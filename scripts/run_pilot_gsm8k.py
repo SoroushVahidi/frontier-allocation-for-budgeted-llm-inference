@@ -160,9 +160,24 @@ def build_controllers(config: dict[str, Any], generator_factory: Any) -> dict[st
             low_threshold=float(config["methods"]["adaptive"]["low_threshold"]),
             max_branches=int(config["methods"]["adaptive"]["max_branches"]),
             allow_verify=True,
+            min_expansions_before_prune=int(config["methods"]["adaptive"].get("min_expansions_before_prune", 0)),
             method_name="adaptive_expand_verify_prune",
         ),
     }
+
+    min_expand_cfg = config.get("methods", {}).get("adaptive_min_expand")
+    if isinstance(min_expand_cfg, dict) and min_expand_cfg.get("enabled", False):
+        methods["adaptive_min_expand"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            max_actions,
+            high_threshold=float(min_expand_cfg["high_threshold"]),
+            low_threshold=float(min_expand_cfg["low_threshold"]),
+            max_branches=int(min_expand_cfg["max_branches"]),
+            allow_verify=bool(min_expand_cfg.get("allow_verify", True)),
+            min_expansions_before_prune=int(min_expand_cfg.get("min_expansions_before_prune", 1)),
+            method_name="adaptive_min_expand",
+        )
 
     abl_cfg = config.get("methods", {}).get("adaptive_no_verify")
     if isinstance(abl_cfg, dict) and abl_cfg.get("enabled", False):

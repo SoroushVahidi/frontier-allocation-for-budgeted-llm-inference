@@ -27,6 +27,13 @@ methods:
     high_threshold: 0.72
     low_threshold: 0.42
     max_branches: 3
+    min_expansions_before_prune: 0
+  adaptive_min_expand:
+    enabled: true
+    high_threshold: 0.72
+    low_threshold: 0.42
+    max_branches: 3
+    min_expansions_before_prune: 1
   adaptive_no_verify:
     enabled: false
     high_threshold: 0.72
