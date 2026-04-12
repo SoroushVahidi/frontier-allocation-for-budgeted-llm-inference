@@ -1,0 +1,199 @@
+#!/usr/bin/env python3
+"""Run the lightweight GSM8K pilot experiment.
+
+This script is intentionally minimal and transparent. It defaults to a small
+simulation-capable setup so feasibility checks can run locally.
+"""
+
+from __future__ import annotations
+
+import argparse
+from dataclasses import asdict
+from datetime import datetime, timezone
+import json
+from pathlib import Path
+import random
+import sys
+from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from experiments.branching import SimulatedBranchGenerator
+from experiments.controllers import (
+    AdaptiveController,
+    BeamController,
+    BestOfNController,
+    GreedyController,
+)
+from experiments.data import load_pilot_examples
+from experiments.scoring import ScoreConfig, SimpleBranchScorer
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run pilot GSM8K controller experiment")
+    parser.add_argument("--config", default="configs/pilot_gsm8k.yaml", help="Path to YAML config")
+    parser.add_argument("--output-dir", default=None, help="Optional override for output directory")
+    return parser.parse_args()
+
+
+def _parse_scalar(raw: str) -> Any:
+    if raw == "null":
+        return None
+    if raw == "true":
+        return True
+    if raw == "false":
+        return False
+    if raw.startswith((""", "'")) and raw.endswith((""", "'")):
+        return raw[1:-1]
+    try:
+        if "." in raw:
+            return float(raw)
+        return int(raw)
+    except ValueError:
+        return raw
+
+
+def _minimal_yaml_parse(text: str) -> dict[str, Any]:
+    """Parse a tiny YAML subset used by this pilot config.
+
+    Supports nested dictionaries with 2-space indentation and scalar values.
+    """
+    root: dict[str, Any] = {}
+    stack: list[tuple[int, dict[str, Any]]] = [(0, root)]
+
+    for line in text.splitlines():
+        content = line.split("#", 1)[0].rstrip()
+        if not content.strip():
+            continue
+
+        indent = len(content) - len(content.lstrip(" "))
+        content = content.strip()
+        if ":" not in content:
+            raise ValueError(f"Unsupported YAML line: {line}")
+        key, raw_value = content.split(":", 1)
+        key = key.strip()
+        raw_value = raw_value.strip()
+
+        while stack and indent < stack[-1][0]:
+            stack.pop()
+        parent = stack[-1][1]
+
+        if raw_value == "":
+            node: dict[str, Any] = {}
+            parent[key] = node
+            stack.append((indent + 2, node))
+        else:
+            parent[key] = _parse_scalar(raw_value)
+
+    return root
+
+
+def load_config(path: str) -> dict[str, Any]:
+    content = Path(path).read_text(encoding="utf-8")
+
+    try:
+        import yaml  # type: ignore
+
+        config = yaml.safe_load(content)
+    except Exception:
+        config = _minimal_yaml_parse(content)
+
+    if not isinstance(config, dict):
+        raise ValueError("Top-level config must be a mapping.")
+    return config
+
+
+def build_controllers(config: dict[str, Any], rng: random.Random) -> dict[str, Any]:
+    scoring_cfg = ScoreConfig(
+        completion_bonus=float(config["scoring"]["completion_bonus"]),
+        depth_penalty=float(config["scoring"]["depth_penalty"]),
+    )
+    scorer = SimpleBranchScorer(scoring_cfg)
+    gen_cfg = config["simulation"]
+
+    def make_generator() -> SimulatedBranchGenerator:
+        return SimulatedBranchGenerator(
+            rng=rng,
+            max_depth=int(gen_cfg["max_depth"]),
+            finish_prob_base=float(gen_cfg["finish_prob_base"]),
+            answer_noise=float(gen_cfg["answer_noise"]),
+        )
+
+    max_actions = int(config["budget"]["max_actions_per_problem"])
+
+    return {
+        "greedy_single_path": GreedyController(make_generator(), scorer, max_actions),
+        "best_of_n": BestOfNController(
+            make_generator(),
+            scorer,
+            max_actions,
+            n_candidates=int(config["methods"]["best_of_n"]["n_candidates"]),
+        ),
+        "fixed_width_beam": BeamController(
+            make_generator(),
+            scorer,
+            max_actions,
+            width=int(config["methods"]["fixed_width_beam"]["width"]),
+        ),
+        "adaptive_expand_verify_prune": AdaptiveController(
+            make_generator(),
+            scorer,
+            max_actions,
+            high_threshold=float(config["methods"]["adaptive"]["high_threshold"]),
+            low_threshold=float(config["methods"]["adaptive"]["low_threshold"]),
+            max_branches=int(config["methods"]["adaptive"]["max_branches"]),
+        ),
+    }
+
+
+def main() -> None:
+    args = parse_args()
+    config = load_config(args.config)
+    rng = random.Random(int(config["seed"]))
+
+    examples, data_meta = load_pilot_examples(config)
+
+    output_base = Path(args.output_dir or config["output_dir"]).expanduser()
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    run_dir = output_base / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    controllers = build_controllers(config, rng)
+
+    manifest = {
+        "run_id": run_id,
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "num_examples": len(examples),
+        "config": config,
+        "data": data_meta,
+    }
+    (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+
+    for method_name, controller in controllers.items():
+        out_path = run_dir / f"{method_name}.jsonl"
+        with out_path.open("w", encoding="utf-8") as f:
+            for example in examples:
+                result = controller.run(example.question, example.answer)
+                row = {
+                    "example_id": example.example_id,
+                    "question": example.question,
+                    "gold_answer": example.answer,
+                    "method": result.method,
+                    "prediction": result.prediction,
+                    "is_correct": result.is_correct,
+                    "actions_used": result.actions_used,
+                    "expansions": result.expansions,
+                    "verifications": result.verifications,
+                    "avg_surviving_branches": result.avg_surviving_branches,
+                    "budget_exhausted": result.budget_exhausted,
+                    "metadata": result.metadata,
+                }
+                f.write(json.dumps(row) + "\n")
+
+    print(f"Pilot run complete. Outputs written to: {run_dir}")
+
+
+if __name__ == "__main__":
+    main()

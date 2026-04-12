@@ -1,0 +1,32 @@
+seed: 7
+pilot_size: 30
+gsm8k_split: test
+# Optional: path to local GSM8K JSONL (question/answer fields).
+gsm8k_jsonl_path: null
+# If GSM8K cannot be loaded, use local arithmetic mock data to keep the pilot runnable.
+allow_mock_data: true
+
+output_dir: outputs/pilot
+
+budget:
+  max_actions_per_problem: 12
+
+methods:
+  best_of_n:
+    n_candidates: 3
+  fixed_width_beam:
+    width: 2
+  adaptive:
+    high_threshold: 0.72
+    low_threshold: 0.42
+    max_branches: 3
+
+scoring:
+  completion_bonus: 0.10
+  depth_penalty: 0.02
+
+simulation:
+  # Placeholder local simulation knobs (used when no real model backend is wired).
+  max_depth: 5
+  finish_prob_base: 0.22
+  answer_noise: 0.20
