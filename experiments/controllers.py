@@ -174,6 +174,7 @@ class AdaptiveController(BaseController):
         low_threshold: float,
         max_branches: int,
         allow_verify: bool = True,
+        min_expansions_before_prune: int = 0,
         method_name: str = "adaptive_expand_verify_prune",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -181,12 +182,14 @@ class AdaptiveController(BaseController):
         self.low_threshold = low_threshold
         self.max_branches = max_branches
         self.allow_verify = allow_verify
+        self.min_expansions_before_prune = max(0, min_expansions_before_prune)
         self.method_name = method_name
 
     def run(self, question: str, gold_answer: str) -> MethodResult:
         actions = expansions = verifications = 0
         surviving_trace: list[int] = []
         action_trace: list[dict[str, Any]] = []
+        branch_expansions: dict[str, int] = {}
         branches: list[BranchState] = [self.generator.init_branch("adaptive_0")]
 
         while actions < self.max_actions and branches:
@@ -199,10 +202,26 @@ class AdaptiveController(BaseController):
                     continue
 
                 score_before = self.scorer.score_branch(branch)
-                if score_before >= self.high_threshold:
+                branch_expand_count = branch_expansions.get(branch.branch_id, 0)
+                if branch_expand_count < self.min_expansions_before_prune:
                     result = self.generator.expand(branch, question, gold_answer)
                     actions += 1
                     expansions += 1
+                    branch_expansions[branch.branch_id] = branch_expand_count + 1
+                    next_branches.append(branch)
+                    action_trace.append(
+                        self._trace_row(branch, "expand", score_before, result.score_after, actions, forced_expand=True)
+                    )
+                    if not branch.is_done and len(next_branches) < self.max_branches and actions < self.max_actions:
+                        child = self.generator.init_branch(f"adaptive_child_{actions}_{len(next_branches)}")
+                        child.score = 0.5 * child.score + 0.5 * branch.score
+                        next_branches.append(child)
+                        branch_expansions[child.branch_id] = 0
+                elif score_before >= self.high_threshold:
+                    result = self.generator.expand(branch, question, gold_answer)
+                    actions += 1
+                    expansions += 1
+                    branch_expansions[branch.branch_id] = branch_expand_count + 1
                     next_branches.append(branch)
                     action_trace.append(
                         self._trace_row(branch, "expand", score_before, result.score_after, actions)
@@ -211,6 +230,7 @@ class AdaptiveController(BaseController):
                         child = self.generator.init_branch(f"adaptive_child_{actions}_{len(next_branches)}")
                         child.score = 0.5 * child.score + 0.5 * branch.score
                         next_branches.append(child)
+                        branch_expansions[child.branch_id] = 0
                 elif self.allow_verify and score_before >= self.low_threshold:
                     result = self.generator.verify(branch, question)
                     actions += 1
@@ -248,6 +268,7 @@ class AdaptiveController(BaseController):
                 "low_threshold": self.low_threshold,
                 "max_branches": self.max_branches,
                 "allow_verify": self.allow_verify,
+                "min_expansions_before_prune": self.min_expansions_before_prune,
                 "action_trace": action_trace,
                 "final_selected_branch": best_branch.branch_id if best_branch else None,
             },
@@ -260,12 +281,14 @@ class AdaptiveController(BaseController):
         score_before: float,
         score_after: float,
         actions_used: int,
+        forced_expand: bool = False,
     ) -> dict[str, Any]:
         return {
             "branch_id": branch.branch_id,
             "action": action,
             "score_before": round(score_before, 4),
             "score_after": round(score_after, 4),
+            "forced_expand": forced_expand,
             "remaining_budget": max(0, self.max_actions - actions_used),
             "branch_done": branch.is_done,
             "branch_pruned": branch.is_pruned,

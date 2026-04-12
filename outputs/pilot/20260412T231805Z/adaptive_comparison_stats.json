@@ -1,0 +1,36 @@
+{
+  "adaptive_expand_verify_prune": {
+    "action_counts": {
+      "verify": 12,
+      "prune": 12
+    },
+    "action_fractions": {
+      "prune": 0.5,
+      "verify": 0.5
+    },
+    "forced_expand_count": 0,
+    "examples_with_any_expand": 0,
+    "examples_zero_expand": 12,
+    "first_action_counts": {
+      "verify": 12
+    }
+  },
+  "adaptive_min_expand": {
+    "action_counts": {
+      "expand": 77,
+      "verify": 18,
+      "prune": 1
+    },
+    "action_fractions": {
+      "expand": 0.8020833333333334,
+      "prune": 0.010416666666666666,
+      "verify": 0.1875
+    },
+    "forced_expand_count": 43,
+    "examples_with_any_expand": 12,
+    "examples_zero_expand": 0,
+    "first_action_counts": {
+      "expand": 12
+    }
+  }
+}
