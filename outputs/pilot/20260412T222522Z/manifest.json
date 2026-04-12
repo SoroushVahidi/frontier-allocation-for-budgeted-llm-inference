@@ -1,0 +1,42 @@
+{
+  "run_id": "20260412T222522Z",
+  "created_utc": "2026-04-12T22:25:22.194999+00:00",
+  "num_examples": 30,
+  "config": {
+    "seed": 7,
+    "pilot_size": 30,
+    "gsm8k_split": "test",
+    "gsm8k_jsonl_path": null,
+    "allow_mock_data": true,
+    "output_dir": "outputs/pilot",
+    "budget": {
+      "max_actions_per_problem": 12
+    },
+    "methods": {
+      "best_of_n": {
+        "n_candidates": 3
+      },
+      "fixed_width_beam": {
+        "width": 2
+      },
+      "adaptive": {
+        "high_threshold": 0.72,
+        "low_threshold": 0.42,
+        "max_branches": 3
+      }
+    },
+    "scoring": {
+      "completion_bonus": 0.1,
+      "depth_penalty": 0.02
+    },
+    "simulation": {
+      "max_depth": 5,
+      "finish_prob_base": 0.22,
+      "answer_noise": 0.2
+    }
+  },
+  "data": {
+    "data_source": "mock_arithmetic",
+    "note": "Placeholder fallback used because GSM8K was unavailable."
+  }
+}

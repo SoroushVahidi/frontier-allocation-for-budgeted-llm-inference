@@ -71,11 +71,12 @@ def load_pilot_examples(config: dict[str, Any]) -> tuple[list[PilotExample], dic
                 f"Original error: {exc}"
             ) from exc
 
-    examples = _build_mock_arithmetic_examples(num_examples=num_examples, seed=seed)
-    return examples, {
-        "data_source": "mock_arithmetic",
-        "note": "Placeholder fallback used because GSM8K was unavailable.",
-    }
+        examples = _build_mock_arithmetic_examples(num_examples=num_examples, seed=seed)
+        return examples, {
+            "data_source": "mock_arithmetic",
+            "note": "Fallback used because GSM8K loading failed.",
+            "load_error": f"{type(exc).__name__}: {exc}",
+        }
 
 
 def _load_from_jsonl(path: Path, num_examples: int) -> list[PilotExample]:
