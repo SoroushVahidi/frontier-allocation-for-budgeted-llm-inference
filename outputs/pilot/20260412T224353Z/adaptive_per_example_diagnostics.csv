@@ -1,0 +1,13 @@
+example_id,is_correct,budget_exhausted,n_actions,n_expand,n_verify,n_prune,first_action,first_score,last_score_after
+gsm8k_0,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_1,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_2,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_3,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_4,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_5,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_6,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_7,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_8,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_9,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_10,False,False,2,0,1,1,verify,0.5,0.25
+gsm8k_11,False,False,2,0,1,1,verify,0.5,0.25

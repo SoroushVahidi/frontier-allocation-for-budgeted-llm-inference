@@ -50,7 +50,7 @@ def main() -> None:
     args = parse_args()
     run_dir = Path(args.run_dir)
 
-    method_files = sorted(p for p in run_dir.glob("*.jsonl") if p.name != "summary.json")
+    method_files = sorted(p for p in run_dir.glob("*.jsonl") if p.stem != "adaptive_diagnostics")
     if not method_files:
         raise FileNotFoundError(f"No method jsonl files found in {run_dir}")
 

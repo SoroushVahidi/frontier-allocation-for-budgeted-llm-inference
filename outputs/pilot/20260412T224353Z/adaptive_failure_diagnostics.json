@@ -1,0 +1,111 @@
+{
+  "run_dir": "outputs/pilot/20260412T224353Z",
+  "n_examples": 12,
+  "adaptive_accuracy": 0.0,
+  "adaptive_avg_actions": 1.0,
+  "adaptive_avg_expansions": 0.0,
+  "adaptive_avg_verifications": 1.0,
+  "adaptive_budget_exhaustion_rate": 0.0,
+  "action_counts": {
+    "expand": 0,
+    "verify": 12,
+    "prune": 12
+  },
+  "action_fraction": {
+    "expand": 0.0,
+    "verify": 0.5,
+    "prune": 0.5
+  },
+  "score_before_means": {
+    "expand": null,
+    "verify": 0.5,
+    "prune": 0.25
+  },
+  "score_after_means": {
+    "expand": null,
+    "verify": 0.25,
+    "prune": 0.25
+  },
+  "remaining_budget_mean_by_action": {
+    "expand": null,
+    "verify": 7,
+    "prune": 7
+  },
+  "first_score_success_mean": null,
+  "first_score_failure_mean": 0.5,
+  "n_adaptive_fail_baseline_succeed": 11,
+  "examples_adaptive_fail_baseline_succeed": [
+    {
+      "example_id": "gsm8k_1",
+      "adaptive_correct": false,
+      "greedy_single_path": true,
+      "best_of_n": true,
+      "fixed_width_beam": true,
+      "adaptive_prediction": null,
+      "gold": "348"
+    },
+    {
+      "example_id": "gsm8k_2",
+      "adaptive_correct": false,
+      "greedy_single_path": true,
+      "best_of_n": true,
+      "fixed_width_beam": true,
+      "adaptive_prediction": null,
+      "gold": "144"
+    },
+    {
+      "example_id": "gsm8k_3",
+      "adaptive_correct": false,
+      "greedy_single_path": true,
+      "best_of_n": true,
+      "fixed_width_beam": true,
+      "adaptive_prediction": null,
+      "gold": "14"
+    },
+    {
+      "example_id": "gsm8k_4",
+      "adaptive_correct": false,
+      "greedy_single_path": true,
+      "best_of_n": true,
+      "fixed_width_beam": true,
+      "adaptive_prediction": null,
+      "gold": "25000"
+    },
+    {
+      "example_id": "gsm8k_5",
+      "adaptive_correct": false,
+      "greedy_single_path": true,
+      "best_of_n": true,
+      "fixed_width_beam": true,
+      "adaptive_prediction": null,
+      "gold": "36"
+    },
+    {
+      "example_id": "gsm8k_6",
+      "adaptive_correct": false,
+      "greedy_single_path": true,
+      "best_of_n": true,
+      "fixed_width_beam": true,
+      "adaptive_prediction": null,
+      "gold": "11"
+    },
+    {
+      "example_id": "gsm8k_7",
+      "adaptive_correct": false,
+      "greedy_single_path": true,
+      "best_of_n": true,
+      "fixed_width_beam": true,
+      "adaptive_prediction": null,
+      "gold": "215"
+    },
+    {
+      "example_id": "gsm8k_8",
+      "adaptive_correct": false,
+      "greedy_single_path": true,
+      "best_of_n": true,
+      "fixed_width_beam": true,
+      "adaptive_prediction": null,
+      "gold": "36"
+    }
+  ]
+}

@@ -1,14 +1,13 @@
-"""Branch state and branch operations for the lightweight pilot experiment.
-
-This module intentionally keeps the simulation logic simple and explicit.
-The default generator below is a placeholder that can run locally without an API.
-"""
+"""Branch state and branch operations for the lightweight pilot experiment."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import json
 import random
+import re
 from typing import Optional
+from urllib import error, request
 
 
 @dataclass
@@ -40,12 +39,7 @@ class BranchActionResult:
 
 
 class SimulatedBranchGenerator:
-    """Simple local generator used when no external LLM is wired.
-
-    NOTE: This simulator is intentionally provisional. To make controller logic
-    testable without an API key, it uses a stochastic process and (optionally)
-    the known gold answer when finalizing a branch.
-    """
+    """Simple local generator used when no external LLM is wired."""
 
     def __init__(
         self,
@@ -60,41 +54,29 @@ class SimulatedBranchGenerator:
         self.answer_noise = answer_noise
 
     def init_branch(self, branch_id: str) -> BranchState:
-        """Initialize a branch with sampled latent quality."""
         latent_quality = self.rng.uniform(0.2, 0.95)
         return BranchState(branch_id=branch_id, latent_quality=latent_quality, score=latent_quality)
 
-    def expand(self, branch: BranchState, gold_answer: str) -> BranchActionResult:
-        """Expand a branch by one reasoning step in simulation mode."""
+    def expand(self, branch: BranchState, question: str, gold_answer: str) -> BranchActionResult:  # noqa: ARG002
         if branch.is_done or branch.is_pruned:
             return BranchActionResult("expand", branch.score, branch.score, branch.is_done)
 
         score_before = branch.score
         branch.steps.append(f"step_{branch.depth + 1}")
-
-        # Keep a little drift so branch quality can move during expansion.
         drift = self.rng.uniform(-0.05, 0.08)
         branch.score = min(1.0, max(0.0, branch.score + drift))
 
-        finish_prob = min(
-            0.95,
-            self.finish_prob_base + 0.1 * branch.depth + 0.25 * branch.latent_quality,
-        )
+        finish_prob = min(0.95, self.finish_prob_base + 0.1 * branch.depth + 0.25 * branch.latent_quality)
         should_finish = branch.depth >= self.max_depth or self.rng.random() < finish_prob
 
         if should_finish:
             branch.is_done = True
-            # Placeholder correctness simulation.
             is_correct = self.rng.random() < max(0.05, branch.score - self.answer_noise)
-            if is_correct:
-                branch.predicted_answer = gold_answer
-            else:
-                branch.predicted_answer = self._make_wrong_answer(gold_answer)
+            branch.predicted_answer = gold_answer if is_correct else self._make_wrong_answer(gold_answer)
 
         return BranchActionResult("expand", score_before, branch.score, branch.is_done)
 
-    def verify(self, branch: BranchState) -> BranchActionResult:
-        """Re-score a branch with a lightweight verification step."""
+    def verify(self, branch: BranchState, question: str) -> BranchActionResult:  # noqa: ARG002
         score_before = branch.score
         correction = (branch.latent_quality - branch.score) * 0.35
         jitter = self.rng.uniform(-0.03, 0.03)
@@ -103,15 +85,181 @@ class SimulatedBranchGenerator:
 
     @staticmethod
     def prune(branch: BranchState) -> BranchActionResult:
-        """Prune (discard) a branch."""
         score_before = branch.score
         branch.is_pruned = True
         return BranchActionResult("prune", score_before, branch.score, branch.is_done)
 
     def _make_wrong_answer(self, gold_answer: str) -> str:
-        """Create a nearby incorrect answer for simulation diagnostics."""
         try:
             value = int(float(gold_answer))
             return str(value + self.rng.choice([-3, -2, -1, 1, 2, 3]))
         except ValueError:
             return f"wrong_{self.rng.randint(0, 999)}"
+
+
+class APIBranchGenerator:
+    """Provisional API-backed branch generator and verifier."""
+
+    def __init__(
+        self,
+        api_key: str | None,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+        timeout_seconds: int = 45,
+        base_url: str | None = None,
+    ) -> None:
+        self.api_key = api_key
+        self.base_url = (base_url or "https://api.openai.com/v1").rstrip("/")
+        self.model = model
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.timeout_seconds = timeout_seconds
+
+    def init_branch(self, branch_id: str) -> BranchState:
+        return BranchState(branch_id=branch_id, latent_quality=0.5, score=0.5)
+
+    def expand(self, branch: BranchState, question: str, gold_answer: str) -> BranchActionResult:  # noqa: ARG002
+        if branch.is_done or branch.is_pruned:
+            return BranchActionResult("expand", branch.score, branch.score, branch.is_done)
+
+        score_before = branch.score
+        prompt = self._expand_prompt(question, branch)
+        payload = {
+            "model": self.model,
+            "input": prompt,
+            "max_output_tokens": self.max_tokens,
+            "text": {"format": {"type": "json_object"}},
+            "temperature": self.temperature,
+        }
+        text = self._call_responses_api(payload)
+        data = self._safe_json(text)
+
+        action = str(data.get("action", "continue")).strip().lower()
+        step = str(data.get("step", ""))[:500]
+        answer = str(data.get("answer", "")).strip()
+        confidence = self._clip01(self._to_float(data.get("confidence", branch.score)))
+
+        if step:
+            branch.steps.append(step)
+        elif action != "final":
+            branch.steps.append("model_step_missing")
+
+        branch.score = 0.6 * branch.score + 0.4 * confidence
+
+        if action == "final" or answer:
+            branch.is_done = True
+            branch.predicted_answer = answer or self._extract_last_number(step)
+
+        return BranchActionResult("expand", score_before, branch.score, branch.is_done)
+
+    def verify(self, branch: BranchState, question: str) -> BranchActionResult:
+        score_before = branch.score
+        prompt = self._verify_prompt(question, branch)
+        payload = {
+            "model": self.model,
+            "input": prompt,
+            "max_output_tokens": self.max_tokens,
+            "text": {"format": {"type": "json_object"}},
+            "temperature": min(0.2, self.temperature),
+        }
+        text = self._call_responses_api(payload)
+        data = self._safe_json(text)
+        confidence = self._clip01(self._to_float(data.get("confidence", branch.score)))
+        maybe_answer = str(data.get("candidate_answer", "")).strip()
+
+        branch.score = 0.5 * branch.score + 0.5 * confidence
+        if maybe_answer and branch.predicted_answer is None:
+            branch.predicted_answer = maybe_answer
+        return BranchActionResult("verify", score_before, branch.score, branch.is_done)
+
+    @staticmethod
+    def prune(branch: BranchState) -> BranchActionResult:
+        score_before = branch.score
+        branch.is_pruned = True
+        return BranchActionResult("prune", score_before, branch.score, branch.is_done)
+
+    def _call_responses_api(self, payload: dict) -> str:
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        req = request.Request(
+            f"{self.base_url}/responses",
+            data=json.dumps(payload).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        try:
+            with request.urlopen(req, timeout=self.timeout_seconds) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+        except error.HTTPError as exc:  # pragma: no cover - network path
+            err_body = exc.read().decode("utf-8", errors="ignore")
+            raise RuntimeError(f"OpenAI API HTTPError {exc.code}: {err_body[:500]}") from exc
+        except Exception as exc:  # pragma: no cover - network path
+            raise RuntimeError(f"OpenAI API request failed: {exc}") from exc
+
+        texts: list[str] = []
+        for item in body.get("output", []):
+            if item.get("type") != "message":
+                continue
+            for content in item.get("content", []):
+                if content.get("type") == "output_text":
+                    texts.append(content.get("text", ""))
+        if texts:
+            return "\n".join(texts)
+
+        fallback = body.get("output_text")
+        if isinstance(fallback, str) and fallback.strip():
+            return fallback
+        raise RuntimeError("OpenAI API returned no text output.")
+
+    @staticmethod
+    def _safe_json(text: str) -> dict:
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            match = re.search(r"\{.*\}", text, flags=re.DOTALL)
+            if match:
+                try:
+                    return json.loads(match.group(0))
+                except json.JSONDecodeError:
+                    pass
+        return {}
+
+    @staticmethod
+    def _extract_last_number(text: str) -> str:
+        nums = re.findall(r"[-+]?\d+(?:\.\d+)?", text)
+        return nums[-1] if nums else text.strip()
+
+    @staticmethod
+    def _to_float(v: object) -> float:
+        try:
+            return float(v)  # type: ignore[arg-type]
+        except Exception:
+            return 0.5
+
+    @staticmethod
+    def _clip01(v: float) -> float:
+        return max(0.0, min(1.0, v))
+
+    def _expand_prompt(self, question: str, branch: BranchState) -> str:
+        prior = "\n".join(f"- {s}" for s in branch.steps[-3:]) or "(none)"
+        return (
+            "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. "
+            "Return strict JSON with keys: action, step, answer, confidence. "
+            "action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\n"
+            f"Question:\n{question}\n\n"
+            f"Current partial reasoning:\n{prior}\n"
+        )
+
+    def _verify_prompt(self, question: str, branch: BranchState) -> str:
+        prior = "\n".join(f"- {s}" for s in branch.steps[-4:]) or "(none)"
+        return (
+            "You are a lightweight verifier for GSM8K reasoning. Assess if the current reasoning path seems correct. "
+            "Return strict JSON with keys: confidence (0..1), candidate_answer, rationale_short. "
+            "candidate_answer may be empty if unknown.\n\n"
+            f"Question:\n{question}\n\n"
+            f"Reasoning path:\n{prior}\n\n"
+            f"Current predicted answer (if any): {branch.predicted_answer or ''}\n"
+        )

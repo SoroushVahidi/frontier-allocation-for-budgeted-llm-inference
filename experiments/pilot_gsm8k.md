@@ -6,9 +6,9 @@ matched action budget.
 
 ## What this pilot is
 
-- A small, configurable run on a GSM8K subset (default: 30 examples).
-- A side-by-side comparison of four controller styles.
-- A transparent output format for quick inspection.
+- A small, configurable run on a GSM8K subset (default: 12 examples).
+- A side-by-side comparison of baseline and adaptive controller styles.
+- A transparent output format for quick inspection and diagnostics.
 
 ## Methods compared
 
@@ -29,13 +29,9 @@ Per-problem budget uses `max_actions_per_problem`.
 
 This is **not** the final pipeline. It includes provisional pieces:
 
-- If no external model/API is configured, the run uses a local simulation mode
-  so controller logic can still be exercised.
-- The branch scorer is a lightweight heuristic, not a strong process verifier.
-- Fallback mock arithmetic data is available if GSM8K loading is unavailable
-  (clearly recorded in `manifest.json`).
-
-These simplifications are intentional for early feasibility checks.
+- If `OPENAI_API_KEY` is set and `model.use_openai_api=true`, run uses OpenAI API-backed branch expansion/verification.
+- If API mode cannot be used, the run falls back to local simulation mode.
+- Fallback mock arithmetic data is available if GSM8K loading is unavailable (clearly recorded in `manifest.json`).
 
 ## Run
 
@@ -53,6 +49,7 @@ Outputs are written to:
 
 - `outputs/pilot/<run_id>/manifest.json`
 - `outputs/pilot/<run_id>/<method>.jsonl`
+- `outputs/pilot/<run_id>/adaptive_diagnostics.jsonl`
 - `outputs/pilot/<run_id>/summary.json` (after evaluation)
 
 ## What results mean (and do not mean)
