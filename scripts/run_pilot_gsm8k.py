@@ -19,7 +19,7 @@ if str(REPO_ROOT) not in sys.path:
 from experiments.branching import APIBranchGenerator, SimulatedBranchGenerator
 from experiments.controllers import AdaptiveController, BeamController, BestOfNController, GreedyController
 from experiments.data import load_pilot_examples
-from experiments.scoring import ScoreConfig, SimpleBranchScorer
+from experiments.scoring import LearnedBranchScorerV3, ScoreConfig, SimpleBranchScorer
 
 
 def parse_args() -> argparse.Namespace:
@@ -177,6 +177,22 @@ def build_controllers(config: dict[str, Any], generator_factory: Any) -> dict[st
             allow_verify=bool(min_expand_cfg.get("allow_verify", True)),
             min_expansions_before_prune=int(min_expand_cfg.get("min_expansions_before_prune", 1)),
             method_name="adaptive_min_expand",
+        )
+
+
+    learned_cfg = config.get("methods", {}).get("adaptive_learned_branch_score_v3")
+    if isinstance(learned_cfg, dict) and learned_cfg.get("enabled", False):
+        learned_scorer = LearnedBranchScorerV3(str(learned_cfg["model_path"]))
+        methods["adaptive_learned_branch_score_v3"] = AdaptiveController(
+            generator_factory(),
+            learned_scorer,
+            max_actions,
+            high_threshold=float(learned_cfg["high_threshold"]),
+            low_threshold=float(learned_cfg["low_threshold"]),
+            max_branches=int(learned_cfg["max_branches"]),
+            allow_verify=bool(learned_cfg.get("allow_verify", True)),
+            min_expansions_before_prune=int(learned_cfg.get("min_expansions_before_prune", 1)),
+            method_name="adaptive_learned_branch_score_v3",
         )
 
     abl_cfg = config.get("methods", {}).get("adaptive_no_verify")
