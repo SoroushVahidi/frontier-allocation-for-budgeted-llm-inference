@@ -112,11 +112,12 @@ class APIBranchGenerator:
     ) -> None:
         self.provider = provider.strip().lower()
         self.api_key = api_key
-        default_base_url = (
-            "https://generativelanguage.googleapis.com/v1beta"
-            if self.provider == "gemini"
-            else "https://api.openai.com/v1"
-        )
+        if self.provider == "gemini":
+            default_base_url = "https://generativelanguage.googleapis.com/v1beta"
+        elif self.provider == "groq":
+            default_base_url = "https://api.groq.com/openai/v1"
+        else:
+            default_base_url = "https://api.openai.com/v1"
         self.base_url = (base_url or default_base_url).rstrip("/")
         self.model = model
         self.temperature = temperature
@@ -189,7 +190,48 @@ class APIBranchGenerator:
     def _call_api(self, payload: dict, prompt: str) -> str:
         if self.provider == "gemini":
             return self._call_gemini_api(prompt)
+        if self.provider == "groq":
+            return self._call_groq_chat_api(prompt)
         return self._call_responses_api(payload)
+
+    def _call_groq_chat_api(self, prompt: str) -> str:
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": "Return only valid JSON matching the requested schema."},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "response_format": {"type": "json_object"},
+        }
+
+        req = request.Request(
+            f"{self.base_url}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        try:
+            with request.urlopen(req, timeout=self.timeout_seconds) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+        except error.HTTPError as exc:  # pragma: no cover - network path
+            err_body = exc.read().decode("utf-8", errors="ignore")
+            raise RuntimeError(f"Groq API HTTPError {exc.code}: {err_body[:500]}") from exc
+        except Exception as exc:  # pragma: no cover - network path
+            raise RuntimeError(f"Groq API request failed: {exc}") from exc
+
+        choices = body.get("choices", [])
+        if choices:
+            message = choices[0].get("message", {})
+            content = message.get("content")
+            if isinstance(content, str) and content.strip():
+                return content
+        raise RuntimeError("Groq API returned no text output.")
 
     def _call_responses_api(self, payload: dict) -> str:
         headers = {"Content-Type": "application/json"}

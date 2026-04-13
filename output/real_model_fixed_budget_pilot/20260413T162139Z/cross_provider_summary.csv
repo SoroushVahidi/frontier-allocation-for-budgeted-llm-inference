@@ -1,0 +1,10 @@
+provider,dataset,ok_methods,failed_methods,raw_top_method,calibrated_top_method,ranking_changed,failure_reasons
+gemini,EleutherAI/hendrycks_math,0,4,,,False,quota_or_rate_limit
+gemini,Idavidrein/gpqa,0,4,,,False,quota_or_rate_limit
+gemini,openai/gsm8k,0,4,,,False,quota_or_rate_limit
+groq,EleutherAI/hendrycks_math,0,4,,,False,http_error_other
+groq,Idavidrein/gpqa,0,4,,,False,http_error_other
+groq,openai/gsm8k,0,4,,,False,http_error_other
+openai,EleutherAI/hendrycks_math,4,0,best_of_n,adaptive_relative_rank,True,
+openai,Idavidrein/gpqa,3,1,adaptive_relative_rank,adaptive_relative_rank,False,http_error_other
+openai,openai/gsm8k,4,0,best_of_n,adaptive_relative_rank,True,
