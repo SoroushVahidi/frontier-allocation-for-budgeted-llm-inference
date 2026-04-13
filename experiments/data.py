@@ -1,0 +1,109 @@
+"""Data loading helpers for the GSM8K pilot experiment."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import json
+from pathlib import Path
+import random
+import re
+from typing import Any
+
+
+@dataclass
+class PilotExample:
+    """Single benchmark example used by the pilot."""
+
+    example_id: str
+    question: str
+    answer: str
+
+
+ANSWER_PATTERN = re.compile(r"####\s*([-+]?\d[\d,]*(?:\.\d+)?)")
+
+
+def extract_final_answer(answer_text: str) -> str:
+    """Extract the GSM8K final numeric answer from canonical text."""
+    match = ANSWER_PATTERN.search(answer_text)
+    if not match:
+        return answer_text.strip()
+    return match.group(1).replace(",", "")
+
+
+def load_pilot_examples(config: dict[str, Any]) -> tuple[list[PilotExample], dict[str, Any]]:
+    """Load a configurable subset of GSM8K with safe local fallback.
+
+    Priority order:
+    1) JSONL file path from config
+    2) HuggingFace datasets (gsm8k/main)
+    3) local mock arithmetic examples (if enabled)
+    """
+    num_examples = int(config["pilot_size"])
+    seed = int(config["seed"])
+
+    jsonl_path = config.get("gsm8k_jsonl_path")
+    if jsonl_path:
+        examples = _load_from_jsonl(Path(jsonl_path), num_examples)
+        return examples, {"data_source": "jsonl", "path": str(jsonl_path)}
+
+    try:
+        from datasets import load_dataset  # type: ignore
+
+        ds = load_dataset("gsm8k", "main", split=config.get("gsm8k_split", "test"))
+        shuffled = ds.shuffle(seed=seed)
+        selected = shuffled.select(range(min(num_examples, len(shuffled))))
+        examples = [
+            PilotExample(
+                example_id=f"gsm8k_{idx}",
+                question=row["question"],
+                answer=extract_final_answer(row["answer"]),
+            )
+            for idx, row in enumerate(selected)
+        ]
+        return examples, {
+            "data_source": "huggingface:gsm8k",
+            "split": config.get("gsm8k_split", "test"),
+        }
+    except Exception as exc:  # noqa: BLE001 - explicit fallback for lightweight pilot
+        if not config.get("allow_mock_data", True):
+            raise RuntimeError(
+                "Could not load GSM8K from HuggingFace and mock mode is disabled. "
+                f"Original error: {exc}"
+            ) from exc
+
+        examples = _build_mock_arithmetic_examples(num_examples=num_examples, seed=seed)
+        return examples, {
+            "data_source": "mock_arithmetic",
+            "note": "Fallback used because GSM8K loading failed.",
+            "load_error": f"{type(exc).__name__}: {exc}",
+        }
+
+
+def _load_from_jsonl(path: Path, num_examples: int) -> list[PilotExample]:
+    examples: list[PilotExample] = []
+    with path.open("r", encoding="utf-8") as f:
+        for idx, line in enumerate(f):
+            if idx >= num_examples:
+                break
+            row = json.loads(line)
+            examples.append(
+                PilotExample(
+                    example_id=f"jsonl_{idx}",
+                    question=row["question"],
+                    answer=extract_final_answer(row["answer"]),
+                )
+            )
+    return examples
+
+
+def _build_mock_arithmetic_examples(num_examples: int, seed: int) -> list[PilotExample]:
+    rng = random.Random(seed)
+    examples: list[PilotExample] = []
+    for i in range(num_examples):
+        a = rng.randint(5, 99)
+        b = rng.randint(2, 40)
+        c = rng.randint(1, 15)
+        question = f"If a store sells {a} apples and then sells {b} more, then throws out {c}, how many are left?"
+        answer = str(a + b - c)
+        examples.append(PilotExample(example_id=f"mock_{i}", question=question, answer=answer))
+    return examples
