@@ -1,0 +1,6 @@
+dataset,repo_id,ok,gated,split,config,token_present,datasets_loader_ok,pandas_fallback_ok,loader_path_used,gpqa_accessible,error,pandas_error
+openai/gsm8k,openai/gsm8k,True,False,test,main,True,,,,,,
+EleutherAI/hendrycks_math,EleutherAI/hendrycks_math,True,False,test,algebra,True,,,,,,
+Idavidrein/gpqa,Idavidrein/gpqa,True,True,train,gpqa_diamond,True,True,True,datasets,True,,
+Hothan/OlympiadBench,Hothan/OlympiadBench,True,False,train,OE_TO_maths_en_COMP,True,,,,,,
+livecodebench/code_generation_lite,livecodebench/code_generation_lite,False,False,test,,True,False,,none,,"RuntimeError: Dataset scripts are no longer supported, but found code_generation_lite.py",

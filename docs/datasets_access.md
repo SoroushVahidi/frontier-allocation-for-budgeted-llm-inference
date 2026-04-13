@@ -35,6 +35,15 @@ Verification output now includes:
 - GPQA pandas `hf://` fallback status (`pd.read_csv("hf://datasets/Idavidrein/gpqa/gpqa_extended.csv")`),
 - final GPQA accessibility verdict.
 
+### Verified status snapshot (2026-04-13, fresh-session check)
+
+From `python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset_access_fresh_session`:
+- ✅ `openai/gsm8k`: datasets loader works (`config=main`, `split=test`)
+- ✅ `EleutherAI/hendrycks_math`: datasets loader works (`config=algebra`, `split=test`)
+- ✅ `Idavidrein/gpqa`: datasets loader works (`config=gpqa_diamond`, `split=train`), and pandas `hf://` fallback also works
+- ✅ `Hothan/OlympiadBench`: datasets loader works (`config=OE_TO_maths_en_COMP`, `split=train`)
+- ⚠️ `livecodebench/code_generation_lite`: fails in this environment due to loader incompatibility (`Dataset scripts are no longer supported`)
+
 ## GitHub-hosted datasets / benchmark repos
 
 GitHub-hosted resources in current scope:
