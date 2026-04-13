@@ -32,6 +32,16 @@ The repository now includes a lightweight GSM8K pilot scaffold for testing basic
 
 This pilot is intentionally provisional and research-friendly: it can run in local simulation mode when no external model API is wired, while keeping controller logic and outputs easy to inspect.
 
+## Real-model fixed-budget pilot (OpenAI + Gemini)
+
+Small real-API pilot runner using the existing branch-allocation controllers on HF subsets:
+
+- `python scripts/run_real_model_fixed_budget_pilot.py --subset-size 2 --max-actions 6 --include-best-of-n`
+- Outputs (JSON/CSV/Markdown) are written under `output/real_model_fixed_budget_pilot/<run_id>/`.
+- Supports datasets:
+  - `openai/gsm8k`
+  - `EleutherAI/hendrycks_math`
+
 
 ## Branch scorer v3 (decision-point ranking)
 

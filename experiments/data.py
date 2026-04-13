@@ -22,12 +22,22 @@ class PilotExample:
 
 
 ANSWER_PATTERN = re.compile(r"####\s*([-+]?\d[\d,]*(?:\.\d+)?)")
+BOXED_PATTERN = re.compile(r"\\boxed\{([^}]*)\}")
+NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?")
 
 
 def extract_final_answer(answer_text: str) -> str:
-    """Extract the GSM8K final numeric answer from canonical text."""
+    """Extract a compact final answer for GSM8K/MATH-style response fields."""
     match = ANSWER_PATTERN.search(answer_text)
     if not match:
+        boxed = BOXED_PATTERN.findall(answer_text)
+        if boxed:
+            candidate = boxed[-1].strip()
+            number_match = NUMBER_PATTERN.findall(candidate)
+            return number_match[-1].replace(",", "") if number_match else candidate
+        nums = NUMBER_PATTERN.findall(answer_text)
+        if nums:
+            return nums[-1].replace(",", "")
         return answer_text.strip()
     return match.group(1).replace(",", "")
 
