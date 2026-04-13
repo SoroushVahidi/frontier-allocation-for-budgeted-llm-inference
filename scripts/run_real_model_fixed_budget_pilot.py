@@ -48,6 +48,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--low-threshold", type=float, default=0.42)
     parser.add_argument("--openai-model", default="gpt-4.1-mini")
     parser.add_argument("--gemini-model", default="gemini-2.0-flash")
+    parser.add_argument("--groq-model", default="llama-3.1-8b-instant")
     parser.add_argument("--output-dir", default="output/real_model_fixed_budget_pilot")
     parser.add_argument(
         "--learned-scorer-path",
@@ -64,11 +65,19 @@ def _provider_api_key(provider: str) -> str | None:
         return os.getenv("OPENAI_API_KEY")
     if provider == "gemini":
         return os.getenv("GEMINI_API_KEY")
+    if provider == "groq":
+        return os.getenv("GROQ_API_KEY")
     return None
 
 
 def _provider_model(provider: str, args: argparse.Namespace) -> str:
-    return args.openai_model if provider == "openai" else args.gemini_model
+    if provider == "openai":
+        return args.openai_model
+    if provider == "gemini":
+        return args.gemini_model
+    if provider == "groq":
+        return args.groq_model
+    raise ValueError(f"Unsupported provider: {provider}")
 
 
 def _resolve_learned_model_path(preferred: Path) -> tuple[Path | None, str]:
@@ -368,7 +377,7 @@ def main() -> None:
         "fixed_budget_max_actions": args.max_actions,
         "max_branches": args.max_branches,
         "thresholds": {"high": args.high_threshold, "low": args.low_threshold},
-        "models": {"openai": args.openai_model, "gemini": args.gemini_model},
+        "models": {"openai": args.openai_model, "gemini": args.gemini_model, "groq": args.groq_model},
         "learned_scorer": {
             "requested_path": args.learned_scorer_path,
             "resolved_path": str(learned_model_path) if learned_model_path else None,
@@ -377,6 +386,7 @@ def main() -> None:
         "api_key_presence": {
             "OPENAI_API_KEY": bool(os.getenv("OPENAI_API_KEY")),
             "GEMINI_API_KEY": bool(os.getenv("GEMINI_API_KEY")),
+            "GROQ_API_KEY": bool(os.getenv("GROQ_API_KEY")),
         },
     }
     (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
