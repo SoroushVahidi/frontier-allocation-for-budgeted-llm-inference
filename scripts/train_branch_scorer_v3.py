@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train v1/v2/v3 branch-scorer models and export text artifacts."""
+"""Train v1/v2/v3/v4 branch-scorer models and export text artifacts."""
 
 from __future__ import annotations
 
@@ -132,6 +132,12 @@ def main() -> None:
         ),
         "adaptive_learned_branch_score_v3": _fit_and_export_model(
             train_rows, "v3_target_progress_value", "decision_tree_regressor"
+        ),
+        "adaptive_learned_branch_score_v4_linear": _fit_and_export_model(
+            train_rows, "v4_target_subtree_value", "linear_regression"
+        ),
+        "adaptive_learned_branch_score_v4": _fit_and_export_model(
+            train_rows, "v4_target_subtree_value", "decision_tree_regressor"
         ),
     }
 

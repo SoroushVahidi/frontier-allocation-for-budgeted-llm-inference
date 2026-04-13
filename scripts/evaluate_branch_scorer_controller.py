@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from pathlib import Path
 import random
@@ -17,12 +18,11 @@ from experiments.branch_scorer_v3 import load_model, simulate_controller
 
 
 METHODS = [
-    "adaptive_raw_score",
     "adaptive_score_plus_progress",
     "adaptive_relative_rank",
-    "adaptive_eptree_baseline",
     "adaptive_learned_branch_score",
     "adaptive_learned_branch_score_v3",
+    "adaptive_learned_branch_score_v4",
 ]
 
 
@@ -44,6 +44,7 @@ def main() -> None:
     model_map = {
         "adaptive_learned_branch_score": load_model(Path(args.model_dir) / "adaptive_learned_branch_score.json"),
         "adaptive_learned_branch_score_v3": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v3.json"),
+        "adaptive_learned_branch_score_v4": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v4.json"),
     }
 
     results: dict[str, dict[str, float]] = {}
@@ -70,25 +71,54 @@ def main() -> None:
             "avg_actions": sum(float(r["actions_used"]) for r in episode_metrics) / n,
         }
 
-    best_hand = max(
-        ["adaptive_raw_score", "adaptive_score_plus_progress", "adaptive_relative_rank", "adaptive_eptree_baseline"],
-        key=lambda m: results[m]["accuracy"],
-    )
-    margin = results["adaptive_learned_branch_score_v3"]["accuracy"] - results[best_hand]["accuracy"]
+    margin_v4_vs_relative_rank = results["adaptive_learned_branch_score_v4"]["accuracy"] - results["adaptive_relative_rank"]["accuracy"]
     summary = {
         "episodes": args.episodes,
         "budget": args.budget,
         "n_init_branches": args.n_init_branches,
         "results": results,
-        "best_hand_designed": best_hand,
-        "v3_margin_over_best_hand": margin,
-        "v3_clearly_beats_best_hand": margin >= 0.02,
+        "v4_margin_over_relative_rank": margin_v4_vs_relative_rank,
+        "v4_beats_relative_rank": margin_v4_vs_relative_rank > 0.0,
     }
 
     out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+    csv_path = out_path.with_suffix(".csv")
+    with csv_path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["method", "accuracy", "solve_rate", "avg_actions"])
+        writer.writeheader()
+        for method_name in METHODS:
+            writer.writerow({"method": method_name, **results[method_name]})
+
+    note_path = out_path.with_name(f"{out_path.stem}_note.md")
+    note_lines = [
+        "# Controller evaluation note",
+        "",
+        "This is a lightweight subtree-value target prototype (v4), not RL training and not a full TreeRL reproduction.",
+        "",
+        "## Subtree value definition (v4 target)",
+        "- For each branch snapshot at decision t, look at later snapshots of the same branch within the same episode.",
+        "- Snapshot utility is 0.7 * future_score + 0.3 * final_branch_correct.",
+        "- v4 target is the mean snapshot utility over those future snapshots (fallback to immediate utility if none).",
+        "",
+        "## Accuracy by method",
+    ]
+    for method_name in METHODS:
+        note_lines.append(f"- {method_name}: accuracy={results[method_name]['accuracy']:.4f}")
+    note_lines.extend(
+        [
+            "",
+            f"- v4 margin over adaptive_relative_rank: {summary['v4_margin_over_relative_rank']:.4f}",
+            f"- v4 beats adaptive_relative_rank: {'yes' if summary['v4_beats_relative_rank'] else 'no'}",
+        ]
+    )
+    note_path.write_text("\n".join(note_lines) + "\n", encoding="utf-8")
+
     print(json.dumps(summary, indent=2))
+    print(f"Wrote: {csv_path}")
+    print(f"Wrote: {note_path}")
 
 
 if __name__ == "__main__":
