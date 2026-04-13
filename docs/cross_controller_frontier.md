@@ -4,8 +4,10 @@ This repository’s **new** NeurIPS-style track studies **heterogeneous controll
 
 ## Where the frontier scaffold lives
 
-- Script: `scripts/run_cross_strategy_frontier_allocation.py`
-- Outputs: `outputs/cross_strategy_frontier_allocation_controller/<run_id>/`
+- Single-dataset scaffold: `scripts/run_cross_strategy_frontier_allocation.py`
+- **Multi-dataset matrix (new-paper empirical pass):** `scripts/run_new_paper_frontier_matrix.py` → `outputs/new_paper_frontier_matrix/<run_id>/`
+  - Manuscript-style exports: `frontier_budget_dataset_summary.csv`, `frontier_allocation_oracle_gap.csv`, `frontier_allocation_controller_selector.csv`, `anti_collapse_min_expand_comparison.csv`, `new_paper_frontier_interpretation.md`, `frontier_allocation_execution_report.json`
+- Single-run outputs: `outputs/cross_strategy_frontier_allocation_controller/<run_id>/`
   - `strategy_metrics.csv`, `selector_summary.csv`, `per_example_eval.jsonl`, `note.md`
 
 ## New heterogeneous families (frontier track)
@@ -49,11 +51,21 @@ python scripts/smoke_frontier_methods.py
 python scripts/run_cross_strategy_frontier_allocation.py --subset-size 4 --budgets 6 --seed 0
 ```
 
+**Serious multi-dataset matrix (GSM8K + MATH mirror by default; optional `--try-gpqa`):**
+
+```bash
+python scripts/run_new_paper_frontier_matrix.py \
+  --subset-size 48 --budgets 6,8,10,12 \
+  --datasets openai/gsm8k,EleutherAI/hendrycks_math
+```
+
 **Small OpenAI-backed pilot (requires `OPENAI_API_KEY`):**
 
 ```bash
 python scripts/run_cross_strategy_frontier_allocation.py --use-openai-api --subset-size 2 --budgets 8 --seed 1 --openai-model gpt-4.1-mini
 ```
+
+Same flag works on the matrix runner: `python scripts/run_new_paper_frontier_matrix.py --use-openai-api --subset-size 8 --budgets 10 --datasets openai/gsm8k`.
 
 ## Limitations
 

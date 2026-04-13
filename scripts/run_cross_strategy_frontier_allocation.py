@@ -12,25 +12,18 @@ from pathlib import Path
 import random
 import statistics
 import sys
-from typing import Any, Callable
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from experiments.branching import APIBranchGenerator, SimulatedBranchGenerator
-from experiments.controllers import (
-    AdaptiveController,
-    BeamController,
-    BestOfNController,
-    GreedyController,
-    ProgramOfThoughtController,
-    VerifierGuidedSearchController,
+from experiments.frontier_matrix_core import (
+    build_frontier_strategies,
+    evaluate_strategies_on_examples,
+    generator_factory_for_mode,
+    load_pilot_examples,
 )
-from experiments.data import PilotExample, extract_final_answer
-from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
-from experiments.scoring import ScoreConfig, SimpleBranchScorer
-from experiments.verifiers import LLMVerifyProxyVerifier, SimulatedScorerVerifier
 
 
 def parse_args() -> argparse.Namespace:
@@ -74,135 +67,12 @@ def _parse_int_list(raw: str) -> list[int]:
     return [int(x.strip()) for x in raw.split(",") if x.strip()]
 
 
-def _load_examples(dataset_name: str, subset_size: int, seed: int) -> list[PilotExample]:
-    spec = resolve_dataset_spec(dataset_name)
-    rows = sample_hf_examples(
-        dataset_name=dataset_name,
-        pilot_size=subset_size,
-        seed=seed,
-        split=spec.default_split,
-        config_name=spec.default_config,
-    )
-    return [
-        PilotExample(
-            example_id=r["example_id"],
-            question=r["question"],
-            answer=extract_final_answer(r["answer"]),
-        )
-        for r in rows
-    ]
-
-
-def _generator_factory(args: argparse.Namespace, rng: random.Random) -> Callable[[], Any]:
-    if args.use_openai_api:
-        key = os.getenv("OPENAI_API_KEY")
-
-        def factory() -> APIBranchGenerator:
-            return APIBranchGenerator(
-                provider="openai",
-                api_key=key,
-                model=args.openai_model,
-                temperature=args.temperature,
-                max_tokens=args.max_output_tokens,
-                timeout_seconds=args.timeout_seconds,
-            )
-
-        return factory
-
-    def factory() -> SimulatedBranchGenerator:
-        return SimulatedBranchGenerator(rng=rng, max_depth=7, finish_prob_base=0.16, answer_noise=0.12)
-
-    return factory
-
-
-def _strategy_specs(
-    generator_factory: Callable[[], Any],
-    budget: int,
-    adaptive_min_expand_grid: list[int],
-    rng: random.Random,
-    args: argparse.Namespace,
-) -> dict[str, Any]:
-    scorer = SimpleBranchScorer(ScoreConfig())
-    specs: dict[str, Any] = {
-        "reasoning_greedy": GreedyController(generator_factory(), scorer, budget),
-        "self_consistency_3": BestOfNController(generator_factory(), scorer, budget, n_candidates=3),
-        "reasoning_beam2": BeamController(generator_factory(), scorer, budget, width=2),
-    }
-    for min_expand in adaptive_min_expand_grid:
-        specs[f"adaptive_min_expand_{min_expand}"] = AdaptiveController(
-            generator_factory(),
-            scorer,
-            budget,
-            high_threshold=0.72,
-            low_threshold=0.42,
-            max_branches=3,
-            allow_verify=True,
-            min_expansions_before_prune=min_expand,
-            method_name=f"adaptive_min_expand_{min_expand}",
-        )
-
-    if args.use_openai_api:
-        verifier = LLMVerifyProxyVerifier(generator_factory())
-    else:
-        verifier = SimulatedScorerVerifier(rng)
-
-    specs["verifier_guided_search"] = VerifierGuidedSearchController(
-        generator_factory(),
-        scorer,
-        budget,
-        n_candidates=min(args.vgs_candidates, max(1, budget // 2)),
-        verifier=verifier,
-        min_expansions_per_candidate=args.vgs_min_expansions,
-        method_name="verifier_guided_search",
-    )
-    specs["program_of_thought"] = ProgramOfThoughtController(
-        generator_factory(),
-        scorer,
-        budget,
-        method_name="program_of_thought",
-    )
-    return specs
-
-
-def _evaluate_strategies(examples: list[PilotExample], strategies: dict[str, Any]) -> tuple[dict[str, dict[str, float]], list[dict[str, Any]]]:
-    rows: list[dict[str, Any]] = []
-    by_strategy: dict[str, list[dict[str, Any]]] = {k: [] for k in strategies}
-    for ex in examples:
-        for name, controller in strategies.items():
-            r = controller.run(ex.question, ex.answer)
-            row = {
-                "example_id": ex.example_id,
-                "strategy": name,
-                "is_correct": r.is_correct,
-                "actions_used": r.actions_used,
-                "expansions": r.expansions,
-                "verifications": r.verifications,
-                "budget_exhausted": r.budget_exhausted,
-                "metadata": r.metadata,
-            }
-            rows.append(row)
-            by_strategy[name].append(row)
-
-    metrics: dict[str, dict[str, float]] = {}
-    for name, srows in by_strategy.items():
-        n = max(1, len(srows))
-        metrics[name] = {
-            "n_examples": n,
-            "accuracy": sum(1 for r in srows if r["is_correct"]) / n,
-            "avg_actions": sum(float(r["actions_used"]) for r in srows) / n,
-            "avg_expansions": sum(float(r["expansions"]) for r in srows) / n,
-            "avg_verifications": sum(float(r["verifications"]) for r in srows) / n,
-            "budget_exhaustion_rate": sum(1 for r in srows if r["budget_exhausted"]) / n,
-        }
-    return metrics, rows
-
-
 def main() -> None:
     args = parse_args()
     rng = random.Random(args.seed)
     budgets = _parse_budgets(args.budgets)
     adaptive_grid = _parse_int_list(args.adaptive_min_expand_grid)
-    examples = _load_examples(args.dataset, args.subset_size, args.seed)
+    examples = load_pilot_examples(args.dataset, args.subset_size, args.seed)
     split_idx = max(1, min(len(examples) - 1, int(len(examples) * args.calibration_ratio)))
     calib_examples = examples[:split_idx]
     eval_examples = examples[split_idx:]
@@ -230,25 +100,49 @@ def main() -> None:
     }
     (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
+    gen_factory = generator_factory_for_mode(
+        args.use_openai_api,
+        rng,
+        args.openai_model,
+        args.temperature,
+        args.max_output_tokens,
+        args.timeout_seconds,
+    )
+
     strategy_rows: list[dict[str, Any]] = []
     selector_rows: list[dict[str, Any]] = []
     per_example_eval_rows: list[dict[str, Any]] = []
 
     for budget in budgets:
-        calib_strategies = _strategy_specs(_generator_factory(args, rng), budget, adaptive_grid, rng, args)
-        calib_metrics, _ = _evaluate_strategies(calib_examples, calib_strategies)
+        calib_strategies = build_frontier_strategies(
+            gen_factory,
+            budget,
+            adaptive_grid,
+            rng,
+            use_openai_api=args.use_openai_api,
+            vgs_candidates=args.vgs_candidates,
+            vgs_min_expansions=args.vgs_min_expansions,
+        )
+        calib_metrics, _ = evaluate_strategies_on_examples(calib_examples, calib_strategies)
 
         feasible = [s for s, m in calib_metrics.items() if m["avg_actions"] <= float(budget)]
         chosen = max(feasible, key=lambda s: calib_metrics[s]["accuracy"]) if feasible else max(
             calib_metrics, key=lambda s: calib_metrics[s]["accuracy"]
         )
 
-        eval_strategies = _strategy_specs(_generator_factory(args, rng), budget, adaptive_grid, rng, args)
-        eval_metrics, eval_rows = _evaluate_strategies(eval_examples, eval_strategies)
+        eval_strategies = build_frontier_strategies(
+            gen_factory,
+            budget,
+            adaptive_grid,
+            rng,
+            use_openai_api=args.use_openai_api,
+            vgs_candidates=args.vgs_candidates,
+            vgs_min_expansions=args.vgs_min_expansions,
+        )
+        eval_metrics, eval_rows = evaluate_strategies_on_examples(eval_examples, eval_strategies)
         for row in eval_rows:
             per_example_eval_rows.append({**row, "budget": budget, "split_name": "eval"})
 
-        # Oracle upper bound over the available strategy frontier on eval split.
         eval_by_example: dict[str, list[dict[str, Any]]] = {}
         for row in eval_rows:
             eval_by_example.setdefault(str(row["example_id"]), []).append(row)
