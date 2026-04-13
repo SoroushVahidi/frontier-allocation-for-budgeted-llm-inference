@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build branch-scorer datasets with decision-point labels for v3."""
+"""Build branch-scorer datasets with decision-point labels for v1/v2/v3/v4."""
 
 from __future__ import annotations
 
@@ -55,6 +55,7 @@ def main() -> None:
     rows: list[dict] = []
     for ep in range(args.episodes):
         branches = [_new_branch(rng, i) for i in range(args.n_init_branches)]
+        episode_row_indices_by_branch: dict[str, list[int]] = {branch.branch_id: [] for branch in branches}
         for decision_id in range(args.budget):
             for branch in branches:
                 branch.branch_age += 1
@@ -84,14 +85,38 @@ def main() -> None:
                     "v1_label_quality": int(branch.score >= 0.62),
                     "v3_target_progress_value": values[branch.branch_id],
                     "v3_target_parent_relative_improvement": values[branch.branch_id] - mean_value,
+                    "v4_target_subtree_value": 0.0,
                 }
                 row.update(features)
                 rows.append(row)
+                episode_row_indices_by_branch[branch.branch_id].append(len(rows) - 1)
+
 
             chosen = rng.choice(active)
             expand_branch(chosen, rng, args.finish_prob_base, args.answer_noise, args.max_depth)
             if not chosen.is_done and rng.random() < 0.35:
                 maybe_verify(chosen, rng)
+
+        # Lightweight subtree-value target (v4): approximate downstream branch utility
+        # from logged branch trajectory snapshots within the same episode.
+        # For each decision-point row, subtree value = mean utility over future snapshots
+        # of the same branch at later decisions.
+        # utility(snapshot) = 0.7 * score(snapshot) + 0.3 * is_correct_final(branch)
+        # If no future snapshot exists, fallback to immediate utility at current row.
+        branch_terminal_correct = {branch.branch_id: 1.0 if branch.is_correct else 0.0 for branch in branches}
+
+        for branch_id, indices in episode_row_indices_by_branch.items():
+            terminal_correct = branch_terminal_correct.get(branch_id, 0.0)
+            for i, row_idx in enumerate(indices):
+                future_indices = indices[i + 1 :]
+                if future_indices:
+                    future_utilities = [
+                        0.7 * float(rows[future_idx]["score"]) + 0.3 * terminal_correct
+                        for future_idx in future_indices
+                    ]
+                    rows[row_idx]["v4_target_subtree_value"] = sum(future_utilities) / len(future_utilities)
+                else:
+                    rows[row_idx]["v4_target_subtree_value"] = 0.7 * float(rows[row_idx]["score"]) + 0.3 * terminal_correct
 
     dataset_path = out_dir / "branch_scorer_v3_dataset.jsonl"
     with dataset_path.open("w", encoding="utf-8") as f:
@@ -106,6 +131,10 @@ def main() -> None:
         "rows": len(rows),
         "train_rows": sum(1 for r in rows if r["split"] == "train"),
         "test_rows": sum(1 for r in rows if r["split"] == "test"),
+        "target_definitions": {
+            "v3_target_progress_value": "continuation-value proxy from expected immediate gain + confidence - depth penalty",
+            "v4_target_subtree_value": "mean downstream utility from future snapshots of the same branch within an episode, utility=0.7*future_score+0.3*final_branch_correct",
+        },
     }
     (out_dir / "dataset_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     print(f"Wrote dataset to {dataset_path}")

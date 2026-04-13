@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Robustness sweep for controller-level branch scorer comparison."""
+"""Robustness sweep for controller-level branch scorer comparison (including v4)."""
 
 from __future__ import annotations
 
@@ -36,7 +36,12 @@ def _parse_int_list(raw: str) -> list[int]:
 
 
 def _method_list(include_progress: bool) -> list[str]:
-    methods = ["adaptive_relative_rank", "adaptive_eptree_baseline", "adaptive_learned_branch_score_v3"]
+    methods = [
+        "adaptive_relative_rank",
+        "adaptive_learned_branch_score",
+        "adaptive_learned_branch_score_v3",
+        "adaptive_learned_branch_score_v4",
+    ]
     if include_progress:
         methods.insert(1, "adaptive_score_plus_progress")
     return methods
@@ -81,25 +86,28 @@ def main() -> None:
     methods = _method_list(args.include_score_plus_progress)
 
     model_map = {
-        "adaptive_learned_branch_score_v3": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v3.json")
+        "adaptive_learned_branch_score": load_model(Path(args.model_dir) / "adaptive_learned_branch_score.json"),
+        "adaptive_learned_branch_score_v3": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v3.json"),
+        "adaptive_learned_branch_score_v4": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v4.json"),
     }
 
     rows: list[dict[str, Any]] = []
-    v3_margins: list[float] = []
-    v3_wins = 0
+    v4_margins_vs_relative_rank: list[float] = []
+    v4_wins_vs_relative_rank = 0
 
     for seed in seeds:
         for budget in budgets:
             for n_init in init_branches:
                 result = _evaluate_setting(seed, budget, n_init, args.episodes, methods, model_map)
                 strongest_hand = max(
-                    [m for m in methods if m != "adaptive_learned_branch_score_v3"],
+                    [m for m in methods if m != "adaptive_learned_branch_score_v4"],
                     key=lambda m: result[m],
                 )
-                margin = result["adaptive_learned_branch_score_v3"] - result[strongest_hand]
-                v3_margins.append(margin)
-                if margin > 0:
-                    v3_wins += 1
+                margin = result["adaptive_learned_branch_score_v4"] - result[strongest_hand]
+                margin_vs_relative_rank = result["adaptive_learned_branch_score_v4"] - result["adaptive_relative_rank"]
+                v4_margins_vs_relative_rank.append(margin_vs_relative_rank)
+                if margin_vs_relative_rank > 0:
+                    v4_wins_vs_relative_rank += 1
 
                 for method_name in methods:
                     rows.append(
@@ -110,7 +118,8 @@ def main() -> None:
                             "method": method_name,
                             "accuracy": result[method_name],
                             "strongest_hand": strongest_hand,
-                            "v3_margin_vs_strongest_hand": margin,
+                            "v4_margin_vs_strongest_hand": margin,
+                            "v4_margin_vs_relative_rank": margin_vs_relative_rank,
                         }
                     )
 
@@ -119,9 +128,9 @@ def main() -> None:
         by_method[row["method"]].append(float(row["accuracy"]))
 
     trial_count = len(seeds) * len(budgets) * len(init_branches)
-    trial_rows = [r for r in rows if r["method"] == "adaptive_learned_branch_score_v3"]
-    best_trial = max(trial_rows, key=lambda r: float(r["v3_margin_vs_strongest_hand"]))
-    worst_trial = min(trial_rows, key=lambda r: float(r["v3_margin_vs_strongest_hand"]))
+    trial_rows = [r for r in rows if r["method"] == "adaptive_learned_branch_score_v4"]
+    best_trial = max(trial_rows, key=lambda r: float(r["v4_margin_vs_relative_rank"]))
+    worst_trial = min(trial_rows, key=lambda r: float(r["v4_margin_vs_relative_rank"]))
 
     summary = {
         "seeds": seeds,
@@ -136,24 +145,27 @@ def main() -> None:
             }
             for method, values in by_method.items()
         },
-        "v3_margin_mean": statistics.mean(v3_margins),
-        "v3_margin_std": statistics.pstdev(v3_margins),
-        "v3_win_rate": v3_wins / max(1, trial_count),
-        "v3_win_count": v3_wins,
+        "v4_margin_vs_relative_rank_mean": statistics.mean(v4_margins_vs_relative_rank),
+        "v4_margin_vs_relative_rank_std": statistics.pstdev(v4_margins_vs_relative_rank),
+        "v4_win_rate_vs_relative_rank": v4_wins_vs_relative_rank / max(1, trial_count),
+        "v4_win_count_vs_relative_rank": v4_wins_vs_relative_rank,
         "trial_count": trial_count,
-        "best_setting_for_v3_margin": {
+        "best_setting_for_v4_margin_vs_relative_rank": {
             "seed": best_trial["seed"],
             "budget": best_trial["budget"],
             "init_branches": best_trial["init_branches"],
-            "margin": best_trial["v3_margin_vs_strongest_hand"],
+            "margin": best_trial["v4_margin_vs_relative_rank"],
         },
-        "worst_setting_for_v3_margin": {
+        "worst_setting_for_v4_margin_vs_relative_rank": {
             "seed": worst_trial["seed"],
             "budget": worst_trial["budget"],
             "init_branches": worst_trial["init_branches"],
-            "margin": worst_trial["v3_margin_vs_strongest_hand"],
+            "margin": worst_trial["v4_margin_vs_relative_rank"],
         },
-        "v3_robustly_better": statistics.mean(v3_margins) > 0 and (v3_wins / max(1, trial_count)) >= 0.7,
+        "v4_robustly_beats_relative_rank": (
+            statistics.mean(v4_margins_vs_relative_rank) > 0
+            and (v4_wins_vs_relative_rank / max(1, trial_count)) >= 0.7
+        ),
     }
 
     json_path = output_dir / "robustness_summary.json"
@@ -170,7 +182,8 @@ def main() -> None:
                 "method",
                 "accuracy",
                 "strongest_hand",
-                "v3_margin_vs_strongest_hand",
+                "v4_margin_vs_strongest_hand",
+                "v4_margin_vs_relative_rank",
             ],
         )
         writer.writeheader()
@@ -178,16 +191,16 @@ def main() -> None:
 
     note_path = output_dir / "robustness_note.md"
     note_lines = [
-        "# Branch scorer v3 robustness note",
+        "# Branch scorer v4 robustness note",
         "",
-        f"- Mean v3 margin vs strongest hand baseline: {summary['v3_margin_mean']:.4f}",
-        f"- Std v3 margin: {summary['v3_margin_std']:.4f}",
-        f"- v3 win rate: {summary['v3_win_rate']:.3f} ({summary['v3_win_count']}/{summary['trial_count']})",
-        f"- Robustly better? {'yes' if summary['v3_robustly_better'] else 'no'}",
+        f"- Mean v4 margin vs adaptive_relative_rank: {summary['v4_margin_vs_relative_rank_mean']:.4f}",
+        f"- Std v4 margin vs adaptive_relative_rank: {summary['v4_margin_vs_relative_rank_std']:.4f}",
+        f"- v4 win rate vs adaptive_relative_rank: {summary['v4_win_rate_vs_relative_rank']:.3f} ({summary['v4_win_count_vs_relative_rank']}/{summary['trial_count']})",
+        f"- Robustly better vs adaptive_relative_rank? {'yes' if summary['v4_robustly_beats_relative_rank'] else 'no'}",
         "",
-        "## Best / worst settings for v3 margin",
-        f"- Best: seed={best_trial['seed']}, budget={best_trial['budget']}, init_branches={best_trial['init_branches']}, margin={best_trial['v3_margin_vs_strongest_hand']:.4f}",
-        f"- Worst: seed={worst_trial['seed']}, budget={worst_trial['budget']}, init_branches={worst_trial['init_branches']}, margin={worst_trial['v3_margin_vs_strongest_hand']:.4f}",
+        "## Best / worst settings for v4 margin vs adaptive_relative_rank",
+        f"- Best: seed={best_trial['seed']}, budget={best_trial['budget']}, init_branches={best_trial['init_branches']}, margin={best_trial['v4_margin_vs_relative_rank']:.4f}",
+        f"- Worst: seed={worst_trial['seed']}, budget={worst_trial['budget']}, init_branches={worst_trial['init_branches']}, margin={worst_trial['v4_margin_vs_relative_rank']:.4f}",
     ]
     note_path.write_text("\n".join(note_lines) + "\n", encoding="utf-8")
 
