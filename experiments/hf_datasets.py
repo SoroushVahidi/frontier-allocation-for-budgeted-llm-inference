@@ -157,14 +157,7 @@ def check_hf_dataset_access(
             "first_row_keys": sorted(list(first.keys())),
         }
         if spec.key == "Idavidrein/gpqa":
-            success.update(
-                {
-                    "datasets_loader_ok": True,
-                    "pandas_fallback_ok": None,
-                    "gpqa_accessible": True,
-                    "loader_path_used": "datasets",
-                }
-            )
+            success.update(_merge_gpqa_loader_results(datasets_loader_ok=True, pandas_result=_gpqa_pandas_fallback()))
         return success
     except Exception as exc:
         failure = {
@@ -179,7 +172,9 @@ def check_hf_dataset_access(
             "error": f"{type(exc).__name__}: {exc}",
         }
         if spec.key == "Idavidrein/gpqa":
-            failure.update(_gpqa_pandas_fallback())
+            failure.update(
+                _merge_gpqa_loader_results(datasets_loader_ok=False, pandas_result=_gpqa_pandas_fallback())
+            )
             failure["ok"] = bool(failure.get("gpqa_accessible"))
         else:
             failure.update({"datasets_loader_ok": False, "pandas_fallback_ok": None, "loader_path_used": "none"})
@@ -207,6 +202,26 @@ def _gpqa_pandas_fallback() -> dict[str, Any]:
             "pandas_error": f"{type(pandas_exc).__name__}: {pandas_exc}",
             "loader_path_used": "none",
         }
+
+
+def _merge_gpqa_loader_results(
+    *,
+    datasets_loader_ok: bool,
+    pandas_result: dict[str, Any],
+) -> dict[str, Any]:
+    pandas_ok = bool(pandas_result.get("pandas_fallback_ok"))
+    loader_path_used = "datasets" if datasets_loader_ok else ("pandas_hf://" if pandas_ok else "none")
+    merged = {
+        "datasets_loader_ok": datasets_loader_ok,
+        "pandas_fallback_ok": pandas_result.get("pandas_fallback_ok"),
+        "gpqa_accessible": bool(datasets_loader_ok or pandas_ok),
+        "loader_path_used": loader_path_used,
+    }
+    if "pandas_columns" in pandas_result:
+        merged["pandas_columns"] = pandas_result["pandas_columns"]
+    if "pandas_error" in pandas_result:
+        merged["pandas_error"] = pandas_result["pandas_error"]
+    return merged
 
 
 def _pick_first_present(row: dict[str, Any], candidates: tuple[str, ...]) -> str:
