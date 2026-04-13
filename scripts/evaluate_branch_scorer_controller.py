@@ -21,8 +21,9 @@ METHODS = [
     "adaptive_score_plus_progress",
     "adaptive_relative_rank",
     "adaptive_learned_branch_score",
-    "adaptive_learned_branch_score_v3",
     "adaptive_learned_branch_score_v4",
+    "adaptive_learned_branch_score_v5",
+    "adaptive_learned_branch_score_v6",
 ]
 
 
@@ -43,8 +44,9 @@ def main() -> None:
 
     model_map = {
         "adaptive_learned_branch_score": load_model(Path(args.model_dir) / "adaptive_learned_branch_score.json"),
-        "adaptive_learned_branch_score_v3": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v3.json"),
         "adaptive_learned_branch_score_v4": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v4.json"),
+        "adaptive_learned_branch_score_v5": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v5.json"),
+        "adaptive_learned_branch_score_v6": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v6.json"),
     }
 
     results: dict[str, dict[str, float]] = {}
@@ -72,6 +74,10 @@ def main() -> None:
         }
 
     margin_v4_vs_relative_rank = results["adaptive_learned_branch_score_v4"]["accuracy"] - results["adaptive_relative_rank"]["accuracy"]
+    margin_v5_vs_relative_rank = results["adaptive_learned_branch_score_v5"]["accuracy"] - results["adaptive_relative_rank"]["accuracy"]
+    margin_v5_vs_v4 = results["adaptive_learned_branch_score_v5"]["accuracy"] - results["adaptive_learned_branch_score_v4"]["accuracy"]
+    margin_v6_vs_relative_rank = results["adaptive_learned_branch_score_v6"]["accuracy"] - results["adaptive_relative_rank"]["accuracy"]
+    margin_v6_vs_v5 = results["adaptive_learned_branch_score_v6"]["accuracy"] - results["adaptive_learned_branch_score_v5"]["accuracy"]
     summary = {
         "episodes": args.episodes,
         "budget": args.budget,
@@ -79,6 +85,14 @@ def main() -> None:
         "results": results,
         "v4_margin_over_relative_rank": margin_v4_vs_relative_rank,
         "v4_beats_relative_rank": margin_v4_vs_relative_rank > 0.0,
+        "v5_margin_over_relative_rank": margin_v5_vs_relative_rank,
+        "v5_beats_relative_rank": margin_v5_vs_relative_rank > 0.0,
+        "v5_margin_over_v4": margin_v5_vs_v4,
+        "v5_beats_v4": margin_v5_vs_v4 > 0.0,
+        "v6_margin_over_relative_rank": margin_v6_vs_relative_rank,
+        "v6_beats_relative_rank": margin_v6_vs_relative_rank > 0.0,
+        "v6_margin_over_v5": margin_v6_vs_v5,
+        "v6_beats_v5": margin_v6_vs_v5 > 0.0,
     }
 
     out_path = Path(args.output)
@@ -96,12 +110,26 @@ def main() -> None:
     note_lines = [
         "# Controller evaluation note",
         "",
-        "This is a lightweight subtree-value target prototype (v4), not RL training and not a full TreeRL reproduction.",
+        "This is a lightweight branch-scorer comparison (v4/v5), not RL training and not a full TreeRL reproduction.",
         "",
         "## Subtree value definition (v4 target)",
         "- For each branch snapshot at decision t, look at later snapshots of the same branch within the same episode.",
         "- Snapshot utility is 0.7 * future_score + 0.3 * final_branch_correct.",
         "- v4 target is the mean snapshot utility over those future snapshots (fallback to immediate utility if none).",
+        "",
+        "## v5 path-aware, budget-aware additions",
+        "- Edge/action types are defined from logged branch operations only: expand and verify (start token when absent).",
+        "- All edge/action costs are kept equal to 1; action type only enters as usefulness features.",
+        "- Last-two-node summaries: current/previous score, depth, estimated future value, estimated remaining distance-to-terminal.",
+        "- Future-value proxy: 0.72*score + 0.18 - depth penalty, clipped to [0,1].",
+        "- Distance proxy (in actions): 4.8 - 2.1*score - 0.45*depth - verify bonus, floored at 0.5.",
+        "- v5 target is v4 subtree value scaled by budget adequacy: min(1, remaining_budget / distance_proxy).",
+        "",
+        "## v6 target: logged competitive supervision",
+        "- At each decision, visible branches are treated as competing candidates in one group.",
+        "- Branch utility comes from future logged outcomes in that same episode (max future score, terminal correctness, solved-any).",
+        "- Utility is budget-aware via remaining_budget / realized steps-to-terminal from logs (no handcrafted distance proxy).",
+        "- v6 supervision blends pairwise win-rate vs peers and a groupwise softmax preference probability.",
         "",
         "## Accuracy by method",
     ]
@@ -112,6 +140,14 @@ def main() -> None:
             "",
             f"- v4 margin over adaptive_relative_rank: {summary['v4_margin_over_relative_rank']:.4f}",
             f"- v4 beats adaptive_relative_rank: {'yes' if summary['v4_beats_relative_rank'] else 'no'}",
+            f"- v5 margin over adaptive_relative_rank: {summary['v5_margin_over_relative_rank']:.4f}",
+            f"- v5 beats adaptive_relative_rank: {'yes' if summary['v5_beats_relative_rank'] else 'no'}",
+            f"- v5 margin over adaptive_learned_branch_score_v4: {summary['v5_margin_over_v4']:.4f}",
+            f"- v5 beats adaptive_learned_branch_score_v4: {'yes' if summary['v5_beats_v4'] else 'no'}",
+            f"- v6 margin over adaptive_relative_rank: {summary['v6_margin_over_relative_rank']:.4f}",
+            f"- v6 beats adaptive_relative_rank: {'yes' if summary['v6_beats_relative_rank'] else 'no'}",
+            f"- v6 margin over adaptive_learned_branch_score_v5: {summary['v6_margin_over_v5']:.4f}",
+            f"- v6 beats adaptive_learned_branch_score_v5: {'yes' if summary['v6_beats_v5'] else 'no'}",
         ]
     )
     note_path.write_text("\n".join(note_lines) + "\n", encoding="utf-8")

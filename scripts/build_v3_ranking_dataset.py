@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build branch-scorer datasets with decision-point labels for v1/v2/v3/v4."""
+"""Build branch-scorer datasets with decision-point labels for v1-v6."""
 
 from __future__ import annotations
 
@@ -15,8 +15,12 @@ if str(REPO_ROOT) not in sys.path:
 
 from experiments.branch_scorer_v3 import (
     FEATURE_NAMES,
+    V5_FEATURE_NAMES,
+    V6_FEATURE_NAMES,
     SimBranch,
     branch_features,
+    branch_features_v5,
+    branch_features_v6,
     continuation_value,
     expected_next_gain,
     expand_branch,
@@ -56,6 +60,7 @@ def main() -> None:
     for ep in range(args.episodes):
         branches = [_new_branch(rng, i) for i in range(args.n_init_branches)]
         episode_row_indices_by_branch: dict[str, list[int]] = {branch.branch_id: [] for branch in branches}
+        episode_row_indices_by_decision: dict[int, list[int]] = {}
         for decision_id in range(args.budget):
             for branch in branches:
                 branch.branch_age += 1
@@ -86,10 +91,29 @@ def main() -> None:
                     "v3_target_progress_value": values[branch.branch_id],
                     "v3_target_parent_relative_improvement": values[branch.branch_id] - mean_value,
                     "v4_target_subtree_value": 0.0,
+                    "v5_target_budgeted_subtree_value": 0.0,
+                    "v6_target_pairwise_groupwise": 0.0,
+                    "v6_label_prefers_over_median": 0,
                 }
                 row.update(features)
+                row.update(
+                    branch_features_v5(
+                        branch=branch,
+                        parent_mean_score=mean_score,
+                        remaining_budget=max(0, args.budget - decision_id),
+                    )
+                )
+                row.update(
+                    branch_features_v6(
+                        branch=branch,
+                        parent_mean_score=mean_score,
+                        remaining_budget=max(0, args.budget - decision_id),
+                    )
+                )
                 rows.append(row)
-                episode_row_indices_by_branch[branch.branch_id].append(len(rows) - 1)
+                row_idx = len(rows) - 1
+                episode_row_indices_by_branch[branch.branch_id].append(row_idx)
+                episode_row_indices_by_decision.setdefault(decision_id, []).append(row_idx)
 
 
             chosen = rng.choice(active)
@@ -117,6 +141,59 @@ def main() -> None:
                     rows[row_idx]["v4_target_subtree_value"] = sum(future_utilities) / len(future_utilities)
                 else:
                     rows[row_idx]["v4_target_subtree_value"] = 0.7 * float(rows[row_idx]["score"]) + 0.3 * terminal_correct
+                distance = float(rows[row_idx]["curr_distance_to_terminal_est"])
+                budget = float(rows[row_idx]["remaining_budget"])
+                budget_factor = min(1.0, budget / max(1.0, distance))
+                rows[row_idx]["v5_target_budgeted_subtree_value"] = rows[row_idx]["v4_target_subtree_value"] * budget_factor
+
+        # Logged-trajectory competitive target (v6):
+        # At each decision, compare each visible branch to its competing branches.
+        # Utility is derived from future logged outcomes for the same branch, then
+        # converted into pairwise and groupwise preference targets.
+        solved_any_episode = 1.0 if any(branch.is_correct for branch in branches if branch.is_done) else 0.0
+        for decision_id, group_indices in episode_row_indices_by_decision.items():
+            if len(group_indices) <= 1:
+                rows[group_indices[0]]["v6_target_pairwise_groupwise"] = 0.5
+                rows[group_indices[0]]["v6_label_prefers_over_median"] = 1
+                continue
+
+            realized_returns: dict[int, float] = {}
+            for row_idx in group_indices:
+                branch_id = str(rows[row_idx]["branch_id"])
+                branch_indices = episode_row_indices_by_branch.get(branch_id, [])
+                terminal_correct = branch_terminal_correct.get(branch_id, 0.0)
+                branch_position = branch_indices.index(row_idx)
+                future_indices = branch_indices[branch_position + 1 :]
+                max_future_score = max(
+                    [float(rows[k]["score"]) for k in future_indices] + [float(rows[row_idx]["score"])]
+                )
+                if future_indices:
+                    steps_to_terminal = max(1, int(rows[future_indices[-1]]["decision_id"]) - decision_id + 1)
+                else:
+                    steps_to_terminal = max(1, args.budget - decision_id)
+                budget_now = float(rows[row_idx]["remaining_budget"])
+                budget_factor = min(1.0, budget_now / float(steps_to_terminal))
+                utility = (0.55 * max_future_score + 0.30 * terminal_correct + 0.15 * solved_any_episode) * budget_factor
+                realized_returns[row_idx] = utility
+
+            group_values = list(realized_returns.values())
+            max_val = max(group_values)
+            exps = {idx: pow(2.718281828, realized_returns[idx] - max_val) for idx in group_indices}
+            softmax_denom = sum(exps.values())
+
+            median_return = sorted(group_values)[len(group_values) // 2]
+            for row_idx in group_indices:
+                row_return = realized_returns[row_idx]
+                pairwise_wins = 0.0
+                for other_idx in group_indices:
+                    if other_idx == row_idx:
+                        continue
+                    pairwise_wins += 1.0 if row_return > realized_returns[other_idx] else 0.0
+                    pairwise_wins += 0.5 if row_return == realized_returns[other_idx] else 0.0
+                pairwise_rate = pairwise_wins / max(1.0, float(len(group_indices) - 1))
+                groupwise_prob = exps[row_idx] / max(1e-9, softmax_denom)
+                rows[row_idx]["v6_target_pairwise_groupwise"] = 0.65 * pairwise_rate + 0.35 * groupwise_prob
+                rows[row_idx]["v6_label_prefers_over_median"] = int(row_return >= median_return)
 
     dataset_path = out_dir / "branch_scorer_v3_dataset.jsonl"
     with dataset_path.open("w", encoding="utf-8") as f:
@@ -127,6 +204,8 @@ def main() -> None:
         "episodes": args.episodes,
         "budget": args.budget,
         "feature_names": FEATURE_NAMES,
+        "v5_feature_names": V5_FEATURE_NAMES,
+        "v6_feature_names": V6_FEATURE_NAMES,
         "n_init_branches": args.n_init_branches,
         "rows": len(rows),
         "train_rows": sum(1 for r in rows if r["split"] == "train"),
@@ -134,6 +213,8 @@ def main() -> None:
         "target_definitions": {
             "v3_target_progress_value": "continuation-value proxy from expected immediate gain + confidence - depth penalty",
             "v4_target_subtree_value": "mean downstream utility from future snapshots of the same branch within an episode, utility=0.7*future_score+0.3*final_branch_correct",
+            "v5_target_budgeted_subtree_value": "v4 subtree value scaled by min(1, remaining_budget / curr_distance_to_terminal_est)",
+            "v6_target_pairwise_groupwise": "decision-time competitive target from logged future outcomes: budget-aware utility blended into pairwise win-rate and groupwise softmax preference",
         },
     }
     (out_dir / "dataset_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")

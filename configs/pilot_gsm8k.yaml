@@ -1,5 +1,8 @@
 seed: 7
 pilot_size: 12
+hf_dataset_name: openai/gsm8k
+hf_dataset_config: main
+hf_dataset_split: test
 gsm8k_split: test
 # Optional: path to local GSM8K JSONL (question/answer fields).
 gsm8k_jsonl_path: null

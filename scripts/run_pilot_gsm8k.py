@@ -26,6 +26,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run pilot GSM8K controller experiment")
     parser.add_argument("--config", default="configs/pilot_gsm8k.yaml", help="Path to YAML config")
     parser.add_argument("--output-dir", default=None, help="Optional override for output directory")
+    parser.add_argument("--hf-dataset-name", default=None, help="Override HF dataset id (e.g., openai/gsm8k)")
+    parser.add_argument("--hf-dataset-config", default=None, help="Override HF dataset config/subset (e.g., main)")
+    parser.add_argument("--hf-dataset-split", default=None, help="Override HF split (e.g., test)")
     return parser.parse_args()
 
 
@@ -213,6 +216,12 @@ def build_controllers(config: dict[str, Any], generator_factory: Any) -> dict[st
 def main() -> None:
     args = parse_args()
     config = load_config(args.config)
+    if args.hf_dataset_name is not None:
+        config["hf_dataset_name"] = args.hf_dataset_name
+    if args.hf_dataset_config is not None:
+        config["hf_dataset_config"] = args.hf_dataset_config
+    if args.hf_dataset_split is not None:
+        config["hf_dataset_split"] = args.hf_dataset_split
     rng = random.Random(int(config["seed"]))
 
     generator_factory, backend_meta = _build_generator_factory(config, rng)

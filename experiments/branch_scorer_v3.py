@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 import math
 from pathlib import Path
@@ -20,6 +20,48 @@ FEATURE_NAMES = [
     "parent_relative_score",
 ]
 
+V5_FEATURE_NAMES = [
+    "remaining_budget",
+    "score",
+    "prev_score",
+    "depth",
+    "prev_depth",
+    "curr_future_value_est",
+    "prev_future_value_est",
+    "curr_distance_to_terminal_est",
+    "prev_distance_to_terminal_est",
+    "value_delta",
+    "distance_delta",
+    "current_action_expand",
+    "current_action_verify",
+    "previous_action_expand",
+    "previous_action_verify",
+    "parent_relative_score",
+]
+
+V6_FEATURE_NAMES = [
+    "remaining_budget",
+    "score",
+    "prev_score",
+    "depth",
+    "prev_depth",
+    "score_delta",
+    "depth_delta",
+    "recent_delta",
+    "verify_count",
+    "stalled_steps",
+    "branch_age",
+    "current_action_expand",
+    "current_action_verify",
+    "previous_action_expand",
+    "previous_action_verify",
+    "parent_relative_score",
+]
+
+ACTION_START = "start"
+ACTION_EXPAND = "expand"
+ACTION_VERIFY = "verify"
+
 
 @dataclass
 class SimBranch:
@@ -34,6 +76,9 @@ class SimBranch:
     recent_delta: float = 0.0
     verify_count: int = 0
     branch_age: int = 0
+    action_history: list[str] = field(default_factory=list)
+    score_history: list[float] = field(default_factory=list)
+    depth_history: list[int] = field(default_factory=list)
 
 
 def _clip01(value: float) -> float:
@@ -50,6 +95,90 @@ def branch_features(branch: SimBranch, parent_mean_score: float = 0.5) -> dict[s
         "branch_age": float(branch.branch_age),
         "score_x_depth": branch.score * float(branch.depth),
         "parent_relative_score": branch.score - parent_mean_score,
+    }
+
+
+def estimate_future_value_proxy(score: float, depth: int) -> float:
+    """Lightweight proxy for future branch utility from logged-trace trends."""
+    depth_penalty = 0.035 * max(0.0, float(depth) - 2.0)
+    return _clip01(0.72 * score + 0.18 - depth_penalty)
+
+
+def estimate_distance_to_terminal_proxy(score: float, depth: int, last_action: str) -> float:
+    """Estimated remaining distance-to-terminal in expected actions.
+
+    Proxy is intentionally simple and calibrated from the synthetic process:
+    higher score and deeper nodes generally finish sooner; recent verify steps
+    are treated as reducing unresolved uncertainty modestly.
+    """
+    verify_bonus = 0.35 if last_action == ACTION_VERIFY else 0.0
+    est = 4.8 - 2.1 * score - 0.45 * float(depth) - verify_bonus
+    return max(0.5, est)
+
+
+def _last_actions(branch: SimBranch) -> tuple[str, str]:
+    if not branch.action_history:
+        return ACTION_START, ACTION_START
+    current = branch.action_history[-1]
+    previous = branch.action_history[-2] if len(branch.action_history) >= 2 else ACTION_START
+    return current, previous
+
+
+def branch_features_v5(branch: SimBranch, parent_mean_score: float, remaining_budget: int) -> dict[str, float]:
+    current_action, previous_action = _last_actions(branch)
+    curr_score = float(branch.score)
+    prev_score = float(branch.score_history[-1]) if branch.score_history else curr_score
+    curr_depth = float(branch.depth)
+    prev_depth = float(branch.depth_history[-1]) if branch.depth_history else curr_depth
+
+    curr_future = estimate_future_value_proxy(curr_score, int(curr_depth))
+    prev_future = estimate_future_value_proxy(prev_score, int(prev_depth))
+    curr_distance = estimate_distance_to_terminal_proxy(curr_score, int(curr_depth), current_action)
+    prev_distance = estimate_distance_to_terminal_proxy(prev_score, int(prev_depth), previous_action)
+
+    return {
+        "remaining_budget": float(max(0, remaining_budget)),
+        "score": curr_score,
+        "prev_score": prev_score,
+        "depth": curr_depth,
+        "prev_depth": prev_depth,
+        "curr_future_value_est": curr_future,
+        "prev_future_value_est": prev_future,
+        "curr_distance_to_terminal_est": curr_distance,
+        "prev_distance_to_terminal_est": prev_distance,
+        "value_delta": curr_future - prev_future,
+        "distance_delta": curr_distance - prev_distance,
+        "current_action_expand": 1.0 if current_action == ACTION_EXPAND else 0.0,
+        "current_action_verify": 1.0 if current_action == ACTION_VERIFY else 0.0,
+        "previous_action_expand": 1.0 if previous_action == ACTION_EXPAND else 0.0,
+        "previous_action_verify": 1.0 if previous_action == ACTION_VERIFY else 0.0,
+        "parent_relative_score": curr_score - parent_mean_score,
+    }
+
+
+def branch_features_v6(branch: SimBranch, parent_mean_score: float, remaining_budget: int) -> dict[str, float]:
+    current_action, previous_action = _last_actions(branch)
+    curr_score = float(branch.score)
+    prev_score = float(branch.score_history[-1]) if branch.score_history else curr_score
+    curr_depth = float(branch.depth)
+    prev_depth = float(branch.depth_history[-1]) if branch.depth_history else curr_depth
+    return {
+        "remaining_budget": float(max(0, remaining_budget)),
+        "score": curr_score,
+        "prev_score": prev_score,
+        "depth": curr_depth,
+        "prev_depth": prev_depth,
+        "score_delta": curr_score - prev_score,
+        "depth_delta": curr_depth - prev_depth,
+        "recent_delta": float(branch.recent_delta),
+        "verify_count": float(branch.verify_count),
+        "stalled_steps": float(branch.stalled_steps),
+        "branch_age": float(branch.branch_age),
+        "current_action_expand": 1.0 if current_action == ACTION_EXPAND else 0.0,
+        "current_action_verify": 1.0 if current_action == ACTION_VERIFY else 0.0,
+        "previous_action_expand": 1.0 if previous_action == ACTION_EXPAND else 0.0,
+        "previous_action_verify": 1.0 if previous_action == ACTION_VERIFY else 0.0,
+        "parent_relative_score": curr_score - parent_mean_score,
     }
 
 
@@ -81,6 +210,9 @@ def expand_branch(branch: SimBranch, rng: random.Random, finish_prob_base: float
     branch.depth += 1
     drift = rng.uniform(-0.06, 0.08) + 0.05 * (branch.latent_quality - 0.5) - 0.015 * min(3, branch.stalled_steps)
     old_score = branch.score
+    branch.score_history.append(old_score)
+    branch.depth_history.append(branch.depth - 1)
+    branch.action_history.append(ACTION_EXPAND)
     branch.score = _clip01(branch.score + drift)
     branch.recent_delta = branch.score - old_score
     branch.stalled_steps = branch.stalled_steps + 1 if branch.recent_delta <= 0.005 else 0
@@ -97,6 +229,9 @@ def maybe_verify(branch: SimBranch, rng: random.Random) -> None:
     if branch.is_done or branch.is_pruned:
         return
     branch.verify_count += 1
+    branch.score_history.append(branch.score)
+    branch.depth_history.append(branch.depth)
+    branch.action_history.append(ACTION_VERIFY)
     correction = (branch.latent_quality - branch.score) * 0.35 + rng.uniform(-0.03, 0.03)
     branch.score = _clip01(branch.score + correction)
 
@@ -161,12 +296,17 @@ def _choose_branch(
     method: str,
     active: list[SimBranch],
     model_map: dict[str, dict[str, Any]] | None,
+    remaining_budget: int,
 ) -> SimBranch:
     if method.startswith("adaptive_learned_branch_score"):
         if model_map is None or method not in model_map:
             raise ValueError(f"Model for {method} not provided")
         model = model_map[method]
         parent_mean = sum(b.score for b in active) / max(1, len(active))
+        if method == "adaptive_learned_branch_score_v5":
+            return max(active, key=lambda b: model_priority(model, branch_features_v5(b, parent_mean, remaining_budget)))
+        if method == "adaptive_learned_branch_score_v6":
+            return max(active, key=lambda b: model_priority(model, branch_features_v6(b, parent_mean, remaining_budget)))
         return max(active, key=lambda b: model_priority(model, branch_features(b, parent_mean)))
 
     return max(active, key=lambda b: baseline_priority(method, b, active))
@@ -198,7 +338,7 @@ def simulate_controller(
         if not active:
             break
 
-        chosen = _choose_branch(method, active, model_map)
+        chosen = _choose_branch(method, active, model_map, remaining_budget=budget - step)
         expand_branch(chosen, rng, finish_prob_base, answer_noise, max_depth)
         if not chosen.is_done and rng.random() < 0.35:
             maybe_verify(chosen, rng)

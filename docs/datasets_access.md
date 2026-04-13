@@ -4,33 +4,36 @@ This guide describes a conservative, reproducible access workflow for the curren
 
 ## Hugging Face datasets
 
-Primary Hugging Face datasets in scope:
-- GSM8K: https://huggingface.co/datasets/openai/gsm8k
-- MATH: https://huggingface.co/datasets/hendrycks/math
-- GPQA Diamond: https://huggingface.co/datasets/Idavidrein/gpqa (likely gated)
-- OlympiadBench: https://huggingface.co/datasets/THUDM/OlympiadBench
+Primary Hugging Face datasets in scope (wired in code):
+- `openai/gsm8k`
+- `EleutherAI/hendrycks_math`
+- `Idavidrein/gpqa` (gated)
+- `Hothan/OlympiadBench`
+- `livecodebench/code_generation_lite` (optional / secondary)
 
 ### Practical setup notes
 
 1. Install and authenticate as needed:
    - `pip install datasets huggingface_hub`
-   - `huggingface-cli login` (required for gated datasets and recommended for stable access)
+   - use `HF_TOKEN` / `HUGGINGFACE_HUB_TOKEN` from environment, or run `huggingface-cli login` (required for gated datasets)
 2. Pin tooling versions in your experiment environment for reproducibility.
 3. Record dataset revision/version metadata when first pulled.
 
 ### Lightweight loading examples
 
-```python
-from datasets import load_dataset
+```bash
+# Verify access (writes JSON/CSV/MD summary only)
+python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset_access
 
-# Public examples
-gsm8k = load_dataset("openai/gsm8k", "main")
-math_ds = load_dataset("hendrycks/math")
-olympiad = load_dataset("THUDM/OlympiadBench")
-
-# GPQA Diamond (access may require login + accepted terms)
-# gpqa = load_dataset("Idavidrein/gpqa")
+# Pilot loader config can choose HF source directly
+python scripts/run_pilot_gsm8k.py --config configs/pilot_gsm8k.yaml
 ```
+
+Verification output now includes:
+- presence/absence of `HF_TOKEN` and `HUGGINGFACE_HUB_TOKEN` (never token values),
+- GPQA datasets-loader status,
+- GPQA pandas `hf://` fallback status (`pd.read_csv("hf://datasets/Idavidrein/gpqa/gpqa_extended.csv")`),
+- final GPQA accessibility verdict.
 
 ## GitHub-hosted datasets / benchmark repos
 
@@ -47,6 +50,7 @@ Practical notes:
 
 - **GPQA Diamond** is currently treated as gated/terms-controlled in this plan.
 - Access may require Hugging Face authentication and explicit acceptance of dataset terms.
+- Loader/verifier behavior: if GPQA access is denied, emit a clear failure entry while continuing checks for other datasets.
 - Do not mirror gated data into this repo.
 - **TODO:** before first GPQA experiment, log the exact approved access path and any usage restrictions in project-internal run notes.
 
@@ -59,6 +63,7 @@ Practical notes:
 - For AIME, canonical sourcing can vary by year and pipeline.
   - **TODO:** standardize the canonical AIME source/version policy for this repository before reporting headline numbers.
 - Store only small metadata/manifests in-repo; keep raw data external.
+- Never commit raw downloaded dataset files into git.
 
 ## TODO checklist before first experiments
 
