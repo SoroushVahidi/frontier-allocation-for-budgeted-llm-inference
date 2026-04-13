@@ -1,0 +1,254 @@
+"""Hugging Face dataset registry + lightweight access helpers."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import importlib
+import os
+from pathlib import Path
+import sys
+from typing import Any
+
+
+@dataclass(frozen=True)
+class HFDatasetSpec:
+    key: str
+    repo_id: str
+    default_config: str | None
+    default_split: str
+    question_fields: tuple[str, ...]
+    answer_fields: tuple[str, ...]
+    gated: bool = False
+    optional: bool = False
+
+
+HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
+    "openai/gsm8k": HFDatasetSpec(
+        key="openai/gsm8k",
+        repo_id="openai/gsm8k",
+        default_config="main",
+        default_split="test",
+        question_fields=("question",),
+        answer_fields=("answer",),
+    ),
+    "EleutherAI/hendrycks_math": HFDatasetSpec(
+        key="EleutherAI/hendrycks_math",
+        repo_id="EleutherAI/hendrycks_math",
+        default_config="algebra",
+        default_split="test",
+        question_fields=("problem", "question"),
+        answer_fields=("solution", "answer"),
+    ),
+    "Idavidrein/gpqa": HFDatasetSpec(
+        key="Idavidrein/gpqa",
+        repo_id="Idavidrein/gpqa",
+        default_config="gpqa_diamond",
+        default_split="train",
+        question_fields=("Question", "question"),
+        answer_fields=("Correct Answer", "answer"),
+        gated=True,
+    ),
+    "Hothan/OlympiadBench": HFDatasetSpec(
+        key="Hothan/OlympiadBench",
+        repo_id="Hothan/OlympiadBench",
+        default_config="OE_TO_maths_en_COMP",
+        default_split="train",
+        question_fields=("question", "problem"),
+        answer_fields=("final_answer", "answer", "solution"),
+    ),
+    "livecodebench/code_generation_lite": HFDatasetSpec(
+        key="livecodebench/code_generation_lite",
+        repo_id="livecodebench/code_generation_lite",
+        default_config=None,
+        default_split="test",
+        question_fields=("question_content", "prompt", "question"),
+        answer_fields=("starter_code", "solution", "answer"),
+        optional=True,
+    ),
+}
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _import_hf_load_dataset() -> Any:
+    """Import HF `load_dataset` while avoiding local `datasets/` path shadowing."""
+    original_path = list(sys.path)
+    try:
+        sys.path = [p for p in original_path if Path(p).resolve() != REPO_ROOT]
+        module = importlib.import_module("datasets")
+    finally:
+        sys.path = original_path
+    load_dataset = getattr(module, "load_dataset", None)
+    if load_dataset is None:
+        raise ImportError("datasets.load_dataset is unavailable in imported module")
+    return load_dataset
+
+
+def _get_hf_token() -> str | None:
+    for env_name in ("HF_TOKEN", "HUGGINGFACE_HUB_TOKEN"):
+        token = os.getenv(env_name)
+        if token:
+            return token
+    return None
+
+
+def hf_token_presence() -> dict[str, bool]:
+    """Presence-only token status; never returns token contents."""
+    return {
+        "HF_TOKEN": bool(os.getenv("HF_TOKEN")),
+        "HUGGINGFACE_HUB_TOKEN": bool(os.getenv("HUGGINGFACE_HUB_TOKEN")),
+    }
+
+
+def resolve_dataset_spec(dataset_name: str) -> HFDatasetSpec:
+    if dataset_name in HF_DATASET_SPECS:
+        return HF_DATASET_SPECS[dataset_name]
+    lower_map = {k.lower(): v for k, v in HF_DATASET_SPECS.items()}
+    if dataset_name.lower() in lower_map:
+        return lower_map[dataset_name.lower()]
+    raise KeyError(f"Unsupported HF dataset: {dataset_name}")
+
+
+def check_hf_dataset_access(
+    dataset_name: str,
+    split: str | None = None,
+    config_name: str | None = None,
+    streaming: bool = True,
+) -> dict[str, Any]:
+    spec = resolve_dataset_spec(dataset_name)
+    try:
+        load_dataset = _import_hf_load_dataset()
+    except Exception as exc:  # pragma: no cover
+        return {
+            "dataset": spec.key,
+            "repo_id": spec.repo_id,
+            "ok": False,
+            "gated": spec.gated,
+            "error": f"datasets import failed: {type(exc).__name__}: {exc}",
+        }
+
+    token_flags = hf_token_presence()
+    token_present = token_flags["HF_TOKEN"] or token_flags["HUGGINGFACE_HUB_TOKEN"]
+    split_to_use = split or spec.default_split
+    config_to_use = config_name if config_name is not None else spec.default_config
+    token = _get_hf_token()
+
+    kwargs: dict[str, Any] = {
+        "path": spec.repo_id,
+        "split": split_to_use,
+        "streaming": streaming,
+        "token": token,
+    }
+    if config_to_use is not None:
+        kwargs["name"] = config_to_use
+
+    try:
+        ds = load_dataset(**kwargs)
+        first = next(iter(ds))
+        success = {
+            "dataset": spec.key,
+            "repo_id": spec.repo_id,
+            "ok": True,
+            "gated": spec.gated,
+            "split": split_to_use,
+            "config": config_to_use,
+            "token_present": token_present,
+            "token_env_presence": token_flags,
+            "first_row_keys": sorted(list(first.keys())),
+        }
+        if spec.key == "Idavidrein/gpqa":
+            success.update(
+                {
+                    "datasets_loader_ok": True,
+                    "pandas_fallback_ok": None,
+                    "gpqa_accessible": True,
+                    "loader_path_used": "datasets",
+                }
+            )
+        return success
+    except Exception as exc:
+        failure = {
+            "dataset": spec.key,
+            "repo_id": spec.repo_id,
+            "ok": False,
+            "gated": spec.gated,
+            "split": split_to_use,
+            "config": config_to_use,
+            "token_present": token_present,
+            "token_env_presence": token_flags,
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+        if spec.key == "Idavidrein/gpqa":
+            failure.update(_gpqa_pandas_fallback())
+            failure["ok"] = bool(failure.get("gpqa_accessible"))
+        else:
+            failure.update({"datasets_loader_ok": False, "pandas_fallback_ok": None, "loader_path_used": "none"})
+        return failure
+
+
+def _gpqa_pandas_fallback() -> dict[str, Any]:
+    """Try GPQA via pandas hf:// path after datasets-based loading fails."""
+    try:
+        import pandas as pd  # type: ignore
+
+        frame = pd.read_csv("hf://datasets/Idavidrein/gpqa/gpqa_extended.csv", nrows=1)
+        return {
+            "datasets_loader_ok": False,
+            "pandas_fallback_ok": True,
+            "gpqa_accessible": True,
+            "pandas_columns": list(frame.columns),
+            "loader_path_used": "pandas_hf://",
+        }
+    except Exception as pandas_exc:
+        return {
+            "datasets_loader_ok": False,
+            "pandas_fallback_ok": False,
+            "gpqa_accessible": False,
+            "pandas_error": f"{type(pandas_exc).__name__}: {pandas_exc}",
+            "loader_path_used": "none",
+        }
+
+
+def _pick_first_present(row: dict[str, Any], candidates: tuple[str, ...]) -> str:
+    for field in candidates:
+        value = row.get(field)
+        if value is not None and str(value).strip():
+            return str(value)
+    return ""
+
+
+def sample_hf_examples(
+    dataset_name: str,
+    pilot_size: int,
+    seed: int,
+    split: str | None = None,
+    config_name: str | None = None,
+) -> list[dict[str, str]]:
+    """Load a small shuffled sample from a supported HF dataset for pilot usage."""
+    spec = resolve_dataset_spec(dataset_name)
+    load_dataset = _import_hf_load_dataset()
+
+    split_to_use = split or spec.default_split
+    config_to_use = config_name if config_name is not None else spec.default_config
+    token = _get_hf_token()
+
+    if config_to_use is None:
+        ds = load_dataset(spec.repo_id, split=split_to_use, token=token)
+    else:
+        ds = load_dataset(spec.repo_id, config_to_use, split=split_to_use, token=token)
+
+    shuffled = ds.shuffle(seed=seed)
+    selected = shuffled.select(range(min(pilot_size, len(shuffled))))
+
+    records: list[dict[str, str]] = []
+    for idx, row in enumerate(selected):
+        question = _pick_first_present(row, spec.question_fields)
+        answer = _pick_first_present(row, spec.answer_fields)
+        records.append(
+            {
+                "example_id": f"{spec.key.replace('/', '_')}_{idx}",
+                "question": question,
+                "answer": answer,
+            }
+        )
+    return records

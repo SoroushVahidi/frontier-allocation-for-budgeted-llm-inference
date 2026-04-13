@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train v1/v2/v3/v4 branch-scorer models and export text artifacts."""
+"""Train v1-v6 branch-scorer models and export text artifacts."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from experiments.branch_scorer_v3 import FEATURE_NAMES
+from experiments.branch_scorer_v3 import FEATURE_NAMES, V5_FEATURE_NAMES, V6_FEATURE_NAMES
 
 
 def parse_args() -> argparse.Namespace:
@@ -31,7 +31,7 @@ def _load_rows(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def _tree_to_dict(tree: Any, node_id: int = 0) -> dict[str, Any]:
+def _tree_to_dict(tree: Any, feature_names: list[str], node_id: int = 0) -> dict[str, Any]:
     left = tree.children_left[node_id]
     right = tree.children_right[node_id]
     if left == right:
@@ -41,14 +41,14 @@ def _tree_to_dict(tree: Any, node_id: int = 0) -> dict[str, Any]:
 
     feature_idx = int(tree.feature[node_id])
     return {
-        "feature": FEATURE_NAMES[feature_idx],
+        "feature": feature_names[feature_idx],
         "threshold": float(tree.threshold[node_id]),
-        "left": _tree_to_dict(tree, int(left)),
-        "right": _tree_to_dict(tree, int(right)),
+        "left": _tree_to_dict(tree, feature_names, int(left)),
+        "right": _tree_to_dict(tree, feature_names, int(right)),
     }
 
 
-def _tree_regressor_to_dict(tree: Any, node_id: int = 0) -> dict[str, Any]:
+def _tree_regressor_to_dict(tree: Any, feature_names: list[str], node_id: int = 0) -> dict[str, Any]:
     left = tree.children_left[node_id]
     right = tree.children_right[node_id]
     if left == right:
@@ -56,20 +56,26 @@ def _tree_regressor_to_dict(tree: Any, node_id: int = 0) -> dict[str, Any]:
 
     feature_idx = int(tree.feature[node_id])
     return {
-        "feature": FEATURE_NAMES[feature_idx],
+        "feature": feature_names[feature_idx],
         "threshold": float(tree.threshold[node_id]),
-        "left": _tree_regressor_to_dict(tree, int(left)),
-        "right": _tree_regressor_to_dict(tree, int(right)),
+        "left": _tree_regressor_to_dict(tree, feature_names, int(left)),
+        "right": _tree_regressor_to_dict(tree, feature_names, int(right)),
     }
 
 
-def _fit_and_export_model(train_rows: list[dict[str, Any]], label_key: str, model_kind: str) -> dict[str, Any]:
+def _fit_and_export_model(
+    train_rows: list[dict[str, Any]],
+    label_key: str,
+    model_kind: str,
+    feature_names: list[str] | None = None,
+) -> dict[str, Any]:
     import numpy as np  # type: ignore
     from sklearn.linear_model import LinearRegression  # type: ignore
     from sklearn.linear_model import LogisticRegression  # type: ignore
     from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor  # type: ignore
 
-    x_train = np.array([[float(r[name]) for name in FEATURE_NAMES] for r in train_rows])
+    used_features = feature_names or FEATURE_NAMES
+    x_train = np.array([[float(r[name]) for name in used_features] for r in train_rows])
     y_train = np.array([float(r[label_key]) for r in train_rows])
 
     if model_kind == "logistic":
@@ -78,7 +84,7 @@ def _fit_and_export_model(train_rows: list[dict[str, Any]], label_key: str, mode
         return {
             "model_type": "logistic",
             "label_key": label_key,
-            "weights": {name: float(weight) for name, weight in zip(FEATURE_NAMES, model.coef_[0])},
+            "weights": {name: float(weight) for name, weight in zip(used_features, model.coef_[0])},
             "intercept": float(model.intercept_[0]),
         }
 
@@ -88,7 +94,7 @@ def _fit_and_export_model(train_rows: list[dict[str, Any]], label_key: str, mode
         return {
             "model_type": "decision_tree",
             "label_key": label_key,
-            "tree": _tree_to_dict(model.tree_),
+            "tree": _tree_to_dict(model.tree_, used_features),
         }
 
     if model_kind == "linear_regression":
@@ -97,7 +103,7 @@ def _fit_and_export_model(train_rows: list[dict[str, Any]], label_key: str, mode
         return {
             "model_type": "linear_regression",
             "label_key": label_key,
-            "weights": {name: float(weight) for name, weight in zip(FEATURE_NAMES, reg.coef_)},
+            "weights": {name: float(weight) for name, weight in zip(used_features, reg.coef_)},
             "intercept": float(reg.intercept_),
         }
 
@@ -107,7 +113,7 @@ def _fit_and_export_model(train_rows: list[dict[str, Any]], label_key: str, mode
         return {
             "model_type": "decision_tree_regressor",
             "label_key": label_key,
-            "tree": _tree_regressor_to_dict(reg.tree_),
+            "tree": _tree_regressor_to_dict(reg.tree_, used_features),
         }
 
     raise ValueError(f"Unsupported model_kind: {model_kind}")
@@ -138,6 +144,18 @@ def main() -> None:
         ),
         "adaptive_learned_branch_score_v4": _fit_and_export_model(
             train_rows, "v4_target_subtree_value", "decision_tree_regressor"
+        ),
+        "adaptive_learned_branch_score_v5": _fit_and_export_model(
+            train_rows,
+            "v5_target_budgeted_subtree_value",
+            "linear_regression",
+            feature_names=V5_FEATURE_NAMES,
+        ),
+        "adaptive_learned_branch_score_v6": _fit_and_export_model(
+            train_rows,
+            "v6_label_prefers_over_median",
+            "logistic",
+            feature_names=V6_FEATURE_NAMES,
         ),
     }
 

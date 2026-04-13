@@ -1,4 +1,4 @@
-"""Data loading helpers for the GSM8K pilot experiment."""
+"""Data loading helpers for pilot experiments (JSONL/HF/mock)."""
 
 from __future__ import annotations
 
@@ -8,6 +8,8 @@ from pathlib import Path
 import random
 import re
 from typing import Any
+
+from experiments.hf_datasets import sample_hf_examples
 
 
 @dataclass
@@ -31,11 +33,11 @@ def extract_final_answer(answer_text: str) -> str:
 
 
 def load_pilot_examples(config: dict[str, Any]) -> tuple[list[PilotExample], dict[str, Any]]:
-    """Load a configurable subset of GSM8K with safe local fallback.
+    """Load a configurable subset of pilot examples with safe local fallback.
 
     Priority order:
     1) JSONL file path from config
-    2) HuggingFace datasets (gsm8k/main)
+    2) HuggingFace datasets (configured by hf_dataset_* keys)
     3) local mock arithmetic examples (if enabled)
     """
     num_examples = int(config["pilot_size"])
@@ -46,35 +48,38 @@ def load_pilot_examples(config: dict[str, Any]) -> tuple[list[PilotExample], dic
         examples = _load_from_jsonl(Path(jsonl_path), num_examples)
         return examples, {"data_source": "jsonl", "path": str(jsonl_path)}
 
-    try:
-        from datasets import load_dataset  # type: ignore
+    hf_dataset_name = str(config.get("hf_dataset_name", "openai/gsm8k"))
+    hf_dataset_split = str(config.get("hf_dataset_split", config.get("gsm8k_split", "test")))
+    hf_dataset_config = config.get("hf_dataset_config")
 
-        ds = load_dataset("gsm8k", "main", split=config.get("gsm8k_split", "test"))
-        shuffled = ds.shuffle(seed=seed)
-        selected = shuffled.select(range(min(num_examples, len(shuffled))))
+    try:
+        rows = sample_hf_examples(
+            dataset_name=hf_dataset_name,
+            pilot_size=num_examples,
+            seed=seed,
+            split=hf_dataset_split,
+            config_name=str(hf_dataset_config) if hf_dataset_config is not None else None,
+        )
         examples = [
             PilotExample(
-                example_id=f"gsm8k_{idx}",
+                example_id=row["example_id"],
                 question=row["question"],
                 answer=extract_final_answer(row["answer"]),
             )
-            for idx, row in enumerate(selected)
+            for row in rows
         ]
-        return examples, {
-            "data_source": "huggingface:gsm8k",
-            "split": config.get("gsm8k_split", "test"),
-        }
+        return examples, {"data_source": f"huggingface:{hf_dataset_name}", "split": hf_dataset_split}
     except Exception as exc:  # noqa: BLE001 - explicit fallback for lightweight pilot
         if not config.get("allow_mock_data", True):
             raise RuntimeError(
-                "Could not load GSM8K from HuggingFace and mock mode is disabled. "
+                f"Could not load HuggingFace dataset {hf_dataset_name} and mock mode is disabled. "
                 f"Original error: {exc}"
             ) from exc
 
         examples = _build_mock_arithmetic_examples(num_examples=num_examples, seed=seed)
         return examples, {
             "data_source": "mock_arithmetic",
-            "note": "Fallback used because GSM8K loading failed.",
+            "note": f"Fallback used because HuggingFace dataset {hf_dataset_name} loading failed.",
             "load_error": f"{type(exc).__name__}: {exc}",
         }
 

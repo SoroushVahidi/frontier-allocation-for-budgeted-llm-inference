@@ -8,6 +8,17 @@ A license-aware status summary for baseline code resources is available at [`ext
 
 The current research-facing dataset package is documented in [`docs/main_datasets.md`](docs/main_datasets.md) and the practical access/setup workflow is in [`docs/datasets_access.md`](docs/datasets_access.md). Repository data-handling policy and placeholder structure are described in [`datasets/README.md`](datasets/README.md). These documents are conservative by design and explicitly mark uncertain details or access conditions for later manual verification.
 
+Quick HF access check command (writes JSON/CSV/MD only, no raw dataset commits):
+
+- `python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset_access`
+
+Wired HF dataset identifiers:
+- `openai/gsm8k`
+- `EleutherAI/hendrycks_math`
+- `Idavidrein/gpqa` (gated)
+- `Hothan/OlympiadBench`
+- `livecodebench/code_generation_lite` (optional)
+
 ## Pilot experiment
 
 The repository now includes a lightweight GSM8K pilot scaffold for testing basic adaptive reasoning-branch allocation ideas against simple baselines.
