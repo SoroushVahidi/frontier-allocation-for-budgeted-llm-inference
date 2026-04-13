@@ -1,55 +1,33 @@
 # Experiments
 
-This directory contains experiment code, scripts, and results for the project.
+This directory contains experiment implementation code plus lightweight result notes.
 
-> **Placeholder — experiments will be added as the research develops.**
+## What is actually here (current state)
 
----
+Core modules:
 
-## Planned Benchmark Experiments
+- `controllers.py`: controller policies (greedy, best-of-n, beam, adaptive variants).
+- `branching.py`: branch generators (simulation + API-backed pathways).
+- `scoring.py`: branch scoring utilities.
+- `data.py`: pilot/example data utilities.
+- `hf_datasets.py`: dataset sampling/adapter helpers.
+- `branch_scorer_v3.py`: learned branch-scorer simulation/evaluation helpers.
 
-All experiments use a **matched-budget evaluation protocol**: strategies are compared at the same total inference compute budget, so differences in performance reflect allocation strategy rather than total compute.
+Result/diagnostic notes:
 
-### Benchmarks
+- `branch_scorer_v3_result_note.md`
+- `branch_scorer_v4_result_note.md`
+- `adaptive_min_expand_note.md`
+- `eptree_baseline_note.md`
+- `pilot_*.md`
 
-| Benchmark | Description | Priority |
-|-----------|-------------|----------|
-| GSM8K | Grade-school math word problems | High |
-| MATH | Competition math (5 difficulty levels) | High |
-| AIME-style subsets | Hard competition math problems | Medium |
+## How this maps to the two paper tracks
 
-### Experiment Types
+- Old manuscript track (binary revise-routing): mostly orchestrated from `scripts/` and manuscript docs.
+- New track (cross-controller frontier allocation): uses these modules heavily via `scripts/run_cross_strategy_frontier_allocation.py` and learned-scorer scripts.
 
-1. **Baseline comparisons**: Uniform allocation, best-of-N, greedy search.
-2. **Adaptive allocation**: Proposed strategy vs. baselines at matched budgets.
-3. **Noise ablations**: Vary the quality of the value estimate; measure robustness.
-4. **Budget scaling**: Fix strategy, vary total budget; measure performance curve.
-
----
-
-## Evaluation Protocol
-
-- **Matched-budget comparison**: All methods receive the same total token / call budget.
-- **Metric**: Exact-match accuracy (for math) or pass@1 (for code).
-- **Repetitions**: Multiple seeds per experiment; report mean ± std.
-- **Output**: Results saved to `outputs/` (gitignored); summary tables in experiment notes.
-
----
-
-## File Organization (Planned)
-
-```
-experiments/
-├── README.md               # This file
-├── baselines/              # Baseline allocation strategies
-├── adaptive/               # Adaptive allocation strategies
-└── eval/                   # Evaluation harness and metrics
-```
-
----
-
-## Notes
+## Reproducibility notes
 
 - Do not commit raw model outputs or large data files.
-- All experiments should be runnable from configs in `configs/`.
-- See `scripts/smoke_test.py` for a minimal end-to-end test.
+- Prefer running through scripts in `scripts/` and configs in `configs/`.
+- Output directories are intentionally outside this folder (`output/` and `outputs/`).
