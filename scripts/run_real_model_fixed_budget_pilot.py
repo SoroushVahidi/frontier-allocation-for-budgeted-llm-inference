@@ -46,6 +46,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-branches", type=int, default=3)
     parser.add_argument("--high-threshold", type=float, default=0.72)
     parser.add_argument("--low-threshold", type=float, default=0.42)
+    parser.add_argument(
+        "--min-expansions-before-prune",
+        type=int,
+        default=0,
+        help="Force each active branch to expand at least this many times before verify/prune gating.",
+    )
     parser.add_argument("--openai-model", default="gpt-4.1-mini")
     parser.add_argument("--gemini-model", default="gemini-2.0-flash")
     parser.add_argument("--groq-model", default="llama-3.1-8b-instant")
@@ -263,7 +269,7 @@ def _method_specs(
                 low_threshold=args.low_threshold,
                 max_branches=args.max_branches,
                 allow_verify=True,
-                min_expansions_before_prune=0,
+                min_expansions_before_prune=args.min_expansions_before_prune,
                 method_name="adaptive_relative_rank",
             ),
             "notes": {"scorer": "RelativeRankBranchScorer"},
@@ -278,7 +284,7 @@ def _method_specs(
                 low_threshold=args.low_threshold,
                 max_branches=args.max_branches,
                 allow_verify=True,
-                min_expansions_before_prune=0,
+                min_expansions_before_prune=args.min_expansions_before_prune,
                 method_name="adaptive_score_plus_progress",
             ),
             "notes": {"scorer": "ScorePlusProgressBranchScorer"},
@@ -310,7 +316,7 @@ def _method_specs(
                 low_threshold=args.low_threshold,
                 max_branches=args.max_branches,
                 allow_verify=True,
-                min_expansions_before_prune=0,
+                min_expansions_before_prune=args.min_expansions_before_prune,
                 method_name="adaptive_learned_branch_score_v4",
             ),
             "notes": learned_note,
@@ -377,6 +383,7 @@ def main() -> None:
         "fixed_budget_max_actions": args.max_actions,
         "max_branches": args.max_branches,
         "thresholds": {"high": args.high_threshold, "low": args.low_threshold},
+        "min_expansions_before_prune": args.min_expansions_before_prune,
         "models": {"openai": args.openai_model, "gemini": args.gemini_model, "groq": args.groq_model},
         "learned_scorer": {
             "requested_path": args.learned_scorer_path,
@@ -554,6 +561,7 @@ def main() -> None:
         f"- Datasets: {', '.join(datasets)}",
         f"- Subset size per provider/dataset: {args.subset_size}",
         f"- Fixed budget (max actions/problem): {args.max_actions}",
+        f"- Min expansions before prune: {args.min_expansions_before_prune}",
         f"- Learned scorer path preference: `{args.learned_scorer_path}`",
         "",
         "## Provider/dataset summary",

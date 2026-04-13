@@ -28,6 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--init-branches", default="3,5,7")
     parser.add_argument("--episodes", type=int, default=400)
     parser.add_argument("--include-score-plus-progress", action="store_true")
+    parser.add_argument("--include-eptree-baseline", action="store_true")
     return parser.parse_args()
 
 
@@ -35,7 +36,7 @@ def _parse_int_list(raw: str) -> list[int]:
     return [int(chunk.strip()) for chunk in raw.split(",") if chunk.strip()]
 
 
-def _method_list(include_progress: bool) -> list[str]:
+def _method_list(include_progress: bool, include_eptree: bool) -> list[str]:
     methods = [
         "adaptive_relative_rank",
         "adaptive_learned_branch_score",
@@ -45,6 +46,8 @@ def _method_list(include_progress: bool) -> list[str]:
     ]
     if include_progress:
         methods.insert(1, "adaptive_score_plus_progress")
+    if include_eptree:
+        methods.insert(1, "adaptive_eptree_baseline")
     return methods
 
 
@@ -84,7 +87,7 @@ def main() -> None:
     seeds = _parse_int_list(args.seeds)
     budgets = _parse_int_list(args.budgets)
     init_branches = _parse_int_list(args.init_branches)
-    methods = _method_list(args.include_score_plus_progress)
+    methods = _method_list(args.include_score_plus_progress, args.include_eptree_baseline)
 
     model_map = {
         "adaptive_learned_branch_score": load_model(Path(args.model_dir) / "adaptive_learned_branch_score.json"),
