@@ -10,6 +10,13 @@ from experiments.branching import BranchState
 from experiments.scoring import SimpleBranchScorer
 
 
+class BranchScorer(Protocol):
+    def score_branch(self, branch: BranchState) -> float: ...
+
+    def pick_best(self, branches: list[BranchState]) -> BranchState | None: ...
+
+
+
 class BranchGenerator(Protocol):
     def init_branch(self, branch_id: str) -> BranchState: ...
 
@@ -37,7 +44,7 @@ class MethodResult:
 
 
 class BaseController:
-    def __init__(self, generator: BranchGenerator, scorer: SimpleBranchScorer, max_actions_per_problem: int) -> None:
+    def __init__(self, generator: BranchGenerator, scorer: BranchScorer, max_actions_per_problem: int) -> None:
         self.generator = generator
         self.scorer = scorer
         self.max_actions = max_actions_per_problem
@@ -81,7 +88,7 @@ class GreedyController(BaseController):
 
 
 class BestOfNController(BaseController):
-    def __init__(self, generator: BranchGenerator, scorer: SimpleBranchScorer, max_actions_per_problem: int, n_candidates: int) -> None:
+    def __init__(self, generator: BranchGenerator, scorer: BranchScorer, max_actions_per_problem: int, n_candidates: int) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
         self.n_candidates = n_candidates
 
@@ -118,7 +125,7 @@ class BestOfNController(BaseController):
 
 
 class BeamController(BaseController):
-    def __init__(self, generator: BranchGenerator, scorer: SimpleBranchScorer, max_actions_per_problem: int, width: int) -> None:
+    def __init__(self, generator: BranchGenerator, scorer: BranchScorer, max_actions_per_problem: int, width: int) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
         self.width = width
 
@@ -168,7 +175,7 @@ class AdaptiveController(BaseController):
     def __init__(
         self,
         generator: BranchGenerator,
-        scorer: SimpleBranchScorer,
+        scorer: BranchScorer,
         max_actions_per_problem: int,
         high_threshold: float,
         low_threshold: float,

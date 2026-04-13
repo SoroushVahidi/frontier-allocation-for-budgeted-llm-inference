@@ -20,3 +20,15 @@ The repository now includes a lightweight GSM8K pilot scaffold for testing basic
   - `python scripts/evaluate_pilot_gsm8k.py outputs/pilot/<run_id>`
 
 This pilot is intentionally provisional and research-friendly: it can run in local simulation mode when no external model API is wired, while keeping controller logic and outputs easy to inspect.
+
+
+## Branch scorer v3 (decision-point ranking)
+
+New empirical scripts for learned branch allocation:
+
+- Build dataset: `python scripts/build_v3_ranking_dataset.py --output-dir outputs/branch_scorer_v3 --episodes 1500 --budget 10 --n-init-branches 5 --seed 7`
+- Train scorers (v1/v2/v3): `python scripts/train_branch_scorer_v3.py --dataset outputs/branch_scorer_v3/branch_scorer_v3_dataset.jsonl --output-dir outputs/branch_scorer_v3`
+- Controller-level comparison (includes lightweight `adaptive_eptree_baseline`): `python scripts/evaluate_branch_scorer_controller.py --model-dir outputs/branch_scorer_v3/models --output outputs/branch_scorer_v3/controller_eval.json --episodes 1000 --seed 19 --budget 10 --n-init-branches 5`
+- Robustness sweep: `python scripts/evaluate_branch_scorer_robustness.py --model-dir outputs/branch_scorer_v3/models --output-dir outputs/branch_scorer_v3/robustness --seeds 3,7,11,19,23 --budgets 8,10,12 --init-branches 3,5,7 --episodes 400 --include-score-plus-progress`
+
+See result note (progress-style v3 target and controller-level comparison): `experiments/branch_scorer_v3_result_note.md`.
