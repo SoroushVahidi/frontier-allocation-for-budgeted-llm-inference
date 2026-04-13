@@ -55,7 +55,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--openai-model", default="gpt-4.1-mini")
     parser.add_argument("--gemini-model", default="gemini-2.0-flash")
     parser.add_argument("--groq-model", default="llama-3.1-8b-instant")
-    parser.add_argument("--output-dir", default="output/real_model_fixed_budget_pilot")
+    parser.add_argument("--output-dir", default="outputs/real_model_fixed_budget_pilot")
     parser.add_argument(
         "--learned-scorer-path",
         default="outputs/branch_scorer_v3/models/adaptive_learned_branch_score_v4.json",

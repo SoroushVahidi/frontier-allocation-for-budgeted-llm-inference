@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "policy": "Documentation and clone URLs only; do not vendor upstream code.",
+  "baselines": {
+    "compute_optimal_tts": {
+      "clone_url": "https://github.com/RyanLiu112/compute-optimal-tts.git",
+      "doc": "external/compute_optimal_tts/README.md",
+      "integration": "link_only"
+    },
+    "when_solve_when_verify": {
+      "clone_url": "https://github.com/nishadsinghi/sc-genrm-scaling.git",
+      "doc": "external/when_solve_when_verify/README.md",
+      "integration": "link_only"
+    },
+    "cascade_routing": {
+      "clone_url": "https://github.com/eth-sri/cascade-routing.git",
+      "doc": "external/cascade_routing/README.md",
+      "integration": "link_only"
+    },
+    "mob_majority_of_bests": {
+      "clone_url": "https://github.com/arakhsha/mob.git",
+      "doc": "external/mob_majority_of_bests/README.md",
+      "integration": "link_only"
+    },
+    "mcts_llm_community": {
+      "clone_url": "https://github.com/NumberChiffre/mcts-llm.git",
+      "doc": "external/mcts_llm_community/README.md",
+      "integration": "optional_partial"
+    },
+    "llm_tree_search_waterhorse": {
+      "clone_url": "https://github.com/waterhorse1/LLM_Tree_Search.git",
+      "doc": "external/llm_tree_search_waterhorse/README.md",
+      "integration": "discuss_only"
+    },
+    "best_route_microsoft": {
+      "clone_url": "https://github.com/microsoft/best-route-llm.git",
+      "doc": "external/best_route_microsoft/README.md",
+      "integration": "link_only"
+    },
+    "openr": {
+      "clone_url": "https://github.com/openreasoner/openr.git",
+      "doc": "external/openr/README.md",
+      "integration": "link_only"
+    },
+    "rest_mcts": {
+      "clone_url": "https://github.com/THUDM/ReST-MCTS.git",
+      "doc": "external/rest_mcts/README.md",
+      "integration": "link_only"
+    },
+    "tree_plv": {
+      "clone_url": null,
+      "doc": "external/tree_plv/README.md",
+      "integration": "discuss_only"
+    },
+    "pgts": {
+      "clone_url": null,
+      "doc": "external/pgts/README.md",
+      "integration": "discuss_only"
+    },
+    "scaling_automated_process_verifiers": {
+      "clone_url": null,
+      "doc": "external/scaling_automated_process_verifiers/README.md",
+      "integration": "discuss_only"
+    }
+  }
+}

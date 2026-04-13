@@ -20,6 +20,8 @@ class HFDatasetSpec:
     answer_fields: tuple[str, ...]
     gated: bool = False
     optional: bool = False
+    # Short provenance / caveat for docs and reports (not used by loaders).
+    provenance_note: str | None = None
 
 
 HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
@@ -30,6 +32,19 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         default_split="test",
         question_fields=("question",),
         answer_fields=("answer",),
+        provenance_note=None,
+    ),
+    # MATH (Hendrycks et al.): paper https://arxiv.org/abs/2103.03874
+    # Official HF org `hendrycks/math` is not a resolvable Hub dataset id; `hendrycks/competition_math`
+    # is the canonical Hendrycks org dataset. `EleutherAI/hendrycks_math` is a widely used mirror.
+    "hendrycks/competition_math": HFDatasetSpec(
+        key="hendrycks/competition_math",
+        repo_id="hendrycks/competition_math",
+        default_config="algebra",
+        default_split="test",
+        question_fields=("problem",),
+        answer_fields=("solution",),
+        provenance_note="Canonical Hendrycks org Hub id for MATH; configs are subject subsets (e.g. algebra).",
     ),
     "EleutherAI/hendrycks_math": HFDatasetSpec(
         key="EleutherAI/hendrycks_math",
@@ -38,6 +53,7 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         default_split="test",
         question_fields=("problem", "question"),
         answer_fields=("solution", "answer"),
+        provenance_note="Community mirror of MATH-style competition math; same broad schema as hendrycks/competition_math.",
     ),
     "Idavidrein/gpqa": HFDatasetSpec(
         key="Idavidrein/gpqa",
@@ -47,7 +63,10 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         question_fields=("Question", "question"),
         answer_fields=("Correct Answer", "answer"),
         gated=True,
+        provenance_note="GPQA Diamond config; requires HF auth / dataset terms acceptance when gated.",
     ),
+    # OlympiadBench paper https://arxiv.org/abs/2406.15513 — THUDM/OlympiadBench Hub id is not
+    # reliably resolvable; Hothan/OlympiadBench is the supported English math competition config.
     "Hothan/OlympiadBench": HFDatasetSpec(
         key="Hothan/OlympiadBench",
         repo_id="Hothan/OlympiadBench",
@@ -55,6 +74,18 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         default_split="train",
         question_fields=("question", "problem"),
         answer_fields=("final_answer", "answer", "solution"),
+        provenance_note="HF mirror with OlympiadBench-style schema; cite THUDM/OpenBMB paper for benchmark definition.",
+    ),
+    # AIME 2024 (30 problems): derived card HuggingFaceH4/aime_2024; integer answers.
+    "HuggingFaceH4/aime_2024": HFDatasetSpec(
+        key="HuggingFaceH4/aime_2024",
+        repo_id="HuggingFaceH4/aime_2024",
+        default_config=None,
+        default_split="train",
+        question_fields=("problem",),
+        answer_fields=("answer",),
+        optional=True,
+        provenance_note="Single-year AIME 2024 slice; for broader AIME coverage see AI-MO/aimo-validation-aime (not wired here).",
     ),
     "livecodebench/code_generation_lite": HFDatasetSpec(
         key="livecodebench/code_generation_lite",
@@ -64,7 +95,21 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         question_fields=("question_content", "prompt", "question"),
         answer_fields=("starter_code", "solution", "answer"),
         optional=True,
+        provenance_note=None,
     ),
+}
+
+# Alternate names / paper shorthand -> canonical registry key
+DATASET_KEY_ALIASES: dict[str, str] = {
+    "hendrycks/math": "hendrycks/competition_math",
+    "math": "hendrycks/competition_math",
+    "MATH": "hendrycks/competition_math",
+    "gpqa_diamond": "Idavidrein/gpqa",
+    "gpqa": "Idavidrein/gpqa",
+    "olympiadbench": "Hothan/OlympiadBench",
+    "olympiadbench_thudm": "Hothan/OlympiadBench",
+    "aime": "HuggingFaceH4/aime_2024",
+    "aime_2024": "HuggingFaceH4/aime_2024",
 }
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -100,7 +145,15 @@ def hf_token_presence() -> dict[str, bool]:
     }
 
 
+def _resolve_alias(name: str) -> str:
+    for k, v in DATASET_KEY_ALIASES.items():
+        if k.lower() == name.strip().lower():
+            return v
+    return name.strip()
+
+
 def resolve_dataset_spec(dataset_name: str) -> HFDatasetSpec:
+    dataset_name = _resolve_alias(dataset_name)
     if dataset_name in HF_DATASET_SPECS:
         return HF_DATASET_SPECS[dataset_name]
     lower_map = {k.lower(): v for k, v in HF_DATASET_SPECS.items()}
@@ -259,11 +312,15 @@ def sample_hf_examples(
     for idx, row in enumerate(selected):
         question = _pick_first_present(row, spec.question_fields)
         answer = _pick_first_present(row, spec.answer_fields)
-        records.append(
-            {
-                "example_id": f"{spec.key.replace('/', '_')}_{idx}",
-                "question": question,
-                "answer": answer,
-            }
-        )
+        rec: dict[str, str] = {
+            "example_id": f"{spec.key.replace('/', '_')}_{idx}",
+            "question": question,
+            "answer": answer,
+        }
+        if spec.key == "Idavidrein/gpqa":
+            for k in ("choices", "Choices"):
+                if k in row and row[k] is not None:
+                    rec["choices"] = str(row[k])
+                    break
+        records.append(rec)
     return records

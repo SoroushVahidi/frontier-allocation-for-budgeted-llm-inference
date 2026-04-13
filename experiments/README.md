@@ -1,6 +1,6 @@
 # Experiments
 
-This directory contains experiment implementation code plus lightweight result notes.
+This directory contains experiment implementation code plus lightweight result notes. Large result trees belong under **`outputs/`** (gitignored).
 
 ## What is actually here (current state)
 
@@ -30,4 +30,4 @@ Result/diagnostic notes:
 
 - Do not commit raw model outputs or large data files.
 - Prefer running through scripts in `scripts/` and configs in `configs/`.
-- Output directories are intentionally outside this folder (`output/` and `outputs/`).
+- Write run artifacts under **`outputs/`** only (legacy singular `output/` is deprecated and gitignored).

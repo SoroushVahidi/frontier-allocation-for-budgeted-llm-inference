@@ -4,11 +4,13 @@ This guide describes a conservative, reproducible access workflow for the curren
 
 ## Hugging Face datasets
 
-Primary Hugging Face datasets in scope (wired in code):
+Primary Hugging Face datasets in scope (wired in `experiments/hf_datasets.py`):
 - `openai/gsm8k`
-- `EleutherAI/hendrycks_math`
-- `Idavidrein/gpqa` (gated)
-- `Hothan/OlympiadBench`
+- `hendrycks/competition_math` (canonical MATH; aliases: `math`, `MATH`, `hendrycks/math`)
+- `EleutherAI/hendrycks_math` (MATH mirror)
+- `Idavidrein/gpqa` (config `gpqa_diamond`; gated; aliases: `gpqa`, `gpqa_diamond`)
+- `HuggingFaceH4/aime_2024` (AIME 2024 slice; aliases: `aime`, `aime_2024`)
+- `Hothan/OlympiadBench` (OlympiadBench mirror; `THUDM/OlympiadBench` Hub id not verified)
 - `livecodebench/code_generation_lite` (optional / secondary)
 
 ### Practical setup notes
@@ -24,6 +26,12 @@ Primary Hugging Face datasets in scope (wired in code):
 ```bash
 # Verify access (writes JSON/CSV/MD summary only)
 python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset_access
+
+# One-example smoke per dataset key (writes JSON summary only; no raw data in git)
+python scripts/dataset_smoke_sample.py --output-dir outputs/dataset_smoke
+
+# Paper integration status report (JSON + Markdown under outputs/)
+python scripts/generate_dataset_integration_report.py
 
 # Pilot loader config can choose HF source directly
 python scripts/run_pilot_gsm8k.py --config configs/pilot_gsm8k.yaml
@@ -46,8 +54,8 @@ From `python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset
 
 ## GitHub-hosted datasets / benchmark repos
 
-GitHub-hosted resources in current scope:
-- NaturalPlan: https://github.com/google-deepmind/natural-plan
+GitHub-hosted resources in current scope (no HF loader in-repo; no raw data committed):
+- NaturalPlan: https://github.com/google-deepmind/natural-plan — **documentation-only** in this repo; clone upstream and pin a commit for experiments.
 - LiveCodeBench (extended/optional): https://github.com/LiveCodeBench/LiveCodeBench
 
 Practical notes:
@@ -69,8 +77,7 @@ Practical notes:
   - **Exact-match style** (common for GSM8K/MATH/AIME-like setups)
   - **Execution-based** (relevant for coding benchmarks like LiveCodeBench)
 - Track benchmark freshness and contamination risk, especially for coding or continuously updated benchmarks.
-- For AIME, canonical sourcing can vary by year and pipeline.
-  - **TODO:** standardize the canonical AIME source/version policy for this repository before reporting headline numbers.
+- For AIME, this repository wires **`HuggingFaceH4/aime_2024`** as a concrete 2024 slice; broader AIME unions require a separate policy and citation.
 - Store only small metadata/manifests in-repo; keep raw data external.
 - Never commit raw downloaded dataset files into git.
 

@@ -7,8 +7,10 @@ import json
 import random
 import re
 import time
-from typing import Optional
+from typing import Any, Optional
 from urllib import error, request
+
+from experiments.code_sandbox import run_restricted_python
 
 
 @dataclass
@@ -96,6 +98,33 @@ class SimulatedBranchGenerator:
             return str(value + self.rng.choice([-3, -2, -1, 1, 2, 3]))
         except ValueError:
             return f"wrong_{self.rng.randint(0, 999)}"
+
+    def generate_program_of_thought_answer(self, question: str) -> dict[str, Any]:
+        """PAL/PoT-style: synthesize trivial code and execute in the local sandbox."""
+        nums = [int(x) for x in re.findall(r"\d+", question)]
+        if len(nums) >= 2:
+            code = f"print({nums[0]} + {nums[1]})"
+        elif len(nums) == 1:
+            code = f"print({nums[0]})"
+        else:
+            code = "print(0)"
+        exec_out = run_restricted_python(code, timeout_seconds=1.0)
+        ans = self._extract_last_numeric(exec_out["stdout"])
+        return {
+            "ok": exec_out["exception"] is None,
+            "python_code": code,
+            "stdout": exec_out["stdout"],
+            "stderr": exec_out["stderr"],
+            "exception": exec_out["exception"],
+            "prediction": ans,
+            "suitable": True,
+            "cost_units": {"generation": 1, "execution": 1},
+        }
+
+    @staticmethod
+    def _extract_last_numeric(text: str) -> str | None:
+        nums = re.findall(r"[-+]?\d+(?:\.\d+)?", text.replace(",", ""))
+        return nums[-1] if nums else None
 
 
 class APIBranchGenerator:
@@ -368,3 +397,46 @@ class APIBranchGenerator:
             f"Reasoning path:\n{prior}\n\n"
             f"Current predicted answer (if any): {branch.predicted_answer or ''}\n"
         )
+
+    def generate_program_of_thought_answer(self, question: str) -> dict[str, Any]:
+        """One-shot code generation + sandbox execution (PAL/PoT-style), separate from expand/verify."""
+        prompt = (
+            "Solve the question by writing short Python code (standard library only, no input(), no network). "
+            "Return strict JSON with keys: python_code (string), explanation (one short sentence). "
+            "python_code must print the final numeric answer as the only output or as the last printed line.\n\n"
+            f"Question:\n{question}\n"
+        )
+        payload = {
+            "model": self.model,
+            "input": prompt,
+            "max_output_tokens": max(256, self.max_tokens),
+            "text": {"format": {"type": "json_object"}},
+            "temperature": min(0.3, self.temperature),
+        }
+        text = self._call_api(payload, prompt=prompt)
+        data = self._safe_json(text)
+        code = str(data.get("python_code", "")).strip()
+        if not code:
+            return {
+                "ok": False,
+                "python_code": "",
+                "stdout": "",
+                "stderr": "",
+                "exception": "missing_python_code",
+                "prediction": None,
+                "suitable": False,
+                "cost_units": {"generation": 1, "execution": 0},
+            }
+        exec_out = run_restricted_python(code, timeout_seconds=2.0)
+        pred = self._extract_last_number(exec_out["stdout"]) if exec_out["stdout"] else None
+        ok = exec_out["exception"] is None and bool(pred)
+        return {
+            "ok": ok,
+            "python_code": code,
+            "stdout": exec_out["stdout"],
+            "stderr": exec_out["stderr"],
+            "exception": exec_out["exception"],
+            "prediction": pred,
+            "suitable": True,
+            "cost_units": {"generation": 1, "execution": 1},
+        }

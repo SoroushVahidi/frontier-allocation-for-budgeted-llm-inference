@@ -16,9 +16,11 @@ This is an early-stage research repository. Contributions and collaboration are 
 
 5. **No fake results**: Do not commit placeholder or fabricated experimental results. Use `TODO` markers or notes instead.
 
-6. **No large binary files**: Do not commit model weights, large datasets, or raw outputs. Use `.gitignore` and external storage.
+6. **No large binary files**: Do not commit model weights, large datasets, or raw outputs. Use `.gitignore` and external storage. Run artifacts belong under **`outputs/`** (ignored); the legacy **`output/`** tree is also ignored—do not re-add it to version control.
 
-7. **Documentation first**: When adding a new experiment or theory direction, start with a markdown note before writing code.
+7. **Secrets**: Never commit `.env`, tokens, or credential files. Verification scripts should only write summaries under `outputs/`.
+
+8. **Documentation first**: When adding a new experiment or theory direction, start with a markdown note before writing code.
 
 ---
 

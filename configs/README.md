@@ -1,42 +1,19 @@
 # Configs
 
-This directory contains configuration files for experiments.
+YAML and JSON configuration for experiments and tooling.
 
-> **Placeholder — configs will be added as experiments are implemented.**
+## Current files
 
----
+| File | Purpose |
+|------|---------|
+| [`pilot_gsm8k.yaml`](pilot_gsm8k.yaml) | Default GSM8K pilot (`scripts/run_pilot_gsm8k.py`) |
+| [`external_baselines_registry.json`](external_baselines_registry.json) | Machine-readable external baseline URLs and status (no vendored code) |
 
-## Planned Structure
+## Conventions
 
-Experiment configurations will be stored as YAML files, one per experiment or experiment group.
+- Prefer **`outputs/`** for all run artifacts (gitignored except `.gitkeep`). The legacy singular `output/` path is deprecated and ignored by git.
+- Keep configs small and reproducible; document uncertain parameters in the matching `docs/` or `experiments/` note rather than in comments alone.
 
-```
-configs/
-├── README.md               # This file
-├── defaults.yaml           # Shared default parameters
-├── gsm8k_baselines.yaml    # GSM8K baseline experiments
-├── gsm8k_adaptive.yaml     # GSM8K adaptive allocation experiments
-└── math_adaptive.yaml      # MATH dataset experiments
-```
+## Planned (optional)
 
----
-
-## Configuration Format (Planned)
-
-Each config file will specify:
-
-- `model`: Model name or path.
-- `benchmark`: Dataset name and split.
-- `budget`: Total inference budget (tokens or calls).
-- `strategy`: Allocation strategy name.
-- `strategy_params`: Strategy-specific hyperparameters.
-- `seed`: Random seed(s).
-- `output_dir`: Where to save results.
-
----
-
-## Notes
-
-- Configs should be self-contained and reproducible.
-- Use `configs/defaults.yaml` for shared parameters; override in per-experiment files.
-- All configs should be tracked in version control.
+Shared defaults and per-benchmark YAML can be added as experiments stabilize—for example `defaults.yaml`, `gsm8k_baselines.yaml`, and dataset-specific overrides.

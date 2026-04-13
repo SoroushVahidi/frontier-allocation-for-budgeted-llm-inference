@@ -12,8 +12,11 @@ This folder is reserved for dataset access instructions, manifests, and controll
 
 ## Current dataset access status (working plan)
 
-- Public (expected): GSM8K, MATH, AIME (source-path verification pending), OlympiadBench, NaturalPlan, LiveCodeBench.
-- May require approval/terms acceptance: GPQA Diamond.
+- **Wired in code (`experiments/hf_datasets.py`):** GSM8K, MATH (`hendrycks/competition_math` + `EleutherAI/hendrycks_math`), GPQA Diamond, AIME 2024 card (`HuggingFaceH4/aime_2024`), OlympiadBench (`Hothan/OlympiadBench`), optional LiveCodeBench.
+- **Documentation-only (no HF loader):** NaturalPlan — use upstream GitHub per license; pin commit; do not commit raw data.
+- May require approval/terms acceptance: GPQA Diamond (HF gated when applicable).
+
+See also: `docs/main_datasets.md`, `docs/datasets_access.md`, and `python scripts/generate_dataset_integration_report.py` for a generated status report under `outputs/` (gitignored by default).
 
 ## TODO
 

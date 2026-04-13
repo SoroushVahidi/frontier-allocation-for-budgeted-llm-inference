@@ -19,10 +19,18 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from experiments.branching import APIBranchGenerator, SimulatedBranchGenerator
-from experiments.controllers import AdaptiveController, BeamController, BestOfNController, GreedyController
+from experiments.controllers import (
+    AdaptiveController,
+    BeamController,
+    BestOfNController,
+    GreedyController,
+    ProgramOfThoughtController,
+    VerifierGuidedSearchController,
+)
 from experiments.data import PilotExample, extract_final_answer
 from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
 from experiments.scoring import ScoreConfig, SimpleBranchScorer
+from experiments.verifiers import LLMVerifyProxyVerifier, SimulatedScorerVerifier
 
 
 def parse_args() -> argparse.Namespace:
@@ -43,6 +51,18 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-output-tokens", type=int, default=180)
     p.add_argument("--timeout-seconds", type=int, default=45)
     p.add_argument("--output-dir", default="outputs/cross_strategy_frontier_allocation_controller")
+    p.add_argument(
+        "--vgs-candidates",
+        type=int,
+        default=3,
+        help="Candidates for verifier_guided_search (best-of-N with verifier scoring).",
+    )
+    p.add_argument(
+        "--vgs-min-expansions",
+        type=int,
+        default=1,
+        help="Minimum expand steps per candidate before verifier scoring (anti-collapse).",
+    )
     return p.parse_args()
 
 
@@ -95,7 +115,13 @@ def _generator_factory(args: argparse.Namespace, rng: random.Random) -> Callable
     return factory
 
 
-def _strategy_specs(generator_factory: Callable[[], Any], budget: int, adaptive_min_expand_grid: list[int]) -> dict[str, Any]:
+def _strategy_specs(
+    generator_factory: Callable[[], Any],
+    budget: int,
+    adaptive_min_expand_grid: list[int],
+    rng: random.Random,
+    args: argparse.Namespace,
+) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
     specs: dict[str, Any] = {
         "reasoning_greedy": GreedyController(generator_factory(), scorer, budget),
@@ -114,6 +140,27 @@ def _strategy_specs(generator_factory: Callable[[], Any], budget: int, adaptive_
             min_expansions_before_prune=min_expand,
             method_name=f"adaptive_min_expand_{min_expand}",
         )
+
+    if args.use_openai_api:
+        verifier = LLMVerifyProxyVerifier(generator_factory())
+    else:
+        verifier = SimulatedScorerVerifier(rng)
+
+    specs["verifier_guided_search"] = VerifierGuidedSearchController(
+        generator_factory(),
+        scorer,
+        budget,
+        n_candidates=min(args.vgs_candidates, max(1, budget // 2)),
+        verifier=verifier,
+        min_expansions_per_candidate=args.vgs_min_expansions,
+        method_name="verifier_guided_search",
+    )
+    specs["program_of_thought"] = ProgramOfThoughtController(
+        generator_factory(),
+        scorer,
+        budget,
+        method_name="program_of_thought",
+    )
     return specs
 
 
@@ -131,6 +178,7 @@ def _evaluate_strategies(examples: list[PilotExample], strategies: dict[str, Any
                 "expansions": r.expansions,
                 "verifications": r.verifications,
                 "budget_exhausted": r.budget_exhausted,
+                "metadata": r.metadata,
             }
             rows.append(row)
             by_strategy[name].append(row)
@@ -177,14 +225,17 @@ def main() -> None:
         "use_openai_api": args.use_openai_api,
         "openai_model": args.openai_model,
         "openai_api_key_present": bool(os.getenv("OPENAI_API_KEY")),
+        "vgs_candidates": args.vgs_candidates,
+        "vgs_min_expansions": args.vgs_min_expansions,
     }
     (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     strategy_rows: list[dict[str, Any]] = []
     selector_rows: list[dict[str, Any]] = []
+    per_example_eval_rows: list[dict[str, Any]] = []
 
     for budget in budgets:
-        calib_strategies = _strategy_specs(_generator_factory(args, rng), budget, adaptive_grid)
+        calib_strategies = _strategy_specs(_generator_factory(args, rng), budget, adaptive_grid, rng, args)
         calib_metrics, _ = _evaluate_strategies(calib_examples, calib_strategies)
 
         feasible = [s for s, m in calib_metrics.items() if m["avg_actions"] <= float(budget)]
@@ -192,8 +243,10 @@ def main() -> None:
             calib_metrics, key=lambda s: calib_metrics[s]["accuracy"]
         )
 
-        eval_strategies = _strategy_specs(_generator_factory(args, rng), budget, adaptive_grid)
+        eval_strategies = _strategy_specs(_generator_factory(args, rng), budget, adaptive_grid, rng, args)
         eval_metrics, eval_rows = _evaluate_strategies(eval_examples, eval_strategies)
+        for row in eval_rows:
+            per_example_eval_rows.append({**row, "budget": budget, "split_name": "eval"})
 
         # Oracle upper bound over the available strategy frontier on eval split.
         eval_by_example: dict[str, list[dict[str, Any]]] = {}
@@ -260,6 +313,10 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(selector_rows)
 
+    with (run_dir / "per_example_eval.jsonl").open("w", encoding="utf-8") as f:
+        for row in per_example_eval_rows:
+            f.write(json.dumps(row, default=str) + "\n")
+
     note_lines = [
         "# Cross-strategy frontier allocation note",
         "",
@@ -270,6 +327,8 @@ def main() -> None:
         "- self_consistency_3 (BestOfNController with n=3)",
         "- reasoning_beam2 (BeamController width=2)",
         f"- adaptive_min_expand_k (AdaptiveController variants for k in {adaptive_grid})",
+        "- verifier_guided_search (VerifierGuidedSearchController: expand candidates, verifier-ranked selection)",
+        "- program_of_thought (ProgramOfThoughtController: code generation + sandbox execution)",
         "",
         "## Budgeted selector results",
     ]

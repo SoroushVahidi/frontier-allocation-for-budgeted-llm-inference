@@ -1,0 +1,19 @@
+# Scripts
+
+Entry points for pilots, evaluation, and maintenance. All write ephemeral results under **`outputs/`** unless overridden.
+
+| Script | Purpose |
+|--------|---------|
+| `run_pilot_gsm8k.py` | GSM8K pilot from `configs/pilot_gsm8k.yaml` |
+| `evaluate_pilot_gsm8k.py` | Summarize a pilot run directory |
+| `run_real_model_fixed_budget_pilot.py` | Real-API fixed-budget pilot (OpenAI / Gemini / optional Groq) |
+| `run_cross_strategy_frontier_allocation.py` | Cross-controller frontier allocation track |
+| `smoke_frontier_methods.py` | Simulator-only smoke for frontier methods |
+| `verify_hf_dataset_access.py` | HF dataset access check → `outputs/hf_dataset_access` (default) |
+| `dataset_smoke_sample.py` | Small dataset smoke samples |
+| `generate_dataset_integration_report.py` | `outputs/dataset_integration_report.{json,md}` |
+| `generate_external_baseline_integration_report.py` | `outputs/external_baseline_integration_report.{json,md}` |
+| `list_external_baselines.py` | Print `configs/external_baselines_registry.json` |
+| `smoke_test.py` | Minimal repo smoke test |
+
+Training and branch-scorer workflows: `build_v3_ranking_dataset.py`, `train_branch_scorer_v3.py`, `evaluate_branch_scorer_controller.py`, `evaluate_branch_scorer_robustness.py`, and shell helpers `run_*.sh` as needed.

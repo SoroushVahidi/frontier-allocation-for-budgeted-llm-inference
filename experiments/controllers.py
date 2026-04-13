@@ -8,6 +8,7 @@ from typing import Any, Protocol
 
 from experiments.branching import BranchState
 from experiments.scoring import SimpleBranchScorer
+from experiments.verifiers import CandidateVerifier
 
 
 class BranchScorer(Protocol):
@@ -301,6 +302,158 @@ class AdaptiveController(BaseController):
             "branch_pruned": branch.is_pruned,
             "predicted_answer": branch.predicted_answer,
         }
+
+
+class VerifierGuidedSearchController(BaseController):
+    """Best-of-N style search with a pluggable verifier score (not majority vote).
+
+    Candidate generation uses the standard expand path per arm; scoring is isolated
+    so PRM-style process verifiers or stronger ORMs can replace the default proxy.
+    """
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        n_candidates: int,
+        verifier: CandidateVerifier,
+        min_expansions_per_candidate: int = 1,
+        method_name: str = "verifier_guided_search",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.n_candidates = max(1, n_candidates)
+        self._verifier = verifier
+        self.min_expansions_per_candidate = max(1, min_expansions_per_candidate)
+        self.method_name = method_name
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        actions = expansions = verifications = 0
+        surviving_trace: list[int] = []
+        if self.max_actions < self.n_candidates:
+            return MethodResult(
+                method=self.method_name,
+                prediction=None,
+                is_correct=False,
+                actions_used=0,
+                expansions=0,
+                verifications=0,
+                avg_surviving_branches=0.0,
+                budget_exhausted=True,
+                metadata={"error": "budget_smaller_than_n_candidates", "n_candidates": self.n_candidates},
+            )
+
+        branches = [self.generator.init_branch(f"vgs_{i}") for i in range(self.n_candidates)]
+
+        verify_reserved = self.n_candidates
+        expand_budget = max(0, self.max_actions - verify_reserved)
+        per_candidate_cap = expand_budget // max(1, self.n_candidates)
+        if expand_budget >= self.n_candidates * self.min_expansions_per_candidate:
+            per_candidate_cap = max(self.min_expansions_per_candidate, per_candidate_cap)
+
+        for branch in branches:
+            if actions >= self.max_actions:
+                break
+            k = 0
+            while actions < self.max_actions and k < per_candidate_cap and not branch.is_done:
+                self.generator.expand(branch, question, gold_answer)
+                actions += 1
+                expansions += 1
+                k += 1
+                surviving_trace.append(self.n_candidates)
+
+        verifier_scores: list[float] = []
+        for branch in branches:
+            if actions >= self.max_actions:
+                verifier_scores.append(float("-inf"))
+                continue
+            score = self._verifier.score(branch, question)
+            verifier_scores.append(float(score))
+            actions += 1
+            verifications += 1
+
+        best_idx = max(range(len(branches)), key=lambda i: verifier_scores[i])
+        best_branch = branches[best_idx]
+        prediction = best_branch.predicted_answer
+
+        cost_proxy = {
+            "candidate_generations": expansions,
+            "verifier_scoring_calls": verifications,
+            "n_candidates": self.n_candidates,
+            "per_candidate_expansion_cap": per_candidate_cap,
+        }
+
+        return MethodResult(
+            method=self.method_name,
+            prediction=prediction,
+            is_correct=self._answers_match(prediction, gold_answer),
+            actions_used=actions,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)) if surviving_trace else float(self.n_candidates),
+            budget_exhausted=actions >= self.max_actions,
+            metadata={
+                "verifier_scores": [round(s, 6) for s in verifier_scores],
+                "selected_candidate_index": best_idx,
+                "cost_proxy": cost_proxy,
+                "anti_collapse_min_expansions_per_candidate": self.min_expansions_per_candidate,
+            },
+        )
+
+
+class ProgramOfThoughtController(BaseController):
+    """PAL/PoT-style: one-shot code generation + local sandbox execution."""
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        method_name: str = "program_of_thought",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.method_name = method_name
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        if not hasattr(self.generator, "generate_program_of_thought_answer"):
+            return MethodResult(
+                method=self.method_name,
+                prediction=None,
+                is_correct=False,
+                actions_used=0,
+                expansions=0,
+                verifications=0,
+                avg_surviving_branches=0.0,
+                budget_exhausted=True,
+                metadata={"error": "generator_missing_generate_program_of_thought_answer"},
+            )
+
+        gen_fn = getattr(self.generator, "generate_program_of_thought_answer")
+        out = gen_fn(question)
+        prediction = out.get("prediction") if isinstance(out, dict) else None
+        pred_str = None if prediction is None else str(prediction)
+
+        cu = out.get("cost_units") if isinstance(out, dict) else {}
+        gen_units = int(cu.get("generation", 1)) if isinstance(cu, dict) else 1
+        exec_units = int(cu.get("execution", 1)) if isinstance(cu, dict) else 1
+        total_units = gen_units + exec_units
+        actions_used = min(self.max_actions, total_units)
+        exhausted = self.max_actions < total_units
+
+        return MethodResult(
+            method=self.method_name,
+            prediction=pred_str,
+            is_correct=self._answers_match(pred_str, gold_answer),
+            actions_used=actions_used,
+            expansions=1,
+            verifications=0,
+            avg_surviving_branches=1.0,
+            budget_exhausted=exhausted,
+            metadata={
+                "pot_output": out,
+                "cost_proxy": {"code_generation": gen_units, "sandbox_execution": exec_units},
+            },
+        )
 
 
 def _normalize_answer(text: str) -> str:

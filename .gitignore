@@ -34,6 +34,9 @@ htmlcov/
 outputs/*
 !outputs/.gitkeep
 
+# Legacy singular output directory (prefer outputs/ for all new runs)
+output/
+
 # OS / editor junk
 .DS_Store
 Thumbs.db

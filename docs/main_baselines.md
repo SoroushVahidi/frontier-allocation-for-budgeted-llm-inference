@@ -58,6 +58,16 @@ These baselines cover key neighboring approaches to adaptive test-time compute a
 
 These four baselines form a strong comparison set because they collectively span (i) reward-guided search, (ii) step-level verifier learning, (iii) policy-based search control, and (iv) automated verifier-guided fixed-budget reasoning. This coverage aligns well with the nearest methodological neighbors to adaptive test-time compute allocation while preserving a clear boundary around methods that do not make marginal budget allocation itself the primary optimization objective.
 
+## Extended external index (new paper track)
+
+For **compute-optimal test-time scaling**, **solve-vs-verify budget trade-offs**, **routing/cascading**, **Best-of-N / MoB-style selection**, and optional community tree-search references, see the audited link-only registry:
+
+- **`external/README.md`** — master table (sections A–C) + per-baseline README paths
+- **`configs/external_baselines_registry.json`** — machine-readable clone URLs (no vendored code)
+- **`python scripts/generate_external_baseline_integration_report.py`** → `outputs/external_baseline_integration_report.{json,md}`
+
+This extends the comparison set beyond the original four **without** implying that every linked repository is author-official for every cited paper; each `external/<name>/README.md` states license and uncertainty explicitly.
+
 ## Working novelty boundary
 
 - Our intended method treats marginal compute allocation across intermediate reasoning states as the central optimization target, rather than only improving search heuristics or verifier quality.

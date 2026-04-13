@@ -13,12 +13,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from experiments.hf_datasets import HF_DATASET_SPECS, check_hf_dataset_access, hf_token_presence
+from experiments.hf_datasets import check_hf_dataset_access, hf_token_presence, resolve_dataset_spec
 
 DEFAULT_DATASETS = [
     "openai/gsm8k",
+    "hendrycks/competition_math",
     "EleutherAI/hendrycks_math",
     "Idavidrein/gpqa",
+    "HuggingFaceH4/aime_2024",
     "Hothan/OlympiadBench",
     "livecodebench/code_generation_lite",
 ]
@@ -116,7 +118,10 @@ def main() -> None:
         "Checked datasets:",
     ]
     for name in datasets:
-        spec = HF_DATASET_SPECS.get(name)
+        try:
+            spec = resolve_dataset_spec(name)
+        except KeyError:
+            spec = None
         gated = spec.gated if spec else False
         optional = spec.optional if spec else False
         tags = []
