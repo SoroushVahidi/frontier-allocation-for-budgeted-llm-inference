@@ -33,6 +33,9 @@ htmlcov/
 # Experiment outputs (tracked separately or ignored)
 outputs/*
 !outputs/.gitkeep
+# Formal comparative frontier audits (CSV/MD only; no secrets)
+!outputs/comparative_frontier_audit/
+!outputs/comparative_frontier_audit/**/*
 
 # Legacy singular output directory (prefer outputs/ for all new runs)
 output/

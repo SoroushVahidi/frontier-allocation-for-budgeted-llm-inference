@@ -25,6 +25,18 @@ from experiments.scoring import ScoreConfig, SimpleBranchScorer
 from experiments.verifiers import LLMVerifyProxyVerifier, SimulatedScorerVerifier
 
 
+def resolve_api_key_for_provider(provider: str) -> str | None:
+    """Return API key from environment for OpenAI / Groq / Gemini-style backends."""
+    p = provider.strip().lower()
+    if p == "openai":
+        return os.getenv("OPENAI_API_KEY")
+    if p == "groq":
+        return os.getenv("GROQ_API_KEY")
+    if p == "gemini":
+        return os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    return None
+
+
 def load_pilot_examples(dataset_name: str, subset_size: int, seed: int) -> list[PilotExample]:
     spec = resolve_dataset_spec(dataset_name)
     rows = sample_hf_examples(
@@ -51,13 +63,15 @@ def generator_factory_for_mode(
     temperature: float,
     max_output_tokens: int,
     timeout_seconds: int,
+    api_provider: str | None = None,
 ) -> Callable[[], Any]:
     if use_openai_api:
-        key = os.getenv("OPENAI_API_KEY")
+        provider = (api_provider or "openai").strip().lower()
+        key = resolve_api_key_for_provider(provider)
 
         def factory() -> APIBranchGenerator:
             return APIBranchGenerator(
-                provider="openai",
+                provider=provider,
                 api_key=key,
                 model=openai_model,
                 temperature=temperature,

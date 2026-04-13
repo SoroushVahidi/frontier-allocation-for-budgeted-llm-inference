@@ -1,0 +1,9 @@
+dataset,budget,method,n_eval_examples,accuracy,avg_actions,avg_expansions,avg_verifications,budget_exhaustion_rate,oracle_accuracy,gap_to_oracle
+openai/gsm8k,8,reasoning_greedy,4,0.75,4.5,4.5,0.0,0.25,0.75,0.0
+openai/gsm8k,8,self_consistency_3,4,0.75,8.0,6.75,1.25,1.0,0.75,0.0
+openai/gsm8k,8,reasoning_beam2,4,0.75,6.5,6.5,0.0,0.5,0.75,0.0
+openai/gsm8k,8,adaptive_min_expand_0,4,0.0,1.0,0.0,1.0,0.0,0.75,0.75
+openai/gsm8k,8,adaptive_min_expand_1,4,0.5,7.75,6.75,1.0,0.5,0.75,0.25
+openai/gsm8k,8,adaptive_min_expand_2,4,0.5,7.5,7.5,0.0,0.5,0.75,0.25
+openai/gsm8k,8,verifier_guided_search,4,0.25,6.0,3.0,3.0,0.0,0.75,0.5
+openai/gsm8k,8,program_of_thought,4,0.75,1.75,1.0,0.0,0.0,0.75,0.0

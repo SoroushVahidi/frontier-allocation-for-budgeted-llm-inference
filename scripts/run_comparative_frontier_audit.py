@@ -33,6 +33,7 @@ from experiments.frontier_matrix_core import (
     evaluate_strategies_on_examples,
     generator_factory_for_mode,
     load_pilot_examples,
+    resolve_api_key_for_provider,
 )
 
 # Runnable in-repo simulator/API controllers only (see main_drawbacks_report for external baselines).
@@ -120,6 +121,7 @@ def run_dataset_audit(
     vgs_candidates: int,
     vgs_min_expansions: int,
     rng: random.Random,
+    api_provider: str | None = None,
 ) -> dict[str, Any]:
     examples = load_pilot_examples(dataset, subset_size, seed)
     if eval_only:
@@ -137,6 +139,7 @@ def run_dataset_audit(
         temperature,
         max_output_tokens,
         timeout_seconds,
+        api_provider=api_provider,
     )
 
     method_rows: list[dict[str, Any]] = []
@@ -278,6 +281,13 @@ def _generate_drawbacks_report(
     primary: str,
     failed: list[dict[str, str]],
 ) -> str:
+    api_back = str(manifest.get("api_backend", "simulator"))
+    model = str(manifest.get("model", ""))
+    backend_line = (
+        f"- **Backend**: **real API** — `{api_back}` model `{model}` (expand/verify/PoT share this generator)."
+        if api_back != "simulator"
+        else "- **Backend**: **simulator** — `SimulatedBranchGenerator` (process proxy, not LLM SOTA)."
+    )
     lines = [
         f"# Main drawbacks report — comparative frontier audit (`{run_id}`)",
         "",
@@ -285,7 +295,7 @@ def _generate_drawbacks_report(
         "",
         "- **New-paper track**: matched-budget comparison of in-repo controller families on the same eval slices and budgets.",
         f"- **Primary “ours” method** (proposed adaptive anti-collapse allocator): `{primary}`.",
-        "- **Simulator default**: `SimulatedBranchGenerator` — metrics reflect stochastic process proxies, not LLM benchmark SOTA.",
+        backend_line,
         "- **External baselines** (cascade routing, MoB, paper-linked codebases): **not runnable inside this repository**; see `run_manifest.json` → `external_baselines_not_integrated`.",
         "",
         "## 1) Where the primary method wins (accuracy vs listed baselines)",
@@ -364,13 +374,23 @@ def _generate_drawbacks_report(
     if ex:
         lines.append(f"- Mean **budget_exhaustion_rate** for `{primary}`: **{statistics.mean(ex):.4f}**.")
 
+    vgs_line = (
+        "- **verifier_guided_search**: uses **LLM verify** as ranking proxy on the same backend — meaningful for routing test-time compute, but still **not** a trained PRM."
+        if api_back != "simulator"
+        else "- **verifier_guided_search**: uses `SimulatedScorerVerifier` in simulation (or API verify proxy). This is a **ranking proxy**, not a trained PRM."
+    )
+    pot_line = (
+        "- **program_of_thought**: uses **codegen + sandbox** on the same API path; quality depends on model and JSON fidelity (see `method_metrics.csv`)."
+        if api_back != "simulator"
+        else "- **program_of_thought**: simulator uses trivial numeric code from regex; many items get **~0 accuracy** in sim — **not** a fair PoT benchmark."
+    )
     lines.extend(
         [
             "",
             "## 5) Verifier-guided search & program-of-thought (maturity)",
             "",
-            "- **verifier_guided_search**: uses `SimulatedScorerVerifier` in simulation (or API verify proxy). This is a **ranking proxy**, not a trained PRM — fair for allocation mechanics, weak as a verifier SOTA claim.",
-            "- **program_of_thought**: simulator uses trivial numeric code from regex; many items get **~0 accuracy** in sim — **not** a fair PoT benchmark. Use `--use-openai-api` for meaningful PoT comparison.",
+            vgs_line,
+            pot_line,
             "",
             "## 6) Inferred drawbacks (evidence-based — check CSVs)",
             "",
@@ -383,8 +403,9 @@ def _generate_drawbacks_report(
             "**Gap to oracle**: Primary method leaves substantial per-example headroom vs the best-of-frontier upper bound — allocation may be **suboptimal vs an oracle meta-policy** (see `oracle_gap_summary.csv`)."
         )
     if comparison_rows and losses > wins:
+        rank_ctx = "this API-backed run" if api_back != "simulator" else "the simulator"
         drawbacks.append(
-            "**Head-to-head**: Primary method loses more cells than it wins against the listed baselines — **marginal ranking under the simulator** may favor simpler families (beam / self-consistency / VGS) in several regimes."
+            f"**Head-to-head**: Primary method loses more cells than it wins against the listed baselines — **marginal ranking in {rank_ctx}** may favor simpler families (beam / self-consistency / VGS) in several regimes."
         )
     # Adaptive ablation: compare gaps for 0 vs 1 vs 2
     adp = {0: [], 1: [], 2: []}
@@ -424,7 +445,7 @@ def _generate_drawbacks_report(
             "## Scale honesty",
             "",
             f"- Subset size / budgets / datasets: see `run_manifest.json`.",
-            "- This audit is **pilot-scale** unless you increase `--subset-size` and run API-backed experiments with budget/time.",
+            "- Even with a real API, small `--subset-size` and few budgets yield **pilot-scale** statistical power; scale up for publication-grade means.",
             "",
         ]
     )
@@ -446,8 +467,14 @@ def parse_args() -> argparse.Namespace:
         help="Reserve a calibration fraction and write selector_audit.csv; otherwise all examples are eval (strict matched-budget comparison).",
     )
     p.add_argument("--calibration-ratio", type=float, default=0.5)
-    p.add_argument("--use-openai-api", action="store_true")
-    p.add_argument("--openai-model", default="gpt-4.1-mini")
+    p.add_argument(
+        "--api-backend",
+        choices=("simulator", "openai", "groq", "gemini"),
+        default="simulator",
+        help="Remote LLM for all controller families (single provider per run). Loads .env for keys.",
+    )
+    p.add_argument("--use-openai-api", action="store_true", help="Shortcut for --api-backend openai")
+    p.add_argument("--model", "--openai-model", dest="model", default="gpt-4.1-mini", help="Model id for the selected API backend")
     p.add_argument("--temperature", type=float, default=0.2)
     p.add_argument("--max-output-tokens", type=int, default=180)
     p.add_argument("--timeout-seconds", type=int, default=45)
@@ -457,8 +484,30 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+def _load_dotenv_repo() -> None:
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(REPO_ROOT / ".env")
+    except ImportError:
+        pass
+
+
 def main() -> None:
+    _load_dotenv_repo()
     args = parse_args()
+    if args.use_openai_api:
+        args.api_backend = "openai"
+    use_remote_api = args.api_backend != "simulator"
+    if use_remote_api:
+        key = resolve_api_key_for_provider(args.api_backend)
+        if not key:
+            print(
+                f"ERROR: No API key in environment for backend `{args.api_backend}` "
+                f"(after loading {REPO_ROOT / '.env'}). Set the appropriate env var and retry.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
     budgets = _parse_budgets(args.budgets)
     adaptive_grid = _parse_int_list(args.adaptive_min_expand_grid)
     datasets = _parse_datasets(args.datasets)
@@ -471,6 +520,8 @@ def main() -> None:
     out_dir = Path(args.output_dir) / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    api_provider: str | None = None if not use_remote_api else args.api_backend
+
     all_method: list[dict[str, Any]] = []
     all_oracle: list[dict[str, Any]] = []
     all_selector: list[dict[str, Any]] = []
@@ -479,6 +530,7 @@ def main() -> None:
     for i, ds in enumerate(datasets):
         ds_seed = args.seed + i * 10007
         rng = random.Random(ds_seed)
+        print(f"[comparative_frontier_audit] dataset={ds} starting...", flush=True)
         try:
             block = run_dataset_audit(
                 ds,
@@ -488,19 +540,22 @@ def main() -> None:
                 calibration_ratio=args.calibration_ratio,
                 eval_only=eval_only,
                 adaptive_grid=adaptive_grid,
-                use_openai_api=args.use_openai_api,
-                openai_model=args.openai_model,
+                use_openai_api=use_remote_api,
+                openai_model=args.model,
                 temperature=args.temperature,
                 max_output_tokens=args.max_output_tokens,
                 timeout_seconds=args.timeout_seconds,
                 vgs_candidates=args.vgs_candidates,
                 vgs_min_expansions=args.vgs_min_expansions,
                 rng=rng,
+                api_provider=api_provider,
             )
         except Exception as exc:  # noqa: BLE001
             failed.append({"dataset": ds, "error": f"{type(exc).__name__}: {exc}", "traceback": traceback.format_exc()})
+            print(f"[comparative_frontier_audit] dataset={ds} FAILED: {exc}", flush=True)
             continue
 
+        print(f"[comparative_frontier_audit] dataset={ds} done ({len(block['method_rows'])} metric rows).", flush=True)
         all_method.extend(block["method_rows"])
         all_oracle.extend(block["oracle_rows"])
         all_selector.extend(block["selector_rows"])
@@ -524,9 +579,15 @@ def main() -> None:
         "budgets": budgets,
         "eval_only": eval_only,
         "calibration_ratio": args.calibration_ratio,
-        "use_openai_api": args.use_openai_api,
-        "openai_api_key_present": bool(os.getenv("OPENAI_API_KEY")),
-        "comparison_principle": "Same eval examples, same budget cap per method, same RNG policy per dataset seed.",
+        "api_backend": args.api_backend,
+        "model": args.model,
+        "use_remote_api": use_remote_api,
+        "keys_available_after_dotenv": {
+            "openai": bool(os.getenv("OPENAI_API_KEY")),
+            "groq": bool(os.getenv("GROQ_API_KEY")),
+            "gemini_or_google": bool(os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")),
+        },
+        "comparison_principle": "Same eval examples, same budget cap per method, same RNG policy per dataset seed; single API provider per run.",
     }
     (out_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 

@@ -50,4 +50,4 @@ Default runs use **`SimulatedBranchGenerator`**. Accuracy is a **process proxy**
 - `outputs/comparative_frontier_audit/20260413T215237Z/` — GSM8K + MATH, subset 64, budgets 6–12 (earlier same config).
 - `outputs/comparative_frontier_audit/20260413T215247Z/` — GSM8K + MATH + GPQA Diamond, subset 48.
 
-`outputs/` is gitignored except `.gitkeep`; re-run the script to regenerate artifacts or archive a run id for the paper.
+`outputs/comparative_frontier_audit/**` is **tracked** in git (CSV/MD/JSON only). For **OpenAI/Groq/Gemini** runs, see [`comparative_frontier_audit_real_model_note.md`](comparative_frontier_audit_real_model_note.md).

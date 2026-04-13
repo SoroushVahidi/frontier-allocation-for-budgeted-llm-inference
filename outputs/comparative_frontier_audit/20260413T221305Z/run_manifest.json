@@ -1,0 +1,68 @@
+{
+  "run_id": "20260413T221305Z",
+  "created_utc": "2026-04-13T22:17:41.308717+00:00",
+  "internal_methods_runnable": [
+    "reasoning_greedy",
+    "self_consistency_3",
+    "reasoning_beam2",
+    "adaptive_min_expand_0",
+    "adaptive_min_expand_1",
+    "adaptive_min_expand_2",
+    "verifier_guided_search",
+    "program_of_thought"
+  ],
+  "primary_method_tagged_ours": "adaptive_min_expand_1",
+  "baselines_compared": [
+    "reasoning_greedy",
+    "self_consistency_3",
+    "reasoning_beam2",
+    "verifier_guided_search",
+    "program_of_thought"
+  ],
+  "adaptive_ablations": [
+    "adaptive_min_expand_0",
+    "adaptive_min_expand_1",
+    "adaptive_min_expand_2"
+  ],
+  "external_baselines_not_integrated": [
+    {
+      "name": "eth-sri/cascade-routing",
+      "note": "Apache-2.0 upstream; not vendored or wrapped\u2014clone separately."
+    },
+    {
+      "name": "nishadsinghi/sc-genrm-scaling (When To Solve / When To Verify)",
+      "note": "Linked from paper; heavy stack; not integrated as a subprocess runner here."
+    },
+    {
+      "name": "RyanLiu112/compute-optimal-tts",
+      "note": "Related MIT repo; not verified as Snell author release; not wired."
+    },
+    {
+      "name": "arakhsha/mob (Majority-of-the-Bests)",
+      "note": "Separate codebase; link-only in external/."
+    }
+  ],
+  "datasets_requested": [
+    "openai/gsm8k"
+  ],
+  "datasets_completed": [
+    "openai/gsm8k"
+  ],
+  "datasets_failed": [],
+  "subset_size": 4,
+  "seed": 42,
+  "budgets": [
+    8
+  ],
+  "eval_only": true,
+  "calibration_ratio": 0.5,
+  "api_backend": "openai",
+  "model": "gpt-4.1-mini",
+  "use_remote_api": true,
+  "keys_available_after_dotenv": {
+    "openai": true,
+    "groq": true,
+    "gemini_or_google": true
+  },
+  "comparison_principle": "Same eval examples, same budget cap per method, same RNG policy per dataset seed; single API provider per run."
+}
