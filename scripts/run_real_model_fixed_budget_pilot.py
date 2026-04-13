@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import random
+import re
 import statistics
 import sys
 from typing import Any
@@ -106,6 +107,122 @@ def _summarize(rows: list[dict[str, Any]]) -> dict[str, float]:
         "avg_surviving_branches": sum(r["avg_surviving_branches"] for r in rows) / n,
         "budget_exhaustion_rate": sum(1 for r in rows if r["budget_exhausted"]) / n,
     }
+
+
+def _action_trace(row: dict[str, Any]) -> list[dict[str, Any]]:
+    metadata = row.get("metadata")
+    if isinstance(metadata, dict):
+        trace = metadata.get("action_trace")
+        if isinstance(trace, list):
+            return [t for t in trace if isinstance(t, dict)]
+    return []
+
+
+def _extract_failure_reason(message: str) -> str:
+    lowered = message.lower()
+    if "401" in lowered or "unauthorized" in lowered or "invalid api key" in lowered:
+        return "auth_error"
+    if "429" in lowered or "rate" in lowered or "quota" in lowered:
+        return "quota_or_rate_limit"
+    if "timeout" in lowered:
+        return "timeout"
+    if "dataset" in lowered:
+        return "dataset_failure"
+    if "http" in lowered:
+        return "http_error_other"
+    return "unknown_error"
+
+
+def _tokenize(text: str | None) -> set[str]:
+    if not text:
+        return set()
+    return set(re.findall(r"[a-z0-9]+", text.lower()))
+
+
+def _row_diagnostics(row: dict[str, Any]) -> dict[str, Any]:
+    trace = _action_trace(row)
+    scores = [float(t.get("score_after", 0.0)) for t in trace if isinstance(t.get("score_after"), (int, float))]
+    branch_ids = [str(t["branch_id"]) for t in trace if "branch_id" in t]
+    unique_branch_ids = set(branch_ids)
+    metadata = row.get("metadata", {})
+    configured_max_branches = 1
+    if isinstance(metadata, dict) and isinstance(metadata.get("max_branches"), int):
+        configured_max_branches = max(1, int(metadata["max_branches"]))
+    diversity = len(unique_branch_ids) / configured_max_branches
+    collapse = len(unique_branch_ids) <= 1 and len(trace) > 0
+    variance = statistics.pvariance(scores) if len(scores) > 1 else 0.0
+    budgets = [int(t.get("remaining_budget", 0)) for t in trace if isinstance(t.get("remaining_budget"), (int, float))]
+    budget_used_over_time = [row["actions_used"] - b for b in budgets] if budgets else []
+    budget_usage_monotonic = all(
+        budget_used_over_time[i] <= budget_used_over_time[i + 1] for i in range(len(budget_used_over_time) - 1)
+    )
+
+    steps = [str(s) for s in metadata.get("steps", []) if isinstance(s, str)] if isinstance(metadata, dict) else []
+    if not steps:
+        steps = [str(t.get("predicted_answer", "")) for t in trace]
+    token_sets = [s for s in (_tokenize(step) for step in steps) if s]
+    jaccards: list[float] = []
+    for i in range(len(token_sets)):
+        for j in range(i + 1, len(token_sets)):
+            inter = token_sets[i] & token_sets[j]
+            union = token_sets[i] | token_sets[j]
+            if union:
+                jaccards.append(len(inter) / len(union))
+    redundancy_proxy = statistics.mean(jaccards) if jaccards else 0.0
+
+    return {
+        "branch_diversity": round(diversity, 4),
+        "branch_collapse": collapse,
+        "branch_score_variance": round(variance, 6),
+        "budget_usage_over_time": budget_used_over_time,
+        "budget_usage_monotonic": budget_usage_monotonic,
+        "semantic_redundancy_proxy": round(redundancy_proxy, 6),
+        "n_trace_events": len(trace),
+        "n_unique_branches_touched": len(unique_branch_ids),
+    }
+
+
+def _collect_score_samples(rows: list[dict[str, Any]]) -> dict[str, dict[str, float]]:
+    provider_scores: dict[str, list[float]] = {}
+    for row in rows:
+        provider = str(row.get("provider", "unknown"))
+        trace = _action_trace(row)
+        for item in trace:
+            val = item.get("score_after")
+            if isinstance(val, (int, float)):
+                provider_scores.setdefault(provider, []).append(float(val))
+    stats: dict[str, dict[str, float]] = {}
+    for provider, values in provider_scores.items():
+        if not values:
+            continue
+        mean = statistics.mean(values)
+        std = statistics.pstdev(values) if len(values) > 1 else 0.0
+        stats[provider] = {"mean": mean, "std": std if std > 1e-8 else 1.0, "n_samples": len(values)}
+    return stats
+
+
+def _attach_calibrated_scores(rows: list[dict[str, Any]], provider_stats: dict[str, dict[str, float]]) -> None:
+    for row in rows:
+        provider = str(row.get("provider", "unknown"))
+        stats = provider_stats.get(provider)
+        trace = _action_trace(row)
+        if not stats or not trace:
+            row["calibration"] = {"provider": provider, "status": "unavailable"}
+            continue
+
+        zscores: list[float] = []
+        for item in trace:
+            val = item.get("score_after")
+            if isinstance(val, (int, float)):
+                zscores.append((float(val) - stats["mean"]) / stats["std"])
+
+        row["calibration"] = {
+            "provider": provider,
+            "status": "ok" if zscores else "no_score_samples",
+            "provider_mean": round(stats["mean"], 6),
+            "provider_std": round(stats["std"], 6),
+            "avg_zscore": round(statistics.mean(zscores), 6) if zscores else None,
+        }
 
 
 def _method_specs(
@@ -275,7 +392,14 @@ def main() -> None:
                 "key_present": key_present,
             }
             if not key_present:
-                summary_rows.append({**combo_meta, "method": "<skipped>", "status": "skipped_missing_key"})
+                summary_rows.append(
+                    {
+                        **combo_meta,
+                        "method": "<skipped>",
+                        "status": "skipped_missing_key",
+                        "failure_reason": f"missing_{provider}_api_key",
+                    }
+                )
                 continue
 
             try:
@@ -287,6 +411,7 @@ def main() -> None:
                         "method": "<dataset_load_error>",
                         "status": "dataset_load_failed",
                         "error": f"{type(exc).__name__}: {exc}",
+                        "failure_reason": _extract_failure_reason(f"{type(exc).__name__}: {exc}"),
                     }
                 )
                 continue
@@ -328,6 +453,7 @@ def main() -> None:
                             "method": method_name,
                             "status": "method_failed",
                             "error": method_error,
+                            "failure_reason": _extract_failure_reason(method_error),
                             "method_notes": method["notes"],
                         }
                     )
@@ -340,12 +466,48 @@ def main() -> None:
                         "method": method_name,
                         "status": "ok",
                         **method_summary,
+                        "failure_reason": "",
                         "method_notes": method["notes"],
                     }
                 )
 
+    for row in detailed_rows:
+        diag = _row_diagnostics(row)
+        row["diagnostics"] = diag
+        meta = row.get("metadata", {})
+        max_branches = meta.get("max_branches") if isinstance(meta, dict) else None
+        row["max_branches"] = max_branches if isinstance(max_branches, int) else None
+
+    calibration_stats = _collect_score_samples(detailed_rows)
+    _attach_calibrated_scores(detailed_rows, calibration_stats)
+
+    for summary_row in summary_rows:
+        if summary_row.get("status") != "ok":
+            continue
+        matched = [
+            r
+            for r in detailed_rows
+            if r.get("provider") == summary_row.get("provider")
+            and r.get("dataset") == summary_row.get("dataset")
+            and r.get("method") == summary_row.get("method")
+            and isinstance(r.get("calibration"), dict)
+            and isinstance(r["calibration"].get("avg_zscore"), (int, float))
+        ]
+        if matched:
+            summary_row["avg_calibrated_zscore"] = round(
+                statistics.mean(float(r["calibration"]["avg_zscore"]) for r in matched), 6
+            )
+
     (run_dir / "results.json").write_text(
-        json.dumps({"manifest": manifest, "summary": summary_rows, "rows": detailed_rows}, indent=2),
+        json.dumps(
+            {
+                "manifest": manifest,
+                "calibration_stats": calibration_stats,
+                "summary": summary_rows,
+                "rows": detailed_rows,
+            },
+            indent=2,
+        ),
         encoding="utf-8",
     )
 
@@ -364,6 +526,8 @@ def main() -> None:
         "avg_verifications",
         "avg_surviving_branches",
         "budget_exhaustion_rate",
+        "avg_calibrated_zscore",
+        "failure_reason",
         "error",
     ]
     with csv_path.open("w", encoding="utf-8", newline="") as f:
@@ -391,7 +555,8 @@ def main() -> None:
             note_lines.append(
                 f"- {row['provider']} | {row['dataset']} | {row['method']}: "
                 f"acc={row['accuracy']:.3f}, avg_actions={row['avg_actions']:.2f}, "
-                f"budget_exhaustion={row['budget_exhaustion_rate']:.2f}"
+                f"budget_exhaustion={row['budget_exhaustion_rate']:.2f}, "
+                f"avg_calibrated_z={row.get('avg_calibrated_zscore', 'n/a')}"
             )
     else:
         note_lines.append("- No successful provider/dataset/method runs were recorded.")
@@ -402,7 +567,7 @@ def main() -> None:
         for row in failed_rows:
             note_lines.append(
                 f"- {row.get('provider')} | {row.get('dataset')} | {row.get('method')}: "
-                f"status={row.get('status')}, error={row.get('error', 'n/a')}"
+                f"status={row.get('status')}, reason={row.get('failure_reason', 'n/a')}, error={row.get('error', 'n/a')}"
             )
 
     if ok_rows:
@@ -413,6 +578,41 @@ def main() -> None:
         )
         if accuracies:
             note_lines.append(f"- Mean method accuracy across successful rows: {statistics.mean(accuracies):.3f}")
+
+    if calibration_stats:
+        note_lines.extend(["", "## Calibration stats (provider-specific mean/std)"])
+        for provider, stats in calibration_stats.items():
+            note_lines.append(
+                f"- {provider}: mean={stats['mean']:.4f}, std={stats['std']:.4f}, n_score_samples={int(stats['n_samples'])}"
+            )
+
+    ranking_groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for row in ok_rows:
+        ranking_groups.setdefault((str(row["provider"]), str(row["dataset"])), []).append(row)
+    if ranking_groups:
+        note_lines.extend(["", "## Ranking comparison (raw accuracy vs calibrated z-score)"])
+        for (provider, dataset), rows in ranking_groups.items():
+            raw_rank = sorted(rows, key=lambda r: (float(r["accuracy"]), -float(r["avg_actions"])), reverse=True)
+            cal_rows = [r for r in rows if isinstance(r.get("avg_calibrated_zscore"), (int, float))]
+            cal_rank = sorted(cal_rows, key=lambda r: float(r["avg_calibrated_zscore"]), reverse=True)
+            raw_top = raw_rank[0]["method"] if raw_rank else "n/a"
+            cal_top = cal_rank[0]["method"] if cal_rank else "n/a"
+            changed = raw_top != cal_top and cal_top != "n/a"
+            note_lines.append(
+                f"- {provider} | {dataset}: raw_top={raw_top}, calibrated_top={cal_top}, ranking_changed={changed}"
+            )
+
+    note_lines.extend(
+        [
+            "",
+            "## Diagnostics included",
+            "- branch diversity / collapse from unique branch ids touched per example",
+            "- branch-score variance across action-trace score updates",
+            "- budget usage over time from remaining_budget in action trace",
+            "- semantic redundancy proxy as mean token-overlap (Jaccard) between recorded steps/predictions",
+            "- provider/method failure reasons via lightweight error categorization",
+        ]
+    )
 
     (run_dir / "note.md").write_text("\n".join(note_lines) + "\n", encoding="utf-8")
     print(str(run_dir))
