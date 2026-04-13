@@ -46,6 +46,42 @@ class SimpleBranchScorer:
         return max(candidates, key=self.score_branch)
 
 
+class RelativeRankBranchScorer:
+    """Approximate adaptive_relative_rank policy for branch prioritization."""
+
+    def __init__(self, depth_bonus: float = 0.02) -> None:
+        self.depth_bonus = depth_bonus
+
+    def score_branch(self, branch: BranchState) -> float:
+        return max(0.0, min(1.0, branch.score + self.depth_bonus * min(5, branch.depth)))
+
+    def pick_best(self, branches: list[BranchState]) -> BranchState | None:
+        candidates = [b for b in branches if not b.is_pruned]
+        if not candidates:
+            return None
+        sorted_by_score = sorted(candidates, key=lambda b: b.score)
+        rank_map = {b.branch_id: idx + 1 for idx, b in enumerate(sorted_by_score)}
+        denom = max(1.0, float(len(candidates)))
+        return max(candidates, key=lambda b: (rank_map[b.branch_id] / denom) + self.depth_bonus * b.depth)
+
+
+class ScorePlusProgressBranchScorer:
+    """Approximate adaptive_score_plus_progress policy."""
+
+    def __init__(self, depth_bonus: float = 0.04) -> None:
+        self.depth_bonus = depth_bonus
+
+    def score_branch(self, branch: BranchState) -> float:
+        raw = branch.score + self.depth_bonus * min(6, branch.depth)
+        return max(0.0, min(1.0, raw))
+
+    def pick_best(self, branches: list[BranchState]) -> BranchState | None:
+        candidates = [b for b in branches if not b.is_pruned]
+        if not candidates:
+            return None
+        return max(candidates, key=self.score_branch)
+
+
 class LearnedBranchScorerV3:
     """Model-backed scorer for controller-time branch selection.
 

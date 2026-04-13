@@ -108,9 +108,16 @@ class APIBranchGenerator:
         max_tokens: int,
         timeout_seconds: int = 45,
         base_url: str | None = None,
+        provider: str = "openai",
     ) -> None:
+        self.provider = provider.strip().lower()
         self.api_key = api_key
-        self.base_url = (base_url or "https://api.openai.com/v1").rstrip("/")
+        default_base_url = (
+            "https://generativelanguage.googleapis.com/v1beta"
+            if self.provider == "gemini"
+            else "https://api.openai.com/v1"
+        )
+        self.base_url = (base_url or default_base_url).rstrip("/")
         self.model = model
         self.temperature = temperature
         self.max_tokens = max_tokens
@@ -132,7 +139,7 @@ class APIBranchGenerator:
             "text": {"format": {"type": "json_object"}},
             "temperature": self.temperature,
         }
-        text = self._call_responses_api(payload)
+        text = self._call_api(payload, prompt=prompt)
         data = self._safe_json(text)
 
         action = str(data.get("action", "continue")).strip().lower()
@@ -163,7 +170,7 @@ class APIBranchGenerator:
             "text": {"format": {"type": "json_object"}},
             "temperature": min(0.2, self.temperature),
         }
-        text = self._call_responses_api(payload)
+        text = self._call_api(payload, prompt=prompt)
         data = self._safe_json(text)
         confidence = self._clip01(self._to_float(data.get("confidence", branch.score)))
         maybe_answer = str(data.get("candidate_answer", "")).strip()
@@ -178,6 +185,11 @@ class APIBranchGenerator:
         score_before = branch.score
         branch.is_pruned = True
         return BranchActionResult("prune", score_before, branch.score, branch.is_done)
+
+    def _call_api(self, payload: dict, prompt: str) -> str:
+        if self.provider == "gemini":
+            return self._call_gemini_api(prompt)
+        return self._call_responses_api(payload)
 
     def _call_responses_api(self, payload: dict) -> str:
         headers = {"Content-Type": "application/json"}
@@ -213,6 +225,45 @@ class APIBranchGenerator:
         if isinstance(fallback, str) and fallback.strip():
             return fallback
         raise RuntimeError("OpenAI API returned no text output.")
+
+    def _call_gemini_api(self, prompt: str) -> str:
+        headers = {"Content-Type": "application/json"}
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "temperature": self.temperature,
+                "maxOutputTokens": self.max_tokens,
+                "responseMimeType": "application/json",
+            },
+        }
+        endpoint = f"{self.base_url}/models/{self.model}:generateContent"
+        if self.api_key:
+            endpoint = f"{endpoint}?key={self.api_key}"
+        req = request.Request(
+            endpoint,
+            data=json.dumps(payload).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        try:
+            with request.urlopen(req, timeout=self.timeout_seconds) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+        except error.HTTPError as exc:  # pragma: no cover - network path
+            err_body = exc.read().decode("utf-8", errors="ignore")
+            raise RuntimeError(f"Gemini API HTTPError {exc.code}: {err_body[:500]}") from exc
+        except Exception as exc:  # pragma: no cover - network path
+            raise RuntimeError(f"Gemini API request failed: {exc}") from exc
+
+        texts: list[str] = []
+        for candidate in body.get("candidates", []):
+            content = candidate.get("content", {})
+            for part in content.get("parts", []):
+                text = part.get("text")
+                if isinstance(text, str) and text.strip():
+                    texts.append(text)
+        if texts:
+            return "\n".join(texts)
+        raise RuntimeError("Gemini API returned no text output.")
 
     @staticmethod
     def _safe_json(text: str) -> dict:
