@@ -1,31 +1,34 @@
 # Datasets directory policy
 
-This folder is reserved for dataset access instructions, manifests, and controlled derived artifacts.
+This directory is for dataset policy/manifests and controlled derived metadata.
+Raw dataset dumps are not committed.
 
-## Policy
+## Role split
 
-- Raw datasets are **not** committed to this repository by default.
-- Data-fetch scripts/instructions should retrieve data from official sources only.
-- Processed artifacts should be written to controlled subfolders with clear provenance metadata.
-- Licensing and usage terms must be respected per dataset.
-- If a dataset is gated or terms-restricted, do not redistribute its raw contents in this repo.
+1. **Main evaluation datasets** (benchmark-facing): see `docs/main_datasets.md`.
+2. **External reasoning-supervision datasets** (new-paper prep): see `docs/DATASET_STATUS.md` and `configs/external_reasoning_datasets_registry.json`.
+3. **Readiness/preparation artifacts**: generated under `outputs/` by scripts, not checked in.
 
-## Current dataset access status (working plan)
+## Core policy
 
-- **Wired in code (`experiments/hf_datasets.py`):** GSM8K, MATH (`hendrycks/competition_math` + `EleutherAI/hendrycks_math`), GPQA Diamond, AIME 2024 card (`HuggingFaceH4/aime_2024`), OlympiadBench (`Hothan/OlympiadBench`), optional LiveCodeBench.
-- **Documentation-only (no HF loader):** NaturalPlan — use upstream GitHub per license; pin commit; do not commit raw data.
-- May require approval/terms acceptance: GPQA Diamond (HF gated when applicable).
+- Fetch from official sources only.
+- Respect licensing and gating restrictions.
+- Keep download-on-demand behavior.
+- Keep provenance in small metadata/report files.
+- Do not present integration status as equivalent to final method performance.
 
-- **New-paper external reasoning-supervision integrations (download-on-demand):** `tasksource/PRM800K`, `peiyi9979/Math-Shepherd` (swap option: `trl-lib/math_shepherd`), `openbmb/UltraInteract_pair`, `openbmb/UltraInteract_sft` via `experiments/external_reasoning_datasets.py`.
+## Useful commands
 
-See also: `docs/main_datasets.md`, `docs/datasets_access.md`, and `python scripts/generate_dataset_integration_report.py` for a generated status report under `outputs/` (gitignored by default).
+```bash
+# Main evaluation dataset access status
+python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset_access
 
-## TODO
+# Main dataset integration report
+python scripts/generate_dataset_integration_report.py
 
-- Add machine-readable manifests for dataset versions/snapshots used in experiments.
-- Add fetch scripts that pin revisions and log source URLs/checksums where possible.
-- Add per-dataset license/terms notes once each source path is finalized.
+# External reasoning-supervision integration report
+python scripts/generate_external_reasoning_dataset_integration_report.py
 
-Additional report tooling: `python scripts/generate_external_reasoning_dataset_integration_report.py` writes run-scoped JSON/MD/CSV artifacts under `outputs/external_reasoning_datasets/<run_id>/`.
-
-Expanded new-paper integration now also covers DeepStep-Math-5K, WebInstruct-verified, JudgeLM (both cards), MT-Bench human judgments, Prometheus collections, math_verify-style HF release, and ARCTraj via the same download-on-demand inspection pipeline.
+# External reasoning-supervision readiness ranking/previews
+python scripts/prepare_external_reasoning_datasets.py
+```

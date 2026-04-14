@@ -1,5 +1,7 @@
 # Main datasets
 
+> Quick role map: For canonical role/status labels (evaluation vs external supervision vs readiness vs not integrated), see [`DATASET_STATUS.md`](DATASET_STATUS.md). This file remains the detailed dataset reference.
+
 Dataset selection is central to adaptive test-time compute research because conclusions depend on both task difficulty and reasoning structure. For multi-step LLM reasoning, we need a mix of arithmetic, formal math, science reasoning, and planning-style tasks to evaluate where extra inference budget is most useful. The working set below is intentionally conservative and documents access uncertainty explicitly.
 
 ## Core dataset set

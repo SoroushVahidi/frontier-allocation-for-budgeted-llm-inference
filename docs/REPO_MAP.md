@@ -1,69 +1,46 @@
-# Repository Map (Tracks, Paths, and Canonical Entry Points)
+# Repository map (tracks, paths, and status labels)
 
-This map clarifies where things live without changing core experiment logic.
+This map is for navigation and interpretation, not for changing experiments.
 
-## Top-level layout
+## Top-level structure
 
-- `scripts/`: runnable entry points and orchestration scripts.
-- `experiments/`: controller/search/data/scoring implementation modules and result notes.
-- `docs/`: manuscript notes, direction notes, and reproducibility/status notes.
-- `configs/`: experiment configs.
-- `jobs/`: cluster job wrappers.
-- `output/` and `outputs/`: generated artifacts (both exist; historical path inconsistency retained for compatibility).
+- `scripts/`: runnable entry points and orchestration.
+- `experiments/`: core implementation modules + compact result notes.
+- `docs/`: navigation docs, status notes, historical memos.
+- `configs/`: registries/configs for pilots, baselines, and datasets.
+- `datasets/`: dataset policy and controlled manifests.
+- `outputs/`: generated artifacts (gitignored).
 
-## Track mapping
+## Two-track mapping (do not mix)
 
-### A) Old manuscript track (binary revise-routing)
+### A) Old manuscript track — binary revise-routing
 
-Primary scripts:
-- `scripts/run_heavy_real_routing_eval.sh`
+- Research question: **when should we revise?**
+- Status: **canonical for existing submitted manuscript support**.
+- Main script: `scripts/run_heavy_real_routing_eval.sh`
+- Main docs: `docs/safe_manuscript_claims_2026-04-13.md`, `docs/manuscript_support_index_2026-04-13.md`
 
-Supporting docs/examples:
-- `docs/safe_manuscript_claims_2026-04-13.md`
-- `docs/manuscript_support_index_2026-04-13.md`
+### B) New paper track — cross-controller frontier allocation
 
-Typical output roots:
-- `outputs/real_model_fixed_budget_heavy/` (from heavy matrix script defaults)
+- Research question: **where should the next unit of compute go?**
+- Status: **canonical active research track**.
+- Main scripts:
+  - `scripts/run_cross_strategy_frontier_allocation.py` (legacy filename)
+  - `scripts/run_multi_action_allocation_pass.sh`
+  - `scripts/evaluate_branch_scorer_controller.py`
+  - `scripts/evaluate_branch_scorer_robustness.py`
+- Main docs:
+  - `docs/NEW_PAPER_CURRENT_STATUS.md`
+  - `docs/NEW_PAPER_CURRENT_BOTTLENECKS.md`
+  - `docs/BRANCH_SCORER_STATUS.md`
 
-### B) New frontier/controller-allocation track
+## Branch-scorer and dataset layers in the new-paper track
 
-Primary scripts:
-- `scripts/run_cross_strategy_frontier_allocation.py`  
-  (legacy filename; used for cross-controller frontier allocation scaffold)
-- `scripts/run_multi_action_allocation_pass.sh`
-- `scripts/evaluate_branch_scorer_controller.py`
-- `scripts/evaluate_branch_scorer_robustness.py`
-- `scripts/build_v3_ranking_dataset.py`
-- `scripts/train_branch_scorer_v3.py`
+- Branch-scorer family notes in `experiments/*branch_scorer*_result_note.md` are mostly **exploratory result notes**.
+- External reasoning datasets and baseline registries in `configs/*registry*.json` are **integration/preparation resources**, not final-method evidence by themselves.
+- Pairwise diagnostics and reliability-weighted BT are **promising but not default** until robustness and transfer evidence is stronger.
 
-Supporting code:
-- `experiments/controllers.py`
-- `experiments/branch_scorer_v3.py`
-- `experiments/branching.py`
-- `experiments/scoring.py`
+## Historical conventions intentionally preserved
 
-Typical output roots:
-- `outputs/branch_scorer_v3/`
-- `outputs/multi_action_allocation_pass/`
-- `outputs/branch_scorer_v3_final_eval/`
-
-## Docs organization guidance
-
-### Canonical orientation docs
-
-- `README.md` (top-level navigation)
-- `docs/OLD_VS_NEW_PAPER_TRACKS.md` (track split + naming policy)
-- `docs/NEXT_PAPER_SUMMARY_AND_GOALS.md` (new-paper framing)
-- `docs/REPO_MAP.md` (this map)
-
-### Historical / dated notes
-
-Many files in `docs/` are timestamped working notes (e.g., `*_2026-04-13.md`).
-They are retained for provenance and should not be treated as single-source canonical navigation docs.
-
-## Known intentional messiness left untouched
-
-- `output/` and `outputs/` both exist.
-  - Kept intact to avoid breaking prior commands and references.
-- Some script names include `cross_strategy` while docs now prefer `cross-controller frontier allocation`.
-  - Kept for backward compatibility; naming clarification is handled in docs.
+- Some script names use `cross_strategy` for backward compatibility; docs use “cross-controller frontier allocation”.
+- Dated notes remain in place for provenance and should be interpreted via `docs/README.md`.
