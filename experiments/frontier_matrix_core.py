@@ -19,6 +19,7 @@ from experiments.controllers import (
     ProgramOfThoughtController,
     VerifierGuidedSearchController,
 )
+from experiments.prm_partial_scorer import HeuristicPRMPartialScorer
 from experiments.data import PilotExample, extract_final_answer
 from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
 from experiments.scoring import ScoreConfig, SimpleBranchScorer
@@ -97,8 +98,12 @@ def build_frontier_strategies(
     vgs_candidates: int = 3,
     vgs_min_expansions: int = 1,
     include_budget_guarded_adaptive: bool = False,
+    include_prm_variants: bool = False,
+    prm_early_reject_threshold: float = 0.25,
+    prm_early_reject_min_expansions: int = 2,
 ) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
+    prm_scorer = HeuristicPRMPartialScorer()
     specs: dict[str, Any] = {
         "reasoning_greedy": GreedyController(generator_factory(), scorer, budget),
         "self_consistency_3": BestOfNController(generator_factory(), scorer, budget, n_candidates=3),
@@ -132,6 +137,36 @@ def build_frontier_strategies(
             method_name="adaptive_budget_guarded",
         )
 
+    if include_prm_variants:
+        specs["adaptive_prm_partial"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            partial_branch_scorer=prm_scorer,
+            enable_prm_early_reject=False,
+            method_name="adaptive_prm_partial",
+        )
+        specs["adaptive_prm_partial_early_reject"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            partial_branch_scorer=prm_scorer,
+            enable_prm_early_reject=True,
+            prm_early_reject_threshold=prm_early_reject_threshold,
+            prm_early_reject_min_expansions=prm_early_reject_min_expansions,
+            method_name="adaptive_prm_partial_early_reject",
+        )
+
     if use_openai_api:
         verifier = LLMVerifyProxyVerifier(generator_factory())
     else:
@@ -146,6 +181,30 @@ def build_frontier_strategies(
         min_expansions_per_candidate=vgs_min_expansions,
         method_name="verifier_guided_search",
     )
+    if include_prm_variants:
+        specs["verifier_guided_search_prm"] = VerifierGuidedSearchController(
+            generator_factory(),
+            scorer,
+            budget,
+            n_candidates=min(vgs_candidates, max(1, budget // 2)),
+            verifier=verifier,
+            min_expansions_per_candidate=vgs_min_expansions,
+            partial_branch_scorer=prm_scorer,
+            enable_prm_early_reject=False,
+            method_name="verifier_guided_search_prm",
+        )
+        specs["verifier_guided_search_prm_early_reject"] = VerifierGuidedSearchController(
+            generator_factory(),
+            scorer,
+            budget,
+            n_candidates=min(vgs_candidates, max(1, budget // 2)),
+            verifier=verifier,
+            min_expansions_per_candidate=vgs_min_expansions,
+            partial_branch_scorer=prm_scorer,
+            enable_prm_early_reject=True,
+            prm_early_reject_threshold=prm_early_reject_threshold,
+            method_name="verifier_guided_search_prm_early_reject",
+        )
     specs["program_of_thought"] = ProgramOfThoughtController(
         generator_factory(),
         scorer,

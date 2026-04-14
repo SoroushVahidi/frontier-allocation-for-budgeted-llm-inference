@@ -10,6 +10,7 @@ Entry points for pilots, evaluation, and maintenance. All write ephemeral result
 | `run_cross_strategy_frontier_allocation.py` | Cross-controller frontier allocation track |
 | `run_new_paper_frontier_matrix.py` | Multi-dataset frontier matrix + anti-collapse tables |
 | `run_comparative_frontier_audit.py` | Matched-budget audit: primary adaptive vs baselines → `main_drawbacks_report.md` |
+| `run_new_paper_prm_branch_scoring.py` | PRM-style partial-branch scoring + early-rejection audit (new-paper track) |
 | `smoke_frontier_methods.py` | Simulator-only smoke for frontier methods |
 | `verify_hf_dataset_access.py` | HF dataset access check → `outputs/hf_dataset_access` (default) |
 | `dataset_smoke_sample.py` | Small dataset smoke samples |
