@@ -103,6 +103,7 @@ def build_frontier_strategies(
     prm_early_reject_min_expansions: int = 2,
     bt_pairwise_model_path: str | None = None,
     bt_pairwise_reliability_model_path: str | None = None,
+    bt_pairwise_oracle_model_path: str | None = None,
 ) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
     prm_scorer = HeuristicPRMPartialScorer()
@@ -148,6 +149,19 @@ def build_frontier_strategies(
             allow_verify=True,
             min_expansions_before_prune=1,
             method_name="adaptive_bt_pairwise_reliability",
+        )
+    if bt_pairwise_oracle_model_path:
+        bt_oracle_scorer = LearnedBTBranchScorer(bt_pairwise_oracle_model_path, max_actions_per_problem=budget)
+        specs["adaptive_bt_pairwise_oracle"] = AdaptiveController(
+            generator_factory(),
+            bt_oracle_scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            method_name="adaptive_bt_pairwise_oracle",
         )
     if include_budget_guarded_adaptive:
         specs["adaptive_budget_guarded"] = AdaptiveController(
