@@ -206,6 +206,20 @@ class LearnedBTBranchScorer:
         score = float(self.model.get("intercept", 0.0))
         for name, weight in self.model.get("weights", {}).items():
             score += float(weight) * float(features.get(name, 0.0))
+
+        adj = self.model.get("posthoc_adjustment", {})
+        if isinstance(adj, dict) and adj:
+            remaining_budget = max(0, self.max_actions - branch.depth)
+            low_budget_threshold = int(adj.get("low_budget_threshold", -1))
+            stalled_steps_threshold = float(adj.get("stalled_steps_threshold", 0.0))
+            verify_count_threshold = float(adj.get("verify_count_threshold", 0.0))
+            penalty = float(adj.get("penalty", 0.0))
+            if (
+                remaining_budget <= low_budget_threshold
+                and float(branch.stalled_steps) >= stalled_steps_threshold
+                and float(branch.verify_count) >= verify_count_threshold
+            ):
+                score -= penalty
         return score
 
     def score_branch(self, branch: BranchState) -> float:
@@ -216,4 +230,14 @@ class LearnedBTBranchScorer:
         if not candidates:
             return None
         parent_mean = sum(float(b.score) for b in candidates) / max(1, len(candidates))
-        return max(candidates, key=lambda b: self._score(b, parent_mean_score=parent_mean))
+        scored = [(b, self._score(b, parent_mean_score=parent_mean)) for b in candidates]
+        scored.sort(key=lambda x: x[1], reverse=True)
+
+        adj = self.model.get("posthoc_adjustment", {})
+        close_margin_threshold = float(adj.get("close_margin_threshold", -1.0)) if isinstance(adj, dict) else -1.0
+        if len(scored) >= 2 and close_margin_threshold >= 0.0:
+            gap = float(scored[0][1]) - float(scored[1][1])
+            if gap <= close_margin_threshold:
+                return max(candidates, key=lambda b: float(b.score))
+
+        return scored[0][0]
