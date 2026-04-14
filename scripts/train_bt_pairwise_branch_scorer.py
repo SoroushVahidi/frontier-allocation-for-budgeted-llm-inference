@@ -64,8 +64,22 @@ def main() -> None:
     args = parse_args()
     random.seed(args.seed)
     rows = _load(Path(args.dataset))
-    train = [r for r in rows if r.get("split") == "train"]
+    train_all = [r for r in rows if r.get("split") == "train"]
     test = [r for r in rows if r.get("split") == "test"]
+
+    train: list[dict[str, Any]] = []
+    dropped_low_conf = 0
+    dropped_uncertain = 0
+    for r in train_all:
+        confidence = float(r.get("pair_confidence", 1.0))
+        tie_or_uncertain = int(r.get("tie_or_uncertain", 0)) == 1
+        if confidence < float(args.min_confidence):
+            dropped_low_conf += 1
+            continue
+        if args.drop_uncertain and tie_or_uncertain:
+            dropped_uncertain += 1
+            continue
+        train.append(r)
 
     w = [0.0 for _ in V7_FEATURE_NAMES]
     b = 0.0
@@ -75,10 +89,6 @@ def main() -> None:
         for r in train:
             confidence = float(r.get("pair_confidence", 1.0))
             tie_or_uncertain = int(r.get("tie_or_uncertain", 0)) == 1
-            if confidence < float(args.min_confidence):
-                continue
-            if args.drop_uncertain and tie_or_uncertain:
-                continue
             xa = _as_vector(r["features_a"])
             xb = _as_vector(r["features_b"])
             if args.soft_uncertain_target and tie_or_uncertain:
@@ -108,6 +118,10 @@ def main() -> None:
                 ok += 1
         return ok / len(eval_rows)
 
+    def pair_acc_in_bin(eval_rows: list[dict[str, Any]], low: float, high: float) -> float:
+        subset = [r for r in eval_rows if low <= float(r.get("pair_confidence", 0.0)) < high]
+        return pair_acc(subset)
+
     model = {
         "model_type": "linear_regression",
         "label_key": "bt_pairwise_a_preferred",
@@ -122,6 +136,13 @@ def main() -> None:
         "intercept": b,
         "train_pair_accuracy": pair_acc(train),
         "test_pair_accuracy": pair_acc(test),
+        "test_pair_accuracy_low_conf_lt_0.2": pair_acc_in_bin(test, 0.0, 0.2),
+        "test_pair_accuracy_mid_conf_0.2_0.5": pair_acc_in_bin(test, 0.2, 0.5),
+        "test_pair_accuracy_high_conf_ge_0.5": pair_acc_in_bin(test, 0.5, 1.01),
+        "n_train_total": len(train_all),
+        "n_train_used": len(train),
+        "n_train_dropped_low_conf": dropped_low_conf,
+        "n_train_dropped_uncertain": dropped_uncertain,
         "n_train": len(train),
         "n_test": len(test),
     }

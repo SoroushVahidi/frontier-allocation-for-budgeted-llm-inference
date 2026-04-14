@@ -71,6 +71,15 @@ def _confidence_summary(pair_rows: list[dict[str, Any]]) -> list[dict[str, Any]]
     high = sum(1 for c in confs if c >= 0.5)
     uncertain = sum(1 for r in pair_rows if int(r.get("tie_or_uncertain", 0)) == 1)
     n = len(pair_rows)
+    rel_keys = [
+        "rel_margin_confidence",
+        "rel_progress_agreement",
+        "rel_distance_trend_clarity",
+        "rel_value_stability",
+        "rel_delta_consistency",
+        "rel_budget_fit",
+    ]
+    rel_means = {k: sum(float(r.get(k, 0.0)) for r in pair_rows) / n for k in rel_keys}
     return [
         {"metric": "pair_rows", "value": float(n)},
         {"metric": "mean_pair_confidence", "value": sum(confs) / n},
@@ -78,6 +87,7 @@ def _confidence_summary(pair_rows: list[dict[str, Any]]) -> list[dict[str, Any]]
         {"metric": "mid_confidence_share_0.2_to_0.5", "value": mid / n},
         {"metric": "high_confidence_share_ge_0.5", "value": high / n},
         {"metric": "tie_or_uncertain_share", "value": uncertain / n},
+        *({"metric": f"mean_{k}", "value": v} for k, v in rel_means.items()),
     ]
 
 
@@ -218,14 +228,54 @@ def main() -> None:
                 "gap_to_oracle": oracle - float(metrics[name]["accuracy"]),
             }
         )
+    method_rows.append(
+        {
+            "dataset": args.dataset,
+            "budget": args.budget,
+            "method": "oracle_upper_bound",
+            "accuracy": oracle,
+            "avg_actions": float(args.budget),
+            "gap_to_oracle": 0.0,
+        }
+    )
 
     plain = json.loads(plain_model.read_text(encoding="utf-8"))
     weighted = json.loads(weighted_model.read_text(encoding="utf-8"))
     filtered = json.loads(weighted_filt_model.read_text(encoding="utf-8"))
     scorer_diag = [
-        {"variant": "plain_bt", "test_pair_accuracy": float(plain.get("test_pair_accuracy", 0.0))},
-        {"variant": "weighted_bt", "test_pair_accuracy": float(weighted.get("test_pair_accuracy", 0.0))},
-        {"variant": "weighted_bt_filtered", "test_pair_accuracy": float(filtered.get("test_pair_accuracy", 0.0))},
+        {
+            "variant": "plain_bt",
+            "test_pair_accuracy": float(plain.get("test_pair_accuracy", 0.0)),
+            "test_pair_accuracy_low_conf_lt_0.2": float(plain.get("test_pair_accuracy_low_conf_lt_0.2", 0.0)),
+            "test_pair_accuracy_mid_conf_0.2_0.5": float(plain.get("test_pair_accuracy_mid_conf_0.2_0.5", 0.0)),
+            "test_pair_accuracy_high_conf_ge_0.5": float(plain.get("test_pair_accuracy_high_conf_ge_0.5", 0.0)),
+            "n_train_total": int(plain.get("n_train_total", 0)),
+            "n_train_used": int(plain.get("n_train_used", 0)),
+            "n_train_dropped_low_conf": int(plain.get("n_train_dropped_low_conf", 0)),
+            "n_train_dropped_uncertain": int(plain.get("n_train_dropped_uncertain", 0)),
+        },
+        {
+            "variant": "weighted_bt",
+            "test_pair_accuracy": float(weighted.get("test_pair_accuracy", 0.0)),
+            "test_pair_accuracy_low_conf_lt_0.2": float(weighted.get("test_pair_accuracy_low_conf_lt_0.2", 0.0)),
+            "test_pair_accuracy_mid_conf_0.2_0.5": float(weighted.get("test_pair_accuracy_mid_conf_0.2_0.5", 0.0)),
+            "test_pair_accuracy_high_conf_ge_0.5": float(weighted.get("test_pair_accuracy_high_conf_ge_0.5", 0.0)),
+            "n_train_total": int(weighted.get("n_train_total", 0)),
+            "n_train_used": int(weighted.get("n_train_used", 0)),
+            "n_train_dropped_low_conf": int(weighted.get("n_train_dropped_low_conf", 0)),
+            "n_train_dropped_uncertain": int(weighted.get("n_train_dropped_uncertain", 0)),
+        },
+        {
+            "variant": "weighted_bt_filtered",
+            "test_pair_accuracy": float(filtered.get("test_pair_accuracy", 0.0)),
+            "test_pair_accuracy_low_conf_lt_0.2": float(filtered.get("test_pair_accuracy_low_conf_lt_0.2", 0.0)),
+            "test_pair_accuracy_mid_conf_0.2_0.5": float(filtered.get("test_pair_accuracy_mid_conf_0.2_0.5", 0.0)),
+            "test_pair_accuracy_high_conf_ge_0.5": float(filtered.get("test_pair_accuracy_high_conf_ge_0.5", 0.0)),
+            "n_train_total": int(filtered.get("n_train_total", 0)),
+            "n_train_used": int(filtered.get("n_train_used", 0)),
+            "n_train_dropped_low_conf": int(filtered.get("n_train_dropped_low_conf", 0)),
+            "n_train_dropped_uncertain": int(filtered.get("n_train_dropped_uncertain", 0)),
+        },
     ]
     oracle_rows = [
         {
@@ -277,6 +327,16 @@ def main() -> None:
         f"- Confidence weighting improves over plain BT: {'yes' if rel_acc > plain_acc else 'no/mixed'}.",
         f"- Filtering uncertain pairs helps: {'yes' if relf_acc > rel_acc else 'no/mixed'}.",
         f"- Oracle-gap improvement beyond plain BT: {'yes' if oracle_rows[0]['reliability_bt_gap'] < oracle_rows[0]['plain_bt_gap'] else 'no/mixed'}.",
+        (
+            "- Low-confidence pairs appear harmful to pairwise fitting: "
+            f"{'yes/mixed evidence' if float(weighted.get('test_pair_accuracy_high_conf_ge_0.5', 0.0)) > float(weighted.get('test_pair_accuracy_low_conf_lt_0.2', 0.0)) else 'no clear evidence'}."
+        ),
+        (
+            "- Filtered training data volume: "
+            f"{int(filtered.get('n_train_used', 0))}/{int(filtered.get('n_train_total', 0))} pairs used "
+            f"(dropped_low_conf={int(filtered.get('n_train_dropped_low_conf', 0))}, "
+            f"dropped_uncertain={int(filtered.get('n_train_dropped_uncertain', 0))})."
+        ),
         f"- Real-model-backed status: {'enabled' if args.use_openai_api else 'simulator-backed only in this run'}.",
         "- Reliability signals are weak confidence heuristics, not ground-truth label quality.",
         "- Inference remains scalar: one score per branch, argmax; no pairwise inference matrix.",
