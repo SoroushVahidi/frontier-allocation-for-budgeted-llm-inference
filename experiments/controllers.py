@@ -7,6 +7,7 @@ import re
 from typing import Any, Protocol
 
 from experiments.branching import BranchState
+from experiments.prm_partial_scorer import PartialBranchScorer
 from experiments.scoring import SimpleBranchScorer
 from experiments.verifiers import CandidateVerifier
 
@@ -15,6 +16,10 @@ class BranchScorer(Protocol):
     def score_branch(self, branch: BranchState) -> float: ...
 
     def pick_best(self, branches: list[BranchState]) -> BranchState | None: ...
+
+
+class EarlyRejectPolicy(Protocol):
+    def should_reject(self, *, score: float, branch: BranchState, expansions_so_far: int) -> bool: ...
 
 
 
@@ -186,6 +191,10 @@ class AdaptiveController(BaseController):
         adaptive_min_expand: bool = False,
         verify_exploration_floor: int = 0,
         budget_guard_prune_floor: float = 0.0,
+        partial_branch_scorer: PartialBranchScorer | None = None,
+        enable_prm_early_reject: bool = False,
+        prm_early_reject_threshold: float = 0.25,
+        prm_early_reject_min_expansions: int = 2,
         method_name: str = "adaptive_expand_verify_prune",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -197,6 +206,10 @@ class AdaptiveController(BaseController):
         self.adaptive_min_expand = adaptive_min_expand
         self.verify_exploration_floor = max(0, verify_exploration_floor)
         self.budget_guard_prune_floor = max(0.0, min(1.0, budget_guard_prune_floor))
+        self.partial_branch_scorer = partial_branch_scorer
+        self.enable_prm_early_reject = enable_prm_early_reject
+        self.prm_early_reject_threshold = float(prm_early_reject_threshold)
+        self.prm_early_reject_min_expansions = max(0, int(prm_early_reject_min_expansions))
         self.method_name = method_name
 
     def run(self, question: str, gold_answer: str) -> MethodResult:
@@ -215,12 +228,48 @@ class AdaptiveController(BaseController):
                     next_branches.append(branch)
                     continue
 
-                score_before = self.scorer.score_branch(branch)
+                fallback_score = self.scorer.score_branch(branch)
+                partial_info = None
+                score_before = fallback_score
+                if self.partial_branch_scorer is not None:
+                    partial_info = self.partial_branch_scorer.score_partial_branch(
+                        branch,
+                        question,
+                        stage="adaptive_frontier",
+                    )
+                    score_before = float(partial_info.value)
                 branch_expand_count = branch_expansions.get(branch.branch_id, 0)
                 remaining_budget_frac = max(0.0, (self.max_actions - actions) / max(1, self.max_actions))
                 effective_min_expand = self.min_expansions_before_prune
                 if self.adaptive_min_expand and remaining_budget_frac >= 0.5:
                     effective_min_expand += 1
+
+                early_reject_flag = (
+                    self.enable_prm_early_reject
+                    and self.partial_branch_scorer is not None
+                    and branch_expand_count >= self.prm_early_reject_min_expansions
+                    and score_before < self.prm_early_reject_threshold
+                )
+                if early_reject_flag:
+                    result = self.generator.prune(branch)
+                    action_trace.append(
+                        self._trace_row(
+                            branch,
+                            "prune",
+                            score_before,
+                            result.score_after,
+                            actions,
+                            forced_expand=False,
+                            forced_expand_reason="prm_early_reject",
+                            partial_score=score_before,
+                            score_source=(partial_info.score_source if partial_info else "base_scorer"),
+                            score_stage=(partial_info.score_stage if partial_info else "adaptive_frontier"),
+                            early_reject_flag=True,
+                            scorer_notes=(partial_info.scorer_notes if partial_info else ""),
+                            fallback_score=fallback_score,
+                        )
+                    )
+                    continue
 
                 if branch_expand_count < effective_min_expand:
                     result = self.generator.expand(branch, question, gold_answer)
@@ -237,6 +286,12 @@ class AdaptiveController(BaseController):
                             actions,
                             forced_expand=True,
                             forced_expand_reason="min_expand_guard",
+                            partial_score=score_before,
+                            score_source=(partial_info.score_source if partial_info else "base_scorer"),
+                            score_stage=(partial_info.score_stage if partial_info else "adaptive_frontier"),
+                            early_reject_flag=False,
+                            scorer_notes=(partial_info.scorer_notes if partial_info else ""),
+                            fallback_score=fallback_score,
                         )
                     )
                     if not branch.is_done and len(next_branches) < self.max_branches and actions < self.max_actions:
@@ -251,7 +306,19 @@ class AdaptiveController(BaseController):
                     branch_expansions[branch.branch_id] = branch_expand_count + 1
                     next_branches.append(branch)
                     action_trace.append(
-                        self._trace_row(branch, "expand", score_before, result.score_after, actions)
+                        self._trace_row(
+                            branch,
+                            "expand",
+                            score_before,
+                            result.score_after,
+                            actions,
+                            partial_score=score_before,
+                            score_source=(partial_info.score_source if partial_info else "base_scorer"),
+                            score_stage=(partial_info.score_stage if partial_info else "adaptive_frontier"),
+                            early_reject_flag=False,
+                            scorer_notes=(partial_info.scorer_notes if partial_info else ""),
+                            fallback_score=fallback_score,
+                        )
                     )
                     if not branch.is_done and len(next_branches) < self.max_branches and actions < self.max_actions:
                         child = self.generator.init_branch(f"adaptive_child_{actions}_{len(next_branches)}")
@@ -268,7 +335,19 @@ class AdaptiveController(BaseController):
                     verifications += 1
                     next_branches.append(branch)
                     action_trace.append(
-                        self._trace_row(branch, "verify", score_before, result.score_after, actions)
+                        self._trace_row(
+                            branch,
+                            "verify",
+                            score_before,
+                            result.score_after,
+                            actions,
+                            partial_score=score_before,
+                            score_source=(partial_info.score_source if partial_info else "base_scorer"),
+                            score_stage=(partial_info.score_stage if partial_info else "adaptive_frontier"),
+                            early_reject_flag=False,
+                            scorer_notes=(partial_info.scorer_notes if partial_info else ""),
+                            fallback_score=fallback_score,
+                        )
                     )
                 else:
                     prune_guard_active = (
@@ -291,12 +370,30 @@ class AdaptiveController(BaseController):
                                 actions,
                                 forced_expand=True,
                                 forced_expand_reason="budget_guard",
+                                partial_score=score_before,
+                                score_source=(partial_info.score_source if partial_info else "base_scorer"),
+                                score_stage=(partial_info.score_stage if partial_info else "adaptive_frontier"),
+                                early_reject_flag=False,
+                                scorer_notes=(partial_info.scorer_notes if partial_info else ""),
+                                fallback_score=fallback_score,
                             )
                         )
                     else:
                         result = self.generator.prune(branch)
                         action_trace.append(
-                            self._trace_row(branch, "prune", score_before, result.score_after, actions)
+                            self._trace_row(
+                                branch,
+                                "prune",
+                                score_before,
+                                result.score_after,
+                                actions,
+                                partial_score=score_before,
+                                score_source=(partial_info.score_source if partial_info else "base_scorer"),
+                                score_stage=(partial_info.score_stage if partial_info else "adaptive_frontier"),
+                                early_reject_flag=False,
+                                scorer_notes=(partial_info.scorer_notes if partial_info else ""),
+                                fallback_score=fallback_score,
+                            )
                         )
 
             branches = [b for b in next_branches if not b.is_pruned][: self.max_branches]
@@ -326,6 +423,10 @@ class AdaptiveController(BaseController):
                 "adaptive_min_expand": self.adaptive_min_expand,
                 "verify_exploration_floor": self.verify_exploration_floor,
                 "budget_guard_prune_floor": self.budget_guard_prune_floor,
+                "uses_partial_prm_scorer": self.partial_branch_scorer is not None,
+                "enable_prm_early_reject": self.enable_prm_early_reject,
+                "prm_early_reject_threshold": self.prm_early_reject_threshold,
+                "prm_early_reject_min_expansions": self.prm_early_reject_min_expansions,
                 "action_trace": action_trace,
                 "final_selected_branch": best_branch.branch_id if best_branch else None,
             },
@@ -340,6 +441,12 @@ class AdaptiveController(BaseController):
         actions_used: int,
         forced_expand: bool = False,
         forced_expand_reason: str | None = None,
+        partial_score: float | None = None,
+        score_source: str | None = None,
+        score_stage: str | None = None,
+        early_reject_flag: bool = False,
+        scorer_notes: str | None = None,
+        fallback_score: float | None = None,
     ) -> dict[str, Any]:
         return {
             "branch_id": branch.branch_id,
@@ -352,6 +459,12 @@ class AdaptiveController(BaseController):
             "branch_done": branch.is_done,
             "branch_pruned": branch.is_pruned,
             "predicted_answer": branch.predicted_answer,
+            "partial_score": None if partial_score is None else round(float(partial_score), 4),
+            "fallback_score": None if fallback_score is None else round(float(fallback_score), 4),
+            "score_source": score_source,
+            "score_stage": score_stage,
+            "early_reject_flag": bool(early_reject_flag),
+            "scorer_notes": scorer_notes,
         }
 
 
@@ -370,12 +483,18 @@ class VerifierGuidedSearchController(BaseController):
         n_candidates: int,
         verifier: CandidateVerifier,
         min_expansions_per_candidate: int = 1,
+        partial_branch_scorer: PartialBranchScorer | None = None,
+        enable_prm_early_reject: bool = False,
+        prm_early_reject_threshold: float = 0.2,
         method_name: str = "verifier_guided_search",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
         self.n_candidates = max(1, n_candidates)
         self._verifier = verifier
         self.min_expansions_per_candidate = max(1, min_expansions_per_candidate)
+        self.partial_branch_scorer = partial_branch_scorer
+        self.enable_prm_early_reject = enable_prm_early_reject
+        self.prm_early_reject_threshold = float(prm_early_reject_threshold)
         self.method_name = method_name
 
     def run(self, question: str, gold_answer: str) -> MethodResult:
@@ -395,6 +514,8 @@ class VerifierGuidedSearchController(BaseController):
             )
 
         branches = [self.generator.init_branch(f"vgs_{i}") for i in range(self.n_candidates)]
+        branch_partial_scores: list[float | None] = [None for _ in branches]
+        branch_early_reject: list[bool] = [False for _ in branches]
 
         verify_reserved = self.n_candidates
         expand_budget = max(0, self.max_actions - verify_reserved)
@@ -412,9 +533,20 @@ class VerifierGuidedSearchController(BaseController):
                 expansions += 1
                 k += 1
                 surviving_trace.append(self.n_candidates)
+            if self.partial_branch_scorer is not None:
+                p = self.partial_branch_scorer.score_partial_branch(branch, question, stage="vgs_candidate")
+                idx = branches.index(branch)
+                branch_partial_scores[idx] = float(p.value)
+                if self.enable_prm_early_reject and (not branch.is_done) and p.value < self.prm_early_reject_threshold:
+                    self.generator.prune(branch)
+                    branch_early_reject[idx] = True
 
         verifier_scores: list[float] = []
         for branch in branches:
+            idx = branches.index(branch)
+            if branch_early_reject[idx]:
+                verifier_scores.append(float("-inf"))
+                continue
             if actions >= self.max_actions:
                 verifier_scores.append(float("-inf"))
                 continue
@@ -448,6 +580,11 @@ class VerifierGuidedSearchController(BaseController):
                 "selected_candidate_index": best_idx,
                 "cost_proxy": cost_proxy,
                 "anti_collapse_min_expansions_per_candidate": self.min_expansions_per_candidate,
+                "partial_branch_scores": [None if s is None else round(float(s), 6) for s in branch_partial_scores],
+                "partial_score_source": "heuristic_prm_proxy" if self.partial_branch_scorer is not None else "none",
+                "prm_early_reject_enabled": self.enable_prm_early_reject,
+                "prm_early_reject_threshold": self.prm_early_reject_threshold,
+                "prm_early_rejected_candidates": int(sum(1 for x in branch_early_reject if x)),
             },
         )
 

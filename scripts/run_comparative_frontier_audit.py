@@ -46,6 +46,10 @@ INTERNAL_METHODS = [
     "adaptive_min_expand_2",
     "verifier_guided_search",
     "program_of_thought",
+    "adaptive_prm_partial",
+    "adaptive_prm_partial_early_reject",
+    "verifier_guided_search_prm",
+    "verifier_guided_search_prm_early_reject",
 ]
 
 DEFAULT_PRIMARY = "adaptive_min_expand_1"
@@ -55,6 +59,12 @@ DEFAULT_BASELINES = [
     "reasoning_beam2",
     "verifier_guided_search",
     "program_of_thought",
+]
+PRM_BASELINES = [
+    "adaptive_prm_partial",
+    "adaptive_prm_partial_early_reject",
+    "verifier_guided_search_prm",
+    "verifier_guided_search_prm_early_reject",
 ]
 
 EXTERNAL_NOT_RUNNABLE = [
@@ -122,6 +132,9 @@ def run_dataset_audit(
     vgs_min_expansions: int,
     rng: random.Random,
     api_provider: str | None = None,
+    include_prm_variants: bool = False,
+    prm_early_reject_threshold: float = 0.25,
+    prm_early_reject_min_expansions: int = 2,
 ) -> dict[str, Any]:
     examples = load_pilot_examples(dataset, subset_size, seed)
     if eval_only:
@@ -156,6 +169,9 @@ def run_dataset_audit(
             use_openai_api=use_openai_api,
             vgs_candidates=vgs_candidates,
             vgs_min_expansions=vgs_min_expansions,
+            include_prm_variants=include_prm_variants,
+            prm_early_reject_threshold=prm_early_reject_threshold,
+            prm_early_reject_min_expansions=prm_early_reject_min_expansions,
         )
 
         if not eval_only and calib_examples:
@@ -481,6 +497,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--output-dir", default="outputs/comparative_frontier_audit")
     p.add_argument("--vgs-candidates", type=int, default=3)
     p.add_argument("--vgs-min-expansions", type=int, default=1)
+    p.add_argument("--include-prm-variants", action="store_true")
+    p.add_argument("--prm-early-reject-threshold", type=float, default=0.25)
+    p.add_argument("--prm-early-reject-min-expansions", type=int, default=2)
     return p.parse_args()
 
 
@@ -549,6 +568,9 @@ def main() -> None:
                 vgs_min_expansions=args.vgs_min_expansions,
                 rng=rng,
                 api_provider=api_provider,
+                include_prm_variants=args.include_prm_variants,
+                prm_early_reject_threshold=args.prm_early_reject_threshold,
+                prm_early_reject_min_expansions=args.prm_early_reject_min_expansions,
             )
         except Exception as exc:  # noqa: BLE001
             failed.append({"dataset": ds, "error": f"{type(exc).__name__}: {exc}", "traceback": traceback.format_exc()})
@@ -561,14 +583,15 @@ def main() -> None:
         all_selector.extend(block["selector_rows"])
 
     primary = args.primary_method
-    comparison = _build_comparison_rows(all_method, primary, DEFAULT_BASELINES)
+    baselines = DEFAULT_BASELINES + (PRM_BASELINES if args.include_prm_variants else [])
+    comparison = _build_comparison_rows(all_method, primary, baselines)
 
     manifest = {
         "run_id": run_id,
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "internal_methods_runnable": INTERNAL_METHODS,
         "primary_method_tagged_ours": primary,
-        "baselines_compared": DEFAULT_BASELINES,
+        "baselines_compared": baselines,
         "adaptive_ablations": [f"adaptive_min_expand_{k}" for k in adaptive_grid],
         "external_baselines_not_integrated": EXTERNAL_NOT_RUNNABLE,
         "datasets_requested": datasets,
@@ -588,6 +611,9 @@ def main() -> None:
             "gemini_or_google": bool(os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")),
         },
         "comparison_principle": "Same eval examples, same budget cap per method, same RNG policy per dataset seed; single API provider per run.",
+        "include_prm_variants": args.include_prm_variants,
+        "prm_early_reject_threshold": args.prm_early_reject_threshold,
+        "prm_early_reject_min_expansions": args.prm_early_reject_min_expansions,
     }
     (out_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 

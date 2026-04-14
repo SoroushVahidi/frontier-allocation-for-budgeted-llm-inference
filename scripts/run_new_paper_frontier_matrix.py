@@ -64,6 +64,9 @@ def run_single_dataset_frontier(
     timeout_seconds: int,
     vgs_candidates: int,
     vgs_min_expansions: int,
+    include_prm_variants: bool,
+    prm_early_reject_threshold: float,
+    prm_early_reject_min_expansions: int,
     rng: random.Random,
 ) -> dict[str, Any]:
     examples = load_pilot_examples(dataset, subset_size, seed)
@@ -94,6 +97,9 @@ def run_single_dataset_frontier(
             use_openai_api=use_openai_api,
             vgs_candidates=vgs_candidates,
             vgs_min_expansions=vgs_min_expansions,
+            include_prm_variants=include_prm_variants,
+            prm_early_reject_threshold=prm_early_reject_threshold,
+            prm_early_reject_min_expansions=prm_early_reject_min_expansions,
         )
         calib_metrics, _ = evaluate_strategies_on_examples(calib_examples, calib_strategies)
 
@@ -110,6 +116,9 @@ def run_single_dataset_frontier(
             use_openai_api=use_openai_api,
             vgs_candidates=vgs_candidates,
             vgs_min_expansions=vgs_min_expansions,
+            include_prm_variants=include_prm_variants,
+            prm_early_reject_threshold=prm_early_reject_threshold,
+            prm_early_reject_min_expansions=prm_early_reject_min_expansions,
         )
         eval_metrics, eval_rows = evaluate_strategies_on_examples(eval_examples, eval_strategies)
 
@@ -204,6 +213,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--output-dir", default="outputs/new_paper_frontier_matrix")
     p.add_argument("--vgs-candidates", type=int, default=3)
     p.add_argument("--vgs-min-expansions", type=int, default=1)
+    p.add_argument("--include-prm-variants", action="store_true")
+    p.add_argument("--prm-early-reject-threshold", type=float, default=0.25)
+    p.add_argument("--prm-early-reject-min-expansions", type=int, default=2)
     return p.parse_args()
 
 
@@ -311,6 +323,9 @@ def main() -> None:
                 timeout_seconds=args.timeout_seconds,
                 vgs_candidates=args.vgs_candidates,
                 vgs_min_expansions=args.vgs_min_expansions,
+                include_prm_variants=args.include_prm_variants,
+                prm_early_reject_threshold=args.prm_early_reject_threshold,
+                prm_early_reject_min_expansions=args.prm_early_reject_min_expansions,
                 rng=rng,
             )
         except Exception as exc:  # noqa: BLE001 — record and continue for optional datasets
@@ -345,6 +360,9 @@ def main() -> None:
         "openai_api_key_present": bool(os.getenv("OPENAI_API_KEY")),
         "vgs_candidates": args.vgs_candidates,
         "vgs_min_expansions": args.vgs_min_expansions,
+        "include_prm_variants": args.include_prm_variants,
+        "prm_early_reject_threshold": args.prm_early_reject_threshold,
+        "prm_early_reject_min_expansions": args.prm_early_reject_min_expansions,
         "mean_oracle_gap": statistics.mean(gaps) if gaps else None,
     }
     (run_dir / "frontier_allocation_execution_report.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
