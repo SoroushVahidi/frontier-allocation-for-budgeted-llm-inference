@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--branch-labels", required=True)
     p.add_argument("--output", required=True)
     p.add_argument("--tie-margin", type=float, default=0.02)
+    p.add_argument("--improved-calibration", action="store_true")
+    p.add_argument("--uncertainty-scale", type=float, default=1.0)
+    p.add_argument("--min-effective-margin", type=float, default=0.0)
     return p.parse_args()
 
 
@@ -36,6 +40,7 @@ def main() -> None:
     out_rows: list[dict[str, Any]] = []
     ties = 0
     uncertain = 0
+    low_effective_margin = 0
 
     for (episode_id, decision_id), group in grouped.items():
         if len(group) < 2:
@@ -47,13 +52,30 @@ def main() -> None:
                 ua = float(a["approx_oracle_continuation_value"])
                 ub = float(b["approx_oracle_continuation_value"])
                 diff = ua - ub
-                tie = abs(diff) <= float(args.tie_margin)
+                std_a = float(a.get("rollout_value_std", 0.0))
+                std_b = float(b.get("rollout_value_std", 0.0))
+                denom = max(1e-6, (std_a + std_b) * float(args.uncertainty_scale) + float(args.tie_margin))
+                effective_margin = abs(diff) / denom
+
+                if args.improved_calibration:
+                    adaptive_tie_margin = float(args.tie_margin) + 0.5 * (std_a + std_b)
+                    tie = abs(diff) <= adaptive_tie_margin
+                    pair_conf = max(0.0, min(1.0, 1.0 - math.exp(-effective_margin)))
+                    tie_or_uncertain = int(tie or effective_margin <= 1.0)
+                else:
+                    tie = abs(diff) <= float(args.tie_margin)
+                    pair_conf = min(1.0, abs(diff) / max(1e-9, 0.2))
+                    tie_or_uncertain = int(abs(diff) <= 2.0 * float(args.tie_margin))
+
                 if tie:
                     ties += 1
+                if tie_or_uncertain:
+                    uncertain += 1
+                if effective_margin < float(args.min_effective_margin):
+                    low_effective_margin += 1
+                    continue
+
                 a_preferred = diff > 0.0 if not tie else (str(a["branch_id"]) <= str(b["branch_id"]))
-                pair_conf = min(1.0, abs(diff) / max(1e-9, 0.2))
-                tie_or_uncertain = int(abs(diff) <= 2.0 * float(args.tie_margin))
-                uncertain += tie_or_uncertain
 
                 out_rows.append(
                     {
@@ -74,6 +96,7 @@ def main() -> None:
                         "preference_margin": abs(diff),
                         "pair_confidence": pair_conf,
                         "tie_or_uncertain": tie_or_uncertain,
+                        "effective_margin": effective_margin,
                     }
                 )
 
@@ -88,7 +111,9 @@ def main() -> None:
         "pair_rows": len(out_rows),
         "tie_rows": ties,
         "tie_or_uncertain_rows": uncertain,
+        "low_effective_margin_dropped": low_effective_margin,
         "label_name": "approx_oracle_continuation_value",
+        "improved_calibration": bool(args.improved_calibration),
         "label_caveat": "Approximate bounded oracle-ish continuation labels, not exact global oracle truth.",
     }
     out_path.with_name(out_path.stem + "_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")

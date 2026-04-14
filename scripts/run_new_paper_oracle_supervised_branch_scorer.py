@@ -36,6 +36,14 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--oracle-label-episodes", type=int, default=30)
     p.add_argument("--oracle-label-decision-budget", type=int, default=10)
     p.add_argument("--oracle-label-rollouts-per-policy", type=int, default=4)
+    p.add_argument("--oracle-pair-tie-margin", type=float, default=0.02)
+    p.add_argument("--oracle-pair-improved-calibration", action="store_true")
+    p.add_argument("--oracle-pair-uncertainty-scale", type=float, default=1.0)
+    p.add_argument("--oracle-pair-min-effective-margin", type=float, default=0.0)
+    p.add_argument("--oracle-train-min-confidence", type=float, default=0.0)
+    p.add_argument("--oracle-train-drop-uncertain", action="store_true")
+    p.add_argument("--oracle-label-value-aggregation", choices=["max", "robust_blend"], default="max")
+    p.add_argument("--oracle-label-value-std-penalty", type=float, default=0.0)
     p.add_argument("--proxy-ranking-episodes", type=int, default=700)
     p.add_argument("--use-openai-api", action="store_true")
     p.add_argument("--openai-model", default="gpt-4.1-mini")
@@ -116,16 +124,23 @@ def main() -> None:
     proxy_model_path = run_dir / "adaptive_learned_branch_score_v7_bt_proxy.json"
     oracle_model_path = run_dir / "adaptive_learned_branch_score_v7_bt_oracleish.json"
 
-    _run(
-        [
-            sys.executable,
-            str(REPO_ROOT / "scripts/build_oracle_pairwise_branch_dataset.py"),
-            "--branch-labels",
-            str(oracle_branch_labels),
-            "--output",
-            str(oracle_pairwise_dataset),
-        ]
-    )
+    oracle_pair_cmd = [
+        sys.executable,
+        str(REPO_ROOT / "scripts/build_oracle_pairwise_branch_dataset.py"),
+        "--branch-labels",
+        str(oracle_branch_labels),
+        "--output",
+        str(oracle_pairwise_dataset),
+        "--tie-margin",
+        str(args.oracle_pair_tie_margin),
+        "--uncertainty-scale",
+        str(args.oracle_pair_uncertainty_scale),
+        "--min-effective-margin",
+        str(args.oracle_pair_min_effective_margin),
+    ]
+    if args.oracle_pair_improved_calibration:
+        oracle_pair_cmd.append("--improved-calibration")
+    _run(oracle_pair_cmd)
 
     _run(
         [
@@ -169,21 +184,24 @@ def main() -> None:
             str(args.seed),
         ]
     )
-    _run(
-        [
-            sys.executable,
-            str(REPO_ROOT / "scripts/train_bt_pairwise_branch_scorer.py"),
-            "--dataset",
-            str(oracle_pairwise_dataset),
-            "--output",
-            str(oracle_model_path),
-            "--seed",
-            str(args.seed),
-            "--weighting",
-            "confidence",
-            "--soft-uncertain-target",
-        ]
-    )
+    oracle_train_cmd = [
+        sys.executable,
+        str(REPO_ROOT / "scripts/train_bt_pairwise_branch_scorer.py"),
+        "--dataset",
+        str(oracle_pairwise_dataset),
+        "--output",
+        str(oracle_model_path),
+        "--seed",
+        str(args.seed),
+        "--weighting",
+        "confidence",
+        "--soft-uncertain-target",
+        "--min-confidence",
+        str(args.oracle_train_min_confidence),
+    ]
+    if args.oracle_train_drop_uncertain:
+        oracle_train_cmd.append("--drop-uncertain")
+    _run(oracle_train_cmd)
 
     rng = random.Random(args.seed)
     examples = load_pilot_examples(args.dataset, args.subset_size, args.seed)

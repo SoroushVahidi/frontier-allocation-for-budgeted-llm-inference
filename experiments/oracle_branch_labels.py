@@ -43,6 +43,8 @@ class OracleLabelConfig:
     exhaustive_action_budget_cap: int = 2
     tie_margin: float = 0.02
     train_ratio: float = 0.8
+    value_aggregation: str = "max"
+    value_std_penalty: float = 0.0
 
 
 @dataclass
@@ -232,15 +234,30 @@ def approximate_oracle_continuation_value(
 
     values = [x.continuation_outcome_value for x in outcomes]
     best = max(outcomes, key=lambda x: x.continuation_outcome_value)
+    sorted_values = sorted(values)
+    q50 = sorted_values[len(sorted_values) // 2] if sorted_values else 0.0
+    q75 = sorted_values[min(len(sorted_values) - 1, int(0.75 * (len(sorted_values) - 1)))] if sorted_values else 0.0
+    value_mean = float(sum(values) / max(1, len(values)))
+    value_std = float(statistics.pstdev(values)) if len(values) > 1 else 0.0
+    if cfg.value_aggregation == "robust_blend":
+        blended = 0.60 * q75 + 0.30 * value_mean + 0.10 * q50
+        agg_value = max(0.0, min(1.0, blended - cfg.value_std_penalty * value_std))
+        label_kind = "approx_high_budget_rollout_robust_blend"
+    else:
+        agg_value = float(best.continuation_outcome_value)
+        label_kind = "approx_high_budget_rollout_max"
+
     return {
-        "approx_oracle_continuation_value": float(best.continuation_outcome_value),
-        "label_kind": "approx_high_budget_rollout_max",
+        "approx_oracle_continuation_value": float(agg_value),
+        "label_kind": label_kind,
         "value_is_exact": False,
         "rollout_count": len(outcomes),
         "high_budget_used": high_budget,
         "best_rollout": asdict(best),
-        "rollout_value_mean": float(sum(values) / max(1, len(values))),
-        "rollout_value_std": float(statistics.pstdev(values)) if len(values) > 1 else 0.0,
+        "rollout_value_mean": value_mean,
+        "rollout_value_std": value_std,
+        "rollout_value_q50": float(q50),
+        "rollout_value_q75": float(q75),
     }
 
 
@@ -317,6 +334,7 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
                 "depth": int(branch.depth),
                 "verify_count": int(branch.verify_count),
                 "stalled_steps": int(branch.stalled_steps),
+                "action_history_len": int(len(branch.action_history)),
                 "parent_relative_score": float(branch.score) - parent_mean,
                 "proxy_continuation_value": float(proxy_value),
                 **approx,
