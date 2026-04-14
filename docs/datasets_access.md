@@ -89,3 +89,65 @@ Practical notes:
 - [ ] Finalize AIME canonical source and year-subset policy (2024 vs 2025 vs combined).
 - [ ] Define metric mapping per dataset (exact match, multiple-choice accuracy, execution-based, etc.).
 - [ ] Add reproducible data-fetch scripts that reference only official sources.
+
+## New-paper external reasoning-supervision candidates (integration prep)
+
+The new-paper track now includes lightweight integration (no raw data commits) for these external reasoning-supervision datasets:
+
+- `tasksource/PRM800K` (step-level PRM-style supervision)
+- `peiyi9979/Math-Shepherd` (step-level supervision; `trl-lib/math_shepherd` documented as an easy variant swap)
+- `openbmb/UltraInteract_pair` (pairwise chosen/rejected interaction supervision)
+- `openbmb/UltraInteract_sft` (SFT trajectory supervision)
+
+Use these scripts:
+
+```bash
+# Access + schema smoke check
+python scripts/verify_external_reasoning_datasets.py \
+  --output-dir outputs/external_reasoning_datasets/latest_verify
+
+# Full comparison report (JSON/MD/CSV under run-id folder)
+python scripts/generate_external_reasoning_dataset_integration_report.py
+```
+
+Artifacts are written under `outputs/external_reasoning_datasets/<run_id>/` and include:
+- `dataset_integration_report.json`
+- `dataset_integration_report.md`
+- `dataset_comparison_summary.csv`
+
+Notes:
+- Integration is preparation-only and does **not** imply final-method training usage.
+- Licenses and gating flags are pulled from Hugging Face card metadata when available; verify again before release.
+- Keep download-on-demand behavior; do not commit raw dataset dumps.
+
+## Remaining-candidate expansion status (2026-04-14)
+
+The integration layer now also attempts the remaining requested candidate family. Integrated and loader-verified in this environment:
+
+- `BlackSnowDot/DeepStep-Math-5K`
+- `TIGER-Lab/WebInstruct-verified`
+- `BAAI/JudgeLM-data-collection-v1.0`
+- `BAAI/JudgeLM-100K`
+- `lmsys/mt_bench_human_judgments` (MT-Bench human-judgment source)
+- `prometheus-eval/Feedback-Collection`
+- `prometheus-eval/Preference-Collection`
+- `HuggingFaceH4/s1k_r1_math_verify` (math_verify-style public release)
+- `SejinKimm/ARCTraj`
+
+Attempted but not integrated:
+
+- **PairS** (`cambridgeltl/PairS`): GitHub code repository found, but no canonical standalone dataset artifact / stable HF mirror identified.
+- **AgentPRM / InversePRM**: `Jolandaaa/agentprm` exists but was gated/inaccessible in this environment; no stable public `inverseprm` dataset artifact found.
+
+Use the full report script for machine-readable integrated/not-integrated audit output:
+
+```bash
+python scripts/generate_external_reasoning_dataset_integration_report.py \
+  --run-id <run_id>
+```
+
+Artifacts include:
+- `dataset_integration_report.json`
+- `dataset_integration_report.md`
+- `dataset_integration_report.csv`
+- `dataset_access_status.json`

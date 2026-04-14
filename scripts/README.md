@@ -15,6 +15,8 @@ Entry points for pilots, evaluation, and maintenance. All write ephemeral result
 | `verify_hf_dataset_access.py` | HF dataset access check → `outputs/hf_dataset_access` (default) |
 | `dataset_smoke_sample.py` | Small dataset smoke samples |
 | `generate_dataset_integration_report.py` | `outputs/dataset_integration_report.{json,md}` |
+| `verify_external_reasoning_datasets.py` | Verify access + schema preview for PRM800K / Math-Shepherd / UltraInteract datasets |
+| `generate_external_reasoning_dataset_integration_report.py` | Run-id report artifacts under `outputs/external_reasoning_datasets/<run_id>/` |
 | `generate_external_baseline_integration_report.py` | `outputs/external_baseline_integration_report.{json,md}` |
 | `list_external_baselines.py` | Print `configs/external_baselines_registry.json` |
 | `smoke_test.py` | Minimal repo smoke test |

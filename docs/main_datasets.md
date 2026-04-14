@@ -28,3 +28,22 @@ We keep LiveCodeBench in extended coverage (rather than core) to preserve the re
 ## Recommended first experimental subset
 
 A practical first subset is **GSM8K + MATH + GPQA Diamond** (see registry keys above). Lock HF revisions in run manifests before headline numbers. Generate a local status report (not committed by default): `python scripts/generate_dataset_integration_report.py` → `outputs/dataset_integration_report.{json,md}`.
+
+## New-paper track: external reasoning-supervision data (preparation layer)
+
+To support upcoming branch-level supervision experiments without prematurely committing to one source, the repository now integrates four external datasets as **candidate supervision sources**:
+
+| Dataset key | HF dataset ID | Supervision type | Planned role in this repo |
+|---|---|---|---|
+| `prm800k` | `tasksource/PRM800K` | `step_supervision` | PRM-style step-level scoring and branch-quality supervision prototypes |
+| `math_shepherd` | `peiyi9979/Math-Shepherd` (swap option: `trl-lib/math_shepherd`) | `step_supervision` | Math-domain step correctness supervision candidates |
+| `ultrainteract_pair` | `openbmb/UltraInteract_pair` | `pairwise_preference` | Pairwise ranking signals for branch-comparison methods |
+| `ultrainteract_sft` | `openbmb/UltraInteract_sft` | `trajectory_supervision` | SFT trajectory data for future trajectory-aware scoring |
+
+These are integrated in a license-aware, download-on-demand way only (see `experiments/external_reasoning_datasets.py` and `configs/external_reasoning_datasets_registry.json`). They are **not** yet evidence of being used in the final method.
+
+### Expanded external reasoning-supervision set (new-paper prep)
+
+Beyond the initial four integrations, the new-paper prep layer now includes additional public candidates for judge/verifier/process supervision and trajectory data: `DeepStep-Math-5K`, `WebInstruct-verified`, `JudgeLM-data-collection-v1.0`, `JudgeLM-100K`, `lmsys/mt_bench_human_judgments`, `prometheus-eval/Feedback-Collection`, `prometheus-eval/Preference-Collection`, `HuggingFaceH4/s1k_r1_math_verify`, and `SejinKimm/ARCTraj`.
+
+Non-integrated candidates are tracked explicitly in the candidate audit output (currently: PairS dataset artifact unresolved; AgentPRM gated + no clear InversePRM dataset release).

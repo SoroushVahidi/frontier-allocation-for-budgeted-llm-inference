@@ -80,6 +80,11 @@ Quick HF access check command (writes JSON/CSV/MD only, no raw dataset commits):
 
 - `python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset_access`
 
+New-paper external reasoning-supervision integration report (PRM800K / Math-Shepherd / UltraInteract):
+
+- `python scripts/generate_external_reasoning_dataset_integration_report.py`
+  → `outputs/external_reasoning_datasets/<run_id>/dataset_integration_report.{json,md,csv}` + `dataset_access_status.json`
+
 Wired HF dataset identifiers:
 
 - `openai/gsm8k`
