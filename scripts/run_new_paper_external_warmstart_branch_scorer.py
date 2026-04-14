@@ -156,7 +156,11 @@ def _v7_features_from_external(row: dict[str, Any], rng: random.Random) -> dict[
     return {k: float(vals.get(k, 0.0)) for k in V7_FEATURE_NAMES}
 
 
-def _extract_external_supervision(prepared_dir: Path, max_rows: int, seed: int) -> tuple[list[dict[str, float]], list[float], list[dict[str, Any]]]:
+def _extract_external_supervision(
+    prepared_dir: Path,
+    max_rows: int,
+    seed: int,
+) -> tuple[list[dict[str, float]], list[float], list[dict[str, Any]], dict[str, tuple[list[dict[str, float]], list[float]]]]:
     rng = random.Random(seed)
     previews = prepared_dir / "normalized_previews"
     # Tier 1 priority from readiness pass.
@@ -168,6 +172,7 @@ def _extract_external_supervision(prepared_dir: Path, max_rows: int, seed: int) 
     rows_x: list[dict[str, float]] = []
     rows_y: list[float] = []
     usage: list[dict[str, Any]] = []
+    per_dataset_xy: dict[str, tuple[list[dict[str, float]], list[float]]] = {}
 
     for key in dataset_keys:
         samples = _load_jsonl(previews / f"{key}.jsonl", max_rows)
@@ -188,6 +193,8 @@ def _extract_external_supervision(prepared_dir: Path, max_rows: int, seed: int) 
             continue
 
         used = 0
+        ds_x: list[dict[str, float]] = []
+        ds_y: list[float] = []
         for row in samples:
             if row.get("normalized_type") == "pairwise_preference":
                 chosen_row = dict(row)
@@ -196,15 +203,28 @@ def _extract_external_supervision(prepared_dir: Path, max_rows: int, seed: int) 
                 rejected_row = dict(row)
                 rejected_row["trajectory"] = row.get("rejected", "")
                 rejected_row["step_labels"] = "chosen=false"
-                rows_x.append(_v7_features_from_external(chosen_row, rng))
+                chosen_x = _v7_features_from_external(chosen_row, rng)
+                rejected_x = _v7_features_from_external(rejected_row, rng)
+                rows_x.append(chosen_x)
                 rows_y.append(1.0)
-                rows_x.append(_v7_features_from_external(rejected_row, rng))
+                rows_x.append(rejected_x)
                 rows_y.append(0.0)
+                ds_x.append(chosen_x)
+                ds_y.append(1.0)
+                ds_x.append(rejected_x)
+                ds_y.append(0.0)
                 used += 2
             else:
-                rows_x.append(_v7_features_from_external(row, rng))
-                rows_y.append(_infer_binary_label(row))
+                x_row = _v7_features_from_external(row, rng)
+                y_row = _infer_binary_label(row)
+                rows_x.append(x_row)
+                rows_y.append(y_row)
+                ds_x.append(x_row)
+                ds_y.append(y_row)
                 used += 1
+
+        if ds_x:
+            per_dataset_xy[key] = (ds_x, ds_y)
 
         usage.append(
             {
@@ -217,7 +237,7 @@ def _extract_external_supervision(prepared_dir: Path, max_rows: int, seed: int) 
             }
         )
 
-    return rows_x, rows_y, usage
+    return rows_x, rows_y, usage, per_dataset_xy
 
 
 def _load_internal_v7_dataset(path: Path) -> tuple[list[dict[str, float]], list[float], list[dict[str, float]], list[float]]:
@@ -446,7 +466,7 @@ def main() -> None:
     internal_dataset_path = run_dir / "branch_scorer_v3_dataset.jsonl"
 
     # 2) Load external warm-start supervision from prepared Tier-1 previews.
-    ext_x, ext_y, usage_rows = _extract_external_supervision(
+    ext_x, ext_y, usage_rows, ext_per_dataset = _extract_external_supervision(
         Path(args.prepared_run_dir),
         max_rows=args.external_max_rows_per_dataset,
         seed=args.seed,
@@ -488,6 +508,15 @@ def main() -> None:
             "holdout_accuracy": _evaluate_classifier(mixed_w, mixed_b, int_test_x, int_test_y),
         },
     ]
+    for ds_name, (ds_x, ds_y) in ext_per_dataset.items():
+        ds_w, ds_b = _train_logistic(ds_x, ds_y, lr=0.07, epochs=140)
+        holdout_rows.append(
+            {
+                "model": f"external_warmstart_only__{ds_name}",
+                "holdout_accuracy": _evaluate_classifier(ds_w, ds_b, int_test_x, int_test_y),
+            }
+        )
+    _write_csv(run_dir / "holdout_metrics.csv", holdout_rows)
 
     model_map = {
         "adaptive_learned_branch_score_internal_only": load_model(model_dir / "adaptive_learned_branch_score_internal_only.json"),
@@ -535,6 +564,7 @@ def main() -> None:
     ]
     _write_csv(run_dir / "oracle_gap_summary.csv", oracle_rows)
     _write_csv(run_dir / "dataset_usage_summary.csv", usage_rows)
+    _write_csv(run_dir / "external_dataset_ablation.csv", [r for r in holdout_rows if r["model"].startswith("external_warmstart_only__")])
 
     real_model_status = {"attempted": False, "reason": "not requested"}
     if args.real_model_smoke:
@@ -555,12 +585,22 @@ def main() -> None:
             "warmstart_comparison": str(run_dir / "warmstart_comparison.csv"),
             "oracle_gap_summary": str(run_dir / "oracle_gap_summary.csv"),
             "dataset_usage_summary": str(run_dir / "dataset_usage_summary.csv"),
+            "external_dataset_ablation": str(run_dir / "external_dataset_ablation.csv"),
+            "holdout_metrics": str(run_dir / "holdout_metrics.csv"),
             "interpretation": str(run_dir / "interpretation.md"),
         },
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     best = max([r for r in method_rows if r["method"] != "oracle_frontier_upper_bound"], key=lambda x: x["accuracy"])
+    ds_holdout = [r for r in holdout_rows if r["model"].startswith("external_warmstart_only__")]
+    ds_holdout_sorted = sorted(ds_holdout, key=lambda r: r["holdout_accuracy"], reverse=True)
+    top_ds_line = (
+        f"- Best single external dataset by holdout transfer: {ds_holdout_sorted[0]['model'].replace('external_warmstart_only__', '')} ({ds_holdout_sorted[0]['holdout_accuracy']:.4f})."
+        if ds_holdout_sorted
+        else "- Best single external dataset by holdout transfer: unavailable (no external rows loaded)."
+    )
+
     interp = [
         f"# External warm-start branch scorer interpretation ({run_id})",
         "",
@@ -579,6 +619,7 @@ def main() -> None:
         f"- External warm-start only accuracy: {by_method['adaptive_learned_branch_score_external_warmstart']['accuracy']:.4f}.",
         f"- External warm-start + internal adaptation accuracy: {by_method['adaptive_learned_branch_score_external_plus_internal']['accuracy']:.4f}.",
         f"- Oracle upper-bound accuracy: {oracle_acc:.4f}.",
+        top_ds_line,
         "",
         "## Interpretation",
         "- If external+internal > internal-only, warm-start is useful as initialization.",
