@@ -400,12 +400,13 @@ def _choose_branch(
         if model_map is None or method not in model_map:
             raise ValueError(f"Model for {method} not provided")
         model = model_map[method]
+        feature_family = str(model.get("feature_family", "v1"))
         parent_mean = sum(b.score for b in active) / max(1, len(active))
-        if method == "adaptive_learned_branch_score_v5":
+        if method == "adaptive_learned_branch_score_v5" or feature_family == "v5":
             return max(active, key=lambda b: model_priority(model, branch_features_v5(b, parent_mean, remaining_budget)))
-        if method == "adaptive_learned_branch_score_v6":
+        if method == "adaptive_learned_branch_score_v6" or feature_family == "v6":
             return max(active, key=lambda b: model_priority(model, branch_features_v6(b, parent_mean, remaining_budget)))
-        if method == "adaptive_learned_branch_score_v7_bt":
+        if method == "adaptive_learned_branch_score_v7_bt" or feature_family == "v7":
             return max(
                 active,
                 key=lambda b: model_priority(model, branch_features_v7_ordered_history(b, parent_mean, remaining_budget)),
