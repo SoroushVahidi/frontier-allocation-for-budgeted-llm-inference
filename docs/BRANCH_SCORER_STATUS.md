@@ -32,8 +32,19 @@ This note organizes branch-scorer development into a practical sequence.
 
 - **Default baseline for branch-scorer line:** plain `adaptive_bt_pairwise`.
 - **Strong heuristic anchor:** `adaptive_relative_rank`.
+- **Main lightweight experimental branch:** tie-aware Rao-Kupper BT (`adaptive_bt_pairwise_tie_aware_raokupper`), currently tracked with matched bounded audits.
 - **Promising but not default:** reliability-weighted BT and external warm-start variants.
 - **Diagnostic utility:** pairwise diagnostic pipeline should be run before heavier expansion.
+
+## Conservative switch policy (proxy BT -> Rao-Kupper)
+
+- Keep `adaptive_bt_pairwise` as default unless **independent matched reruns** show Rao-Kupper is consistently positive.
+- Promote Rao-Kupper only when all of the following hold in bounded matched audits:
+  1. positive mean controller delta vs proxy BT,
+  2. wins exceed losses across seeds (not just one lucky run),
+  3. near-tie slice is at least non-regressing on average,
+  4. result is reproduced on a fresh seed set.
+- If any condition fails, keep proxy BT default and keep Rao-Kupper as experimental-leading branch.
 
 ## Canonical vs exploratory labels
 
