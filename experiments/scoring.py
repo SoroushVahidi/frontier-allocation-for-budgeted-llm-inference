@@ -308,6 +308,113 @@ class TieAwareBTBranchScorer:
         return max(candidates, key=expected_against_reference)
 
 
+class RegimeGatedHybridBTBranchScorer:
+    """Proxy-BT default scorer with bounded Rao-Kupper fallback in selected regimes.
+
+    Default branch choice is from the proxy BT model. Rao-Kupper is only used when
+    a lightweight, interpretable gate triggers on top-2 branch comparison signals.
+    """
+
+    def __init__(
+        self,
+        baseline_model_path: str | Path,
+        raokupper_model_path: str | Path,
+        max_actions_per_problem: int,
+        gate_config: dict[str, float | int | bool | str] | None = None,
+    ) -> None:
+        self.baseline_model = json.loads(Path(baseline_model_path).read_text(encoding="utf-8"))
+        self.raokupper_model = json.loads(Path(raokupper_model_path).read_text(encoding="utf-8"))
+        self.max_actions = max_actions_per_problem
+        self.gate_config = gate_config or {}
+
+    def _linear_score(self, model: dict[str, object], branch: BranchState, parent_mean_score: float) -> float:
+        features = _ordered_history_features(
+            branch,
+            parent_mean_score=parent_mean_score,
+            remaining_budget=max(0, self.max_actions - branch.depth),
+        )
+        score = float(model.get("intercept", 0.0))
+        for name, weight in model.get("weights", {}).items():
+            score += float(weight) * float(features.get(name, 0.0))
+        return score
+
+    @staticmethod
+    def _tie_probs_raokupper(model: dict[str, object], delta: float) -> tuple[float, float, float]:
+        tie_raw = float(model.get("tie_raw_parameter", -2.0))
+        eta = 1.0 + math.log1p(math.exp(tie_raw))
+        ed = math.exp(max(-40.0, min(40.0, delta)))
+        p_win = ed / (ed + eta)
+        p_loss = 1.0 / (1.0 + eta * ed)
+        p_tie = max(1e-12, 1.0 - p_win - p_loss)
+        z = p_win + p_loss + p_tie
+        return p_win / z, p_loss / z, p_tie / z
+
+    def _gate_active(
+        self,
+        top: BranchState,
+        second: BranchState,
+        parent_mean_score: float,
+        baseline_scores: dict[str, float],
+        raokupper_scores: dict[str, float],
+    ) -> bool:
+        gap = float(baseline_scores[top.branch_id] - baseline_scores[second.branch_id])
+        if gap < float(self.gate_config.get("min_gap", 0.0)):
+            return False
+        if gap > float(self.gate_config.get("max_gap", 1e9)):
+            return False
+
+        remaining_budget = min(max(0, self.max_actions - top.depth), max(0, self.max_actions - second.depth))
+        if remaining_budget < int(self.gate_config.get("min_remaining_budget", 0)):
+            return False
+        if remaining_budget > int(self.gate_config.get("max_remaining_budget", self.max_actions)):
+            return False
+
+        verify_count_max = max(float(top.verify_count), float(second.verify_count))
+        if verify_count_max < float(self.gate_config.get("min_verify_count_max", 0.0)):
+            return False
+        if verify_count_max > float(self.gate_config.get("max_verify_count_max", 1e9)):
+            return False
+
+        stalled_steps_max = max(float(top.stalled_steps), float(second.stalled_steps))
+        if stalled_steps_max < float(self.gate_config.get("min_stalled_steps_max", 0.0)):
+            return False
+        if stalled_steps_max > float(self.gate_config.get("max_stalled_steps_max", 1e9)):
+            return False
+
+        delta = float(raokupper_scores[top.branch_id] - raokupper_scores[second.branch_id])
+        _, _, p_tie = self._tie_probs_raokupper(self.raokupper_model, delta)
+        if p_tie < float(self.gate_config.get("min_tie_prob", 0.0)):
+            return False
+        if p_tie > float(self.gate_config.get("max_tie_prob", 1.0)):
+            return False
+
+        return True
+
+    def score_branch(self, branch: BranchState) -> float:
+        baseline_raw = self._linear_score(self.baseline_model, branch, parent_mean_score=0.5)
+        return baseline_raw
+
+    def pick_best(self, branches: list[BranchState]) -> BranchState | None:
+        candidates = [b for b in branches if not b.is_pruned]
+        if not candidates:
+            return None
+        if len(candidates) == 1:
+            return candidates[0]
+
+        parent_mean = sum(float(b.score) for b in candidates) / max(1, len(candidates))
+        baseline_scores = {b.branch_id: self._linear_score(self.baseline_model, b, parent_mean) for b in candidates}
+        ranked = sorted(candidates, key=lambda b: baseline_scores[b.branch_id], reverse=True)
+        top, second = ranked[0], ranked[1]
+
+        raokupper_scores = {b.branch_id: self._linear_score(self.raokupper_model, b, parent_mean) for b in candidates}
+        if not self._gate_active(top, second, parent_mean, baseline_scores, raokupper_scores):
+            return top
+
+        delta_top_vs_second = float(raokupper_scores[top.branch_id] - raokupper_scores[second.branch_id])
+        p_top, p_second, _ = self._tie_probs_raokupper(self.raokupper_model, delta_top_vs_second)
+        return top if p_top >= p_second else second
+
+
 class TwoStageNearTieBTBranchScorer:
     """Two-stage scorer: baseline BT first, then near-tie tie-breaker on close top-2.
 
