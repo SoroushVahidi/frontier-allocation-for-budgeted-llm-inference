@@ -6,6 +6,7 @@ These are intentionally simple placeholders for feasibility experiments.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 import json
 from pathlib import Path
 
@@ -241,3 +242,93 @@ class LearnedBTBranchScorer:
                 return max(candidates, key=lambda b: float(b.score))
 
         return scored[0][0]
+
+
+class TwoStageNearTieBTBranchScorer:
+    """Two-stage scorer: baseline BT first, then near-tie tie-breaker on close top-2.
+
+    Stage 1 keeps the strong global BT utility model.
+    Stage 2 is only invoked when the top-2 baseline scores are within
+    `near_tie_margin`, then a lightweight logistic tie-breaker chooses between them.
+    """
+
+    def __init__(self, model_path: str | Path, max_actions_per_problem: int) -> None:
+        self.model = json.loads(Path(model_path).read_text(encoding="utf-8"))
+        self.max_actions = max_actions_per_problem
+        self.base_model = self.model.get("base_model", {})
+        self.tie_model = self.model.get("tie_break_model", {})
+        self.near_tie_margin = float(self.model.get("near_tie_margin", 0.06))
+
+    def _base_score(self, branch: BranchState, parent_mean_score: float) -> float:
+        features = _ordered_history_features(
+            branch,
+            parent_mean_score=parent_mean_score,
+            remaining_budget=max(0, self.max_actions - branch.depth),
+        )
+        score = float(self.base_model.get("intercept", 0.0))
+        for name, weight in self.base_model.get("weights", {}).items():
+            score += float(weight) * float(features.get(name, 0.0))
+        return score
+
+    def _tie_features(self, a: BranchState, b: BranchState, parent_mean_score: float) -> dict[str, float]:
+        fa = _ordered_history_features(
+            a,
+            parent_mean_score=parent_mean_score,
+            remaining_budget=max(0, self.max_actions - a.depth),
+        )
+        fb = _ordered_history_features(
+            b,
+            parent_mean_score=parent_mean_score,
+            remaining_budget=max(0, self.max_actions - b.depth),
+        )
+        feats: dict[str, float] = {}
+        for name in self.tie_model.get("feature_names", []):
+            if name.startswith("diff::"):
+                base = name.split("::", 1)[1]
+                feats[name] = float(fa.get(base, 0.0)) - float(fb.get(base, 0.0))
+            elif name.startswith("abs_diff::"):
+                base = name.split("::", 1)[1]
+                feats[name] = abs(float(fa.get(base, 0.0)) - float(fb.get(base, 0.0)))
+            else:
+                feats[name] = 0.0
+        return feats
+
+    @staticmethod
+    def _sigmoid(z: float) -> float:
+        if z >= 0:
+            ez = math.exp(-z)
+            return 1.0 / (1.0 + ez)
+        ez = math.exp(z)
+        return ez / (1.0 + ez)
+
+    def _tie_prob_a(self, a: BranchState, b: BranchState, parent_mean_score: float) -> float:
+        feats = self._tie_features(a, b, parent_mean_score)
+        model_type = str(self.tie_model.get("model_type", "logistic_regression"))
+        if model_type == "decision_stump":
+            feature = str(self.tie_model.get("stump_feature", ""))
+            threshold = float(self.tie_model.get("threshold", 0.0))
+            left_prob = float(self.tie_model.get("left_prob_a", 0.5))
+            right_prob = float(self.tie_model.get("right_prob_a", 0.5))
+            return left_prob if float(feats.get(feature, 0.0)) <= threshold else right_prob
+
+        z = float(self.tie_model.get("intercept", 0.0))
+        for name, weight in self.tie_model.get("weights", {}).items():
+            z += float(weight) * float(feats.get(name, 0.0))
+        return self._sigmoid(z)
+
+    def score_branch(self, branch: BranchState) -> float:
+        return self._base_score(branch, parent_mean_score=0.5)
+
+    def pick_best(self, branches: list[BranchState]) -> BranchState | None:
+        candidates = [b for b in branches if not b.is_pruned]
+        if not candidates:
+            return None
+        parent_mean = sum(float(b.score) for b in candidates) / max(1, len(candidates))
+        ranked = sorted(candidates, key=lambda b: self._base_score(b, parent_mean), reverse=True)
+        if len(ranked) < 2:
+            return ranked[0]
+        gap = self._base_score(ranked[0], parent_mean) - self._base_score(ranked[1], parent_mean)
+        if gap > self.near_tie_margin:
+            return ranked[0]
+        p_top = self._tie_prob_a(ranked[0], ranked[1], parent_mean)
+        return ranked[0] if p_top >= 0.5 else ranked[1]
