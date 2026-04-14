@@ -24,6 +24,13 @@ class BranchState:
     predicted_answer: Optional[str] = None
     is_done: bool = False
     is_pruned: bool = False
+    stalled_steps: int = 0
+    recent_delta: float = 0.0
+    verify_count: int = 0
+    branch_age: int = 0
+    action_history: list[str] = field(default_factory=list)
+    score_history: list[float] = field(default_factory=list)
+    depth_history: list[int] = field(default_factory=list)
 
     @property
     def depth(self) -> int:
@@ -65,9 +72,14 @@ class SimulatedBranchGenerator:
             return BranchActionResult("expand", branch.score, branch.score, branch.is_done)
 
         score_before = branch.score
+        branch.score_history.append(score_before)
+        branch.depth_history.append(branch.depth)
+        branch.action_history.append("expand")
         branch.steps.append(f"step_{branch.depth + 1}")
         drift = self.rng.uniform(-0.05, 0.08)
         branch.score = min(1.0, max(0.0, branch.score + drift))
+        branch.recent_delta = branch.score - score_before
+        branch.stalled_steps = branch.stalled_steps + 1 if branch.recent_delta <= 0.005 else 0
 
         finish_prob = min(0.95, self.finish_prob_base + 0.1 * branch.depth + 0.25 * branch.latent_quality)
         should_finish = branch.depth >= self.max_depth or self.rng.random() < finish_prob
@@ -81,9 +93,14 @@ class SimulatedBranchGenerator:
 
     def verify(self, branch: BranchState, question: str) -> BranchActionResult:  # noqa: ARG002
         score_before = branch.score
+        branch.verify_count += 1
+        branch.score_history.append(score_before)
+        branch.depth_history.append(branch.depth)
+        branch.action_history.append("verify")
         correction = (branch.latent_quality - branch.score) * 0.35
         jitter = self.rng.uniform(-0.03, 0.03)
         branch.score = min(1.0, max(0.0, branch.score + correction + jitter))
+        branch.recent_delta = branch.score - score_before
         return BranchActionResult("verify", score_before, branch.score, branch.is_done)
 
     @staticmethod

@@ -17,10 +17,12 @@ from experiments.branch_scorer_v3 import (
     FEATURE_NAMES,
     V5_FEATURE_NAMES,
     V6_FEATURE_NAMES,
+    V7_FEATURE_NAMES,
     SimBranch,
     branch_features,
     branch_features_v5,
     branch_features_v6,
+    branch_features_v7_ordered_history,
     continuation_value,
     expected_next_gain,
     expand_branch,
@@ -105,6 +107,13 @@ def main() -> None:
                 )
                 row.update(
                     branch_features_v6(
+                        branch=branch,
+                        parent_mean_score=mean_score,
+                        remaining_budget=max(0, args.budget - decision_id),
+                    )
+                )
+                row.update(
+                    branch_features_v7_ordered_history(
                         branch=branch,
                         parent_mean_score=mean_score,
                         remaining_budget=max(0, args.budget - decision_id),
@@ -206,6 +215,7 @@ def main() -> None:
         "feature_names": FEATURE_NAMES,
         "v5_feature_names": V5_FEATURE_NAMES,
         "v6_feature_names": V6_FEATURE_NAMES,
+        "v7_feature_names": V7_FEATURE_NAMES,
         "n_init_branches": args.n_init_branches,
         "rows": len(rows),
         "train_rows": sum(1 for r in rows if r["split"] == "train"),
@@ -215,6 +225,7 @@ def main() -> None:
             "v4_target_subtree_value": "mean downstream utility from future snapshots of the same branch within an episode, utility=0.7*future_score+0.3*final_branch_correct",
             "v5_target_budgeted_subtree_value": "v4 subtree value scaled by min(1, remaining_budget / curr_distance_to_terminal_est)",
             "v6_target_pairwise_groupwise": "decision-time competitive target from logged future outcomes: budget-aware utility blended into pairwise win-rate and groupwise softmax preference",
+            "v7_ordered_history_features": "remaining budget + ordered last-4 nodes and last-3 edges with explicit padding/masks for short branch histories",
         },
     }
     (out_dir / "dataset_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")

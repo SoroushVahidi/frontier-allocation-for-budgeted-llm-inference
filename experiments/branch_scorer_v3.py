@@ -58,6 +58,42 @@ V6_FEATURE_NAMES = [
     "parent_relative_score",
 ]
 
+V7_FEATURE_NAMES = [
+    "remaining_budget",
+    "verify_count",
+    "stalled_steps",
+    "branch_age",
+    "parent_relative_score",
+    "node_0_mask",
+    "node_0_score",
+    "node_0_future_value_est",
+    "node_0_distance_to_terminal_est",
+    "node_1_mask",
+    "node_1_score",
+    "node_1_future_value_est",
+    "node_1_distance_to_terminal_est",
+    "node_2_mask",
+    "node_2_score",
+    "node_2_future_value_est",
+    "node_2_distance_to_terminal_est",
+    "node_3_mask",
+    "node_3_score",
+    "node_3_future_value_est",
+    "node_3_distance_to_terminal_est",
+    "edge_0_is_start",
+    "edge_0_is_expand",
+    "edge_0_is_verify",
+    "edge_0_score_delta",
+    "edge_1_is_start",
+    "edge_1_is_expand",
+    "edge_1_is_verify",
+    "edge_1_score_delta",
+    "edge_2_is_start",
+    "edge_2_is_expand",
+    "edge_2_is_verify",
+    "edge_2_score_delta",
+]
+
 ACTION_START = "start"
 ACTION_EXPAND = "expand"
 ACTION_VERIFY = "verify"
@@ -180,6 +216,68 @@ def branch_features_v6(branch: SimBranch, parent_mean_score: float, remaining_bu
         "previous_action_verify": 1.0 if previous_action == ACTION_VERIFY else 0.0,
         "parent_relative_score": curr_score - parent_mean_score,
     }
+
+
+def branch_features_v7_ordered_history(
+    branch: SimBranch,
+    parent_mean_score: float,
+    remaining_budget: int,
+    node_window: int = 4,
+    edge_window: int = 3,
+) -> dict[str, float]:
+    """Ordered path-history features for BT-style scalar branch scoring.
+
+    Slots are oldest -> newest in each window.
+    - node_i_* uses the i-th slot among last-4 nodes ending at current node.
+    - edge_i_* uses the i-th slot among last-3 actions leading into current node.
+    Missing history is represented with explicit START-padding and node masks.
+    """
+    scores = [float(x) for x in branch.score_history] + [float(branch.score)]
+    depths = [float(x) for x in branch.depth_history] + [float(branch.depth)]
+    actions = list(branch.action_history)
+
+    node_scores = scores[-node_window:]
+    node_depths = depths[-node_window:]
+    node_masks = [1.0] * len(node_scores)
+    while len(node_scores) < node_window:
+        node_scores.insert(0, 0.0)
+        node_depths.insert(0, 0.0)
+        node_masks.insert(0, 0.0)
+
+    edge_actions = actions[-edge_window:]
+    while len(edge_actions) < edge_window:
+        edge_actions.insert(0, ACTION_START)
+
+    score_deltas = []
+    for i in range(len(scores) - 1):
+        score_deltas.append(scores[i + 1] - scores[i])
+    edge_deltas = score_deltas[-edge_window:]
+    while len(edge_deltas) < edge_window:
+        edge_deltas.insert(0, 0.0)
+
+    out: dict[str, float] = {
+        "remaining_budget": float(max(0, remaining_budget)),
+        "verify_count": float(branch.verify_count),
+        "stalled_steps": float(branch.stalled_steps),
+        "branch_age": float(branch.branch_age),
+        "parent_relative_score": float(branch.score) - parent_mean_score,
+    }
+    for i in range(node_window):
+        score_i = node_scores[i]
+        depth_i = int(node_depths[i])
+        action_for_distance = ACTION_START if i == 0 else edge_actions[min(i - 1, edge_window - 1)]
+        out[f"node_{i}_mask"] = node_masks[i]
+        out[f"node_{i}_score"] = score_i
+        out[f"node_{i}_future_value_est"] = estimate_future_value_proxy(score_i, depth_i)
+        out[f"node_{i}_distance_to_terminal_est"] = estimate_distance_to_terminal_proxy(score_i, depth_i, action_for_distance)
+
+    for i in range(edge_window):
+        action_i = edge_actions[i]
+        out[f"edge_{i}_is_start"] = 1.0 if action_i == ACTION_START else 0.0
+        out[f"edge_{i}_is_expand"] = 1.0 if action_i == ACTION_EXPAND else 0.0
+        out[f"edge_{i}_is_verify"] = 1.0 if action_i == ACTION_VERIFY else 0.0
+        out[f"edge_{i}_score_delta"] = float(edge_deltas[i])
+    return out
 
 
 def expected_next_gain(branch: SimBranch, finish_prob_base: float, answer_noise: float) -> float:
@@ -307,6 +405,11 @@ def _choose_branch(
             return max(active, key=lambda b: model_priority(model, branch_features_v5(b, parent_mean, remaining_budget)))
         if method == "adaptive_learned_branch_score_v6":
             return max(active, key=lambda b: model_priority(model, branch_features_v6(b, parent_mean, remaining_budget)))
+        if method == "adaptive_learned_branch_score_v7_bt":
+            return max(
+                active,
+                key=lambda b: model_priority(model, branch_features_v7_ordered_history(b, parent_mean, remaining_budget)),
+            )
         return max(active, key=lambda b: model_priority(model, branch_features(b, parent_mean)))
 
     return max(active, key=lambda b: baseline_priority(method, b, active))

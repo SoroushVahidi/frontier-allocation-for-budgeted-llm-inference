@@ -22,7 +22,7 @@ from experiments.controllers import (
 from experiments.prm_partial_scorer import HeuristicPRMPartialScorer
 from experiments.data import PilotExample, extract_final_answer
 from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
-from experiments.scoring import ScoreConfig, SimpleBranchScorer
+from experiments.scoring import LearnedBTBranchScorer, ScoreConfig, SimpleBranchScorer
 from experiments.verifiers import LLMVerifyProxyVerifier, SimulatedScorerVerifier
 
 
@@ -101,6 +101,8 @@ def build_frontier_strategies(
     include_prm_variants: bool = False,
     prm_early_reject_threshold: float = 0.25,
     prm_early_reject_min_expansions: int = 2,
+    bt_pairwise_model_path: str | None = None,
+    bt_pairwise_reliability_model_path: str | None = None,
 ) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
     prm_scorer = HeuristicPRMPartialScorer()
@@ -120,6 +122,32 @@ def build_frontier_strategies(
             allow_verify=True,
             min_expansions_before_prune=min_expand,
             method_name=f"adaptive_min_expand_{min_expand}",
+        )
+    if bt_pairwise_model_path:
+        bt_scorer = LearnedBTBranchScorer(bt_pairwise_model_path, max_actions_per_problem=budget)
+        specs["adaptive_bt_pairwise"] = AdaptiveController(
+            generator_factory(),
+            bt_scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            method_name="adaptive_bt_pairwise",
+        )
+    if bt_pairwise_reliability_model_path:
+        bt_rel_scorer = LearnedBTBranchScorer(bt_pairwise_reliability_model_path, max_actions_per_problem=budget)
+        specs["adaptive_bt_pairwise_reliability"] = AdaptiveController(
+            generator_factory(),
+            bt_rel_scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            method_name="adaptive_bt_pairwise_reliability",
         )
     if include_budget_guarded_adaptive:
         specs["adaptive_budget_guarded"] = AdaptiveController(

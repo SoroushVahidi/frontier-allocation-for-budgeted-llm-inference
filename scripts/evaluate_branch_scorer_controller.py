@@ -24,6 +24,7 @@ METHODS = [
     "adaptive_learned_branch_score_v4",
     "adaptive_learned_branch_score_v5",
     "adaptive_learned_branch_score_v6",
+    "adaptive_learned_branch_score_v7_bt",
 ]
 
 
@@ -47,6 +48,7 @@ def main() -> None:
         "adaptive_learned_branch_score_v4": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v4.json"),
         "adaptive_learned_branch_score_v5": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v5.json"),
         "adaptive_learned_branch_score_v6": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v6.json"),
+        "adaptive_learned_branch_score_v7_bt": load_model(Path(args.model_dir) / "adaptive_learned_branch_score_v7_bt.json"),
     }
 
     results: dict[str, dict[str, float]] = {}
