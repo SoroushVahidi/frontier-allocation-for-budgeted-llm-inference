@@ -40,6 +40,10 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `run_new_paper_external_warmstart_branch_scorer.py` | exploratory | External warm-start comparison |
 | `run_new_paper_pairwise_diagnostic_audit.py` | exploratory diagnostic | Pairwise label/confidence diagnostics |
 | `run_new_paper_prm_branch_scoring.py` | exploratory | PRM-style branch scoring audit |
+| `run_new_paper_raokupper_resolution_audit.py` | exploratory diagnostic | Matched proxy BT vs Rao-Kupper resolution/contradiction audit |
+| `run_new_paper_raokupper_confirmation.py` | exploratory diagnostic | One-command bounded independent confirmation alias for Rao-Kupper |
+| `run_new_paper_ambiguous_branch_dataset.py` | exploratory diagnostic/data curation | Build curated ambiguous branch-comparison supervision/eval asset |
+| `run_new_paper_ambiguous_pair_targeted_experiment.py` | exploratory diagnostic/adaptation | Cheap targeted reweighting experiment using ambiguous-pair asset |
 
 ## Dataset and baseline integration/preparation
 

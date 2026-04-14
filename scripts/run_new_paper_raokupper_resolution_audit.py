@@ -33,6 +33,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--budget", type=int, default=10)
     p.add_argument("--ranking-episodes", type=int, default=130)
     p.add_argument("--near-tie-margin", type=float, default=0.06)
+    p.add_argument("--primary-tie-supervision", choices=["none", "strict_tie", "tie_or_uncertain"], default="tie_or_uncertain")
     p.add_argument("--include-oracle-reference", action="store_true")
     return p.parse_args()
 
@@ -128,6 +129,7 @@ def _controller_eval(
     subset_size: int,
     budget: int,
     model_paths: dict[str, Path],
+    primary_tie_supervision: str,
     include_oracle: bool,
 ) -> tuple[list[dict[str, Any]], float]:
     import random
@@ -148,7 +150,7 @@ def _controller_eval(
     strategies: dict[str, Any] = {
         "adaptive_bt_pairwise": baseline_specs["adaptive_bt_pairwise"],
         "adaptive_bt_pairwise_tie_aware_raokupper": AdaptiveController(
-            gen_factory(), TieAwareBTBranchScorer(model_paths["rao_tie_or_uncertain"], max_actions_per_problem=budget), budget,
+            gen_factory(), TieAwareBTBranchScorer(model_paths[f"rao_{primary_tie_supervision}"], max_actions_per_problem=budget), budget,
             high_threshold=0.72, low_threshold=0.42, max_branches=3, allow_verify=True, min_expansions_before_prune=1,
             method_name="adaptive_bt_pairwise_tie_aware_raokupper",
         ),
@@ -311,15 +313,13 @@ def main() -> None:
                 mode,
             ])
 
-        model_paths["rao_tie_or_uncertain"] = model_paths["rao_tie_or_uncertain"]
-
         pair_rows = _load_jsonl(pairwise_path)
         test_rows = [r for r in pair_rows if r.get("split") == "test"]
 
         base_model = _load_json(model_paths["proxy_bt"])
         dav_model = _load_json(model_paths["davidson_tie_or_uncertain"])
         rk_mode_models = {m: _load_json(model_paths[f"rao_{m}"]) for m in tie_modes}
-        rk_default_model = rk_mode_models["tie_or_uncertain"]
+        rk_default_model = rk_mode_models[args.primary_tie_supervision]
 
         near_keys = {
             _pair_key(r)
@@ -346,7 +346,7 @@ def main() -> None:
             },
             {
                 "seed": seed,
-                "method": "tie_aware_raokupper_tie_or_uncertain",
+                "method": f"tie_aware_raokupper_{args.primary_tie_supervision}",
                 "pair_acc_test": _pair_acc(test_rows, rk_default_model),
                 "pair_acc_near_tie_broad": _pair_acc(near_broad, rk_default_model),
                 "pair_acc_near_tie_extreme": _pair_acc(near_extreme, rk_default_model),
@@ -372,12 +372,13 @@ def main() -> None:
             dataset=args.dataset,
             subset_size=args.subset_size,
             budget=args.budget,
-            model_paths={
-                "proxy_bt": model_paths["proxy_bt"],
-                "davidson_tie_or_uncertain": model_paths["davidson_tie_or_uncertain"],
-                "rao_tie_or_uncertain": model_paths["rao_tie_or_uncertain"],
-            },
-            include_oracle=args.include_oracle_reference,
+                model_paths={
+                    "proxy_bt": model_paths["proxy_bt"],
+                    "davidson_tie_or_uncertain": model_paths["davidson_tie_or_uncertain"],
+                    **{f"rao_{mode}": path for mode, path in [(m, model_paths[f"rao_{m}"]) for m in tie_modes]},
+                },
+                primary_tie_supervision=args.primary_tie_supervision,
+                include_oracle=args.include_oracle_reference,
         )
         method_rows.extend(base_controller_rows)
         proxy_acc = next(float(r["accuracy"]) for r in base_controller_rows if r["method"] == "adaptive_bt_pairwise")
@@ -391,8 +392,9 @@ def main() -> None:
                 model_paths={
                     "proxy_bt": model_paths["proxy_bt"],
                     "davidson_tie_or_uncertain": model_paths["davidson_tie_or_uncertain"],
-                    "rao_tie_or_uncertain": model_paths[f"rao_{mode}"],
+                    **{f"rao_{m}": model_paths[f"rao_{m}"] for m in tie_modes},
                 },
+                primary_tie_supervision=mode,
                 include_oracle=False,
             )
             rao_acc = next(float(r["accuracy"]) for r in mode_rows if r["method"] == "adaptive_bt_pairwise_tie_aware_raokupper")
@@ -506,7 +508,7 @@ def main() -> None:
     top_regimes = sorted(regime_means.items(), key=lambda x: x[1], reverse=True)
 
     near_proxy = [r for r in near_rows if r["method"] == "proxy_bt_baseline"]
-    near_rk = [r for r in near_rows if r["method"] == "tie_aware_raokupper_tie_or_uncertain"]
+    near_rk = [r for r in near_rows if r["method"] == f"tie_aware_raokupper_{args.primary_tie_supervision}"]
     near_extreme_delta = (
         (sum(float(r["pair_acc_near_tie_extreme"]) for r in near_rk) / max(1, len(near_rk)))
         - (sum(float(r["pair_acc_near_tie_extreme"]) for r in near_proxy) / max(1, len(near_proxy)))
@@ -521,7 +523,7 @@ def main() -> None:
         "",
         "## Direct answers",
         f"- Was the recent strong Rao-Kupper result real or likely noise? **{'Likely real within this matched bounded setup, but still modest/seed-sensitive' if rk_summary and float(rk_summary['mean_delta_vs_proxy_bt']) > 0 else 'Likely noise/mixed'}**.",
-        f"- In matched multi-seed setting, does Rao-Kupper beat proxy BT? **{'Yes' if rk_summary and rk_summary['wins_vs_proxy_bt'] > rk_summary['losses_vs_proxy_bt'] else 'No or mixed'}** (wins/losses={rk_summary['wins_vs_proxy_bt'] if rk_summary else 0}/{rk_summary['losses_vs_proxy_bt'] if rk_summary else 0}, mean delta={float(rk_summary['mean_delta_vs_proxy_bt']) if rk_summary else 0:+.4f}).",
+        f"- In matched multi-seed setting, does Rao-Kupper beat proxy BT? **{'Yes' if rk_summary and float(rk_summary['mean_delta_vs_proxy_bt']) > 0 and rk_summary['wins_vs_proxy_bt'] > rk_summary['losses_vs_proxy_bt'] else 'No or mixed'}** (wins/losses={rk_summary['wins_vs_proxy_bt'] if rk_summary else 0}/{rk_summary['losses_vs_proxy_bt'] if rk_summary else 0}, mean delta={float(rk_summary['mean_delta_vs_proxy_bt']) if rk_summary else 0:+.4f}).",
         f"- Which tie-supervision mode works best? **{best_mode['tie_supervision'] if best_mode else 'n/a'}** (mean delta vs proxy={float(best_mode['delta_vs_proxy_bt']) if best_mode else 0:+.4f})." if best_mode else "- Which tie-supervision mode works best? n/a.",
         f"- Why overall up but hardest near-tie not up? Near-tie-extreme mean delta is {near_extreme_delta:+.4f}; gains are concentrated in selected ambiguity/regime slices rather than uniformly fixing hardest pairs.",
         f"- Should proxy BT remain default? **{'Yes' if (rk_summary and float(rk_summary['mean_delta_vs_proxy_bt']) <= 0.02) else 'Not clearly; matched run favors Rao-Kupper but with caution'}**.",
@@ -553,6 +555,7 @@ def main() -> None:
         "ranking_episodes": args.ranking_episodes,
         "near_tie_margin": args.near_tie_margin,
         "tie_supervision_modes": tie_modes,
+        "primary_tie_supervision": args.primary_tie_supervision,
         "artifacts": {
             "method_metrics_by_seed": str(run_dir / "method_metrics_by_seed.csv"),
             "stability_summary": str(run_dir / "stability_summary.csv"),
