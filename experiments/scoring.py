@@ -244,6 +244,70 @@ class LearnedBTBranchScorer:
         return scored[0][0]
 
 
+class TieAwareBTBranchScorer:
+    """Tie-aware BT scorer with scalar inference compatibility.
+
+    Supports Davidson / Rao-Kupper objectives from `train_bt_pairwise_branch_scorer.py`.
+    Converts latent scalar utility differences into (win, loss, tie) probabilities
+    against a reference branch and selects the highest expected utility branch.
+    """
+
+    def __init__(self, model_path: str | Path, max_actions_per_problem: int) -> None:
+        self.model = json.loads(Path(model_path).read_text(encoding="utf-8"))
+        self.max_actions = max_actions_per_problem
+
+    def _raw_score(self, branch: BranchState, parent_mean_score: float) -> float:
+        features = _ordered_history_features(
+            branch,
+            parent_mean_score=parent_mean_score,
+            remaining_budget=max(0, self.max_actions - branch.depth),
+        )
+        out = float(self.model.get("intercept", 0.0))
+        for name, weight in self.model.get("weights", {}).items():
+            out += float(weight) * float(features.get(name, 0.0))
+        return out
+
+    def _tie_probs(self, delta: float) -> tuple[float, float, float]:
+        objective = str(self.model.get("training_objective", "bt")).lower()
+        tie_raw = float(self.model.get("tie_raw_parameter", -2.0))
+        if objective == "davidson":
+            nu = max(1e-6, math.exp(tie_raw))
+            a = math.exp(max(-40.0, min(40.0, delta / 2.0)))
+            b = math.exp(max(-40.0, min(40.0, -delta / 2.0)))
+            d = a + b + nu
+            return a / d, b / d, nu / d
+        if objective == "raokupper":
+            eta = 1.0 + math.log1p(math.exp(tie_raw))
+            ed = math.exp(max(-40.0, min(40.0, delta)))
+            p_win = ed / (ed + eta)
+            p_loss = 1.0 / (1.0 + eta * ed)
+            p_tie = max(1e-12, 1.0 - p_win - p_loss)
+            z = p_win + p_loss + p_tie
+            return p_win / z, p_loss / z, p_tie / z
+        p = 1.0 / (1.0 + math.exp(-max(-40.0, min(40.0, delta))))
+        return p, 1.0 - p, 0.0
+
+    def score_branch(self, branch: BranchState) -> float:
+        raw = self._raw_score(branch, parent_mean_score=0.5)
+        p_win, _, p_tie = self._tie_probs(raw)
+        return p_win + 0.5 * p_tie
+
+    def pick_best(self, branches: list[BranchState]) -> BranchState | None:
+        candidates = [b for b in branches if not b.is_pruned]
+        if not candidates:
+            return None
+        parent_mean = sum(float(b.score) for b in candidates) / max(1, len(candidates))
+        raw_scores = {b.branch_id: self._raw_score(b, parent_mean_score=parent_mean) for b in candidates}
+        reference = sum(raw_scores.values()) / max(1, len(raw_scores))
+
+        def expected_against_reference(b: BranchState) -> float:
+            delta = raw_scores[b.branch_id] - reference
+            p_win, _, p_tie = self._tie_probs(delta)
+            return p_win + 0.5 * p_tie
+
+        return max(candidates, key=expected_against_reference)
+
+
 class TwoStageNearTieBTBranchScorer:
     """Two-stage scorer: baseline BT first, then near-tie tie-breaker on close top-2.
 
