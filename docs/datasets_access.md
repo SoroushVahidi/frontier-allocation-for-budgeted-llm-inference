@@ -1,5 +1,7 @@
 # Dataset access guide
 
+> Status categories and interpretation guardrails are summarized in [`DATASET_STATUS.md`](DATASET_STATUS.md).
+
 This guide describes a conservative, reproducible access workflow for the current dataset plan. It is documentation-only: **do not commit raw dataset dumps to this repository** and do not assume access terms are uniform across datasets.
 
 ## Hugging Face datasets
