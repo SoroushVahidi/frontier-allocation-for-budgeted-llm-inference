@@ -10,6 +10,13 @@ import json
 from pathlib import Path
 
 from experiments.branching import BranchState
+from experiments.branch_scorer_v3 import (
+    ACTION_EXPAND,
+    ACTION_START,
+    ACTION_VERIFY,
+    estimate_distance_to_terminal_proxy,
+    estimate_future_value_proxy,
+)
 
 
 @dataclass
@@ -135,3 +142,78 @@ class LearnedBranchScorerV3:
             return None
         mean_score = sum(float(b.score) for b in candidates) / max(1, len(candidates))
         return max(candidates, key=lambda b: self._score_with_parent(b, mean_score))
+
+
+def _ordered_history_features(branch: BranchState, parent_mean_score: float, remaining_budget: int) -> dict[str, float]:
+    scores = [float(x) for x in branch.score_history] + [float(branch.score)]
+    depths = [float(x) for x in branch.depth_history] + [float(branch.depth)]
+    actions = list(branch.action_history)
+    node_scores = scores[-4:]
+    node_depths = depths[-4:]
+    node_masks = [1.0] * len(node_scores)
+    while len(node_scores) < 4:
+        node_scores.insert(0, 0.0)
+        node_depths.insert(0, 0.0)
+        node_masks.insert(0, 0.0)
+    edge_actions = actions[-3:]
+    while len(edge_actions) < 3:
+        edge_actions.insert(0, ACTION_START)
+    deltas = [scores[i + 1] - scores[i] for i in range(len(scores) - 1)]
+    edge_deltas = deltas[-3:]
+    while len(edge_deltas) < 3:
+        edge_deltas.insert(0, 0.0)
+
+    out = {
+        "remaining_budget": float(max(0, remaining_budget)),
+        "verify_count": float(branch.verify_count),
+        "stalled_steps": float(branch.stalled_steps),
+        "branch_age": float(max(branch.branch_age, branch.depth)),
+        "parent_relative_score": float(branch.score) - parent_mean_score,
+    }
+    for i in range(4):
+        action_for_distance = ACTION_START if i == 0 else edge_actions[min(i - 1, 2)]
+        out[f"node_{i}_mask"] = node_masks[i]
+        out[f"node_{i}_score"] = node_scores[i]
+        out[f"node_{i}_future_value_est"] = estimate_future_value_proxy(node_scores[i], int(node_depths[i]))
+        out[f"node_{i}_distance_to_terminal_est"] = estimate_distance_to_terminal_proxy(
+            node_scores[i], int(node_depths[i]), action_for_distance
+        )
+    for i in range(3):
+        action = edge_actions[i]
+        out[f"edge_{i}_is_start"] = 1.0 if action == ACTION_START else 0.0
+        out[f"edge_{i}_is_expand"] = 1.0 if action == ACTION_EXPAND else 0.0
+        out[f"edge_{i}_is_verify"] = 1.0 if action == ACTION_VERIFY else 0.0
+        out[f"edge_{i}_score_delta"] = float(edge_deltas[i])
+    return out
+
+
+class LearnedBTBranchScorer:
+    """BT-trained scorer with scalar inference.
+
+    Training can be pairwise; inference stays O(n): score each branch once and argmax.
+    """
+
+    def __init__(self, model_path: str | Path, max_actions_per_problem: int) -> None:
+        self.model = json.loads(Path(model_path).read_text(encoding="utf-8"))
+        self.max_actions = max_actions_per_problem
+
+    def _score(self, branch: BranchState, parent_mean_score: float) -> float:
+        features = _ordered_history_features(
+            branch,
+            parent_mean_score=parent_mean_score,
+            remaining_budget=max(0, self.max_actions - branch.depth),
+        )
+        score = float(self.model.get("intercept", 0.0))
+        for name, weight in self.model.get("weights", {}).items():
+            score += float(weight) * float(features.get(name, 0.0))
+        return score
+
+    def score_branch(self, branch: BranchState) -> float:
+        return self._score(branch, parent_mean_score=0.5)
+
+    def pick_best(self, branches: list[BranchState]) -> BranchState | None:
+        candidates = [b for b in branches if not b.is_pruned]
+        if not candidates:
+            return None
+        parent_mean = sum(float(b.score) for b in candidates) / max(1, len(candidates))
+        return max(candidates, key=lambda b: self._score(b, parent_mean_score=parent_mean))
