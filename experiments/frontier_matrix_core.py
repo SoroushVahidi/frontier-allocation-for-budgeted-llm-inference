@@ -96,6 +96,7 @@ def build_frontier_strategies(
     use_openai_api: bool,
     vgs_candidates: int = 3,
     vgs_min_expansions: int = 1,
+    include_budget_guarded_adaptive: bool = False,
 ) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
     specs: dict[str, Any] = {
@@ -114,6 +115,21 @@ def build_frontier_strategies(
             allow_verify=True,
             min_expansions_before_prune=min_expand,
             method_name=f"adaptive_min_expand_{min_expand}",
+        )
+    if include_budget_guarded_adaptive:
+        specs["adaptive_budget_guarded"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.72,
+            low_threshold=0.42,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=0,
+            adaptive_min_expand=True,
+            verify_exploration_floor=1,
+            budget_guard_prune_floor=0.40,
+            method_name="adaptive_budget_guarded",
         )
 
     if use_openai_api:

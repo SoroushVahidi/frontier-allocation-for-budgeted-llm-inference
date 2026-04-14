@@ -1,0 +1,6 @@
+dataset,budget,primary_method,primary_accuracy,primary_avg_actions,primary_gap_to_oracle,baseline_method,baseline_accuracy,baseline_avg_actions,baseline_gap_to_oracle,delta_accuracy_primary_minus_baseline,winner
+EleutherAI/hendrycks_math,6,adaptive_min_expand_1,0.3333333333333333,4.333333333333333,0.0,reasoning_greedy,0.3333333333333333,3.6666666666666665,0.0,0.0,tie
+EleutherAI/hendrycks_math,6,adaptive_min_expand_1,0.3333333333333333,4.333333333333333,0.0,self_consistency_3,0.3333333333333333,6.0,0.0,0.0,tie
+EleutherAI/hendrycks_math,6,adaptive_min_expand_1,0.3333333333333333,4.333333333333333,0.0,reasoning_beam2,0.3333333333333333,4.666666666666667,0.0,0.0,tie
+EleutherAI/hendrycks_math,6,adaptive_min_expand_1,0.3333333333333333,4.333333333333333,0.0,verifier_guided_search,0.3333333333333333,6.0,0.0,0.0,tie
+EleutherAI/hendrycks_math,6,adaptive_min_expand_1,0.3333333333333333,4.333333333333333,0.0,program_of_thought,0.0,1.6666666666666667,0.3333333333333333,0.3333333333333333,adaptive_min_expand_1

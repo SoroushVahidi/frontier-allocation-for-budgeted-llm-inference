@@ -24,6 +24,11 @@ from experiments.frontier_matrix_core import (
     generator_factory_for_mode,
     load_pilot_examples,
 )
+from experiments.frontier_router import (
+    derive_oracle_labels,
+    fit_lightweight_router,
+    selector_accuracy_from_predictions,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -43,7 +48,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--temperature", type=float, default=0.2)
     p.add_argument("--max-output-tokens", type=int, default=180)
     p.add_argument("--timeout-seconds", type=int, default=45)
-    p.add_argument("--output-dir", default="outputs/cross_strategy_frontier_allocation_controller")
+    p.add_argument("--output-dir", default="outputs/new_paper/paradigm_controller_router")
+    p.add_argument(
+        "--selector-mode",
+        choices=["static_calib_best", "router", "both"],
+        default="both",
+        help="Optional selector integration for frontier allocation path.",
+    )
     p.add_argument(
         "--vgs-candidates",
         type=int,
@@ -111,7 +122,20 @@ def main() -> None:
 
     strategy_rows: list[dict[str, Any]] = []
     selector_rows: list[dict[str, Any]] = []
+    router_dataset_rows: list[dict[str, Any]] = []
+    router_prediction_rows: list[dict[str, Any]] = []
     per_example_eval_rows: list[dict[str, Any]] = []
+    family_order = [
+        "reasoning_greedy",
+        "self_consistency_3",
+        "reasoning_beam2",
+        "adaptive_min_expand_0",
+        "adaptive_min_expand_1",
+        "adaptive_min_expand_2",
+        "verifier_guided_search",
+        "program_of_thought",
+    ]
+    primary_method = "adaptive_min_expand_1"
 
     for budget in budgets:
         calib_strategies = build_frontier_strategies(
@@ -123,7 +147,7 @@ def main() -> None:
             vgs_candidates=args.vgs_candidates,
             vgs_min_expansions=args.vgs_min_expansions,
         )
-        calib_metrics, _ = evaluate_strategies_on_examples(calib_examples, calib_strategies)
+        calib_metrics, calib_rows = evaluate_strategies_on_examples(calib_examples, calib_strategies)
 
         feasible = [s for s, m in calib_metrics.items() if m["avg_actions"] <= float(budget)]
         chosen = max(feasible, key=lambda s: calib_metrics[s]["accuracy"]) if feasible else max(
@@ -152,16 +176,102 @@ def main() -> None:
         oracle_accuracy = oracle_correct / max(1, len(eval_by_example))
 
         chosen_eval = eval_metrics[chosen]
+        base_row = {
+            "budget": budget,
+            "selector": "static_calib_best",
+            "selected_strategy": chosen,
+            "train_mode": "calibration_constant",
+            "selected_strategy_calib_accuracy": calib_metrics[chosen]["accuracy"],
+            "selected_strategy_eval_accuracy": chosen_eval["accuracy"],
+            "selected_strategy_eval_avg_actions": chosen_eval["avg_actions"],
+            "oracle_eval_accuracy_over_strategy_frontier": oracle_accuracy,
+            "oracle_gap_recovered_vs_static": 0.0,
+        }
         selector_rows.append(
             {
-                "budget": budget,
-                "selected_strategy": chosen,
-                "selected_strategy_calib_accuracy": calib_metrics[chosen]["accuracy"],
-                "selected_strategy_eval_accuracy": chosen_eval["accuracy"],
-                "selected_strategy_eval_avg_actions": chosen_eval["avg_actions"],
-                "oracle_eval_accuracy_over_strategy_frontier": oracle_accuracy,
+                **base_row,
             }
         )
+        if primary_method in eval_metrics:
+            p = eval_metrics[primary_method]
+            selector_rows.append(
+                {
+                    "budget": budget,
+                    "selector": "primary_method",
+                    "selected_strategy": primary_method,
+                    "train_mode": "fixed_primary",
+                    "selected_strategy_calib_accuracy": "",
+                    "selected_strategy_eval_accuracy": p["accuracy"],
+                    "selected_strategy_eval_avg_actions": p["avg_actions"],
+                    "oracle_eval_accuracy_over_strategy_frontier": oracle_accuracy,
+                    "oracle_gap_recovered_vs_static": 0.0,
+                }
+            )
+
+        calib_oracle = derive_oracle_labels(calib_rows, strategy_order=family_order)
+        eval_oracle = derive_oracle_labels(eval_rows, strategy_order=family_order)
+        ex_question = {str(ex.example_id): ex.question for ex in examples}
+        for ex_id, label in calib_oracle.items():
+            router_dataset_rows.append(
+                {
+                    "split": "calibration",
+                    "budget": budget,
+                    "example_id": ex_id,
+                    "question": ex_question.get(ex_id, ""),
+                    "oracle_best_strategy": label,
+                }
+            )
+        for ex_id, label in eval_oracle.items():
+            router_dataset_rows.append(
+                {
+                    "split": "eval",
+                    "budget": budget,
+                    "example_id": ex_id,
+                    "question": ex_question.get(ex_id, ""),
+                    "oracle_best_strategy": label,
+                }
+            )
+
+        if args.selector_mode in {"router", "both"} and calib_oracle:
+            train_pairs = [(ex_id, y) for ex_id, y in calib_oracle.items() if ex_id in ex_question]
+            train_questions = [ex_question[ex_id] for ex_id, _ in train_pairs]
+            train_labels = [y for _, y in train_pairs]
+            fit = fit_lightweight_router(train_questions, train_labels, seed=args.seed + budget)
+
+            eval_questions = {ex_id: ex_question.get(ex_id, "") for ex_id in eval_oracle}
+            pred_labels = fit.model.predict(list(eval_questions.values()))
+            pred_map = {
+                ex_id: str(pred_labels[idx])
+                for idx, ex_id in enumerate(eval_questions.keys())
+            }
+            pred_metrics = selector_accuracy_from_predictions(eval_rows, pred_map)
+            static_acc = float(base_row["selected_strategy_eval_accuracy"])
+            router_acc = float(pred_metrics["accuracy"])
+            denom = max(1e-9, oracle_accuracy - static_acc)
+            recovered = (router_acc - static_acc) / denom if oracle_accuracy > static_acc else 0.0
+            selector_rows.append(
+                {
+                    "budget": budget,
+                    "selector": "router",
+                    "selected_strategy": "per_query_prediction",
+                    "train_mode": fit.mode,
+                    "selected_strategy_calib_accuracy": "",
+                    "selected_strategy_eval_accuracy": router_acc,
+                    "selected_strategy_eval_avg_actions": pred_metrics["avg_actions"],
+                    "oracle_eval_accuracy_over_strategy_frontier": oracle_accuracy,
+                    "oracle_gap_recovered_vs_static": recovered,
+                }
+            )
+            for ex_id, pred in pred_map.items():
+                router_prediction_rows.append(
+                    {
+                        "budget": budget,
+                        "example_id": ex_id,
+                        "predicted_strategy": pred,
+                        "oracle_best_strategy": eval_oracle.get(ex_id, ""),
+                        "is_oracle_match": int(pred == eval_oracle.get(ex_id, "")),
+                    }
+                )
 
         for split_name, metrics in (("calibration", calib_metrics), ("eval", eval_metrics)):
             for strategy, m in metrics.items():
@@ -197,15 +307,34 @@ def main() -> None:
             f,
             fieldnames=[
                 "budget",
+                "selector",
                 "selected_strategy",
+                "train_mode",
                 "selected_strategy_calib_accuracy",
                 "selected_strategy_eval_accuracy",
                 "selected_strategy_eval_avg_actions",
                 "oracle_eval_accuracy_over_strategy_frontier",
+                "oracle_gap_recovered_vs_static",
             ],
         )
         writer.writeheader()
         writer.writerows(selector_rows)
+
+    with (run_dir / "router_dataset.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["split", "budget", "example_id", "question", "oracle_best_strategy"],
+        )
+        writer.writeheader()
+        writer.writerows(router_dataset_rows)
+
+    with (run_dir / "router_predictions.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["budget", "example_id", "predicted_strategy", "oracle_best_strategy", "is_oracle_match"],
+        )
+        writer.writeheader()
+        writer.writerows(router_prediction_rows)
 
     with (run_dir / "per_example_eval.jsonl").open("w", encoding="utf-8") as f:
         for row in per_example_eval_rows:
@@ -214,7 +343,7 @@ def main() -> None:
     note_lines = [
         "# Cross-strategy frontier allocation note",
         "",
-        "This run evaluates a frontier of distinct existing strategy families and a simple budgeted selector.",
+        "This run evaluates a frontier of distinct existing strategy families and selectors under fixed budget.",
         "",
         "Strategies used:",
         "- reasoning_greedy (GreedyController)",
@@ -224,14 +353,20 @@ def main() -> None:
         "- verifier_guided_search (VerifierGuidedSearchController: expand candidates, verifier-ranked selection)",
         "- program_of_thought (ProgramOfThoughtController: code generation + sandbox execution)",
         "",
-        "## Budgeted selector results",
+        "## Label derivation from existing artifacts",
+        "- `strategy_metrics.csv` stores per-family frontier aggregates.",
+        "- `per_example_eval.jsonl` stores per-example x strategy outcomes used to derive oracle labels.",
+        "- `router_dataset.csv` materializes query -> oracle best strategy labels for router training/eval.",
+        "",
+        "## Selector comparison results",
     ]
     for r in selector_rows:
         note_lines.append(
-            f"- budget={r['budget']}: selected={r['selected_strategy']}, "
+            f"- budget={r['budget']}, selector={r['selector']}: selected={r['selected_strategy']}, "
             f"selected_eval_acc={r['selected_strategy_eval_accuracy']:.3f}, "
             f"selected_eval_avg_actions={r['selected_strategy_eval_avg_actions']:.2f}, "
-            f"oracle_eval_acc={r['oracle_eval_accuracy_over_strategy_frontier']:.3f}"
+            f"oracle_eval_acc={r['oracle_eval_accuracy_over_strategy_frontier']:.3f}, "
+            f"oracle_gap_recovered_vs_static={float(r['oracle_gap_recovered_vs_static']):.3f}"
         )
 
     if selector_rows:
