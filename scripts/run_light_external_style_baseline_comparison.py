@@ -73,6 +73,12 @@ METHOD_SPECS: list[dict[str, str]] = [
         "style": "s1_simple_test_time_scaling_budget_forcing",
         "description": "s1 (Muennighoff et al., 2025) inspired budget-forcing stop/continue control adapter.",
     },
+    {
+        "method": "external_tale_prompt_budgeting",
+        "family": "external_published_baseline",
+        "style": "tale_token_budget_aware_prompt_budgeting",
+        "description": "TALE (Han et al., 2025) inspired per-instance token-budgeting prompt adapter.",
+    },
 ]
 
 
@@ -114,6 +120,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--vgs-min-expansions", type=int, default=1)
     p.add_argument("--s1-num-ignore-think-end", type=int, default=1)
     p.add_argument("--s1-min-thinking-steps", type=int, default=0)
+    p.add_argument("--tale-token-budget-default", type=int, default=256)
+    p.add_argument("--tale-token-budget-min", type=int, default=64)
+    p.add_argument("--tale-token-budget-max", type=int, default=512)
+    p.add_argument("--tale-token-budget-per-question-char", type=float, default=0.75)
+    p.add_argument("--tale-token-per-action", type=float, default=64.0)
     p.add_argument("--output-dir", default="outputs/light_external_style_baseline_comparison")
     return p.parse_args()
 
@@ -158,6 +169,12 @@ def main() -> None:
                 include_external_s1_baseline=True,
                 s1_num_ignore_think_end=args.s1_num_ignore_think_end,
                 s1_min_thinking_steps=args.s1_min_thinking_steps,
+                include_external_tale_baseline=True,
+                tale_token_budget_default=args.tale_token_budget_default,
+                tale_token_budget_min=args.tale_token_budget_min,
+                tale_token_budget_max=args.tale_token_budget_max,
+                tale_token_budget_per_question_char=args.tale_token_budget_per_question_char,
+                tale_token_per_action=args.tale_token_per_action,
             )
             eval_metrics, eval_rows = evaluate_strategies_on_examples(examples, strategies)
             oracle_acc = _oracle_accuracy(eval_rows)
@@ -265,7 +282,9 @@ def main() -> None:
         "note": (
             "Methods tagged external_style are paper-inspired approximations in this local environment. "
             "Method external_s1_budget_forcing is an external published-baseline adapter for the s1 "
-            "inference-time budget-forcing behavior, but still not a full paper-system reproduction."
+            "inference-time budget-forcing behavior, and external_tale_prompt_budgeting is an external "
+            "published-baseline adapter for TALE-style prompt token budgeting; neither is a full "
+            "paper-system reproduction."
         ),
     }
 
@@ -296,6 +315,7 @@ def main() -> None:
         "",
         "External-style baselines are **paper-inspired approximations** in this repo environment, not exact paper reproductions.",
         "The `external_s1_budget_forcing` entry is a conservative adapter of s1 budget forcing only.",
+        "The `external_tale_prompt_budgeting` entry is a conservative adapter of TALE-style prompt token budgeting only.",
         "",
         "## Mean accuracy over budgets (higher is better)",
         "",

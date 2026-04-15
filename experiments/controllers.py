@@ -716,6 +716,97 @@ class S1BudgetForcingController(BaseController):
         )
 
 
+class TALEPromptBudgetingController(BaseController):
+    """External baseline adapter for TALE-style per-instance token budgeting.
+
+    Faithful core idea: estimate a per-instance token budget, inject the budget
+    into the reasoning prompt, and constrain generation under that budget.
+    This controller adapts TALE's token budget notion to the repo's action-based
+    frontier environment using an explicit token-to-action conversion.
+    """
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        token_budget_default: int = 256,
+        token_budget_min: int = 64,
+        token_budget_max: int = 512,
+        token_budget_per_question_char: float = 0.75,
+        token_per_action: float = 64.0,
+        method_name: str = "external_tale_prompt_budgeting",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.token_budget_default = max(1, int(token_budget_default))
+        self.token_budget_min = max(1, int(token_budget_min))
+        self.token_budget_max = max(self.token_budget_min, int(token_budget_max))
+        self.token_budget_per_question_char = max(0.0, float(token_budget_per_question_char))
+        self.token_per_action = max(1.0, float(token_per_action))
+        self.method_name = method_name
+
+    def _estimate_budget_tokens(self, question: str) -> int:
+        char_count = len(question.strip())
+        est = int(round(self.token_budget_default + self.token_budget_per_question_char * char_count))
+        return max(self.token_budget_min, min(self.token_budget_max, est))
+
+    @staticmethod
+    def _estimate_generated_tokens(text: str | None) -> int:
+        if not text:
+            return 0
+        return len(re.findall(r"\S+", text))
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        branch = self.generator.init_branch("tale_0")
+        actions = expansions = verifications = 0
+        surviving_trace: list[int] = []
+
+        budget_tokens = self._estimate_budget_tokens(question)
+        budget_actions = max(1, int(round(budget_tokens / self.token_per_action)))
+        allowed_actions = min(self.max_actions, budget_actions)
+
+        budgeted_question = (
+            f"{question}\n"
+            f"Let's think step by step and use less than {budget_tokens} tokens."
+        )
+
+        while actions < allowed_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, budgeted_question, gold_answer)
+            actions += 1
+            expansions += 1
+            surviving_trace.append(1)
+
+        prediction = branch.predicted_answer
+        generated_tokens_estimate = self._estimate_generated_tokens(prediction)
+        budget_violation = generated_tokens_estimate > budget_tokens
+
+        return MethodResult(
+            method=self.method_name,
+            prediction=prediction,
+            is_correct=self._answers_match(prediction, gold_answer),
+            actions_used=actions,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)),
+            budget_exhausted=actions >= allowed_actions and not branch.is_done,
+            metadata={
+                "external_baseline_family": "token_budget_aware_llm_reasoning_tale",
+                "token_budget_estimator": "char_length_linear",
+                "token_budget_default": self.token_budget_default,
+                "token_budget_min": self.token_budget_min,
+                "token_budget_max": self.token_budget_max,
+                "token_budget_per_question_char": self.token_budget_per_question_char,
+                "token_budget_predicted": budget_tokens,
+                "token_per_action": self.token_per_action,
+                "budget_actions_equivalent": budget_actions,
+                "generated_tokens_estimate": generated_tokens_estimate,
+                "token_budget_violation": budget_violation,
+                "final_score": self.scorer.score_branch(branch),
+            },
+        )
+
+
 def _normalize_answer(text: str) -> str:
     stripped = text.strip()
     nums = re.findall(r"[-+]?\d+(?:\.\d+)?", stripped.replace(",", ""))
