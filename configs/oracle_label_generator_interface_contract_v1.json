@@ -1,0 +1,61 @@
+{
+  "contract_name": "oracle_label_generator_interface_v1",
+  "status": "interface_scaffold_only",
+  "purpose": "Stable input/output contract for future heavy oracle-label generation.",
+  "required_inputs": {
+    "pilot_config_arg": "--pilot-config",
+    "state_manifest_arg": "--state-manifest",
+    "output_dir_arg": "--output-dir",
+    "hpc_env_vars": [
+      "ORACLE_PILOT_CONFIG",
+      "ORACLE_STATE_MANIFEST",
+      "ORACLE_OUTPUT_DIR",
+      "ORACLE_LABELS_JSONL",
+      "ORACLE_LABEL_MANIFEST"
+    ]
+  },
+  "required_outputs": [
+    "oracle_stop_vs_act_labels.jsonl",
+    "oracle_label_manifest.json"
+  ],
+  "required_row_fields": [
+    "state_id",
+    "example_id",
+    "budget",
+    "remaining_budget",
+    "current_branch_id",
+    "q_act",
+    "q_stop",
+    "oracle_action_gap",
+    "oracle_label_act",
+    "horizon",
+    "rollout_depth",
+    "teacher_mode",
+    "paired_randomness_used"
+  ],
+  "optional_row_fields": [
+    "gap_std",
+    "gap_ci_low",
+    "gap_ci_high",
+    "agreement_rate",
+    "rollout_count",
+    "trace_id",
+    "runtime_ms"
+  ],
+  "invariants": [
+    "oracle_action_gap == q_act - q_stop (within configured tolerance)",
+    "oracle_label_act == 1 iff oracle_action_gap > 0 else 0",
+    "q_act/q_stop/oracle_action_gap are finite numbers",
+    "row teacher metadata matches run settings",
+    "paired_randomness_used truthfully records pairing usage"
+  ],
+  "mock_policy": {
+    "allowed_for_interface_testing": true,
+    "required_markers": [
+      "mock_mode=true in output manifest",
+      "mock_interface_only=true in each row",
+      "non_oracle_warning included in row and manifest"
+    ],
+    "not_valid_for_distillation": true
+  }
+}

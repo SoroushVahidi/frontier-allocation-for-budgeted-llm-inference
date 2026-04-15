@@ -85,11 +85,17 @@ Those are the real next empirical steps.
 Only a limited set of practical execution details remain outside the current repository preparation layer.
 
 Most importantly:
-- HPC job orchestration,
-- runtime resource envelope,
-- and any cluster-specific batch submission wrappers for the pilot run.
+- runtime resource envelope sizing on the target cluster,
+- cluster-specific generator command wiring,
+- and submission-time scheduler parameters (partition/time/memory/GPU policy).
 
-These are important, but they are now execution details rather than conceptual gaps.
+A repo-level HPC orchestration wrapper and launch protocol now exist (`scripts/run_oracle_label_pilot_hpc.sh`, `docs/HPC_ORACLE_LABEL_PILOT_LAUNCH_PROTOCOL_V1.md`). The remaining gap is cluster-specific command/resource wiring, not methodological framing.
+
+Generator-interface status update:
+- A concrete heavy-generator contract now exists: `docs/ORACLE_LABEL_GENERATOR_INTERFACE_CONTRACT_V1.md` + `configs/oracle_label_generator_interface_contract_v1.json`.
+- A testing-only CLI scaffold now exists: `scripts/run_oracle_label_generator_interface_stub.py` (mock mode clearly labeled non-oracle).
+- A first real (limited) generator prototype now exists: `scripts/run_oracle_label_generator_prototype.py` with scope note `docs/ORACLE_LABEL_GENERATOR_PROTOTYPE_V1_NOTE.md`.
+- Real heavy oracle rollout logic is still pending and remains the main compute-dependent implementation step.
 
 ---
 
