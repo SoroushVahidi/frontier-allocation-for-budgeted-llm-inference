@@ -1,46 +1,65 @@
-# Repository map (tracks, paths, and status labels)
+# Repository map and canonical path
 
-This map is for navigation and interpretation, not for changing experiments.
+## Project scope (current)
 
-## Top-level structure
+Canonical scope is the current NeurIPS-oriented project on:
+- fixed-budget adaptive test-time compute allocation,
+- cross-controller frontier allocation,
+- action-conditional branch/controller allocation decisions.
 
-- `scripts/`: runnable entry points and orchestration.
-- `experiments/`: core implementation modules + compact result notes.
-- `docs/`: navigation docs, status notes, historical memos.
-- `configs/`: registries/configs for pilots, baselines, and datasets.
-- `datasets/`: dataset policy and controlled manifests.
-- `outputs/`: generated artifacts (gitignored).
+## Directory map
 
-## Two-track mapping (do not mix)
+- `scripts/`: runnable entry points and orchestration wrappers.
+- `experiments/`: implementation modules and compact result notes.
+- `docs/`: canonical status/method notes plus exploratory/historical memos.
+- `configs/`: dataset/baseline registries and pilot configs.
+- `datasets/`: dataset policy/readme assets.
+- `external/`: external baseline references and integration notes.
+- `outputs/`: generated artifacts (gitignored provenance outputs).
 
-### A) Old manuscript track — binary revise-routing
+## Canonical entry points now
 
-- Research question: **when should we revise?**
-- Status: **canonical for existing submitted manuscript support**.
-- Main script: `scripts/run_heavy_real_routing_eval.sh`
-- Main docs: `docs/safe_manuscript_claims_2026-04-13.md`, `docs/manuscript_support_index_2026-04-13.md`
+### Canonical docs
 
-### B) New paper track — cross-controller frontier allocation
+- `docs/CURRENT_PROJECT_STATUS.md`
+- `docs/CURRENT_BOTTLENECKS.md`
+- `docs/STOP_VS_ACT_DIRECTION.md`
+- `docs/NEXT_LIGHTWEIGHT_STEPS.md`
+- `docs/EXPERIMENT_STATUS.md`
+- `docs/PAPER_POSITIONING_NOTE.md`
 
-- Research question: **where should the next unit of compute go?**
-- Status: **canonical active research track**.
-- Main scripts:
-  - `scripts/run_cross_strategy_frontier_allocation.py` (legacy filename)
-  - `scripts/run_multi_action_allocation_pass.sh`
-  - `scripts/evaluate_branch_scorer_controller.py`
-  - `scripts/evaluate_branch_scorer_robustness.py`
-- Main docs:
-  - `docs/NEW_PAPER_CURRENT_STATUS.md`
-  - `docs/NEW_PAPER_CURRENT_BOTTLENECKS.md`
-  - `docs/BRANCH_SCORER_STATUS.md`
+### Canonical scripts
 
-## Branch-scorer and dataset layers in the new-paper track
+- `scripts/run_cross_strategy_frontier_allocation.py` (legacy filename; canonical frontier scaffold)
+- `scripts/run_multi_action_allocation_pass.sh`
+- `scripts/evaluate_branch_scorer_controller.py`
+- `scripts/evaluate_branch_scorer_robustness.py`
+- `scripts/run_comparative_frontier_audit.py`
+- `scripts/run_new_paper_frontier_matrix.py`
 
-- Branch-scorer family notes in `experiments/*branch_scorer*_result_note.md` are mostly **exploratory result notes**.
-- External reasoning datasets and baseline registries in `configs/*registry*.json` are **integration/preparation resources**, not final-method evidence by themselves.
-- Pairwise diagnostics and reliability-weighted BT are **promising but not default** until robustness and transfer evidence is stronger.
+## Classification labels
 
-## Historical conventions intentionally preserved
+### Canonical (current path)
 
-- Some script names use `cross_strategy` for backward compatibility; docs use “cross-controller frontier allocation”.
-- Dated notes remain in place for provenance and should be interpreted via `docs/README.md`.
+- Frontier/controller allocation scaffold and matched evaluation scripts.
+- Canonical docs listed above.
+
+### Exploratory (important but not default winners)
+
+- Reliability-aware BT variants.
+- External warm-start branch-scorer variants.
+- Tie-aware/near-tie targeted variants and diagnostic audits.
+- Method-specific one-off notes in `experiments/*result_note.md`.
+
+### Historical
+
+- Old manuscript/binary revise-routing material.
+- Dated memo snapshots.
+- Earlier high-level docs superseded by current canonical docs.
+
+## Practical collaborator start path
+
+1. Read canonical docs in order from README.
+2. Run smoke/integration checks from `scripts/README.md`.
+3. Start with bounded experiments from `docs/NEXT_LIGHTWEIGHT_STEPS.md`.
+4. Treat heavier plans in `docs/LATER_HEAVIER_STEPS.md` as post-HPC sequence.
