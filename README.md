@@ -1,65 +1,73 @@
 # adaptive-reasoning-budget-allocation
 
-Repository for **adaptive test-time compute allocation for LLM reasoning** with two intentionally separate research tracks:
+Repository for the **current NeurIPS-oriented project** on **fixed-budget adaptive test-time compute allocation for LLM reasoning**.
 
-1. **Old manuscript track**: binary revise-routing (**"when should we revise?"**).
-2. **New paper track**: cross-controller frontier allocation (**"where should the next unit of compute go?"**).
+## Project identity (canonical)
 
-> This repository keeps both tracks for continuity, but they should not be mixed in claims, evaluation narratives, or script interpretation.
+This repository is now organized around one primary research question:
 
-## Start here
+> **Is the next unit of compute worth spending here?**
 
-- Track split and naming guardrail: [`docs/OLD_VS_NEW_PAPER_TRACKS.md`](docs/OLD_VS_NEW_PAPER_TRACKS.md)
-- Canonical repo map and entry points: [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
-- Documentation index: [`docs/README.md`](docs/README.md)
-- Script index: [`scripts/README.md`](scripts/README.md)
+Concretely, the project focuses on:
+- fixed-budget adaptive test-time compute allocation,
+- cross-controller frontier allocation,
+- branch/controller allocation under a global compute budget,
+- oracle frontier headroom,
+- anti-collapse controller design,
+- supervision target design for allocation decisions.
 
-## What is canonical vs exploratory
+## Current interpretation (important)
 
-| Area | Current status | Where to start |
-|---|---|---|
-| Old manuscript (binary revise-routing) | **Canonical for submitted manuscript support** | `scripts/run_heavy_real_routing_eval.sh`, `docs/safe_manuscript_claims_2026-04-13.md` |
-| New paper (frontier allocation) | **Canonical active research direction** | `docs/NEW_PAPER_CURRENT_STATUS.md`, `scripts/run_cross_strategy_frontier_allocation.py` |
-| Branch-scorer variants (BT, reliability, warm-start, diagnostics) | **Exploratory within new-paper track** | `docs/BRANCH_SCORER_STATUS.md`, `experiments/*branch_scorer*_result_note.md` |
-| External reasoning datasets integration/readiness | **Preparation/integration layer (not final method)** | `docs/DATASET_STATUS.md`, `configs/external_reasoning_datasets_registry.json` |
-| Dated memos and audits | **Historical provenance** | `docs/README.md` → “Historical notes” |
+This repo is best interpreted as:
+- a **strong research platform** with solid infrastructure and framing,
+- with **active-development-level method maturity**.
 
-## Track A: old manuscript (binary revise-routing)
+What is strong now:
+- infrastructure and experiment scaffolding,
+- frontier/controller framing,
+- dataset and baseline integration readiness,
+- careful diagnostics and provenance notes.
 
-Use when you need evidence for the existing manuscript story.
+What is not solved yet:
+- robust learned allocation signal,
+- supervision target quality / calibration,
+- robust controller-level wins over strongest heuristics,
+- broad real-model evidence.
 
-- Question: **When should we revise?**
-- Primary entry: `scripts/run_heavy_real_routing_eval.sh`
-- Manuscript-safe wording/index:
-  - `docs/safe_manuscript_claims_2026-04-13.md`
-  - `docs/manuscript_support_index_2026-04-13.md`
+## Main bottleneck (canonical)
 
-## Track B: new paper (cross-controller frontier allocation)
+The main bottleneck is **supervision target quality** and **proxy-label mismatch**.
 
-Use for ongoing work on budgeted allocation across controller families.
+It is **not** primarily:
+- missing infrastructure,
+- or lack of heavier models.
 
-- Question: **Where should the next unit of compute go?**
-- Current practical status: `docs/NEW_PAPER_CURRENT_STATUS.md`
-- Bottleneck note: `docs/NEW_PAPER_CURRENT_BOTTLENECKS.md`
-- Safe-claim guardrail: `docs/NEW_PAPER_SAFE_CLAIMS.md`
-- Immediate next-step plan: `docs/NEW_PAPER_NEXT_STEPS.md`
+## Current best next method direction
 
-Primary scripts:
+The recommended near-term controller direction is:
 
-- `scripts/run_cross_strategy_frontier_allocation.py` (legacy filename; frontier allocation scaffold)
-- `scripts/run_multi_action_allocation_pass.sh`
-- `scripts/evaluate_branch_scorer_controller.py`
-- `scripts/evaluate_branch_scorer_robustness.py`
-- branch-scorer workflow scripts listed in `scripts/README.md`
+- a **lightweight, budget-conditioned, binary stop-vs-act controller**
+- for branch/controller allocation,
+- with uncertainty used both:
+  - as controller input features,
+  - and as training-example filtering/reweighting signal.
 
-## Datasets and external integrations
+Rationale: binary targets are currently expected to be more stable under noisy proxy supervision than a first-pass continuous marginal-value regressor.
 
-- Main evaluation datasets + policy: `docs/main_datasets.md`, `docs/datasets_access.md`, `datasets/README.md`
-- New-paper dataset status (evaluation vs external supervision vs readiness): `docs/DATASET_STATUS.md`
-- External supervision registry: `configs/external_reasoning_datasets_registry.json`
+## Canonical path (read in this order)
 
-## Repository hygiene conventions
+1. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+2. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+3. [`docs/STOP_VS_ACT_DIRECTION.md`](docs/STOP_VS_ACT_DIRECTION.md)
+4. [`docs/NEXT_LIGHTWEIGHT_STEPS.md`](docs/NEXT_LIGHTWEIGHT_STEPS.md)
+5. [`docs/EXPERIMENT_STATUS.md`](docs/EXPERIMENT_STATUS.md)
+6. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+7. [`scripts/README.md`](scripts/README.md)
 
-- Put run artifacts under `outputs/` (gitignored).
-- Keep external datasets download-on-demand; do not commit raw dataset dumps.
-- Treat external warm-start and reliability-weighted BT as **promising exploratory methods**, not final winners.
+## Canonical vs exploratory vs historical
+
+- **Canonical now**: docs listed in “Canonical path” and corresponding frontier/allocation scripts.
+- **Exploratory**: branch-scorer variants (reliability-aware, warm-start, tie-aware variants) and targeted audits.
+- **Historical**: old manuscript/binary revise-routing materials and dated memo snapshots.
+
+See [`docs/REPO_MAP.md`](docs/REPO_MAP.md) and [`docs/README.md`](docs/README.md) for exact labels.

@@ -1,44 +1,39 @@
 # Documentation index
 
-This index distinguishes **canonical navigation docs** from **exploratory/historical notes**.
+This index defines **canonical**, **exploratory**, and **historical** documentation for the current project.
 
-## 1) Canonical navigation (read first)
+## 1) Canonical docs (read first)
 
-| Document | Role |
-|---|---|
-| [`OLD_VS_NEW_PAPER_TRACKS.md`](OLD_VS_NEW_PAPER_TRACKS.md) | Hard separation between old manuscript and new-paper tracks |
-| [`REPO_MAP.md`](REPO_MAP.md) | Directory map + canonical script/doc entry points |
-| [`NEW_PAPER_CURRENT_STATUS.md`](NEW_PAPER_CURRENT_STATUS.md) | Practical new-paper status summary |
-| [`NEW_PAPER_CURRENT_BOTTLENECKS.md`](NEW_PAPER_CURRENT_BOTTLENECKS.md) | Plain-language current bottleneck and weakness |
-| [`NEW_PAPER_SAFE_CLAIMS.md`](NEW_PAPER_SAFE_CLAIMS.md) | Publication-safe wording for new-paper line |
-| [`NEW_PAPER_NEXT_STEPS.md`](NEW_PAPER_NEXT_STEPS.md) | Next non-heavy execution plan |
-| [`BRANCH_SCORER_STATUS.md`](BRANCH_SCORER_STATUS.md) | Branch-scorer timeline and default recommendations |
-| [`DATASET_STATUS.md`](DATASET_STATUS.md) | Evaluation datasets vs external supervision integration status |
+1. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+2. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+3. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+4. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
+5. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
+6. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
+7. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
+8. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+9. [`REPO_MAP.md`](REPO_MAP.md)
 
-## 2) Stable paper-facing anchors
+## 2) Canonical supporting references
 
-| Document | Role |
-|---|---|
-| [`problem_statement.md`](problem_statement.md) | Problem formulation |
-| [`related_work.md`](related_work.md) | Related work sketch |
-| [`research_plan.md`](research_plan.md) | Research plan |
-| [`cross_controller_frontier.md`](cross_controller_frontier.md) | Frontier-allocation framing |
-| [`NEXT_PAPER_SUMMARY_AND_GOALS.md`](NEXT_PAPER_SUMMARY_AND_GOALS.md) | New-paper direction narrative |
-| [`main_baselines.md`](main_baselines.md) | Baseline set and external baseline registry context |
-| [`main_datasets.md`](main_datasets.md) | Main dataset plan |
-| [`datasets_access.md`](datasets_access.md) | Access workflow and reproducibility checks |
+- [`cross_controller_frontier.md`](cross_controller_frontier.md)
+- [`main_datasets.md`](main_datasets.md)
+- [`main_baselines.md`](main_baselines.md)
+- [`datasets_access.md`](datasets_access.md)
+- [`DATASET_STATUS.md`](DATASET_STATUS.md)
 
-## 3) Historical / dated working notes
+## 3) Exploratory/active-branch notes
 
-Dated files (for example `*_2026-04-13.md`, `*_2026-04-14.md`) are retained as provenance and iteration history.
+- Branch-scorer line status: [`BRANCH_SCORER_STATUS.md`](BRANCH_SCORER_STATUS.md)
+- Experiment-specific docs under `experiments/*result_note.md`
+- Focused method notes that are explicitly scoped to a single audit pass
 
-Use them for:
-- audit traceability,
-- command/result provenance,
-- intermediate interpretation snapshots.
+## 4) Historical/provenance notes
 
-Do **not** treat a single dated memo as the canonical current project position unless it is explicitly linked from section (1).
+- Dated memos/snapshots (e.g., files ending with `_2026-04-13.md`, `_2026-04-14.md`).
+- Old-track separation note: [`OLD_VS_NEW_PAPER_TRACKS.md`](OLD_VS_NEW_PAPER_TRACKS.md).
+- Earlier “NEW_PAPER_*” summary docs are retained for provenance but superseded by section (1).
 
-## 4) Generated artifacts
-
-Generated outputs live under `outputs/` (gitignored), including dataset/baseline integration reports and run manifests.
+Interpretation rule:
+- Use section (1) for current project interpretation.
+- Use sections (3)-(4) for evidence traceability and history.
