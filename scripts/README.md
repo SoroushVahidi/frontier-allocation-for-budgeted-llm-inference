@@ -19,6 +19,7 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `evaluate_branch_scorer_robustness.py` | Multi-seed/budget/init robustness sweep |
 | `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
 | `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
+| `run_new_paper_stop_vs_act_controller.py` | Stop-vs-act lightweight pipeline (dataset + train/eval) |
 
 ## Exploratory branch-scorer workflows
 
