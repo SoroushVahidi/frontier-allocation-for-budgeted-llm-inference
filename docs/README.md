@@ -31,6 +31,10 @@ This index defines **canonical**, **exploratory**, and **historical** documentat
 - Oracle heavy generator path note: [`ORACLE_LABEL_GENERATOR_HEAVY_PATH_NOTE_2026_04_15.md`](ORACLE_LABEL_GENERATOR_HEAVY_PATH_NOTE_2026_04_15.md)
 - Oracle selective distillation plan: [`ORACLE_SELECTIVE_DISTILLATION_PLAN_V1.md`](ORACLE_SELECTIVE_DISTILLATION_PLAN_V1.md)
 - Oracle-distilled student training protocol: [`ORACLE_DISTILLED_STUDENT_TRAINING_PROTOCOL_V1.md`](ORACLE_DISTILLED_STUDENT_TRAINING_PROTOCOL_V1.md)
+- Oracle-distilled matched-control evaluation protocol: [`ORACLE_DISTILLED_MATCHED_CONTROL_EVALUATION_PROTOCOL_2026_04_15.md`](ORACLE_DISTILLED_MATCHED_CONTROL_EVALUATION_PROTOCOL_2026_04_15.md)
+- Random matched-coverage baseline protocol: [`RANDOM_MATCHED_COVERAGE_BASELINE_PROTOCOL_2026_04_15.md`](RANDOM_MATCHED_COVERAGE_BASELINE_PROTOCOL_2026_04_15.md)
+- Repeated-random matched-control protocol: [`REPEATED_RANDOM_MATCHED_CONTROL_PROTOCOL_2026_04_15.md`](REPEATED_RANDOM_MATCHED_CONTROL_PROTOCOL_2026_04_15.md)
+- Oracle-distilled regime bundle runner protocol: [`ORACLE_DISTILLED_REGIME_BUNDLE_RUNNER_PROTOCOL_2026_04_15.md`](ORACLE_DISTILLED_REGIME_BUNDLE_RUNNER_PROTOCOL_2026_04_15.md)
 
 - Branch-scorer line status: [`BRANCH_SCORER_STATUS.md`](BRANCH_SCORER_STATUS.md)
 - Experiment-specific docs under `experiments/*result_note.md`
