@@ -1,57 +1,60 @@
 # Documentation index
 
-This index defines **canonical**, **exploratory**, and **historical** documentation for the current project.
+This index defines the **canonical**, **exploratory**, and **historical** documentation for the current project.
 
-## 1) Canonical docs (read first)
+## Canonical docs (read in this order)
 
-1. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
-2. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
-3. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-4. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
-5. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
-6. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
-7. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
-8. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
-9. [`REPO_MAP.md`](REPO_MAP.md)
+1. [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)
+2. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+3. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+4. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+5. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
+6. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
+7. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
+8. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
+9. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+10. [`REPO_MAP.md`](REPO_MAP.md)
 
-## 2) Canonical supporting references
+## Canonical supporting references
 
 - [`cross_controller_frontier.md`](cross_controller_frontier.md)
 - [`main_datasets.md`](main_datasets.md)
 - [`main_baselines.md`](main_baselines.md)
 - [`datasets_access.md`](datasets_access.md)
 - [`DATASET_STATUS.md`](DATASET_STATUS.md)
+- [`CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`](CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md)
 
-## 3) Exploratory/active-branch notes
+## How to interpret the canonical docs
 
-- Oracle generator interface contract: [`ORACLE_LABEL_GENERATOR_INTERFACE_CONTRACT_V1.md`](ORACLE_LABEL_GENERATOR_INTERFACE_CONTRACT_V1.md)
-- Oracle generator prototype note: [`ORACLE_LABEL_GENERATOR_PROTOTYPE_V1_NOTE.md`](ORACLE_LABEL_GENERATOR_PROTOTYPE_V1_NOTE.md)
-- Oracle pilot HPC runbook: [`HPC_ORACLE_LABEL_PILOT_LAUNCH_PROTOCOL_V1.md`](HPC_ORACLE_LABEL_PILOT_LAUNCH_PROTOCOL_V1.md)
-- Oracle pilot productionization note: [`ORACLE_LABEL_PILOT_PRODUCTIONIZATION_NOTE_2026_04_15.md`](ORACLE_LABEL_PILOT_PRODUCTIONIZATION_NOTE_2026_04_15.md)
-- Oracle heavy generator path note: [`ORACLE_LABEL_GENERATOR_HEAVY_PATH_NOTE_2026_04_15.md`](ORACLE_LABEL_GENERATOR_HEAVY_PATH_NOTE_2026_04_15.md)
-- Oracle selective distillation plan: [`ORACLE_SELECTIVE_DISTILLATION_PLAN_V1.md`](ORACLE_SELECTIVE_DISTILLATION_PLAN_V1.md)
-- Oracle-distilled student training protocol: [`ORACLE_DISTILLED_STUDENT_TRAINING_PROTOCOL_V1.md`](ORACLE_DISTILLED_STUDENT_TRAINING_PROTOCOL_V1.md)
-- Oracle-distilled matched-control evaluation protocol: [`ORACLE_DISTILLED_MATCHED_CONTROL_EVALUATION_PROTOCOL_2026_04_15.md`](ORACLE_DISTILLED_MATCHED_CONTROL_EVALUATION_PROTOCOL_2026_04_15.md)
-- Oracle controller behavioral-policy metrics protocol: [`ORACLE_CONTROLLER_BEHAVIOR_POLICY_METRICS_PROTOCOL_2026_04_15.md`](ORACLE_CONTROLLER_BEHAVIOR_POLICY_METRICS_PROTOCOL_2026_04_15.md)
-- Oracle controller-behavior smoke test (structural): [`ORACLE_CONTROLLER_BEHAVIOR_SMOKE_TEST_2026_04_15.md`](ORACLE_CONTROLLER_BEHAVIOR_SMOKE_TEST_2026_04_15.md)
-- Oracle matched-rate evaluation protocol: [`ORACLE_MATCHED_RATE_EVALUATION_PROTOCOL_2026_04_15.md`](ORACLE_MATCHED_RATE_EVALUATION_PROTOCOL_2026_04_15.md)
-- Oracle matched-rate smoke test (structural): [`ORACLE_MATCHED_RATE_SMOKE_TEST_2026_04_15.md`](ORACLE_MATCHED_RATE_SMOKE_TEST_2026_04_15.md)
-- Oracle matched-rate frontier protocol: [`ORACLE_MATCHED_RATE_FRONTIER_EVALUATION_PROTOCOL_2026_04_15.md`](ORACLE_MATCHED_RATE_FRONTIER_EVALUATION_PROTOCOL_2026_04_15.md)
-- Oracle matched-rate frontier smoke test (structural): [`ORACLE_MATCHED_RATE_FRONTIER_SMOKE_TEST_2026_04_15.md`](ORACLE_MATCHED_RATE_FRONTIER_SMOKE_TEST_2026_04_15.md)
-- Random matched-coverage baseline protocol: [`RANDOM_MATCHED_COVERAGE_BASELINE_PROTOCOL_2026_04_15.md`](RANDOM_MATCHED_COVERAGE_BASELINE_PROTOCOL_2026_04_15.md)
-- Repeated-random matched-control protocol: [`REPEATED_RANDOM_MATCHED_CONTROL_PROTOCOL_2026_04_15.md`](REPEATED_RANDOM_MATCHED_CONTROL_PROTOCOL_2026_04_15.md)
-- Oracle-distilled regime bundle runner protocol: [`ORACLE_DISTILLED_REGIME_BUNDLE_RUNNER_PROTOCOL_2026_04_15.md`](ORACLE_DISTILLED_REGIME_BUNDLE_RUNNER_PROTOCOL_2026_04_15.md)
+- `PROJECT_MASTER_PLAN.md` gives the full project identity, final goal, and roadmap.
+- `CURRENT_PROJECT_STATUS.md` says what is genuinely built and what is still unresolved.
+- `CURRENT_BOTTLENECKS.md` explains the main obstacle.
+- `CURRENT_SAFE_CLAIMS.md` tells you what is manuscript-safe to say now.
+- `STOP_VS_ACT_DIRECTION.md` defines the main near-term controller direction.
+- `NEXT_LIGHTWEIGHT_STEPS.md` and `LATER_HEAVIER_STEPS.md` describe what to do next.
+- `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
+- `REPO_MAP.md` tells collaborators where to start in code and docs.
 
-- Branch-scorer line status: [`BRANCH_SCORER_STATUS.md`](BRANCH_SCORER_STATUS.md)
-- Experiment-specific docs under `experiments/*result_note.md`
-- Focused method notes that are explicitly scoped to a single audit pass
+## Exploratory / active-branch notes
 
-## 4) Historical/provenance notes
+These notes are useful, but they are **not** the default interpretation of the project.
 
-- Dated memos/snapshots (e.g., files ending with `_2026-04-13.md`, `_2026-04-14.md`).
-- Old-track separation note: [`OLD_VS_NEW_PAPER_TRACKS.md`](OLD_VS_NEW_PAPER_TRACKS.md).
-- Earlier “NEW_PAPER_*” summary docs are retained for provenance but superseded by section (1).
+- Oracle generator interface / productionization / pilot protocols.
+- Oracle selective distillation and oracle-distilled student notes.
+- Branch-scorer line status and method-specific result notes.
+- Tie-aware, reliability-aware, warm-start, and ambiguity-targeted experimental notes.
 
-Interpretation rule:
-- Use section (1) for current project interpretation.
-- Use sections (3)-(4) for evidence traceability and history.
+Use these when you need traceability for a specific experiment line, not as the first summary of the repo.
+
+## Historical / provenance notes
+
+These remain valuable for traceability but are not canonical:
+- old-track separation notes,
+- dated memo snapshots,
+- earlier summaries superseded by the current canonical docs.
+
+## Interpretation rule
+
+- Use the **canonical docs** for current project interpretation and paper planning.
+- Use **exploratory notes** for experiment-specific context.
+- Use **historical notes** only for provenance or comparison with older directions.

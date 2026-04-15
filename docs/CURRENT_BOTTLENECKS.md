@@ -2,31 +2,43 @@
 
 ## Primary bottleneck
 
-The primary bottleneck is **supervision target quality** and **proxy-label mismatch** for allocation decisions.
+The primary bottleneck is **supervision target quality / proxy-label mismatch** for allocation decisions.
 
-## Explicit non-bottlenecks (for current phase)
+## Why this dominates now
 
-The primary bottleneck is **not**:
+The project is no longer blocked mainly by lack of infrastructure. The repo already contains controllers, audits, dataset tooling, oracle-label pilot paths, and real-model pilot pathways.
+
+The weaker point is that current labels or target approximations still do not capture the local decision we care about with enough fidelity:
+
+> **Should the next unit of compute be spent here, or preserved for later use elsewhere?**
+
+## How the bottleneck appears in practice
+
+- noisy ACT-vs-STOP deltas,
+- unstable near-threshold behavior,
+- shallow STOP semantics,
+- limited calibration transfer across budgets / seeds / datasets,
+- controller wins that are promising but not yet consistently robust,
+- under-spend or misallocated spend even when budget headroom exists.
+
+## Explicit non-bottlenecks for the current phase
+
+The main problem is **not** primarily:
 - infrastructure completeness,
-- absence of heavier models,
-- inability to run broader sweeps.
+- lack of additional controller variants,
+- lack of heavier models,
+- or inability to run broader sweeps.
 
-## Why this bottleneck dominates now
-
-Current learned branch/controller scoring depends heavily on approximate proxy labels. Those proxies are useful, but they do not directly encode whether the next compute action is worth the budget in the present state.
-
-This mismatch weakens:
-- controller-level robustness,
-- transfer across datasets/seeds/budgets,
-- calibration of stop/act behavior.
-
-## Practical consequence
-
-The next efficient progress comes from improving action-conditional targets, not from immediate scale-up.
+These may matter later, but they are not the highest-leverage next fix.
 
 ## Canonical near-term response
 
-1. Build cheap approximate marginal labels (stop-vs-one-more-action, short-horizon delta utility, +1 or small-k rollout comparisons).
-2. Mark uncertainty/ambiguity explicitly.
-3. Train/evaluate a budget-conditioned stop-vs-act controller with uncertainty-aware training.
-4. Re-run matched bounded comparisons against strong heuristics and pairwise BT baseline.
+1. Improve action-conditional target design for stop-vs-act.
+2. Make STOP semantics more opportunity-cost-aware.
+3. Continue uncertainty-aware filtering / reweighting.
+4. Re-run matched controller comparisons against strong heuristics and BT baseline.
+5. Use broader scaling only after target-quality improvements are visible.
+
+## Practical consequence
+
+The next efficient progress is expected to come from **better local supervision and cleaner comparator design**, not from immediately scaling compute or model size.

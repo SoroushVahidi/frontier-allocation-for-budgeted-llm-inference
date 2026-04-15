@@ -5,53 +5,62 @@
 This is the canonical status note for the current NeurIPS-oriented project on:
 - fixed-budget adaptive test-time compute allocation,
 - cross-controller frontier allocation,
-- action-conditional branch/controller decisions under a global compute budget.
+- budget-conditioned stop-vs-act control under a global compute budget.
 
 ## Core project goal
 
 Learn and evaluate allocation policies that decide where the next unit of compute should go, while respecting a fixed budget and avoiding allocation collapse.
 
-## What has been built (established)
+## Final paper goal
 
-- Runnable frontier/controller experimentation scaffold.
-- Anti-collapse controller mechanisms and corresponding audits.
-- Branch-scorer experimentation stack (pointwise, pairwise BT, tie-aware/reliability variants).
-- Dataset and baseline integration/readiness tooling.
-- Oracle/frontier comparative audit pathways.
+The final paper should show that:
+1. budgeted test-time compute allocation is a meaningful and distinct problem,
+2. a clean frontier / controller framing is more honest than a vague “more reasoning helps” story,
+3. budget-conditioned stop-vs-act control is the strongest near-term controller family,
+4. and the main methodological challenge is supervision-target quality.
 
-## What has been learned so far
+## What has been built
 
-1. The framing is sound: cross-controller frontier allocation is a distinct and useful problem framing.
-2. Anti-collapse controller design matters for realized budget use.
-3. Pairwise BT branch scoring is one of the strongest active learned directions.
-4. External warm-start and reliability-aware variants are promising but mixed.
-5. Robustness remains uneven across seeds/budgets/datasets; no settled universal winner.
+The repo already contains:
+- a runnable frontier/controller experimentation scaffold,
+- anti-collapse controller mechanisms and audits,
+- branch-scorer experimentation stack,
+- stop-vs-act dataset / train / eval machinery,
+- dataset and baseline integration/readiness tooling,
+- oracle-label pilot infrastructure,
+- provenance-aware output and reporting patterns.
+
+## What has been learned
+
+1. The new project framing is sound and distinct from the old binary revise-routing track.
+2. Anti-collapse controller design matters for realized budget use and frontier behavior.
+3. Pairwise BT remains one of the strongest active learned directions.
+4. The stop-vs-act controller family is the clearest next method direction.
+5. Several bounded comparator variants improved understanding, but none has fully solved the ACT-vs-STOP target problem.
+6. Larger scale alone is unlikely to fix the current weaknesses without better targets.
 
 ## Main unresolved issue
 
-The main unresolved issue is supervision target quality:
+The main unresolved issue is **supervision target quality**:
 - proxy-label mismatch,
-- label noise/alignment problems,
-- insufficient calibration of decision-time allocation signal.
+- noisy or shallow ACT-vs-STOP comparisons,
+- imperfect opportunity-cost modeling on the STOP side,
+- uneven controller robustness across budgets / seeds / datasets.
 
-## Canonical methodological interpretation
+## Current methodological interpretation
 
-The project should now be framed around:
+The project should currently be interpreted as:
 
-> **Is the next unit of compute worth spending here?**
-
-rather than only generic branch ranking.
-
-Ideal target is expected marginal utility of the next compute action, but for first implementation stability the preferred approximation is a budget-conditioned binary stop-vs-act decision.
+> **a strong platform and paper direction whose main open problem is action-conditional supervision design, not missing infrastructure.**
 
 ## Current best next implementation direction
 
-- Implement a lightweight budget-conditioned stop-vs-act controller.
-- Use uncertainty both as:
-  - input features for decisions,
-  - and training-example filtering/reweighting signal.
-- Keep pairwise BT branch scoring as an active baseline/companion line, not the sole canonical next controller.
+- Keep stop-vs-act as the canonical near-term controller family.
+- Use uncertainty both as controller input and as data-policy signal.
+- Continue matched bounded comparisons versus strong heuristics and BT baseline.
+- Integrate the most important external paper baselines carefully and fairly.
+- Treat oracle-label and selective-distillation work as high-value supporting lines, not replacements for clean baseline controller evaluation.
 
-## Practical implication before heavy scaling
+## Practical implication
 
-Before large-scale label generation or heavier neural models, prioritize bounded supervision-target design and label-quality experiments.
+The repo is already ready for serious paper planning, collaborator onboarding, and baseline integration work. The next phase should focus on sharpening the controller target and tightening the evaluation story, not on simply adding more scale.

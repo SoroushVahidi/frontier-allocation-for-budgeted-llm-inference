@@ -1,42 +1,46 @@
-# Next lightweight steps (before HPC returns)
+# Next lightweight steps (canonical near-term)
 
 ## Objective
 
-Improve supervision target design and controller signal quality with bounded, low-cost experiments.
+Improve supervision target design and controller signal quality with bounded, low-cost experiments that strengthen the paper story without requiring large-scale runs.
 
-## Priority sequence
+## Near-term priority sequence
 
-1. **Binary stop-vs-act label design (budget-conditioned).**
-   - Construct labels around “stop vs one-more-action” at decision states.
-   - Condition labels/features on remaining budget and frontier context.
+1. **Strengthen stop-vs-act target design.**
+   - Construct cleaner ACT-vs-STOP comparisons.
+   - Make STOP semantics more opportunity-cost-aware.
+   - Keep the decision explicitly budget-conditioned.
 
-2. **Uncertainty-aware training setup.**
-   - Add uncertainty indicators as model inputs.
-   - Use uncertainty for filtering/reweighting ambiguous examples.
+2. **Improve uncertainty-aware training policy.**
+   - Use uncertainty indicators as model inputs.
+   - Use uncertainty for filtering / reweighting ambiguous examples.
+   - Track ambiguous slices explicitly in reports.
 
-3. **Cheap approximate marginal-label experiments.**
-   - +1 action delta labels.
-   - short-horizon (small-k) rollout delta utility labels.
-   - bounded rollout comparison labels for stop-vs-act.
+3. **Run matched bounded controller comparisons.**
+   - Compare stop-vs-act against strong heuristics.
+   - Compare stop-vs-act against pairwise BT controller baseline.
+   - Keep seeds, budgets, and slices matched and auditable.
 
-4. **Bounded label audits.**
-   - Audit disagreement rates, near-threshold instability, and calibration slices.
-   - Mark uncertain/ambiguous examples explicitly.
+4. **Integrate the most important external paper baselines fairly.**
+   - Prioritize baselines that are closest to budget control and test-time allocation.
+   - Separate faithful inference-only adapters from full external-method reproductions when needed.
+   - Document fairness caveats explicitly.
 
-5. **Matched comparisons (small scale).**
-   - Compare stop-vs-act controller vs:
-     - strong heuristic baseline(s),
-     - plain pairwise BT branch scorer controller.
-   - Keep budgets, seeds, and slices matched and auditable.
+5. **Sharpen manuscript-safe exports.**
+   - Update safe claims after each bounded pass.
+   - Keep note/report artifacts easy to cite later.
+   - Convert exploratory results into reviewer-facing summaries only when the evidence is stable enough.
 
 ## Deliverables for this phase
 
-- Label schema + audit summary.
-- First stop-vs-act baseline results (small but matched).
-- Updated safe-claim wording based on bounded evidence.
+- clearer ACT-vs-STOP target notes and audit outputs,
+- matched small-scale controller comparisons,
+- at least one important external baseline integration plan or implementation,
+- updated safe-claim wording,
+- cleaner paper-positioning materials.
 
-## Explicit non-goals (pre-HPC)
+## Explicit non-goals (near-term)
 
-- No large benchmark expansion.
-- No heavy model scaling before target quality improves.
-- No overclaiming from exploratory wins.
+- No broad heavy scaling before target quality improves.
+- No overclaiming from isolated wins.
+- No diffusion back into the old binary revise-routing manuscript story.

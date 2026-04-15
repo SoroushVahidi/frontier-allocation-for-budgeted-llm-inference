@@ -2,72 +2,87 @@
 
 Repository for the **current NeurIPS-oriented project** on **fixed-budget adaptive test-time compute allocation for LLM reasoning**.
 
-## Project identity (canonical)
-
-This repository is now organized around one primary research question:
+## Canonical project question
 
 > **Is the next unit of compute worth spending here?**
 
-Concretely, the project focuses on:
+This repository is no longer centered on the old binary revise-routing paper. Its canonical identity is now:
 - fixed-budget adaptive test-time compute allocation,
 - cross-controller frontier allocation,
-- branch/controller allocation under a global compute budget,
+- budget-conditioned stop-vs-act control,
 - oracle frontier headroom,
 - anti-collapse controller design,
-- supervision target design for allocation decisions.
+- supervision-target design for allocation decisions.
 
-## Current interpretation (important)
+## Current interpretation
 
-This repo is best interpreted as:
-- a **strong research platform** with solid infrastructure and framing,
-- with **active-development-level method maturity**.
+This repo should currently be interpreted as:
+- a **strong research platform**,
+- with **active-development method maturity**,
+- aimed at a **careful NeurIPS paper story** rather than an overclaimed finished winner.
 
-What is strong now:
-- infrastructure and experiment scaffolding,
-- frontier/controller framing,
+### What is already strong
+- frontier/controller experimentation scaffold,
+- anti-collapse controller mechanisms and audits,
+- branch-scorer and stop-vs-act experimentation paths,
 - dataset and baseline integration readiness,
-- careful diagnostics and provenance notes.
+- oracle-label pilot infrastructure,
+- careful provenance notes and safe-claim discipline.
 
-What is not solved yet:
-- robust learned allocation signal,
-- supervision target quality / calibration,
-- robust controller-level wins over strongest heuristics,
-- broad real-model evidence.
+### What is not solved yet
+- robust supervision targets for stop-vs-act control,
+- reliable controller calibration across budgets / seeds / datasets,
+- broad decisive real-model evidence,
+- a robust universally winning learned allocator.
 
-## Main bottleneck (canonical)
+## Main bottleneck
 
-The main bottleneck is **supervision target quality** and **proxy-label mismatch**.
+The canonical bottleneck is:
 
-It is **not** primarily:
+**supervision target quality / proxy-label mismatch**.
+
+The repo’s current view is that the project is **not** primarily blocked by:
 - missing infrastructure,
-- or lack of heavier models.
+- lack of heavier models,
+- or lack of larger sweeps.
 
-## Current best next method direction
+## Best near-term method direction
 
-The recommended near-term controller direction is:
+The recommended next controller direction is:
 
-- a **lightweight, budget-conditioned, binary stop-vs-act controller**
-- for branch/controller allocation,
+- a **lightweight budget-conditioned binary stop-vs-act controller**,
 - with uncertainty used both:
   - as controller input features,
-  - and as training-example filtering/reweighting signal.
+  - and as training-example filtering / reweighting signals.
 
-Rationale: binary targets are currently expected to be more stable under noisy proxy supervision than a first-pass continuous marginal-value regressor.
+Pairwise BT branch scoring remains a strong active line and an important baseline / companion direction, but it is not the only canonical next step.
 
-## Canonical path (read in this order)
+## Paper-level interpretation
 
-1. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
-2. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-3. [`docs/STOP_VS_ACT_DIRECTION.md`](docs/STOP_VS_ACT_DIRECTION.md)
-4. [`docs/NEXT_LIGHTWEIGHT_STEPS.md`](docs/NEXT_LIGHTWEIGHT_STEPS.md)
-5. [`docs/EXPERIMENT_STATUS.md`](docs/EXPERIMENT_STATUS.md)
-6. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
-7. [`scripts/README.md`](scripts/README.md)
+The strongest current paper story is:
+
+**fixed-budget cross-controller frontier allocation for LLM reasoning, with stop-vs-act control as the most promising near-term controller family and supervision-target design as the central unresolved issue.**
+
+That is a stronger and more honest story than pretending the repo already contains a universally dominant learned controller.
+
+## Canonical reading path
+
+1. [`docs/PROJECT_MASTER_PLAN.md`](docs/PROJECT_MASTER_PLAN.md)
+2. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+3. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+4. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+5. [`docs/STOP_VS_ACT_DIRECTION.md`](docs/STOP_VS_ACT_DIRECTION.md)
+6. [`docs/NEXT_LIGHTWEIGHT_STEPS.md`](docs/NEXT_LIGHTWEIGHT_STEPS.md)
+7. [`docs/LATER_HEAVIER_STEPS.md`](docs/LATER_HEAVIER_STEPS.md)
+8. [`docs/EXPERIMENT_STATUS.md`](docs/EXPERIMENT_STATUS.md)
+9. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+10. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+11. [`scripts/README.md`](scripts/README.md)
 
 ## Canonical vs exploratory vs historical
 
-- **Canonical now**: docs listed in “Canonical path” and corresponding frontier/allocation scripts.
-- **Exploratory**: branch-scorer variants (reliability-aware, warm-start, tie-aware variants) and targeted audits.
-- **Historical**: old manuscript/binary revise-routing materials and dated memo snapshots.
+- **Canonical now**: the docs listed above and the corresponding frontier-allocation / stop-vs-act scripts.
+- **Exploratory**: reliability-aware BT variants, warm-start variants, tie-aware / ambiguity-aware targeted experiments, and method-specific diagnostic notes.
+- **Historical**: old manuscript / binary revise-routing material and dated memo snapshots.
 
-See [`docs/REPO_MAP.md`](docs/REPO_MAP.md) and [`docs/README.md`](docs/README.md) for exact labels.
+See [`docs/README.md`](docs/README.md) and [`docs/REPO_MAP.md`](docs/REPO_MAP.md) for exact labels and collaborator start guidance.

@@ -1,22 +1,64 @@
 # Paper positioning note (canonical interpretation)
 
-## Likely paper story (current best interpretation)
+## Strongest current paper story
 
 The strongest current paper direction is:
 
-**fixed-budget branch/controller allocation with supervision-target design as the core unresolved issue, and a budget-conditioned binary stop-vs-act controller as the most promising near-term controller direction.**
+**fixed-budget cross-controller frontier allocation for LLM reasoning, with budget-conditioned stop-vs-act control as the leading near-term controller family and supervision-target design as the central unresolved methodological issue.**
 
-## Positioning elements
+## What this means in practice
 
-1. Problem: fixed-budget adaptive test-time compute allocation for LLM reasoning.
-2. Mechanism: cross-controller frontier allocation with anti-collapse design.
-3. Evaluation lens: oracle frontier headroom + matched controller-level comparisons.
-4. Core unresolved issue: supervision target quality and proxy-label mismatch.
-5. Near-term method focus: uncertainty-aware stop-vs-act controller with approximate marginal labels.
+The paper should not be framed as:
+- “we already found the universally best controller,”
+- or “more reasoning helps,”
+- or “a small variant of the old revise-routing manuscript.”
+
+Instead, the paper should be framed as:
+- a distinct budgeted inference problem,
+- with a clear frontier/controller lens,
+- an honest evaluation lens centered on oracle headroom and matched comparisons,
+- and a diagnosis that target quality is currently the main blocker to stronger learned control.
+
+## Recommended positioning elements
+
+1. **Problem:** fixed-budget adaptive test-time compute allocation for LLM reasoning.
+2. **Mechanism:** cross-controller frontier allocation with anti-collapse design.
+3. **Controller focus:** budget-conditioned stop-vs-act as the clearest near-term control rule.
+4. **Evaluation lens:** oracle frontier headroom + matched controller-level comparisons + budget-aware frontier summaries.
+5. **Main unresolved issue:** supervision-target quality and proxy-label mismatch.
+6. **Honest contribution type:** framing, evaluation design, and controller-target diagnosis, with emerging but not yet final method evidence.
+
+## Best contribution framing
+
+A strong introduction should make clear that the contribution is not merely a stronger search heuristic. The contribution is the combination of:
+- a cleaner resource-allocation framing,
+- a more interpretable control question,
+- explicit anti-collapse / frontier considerations,
+- and a clearer diagnosis of why controller learning is hard.
+
+## Baseline framing guidance
+
+The paper should compare against:
+- strong in-repo heuristic and learned baselines,
+- the strongest directly relevant external budget-control baselines,
+- and a few adjacent adaptive-allocation baselines when they support the broader claim.
+
+But the paper must distinguish:
+- **direct budget-control baselines**, and
+- **adjacent adaptive-allocation baselines**.
+
+That distinction will make the empirical story more reviewer-proof.
 
 ## Claims discipline for writing
 
 - Emphasize platform strength and methodological honesty.
-- Treat pairwise BT as strong active line/baseline, not settled endpoint.
-- Keep warm-start/reliability variants in promising-but-mixed category.
-- Present heavier models/scale as later-stage tools after target quality improves.
+- Treat pairwise BT as a strong active line / baseline, not the settled endpoint.
+- Keep warm-start / reliability-aware variants in the promising-but-mixed category.
+- Present heavier models and larger scaling as later-stage tools after target quality improves.
+- Avoid implying that current partial external-baseline integration already settles the empirical picture.
+
+## Best current headline
+
+A strong safe headline for the paper direction is:
+
+**effective test-time compute allocation depends not only on having stronger reasoning actions, but on deciding when the next unit of compute is worth its opportunity cost.**
