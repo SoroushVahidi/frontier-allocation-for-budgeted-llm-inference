@@ -36,6 +36,8 @@ Each run must report:
 Pairwise control requirement:
 - For selective-vs-random matched pairs, include ACT-rate gap and, when available, avg-actions gap.
 - If rate mismatch exceeds tolerance, treat any quality claim as provisional pending matched-rate follow-up.
+- Prefer matched-threshold comparisons at a declared target ACT-rate, with explicit residual mismatch reporting.
+- Prefer a small shared matched-rate frontier summary in addition to one-point matched-rate checks.
 
 ## 4) Required slice breakdowns
 
@@ -48,6 +50,20 @@ Every compared run must include at least the following slice summaries:
 
 Interpretation rule:
 - A global average gain with deterioration in warning slices (uncertainty/disagreement) is not sufficient for promotion.
+
+## 4b) Required controller-behavior metrics when primitive gaps exist
+
+When per-state `oracle_action_gap` (or contract-equivalent ACT-vs-STOP utility gap) is present,
+evaluation outputs must report controller-behavior metrics:
+
+- BAR (beneficial ACT rate),
+- HAR (harmful ACT rate),
+- HPSR (harmful premature STOP rate),
+- BSR (beneficial STOP rate),
+- oracle-action regret.
+
+If the gap primitive is missing, summaries must mark behavior metrics as unavailable with explicit reason
+instead of silently defaulting to zero.
 
 ## 5) Safe vs unsafe claims before real pilot results
 
