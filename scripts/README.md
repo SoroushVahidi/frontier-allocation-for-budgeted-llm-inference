@@ -64,3 +64,11 @@ All scripts write run artifacts under `outputs/` unless overridden.
 
 - `run_cross_strategy_frontier_allocation.py` keeps a legacy filename for compatibility; docs refer to this as cross-controller frontier allocation.
 - Current canonical method direction is documented in `docs/STOP_VS_ACT_DIRECTION.md` (stop-vs-act), but implementation scripts are still evolving.
+
+## Oracle-label pilot execution
+
+| Script | Role |
+|---|---|
+| `run_oracle_label_pilot_hpc.sh` | HPC-oriented wrapper: preflight, optional manifest build, generator hook, validator gate, run summary |
+| `run_oracle_label_generator_interface_stub.py` | Interface-stabilization stub CLI for heavy generator contract; supports testing-only `--mock-mode` outputs |
+| `run_oracle_label_generator_prototype.py` | First real paired-rollout oracle-label prototype generator (limited subset, CPU-oriented) |

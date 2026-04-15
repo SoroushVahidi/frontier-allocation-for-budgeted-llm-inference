@@ -9,6 +9,7 @@ YAML and JSON configuration for experiments and tooling.
 | [`pilot_gsm8k.yaml`](pilot_gsm8k.yaml) | Default GSM8K pilot (`scripts/run_pilot_gsm8k.py`) |
 | [`external_baselines_registry.json`](external_baselines_registry.json) | Machine-readable external baseline URLs and status (no vendored code) |
 | [`external_reasoning_datasets_registry.json`](external_reasoning_datasets_registry.json) | New-paper external reasoning supervision candidates (HF IDs + supervision taxonomy) |
+| [`oracle_label_generator_interface_contract_v1.json`](oracle_label_generator_interface_contract_v1.json) | Machine-readable heavy-generator input/output/invariant contract for oracle-label pilot v1 |
 
 ## Conventions
 

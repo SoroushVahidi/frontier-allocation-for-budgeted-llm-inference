@@ -24,6 +24,10 @@ This index defines **canonical**, **exploratory**, and **historical** documentat
 
 ## 3) Exploratory/active-branch notes
 
+- Oracle generator interface contract: [`ORACLE_LABEL_GENERATOR_INTERFACE_CONTRACT_V1.md`](ORACLE_LABEL_GENERATOR_INTERFACE_CONTRACT_V1.md)
+- Oracle generator prototype note: [`ORACLE_LABEL_GENERATOR_PROTOTYPE_V1_NOTE.md`](ORACLE_LABEL_GENERATOR_PROTOTYPE_V1_NOTE.md)
+- Oracle pilot HPC runbook: [`HPC_ORACLE_LABEL_PILOT_LAUNCH_PROTOCOL_V1.md`](HPC_ORACLE_LABEL_PILOT_LAUNCH_PROTOCOL_V1.md)
+
 - Branch-scorer line status: [`BRANCH_SCORER_STATUS.md`](BRANCH_SCORER_STATUS.md)
 - Experiment-specific docs under `experiments/*result_note.md`
 - Focused method notes that are explicitly scoped to a single audit pass
