@@ -36,6 +36,16 @@ def parse_args() -> argparse.Namespace:
         help="If set, instability contributes to uncertainty only when |delta_mean| <= this band.",
     )
     parser.add_argument("--rollout-samples", type=int, default=6)
+    parser.add_argument(
+        "--target-mode",
+        default="proxy_best_other_gain",
+        choices=[
+            "proxy_best_other_gain",
+            "counterfactual_here_vs_best_other",
+            "counterfactual_act_vs_stop_h2",
+        ],
+    )
+    parser.add_argument("--small-horizon-steps", type=int, default=2)
     return parser.parse_args()
 
 
@@ -50,6 +60,8 @@ def main() -> None:
         instability_std_threshold=args.instability_std_threshold,
         instability_guard_band=args.instability_guard_band,
         rollout_samples=args.rollout_samples,
+        target_mode=args.target_mode,
+        small_horizon_steps=args.small_horizon_steps,
     )
     rows = build_stop_vs_act_dataset(
         episodes=args.episodes,
@@ -83,6 +95,13 @@ def main() -> None:
             "utility": "0.72*score + 0.20*done_and_correct + 0.08*done_bonus",
             "rollout": f"bounded rollout with {args.rollout_samples} local samples",
             "gain_margin": args.gain_margin,
+            "target_mode": args.target_mode,
+            "target_mode_definition": (
+                "proxy_best_other_gain: E[gain_here]-best_other_expected_next_gain; "
+                "counterfactual_here_vs_best_other: E[gain_here - gain_best_other_one_step]; "
+                "counterfactual_act_vs_stop_h2: E[value_after_h2(force_act_here) - value_after_h2(skip_here_first)]"
+            ),
+            "small_horizon_steps": args.small_horizon_steps,
         },
         "uncertainty_rule": {
             "uncertain_if": (
