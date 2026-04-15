@@ -1,0 +1,43 @@
+{
+  "run_name": "stop_vs_act_oracle_distilled_student_train_v1",
+  "status": "pre_pilot_training_path_ready",
+  "purpose": "First real oracle-distilled student train/eval defaults for post-pilot use.",
+  "inputs": {
+    "distillation_dataset_jsonl": "outputs/oracle_label_pilot_hpc/<run_id>/distillation_ready_labels.jsonl",
+    "state_manifest_jsonl": "outputs/oracle_label_pilot_hpc/<run_id>/pilot_state_manifest.jsonl"
+  },
+  "model": {
+    "model_kind": "logistic",
+    "decision_threshold": 0.5
+  },
+  "training": {
+    "train_buckets": [
+      "accepted",
+      "borderline"
+    ],
+    "eval_buckets": [
+      "accepted",
+      "borderline"
+    ],
+    "uncertain_policy": "downweight",
+    "use_sample_weight": true,
+    "soft_weight_mode": "confidence",
+    "soft_weight_strength": 0.3,
+    "train_ratio": 0.8,
+    "split_mode": "prefer_existing_then_hash",
+    "hash_split_seed": 31
+  },
+  "anchor_baseline": {
+    "name": "default_gain_gap_rule",
+    "heuristic_margin": 0.01,
+    "note": "Anchor comparator in this training script is a deterministic gain-gap heuristic on the same eval rows. Full canonical anchor comparison still requires running the existing default stop-vs-act path and comparing summaries."
+  },
+  "provenance": {
+    "requires_non_mock_labels_for_claims": true,
+    "safe_without_real_labels": [
+      "pipeline functionality",
+      "artifact schema",
+      "non-claim dry runs"
+    ]
+  }
+}

@@ -29,6 +29,8 @@ This index defines **canonical**, **exploratory**, and **historical** documentat
 - Oracle pilot HPC runbook: [`HPC_ORACLE_LABEL_PILOT_LAUNCH_PROTOCOL_V1.md`](HPC_ORACLE_LABEL_PILOT_LAUNCH_PROTOCOL_V1.md)
 - Oracle pilot productionization note: [`ORACLE_LABEL_PILOT_PRODUCTIONIZATION_NOTE_2026_04_15.md`](ORACLE_LABEL_PILOT_PRODUCTIONIZATION_NOTE_2026_04_15.md)
 - Oracle heavy generator path note: [`ORACLE_LABEL_GENERATOR_HEAVY_PATH_NOTE_2026_04_15.md`](ORACLE_LABEL_GENERATOR_HEAVY_PATH_NOTE_2026_04_15.md)
+- Oracle selective distillation plan: [`ORACLE_SELECTIVE_DISTILLATION_PLAN_V1.md`](ORACLE_SELECTIVE_DISTILLATION_PLAN_V1.md)
+- Oracle-distilled student training protocol: [`ORACLE_DISTILLED_STUDENT_TRAINING_PROTOCOL_V1.md`](ORACLE_DISTILLED_STUDENT_TRAINING_PROTOCOL_V1.md)
 
 - Branch-scorer line status: [`BRANCH_SCORER_STATUS.md`](BRANCH_SCORER_STATUS.md)
 - Experiment-specific docs under `experiments/*result_note.md`

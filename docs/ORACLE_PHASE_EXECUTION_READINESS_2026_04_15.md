@@ -149,3 +149,39 @@ The repository is now:
 but not yet:
 
 **empirically complete for that phase.**
+
+---
+
+## Selective distillation layer status update (pre-HPC)
+
+A concrete selective-distillation policy/scaffold is now defined for the post-generation phase:
+
+- design note: `docs/ORACLE_SELECTIVE_DISTILLATION_PLAN_V1.md`
+- policy config: `configs/stop_vs_act_oracle_selective_distillation_v1.json`
+- preprocessing tool: `scripts/build_stop_vs_act_oracle_distillation_dataset.py`
+
+This addition keeps phase boundaries explicit:
+
+1. Oracle-label generation + validator gates must pass first.
+2. Then selective distillation preprocessing assigns `accepted` / `borderline` / `rejected` buckets and emits weighted training rows.
+3. Only then should student training/evaluation be run against the unchanged default anchor baseline.
+
+So the immediate next action after obtaining valid non-mock pilot oracle labels is:
+- run the distillation preprocessing tool on validated labels,
+- inspect bucket summary diagnostics,
+- and launch first selective-distillation training/eval pass.
+
+---
+
+## Oracle-distilled student path status update (pre-pilot execution)
+
+The repository now also includes the first concrete post-pilot student path:
+
+- protocol: `docs/ORACLE_DISTILLED_STUDENT_TRAINING_PROTOCOL_V1.md`
+- training defaults: `configs/stop_vs_act_oracle_distilled_student_train_v1.json`
+- train/eval script: `scripts/train_oracle_distilled_stop_vs_act_student.py`
+- run-comparison scaffold: `scripts/compare_oracle_distilled_stop_vs_act_runs.py`
+
+Interpretation remains unchanged:
+- this is **execution readiness** for post-pilot training/evaluation,
+- not evidence that real oracle-distilled gains have already been demonstrated.

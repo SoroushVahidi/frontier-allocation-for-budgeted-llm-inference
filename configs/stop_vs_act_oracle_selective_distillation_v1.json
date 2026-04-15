@@ -1,0 +1,113 @@
+{
+  "plan_name": "stop_vs_act_oracle_selective_distillation_v1",
+  "status": "pre_pilot_scaffold",
+  "purpose": "Policy for mapping contract-compliant oracle ACT-vs-STOP labels into accepted/borderline/rejected distillation buckets.",
+  "phase_boundary": {
+    "generation_phase_required": true,
+    "distillation_phase_requires_validated_labels": true,
+    "mock_rows_not_valid_for_training": true
+  },
+  "input_contract": {
+    "required_core_fields": [
+      "state_id",
+      "q_act",
+      "q_stop",
+      "oracle_action_gap",
+      "oracle_label_act"
+    ],
+    "optional_quality_fields": [
+      "agreement_rate",
+      "gap_std",
+      "gap_ci_low",
+      "gap_ci_high",
+      "audit_status",
+      "quality_gate_status"
+    ],
+    "mock_markers": [
+      "mock_interface_only",
+      "non_oracle_warning"
+    ]
+  },
+  "bucket_policy": {
+    "gap_consistency_tolerance": 1e-06,
+    "agreement": {
+      "accepted_min": 0.7,
+      "borderline_min": 0.55
+    },
+    "margin_bands": {
+      "accepted_min_abs_gap": 0.12,
+      "borderline_min_abs_gap": 0.04
+    },
+    "remaining_budget_region_overrides": [
+      {
+        "name": "low_remaining_budget",
+        "min_remaining_budget": 0,
+        "max_remaining_budget": 1,
+        "accepted_min_abs_gap": 0.16,
+        "borderline_min_abs_gap": 0.06
+      }
+    ],
+    "reject_if": {
+      "reject_mock_rows": true,
+      "blocked_audit_statuses": [
+        "fail",
+        "disagree",
+        "hard_fail"
+      ],
+      "blocked_quality_statuses": [
+        "fail",
+        "blocked"
+      ]
+    }
+  },
+  "training_treatment": {
+    "accepted": {
+      "sample_weight": 1.0,
+      "hard_loss_weight": 1.0,
+      "soft_kl_weight": 1.0,
+      "abstain_target": 0.0
+    },
+    "borderline": {
+      "sample_weight": 0.5,
+      "hard_loss_weight": 0.35,
+      "soft_kl_weight": 1.0,
+      "abstain_target": 1.0
+    },
+    "rejected": {
+      "sample_weight": 0.0,
+      "hard_loss_weight": 0.0,
+      "soft_kl_weight": 0.0,
+      "abstain_target": 1.0
+    }
+  },
+  "soft_target": {
+    "method": "gap_logistic",
+    "temperature": 0.1,
+    "clip_min": 0.001,
+    "clip_max": 0.999
+  },
+  "output_fields": [
+    "state_id",
+    "example_id",
+    "budget",
+    "remaining_budget",
+    "current_branch_id",
+    "hard_label_act",
+    "teacher_prob_act",
+    "oracle_action_gap",
+    "abs_oracle_action_gap",
+    "q_act",
+    "q_stop",
+    "bucket",
+    "bucket_reason",
+    "sample_weight",
+    "hard_loss_weight",
+    "soft_kl_weight",
+    "abstain_target",
+    "agreement_rate",
+    "audit_status",
+    "quality_gate_status",
+    "bucket_threshold_meta",
+    "provenance"
+  ]
+}
