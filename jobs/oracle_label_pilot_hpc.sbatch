@@ -16,16 +16,11 @@ REPO_ROOT="${SLURM_SUBMIT_DIR:-$PWD}"
 cd "$REPO_ROOT"
 mkdir -p outputs/slurm
 
-# TODO: replace this placeholder with the real heavy generator entrypoint.
-# Interface smoke-test example (testing only, not real oracle labels):
-# GENERATOR_PLACEHOLDER='python3 scripts/run_oracle_label_generator_interface_stub.py --pilot-config "$ORACLE_PILOT_CONFIG" --state-manifest "$ORACLE_STATE_MANIFEST" --output-dir "$ORACLE_OUTPUT_DIR" --mock-mode --seed 7 --max-states 24'
-# Prototype real-rollout example (limited subset, still not full production scale):
-# GENERATOR_PLACEHOLDER='python3 scripts/run_oracle_label_generator_prototype.py --pilot-config "$ORACLE_PILOT_CONFIG" --selection-config configs/stop_vs_act_oracle_pilot_state_selection_v1.json --state-manifest "$ORACLE_STATE_MANIFEST" --output-dir "$ORACLE_OUTPUT_DIR" --max-states 64 --seed 7 --paired-rollouts 16'
-# It must consume ORACLE_* env vars exported by the wrapper and write:
-# - $ORACLE_LABELS_JSONL
-# - $ORACLE_LABEL_MANIFEST
-GENERATOR_PLACEHOLDER='python3 -c "import sys; raise SystemExit(9)"'
+# Production-leaning heavy generator command (single-manifest mode).
+# For sharded pilot runs, prefer pre-splitting state manifests and submitting
+# one job per shard with shard-specific ORACLE_STATE_MANIFEST + output-dir.
+GENERATOR_CMD='python3 scripts/run_oracle_label_generator_heavy.py --pilot-config "$ORACLE_PILOT_CONFIG" --selection-config configs/stop_vs_act_oracle_pilot_state_selection_v1.json --state-manifest "$ORACLE_STATE_MANIFEST" --output-dir "$ORACLE_OUTPUT_DIR" --seed 7 --resume --progress-every 50'
 
 scripts/run_oracle_label_pilot_hpc.sh \
   --build-state-manifest \
-  --generator-cmd "$GENERATOR_PLACEHOLDER"
+  --generator-cmd "$GENERATOR_CMD"

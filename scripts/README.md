@@ -72,3 +72,5 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `run_oracle_label_pilot_hpc.sh` | HPC-oriented wrapper: preflight, optional manifest build, generator hook, validator gate, run summary |
 | `run_oracle_label_generator_interface_stub.py` | Interface-stabilization stub CLI for heavy generator contract; supports testing-only `--mock-mode` outputs |
 | `run_oracle_label_generator_prototype.py` | First real paired-rollout oracle-label prototype generator (limited subset, CPU-oriented) |
+| `run_oracle_label_generator_heavy.py` | Production-leaning heavy-path generator with resume/progress/state-error handling for shard-scale runs |
+| `oracle_label_pilot_sharding.py` | Deterministic shard split/merge utility for pilot-state manifests and per-shard oracle-label outputs |
