@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import sys
 from typing import Any
@@ -157,6 +158,68 @@ def _bucket_metrics(model: dict[str, Any], test_rows: list[dict[str, Any]], thre
     return out
 
 
+def _predicted_act_rate(model: dict[str, Any], rows: list[dict[str, Any]], threshold: float) -> float:
+    if not rows:
+        return 0.0
+    probs = [stop_vs_act_probability(model, {name: float(r[name]) for name in STOP_VS_ACT_FEATURE_NAMES}) for r in rows]
+    acts = [1.0 if p >= threshold else 0.0 for p in probs]
+    return float(sum(acts) / max(1, len(acts)))
+
+
+def _slice_metrics(
+    model: dict[str, Any],
+    test_rows: list[dict[str, Any]],
+    *,
+    threshold: float,
+    key_name: str,
+    key_fn: Any,
+) -> dict[str, dict[str, float]]:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for r in test_rows:
+        key = str(key_fn(r))
+        groups.setdefault(key, []).append(r)
+
+    out: dict[str, dict[str, float]] = {}
+    for key, rows in sorted(groups.items()):
+        cls = evaluate_binary_predictions(model, rows, threshold=threshold)
+        out[key] = {
+            "rows": float(len(rows)),
+            "accuracy": float(cls["accuracy"]),
+            "roc_auc": float(cls["roc_auc"]),
+            "brier": float(cls["brier"]),
+            "pred_act_rate": _predicted_act_rate(model, rows, threshold=threshold),
+        }
+    return {key_name: out}
+
+
+def _margin_bin(abs_gap: float) -> str:
+    if abs_gap < 0.04:
+        return "m0_lt_0.04"
+    if abs_gap < 0.12:
+        return "m1_0.04_to_0.12"
+    return "m2_ge_0.12"
+
+
+def _disagreement_bin(agreement_rate: float | None) -> str:
+    if agreement_rate is None or math.isnan(float(agreement_rate)):
+        return "unknown"
+    if agreement_rate < 0.60:
+        return "low_lt_0.60"
+    if agreement_rate < 0.80:
+        return "mid_0.60_to_0.80"
+    return "high_ge_0.80"
+
+
+def _budget_bin(remaining_budget: float | None) -> str:
+    if remaining_budget is None:
+        return "unknown"
+    if remaining_budget <= 3.0:
+        return "low_le_3"
+    if remaining_budget <= 7.0:
+        return "mid_4_to_7"
+    return "high_ge_8"
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Train/eval oracle-distilled stop-vs-act student")
     p.add_argument("--distill-dataset", required=True, help="Distillation-ready JSONL from selective builder")
@@ -167,6 +230,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--train-ratio", type=float, default=0.8)
     p.add_argument("--train-buckets", default="accepted,borderline")
     p.add_argument("--eval-buckets", default="accepted,borderline")
+    p.add_argument(
+        "--train-selection-mode",
+        choices=["bucket", "selected_flag"],
+        default="bucket",
+        help=(
+            "bucket: train_rows selected by train_buckets (default). "
+            "selected_flag: train_rows selected by row field `selected_for_training`==1."
+        ),
+    )
     p.add_argument("--model-kind", choices=["logistic", "gbdt"], default="logistic")
     p.add_argument("--uncertain-policy", choices=["none", "filter", "downweight", "downweight_nonpositive"], default="downweight")
     p.add_argument("--decision-threshold", type=float, default=0.5)
@@ -176,6 +248,29 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--heuristic-margin", type=float, default=0.01)
     p.add_argument("--fail-on-mock-provenance", action="store_true")
     p.add_argument("--provenance-tag", default="")
+    p.add_argument(
+        "--filter-policy",
+        default="oracle_distilled_generic",
+        help=(
+            "Optional role tag used by downstream comparison scaffolds "
+            "(e.g. anchor_default, oracle_distilled_accepted_only, "
+            "oracle_distilled_accepted_plus_borderline, random_matched_coverage_baseline)."
+        ),
+    )
+    p.add_argument(
+        "--random-baseline-source",
+        default="",
+        help="Optional free-form note for random matched-coverage baseline provenance.",
+    )
+    p.add_argument(
+        "--observed-avg-actions",
+        type=float,
+        default=-1.0,
+        help=(
+            "Optional externally measured avg-actions/compute-rate. "
+            "If omitted (<0), comparison uses predicted ACT-rate only."
+        ),
+    )
     return p.parse_args()
 
 
@@ -229,6 +324,9 @@ def main() -> None:
             "target_reliability_weight": _confidence_weight(teacher_prob),
             "teacher_prob_act": teacher_prob,
             "oracle_action_gap": float(row.get("oracle_action_gap", 0.0)),
+            "agreement_rate": row.get("agreement_rate"),
+            "remaining_budget_raw": row.get("remaining_budget"),
+            "selected_for_training": int(row.get("selected_for_training", 0)),
             "mock_provenance": int(is_mock),
         }
         prepared_row.update(features)
@@ -237,8 +335,20 @@ def main() -> None:
     if args.fail_on_mock_provenance and mock_rows > 0:
         raise SystemExit(f"Mock/non-oracle provenance detected in input rows: {mock_rows}")
 
-    train_rows = [r for r in prepared if r["split"] == "train" and str(r["bucket"]) in train_buckets and float(r["sample_weight"]) > 0.0]
+    if args.train_selection_mode == "bucket":
+        train_rows = [
+            r
+            for r in prepared
+            if r["split"] == "train" and str(r["bucket"]) in train_buckets and float(r["sample_weight"]) > 0.0
+        ]
+    else:
+        train_rows = [
+            r
+            for r in prepared
+            if r["split"] == "train" and int(r.get("selected_for_training", 0)) == 1 and float(r["sample_weight"]) > 0.0
+        ]
     test_rows = [r for r in prepared if r["split"] == "test" and str(r["bucket"]) in eval_buckets]
+    train_pool_rows = [r for r in prepared if r["split"] == "train"]
 
     if not train_rows:
         raise SystemExit("No training rows remain after bucket/weight/feature filters")
@@ -256,6 +366,37 @@ def main() -> None:
     student_metrics = evaluate_binary_predictions(model, test_rows, threshold=args.decision_threshold)
     baseline_metrics = _evaluate_gain_gap_baseline(test_rows, margin=args.heuristic_margin)
     by_bucket = _bucket_metrics(model, test_rows, threshold=args.decision_threshold)
+    predicted_act_rate = _predicted_act_rate(model, test_rows, threshold=args.decision_threshold)
+    uncertainty_slices = _slice_metrics(
+        model,
+        test_rows,
+        threshold=args.decision_threshold,
+        key_name="uncertainty_bins",
+        key_fn=lambda r: "uncertain_borderline" if str(r.get("bucket", "")) == "borderline" else "certain_nonborderline",
+    )
+    margin_slices = _slice_metrics(
+        model,
+        test_rows,
+        threshold=args.decision_threshold,
+        key_name="oracle_margin_bins",
+        key_fn=lambda r: _margin_bin(abs(float(r.get("oracle_action_gap", 0.0)))),
+    )
+    disagreement_slices = _slice_metrics(
+        model,
+        test_rows,
+        threshold=args.decision_threshold,
+        key_name="disagreement_bins",
+        key_fn=lambda r: _disagreement_bin(r.get("agreement_rate")),
+    )
+    budget_slices = _slice_metrics(
+        model,
+        test_rows,
+        threshold=args.decision_threshold,
+        key_name="remaining_budget_bins",
+        key_fn=lambda r: _budget_bin(
+            float(r.get("remaining_budget_raw")) if isinstance(r.get("remaining_budget_raw"), (int, float)) else None
+        ),
+    )
 
     student_probs = [
         stop_vs_act_probability(model, {name: float(r[name]) for name in STOP_VS_ACT_FEATURE_NAMES}) for r in test_rows
@@ -276,6 +417,7 @@ def main() -> None:
             "train_ratio": args.train_ratio,
             "train_buckets": sorted(train_buckets),
             "eval_buckets": sorted(eval_buckets),
+            "train_selection_mode": args.train_selection_mode,
             "model_kind": args.model_kind,
             "uncertain_policy": args.uncertain_policy,
             "decision_threshold": args.decision_threshold,
@@ -284,6 +426,8 @@ def main() -> None:
             "soft_weight_strength": args.soft_weight_strength,
             "heuristic_margin": args.heuristic_margin,
             "provenance_tag": args.provenance_tag,
+            "filter_policy": args.filter_policy,
+            "random_baseline_source": args.random_baseline_source,
         },
         "dataset_summary": {
             "input_rows": len(distill_rows),
@@ -292,6 +436,8 @@ def main() -> None:
             "mock_rows_detected": mock_rows,
             "bucket_counts_prepared": bucket_counts,
             "train_rows": len(train_rows),
+            "train_pool_rows": len(train_pool_rows),
+            "retained_coverage_train_pool": float(len(train_rows) / max(1, len(train_pool_rows))),
             "eval_rows": len(test_rows),
         },
         "student_model": {
@@ -310,6 +456,16 @@ def main() -> None:
             },
             "student_by_bucket": by_bucket,
             "mean_student_prob": mean_student_prob,
+            "compute_reporting": {
+                "predicted_act_rate": predicted_act_rate,
+                "observed_avg_actions": None if args.observed_avg_actions < 0.0 else float(args.observed_avg_actions),
+            },
+            "required_slices": {
+                **uncertainty_slices,
+                **margin_slices,
+                **disagreement_slices,
+                **budget_slices,
+            },
         },
         "safety": {
             "non_claim_mode": bool(mock_rows > 0),
