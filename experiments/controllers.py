@@ -644,6 +644,78 @@ class ProgramOfThoughtController(BaseController):
         )
 
 
+class S1BudgetForcingController(BaseController):
+    """External baseline adapter for s1-style test-time scaling budget forcing.
+
+    This approximates the inference-time loop from the s1 repository:
+    when generation reaches an end-of-thinking stop, append a short "wait"
+    continuation cue and keep reasoning, up to a configured number of forced
+    continuations and an overall action budget.
+    """
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        num_ignore_think_end: int = 1,
+        min_thinking_steps: int = 0,
+        wait_token: str = "Wait",
+        method_name: str = "external_s1_budget_forcing",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.num_ignore_think_end = max(0, int(num_ignore_think_end))
+        self.min_thinking_steps = max(0, int(min_thinking_steps))
+        self.wait_token = wait_token
+        self.method_name = method_name
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        branch = self.generator.init_branch("s1_0")
+        actions = expansions = verifications = 0
+        surviving_trace: list[int] = []
+        forced_continue_events = 0
+
+        while actions < self.max_actions:
+            if branch.is_pruned:
+                break
+            if branch.is_done:
+                need_min_thinking = expansions < self.min_thinking_steps
+                can_force_continue = forced_continue_events < self.num_ignore_think_end
+                if need_min_thinking or can_force_continue:
+                    forced_continue_events += 1
+                    branch.is_done = False
+                    branch.predicted_answer = None
+                    branch.steps.append(f"{self.wait_token} (forced-continue)")
+                else:
+                    break
+
+            self.generator.expand(branch, question, gold_answer)
+            actions += 1
+            expansions += 1
+            surviving_trace.append(1)
+
+        prediction = branch.predicted_answer
+        return MethodResult(
+            method=self.method_name,
+            prediction=prediction,
+            is_correct=self._answers_match(prediction, gold_answer),
+            actions_used=actions,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)),
+            budget_exhausted=actions >= self.max_actions and not branch.is_done,
+            metadata={
+                "external_baseline_family": "s1_simple_test_time_scaling",
+                "num_ignore_think_end": self.num_ignore_think_end,
+                "min_thinking_steps": self.min_thinking_steps,
+                "wait_token": self.wait_token,
+                "forced_continue_events": forced_continue_events,
+                "final_score": self.scorer.score_branch(branch),
+            },
+        )
+
+
 def _normalize_answer(text: str) -> str:
     stripped = text.strip()
     nums = re.findall(r"[-+]?\d+(?:\.\d+)?", stripped.replace(",", ""))

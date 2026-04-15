@@ -67,6 +67,12 @@ METHOD_SPECS: list[dict[str, str]] = [
         "style": "structured_reasoning_prompting",
         "description": "Program-of-thought style structured reasoning baseline.",
     },
+    {
+        "method": "external_s1_budget_forcing",
+        "family": "external_published_baseline",
+        "style": "s1_simple_test_time_scaling_budget_forcing",
+        "description": "s1 (Muennighoff et al., 2025) inspired budget-forcing stop/continue control adapter.",
+    },
 ]
 
 
@@ -106,6 +112,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--adaptive-grid", default="0,1,2")
     p.add_argument("--vgs-candidates", type=int, default=3)
     p.add_argument("--vgs-min-expansions", type=int, default=1)
+    p.add_argument("--s1-num-ignore-think-end", type=int, default=1)
+    p.add_argument("--s1-min-thinking-steps", type=int, default=0)
     p.add_argument("--output-dir", default="outputs/light_external_style_baseline_comparison")
     return p.parse_args()
 
@@ -147,6 +155,9 @@ def main() -> None:
                 use_openai_api=False,
                 vgs_candidates=args.vgs_candidates,
                 vgs_min_expansions=args.vgs_min_expansions,
+                include_external_s1_baseline=True,
+                s1_num_ignore_think_end=args.s1_num_ignore_think_end,
+                s1_min_thinking_steps=args.s1_min_thinking_steps,
             )
             eval_metrics, eval_rows = evaluate_strategies_on_examples(examples, strategies)
             oracle_acc = _oracle_accuracy(eval_rows)
@@ -252,8 +263,9 @@ def main() -> None:
         "budgets": budgets,
         "method_catalog": METHOD_SPECS,
         "note": (
-            "External-style methods are paper-inspired approximations executed inside the same local repo environment; "
-            "they are not direct reproductions of external paper systems."
+            "Methods tagged external_style are paper-inspired approximations in this local environment. "
+            "Method external_s1_budget_forcing is an external published-baseline adapter for the s1 "
+            "inference-time budget-forcing behavior, but still not a full paper-system reproduction."
         ),
     }
 
@@ -283,6 +295,7 @@ def main() -> None:
         f"- Budgets: `{', '.join(str(b) for b in budgets)}`",
         "",
         "External-style baselines are **paper-inspired approximations** in this repo environment, not exact paper reproductions.",
+        "The `external_s1_budget_forcing` entry is a conservative adapter of s1 budget forcing only.",
         "",
         "## Mean accuracy over budgets (higher is better)",
         "",

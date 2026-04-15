@@ -42,6 +42,7 @@ These strengthen comparisons for **fixed test-time compute**, **verifier vs gene
 | When To Solve, When To Verify | SC vs GenRM under budget | `LINK_ONLY` | https://github.com/nishadsinghi/sc-genrm-scaling (linked from arXiv abstract) | **Apache-2.0** |
 | Cascade routing (ICML 2025) | Unified routing + cascading | `LINK_ONLY` | https://github.com/eth-sri/cascade-routing | **Apache-2.0** |
 | MoB (Majority-of-the-Bests) | Bootstrapped Best-of-N improvement | `LINK_ONLY` | https://github.com/arakhsha/mob | **MIT** (repo); paper CC BY-NC-SA on OpenReview |
+| s1: Simple test-time scaling (EMNLP 2025) | Test-time budget forcing / thinking-length scaling | `ADAPTER_PARTIAL` | https://github.com/simplescaling/s1 | **Apache-2.0** |
 
 Per-baseline notes:
 
@@ -49,6 +50,7 @@ Per-baseline notes:
 - `external/when_solve_when_verify/README.md`
 - `external/cascade_routing/README.md`
 - `external/mob_majority_of_bests/README.md`
+- `external/s1_simple_test_time_scaling/README.md`
 
 ---
 
