@@ -64,3 +64,13 @@ The project should currently be interpreted as:
 ## Practical implication
 
 The repo is already ready for serious paper planning, collaborator onboarding, and baseline integration work. The next phase should focus on sharpening the branch-comparison signal and tightening the evaluation story, not on simply adding more scale.
+
+
+## External baseline completeness status (2026-04-16 pass)
+
+- s1 / TALE / L1: integrated with runnable MODE A and partial MODE B adapters with explicit blocker state reporting.
+- BEST-Route: explicit blocked integration record (fair-adapter protocol not yet implemented).
+- Completeness artifact: `docs/external_baseline_completeness_report.md` plus machine-readable `outputs/external_baseline_completeness_summary.{json,csv}`.
+- Runnability artifact: `outputs/external_baseline_runnability/<run_id>/verification_summary.json`.
+
+- compute_optimal_tts: moved from vague link-only to explicit blocked/protocol status with machine-readable artifacts and provenance checks.

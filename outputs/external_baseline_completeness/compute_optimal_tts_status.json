@@ -1,0 +1,39 @@
+{
+  "generated_utc": "2026-04-15T23:49:35.778701+00:00",
+  "baseline_key": "compute_optimal_tts",
+  "status": "blocked",
+  "status_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ],
+  "provenance": {
+    "target_paper": {
+      "title": "Scaling LLM Test-Time Compute Optimally Can be More Effective than Scaling Parameters for Reasoning",
+      "venue": "ICLR 2025",
+      "url": "https://openreview.net/forum?id=4FWAwZtd2n"
+    },
+    "linked_repo": {
+      "url": "https://github.com/RyanLiu112/compute-optimal-tts",
+      "observed_head_commit": "0ee2578af1f8d6cac445c9c4c72780528bb94556",
+      "paper_repo_match_strength": "weak",
+      "official_for_target_paper": "unverified",
+      "reason": "Linked repo self-identifies around arXiv:2502.06703; target paper in this repo is OpenReview 4FWAwZtd2n."
+    }
+  },
+  "fair_adapter_feasible_now": false,
+  "main_blockers": [
+    "Paper-repo identity for target ICLR 2025 paper is not verified as official.",
+    "Upstream linked repo depends on heavy multi-GPU serving and PRM stack (vLLM + Ray + FastChat + model serving scripts).",
+    "No fair apples-to-apples adapter protocol is yet defined for this repo's frontier/action substrate."
+  ],
+  "manuscript_use_now": {
+    "recommended": "discussion_only_not_empirical",
+    "safe_claim": "Conceptual adjacent baseline for compute-optimal allocation framing; not runnable in this repo yet."
+  },
+  "next_exact_step": "Pin an author-verified official code release (or explicit author confirmation), then implement a minimal import-only adapter protocol on shared prompts and matched cost accounting before any empirical claim."
+}

@@ -1,28 +1,46 @@
-# Compute-optimal test-time scaling (Snell et al., ICLR 2025)
+# compute_optimal_tts external baseline note
 
-- **Canonical paper (ICLR 2025):** *Scaling LLM Test-Time Compute Optimally Can be More Effective than Scaling Parameters for Reasoning*
-- **Paper (OpenReview):** https://openreview.net/forum?id=4FWAwZtd2n
-- **Official code from authors (Snell et al.):** **Not verified** on the OpenReview page snapshot checked for this repo; check the **camera-ready PDF**, **ICLR supplementary**, and **authors’ pages** before treating any repository as authoritative for this exact paper.
+## Target paper tracked by this repository
 
-## Related public codebase (different paper title on GitHub)
+- **Title:** *Scaling LLM Test-Time Compute Optimally Can be More Effective than Scaling Parameters for Reasoning*
+- **Venue:** ICLR 2025
+- **OpenReview:** https://openreview.net/forum?id=4FWAwZtd2n
+- **Status of official code for this exact paper (in this repo's audit):** **unverified**
 
-The following repository is **widely used** for compute-optimal test-time scaling experiments and is **MIT-licensed** on GitHub, but its README titles a **different** paper (*“Can 1B LLM Surpass 405B LLM? Rethinking Compute-Optimal Test-Time Scaling”*). Use as a **related / implementation baseline** unless you independently verify equivalence or author endorsement.
+## Linked public code currently in registry
 
-- **Repository:** https://github.com/RyanLiu112/compute-optimal-tts
-- **License (GitHub API, verification time):** **MIT**
-- **Import status:** **Linked only** — no submodule, no vendored code in this repo.
+- **Repo:** https://github.com/RyanLiu112/compute-optimal-tts
+- **Repo self-described paper:** arXiv `2502.06703` (*Can 1B LLM Surpass 405B LLM? Rethinking Compute-Optimal Test-Time Scaling*)
+- **License:** MIT
 
-## Role for this project
+### Why this matters
 
-Baseline framing for **compute-optimal allocation of test-time inference** under budget (aligned with frontier allocation). Cite **Snell et al.** for the theoretical/methodological reference; cite **Liu et al. / upstream repo** only for results obtained with that codebase.
+This linked repo is clearly valuable and related, but the paper-repo identity for the exact ICLR target paper above is not verified in this repository.
 
-## Setup notes (upstream)
+So this baseline is **not treated as official-reproduction-ready** here.
+
+## Pinned provenance snapshot used in this repo pass
+
+- **Observed HEAD commit in local audit clone:** `0ee2578af1f8d6cac445c9c4c72780528bb94556`
+- **Clone command:**
 
 ```bash
-git clone https://github.com/RyanLiu112/compute-optimal-tts.git
+git clone --depth 1 https://github.com/RyanLiu112/compute-optimal-tts.git .tmp_compute_optimal_tts
 ```
 
-## Integration scaffold (this repo)
+> Pinning this commit is for audit reproducibility of this repo pass only; it does **not** establish official mapping to OpenReview `4FWAwZtd2n`.
 
-- Registry entry: `configs/external_baselines_registry.json` → `compute_optimal_tts`
-- This directory contains **documentation only**.
+## Integration decision in this repository
+
+- **Classification:** `blocked`
+- **Reason:** unresolved paper↔repo official mapping + no fair matched-cost adapter protocol yet.
+- **Canonical integration doc:** `docs/compute_optimal_tts_integration.md`
+- **Machine-readable status artifacts:**
+  - `outputs/external_baseline_completeness/compute_optimal_tts_status.json`
+  - `outputs/external_baseline_completeness/compute_optimal_tts_status.md`
+
+## Non-overclaim policy
+
+- Do not claim this baseline is implemented/runnable in this repo today.
+- Do not claim official reproduction for Snell et al. ICLR 2025 from this linked repo unless author-level mapping is verified.
+- Use as adjacent discussion baseline until provenance and fairness protocol are both upgraded.

@@ -126,3 +126,34 @@ Implementation references:
 
 Methodological caveat:
 - L1 controls token-length generation behavior, while our primary method controls frontier stop-vs-act allocation decisions; keep matched-budget reporting explicit and avoid strict control-equivalence claims.
+
+
+## External baseline completeness (reviewer-defensible, 2026-04-16 pass)
+
+### compute_optimal_tts status update (2026-04-16)
+
+- `compute_optimal_tts` is now tracked as **`blocked`** (not vague link-only) because the target paper in this repo is OpenReview `4FWAwZtd2n` (ICLR 2025), while the linked codebase self-identifies around arXiv `2502.06703`; official equivalence is unverified.
+- A conservative provenance+blocker protocol is now the canonical integration artifact for this baseline:
+  - `docs/compute_optimal_tts_integration.md`
+  - `outputs/external_baseline_completeness/compute_optimal_tts_status.json`
+  - `outputs/external_baseline_completeness/compute_optimal_tts_status.md`
+- Manuscript-safe usage now: discussion-only adjacent baseline until paper↔repo mapping is author-verified and a fair matched-cost adapter protocol is implemented.
+
+
+For manuscript-safe claims, treat external baselines as follows:
+
+- **Usable now in direct comparisons (MODE A only):**
+  - s1 via `configs/s1_budget_forcing_inference_only_v1.json` + `scripts/run_s1_budget_forcing_baseline.py`
+  - TALE via `configs/tale_prompt_budgeting_v1.json` + `scripts/run_tale_baseline.py`
+  - L1 via `configs/l1_inference_adapter_v1.json` + `scripts/run_l1_baseline.py`
+- **Partially usable:** MODE B adapters for s1/TALE/L1 are reporting paths only and remain blocked unless externally-produced official/full outputs are imported through `official.results_path`.
+- **BEST-Route status in this pass:** blocked for fair comparability claims; kept as explicit non-runnable integration record rather than forcing a weak adapter.
+
+Companion artifacts:
+- `docs/external_baseline_completeness_report.md`
+- `outputs/external_baseline_completeness_summary.json`
+- `outputs/external_baseline_completeness_summary.csv`
+- `outputs/external_baseline_runnability/<run_id>/verification_summary.json`
+
+Safe wording rule:
+- Do **not** claim full official reproduction for any baseline unless the official training/inference stack is actually run in this repo and auditable from artifacts.

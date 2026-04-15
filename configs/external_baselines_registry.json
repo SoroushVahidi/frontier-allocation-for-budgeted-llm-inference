@@ -1,81 +1,131 @@
 {
-  "version": 1,
+  "version": 2,
   "policy": "Documentation and clone URLs only; do not vendor upstream code.",
   "baselines": {
     "compute_optimal_tts": {
       "clone_url": "https://github.com/RyanLiu112/compute-optimal-tts.git",
       "doc": "external/compute_optimal_tts/README.md",
-      "integration": "link_only"
+      "integration": "blocked",
+      "completeness_class": "blocked",
+      "blocker": "unverified_paper_repo_mapping_plus_no_fair_adapter_protocol",
+      "provenance": {
+        "target_paper": "https://openreview.net/forum?id=4FWAwZtd2n",
+        "linked_repo": "https://github.com/RyanLiu112/compute-optimal-tts",
+        "paper_repo_match_strength": "weak",
+        "official_for_target_paper": "unverified"
+      },
+      "integration_doc": "docs/compute_optimal_tts_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/compute_optimal_tts_status.json",
+        "outputs/external_baseline_completeness/compute_optimal_tts_status.md"
+      ]
     },
     "when_solve_when_verify": {
       "clone_url": "https://github.com/nishadsinghi/sc-genrm-scaling.git",
       "doc": "external/when_solve_when_verify/README.md",
-      "integration": "link_only"
+      "integration": "link_only",
+      "completeness_class": "link_only",
+      "blocker": "no_in_repo_adapter"
     },
     "cascade_routing": {
       "clone_url": "https://github.com/eth-sri/cascade-routing.git",
       "doc": "external/cascade_routing/README.md",
-      "integration": "link_only"
+      "integration": "link_only",
+      "completeness_class": "link_only",
+      "blocker": "no_in_repo_adapter"
     },
     "mob_majority_of_bests": {
       "clone_url": "https://github.com/arakhsha/mob.git",
       "doc": "external/mob_majority_of_bests/README.md",
-      "integration": "link_only"
+      "integration": "link_only",
+      "completeness_class": "link_only",
+      "blocker": "no_in_repo_adapter"
     },
     "mcts_llm_community": {
       "clone_url": "https://github.com/NumberChiffre/mcts-llm.git",
       "doc": "external/mcts_llm_community/README.md",
-      "integration": "optional_partial"
+      "integration": "link_only",
+      "completeness_class": "link_only",
+      "blocker": "optional_community_reference_no_adapter"
     },
     "llm_tree_search_waterhorse": {
       "clone_url": "https://github.com/waterhorse1/LLM_Tree_Search.git",
       "doc": "external/llm_tree_search_waterhorse/README.md",
-      "integration": "discuss_only"
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "license_uncertain"
     },
     "best_route_microsoft": {
       "clone_url": "https://github.com/microsoft/best-route-llm.git",
       "doc": "external/best_route_microsoft/README.md",
-      "integration": "link_only"
+      "integration": "blocked",
+      "completeness_class": "blocked",
+      "blocker": "requires_fair_adapter_protocol_before_claiming_comparability"
     },
     "openr": {
       "clone_url": "https://github.com/openreasoner/openr.git",
       "doc": "external/openr/README.md",
-      "integration": "link_only"
+      "integration": "link_only",
+      "completeness_class": "link_only",
+      "blocker": "no_in_repo_adapter"
     },
     "rest_mcts": {
       "clone_url": "https://github.com/THUDM/ReST-MCTS.git",
       "doc": "external/rest_mcts/README.md",
-      "integration": "link_only"
+      "integration": "link_only",
+      "completeness_class": "link_only",
+      "blocker": "no_in_repo_adapter"
     },
     "tree_plv": {
       "clone_url": null,
       "doc": "external/tree_plv/README.md",
-      "integration": "discuss_only"
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_code_unverified"
     },
     "pgts": {
       "clone_url": null,
       "doc": "external/pgts/README.md",
-      "integration": "discuss_only"
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_code_unverified"
     },
     "scaling_automated_process_verifiers": {
       "clone_url": null,
       "doc": "external/scaling_automated_process_verifiers/README.md",
-      "integration": "discuss_only"
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_code_unverified"
     },
     "s1_simple_test_time_scaling": {
       "clone_url": "https://github.com/simplescaling/s1",
       "doc": "external/s1_simple_test_time_scaling/README.md",
-      "integration": "mode_a_complete_mode_b_partial"
+      "integration": "mode_a_complete_mode_b_partial",
+      "completeness_class": "mode_b_partial",
+      "blocker": "runnable_mode_a_blocked_mode_b_without_official_results"
     },
     "tale_token_budget_aware_reasoning": {
       "clone_url": "https://github.com/GeniusHTX/TALE",
       "doc": "external/tale_token_budget_aware_reasoning/README.md",
-      "integration": "mode_a_complete_mode_b_partial"
+      "integration": "mode_a_complete_mode_b_partial",
+      "completeness_class": "mode_b_partial",
+      "blocker": "runnable_mode_a_blocked_mode_b_without_official_results"
     },
     "l1_length_control_rl": {
       "clone_url": "https://github.com/cmu-l3/l1.git",
       "doc": "external/l1_length_control_rl/README.md",
-      "integration": "mode_a_complete_mode_b_partial"
+      "integration": "mode_a_complete_mode_b_partial",
+      "completeness_class": "mode_b_partial",
+      "blocker": "runnable_mode_a_blocked_mode_b_without_official_results"
     }
-  }
+  },
+  "completeness_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ]
 }

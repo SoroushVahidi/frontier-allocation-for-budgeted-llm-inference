@@ -115,3 +115,12 @@ Prefer to say:
 - the project is informed by metareasoning, adaptive test-time compute allocation, uncertainty-aware control, local credit assignment, paired action-gap estimation, and opportunity-cost-aware control;
 - stop-vs-act is the strongest near-term controller family;
 - and the current unresolved issue is supervision-target fidelity rather than infrastructure.
+
+
+## External baseline integration update (2026-04-16)
+
+- The most important direct/near-direct baselines (s1, TALE, L1) are now maintained with explicit MODE A runnable vs MODE B partial boundaries in executable scripts/configs.
+- BEST-Route has been inspected and is kept as a high-priority adjacent baseline with an explicit blocked status for now (no overclaim of comparability).
+- Reviewer-facing completeness state is centralized in `docs/external_baseline_completeness_report.md` with machine-readable exports under `outputs/external_baseline_completeness_summary.{json,csv}`.
+
+- compute_optimal_tts now has an explicit blocked/protocol integration package with paper↔repo provenance uncertainty made explicit.

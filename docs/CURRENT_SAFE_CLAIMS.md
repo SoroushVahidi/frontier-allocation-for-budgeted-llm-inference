@@ -51,3 +51,17 @@ Every central claim in the paper should map cleanly to one of the following supp
 5. or a clearly bounded real-model result.
 
 If a claim does not map to one of these, it is probably not safe to present as established.
+
+
+## External baseline claims (2026-04-16 update)
+
+Safe to claim now:
+- s1, TALE, and L1 MODE A paths are runnable in-repo with auditable artifacts (manifest, summary, per-example rows, fairness report, comparison tables).
+- s1, TALE, and L1 MODE B paths are partial adapter/reporting paths and explicitly blocked unless official/full outputs are imported.
+- BEST-Route is documented as blocked-for-fair-adaptation in this repo (not falsely presented as runnable).
+
+Not safe to claim yet:
+- that BEST-Route is currently a fair runnable comparison in this repository,
+- that any s1/TALE/L1 MODE B full official reproduction has been completed in-repo.
+
+- compute_optimal_tts is explicitly blocked (provenance and fairness protocol incomplete) rather than ambiguously link-only.
