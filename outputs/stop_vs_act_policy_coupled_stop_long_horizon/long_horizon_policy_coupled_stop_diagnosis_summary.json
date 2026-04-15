@@ -1,0 +1,27 @@
+{
+  "diagnosis_grid": {
+    "seeds": [
+      41,
+      42
+    ],
+    "budgets": [
+      10,
+      14
+    ],
+    "episodes": 520
+  },
+  "diagnosis": {
+    "why_one_step_likely_failed": "One-step policy-coupled STOP changes only the immediate action destination; it can miss opportunity-cost effects that appear after allocator adaptation over additional steps.",
+    "most_plausible_bottleneck": "STOP baseline remains too myopic: preserved compute is represented at t+1 but not through a short downstream reuse horizon under the same policy context.",
+    "why_longer_horizon_is_next": "A small bounded horizon (h=2 or h=3) is the minimal extension that keeps simulation lightweight while better matching natural reallocation dynamics.",
+    "target_definition": "ACT: force current-branch action at step 1 then continue same policy for h=3; STOP: skip current branch at step 1, preserve compute, and let same policy reuse it over the same horizon with paired per-sample RNG."
+  },
+  "label_stats": {
+    "default_delta_std_mean": 0.09009122653648054,
+    "default_sign_flip_rate_mean": 0.13644220331126952,
+    "long_horizon_delta_std_mean": 0.08692878165473114,
+    "long_horizon_sign_flip_rate_mean": 0.35322374137201984,
+    "one_step_delta_std_mean": 0.07503237494589565,
+    "one_step_sign_flip_rate_mean": 0.23591072233580637
+  }
+}

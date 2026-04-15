@@ -124,17 +124,20 @@ Not safe to say now:
 
 ## Current next move
 
-The next best move is **not** another simple threshold tweak.
+The next best move is **not** another minor local target tweak.
 
-It is:
-- a bounded pass on target stabilization / variance reduction for the current stop-vs-act target family,
-- while keeping the current default setup as the comparison anchor.
+After multiple bounded local passes (including matched comparator and policy-coupled STOP variants), the most plausible bottleneck is now supervision fidelity rather than another lightweight estimator adjustment.
 
-Examples of appropriate next steps:
-- tighter paired rollout comparisons,
-- better target averaging / variance reduction,
-- slightly more stable bounded value summaries,
-- or other low-cost ways to reduce local target noise.
+So the next move is:
+- keep the current default setup as the anchor baseline,
+- transition planning toward higher-fidelity offline label generation,
+- and prepare an oracle/distillation path that can be executed when heavier compute is available.
+
+Appropriate immediate actions:
+- freeze a canonical schema for oracle-style ACT-vs-STOP labels,
+- add a tiny scaffold/dry-run generator for that schema,
+- define heavy-run manifests (teacher objective, horizon/depth, rollout counts, provenance fields),
+- avoid claiming heavy-label benefits before those labels are actually generated.
 
 ---
 
@@ -146,4 +149,4 @@ The repo should now reflect the following summary:
 - it has been implemented,
 - it has been tested through multiple bounded passes,
 - it remains one of the most important near-term method directions,
-- but the main unresolved issue is now deeper target stability rather than controller existence.
+- and the main unresolved issue is now label fidelity for ACT-vs-STOP supervision (best addressed by planned offline oracle/distillation data generation).

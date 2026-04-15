@@ -1,0 +1,27 @@
+{
+  "plan_name": "stop_vs_act_oracle_label_plan_v1",
+  "purpose": "Schema-first bridge to future heavy-compute oracle-distilled stop-vs-act labels.",
+  "anchor_baseline": {
+    "target_mode": "proxy_best_other_gain",
+    "status": "keep_as_default"
+  },
+  "teacher_design": {
+    "teacher_type": "offline_policy_coupled_oracle_rollout",
+    "objective": "Estimate paired Q_oracle(ACT_here_now) and Q_oracle(STOP_here_now) under shared snapshot and budget-preserving reallocation.",
+    "heavy_compute_required": true
+  },
+  "future_heavy_generation": {
+    "preferred_horizons": [4, 6, 8],
+    "paired_rollouts_per_state": [32, 64, 128],
+    "required_outputs": [
+      "oracle_stop_vs_act_labels.jsonl",
+      "oracle_label_manifest.json",
+      "oracle_label_quality_report.json"
+    ]
+  },
+  "prototype_limits": {
+    "uses_lightweight_labels_only": true,
+    "oracle_fields_are_placeholders": true,
+    "claims_allowed": "schema/provenance readiness only"
+  }
+}

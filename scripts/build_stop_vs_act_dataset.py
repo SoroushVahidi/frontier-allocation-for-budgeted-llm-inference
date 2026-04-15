@@ -42,6 +42,7 @@ def parse_args() -> argparse.Namespace:
         choices=[
             "proxy_best_other_gain",
             "proxy_policy_coupled_stop_reallocation",
+            "proxy_policy_coupled_stop_reallocation_horizon",
             "counterfactual_here_vs_best_other",
             "counterfactual_act_vs_stop_h2",
             "counterfactual_act_vs_stop_h2_matched",
@@ -115,6 +116,7 @@ def main() -> None:
             "target_mode_definition": (
                 "proxy_best_other_gain: E[gain_here]-best_other_expected_next_gain; "
                 "proxy_policy_coupled_stop_reallocation: E[one_step_gain_if_act_here - one_step_gain_if_stop_reallocate_elsewhere_under_same_policy]; "
+                "proxy_policy_coupled_stop_reallocation_horizon: E[h-step_gain_if_act_here_then_policy - h-step_gain_if_skip_here_then_policy_reallocation]; "
                 "counterfactual_here_vs_best_other: E[gain_here - gain_best_other_one_step]; "
                 "counterfactual_act_vs_stop_h2: E[value_after_h2(force_act_here) - value_after_h2(skip_here_first)]; "
                 "counterfactual_act_vs_stop_h2_matched: same ACT-vs-STOP h2 objective with paired shared RNG seed per sample"

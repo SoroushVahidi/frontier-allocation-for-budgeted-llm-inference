@@ -54,6 +54,7 @@ class StopVsActLabelConfig:
     target_mode: Literal[
         "proxy_best_other_gain",
         "proxy_policy_coupled_stop_reallocation",
+        "proxy_policy_coupled_stop_reallocation_horizon",
         "counterfactual_here_vs_best_other",
         "counterfactual_act_vs_stop_h2",
         "counterfactual_act_vs_stop_h2_matched",
@@ -199,6 +200,7 @@ def estimate_act_gain_delta(
     target_mode: Literal[
         "proxy_best_other_gain",
         "proxy_policy_coupled_stop_reallocation",
+        "proxy_policy_coupled_stop_reallocation_horizon",
         "counterfactual_here_vs_best_other",
         "counterfactual_act_vs_stop_h2",
         "counterfactual_act_vs_stop_h2_matched",
@@ -215,6 +217,11 @@ def estimate_act_gain_delta(
         - proxy_policy_coupled_stop_reallocation: one-step local comparator with explicit
           policy-coupled STOP reallocation baseline. ACT forces action on this branch now;
           STOP forbids this branch at step 1 and reallocates that action using the same downstream policy.
+        - proxy_policy_coupled_stop_reallocation_horizon: small-horizon extension of
+          policy-coupled STOP reallocation. ACT spends one action here now then follows the
+          same downstream policy for `small_horizon_steps`; STOP preserves that action now by
+          skipping this branch at step 1, then follows the same downstream policy over the same
+          horizon so saved compute is naturally reused.
         - counterfactual_here_vs_best_other: compares one simulated action here versus
           one simulated action on the best alternative branch from the same local snapshot.
         - counterfactual_act_vs_stop_h2: compare a short-horizon trajectory where step 1
@@ -270,6 +277,46 @@ def estimate_act_gain_delta(
                 forced_first_branch_id=None,
                 skip_first_branch_id=branch.branch_id,
                 horizon_steps=1,
+                rng=stop_rng,
+                finish_prob_base=finish_prob_base,
+                answer_noise=answer_noise,
+                max_depth=max_depth,
+            )
+            deltas.append((act_value - start_value) - (stop_value - start_value))
+            stop_values.append(stop_value - start_value)
+
+        mean_delta = sum(deltas) / max(1, len(deltas))
+        var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
+        std = math.sqrt(max(0.0, var))
+        sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
+        policy_coupled_stop_ref = sum(stop_values) / max(1, len(stop_values))
+        return mean_delta, std, policy_coupled_stop_ref, sign_flip_rate
+
+    if target_mode == "proxy_policy_coupled_stop_reallocation_horizon":
+        horizon = max(2, int(small_horizon_steps))
+        stop_reference = max((expected_next_gain(b, finish_prob_base, answer_noise) for b in others), default=0.0)
+        start_value = max((_snapshot_utility(b) for b in active), default=0.0)
+        deltas = []
+        stop_values = []
+        for _ in range(max(1, rollout_samples)):
+            paired_seed = rng.randint(0, 2**31 - 1)
+            act_rng = random.Random(paired_seed)
+            stop_rng = random.Random(paired_seed)
+            act_value = _local_rollout_value(
+                active_snapshot=active,
+                forced_first_branch_id=branch.branch_id,
+                skip_first_branch_id=None,
+                horizon_steps=horizon,
+                rng=act_rng,
+                finish_prob_base=finish_prob_base,
+                answer_noise=answer_noise,
+                max_depth=max_depth,
+            )
+            stop_value = _local_rollout_value(
+                active_snapshot=active,
+                forced_first_branch_id=None,
+                skip_first_branch_id=branch.branch_id,
+                horizon_steps=horizon,
                 rng=stop_rng,
                 finish_prob_base=finish_prob_base,
                 answer_noise=answer_noise,

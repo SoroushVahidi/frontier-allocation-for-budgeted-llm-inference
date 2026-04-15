@@ -29,11 +29,12 @@ The project has already tried several sensible fixes:
 - small-horizon ACT-vs-STOP target,
 - repeated averaging / target stabilization,
 - matched-RNG comparator,
-- one-step policy-coupled STOP reallocation.
+- one-step policy-coupled STOP reallocation,
+- slightly longer-horizon policy-coupled STOP reallocation.
 
 The consistent lesson is:
 - better local estimates are not enough if the comparator is still not aligned,
-- and one-step policy-coupled STOP remains too shallow.
+- and even slightly longer-horizon policy-coupled STOP remained mixed in bounded checks.
 
 So the current best diagnosis is:
 
@@ -43,21 +44,19 @@ So the current best diagnosis is:
 
 ## Immediate next experimental direction
 
-### Highest-priority next step
-Run a bounded pass on:
+### Highest-priority next step (updated after latest bounded pass)
+Transition from lightweight local target tweaking to a **higher-fidelity offline label-generation plan**:
 
-**slightly longer-horizon policy-coupled STOP reallocation**
-
-while keeping:
-- the current default stop-vs-act setup as anchor,
-- the same lightweight simulation path,
-- and the same conservative matched-grid regime.
+- keep current default stop-vs-act as anchor,
+- define the oracle/distillation label schema and heavy-run manifest,
+- run only tiny scaffold/dry-run generation now,
+- defer true heavy oracle label generation to compute-rich runs.
 
 ### Why this is next
-Because the current evidence suggests:
-- one-step policy-coupled STOP is still too local,
-- matched randomness alone does not fix the semantics,
-- and preserved compute likely needs a slightly richer future-policy interpretation.
+Because current evidence now suggests:
+- one-step and slightly longer-horizon policy-coupled STOP tweaks did not produce robust replacement-level gains,
+- bounded local comparator engineering appears near diminishing returns,
+- the likely remaining lever is stronger supervision quality from deeper oracle-style paired ACT/STOP values.
 
 ---
 
@@ -102,14 +101,20 @@ Do **not** prioritize:
 
 ---
 
-## Secondary priorities after the next pass
+## Secondary priorities
 
-If the longer-horizon policy-coupled STOP baseline is still weak, then the next likely directions are:
-- slightly richer bounded opportunity-cost targets,
-- better downstream-policy coupling for preserve-budget paths,
-- or heavier label generation later when more compute becomes available.
+After the schema/scaffold bridge is in place, secondary priorities are:
+- execute heavy offline oracle label generation on a controlled grid,
+- train distilled stop-vs-act models against oracle action-gap labels,
+- evaluate whether oracle-distilled supervision can beat the current default and heuristic baseline more reliably than local-target tweaks.
 
-But those are secondary until the next bounded pass is tested.
+Operational assets for the first pilot are now expected to include:
+- `docs/ORACLE_LABEL_PILOT_PROTOCOL_V1.md` (execution protocol),
+- `docs/ORACLE_LABEL_PILOT_STATE_SELECTION_PROTOCOL_V1.md` (state extraction/selection protocol),
+- `configs/stop_vs_act_oracle_label_pilot_v1.json` (pilot settings + quality gates),
+- `configs/stop_vs_act_oracle_pilot_state_selection_v1.json` (state-selection config),
+- `scripts/build_oracle_label_pilot_state_manifest.py` (deterministic stratified state manifest builder),
+- `scripts/validate_oracle_label_pilot_outputs.py` (dry-run config validation + post-run quality report).
 
 ---
 
