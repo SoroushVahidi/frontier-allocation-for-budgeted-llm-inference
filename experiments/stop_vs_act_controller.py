@@ -14,7 +14,7 @@ import json
 import math
 from pathlib import Path
 import random
-from typing import Any
+from typing import Any, Literal
 
 from experiments.branch_scorer_v3 import (
     SimBranch,
@@ -51,6 +51,12 @@ class StopVsActLabelConfig:
     instability_std_threshold: float = 0.045
     instability_guard_band: float | None = None
     rollout_samples: int = 6
+    target_mode: Literal[
+        "proxy_best_other_gain",
+        "counterfactual_here_vs_best_other",
+        "counterfactual_act_vs_stop_h2",
+    ] = "proxy_best_other_gain"
+    small_horizon_steps: int = 2
 
 
 @dataclass
@@ -111,6 +117,65 @@ def stop_vs_act_features(
     return features
 
 
+def _clone_branch(branch: SimBranch) -> SimBranch:
+    return SimBranch(
+        branch_id=branch.branch_id,
+        latent_quality=float(branch.latent_quality),
+        score=float(branch.score),
+        depth=int(branch.depth),
+        is_done=bool(branch.is_done),
+        is_pruned=bool(branch.is_pruned),
+        is_correct=bool(branch.is_correct),
+        stalled_steps=int(branch.stalled_steps),
+        recent_delta=float(branch.recent_delta),
+        verify_count=int(branch.verify_count),
+        branch_age=int(branch.branch_age),
+        action_history=list(branch.action_history),
+        score_history=list(branch.score_history),
+        depth_history=list(branch.depth_history),
+    )
+
+
+def _clone_active_branches(active: list[SimBranch]) -> list[SimBranch]:
+    return [_clone_branch(b) for b in active]
+
+
+def _pick_best_active_for_local_rollout(active: list[SimBranch]) -> SimBranch:
+    return max(active, key=lambda b: baseline_priority("adaptive_score_plus_progress", b, active))
+
+
+def _local_rollout_value(
+    *,
+    active_snapshot: list[SimBranch],
+    forced_first_branch_id: str | None,
+    skip_first_branch_id: str | None,
+    horizon_steps: int,
+    rng: random.Random,
+    finish_prob_base: float,
+    answer_noise: float,
+    max_depth: int,
+) -> float:
+    sim_active = _clone_active_branches(active_snapshot)
+    horizon = max(1, int(horizon_steps))
+    for step in range(horizon):
+        live = [b for b in sim_active if not b.is_done and not b.is_pruned]
+        if not live:
+            break
+        if step == 0 and forced_first_branch_id is not None:
+            chosen = next((b for b in live if b.branch_id == forced_first_branch_id), None)
+            if chosen is None:
+                chosen = _pick_best_active_for_local_rollout(live)
+        else:
+            candidates = [b for b in live if b.branch_id != skip_first_branch_id] if (step == 0 and skip_first_branch_id) else live
+            chosen = _pick_best_active_for_local_rollout(candidates or live)
+
+        expand_branch(chosen, rng, finish_prob_base, answer_noise, max_depth)
+        if not chosen.is_done and rng.random() < 0.35:
+            maybe_verify(chosen, rng)
+
+    return max((_snapshot_utility(b) for b in sim_active), default=0.0)
+
+
 def estimate_act_gain_delta(
     branch: SimBranch,
     *,
@@ -120,39 +185,104 @@ def estimate_act_gain_delta(
     answer_noise: float,
     max_depth: int,
     rollout_samples: int,
+    target_mode: Literal[
+        "proxy_best_other_gain",
+        "counterfactual_here_vs_best_other",
+        "counterfactual_act_vs_stop_h2",
+    ] = "proxy_best_other_gain",
+    small_horizon_steps: int = 2,
 ) -> tuple[float, float, float]:
-    """Estimate +1-action gain delta for ACT-here vs STOP-here.
+    """Estimate local ACT delta for ACT-here versus a bounded local baseline.
 
     Returns:
         (delta_mean, delta_std, stop_reference)
+
+    target_mode:
+        - proxy_best_other_gain: (legacy) uses best_other_expected_next_gain as stop reference.
+        - counterfactual_here_vs_best_other: compares one simulated action here versus
+          one simulated action on the best alternative branch from the same local snapshot.
+        - counterfactual_act_vs_stop_h2: compare a short-horizon trajectory where step 1
+          is forced ACT-here versus a matched short-horizon trajectory where step 1 skips
+          this branch (STOP-here-now), then both continue with the same lightweight policy.
     """
     curr_utility = _snapshot_utility(branch)
     others = [b for b in active if b.branch_id != branch.branch_id]
-    stop_reference = max((expected_next_gain(b, finish_prob_base, answer_noise) for b in others), default=0.0)
 
-    deltas: list[float] = []
+    if target_mode == "proxy_best_other_gain":
+        stop_reference = max((expected_next_gain(b, finish_prob_base, answer_noise) for b in others), default=0.0)
+        deltas: list[float] = []
+        for _ in range(max(1, rollout_samples)):
+            sim = _clone_branch(branch)
+            expand_branch(sim, rng, finish_prob_base, answer_noise, max_depth)
+            if not sim.is_done and rng.random() < 0.35:
+                maybe_verify(sim, rng)
+            act_gain = _snapshot_utility(sim) - curr_utility
+            deltas.append(act_gain - stop_reference)
+
+        if not deltas:
+            return 0.0, 0.0, stop_reference
+        mean_delta = sum(deltas) / len(deltas)
+        var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
+        std = math.sqrt(max(0.0, var))
+        return mean_delta, std, stop_reference
+
+    if target_mode == "counterfactual_act_vs_stop_h2":
+        stop_reference = max((_snapshot_utility(b) for b in active), default=0.0)
+        deltas = []
+        for _ in range(max(1, rollout_samples)):
+            act_value = _local_rollout_value(
+                active_snapshot=active,
+                forced_first_branch_id=branch.branch_id,
+                skip_first_branch_id=None,
+                horizon_steps=small_horizon_steps,
+                rng=rng,
+                finish_prob_base=finish_prob_base,
+                answer_noise=answer_noise,
+                max_depth=max_depth,
+            )
+            stop_value = _local_rollout_value(
+                active_snapshot=active,
+                forced_first_branch_id=None,
+                skip_first_branch_id=branch.branch_id,
+                horizon_steps=small_horizon_steps,
+                rng=rng,
+                finish_prob_base=finish_prob_base,
+                answer_noise=answer_noise,
+                max_depth=max_depth,
+            )
+            deltas.append(act_value - stop_value)
+
+        mean_delta = sum(deltas) / max(1, len(deltas))
+        var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
+        std = math.sqrt(max(0.0, var))
+        return mean_delta, std, stop_reference
+
+    if target_mode != "counterfactual_here_vs_best_other":
+        raise ValueError(f"Unsupported target_mode: {target_mode}")
+
+    best_other = max(
+        others,
+        key=lambda b: expected_next_gain(b, finish_prob_base, answer_noise),
+        default=branch,
+    )
+    stop_reference = expected_next_gain(best_other, finish_prob_base, answer_noise)
+
+    deltas = []
     for _ in range(max(1, rollout_samples)):
-        sim = SimBranch(
-            branch_id=branch.branch_id,
-            latent_quality=float(branch.latent_quality),
-            score=float(branch.score),
-            depth=int(branch.depth),
-            is_done=bool(branch.is_done),
-            is_pruned=bool(branch.is_pruned),
-            is_correct=bool(branch.is_correct),
-            stalled_steps=int(branch.stalled_steps),
-            recent_delta=float(branch.recent_delta),
-            verify_count=int(branch.verify_count),
-            branch_age=int(branch.branch_age),
-            action_history=list(branch.action_history),
-            score_history=list(branch.score_history),
-            depth_history=list(branch.depth_history),
-        )
-        expand_branch(sim, rng, finish_prob_base, answer_noise, max_depth)
-        if not sim.is_done and rng.random() < 0.35:
-            maybe_verify(sim, rng)
-        act_gain = _snapshot_utility(sim) - curr_utility
-        deltas.append(act_gain - stop_reference)
+        sim_here = _clone_branch(branch)
+        sim_other = _clone_branch(best_other)
+
+        expand_branch(sim_here, rng, finish_prob_base, answer_noise, max_depth)
+        if not sim_here.is_done and rng.random() < 0.35:
+            maybe_verify(sim_here, rng)
+
+        expand_branch(sim_other, rng, finish_prob_base, answer_noise, max_depth)
+        if not sim_other.is_done and rng.random() < 0.35:
+            maybe_verify(sim_other, rng)
+
+        here_gain = _snapshot_utility(sim_here) - curr_utility
+        other_gain = _snapshot_utility(sim_other) - _snapshot_utility(best_other)
+        deltas.append(here_gain - other_gain)
 
     if not deltas:
         return 0.0, 0.0, stop_reference
@@ -216,6 +346,8 @@ def build_stop_vs_act_dataset(
                     answer_noise=answer_noise,
                     max_depth=max_depth,
                     rollout_samples=label_cfg.rollout_samples,
+                    target_mode=label_cfg.target_mode,
+                    small_horizon_steps=label_cfg.small_horizon_steps,
                 )
 
                 label_act = int(delta_mean > label_cfg.gain_margin)
