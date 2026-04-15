@@ -74,3 +74,6 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `run_oracle_label_generator_prototype.py` | First real paired-rollout oracle-label prototype generator (limited subset, CPU-oriented) |
 | `run_oracle_label_generator_heavy.py` | Production-leaning heavy-path generator with resume/progress/state-error handling for shard-scale runs |
 | `oracle_label_pilot_sharding.py` | Deterministic shard split/merge utility for pilot-state manifests and per-shard oracle-label outputs |
+| `build_stop_vs_act_oracle_distillation_dataset.py` | Selective-distillation preprocessing: bucket oracle rows into accepted/borderline/rejected, apply manifest-aware mock checks, and emit weighted distillation-ready JSONL |
+| `train_oracle_distilled_stop_vs_act_student.py` | First oracle-distilled student train/eval path using distillation-ready rows + manifest feature join with non-claim safety markers |
+| `compare_oracle_distilled_stop_vs_act_runs.py` | Comparison scaffold across oracle-distilled runs (accepted-only vs accepted+borderline and anchor deltas) |

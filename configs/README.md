@@ -10,6 +10,8 @@ YAML and JSON configuration for experiments and tooling.
 | [`external_baselines_registry.json`](external_baselines_registry.json) | Machine-readable external baseline URLs and status (no vendored code) |
 | [`external_reasoning_datasets_registry.json`](external_reasoning_datasets_registry.json) | New-paper external reasoning supervision candidates (HF IDs + supervision taxonomy) |
 | [`oracle_label_generator_interface_contract_v1.json`](oracle_label_generator_interface_contract_v1.json) | Machine-readable heavy-generator input/output/invariant contract for oracle-label pilot v1 |
+| [`stop_vs_act_oracle_selective_distillation_v1.json`](stop_vs_act_oracle_selective_distillation_v1.json) | Selective distillation policy (accepted/borderline/rejected buckets, weights, soft-target settings) for post-pilot oracle labels |
+| [`stop_vs_act_oracle_distilled_student_train_v1.json`](stop_vs_act_oracle_distilled_student_train_v1.json) | Default settings for first oracle-distilled stop-vs-act student train/eval path (post-pilot) |
 
 ## Conventions
 
