@@ -1,0 +1,71 @@
+{
+  "comparison_grid": {
+    "seeds": [
+      31,
+      32,
+      33
+    ],
+    "budgets": [
+      10,
+      14
+    ],
+    "episodes": 360,
+    "eval_episodes": 160
+  },
+  "target_definitions": {
+    "default": "delta = E[gain_here] - best_other_expected_next_gain, single local estimate",
+    "stabilized": "same default delta family, but average K repeated local estimates; delta_estimator_std estimates target uncertainty and can weight training"
+  },
+  "stabilization": {
+    "mode": "repeated_local_averaging",
+    "stabilization_repeats": 3,
+    "reliability_power": 1.0
+  },
+  "old_vs_stabilized_label_stats": {
+    "default_delta_std_mean": 0.09058718926694327,
+    "stabilized_delta_std_mean": 0.05853530959114733,
+    "default_uncertain_rate": 0.8150787222366277,
+    "stabilized_uncertain_rate": 0.8162773185980224
+  },
+  "controller_metrics": {
+    "default_mean_learned_vs_heuristic_accuracy_margin": 0.039583333333333325,
+    "stabilized_mean_learned_vs_heuristic_accuracy_margin": 0.030208333333333337,
+    "default_mean_learned_vs_heuristic_score_margin": 0.014962837410179933,
+    "stabilized_mean_learned_vs_heuristic_score_margin": 0.00671519027910646
+  },
+  "win_loss": {
+    "default_vs_heuristic_accuracy": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "total": 6
+    },
+    "stabilized_vs_heuristic_accuracy": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "total": 6
+    },
+    "stabilized_vs_default_accuracy": {
+      "wins": 2,
+      "losses": 4,
+      "ties": 0,
+      "total": 6
+    },
+    "stabilized_vs_default_score": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "total": 6
+    }
+  },
+  "stability_signal": {
+    "default_margin_std": 0.042338336318544945,
+    "stabilized_margin_std": 0.04806363331274718
+  },
+  "interpretation": {
+    "conservative_read": "Use only as bounded evidence. Promote only if stabilized setup improves both mean margin and stability with consistent W/L.",
+    "recommendation": "keep_current_default",
+    "next_best_move": "If mixed: keep stabilized option available but continue local target-quality work (paired randomness control or better stop baseline matching)."
+  }
+}

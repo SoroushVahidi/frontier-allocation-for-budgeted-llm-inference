@@ -1,0 +1,36 @@
+{
+  "diagnosis_grid": {
+    "seeds": [
+      31,
+      32,
+      33
+    ],
+    "budgets": [
+      10,
+      14
+    ],
+    "episodes": 360
+  },
+  "diagnosed_bottleneck": {
+    "most_plausible_source": "high variance from too-few local samples in noisy ACT/STOP paired comparison (local rollout randomness).",
+    "evidence": {
+      "default_delta_std_mean": 0.09058718926694327,
+      "default_near_margin_rate": 0.012229573327367065,
+      "default_uncertain_rate": 0.8150787222366277
+    }
+  },
+  "single_stabilization_strategy": {
+    "name": "repeated_local_target_estimation_with_averaging",
+    "definition": "Repeat the same default local delta estimate K times with different local RNG seeds; use averaged delta_mean and estimator std-based reliability.",
+    "stabilization_repeats": 3,
+    "reliability_weight": "target_reliability_weight = 1/(1+delta_estimator_std)"
+  },
+  "old_vs_stabilized_target_stats": {
+    "default_delta_std_mean": 0.09058718926694327,
+    "stabilized_delta_std_mean": 0.05853530959114733,
+    "default_uncertain_rate": 0.8150787222366277,
+    "stabilized_uncertain_rate": 0.8162773185980224,
+    "default_reliability_mean": 0.9180993165227913,
+    "stabilized_reliability_mean": 0.9448920883501114
+  }
+}

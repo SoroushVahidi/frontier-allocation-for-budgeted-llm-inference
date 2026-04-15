@@ -41,11 +41,25 @@ def parse_args() -> argparse.Namespace:
         default="proxy_best_other_gain",
         choices=[
             "proxy_best_other_gain",
+            "proxy_policy_coupled_stop_reallocation",
             "counterfactual_here_vs_best_other",
             "counterfactual_act_vs_stop_h2",
+            "counterfactual_act_vs_stop_h2_matched",
         ],
     )
     parser.add_argument("--small-horizon-steps", type=int, default=2)
+    parser.add_argument(
+        "--target-stabilization-mode",
+        default="none",
+        choices=["none", "repeated_local_averaging"],
+        help="Optional lightweight target-estimation stabilization.",
+    )
+    parser.add_argument(
+        "--stabilization-repeats",
+        type=int,
+        default=3,
+        help="Number of repeated local target estimates when stabilization is enabled.",
+    )
     return parser.parse_args()
 
 
@@ -62,6 +76,8 @@ def main() -> None:
         rollout_samples=args.rollout_samples,
         target_mode=args.target_mode,
         small_horizon_steps=args.small_horizon_steps,
+        target_stabilization_mode=args.target_stabilization_mode,
+        stabilization_repeats=args.stabilization_repeats,
     )
     rows = build_stop_vs_act_dataset(
         episodes=args.episodes,
@@ -98,10 +114,14 @@ def main() -> None:
             "target_mode": args.target_mode,
             "target_mode_definition": (
                 "proxy_best_other_gain: E[gain_here]-best_other_expected_next_gain; "
+                "proxy_policy_coupled_stop_reallocation: E[one_step_gain_if_act_here - one_step_gain_if_stop_reallocate_elsewhere_under_same_policy]; "
                 "counterfactual_here_vs_best_other: E[gain_here - gain_best_other_one_step]; "
-                "counterfactual_act_vs_stop_h2: E[value_after_h2(force_act_here) - value_after_h2(skip_here_first)]"
+                "counterfactual_act_vs_stop_h2: E[value_after_h2(force_act_here) - value_after_h2(skip_here_first)]; "
+                "counterfactual_act_vs_stop_h2_matched: same ACT-vs-STOP h2 objective with paired shared RNG seed per sample"
             ),
             "small_horizon_steps": args.small_horizon_steps,
+            "target_stabilization_mode": args.target_stabilization_mode,
+            "stabilization_repeats": args.stabilization_repeats,
         },
         "uncertainty_rule": {
             "uncertain_if": (
@@ -112,6 +132,13 @@ def main() -> None:
             "instability_std_threshold": args.instability_std_threshold,
             "instability_guard_band": args.instability_guard_band,
             "weighting": "sample_weight reduced for uncertain examples (near-zero:0.35, unstable:0.50, both:0.20)",
+        },
+        "stabilization_outputs": {
+            "delta_repeat_std": "Std-dev across repeated local delta_mean estimates (0 when disabled).",
+            "delta_within_std_mean": "Mean within-repeat rollout std estimate.",
+            "delta_estimator_std": "Estimated std of the stabilized delta_mean estimator.",
+            "target_reliability_weight": "1/(1+delta_estimator_std), usable as optional training weight.",
+            "delta_sign_flip_rate": "Within-estimator sign disagreement rate relative to final delta_mean sign.",
         },
     }
     (out_dir / "dataset_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")

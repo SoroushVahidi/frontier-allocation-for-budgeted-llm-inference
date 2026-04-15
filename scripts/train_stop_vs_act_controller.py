@@ -43,6 +43,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--answer-noise", type=float, default=0.12)
     parser.add_argument("--heuristic-margin", type=float, default=0.01)
     parser.add_argument("--entropy-threshold", type=float, default=0.62)
+    parser.add_argument(
+        "--reliability-power",
+        type=float,
+        default=0.0,
+        help="Optional exponent for target_reliability_weight multiplier during training.",
+    )
     return parser.parse_args()
 
 
@@ -103,6 +109,7 @@ def main() -> None:
         model_kind=args.model_kind,
         uncertain_policy=args.uncertain_policy,
         seed=args.seed,
+        reliability_power=args.reliability_power,
     )
 
     cls_metrics = evaluate_binary_predictions(model, test_rows, threshold=args.decision_threshold)
@@ -140,6 +147,7 @@ def main() -> None:
             "model_kind": args.model_kind,
             "uncertain_policy": args.uncertain_policy,
             "decision_threshold": args.decision_threshold,
+            "reliability_power": args.reliability_power,
             "eval_episodes": args.eval_episodes,
             "budget": args.budget,
         },

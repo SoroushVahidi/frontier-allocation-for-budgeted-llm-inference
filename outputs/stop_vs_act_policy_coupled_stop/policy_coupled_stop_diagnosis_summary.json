@@ -1,0 +1,38 @@
+{
+  "diagnosis_grid": {
+    "seeds": [
+      31,
+      32,
+      33
+    ],
+    "budgets": [
+      10,
+      14
+    ],
+    "episodes": 360
+  },
+  "why_matched_rng_was_not_enough": "Matched randomness reduces nuisance variance, but if STOP is still a weak proxy for natural reallocation, labels remain misaligned.",
+  "most_plausible_bottleneck": {
+    "primary": "STOP baseline semantic mismatch: default subtracts best-other expected gain instead of simulating what policy would spend saved compute on.",
+    "evidence": {
+      "default_stop_reference_gain_mean": 0.24495746709141786,
+      "default_delta_sign_flip_rate_mean": 0.13828368371863475
+    }
+  },
+  "single_strategy": {
+    "name": "proxy_policy_coupled_stop_reallocation",
+    "definition": "One-step ACT-vs-STOP comparator where ACT forces current-branch action now, while STOP forbids current branch at step 1 and lets the same downstream policy naturally reallocate that action elsewhere.",
+    "coupling_details": [
+      "same initial active branch pool",
+      "same one-step budget context",
+      "same policy family for choosing alternative under STOP",
+      "paired per-sample RNG seed between ACT and STOP one-step futures"
+    ]
+  },
+  "old_vs_new_label_stats": {
+    "default_delta_std_mean": 0.09058718926694327,
+    "policy_coupled_delta_std_mean": 0.07498925877040379,
+    "default_sign_flip_rate_mean": 0.13828368371863475,
+    "policy_coupled_sign_flip_rate_mean": 0.2362468862283393
+  }
+}

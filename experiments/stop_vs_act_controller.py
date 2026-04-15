@@ -53,10 +53,14 @@ class StopVsActLabelConfig:
     rollout_samples: int = 6
     target_mode: Literal[
         "proxy_best_other_gain",
+        "proxy_policy_coupled_stop_reallocation",
         "counterfactual_here_vs_best_other",
         "counterfactual_act_vs_stop_h2",
+        "counterfactual_act_vs_stop_h2_matched",
     ] = "proxy_best_other_gain"
     small_horizon_steps: int = 2
+    target_stabilization_mode: Literal["none", "repeated_local_averaging"] = "none"
+    stabilization_repeats: int = 3
 
 
 @dataclass
@@ -140,6 +144,13 @@ def _clone_active_branches(active: list[SimBranch]) -> list[SimBranch]:
     return [_clone_branch(b) for b in active]
 
 
+def _stable_branch_seed_offset(branch_id: str) -> int:
+    out = 0
+    for i, ch in enumerate(branch_id):
+        out += (i + 1) * ord(ch)
+    return out
+
+
 def _pick_best_active_for_local_rollout(active: list[SimBranch]) -> SimBranch:
     return max(active, key=lambda b: baseline_priority("adaptive_score_plus_progress", b, active))
 
@@ -187,23 +198,31 @@ def estimate_act_gain_delta(
     rollout_samples: int,
     target_mode: Literal[
         "proxy_best_other_gain",
+        "proxy_policy_coupled_stop_reallocation",
         "counterfactual_here_vs_best_other",
         "counterfactual_act_vs_stop_h2",
+        "counterfactual_act_vs_stop_h2_matched",
     ] = "proxy_best_other_gain",
     small_horizon_steps: int = 2,
-) -> tuple[float, float, float]:
+) -> tuple[float, float, float, float]:
     """Estimate local ACT delta for ACT-here versus a bounded local baseline.
 
     Returns:
-        (delta_mean, delta_std, stop_reference)
+        (delta_mean, delta_std, stop_reference, sign_flip_rate)
 
     target_mode:
         - proxy_best_other_gain: (legacy) uses best_other_expected_next_gain as stop reference.
+        - proxy_policy_coupled_stop_reallocation: one-step local comparator with explicit
+          policy-coupled STOP reallocation baseline. ACT forces action on this branch now;
+          STOP forbids this branch at step 1 and reallocates that action using the same downstream policy.
         - counterfactual_here_vs_best_other: compares one simulated action here versus
           one simulated action on the best alternative branch from the same local snapshot.
         - counterfactual_act_vs_stop_h2: compare a short-horizon trajectory where step 1
           is forced ACT-here versus a matched short-horizon trajectory where step 1 skips
           this branch (STOP-here-now), then both continue with the same lightweight policy.
+        - counterfactual_act_vs_stop_h2_matched: same as counterfactual_act_vs_stop_h2,
+          but with paired common-random-number rollouts (same RNG seed per sample on ACT and STOP sides)
+          to reduce nuisance randomness mismatch in the local ACT-vs-STOP comparator.
     """
     curr_utility = _snapshot_utility(branch)
     others = [b for b in active if b.branch_id != branch.branch_id]
@@ -220,22 +239,65 @@ def estimate_act_gain_delta(
             deltas.append(act_gain - stop_reference)
 
         if not deltas:
-            return 0.0, 0.0, stop_reference
+            return 0.0, 0.0, stop_reference, 0.0
         mean_delta = sum(deltas) / len(deltas)
         var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
         std = math.sqrt(max(0.0, var))
-        return mean_delta, std, stop_reference
+        sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
+        return mean_delta, std, stop_reference, sign_flip_rate
 
-    if target_mode == "counterfactual_act_vs_stop_h2":
+    if target_mode == "proxy_policy_coupled_stop_reallocation":
+        stop_reference = max((expected_next_gain(b, finish_prob_base, answer_noise) for b in others), default=0.0)
+        start_value = max((_snapshot_utility(b) for b in active), default=0.0)
+        deltas = []
+        stop_values = []
+        for _ in range(max(1, rollout_samples)):
+            paired_seed = rng.randint(0, 2**31 - 1)
+            act_rng = random.Random(paired_seed)
+            stop_rng = random.Random(paired_seed)
+            act_value = _local_rollout_value(
+                active_snapshot=active,
+                forced_first_branch_id=branch.branch_id,
+                skip_first_branch_id=None,
+                horizon_steps=1,
+                rng=act_rng,
+                finish_prob_base=finish_prob_base,
+                answer_noise=answer_noise,
+                max_depth=max_depth,
+            )
+            stop_value = _local_rollout_value(
+                active_snapshot=active,
+                forced_first_branch_id=None,
+                skip_first_branch_id=branch.branch_id,
+                horizon_steps=1,
+                rng=stop_rng,
+                finish_prob_base=finish_prob_base,
+                answer_noise=answer_noise,
+                max_depth=max_depth,
+            )
+            deltas.append((act_value - start_value) - (stop_value - start_value))
+            stop_values.append(stop_value - start_value)
+
+        mean_delta = sum(deltas) / max(1, len(deltas))
+        var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
+        std = math.sqrt(max(0.0, var))
+        sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
+        policy_coupled_stop_ref = sum(stop_values) / max(1, len(stop_values))
+        return mean_delta, std, policy_coupled_stop_ref, sign_flip_rate
+
+    if target_mode in {"counterfactual_act_vs_stop_h2", "counterfactual_act_vs_stop_h2_matched"}:
         stop_reference = max((_snapshot_utility(b) for b in active), default=0.0)
         deltas = []
         for _ in range(max(1, rollout_samples)):
+            paired_seed = rng.randint(0, 2**31 - 1)
+            act_rng = random.Random(paired_seed) if target_mode == "counterfactual_act_vs_stop_h2_matched" else rng
+            stop_rng = random.Random(paired_seed) if target_mode == "counterfactual_act_vs_stop_h2_matched" else rng
             act_value = _local_rollout_value(
                 active_snapshot=active,
                 forced_first_branch_id=branch.branch_id,
                 skip_first_branch_id=None,
                 horizon_steps=small_horizon_steps,
-                rng=rng,
+                rng=act_rng,
                 finish_prob_base=finish_prob_base,
                 answer_noise=answer_noise,
                 max_depth=max_depth,
@@ -245,7 +307,7 @@ def estimate_act_gain_delta(
                 forced_first_branch_id=None,
                 skip_first_branch_id=branch.branch_id,
                 horizon_steps=small_horizon_steps,
-                rng=rng,
+                rng=stop_rng,
                 finish_prob_base=finish_prob_base,
                 answer_noise=answer_noise,
                 max_depth=max_depth,
@@ -255,7 +317,8 @@ def estimate_act_gain_delta(
         mean_delta = sum(deltas) / max(1, len(deltas))
         var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
         std = math.sqrt(max(0.0, var))
-        return mean_delta, std, stop_reference
+        sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
+        return mean_delta, std, stop_reference, sign_flip_rate
 
     if target_mode != "counterfactual_here_vs_best_other":
         raise ValueError(f"Unsupported target_mode: {target_mode}")
@@ -285,11 +348,12 @@ def estimate_act_gain_delta(
         deltas.append(here_gain - other_gain)
 
     if not deltas:
-        return 0.0, 0.0, stop_reference
+        return 0.0, 0.0, stop_reference, 0.0
     mean_delta = sum(deltas) / len(deltas)
     var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
     std = math.sqrt(max(0.0, var))
-    return mean_delta, std, stop_reference
+    sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
+    return mean_delta, std, stop_reference, sign_flip_rate
 
 
 def build_stop_vs_act_dataset(
@@ -337,18 +401,67 @@ def build_stop_vs_act_dataset(
                     finish_prob_base=finish_prob_base,
                     answer_noise=answer_noise,
                 )
-                local_rng = random.Random((seed + 17) * 10_000_019 + episode_id * 104_729 + decision_id * 1009)
-                delta_mean, delta_std, stop_ref = estimate_act_gain_delta(
-                    branch,
-                    active=active,
-                    rng=local_rng,
-                    finish_prob_base=finish_prob_base,
-                    answer_noise=answer_noise,
-                    max_depth=max_depth,
-                    rollout_samples=label_cfg.rollout_samples,
-                    target_mode=label_cfg.target_mode,
-                    small_horizon_steps=label_cfg.small_horizon_steps,
+                base_local_seed = (
+                    (seed + 17) * 10_000_019
+                    + episode_id * 104_729
+                    + decision_id * 1009
+                    + _stable_branch_seed_offset(branch.branch_id) * 97
                 )
+
+                if label_cfg.target_stabilization_mode == "none":
+                    local_rng = random.Random(base_local_seed)
+                    delta_mean, delta_std, stop_ref, delta_sign_flip_rate = estimate_act_gain_delta(
+                        branch,
+                        active=active,
+                        rng=local_rng,
+                        finish_prob_base=finish_prob_base,
+                        answer_noise=answer_noise,
+                        max_depth=max_depth,
+                        rollout_samples=label_cfg.rollout_samples,
+                        target_mode=label_cfg.target_mode,
+                        small_horizon_steps=label_cfg.small_horizon_steps,
+                    )
+                    delta_repeat_std = 0.0
+                    delta_within_std_mean = delta_std
+                    delta_estimator_std = delta_std
+                elif label_cfg.target_stabilization_mode == "repeated_local_averaging":
+                    repeats = max(2, int(label_cfg.stabilization_repeats))
+                    repeat_delta_means: list[float] = []
+                    repeat_delta_stds: list[float] = []
+                    stop_refs: list[float] = []
+                    sign_flip_rates: list[float] = []
+                    for ridx in range(repeats):
+                        local_rng = random.Random(base_local_seed + ridx * 1_000_003)
+                        d_mean, d_std, s_ref, s_flip = estimate_act_gain_delta(
+                            branch,
+                            active=active,
+                            rng=local_rng,
+                            finish_prob_base=finish_prob_base,
+                            answer_noise=answer_noise,
+                            max_depth=max_depth,
+                            rollout_samples=label_cfg.rollout_samples,
+                            target_mode=label_cfg.target_mode,
+                            small_horizon_steps=label_cfg.small_horizon_steps,
+                        )
+                        repeat_delta_means.append(float(d_mean))
+                        repeat_delta_stds.append(float(d_std))
+                        stop_refs.append(float(s_ref))
+                        sign_flip_rates.append(float(s_flip))
+
+                    delta_mean = sum(repeat_delta_means) / max(1, len(repeat_delta_means))
+                    stop_ref = sum(stop_refs) / max(1, len(stop_refs))
+                    between_var = (
+                        sum((x - delta_mean) ** 2 for x in repeat_delta_means) / max(1, len(repeat_delta_means))
+                    )
+                    delta_repeat_std = math.sqrt(max(0.0, between_var))
+                    delta_within_std_mean = sum(repeat_delta_stds) / max(1, len(repeat_delta_stds))
+                    within_var = sum((x**2) for x in repeat_delta_stds) / max(1, len(repeat_delta_stds))
+                    estimator_var = (within_var + between_var) / float(repeats)
+                    delta_estimator_std = math.sqrt(max(0.0, estimator_var))
+                    delta_std = delta_estimator_std
+                    delta_sign_flip_rate = sum(sign_flip_rates) / max(1, len(sign_flip_rates))
+                else:
+                    raise ValueError(f"Unsupported target_stabilization_mode: {label_cfg.target_stabilization_mode}")
 
                 label_act = int(delta_mean > label_cfg.gain_margin)
                 near_zero = abs(delta_mean) <= label_cfg.uncertainty_band
@@ -375,6 +488,12 @@ def build_stop_vs_act_dataset(
                     "label_act": label_act,
                     "delta_mean": delta_mean,
                     "delta_std": delta_std,
+                    "delta_repeat_std": delta_repeat_std,
+                    "delta_within_std_mean": delta_within_std_mean,
+                    "delta_estimator_std": delta_estimator_std,
+                    "target_variance": delta_estimator_std * delta_estimator_std,
+                    "target_reliability_weight": 1.0 / (1.0 + max(0.0, delta_estimator_std)),
+                    "delta_sign_flip_rate": delta_sign_flip_rate,
                     "stop_reference_gain": stop_ref,
                     "is_uncertain": int(uncertain),
                     "sample_weight": weight,
@@ -398,6 +517,7 @@ def fit_stop_vs_act_model(
     model_kind: str,
     uncertain_policy: str,
     seed: int,
+    reliability_power: float = 0.0,
 ) -> dict[str, Any]:
     import numpy as np  # type: ignore
     from sklearn.ensemble import GradientBoostingClassifier  # type: ignore
@@ -424,6 +544,14 @@ def fit_stop_vs_act_model(
                 for r in used
             ]
         )
+    if reliability_power > 0.0:
+        reliability = np.array(
+            [max(0.0, min(1.0, float(r.get("target_reliability_weight", 1.0)))) ** reliability_power for r in used]
+        )
+        if weights is None:
+            weights = reliability
+        else:
+            weights = weights * reliability
 
     if model_kind == "logistic":
         model = LogisticRegression(max_iter=1200, class_weight="balanced", random_state=seed)
@@ -433,6 +561,7 @@ def fit_stop_vs_act_model(
             "feature_family": "stop_vs_act_v1",
             "feature_names": STOP_VS_ACT_FEATURE_NAMES,
             "uncertain_policy": uncertain_policy,
+            "reliability_power": reliability_power,
             "weights": {name: float(w) for name, w in zip(STOP_VS_ACT_FEATURE_NAMES, model.coef_[0])},
             "intercept": float(model.intercept_[0]),
             "train_rows_used": len(used),
@@ -446,6 +575,7 @@ def fit_stop_vs_act_model(
             "feature_family": "stop_vs_act_v1",
             "feature_names": STOP_VS_ACT_FEATURE_NAMES,
             "uncertain_policy": uncertain_policy,
+            "reliability_power": reliability_power,
             "estimator": model,
             "train_rows_used": len(used),
         }

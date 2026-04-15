@@ -1,0 +1,66 @@
+{
+  "comparison_grid": {
+    "seeds": [
+      31,
+      32,
+      33
+    ],
+    "budgets": [
+      10,
+      14
+    ],
+    "episodes": 360,
+    "eval_episodes": 160
+  },
+  "comparator_definitions": {
+    "default": "proxy_best_other_gain: E[gain_here] - best_other_expected_next_gain",
+    "matched_comparator": "counterfactual_act_vs_stop_h2_matched: E[value_h2(force_act_here) - value_h2(skip_here_first)] with paired per-sample RNG seeds"
+  },
+  "old_vs_new_comparator_stats": {
+    "default_delta_std_mean": 0.09058718926694327,
+    "matched_delta_std_mean": 0.0865111285831776,
+    "default_sign_flip_rate_mean": 0.13828368371863475,
+    "matched_sign_flip_rate_mean": 0.31605814087046885
+  },
+  "controller_metrics": {
+    "default_mean_learned_vs_heuristic_accuracy_margin": 0.039583333333333325,
+    "matched_mean_learned_vs_heuristic_accuracy_margin": 0.01874999999999999,
+    "default_mean_learned_vs_heuristic_score_margin": 0.014962837410179933,
+    "matched_mean_learned_vs_heuristic_score_margin": 0.011112131652962801
+  },
+  "win_loss": {
+    "default_vs_heuristic_accuracy": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "total": 6
+    },
+    "matched_vs_heuristic_accuracy": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "total": 6
+    },
+    "matched_vs_default_accuracy": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "total": 6
+    },
+    "matched_vs_default_score": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "total": 6
+    }
+  },
+  "stability_signal": {
+    "default_margin_std": 0.042338336318544945,
+    "matched_margin_std": 0.06922186552431729
+  },
+  "interpretation": {
+    "conservative_read": "Bounded evidence only; if mixed, do not replace default.",
+    "recommendation": "keep_current_default",
+    "next_best_move": "If mixed or negative, keep this as optional comparator mode and next test tighter policy-coupled stop baseline under identical future branch-selection context."
+  }
+}

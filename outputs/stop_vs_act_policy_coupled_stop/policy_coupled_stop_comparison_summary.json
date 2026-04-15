@@ -1,0 +1,68 @@
+{
+  "comparison_grid": {
+    "seeds": [
+      31,
+      32,
+      33
+    ],
+    "budgets": [
+      10,
+      14
+    ],
+    "episodes": 360,
+    "eval_episodes": 160
+  },
+  "stop_baseline_definitions": {
+    "default": "proxy_best_other_gain: subtract static best-other expected next gain",
+    "policy_coupled_stop": "proxy_policy_coupled_stop_reallocation: STOP forbids current branch at step 1 and reallocates saved action via same policy"
+  },
+  "label_stats": {
+    "default_delta_std_mean": 0.09058718926694327,
+    "policy_coupled_delta_std_mean": 0.07498925877040379,
+    "default_sign_flip_rate_mean": 0.13828368371863475,
+    "policy_coupled_sign_flip_rate_mean": 0.2362468862283393,
+    "default_stop_reference_gain_mean": 0.24495746709141786,
+    "policy_coupled_stop_reference_gain_mean": 0.0826270138815059
+  },
+  "controller_metrics": {
+    "default_mean_learned_vs_heuristic_accuracy_margin": 0.039583333333333325,
+    "policy_coupled_mean_learned_vs_heuristic_accuracy_margin": 0.024999999999999984,
+    "default_mean_learned_vs_heuristic_score_margin": 0.014962837410179933,
+    "policy_coupled_mean_learned_vs_heuristic_score_margin": 0.012024295317554909
+  },
+  "win_loss": {
+    "default_vs_heuristic_accuracy": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "total": 6
+    },
+    "policy_coupled_vs_heuristic_accuracy": {
+      "wins": 3,
+      "losses": 2,
+      "ties": 1,
+      "total": 6
+    },
+    "policy_coupled_vs_default_accuracy": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "total": 6
+    },
+    "policy_coupled_vs_default_score": {
+      "wins": 2,
+      "losses": 4,
+      "ties": 0,
+      "total": 6
+    }
+  },
+  "stability_signal": {
+    "default_margin_std": 0.042338336318544945,
+    "policy_coupled_margin_std": 0.04521361336293897
+  },
+  "interpretation": {
+    "conservative_read": "Small matched evidence only; do not promote replacement unless robustly positive.",
+    "recommendation": "keep_current_default",
+    "next_best_move": "If mixed: keep this optional mode and next test a slightly longer-horizon policy-coupled reallocation baseline while preserving same downstream policy."
+  }
+}
