@@ -81,3 +81,17 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `train_oracle_distilled_stop_vs_act_student.py` | Oracle-distilled student train/eval path with retained-coverage accounting, ACT-rate reporting, and required slice summaries (uncertainty/margin/disagreement/budget) |
 | `compare_oracle_distilled_stop_vs_act_runs.py` | Matched-control comparison scaffold with required roles (anchor, accepted-only, accepted+borderline, matched random), repeated-random variance summaries, and readiness gates |
 | `run_oracle_distilled_regime_bundle.py` | Regime-level orchestration runner that bundles repeated random draws, selective/anchor/random student runs, and one comparison-ready package |
+
+## s1 baseline integration scripts (fair split)
+
+| Script | Role |
+|---|---|
+| `run_s1_budget_forcing_baseline.py` | Canonical s1 fair-baseline runner with MODE A (inference-only) and MODE B (official/full adapter reporting). Writes manifest, summary CSV, per-example JSONL, fairness report, and comparison tables under `outputs/s1_baseline/`. |
+| `run_s1_baseline_comparison_bundle.py` | Merge one or more s1 run directories into manuscript-ready aggregate comparison artifacts. |
+
+## TALE baseline integration scripts (fair split)
+
+| Script | Role |
+|---|---|
+| `run_tale_baseline.py` | Canonical TALE fair-baseline runner with MODE A (prompt budgeting inference-only) and MODE B (official/full adapter reporting). Writes manifest, summary CSV, per-example JSONL, fairness report, and comparison tables under `outputs/tale_baseline/`. |
+| `run_tale_comparison_bundle.py` | Merge one or more TALE run directories into manuscript-ready aggregate comparison artifacts. |

@@ -12,6 +12,10 @@ YAML and JSON configuration for experiments and tooling.
 | [`oracle_label_generator_interface_contract_v1.json`](oracle_label_generator_interface_contract_v1.json) | Machine-readable heavy-generator input/output/invariant contract for oracle-label pilot v1 |
 | [`stop_vs_act_oracle_selective_distillation_v1.json`](stop_vs_act_oracle_selective_distillation_v1.json) | Selective distillation policy (accepted/borderline/rejected buckets, weights, soft-target settings) for post-pilot oracle labels |
 | [`stop_vs_act_oracle_distilled_student_train_v1.json`](stop_vs_act_oracle_distilled_student_train_v1.json) | Default settings for first oracle-distilled stop-vs-act student train/eval path (post-pilot) |
+| [`s1_budget_forcing_inference_only_v1.json`](s1_budget_forcing_inference_only_v1.json) | MODE A primary fair baseline: s1-style inference budget forcing on unchanged base model family |
+| [`s1_full_or_official_adapter_v1.json`](s1_full_or_official_adapter_v1.json) | MODE B secondary path: full/official s1 reporting adapter (includes post-training caveat) |
+| [`tale_prompt_budgeting_v1.json`](tale_prompt_budgeting_v1.json) | MODE A TALE baseline: faithful in-repo prompt-level adaptive token budgeting adapter |
+| [`tale_official_adapter_v1.json`](tale_official_adapter_v1.json) | MODE B TALE baseline: official/full adapter reporting path (separately labeled, may include TALE-PT) |
 
 ## Conventions
 

@@ -7,25 +7,29 @@
 
 ## Integration status in this repository
 
-- Integration mode: `adapter_partial`
-- Scope implemented: inference-time **budget forcing** behavior (stop/continue control)
+- Integration mode: `MODE_A_COMPLETE_MODE_B_PARTIAL`
+- Scope implemented:
+  - MODE A inference-time **budget forcing** behavior under matched in-repo settings.
+  - MODE B official/full reporting adapter path (import-based; not full in-repo training reproduction).
 - In-repo method id: `external_s1_budget_forcing`
-- Policy: no vendored upstream code; provenance links only
+- Policy: no vendored upstream code; provenance links only.
 
 ## What is and is not reproduced
 
 Implemented here:
-- A conservative adapter for the s1 inference control loop (ignore early end-of-thinking and force continuation using a short wait cue).
+- A conservative adapter for s1 inference control (ignore early end-of-thinking and force continuation using a short wait cue).
+- Explicit fairness split between inference-only (primary) and full/official-with-post-training (secondary).
 
-Not reproduced here:
-- Full s1 training/data pipeline.
-- Exact tokenizer/serving stack parity (e.g., vLLM stop-token mechanics from upstream scripts).
+Not reproduced here automatically:
+- Full s1/s1.1 post-training/data pipeline in this repository.
+- Exact tokenizer/serving stack parity for upstream vLLM internals.
 - Paper-level benchmark replication claims.
 
 ## Local runner hooks
 
-- `python scripts/run_light_anchor_vs_s1_comparison.py`
-- `python scripts/run_light_external_style_baseline_comparison.py`
+- `python scripts/run_s1_budget_forcing_baseline.py --config configs/s1_budget_forcing_inference_only_v1.json`
+- `python scripts/run_s1_budget_forcing_baseline.py --config configs/s1_full_or_official_adapter_v1.json`
+- `python scripts/run_s1_baseline_comparison_bundle.py --run-dirs <run_dir_1,run_dir_2,...>`
 
 See also:
-- `docs/s1_baseline_integration_note_2026_04_15.md`
+- `docs/s1_baseline_integration.md`

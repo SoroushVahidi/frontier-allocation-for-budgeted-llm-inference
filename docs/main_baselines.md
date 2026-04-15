@@ -74,3 +74,38 @@ This extends the comparison set beyond the original four **without** implying th
 - Our intended framing emphasizes explicit online budget allocation under constrained test-time compute, rather than fixed-budget execution with improved guidance signals alone.
 - Our intended project aims for a cleaner formal problem statement around allocation decisions over reasoning trees, with stronger theoretical emphasis.
 - Our intended comparison axis distinguishes *where* extra compute is allocated in the tree, not only *how* candidate steps are scored or selected.
+
+## s1 integration status for this repository (2026-04 fair split)
+
+To keep comparisons reviewer-defensible, this repo now distinguishes two s1 modes:
+
+- **MODE A (primary apples-to-apples):** inference-only s1 budget forcing on the same base model family as our method, no extra s1K post-training.
+- **MODE B (secondary, separately labeled):** full/official s1 path including post-training where feasible; not apples-to-apples with unchanged-base-model controller comparisons.
+
+Implementation references:
+- `docs/s1_baseline_integration.md`
+- `configs/s1_budget_forcing_inference_only_v1.json`
+- `configs/s1_full_or_official_adapter_v1.json`
+- `scripts/run_s1_budget_forcing_baseline.py`
+- `scripts/run_s1_baseline_comparison_bundle.py`
+
+Reporting policy:
+- Always report fixed-budget quality and cost-quality frontier summaries.
+- Always keep MODE A and MODE B claims separated in text/tables.
+
+## TALE integration status for this repository (2026-04 fair split)
+
+TALE (Token-Budget-Aware LLM Reasoning) is integrated as a **published adjacent adaptive-budget baseline** with explicit mode separation:
+
+- **MODE A (`prompt_budgeting_inference_only`)**: runnable in-repo TALE-style prompt/inference token-budgeting adapter (primary fair comparison path).
+- **MODE B (`official_full_adapter`)**: secondary official/full adapter reporting path (may include TALE-PT/post-training; not apples-to-apples).
+
+Implementation references:
+- `docs/tale_baseline_integration.md`
+- `configs/tale_prompt_budgeting_v1.json`
+- `configs/tale_official_adapter_v1.json`
+- `scripts/run_tale_baseline.py`
+- `scripts/run_tale_comparison_bundle.py`
+
+Methodological caveat:
+- TALE is per-instance token budgeting, while our primary method is frontier stop-vs-act allocation; report matched-compute comparisons and avoid direct control-equivalence claims.

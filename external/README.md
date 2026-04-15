@@ -42,7 +42,8 @@ These strengthen comparisons for **fixed test-time compute**, **verifier vs gene
 | When To Solve, When To Verify | SC vs GenRM under budget | `LINK_ONLY` | https://github.com/nishadsinghi/sc-genrm-scaling (linked from arXiv abstract) | **Apache-2.0** |
 | Cascade routing (ICML 2025) | Unified routing + cascading | `LINK_ONLY` | https://github.com/eth-sri/cascade-routing | **Apache-2.0** |
 | MoB (Majority-of-the-Bests) | Bootstrapped Best-of-N improvement | `LINK_ONLY` | https://github.com/arakhsha/mob | **MIT** (repo); paper CC BY-NC-SA on OpenReview |
-| s1: Simple test-time scaling (EMNLP 2025) | Test-time budget forcing / thinking-length scaling | `ADAPTER_PARTIAL` | https://github.com/simplescaling/s1 | **Apache-2.0** |
+| s1: Simple test-time scaling (EMNLP 2025) | Test-time budget forcing / thinking-length scaling | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/simplescaling/s1 | **Apache-2.0** |
+| TALE (Token-Budget-Aware LLM Reasoning) | Per-instance token-budget-aware reasoning | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/GeniusHTX/TALE | Unknown (re-check upstream) |
 
 Per-baseline notes:
 
@@ -51,6 +52,7 @@ Per-baseline notes:
 - `external/cascade_routing/README.md`
 - `external/mob_majority_of_bests/README.md`
 - `external/s1_simple_test_time_scaling/README.md`
+- `external/tale_token_budget_aware_reasoning/README.md`
 
 ---
 
@@ -71,3 +73,17 @@ Per-baseline notes:
 2. When official code or licensing is unclear, **link only** and document uncertainty (see section A and Waterhorse entry).
 3. Do not mirror large upstream repositories into this git history without explicit license permission.
 4. For the **new paper track**, prioritize baselines in **section B** for empirical comparability with **frontier allocation** and **heterogeneous controller families**; use section A for **related work** and section C **selectively**.
+
+
+### s1 fairness split note (new canonical)
+
+- MODE A (`inference_only`): implemented runnable in-repo adapter for budget forcing on unchanged base model family.
+- MODE B (`full_or_official`): partial adapter/reporting path; requires imported official/full outputs (or external reproduction) for completed reporting.
+- Canonical integration doc: `docs/s1_baseline_integration.md`.
+
+
+### TALE fairness split note (new canonical)
+
+- MODE A (`prompt_budgeting_inference_only`): runnable TALE-style in-repo prompt token-budgeting adapter.
+- MODE B (`official_full_adapter`): partial adapter/reporting path for official/full TALE outputs; may include TALE-PT assets and is not apples-to-apples.
+- Canonical integration doc: `docs/tale_baseline_integration.md`.

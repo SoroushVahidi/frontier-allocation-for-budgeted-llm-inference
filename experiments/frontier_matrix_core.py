@@ -18,6 +18,7 @@ from experiments.controllers import (
     GreedyController,
     ProgramOfThoughtController,
     S1BudgetForcingController,
+    TALEPromptBudgetingController,
     VerifierGuidedSearchController,
 )
 from experiments.prm_partial_scorer import HeuristicPRMPartialScorer
@@ -108,6 +109,12 @@ def build_frontier_strategies(
     include_external_s1_baseline: bool = False,
     s1_num_ignore_think_end: int = 1,
     s1_min_thinking_steps: int = 0,
+    include_external_tale_baseline: bool = False,
+    tale_token_budget_default: int = 256,
+    tale_token_budget_min: int = 64,
+    tale_token_budget_max: int = 512,
+    tale_token_budget_per_question_char: float = 0.75,
+    tale_token_per_action: float = 64.0,
 ) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
     prm_scorer = HeuristicPRMPartialScorer()
@@ -265,6 +272,18 @@ def build_frontier_strategies(
             num_ignore_think_end=s1_num_ignore_think_end,
             min_thinking_steps=s1_min_thinking_steps,
             method_name="external_s1_budget_forcing",
+        )
+    if include_external_tale_baseline:
+        specs["external_tale_prompt_budgeting"] = TALEPromptBudgetingController(
+            generator_factory(),
+            scorer,
+            budget,
+            token_budget_default=tale_token_budget_default,
+            token_budget_min=tale_token_budget_min,
+            token_budget_max=tale_token_budget_max,
+            token_budget_per_question_char=tale_token_budget_per_question_char,
+            token_per_action=tale_token_per_action,
+            method_name="external_tale_prompt_budgeting",
         )
     return specs
 

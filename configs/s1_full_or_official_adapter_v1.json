@@ -1,0 +1,69 @@
+{
+  "version": "s1_full_or_official_adapter_v1",
+  "mode": "full_or_official",
+  "provenance": {
+    "paper": "https://aclanthology.org/2025.emnlp-main.1025/",
+    "official_code": "https://github.com/simplescaling/s1",
+    "intent": "Secondary path for full/official s1 reporting. Not apples-to-apples when post-training is included."
+  },
+  "model": {
+    "use_openai_api": false,
+    "provider": "openai",
+    "name": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180,
+    "timeout_seconds": 45
+  },
+  "s1_budget_forcing": {
+    "num_ignore_think_end": 1,
+    "min_thinking_steps": 0,
+    "wait_token": "Wait"
+  },
+  "dataset": {
+    "name": "openai/gsm8k",
+    "subset_size": 32,
+    "seeds": [11, 23, 37]
+  },
+  "budget": {
+    "grid": [4, 6, 8],
+    "unit": "action",
+    "action_to_token_equivalent": 64.0,
+    "matching_policy": "Report internal action budgets and token-equivalent budgets. Keep full s1 results separately labeled."
+  },
+  "methods": {
+    "include": [
+      "adaptive_min_expand_1",
+      "external_s1_budget_forcing"
+    ],
+    "adaptive_min_expand_grid": [1]
+  },
+  "official": {
+    "results_path": "",
+    "expected_columns": [
+      "dataset",
+      "model",
+      "setting",
+      "accuracy",
+      "avg_token_cost",
+      "source"
+    ],
+    "status_policy": "If results_path is empty/missing, mark MODE B blocked without overclaiming reproduction."
+  },
+  "metrics": {
+    "primary": [
+      "accuracy",
+      "exact_match",
+      "avg_token_cost_equivalent",
+      "budget_adherence_rate",
+      "budget_violation_rate",
+      "budget_exhaustion_rate"
+    ],
+    "frontier": "Pareto frontier over (mean_avg_token_cost_equivalent, mean_accuracy)."
+  },
+  "output": {
+    "root_dir": "outputs/s1_baseline"
+  },
+  "reproducibility": {
+    "notes": "This mode records blocking status unless official full-s1 outputs are provided."
+  }
+}
