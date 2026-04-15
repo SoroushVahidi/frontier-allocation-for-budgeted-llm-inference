@@ -61,6 +61,11 @@
       "clone_url": null,
       "doc": "external/scaling_automated_process_verifiers/README.md",
       "integration": "discuss_only"
+    },
+    "s1_simple_test_time_scaling": {
+      "clone_url": "https://github.com/simplescaling/s1",
+      "doc": "external/s1_simple_test_time_scaling/README.md",
+      "integration": "adapter_partial"
     }
   }
 }

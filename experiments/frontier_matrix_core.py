@@ -17,6 +17,7 @@ from experiments.controllers import (
     BestOfNController,
     GreedyController,
     ProgramOfThoughtController,
+    S1BudgetForcingController,
     VerifierGuidedSearchController,
 )
 from experiments.prm_partial_scorer import HeuristicPRMPartialScorer
@@ -104,6 +105,9 @@ def build_frontier_strategies(
     bt_pairwise_model_path: str | None = None,
     bt_pairwise_reliability_model_path: str | None = None,
     bt_pairwise_oracle_model_path: str | None = None,
+    include_external_s1_baseline: bool = False,
+    s1_num_ignore_think_end: int = 1,
+    s1_min_thinking_steps: int = 0,
 ) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
     prm_scorer = HeuristicPRMPartialScorer()
@@ -253,6 +257,15 @@ def build_frontier_strategies(
         budget,
         method_name="program_of_thought",
     )
+    if include_external_s1_baseline:
+        specs["external_s1_budget_forcing"] = S1BudgetForcingController(
+            generator_factory(),
+            scorer,
+            budget,
+            num_ignore_think_end=s1_num_ignore_think_end,
+            min_thinking_steps=s1_min_thinking_steps,
+            method_name="external_s1_budget_forcing",
+        )
     return specs
 
 

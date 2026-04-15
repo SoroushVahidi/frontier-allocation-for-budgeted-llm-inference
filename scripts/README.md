@@ -20,6 +20,7 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
 | `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
 | `run_light_external_style_baseline_comparison.py` | Lightweight internal-vs-external-style local comparison |
+| `run_light_anchor_vs_s1_comparison.py` | Lightweight matched anchor vs external s1 baseline adapter |
 | `run_new_paper_stop_vs_act_controller.py` | Stop-vs-act lightweight pipeline (dataset + train/eval) |
 | `run_new_paper_stop_vs_act_target_stabilization_pass.py` | Bounded default-target stabilization/variance-reduction comparison |
 | `run_new_paper_stop_vs_act_matched_comparator_pass.py` | Bounded matched ACT-vs-STOP comparator pass |
