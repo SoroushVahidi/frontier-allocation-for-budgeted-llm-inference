@@ -20,6 +20,9 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
 | `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
 | `run_new_paper_stop_vs_act_controller.py` | Stop-vs-act lightweight pipeline (dataset + train/eval) |
+| `run_new_paper_stop_vs_act_target_stabilization_pass.py` | Bounded default-target stabilization/variance-reduction comparison |
+| `run_new_paper_stop_vs_act_matched_comparator_pass.py` | Bounded matched ACT-vs-STOP comparator pass |
+| `run_new_paper_stop_vs_act_policy_coupled_stop_pass.py` | Bounded policy-coupled STOP-baseline pass |
 
 ## Exploratory branch-scorer workflows
 

@@ -1,0 +1,38 @@
+{
+  "diagnosis_grid": {
+    "seeds": [
+      31,
+      32,
+      33
+    ],
+    "budgets": [
+      10,
+      14
+    ],
+    "episodes": 360
+  },
+  "why_stabilization_was_not_enough": "Repeated averaging reduced estimator variance, but preserved comparator mismatch: default target still uses proxy best-other stop baseline and non-paired ACT/STOP futures.",
+  "most_plausible_mismatch": {
+    "primary": "stop-baseline mismatch plus downstream randomness mismatch between ACT and STOP futures",
+    "evidence": {
+      "default_sign_flip_rate_mean": 0.13828368371863475,
+      "default_delta_std_mean": 0.09058718926694327
+    }
+  },
+  "single_strategy": {
+    "name": "matched_act_vs_stop_h2_paired_rng",
+    "definition": "Use ACT-vs-STOP horizon-2 local comparator with paired common-random-number rollouts; ACT and STOP share the same per-sample RNG seed and differ only in first-step action constraint (act-here vs skip-here).",
+    "shared_between_act_and_stop": [
+      "same initial active snapshot",
+      "same horizon and remaining-budget context",
+      "same per-sample RNG seed",
+      "same downstream policy after first-step intervention"
+    ]
+  },
+  "old_vs_new_target_stats": {
+    "default_delta_std_mean": 0.09058718926694327,
+    "matched_delta_std_mean": 0.0865111285831776,
+    "default_sign_flip_rate_mean": 0.13828368371863475,
+    "matched_sign_flip_rate_mean": 0.31605814087046885
+  }
+}
