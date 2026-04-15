@@ -29,7 +29,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="outputs/stop_vs_act_controller")
     parser.add_argument("--seed", type=int, default=31)
     parser.add_argument("--model-kind", choices=["logistic", "gbdt"], default="logistic")
-    parser.add_argument("--uncertain-policy", choices=["none", "filter", "downweight"], default="downweight")
+    parser.add_argument(
+        "--uncertain-policy",
+        choices=["none", "filter", "downweight", "downweight_nonpositive"],
+        default="downweight",
+    )
     parser.add_argument("--decision-threshold", type=float, default=0.5)
     parser.add_argument("--eval-episodes", type=int, default=500)
     parser.add_argument("--budget", type=int, default=10)

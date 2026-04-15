@@ -29,6 +29,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--gain-margin", type=float, default=0.015)
     parser.add_argument("--uncertainty-band", type=float, default=0.03)
     parser.add_argument("--instability-std-threshold", type=float, default=0.045)
+    parser.add_argument(
+        "--instability-guard-band",
+        type=float,
+        default=None,
+        help="If set, instability contributes to uncertainty only when |delta_mean| <= this band.",
+    )
     parser.add_argument("--rollout-samples", type=int, default=6)
     return parser.parse_args()
 
@@ -42,6 +48,7 @@ def main() -> None:
         gain_margin=args.gain_margin,
         uncertainty_band=args.uncertainty_band,
         instability_std_threshold=args.instability_std_threshold,
+        instability_guard_band=args.instability_guard_band,
         rollout_samples=args.rollout_samples,
     )
     rows = build_stop_vs_act_dataset(
@@ -78,9 +85,13 @@ def main() -> None:
             "gain_margin": args.gain_margin,
         },
         "uncertainty_rule": {
-            "uncertain_if": "abs(delta_mean) <= uncertainty_band OR delta_std >= instability_std_threshold",
+            "uncertain_if": (
+                "abs(delta_mean) <= uncertainty_band OR "
+                "((delta_std >= instability_std_threshold) AND (|delta_mean| <= instability_guard_band if provided else True))"
+            ),
             "uncertainty_band": args.uncertainty_band,
             "instability_std_threshold": args.instability_std_threshold,
+            "instability_guard_band": args.instability_guard_band,
             "weighting": "sample_weight reduced for uncertain examples (near-zero:0.35, unstable:0.50, both:0.20)",
         },
     }

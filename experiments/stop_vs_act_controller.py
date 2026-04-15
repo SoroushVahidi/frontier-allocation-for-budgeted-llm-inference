@@ -49,6 +49,7 @@ class StopVsActLabelConfig:
     gain_margin: float = 0.015
     uncertainty_band: float = 0.03
     instability_std_threshold: float = 0.045
+    instability_guard_band: float | None = None
     rollout_samples: int = 6
 
 
@@ -220,7 +221,10 @@ def build_stop_vs_act_dataset(
                 label_act = int(delta_mean > label_cfg.gain_margin)
                 near_zero = abs(delta_mean) <= label_cfg.uncertainty_band
                 unstable = delta_std >= label_cfg.instability_std_threshold
-                uncertain = bool(near_zero or unstable)
+                instability_relevant = True
+                if label_cfg.instability_guard_band is not None:
+                    instability_relevant = abs(delta_mean) <= float(label_cfg.instability_guard_band)
+                uncertain = bool(near_zero or (unstable and instability_relevant))
 
                 weight = 1.0
                 if uncertain:
@@ -267,7 +271,7 @@ def fit_stop_vs_act_model(
     from sklearn.ensemble import GradientBoostingClassifier  # type: ignore
     from sklearn.linear_model import LogisticRegression  # type: ignore
 
-    if uncertain_policy not in {"none", "filter", "downweight"}:
+    if uncertain_policy not in {"none", "filter", "downweight", "downweight_nonpositive"}:
         raise ValueError(f"Unsupported uncertain_policy: {uncertain_policy}")
 
     used = train_rows
@@ -279,6 +283,15 @@ def fit_stop_vs_act_model(
     weights = None
     if uncertain_policy == "downweight":
         weights = np.array([float(r.get("sample_weight", 1.0)) for r in used])
+    elif uncertain_policy == "downweight_nonpositive":
+        weights = np.array(
+            [
+                float(r.get("sample_weight", 1.0))
+                if (bool(r.get("is_uncertain", 0)) and int(r.get("label_act", 0)) == 0)
+                else 1.0
+                for r in used
+            ]
+        )
 
     if model_kind == "logistic":
         model = LogisticRegression(max_iter=1200, class_weight="balanced", random_state=seed)

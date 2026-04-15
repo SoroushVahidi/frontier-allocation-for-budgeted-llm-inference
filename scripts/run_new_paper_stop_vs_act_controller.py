@@ -18,7 +18,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--budget", type=int, default=14)
     parser.add_argument("--seed", type=int, default=31)
     parser.add_argument("--eval-episodes", type=int, default=500)
-    parser.add_argument("--uncertain-policy", choices=["none", "filter", "downweight"], default="downweight")
+    parser.add_argument("--instability-guard-band", type=float, default=None)
+    parser.add_argument(
+        "--uncertain-policy",
+        choices=["none", "filter", "downweight", "downweight_nonpositive"],
+        default="downweight",
+    )
     return parser.parse_args()
 
 
@@ -43,6 +48,11 @@ def main() -> None:
             str(args.budget),
             "--seed",
             str(args.seed),
+            *(
+                ["--instability-guard-band", str(args.instability_guard_band)]
+                if args.instability_guard_band is not None
+                else []
+            ),
         ]
     )
 
