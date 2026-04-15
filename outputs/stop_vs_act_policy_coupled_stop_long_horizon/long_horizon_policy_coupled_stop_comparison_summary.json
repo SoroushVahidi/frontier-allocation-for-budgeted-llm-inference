@@ -1,0 +1,70 @@
+{
+  "comparison_grid": {
+    "seeds": [
+      41,
+      42
+    ],
+    "budgets": [
+      10,
+      14
+    ],
+    "episodes": 520,
+    "eval_episodes": 220
+  },
+  "stop_baseline_definitions": {
+    "default": "proxy_best_other_gain: subtract static best-other expected next gain",
+    "long_horizon_policy_coupled_stop": "proxy_policy_coupled_stop_reallocation_horizon: ACT acts here now, STOP skips here now, then both continue same policy for h=3 with paired RNG",
+    "one_step_policy_coupled_stop": "proxy_policy_coupled_stop_reallocation: ACT acts here now, STOP skips here now for one step only"
+  },
+  "label_stats": {
+    "default_delta_std_mean": 0.09009122653648054,
+    "default_sign_flip_rate_mean": 0.13644220331126952,
+    "long_horizon_delta_std_mean": 0.08692878165473114,
+    "long_horizon_sign_flip_rate_mean": 0.35322374137201984,
+    "one_step_delta_std_mean": 0.07503237494589565,
+    "one_step_sign_flip_rate_mean": 0.23591072233580637
+  },
+  "controller_metrics": {
+    "default_mean_learned_vs_heuristic_accuracy_margin": 0.007954545454545436,
+    "long_horizon_mean_learned_vs_heuristic_accuracy_margin": -0.027272727272727254,
+    "default_mean_learned_vs_heuristic_score_margin": 0.011051380712212233,
+    "long_horizon_mean_learned_vs_heuristic_score_margin": 0.011689590545437473,
+    "one_step_mean_learned_vs_heuristic_accuracy_margin": -0.011363636363636381
+  },
+  "win_loss": {
+    "default_vs_heuristic_accuracy": {
+      "wins": 2,
+      "losses": 2,
+      "ties": 0,
+      "total": 4
+    },
+    "long_horizon_vs_heuristic_accuracy": {
+      "wins": 0,
+      "losses": 4,
+      "ties": 0,
+      "total": 4
+    },
+    "long_horizon_vs_default_accuracy": {
+      "wins": 0,
+      "losses": 4,
+      "ties": 0,
+      "total": 4
+    },
+    "long_horizon_vs_default_score": {
+      "wins": 3,
+      "losses": 1,
+      "ties": 0,
+      "total": 4
+    }
+  },
+  "stability_signal": {
+    "default_margin_std": 0.02235490406012047,
+    "long_horizon_margin_std": 0.0140100318249295
+  },
+  "interpretation": {
+    "conservative_read": "Small matched evidence only; effect may be noisy and should not be overclaimed.",
+    "did_it_help": "no_or_mixed",
+    "recommendation": "keep_current_default",
+    "next_best_move": "If outcomes remain mixed, keep this mode optional and test a budget-aware horizon gate (e.g., h=2 for tight budgets, h=3 otherwise) without changing controller family."
+  }
+}

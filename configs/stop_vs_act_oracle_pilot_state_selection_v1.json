@@ -1,0 +1,39 @@
+{
+  "selection_name": "stop_vs_act_oracle_pilot_state_selection_v1",
+  "pilot_config_path": "configs/stop_vs_act_oracle_label_pilot_v1.json",
+  "source_pipeline": {
+    "builder": "experiments.stop_vs_act_controller.build_stop_vs_act_dataset",
+    "target_mode": "proxy_best_other_gain",
+    "n_init_branches": 5,
+    "max_depth": 7,
+    "finish_prob_base": 0.16,
+    "answer_noise": 0.12,
+    "rollout_samples": 6,
+    "train_ratio": 0.8
+  },
+  "candidate_generation": {
+    "episodes_per_seed_budget": 180,
+    "include_splits": ["train", "test"]
+  },
+  "selection": {
+    "target_states_total": 1200,
+    "selection_seed": 20260416,
+    "dedupe_keys": [
+      "source_seed",
+      "budget",
+      "episode_id",
+      "decision_id",
+      "branch_id"
+    ],
+    "ambiguity_metric": "abs(gap_to_best_other_gain)",
+    "ambiguity_buckets": ["high", "medium", "low"],
+    "uncertainty_buckets": ["uncertain", "certain"],
+    "per_budget_strategy": "equal_share_then_fill_within_budget"
+  },
+  "exclusions": {
+    "exclude_uncertain_only": false,
+    "exclude_missing_core_fields": true,
+    "exclude_nonfinite_numeric_fields": true,
+    "exclude_single_branch_terminal_states": true
+  }
+}
