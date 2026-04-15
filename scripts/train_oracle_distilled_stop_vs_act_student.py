@@ -104,6 +104,14 @@ def _confidence_weight(teacher_prob_act: float) -> float:
     return max(0.0, min(1.0, abs(float(teacher_prob_act) - 0.5) * 2.0))
 
 
+def _to_optional_float(x: Any) -> float | None:
+    if isinstance(x, bool):
+        return None
+    if isinstance(x, (int, float)):
+        return float(x)
+    return None
+
+
 def _evaluate_gain_gap_baseline(test_rows: list[dict[str, Any]], margin: float) -> dict[str, float]:
     scored: list[tuple[float, int]] = []
     for row in test_rows:
@@ -220,6 +228,130 @@ def _budget_bin(remaining_budget: float | None) -> str:
     return "high_ge_8"
 
 
+def _controller_behavior_metrics(
+    model: dict[str, Any],
+    test_rows: list[dict[str, Any]],
+    *,
+    threshold: float,
+    neutral_gap_band: float,
+) -> dict[str, Any]:
+    if not test_rows:
+        return {
+            "available": False,
+            "reason": "no_eval_rows",
+            "primitive_quantity": "oracle_action_gap",
+            "eligible_rows": 0,
+            "total_eval_rows": 0,
+        }
+
+    counted = 0
+    beneficial_act = 0
+    harmful_act = 0
+    harmful_premature_stop = 0
+    beneficial_stop = 0
+    neutral_rows = 0
+    total_regret = 0.0
+
+    for row in test_rows:
+        gap = _to_optional_float(row.get("oracle_action_gap"))
+        if gap is None:
+            continue
+        counted += 1
+        prob_act = stop_vs_act_probability(model, {name: float(row[name]) for name in STOP_VS_ACT_FEATURE_NAMES})
+        pred_act = prob_act >= threshold
+
+        if gap > neutral_gap_band:
+            if pred_act:
+                beneficial_act += 1
+            else:
+                harmful_premature_stop += 1
+                total_regret += float(gap)
+        elif gap < -neutral_gap_band:
+            if pred_act:
+                harmful_act += 1
+                total_regret += float(-gap)
+            else:
+                beneficial_stop += 1
+        else:
+            neutral_rows += 1
+
+    if counted <= 0:
+        return {
+            "available": False,
+            "reason": "missing_oracle_action_gap",
+            "primitive_quantity": "oracle_action_gap",
+            "eligible_rows": 0,
+            "total_eval_rows": len(test_rows),
+        }
+
+    denom = float(counted)
+    return {
+        "available": True,
+        "primitive_quantity": "oracle_action_gap",
+        "utility_gap_definition": "utility(ACT) - utility(STOP)",
+        "neutral_gap_band": float(neutral_gap_band),
+        "eligible_rows": counted,
+        "total_eval_rows": len(test_rows),
+        "missing_rows": int(len(test_rows) - counted),
+        "rate_denominator": "eligible_eval_rows",
+        "beneficial_act_rate_bar": float(beneficial_act / denom),
+        "harmful_act_rate_har": float(harmful_act / denom),
+        "harmful_premature_stop_rate_hpsr": float(harmful_premature_stop / denom),
+        "beneficial_stop_rate_bsr": float(beneficial_stop / denom),
+        "neutral_gap_rate": float(neutral_rows / denom),
+        "oracle_action_regret": float(total_regret / denom),
+        "aux_counts": {
+            "beneficial_act": int(beneficial_act),
+            "harmful_act": int(harmful_act),
+            "harmful_premature_stop": int(harmful_premature_stop),
+            "beneficial_stop": int(beneficial_stop),
+            "neutral_gap_rows": int(neutral_rows),
+        },
+    }
+
+
+def _threshold_grid(min_threshold: float, max_threshold: float, step: float, include: float) -> list[float]:
+    lo = max(0.0, min(1.0, float(min_threshold)))
+    hi = max(0.0, min(1.0, float(max_threshold)))
+    if hi < lo:
+        lo, hi = hi, lo
+    step_val = max(1e-6, float(step))
+    vals: list[float] = []
+    t = lo
+    while t <= hi + 1e-9:
+        vals.append(round(float(t), 6))
+        t += step_val
+    vals.append(round(max(0.0, min(1.0, float(include))), 6))
+    return sorted(set(vals))
+
+
+def _evaluation_at_threshold(
+    model: dict[str, Any],
+    test_rows: list[dict[str, Any]],
+    *,
+    threshold: float,
+    behavior_neutral_gap_band: float,
+) -> dict[str, Any]:
+    cls = evaluate_binary_predictions(model, test_rows, threshold=threshold)
+    return {
+        "threshold": float(threshold),
+        "predicted_act_rate": _predicted_act_rate(model, test_rows, threshold=threshold),
+        "student": {
+            "accuracy": float(cls["accuracy"]),
+            "roc_auc": float(cls["roc_auc"]),
+            "brier": float(cls["brier"]),
+            "precision": float(cls["precision"]),
+            "recall": float(cls["recall"]),
+        },
+        "controller_behavior": _controller_behavior_metrics(
+            model,
+            test_rows,
+            threshold=threshold,
+            neutral_gap_band=behavior_neutral_gap_band,
+        ),
+    }
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Train/eval oracle-distilled stop-vs-act student")
     p.add_argument("--distill-dataset", required=True, help="Distillation-ready JSONL from selective builder")
@@ -246,6 +378,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--soft-weight-mode", choices=["none", "confidence"], default="confidence")
     p.add_argument("--soft-weight-strength", type=float, default=0.3)
     p.add_argument("--heuristic-margin", type=float, default=0.01)
+    p.add_argument(
+        "--behavior-neutral-gap-band",
+        type=float,
+        default=0.0,
+        help="Treat |oracle_action_gap| <= this value as neutral for BAR/HAR/HPSR/BSR metrics.",
+    )
+    p.add_argument("--sweep-threshold-min", type=float, default=0.05)
+    p.add_argument("--sweep-threshold-max", type=float, default=0.95)
+    p.add_argument("--sweep-threshold-step", type=float, default=0.05)
     p.add_argument("--fail-on-mock-provenance", action="store_true")
     p.add_argument("--provenance-tag", default="")
     p.add_argument(
@@ -323,7 +464,7 @@ def main() -> None:
             "is_uncertain": 1 if bucket == "borderline" else 0,
             "target_reliability_weight": _confidence_weight(teacher_prob),
             "teacher_prob_act": teacher_prob,
-            "oracle_action_gap": float(row.get("oracle_action_gap", 0.0)),
+            "oracle_action_gap": _to_optional_float(row.get("oracle_action_gap")),
             "agreement_rate": row.get("agreement_rate"),
             "remaining_budget_raw": row.get("remaining_budget"),
             "selected_for_training": int(row.get("selected_for_training", 0)),
@@ -379,7 +520,11 @@ def main() -> None:
         test_rows,
         threshold=args.decision_threshold,
         key_name="oracle_margin_bins",
-        key_fn=lambda r: _margin_bin(abs(float(r.get("oracle_action_gap", 0.0)))),
+        key_fn=lambda r: (
+            _margin_bin(abs(float(r.get("oracle_action_gap"))))
+            if isinstance(r.get("oracle_action_gap"), (int, float))
+            else "unknown"
+        ),
     )
     disagreement_slices = _slice_metrics(
         model,
@@ -402,6 +547,27 @@ def main() -> None:
         stop_vs_act_probability(model, {name: float(r[name]) for name in STOP_VS_ACT_FEATURE_NAMES}) for r in test_rows
     ]
     mean_student_prob = float(sum(student_probs) / max(1, len(student_probs)))
+    behavior_metrics = _controller_behavior_metrics(
+        model,
+        test_rows,
+        threshold=args.decision_threshold,
+        neutral_gap_band=float(args.behavior_neutral_gap_band),
+    )
+    threshold_grid = _threshold_grid(
+        args.sweep_threshold_min,
+        args.sweep_threshold_max,
+        args.sweep_threshold_step,
+        args.decision_threshold,
+    )
+    threshold_sweep = [
+        _evaluation_at_threshold(
+            model,
+            test_rows,
+            threshold=t,
+            behavior_neutral_gap_band=float(args.behavior_neutral_gap_band),
+        )
+        for t in threshold_grid
+    ]
 
     bucket_counts: dict[str, int] = {}
     for r in prepared:
@@ -425,6 +591,10 @@ def main() -> None:
             "soft_weight_mode": args.soft_weight_mode,
             "soft_weight_strength": args.soft_weight_strength,
             "heuristic_margin": args.heuristic_margin,
+            "behavior_neutral_gap_band": args.behavior_neutral_gap_band,
+            "sweep_threshold_min": args.sweep_threshold_min,
+            "sweep_threshold_max": args.sweep_threshold_max,
+            "sweep_threshold_step": args.sweep_threshold_step,
             "provenance_tag": args.provenance_tag,
             "filter_policy": args.filter_policy,
             "random_baseline_source": args.random_baseline_source,
@@ -460,6 +630,8 @@ def main() -> None:
                 "predicted_act_rate": predicted_act_rate,
                 "observed_avg_actions": None if args.observed_avg_actions < 0.0 else float(args.observed_avg_actions),
             },
+            "controller_behavior": behavior_metrics,
+            "threshold_sweep": threshold_sweep,
             "required_slices": {
                 **uncertainty_slices,
                 **margin_slices,
