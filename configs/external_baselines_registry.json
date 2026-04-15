@@ -71,6 +71,11 @@
       "clone_url": "https://github.com/GeniusHTX/TALE",
       "doc": "external/tale_token_budget_aware_reasoning/README.md",
       "integration": "mode_a_complete_mode_b_partial"
+    },
+    "l1_length_control_rl": {
+      "clone_url": "https://github.com/cmu-l3/l1.git",
+      "doc": "external/l1_length_control_rl/README.md",
+      "integration": "mode_a_complete_mode_b_partial"
     }
   }
 }
