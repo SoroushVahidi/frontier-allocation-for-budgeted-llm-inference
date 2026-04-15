@@ -109,3 +109,20 @@ Implementation references:
 
 Methodological caveat:
 - TALE is per-instance token budgeting, while our primary method is frontier stop-vs-act allocation; report matched-compute comparisons and avoid direct control-equivalence claims.
+
+## L1 integration status for this repository (2026-04 fair split)
+
+L1 (*Controlling How Long A Reasoning Model Thinks With Reinforcement Learning*) is integrated as a **direct / near-direct budget-control baseline** with explicit mode separation:
+
+- **MODE A (`inference_only_adapter`)**: runnable in-repo L1-style length-conditioning adapter supporting both `external_l1_exact` (exact target length) and `external_l1_max` (max-length bound).
+- **MODE B (`official_full_adapter`)**: secondary official/full adapter reporting path (may include RL-trained L1 checkpoints; not apples-to-apples with unchanged-base-model controller comparisons).
+
+Implementation references:
+- `docs/l1_baseline_integration.md`
+- `configs/l1_inference_adapter_v1.json`
+- `configs/l1_official_full_adapter_v1.json`
+- `scripts/run_l1_baseline.py`
+- `scripts/run_l1_comparison_bundle.py`
+
+Methodological caveat:
+- L1 controls token-length generation behavior, while our primary method controls frontier stop-vs-act allocation decisions; keep matched-budget reporting explicit and avoid strict control-equivalence claims.

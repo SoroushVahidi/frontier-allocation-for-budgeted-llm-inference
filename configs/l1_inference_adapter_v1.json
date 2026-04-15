@@ -1,0 +1,68 @@
+{
+  "version": "l1_inference_adapter_v1",
+  "mode": "inference_only_adapter",
+  "provenance": {
+    "paper": "https://arxiv.org/abs/2503.04697",
+    "project_page": "https://cmu-l3.github.io/l1/",
+    "official_code": "https://github.com/cmu-l3/l1",
+    "intent": "Primary fair L1-style baseline: inference-only length-conditioned adapter (Exact + Max) on unchanged base model family."
+  },
+  "model": {
+    "use_openai_api": false,
+    "provider": "openai",
+    "name": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180,
+    "timeout_seconds": 45
+  },
+  "dataset": {
+    "name": "openai/gsm8k",
+    "subset_size": 32,
+    "seeds": [11, 23, 37]
+  },
+  "budget": {
+    "grid": [4, 6, 8],
+    "unit": "action",
+    "action_to_token_equivalent": 64.0,
+    "matching_policy": "Primary tables compare methods under matched average compute using action budgets and token-equivalent reporting."
+  },
+  "l1": {
+    "exact_token_budget": 512,
+    "max_token_budget": 512,
+    "token_per_action": 64.0,
+    "prompt_style": "Let's think step by step and output the final answer within \\boxed{}.",
+    "condition_templates": {
+      "exact": "Think for exactly {budget} tokens.",
+      "max": "Think for maximum {budget} tokens."
+    }
+  },
+  "methods": {
+    "include": [
+      "adaptive_min_expand_1",
+      "reasoning_greedy",
+      "self_consistency_3",
+      "verifier_guided_search",
+      "external_l1_exact",
+      "external_l1_max"
+    ],
+    "adaptive_min_expand_grid": [1]
+  },
+  "metrics": {
+    "primary": [
+      "accuracy",
+      "exact_match",
+      "avg_generated_tokens",
+      "avg_budget_error_tokens",
+      "budget_adherence_rate",
+      "budget_violation_rate",
+      "budget_exhaustion_rate"
+    ],
+    "frontier": "Pareto frontier over (mean_avg_token_cost_equivalent, mean_accuracy)."
+  },
+  "output": {
+    "root_dir": "outputs/l1_baseline"
+  },
+  "reproducibility": {
+    "notes": "Deterministic seed list in config. Manifest stores mode split and L1 variant metadata for auditability."
+  }
+}

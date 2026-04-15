@@ -18,6 +18,7 @@ from experiments.controllers import (
     GreedyController,
     ProgramOfThoughtController,
     S1BudgetForcingController,
+    L1LengthControlController,
     TALEPromptBudgetingController,
     VerifierGuidedSearchController,
 )
@@ -115,6 +116,11 @@ def build_frontier_strategies(
     tale_token_budget_max: int = 512,
     tale_token_budget_per_question_char: float = 0.75,
     tale_token_per_action: float = 64.0,
+    include_external_l1_baseline: bool = False,
+    l1_exact_token_budget: int = 512,
+    l1_max_token_budget: int = 512,
+    l1_token_per_action: float = 64.0,
+    l1_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
 ) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
     prm_scorer = HeuristicPRMPartialScorer()
@@ -284,6 +290,27 @@ def build_frontier_strategies(
             token_budget_per_question_char=tale_token_budget_per_question_char,
             token_per_action=tale_token_per_action,
             method_name="external_tale_prompt_budgeting",
+        )
+    if include_external_l1_baseline:
+        specs["external_l1_exact"] = L1LengthControlController(
+            generator_factory(),
+            scorer,
+            budget,
+            control_mode="exact",
+            token_budget=l1_exact_token_budget,
+            token_per_action=l1_token_per_action,
+            prompt_style=l1_prompt_style,
+            method_name="external_l1_exact",
+        )
+        specs["external_l1_max"] = L1LengthControlController(
+            generator_factory(),
+            scorer,
+            budget,
+            control_mode="max",
+            token_budget=l1_max_token_budget,
+            token_per_action=l1_token_per_action,
+            prompt_style=l1_prompt_style,
+            method_name="external_l1_max",
         )
     return specs
 

@@ -95,3 +95,10 @@ All scripts write run artifacts under `outputs/` unless overridden.
 |---|---|
 | `run_tale_baseline.py` | Canonical TALE fair-baseline runner with MODE A (prompt budgeting inference-only) and MODE B (official/full adapter reporting). Writes manifest, summary CSV, per-example JSONL, fairness report, and comparison tables under `outputs/tale_baseline/`. |
 | `run_tale_comparison_bundle.py` | Merge one or more TALE run directories into manuscript-ready aggregate comparison artifacts. |
+
+## L1 baseline integration scripts (fair split)
+
+| Script | Role |
+|---|---|
+| `run_l1_baseline.py` | Canonical L1 fair-baseline runner with MODE A (inference-only L1-style Exact/Max length control adapter) and MODE B (official/full adapter reporting). Writes manifest, summary CSV, per-example JSONL, fairness report, and comparison tables under `outputs/l1_baseline/`. |
+| `run_l1_comparison_bundle.py` | Merge one or more L1 run directories into manuscript-ready aggregate comparison artifacts. |

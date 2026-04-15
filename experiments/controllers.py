@@ -807,6 +807,100 @@ class TALEPromptBudgetingController(BaseController):
         )
 
 
+class L1LengthControlController(BaseController):
+    """External baseline adapter for L1/LCPO-style length-conditioned control.
+
+    Supports two inference-time modes used in the L1 paper/repo framing:
+    - `exact`: condition on "think for exactly N tokens"
+    - `max`: condition on "think for maximum N tokens"
+
+    This adapter is intentionally inference-only for fair in-repo comparisons.
+    It does not claim to reproduce L1 RL training.
+    """
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        control_mode: str = "exact",
+        token_budget: int = 512,
+        token_per_action: float = 64.0,
+        prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        method_name: str = "external_l1_exact",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        normalized_mode = control_mode.strip().lower()
+        if normalized_mode not in {"exact", "max"}:
+            normalized_mode = "exact"
+        self.control_mode = normalized_mode
+        self.token_budget = max(1, int(token_budget))
+        self.token_per_action = max(1.0, float(token_per_action))
+        self.prompt_style = prompt_style.strip() if prompt_style.strip() else "Let's think step by step."
+        self.method_name = method_name
+
+    @staticmethod
+    def _estimate_generated_tokens(text: str | None) -> int:
+        if not text:
+            return 0
+        return len(re.findall(r"\S+", text))
+
+    def _compose_budgeted_question(self, question: str) -> str:
+        if self.control_mode == "exact":
+            length_instruction = f"Think for exactly {self.token_budget} tokens."
+        else:
+            length_instruction = f"Think for maximum {self.token_budget} tokens."
+        return f"{question}\n\n{self.prompt_style} {length_instruction}"
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        branch = self.generator.init_branch(f"l1_{self.control_mode}_0")
+        actions = expansions = verifications = 0
+        surviving_trace: list[int] = []
+
+        budgeted_question = self._compose_budgeted_question(question)
+        budget_actions = max(1, int(round(self.token_budget / self.token_per_action)))
+        allowed_actions = min(self.max_actions, budget_actions)
+
+        while actions < allowed_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, budgeted_question, gold_answer)
+            actions += 1
+            expansions += 1
+            surviving_trace.append(1)
+
+        prediction = branch.predicted_answer
+        generated_tokens_estimate = self._estimate_generated_tokens(prediction)
+
+        budget_error = float(abs(generated_tokens_estimate - self.token_budget))
+        if self.control_mode == "exact":
+            violation = generated_tokens_estimate != self.token_budget
+        else:
+            violation = generated_tokens_estimate > self.token_budget
+
+        return MethodResult(
+            method=self.method_name,
+            prediction=prediction,
+            is_correct=self._answers_match(prediction, gold_answer),
+            actions_used=actions,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)),
+            budget_exhausted=actions >= allowed_actions and not branch.is_done,
+            metadata={
+                "external_baseline_family": "l1_lcpo_length_control",
+                "l1_control_mode": self.control_mode,
+                "token_budget_instruction": self.token_budget,
+                "token_per_action": self.token_per_action,
+                "budget_actions_equivalent": budget_actions,
+                "generated_tokens_estimate": generated_tokens_estimate,
+                "budget_error_tokens": budget_error,
+                "token_budget_violation": bool(violation),
+                "prompt_style": self.prompt_style,
+                "final_score": self.scorer.score_branch(branch),
+            },
+        )
+
+
 def _normalize_answer(text: str) -> str:
     stripped = text.strip()
     nums = re.findall(r"[-+]?\d+(?:\.\d+)?", stripped.replace(",", ""))

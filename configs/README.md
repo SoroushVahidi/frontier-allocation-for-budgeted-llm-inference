@@ -16,6 +16,8 @@ YAML and JSON configuration for experiments and tooling.
 | [`s1_full_or_official_adapter_v1.json`](s1_full_or_official_adapter_v1.json) | MODE B secondary path: full/official s1 reporting adapter (includes post-training caveat) |
 | [`tale_prompt_budgeting_v1.json`](tale_prompt_budgeting_v1.json) | MODE A TALE baseline: faithful in-repo prompt-level adaptive token budgeting adapter |
 | [`tale_official_adapter_v1.json`](tale_official_adapter_v1.json) | MODE B TALE baseline: official/full adapter reporting path (separately labeled, may include TALE-PT) |
+| [`l1_inference_adapter_v1.json`](l1_inference_adapter_v1.json) | MODE A L1 baseline: inference-only L1-style length-conditioned adapter (Exact + Max variants) |
+| [`l1_official_full_adapter_v1.json`](l1_official_full_adapter_v1.json) | MODE B L1 baseline: official/full adapter reporting path (separately labeled, may include RL-trained L1 checkpoints) |
 
 ## Conventions
 

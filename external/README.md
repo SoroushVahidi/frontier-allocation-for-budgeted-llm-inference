@@ -44,6 +44,7 @@ These strengthen comparisons for **fixed test-time compute**, **verifier vs gene
 | MoB (Majority-of-the-Bests) | Bootstrapped Best-of-N improvement | `LINK_ONLY` | https://github.com/arakhsha/mob | **MIT** (repo); paper CC BY-NC-SA on OpenReview |
 | s1: Simple test-time scaling (EMNLP 2025) | Test-time budget forcing / thinking-length scaling | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/simplescaling/s1 | **Apache-2.0** |
 | TALE (Token-Budget-Aware LLM Reasoning) | Per-instance token-budget-aware reasoning | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/GeniusHTX/TALE | Unknown (re-check upstream) |
+| L1 (LCPO length control) | RL-trained controllable reasoning length (Exact/Max) | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/cmu-l3/l1 | **Apache-2.0** |
 
 Per-baseline notes:
 
@@ -53,6 +54,7 @@ Per-baseline notes:
 - `external/mob_majority_of_bests/README.md`
 - `external/s1_simple_test_time_scaling/README.md`
 - `external/tale_token_budget_aware_reasoning/README.md`
+- `external/l1_length_control_rl/README.md`
 
 ---
 
@@ -87,3 +89,9 @@ Per-baseline notes:
 - MODE A (`prompt_budgeting_inference_only`): runnable TALE-style in-repo prompt token-budgeting adapter.
 - MODE B (`official_full_adapter`): partial adapter/reporting path for official/full TALE outputs; may include TALE-PT assets and is not apples-to-apples.
 - Canonical integration doc: `docs/tale_baseline_integration.md`.
+
+### L1 fairness split note (new canonical)
+
+- MODE A (`inference_only_adapter`): runnable in-repo L1-style inference adapter with LCPO-Exact-style and LCPO-Max-style conditioning.
+- MODE B (`official_full_adapter`): partial adapter/reporting path for official/full L1 outputs; may include RL-trained checkpoints and is not apples-to-apples.
+- Canonical integration doc: `docs/l1_baseline_integration.md`.
