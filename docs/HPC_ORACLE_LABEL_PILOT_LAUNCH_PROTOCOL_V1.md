@@ -55,12 +55,30 @@ If any required input is missing, the pipeline must stop before label generation
    - `python3 scripts/build_oracle_label_pilot_state_manifest.py --selection-config ... --output-dir ...`
 3. Fail immediately if `pilot_state_manifest.jsonl` was not produced.
 
+### Stage 1.5 — Optional deterministic sharding for pilot-scale HPC
+
+For pilot-scale execution, prefer sharded generation over one monolithic job:
+
+1. Split the full state manifest deterministically:
+   - `python3 scripts/oracle_label_pilot_sharding.py split --state-manifest <full_manifest.jsonl> --output-dir <shard_plan_dir> --num-shards <K>`
+2. Launch one generator job per shard manifest (same generator contract, shard-specific `ORACLE_STATE_MANIFEST` + output dir).
+3. Merge shard outputs deterministically:
+   - `python3 scripts/oracle_label_pilot_sharding.py merge --split-manifest <shard_plan_dir>/shard_split_manifest.json --shard-run-root <per_shard_runs_root> --output-dir <merged_dir>`
+4. Treat merge checks as hard gates:
+   - no missing shards unless explicitly allowed for debug,
+   - no missing states,
+   - no duplicate `state_id`,
+   - no unknown `state_id` outside source manifest.
+
+The merged labels artifact is the only valid input to the final validator gate for distillation readiness.
+
 ### Stage 2 — Oracle label generation
 Generator contract reference:
 - `docs/ORACLE_LABEL_GENERATOR_INTERFACE_CONTRACT_V1.md`
 - `configs/oracle_label_generator_interface_contract_v1.json`
 - testing-only stub: `scripts/run_oracle_label_generator_interface_stub.py --mock-mode`
 - real limited prototype: `scripts/run_oracle_label_generator_prototype.py`
+- production-leaning heavy path: `scripts/run_oracle_label_generator_heavy.py`
 
 1. Export generator interface variables:
    - `ORACLE_PILOT_CONFIG`
