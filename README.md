@@ -4,12 +4,16 @@ Repository for the **current NeurIPS-oriented project** on **fixed-budget adapti
 
 ## Canonical project question
 
-> **Is the next unit of compute worth spending here?**
+> **Which active branch should receive the next unit of compute?**
+
+Equivalent local phrasing:
+
+> **Is the next unit of compute worth spending here, relative to spending it elsewhere?**
 
 This repository is no longer centered on the old binary revise-routing paper. Its canonical identity is now:
 - fixed-budget adaptive test-time compute allocation,
 - cross-controller frontier allocation,
-- budget-conditioned stop-vs-act control,
+- branch-priority / next-step allocation over active branches,
 - oracle frontier headroom,
 - anti-collapse controller design,
 - supervision-target design for allocation decisions.
@@ -24,14 +28,14 @@ This repo should currently be interpreted as:
 ### What is already strong
 - frontier/controller experimentation scaffold,
 - anti-collapse controller mechanisms and audits,
-- branch-scorer and stop-vs-act experimentation paths,
+- branch-scorer experimentation paths,
 - dataset and baseline integration readiness,
 - oracle-label pilot infrastructure,
 - careful provenance notes and safe-claim discipline.
 
 ### What is not solved yet
-- robust supervision targets for stop-vs-act control,
-- reliable controller calibration across budgets / seeds / datasets,
+- robust supervision targets for branch-priority allocation,
+- reliable branch-score / continuation calibration across budgets / seeds / datasets,
 - broad decisive real-model evidence,
 - a robust universally winning learned allocator.
 
@@ -39,7 +43,7 @@ This repo should currently be interpreted as:
 
 The canonical bottleneck is:
 
-**supervision target quality / proxy-label mismatch**.
+**supervision target quality / proxy-label mismatch for next-step branch allocation.**
 
 The repo’s current view is that the project is **not** primarily blocked by:
 - missing infrastructure,
@@ -48,22 +52,21 @@ The repo’s current view is that the project is **not** primarily blocked by:
 
 ## Best near-term method direction
 
-The recommended next controller direction is:
+The recommended next method direction is:
 
-- a **lightweight budget-conditioned binary stop-vs-act controller**,
-- with uncertainty used both:
-  - as controller input features,
-  - and as training-example filtering / reweighting signals.
+- a **branch-priority / next-step allocation policy** over active branches,
+- with pairwise or pointwise branch scoring as the main decision mechanism,
+- and, if useful, a lightweight local gate that asks whether the current candidate branch really deserves the next unit of budget.
 
-Pairwise BT branch scoring remains a strong active line and an important baseline / companion direction, but it is not the only canonical next step.
+The important conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
 ## Paper-level interpretation
 
 The strongest current paper story is:
 
-**fixed-budget cross-controller frontier allocation for LLM reasoning, with stop-vs-act control as the most promising near-term controller family and supervision-target design as the central unresolved issue.**
+**fixed-budget cross-controller frontier allocation for LLM reasoning, where the main challenge is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget.**
 
-That is a stronger and more honest story than pretending the repo already contains a universally dominant learned controller.
+A local stop-vs-act gate may still be useful as an implementation simplification, but it should not be treated as the full conceptual center of the project.
 
 ## Canonical reading path
 
@@ -81,7 +84,7 @@ That is a stronger and more honest story than pretending the repo already contai
 
 ## Canonical vs exploratory vs historical
 
-- **Canonical now**: the docs listed above and the corresponding frontier-allocation / stop-vs-act scripts.
+- **Canonical now**: the docs listed above and the corresponding frontier-allocation / branch-priority scripts.
 - **Exploratory**: reliability-aware BT variants, warm-start variants, tie-aware / ambiguity-aware targeted experiments, and method-specific diagnostic notes.
 - **Historical**: old manuscript / binary revise-routing material and dated memo snapshots.
 

@@ -5,18 +5,18 @@
 This is the canonical status note for the current NeurIPS-oriented project on:
 - fixed-budget adaptive test-time compute allocation,
 - cross-controller frontier allocation,
-- budget-conditioned stop-vs-act control under a global compute budget.
+- branch-priority / next-step allocation over active branches.
 
 ## Core project goal
 
-Learn and evaluate allocation policies that decide where the next unit of compute should go, while respecting a fixed budget and avoiding allocation collapse.
+Learn and evaluate policies that decide **which active branch should receive the next unit of compute**, while respecting a fixed budget and avoiding allocation collapse.
 
 ## Final paper goal
 
 The final paper should show that:
 1. budgeted test-time compute allocation is a meaningful and distinct problem,
 2. a clean frontier / controller framing is more honest than a vague “more reasoning helps” story,
-3. budget-conditioned stop-vs-act control is the strongest near-term controller family,
+3. branch ranking / next-step allocation is the right conceptual center,
 4. and the main methodological challenge is supervision-target quality.
 
 ## What has been built
@@ -25,7 +25,7 @@ The repo already contains:
 - a runnable frontier/controller experimentation scaffold,
 - anti-collapse controller mechanisms and audits,
 - branch-scorer experimentation stack,
-- stop-vs-act dataset / train / eval machinery,
+- local-gate / stop-vs-act dataset / train / eval machinery,
 - dataset and baseline integration/readiness tooling,
 - oracle-label pilot infrastructure,
 - provenance-aware output and reporting patterns.
@@ -35,32 +35,32 @@ The repo already contains:
 1. The new project framing is sound and distinct from the old binary revise-routing track.
 2. Anti-collapse controller design matters for realized budget use and frontier behavior.
 3. Pairwise BT remains one of the strongest active learned directions.
-4. The stop-vs-act controller family is the clearest next method direction.
-5. Several bounded comparator variants improved understanding, but none has fully solved the ACT-vs-STOP target problem.
+4. The clean conceptual center is branch ranking / next-step allocation over active branches.
+5. A local stop-vs-act formulation is useful only as a bounded approximation or continuation gate.
 6. Larger scale alone is unlikely to fix the current weaknesses without better targets.
 
 ## Main unresolved issue
 
-The main unresolved issue is **supervision target quality**:
+The main unresolved issue is **supervision target quality** for branch allocation:
 - proxy-label mismatch,
-- noisy or shallow ACT-vs-STOP comparisons,
-- imperfect opportunity-cost modeling on the STOP side,
+- noisy branch-comparison targets,
+- imperfect opportunity-cost modeling,
 - uneven controller robustness across budgets / seeds / datasets.
 
 ## Current methodological interpretation
 
 The project should currently be interpreted as:
 
-> **a strong platform and paper direction whose main open problem is action-conditional supervision design, not missing infrastructure.**
+> **a strong platform and paper direction whose main open problem is learning how to compare active branches and allocate the next unit of compute well.**
 
 ## Current best next implementation direction
 
-- Keep stop-vs-act as the canonical near-term controller family.
-- Use uncertainty both as controller input and as data-policy signal.
+- Keep branch-priority / next-step allocation as the canonical conceptual center.
+- Use pairwise or pointwise branch scoring as the main learned object.
+- Treat any local stop-vs-act gate as a helper mechanism, not the full algorithm.
 - Continue matched bounded comparisons versus strong heuristics and BT baseline.
 - Integrate the most important external paper baselines carefully and fairly.
-- Treat oracle-label and selective-distillation work as high-value supporting lines, not replacements for clean baseline controller evaluation.
 
 ## Practical implication
 
-The repo is already ready for serious paper planning, collaborator onboarding, and baseline integration work. The next phase should focus on sharpening the controller target and tightening the evaluation story, not on simply adding more scale.
+The repo is already ready for serious paper planning, collaborator onboarding, and baseline integration work. The next phase should focus on sharpening the branch-comparison signal and tightening the evaluation story, not on simply adding more scale.

@@ -5,12 +5,16 @@
 This repository is the canonical home for the **new NeurIPS-oriented project** on:
 - fixed-budget adaptive test-time compute allocation for LLM reasoning,
 - cross-controller frontier allocation,
-- budget-conditioned stop-vs-act control,
+- branch-priority / next-step allocation over active branches,
 - oracle frontier headroom and anti-collapse controller design.
 
 The central project question is:
 
-> **Is the next unit of compute worth spending here?**
+> **Which active branch should receive the next unit of compute?**
+
+Equivalent local phrasing:
+
+> **Is the next unit of compute worth spending here, relative to other active branches?**
 
 This question should guide the method design, evaluation design, safe claims, and paper writing.
 
@@ -21,7 +25,7 @@ The long-run paper goal is **not** merely to show that additional reasoning can 
 The real goal is to show that:
 1. test-time compute should be treated as a scarce budgeted resource,
 2. that resource can be allocated more effectively than uniform spending,
-3. the most useful near-term controller is a budget-conditioned stop-vs-act decision rule,
+3. the most useful near-term learned object is a branch-priority / next-step allocation policy,
 4. and the main obstacle is not infrastructure but **supervision-target quality**.
 
 ## What the repo already has
@@ -30,7 +34,7 @@ The repository already provides:
 - a runnable frontier/controller experimentation scaffold,
 - anti-collapse controller mechanisms and audits,
 - branch-scorer experimentation paths,
-- stop-vs-act dataset / model / evaluation machinery,
+- local-gate / stop-vs-act experimentation machinery,
 - dataset and baseline integration readiness tooling,
 - oracle-label pilot infrastructure,
 - provenance-aware outputs and documentation.
@@ -39,21 +43,22 @@ These are meaningful assets. The repository is already a strong research platfor
 
 ## What is still missing
 
-The current gap is **not** that the project lacks ideas or code. The main missing piece is a stable, action-conditional supervision signal that teaches the controller whether compute should be spent now or preserved for later.
+The current gap is **not** that the project lacks ideas or code. The main missing piece is a stable supervision signal that teaches the allocator which branch should receive the next unit of compute.
 
 This appears as:
 - proxy-label mismatch,
-- noisy or shallow ACT-vs-STOP comparators,
-- unstable controller calibration across budgets / seeds / datasets,
+- noisy branch-comparison targets,
+- shallow local comparator definitions,
+- unstable calibration across budgets / seeds / datasets,
 - inconsistent controller-level wins over strong heuristics.
 
 ## Canonical paper story
 
 The strongest current paper story is:
 
-**fixed-budget cross-controller frontier allocation for LLM reasoning, with budget-conditioned stop-vs-act control as the leading near-term method direction, and supervision-target design as the central unresolved methodological issue.**
+**fixed-budget cross-controller frontier allocation for LLM reasoning, where the core methodological problem is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget.**
 
-This paper story is stronger and more honest than pretending the project already has a universally winning learned allocator.
+A local stop-vs-act gate can still be useful as an implementation simplification, but it should not be treated as the full conceptual center of the paper.
 
 ## Main methodological layers
 
@@ -64,8 +69,9 @@ This paper story is stronger and more honest than pretending the project already
 
 ### Layer 2: mechanism
 - Anti-collapse controller design.
-- Budget-conditioned stop-vs-act control.
+- Branch-priority / next-step allocation over active branches.
 - Pairwise BT branch scoring as a strong active baseline / companion line.
+- Optional local continuation gate as a simplification, not the main conceptual primitive.
 
 ### Layer 3: evaluation lens
 - Oracle frontier headroom.
@@ -78,14 +84,14 @@ This paper story is stronger and more honest than pretending the project already
 1. The new framing is real and distinct from the old binary revise-routing manuscript.
 2. Anti-collapse design matters.
 3. Pairwise BT remains one of the strongest active learned directions.
-4. Stop-vs-act is the clearest near-term controller family.
-5. Several bounded target variants helped, but none has yet fully solved the comparator problem.
+4. The cleanest conceptual center is branch ranking / next-step allocation over active branches.
+5. A standalone stop-vs-act story is useful only as a local approximation, not as the full allocation formulation.
 6. Scaling up before target quality improves is unlikely to be the most efficient next move.
 
 ## What we should do next
 
 ### Near-term
-- strengthen ACT-vs-STOP target design,
+- strengthen branch-comparison and next-step allocation target design,
 - improve uncertainty-aware filtering / reweighting,
 - run matched bounded comparisons against strong heuristics and BT baseline,
 - integrate the most important external paper baselines fairly,
@@ -100,7 +106,7 @@ This paper story is stronger and more honest than pretending the project already
 ### Later
 - only after target quality improves, scale to heavier runs,
 - broaden benchmark coverage,
-- test richer action spaces and stronger learned controllers.
+- test richer action spaces and stronger learned allocators.
 
 ## Explicit non-goals for now
 

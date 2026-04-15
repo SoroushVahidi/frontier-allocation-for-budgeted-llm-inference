@@ -1,54 +1,71 @@
-# Stop-vs-act method direction (canonical near-term)
+# Local gating vs branch-priority allocation
 
-## Decision question
+## Clarification
 
-At each allocation step, ask:
+For the current project, the main conceptual object is **branch-priority / next-step allocation over active branches**.
 
-> **Is the next unit of compute worth spending here?**
+The main question is:
 
-This action-conditional question is the canonical controller framing for the next implementation phase.
+> **Which active branch should receive the next unit of compute?**
 
-## Why prefer binary stop-vs-act first
+A local stop-vs-act question can still be used, but only as a **local approximation** or **continuation gate** inside a richer branch-allocation process.
 
-Compared with a first-pass continuous marginal-value regressor, binary stop-vs-act is currently preferred because:
+## Better decomposition
 
-1. Continuous value targets are more expressive but significantly noisier under proxy supervision.
-2. Binary targets are usually more stable and less brittle with approximate labels.
-3. The current project need is a reliable first decision rule, not a high-variance fine-grained estimator.
-4. Uncertainty-aware stopping/routing has strong support in nearby literature.
+A cleaner allocator has two layers:
+
+1. **Branch-priority / candidate-selection layer**
+   - Compare active branches.
+   - Maintain their scores or priorities.
+   - Choose the highest-priority candidate for the next budget step.
+
+2. **Optional local continuation gate**
+   - Ask whether the selected candidate really deserves the next unit of compute.
+   - If not, redirect or preserve that budget according to the downstream allocation rule.
+
+In this view, a local gate is not the whole algorithm. It is only a layer on top of branch comparison / ranking.
+
+## Why a local gate was considered useful
+
+Compared with a first-pass continuous marginal-value regressor or full multi-action allocator:
+
+1. A binary local gate can be easier to train.
+2. Its targets may be more stable than fully continuous marginal-value targets.
+3. It can be used as a bounded approximation while the richer ranking/allocation policy is still under development.
+
+But this convenience should not be mistaken for the full conceptual formulation of the project.
 
 ## Role of pairwise BT branch scoring
 
 Pairwise BT branch scoring remains central and useful:
 - as a strong baseline,
 - as an active branch of work,
-- and as a potential component for richer later controllers.
+- and as one of the cleanest current ways to represent branch comparison.
 
-But it is not, by itself, the clearest first controller for the next phase.
+This fits the project better conceptually than treating a standalone local gate as the whole allocator.
 
-## First implementation sketch
+## Recommended implementation interpretation
 
-- Model type: lightweight classifier.
-- Input: branch/frontier state features + remaining budget + uncertainty indicators.
-- Output: stop vs act probability (or score thresholded by budget policy).
-- Training data: approximate marginal labels (stop-vs-one-more-action and short-horizon deltas).
-- Training policy: uncertainty-aware filtering/reweighting.
-- Evaluation: matched-budget controller-level comparisons versus strong heuristics and BT baseline.
+A clean near-term implementation can look like this:
 
-## How to use uncertainty
+- keep active branches in a priority structure,
+- score or rank them,
+- pop the highest-priority branch,
+- expand / verify / update it,
+- recompute its score,
+- push it back if still alive.
 
-Use uncertainty in two places:
+A local gate may still be inserted after candidate selection, but only as a local decision aid.
 
-1. **Inference-time feature**
-   - include confidence/ambiguity proxies in controller input.
+## Recommended language for the paper and docs
 
-2. **Training-time data policy**
-   - downweight or filter high-ambiguity examples,
-   - optionally maintain a flagged ambiguous split for diagnostics.
+Prefer terms like:
+- branch-priority allocation,
+- next-step branch allocation,
+- continue-here vs reallocate-elsewhere,
+- candidate selection plus continuation gate,
+- budget allocation over active branches.
 
-## Later upgrades
+## File-role note
 
-After stable binary controller behavior:
-- calibrated multi-threshold stop-vs-act policies,
-- hybrid controller combining BT ranking with stop-vs-act gate,
-- eventually continuous marginal-value modeling if labels and calibration improve.
+This file keeps the historical `STOP_VS_ACT_DIRECTION.md` path for continuity, but the current repo interpretation is broader: branch ranking / next-step allocation is the main conceptual center.
