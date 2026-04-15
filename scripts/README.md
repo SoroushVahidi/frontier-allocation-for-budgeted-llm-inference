@@ -102,3 +102,13 @@ All scripts write run artifacts under `outputs/` unless overridden.
 |---|---|
 | `run_l1_baseline.py` | Canonical L1 fair-baseline runner with MODE A (inference-only L1-style Exact/Max length control adapter) and MODE B (official/full adapter reporting). Writes manifest, summary CSV, per-example JSONL, fairness report, and comparison tables under `outputs/l1_baseline/`. |
 | `run_l1_comparison_bundle.py` | Merge one or more L1 run directories into manuscript-ready aggregate comparison artifacts. |
+
+
+## External baseline completeness / runnability scripts
+
+| Script | Role |
+|---|---|
+| `verify_external_baseline_runnability.py` | Smoke-verifies that s1/TALE/L1 MODE A runners execute and that MODE B adapters correctly report blocked/import status boundaries. Writes artifacts under `outputs/external_baseline_runnability/<run_id>/`. |
+| `generate_external_baseline_completeness_report.py` | Generates repository-facing external-baseline completeness report and machine-readable summary artifacts (`docs/external_baseline_completeness_report.md`, `outputs/external_baseline_completeness_summary.{json,csv}`). |
+| `verify_compute_optimal_tts_provenance.py` | Audits paper↔repo provenance signals for compute_optimal_tts (target OpenReview paper vs linked repo identity) and emits machine-readable provenance checks. |
+| `generate_compute_optimal_tts_blocker_report.py` | Generates conservative blocker/status artifacts for compute_optimal_tts under `outputs/external_baseline_completeness/`. |

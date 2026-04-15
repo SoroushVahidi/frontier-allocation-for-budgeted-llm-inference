@@ -1,0 +1,91 @@
+{
+  "generated_utc": "2026-04-15T23:31:46.721969+00:00",
+  "run_id": "20260415T233113Z",
+  "policy": "Tiny smoke checks only; do not interpret as full benchmark reproduction.",
+  "results": [
+    {
+      "baseline": "s1",
+      "mode": "mode_a",
+      "script": "scripts/run_s1_budget_forcing_baseline.py",
+      "config": "configs/s1_budget_forcing_inference_only_v1.json",
+      "return_code": 0,
+      "runnable": true,
+      "run_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/s1_baseline/verify_20260415T233113Z_0_s1_mode_a",
+      "observed_mode_b_status": "not_requested",
+      "expected_mode_b_status": "not_requested",
+      "mode_b_status_matches_expectation": true,
+      "mode_b_notes": "",
+      "stderr_tail": "Generating train split:   0%|          | 0/7473 [00:00<?, ? examples/s]\nGenerating train split: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 7473/7473 [00:00<00:00, 118729.65 examples/s]\n\nGenerating test split:   0%|          | 0/1319 [00:00<?, ? examples/s]\nGenerating test split: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1319/1319 [00:00<00:00, 129268.10 examples/s]"
+    },
+    {
+      "baseline": "s1",
+      "mode": "mode_b",
+      "script": "scripts/run_s1_budget_forcing_baseline.py",
+      "config": "configs/s1_full_or_official_adapter_v1.json",
+      "return_code": 0,
+      "runnable": true,
+      "run_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/s1_baseline/verify_20260415T233113Z_1_s1_mode_b",
+      "observed_mode_b_status": "blocked",
+      "expected_mode_b_status": "blocked",
+      "mode_b_status_matches_expectation": true,
+      "mode_b_notes": "Official mode requested, but this repo does not reproduce s1 post-training assets automatically. Provide `official.results_path` with exported official run metrics to complete MODE B reporting.",
+      "stderr_tail": ""
+    },
+    {
+      "baseline": "tale",
+      "mode": "mode_a",
+      "script": "scripts/run_tale_baseline.py",
+      "config": "configs/tale_prompt_budgeting_v1.json",
+      "return_code": 0,
+      "runnable": true,
+      "run_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/tale_baseline/verify_20260415T233113Z_2_tale_mode_a",
+      "observed_mode_b_status": "not_requested",
+      "expected_mode_b_status": "not_requested",
+      "mode_b_status_matches_expectation": true,
+      "mode_b_notes": "",
+      "stderr_tail": ""
+    },
+    {
+      "baseline": "tale",
+      "mode": "mode_b",
+      "script": "scripts/run_tale_baseline.py",
+      "config": "configs/tale_official_adapter_v1.json",
+      "return_code": 0,
+      "runnable": true,
+      "run_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/tale_baseline/verify_20260415T233113Z_3_tale_mode_b",
+      "observed_mode_b_status": "blocked",
+      "expected_mode_b_status": "blocked",
+      "mode_b_status_matches_expectation": true,
+      "mode_b_notes": "Official/full TALE mode requested, but this repo does not automatically reproduce TALE-PT or full TALE stack. Provide `official.results_path` with exported official run metrics to complete MODE B reporting.",
+      "stderr_tail": ""
+    },
+    {
+      "baseline": "l1",
+      "mode": "mode_a",
+      "script": "scripts/run_l1_baseline.py",
+      "config": "configs/l1_inference_adapter_v1.json",
+      "return_code": 0,
+      "runnable": true,
+      "run_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/l1_baseline/verify_20260415T233113Z_4_l1_mode_a",
+      "observed_mode_b_status": "not_requested",
+      "expected_mode_b_status": "not_requested",
+      "mode_b_status_matches_expectation": true,
+      "mode_b_notes": "",
+      "stderr_tail": ""
+    },
+    {
+      "baseline": "l1",
+      "mode": "mode_b",
+      "script": "scripts/run_l1_baseline.py",
+      "config": "configs/l1_official_full_adapter_v1.json",
+      "return_code": 0,
+      "runnable": true,
+      "run_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/l1_baseline/verify_20260415T233113Z_5_l1_mode_b",
+      "observed_mode_b_status": "blocked",
+      "expected_mode_b_status": "blocked",
+      "mode_b_status_matches_expectation": true,
+      "mode_b_notes": "Official mode requested, but this repo does not reproduce L1 RL training automatically. Provide `official.results_path` with exported official run metrics to complete MODE B reporting.",
+      "stderr_tail": ""
+    }
+  ]
+}

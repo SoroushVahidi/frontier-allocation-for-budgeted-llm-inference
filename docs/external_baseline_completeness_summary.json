@@ -1,0 +1,186 @@
+{
+  "generated_utc": "2026-04-15T23:49:46.038479+00:00",
+  "taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ],
+  "rows": [
+    {
+      "baseline_key": "s1_simple_test_time_scaling",
+      "display_name": "s1",
+      "category": "mode_b_partial",
+      "directness": "direct",
+      "usable_now": "yes_mode_a",
+      "mode_a": "runnable",
+      "mode_b": "blocked_without_official_results_import",
+      "blocker": "MODE B requires externally-produced official/full outputs; this repo does not reproduce s1 post-training stack.",
+      "next_requirement": "Provide exported official/full s1 metrics file and wire official.results_path."
+    },
+    {
+      "baseline_key": "tale_token_budget_aware_reasoning",
+      "display_name": "TALE",
+      "category": "mode_b_partial",
+      "directness": "adjacent",
+      "usable_now": "yes_mode_a",
+      "mode_a": "runnable",
+      "mode_b": "blocked_without_official_results_import",
+      "blocker": "MODE B requires externally-produced TALE official/full outputs (e.g., TALE-PT stack).",
+      "next_requirement": "Provide official/full TALE exported metrics and set official.results_path."
+    },
+    {
+      "baseline_key": "l1_length_control_rl",
+      "display_name": "L1",
+      "category": "mode_b_partial",
+      "directness": "direct",
+      "usable_now": "yes_mode_a",
+      "mode_a": "runnable",
+      "mode_b": "blocked_without_official_results_import",
+      "blocker": "MODE B requires externally-produced full L1 outputs; RL training path is not reproduced in this repo.",
+      "next_requirement": "Provide exported official/full L1 metrics and set official.results_path."
+    },
+    {
+      "baseline_key": "best_route_microsoft",
+      "display_name": "BEST-Route",
+      "category": "blocked",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "Upstream BEST-Route pipeline depends on mixed multi-dataset response banks, ArmoRM scoring, and router training stack not mapped to this repo's frontier/action substrate.",
+      "next_requirement": "Design a fair adapter protocol on shared prompts/models with matched cost accounting and a common reward/scoring interface."
+    },
+    {
+      "baseline_key": "compute_optimal_tts",
+      "display_name": "Compute-optimal TTS",
+      "category": "blocked",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "Paper\u2194repo official mapping for target OpenReview 4FWAwZtd2n is unverified and no fair matched adapter protocol exists yet.",
+      "next_requirement": "Confirm author-official code mapping for target paper, then add import-only matched-cost adapter protocol."
+    },
+    {
+      "baseline_key": "when_solve_when_verify",
+      "display_name": "When To Solve, When To Verify",
+      "category": "link_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "No in-repo adapter; upstream stack not normalized to this repo's evaluation substrate.",
+      "next_requirement": "Define shared dataset/cost protocol and minimal import adapter."
+    },
+    {
+      "baseline_key": "cascade_routing",
+      "display_name": "Cascade routing",
+      "category": "link_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "No in-repo adapter or matched-cost runner.",
+      "next_requirement": "Create routing-comparison harness with common cost model."
+    },
+    {
+      "baseline_key": "mob_majority_of_bests",
+      "display_name": "MoB",
+      "category": "link_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "No adapter and no matched frontier-control protocol in this repo.",
+      "next_requirement": "Add selection-baseline adapter with consistent compute accounting."
+    },
+    {
+      "baseline_key": "rest_mcts",
+      "display_name": "ReST-MCTS*",
+      "category": "link_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "Tracked as linked reference only; no in-repo runnable adapter.",
+      "next_requirement": "Implement constrained adapter or keep as literature-only comparator."
+    },
+    {
+      "baseline_key": "mcts_llm_community",
+      "display_name": "MCTS-LLM (community)",
+      "category": "link_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "Optional/community reference; no canonical in-repo adapter.",
+      "next_requirement": "Only integrate if clear canonical paper mapping is fixed."
+    },
+    {
+      "baseline_key": "openr",
+      "display_name": "OpenR",
+      "category": "link_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "No focused in-repo baseline adapter for current frontier tests.",
+      "next_requirement": "Design narrow comparable task slice and adapter."
+    },
+    {
+      "baseline_key": "tree_plv",
+      "display_name": "Tree-PLV",
+      "category": "discuss_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "Official code/repro path not confirmed for this repo's integration policy.",
+      "next_requirement": "Confirm official code + licensing before adapter work."
+    },
+    {
+      "baseline_key": "pgts",
+      "display_name": "PGTS",
+      "category": "discuss_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "No verified official code path for reproducible integration.",
+      "next_requirement": "Confirm authoritative code artifact and license."
+    },
+    {
+      "baseline_key": "scaling_automated_process_verifiers",
+      "display_name": "Scaling Automated Process Verifiers",
+      "category": "discuss_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "No verified official repo integration path under current policy.",
+      "next_requirement": "Verify official implementation and licensing."
+    },
+    {
+      "baseline_key": "llm_tree_search_waterhorse",
+      "display_name": "LLM Tree Search (Waterhorse)",
+      "category": "discuss_only",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "License uncertainty and no approved in-repo adapter.",
+      "next_requirement": "Resolve license then revisit integration."
+    }
+  ],
+  "usable_now_in_comparisons": [
+    "s1_simple_test_time_scaling (MODE A)",
+    "tale_token_budget_aware_reasoning (MODE A)",
+    "l1_length_control_rl (MODE A)"
+  ],
+  "single_next_priority": "when_solve_when_verify",
+  "single_next_priority_rationale": "After compute_optimal_tts blocker/provenance protocol is in place, solve-vs-verify is the next adjacent budget-allocation baseline to harden."
+}

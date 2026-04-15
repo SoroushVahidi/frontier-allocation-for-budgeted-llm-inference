@@ -36,6 +36,8 @@ outputs/*
 # Formal comparative frontier audits (CSV/MD only; no secrets)
 !outputs/comparative_frontier_audit/
 !outputs/comparative_frontier_audit/**/*
+!outputs/external_baseline_completeness/
+!outputs/external_baseline_completeness/**/*
 
 # Legacy singular output directory (prefer outputs/ for all new runs)
 output/

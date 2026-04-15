@@ -1,0 +1,31 @@
+{
+  "generated_utc": "2026-04-15T23:49:34.571164+00:00",
+  "baseline_key": "compute_optimal_tts",
+  "paper_target": {
+    "title": "Scaling LLM Test-Time Compute Optimally Can be More Effective than Scaling Parameters for Reasoning",
+    "venue": "ICLR 2025",
+    "openreview_id": "4FWAwZtd2n",
+    "openreview_url": "https://openreview.net/forum?id=4FWAwZtd2n",
+    "pdf_url": "https://openreview.net/pdf?id=4FWAwZtd2n"
+  },
+  "linked_repo": {
+    "url": "https://github.com/RyanLiu112/compute-optimal-tts",
+    "clone_path": "/workspace/adaptive-reasoning-budget-allocation/.tmp_compute_optimal_tts",
+    "clone_available": true,
+    "head_commit": "0ee2578af1f8d6cac445c9c4c72780528bb94556",
+    "license_file_present": true,
+    "readme_title": "Compute-Optimal Test-Time Scaling",
+    "readme_mentions_arxiv_2502_06703": true,
+    "readme_mentions_openreview_4FWAwZtd2n": false
+  },
+  "provenance_assessment": {
+    "paper_repo_match_strength": "weak",
+    "classification": "related_repo_not_verified_as_official_for_target_paper",
+    "official_status": "unclear",
+    "notes": [
+      "OpenReview paper target is ICLR 2025 paper id 4FWAwZtd2n (Snell et al.).",
+      "Linked GitHub repo self-identifies around arXiv:2502.06703 and not OpenReview id 4FWAwZtd2n.",
+      "Therefore paper-repo mapping is not established as identical/official for Snell et al. by this check."
+    ]
+  }
+}
