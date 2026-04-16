@@ -17,6 +17,16 @@ if str(REPO_ROOT) not in sys.path:
 from experiments.oracle_branch_labels import OracleLabelConfig, generate_oracle_branch_labels, write_jsonl
 
 
+def _resolve_rule_toggle(enable_flag: bool, disable_flag: bool, *, default: bool = True) -> bool:
+    if enable_flag and disable_flag:
+        raise SystemExit("Conflicting flags: cannot set both --enable-* and --disable-* for the same uncertainty rule.")
+    if enable_flag:
+        return True
+    if disable_flag:
+        return False
+    return bool(default)
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description=(
@@ -38,8 +48,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--tie-margin", type=float, default=0.02)
     p.add_argument("--uncertainty-margin-band", type=float, default=None)
     p.add_argument("--disagreement-rate-threshold", type=float, default=0.25)
+    p.add_argument("--enable-margin-uncertainty-rule", action="store_true", default=False)
     p.add_argument("--disable-margin-uncertainty-rule", action="store_true")
+    p.add_argument("--enable-ci-uncertainty-rule", action="store_true", default=False)
     p.add_argument("--disable-ci-uncertainty-rule", action="store_true")
+    p.add_argument("--enable-disagreement-uncertainty-rule", action="store_true", default=False)
     p.add_argument("--disable-disagreement-uncertainty-rule", action="store_true")
     p.add_argument("--value-aggregation", choices=["max", "robust_blend"], default="max")
     p.add_argument("--value-std-penalty", type=float, default=0.0)
@@ -57,6 +70,21 @@ def main() -> None:
     run_id = _run_id(args.run_id)
     out_dir = Path(args.output_root) / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
+    margin_rule = _resolve_rule_toggle(
+        args.enable_margin_uncertainty_rule,
+        args.disable_margin_uncertainty_rule,
+        default=True,
+    )
+    ci_rule = _resolve_rule_toggle(
+        args.enable_ci_uncertainty_rule,
+        args.disable_ci_uncertainty_rule,
+        default=True,
+    )
+    disagreement_rule = _resolve_rule_toggle(
+        args.enable_disagreement_uncertainty_rule,
+        args.disable_disagreement_uncertainty_rule,
+        default=True,
+    )
 
     cfg = OracleLabelConfig(
         episodes=args.episodes,
@@ -70,9 +98,9 @@ def main() -> None:
         exhaustive_action_budget_cap=args.exhaustive_action_budget_cap,
         tie_margin=args.tie_margin,
         uncertainty_margin_band=args.uncertainty_margin_band,
-        enable_margin_uncertainty_rule=not bool(args.disable_margin_uncertainty_rule),
-        enable_ci_uncertainty_rule=not bool(args.disable_ci_uncertainty_rule),
-        enable_disagreement_uncertainty_rule=not bool(args.disable_disagreement_uncertainty_rule),
+        enable_margin_uncertainty_rule=margin_rule,
+        enable_ci_uncertainty_rule=ci_rule,
+        enable_disagreement_uncertainty_rule=disagreement_rule,
         disagreement_rate_threshold=args.disagreement_rate_threshold,
         value_aggregation=args.value_aggregation,
         value_std_penalty=args.value_std_penalty,
