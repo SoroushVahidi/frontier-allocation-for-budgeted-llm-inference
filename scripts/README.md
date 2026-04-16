@@ -80,6 +80,12 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `build_bruteforce_target_regimes.py` | Builds manifest-backed pair-construction target regimes (all-pairs, top-vs-rest, adjacent-rank, high-margin-only, uncertainty-filtered) with pair-quality metadata and optional exact-label promotion. |
 | `audit_bruteforce_exact_vs_approx_pairs.py` | Runs targeted exact-vs-approx disagreement audits with slices by dataset, budget, margin bucket, branch count, and pair type. |
 | `run_target_fidelity_regime_experiment.py` | Runs matched multi-seed learner comparisons across target regimes to isolate supervision-quality effects from model-class effects. |
+| `mine_bruteforce_hard_regions.py` | Mines hard branch-comparison regions (near-tie/small-margin/high-uncertainty/adjacent-rank/disagreement-risk) and emits priority-scored relabel candidates with provenance. |
+| `expand_bruteforce_exact_hard_regions.py` | Runs bounded exact relabeling only for mined hard-region pairs, with resume-safe progress, per-row provenance, and manifest checksums. |
+| `build_exact_augmented_target_regimes.py` | Materializes exact-augmented supervision regimes that combine approximate easy-region labels with selectively promoted exact hard-region labels. |
+| `run_hard_region_exact_supervision_experiment.py` | Executes matched multi-seed learning across exact-augmented regimes and reports hard-slice metrics (near-tie, adjacent-rank, exact-promoted). |
+| `audit_bruteforce_feature_representation.py` | Audits hard-case feature coverage (v1 vs v2) and emits canonical feature-audit artifacts for near-tie/adjacent slices. |
+| `run_hard_case_feature_representation_experiment.py` | Runs matched old-vs-richer feature-set experiments on fixed supervision regimes and reports hard-slice metrics. |
 
 ### Brute-force allocator learning: GBDT ranking + uncertainty-aware options
 
@@ -160,6 +166,77 @@ python scripts/run_target_fidelity_regime_experiment.py \
   --run-id target_fidelity_learning_v1 \
   --seeds 11,29,47 \
   --near-tie-margin 0.03
+```
+
+### Hard-region exact-supervision workflow
+
+Mine hard relabeling candidates:
+
+```bash
+python scripts/mine_bruteforce_hard_regions.py \
+  --labels-dir outputs/branch_label_bruteforce/<base_run_id> \
+  --run-id hard_region_mining_v1 \
+  --near-tie-margin 0.03 \
+  --small-margin-threshold 0.08 \
+  --high-std-threshold 0.07 \
+  --max-candidates 200
+```
+
+Run targeted exact relabeling for mined hard pairs:
+
+```bash
+python scripts/expand_bruteforce_exact_hard_regions.py \
+  --base-labels-dir outputs/branch_label_bruteforce/<base_run_id> \
+  --mined-candidates-jsonl outputs/branch_label_bruteforce_targets/hard_region_mining_v1/mined_hard_candidates.jsonl \
+  --run-id hard_region_exact_expansion_v1 \
+  --max-target-pairs 200
+```
+
+Build exact-augmented regimes and run matched evaluation:
+
+```bash
+python scripts/build_exact_augmented_target_regimes.py \
+  --labels-dir outputs/branch_label_bruteforce/<base_run_id> \
+  --exact-expansion-dir outputs/branch_label_bruteforce_targets/hard_region_exact_expansion_v1 \
+  --run-id hard_region_exact_augmented_regimes_v1
+
+python scripts/run_hard_region_exact_supervision_experiment.py \
+  --targets-root outputs/branch_label_bruteforce_targets/hard_region_exact_augmented_regimes_v1 \
+  --run-id hard_region_exact_matched_v1 \
+  --seeds 11,29,47 \
+  --near-tie-margin 0.03
+```
+
+### Hard-case feature-representation workflow
+
+Run feature audit on a fixed regime:
+
+```bash
+python scripts/audit_bruteforce_feature_representation.py \
+  --labels-dir outputs/branch_label_bruteforce_targets/<regime_root>/regime_promoted_exact_hard_region \
+  --run-id hard_case_feature_audit_v1 \
+  --near-tie-margin 0.03
+```
+
+Run matched v1-vs-v2 feature experiments (same supervision):
+
+```bash
+python scripts/run_hard_case_feature_representation_experiment.py \
+  --targets-root outputs/branch_label_bruteforce_targets/<regime_root> \
+  --run-id hard_case_feature_representation_v1 \
+  --seeds 11,29,47 \
+  --feature-sets v1,v2 \
+  --regimes all_pairs_approx,promoted_exact_hard_region \
+  --near-tie-margin 0.03
+```
+
+Direct learner training with richer features is also available:
+
+```bash
+python scripts/train_bruteforce_branch_allocator.py \
+  --labels-dir outputs/branch_label_bruteforce_targets/<regime_root>/regime_promoted_exact_hard_region \
+  --run-id hard_case_feature_train_v2 \
+  --feature-set v2
 ```
 | `run_oracle_label_pilot_hpc.sh` | HPC-oriented wrapper: preflight, optional manifest build, generator hook, validator gate, run summary |
 | `run_oracle_label_generator_interface_stub.py` | Interface-stabilization stub CLI for heavy generator contract; supports testing-only `--mock-mode` outputs |

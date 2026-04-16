@@ -53,6 +53,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--catboost-iterations", type=int, default=250)
     p.add_argument("--catboost-learning-rate", type=float, default=0.05)
     p.add_argument("--catboost-depth", type=int, default=6)
+    p.add_argument("--feature-set", choices=["v1", "v2"], default="v1")
     p.add_argument("--disable-pairwise", action="store_true")
     p.add_argument("--disable-pointwise", action="store_true")
     p.add_argument("--disable-outside-option", action="store_true")
@@ -124,6 +125,7 @@ def main() -> None:
         catboost_iterations=int(args.catboost_iterations),
         catboost_learning_rate=float(args.catboost_learning_rate),
         catboost_depth=int(args.catboost_depth),
+        feature_set=str(args.feature_set),
     )
 
     start = time.time()
