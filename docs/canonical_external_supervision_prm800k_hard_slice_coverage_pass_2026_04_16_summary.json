@@ -1,0 +1,347 @@
+{
+  "date": "2026-04-16",
+  "status": "completed",
+  "harder_corpus": {
+    "path": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_harder_v1",
+    "build_strategy": "base merged corpus + hard target regimes (all_pairs + adjacent_rank + top_vs_rest + uncertainty_filtered) with exact-label promotion attempt",
+    "source_paths": {
+      "base_labels": "outputs/branch_label_bruteforce_merged/recover_multi_dataset_merged_20260416_v2",
+      "exact_labels_for_promotion": "outputs/branch_label_bruteforce_merged/harder_exact_merged_20260416_v1",
+      "target_regimes": "outputs/branch_label_bruteforce_targets/harder_target_regimes_20260416"
+    },
+    "counts": {
+      "candidate_rows": 216,
+      "pairwise_rows": 290,
+      "outside_option_rows": 216
+    },
+    "split_counts_pairwise": {
+      "train": 232,
+      "test": 23,
+      "val": 35
+    },
+    "hard_slice_counts_corpus": {
+      "near_tie_pairs": 108,
+      "small_margin_pairs": 195,
+      "adjacent_rank_pairs": 163,
+      "ambiguous_tie_pairs": 257,
+      "exact_promoted_pairs": 0
+    },
+    "exact_vs_approx_corpus": {
+      "pairwise_exact_rows": 208,
+      "pairwise_approx_rows": 82,
+      "candidate_exact_rows": 20,
+      "candidate_approx_rows": 196
+    },
+    "dataset_counts_corpus": {
+      "HuggingFaceH4/MATH-500": 145,
+      "openai/gsm8k": 145
+    },
+    "budget_counts_corpus": {
+      "4": 88,
+      "3": 64,
+      "2": 40,
+      "5": 98
+    }
+  },
+  "external_artifact_path": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+  "comparison": {
+    "anchor": {
+      "model_key": "reweighted::pointwise",
+      "pairwise_accuracy_test": {
+        "n": 42.0,
+        "acc": 0.5238095238095238
+      },
+      "ranking_top1_accuracy_test": 0.0,
+      "hard_slices": {
+        "near_tie": {
+          "n": 14.0,
+          "acc": 0.6428571428571429
+        },
+        "adjacent_rank": {
+          "n": 23.0,
+          "acc": 0.43478260869565216
+        },
+        "small_margin": {
+          "n": 29.0,
+          "acc": 0.5517241379310345
+        },
+        "exact_promoted": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "exact_only": {
+          "n": 27.0,
+          "acc": 0.5185185185185185
+        },
+        "approx_only": {
+          "n": 15.0,
+          "acc": 0.5333333333333333
+        }
+      },
+      "dataset_slices": {
+        "HuggingFaceH4/MATH-500": {
+          "n": 30.0,
+          "acc": 0.5666666666666667
+        },
+        "openai/gsm8k": {
+          "n": 12.0,
+          "acc": 0.4166666666666667
+        }
+      },
+      "budget_slices": {
+        "2": {
+          "n": 1.0,
+          "acc": 0.0
+        },
+        "3": {
+          "n": 2.0,
+          "acc": 0.0
+        },
+        "4": {
+          "n": 17.0,
+          "acc": 0.5294117647058824
+        },
+        "5": {
+          "n": 22.0,
+          "acc": 0.5909090909090909
+        }
+      }
+    },
+    "broad": {
+      "model_key": "external::prm800k_pointwise_blend_from_reweighted_pointwise",
+      "pairwise_accuracy_test": {
+        "n": 42.0,
+        "acc": 0.5238095238095238
+      },
+      "ranking_top1_accuracy_test": 0.125,
+      "hard_slices": {
+        "near_tie": {
+          "n": 14.0,
+          "acc": 0.5714285714285714
+        },
+        "adjacent_rank": {
+          "n": 23.0,
+          "acc": 0.4782608695652174
+        },
+        "small_margin": {
+          "n": 29.0,
+          "acc": 0.5517241379310345
+        },
+        "exact_promoted": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "exact_only": {
+          "n": 27.0,
+          "acc": 0.5555555555555556
+        },
+        "approx_only": {
+          "n": 15.0,
+          "acc": 0.4666666666666667
+        }
+      },
+      "dataset_slices": {
+        "HuggingFaceH4/MATH-500": {
+          "n": 30.0,
+          "acc": 0.5333333333333333
+        },
+        "openai/gsm8k": {
+          "n": 12.0,
+          "acc": 0.5
+        }
+      },
+      "budget_slices": {
+        "2": {
+          "n": 1.0,
+          "acc": 0.0
+        },
+        "3": {
+          "n": 2.0,
+          "acc": 0.5
+        },
+        "4": {
+          "n": 17.0,
+          "acc": 0.5294117647058824
+        },
+        "5": {
+          "n": 22.0,
+          "acc": 0.5454545454545454
+        }
+      }
+    },
+    "aligned": {
+      "model_key": "external::prm800k_uncertainty_gated_blend_from_reweighted_pointwise",
+      "pairwise_accuracy_test": {
+        "n": 42.0,
+        "acc": 0.5238095238095238
+      },
+      "ranking_top1_accuracy_test": 0.125,
+      "hard_slices": {
+        "near_tie": {
+          "n": 14.0,
+          "acc": 0.5714285714285714
+        },
+        "adjacent_rank": {
+          "n": 23.0,
+          "acc": 0.4782608695652174
+        },
+        "small_margin": {
+          "n": 29.0,
+          "acc": 0.5517241379310345
+        },
+        "exact_promoted": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "exact_only": {
+          "n": 27.0,
+          "acc": 0.5555555555555556
+        },
+        "approx_only": {
+          "n": 15.0,
+          "acc": 0.4666666666666667
+        }
+      },
+      "dataset_slices": {
+        "HuggingFaceH4/MATH-500": {
+          "n": 30.0,
+          "acc": 0.5333333333333333
+        },
+        "openai/gsm8k": {
+          "n": 12.0,
+          "acc": 0.5
+        }
+      },
+      "budget_slices": {
+        "2": {
+          "n": 1.0,
+          "acc": 0.0
+        },
+        "3": {
+          "n": 2.0,
+          "acc": 0.5
+        },
+        "4": {
+          "n": 17.0,
+          "acc": 0.5294117647058824
+        },
+        "5": {
+          "n": 22.0,
+          "acc": 0.5454545454545454
+        }
+      }
+    },
+    "boundary": {
+      "model_key": "external::prm800k_comparator_boundary_tiebreak_from_reweighted_pointwise",
+      "pairwise_accuracy_test": {
+        "n": 42.0,
+        "acc": 0.5476190476190477
+      },
+      "ranking_top1_accuracy_test": 0.0,
+      "hard_slices": {
+        "near_tie": {
+          "n": 14.0,
+          "acc": 0.6428571428571429
+        },
+        "adjacent_rank": {
+          "n": 23.0,
+          "acc": 0.5217391304347826
+        },
+        "small_margin": {
+          "n": 29.0,
+          "acc": 0.5862068965517241
+        },
+        "exact_promoted": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "exact_only": {
+          "n": 27.0,
+          "acc": 0.5555555555555556
+        },
+        "approx_only": {
+          "n": 15.0,
+          "acc": 0.5333333333333333
+        }
+      },
+      "dataset_slices": {
+        "HuggingFaceH4/MATH-500": {
+          "n": 30.0,
+          "acc": 0.5666666666666667
+        },
+        "openai/gsm8k": {
+          "n": 12.0,
+          "acc": 0.5
+        }
+      },
+      "budget_slices": {
+        "2": {
+          "n": 1.0,
+          "acc": 0.0
+        },
+        "3": {
+          "n": 2.0,
+          "acc": 0.5
+        },
+        "4": {
+          "n": 17.0,
+          "acc": 0.5294117647058824
+        },
+        "5": {
+          "n": 22.0,
+          "acc": 0.5909090909090909
+        }
+      }
+    }
+  },
+  "aligned_activity": {
+    "status": "ok",
+    "candidate_test_n": 27,
+    "candidate_score_shift_mean_abs": 0.05029169050416383,
+    "candidate_score_shift_max_abs": 0.07869148295160888,
+    "candidate_changed_fraction": 1.0,
+    "targeted_candidate_n": 27,
+    "targeted_candidate_fraction": 1.0,
+    "targeted_changed_fraction": 1.0,
+    "pair_test_n": 42,
+    "pair_decision_changed_n": 4,
+    "pair_decision_changed_fraction": 0.09523809523809523,
+    "pair_hard_slice_n": 34,
+    "pair_hard_slice_changed_n": 3
+  },
+  "boundary_diagnostics": {
+    "status": "ok",
+    "pair_test_n": 42,
+    "eligible_pair_n": 22,
+    "eligible_pair_fraction": 0.5238095238095238,
+    "eligible_external_disagree_n": 3,
+    "changed_pair_n": 3,
+    "changed_pair_fraction": 0.07142857142857142,
+    "changed_pair_helpful_n": 2,
+    "changed_pair_harmful_n": 1,
+    "changed_pair_neutral_n": 0,
+    "changed_pair_hard_slice_n": 2,
+    "changed_pair_by_dataset": {
+      "HuggingFaceH4/MATH-500": 2,
+      "openai/gsm8k": 1
+    },
+    "changed_pair_by_budget": {
+      "4": 2,
+      "3": 1
+    },
+    "top1_test_state_n": 8,
+    "top1_changed_state_n": 0,
+    "top1_changed_helpful_n": 0,
+    "top1_changed_harmful_n": 0,
+    "top1_changed_neutral_n": 0,
+    "pair_margin_threshold": 0.02,
+    "pair_uncertainty_std_threshold": 0.02
+  },
+  "diagnosis": {
+    "broad_equals_aligned_pairwise": true,
+    "aligned_minus_broad_pairwise_delta": 0.0,
+    "boundary_minus_anchor_pairwise_delta": 0.023809523809523836,
+    "math_shepherd_should_wait": true,
+    "evidence_call": "harder regime improved hard-slice support (especially adjacent-rank), but broad vs aligned still tied; aligned-specific advantage remains unproven."
+  }
+}

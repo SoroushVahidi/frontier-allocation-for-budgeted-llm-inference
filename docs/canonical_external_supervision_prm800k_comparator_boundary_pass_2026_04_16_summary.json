@@ -1,0 +1,38 @@
+{
+  "date": "2026-04-16",
+  "run_id": "real_canonical_learning_20260416_external_prm800k_comparator_boundary",
+  "status": "blocked_missing_canonical_rows",
+  "internal_eval_corpus_path": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_v1",
+  "external_artifact_path": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+  "canonical_runner": "scripts/run_canonical_branch_learning_pass.py",
+  "boundary_intervention": {
+    "name": "prm800k_comparator_boundary_tiebreak",
+    "pair_eligibility": "abs(base_pair_margin) <= threshold AND pair_uncertainty_std_mean >= threshold",
+    "thresholds": {
+      "boundary_pair_margin_threshold": 0.02,
+      "boundary_pair_uncertainty_std_threshold": 0.02
+    }
+  },
+  "read_first_transfer_alignment_confirmation": {
+    "source": "docs/canonical_external_supervision_prm800k_transfer_alignment_pass_2026_04_16_summary.json",
+    "candidate_score_shift_observed": true,
+    "pair_decision_changed_n": 0,
+    "pair_decision_changed_fraction": 0.0,
+    "diagnosis": "Candidate scores moved but pair decisions did not flip in prior aligned pass."
+  },
+  "commands_run": [
+    "python -m py_compile scripts/run_canonical_branch_learning_pass.py",
+    "python scripts/run_canonical_branch_learning_pass.py --help | head -n 80",
+    "python scripts/run_canonical_branch_learning_pass.py --canonical-corpus-dir outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_v1 --output-root outputs/canonical_branch_learning_pass --run-id real_canonical_learning_20260416_external_prm800k_comparator_boundary --seed 17 --near-tie-margin 0.03 --feature-set v2 --hard-case-mult 1.75 --exact-promoted-mult 2.0 --uncertainty-weighting --intervention balanced_hardcase_weighting --intervention-target-boost 0.6 --external-supervision prm800k_comparator_boundary_tiebreak --external-prm-corpus-dir outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416 --external-source-key prm800k --external-source-split train --external-pointwise-blend-alpha 0.2 --external-gate-uncertainty-std-threshold 0.03 --external-gate-top-gap-threshold 0.04 --external-boundary-pair-margin-threshold 0.02 --external-boundary-pair-uncertainty-std-threshold 0.02"
+  ],
+  "failure": {
+    "exception": "FileNotFoundError",
+    "missing_path": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_v1/rows/candidate_rows.jsonl"
+  },
+  "comparison": {
+    "anchor_vs_broad_vs_aligned_vs_boundary": "pending_canonical_artifact_availability"
+  },
+  "diagnosis": "Comparator-boundary mechanism is implemented but empirical boundary-flip evaluation is blocked by missing canonical corpus rows in this workspace.",
+  "recommendation_next": "Restore required corpus artifacts, rerun exact command, and only claim improvement if boundary-eligible pair flips are directionally helpful and metric-positive.",
+  "math_shepherd_should_wait": true
+}
