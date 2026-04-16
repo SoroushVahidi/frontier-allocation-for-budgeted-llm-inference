@@ -2,6 +2,7 @@
 
 This module intentionally produces *bounded / approximate* continuation-value labels.
 It does not claim exact oracle values except in trivial terminal/zero-budget states.
+Pairwise outputs are used as helper supervision for branch-allocation research.
 """
 
 from __future__ import annotations

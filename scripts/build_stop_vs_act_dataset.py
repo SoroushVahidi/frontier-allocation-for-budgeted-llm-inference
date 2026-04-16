@@ -20,6 +20,16 @@ from experiments.stop_vs_act_controller import (
 )
 
 
+def _resolve_rule_toggle(enable_flag: bool, disable_flag: bool, *, default: bool = True) -> bool:
+    if enable_flag and disable_flag:
+        raise SystemExit("Conflicting flags: cannot set both --enable-* and --disable-* for the same uncertainty rule.")
+    if enable_flag:
+        return True
+    if disable_flag:
+        return False
+    return bool(default)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build stop-vs-act dataset")
     parser.add_argument("--output-dir", default="outputs/stop_vs_act_controller")
@@ -83,23 +93,21 @@ def main() -> None:
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    margin_rule = True
-    if args.disable_margin_uncertainty_rule:
-        margin_rule = False
-    if args.enable_margin_uncertainty_rule:
-        margin_rule = True
-
-    ci_rule = True
-    if args.disable_ci_uncertainty_rule:
-        ci_rule = False
-    if args.enable_ci_uncertainty_rule:
-        ci_rule = True
-
-    disagreement_rule = True
-    if args.disable_disagreement_uncertainty_rule:
-        disagreement_rule = False
-    if args.enable_disagreement_uncertainty_rule:
-        disagreement_rule = True
+    margin_rule = _resolve_rule_toggle(
+        args.enable_margin_uncertainty_rule,
+        args.disable_margin_uncertainty_rule,
+        default=True,
+    )
+    ci_rule = _resolve_rule_toggle(
+        args.enable_ci_uncertainty_rule,
+        args.disable_ci_uncertainty_rule,
+        default=True,
+    )
+    disagreement_rule = _resolve_rule_toggle(
+        args.enable_disagreement_uncertainty_rule,
+        args.disable_disagreement_uncertainty_rule,
+        default=True,
+    )
 
     label_cfg = StopVsActLabelConfig(
         gain_margin=args.gain_margin,
@@ -148,6 +156,10 @@ def main() -> None:
         "label_rule": {
             "target": "ACT(1) if estimated +1-action gain delta is larger than gain_margin; else STOP(0)",
             "delta_definition": "delta = E[utility_after_one_more_action_here - current_utility] - best_other_expected_next_gain",
+            "project_interpretation": (
+                "Local outside-option helper target for branch allocation; "
+                "repo-level conceptual center remains next-step frontier allocation/ranking."
+            ),
             "utility": "0.72*score + 0.20*done_and_correct + 0.08*done_bonus",
             "rollout": f"bounded rollout with {args.rollout_samples} local samples",
             "gain_margin": args.gain_margin,

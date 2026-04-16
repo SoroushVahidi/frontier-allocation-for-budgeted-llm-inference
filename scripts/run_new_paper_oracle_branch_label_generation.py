@@ -18,7 +18,12 @@ from experiments.oracle_branch_labels import OracleLabelConfig, generate_oracle_
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Generate approximate-oracle branch labels (new-paper track)")
+    p = argparse.ArgumentParser(
+        description=(
+            "Generate approximate-oracle branch labels (new-paper track). "
+            "Pairwise preference outputs are helper supervision for branch-allocation experiments."
+        )
+    )
     p.add_argument("--output-root", default="outputs/new_paper/oracle_branch_labels")
     p.add_argument("--run-id", default=None)
     p.add_argument("--episodes", type=int, default=24)

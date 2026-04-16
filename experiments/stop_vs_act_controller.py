@@ -5,6 +5,9 @@ This module reuses the synthetic branch simulation primitives from
 - bounded stop-vs-act label construction,
 - uncertainty-aware filtering/reweighting helpers,
 - lightweight model training and controller-level evaluation.
+
+Note: this is a local outside-option helper view for next-step branch allocation;
+it is not the full conceptual center of the repository.
 """
 
 from __future__ import annotations
