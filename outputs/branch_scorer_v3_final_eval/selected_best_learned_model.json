@@ -1,0 +1,17 @@
+{
+  "fallback_used": false,
+  "source_dir": "outputs/branch_scorer_v3_heavy_ml/controller_eval",
+  "mean_accuracy_by_learned_method": {
+    "adaptive_learned_branch_score": 0.5770666666666667,
+    "adaptive_learned_branch_score_v4": 0.5781925925925926,
+    "adaptive_learned_branch_score_v5": 0.5715703703703704,
+    "adaptive_learned_branch_score_v6": 0.5754370370370371
+  },
+  "n_settings_by_learned_method": {
+    "adaptive_learned_branch_score": 27,
+    "adaptive_learned_branch_score_v4": 27,
+    "adaptive_learned_branch_score_v5": 27,
+    "adaptive_learned_branch_score_v6": 27
+  },
+  "best_learned": "adaptive_learned_branch_score_v4"
+}

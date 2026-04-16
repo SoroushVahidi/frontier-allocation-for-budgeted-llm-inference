@@ -1,0 +1,36 @@
+{
+  "best_learned_method": "adaptive_learned_branch_score_v4",
+  "heldout_seeds": [
+    29,
+    31,
+    37,
+    41,
+    43
+  ],
+  "budgets": [
+    8,
+    10,
+    12,
+    14
+  ],
+  "init_branches": [
+    3,
+    5,
+    7
+  ],
+  "episodes_per_setting": 3000,
+  "n_settings": 60,
+  "mean_best_learned_accuracy": 0.5734277777777778,
+  "mean_relative_rank_accuracy": 0.5717166666666667,
+  "mean_score_plus_progress_accuracy": 0.5742222222222222,
+  "mean_raw_score_accuracy": 0.5744055555555555,
+  "mean_eptree_accuracy": 0.5360611111111111,
+  "mean_margin_vs_relative_rank": 0.0017111111111111207,
+  "mean_margin_vs_score_plus_progress": -0.0007944444444444365,
+  "mean_margin_vs_raw_score": -0.0009777777777777738,
+  "mean_margin_vs_eptree": 0.03736666666666667,
+  "win_rate_vs_relative_rank": 0.6,
+  "win_rate_vs_score_plus_progress": 0.4666666666666667,
+  "win_rate_vs_raw_score": 0.5333333333333333,
+  "win_rate_vs_eptree": 0.9
+}

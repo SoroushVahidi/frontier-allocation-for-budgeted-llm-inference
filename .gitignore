@@ -38,6 +38,9 @@ outputs/*
 !outputs/comparative_frontier_audit/**/*
 !outputs/external_baseline_completeness/
 !outputs/external_baseline_completeness/**/*
+# Branch scorer v3 final manuscript eval (job 935482; small CSV/JSON/MD only)
+!outputs/branch_scorer_v3_final_eval/
+!outputs/branch_scorer_v3_final_eval/**/*
 
 # Legacy singular output directory (prefer outputs/ for all new runs)
 output/

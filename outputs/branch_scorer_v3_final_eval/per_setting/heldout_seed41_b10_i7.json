@@ -1,0 +1,41 @@
+{
+  "seed": 41,
+  "budget": 10,
+  "init_branches": 7,
+  "episodes": 3000,
+  "methods": [
+    "adaptive_relative_rank",
+    "adaptive_score_plus_progress",
+    "adaptive_raw_score",
+    "adaptive_eptree_baseline",
+    "adaptive_learned_branch_score_v4"
+  ],
+  "best_learned": "adaptive_learned_branch_score_v4",
+  "results": {
+    "adaptive_relative_rank": {
+      "accuracy": 0.607,
+      "solve_rate": 0.9316666666666666,
+      "avg_actions": 10.0
+    },
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.6203333333333333,
+      "solve_rate": 0.9433333333333334,
+      "avg_actions": 10.0
+    },
+    "adaptive_raw_score": {
+      "accuracy": 0.6013333333333334,
+      "solve_rate": 0.9313333333333333,
+      "avg_actions": 10.0
+    },
+    "adaptive_eptree_baseline": {
+      "accuracy": 0.511,
+      "solve_rate": 0.858,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.6046666666666667,
+      "solve_rate": 0.94,
+      "avg_actions": 10.0
+    }
+  }
+}
