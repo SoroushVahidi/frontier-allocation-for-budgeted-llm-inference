@@ -72,6 +72,14 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - A pilot learner trains end-to-end on this corpus and achieves non-trivial but still moderate held-out metrics, consistent with “labels usable, bottleneck not closed”.
 - Canonical interpretation: label-data bottleneck is now **partially resolved**, not fully resolved. See `docs/BRUTEFORCE_LABEL_DATA_STATUS.md` for commands, artifacts, metrics, and caveats.
 
+## Brute-force label-data scaling update (2026-04-16 multi-dataset run)
+
+- A broader multi-dataset label campaign was executed across GSM8K, MATH-500, and AMO-Bench with multiple budget caps and multiple seeds, then merged into one provenance-preserving corpus.
+- Merged corpus size reached 684 states, 1,857 candidate rows, and 1,755 pairwise rows (about 3.1x the prior medium GSM8K corpus on key row-count axes).
+- Exact-vs-approx provenance is explicit in the merged corpus (`approx`: 1,770 candidate rows; `exact`: 87 candidate rows), with exact rows intentionally sparse and treated as bounded slice evidence.
+- Multi-seed learned allocator training/evaluation was run on the merged corpus with full-corpus and leave-one-dataset-out slices; results are non-trivial but still mixed across datasets and margins.
+- Canonical interpretation remains: the labeled-data bottleneck is **still partially resolved** (materially improved, not closed). See `docs/BRUTEFORCE_LABEL_SCALING_STATUS.md` for commands, artifacts, and metrics.
+
 
 ## External baseline completeness status (2026-04-16 pass)
 

@@ -75,6 +75,8 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `analyze_bruteforce_label_quality.py` | Produces label-quality diagnostics for brute-force runs (counts, margin/near-tie/gap distributions, per-budget breakdown, and exact-vs-approx agreement) and optional pilot-learner summary. |
 | `train_bruteforce_branch_allocator.py` | Trains pairwise / pointwise / outside-option branch-allocation models from brute-force label artifacts and writes evaluation + manifests. |
 | `evaluate_bruteforce_branch_allocator.py` | Re-evaluates trained brute-force-label branch allocators with near-tie, ranking, mode-slice, budget-slice, and dataset-slice metrics. |
+| `merge_bruteforce_branch_label_runs.py` | Consolidates multiple brute-force run directories into a single provenance-preserving merged corpus with dataset/budget/mode/near-tie summaries and output checksums. |
+| `run_bruteforce_allocator_scaling_experiment.py` | Multi-seed allocator scaling runner over a merged corpus with full-corpus evaluation plus leave-one-dataset-out generalization slices. |
 | `run_oracle_label_pilot_hpc.sh` | HPC-oriented wrapper: preflight, optional manifest build, generator hook, validator gate, run summary |
 | `run_oracle_label_generator_interface_stub.py` | Interface-stabilization stub CLI for heavy generator contract; supports testing-only `--mock-mode` outputs |
 | `run_oracle_label_generator_prototype.py` | First real paired-rollout oracle-label prototype generator (limited subset, CPU-oriented) |

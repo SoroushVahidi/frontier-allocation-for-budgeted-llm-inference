@@ -51,3 +51,11 @@ The next efficient progress is expected to come from **better branch-allocation 
 - Approximate labels show strong bounded alignment to exact tiny-state labels (winner agreement 0.956 on overlapping feasible states), supporting approximate mode as a practical supervision source.
 - Remaining bottleneck shape: many non-negligible near-tie/low-margin comparisons and only moderate downstream pilot learner accuracy, indicating target noise/calibration issues still matter.
 - Therefore the bottleneck status is best described as **partially resolved**.
+
+## Evidence update from multi-dataset brute-force scaling run (2026-04-16)
+
+- A larger merged corpus now exists across GSM8K, MATH-500, and AMO-Bench with multi-budget/multi-seed coverage (`docs/BRUTEFORCE_LABEL_SCALING_STATUS.md`).
+- This materially reduced data scarcity for branch-allocation supervision (roughly 3.1x row-count expansion over the prior medium GSM8K corpus).
+- Learned allocator metrics improved to moderate levels and remain dataset-sensitive, with non-trivial but not robustly high cross-dataset transfer.
+- Exact-mode coverage is now present but still sparse, so exact-slice conclusions are still low-confidence.
+- Updated bottleneck interpretation: supervision-data quantity is less limiting than before, but supervision-target fidelity/calibration remains a central unresolved issue; bottleneck remains **partially resolved**.
