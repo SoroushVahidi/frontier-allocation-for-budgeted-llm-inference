@@ -1,0 +1,423 @@
+{
+  "date": "2026-04-16",
+  "pass": "canonical_exact_promoted_near_boundary_support",
+  "inputs": {
+    "start_corpus": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_lowbudget_exactpromoted_v1",
+    "targeted_corpus": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_lowbudget_exactpromoted_targeted_v2",
+    "expanded_corpus": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_exactpromoted_boundary_targeted_holdout_v3",
+    "external_prm": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+    "evaluation_protocol": "scripts/run_canonical_boundary_sensitive_evaluation.py",
+    "holdout_expansion_script": "scripts/run_protected_strata_holdout_expansion.py"
+  },
+  "strategy": {
+    "name": "targeted_low_budget_exact_overlap_generation_plus_seeded_holdout_freeze",
+    "description": "bounded additional b1/b2-focused approx+exact runs, exact-promotion regime rebuild, then protected-strata split-seed freeze"
+  },
+  "underpowered_prepass_counts": {
+    "exact_promoted_near_boundary": 1,
+    "exact_promoted_non_boundary": 1,
+    "low_budget_near_boundary": 6,
+    "extreme_low_budget_boundary_eligible": 0,
+    "exact_only": 2,
+    "approx_only": 39,
+    "boundary_eligible": 16,
+    "pivot_boundary_eligible_state_n": 6
+  },
+  "holdout_expansion": {
+    "baseline_seed": 17,
+    "selected_seed": 37,
+    "baseline_counts": {
+      "total_test_pairs": 47,
+      "near_tie": 23,
+      "adjacent_rank": 29,
+      "small_margin": 38,
+      "exact_promoted": 8,
+      "exact_only": 8,
+      "approx_only": 39,
+      "low_budget": 25,
+      "extreme_low_budget": 6,
+      "boundary_eligible": 7,
+      "exact_promoted_near_boundary": 0,
+      "exact_promoted_non_boundary": 8,
+      "approx_near_boundary": 7,
+      "approx_non_boundary": 32,
+      "low_budget_near_boundary": 3,
+      "low_budget_non_boundary": 22,
+      "extreme_low_budget_boundary_eligible": 0
+    },
+    "selected_counts": {
+      "total_test_pairs": 72,
+      "near_tie": 32,
+      "adjacent_rank": 42,
+      "small_margin": 50,
+      "exact_promoted": 5,
+      "exact_only": 5,
+      "approx_only": 67,
+      "low_budget": 46,
+      "extreme_low_budget": 4,
+      "boundary_eligible": 27,
+      "exact_promoted_near_boundary": 2,
+      "exact_promoted_non_boundary": 3,
+      "approx_near_boundary": 25,
+      "approx_non_boundary": 42,
+      "low_budget_near_boundary": 16,
+      "low_budget_non_boundary": 30,
+      "extreme_low_budget_boundary_eligible": 0
+    },
+    "manifest": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_targeted_v3_manifest.json",
+    "holdout_jsonl": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_targeted_v3_holdout.jsonl",
+    "audit_json": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_targeted_v3_audit.json"
+  },
+  "old_vs_new_support": {
+    "old": {
+      "total_test_pairs": 41,
+      "total_top1_states": 12,
+      "near_tie": 23,
+      "adjacent_rank": 25,
+      "small_margin": 35,
+      "exact_promoted": 2,
+      "low_budget": 16,
+      "extreme_low_budget": 3,
+      "boundary_eligible": 16,
+      "exact_promoted_near_boundary": 1,
+      "exact_promoted_non_boundary": 1,
+      "low_budget_near_boundary": 6,
+      "extreme_low_budget_boundary_eligible": 0,
+      "exact_only": 2,
+      "approx_only": 39
+    },
+    "new": {
+      "total_test_pairs": 72,
+      "total_top1_states": 17,
+      "near_tie": 32,
+      "adjacent_rank": 42,
+      "small_margin": 50,
+      "exact_promoted": 5,
+      "low_budget": 46,
+      "extreme_low_budget": 4,
+      "boundary_eligible": 27,
+      "exact_promoted_near_boundary": 2,
+      "exact_promoted_non_boundary": 3,
+      "low_budget_near_boundary": 16,
+      "extreme_low_budget_boundary_eligible": 0,
+      "exact_only": 5,
+      "approx_only": 67
+    }
+  },
+  "metrics": {
+    "aggregate_old": {
+      "n": 41,
+      "anchor": 0.8048780487804879,
+      "broad": 0.7804878048780488,
+      "aligned": 0.7804878048780488,
+      "boundary": 0.7804878048780488
+    },
+    "aggregate_new": {
+      "n": 72,
+      "anchor": 0.6666666666666666,
+      "broad": 0.6805555555555556,
+      "aligned": 0.6805555555555556,
+      "boundary": 0.6805555555555556
+    },
+    "hard_slices_old": {
+      "near_tie": {
+        "n": 23,
+        "anchor": 0.7391304347826086,
+        "broad": 0.7391304347826086,
+        "aligned": 0.7391304347826086,
+        "boundary": 0.7391304347826086
+      },
+      "adjacent_rank": {
+        "n": 25,
+        "anchor": 0.76,
+        "broad": 0.68,
+        "aligned": 0.68,
+        "boundary": 0.68
+      },
+      "small_margin": {
+        "n": 35,
+        "anchor": 0.8,
+        "broad": 0.7714285714285715,
+        "aligned": 0.7714285714285715,
+        "boundary": 0.7714285714285715
+      }
+    },
+    "hard_slices_new": {
+      "near_tie": {
+        "n": 32,
+        "anchor": 0.71875,
+        "broad": 0.6875,
+        "aligned": 0.6875,
+        "boundary": 0.6875
+      },
+      "adjacent_rank": {
+        "n": 42,
+        "anchor": 0.5476190476190477,
+        "broad": 0.5,
+        "aligned": 0.5,
+        "boundary": 0.5238095238095238
+      },
+      "small_margin": {
+        "n": 50,
+        "anchor": 0.7,
+        "broad": 0.66,
+        "aligned": 0.66,
+        "boundary": 0.68
+      }
+    },
+    "protected_strata_old": {
+      "exact_promoted_near_boundary": {
+        "n": 1,
+        "anchor": 1.0,
+        "broad": 1.0,
+        "aligned": 1.0,
+        "boundary": 1.0
+      },
+      "exact_promoted_non_boundary": {
+        "n": 1,
+        "anchor": 1.0,
+        "broad": 1.0,
+        "aligned": 1.0,
+        "boundary": 1.0
+      },
+      "approx_near_boundary": {
+        "n": 15,
+        "anchor": 0.8,
+        "broad": 0.7333333333333333,
+        "aligned": 0.7333333333333333,
+        "boundary": 0.7333333333333333
+      },
+      "approx_non_boundary": {
+        "n": 24,
+        "anchor": 0.7916666666666666,
+        "broad": 0.7916666666666666,
+        "aligned": 0.7916666666666666,
+        "boundary": 0.7916666666666666
+      },
+      "low_budget_near_boundary": {
+        "n": 6,
+        "anchor": 0.8333333333333334,
+        "broad": 0.8333333333333334,
+        "aligned": 0.8333333333333334,
+        "boundary": 0.8333333333333334
+      },
+      "low_budget_non_boundary": {
+        "n": 10,
+        "anchor": 0.8,
+        "broad": 0.8,
+        "aligned": 0.8,
+        "boundary": 0.8
+      }
+    },
+    "protected_strata_new": {
+      "exact_promoted_near_boundary": {
+        "n": 2,
+        "anchor": 0.5,
+        "broad": 0.5,
+        "aligned": 0.5,
+        "boundary": 0.5
+      },
+      "exact_promoted_non_boundary": {
+        "n": 3,
+        "anchor": 0.6666666666666666,
+        "broad": 0.6666666666666666,
+        "aligned": 0.6666666666666666,
+        "boundary": 0.6666666666666666
+      },
+      "approx_near_boundary": {
+        "n": 25,
+        "anchor": 0.68,
+        "broad": 0.72,
+        "aligned": 0.72,
+        "boundary": 0.72
+      },
+      "approx_non_boundary": {
+        "n": 42,
+        "anchor": 0.6666666666666666,
+        "broad": 0.6666666666666666,
+        "aligned": 0.6666666666666666,
+        "boundary": 0.6666666666666666
+      },
+      "low_budget_near_boundary": {
+        "n": 16,
+        "anchor": 0.875,
+        "broad": 0.875,
+        "aligned": 0.875,
+        "boundary": 0.875
+      },
+      "low_budget_non_boundary": {
+        "n": 30,
+        "anchor": 0.6,
+        "broad": 0.6,
+        "aligned": 0.6,
+        "boundary": 0.6
+      }
+    },
+    "pivot_boundary_consistency_old": {
+      "anchor": {
+        "eligible_state_n": 6,
+        "consistency": 0.6666666666666666
+      },
+      "broad": {
+        "eligible_state_n": 6,
+        "consistency": 0.6666666666666666
+      },
+      "aligned": {
+        "eligible_state_n": 6,
+        "consistency": 0.6666666666666666
+      },
+      "boundary": {
+        "eligible_state_n": 6,
+        "consistency": 0.6666666666666666
+      }
+    },
+    "pivot_boundary_consistency_new": {
+      "anchor": {
+        "eligible_state_n": 6,
+        "consistency": 0.5
+      },
+      "broad": {
+        "eligible_state_n": 6,
+        "consistency": 0.5
+      },
+      "aligned": {
+        "eligible_state_n": 6,
+        "consistency": 0.5
+      },
+      "boundary": {
+        "eligible_state_n": 6,
+        "consistency": 0.5
+      }
+    },
+    "paired_uncertainty_new": {
+      "all": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.013888888888888888,
+          "ci_low": -0.06944444444444445,
+          "ci_high": 0.09722222222222222,
+          "n": 72
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.013888888888888888,
+          "ci_low": -0.06944444444444445,
+          "ci_high": 0.09722222222222222,
+          "n": 72
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.013888888888888888,
+          "ci_low": -0.041666666666666664,
+          "ci_high": 0.06979166666666478,
+          "n": 72
+        }
+      },
+      "near_tie": {
+        "anchor_vs_broad": {
+          "mean_delta": -0.03125,
+          "ci_low": -0.09375,
+          "ci_high": 0.0,
+          "n": 32
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": -0.03125,
+          "ci_low": -0.09375,
+          "ci_high": 0.0,
+          "n": 32
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": -0.03125,
+          "ci_low": -0.09375,
+          "ci_high": 0.0,
+          "n": 32
+        }
+      },
+      "adjacent_rank": {
+        "anchor_vs_broad": {
+          "mean_delta": -0.047619047619047616,
+          "ci_low": -0.16666666666666666,
+          "ci_high": 0.07142857142857142,
+          "n": 42
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": -0.047619047619047616,
+          "ci_low": -0.16666666666666666,
+          "ci_high": 0.07142857142857142,
+          "n": 42
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": -0.023809523809523808,
+          "ci_low": -0.09523809523809523,
+          "ci_high": 0.047619047619047616,
+          "n": 42
+        }
+      },
+      "small_margin": {
+        "anchor_vs_broad": {
+          "mean_delta": -0.04,
+          "ci_low": -0.1,
+          "ci_high": 0.0,
+          "n": 50
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": -0.04,
+          "ci_low": -0.1,
+          "ci_high": 0.0,
+          "n": 50
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": -0.02,
+          "ci_low": -0.06,
+          "ci_high": 0.0,
+          "n": 50
+        }
+      },
+      "low_budget": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": -0.13043478260869565,
+          "ci_high": 0.13043478260869565,
+          "n": 46
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": -0.13043478260869565,
+          "ci_high": 0.13043478260869565,
+          "n": 46
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": -0.08695652173913043,
+          "ci_high": 0.08695652173913043,
+          "n": 46
+        }
+      },
+      "boundary_eligible": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.037037037037037035,
+          "ci_low": -0.14814814814814814,
+          "ci_high": 0.2222222222222222,
+          "n": 27
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.037037037037037035,
+          "ci_low": -0.14814814814814814,
+          "ci_high": 0.2222222222222222,
+          "n": 27
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.037037037037037035,
+          "ci_low": -0.14814814814814814,
+          "ci_high": 0.2222222222222222,
+          "n": 27
+        }
+      }
+    }
+  },
+  "conclusion": {
+    "targeted_support_improved": true,
+    "exact_promoted_near_boundary_improved": true,
+    "extreme_low_budget_boundary_eligible_improved": false,
+    "broad_ties_aligned": true,
+    "robust_method_gain_proven": false,
+    "math_shepherd_recommendation": "wait"
+  }
+}
