@@ -1,0 +1,3 @@
+mode,source_type,benchmark,gen_model,reward_model,num_samples,algorithm,accuracy,num_trials,artifact_id,commit_or_version,comparability_scope
+mob_adjacent_import,official,gsm8k,qwen2.5-3b-instruct,grm3b,128,bon,0.734,500,mob-demo-001,demo,adjacent_only
+mob_adjacent_import,official,gsm8k,qwen2.5-3b-instruct,grm3b,128,mob_adaptive_m,0.761,500,mob-demo-001,demo,adjacent_only

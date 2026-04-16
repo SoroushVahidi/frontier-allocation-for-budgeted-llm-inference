@@ -1,0 +1,45 @@
+{
+  "generated_utc": "2026-04-16T02:06:45.859747+00:00",
+  "baseline_key": "mob_majority_of_bests",
+  "status": "runnable_adjacent",
+  "integration_kind": "verified_import_only",
+  "status_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ],
+  "upstream": {
+    "repo": "https://github.com/arakhsha/mob",
+    "paper": "https://openreview.net/forum?id=aEAbRPXV37",
+    "venue_page": "https://neurips.cc/virtual/2025/poster/117285"
+  },
+  "protocol": {
+    "validator_script": "scripts/verify_mob_import.py",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "dataset_loading_from_jsonl_gz",
+      "algorithm_evaluation_via_main_py",
+      "aggregated_csv_export"
+    ],
+    "required_algorithm_coverage": [
+      "bon",
+      "at_least_one_mob_variant"
+    ],
+    "comparability_scope": "adjacent_only"
+  },
+  "safe_claims": [
+    "This repo supports reviewer-auditable adjacent import of MoB evaluation outputs.",
+    "Imported outputs are validated for workflow declarations, BoN+MoB algorithm coverage, and adjacent-only scope."
+  ],
+  "not_safe_claims": [
+    "Direct in-repo full reproduction of the upstream MoB benchmark stack.",
+    "Control-equivalent direct comparability claims with frontier/action-native controllers."
+  ]
+}

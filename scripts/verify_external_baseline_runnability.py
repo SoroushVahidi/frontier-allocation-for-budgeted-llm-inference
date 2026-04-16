@@ -7,6 +7,8 @@ This script intentionally runs tiny, deterministic checks for:
 - L1 MODE A + MODE B
 - BEST-Route adjacent import validator against a local fixture package
 - when_solve_when_verify adjacent import validator against a local fixture package
+- cascade_routing adjacent import validator against a local fixture package
+- mob_majority_of_bests adjacent import validator against a local fixture package
 
 Outputs:
 - outputs/external_baseline_runnability/<run_id>/verification_summary.json
@@ -78,6 +80,24 @@ BEST_ROUTE_FIXTURE_CASE = {
     "mode": "adjacent_import",
     "script": "scripts/verify_best_route_import.py",
     "results_path": "tests/fixtures/best_route_import_valid",
+    "expected_status": "valid",
+}
+
+
+CASCADE_ROUTING_FIXTURE_CASE = {
+    "baseline": "cascade_routing",
+    "mode": "adjacent_import",
+    "script": "scripts/verify_cascade_routing_import.py",
+    "results_path": "tests/fixtures/cascade_routing_import_valid",
+    "expected_status": "valid",
+}
+
+
+MOB_FIXTURE_CASE = {
+    "baseline": "mob_majority_of_bests",
+    "mode": "adjacent_import",
+    "script": "scripts/verify_mob_import.py",
+    "results_path": "tests/fixtures/mob_import_valid",
     "expected_status": "valid",
 }
 
@@ -229,6 +249,83 @@ def main() -> None:
         }
     )
 
+    cascade_cmd = [
+        sys.executable,
+        str(REPO_ROOT / CASCADE_ROUTING_FIXTURE_CASE["script"]),
+        "--results-path",
+        str(REPO_ROOT / CASCADE_ROUTING_FIXTURE_CASE["results_path"]),
+        "--expected-dataset",
+        "routerbench",
+        "--expected-split",
+        "test",
+    ]
+    cascade_proc = subprocess.run(cascade_cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+    cascade_parsed: dict[str, Any] = {}
+    if cascade_proc.stdout.strip():
+        try:
+            cascade_parsed = json.loads(cascade_proc.stdout.strip())
+        except json.JSONDecodeError:
+            cascade_parsed = {"raw_stdout": cascade_proc.stdout.strip()}
+
+    cascade_status = str(cascade_parsed.get("status", "unknown"))
+    results.append(
+        {
+            "baseline": CASCADE_ROUTING_FIXTURE_CASE["baseline"],
+            "mode": CASCADE_ROUTING_FIXTURE_CASE["mode"],
+            "script": CASCADE_ROUTING_FIXTURE_CASE["script"],
+            "config": CASCADE_ROUTING_FIXTURE_CASE["results_path"],
+            "return_code": int(cascade_proc.returncode),
+            "runnable": cascade_proc.returncode == 0 and cascade_status == "valid",
+            "run_dir": "",
+            "observed_mode_b_status": cascade_status,
+            "expected_mode_b_status": CASCADE_ROUTING_FIXTURE_CASE["expected_status"],
+            "mode_b_status_matches_expectation": cascade_status == CASCADE_ROUTING_FIXTURE_CASE["expected_status"],
+            "mode_b_notes": "cascade_routing adjacent import fixture validation",
+            "stderr_tail": "\n".join(cascade_proc.stderr.strip().splitlines()[-6:]),
+        }
+    )
+
+
+    mob_cmd = [
+        sys.executable,
+        str(REPO_ROOT / MOB_FIXTURE_CASE["script"]),
+        "--results-path",
+        str(REPO_ROOT / MOB_FIXTURE_CASE["results_path"]),
+        "--expected-benchmark",
+        "gsm8k",
+        "--expected-gen-model",
+        "qwen2.5-3b-instruct",
+        "--expected-reward-model",
+        "grm3b",
+        "--expected-num-samples",
+        "128",
+    ]
+    mob_proc = subprocess.run(mob_cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+    mob_parsed: dict[str, Any] = {}
+    if mob_proc.stdout.strip():
+        try:
+            mob_parsed = json.loads(mob_proc.stdout.strip())
+        except json.JSONDecodeError:
+            mob_parsed = {"raw_stdout": mob_proc.stdout.strip()}
+
+    mob_status = str(mob_parsed.get("status", "unknown"))
+    results.append(
+        {
+            "baseline": MOB_FIXTURE_CASE["baseline"],
+            "mode": MOB_FIXTURE_CASE["mode"],
+            "script": MOB_FIXTURE_CASE["script"],
+            "config": MOB_FIXTURE_CASE["results_path"],
+            "return_code": int(mob_proc.returncode),
+            "runnable": mob_proc.returncode == 0 and mob_status == "valid",
+            "run_dir": "",
+            "observed_mode_b_status": mob_status,
+            "expected_mode_b_status": MOB_FIXTURE_CASE["expected_status"],
+            "mode_b_status_matches_expectation": mob_status == MOB_FIXTURE_CASE["expected_status"],
+            "mode_b_notes": "mob_majority_of_bests adjacent import fixture validation",
+            "stderr_tail": "\n".join(mob_proc.stderr.strip().splitlines()[-6:]),
+        }
+    )
+
     summary = {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "run_id": run_id,
@@ -243,7 +340,7 @@ def main() -> None:
         "# External baseline runnability verification note",
         "",
         f"- run_id: `{run_id}`",
-        "- scope: s1 / TALE / L1 mode-A and mode-B adapter paths + BEST-Route + when_solve_when_verify adjacent import validators",
+        "- scope: s1 / TALE / L1 mode-A and mode-B adapter paths + BEST-Route + when_solve_when_verify + cascade_routing + mob_majority_of_bests adjacent import validators",
         "- interpretation: smoke verification only (runnability + blocker-state consistency)",
         "",
         "| baseline | mode | runnable | mode_b_status | expected | matches |",

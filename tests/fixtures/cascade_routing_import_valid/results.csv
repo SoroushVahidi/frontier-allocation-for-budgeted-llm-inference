@@ -1,0 +1,4 @@
+mode,source_type,dataset,split,benchmark,strategy_family,max_expected_cost,quality_metric,quality_value,cost_metric,cost_value,artifact_id,commit_or_version,comparability_scope
+cascade_routing_adjacent_import,official,routerbench,test,routerbench_0shot,routing,0.003,accuracy,0.671,avg_cost_usd,0.0018,cascade-routing-demo-001,demo,adjacent_only
+cascade_routing_adjacent_import,official,routerbench,test,routerbench_0shot,cascading,0.003,accuracy,0.689,avg_cost_usd,0.0023,cascade-routing-demo-001,demo,adjacent_only
+cascade_routing_adjacent_import,official,routerbench,test,routerbench_0shot,cascade_routing,0.003,accuracy,0.702,avg_cost_usd,0.0021,cascade-routing-demo-001,demo,adjacent_only

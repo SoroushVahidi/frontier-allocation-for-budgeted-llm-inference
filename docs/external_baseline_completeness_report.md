@@ -1,6 +1,6 @@
 # External baseline completeness report
 
-- Generated (UTC): `2026-04-16T01:40:40.095423+00:00`
+- Generated (UTC): `2026-04-16T02:06:46.665260+00:00`
 - Scope: external baseline completeness for reviewer-defensible reporting.
 
 ## Classification taxonomy
@@ -22,8 +22,8 @@
 | BEST-Route (`best_route_microsoft`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | Compute-optimal TTS (`compute_optimal_tts`) | blocked | adjacent | no | not_applicable | not_applicable |
 | When To Solve, When To Verify (`when_solve_when_verify`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
-| Cascade routing (`cascade_routing`) | link_only | adjacent | no | not_applicable | not_applicable |
-| MoB (`mob_majority_of_bests`) | link_only | adjacent | no | not_applicable | not_applicable |
+| Cascade routing (`cascade_routing`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
+| MoB (`mob_majority_of_bests`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | ReST-MCTS* (`rest_mcts`) | link_only | adjacent | no | not_applicable | not_applicable |
 | MCTS-LLM (community) (`mcts_llm_community`) | link_only | adjacent | no | not_applicable | not_applicable |
 | OpenR (`openr`) | link_only | adjacent | no | not_applicable | not_applicable |
@@ -38,6 +38,8 @@
 - L1 MODE A (`inference_only_adapter`) through `scripts/run_l1_baseline.py`.
 - BEST-Route adjacent import path through `scripts/verify_best_route_import.py` (strict validator; adjacent-only claims).
 - when_solve_when_verify adjacent import path through `scripts/verify_when_solve_when_verify_import.py` (strict validator; adjacent-only claims).
+- Cascade Routing adjacent import path through `scripts/verify_cascade_routing_import.py` (strict validator; adjacent-only claims).
+- MoB adjacent import path through `scripts/verify_mob_import.py` (strict validator; adjacent-only claims).
 
 ## Partially usable
 - s1 / TALE / L1 MODE B paths are adapter-reporting only and remain blocked unless official/full externally-produced outputs are provided via `official.results_path`.
@@ -47,8 +49,23 @@
 - Interpretation: usable for adjacent comparisons only; not a direct control-space-equivalent reproduction.
 - Guardrail: imported outputs must pass `scripts/verify_best_route_import.py` and be labeled `adjacent_only`.
 
+## when_solve_when_verify integration decision in this pass
+- Status: `runnable_adjacent` (verified import protocol available).
+- Interpretation: usable for adjacent comparisons only; not a direct control-space-equivalent reproduction.
+- Guardrail: imported outputs must pass `scripts/verify_when_solve_when_verify_import.py` and be labeled `adjacent_only`.
+
+## Cascade Routing integration decision in this pass
+- Status: `runnable_adjacent` (verified import protocol available).
+- Interpretation: usable for adjacent comparisons only; not a direct in-repo full-stack reproduction.
+- Guardrail: imported outputs must pass `scripts/verify_cascade_routing_import.py` and be labeled `adjacent_only`.
+
+## MoB integration decision in this pass
+- Status: `runnable_adjacent` (verified import protocol available).
+- Interpretation: usable for adjacent comparisons only; not a direct in-repo full-stack reproduction.
+- Guardrail: imported outputs must pass `scripts/verify_mob_import.py` and be labeled `adjacent_only`.
+
 ## Single next highest-priority baseline after this pass
-- `cascade_routing` (next adjacent baseline to move beyond link-only after this solve-vs-verify protocol pass).
+- `rest_mcts` (next high-priority baseline still at link-only after unblocking MoB).
 
 ## Machine-readable companion artifacts
 - `outputs/external_baseline_completeness_summary.json`

@@ -20,6 +20,8 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 - [`cross_controller_frontier.md`](cross_controller_frontier.md)
 - [`main_datasets.md`](main_datasets.md)
 - [`main_baselines.md`](main_baselines.md)
+- [`cascade_routing_integration.md`](cascade_routing_integration.md)
+- [`mob_majority_of_bests_integration.md`](mob_majority_of_bests_integration.md)
 - [`l1_baseline_integration.md`](l1_baseline_integration.md)
 - [`datasets_access.md`](datasets_access.md)
 - [`DATASET_STATUS.md`](DATASET_STATUS.md)

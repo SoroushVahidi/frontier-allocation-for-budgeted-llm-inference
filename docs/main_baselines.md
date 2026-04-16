@@ -149,6 +149,8 @@ For manuscript-safe claims, treat external baselines as follows:
 - **Partially usable:** s1 and TALE MODE B are strict official/full-results import + verification paths (usable when valid official packages are supplied); TALE MODE B additionally enforces explicit TALE-vs-TALE-PT variant separation. L1 MODE B remains blocked adapter/reporting path unless externally-produced official/full outputs are imported through `official.results_path`.
 - **BEST-Route status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_best_route_import.py`) with explicit adjacent-only claim boundaries.
 - **when_solve_when_verify status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_when_solve_when_verify_import.py`) for SC-vs-GenRM fixed-budget adjacent comparisons only.
+- **cascade_routing status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_cascade_routing_import.py`) for adjacent routing/cascading/cascade-routing comparisons only.
+- **mob_majority_of_bests status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_mob_import.py`) for adjacent best-of-N/MoB comparisons only.
 
 Companion artifacts:
 - `docs/external_baseline_completeness_report.md`
