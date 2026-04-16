@@ -97,3 +97,15 @@ The next efficient progress is expected to come from **better branch-allocation 
 - Confidence-calibration variants (temperature/Platt/isotonic) and fallback-policy variants were compared in matched runs with fixed representation (`v2`) and explicit abstention threshold controls.
 - In this bounded setting, probability-calibration metrics (Brier/ECE) did not uniformly improve, but calibrated abstention variants improved accepted-accuracy/coverage operating tradeoff versus the prior uncalibrated abstention baseline.
 - Near-tie forced-decision behavior remained weak across variants, indicating that fallback design and irreducible ambiguity handling remain key unresolved bottlenecks.
+
+## Evidence update from dedicated near-tie policy pass (2026-04-16 bounded)
+
+- A dedicated near-tie detector + routing layer is now integrated with explicit configuration and provenance under matched feature/supervision settings (`docs/NEAR_TIE_POLICY_STATUS.md`).
+- Bounded matched evidence indicates near-tie routing policy choice matters: pointwise fallback in routed near-tie cases improved hardest-slice forced accuracy in this run, while balanced/shared fallback improved near-tie slice but degraded overall forced/top-1.
+- Updated interpretation remains conservative: bottleneck is still centered on hard near-tie ambiguity and policy quality in routed hard cases; this pass improves leverage/diagnostics rather than closing the bottleneck.
+
+## Evidence update from near-tie pointwise-expert pass (2026-04-16 bounded)
+
+- A dedicated near-tie pointwise-expert path is now integrated with explicit specialized/reweighted pointwise provenance plus near-tie bucket diagnostics (`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`).
+- Bounded evidence indicates pointwise path quality is not automatic: near-tie-specialized pointwise retained the strongest near-tie slice signal in this run, while generic/reweighted pointwise variants under the tested routing gate degraded overall and did not improve near-tie forced behavior.
+- Updated bottleneck interpretation: near-tie handling now appears most constrained by expert-model quality and routing-gate quality (with residual irreducible ambiguity), rather than by generic calibration/fallback logic alone.
