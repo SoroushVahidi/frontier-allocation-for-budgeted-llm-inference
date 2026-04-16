@@ -6,6 +6,8 @@ This note defines the **stable interface contract** for the future heavy oracle-
 
 It exists to prevent implementation drift across HPC environments.
 
+This contract should be interpreted as a local outside-option labeling interface inside the broader branch-allocation project framing (next-step allocation/ranking remains the conceptual center).
+
 This is an interface/specification document, **not** evidence that heavy oracle generation has already run.
 
 ---
