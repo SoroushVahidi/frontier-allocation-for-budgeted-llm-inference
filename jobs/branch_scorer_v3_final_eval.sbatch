@@ -10,9 +10,7 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-cd "$REPO_DIR"
+cd "${SLURM_SUBMIT_DIR:?SLURM_SUBMIT_DIR unset}"
 
 mkdir -p logs/slurm outputs/branch_scorer_v3_final_eval
 

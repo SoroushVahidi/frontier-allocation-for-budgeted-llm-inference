@@ -10,9 +10,8 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-cd "$REPO_DIR"
+# Slurm starts the batch script in SLURM_SUBMIT_DIR (the directory you ran sbatch from).
+cd "${SLURM_SUBMIT_DIR:?SLURM_SUBMIT_DIR unset}"
 
 mkdir -p logs/slurm outputs/branch_scorer_v3_heavy_ml
 
