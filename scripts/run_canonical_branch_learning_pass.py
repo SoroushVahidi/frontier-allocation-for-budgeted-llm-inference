@@ -229,6 +229,117 @@ def _external_activity_diagnostics(
     }
 
 
+def _comparator_boundary_pair_predictor(
+    *,
+    base_fn: Callable[[dict[str, Any]], float],
+    external_fn: Callable[[dict[str, Any]], float],
+    pair_margin_threshold: float,
+    pair_uncertainty_std_threshold: float,
+) -> Callable[[dict[str, Any]], int]:
+    def _pred(row: dict[str, Any]) -> int:
+        b_i = float(base_fn({"x": row["x_i"]}))
+        b_j = float(base_fn({"x": row["x_j"]}))
+        base_margin = b_i - b_j
+        pair_std = float(row.get("pair_uncertainty_std_mean", 0.0))
+        eligible = bool(abs(base_margin) <= pair_margin_threshold and pair_std >= pair_uncertainty_std_threshold)
+        if eligible:
+            e_i = float(external_fn({"x": row["x_i"]}))
+            e_j = float(external_fn({"x": row["x_j"]}))
+            return 1 if e_i >= e_j else 0
+        return 1 if base_margin >= 0.0 else 0
+
+    return _pred
+
+
+def _boundary_intervention_diagnostics(
+    *,
+    tables: dict[str, Any],
+    base_score_fn: Callable[[dict[str, Any]], float],
+    external_score_fn: Callable[[dict[str, Any]], float],
+    boundary_pair_pred_fn: Callable[[dict[str, Any]], int],
+    pair_margin_threshold: float,
+    pair_uncertainty_std_threshold: float,
+) -> dict[str, Any]:
+    pair_rows = [r for r in tables["pairwise"] if r.get("split") == "test"]
+    if not pair_rows:
+        return {"status": "no_test_pairs"}
+
+    eligible_n = 0
+    eligible_external_disagree_n = 0
+    changed_n = 0
+    helpful_n = 0
+    harmful_n = 0
+    changed_by_dataset: dict[str, int] = {}
+    changed_by_budget: dict[str, int] = {}
+    changed_hard_slice_n = 0
+
+    for row in pair_rows:
+        b_i = float(base_score_fn({"x": row["x_i"]}))
+        b_j = float(base_score_fn({"x": row["x_j"]}))
+        margin = b_i - b_j
+        pair_std = float(row.get("pair_uncertainty_std_mean", 0.0))
+        eligible = bool(abs(margin) <= pair_margin_threshold and pair_std >= pair_uncertainty_std_threshold)
+        eligible_n += int(eligible)
+        base_pred = 1 if margin >= 0.0 else 0
+        ext_pred = 1 if float(external_score_fn({"x": row["x_i"]})) >= float(external_score_fn({"x": row["x_j"]})) else 0
+        eligible_external_disagree_n += int(eligible and ext_pred != base_pred)
+        new_pred = int(boundary_pair_pred_fn(row))
+        changed = int(base_pred != new_pred)
+        changed_n += changed
+        if changed:
+            truth = int(row.get("label", 0))
+            helpful_n += int(new_pred == truth and base_pred != truth)
+            harmful_n += int(new_pred != truth and base_pred == truth)
+            ds = str(row.get("dataset_name", "unknown"))
+            changed_by_dataset[ds] = changed_by_dataset.get(ds, 0) + 1
+            b = str(int(row.get("remaining_budget", 0)))
+            changed_by_budget[b] = changed_by_budget.get(b, 0) + 1
+            hard = bool(row.get("near_tie_flag", False) or row.get("adjacent_rank_flag", False) or row.get("small_margin_flag", False))
+            changed_hard_slice_n += int(hard)
+
+    state_to_cands = tables["state_to_candidates"]
+    top1_total = 0
+    top1_changed = 0
+    top1_helpful = 0
+    top1_harmful = 0
+    for rows in state_to_cands.values():
+        test_rows = [r for r in rows if r.get("split") == "test"]
+        if len(test_rows) < 2:
+            continue
+        top1_total += 1
+        base_top = max(test_rows, key=base_score_fn)["branch_id"]
+        new_top = _state_top1_from_pair_predictor(test_rows, boundary_pair_pred_fn, base_score_fn)
+        truth = max(test_rows, key=lambda r: float(r.get("estimated_value_if_allocate_next", 0.0)))["branch_id"]
+        changed = int(base_top != new_top)
+        top1_changed += changed
+        if changed:
+            top1_helpful += int(new_top == truth and base_top != truth)
+            top1_harmful += int(new_top != truth and base_top == truth)
+
+    return {
+        "status": "ok",
+        "pair_test_n": len(pair_rows),
+        "eligible_pair_n": int(eligible_n),
+        "eligible_pair_fraction": float(eligible_n / max(1, len(pair_rows))),
+        "eligible_external_disagree_n": int(eligible_external_disagree_n),
+        "changed_pair_n": int(changed_n),
+        "changed_pair_fraction": float(changed_n / max(1, len(pair_rows))),
+        "changed_pair_helpful_n": int(helpful_n),
+        "changed_pair_harmful_n": int(harmful_n),
+        "changed_pair_neutral_n": int(max(0, changed_n - helpful_n - harmful_n)),
+        "changed_pair_hard_slice_n": int(changed_hard_slice_n),
+        "changed_pair_by_dataset": changed_by_dataset,
+        "changed_pair_by_budget": changed_by_budget,
+        "top1_test_state_n": int(top1_total),
+        "top1_changed_state_n": int(top1_changed),
+        "top1_changed_helpful_n": int(top1_helpful),
+        "top1_changed_harmful_n": int(top1_harmful),
+        "top1_changed_neutral_n": int(max(0, top1_changed - top1_helpful - top1_harmful)),
+        "pair_margin_threshold": float(pair_margin_threshold),
+        "pair_uncertainty_std_threshold": float(pair_uncertainty_std_threshold),
+    }
+
+
 def _find_latest_real_corpus(root: Path) -> Path:
     if not root.exists():
         raise FileNotFoundError(f"Corpus root does not exist: {root}")
@@ -291,6 +402,58 @@ def _predict_pair_label(score_fn: Callable[[dict[str, Any]], float], row: dict[s
     return 1 if si >= sj else 0
 
 
+def _state_top1_from_pair_predictor(
+    rows: list[dict[str, Any]],
+    pair_pred_fn: Callable[[dict[str, Any]], int],
+    score_fn_tiebreak: Callable[[dict[str, Any]], float],
+) -> str:
+    if not rows:
+        return ""
+    if len(rows) == 1:
+        return str(rows[0].get("branch_id", ""))
+    win_counts: dict[str, int] = {str(r.get("branch_id", "")): 0 for r in rows}
+    for i in range(len(rows)):
+        for j in range(i + 1, len(rows)):
+            ri = rows[i]
+            rj = rows[j]
+            pred = int(
+                pair_pred_fn(
+                    {
+                        "x_i": ri["x"],
+                        "x_j": rj["x"],
+                    }
+                )
+            )
+            winner = str(ri.get("branch_id", "")) if pred == 1 else str(rj.get("branch_id", ""))
+            win_counts[winner] = win_counts.get(winner, 0) + 1
+    return max(
+        rows,
+        key=lambda r: (
+            win_counts.get(str(r.get("branch_id", "")), 0),
+            float(score_fn_tiebreak(r)),
+        ),
+    )["branch_id"]
+
+
+def _top1_accuracy_with_pair_predictor(
+    state_to_candidates: dict[str, list[dict[str, Any]]],
+    *,
+    pair_pred_fn: Callable[[dict[str, Any]], int],
+    score_fn_tiebreak: Callable[[dict[str, Any]], float],
+) -> float:
+    total = 0
+    ok = 0
+    for rows in state_to_candidates.values():
+        test_rows = [r for r in rows if r.get("split") == "test"]
+        if len(test_rows) < 2:
+            continue
+        pred = _state_top1_from_pair_predictor(test_rows, pair_pred_fn, score_fn_tiebreak)
+        truth = max(test_rows, key=lambda r: float(r.get("estimated_value_if_allocate_next", 0.0)))["branch_id"]
+        ok += int(pred == truth)
+        total += 1
+    return float(ok / max(1, total))
+
+
 def _pairwise_accuracy(rows: list[dict[str, Any]], pred_fn: Callable[[dict[str, Any]], int], pred_filter: Callable[[dict[str, Any]], bool]) -> dict[str, float]:
     subset = [r for r in rows if r.get("split") == "test" and pred_filter(r)]
     if not subset:
@@ -313,12 +476,18 @@ def _top1_accuracy(state_to_candidates: dict[str, list[dict[str, Any]]], score_f
     return float(ok / max(1, total))
 
 
-def _evaluate_model(name: str, score_fn: Callable[[dict[str, Any]], float], tables: dict[str, Any]) -> dict[str, Any]:
+def _evaluate_model(
+    name: str,
+    score_fn: Callable[[dict[str, Any]], float],
+    tables: dict[str, Any],
+    *,
+    pair_pred_fn: Callable[[dict[str, Any]], int] | None = None,
+) -> dict[str, Any]:
     pair_rows = tables["pairwise"]
     state_to_cands = tables["state_to_candidates"]
     state_branch_count = {sid: len(rows) for sid, rows in state_to_cands.items()}
 
-    pred_fn = lambda r: _predict_pair_label(score_fn, r)
+    pred_fn = pair_pred_fn if pair_pred_fn is not None else (lambda r: _predict_pair_label(score_fn, r))
 
     agg = _pairwise_accuracy(pair_rows, pred_fn, lambda _r: True)
     near_tie = _pairwise_accuracy(pair_rows, pred_fn, lambda r: bool(r.get("near_tie_flag", False)))
@@ -349,7 +518,11 @@ def _evaluate_model(name: str, score_fn: Callable[[dict[str, Any]], float], tabl
     return {
         "model_name": name,
         "pairwise_accuracy_test": agg,
-        "ranking_top1_accuracy_test": _top1_accuracy(state_to_cands, score_fn),
+        "ranking_top1_accuracy_test": (
+            _top1_accuracy_with_pair_predictor(state_to_cands, pair_pred_fn=pred_fn, score_fn_tiebreak=score_fn)
+            if pair_pred_fn is not None
+            else _top1_accuracy(state_to_cands, score_fn)
+        ),
         "hard_slices": {
             "near_tie": near_tie,
             "adjacent_rank": adjacent,
@@ -445,7 +618,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--external-supervision",
         default="none",
-        choices=["none", "prm800k_pointwise_blend", "prm800k_uncertainty_gated_blend"],
+        choices=[
+            "none",
+            "prm800k_pointwise_blend",
+            "prm800k_uncertainty_gated_blend",
+            "prm800k_comparator_boundary_tiebreak",
+        ],
         help="Conservative external auxiliary supervision path.",
     )
     p.add_argument("--external-prm-corpus-dir", default="")
@@ -454,6 +632,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--external-pointwise-blend-alpha", type=float, default=0.2)
     p.add_argument("--external-gate-uncertainty-std-threshold", type=float, default=0.03)
     p.add_argument("--external-gate-top-gap-threshold", type=float, default=0.04)
+    p.add_argument("--external-boundary-pair-margin-threshold", type=float, default=0.02)
+    p.add_argument("--external-boundary-pair-uncertainty-std-threshold", type=float, default=0.02)
     return p.parse_args()
 
 
@@ -541,7 +721,11 @@ def main() -> None:
             results[f"intervention::{name}"]["train_status"] = model.get("status", "unknown")
 
     external_meta: dict[str, Any] = {"external_supervision": str(args.external_supervision), "status": "not_run"}
-    if str(args.external_supervision) in {"prm800k_pointwise_blend", "prm800k_uncertainty_gated_blend"}:
+    if str(args.external_supervision) in {
+        "prm800k_pointwise_blend",
+        "prm800k_uncertainty_gated_blend",
+        "prm800k_comparator_boundary_tiebreak",
+    }:
         ext_dir = Path(args.external_prm_corpus_dir) if args.external_prm_corpus_dir else None
         if ext_dir is None:
             external_meta = {"external_supervision": str(args.external_supervision), "status": "missing_external_prm_corpus_dir"}
@@ -560,6 +744,8 @@ def main() -> None:
                 "external_pointwise_blend_alpha": float(args.external_pointwise_blend_alpha),
                 "external_gate_uncertainty_std_threshold": float(args.external_gate_uncertainty_std_threshold),
                 "external_gate_top_gap_threshold": float(args.external_gate_top_gap_threshold),
+                "external_boundary_pair_margin_threshold": float(args.external_boundary_pair_margin_threshold),
+                "external_boundary_pair_uncertainty_std_threshold": float(args.external_boundary_pair_uncertainty_std_threshold),
                 "prior_fit": ext_prior,
                 "status": "base_or_prior_unavailable",
             }
@@ -606,6 +792,29 @@ def main() -> None:
                         uncertainty_std_threshold=float(args.external_gate_uncertainty_std_threshold),
                         top_gap_threshold=float(args.external_gate_top_gap_threshold),
                     )
+                elif str(args.external_supervision) == "prm800k_comparator_boundary_tiebreak":
+                    boundary_pair_pred = _comparator_boundary_pair_predictor(
+                        base_fn=base_fn,
+                        external_fn=broad_fn,
+                        pair_margin_threshold=float(args.external_boundary_pair_margin_threshold),
+                        pair_uncertainty_std_threshold=float(args.external_boundary_pair_uncertainty_std_threshold),
+                    )
+                    boundary_key = "external::prm800k_comparator_boundary_tiebreak_from_reweighted_pointwise"
+                    results[boundary_key] = _evaluate_model(
+                        boundary_key,
+                        base_fn,
+                        reweighted_tables,
+                        pair_pred_fn=boundary_pair_pred,
+                    )
+                    results[boundary_key]["train_status"] = "ok_external_boundary_tiebreak"
+                    external_meta["boundary_tiebreak_diagnostics"] = _boundary_intervention_diagnostics(
+                        tables=reweighted_tables,
+                        base_score_fn=base_fn,
+                        external_score_fn=broad_fn,
+                        boundary_pair_pred_fn=boundary_pair_pred,
+                        pair_margin_threshold=float(args.external_boundary_pair_margin_threshold),
+                        pair_uncertainty_std_threshold=float(args.external_boundary_pair_uncertainty_std_threshold),
+                    )
                 external_meta["status"] = "ok"
 
     ranking = sorted(
@@ -645,6 +854,8 @@ def main() -> None:
             "external_pointwise_blend_alpha": float(args.external_pointwise_blend_alpha),
             "external_gate_uncertainty_std_threshold": float(args.external_gate_uncertainty_std_threshold),
             "external_gate_top_gap_threshold": float(args.external_gate_top_gap_threshold),
+            "external_boundary_pair_margin_threshold": float(args.external_boundary_pair_margin_threshold),
+            "external_boundary_pair_uncertainty_std_threshold": float(args.external_boundary_pair_uncertainty_std_threshold),
         },
         "intervention_meta": intervention_meta,
         "external_meta": external_meta,

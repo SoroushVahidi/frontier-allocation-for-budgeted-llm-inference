@@ -1,0 +1,312 @@
+{
+  "date": "2026-04-16",
+  "status": "completed_with_rebuilt_corpus",
+  "canonical_corpus_path": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_v1",
+  "canonical_corpus_recovery": {
+    "identity_reused": true,
+    "exact_original_artifact_recovered": false,
+    "rebuild_type": "faithful_workspace_rebuild_from_available_generators_and_hf_data",
+    "reason_original_missing": "outputs artifacts are gitignored and were not materialized in this workspace"
+  },
+  "external_artifact_path": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+  "comparison_anchor_broad_aligned_boundary": {
+    "anchor": {
+      "model_key": "reweighted::pointwise",
+      "pairwise_accuracy_test": {
+        "n": 18.0,
+        "acc": 0.5
+      },
+      "ranking_top1_accuracy_test": 0.0,
+      "hard_slices": {
+        "near_tie": {
+          "n": 2.0,
+          "acc": 1.0
+        },
+        "adjacent_rank": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "small_margin": {
+          "n": 11.0,
+          "acc": 0.45454545454545453
+        },
+        "exact_promoted": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "exact_only": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "approx_only": {
+          "n": 0.0,
+          "acc": 0.0
+        }
+      },
+      "dataset_slices": {
+        "HuggingFaceH4/MATH-500": {
+          "n": 6.0,
+          "acc": 0.5
+        },
+        "openai/gsm8k": {
+          "n": 12.0,
+          "acc": 0.5
+        }
+      },
+      "budget_slices": {
+        "2": {
+          "n": 6.0,
+          "acc": 0.5
+        },
+        "3": {
+          "n": 6.0,
+          "acc": 0.6666666666666666
+        },
+        "4": {
+          "n": 6.0,
+          "acc": 0.3333333333333333
+        }
+      }
+    },
+    "broad": {
+      "model_key": "external::prm800k_pointwise_blend_from_reweighted_pointwise",
+      "pairwise_accuracy_test": {
+        "n": 18.0,
+        "acc": 0.5555555555555556
+      },
+      "ranking_top1_accuracy_test": 0.25,
+      "hard_slices": {
+        "near_tie": {
+          "n": 2.0,
+          "acc": 1.0
+        },
+        "adjacent_rank": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "small_margin": {
+          "n": 11.0,
+          "acc": 0.45454545454545453
+        },
+        "exact_promoted": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "exact_only": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "approx_only": {
+          "n": 0.0,
+          "acc": 0.0
+        }
+      },
+      "dataset_slices": {
+        "HuggingFaceH4/MATH-500": {
+          "n": 6.0,
+          "acc": 0.3333333333333333
+        },
+        "openai/gsm8k": {
+          "n": 12.0,
+          "acc": 0.6666666666666666
+        }
+      },
+      "budget_slices": {
+        "2": {
+          "n": 6.0,
+          "acc": 0.3333333333333333
+        },
+        "3": {
+          "n": 6.0,
+          "acc": 0.6666666666666666
+        },
+        "4": {
+          "n": 6.0,
+          "acc": 0.6666666666666666
+        }
+      }
+    },
+    "aligned": {
+      "model_key": "external::prm800k_uncertainty_gated_blend_from_reweighted_pointwise",
+      "pairwise_accuracy_test": {
+        "n": 18.0,
+        "acc": 0.5555555555555556
+      },
+      "ranking_top1_accuracy_test": 0.25,
+      "hard_slices": {
+        "near_tie": {
+          "n": 2.0,
+          "acc": 1.0
+        },
+        "adjacent_rank": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "small_margin": {
+          "n": 11.0,
+          "acc": 0.45454545454545453
+        },
+        "exact_promoted": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "exact_only": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "approx_only": {
+          "n": 0.0,
+          "acc": 0.0
+        }
+      },
+      "dataset_slices": {
+        "HuggingFaceH4/MATH-500": {
+          "n": 6.0,
+          "acc": 0.3333333333333333
+        },
+        "openai/gsm8k": {
+          "n": 12.0,
+          "acc": 0.6666666666666666
+        }
+      },
+      "budget_slices": {
+        "2": {
+          "n": 6.0,
+          "acc": 0.3333333333333333
+        },
+        "3": {
+          "n": 6.0,
+          "acc": 0.6666666666666666
+        },
+        "4": {
+          "n": 6.0,
+          "acc": 0.6666666666666666
+        }
+      }
+    },
+    "boundary": {
+      "model_key": "external::prm800k_comparator_boundary_tiebreak_from_reweighted_pointwise",
+      "pairwise_accuracy_test": {
+        "n": 18.0,
+        "acc": 0.5555555555555556
+      },
+      "ranking_top1_accuracy_test": 0.0,
+      "hard_slices": {
+        "near_tie": {
+          "n": 2.0,
+          "acc": 1.0
+        },
+        "adjacent_rank": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "small_margin": {
+          "n": 11.0,
+          "acc": 0.45454545454545453
+        },
+        "exact_promoted": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "exact_only": {
+          "n": 0.0,
+          "acc": 0.0
+        },
+        "approx_only": {
+          "n": 0.0,
+          "acc": 0.0
+        }
+      },
+      "dataset_slices": {
+        "HuggingFaceH4/MATH-500": {
+          "n": 6.0,
+          "acc": 0.3333333333333333
+        },
+        "openai/gsm8k": {
+          "n": 12.0,
+          "acc": 0.6666666666666666
+        }
+      },
+      "budget_slices": {
+        "2": {
+          "n": 6.0,
+          "acc": 0.3333333333333333
+        },
+        "3": {
+          "n": 6.0,
+          "acc": 0.6666666666666666
+        },
+        "4": {
+          "n": 6.0,
+          "acc": 0.6666666666666666
+        }
+      }
+    }
+  },
+  "transfer_activity": {
+    "broad_blend_activity": {
+      "status": "ok",
+      "candidate_test_n": 14,
+      "candidate_score_shift_mean_abs": 0.02904686137525961,
+      "candidate_score_shift_max_abs": 0.062242462471058135,
+      "candidate_changed_fraction": 1.0,
+      "targeted_candidate_n": 13,
+      "targeted_candidate_fraction": 0.9285714285714286,
+      "targeted_changed_fraction": 1.0,
+      "pair_test_n": 18,
+      "pair_decision_changed_n": 3,
+      "pair_decision_changed_fraction": 0.16666666666666666,
+      "pair_hard_slice_n": 11,
+      "pair_hard_slice_changed_n": 2
+    },
+    "aligned_blend_activity": {
+      "status": "ok",
+      "candidate_test_n": 14,
+      "candidate_score_shift_mean_abs": 0.028290457303495404,
+      "candidate_score_shift_max_abs": 0.062242462471058135,
+      "candidate_changed_fraction": 0.9285714285714286,
+      "targeted_candidate_n": 13,
+      "targeted_candidate_fraction": 0.9285714285714286,
+      "targeted_changed_fraction": 1.0,
+      "pair_test_n": 18,
+      "pair_decision_changed_n": 3,
+      "pair_decision_changed_fraction": 0.16666666666666666,
+      "pair_hard_slice_n": 11,
+      "pair_hard_slice_changed_n": 2
+    }
+  },
+  "boundary_diagnostics": {
+    "status": "ok",
+    "pair_test_n": 18,
+    "eligible_pair_n": 6,
+    "eligible_pair_fraction": 0.3333333333333333,
+    "eligible_external_disagree_n": 3,
+    "changed_pair_n": 3,
+    "changed_pair_fraction": 0.16666666666666666,
+    "changed_pair_helpful_n": 2,
+    "changed_pair_harmful_n": 1,
+    "changed_pair_neutral_n": 0,
+    "changed_pair_hard_slice_n": 2,
+    "changed_pair_by_dataset": {
+      "HuggingFaceH4/MATH-500": 1,
+      "openai/gsm8k": 2
+    },
+    "changed_pair_by_budget": {
+      "2": 1,
+      "4": 2
+    },
+    "top1_test_state_n": 4,
+    "top1_changed_state_n": 0,
+    "top1_changed_helpful_n": 0,
+    "top1_changed_harmful_n": 0,
+    "top1_changed_neutral_n": 0,
+    "pair_margin_threshold": 0.02,
+    "pair_uncertainty_std_threshold": 0.02
+  },
+  "diagnosis": {
+    "pairwise_boundary_movement_observed": true,
+    "top1_changed_state_n": 0,
+    "metric_gain_vs_anchor_pairwise": 0.05555555555555558,
+    "math_shepherd_should_wait": true
+  }
+}
