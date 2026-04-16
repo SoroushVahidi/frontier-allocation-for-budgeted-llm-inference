@@ -31,6 +31,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--high-budget-multiplier", type=float, default=1.5)
     p.add_argument("--exhaustive-action-budget-cap", type=int, default=2)
     p.add_argument("--tie-margin", type=float, default=0.02)
+    p.add_argument("--uncertainty-use-margin-band", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--uncertainty-use-ci-overlap-zero", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--uncertainty-use-disagreement-rate", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--uncertainty-disagreement-rate-threshold", type=float, default=0.5)
     p.add_argument("--value-aggregation", choices=["max", "robust_blend"], default="max")
     p.add_argument("--value-std-penalty", type=float, default=0.0)
     p.add_argument("--mode", choices=["exact_tiny_state", "approx_large_state"], default="approx_large_state")
@@ -61,6 +65,10 @@ def main() -> None:
         high_budget_multiplier=args.high_budget_multiplier,
         exhaustive_action_budget_cap=args.exhaustive_action_budget_cap,
         tie_margin=args.tie_margin,
+        uncertainty_use_margin_band=args.uncertainty_use_margin_band,
+        uncertainty_use_ci_overlap_zero=args.uncertainty_use_ci_overlap_zero,
+        uncertainty_use_disagreement_rate=args.uncertainty_use_disagreement_rate,
+        uncertainty_disagreement_rate_threshold=args.uncertainty_disagreement_rate_threshold,
         value_aggregation=args.value_aggregation,
         value_std_penalty=args.value_std_penalty,
     )
@@ -99,6 +107,14 @@ def main() -> None:
             "approx_large_state": (
                 "Use rollout/sampler estimates for continuation utility with confidence intervals and approximation metadata."
             ),
+        },
+        "canonical_uncertainty_rules": {
+            "or_semantics": True,
+            "margin_band_rule_enabled": args.uncertainty_use_margin_band,
+            "ci_overlap_with_zero_rule_enabled": args.uncertainty_use_ci_overlap_zero,
+            "disagreement_rate_rule_enabled": args.uncertainty_use_disagreement_rate,
+            "disagreement_rate_threshold": args.uncertainty_disagreement_rate_threshold,
+            "tie_margin": args.tie_margin,
         },
         "output_files": {
             "branch_oracle_labels": str(branch_path),

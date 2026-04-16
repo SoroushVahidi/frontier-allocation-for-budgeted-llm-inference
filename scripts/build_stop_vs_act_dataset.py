@@ -33,6 +33,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--gain-margin", type=float, default=0.015)
     parser.add_argument("--uncertainty-band", type=float, default=0.03)
     parser.add_argument("--instability-std-threshold", type=float, default=0.045)
+    parser.add_argument("--uncertainty-use-margin-band", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--uncertainty-use-ci-overlap-zero", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--uncertainty-use-disagreement-rate", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--uncertainty-disagreement-rate-threshold", type=float, default=0.35)
     parser.add_argument(
         "--instability-guard-band",
         type=float,
@@ -78,6 +82,10 @@ def main() -> None:
         uncertainty_band=args.uncertainty_band,
         instability_std_threshold=args.instability_std_threshold,
         instability_guard_band=args.instability_guard_band,
+        uncertainty_use_margin_band=args.uncertainty_use_margin_band,
+        uncertainty_use_ci_overlap_zero=args.uncertainty_use_ci_overlap_zero,
+        uncertainty_use_disagreement_rate=args.uncertainty_use_disagreement_rate,
+        uncertainty_disagreement_rate_threshold=args.uncertainty_disagreement_rate_threshold,
         rollout_samples=args.rollout_samples,
         target_mode=args.target_mode,
         small_horizon_steps=args.small_horizon_steps,
@@ -116,6 +124,15 @@ def main() -> None:
                 "q_outside_next": float(row.get("q_outside_next", 0.0)),
                 "delta_vs_outside": float(row.get("delta_vs_outside", row.get("delta_mean", 0.0))),
                 "label_act_vs_outside": int(row.get("label_act_vs_outside", row.get("label_act", 0))),
+                "is_near_tie": int(row.get("is_near_tie", 0)),
+                "tie_margin": float(row.get("tie_margin", args.uncertainty_band)),
+                "abs_margin": float(row.get("abs_margin", abs(float(row.get("delta_mean", 0.0))))),
+                "utility_std": float(row.get("utility_std", row.get("delta_std", 0.0))),
+                "ci_low": float(row.get("ci_low", row.get("delta_mean", 0.0))),
+                "ci_high": float(row.get("ci_high", row.get("delta_mean", 0.0))),
+                "n_rollouts": int(row.get("n_rollouts", args.rollout_samples)),
+                "disagreement_rate": float(row.get("disagreement_rate", row.get("delta_sign_flip_rate", 0.0))),
+                "is_uncertain": int(row.get("is_uncertain", 0)),
             }
             f.write(json.dumps(payload) + "\n")
 
@@ -148,13 +165,23 @@ def main() -> None:
             "stabilization_repeats": args.stabilization_repeats,
         },
         "uncertainty_rule": {
-            "uncertain_if": (
-                "abs(delta_mean) <= uncertainty_band OR "
-                "((delta_std >= instability_std_threshold) AND (|delta_mean| <= instability_guard_band if provided else True))"
-            ),
-            "uncertainty_band": args.uncertainty_band,
-            "instability_std_threshold": args.instability_std_threshold,
-            "instability_guard_band": args.instability_guard_band,
+            "or_semantics": True,
+            "margin_band_rule": {
+                "enabled": args.uncertainty_use_margin_band,
+                "condition": "abs_margin <= tie_margin",
+                "tie_margin": args.uncertainty_band,
+            },
+            "ci_overlap_with_zero_rule": {
+                "enabled": args.uncertainty_use_ci_overlap_zero,
+                "condition": "ci_low <= 0 <= ci_high",
+            },
+            "disagreement_rate_rule": {
+                "enabled": args.uncertainty_use_disagreement_rate,
+                "condition": "disagreement_rate >= threshold",
+                "threshold": args.uncertainty_disagreement_rate_threshold,
+            },
+            "legacy_instability_threshold": args.instability_std_threshold,
+            "legacy_instability_guard_band": args.instability_guard_band,
             "weighting": "sample_weight reduced for uncertain examples (near-zero:0.35, unstable:0.50, both:0.20)",
         },
         "stabilization_outputs": {
@@ -198,6 +225,35 @@ def main() -> None:
                 }
                 for opt_source in sorted({str(r.get("outside_option_source", "unknown")) for r in rows})
                 for source_rows in [[r for r in rows if str(r.get("outside_option_source", "unknown")) == opt_source]]
+            },
+        },
+        "slice_summaries": {
+            "near_tie_coverage": _mean([float(r.get("is_near_tie", 0)) for r in rows]),
+            "uncertainty_coverage": _mean([float(r.get("is_uncertain", 0)) for r in rows]),
+            "label_polarity_by_budget_bucket": {
+                bucket: {
+                    "rows": len(bucket_rows),
+                    "act_rate": _mean([float(r.get("label_act_vs_outside", r.get("label_act", 0))) for r in bucket_rows]),
+                    "stop_rate": 1.0
+                    - _mean([float(r.get("label_act_vs_outside", r.get("label_act", 0))) for r in bucket_rows]),
+                }
+                for bucket in ("0-2", "3-5", "6+")
+                for bucket_rows in [[
+                    r
+                    for r in rows
+                    if (
+                        ("0-2" if int(r.get("remaining_budget", 0)) <= 2 else ("3-5" if int(r.get("remaining_budget", 0)) <= 5 else "6+"))
+                        == bucket
+                    )
+                ]]
+            },
+            "uncertainty_by_outside_option_type": {
+                opt_type: {
+                    "rows": len(type_rows),
+                    "uncertainty_rate": _mean([float(r.get("is_uncertain", 0)) for r in type_rows]),
+                }
+                for opt_type in sorted({str(r.get("outside_option_type", "unknown")) for r in rows})
+                for type_rows in [[r for r in rows if str(r.get("outside_option_type", "unknown")) == opt_type]]
             },
         },
     }

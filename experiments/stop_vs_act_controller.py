@@ -50,6 +50,10 @@ class StopVsActLabelConfig:
     uncertainty_band: float = 0.03
     instability_std_threshold: float = 0.045
     instability_guard_band: float | None = None
+    uncertainty_use_margin_band: bool = True
+    uncertainty_use_ci_overlap_zero: bool = True
+    uncertainty_use_disagreement_rate: bool = True
+    uncertainty_disagreement_rate_threshold: float = 0.35
     rollout_samples: int = 6
     target_mode: Literal[
         "proxy_best_other_gain",
@@ -637,12 +641,24 @@ def build_stop_vs_act_dataset(
                     raise ValueError(f"Unsupported target_stabilization_mode: {label_cfg.target_stabilization_mode}")
 
                 label_act = int(delta_mean > label_cfg.gain_margin)
-                near_zero = abs(delta_mean) <= label_cfg.uncertainty_band
+                abs_margin = abs(delta_mean)
+                near_zero = abs_margin <= label_cfg.uncertainty_band
                 unstable = delta_std >= label_cfg.instability_std_threshold
                 instability_relevant = True
                 if label_cfg.instability_guard_band is not None:
                     instability_relevant = abs(delta_mean) <= float(label_cfg.instability_guard_band)
-                uncertain = bool(near_zero or (unstable and instability_relevant))
+                n_rollouts = max(1, int(label_cfg.rollout_samples))
+                ci_half_width = 1.96 * (delta_std / (n_rollouts**0.5)) if n_rollouts > 0 else 0.0
+                ci_low = float(delta_mean - ci_half_width)
+                ci_high = float(delta_mean + ci_half_width)
+                disagreement_rate = float(delta_sign_flip_rate)
+                margin_uncertain = bool(label_cfg.uncertainty_use_margin_band and near_zero)
+                ci_uncertain = bool(label_cfg.uncertainty_use_ci_overlap_zero and (ci_low <= 0.0 <= ci_high))
+                disagreement_uncertain = bool(
+                    label_cfg.uncertainty_use_disagreement_rate
+                    and disagreement_rate >= float(label_cfg.uncertainty_disagreement_rate_threshold)
+                )
+                uncertain = bool(margin_uncertain or ci_uncertain or disagreement_uncertain)
 
                 weight = 1.0
                 if uncertain:
@@ -675,6 +691,14 @@ def build_stop_vs_act_dataset(
                     "q_outside_next": q_outside_next,
                     "delta_vs_outside": q_branch_next - q_outside_next,
                     "label_act_vs_outside": label_act,
+                    "is_near_tie": int(near_zero),
+                    "tie_margin": float(label_cfg.uncertainty_band),
+                    "abs_margin": float(abs_margin),
+                    "utility_std": float(delta_std),
+                    "ci_low": float(ci_low),
+                    "ci_high": float(ci_high),
+                    "n_rollouts": int(n_rollouts),
+                    "disagreement_rate": float(disagreement_rate),
                     "is_uncertain": int(uncertain),
                     "sample_weight": weight,
                     "uncertain_near_zero": int(near_zero),
