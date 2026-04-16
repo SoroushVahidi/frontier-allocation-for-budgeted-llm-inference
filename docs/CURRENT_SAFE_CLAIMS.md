@@ -75,3 +75,15 @@ Not safe to claim yet:
 - that any s1/TALE/L1 MODE B full official reproduction has been completed in-repo.
 
 - compute_optimal_tts is explicitly blocked (provenance and fairness protocol incomplete) rather than ambiguously link-only.
+
+## Brute-force label-data claims (2026-04-16 medium run)
+
+Safe to claim now:
+- a real GSM8K-backed medium-scale brute-force/near-brute-force label corpus has been generated in-repo (220 states, 593 candidate rows, 559 pairwise rows),
+- approximate-mode labels have high but imperfect agreement with exact tiny-state labels on overlapping feasible states,
+- the generated labels are usable for bounded pilot learning runs (training/evaluation completes, non-trivial held-out metrics).
+
+Not safe to claim yet:
+- that label-data bottleneck is fully solved,
+- that approximate labels are exact substitutes for tiny-state exact labels,
+- that current learned allocators trained on these labels are robust universal winners.

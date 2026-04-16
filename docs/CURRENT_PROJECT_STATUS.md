@@ -65,6 +65,13 @@ The project should currently be interpreted as:
 
 The repo is already ready for serious paper planning, collaborator onboarding, and baseline integration work. The next phase should focus on sharpening the branch-comparison signal and tightening the evaluation story, not on simply adding more scale.
 
+## Brute-force label-data status update (2026-04-16 medium run)
+
+- A real GSM8K-backed medium-scale brute-force/near-brute-force label run has now been executed with 220 frontier states, 593 candidate rows, and 559 pairwise rows (`outputs/branch_label_bruteforce/gsm8k_medium_20260416/`).
+- A matched tiny-state exact-vs-approx slice showed high but imperfect agreement (winner agreement 0.956; branch-vs-outside sign agreement 0.961), which supports approximate-mode usability as bounded supervision.
+- A pilot learner trains end-to-end on this corpus and achieves non-trivial but still moderate held-out metrics, consistent with “labels usable, bottleneck not closed”.
+- Canonical interpretation: label-data bottleneck is now **partially resolved**, not fully resolved. See `docs/BRUTEFORCE_LABEL_DATA_STATUS.md` for commands, artifacts, metrics, and caveats.
+
 
 ## External baseline completeness status (2026-04-16 pass)
 
