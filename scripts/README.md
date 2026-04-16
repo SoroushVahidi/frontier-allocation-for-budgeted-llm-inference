@@ -76,6 +76,8 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `run_oracle_label_generator_prototype.py` | First real paired-rollout oracle-label prototype generator (limited subset, CPU-oriented) |
 | `run_oracle_label_generator_heavy.py` | Production-leaning heavy-path generator with resume/progress/state-error handling for shard-scale runs |
 | `oracle_label_pilot_sharding.py` | Deterministic shard split/merge utility for pilot-state manifests and per-shard oracle-label outputs |
+| `run_allocation_target_generator_heavy.py` | Resumable heavy-path allocation-target generator; emits outside-option + pairwise labels with progress/state-error checkpoints |
+| `allocation_target_pilot_sharding.py` | Deterministic shard split/merge utility for allocation-target state manifests and per-shard outside/pairwise outputs |
 | `build_stop_vs_act_oracle_distillation_dataset.py` | Selective-distillation preprocessing: bucket oracle rows into accepted/borderline/rejected, apply manifest-aware mock checks, and emit weighted distillation-ready JSONL |
 | `build_random_matched_coverage_oracle_distillation_dataset.py` | Build deterministic random matched-coverage distillation baselines per regime (accepted-only or accepted+borderline), including repeated-draw mode and overlap summaries |
 | `train_oracle_distilled_stop_vs_act_student.py` | Oracle-distilled student train/eval path with retained-coverage accounting, ACT-rate reporting, and required slice summaries (uncertainty/margin/disagreement/budget) |
