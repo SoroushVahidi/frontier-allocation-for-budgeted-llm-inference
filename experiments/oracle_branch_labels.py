@@ -49,6 +49,7 @@ class OracleLabelConfig:
     enable_margin_uncertainty_rule: bool = True
     enable_ci_uncertainty_rule: bool = True
     enable_disagreement_uncertainty_rule: bool = True
+    disagreement_rate_threshold: float = 0.25
 
 
 @dataclass
@@ -414,7 +415,10 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
                 is_uncertain = int(
                     (cfg.enable_margin_uncertainty_rule and pair_abs_margin <= margin_band)
                     or (cfg.enable_ci_uncertainty_rule and ci_overlaps_zero)
-                    or (cfg.enable_disagreement_uncertainty_rule and disagreement_rate > 0.0)
+                    or (
+                        cfg.enable_disagreement_uncertainty_rule
+                        and disagreement_rate >= float(cfg.disagreement_rate_threshold)
+                    )
                 )
 
                 pair_rows.append(

@@ -5,6 +5,7 @@ This note defines the canonical uncertainty fields emitted by:
 - outside-option stop-vs-act rows (`stop_vs_act_dataset.jsonl`).
 
 The goal is to keep uncertainty semantics stable across generators and downstream analyses.
+The conceptual center remains next-step allocation/ranking; stop-vs-act rows are a local outside-option helper view.
 
 ## Canonical fields
 
@@ -65,4 +66,3 @@ Implementations may keep additional legacy rules (e.g., instability gates), but 
 - `is_uncertain=1` is a caution flag for filtering, downweighting, or manual audit, not proof that the label is wrong.
 - `is_uncertain=0` should still be treated as “no warning triggered,” not “ground truth certainty.”
 - Cross-run comparisons should only compare uncertainty rates when threshold configs are matched.
-
