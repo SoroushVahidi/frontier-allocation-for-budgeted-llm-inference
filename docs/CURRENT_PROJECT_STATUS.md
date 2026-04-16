@@ -120,3 +120,17 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - New engineered representation adds frontier competition context, branch rank/gap structure, verification dynamics normalization, trend/stagnation interactions, and budget-context interactions while preserving backward compatibility.
 - In this bounded run, richer features materially improved the pairwise logistic baseline on near-tie and adjacent-rank slices under fixed supervision; CatBoost did not show the same lift signal.
 - Conservative interpretation: representation quality is a meaningful part of the remaining bottleneck, but hard-case ambiguity is not fully resolved.
+
+## Ternary / selective-abstention branch-comparison status (2026-04-16 bounded implementation pass)
+
+- A tie-aware/abstaining branch-comparison path is now integrated with manifest-backed ambiguity labels (`ambiguous_tie_target`, `ambiguous_tie_reasons`, `ternary_label_name`) and configurable tie-band rules over margin/relative-margin/std/near-tie/provenance.
+- A matched runner now compares forced binary, ternary compare/tie, and selective abstention formulations under fixed feature representation (`v2`) and explicit fallback semantics.
+- In the bounded run documented in `docs/TERNARY_OR_ABSTAIN_BRANCH_COMPARISON_STATUS.md`, ternary formulation improved tie-detection quality but at very low usable coverage under the tested tie-band, while selective abstention provided a clearer coverage-vs-accepted-accuracy tradeoff.
+- Conservative interpretation remains: hard-case ambiguity looks real and measurable, but formulation changes alone did not close hardest-slice reliability in this run.
+
+## Ambiguity calibration + fallback status (2026-04-16 bounded implementation pass)
+
+- A matched ambiguity-handling runner now supports confidence calibration (`none`, `temperature`, `platt`, `isotonic`) and explicit fallback-policy variants (`pointwise_value`, `pairwise_binary_backup`, `heuristic_score`, `outside_option_aware`) under fixed feature representation (`v2`).
+- Calibration provenance is explicit (fit on `val`, evaluated on `test`) with stored calibration-quality summaries (Brier/ECE/NLL) and accepted-accuracy-vs-threshold traces.
+- In this bounded run (`docs/AMBIGUITY_CALIBRATION_AND_FALLBACK_STATUS.md`), calibration quality metrics did not uniformly improve, but calibrated abstention operating behavior improved accepted-accuracy/coverage tradeoff versus prior uncalibrated abstention baseline.
+- Conservative interpretation: ambiguity handling became more controllable and auditable, but hard near-tie behavior remains weak and the bottleneck is still not closed.

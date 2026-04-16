@@ -85,3 +85,15 @@ The next efficient progress is expected to come from **better branch-allocation 
 - Under fixed supervision regimes, the pairwise logistic baseline improved strongly on near-tie and adjacent-rank slices when using richer features versus the prior v1 representation.
 - In the same bounded pass, CatBoost did not show a clear corresponding lift, so gains are model-path dependent.
 - Updated bottleneck interpretation: remaining weakness now looks more like a mix of representation quality and irreducible hard-case ambiguity/modeling limits, rather than label provenance alone.
+
+## Evidence update from ternary / selective-abstention formulation pass (2026-04-16 bounded)
+
+- Tie-aware and abstaining branch-comparison formulations were added and compared in matched runs with fixed richer features (`v2`) and explicit fallback policy.
+- Bounded evidence showed strong tie-detection capacity for ternary labels, but with severe coverage collapse under the tested tie-band; selective abstention showed a non-trivial coverage/accuracy tradeoff but did not clearly improve forced near-tie outcomes after fallback.
+- Updated interpretation: forced binary pressure is part of hard-slice failure, but fallback calibration and ambiguity handling thresholds remain active bottlenecks; this does not yet support a claim of closure.
+
+## Evidence update from ambiguity calibration + fallback pass (2026-04-16 bounded)
+
+- Confidence-calibration variants (temperature/Platt/isotonic) and fallback-policy variants were compared in matched runs with fixed representation (`v2`) and explicit abstention threshold controls.
+- In this bounded setting, probability-calibration metrics (Brier/ECE) did not uniformly improve, but calibrated abstention variants improved accepted-accuracy/coverage operating tradeoff versus the prior uncalibrated abstention baseline.
+- Near-tie forced-decision behavior remained weak across variants, indicating that fallback design and irreducible ambiguity handling remain key unresolved bottlenecks.

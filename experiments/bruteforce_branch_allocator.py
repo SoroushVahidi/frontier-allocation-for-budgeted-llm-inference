@@ -93,6 +93,13 @@ class LearningConfig:
     catboost_learning_rate: float = 0.05
     catboost_depth: int = 6
     feature_set: str = "v1"  # one of: v1, v2
+    train_pairwise_ternary: bool = False
+    tie_abs_margin_threshold: float = 0.03
+    tie_relative_margin_threshold: float = 0.15
+    tie_std_threshold: float = 0.08
+    tie_use_near_tie_flag: bool = True
+    tie_include_approx: bool = True
+    tie_require_exact_or_mixed: bool = False
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -270,6 +277,25 @@ def _pairwise_weight(row: dict[str, Any], cfg: LearningConfig) -> tuple[bool, fl
     return (True, max(weight, 1e-8))
 
 
+def _is_ambiguous_pair(row: dict[str, Any], cfg: LearningConfig) -> bool:
+    margin_abs = float(row.get("margin_abs", abs(float(row.get("margin", 0.0)))))
+    rel_margin = float(row.get("relative_margin", 1e9))
+    pair_std = float(row.get("pair_uncertainty_std_mean", row.get("pair_allocation_value_std", 0.0)))
+    near_tie_flag = bool(row.get("near_tie_flag", margin_abs <= float(cfg.near_tie_margin)))
+    pair_mode = str(row.get("pair_mode_provenance", row.get("pair_mode", "unknown")))
+    is_exact_or_mixed = pair_mode in {"exact", "mixed"}
+    if (not bool(cfg.tie_include_approx)) and pair_mode == "approx":
+        return False
+    if bool(cfg.tie_require_exact_or_mixed) and (not is_exact_or_mixed):
+        return False
+    return bool(
+        margin_abs <= float(cfg.tie_abs_margin_threshold)
+        or rel_margin <= float(cfg.tie_relative_margin_threshold)
+        or pair_std >= float(cfg.tie_std_threshold)
+        or (bool(cfg.tie_use_near_tie_flag) and near_tie_flag)
+    )
+
+
 def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: LearningConfig) -> dict[str, Any]:
     candidates = [dict(row) for row in data["candidate_labels"]]
     pairwise = [dict(row) for row in data["pairwise_labels"]]
@@ -325,6 +351,17 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         include, weight = _pairwise_weight(row, cfg)
         row["include_for_pairwise_training"] = include
         row["pair_train_weight"] = weight
+        ambiguous = _is_ambiguous_pair(row, cfg)
+        row["ambiguous_target_flag"] = ambiguous
+        # ternary labels: 0 -> prefer_branch_j, 1 -> tie/ambiguous, 2 -> prefer_branch_i
+        binary_label = int(row.get("label", 0))
+        row["ternary_label"] = 1 if ambiguous else (2 if binary_label == 1 else 0)
+        if row["ternary_label"] == 1:
+            row["ternary_label_name"] = "tie_ambiguous"
+        elif row["ternary_label"] == 2:
+            row["ternary_label_name"] = "prefer_branch_i"
+        else:
+            row["ternary_label_name"] = "prefer_branch_j"
 
     state_to_candidates: dict[str, list[dict[str, Any]]] = {}
     for row in candidates:
@@ -376,6 +413,37 @@ def _fit_pairwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dict
             "pairwise_near_tie_downweight": cfg.pairwise_near_tie_downweight,
             "uncertainty_weighting": cfg.uncertainty_weighting,
         },
+    }
+
+
+def _fit_pairwise_ternary_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dict[str, Any]:
+    train = [r for r in rows if r["split"] == "train" and bool(r.get("include_for_pairwise_training", True))]
+    if len(train) < 3:
+        return {"model_type": "pairwise_ternary_logreg", "status": "insufficient_train_rows"}
+    x = [r["x_diff"] for r in train]
+    y = [int(r.get("ternary_label", 1)) for r in train]
+    weights = [float(r.get("pair_train_weight", 1.0)) for r in train]
+    classes = sorted(set(y))
+    if len(classes) < 2:
+        return {
+            "model_type": "pairwise_ternary_logreg",
+            "status": "single_class_train",
+            "constant_label": int(y[0]) if y else 1,
+        }
+    model = LogisticRegression(
+        max_iter=cfg.pairwise_max_iter,
+        random_state=cfg.seed,
+    )
+    model.fit(x, y, sample_weight=weights)
+    return {
+        "model_type": "pairwise_ternary_logreg",
+        "status": "ok",
+        "feature_names": _feature_names_for_set(str(cfg.feature_set)),
+        "feature_set": str(cfg.feature_set),
+        "weights": [[float(v) for v in row] for row in model.coef_],
+        "intercepts": [float(v) for v in model.intercept_],
+        "classes": [int(c) for c in model.classes_],
+        "training_rows": len(train),
     }
 
 
@@ -538,6 +606,8 @@ def train_models(tables: dict[str, Any], cfg: LearningConfig, model_artifact_dir
         model_artifact_dir.mkdir(parents=True, exist_ok=True)
     if cfg.train_pairwise:
         models["pairwise"] = _fit_pairwise_model(tables["pairwise"], cfg)
+    if cfg.train_pairwise_ternary:
+        models["pairwise_ternary"] = _fit_pairwise_ternary_model(tables["pairwise"], cfg)
     if cfg.train_pointwise:
         models["pointwise"] = _fit_pointwise_model(tables["candidates"], cfg)
     if cfg.train_outside_option:
@@ -691,6 +761,12 @@ def _slice_pairwise_accuracy(
 def evaluate_models(models: dict[str, Any], tables: dict[str, Any], cfg: LearningConfig) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for name, model in models.items():
+        if str(model.get("model_type", "")) == "pairwise_ternary_logreg":
+            out[name] = {
+                "model_status": model.get("status", "unknown"),
+                "note": "pairwise_ternary_logreg requires pair-level evaluation; candidate ranking metrics are not computed here",
+            }
+            continue
         scorer = scorer_from_model(model)
         pair_acc, near_acc, far_acc, brier = _pairwise_agreement(
             tables["pairwise"],
