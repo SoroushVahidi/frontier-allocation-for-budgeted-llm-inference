@@ -1,0 +1,101 @@
+{
+  "date": "2026-04-16",
+  "internal_corpus": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_v1",
+  "external_artifact": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+  "external_dataset_used": "prm800k",
+  "baseline_anchor": "reweighted::pointwise",
+  "external_anchor": "external::prm800k_pointwise_blend_from_reweighted_pointwise",
+  "aggregate": {
+    "baseline_pairwise_acc": 1.0,
+    "external_pairwise_acc": 1.0,
+    "delta_pairwise_acc": 0.0,
+    "baseline_top1_acc": 1.0,
+    "external_top1_acc": 1.0,
+    "delta_top1_acc": 0.0
+  },
+  "hard_slices": {
+    "near_tie": {
+      "baseline_acc": 1.0,
+      "baseline_n": 2.0,
+      "external_acc": 1.0,
+      "external_n": 2.0,
+      "delta_acc": 0.0
+    },
+    "adjacent_rank": {
+      "baseline_acc": 1.0,
+      "baseline_n": 14.0,
+      "external_acc": 1.0,
+      "external_n": 14.0,
+      "delta_acc": 0.0
+    },
+    "small_margin": {
+      "baseline_acc": 1.0,
+      "baseline_n": 11.0,
+      "external_acc": 1.0,
+      "external_n": 11.0,
+      "delta_acc": 0.0
+    },
+    "exact_promoted": {
+      "baseline_acc": 1.0,
+      "baseline_n": 1.0,
+      "external_acc": 1.0,
+      "external_n": 1.0,
+      "delta_acc": 0.0
+    },
+    "exact_only": {
+      "baseline_acc": 1.0,
+      "baseline_n": 12.0,
+      "external_acc": 1.0,
+      "external_n": 12.0,
+      "delta_acc": 0.0
+    },
+    "approx_only": {
+      "baseline_acc": 1.0,
+      "baseline_n": 9.0,
+      "external_acc": 1.0,
+      "external_n": 9.0,
+      "delta_acc": 0.0
+    }
+  },
+  "dataset_slices": {
+    "HuggingFaceH4/MATH-500": {
+      "baseline_acc": 1.0,
+      "baseline_n": 9.0,
+      "external_acc": 1.0,
+      "external_n": 9.0,
+      "delta_acc": 0.0
+    },
+    "openai/gsm8k": {
+      "baseline_acc": 1.0,
+      "baseline_n": 12.0,
+      "external_acc": 1.0,
+      "external_n": 12.0,
+      "delta_acc": 0.0
+    }
+  },
+  "budget_slices": {
+    "2": {
+      "baseline_acc": 1.0,
+      "baseline_n": 12.0,
+      "external_acc": 1.0,
+      "external_n": 12.0,
+      "delta_acc": 0.0
+    },
+    "3": {
+      "baseline_acc": 1.0,
+      "baseline_n": 3.0,
+      "external_acc": 1.0,
+      "external_n": 3.0,
+      "delta_acc": 0.0
+    },
+    "4": {
+      "baseline_acc": 1.0,
+      "baseline_n": 6.0,
+      "external_acc": 1.0,
+      "external_n": 6.0,
+      "delta_acc": 0.0
+    }
+  },
+  "diagnosis": "No measurable improvement vs strongest matched baseline in this pass; external prior collapsed to near-constant due sparse/derived PRM mapping and did not improve branch-comparison bottleneck.",
+  "recommendation_next": "Proceed to a Math-Shepherd pass only after fixing external candidate-quality extraction so auxiliary supervision has non-degenerate signal; keep APPS blocked pending loader compatibility fix."
+}

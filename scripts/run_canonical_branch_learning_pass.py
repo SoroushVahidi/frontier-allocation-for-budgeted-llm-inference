@@ -5,9 +5,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any, Callable
 import sys
+
+import numpy as np
+from sklearn.linear_model import Ridge
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -38,6 +42,191 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def _extract_step_idx(branch_id: str) -> int:
+    m = re.search(r"step(\d+)", branch_id)
+    if m:
+        return int(m.group(1))
+    m = re.search(r"cand(\d+)$", branch_id)
+    return int(m.group(1)) if m else 0
+
+
+def _external_prm_candidate_to_x(row: dict[str, Any], *, feature_names: list[str]) -> list[float]:
+    """Map PRM candidate rows to canonical features conservatively (derived supervision)."""
+    quality = float(row.get("quality_score", 0.0))
+    step_idx = _extract_step_idx(str(row.get("branch_id", "")))
+    comp_idx_match = re.search(r"cand(\d+)$", str(row.get("branch_id", "")))
+    comp_idx = int(comp_idx_match.group(1)) if comp_idx_match else 0
+    supervision_origin = str(row.get("supervision_origin", "derived"))
+    feat = {k: 0.0 for k in feature_names}
+    feat["remaining_budget"] = float(row.get("remaining_budget", 1.0))
+    feat["score"] = quality
+    feat["depth"] = float(step_idx + 1)
+    feat["recent_delta"] = quality - 0.5
+    feat["stalled_steps"] = 1.0 if quality <= 0.25 else 0.0
+    feat["verify_count"] = 0.0
+    feat["branch_age"] = float(step_idx + 1)
+    feat["parent_relative_score"] = -float(comp_idx)
+    feat["allocation_candidates_evaluated"] = float(comp_idx + 1)
+    feat["allocation_value_std"] = quality * (1.0 - quality)
+    feat["mode_exact"] = 1.0 if supervision_origin.startswith("native") else 0.0
+    feat["mode_approx"] = 0.0 if feat["mode_exact"] > 0 else 1.0
+    feat["mode_degenerate"] = 0.0
+    return [float(feat.get(name, 0.0)) for name in feature_names]
+
+
+def _fit_external_prm_pointwise_prior(
+    external_corpus_dir: Path,
+    *,
+    feature_names: list[str],
+    source_dataset_key: str,
+    source_split: str,
+) -> dict[str, Any]:
+    path = external_corpus_dir / "rows" / "candidate_rows.jsonl"
+    if not path.exists():
+        return {"status": "external_candidate_rows_missing", "path": str(path)}
+    rows = _read_jsonl(path)
+    rows = [
+        r
+        for r in rows
+        if str(r.get("source_dataset_key", "")) == source_dataset_key and str(r.get("source_split", "")) == source_split
+    ]
+    if len(rows) < 8:
+        return {"status": "insufficient_external_rows", "n": len(rows)}
+    x = [_external_prm_candidate_to_x(r, feature_names=feature_names) for r in rows]
+    y = [float(r.get("quality_score", 0.0)) for r in rows]
+    y_mean = float(np.mean(y))
+    y_std = float(np.std(y))
+    x_arr = np.array(x, dtype=float)
+    x_std = np.std(x_arr, axis=0) if x_arr.size else np.array([])
+    nonconstant_features = int(np.sum(x_std > 1e-8)) if x_arr.size else 0
+    if y_std <= 1e-8:
+        return {
+            "status": "degenerate_target_variance",
+            "n": len(rows),
+            "target_mean": y_mean,
+            "target_std": y_std,
+            "nonconstant_feature_count": nonconstant_features,
+        }
+    model = Ridge(alpha=1.0, random_state=17)
+    model.fit(x, y)
+    return {
+        "status": "ok",
+        "n": len(rows),
+        "target_mean": y_mean,
+        "target_std": y_std,
+        "nonconstant_feature_count": nonconstant_features,
+        "feature_names": feature_names,
+        "weights": [float(v) for v in model.coef_],
+        "intercept": float(model.intercept_),
+        "source_dataset_key": source_dataset_key,
+        "source_split": source_split,
+    }
+
+
+def _blended_linear_scorer(
+    base_model: dict[str, Any],
+    ext_prior: dict[str, Any],
+    *,
+    blend_alpha: float,
+    norm_match_to_base: bool = True,
+) -> Callable[[dict[str, Any]], float]:
+    wb = np.array([float(v) for v in base_model.get("weights", [])], dtype=float)
+    bb = float(base_model.get("intercept", 0.0))
+    we = np.array([float(v) for v in ext_prior.get("weights", [])], dtype=float)
+    be = float(ext_prior.get("intercept", 0.0))
+    if wb.shape != we.shape or wb.size == 0:
+        return scorer_from_model(base_model)
+    if norm_match_to_base:
+        base_norm = float(np.linalg.norm(wb))
+        ext_norm = float(np.linalg.norm(we))
+        if base_norm > 1e-12 and ext_norm > 1e-12:
+            we = we * (base_norm / ext_norm)
+    w = (1.0 - blend_alpha) * wb + blend_alpha * we
+    b = (1.0 - blend_alpha) * bb + blend_alpha * be
+    return lambda row: float(np.dot(w, np.array(row["x"], dtype=float)) + b)
+
+
+def _uncertainty_gated_blended_scorer(
+    base_model: dict[str, Any],
+    ext_prior: dict[str, Any],
+    *,
+    blend_alpha: float,
+    std_threshold: float,
+    gap_threshold: float,
+) -> Callable[[dict[str, Any]], float]:
+    base_fn = scorer_from_model(base_model)
+    broad_fn = _blended_linear_scorer(
+        base_model,
+        ext_prior,
+        blend_alpha=blend_alpha,
+        norm_match_to_base=True,
+    )
+
+    def _gate(row: dict[str, Any]) -> float:
+        std = float(row.get("allocation_value_std", 0.0))
+        f2 = row.get("features_branch_v2", {}) if isinstance(row.get("features_branch_v2"), dict) else {}
+        gap_to_top = abs(float(f2.get("score_gap_to_top", 0.0)))
+        hard_flag = bool(std >= std_threshold or gap_to_top <= gap_threshold)
+        return 1.0 if hard_flag else 0.0
+
+    return lambda row: float(base_fn(row) + _gate(row) * (broad_fn(row) - base_fn(row)))
+
+
+def _external_activity_diagnostics(
+    *,
+    base_fn: Callable[[dict[str, Any]], float],
+    ext_fn: Callable[[dict[str, Any]], float],
+    tables: dict[str, Any],
+    uncertainty_std_threshold: float,
+    top_gap_threshold: float,
+) -> dict[str, Any]:
+    test_cands = [r for r in tables["candidates"] if r.get("split") == "test"]
+    if not test_cands:
+        return {"status": "no_test_candidates"}
+    score_deltas = [abs(float(ext_fn(r)) - float(base_fn(r))) for r in test_cands]
+    targeted = 0
+    targeted_changed = 0
+    changed = 0
+    for r, d in zip(test_cands, score_deltas):
+        f2 = r.get("features_branch_v2", {}) if isinstance(r.get("features_branch_v2"), dict) else {}
+        is_targeted = bool(
+            float(r.get("allocation_value_std", 0.0)) >= uncertainty_std_threshold
+            or abs(float(f2.get("score_gap_to_top", 0.0))) <= top_gap_threshold
+        )
+        targeted += int(is_targeted)
+        changed += int(d > 1e-9)
+        targeted_changed += int(is_targeted and d > 1e-9)
+
+    pair_rows = [r for r in tables["pairwise"] if r.get("split") == "test"]
+    changed_pair = 0
+    changed_pair_hard = 0
+    hard_n = 0
+    for r in pair_rows:
+        b_label = _predict_pair_label(base_fn, r)
+        e_label = _predict_pair_label(ext_fn, r)
+        diff = int(b_label != e_label)
+        changed_pair += diff
+        hard = bool(r.get("near_tie_flag", False) or r.get("adjacent_rank_flag", False) or r.get("small_margin_flag", False))
+        hard_n += int(hard)
+        changed_pair_hard += int(diff and hard)
+
+    return {
+        "status": "ok",
+        "candidate_test_n": len(test_cands),
+        "candidate_score_shift_mean_abs": float(np.mean(score_deltas)),
+        "candidate_score_shift_max_abs": float(np.max(score_deltas)),
+        "candidate_changed_fraction": float(changed / max(1, len(test_cands))),
+        "targeted_candidate_n": int(targeted),
+        "targeted_candidate_fraction": float(targeted / max(1, len(test_cands))),
+        "targeted_changed_fraction": float(targeted_changed / max(1, max(1, targeted))),
+        "pair_test_n": len(pair_rows),
+        "pair_decision_changed_n": int(changed_pair),
+        "pair_decision_changed_fraction": float(changed_pair / max(1, len(pair_rows))),
+        "pair_hard_slice_n": int(hard_n),
+        "pair_hard_slice_changed_n": int(changed_pair_hard),
+    }
 
 
 def _find_latest_real_corpus(root: Path) -> Path:
@@ -253,6 +442,18 @@ def parse_args() -> argparse.Namespace:
         default=0.5,
         help="Exponent for balanced_hardcase_weighting inverse-frequency multiplier.",
     )
+    p.add_argument(
+        "--external-supervision",
+        default="none",
+        choices=["none", "prm800k_pointwise_blend", "prm800k_uncertainty_gated_blend"],
+        help="Conservative external auxiliary supervision path.",
+    )
+    p.add_argument("--external-prm-corpus-dir", default="")
+    p.add_argument("--external-source-key", default="prm800k")
+    p.add_argument("--external-source-split", default="train")
+    p.add_argument("--external-pointwise-blend-alpha", type=float, default=0.2)
+    p.add_argument("--external-gate-uncertainty-std-threshold", type=float, default=0.03)
+    p.add_argument("--external-gate-top-gap-threshold", type=float, default=0.04)
     return p.parse_args()
 
 
@@ -339,6 +540,74 @@ def main() -> None:
             )
             results[f"intervention::{name}"]["train_status"] = model.get("status", "unknown")
 
+    external_meta: dict[str, Any] = {"external_supervision": str(args.external_supervision), "status": "not_run"}
+    if str(args.external_supervision) in {"prm800k_pointwise_blend", "prm800k_uncertainty_gated_blend"}:
+        ext_dir = Path(args.external_prm_corpus_dir) if args.external_prm_corpus_dir else None
+        if ext_dir is None:
+            external_meta = {"external_supervision": str(args.external_supervision), "status": "missing_external_prm_corpus_dir"}
+        else:
+            ext_prior = _fit_external_prm_pointwise_prior(
+                ext_dir,
+                feature_names=list(tables.get("feature_names", [])),
+                source_dataset_key=str(args.external_source_key),
+                source_split=str(args.external_source_split),
+            )
+            external_meta = {
+                "external_supervision": str(args.external_supervision),
+                "external_prm_corpus_dir": str(ext_dir),
+                "external_source_key": str(args.external_source_key),
+                "external_source_split": str(args.external_source_split),
+                "external_pointwise_blend_alpha": float(args.external_pointwise_blend_alpha),
+                "external_gate_uncertainty_std_threshold": float(args.external_gate_uncertainty_std_threshold),
+                "external_gate_top_gap_threshold": float(args.external_gate_top_gap_threshold),
+                "prior_fit": ext_prior,
+                "status": "base_or_prior_unavailable",
+            }
+            pointwise_model = reweighted_models.get("pointwise", {})
+            if str(pointwise_model.get("status", "")) == "ok" and str(ext_prior.get("status", "")) == "ok":
+                base_fn = scorer_from_model(pointwise_model)
+                broad_fn = _blended_linear_scorer(
+                    pointwise_model,
+                    ext_prior,
+                    blend_alpha=float(args.external_pointwise_blend_alpha),
+                )
+                broad_key = "external::prm800k_pointwise_blend_from_reweighted_pointwise"
+                results[broad_key] = _evaluate_model(broad_key, broad_fn, reweighted_tables)
+                results[broad_key]["train_status"] = "ok_external_blend"
+                test_rows = [r for r in reweighted_tables["candidates"] if r.get("split") == "test"]
+                if test_rows:
+                    deltas = [abs(float(broad_fn(r)) - float(base_fn(r))) for r in test_rows]
+                    external_meta["score_shift_test_mean_abs"] = float(np.mean(deltas))
+                    external_meta["score_shift_test_max_abs"] = float(np.max(deltas))
+
+                external_meta["broad_blend_activity"] = _external_activity_diagnostics(
+                    base_fn=base_fn,
+                    ext_fn=broad_fn,
+                    tables=reweighted_tables,
+                    uncertainty_std_threshold=float(args.external_gate_uncertainty_std_threshold),
+                    top_gap_threshold=float(args.external_gate_top_gap_threshold),
+                )
+
+                if str(args.external_supervision) == "prm800k_uncertainty_gated_blend":
+                    aligned_fn = _uncertainty_gated_blended_scorer(
+                        pointwise_model,
+                        ext_prior,
+                        blend_alpha=float(args.external_pointwise_blend_alpha),
+                        std_threshold=float(args.external_gate_uncertainty_std_threshold),
+                        gap_threshold=float(args.external_gate_top_gap_threshold),
+                    )
+                    aligned_key = "external::prm800k_uncertainty_gated_blend_from_reweighted_pointwise"
+                    results[aligned_key] = _evaluate_model(aligned_key, aligned_fn, reweighted_tables)
+                    results[aligned_key]["train_status"] = "ok_external_aligned_blend"
+                    external_meta["aligned_blend_activity"] = _external_activity_diagnostics(
+                        base_fn=base_fn,
+                        ext_fn=aligned_fn,
+                        tables=reweighted_tables,
+                        uncertainty_std_threshold=float(args.external_gate_uncertainty_std_threshold),
+                        top_gap_threshold=float(args.external_gate_top_gap_threshold),
+                    )
+                external_meta["status"] = "ok"
+
     ranking = sorted(
         [
             {
@@ -369,8 +638,16 @@ def main() -> None:
             "uncertainty_weighting": bool(args.uncertainty_weighting),
             "intervention": str(args.intervention),
             "intervention_target_boost": float(args.intervention_target_boost),
+            "external_supervision": str(args.external_supervision),
+            "external_prm_corpus_dir": str(args.external_prm_corpus_dir),
+            "external_source_key": str(args.external_source_key),
+            "external_source_split": str(args.external_source_split),
+            "external_pointwise_blend_alpha": float(args.external_pointwise_blend_alpha),
+            "external_gate_uncertainty_std_threshold": float(args.external_gate_uncertainty_std_threshold),
+            "external_gate_top_gap_threshold": float(args.external_gate_top_gap_threshold),
         },
         "intervention_meta": intervention_meta,
+        "external_meta": external_meta,
         "methods_compared": list(results.keys()),
         "ranking": ranking,
         "metrics": results,
