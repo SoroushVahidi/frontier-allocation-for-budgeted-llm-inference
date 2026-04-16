@@ -130,6 +130,16 @@
         "SejinKimm/ARCTraj"
       ],
       "selection_note": "Public ARCTraj release; schema is table-centric and requires downstream parsing choices."
+    },
+    {
+      "dataset_key": "apps",
+      "hf_dataset_id": "codeparrot/apps",
+      "supervision_type": "verifier_backed_code_reasoning",
+      "structure_type": "coding_problem_with_testcase_verifier",
+      "variant_candidates": [
+        "codeparrot/apps"
+      ],
+      "selection_note": "APPS coding benchmark with testcase-based verification signal; branch-level supervision is derived, not native."
     }
   ],
   "candidate_audit": [
@@ -146,6 +156,13 @@
       "chosen_source": "HF: Jolandaaa/agentprm (gated), no inverseprm dataset found",
       "integration_status": "not_integrated",
       "reason": "agentprm is gated/inaccessible in this environment; no stable public InversePRM dataset artifact identified."
+    },
+    {
+      "candidate_name": "APPS",
+      "requested_source": "HF coding benchmark with executable verification signal",
+      "chosen_source": "HF: codeparrot/apps",
+      "integration_status": "integrated",
+      "reason": "Public HF dataset is accessible; testcase fields support verifier-backed derived supervision paths."
     }
   ]
 }

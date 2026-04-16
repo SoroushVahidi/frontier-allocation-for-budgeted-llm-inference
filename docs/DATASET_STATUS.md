@@ -1,6 +1,6 @@
 # Dataset status (evaluation vs supervision vs readiness)
 
-This note clarifies dataset roles for the repository.
+This note clarifies dataset roles for the repository. For the latest full code-vs-doc/readiness audit, see `docs/CURRENT_DATASET_AUDIT_STATUS.md` (2026-04-16).
 
 ## A) Main evaluation datasets (current benchmark-facing set)
 
@@ -30,6 +30,7 @@ These are integrated mainly for branch/process supervision experiments and warm-
 - Prometheus collections
 - math_verify release
 - ARCTraj
+- APPS (verifier-backed coding dataset; partially integrated)
 
 Status: **integration/preparation sources**; not equivalent to final-method evidence.
 

@@ -1,0 +1,95 @@
+{
+  "schema_version": "branch_learning_corpus_v1",
+  "description": "Canonical processed corpus schema for branch-allocation learning.",
+  "row_types": {
+    "candidate": {
+      "required_fields": [
+        "schema_version",
+        "row_type",
+        "row_uid",
+        "state_id",
+        "branch_id",
+        "dataset_name",
+        "remaining_budget",
+        "split",
+        "estimated_value_if_allocate_next",
+        "branch_vs_outside_gap",
+        "allocation_value_std",
+        "mode",
+        "is_exact_label",
+        "is_approx_label",
+        "label_source"
+      ],
+      "optional_fields": [
+        "example_id",
+        "source_run_id",
+        "source_seed",
+        "source_dataset_name",
+        "features_branch_v1",
+        "features_branch_v2",
+        "allocation_candidates_evaluated"
+      ]
+    },
+    "pairwise": {
+      "required_fields": [
+        "schema_version",
+        "row_type",
+        "row_uid",
+        "canonical_pair_uid",
+        "state_id",
+        "branch_i",
+        "branch_j",
+        "dataset_name",
+        "remaining_budget",
+        "split",
+        "label",
+        "preference",
+        "margin",
+        "margin_abs",
+        "pair_type",
+        "near_tie_flag",
+        "adjacent_rank_flag",
+        "is_exact_label",
+        "is_approx_label",
+        "label_source",
+        "source_regime"
+      ],
+      "optional_fields": [
+        "example_id",
+        "relative_margin",
+        "pair_uncertainty_std_mean",
+        "pair_uncertainty_std_max",
+        "small_margin_flag",
+        "ambiguous_tie_target",
+        "ambiguous_tie_reasons",
+        "ternary_label_name",
+        "pair_mode_provenance",
+        "replaced_approx_label",
+        "mined_reasons",
+        "source_path"
+      ]
+    },
+    "outside_option": {
+      "required_fields": [
+        "schema_version",
+        "row_type",
+        "row_uid",
+        "state_id",
+        "branch_id",
+        "dataset_name",
+        "remaining_budget",
+        "split",
+        "branch_vs_outside_gap",
+        "estimated_value_if_allocate_next",
+        "allocation_value_std",
+        "is_exact_label",
+        "label_source"
+      ],
+      "optional_fields": [
+        "example_id",
+        "source_run_id",
+        "source_seed"
+      ]
+    }
+  }
+}
