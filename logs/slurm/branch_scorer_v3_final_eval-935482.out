@@ -1,0 +1,7 @@
+Best learned selected: adaptive_learned_branch_score_v4
+Wrote: outputs/branch_scorer_v3_final_eval/selected_best_learned_model.json
+Wrote: outputs/branch_scorer_v3_final_eval/final_summary.json
+Wrote: outputs/branch_scorer_v3_final_eval/final_per_setting.csv
+Wrote: outputs/branch_scorer_v3_final_eval/budget_sweep_table.csv
+Wrote: outputs/branch_scorer_v3_final_eval/manuscript_eval_note.md
+Final manuscript evaluation run complete.

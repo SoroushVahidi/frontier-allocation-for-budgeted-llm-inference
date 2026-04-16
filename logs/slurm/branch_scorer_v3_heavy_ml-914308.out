@@ -1,0 +1,1433 @@
+Starting branch_scorer_v3 ML sweep.
+Output root: outputs/branch_scorer_v3_heavy_ml
+Building dataset for seed=7
+Wrote dataset to outputs/branch_scorer_v3_heavy_ml/datasets/seed_7/branch_scorer_v3_dataset.jsonl
+Building dataset for seed=19
+Wrote dataset to outputs/branch_scorer_v3_heavy_ml/datasets/seed_19/branch_scorer_v3_dataset.jsonl
+Building dataset for seed=23
+Wrote dataset to outputs/branch_scorer_v3_heavy_ml/datasets/seed_23/branch_scorer_v3_dataset.jsonl
+{
+  "pooled_from_seeds": [
+    7,
+    19,
+    23
+  ],
+  "rows": 550424,
+  "train_rows": 439334,
+  "test_rows": 111090
+}
+{
+  "train_rows": 439334,
+  "test_rows": 111090,
+  "models_written": [
+    "adaptive_learned_branch_score",
+    "adaptive_learned_branch_score_v1",
+    "adaptive_learned_branch_score_v2",
+    "adaptive_learned_branch_score_v3",
+    "adaptive_learned_branch_score_v3_linear",
+    "adaptive_learned_branch_score_v4",
+    "adaptive_learned_branch_score_v4_linear",
+    "adaptive_learned_branch_score_v5",
+    "adaptive_learned_branch_score_v6"
+  ]
+}
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5112,
+      "solve_rate": 0.7616,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5364,
+      "solve_rate": 0.7732,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5384,
+      "solve_rate": 0.7644,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5232,
+      "solve_rate": 0.7716,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5248,
+      "solve_rate": 0.7612,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5288,
+      "solve_rate": 0.7712,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.01319999999999999,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.011599999999999944,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": 0.0016000000000000458,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": -0.00759999999999994,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": 0.0040000000000000036,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b8_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b8_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5768,
+      "solve_rate": 0.8796,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.588,
+      "solve_rate": 0.8608,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5924,
+      "solve_rate": 0.8812,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5728,
+      "solve_rate": 0.8692,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.578,
+      "solve_rate": 0.8724,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5712,
+      "solve_rate": 0.8652,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.015199999999999991,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.010000000000000009,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": 0.005199999999999982,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": -0.016799999999999926,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.006799999999999917,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b8_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b8_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5988,
+      "solve_rate": 0.9064,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6152,
+      "solve_rate": 0.902,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.62,
+      "solve_rate": 0.9024,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.6132,
+      "solve_rate": 0.9064,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.6032,
+      "solve_rate": 0.902,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5936,
+      "solve_rate": 0.8836,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.0020000000000000018,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.01200000000000001,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.010000000000000009,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.021599999999999953,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.009599999999999942,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b8_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b8_i7_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5188,
+      "solve_rate": 0.7748,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5388,
+      "solve_rate": 0.774,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5136,
+      "solve_rate": 0.7692,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5372,
+      "solve_rate": 0.794,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.542,
+      "solve_rate": 0.7976,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5312,
+      "solve_rate": 0.7836,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.0015999999999999348,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": 0.0032000000000000917,
+  "v5_beats_relative_rank": true,
+  "v5_margin_over_v4": 0.0048000000000000265,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": -0.00759999999999994,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.010800000000000032,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b10_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b10_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5748,
+      "solve_rate": 0.9004,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.584,
+      "solve_rate": 0.902,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5704,
+      "solve_rate": 0.8972,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5896,
+      "solve_rate": 0.8996,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5872,
+      "solve_rate": 0.9016,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5852,
+      "solve_rate": 0.9096,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.005600000000000049,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": 0.0032000000000000917,
+  "v5_beats_relative_rank": true,
+  "v5_margin_over_v4": -0.0023999999999999577,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": 0.0012000000000000899,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": -0.0020000000000000018,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b10_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b10_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5948,
+      "solve_rate": 0.9276,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6272,
+      "solve_rate": 0.9312,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.6128,
+      "solve_rate": 0.9352,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.63,
+      "solve_rate": 0.9412,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.6048,
+      "solve_rate": 0.9368,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5796,
+      "solve_rate": 0.924,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.0028000000000000247,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": -0.022399999999999975,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.0252,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.047599999999999976,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.0252,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b10_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b10_i7_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5172,
+      "solve_rate": 0.7764,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.534,
+      "solve_rate": 0.7708,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5208,
+      "solve_rate": 0.7768,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5464,
+      "solve_rate": 0.8004,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5392,
+      "solve_rate": 0.7948,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5284,
+      "solve_rate": 0.7856,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.012399999999999967,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": 0.005199999999999982,
+  "v5_beats_relative_rank": true,
+  "v5_margin_over_v4": -0.007199999999999984,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.005600000000000049,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.010800000000000032,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b12_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b12_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.6004,
+      "solve_rate": 0.9172,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5916,
+      "solve_rate": 0.9128,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5764,
+      "solve_rate": 0.9184,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.598,
+      "solve_rate": 0.916,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5736,
+      "solve_rate": 0.9064,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5844,
+      "solve_rate": 0.916,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.006399999999999961,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": -0.018000000000000016,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.024399999999999977,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.007199999999999984,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": 0.010800000000000032,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b12_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b12_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5972,
+      "solve_rate": 0.9552,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6044,
+      "solve_rate": 0.9536,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.628,
+      "solve_rate": 0.9604,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.6004,
+      "solve_rate": 0.9436,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.6036,
+      "solve_rate": 0.9508,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.62,
+      "solve_rate": 0.956,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.0040000000000000036,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.0008000000000000229,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": 0.0031999999999999806,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": 0.015599999999999947,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.01639999999999997,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b12_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed7_b12_i7_note.md
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5484,
+      "solve_rate": 0.7812,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5352,
+      "solve_rate": 0.7732,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.534,
+      "solve_rate": 0.764,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.536,
+      "solve_rate": 0.7656,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5352,
+      "solve_rate": 0.7796,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5392,
+      "solve_rate": 0.7728,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.0008000000000000229,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": 0.0,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.0008000000000000229,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": 0.0040000000000000036,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.0040000000000000036,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b8_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b8_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5792,
+      "solve_rate": 0.8756,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5656,
+      "solve_rate": 0.854,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5832,
+      "solve_rate": 0.8704,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5832,
+      "solve_rate": 0.8776,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5832,
+      "solve_rate": 0.8604,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5748,
+      "solve_rate": 0.8644,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.01760000000000006,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": 0.01760000000000006,
+  "v5_beats_relative_rank": true,
+  "v5_margin_over_v4": 0.0,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": 0.009199999999999986,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": -0.008400000000000074,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b8_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b8_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5924,
+      "solve_rate": 0.8968,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6052,
+      "solve_rate": 0.8944,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.6028,
+      "solve_rate": 0.8904,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.6076,
+      "solve_rate": 0.902,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5988,
+      "solve_rate": 0.9008,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.614,
+      "solve_rate": 0.8932,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.0024000000000000687,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": -0.006399999999999961,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.00880000000000003,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": 0.00880000000000003,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.015199999999999991,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b8_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b8_i7_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5428,
+      "solve_rate": 0.7836,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5336,
+      "solve_rate": 0.778,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.55,
+      "solve_rate": 0.784,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5344,
+      "solve_rate": 0.7712,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.524,
+      "solve_rate": 0.78,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.538,
+      "solve_rate": 0.77,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.0008000000000000229,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": -0.009599999999999942,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.010399999999999965,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": 0.0044000000000000705,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.014000000000000012,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b10_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b10_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5856,
+      "solve_rate": 0.9036,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5992,
+      "solve_rate": 0.8984,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5724,
+      "solve_rate": 0.902,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5868,
+      "solve_rate": 0.904,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5824,
+      "solve_rate": 0.892,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5896,
+      "solve_rate": 0.8964,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.012399999999999967,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.016799999999999926,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.0043999999999999595,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.009599999999999942,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": 0.007199999999999984,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b10_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b10_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.6184,
+      "solve_rate": 0.9348,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6128,
+      "solve_rate": 0.9268,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.6116,
+      "solve_rate": 0.9356,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.6192,
+      "solve_rate": 0.9312,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.6212,
+      "solve_rate": 0.9376,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.6064,
+      "solve_rate": 0.924,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.006399999999999961,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": 0.008399999999999963,
+  "v5_beats_relative_rank": true,
+  "v5_margin_over_v4": 0.0020000000000000018,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": -0.006399999999999961,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.014799999999999924,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b10_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b10_i7_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5384,
+      "solve_rate": 0.7832,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.538,
+      "solve_rate": 0.7796,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5404,
+      "solve_rate": 0.7832,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.532,
+      "solve_rate": 0.7736,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5176,
+      "solve_rate": 0.778,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5328,
+      "solve_rate": 0.7744,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.006000000000000005,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.020400000000000085,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.01440000000000008,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.005199999999999982,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": 0.015200000000000102,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b12_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b12_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5672,
+      "solve_rate": 0.9028,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6008,
+      "solve_rate": 0.9208,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5936,
+      "solve_rate": 0.9076,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5804,
+      "solve_rate": 0.9164,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.574,
+      "solve_rate": 0.9252,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.56,
+      "solve_rate": 0.9036,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.020399999999999974,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.026800000000000046,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.006400000000000072,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.04079999999999995,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.013999999999999901,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b12_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b12_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.6132,
+      "solve_rate": 0.9512,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6048,
+      "solve_rate": 0.9476,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.6132,
+      "solve_rate": 0.9508,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.6104,
+      "solve_rate": 0.9568,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.6124,
+      "solve_rate": 0.9396,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.6144,
+      "solve_rate": 0.9552,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.005600000000000049,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": 0.007600000000000051,
+  "v5_beats_relative_rank": true,
+  "v5_margin_over_v4": 0.0020000000000000018,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": 0.009599999999999942,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.0019999999999998908,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b12_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed19_b12_i7_note.md
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5248,
+      "solve_rate": 0.758,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5444,
+      "solve_rate": 0.77,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5428,
+      "solve_rate": 0.7824,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5436,
+      "solve_rate": 0.7744,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5368,
+      "solve_rate": 0.7728,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.546,
+      "solve_rate": 0.7788,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.0008000000000000229,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.00759999999999994,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.006799999999999917,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": 0.0016000000000000458,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.009199999999999986,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b8_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b8_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5968,
+      "solve_rate": 0.8828,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5556,
+      "solve_rate": 0.8628,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5928,
+      "solve_rate": 0.8668,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5948,
+      "solve_rate": 0.8784,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.578,
+      "solve_rate": 0.8672,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.602,
+      "solve_rate": 0.8796,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.03920000000000001,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": 0.022399999999999975,
+  "v5_beats_relative_rank": true,
+  "v5_margin_over_v4": -0.016800000000000037,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": 0.0464,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.02400000000000002,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b8_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b8_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.6148,
+      "solve_rate": 0.9028,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6156,
+      "solve_rate": 0.9144,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.6088,
+      "solve_rate": 0.912,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.6,
+      "solve_rate": 0.8936,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5888,
+      "solve_rate": 0.8896,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.604,
+      "solve_rate": 0.894,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.015600000000000058,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.026800000000000046,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.011199999999999988,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.011600000000000055,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": 0.015199999999999991,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b8_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b8_i7_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5392,
+      "solve_rate": 0.7772,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.554,
+      "solve_rate": 0.7828,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5428,
+      "solve_rate": 0.784,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5576,
+      "solve_rate": 0.7856,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5284,
+      "solve_rate": 0.7852,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5516,
+      "solve_rate": 0.7944,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.0035999999999999366,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": -0.025600000000000067,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.029200000000000004,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.0024000000000000687,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": 0.0232,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b10_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b10_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5816,
+      "solve_rate": 0.9056,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5968,
+      "solve_rate": 0.898,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5844,
+      "solve_rate": 0.9032,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5796,
+      "solve_rate": 0.8956,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5692,
+      "solve_rate": 0.8984,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5824,
+      "solve_rate": 0.896,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.017199999999999993,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.027599999999999958,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.010399999999999965,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.014399999999999968,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": 0.01319999999999999,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b10_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b10_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 10,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.6132,
+      "solve_rate": 0.9312,
+      "avg_actions": 10.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.5988,
+      "solve_rate": 0.9364,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.6156,
+      "solve_rate": 0.9452,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5896,
+      "solve_rate": 0.9264,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.608,
+      "solve_rate": 0.9304,
+      "avg_actions": 10.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.6196,
+      "solve_rate": 0.9364,
+      "avg_actions": 10.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.009199999999999986,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": 0.009199999999999986,
+  "v5_beats_relative_rank": true,
+  "v5_margin_over_v4": 0.018399999999999972,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": 0.02080000000000004,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.011600000000000055,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b10_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b10_i7_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 3,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5376,
+      "solve_rate": 0.7788,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.546,
+      "solve_rate": 0.7816,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5392,
+      "solve_rate": 0.7796,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5612,
+      "solve_rate": 0.7796,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5384,
+      "solve_rate": 0.798,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5548,
+      "solve_rate": 0.7968,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": 0.015199999999999991,
+  "v4_beats_relative_rank": true,
+  "v5_margin_over_relative_rank": -0.007600000000000051,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.022800000000000042,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": 0.008799999999999919,
+  "v6_beats_relative_rank": true,
+  "v6_margin_over_v5": 0.01639999999999997,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b12_i3.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b12_i3_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.6004,
+      "solve_rate": 0.918,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.596,
+      "solve_rate": 0.9148,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.58,
+      "solve_rate": 0.9116,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5904,
+      "solve_rate": 0.9288,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.5648,
+      "solve_rate": 0.916,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5748,
+      "solve_rate": 0.9076,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.005599999999999938,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.031200000000000006,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": -0.025600000000000067,
+  "v5_beats_v4": false,
+  "v6_margin_over_relative_rank": -0.021199999999999997,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": 0.010000000000000009,
+  "v6_beats_v5": true
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b12_i5.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b12_i5_note.md
+{
+  "episodes": 2500,
+  "budget": 12,
+  "n_init_branches": 7,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.6132,
+      "solve_rate": 0.9548,
+      "avg_actions": 12.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.6192,
+      "solve_rate": 0.9624,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.6004,
+      "solve_rate": 0.9592,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5936,
+      "solve_rate": 0.9428,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.6148,
+      "solve_rate": 0.9572,
+      "avg_actions": 12.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.61,
+      "solve_rate": 0.9544,
+      "avg_actions": 12.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.025599999999999956,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.0043999999999999595,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": 0.021199999999999997,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": -0.009199999999999986,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.0048000000000000265,
+  "v6_beats_v5": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b12_i7.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/controller_eval/controller_eval_seed23_b12_i7_note.md
+{
+  "seeds": [
+    3,
+    7,
+    11,
+    19,
+    23
+  ],
+  "budgets": [
+    8,
+    10,
+    12
+  ],
+  "init_branches": [
+    3,
+    5,
+    7
+  ],
+  "episodes_per_setting": 1200,
+  "methods": [
+    "adaptive_relative_rank",
+    "adaptive_score_plus_progress",
+    "adaptive_learned_branch_score",
+    "adaptive_learned_branch_score_v4",
+    "adaptive_learned_branch_score_v5",
+    "adaptive_learned_branch_score_v6"
+  ],
+  "method_accuracy_stats": {
+    "adaptive_relative_rank": {
+      "mean_accuracy": 0.5767777777777778,
+      "std_accuracy": 0.031031942921471767
+    },
+    "adaptive_score_plus_progress": {
+      "mean_accuracy": 0.5732962962962963,
+      "std_accuracy": 0.03472997938041513
+    },
+    "adaptive_learned_branch_score": {
+      "mean_accuracy": 0.5753518518518519,
+      "std_accuracy": 0.033634972654359836
+    },
+    "adaptive_learned_branch_score_v4": {
+      "mean_accuracy": 0.5771481481481482,
+      "std_accuracy": 0.03531930577981645
+    },
+    "adaptive_learned_branch_score_v5": {
+      "mean_accuracy": 0.575,
+      "std_accuracy": 0.0369530065266417
+    },
+    "adaptive_learned_branch_score_v6": {
+      "mean_accuracy": 0.577037037037037,
+      "std_accuracy": 0.031230206351411046
+    }
+  },
+  "v6_margin_vs_relative_rank_mean": 0.00025925925925925536,
+  "v6_margin_vs_relative_rank_std": 0.019444303350458107,
+  "v6_win_rate_vs_relative_rank": 0.5111111111111111,
+  "v6_win_count_vs_relative_rank": 23,
+  "v6_margin_vs_v5_mean": 0.0020370370370370347,
+  "v6_margin_vs_v5_std": 0.020286950402979474,
+  "trial_count": 45,
+  "best_setting_for_v6_margin_vs_relative_rank": {
+    "seed": 7,
+    "budget": 12,
+    "init_branches": 3,
+    "margin": 0.04499999999999993
+  },
+  "worst_setting_for_v6_margin_vs_relative_rank": {
+    "seed": 3,
+    "budget": 8,
+    "init_branches": 3,
+    "margin": -0.033333333333333326
+  },
+  "v6_robustly_beats_relative_rank": false
+}
+Wrote: outputs/branch_scorer_v3_heavy_ml/robustness/robustness_summary.json
+Wrote: outputs/branch_scorer_v3_heavy_ml/robustness/robustness_per_setting.csv
+Wrote: outputs/branch_scorer_v3_heavy_ml/robustness/robustness_note.md

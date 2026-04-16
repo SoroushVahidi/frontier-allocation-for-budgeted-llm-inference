@@ -1,0 +1,17 @@
+Starting heavy real-model routing evaluation matrix.
+subset_size=60 max_actions=8 max_branches=4 seeds=7 19 23
+Running combo: provider=openai dataset=openai/gsm8k seed=7
+outputs/real_model_fixed_budget_heavy/provider_openai__dataset_openai__gsm8k__seed_7/20260416T205702Z
+Running combo: provider=openai dataset=openai/gsm8k seed=19
+outputs/real_model_fixed_budget_heavy/provider_openai__dataset_openai__gsm8k__seed_19/20260416T211753Z
+Running combo: provider=openai dataset=openai/gsm8k seed=23
+outputs/real_model_fixed_budget_heavy/provider_openai__dataset_openai__gsm8k__seed_23/20260416T213928Z
+Running combo: provider=openai dataset=EleutherAI/hendrycks_math seed=7
+outputs/real_model_fixed_budget_heavy/provider_openai__dataset_EleutherAI__hendrycks_math__seed_7/20260416T220038Z
+Running combo: provider=openai dataset=EleutherAI/hendrycks_math seed=19
+outputs/real_model_fixed_budget_heavy/provider_openai__dataset_EleutherAI__hendrycks_math__seed_19/20260416T222618Z
+Running combo: provider=openai dataset=EleutherAI/hendrycks_math seed=23
+outputs/real_model_fixed_budget_heavy/provider_openai__dataset_EleutherAI__hendrycks_math__seed_23/20260416T225102Z
+Running combo: provider=openai dataset=Idavidrein/gpqa seed=7
+outputs/real_model_fixed_budget_heavy/provider_openai__dataset_Idavidrein__gpqa__seed_7/20260416T231329Z
+Running combo: provider=openai dataset=Idavidrein/gpqa seed=19
