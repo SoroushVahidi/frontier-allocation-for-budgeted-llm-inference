@@ -1,0 +1,491 @@
+{
+  "pass": "canonical_exact_promoted_near_boundary_support_v4",
+  "date": "2026-04-16",
+  "artifacts": {
+    "start_corpus": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_lowbudget_exactpromoted_v1",
+    "expanded_corpus": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_exactpromoted_boundary_epnb_holdout_v4",
+    "external_prm_corpus": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+    "holdout_manifest": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_epnb_v4_manifest.json",
+    "holdout_jsonl": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_epnb_v4_holdout.jsonl",
+    "holdout_audit": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_epnb_v4_audit.json",
+    "old_eval": "outputs/canonical_branch_learning_pass/boundary_sensitive_eval_20260416_epnb_old_v1_seed17.json",
+    "new_eval": "outputs/canonical_branch_learning_pass/boundary_sensitive_eval_20260416_epnb_new_v4_seed35.json",
+    "support_audit": "outputs/canonical_branch_learning_pass/epnb_support_audit_old_new_v4.json"
+  },
+  "strategy": {
+    "name": "extreme_low_budget_exact_overlap_mining",
+    "description": "budget=1-only approx+exact generation merged into recovered canonical family, then holdout expansion/freeze"
+  },
+  "holdout": {
+    "baseline_seed": 17,
+    "selected_seed": 35,
+    "protected_strata": {
+      "total_test_pairs": 27,
+      "near_tie": 10,
+      "adjacent_rank": 18,
+      "small_margin": 19,
+      "exact_promoted": 6,
+      "exact_only": 6,
+      "approx_only": 21,
+      "low_budget": 17,
+      "extreme_low_budget": 8,
+      "boundary_eligible": 14,
+      "exact_promoted_near_boundary": 3,
+      "exact_promoted_non_boundary": 3,
+      "approx_near_boundary": 11,
+      "approx_non_boundary": 10,
+      "low_budget_near_boundary": 5,
+      "low_budget_non_boundary": 12,
+      "extreme_low_budget_boundary_eligible": 0
+    }
+  },
+  "support_counts_old_new": {
+    "old": {
+      "total_test_pairs": 9,
+      "total_top1_states": 2,
+      "near_tie": 3,
+      "adjacent_rank": 5,
+      "small_margin": 6,
+      "exact_promoted": 1,
+      "low_budget": 3,
+      "extreme_low_budget": 0,
+      "boundary_eligible": 1,
+      "exact_promoted_near_boundary": 0,
+      "exact_promoted_non_boundary": 1,
+      "low_budget_near_boundary": 1,
+      "extreme_low_budget_boundary_eligible": 0,
+      "exact_only": 1,
+      "approx_only": 8,
+      "pivot_group_boundary_counts": {
+        "openai/gsm8k|budget_2": 1
+      }
+    },
+    "new": {
+      "total_test_pairs": 27,
+      "total_top1_states": 10,
+      "near_tie": 10,
+      "adjacent_rank": 18,
+      "small_margin": 19,
+      "exact_promoted": 6,
+      "low_budget": 17,
+      "extreme_low_budget": 8,
+      "boundary_eligible": 14,
+      "exact_promoted_near_boundary": 3,
+      "exact_promoted_non_boundary": 3,
+      "low_budget_near_boundary": 5,
+      "extreme_low_budget_boundary_eligible": 0,
+      "exact_only": 6,
+      "approx_only": 21,
+      "pivot_group_boundary_counts": {
+        "HuggingFaceH4/MATH-500|budget_3": 6,
+        "openai/gsm8k|budget_2": 4,
+        "openai/gsm8k|budget_3": 3,
+        "HuggingFaceH4/MATH-500|budget_2": 1
+      }
+    },
+    "deltas": {
+      "total_test_pairs": 18,
+      "total_top1_states": 8,
+      "near_tie": 7,
+      "adjacent_rank": 13,
+      "small_margin": 13,
+      "exact_promoted": 5,
+      "low_budget": 14,
+      "extreme_low_budget": 8,
+      "boundary_eligible": 13,
+      "exact_promoted_near_boundary": 3,
+      "exact_promoted_non_boundary": 2,
+      "low_budget_near_boundary": 4,
+      "extreme_low_budget_boundary_eligible": 0,
+      "exact_only": 5,
+      "approx_only": 13
+    }
+  },
+  "aggregate_metrics": {
+    "old": {
+      "n": 9,
+      "anchor": 0.3333333333333333,
+      "broad": 0.3333333333333333,
+      "aligned": 0.3333333333333333,
+      "boundary": 0.3333333333333333
+    },
+    "new": {
+      "n": 27,
+      "anchor": 0.48148148148148145,
+      "broad": 0.5185185185185185,
+      "aligned": 0.5185185185185185,
+      "boundary": 0.5185185185185185
+    }
+  },
+  "hard_slice_metrics_new": {
+    "near_tie": {
+      "n": 10,
+      "anchor": 0.4,
+      "broad": 0.4,
+      "aligned": 0.4,
+      "boundary": 0.4
+    },
+    "adjacent_rank": {
+      "n": 18,
+      "anchor": 0.4444444444444444,
+      "broad": 0.5,
+      "aligned": 0.5,
+      "boundary": 0.5
+    },
+    "small_margin": {
+      "n": 19,
+      "anchor": 0.3157894736842105,
+      "broad": 0.3684210526315789,
+      "aligned": 0.3684210526315789,
+      "boundary": 0.3684210526315789
+    }
+  },
+  "protected_strata_metrics_new": {
+    "exact_promoted_near_boundary": {
+      "n": 3,
+      "anchor": 0.3333333333333333,
+      "broad": 0.6666666666666666,
+      "aligned": 0.6666666666666666,
+      "boundary": 0.6666666666666666
+    },
+    "exact_promoted_non_boundary": {
+      "n": 3,
+      "anchor": 0.6666666666666666,
+      "broad": 0.6666666666666666,
+      "aligned": 0.6666666666666666,
+      "boundary": 0.6666666666666666
+    },
+    "approx_near_boundary": {
+      "n": 11,
+      "anchor": 0.36363636363636365,
+      "broad": 0.36363636363636365,
+      "aligned": 0.36363636363636365,
+      "boundary": 0.36363636363636365
+    },
+    "approx_non_boundary": {
+      "n": 10,
+      "anchor": 0.6,
+      "broad": 0.6,
+      "aligned": 0.6,
+      "boundary": 0.6
+    },
+    "low_budget_near_boundary": {
+      "n": 5,
+      "anchor": 0.2,
+      "broad": 0.2,
+      "aligned": 0.2,
+      "boundary": 0.2
+    },
+    "low_budget_non_boundary": {
+      "n": 12,
+      "anchor": 0.6666666666666666,
+      "broad": 0.6666666666666666,
+      "aligned": 0.6666666666666666,
+      "boundary": 0.6666666666666666
+    }
+  },
+  "boundary_sensitive_metrics": {
+    "boundary_eligible_old": {
+      "n": 1,
+      "anchor": 0.0,
+      "broad": 0.0,
+      "aligned": 0.0,
+      "boundary": 0.0
+    },
+    "boundary_eligible_new": {
+      "n": 14,
+      "anchor": 0.35714285714285715,
+      "broad": 0.42857142857142855,
+      "aligned": 0.42857142857142855,
+      "boundary": 0.42857142857142855
+    },
+    "pivot_consistency_old": {
+      "anchor": {
+        "eligible_state_n": 0,
+        "consistency": 0.0
+      },
+      "broad": {
+        "eligible_state_n": 0,
+        "consistency": 0.0
+      },
+      "aligned": {
+        "eligible_state_n": 0,
+        "consistency": 0.0
+      },
+      "boundary": {
+        "eligible_state_n": 0,
+        "consistency": 0.0
+      }
+    },
+    "pivot_consistency_new": {
+      "anchor": {
+        "eligible_state_n": 5,
+        "consistency": 0.4
+      },
+      "broad": {
+        "eligible_state_n": 5,
+        "consistency": 0.4
+      },
+      "aligned": {
+        "eligible_state_n": 5,
+        "consistency": 0.4
+      },
+      "boundary": {
+        "eligible_state_n": 5,
+        "consistency": 0.4
+      }
+    }
+  },
+  "paired_uncertainty": {
+    "old": {
+      "all": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 9
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 9
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 9
+        }
+      },
+      "near_tie": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 3
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 3
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 3
+        }
+      },
+      "adjacent_rank": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 5
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 5
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 5
+        }
+      },
+      "small_margin": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 6
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 6
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 6
+        }
+      },
+      "low_budget": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 3
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 3
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 3
+        }
+      },
+      "boundary_eligible": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 1
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 1
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 1
+        }
+      }
+    },
+    "new": {
+      "all": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.037037037037037035,
+          "ci_low": 0.0,
+          "ci_high": 0.1111111111111111,
+          "n": 27
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.037037037037037035,
+          "ci_low": 0.0,
+          "ci_high": 0.1111111111111111,
+          "n": 27
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.037037037037037035,
+          "ci_low": 0.0,
+          "ci_high": 0.1111111111111111,
+          "n": 27
+        }
+      },
+      "near_tie": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 10
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 10
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 10
+        }
+      },
+      "adjacent_rank": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.05555555555555555,
+          "ci_low": 0.0,
+          "ci_high": 0.16666666666666666,
+          "n": 18
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.05555555555555555,
+          "ci_low": 0.0,
+          "ci_high": 0.16666666666666666,
+          "n": 18
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.05555555555555555,
+          "ci_low": 0.0,
+          "ci_high": 0.16666666666666666,
+          "n": 18
+        }
+      },
+      "small_margin": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.05263157894736842,
+          "ci_low": 0.0,
+          "ci_high": 0.15789473684210525,
+          "n": 19
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.05263157894736842,
+          "ci_low": 0.0,
+          "ci_high": 0.15789473684210525,
+          "n": 19
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.05263157894736842,
+          "ci_low": 0.0,
+          "ci_high": 0.15789473684210525,
+          "n": 19
+        }
+      },
+      "low_budget": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 17
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 17
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 17
+        }
+      },
+      "boundary_eligible": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.07142857142857142,
+          "ci_low": 0.0,
+          "ci_high": 0.21428571428571427,
+          "n": 14
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.07142857142857142,
+          "ci_low": 0.0,
+          "ci_high": 0.21428571428571427,
+          "n": 14
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.07142857142857142,
+          "ci_low": 0.0,
+          "ci_high": 0.21428571428571427,
+          "n": 14
+        }
+      }
+    }
+  },
+  "diagnosis": {
+    "support_improved_exact_promoted_near_boundary": true,
+    "extreme_low_budget_boundary_eligible_nonzero": false,
+    "broad_vs_aligned_tie_all": true,
+    "recommend_math_shepherd_now": false
+  }
+}
