@@ -7,8 +7,16 @@
 - **Repository status:** Exists, appears official (matches arXiv-linked code URL), and is publicly reachable.
 - **Venue / year:** NeurIPS 2024
 - **License:** **Unclear / not declared** in repository metadata at verification time (`license: null` via GitHub API; no top-level `LICENSE` file observed).
-- **Import status:** Linked only (not imported).
-- **Reason:** Importing external code without a clear license is legally unclear and therefore unsafe for direct inclusion/submodule use in this repository.
+- **Import status:** Runnable-adjacent via strict import validation (no vendored code; no direct reproduction claim).
+- **Reason:** This repo keeps conservative boundaries: adjacent-only verified import of upstream-produced artifacts, without claiming full in-repo reproduction or control-equivalence.
+
+## Canonical adjacent protocol in this repo
+
+- Integration note: `docs/rest_mcts_integration.md`
+- Validator: `scripts/verify_rest_mcts_import.py`
+- Status artifacts:
+  - `outputs/external_baseline_completeness/rest_mcts_status.json`
+  - `outputs/external_baseline_completeness/rest_mcts_status.md`
 
 ## Setup notes (upstream)
 

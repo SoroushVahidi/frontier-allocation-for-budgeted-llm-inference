@@ -62,12 +62,16 @@ Safe to claim now:
 - when_solve_when_verify has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_when_solve_when_verify_import.py`).
 - cascade_routing has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_cascade_routing_import.py`).
 - mob_majority_of_bests has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_mob_import.py`).
+- rest_mcts has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_rest_mcts_import.py`).
+- openr has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_openr_import.py`).
 
 Not safe to claim yet:
 - that BEST-Route is a direct apples-to-apples control-equivalent reproduction in this repository,
 - that when_solve_when_verify is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
 - that cascade_routing is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
 - that mob_majority_of_bests is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
+- that rest_mcts is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
+- that openr is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
 - that any s1/TALE/L1 MODE B full official reproduction has been completed in-repo.
 
 - compute_optimal_tts is explicitly blocked (provenance and fairness protocol incomplete) rather than ambiguously link-only.

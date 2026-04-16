@@ -12,9 +12,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from experiments.hf_datasets import check_hf_dataset_access, hf_token_presence
+from experiments.hf_datasets import check_git_dataset_access, check_hf_dataset_access, hf_token_presence
 
-# Five paper-priority rows (static policy + optional live probe)
+# Paper-priority rows (static policy + optional live probe)
 PRIORITY_ROWS: list[dict[str, str | bool | None]] = [
     {
         "dataset_name": "MATH (Hendrycks et al.)",
@@ -78,13 +78,41 @@ PRIORITY_ROWS: list[dict[str, str | bool | None]] = [
         "official_source_link": "https://arxiv.org/abs/2406.04520",
         "access_link": "https://github.com/google-deepmind/natural-plan",
         "public_or_gated": "public_repo",
-        "registry_keys": "none (GitHub-hosted; not in HF_DATASET_SPECS)",
-        "could_add_to_repository": "NO",
-        "what_was_added": "Documentation-only status; no raw data or loader committed.",
-        "what_is_still_missing": "Optional future: thin loader after license review and pinned commit policy.",
-        "manual_steps": "Clone upstream repo per license; pin commit; do not vendor raw data into this repo.",
-        "schema_version_uncertainty": "N/A until a pinned snapshot is adopted.",
+        "registry_keys": "google-deepmind/natural-plan (+ aliases naturalplan, natural_plan)",
+        "could_add_to_repository": "PARTIAL",
+        "what_was_added": "Git-clone dataset spec + access checker + sample helper; no raw data vendored.",
+        "what_is_still_missing": "Local clone path must be prepared by user (`NATURAL_PLAN_DIR` or default external_datasets path).",
+        "manual_steps": "Clone upstream repo per license, pin commit, and keep raw files outside git history.",
+        "schema_version_uncertainty": "Upstream JSON task files may evolve; pin commit hash in run manifests.",
         "recommended_for_main_paper_now": False,
+    },
+    {
+        "dataset_name": "MATH-500",
+        "target_priority": "A",
+        "official_source_link": "https://github.com/openai/prm800k#math-splits",
+        "access_link": "https://huggingface.co/datasets/HuggingFaceH4/MATH-500",
+        "public_or_gated": "public",
+        "registry_keys": "HuggingFaceH4/MATH-500 (+ aliases math500, math-500, MATH-500)",
+        "could_add_to_repository": "YES",
+        "what_was_added": "Canonical HF spec + aliases + smoke/report integration.",
+        "what_is_still_missing": "Mirror equivalence checks are still run-level responsibilities when comparing alternative cards.",
+        "manual_steps": "Pin HF revision hash in experiment manifest.",
+        "schema_version_uncertainty": "Subset mirrors share schema but not guaranteed to remain bit-identical forever.",
+        "recommended_for_main_paper_now": True,
+    },
+    {
+        "dataset_name": "AMO-Bench",
+        "target_priority": "A",
+        "official_source_link": "https://amo-bench.github.io/",
+        "access_link": "https://huggingface.co/datasets/meituan-longcat/AMO-Bench",
+        "public_or_gated": "public",
+        "registry_keys": "meituan-longcat/AMO-Bench (+ aliases amo-bench, amo_bench, AMO-Bench)",
+        "could_add_to_repository": "YES",
+        "what_was_added": "HF spec with hard-math fields (`prompt`, `answer`) and report/smoke wiring.",
+        "what_is_still_missing": "Official grading pipeline parity (parser/LLM hybrid) is external to this repo's basic access helpers.",
+        "manual_steps": "Pin HF revision and record answer-type handling policy.",
+        "schema_version_uncertainty": "Dataset card notes active updates; lock exact snapshot date/commit in runs.",
+        "recommended_for_main_paper_now": True,
     },
 ]
 
@@ -97,9 +125,11 @@ def main() -> None:
     probe_ids = [
         "hendrycks/competition_math",
         "EleutherAI/hendrycks_math",
+        "HuggingFaceH4/MATH-500",
         "Idavidrein/gpqa",
         "HuggingFaceH4/aime_2024",
         "Hothan/OlympiadBench",
+        "meituan-longcat/AMO-Bench",
     ]
     probe_results: dict[str, object] = {}
     for name in probe_ids:
@@ -107,6 +137,8 @@ def main() -> None:
             probe_results[name] = check_hf_dataset_access(name)
         except Exception as exc:  # noqa: BLE001
             probe_results[name] = {"dataset": name, "ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
+    probe_results["google-deepmind/natural-plan"] = check_git_dataset_access("google-deepmind/natural-plan")
 
     report = {
         "created_utc": created,

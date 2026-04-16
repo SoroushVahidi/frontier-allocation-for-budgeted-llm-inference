@@ -12,14 +12,23 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
+from experiments.hf_datasets import (
+    resolve_dataset_spec,
+    resolve_git_dataset_spec,
+    sample_git_dataset_examples,
+    sample_hf_examples,
+)
 
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Smoke sample one example per dataset key")
     p.add_argument(
         "--datasets",
-        default="openai/gsm8k,hendrycks/competition_math,Idavidrein/gpqa,HuggingFaceH4/aime_2024,Hothan/OlympiadBench",
+        default=(
+            "openai/gsm8k,hendrycks/competition_math,HuggingFaceH4/MATH-500,"
+            "Idavidrein/gpqa,HuggingFaceH4/aime_2024,Hothan/OlympiadBench,"
+            "meituan-longcat/AMO-Bench,google-deepmind/natural-plan"
+        ),
     )
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--output-dir", default="outputs/dataset_smoke")
@@ -34,12 +43,19 @@ def main() -> None:
     rows_out: list[dict[str, object]] = []
     for name in names:
         try:
-            spec = resolve_dataset_spec(name)
-            sample = sample_hf_examples(name, pilot_size=1, seed=args.seed)
+            try:
+                spec = resolve_dataset_spec(name)
+                sample = sample_hf_examples(name, pilot_size=1, seed=args.seed)
+                source_type = "hf"
+            except KeyError:
+                spec = resolve_git_dataset_spec(name)
+                sample = sample_git_dataset_examples(name, pilot_size=1, seed=args.seed)
+                source_type = "git_clone"
             rows_out.append(
                 {
                     "requested_name": name,
                     "resolved_key": spec.key,
+                    "source_type": source_type,
                     "provenance_note": spec.provenance_note,
                     "example": sample[0] if sample else None,
                 }

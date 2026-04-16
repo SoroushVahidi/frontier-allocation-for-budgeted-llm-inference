@@ -10,9 +10,11 @@ Primary Hugging Face datasets in scope (wired in `experiments/hf_datasets.py`):
 - `openai/gsm8k`
 - `hendrycks/competition_math` (canonical MATH; aliases: `math`, `MATH`, `hendrycks/math`)
 - `EleutherAI/hendrycks_math` (MATH mirror)
+- `HuggingFaceH4/MATH-500` (canonical MATH-500 in this repo; aliases: `math500`, `math-500`, `MATH-500`)
 - `Idavidrein/gpqa` (config `gpqa_diamond`; gated; aliases: `gpqa`, `gpqa_diamond`)
 - `HuggingFaceH4/aime_2024` (AIME 2024 slice; aliases: `aime`, `aime_2024`)
 - `Hothan/OlympiadBench` (OlympiadBench mirror; `THUDM/OlympiadBench` Hub id not verified)
+- `meituan-longcat/AMO-Bench` (hard-math benchmark; aliases: `amo-bench`, `amo_bench`, `AMO-Bench`)
 - `livecodebench/code_generation_lite` (optional / secondary)
 
 ### Practical setup notes
@@ -57,7 +59,7 @@ From `python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset
 ## GitHub-hosted datasets / benchmark repos
 
 GitHub-hosted resources in current scope (no HF loader in-repo; no raw data committed):
-- NaturalPlan: https://github.com/google-deepmind/natural-plan — **documentation-only** in this repo; clone upstream and pin a commit for experiments.
+- NaturalPlan: https://github.com/google-deepmind/natural-plan — integrated as git-clone dataset key `google-deepmind/natural-plan` (aliases: `naturalplan`, `natural_plan`), with local-clone checks and sampling helper support.
 - LiveCodeBench (extended/optional): https://github.com/LiveCodeBench/LiveCodeBench
 
 Practical notes:
@@ -80,6 +82,9 @@ Practical notes:
   - **Execution-based** (relevant for coding benchmarks like LiveCodeBench)
 - Track benchmark freshness and contamination risk, especially for coding or continuously updated benchmarks.
 - For AIME, this repository wires **`HuggingFaceH4/aime_2024`** as a concrete 2024 slice; broader AIME unions require a separate policy and citation.
+- For MATH-500, this repository canonicalizes **`HuggingFaceH4/MATH-500`** (candidate mirror `math-ai/math500` exists but is not the canonical id here).
+- For AMO-Bench, this repository wires **`meituan-longcat/AMO-Bench`** and expects `prompt`/`answer` fields for lightweight access helpers.
+- For NaturalPlan, clone upstream and set `NATURAL_PLAN_DIR` (or use default `external_datasets/natural-plan`) for local access checks; keep raw data out of git.
 - Store only small metadata/manifests in-repo; keep raw data external.
 - Never commit raw downloaded dataset files into git.
 

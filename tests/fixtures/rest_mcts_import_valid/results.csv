@@ -1,0 +1,3 @@
+mode,source_type,dataset,split,policy_model,value_model,search_mode,self_training_iteration,iteration_limit,branch,accuracy,num_examples,artifact_id,commit_or_version,comparability_scope
+rest_mcts_adjacent_import,official,math,test,llama3-8b-instruct,mistral-7b,mcts,1,50,3,0.612,500,rest_mcts_fixture_v1,main,adjacent_only
+rest_mcts_adjacent_import,official,math,test,llama3-8b-instruct,mistral-7b,cot,1,50,1,0.574,500,rest_mcts_fixture_v1,main,adjacent_only

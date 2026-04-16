@@ -18,7 +18,7 @@ python scripts/list_external_baselines.py
 
 | Baseline | Canonical title | Integration | Official / best-known code | License (last check) |
 |---|---|---|---|---|
-| ReST-MCTS* | ReST-MCTS*: LLM Self-Training via Process Reward Guided Tree Search | `LINK_ONLY` | https://github.com/THUDM/ReST-MCTS | Unclear in repo (see note) |
+| ReST-MCTS* | ReST-MCTS*: LLM Self-Training via Process Reward Guided Tree Search | `RUNNABLE_ADJACENT` | https://github.com/THUDM/ReST-MCTS | Unclear in repo (see note) |
 | Tree-PLV | Advancing Process Verification … Tree-Based Preference Learning | `DISCUSS_ONLY` | Not verified (ACL / unclear GitHub) | Unknown |
 | PGTS | Policy Guided Tree Search for Enhanced LLM Reasoning | `DISCUSS_ONLY` | Not confirmed | Unknown |
 | Scaling Automated Process Verifiers | Scaling Automated Process Verifiers for LLM Reasoning | `DISCUSS_ONLY` | Not confirmed | Unknown |
@@ -69,7 +69,7 @@ Per-baseline notes:
 | MCTS + LLM (community) | `LINK_ONLY` | https://github.com/NumberChiffre/mcts-llm | MIT | Not bound to a single canonical paper in this README; cite carefully. |
 | LLM_Tree_Search (Waterhorse) | `discuss_only` | https://github.com/waterhorse1/LLM_Tree_Search | **Unclear** | Do not submodule until license confirmed. |
 | BEST-Route (Microsoft) | `RUNNABLE_ADJACENT` | https://github.com/microsoft/best-route-llm | MIT (API); re-verify `LICENSE` in clone | Routing baseline via verified import-only adjacent protocol. |
-| OpenR | `LINK_ONLY` | https://github.com/openreasoner/openr | MIT | Optional ecosystem / process reasoning stack. |
+| OpenR | `RUNNABLE_ADJACENT` | https://github.com/openreasoner/openr | MIT | Optional ecosystem / process reasoning stack via verified import-only adjacent protocol. |
 
 ---
 
@@ -110,6 +110,8 @@ This pass makes the currently integrated baselines fully auditable and keeps com
 - **When To Solve, When To Verify**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_when_solve_when_verify_import.py`) for SC-vs-GenRM fixed-budget adjacent comparisons only.
 - **Cascade Routing**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_cascade_routing_import.py`) for adjacent routing/cascading/cascade-routing comparisons only.
 - **MoB (Majority-of-the-Bests)**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_mob_import.py`) for adjacent best-of-N selection comparisons only.
+- **ReST-MCTS***: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_rest_mcts_import.py`) for adjacent process-reward-guided tree-search comparisons only.
+- **OpenR**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_openr_import.py`) for adjacent search-strategy comparisons only.
 
 Use these artifacts to audit runnability and status:
 

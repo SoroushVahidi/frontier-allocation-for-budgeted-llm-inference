@@ -85,16 +85,26 @@
     "openr": {
       "clone_url": "https://github.com/openreasoner/openr.git",
       "doc": "external/openr/README.md",
-      "integration": "link_only",
-      "completeness_class": "link_only",
-      "blocker": "no_in_repo_adapter"
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration_doc": "docs/openr_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/openr_status.json",
+        "outputs/external_baseline_completeness/openr_status.md"
+      ]
     },
     "rest_mcts": {
       "clone_url": "https://github.com/THUDM/ReST-MCTS.git",
       "doc": "external/rest_mcts/README.md",
-      "integration": "link_only",
-      "completeness_class": "link_only",
-      "blocker": "no_in_repo_adapter"
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration_doc": "docs/rest_mcts_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/rest_mcts_status.json",
+        "outputs/external_baseline_completeness/rest_mcts_status.md"
+      ]
     },
     "tree_plv": {
       "clone_url": null,

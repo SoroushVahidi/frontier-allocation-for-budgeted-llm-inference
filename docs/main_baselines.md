@@ -12,7 +12,7 @@ These baselines cover key neighboring approaches to adaptive test-time compute a
 - **Main benchmarks:** MATH, SciBench, and college-level scientific reasoning tasks.
 - **Official code:** https://github.com/THUDM/ReST-MCTS
 - **Data / benchmark links:** See the official repository and paper resources for benchmark setup details; exact reconstruction of full data flows may require manual verification.
-- **Reproducibility caveats:** Code is public, but generated traces and the exact full data pipeline may require careful reconstruction.
+- **Reproducibility caveats:** Full upstream training/evaluation reproduction remains heavyweight; this repo now supports adjacent import validation via `scripts/verify_rest_mcts_import.py` with conservative claim boundaries.
 - **How it differs from our target method:** It uses reward-guided search, but does not cleanly formulate marginal budget allocation over reasoning trees with strong guarantees.
 
 ## Tree-PLV
@@ -151,6 +151,8 @@ For manuscript-safe claims, treat external baselines as follows:
 - **when_solve_when_verify status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_when_solve_when_verify_import.py`) for SC-vs-GenRM fixed-budget adjacent comparisons only.
 - **cascade_routing status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_cascade_routing_import.py`) for adjacent routing/cascading/cascade-routing comparisons only.
 - **mob_majority_of_bests status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_mob_import.py`) for adjacent best-of-N/MoB comparisons only.
+- **rest_mcts status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_rest_mcts_import.py`) for adjacent process-reward-guided MCTS comparisons only.
+- **openr status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_openr_import.py`) for adjacent OpenR inference/search comparisons only.
 
 Companion artifacts:
 - `docs/external_baseline_completeness_report.md`

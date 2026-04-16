@@ -13,15 +13,24 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from experiments.hf_datasets import check_hf_dataset_access, hf_token_presence, resolve_dataset_spec
+from experiments.hf_datasets import (
+    check_git_dataset_access,
+    check_hf_dataset_access,
+    hf_token_presence,
+    resolve_dataset_spec,
+    resolve_git_dataset_spec,
+)
 
 DEFAULT_DATASETS = [
     "openai/gsm8k",
     "hendrycks/competition_math",
     "EleutherAI/hendrycks_math",
+    "HuggingFaceH4/MATH-500",
     "Idavidrein/gpqa",
     "HuggingFaceH4/aime_2024",
     "Hothan/OlympiadBench",
+    "meituan-longcat/AMO-Bench",
+    "google-deepmind/natural-plan",
     "livecodebench/code_generation_lite",
 ]
 
@@ -39,7 +48,26 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     datasets = [part.strip() for part in args.datasets.split(",") if part.strip()]
-    results = [check_hf_dataset_access(dataset_name=name) for name in datasets]
+    results = []
+    for name in datasets:
+        try:
+            results.append(check_hf_dataset_access(dataset_name=name))
+            continue
+        except KeyError:
+            pass
+        try:
+            results.append(check_git_dataset_access(dataset_name=name))
+            continue
+        except KeyError:
+            pass
+        results.append(
+            {
+                "dataset": name,
+                "ok": False,
+                "error": f"Unsupported dataset key: {name}",
+                "source_type": "unknown",
+            }
+        )
     token_env_presence = hf_token_presence()
 
     summary = {
@@ -79,6 +107,8 @@ def main() -> None:
                 "split",
                 "config",
                 "token_present",
+                "source_type",
+                "clone_path",
                 "datasets_loader_ok",
                 "pandas_fallback_ok",
                 "loader_path_used",
@@ -98,6 +128,8 @@ def main() -> None:
                     "split": row.get("split"),
                     "config": row.get("config"),
                     "token_present": row.get("token_present"),
+                    "source_type": row.get("source_type", "hf"),
+                    "clone_path": row.get("clone_path", ""),
                     "datasets_loader_ok": row.get("datasets_loader_ok"),
                     "pandas_fallback_ok": row.get("pandas_fallback_ok"),
                     "loader_path_used": row.get("loader_path_used"),
@@ -118,10 +150,18 @@ def main() -> None:
         "Checked datasets:",
     ]
     for name in datasets:
+        spec = None
+        git_spec = None
         try:
             spec = resolve_dataset_spec(name)
         except KeyError:
-            spec = None
+            try:
+                git_spec = resolve_git_dataset_spec(name)
+            except KeyError:
+                spec = None
+                git_spec = None
+        else:
+            git_spec = None
         gated = spec.gated if spec else False
         optional = spec.optional if spec else False
         tags = []
@@ -129,6 +169,8 @@ def main() -> None:
             tags.append("gated")
         if optional:
             tags.append("optional")
+        if git_spec is not None:
+            tags.append("git_clone")
         suffix = f" ({', '.join(tags)})" if tags else ""
         lines.append(f"- {name}{suffix}")
 

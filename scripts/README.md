@@ -46,9 +46,9 @@ All scripts write run artifacts under `outputs/` unless overridden.
 
 | Script | Role |
 |---|---|
-| `verify_hf_dataset_access.py` | Verify HF access and summarize status |
-| `dataset_smoke_sample.py` | Lightweight dataset smoke samples |
-| `generate_dataset_integration_report.py` | Main evaluation-dataset integration report |
+| `verify_hf_dataset_access.py` | Verify evaluation-dataset access (HF + git-clone-backed dataset keys) and summarize status |
+| `dataset_smoke_sample.py` | Lightweight dataset smoke samples (HF datasets + local-clone datasets such as NaturalPlan) |
+| `generate_dataset_integration_report.py` | Main evaluation-dataset integration report (includes MATH-500, AMO-Bench, and NaturalPlan clone-path status) |
 | `verify_external_reasoning_datasets.py` | External supervision access/schema checks |
 | `generate_external_reasoning_dataset_integration_report.py` | External supervision integration report |
 | `prepare_external_reasoning_datasets.py` | Readiness ranking and normalized previews |
@@ -112,7 +112,7 @@ All scripts write run artifacts under `outputs/` unless overridden.
 
 | Script | Role |
 |---|---|
-| `verify_external_baseline_runnability.py` | Smoke-verifies that s1/TALE/L1 MODE A runners execute and that MODE B adapters correctly report blocked/import status boundaries, and runs BEST-Route / when_solve_when_verify / cascade_routing / MoB adjacent import fixture checks. Writes artifacts under `outputs/external_baseline_runnability/<run_id>/`. |
+| `verify_external_baseline_runnability.py` | Smoke-verifies that s1/TALE/L1 MODE A runners execute and that MODE B adapters correctly report blocked/import status boundaries, and runs BEST-Route / when_solve_when_verify / cascade_routing / MoB / ReST-MCTS / OpenR adjacent import fixture checks. Writes artifacts under `outputs/external_baseline_runnability/<run_id>/`. |
 | `generate_external_baseline_completeness_report.py` | Generates repository-facing external-baseline completeness report and machine-readable summary artifacts (`docs/external_baseline_completeness_report.md`, `outputs/external_baseline_completeness_summary.{json,csv}`). |
 | `verify_best_route_import.py` | Strict validator for BEST-Route adjacent import packages (`metadata.json` + `results.csv`) with workflow-stage, bo-arm schema, and adjacent-only comparability checks. |
 | `generate_best_route_status_report.py` | Generates conservative BEST-Route status artifacts under `outputs/external_baseline_completeness/` and documents safe vs unsafe claims. |
@@ -122,5 +122,9 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `generate_cascade_routing_status_report.py` | Generates conservative cascade_routing status artifacts under `outputs/external_baseline_completeness/`. |
 | `verify_mob_import.py` | Strict validator for MoB adjacent import packages (workflow-stage declarations, benchmark/model/num-samples identity checks, BoN+MoB algorithm coverage, and adjacent-only comparability checks). |
 | `generate_mob_status_report.py` | Generates conservative mob_majority_of_bests status artifacts under `outputs/external_baseline_completeness/`. |
+| `verify_rest_mcts_import.py` | Strict validator for ReST-MCTS adjacent import packages (workflow-stage declarations, dataset/model/search-setting checks, MCTS-search coverage, and adjacent-only comparability checks). |
+| `generate_rest_mcts_status_report.py` | Generates conservative rest_mcts status artifacts under `outputs/external_baseline_completeness/`. |
+| `verify_openr_import.py` | Strict validator for OpenR adjacent import packages (workflow-stage declarations, method-coverage checks, metric sanity checks, and adjacent-only comparability checks). |
+| `generate_openr_status_report.py` | Generates conservative openr status artifacts under `outputs/external_baseline_completeness/`. |
 | `verify_compute_optimal_tts_provenance.py` | Audits paper↔repo provenance signals for compute_optimal_tts (target OpenReview paper vs linked repo identity) and emits machine-readable provenance checks. |
 | `generate_compute_optimal_tts_blocker_report.py` | Generates conservative blocker/status artifacts for compute_optimal_tts under `outputs/external_baseline_completeness/`. |
