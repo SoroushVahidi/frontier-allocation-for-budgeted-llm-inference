@@ -15,6 +15,10 @@ if str(REPO_ROOT) not in sys.path:
 from experiments.stop_vs_act_controller import STOP_VS_ACT_FEATURE_NAMES, StopVsActLabelConfig, build_stop_vs_act_dataset
 
 
+def _mean(values: list[float]) -> float:
+    return sum(values) / max(1, len(values))
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build stop-vs-act dataset")
     parser.add_argument("--output-dir", default="outputs/stop_vs_act_controller")
@@ -97,6 +101,24 @@ def main() -> None:
         for row in rows:
             f.write(json.dumps(row) + "\n")
 
+    outside_labels_path = out_dir / "branch_vs_outside_labels.jsonl"
+    with outside_labels_path.open("w", encoding="utf-8") as f:
+        for row in rows:
+            payload = {
+                "episode_id": int(row["episode_id"]),
+                "decision_id": int(row["decision_id"]),
+                "branch_id": str(row["branch_id"]),
+                "split": str(row["split"]),
+                "outside_option_type": str(row.get("outside_option_type", "unknown")),
+                "outside_option_source": str(row.get("outside_option_source", "unknown")),
+                "outside_option_provenance": row.get("outside_option_provenance", {}),
+                "q_branch_next": float(row.get("q_branch_next", 0.0)),
+                "q_outside_next": float(row.get("q_outside_next", 0.0)),
+                "delta_vs_outside": float(row.get("delta_vs_outside", row.get("delta_mean", 0.0))),
+                "label_act_vs_outside": int(row.get("label_act_vs_outside", row.get("label_act", 0))),
+            }
+            f.write(json.dumps(payload) + "\n")
+
     uncertain_count = sum(int(bool(r["is_uncertain"])) for r in rows)
     pos = sum(int(r["label_act"]) for r in rows)
     meta = {
@@ -141,6 +163,42 @@ def main() -> None:
             "delta_estimator_std": "Estimated std of the stabilized delta_mean estimator.",
             "target_reliability_weight": "1/(1+delta_estimator_std), usable as optional training weight.",
             "delta_sign_flip_rate": "Within-estimator sign disagreement rate relative to final delta_mean sign.",
+        },
+        "outside_option_summary": {
+            "labels_file": str(outside_labels_path),
+            "label_definition": "ACT(1) iff q_branch_next > q_outside_next + gain_margin; STOP(0) otherwise.",
+            "mean_q_branch_next": _mean([float(r.get("q_branch_next", 0.0)) for r in rows]),
+            "mean_q_outside_next": _mean([float(r.get("q_outside_next", 0.0)) for r in rows]),
+            "mean_delta_vs_outside": _mean([float(r.get("delta_vs_outside", r.get("delta_mean", 0.0))) for r in rows]),
+            "positive_rate_act_vs_outside": _mean(
+                [float(r.get("label_act_vs_outside", r.get("label_act", 0))) for r in rows]
+            ),
+            "by_outside_option_type": {
+                opt_type: {
+                    "rows": len(type_rows),
+                    "positive_rate_act_vs_outside": _mean(
+                        [float(r.get("label_act_vs_outside", r.get("label_act", 0))) for r in type_rows]
+                    ),
+                    "mean_delta_vs_outside": _mean(
+                        [float(r.get("delta_vs_outside", r.get("delta_mean", 0.0))) for r in type_rows]
+                    ),
+                }
+                for opt_type in sorted({str(r.get("outside_option_type", "unknown")) for r in rows})
+                for type_rows in [[r for r in rows if str(r.get("outside_option_type", "unknown")) == opt_type]]
+            },
+            "by_outside_option_source": {
+                opt_source: {
+                    "rows": len(source_rows),
+                    "positive_rate_act_vs_outside": _mean(
+                        [float(r.get("label_act_vs_outside", r.get("label_act", 0))) for r in source_rows]
+                    ),
+                    "mean_delta_vs_outside": _mean(
+                        [float(r.get("delta_vs_outside", r.get("delta_mean", 0.0))) for r in source_rows]
+                    ),
+                }
+                for opt_source in sorted({str(r.get("outside_option_source", "unknown")) for r in rows})
+                for source_rows in [[r for r in rows if str(r.get("outside_option_source", "unknown")) == opt_source]]
+            },
         },
     }
     (out_dir / "dataset_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")

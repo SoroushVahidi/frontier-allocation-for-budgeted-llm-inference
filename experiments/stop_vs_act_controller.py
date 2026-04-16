@@ -70,6 +70,19 @@ class StopVsActEvalArtifacts:
     comparison_rows: list[dict[str, Any]]
 
 
+@dataclass
+class ActVsOutsideEstimate:
+    delta_mean: float
+    delta_std: float
+    stop_reference_gain: float
+    sign_flip_rate: float
+    q_branch_next: float
+    q_outside_next: float
+    outside_option_type: str
+    outside_option_source: str
+    outside_option_provenance: dict[str, Any]
+
+
 def _safe_entropy(prob: float) -> float:
     p = _clip01(prob)
     if p <= 1e-8 or p >= 1 - 1e-8:
@@ -206,7 +219,7 @@ def estimate_act_gain_delta(
         "counterfactual_act_vs_stop_h2_matched",
     ] = "proxy_best_other_gain",
     small_horizon_steps: int = 2,
-) -> tuple[float, float, float, float]:
+) -> ActVsOutsideEstimate:
     """Estimate local ACT delta for ACT-here versus a bounded local baseline.
 
     Returns:
@@ -246,12 +259,33 @@ def estimate_act_gain_delta(
             deltas.append(act_gain - stop_reference)
 
         if not deltas:
-            return 0.0, 0.0, stop_reference, 0.0
+            return ActVsOutsideEstimate(
+                delta_mean=0.0,
+                delta_std=0.0,
+                stop_reference_gain=stop_reference,
+                sign_flip_rate=0.0,
+                q_branch_next=0.0,
+                q_outside_next=stop_reference,
+                outside_option_type="best_other_branch",
+                outside_option_source="expected_next_gain_proxy",
+                outside_option_provenance={"target_mode": target_mode, "reference": "best_other_expected_next_gain"},
+            )
         mean_delta = sum(deltas) / len(deltas)
         var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
         std = math.sqrt(max(0.0, var))
         sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
-        return mean_delta, std, stop_reference, sign_flip_rate
+        q_branch_next = mean_delta + stop_reference
+        return ActVsOutsideEstimate(
+            delta_mean=mean_delta,
+            delta_std=std,
+            stop_reference_gain=stop_reference,
+            sign_flip_rate=sign_flip_rate,
+            q_branch_next=q_branch_next,
+            q_outside_next=stop_reference,
+            outside_option_type="best_other_branch",
+            outside_option_source="expected_next_gain_proxy",
+            outside_option_provenance={"target_mode": target_mode, "reference": "best_other_expected_next_gain"},
+        )
 
     if target_mode == "proxy_policy_coupled_stop_reallocation":
         stop_reference = max((expected_next_gain(b, finish_prob_base, answer_noise) for b in others), default=0.0)
@@ -290,7 +324,18 @@ def estimate_act_gain_delta(
         std = math.sqrt(max(0.0, var))
         sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
         policy_coupled_stop_ref = sum(stop_values) / max(1, len(stop_values))
-        return mean_delta, std, policy_coupled_stop_ref, sign_flip_rate
+        q_branch_next = mean_delta + policy_coupled_stop_ref
+        return ActVsOutsideEstimate(
+            delta_mean=mean_delta,
+            delta_std=std,
+            stop_reference_gain=policy_coupled_stop_ref,
+            sign_flip_rate=sign_flip_rate,
+            q_branch_next=q_branch_next,
+            q_outside_next=policy_coupled_stop_ref,
+            outside_option_type="cross_controller",
+            outside_option_source="policy_coupled_stop_reallocation_h1",
+            outside_option_provenance={"target_mode": target_mode, "horizon_steps": 1},
+        )
 
     if target_mode == "proxy_policy_coupled_stop_reallocation_horizon":
         horizon = max(2, int(small_horizon_steps))
@@ -330,11 +375,24 @@ def estimate_act_gain_delta(
         std = math.sqrt(max(0.0, var))
         sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
         policy_coupled_stop_ref = sum(stop_values) / max(1, len(stop_values))
-        return mean_delta, std, policy_coupled_stop_ref, sign_flip_rate
+        q_branch_next = mean_delta + policy_coupled_stop_ref
+        return ActVsOutsideEstimate(
+            delta_mean=mean_delta,
+            delta_std=std,
+            stop_reference_gain=policy_coupled_stop_ref,
+            sign_flip_rate=sign_flip_rate,
+            q_branch_next=q_branch_next,
+            q_outside_next=policy_coupled_stop_ref,
+            outside_option_type="cross_controller",
+            outside_option_source="policy_coupled_stop_reallocation_horizon",
+            outside_option_provenance={"target_mode": target_mode, "horizon_steps": horizon},
+        )
 
     if target_mode in {"counterfactual_act_vs_stop_h2", "counterfactual_act_vs_stop_h2_matched"}:
         stop_reference = max((_snapshot_utility(b) for b in active), default=0.0)
         deltas = []
+        q_branch_vals = []
+        q_outside_vals = []
         for _ in range(max(1, rollout_samples)):
             paired_seed = rng.randint(0, 2**31 - 1)
             act_rng = random.Random(paired_seed) if target_mode == "counterfactual_act_vs_stop_h2_matched" else rng
@@ -360,12 +418,30 @@ def estimate_act_gain_delta(
                 max_depth=max_depth,
             )
             deltas.append(act_value - stop_value)
+            q_branch_vals.append(act_value)
+            q_outside_vals.append(stop_value)
 
         mean_delta = sum(deltas) / max(1, len(deltas))
         var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
         std = math.sqrt(max(0.0, var))
         sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
-        return mean_delta, std, stop_reference, sign_flip_rate
+        q_branch_next = sum(q_branch_vals) / max(1, len(q_branch_vals))
+        q_outside_next = sum(q_outside_vals) / max(1, len(q_outside_vals))
+        return ActVsOutsideEstimate(
+            delta_mean=mean_delta,
+            delta_std=std,
+            stop_reference_gain=stop_reference,
+            sign_flip_rate=sign_flip_rate,
+            q_branch_next=q_branch_next,
+            q_outside_next=q_outside_next,
+            outside_option_type="cross_controller",
+            outside_option_source="counterfactual_skip_here_policy_continuation",
+            outside_option_provenance={
+                "target_mode": target_mode,
+                "horizon_steps": max(1, int(small_horizon_steps)),
+                "matched_rng": bool(target_mode == "counterfactual_act_vs_stop_h2_matched"),
+            },
+        )
 
     if target_mode != "counterfactual_here_vs_best_other":
         raise ValueError(f"Unsupported target_mode: {target_mode}")
@@ -395,12 +471,34 @@ def estimate_act_gain_delta(
         deltas.append(here_gain - other_gain)
 
     if not deltas:
-        return 0.0, 0.0, stop_reference, 0.0
+        return ActVsOutsideEstimate(
+            delta_mean=0.0,
+            delta_std=0.0,
+            stop_reference_gain=stop_reference,
+            sign_flip_rate=0.0,
+            q_branch_next=stop_reference,
+            q_outside_next=stop_reference,
+            outside_option_type="best_other_branch",
+            outside_option_source="counterfactual_best_other_one_step",
+            outside_option_provenance={"target_mode": target_mode, "reference_branch_id": best_other.branch_id},
+        )
     mean_delta = sum(deltas) / len(deltas)
     var = sum((x - mean_delta) ** 2 for x in deltas) / max(1, len(deltas))
     std = math.sqrt(max(0.0, var))
     sign_flip_rate = float(sum(1 for x in deltas if x * mean_delta < 0.0) / max(1, len(deltas)))
-    return mean_delta, std, stop_reference, sign_flip_rate
+    q_outside_next = stop_reference
+    q_branch_next = mean_delta + q_outside_next
+    return ActVsOutsideEstimate(
+        delta_mean=mean_delta,
+        delta_std=std,
+        stop_reference_gain=stop_reference,
+        sign_flip_rate=sign_flip_rate,
+        q_branch_next=q_branch_next,
+        q_outside_next=q_outside_next,
+        outside_option_type="best_other_branch",
+        outside_option_source="counterfactual_best_other_one_step",
+        outside_option_provenance={"target_mode": target_mode, "reference_branch_id": best_other.branch_id},
+    )
 
 
 def build_stop_vs_act_dataset(
@@ -457,7 +555,7 @@ def build_stop_vs_act_dataset(
 
                 if label_cfg.target_stabilization_mode == "none":
                     local_rng = random.Random(base_local_seed)
-                    delta_mean, delta_std, stop_ref, delta_sign_flip_rate = estimate_act_gain_delta(
+                    estimate = estimate_act_gain_delta(
                         branch,
                         active=active,
                         rng=local_rng,
@@ -468,6 +566,15 @@ def build_stop_vs_act_dataset(
                         target_mode=label_cfg.target_mode,
                         small_horizon_steps=label_cfg.small_horizon_steps,
                     )
+                    delta_mean = estimate.delta_mean
+                    delta_std = estimate.delta_std
+                    stop_ref = estimate.stop_reference_gain
+                    delta_sign_flip_rate = estimate.sign_flip_rate
+                    q_branch_next = estimate.q_branch_next
+                    q_outside_next = estimate.q_outside_next
+                    outside_option_type = estimate.outside_option_type
+                    outside_option_source = estimate.outside_option_source
+                    outside_option_provenance = estimate.outside_option_provenance
                     delta_repeat_std = 0.0
                     delta_within_std_mean = delta_std
                     delta_estimator_std = delta_std
@@ -477,9 +584,14 @@ def build_stop_vs_act_dataset(
                     repeat_delta_stds: list[float] = []
                     stop_refs: list[float] = []
                     sign_flip_rates: list[float] = []
+                    q_branch_next_vals: list[float] = []
+                    q_outside_next_vals: list[float] = []
+                    outside_option_types: list[str] = []
+                    outside_option_sources: list[str] = []
+                    outside_option_provenances: list[dict[str, Any]] = []
                     for ridx in range(repeats):
                         local_rng = random.Random(base_local_seed + ridx * 1_000_003)
-                        d_mean, d_std, s_ref, s_flip = estimate_act_gain_delta(
+                        estimate = estimate_act_gain_delta(
                             branch,
                             active=active,
                             rng=local_rng,
@@ -490,10 +602,15 @@ def build_stop_vs_act_dataset(
                             target_mode=label_cfg.target_mode,
                             small_horizon_steps=label_cfg.small_horizon_steps,
                         )
-                        repeat_delta_means.append(float(d_mean))
-                        repeat_delta_stds.append(float(d_std))
-                        stop_refs.append(float(s_ref))
-                        sign_flip_rates.append(float(s_flip))
+                        repeat_delta_means.append(float(estimate.delta_mean))
+                        repeat_delta_stds.append(float(estimate.delta_std))
+                        stop_refs.append(float(estimate.stop_reference_gain))
+                        sign_flip_rates.append(float(estimate.sign_flip_rate))
+                        q_branch_next_vals.append(float(estimate.q_branch_next))
+                        q_outside_next_vals.append(float(estimate.q_outside_next))
+                        outside_option_types.append(str(estimate.outside_option_type))
+                        outside_option_sources.append(str(estimate.outside_option_source))
+                        outside_option_provenances.append(dict(estimate.outside_option_provenance))
 
                     delta_mean = sum(repeat_delta_means) / max(1, len(repeat_delta_means))
                     stop_ref = sum(stop_refs) / max(1, len(stop_refs))
@@ -507,6 +624,15 @@ def build_stop_vs_act_dataset(
                     delta_estimator_std = math.sqrt(max(0.0, estimator_var))
                     delta_std = delta_estimator_std
                     delta_sign_flip_rate = sum(sign_flip_rates) / max(1, len(sign_flip_rates))
+                    q_branch_next = sum(q_branch_next_vals) / max(1, len(q_branch_next_vals))
+                    q_outside_next = sum(q_outside_next_vals) / max(1, len(q_outside_next_vals))
+                    outside_option_type = max(set(outside_option_types), key=outside_option_types.count)
+                    outside_option_source = max(set(outside_option_sources), key=outside_option_sources.count)
+                    outside_option_provenance = {
+                        "aggregation": "mode+mean",
+                        "repeats": repeats,
+                        "representative": outside_option_provenances[0] if outside_option_provenances else {},
+                    }
                 else:
                     raise ValueError(f"Unsupported target_stabilization_mode: {label_cfg.target_stabilization_mode}")
 
@@ -542,6 +668,13 @@ def build_stop_vs_act_dataset(
                     "target_reliability_weight": 1.0 / (1.0 + max(0.0, delta_estimator_std)),
                     "delta_sign_flip_rate": delta_sign_flip_rate,
                     "stop_reference_gain": stop_ref,
+                    "outside_option_type": outside_option_type,
+                    "outside_option_source": outside_option_source,
+                    "outside_option_provenance": outside_option_provenance,
+                    "q_branch_next": q_branch_next,
+                    "q_outside_next": q_outside_next,
+                    "delta_vs_outside": q_branch_next - q_outside_next,
+                    "label_act_vs_outside": label_act,
                     "is_uncertain": int(uncertain),
                     "sample_weight": weight,
                     "uncertain_near_zero": int(near_zero),
