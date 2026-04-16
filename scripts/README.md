@@ -86,15 +86,19 @@ All scripts write run artifacts under `outputs/` unless overridden.
 
 | Script | Role |
 |---|---|
-| `run_s1_budget_forcing_baseline.py` | Canonical s1 fair-baseline runner with MODE A (inference-only) and MODE B (official/full adapter reporting). Writes manifest, summary CSV, per-example JSONL, fairness report, and comparison tables under `outputs/s1_baseline/`. |
+| `run_s1_budget_forcing_baseline.py` | Canonical s1 fair-baseline runner with MODE A (inference-only) and MODE B (strict official/full import + verification). MODE B emits `official_mode_import.csv`, `official_mode_import_report.md`, `fairness_report.md`, and `manifest.json` under `outputs/s1_baseline/<run_id>/`. |
 | `run_s1_baseline_comparison_bundle.py` | Merge one or more s1 run directories into manuscript-ready aggregate comparison artifacts. |
+| `verify_s1_mode_b_import.py` | Strict validator for s1 MODE B official/full import packages (required files, metadata schema, fairness checks, and table-readiness checks). |
+| `generate_s1_mode_b_import_report.py` | Generates reviewer-facing markdown report from MODE B verification JSON. |
 
 ## TALE baseline integration scripts (fair split)
 
 | Script | Role |
 |---|---|
-| `run_tale_baseline.py` | Canonical TALE fair-baseline runner with MODE A (prompt budgeting inference-only) and MODE B (official/full adapter reporting). Writes manifest, summary CSV, per-example JSONL, fairness report, and comparison tables under `outputs/tale_baseline/`. |
+| `run_tale_baseline.py` | Canonical TALE fair-baseline runner with MODE A (prompt budgeting inference-only) and MODE B (strict official/full import + verification with TALE-vs-TALE-PT variant separation). MODE B emits `official_mode_import.csv`, `official_mode_import_report.md`, `fairness_report.md`, and `manifest.json` under `outputs/tale_baseline/<run_id>/`. |
 | `run_tale_comparison_bundle.py` | Merge one or more TALE run directories into manuscript-ready aggregate comparison artifacts. |
+| `verify_tale_mode_b_import.py` | Strict validator for TALE MODE B official/full import packages (schema, provenance, fairness checks, and TALE-vs-TALE-PT variant separation checks). |
+| `generate_tale_mode_b_import_report.py` | Generates reviewer-facing markdown report from TALE MODE B verification JSON. |
 
 ## L1 baseline integration scripts (fair split)
 

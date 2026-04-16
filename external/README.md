@@ -81,14 +81,14 @@ Per-baseline notes:
 ### s1 fairness split note (new canonical)
 
 - MODE A (`inference_only`): implemented runnable in-repo adapter for budget forcing on unchanged base model family.
-- MODE B (`full_or_official`): partial adapter/reporting path; requires imported official/full outputs (or external reproduction) for completed reporting.
+- MODE B (`full_or_official`): strict official/full results import + verification path; usable when a valid package is provided, blocked/rejected otherwise.
 - Canonical integration doc: `docs/s1_baseline_integration.md`.
 
 
 ### TALE fairness split note (new canonical)
 
 - MODE A (`prompt_budgeting_inference_only`): runnable TALE-style in-repo prompt token-budgeting adapter.
-- MODE B (`official_full_adapter`): partial adapter/reporting path for official/full TALE outputs; may include TALE-PT assets and is not apples-to-apples.
+- MODE B (`official_full_adapter`): strict official/full TALE results import + verification path with explicit TALE-vs-TALE-PT variant identity; usable when valid package is provided.
 - Canonical integration doc: `docs/tale_baseline_integration.md`.
 
 ### L1 fairness split note (new canonical)
@@ -102,7 +102,7 @@ Per-baseline notes:
 
 This pass makes the currently integrated baselines fully auditable and keeps comparability claims conservative:
 
-- **s1 / TALE / L1**: `MODE_A_COMPLETE_MODE_B_PARTIAL` with runnable MODE A scripts in-repo and explicit MODE B blocker reporting unless official/full outputs are imported.
+- **s1 / TALE / L1**: `MODE_A_COMPLETE_MODE_B_PARTIAL` with runnable MODE A scripts in-repo; s1 and TALE MODE B are usable via strict verified official import (TALE includes variant-separation checks), while L1 MODE B remains blocked without imported official/full outputs.
 - **BEST-Route**: currently **`BLOCKED` for fair in-repo comparison claims**, not because upstream code is missing, but because the upstream response-bank + reward-model + router-training workflow is not yet mapped to this repo's frontier/action substrate under a shared cost protocol.
 
 Use these artifacts to audit runnability and status:

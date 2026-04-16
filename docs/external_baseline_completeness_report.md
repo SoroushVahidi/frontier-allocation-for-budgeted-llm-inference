@@ -16,9 +16,9 @@
 
 | Baseline | Category | Direct vs adjacent | Usable now | MODE A | MODE B |
 |---|---|---|---|---|---|
-| s1 (`s1_simple_test_time_scaling`) | mode_b_partial | direct | yes_mode_a | runnable | blocked_without_official_results_import |
-| TALE (`tale_token_budget_aware_reasoning`) | mode_b_partial | adjacent | yes_mode_a | runnable | blocked_without_official_results_import |
-| L1 (`l1_length_control_rl`) | mode_b_partial | direct | yes_mode_a | runnable | blocked_without_official_results_import |
+| s1 (`s1_simple_test_time_scaling`) | mode_b_partial | direct | yes_mode_a | runnable | usable_with_verified_official_results_import |
+| TALE (`tale_token_budget_aware_reasoning`) | mode_b_partial | adjacent | yes_mode_a | runnable | usable_with_verified_official_results_import_with_variant_separation |
+| L1 (`l1_length_control_rl`) | mode_b_partial | direct | yes_mode_a | runnable | usable_with_verified_official_results_import |
 | BEST-Route (`best_route_microsoft`) | blocked | adjacent | no | not_applicable | not_applicable |
 | Compute-optimal TTS (`compute_optimal_tts`) | blocked | adjacent | no | not_applicable | not_applicable |
 | When To Solve, When To Verify (`when_solve_when_verify`) | link_only | adjacent | no | not_applicable | not_applicable |
@@ -38,7 +38,9 @@
 - L1 MODE A (`inference_only_adapter`) through `scripts/run_l1_baseline.py`.
 
 ## Partially usable
-- s1 / TALE / L1 MODE B paths are adapter-reporting only and remain blocked unless official/full externally-produced outputs are provided via `official.results_path`.
+- s1 MODE B is now a strict official/full import + verification path: usable when `official.results_path` points to a valid package and rejected otherwise.
+- TALE MODE B is now a strict official/full import + verification path (including explicit TALE vs TALE-PT variant checks): usable when `official.results_path` points to a valid package and rejected otherwise.
+- L1 MODE B remains adapter-reporting only and blocked unless official/full externally-produced outputs are provided via `official.results_path`.
 
 ## BEST-Route integration decision in this pass
 - Status: `blocked` (explicit non-runnable integration record for now).

@@ -17,10 +17,19 @@
   "dataset": {
     "name": "openai/gsm8k",
     "subset_size": 32,
-    "seeds": [11, 23, 37]
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "split": "test"
   },
   "budget": {
-    "grid": [4, 6, 8],
+    "grid": [
+      4,
+      6,
+      8
+    ],
     "unit": "action",
     "action_to_token_equivalent": 64.0,
     "matching_policy": "Keep official/full TALE rows separately labeled; avoid direct control-equivalence claims."
@@ -39,19 +48,69 @@
       "adaptive_min_expand_1",
       "external_tale_prompt_budgeting"
     ],
-    "adaptive_min_expand_grid": [1]
+    "adaptive_min_expand_grid": [
+      1
+    ]
   },
   "official": {
     "results_path": "",
-    "expected_columns": [
-      "dataset",
-      "model",
-      "setting",
-      "accuracy",
-      "avg_token_cost",
-      "source"
+    "contract_version": "tale_mode_b_official_import_v1",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
     ],
-    "status_policy": "If results_path is empty/missing, mark MODE B blocked without overclaiming reproduction."
+    "required_metadata_fields": [
+      "source.type",
+      "tale_variant.kind",
+      "tale_variant.name",
+      "tale_variant.includes_post_training",
+      "model.checkpoint",
+      "dataset.name",
+      "dataset.split",
+      "prompt.template",
+      "prompt.family",
+      "budget.unit",
+      "budget.settings",
+      "token_accounting.prompt_tokens_field",
+      "token_accounting.completion_tokens_field",
+      "token_accounting.total_tokens_field",
+      "decoding.temperature",
+      "decoding.top_p",
+      "decoding.max_new_tokens",
+      "metrics.schema_version",
+      "metrics.primary",
+      "provenance.exported_at_utc",
+      "provenance.source_uri",
+      "provenance.artifact_id",
+      "provenance.version_or_commit_if_available"
+    ],
+    "required_results_columns": [
+      "mode",
+      "source_type",
+      "tale_variant_kind",
+      "tale_variant_name",
+      "includes_post_training",
+      "dataset",
+      "split",
+      "model_checkpoint",
+      "prompt_family",
+      "prompt_template",
+      "budget_setting",
+      "accuracy",
+      "exact_match",
+      "avg_token_cost",
+      "temperature",
+      "top_p",
+      "max_new_tokens",
+      "artifact_id",
+      "version_or_commit"
+    ],
+    "allowed_tale_variant_kinds": [
+      "tale_inference_budgeting",
+      "tale_pt",
+      "official_tale_other"
+    ],
+    "status_policy": "If results_path is empty, MODE B is blocked. If provided, results must pass strict verification or import is rejected."
   },
   "metrics": {
     "primary": [
@@ -68,6 +127,6 @@
     "root_dir": "outputs/tale_baseline"
   },
   "reproducibility": {
-    "notes": "MODE B is adapter/reporting only unless official/full TALE artifacts are supplied via results_path."
+    "notes": "MODE B is official/full TALE results import only with strict verification and explicit TALE-vs-TALE-PT variant identity; no local full reproduction claim."
   }
 }

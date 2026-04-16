@@ -102,14 +102,16 @@
       "doc": "external/s1_simple_test_time_scaling/README.md",
       "integration": "mode_a_complete_mode_b_partial",
       "completeness_class": "mode_b_partial",
-      "blocker": "runnable_mode_a_blocked_mode_b_without_official_results"
+      "blocker": "mode_b_requires_verified_official_results_import_contract",
+      "mode_b_policy": "usable_via_verified_official_import"
     },
     "tale_token_budget_aware_reasoning": {
       "clone_url": "https://github.com/GeniusHTX/TALE",
       "doc": "external/tale_token_budget_aware_reasoning/README.md",
       "integration": "mode_a_complete_mode_b_partial",
       "completeness_class": "mode_b_partial",
-      "blocker": "runnable_mode_a_blocked_mode_b_without_official_results"
+      "blocker": "mode_b_requires_verified_official_results_import_contract_with_variant_identity",
+      "mode_b_policy": "usable_via_verified_official_import_with_tale_variant_separation"
     },
     "l1_length_control_rl": {
       "clone_url": "https://github.com/cmu-l3/l1.git",

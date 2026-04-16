@@ -1,23 +1,13 @@
 # TALE baseline integration (fair, reviewer-defensible)
 
-This document defines a conservative TALE integration for the current NeurIPS-oriented fixed-budget compute-allocation project.
-
-## Upstream method summary (audited)
-
-From the official TALE paper/repo:
-- TALE includes an inference-time budget-allocation line (e.g., TALE-EP) where a per-problem token budget is estimated and injected into the reasoning prompt.
-- The repo includes budget-search and estimator-oriented scripts (`search_budget.py`, `TALE-EP.py`) plus a separate TALE-PT training path (`TALE-PT.py`).
-- Therefore, inference-time prompt budgeting and post-training are distinct and must be reported separately.
+This document defines a conservative TALE integration for the fixed-budget compute-allocation project.
 
 ## Mode split in this repository
 
 ## MODE A (primary): `prompt_budgeting_inference_only`
 
-- Fully runnable in this repository.
-- Implements a faithful TALE-style adapter:
-  - per-instance token budget estimation,
-  - prompt-level budget injection,
-  - budget-constrained generation behavior in our local controller environment.
+- Runnable in this repository.
+- In-repo TALE-style prompt-budgeting adapter (per-instance budget estimation + prompt injection).
 - Does **not** include TALE-PT post-training.
 
 Runner:
@@ -25,64 +15,104 @@ Runner:
 
 ## MODE B (secondary): `official_full_adapter`
 
-- Partial adapter/reporting path.
-- Supports importing externally-produced official/full TALE results for side-by-side reporting.
-- If official artifacts are unavailable, run is recorded as `blocked` (no overclaim).
+- Strict official/full TALE results import + verification path.
+- Usable when valid external official/full package is provided.
+- Not a local full TALE/TALE-PT reproduction claim.
 
 Runner:
 - `python scripts/run_tale_baseline.py --config configs/tale_official_adapter_v1.json`
 
-## What is faithful vs adapted
+Critical boundary:
+- MODE A and MODE B must remain separate.
+- TALE inference-time variant and TALE-PT variant must remain explicit and unblurred.
 
-Faithful to TALE core idea:
-- Per-instance budget assignment.
-- Prompt-level token budget instruction.
-- Budget-aware quality/cost reporting.
+---
 
-Adapted to this repository:
-- Our canonical execution substrate is frontier/action-based controller evaluation.
-- TALE token budgets are mapped to this substrate via explicit token↔action conversion metadata.
-- The estimator in MODE A is a lightweight in-repo estimator (`char_length_linear`) rather than TALE's full external stack.
+## MODE B official import contract (`tale_mode_b_official_import_v1`)
 
-## Fairness protocol
+Required package at `official.results_path`:
+- `metadata.json`
+- `results.csv`
 
-Primary comparison:
-- `adaptive_min_expand_1` (our anchor) vs `external_tale_prompt_budgeting` (TALE-style adapter).
+### Required metadata coverage
 
-Budget matching:
-- Report fixed-grid comparisons and **matched average compute** comparisons.
-- Matching uses average generated-token estimates (plus action-budget metadata).
+Metadata must explicitly include:
+- source type (`official` / `author-produced` / `imported`),
+- TALE variant identity (`tale_inference_budgeting` / `tale_pt` / other official TALE variant),
+- explicit post-training inclusion flag,
+- model/checkpoint identity,
+- dataset identity + split,
+- prompt template + prompt family,
+- budget unit + settings,
+- token accounting fields,
+- decoding settings,
+- metrics schema,
+- provenance fields,
+- artifact/version/commit identifier if available.
 
-Required caveat:
-- TALE is a strong adjacent published baseline but not the same decision granularity as stop-vs-act frontier control.
+Canonical required keys are defined in:
+- `configs/tale_official_adapter_v1.json` (`official.required_metadata_fields`)
+- `scripts/verify_tale_mode_b_import.py`
 
-## Metrics emitted
+### Required results table coverage
 
-At minimum:
-- accuracy / exact match,
-- average generated tokens,
-- predicted budget and budget adherence/violation rates,
-- budget exhaustion,
-- frontier summaries (Pareto cost-quality).
+`results.csv` must include comparison-safe rows with explicit TALE variant identity and no MODE A mixing.
 
-## Artifacts emitted per run
+Canonical required columns are defined in:
+- `configs/tale_official_adapter_v1.json` (`official.required_results_columns`)
+- `scripts/verify_tale_mode_b_import.py`
 
-Under `outputs/tale_baseline/<run_id>/`:
-- `manifest.json`
-- `summary.csv`
-- `summary_per_seed.csv`
-- `per_example.jsonl`
-- `note.md`
-- `fairness_report.md`
-- `comparison_to_ours.csv`
-- `frontier_summary.csv`
+---
+
+## Verification behavior
+
+Verifier scripts:
+- `scripts/verify_tale_mode_b_import.py`
+- `scripts/generate_tale_mode_b_import_report.py`
+
+Checks include:
+- required files exist,
+- metadata schema completeness,
+- results schema completeness,
+- dataset + split match declared run,
+- budget fields parseable and expected budget coverage present,
+- imported outputs are not mixed with MODE A markers,
+- variant identity is explicit and not mixed (TALE vs TALE-PT separation),
+- metric/decode fields are numeric/interpretable,
+- output rows are normalized for repository comparison tables.
+
+Decision policy:
+- no `official.results_path` → MODE B `blocked`,
+- provided + valid package → MODE B `validated_imported_results`,
+- provided + invalid package → MODE B `invalid_import_rejected`.
+
+---
+
+## MODE B run artifacts
+
+Per run (`outputs/tale_baseline/<run_id>/`):
 - `official_mode_import.csv`
+- `official_mode_import_report.md`
+- `fairness_report.md`
+- `manifest.json`
 
-## Non-claims
+Additional artifacts include:
+- `summary.csv`, `summary_per_seed.csv`, `per_example.jsonl`, `note.md`, `comparison_to_ours.csv`, `frontier_summary.csv`.
 
-- No claim that TALE-PT is fully reproduced in-repo.
-- No claim of exact control-space equivalence between TALE prompt budgeting and frontier stop-vs-act policies.
-- No claim of exact paper-number reproduction without full official assets.
+---
+
+## Manuscript-safe wording
+
+Safe wording:
+- “MODE A is the in-repo prompt-budgeting TALE adapter.”
+- “MODE B is official/full TALE results import with strict verification.”
+- “MODE B does not imply local full TALE/TALE-PT reproduction in this repository.”
+- “TALE and TALE-PT are explicitly separated in MODE B metadata and reporting.”
+
+Unsafe wording:
+- “this repo fully reproduces TALE-PT official training results” (unless that stack is truly added and auditable).
+
+---
 
 ## Upstream references
 

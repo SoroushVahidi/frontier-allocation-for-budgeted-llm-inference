@@ -5,7 +5,7 @@ MODE A (inference_only):
 - In-repo s1-style budget forcing adapter on same base model family as our controller.
 
 MODE B (full_or_official):
-- Optional official-result adapter/import path for full s1 runs that include post-training.
+- Strict official-result import + verification path for full s1 runs that include post-training.
 - This script does not claim full reproduction by itself.
 """
 
@@ -19,6 +19,7 @@ import json
 from pathlib import Path
 import random
 import statistics
+import subprocess
 import sys
 from typing import Any
 
@@ -47,6 +48,7 @@ DEFAULT_METHODS = [
 class RunConfig:
     mode: str
     dataset: str
+    dataset_split: str
     subset_size: int
     seeds: list[int]
     budgets: list[int]
@@ -65,20 +67,18 @@ class RunConfig:
     official_results_path: str | None
 
 
-def _parse_int_list(raw: str) -> list[int]:
-    return [int(x.strip()) for x in raw.split(",") if x.strip()]
-
-
 def _load_config(path: Path) -> RunConfig:
     data = json.loads(path.read_text(encoding="utf-8"))
     out = data["output"]
     mode = str(data.get("mode", "inference_only"))
     official = data.get("official", {}) or {}
+    dataset_cfg = data["dataset"]
     return RunConfig(
         mode=mode,
-        dataset=str(data["dataset"]["name"]),
-        subset_size=int(data["dataset"].get("subset_size", 32)),
-        seeds=[int(s) for s in data["dataset"].get("seeds", [11, 23, 37])],
+        dataset=str(dataset_cfg["name"]),
+        dataset_split=str(dataset_cfg.get("split", "test")),
+        subset_size=int(dataset_cfg.get("subset_size", 32)),
+        seeds=[int(s) for s in dataset_cfg.get("seeds", [11, 23, 37])],
         budgets=[int(b) for b in data["budget"]["grid"]],
         adaptive_grid=[int(k) for k in data["methods"].get("adaptive_min_expand_grid", [1])],
         use_openai_api=bool(data["model"].get("use_openai_api", False)),
@@ -129,20 +129,60 @@ def _pareto_frontier(rows: list[dict[str, Any]], acc_key: str, cost_key: str) ->
     return frontier
 
 
-def _load_official_results(path: Path) -> list[dict[str, Any]]:
-    if not path.exists():
-        return []
-    if path.suffix.lower() == ".json":
-        loaded = json.loads(path.read_text(encoding="utf-8"))
-        if isinstance(loaded, list):
-            return [dict(x) for x in loaded]
-        if isinstance(loaded, dict) and isinstance(loaded.get("rows"), list):
-            return [dict(x) for x in loaded["rows"]]
-        return []
-    if path.suffix.lower() == ".csv":
-        with path.open("r", encoding="utf-8", newline="") as f:
-            return [dict(r) for r in csv.DictReader(f)]
-    return []
+def _verify_mode_b_import(
+    *,
+    official_results_path: str,
+    run_dir: Path,
+    dataset: str,
+    dataset_split: str,
+    budgets: list[int],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    verify_script = REPO_ROOT / "scripts/verify_s1_mode_b_import.py"
+    report_script = REPO_ROOT / "scripts/generate_s1_mode_b_import_report.py"
+    verification_json = run_dir / "official_mode_import_verification.json"
+
+    cmd = [
+        sys.executable,
+        str(verify_script),
+        "--results-path",
+        official_results_path,
+        "--expected-dataset",
+        dataset,
+        "--expected-split",
+        dataset_split,
+        "--expected-budgets",
+        ",".join(str(b) for b in budgets),
+        "--output-json",
+        str(verification_json),
+    ]
+    completed = subprocess.run(cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+
+    verification: dict[str, Any]
+    if verification_json.exists():
+        verification = json.loads(verification_json.read_text(encoding="utf-8"))
+    else:
+        verification = {
+            "status": "invalid",
+            "issues": ["verification_script_failed"],
+            "errors": [completed.stderr[-4000:] if completed.stderr else ""],
+            "imported_rows": [],
+        }
+
+    report_cmd = [
+        sys.executable,
+        str(report_script),
+        "--verification-json",
+        str(verification_json),
+        "--output-md",
+        str(run_dir / "official_mode_import_report.md"),
+    ]
+    subprocess.run(report_cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+
+    imported_rows = verification.get("imported_rows", []) if isinstance(verification, dict) else []
+    if not isinstance(imported_rows, list):
+        imported_rows = []
+    normalized_rows = [dict(r) for r in imported_rows if isinstance(r, dict)]
+    return verification, normalized_rows
 
 
 def parse_args() -> argparse.Namespace:
@@ -204,6 +244,7 @@ def main() -> None:
                     {
                         "mode": cfg.mode,
                         "dataset": cfg.dataset,
+                        "dataset_split": cfg.dataset_split,
                         "seed": seed,
                         "budget_actions": budget,
                         "budget_token_equivalent": budget * cfg.action_to_token_equivalent,
@@ -229,6 +270,7 @@ def main() -> None:
                     {
                         "mode": cfg.mode,
                         "dataset": cfg.dataset,
+                        "dataset_split": cfg.dataset_split,
                         "seed": seed,
                         "budget_actions": budget,
                         "budget_token_equivalent": budget * cfg.action_to_token_equivalent,
@@ -258,6 +300,7 @@ def main() -> None:
             {
                 "mode": cfg.mode,
                 "dataset": cfg.dataset,
+                "dataset_split": cfg.dataset_split,
                 "budget_actions": budget,
                 "budget_token_equivalent": budget * cfg.action_to_token_equivalent,
                 "method": method,
@@ -282,6 +325,7 @@ def main() -> None:
             {
                 "mode": cfg.mode,
                 "dataset": cfg.dataset,
+                "dataset_split": cfg.dataset_split,
                 "budget_actions": budget,
                 "budget_token_equivalent": budget * cfg.action_to_token_equivalent,
                 "our_method": "adaptive_min_expand_1",
@@ -310,30 +354,63 @@ def main() -> None:
         "status": "not_requested",
         "notes": "",
     }
+
     if cfg.mode == "full_or_official":
         if cfg.official_results_path:
-            imported = _load_official_results(REPO_ROOT / cfg.official_results_path)
-            if imported:
-                mode_b_state["status"] = "imported_results"
-                mode_b_state["notes"] = "Loaded externally-produced official/full s1 results for side-by-side reporting."
-                for r in imported:
-                    merged = {"mode": "full_or_official", "source": "official_import", **r}
-                    mode_b_official_rows.append(merged)
+            verification, imported_rows = _verify_mode_b_import(
+                official_results_path=cfg.official_results_path,
+                run_dir=run_dir,
+                dataset=cfg.dataset,
+                dataset_split=cfg.dataset_split,
+                budgets=cfg.budgets,
+            )
+            mode_b_state["verification"] = {
+                "status": str(verification.get("status", "invalid")),
+                "verification_file": "official_mode_import_verification.json",
+            }
+            if str(verification.get("status", "invalid")) == "valid":
+                mode_b_state["status"] = "validated_imported_results"
+                mode_b_state["notes"] = (
+                    "Loaded externally-produced official/full s1 results after strict schema, metadata, "
+                    "provenance, and fairness validation."
+                )
+                mode_b_official_rows = imported_rows
             else:
-                mode_b_state["status"] = "blocked"
-                mode_b_state["notes"] = "Official mode requested but results file missing/empty/unreadable."
+                mode_b_state["status"] = "invalid_import_rejected"
+                issues = verification.get("issues", [])
+                issue_text = "; ".join(str(x) for x in issues[:6]) if isinstance(issues, list) else "unknown"
+                mode_b_state["notes"] = (
+                    "Official results path was provided but verification failed. "
+                    f"Import rejected. First issues: {issue_text}"
+                )
         else:
             mode_b_state["status"] = "blocked"
             mode_b_state["notes"] = (
-                "Official mode requested, but this repo does not reproduce s1 post-training assets automatically. "
-                "Provide `official.results_path` with exported official run metrics to complete MODE B reporting."
+                "Official mode requested, but no `official.results_path` was provided. "
+                "MODE B in this repo is a strict official-results import + verification path, "
+                "not a local full post-training reproduction."
             )
+            (run_dir / "official_mode_import_report.md").write_text(
+                "# s1 MODE B official import report\n\n"
+                "- status: `blocked`\n"
+                "- reason: missing `official.results_path`\n"
+                "- policy: MODE B only runs when an official/full results package is supplied and verified.\n",
+                encoding="utf-8",
+            )
+    else:
+        (run_dir / "official_mode_import_report.md").write_text(
+            "# s1 MODE B official import report\n\n"
+            "- status: `not_requested`\n"
+            "- reason: run mode is MODE A (`inference_only`)\n",
+            encoding="utf-8",
+        )
 
     manifest = {
         "run_id": run_id,
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "mode": cfg.mode,
         "dataset": cfg.dataset,
+        "dataset_split": cfg.dataset_split,
         "subset_size": cfg.subset_size,
         "seeds": cfg.seeds,
         "budget_grid_actions": cfg.budgets,
@@ -367,6 +444,7 @@ def main() -> None:
         f"- run_id: `{run_id}`",
         f"- mode: `{cfg.mode}`",
         f"- dataset: `{cfg.dataset}`",
+        f"- dataset_split: `{cfg.dataset_split}`",
         f"- subset_size_per_seed: `{cfg.subset_size}`",
         f"- seeds: `{', '.join(str(x) for x in cfg.seeds)}`",
         f"- budgets(actions): `{', '.join(str(x) for x in cfg.budgets)}`",
@@ -389,9 +467,13 @@ def main() -> None:
         f"- Internal action budgets are mapped to token-equivalent budgets via fixed conversion: 1 action = {cfg.action_to_token_equivalent} token-equivalent units.",
         "- We report both action-budget and token-equivalent columns so tables can be audited.",
         "",
+        "## MODE B import guardrails",
+        "- MODE B is a strict official/full results import path with required schema + metadata + provenance validation.",
+        "- Imported results are rejected if metadata is incomplete/inconsistent or if fairness checks fail.",
+        "",
         "## Caveats",
         "- Inference-only adapter does not claim exact token-level stop-token parity with upstream vLLM internals.",
-        "- MODE B is not marked complete unless external official/full results are imported or reproduced with full assets.",
+        "- MODE B does not claim in-repo reproduction of s1 post-training assets.",
     ]
 
     _write_csv(run_dir / "summary.csv", summary_rows)
