@@ -7,6 +7,7 @@ It does not claim exact oracle values except in trivial terminal/zero-budget sta
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import hashlib
 import itertools
 import json
 from pathlib import Path
@@ -29,6 +30,7 @@ ACTION_VERIFY = "verify"
 
 @dataclass
 class OracleLabelConfig:
+    mode: str = "approx_large_state"
     episodes: int = 24
     seed: int = 17
     decision_budget: int = 10
@@ -45,6 +47,22 @@ class OracleLabelConfig:
     train_ratio: float = 0.8
     value_aggregation: str = "max"
     value_std_penalty: float = 0.0
+
+
+def estimator_config_hash(cfg: OracleLabelConfig) -> str:
+    payload = {
+        "mode": cfg.mode,
+        "rollouts_per_policy": cfg.rollouts_per_policy,
+        "high_budget_multiplier": cfg.high_budget_multiplier,
+        "exhaustive_action_budget_cap": cfg.exhaustive_action_budget_cap,
+        "value_aggregation": cfg.value_aggregation,
+        "value_std_penalty": cfg.value_std_penalty,
+        "finish_prob_base": cfg.finish_prob_base,
+        "answer_noise": cfg.answer_noise,
+        "max_depth": cfg.max_depth,
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()[:16]
 
 
 @dataclass
@@ -159,13 +177,26 @@ def approximate_oracle_continuation_value(
     episode_id: int,
     decision_id: int,
 ) -> dict[str, Any]:
+    mode = str(cfg.mode).strip()
+    if mode not in {"exact_tiny_state", "approx_large_state"}:
+        raise ValueError(f"Unsupported oracle label mode: {mode}")
+    config_hash = estimator_config_hash(cfg)
     if branch.is_done or remaining_budget <= 0:
         exact_value = 1.0 if branch.is_done and branch.is_correct else float(branch.score)
         return {
             "approx_oracle_continuation_value": float(exact_value),
             "label_kind": "exact_terminal_or_zero_budget",
             "value_is_exact": True,
+            "value_is_near_exact": True,
+            "mode": mode,
+            "approximation_used": False,
+            "tiny_state_exhaustive_applied": False,
+            "rollout_ci_lower_95": float(exact_value),
+            "rollout_ci_upper_95": float(exact_value),
+            "estimator_config_hash": config_hash,
             "rollout_count": 0,
+            "diagnostic_rollout_samples": 0,
+            "diagnostic_exhaustive_candidates": 0,
             "best_rollout": None,
             "rollout_value_mean": float(exact_value),
             "rollout_value_std": 0.0,
@@ -175,28 +206,30 @@ def approximate_oracle_continuation_value(
     policy_names = ["expand_only", "verify_then_expand", "stalled_recovery", "random_mix"]
 
     outcomes: list[RolloutOutcome] = []
-    for policy_idx, policy_name in enumerate(policy_names):
-        for rep in range(cfg.rollouts_per_policy):
-            rollout_seed = (
-                cfg.seed * 10_000_019
-                + episode_id * 19_999
-                + decision_id * 3_001
-                + policy_idx * 101
-                + rep
-            )
-            outcomes.append(
-                simulate_rollout(
-                    branch,
-                    remaining_budget=high_budget,
-                    policy_name=policy_name,
-                    rollout_seed=rollout_seed,
-                    finish_prob_base=cfg.finish_prob_base,
-                    answer_noise=cfg.answer_noise,
-                    max_depth=cfg.max_depth,
+    if mode == "approx_large_state":
+        for policy_idx, policy_name in enumerate(policy_names):
+            for rep in range(cfg.rollouts_per_policy):
+                rollout_seed = (
+                    cfg.seed * 10_000_019
+                    + episode_id * 19_999
+                    + decision_id * 3_001
+                    + policy_idx * 101
+                    + rep
                 )
-            )
+                outcomes.append(
+                    simulate_rollout(
+                        branch,
+                        remaining_budget=high_budget,
+                        policy_name=policy_name,
+                        rollout_seed=rollout_seed,
+                        finish_prob_base=cfg.finish_prob_base,
+                        answer_noise=cfg.answer_noise,
+                        max_depth=cfg.max_depth,
+                    )
+                )
 
-    if remaining_budget <= cfg.exhaustive_action_budget_cap:
+    tiny_state_exhaustive = mode == "exact_tiny_state" and remaining_budget <= cfg.exhaustive_action_budget_cap
+    if tiny_state_exhaustive:
         action_space = [ACTION_EXPAND, ACTION_VERIFY]
         for actions in itertools.product(action_space, repeat=remaining_budget):
             rollout_seed = (
@@ -220,7 +253,7 @@ def approximate_oracle_continuation_value(
                 max_score_seen = max(max_score_seen, float(work.score))
             outcomes.append(
                 RolloutOutcome(
-                    policy_name="bounded_action_enumeration",
+                    policy_name="exact_tiny_state_action_enumeration",
                     rollout_seed=rollout_seed,
                     actions=taken,
                     terminal_reached=bool(work.is_done),
@@ -231,27 +264,88 @@ def approximate_oracle_continuation_value(
                     continuation_outcome_value=_rollout_value(work, max_score_seen=max_score_seen, actions_used=len(taken), budget=remaining_budget),
                 )
             )
+    elif mode == "exact_tiny_state":
+        fallback_seed = cfg.seed * 1_000_003 + episode_id * 1009 + decision_id * 37
+        outcomes.append(
+            simulate_rollout(
+                branch,
+                remaining_budget=min(high_budget, max(1, remaining_budget)),
+                policy_name="stalled_recovery",
+                rollout_seed=fallback_seed,
+                finish_prob_base=cfg.finish_prob_base,
+                answer_noise=cfg.answer_noise,
+                max_depth=cfg.max_depth,
+            )
+        )
 
     values = [x.continuation_outcome_value for x in outcomes]
+    if not values:
+        fallback = float(branch.score)
+        return {
+            "approx_oracle_continuation_value": fallback,
+            "label_kind": "degenerate_no_outcomes",
+            "value_is_exact": False,
+            "value_is_near_exact": False,
+            "mode": mode,
+            "approximation_used": True,
+            "tiny_state_exhaustive_applied": False,
+            "rollout_ci_lower_95": fallback,
+            "rollout_ci_upper_95": fallback,
+            "estimator_config_hash": config_hash,
+            "rollout_count": 0,
+            "diagnostic_rollout_samples": 0,
+            "diagnostic_exhaustive_candidates": 0,
+            "best_rollout": None,
+            "rollout_value_mean": fallback,
+            "rollout_value_std": 0.0,
+            "rollout_value_q50": fallback,
+            "rollout_value_q75": fallback,
+        }
     best = max(outcomes, key=lambda x: x.continuation_outcome_value)
     sorted_values = sorted(values)
     q50 = sorted_values[len(sorted_values) // 2] if sorted_values else 0.0
     q75 = sorted_values[min(len(sorted_values) - 1, int(0.75 * (len(sorted_values) - 1)))] if sorted_values else 0.0
     value_mean = float(sum(values) / max(1, len(values)))
     value_std = float(statistics.pstdev(values)) if len(values) > 1 else 0.0
-    if cfg.value_aggregation == "robust_blend":
+    ci_half_width = 1.96 * (value_std / (len(values) ** 0.5)) if len(values) > 1 else 0.0
+    ci_lower = max(0.0, value_mean - ci_half_width)
+    ci_upper = min(1.0, value_mean + ci_half_width)
+    if mode == "approx_large_state" and cfg.value_aggregation == "robust_blend":
         blended = 0.60 * q75 + 0.30 * value_mean + 0.10 * q50
         agg_value = max(0.0, min(1.0, blended - cfg.value_std_penalty * value_std))
         label_kind = "approx_high_budget_rollout_robust_blend"
-    else:
+        value_is_near_exact = False
+        approximation_used = True
+    elif mode == "approx_large_state":
         agg_value = float(best.continuation_outcome_value)
         label_kind = "approx_high_budget_rollout_max"
+        value_is_near_exact = False
+        approximation_used = True
+    elif tiny_state_exhaustive:
+        agg_value = float(best.continuation_outcome_value)
+        label_kind = "near_exact_tiny_state_exhaustive_enumeration"
+        value_is_near_exact = True
+        approximation_used = False
+    else:
+        agg_value = float(best.continuation_outcome_value)
+        label_kind = "approx_tiny_state_fallback_sampler"
+        value_is_near_exact = False
+        approximation_used = True
 
     return {
         "approx_oracle_continuation_value": float(agg_value),
         "label_kind": label_kind,
         "value_is_exact": False,
+        "value_is_near_exact": bool(value_is_near_exact),
+        "mode": mode,
+        "approximation_used": bool(approximation_used),
+        "tiny_state_exhaustive_applied": bool(tiny_state_exhaustive),
+        "rollout_ci_lower_95": float(ci_lower),
+        "rollout_ci_upper_95": float(ci_upper),
+        "estimator_config_hash": config_hash,
         "rollout_count": len(outcomes),
+        "diagnostic_rollout_samples": int(sum(1 for o in outcomes if o.policy_name != "exact_tiny_state_action_enumeration")),
+        "diagnostic_exhaustive_candidates": int(sum(1 for o in outcomes if o.policy_name == "exact_tiny_state_action_enumeration")),
         "high_budget_used": high_budget,
         "best_rollout": asdict(best),
         "rollout_value_mean": value_mean,
@@ -398,6 +492,13 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
                         "oracle_margin": abs(oracle_delta),
                         "proxy_margin": abs(proxy_delta),
                         "label_source": "approx_oracle_continuation_value_vs_proxy_continuation_value",
+                        "mode": str(cfg.mode),
+                        "value_is_exact_a": bool(a["value_is_exact"]),
+                        "value_is_exact_b": bool(b["value_is_exact"]),
+                        "value_is_near_exact_a": bool(a.get("value_is_near_exact", False)),
+                        "value_is_near_exact_b": bool(b.get("value_is_near_exact", False)),
+                        "estimator_config_hash_a": str(a.get("estimator_config_hash", "")),
+                        "estimator_config_hash_b": str(b.get("estimator_config_hash", "")),
                     }
                 )
                 if (not agree) and (abs(oracle_delta) > cfg.tie_margin):
@@ -418,7 +519,11 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
         "n_branch_labels": len(branch_rows),
         "n_pairwise_labels": len(pair_rows),
         "n_exact_labels": sum(1 for r in branch_rows if bool(r["value_is_exact"])),
+        "n_near_exact_labels": sum(1 for r in branch_rows if bool(r.get("value_is_near_exact"))),
         "n_approximate_labels": sum(1 for r in branch_rows if not bool(r["value_is_exact"])),
+        "n_approximation_used": sum(1 for r in branch_rows if bool(r.get("approximation_used"))),
+        "mode": str(cfg.mode),
+        "estimator_config_hash": estimator_config_hash(cfg),
         "oracle_proxy_pair_agreement_rate": (agreements / max(1, agreements + disagreements)),
         "oracle_proxy_pair_disagreement_rate": (disagreements / max(1, agreements + disagreements)),
         "oracle_proxy_confident_disagreements": confident_disagreements,
