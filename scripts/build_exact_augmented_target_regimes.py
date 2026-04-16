@@ -64,7 +64,49 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--near-tie-margin", type=float, default=0.03)
     p.add_argument("--high-margin-threshold", type=float, default=0.08)
     p.add_argument("--max-pair-std", type=float, default=0.08)
+    p.add_argument("--tie-abs-margin-threshold", type=float, default=0.03)
+    p.add_argument("--tie-relative-margin-threshold", type=float, default=0.15)
+    p.add_argument("--tie-std-threshold", type=float, default=0.08)
+    p.add_argument("--tie-use-near-tie-flag", action="store_true")
+    p.add_argument("--tie-include-approx", action="store_true")
+    p.add_argument("--tie-require-exact-or-mixed", action="store_true")
     return p.parse_args()
+
+
+def _annotate_ambiguous_pair(
+    row: dict[str, Any],
+    *,
+    tie_abs_margin_threshold: float,
+    tie_relative_margin_threshold: float,
+    tie_std_threshold: float,
+    tie_use_near_tie_flag: bool,
+    tie_include_approx: bool,
+    tie_require_exact_or_mixed: bool,
+) -> dict[str, Any]:
+    out = dict(row)
+    pair_mode = str(out.get("pair_mode_provenance", "unknown"))
+    eligible_mode = True
+    if (not tie_include_approx) and pair_mode == "approx":
+        eligible_mode = False
+    if tie_require_exact_or_mixed and pair_mode not in {"exact", "mixed"}:
+        eligible_mode = False
+    triggers: list[str] = []
+    if float(out.get("margin_abs", 0.0)) <= float(tie_abs_margin_threshold):
+        triggers.append("abs_margin")
+    if float(out.get("relative_margin", 1e9)) <= float(tie_relative_margin_threshold):
+        triggers.append("relative_margin")
+    if float(out.get("pair_uncertainty_std_mean", 0.0)) >= float(tie_std_threshold):
+        triggers.append("uncertainty_std")
+    if tie_use_near_tie_flag and bool(out.get("near_tie_flag", False)):
+        triggers.append("near_tie_flag")
+    out["ambiguous_tie_target"] = bool(eligible_mode and len(triggers) > 0)
+    out["ambiguous_tie_reasons"] = triggers
+    out["ternary_label_name"] = (
+        "tie_ambiguous"
+        if out["ambiguous_tie_target"]
+        else ("prefer_branch_i" if int(out.get("label", out.get("preference", 0))) == 1 else "prefer_branch_j")
+    )
+    return out
 
 
 def main() -> None:
@@ -118,8 +160,27 @@ def main() -> None:
         out["margin_abs"] = abs(margin)
         out["near_tie_flag"] = bool(abs(margin) <= float(args.near_tie_margin))
         out["pair_uncertainty_std_mean"] = 0.5 * (std_i + std_j)
+        out["pair_uncertainty_std_max"] = max(std_i, std_j)
+        out["relative_margin"] = abs(margin) / max(
+            abs(float(ci.get("estimated_value_if_allocate_next", 0.0))),
+            abs(float(cj.get("estimated_value_if_allocate_next", 0.0))),
+            1e-6,
+        )
+        mode_i = str(ci.get("mode", "unknown"))
+        mode_j = str(cj.get("mode", "unknown"))
+        out["pair_mode_provenance"] = mode_i if mode_i == mode_j else "mixed"
         out["pair_type"] = pair_type_map.get(k, "generic")
-        promoted.append(out)
+        promoted.append(
+            _annotate_ambiguous_pair(
+                out,
+                tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
+                tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
+                tie_std_threshold=float(args.tie_std_threshold),
+                tie_use_near_tie_flag=bool(args.tie_use_near_tie_flag),
+                tie_include_approx=bool(args.tie_include_approx),
+                tie_require_exact_or_mixed=bool(args.tie_require_exact_or_mixed),
+            )
+        )
 
     baseline_rows: list[dict[str, Any]] = []
     for row in pairs:
@@ -139,8 +200,27 @@ def main() -> None:
         b["pair_uncertainty_std_mean"] = 0.5 * (
             float(ci.get("allocation_value_std", 0.0)) + float(cj.get("allocation_value_std", 0.0))
         )
+        b["pair_uncertainty_std_max"] = max(float(ci.get("allocation_value_std", 0.0)), float(cj.get("allocation_value_std", 0.0)))
+        b["relative_margin"] = abs(margin) / max(
+            abs(float(ci.get("estimated_value_if_allocate_next", 0.0))),
+            abs(float(cj.get("estimated_value_if_allocate_next", 0.0))),
+            1e-6,
+        )
+        mode_i = str(ci.get("mode", "unknown"))
+        mode_j = str(cj.get("mode", "unknown"))
+        b["pair_mode_provenance"] = mode_i if mode_i == mode_j else "mixed"
         b["pair_type"] = pair_type_map.get(k, "generic")
-        baseline_rows.append(b)
+        baseline_rows.append(
+            _annotate_ambiguous_pair(
+                b,
+                tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
+                tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
+                tie_std_threshold=float(args.tie_std_threshold),
+                tie_use_near_tie_flag=bool(args.tie_use_near_tie_flag),
+                tie_include_approx=bool(args.tie_include_approx),
+                tie_require_exact_or_mixed=bool(args.tie_require_exact_or_mixed),
+            )
+        )
 
     regimes: dict[str, list[dict[str, Any]]] = {
         "all_pairs_approx": baseline_rows,
@@ -162,6 +242,12 @@ def main() -> None:
             "near_tie_margin": args.near_tie_margin,
             "high_margin_threshold": args.high_margin_threshold,
             "max_pair_std": args.max_pair_std,
+            "tie_abs_margin_threshold": args.tie_abs_margin_threshold,
+            "tie_relative_margin_threshold": args.tie_relative_margin_threshold,
+            "tie_std_threshold": args.tie_std_threshold,
+            "tie_use_near_tie_flag": bool(args.tie_use_near_tie_flag),
+            "tie_include_approx": bool(args.tie_include_approx),
+            "tie_require_exact_or_mixed": bool(args.tie_require_exact_or_mixed),
         },
     }
 
@@ -179,6 +265,7 @@ def main() -> None:
             "promoted_exact_rate": promoted_count / max(1, len(rows)),
             "near_tie_rate": sum(1 for r in rows if bool(r.get("near_tie_flag", False))) / max(1, len(rows)),
             "adjacent_rank_rate": sum(1 for r in rows if str(r.get("pair_type", "")) == "adjacent_rank") / max(1, len(rows)),
+            "ambiguous_tie_rate": sum(1 for r in rows if bool(r.get("ambiguous_tie_target", False))) / max(1, len(rows)),
         }
         (d / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
         manifest["regimes"][regime] = {"output_dir": str(d), "summary": summary}

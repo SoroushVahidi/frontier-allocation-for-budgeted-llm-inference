@@ -54,6 +54,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--catboost-learning-rate", type=float, default=0.05)
     p.add_argument("--catboost-depth", type=int, default=6)
     p.add_argument("--feature-set", choices=["v1", "v2"], default="v1")
+    p.add_argument("--train-pairwise-ternary", action="store_true")
+    p.add_argument("--tie-abs-margin-threshold", type=float, default=0.03)
+    p.add_argument("--tie-relative-margin-threshold", type=float, default=0.15)
+    p.add_argument("--tie-std-threshold", type=float, default=0.08)
+    p.add_argument("--tie-use-near-tie-flag", action="store_true")
+    p.add_argument("--tie-include-approx", action="store_true")
+    p.add_argument("--tie-require-exact-or-mixed", action="store_true")
     p.add_argument("--disable-pairwise", action="store_true")
     p.add_argument("--disable-pointwise", action="store_true")
     p.add_argument("--disable-outside-option", action="store_true")
@@ -126,6 +133,13 @@ def main() -> None:
         catboost_learning_rate=float(args.catboost_learning_rate),
         catboost_depth=int(args.catboost_depth),
         feature_set=str(args.feature_set),
+        train_pairwise_ternary=bool(args.train_pairwise_ternary),
+        tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
+        tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
+        tie_std_threshold=float(args.tie_std_threshold),
+        tie_use_near_tie_flag=bool(args.tie_use_near_tie_flag),
+        tie_include_approx=bool(args.tie_include_approx),
+        tie_require_exact_or_mixed=bool(args.tie_require_exact_or_mixed),
     )
 
     start = time.time()

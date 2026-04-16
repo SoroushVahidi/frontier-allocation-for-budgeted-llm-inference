@@ -145,3 +145,27 @@ Not safe to claim yet:
 - that richer features universally improve all integrated model families,
 - that hard-case ambiguity is solved,
 - that current bounded run results establish robust cross-dataset universal closure.
+
+## Ternary / selective-abstention formulation claims (2026-04-16 bounded update)
+
+Safe to claim now:
+- tie-aware supervision metadata and ternary-label hooks are integrated in target-construction + learning paths with auditable artifacts,
+- selective abstention and explicit fallback semantics are now runnable in matched branch-comparison experiments,
+- bounded evidence indicates a real coverage-vs-accuracy tradeoff when ambiguity is handled explicitly.
+
+Not safe to claim yet:
+- that ternary/tie-aware formulation is already a robust universal improvement over forced binary comparison,
+- that abstention fallback currently preserves or improves hardest near-tie behavior across settings,
+- that ambiguity handling thresholds are already calibrated for high coverage and high reliability simultaneously.
+
+## Ambiguity calibration + fallback claims (2026-04-16 bounded update)
+
+Safe to claim now:
+- calibration-aware abstention experiments are integrated with explicit calibration-fit provenance (`val`) and test-side calibration-quality metrics (Brier/ECE/NLL),
+- multiple explicit fallback policies are runnable and auditable in matched ambiguity-handling comparisons,
+- bounded evidence indicates fallback choice materially affects forced/top-1 behavior when abstention is enabled.
+
+Not safe to claim yet:
+- that probability calibration is universally improved by current simple calibrators in this setup,
+- that calibrated abstention reliably improves hardest near-tie slices across settings,
+- that ambiguity-handling bottleneck is solved.

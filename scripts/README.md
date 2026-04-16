@@ -86,6 +86,8 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `run_hard_region_exact_supervision_experiment.py` | Executes matched multi-seed learning across exact-augmented regimes and reports hard-slice metrics (near-tie, adjacent-rank, exact-promoted). |
 | `audit_bruteforce_feature_representation.py` | Audits hard-case feature coverage (v1 vs v2) and emits canonical feature-audit artifacts for near-tie/adjacent slices. |
 | `run_hard_case_feature_representation_experiment.py` | Runs matched old-vs-richer feature-set experiments on fixed supervision regimes and reports hard-slice metrics. |
+| `run_ternary_or_abstain_branch_comparison_experiment.py` | Runs matched binary-forced vs ternary tie-aware vs selective-abstention branch-comparison experiments with configurable tie-band rules and explicit fallback semantics. |
+| `run_ambiguity_calibration_and_fallback_experiment.py` | Runs matched ambiguity-handling experiments for abstention/tie decisions with confidence calibration (none/temperature/Platt/isotonic) and configurable fallback policies. |
 
 ### Brute-force allocator learning: GBDT ranking + uncertainty-aware options
 
@@ -237,6 +239,57 @@ python scripts/train_bruteforce_branch_allocator.py \
   --labels-dir outputs/branch_label_bruteforce_targets/<regime_root>/regime_promoted_exact_hard_region \
   --run-id hard_case_feature_train_v2 \
   --feature-set v2
+```
+
+### Ternary / selective-abstention branch-comparison workflow
+
+Build exact-augmented regimes with tie/ambiguous annotations:
+
+```bash
+python scripts/build_exact_augmented_target_regimes.py \
+  --labels-dir outputs/branch_label_bruteforce/<base_run_id> \
+  --exact-expansion-dir outputs/branch_label_bruteforce_targets/<exact_expansion_run_id> \
+  --run-id ternary_abstain_regimes_v1 \
+  --tie-abs-margin-threshold 0.03 \
+  --tie-relative-margin-threshold 0.15 \
+  --tie-std-threshold 0.08 \
+  --tie-use-near-tie-flag \
+  --tie-include-approx
+```
+
+Run matched binary vs ternary vs abstaining comparison with fixed feature representation (`v2`):
+
+```bash
+python scripts/run_ternary_or_abstain_branch_comparison_experiment.py \
+  --targets-root outputs/branch_label_bruteforce_targets/ternary_abstain_regimes_v1 \
+  --run-id ternary_or_abstain_v1 \
+  --seeds 11,29,47 \
+  --feature-set v2 \
+  --regimes all_pairs_approx,promoted_exact_hard_region \
+  --tie-abs-margin-threshold 0.03 \
+  --tie-relative-margin-threshold 0.15 \
+  --tie-std-threshold 0.08 \
+  --tie-use-near-tie-flag \
+  --tie-include-approx \
+  --abstain-confidence-threshold 0.20 \
+  --fallback-policy pointwise_value
+```
+
+### Ambiguity calibration + fallback workflow
+
+Run matched calibration/fallback comparisons on fixed feature representation (`v2`):
+
+```bash
+python scripts/run_ambiguity_calibration_and_fallback_experiment.py \
+  --targets-root outputs/branch_label_bruteforce_targets/<regime_root> \
+  --run-id ambiguity_calibration_fallback_v1 \
+  --seeds 11,29,47 \
+  --feature-set v2 \
+  --regimes all_pairs_approx,promoted_exact_hard_region \
+  --calibration-methods none,temperature,platt,isotonic \
+  --primary-calibration temperature \
+  --abstain-confidence-threshold 0.20 \
+  --ternary-fallback-policy outside_option_aware
 ```
 | `run_oracle_label_pilot_hpc.sh` | HPC-oriented wrapper: preflight, optional manifest build, generator hook, validator gate, run summary |
 | `run_oracle_label_generator_interface_stub.py` | Interface-stabilization stub CLI for heavy generator contract; supports testing-only `--mock-mode` outputs |

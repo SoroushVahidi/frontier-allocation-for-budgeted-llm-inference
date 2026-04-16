@@ -51,6 +51,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--exact-labels-dir", default="")
     p.add_argument("--promote-exact-over-approx", action="store_true")
     p.add_argument("--min-relative-margin", type=float, default=0.0)
+    p.add_argument("--tie-abs-margin-threshold", type=float, default=0.03)
+    p.add_argument("--tie-relative-margin-threshold", type=float, default=0.15)
+    p.add_argument("--tie-std-threshold", type=float, default=0.08)
+    p.add_argument("--tie-use-near-tie-flag", action="store_true")
+    p.add_argument("--tie-include-approx", action="store_true")
+    p.add_argument("--tie-require-exact-or-mixed", action="store_true")
     return p.parse_args()
 
 
@@ -80,6 +86,42 @@ def _augment_pair_row(
     out["outside_gap_abs_diff"] = abs(out["outside_gap_i"] - out["outside_gap_j"])
     out["pair_type"] = pair_type
     out["pair_quality_version"] = "branch_pair_quality_v1"
+    return out
+
+
+def _annotate_ambiguous_pair(
+    row: dict[str, Any],
+    *,
+    tie_abs_margin_threshold: float,
+    tie_relative_margin_threshold: float,
+    tie_std_threshold: float,
+    tie_use_near_tie_flag: bool,
+    tie_include_approx: bool,
+    tie_require_exact_or_mixed: bool,
+) -> dict[str, Any]:
+    out = dict(row)
+    pair_mode = str(out.get("pair_mode_provenance", "unknown"))
+    eligible_mode = True
+    if (not tie_include_approx) and pair_mode == "approx":
+        eligible_mode = False
+    if tie_require_exact_or_mixed and pair_mode not in {"exact", "mixed"}:
+        eligible_mode = False
+    triggers: list[str] = []
+    if float(out.get("margin_abs", 0.0)) <= float(tie_abs_margin_threshold):
+        triggers.append("abs_margin")
+    if float(out.get("relative_margin", 1e9)) <= float(tie_relative_margin_threshold):
+        triggers.append("relative_margin")
+    if float(out.get("pair_uncertainty_std_mean", 0.0)) >= float(tie_std_threshold):
+        triggers.append("uncertainty_std")
+    if tie_use_near_tie_flag and bool(out.get("near_tie_flag", False)):
+        triggers.append("near_tie_flag")
+    out["ambiguous_tie_target"] = bool(eligible_mode and len(triggers) > 0)
+    out["ambiguous_tie_reasons"] = triggers
+    out["ternary_label_name"] = (
+        "tie_ambiguous"
+        if out["ambiguous_tie_target"]
+        else ("prefer_branch_i" if int(out.get("label", out.get("preference", 0))) == 1 else "prefer_branch_j")
+    )
     return out
 
 
@@ -125,6 +167,12 @@ def main() -> None:
             "promote_exact_over_approx": bool(args.promote_exact_over_approx),
             "min_relative_margin": args.min_relative_margin,
             "exact_labels_dir": args.exact_labels_dir,
+            "tie_abs_margin_threshold": args.tie_abs_margin_threshold,
+            "tie_relative_margin_threshold": args.tie_relative_margin_threshold,
+            "tie_std_threshold": args.tie_std_threshold,
+            "tie_use_near_tie_flag": bool(args.tie_use_near_tie_flag),
+            "tie_include_approx": bool(args.tie_include_approx),
+            "tie_require_exact_or_mixed": bool(args.tie_require_exact_or_mixed),
         },
         "regimes": {},
     }
@@ -212,7 +260,17 @@ def main() -> None:
                         raise ValueError(f"Unknown strategy: {strat}")
 
                     if keep:
-                        kept.append(prow)
+                        kept.append(
+                            _annotate_ambiguous_pair(
+                                prow,
+                                tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
+                                tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
+                                tie_std_threshold=float(args.tie_std_threshold),
+                                tie_use_near_tie_flag=bool(args.tie_use_near_tie_flag),
+                                tie_include_approx=bool(args.tie_include_approx),
+                                tie_require_exact_or_mixed=bool(args.tie_require_exact_or_mixed),
+                            )
+                        )
 
         out_dir = out_root / f"regime_{strat}"
         out_dir.mkdir(parents=True, exist_ok=True)
