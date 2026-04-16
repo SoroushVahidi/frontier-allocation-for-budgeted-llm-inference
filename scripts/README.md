@@ -76,7 +76,91 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `train_bruteforce_branch_allocator.py` | Trains pairwise / pointwise / outside-option branch-allocation models from brute-force label artifacts and writes evaluation + manifests. |
 | `evaluate_bruteforce_branch_allocator.py` | Re-evaluates trained brute-force-label branch allocators with near-tie, ranking, mode-slice, budget-slice, and dataset-slice metrics. |
 | `merge_bruteforce_branch_label_runs.py` | Consolidates multiple brute-force run directories into a single provenance-preserving merged corpus with dataset/budget/mode/near-tie summaries and output checksums. |
-| `run_bruteforce_allocator_scaling_experiment.py` | Multi-seed allocator scaling runner over a merged corpus with full-corpus evaluation plus leave-one-dataset-out generalization slices. |
+| `run_bruteforce_allocator_scaling_experiment.py` | Multi-seed allocator scaling runner over a merged corpus with full-corpus evaluation plus leave-one-dataset-out generalization slices, including linear baselines and GBDT ranking baselines (LightGBM LambdaRank + CatBoost YetiRankPairwise when available). |
+| `build_bruteforce_target_regimes.py` | Builds manifest-backed pair-construction target regimes (all-pairs, top-vs-rest, adjacent-rank, high-margin-only, uncertainty-filtered) with pair-quality metadata and optional exact-label promotion. |
+| `audit_bruteforce_exact_vs_approx_pairs.py` | Runs targeted exact-vs-approx disagreement audits with slices by dataset, budget, margin bucket, branch count, and pair type. |
+| `run_target_fidelity_regime_experiment.py` | Runs matched multi-seed learner comparisons across target regimes to isolate supervision-quality effects from model-class effects. |
+
+### Brute-force allocator learning: GBDT ranking + uncertainty-aware options
+
+`train_bruteforce_branch_allocator.py` now supports:
+
+- **GBDT ranking baselines**:
+  - LightGBM LambdaRank (`lightgbm_ranker`)
+  - CatBoost YetiRankPairwise (`catboost_ranker`)
+- **Near-tie handling for pairwise linear learner**:
+  - `--pairwise-near-tie-action {none,filter,downweight}`
+  - `--pairwise-near-tie-downweight <float>`
+- **Uncertainty-aware pairwise weighting**:
+  - `--uncertainty-weighting`
+  - `--margin-weight-power`
+  - `--std-weight-scale`
+  - `--approx-mode-weight`
+  - `--exact-mode-weight`
+
+Example (matched linear + GBDT run):
+
+```bash
+python scripts/train_bruteforce_branch_allocator.py \
+  --labels-dir outputs/branch_label_bruteforce_merged/<merged_run_id> \
+  --run-id gbdt_matched_baseline \
+  --seed 17 \
+  --near-tie-margin 0.03
+```
+
+Example (uncertainty-aware pairwise weighting):
+
+```bash
+python scripts/train_bruteforce_branch_allocator.py \
+  --labels-dir outputs/branch_label_bruteforce_merged/<merged_run_id> \
+  --run-id gbdt_uncertainty_weighted \
+  --seed 17 \
+  --near-tie-margin 0.03 \
+  --pairwise-near-tie-action downweight \
+  --pairwise-near-tie-downweight 0.2 \
+  --uncertainty-weighting
+```
+
+Example (multi-seed matched scaling + leave-one-dataset-out):
+
+```bash
+python scripts/run_bruteforce_allocator_scaling_experiment.py \
+  --labels-dir outputs/branch_label_bruteforce_merged/<merged_run_id> \
+  --run-id gbdt_scaling_matched \
+  --seeds 11,29,47 \
+  --near-tie-margin 0.03
+```
+
+### Target-fidelity / pair-construction workflow
+
+Build pair-construction regimes with pair-quality metadata:
+
+```bash
+python scripts/build_bruteforce_target_regimes.py \
+  --labels-dir outputs/branch_label_bruteforce_merged/<approx_run> \
+  --run-id target_regimes_v1 \
+  --exact-labels-dir outputs/branch_label_bruteforce_merged/<exact_run> \
+  --promote-exact-over-approx
+```
+
+Run exact-vs-approx targeted disagreement audit:
+
+```bash
+python scripts/audit_bruteforce_exact_vs_approx_pairs.py \
+  --approx-labels-dir outputs/branch_label_bruteforce_targets/target_regimes_v1/regime_all_pairs \
+  --exact-labels-dir outputs/branch_label_bruteforce_targets/target_regimes_exact_v1/regime_all_pairs \
+  --output-dir outputs/branch_label_bruteforce_targets/target_regimes_v1/exact_vs_approx_audit
+```
+
+Run matched multi-seed learning across regimes:
+
+```bash
+python scripts/run_target_fidelity_regime_experiment.py \
+  --targets-root outputs/branch_label_bruteforce_targets/target_regimes_v1 \
+  --run-id target_fidelity_learning_v1 \
+  --seeds 11,29,47 \
+  --near-tie-margin 0.03
+```
 | `run_oracle_label_pilot_hpc.sh` | HPC-oriented wrapper: preflight, optional manifest build, generator hook, validator gate, run summary |
 | `run_oracle_label_generator_interface_stub.py` | Interface-stabilization stub CLI for heavy generator contract; supports testing-only `--mock-mode` outputs |
 | `run_oracle_label_generator_prototype.py` | First real paired-rollout oracle-label prototype generator (limited subset, CPU-oriented) |

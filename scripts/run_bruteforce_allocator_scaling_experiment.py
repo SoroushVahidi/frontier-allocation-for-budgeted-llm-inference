@@ -32,6 +32,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--near-tie-margin", type=float, default=0.03)
     p.add_argument("--train-ratio", type=float, default=0.8)
     p.add_argument("--val-ratio", type=float, default=0.1)
+    p.add_argument("--pairwise-near-tie-action", choices=["none", "filter", "downweight"], default="none")
+    p.add_argument("--pairwise-near-tie-downweight", type=float, default=0.25)
+    p.add_argument("--uncertainty-weighting", action="store_true")
+    p.add_argument("--disable-lightgbm-ranker", action="store_true")
+    p.add_argument("--disable-catboost-ranker", action="store_true")
     return p.parse_args()
 
 
@@ -43,7 +48,13 @@ def _dataset_for_candidate_row(row: dict[str, Any], state_to_dataset: dict[str, 
     return str(row.get("source_dataset_name") or state_to_dataset.get(str(row.get("state_id")), "unknown"))
 
 
-def _train_excluding_dataset(tables: dict[str, Any], cfg: LearningConfig, heldout_dataset: str) -> dict[str, Any]:
+def _train_excluding_dataset(
+    tables: dict[str, Any],
+    cfg: LearningConfig,
+    heldout_dataset: str,
+    *,
+    model_artifact_dir: Path,
+) -> dict[str, Any]:
     t = copy.deepcopy(tables)
     for row in t["candidates"]:
         ds = _dataset_for_candidate_row(row, t["state_to_dataset"])
@@ -53,7 +64,7 @@ def _train_excluding_dataset(tables: dict[str, Any], cfg: LearningConfig, heldou
         ds = _dataset_for_pair_row(row, t["state_to_dataset"])
         if ds == heldout_dataset:
             row["split"] = "test"
-    models = train_models(t, cfg)
+    models = train_models(t, cfg, model_artifact_dir=model_artifact_dir)
     eval_summary = evaluate_models(models, t, cfg)
     return {"models": models, "evaluation": eval_summary}
 
@@ -81,9 +92,15 @@ def main() -> None:
             train_ratio=float(args.train_ratio),
             val_ratio=float(args.val_ratio),
             near_tie_margin=float(args.near_tie_margin),
+            pairwise_near_tie_action=str(args.pairwise_near_tie_action),
+            pairwise_near_tie_downweight=float(args.pairwise_near_tie_downweight),
+            uncertainty_weighting=bool(args.uncertainty_weighting),
+            train_lightgbm_ranker=not bool(args.disable_lightgbm_ranker),
+            train_catboost_ranker=not bool(args.disable_catboost_ranker),
         )
         tables = prepare_learning_tables(artifacts, cfg)
-        models = train_models(tables, cfg)
+        seed_out_dir = out_dir / f"seed_{seed}"
+        models = train_models(tables, cfg, model_artifact_dir=seed_out_dir / "full_corpus_models")
         evaluation = evaluate_models(models, tables, cfg)
         all_results["full_corpus"][str(seed)] = {
             "config": {
@@ -91,6 +108,11 @@ def main() -> None:
                 "train_ratio": args.train_ratio,
                 "val_ratio": args.val_ratio,
                 "near_tie_margin": args.near_tie_margin,
+                "pairwise_near_tie_action": args.pairwise_near_tie_action,
+                "pairwise_near_tie_downweight": args.pairwise_near_tie_downweight,
+                "uncertainty_weighting": bool(args.uncertainty_weighting),
+                "train_lightgbm_ranker": not bool(args.disable_lightgbm_ranker),
+                "train_catboost_ranker": not bool(args.disable_catboost_ranker),
             },
             "models": models,
             "evaluation": evaluation,
@@ -99,7 +121,12 @@ def main() -> None:
         datasets = sorted(set(tables["state_to_dataset"].values()))
         all_results["cross_dataset_leave_one_out"][str(seed)] = {}
         for ds in datasets:
-            res = _train_excluding_dataset(tables, cfg, ds)
+            res = _train_excluding_dataset(
+                tables,
+                cfg,
+                ds,
+                model_artifact_dir=seed_out_dir / f"leaveout_{ds}_models",
+            )
             all_results["cross_dataset_leave_one_out"][str(seed)][ds] = res
 
     (out_dir / "scaling_experiment_results.json").write_text(json.dumps(all_results, indent=2), encoding="utf-8")
@@ -157,10 +184,13 @@ def main() -> None:
     for seed in seeds:
         lines.append(f"### Seed {seed}")
         for ds, block in all_results["cross_dataset_leave_one_out"][str(seed)].items():
-            pw = block["evaluation"].get("pairwise", {})
-            lines.append(
-                f"- hold out {ds}: pairwise model test pairwise={pw.get('pairwise_accuracy_test', 0.0):.3f}, top1={pw.get('ranking_top1_accuracy_test', 0.0):.3f}"
+            compact = ", ".join(
+                [
+                    f"{model_name}: pairwise={met.get('pairwise_accuracy_test', 0.0):.3f}, top1={met.get('ranking_top1_accuracy_test', 0.0):.3f}"
+                    for model_name, met in block["evaluation"].items()
+                ]
             )
+            lines.append(f"- hold out {ds}: {compact}")
         lines.append("")
 
     (out_dir / "scaling_experiment_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")

@@ -38,6 +38,21 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--pairwise-max-iter", type=int, default=500)
     p.add_argument("--outside-max-iter", type=int, default=500)
     p.add_argument("--pointwise-alpha", type=float, default=1.0)
+    p.add_argument("--disable-lightgbm-ranker", action="store_true")
+    p.add_argument("--disable-catboost-ranker", action="store_true")
+    p.add_argument("--pairwise-near-tie-action", choices=["none", "filter", "downweight"], default="none")
+    p.add_argument("--pairwise-near-tie-downweight", type=float, default=0.25)
+    p.add_argument("--uncertainty-weighting", action="store_true")
+    p.add_argument("--margin-weight-power", type=float, default=1.0)
+    p.add_argument("--std-weight-scale", type=float, default=3.0)
+    p.add_argument("--approx-mode-weight", type=float, default=0.9)
+    p.add_argument("--exact-mode-weight", type=float, default=1.05)
+    p.add_argument("--lightgbm-num-leaves", type=int, default=31)
+    p.add_argument("--lightgbm-learning-rate", type=float, default=0.05)
+    p.add_argument("--lightgbm-n-estimators", type=int, default=200)
+    p.add_argument("--catboost-iterations", type=int, default=250)
+    p.add_argument("--catboost-learning-rate", type=float, default=0.05)
+    p.add_argument("--catboost-depth", type=int, default=6)
     p.add_argument("--disable-pairwise", action="store_true")
     p.add_argument("--disable-pointwise", action="store_true")
     p.add_argument("--disable-outside-option", action="store_true")
@@ -94,6 +109,21 @@ def main() -> None:
         train_pairwise=not bool(args.disable_pairwise),
         train_pointwise=not bool(args.disable_pointwise),
         train_outside_option=not bool(args.disable_outside_option),
+        train_lightgbm_ranker=not bool(args.disable_lightgbm_ranker),
+        train_catboost_ranker=not bool(args.disable_catboost_ranker),
+        pairwise_near_tie_action=str(args.pairwise_near_tie_action),
+        pairwise_near_tie_downweight=float(args.pairwise_near_tie_downweight),
+        uncertainty_weighting=bool(args.uncertainty_weighting),
+        margin_weight_power=float(args.margin_weight_power),
+        std_weight_scale=float(args.std_weight_scale),
+        approx_mode_weight=float(args.approx_mode_weight),
+        exact_mode_weight=float(args.exact_mode_weight),
+        lightgbm_num_leaves=int(args.lightgbm_num_leaves),
+        lightgbm_learning_rate=float(args.lightgbm_learning_rate),
+        lightgbm_n_estimators=int(args.lightgbm_n_estimators),
+        catboost_iterations=int(args.catboost_iterations),
+        catboost_learning_rate=float(args.catboost_learning_rate),
+        catboost_depth=int(args.catboost_depth),
     )
 
     start = time.time()
@@ -112,7 +142,7 @@ def main() -> None:
         },
     )
 
-    models = train_models(tables, cfg)
+    models = train_models(tables, cfg, model_artifact_dir=out_dir / "model_artifacts")
     write_json(models_path, {"run_id": run_id, "config": config_to_dict(cfg), "models": models})
 
     eval_summary = evaluate_models(models, tables, cfg)

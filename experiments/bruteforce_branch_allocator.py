@@ -9,7 +9,19 @@ import math
 from pathlib import Path
 from typing import Any, Callable
 
+import numpy as np
 from sklearn.linear_model import LogisticRegression, Ridge
+
+try:
+    import lightgbm as lgb
+except Exception:  # pragma: no cover - optional dependency
+    lgb = None
+
+try:
+    from catboost import CatBoostRanker, Pool
+except Exception:  # pragma: no cover - optional dependency
+    CatBoostRanker = None
+    Pool = None
 
 
 ALLOC_FEATURE_NAMES = [
@@ -42,6 +54,21 @@ class LearningConfig:
     train_pairwise: bool = True
     train_pointwise: bool = True
     train_outside_option: bool = True
+    train_lightgbm_ranker: bool = True
+    train_catboost_ranker: bool = True
+    pairwise_near_tie_action: str = "none"  # one of: none, filter, downweight
+    pairwise_near_tie_downweight: float = 0.25
+    uncertainty_weighting: bool = False
+    margin_weight_power: float = 1.0
+    std_weight_scale: float = 3.0
+    approx_mode_weight: float = 0.9
+    exact_mode_weight: float = 1.05
+    lightgbm_num_leaves: int = 31
+    lightgbm_learning_rate: float = 0.05
+    lightgbm_n_estimators: int = 200
+    catboost_iterations: int = 250
+    catboost_learning_rate: float = 0.05
+    catboost_depth: int = 6
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -112,6 +139,29 @@ def assign_split(state_id: str, cfg: LearningConfig) -> str:
     return "test"
 
 
+def _pairwise_weight(row: dict[str, Any], cfg: LearningConfig) -> tuple[bool, float]:
+    margin_abs = abs(float(row.get("margin", 0.0)))
+    near_tie = margin_abs <= float(cfg.near_tie_margin)
+    if near_tie and cfg.pairwise_near_tie_action == "filter":
+        return (False, 0.0)
+
+    weight = 1.0
+    if near_tie and cfg.pairwise_near_tie_action == "downweight":
+        weight *= float(cfg.pairwise_near_tie_downweight)
+
+    if cfg.uncertainty_weighting:
+        weight *= max(margin_abs, 1e-6) ** float(cfg.margin_weight_power)
+        pair_std = float(row.get("pair_allocation_value_std", 0.0))
+        weight *= 1.0 / (1.0 + float(cfg.std_weight_scale) * max(pair_std, 0.0))
+        pair_mode = str(row.get("pair_mode", "unknown"))
+        if pair_mode == "approx":
+            weight *= float(cfg.approx_mode_weight)
+        elif pair_mode == "exact":
+            weight *= float(cfg.exact_mode_weight)
+
+    return (True, max(weight, 1e-8))
+
+
 def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: LearningConfig) -> dict[str, Any]:
     candidates = [dict(row) for row in data["candidate_labels"]]
     pairwise = [dict(row) for row in data["pairwise_labels"]]
@@ -141,6 +191,15 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         row["x_diff"] = [float(a - b) for a, b in zip(xi, xj)]
         if "label" not in row:
             row["label"] = int(row.get("preference", 0))
+        row["pair_allocation_value_std"] = 0.5 * (
+            float(ci.get("allocation_value_std", 0.0)) + float(cj.get("allocation_value_std", 0.0))
+        )
+        mode_i = str(ci.get("mode", "unknown"))
+        mode_j = str(cj.get("mode", "unknown"))
+        row["pair_mode"] = mode_i if mode_i == mode_j else "mixed"
+        include, weight = _pairwise_weight(row, cfg)
+        row["include_for_pairwise_training"] = include
+        row["pair_train_weight"] = weight
 
     state_to_candidates: dict[str, list[dict[str, Any]]] = {}
     for row in candidates:
@@ -162,11 +221,12 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
 
 
 def _fit_pairwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dict[str, Any]:
-    train = [r for r in rows if r["split"] == "train"]
+    train = [r for r in rows if r["split"] == "train" and bool(r.get("include_for_pairwise_training", True))]
     if len(train) < 2:
         return {"model_type": "pairwise_logreg", "status": "insufficient_train_rows"}
     x = [r["x_diff"] for r in train]
     y = [int(r["label"]) for r in train]
+    weights = [float(r.get("pair_train_weight", 1.0)) for r in train]
     if len(set(y)) < 2:
         return {
             "model_type": "pairwise_logreg",
@@ -174,14 +234,20 @@ def _fit_pairwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dict
             "constant_label": int(y[0]),
         }
     model = LogisticRegression(max_iter=cfg.pairwise_max_iter, random_state=cfg.seed)
-    model.fit(x, y)
-    weights = list(float(v) for v in model.coef_[0])
+    model.fit(x, y, sample_weight=weights)
+    coef = list(float(v) for v in model.coef_[0])
     return {
         "model_type": "pairwise_logreg",
         "status": "ok",
         "feature_names": ALLOC_FEATURE_NAMES,
-        "weights": weights,
+        "weights": coef,
         "intercept": float(model.intercept_[0]),
+        "training_rows": len(train),
+        "weighting": {
+            "pairwise_near_tie_action": cfg.pairwise_near_tie_action,
+            "pairwise_near_tie_downweight": cfg.pairwise_near_tie_downweight,
+            "uncertainty_weighting": cfg.uncertainty_weighting,
+        },
     }
 
 
@@ -225,14 +291,126 @@ def _fit_outside_option_model(rows: list[dict[str, Any]], cfg: LearningConfig) -
     }
 
 
-def train_models(tables: dict[str, Any], cfg: LearningConfig) -> dict[str, Any]:
+def _grouped_candidate_arrays(candidates: list[dict[str, Any]]) -> tuple[np.ndarray, np.ndarray, list[int], np.ndarray]:
+    train_rows = [r for r in candidates if r["split"] == "train"]
+    by_state: dict[str, list[dict[str, Any]]] = {}
+    for row in train_rows:
+        by_state.setdefault(str(row["state_id"]), []).append(row)
+    ordered_groups = [rows for _sid, rows in sorted(by_state.items()) if len(rows) >= 2]
+    if not ordered_groups:
+        return np.zeros((0, len(ALLOC_FEATURE_NAMES))), np.zeros((0,)), [], np.zeros((0,))
+    x = np.array([r["x"] for grp in ordered_groups for r in grp], dtype=float)
+    y = np.array([float(r["estimated_value_if_allocate_next"]) for grp in ordered_groups for r in grp], dtype=float)
+    group = [len(grp) for grp in ordered_groups]
+    weights = np.array([
+        max(1e-8, 1.0 / (1.0 + float(r.get("allocation_value_std", 0.0)) * 4.0))
+        for grp in ordered_groups
+        for r in grp
+    ], dtype=float)
+    return x, y, group, weights
+
+
+def _fit_lightgbm_ranker(candidates: list[dict[str, Any]], cfg: LearningConfig, model_artifact_dir: Path | None) -> dict[str, Any]:
+    if not cfg.train_lightgbm_ranker:
+        return {"model_type": "lightgbm_lambdarank", "status": "disabled"}
+    if lgb is None:
+        return {"model_type": "lightgbm_lambdarank", "status": "dependency_unavailable"}
+    if model_artifact_dir is None:
+        return {"model_type": "lightgbm_lambdarank", "status": "artifact_dir_required"}
+    x, y, group, w = _grouped_candidate_arrays(candidates)
+    if x.shape[0] < 4 or len(group) < 2:
+        return {"model_type": "lightgbm_lambdarank", "status": "insufficient_train_rows"}
+    y_rel = np.zeros_like(y, dtype=int)
+    idx = 0
+    for g in group:
+        segment = y[idx : idx + g]
+        order = np.argsort(segment)
+        rel = np.zeros(g, dtype=int)
+        for rank_pos, local_idx in enumerate(order):
+            rel[local_idx] = rank_pos
+        y_rel[idx : idx + g] = rel
+        idx += g
+
+    model = lgb.LGBMRanker(
+        objective="lambdarank",
+        random_state=cfg.seed,
+        learning_rate=cfg.lightgbm_learning_rate,
+        n_estimators=cfg.lightgbm_n_estimators,
+        num_leaves=cfg.lightgbm_num_leaves,
+        min_data_in_leaf=5,
+    )
+    model.fit(x, y_rel, group=group, sample_weight=w)
+    model_path = model_artifact_dir / "lightgbm_lambdarank_model.txt"
+    model.booster_.save_model(str(model_path))
+    return {
+        "model_type": "lightgbm_lambdarank",
+        "status": "ok",
+        "feature_names": ALLOC_FEATURE_NAMES,
+        "model_path": str(model_path),
+        "training_rows": int(x.shape[0]),
+        "training_groups": int(len(group)),
+    }
+
+
+def _fit_catboost_ranker(candidates: list[dict[str, Any]], cfg: LearningConfig, model_artifact_dir: Path | None) -> dict[str, Any]:
+    if not cfg.train_catboost_ranker:
+        return {"model_type": "catboost_yetirankpairwise", "status": "disabled"}
+    if CatBoostRanker is None or Pool is None:
+        return {"model_type": "catboost_yetirankpairwise", "status": "dependency_unavailable"}
+    if model_artifact_dir is None:
+        return {"model_type": "catboost_yetirankpairwise", "status": "artifact_dir_required"}
+
+    train_rows = [r for r in candidates if r["split"] == "train"]
+    by_state: dict[str, list[dict[str, Any]]] = {}
+    for row in train_rows:
+        by_state.setdefault(str(row["state_id"]), []).append(row)
+    groups = [rows for _sid, rows in sorted(by_state.items()) if len(rows) >= 2]
+    if sum(len(g) for g in groups) < 4 or len(groups) < 2:
+        return {"model_type": "catboost_yetirankpairwise", "status": "insufficient_train_rows"}
+
+    x = np.array([r["x"] for grp in groups for r in grp], dtype=float)
+    y = np.array([float(r["estimated_value_if_allocate_next"]) for grp in groups for r in grp], dtype=float)
+    group_id = np.array([gi for gi, grp in enumerate(groups) for _ in grp], dtype=int)
+    weights = np.array([
+        max(1e-8, 1.0 / (1.0 + float(r.get("allocation_value_std", 0.0)) * 4.0))
+        for grp in groups
+        for r in grp
+    ], dtype=float)
+
+    train_pool = Pool(data=x, label=y, group_id=group_id, weight=weights)
+    model = CatBoostRanker(
+        loss_function="YetiRankPairwise",
+        random_seed=cfg.seed,
+        iterations=cfg.catboost_iterations,
+        learning_rate=cfg.catboost_learning_rate,
+        depth=cfg.catboost_depth,
+        verbose=False,
+    )
+    model.fit(train_pool)
+    model_path = model_artifact_dir / "catboost_yetirankpairwise_model.json"
+    model.save_model(str(model_path), format="json")
+    return {
+        "model_type": "catboost_yetirankpairwise",
+        "status": "ok",
+        "feature_names": ALLOC_FEATURE_NAMES,
+        "model_path": str(model_path),
+        "training_rows": int(x.shape[0]),
+        "training_groups": int(len(groups)),
+    }
+
+
+def train_models(tables: dict[str, Any], cfg: LearningConfig, model_artifact_dir: Path | None = None) -> dict[str, Any]:
     models: dict[str, Any] = {}
+    if model_artifact_dir is not None:
+        model_artifact_dir.mkdir(parents=True, exist_ok=True)
     if cfg.train_pairwise:
         models["pairwise"] = _fit_pairwise_model(tables["pairwise"], cfg)
     if cfg.train_pointwise:
         models["pointwise"] = _fit_pointwise_model(tables["candidates"], cfg)
     if cfg.train_outside_option:
         models["outside_option"] = _fit_outside_option_model(tables["candidates"], cfg)
+    models["lightgbm_ranker"] = _fit_lightgbm_ranker(tables["candidates"], cfg, model_artifact_dir)
+    models["catboost_ranker"] = _fit_catboost_ranker(tables["candidates"], cfg, model_artifact_dir)
     return models
 
 
@@ -245,12 +423,29 @@ def scorer_from_model(model: dict[str, Any]) -> Callable[[dict[str, Any]], float
     if status != "ok":
         constant = float(model.get("constant_label", 0.0))
         return lambda _row: constant
-    w = [float(v) for v in model.get("weights", [])]
-    b = float(model.get("intercept", 0.0))
 
-    if model.get("model_type") == "pairwise_logreg":
-        return lambda row: _dot(w, row["x"])
-    return lambda row: _dot(w, row["x"]) + b
+    model_type = str(model.get("model_type", ""))
+    if model_type in {"pairwise_logreg", "pointwise_ridge", "outside_option_logreg"}:
+        w = [float(v) for v in model.get("weights", [])]
+        b = float(model.get("intercept", 0.0))
+        if model_type == "pairwise_logreg":
+            return lambda row: _dot(w, row["x"])
+        return lambda row: _dot(w, row["x"]) + b
+
+    if model_type == "lightgbm_lambdarank":
+        if lgb is None:
+            return lambda _row: 0.0
+        booster = lgb.Booster(model_file=str(model.get("model_path", "")))
+        return lambda row: float(booster.predict(np.array([row["x"]], dtype=float))[0])
+
+    if model_type == "catboost_yetirankpairwise":
+        if CatBoostRanker is None:
+            return lambda _row: 0.0
+        cb_model = CatBoostRanker()
+        cb_model.load_model(str(model.get("model_path", "")), format="json")
+        return lambda row: float(cb_model.predict(np.array([row["x"]], dtype=float))[0])
+
+    return lambda _row: 0.0
 
 
 def _sigmoid(z: float) -> float:
@@ -386,6 +581,7 @@ def evaluate_models(models: dict[str, Any], tables: dict[str, Any], cfg: Learnin
             "near_tie_pairwise_accuracy_test": near_acc,
             "far_margin_pairwise_accuracy_test": far_acc,
             "pairwise_margin_brier_test": brier,
+            "exact_only_pairwise_accuracy_test": slices.get("pairwise_accuracy_by_mode", {}).get("exact", 0.0),
             **slices,
         }
     return out
@@ -403,6 +599,8 @@ def write_markdown_report(path: Path, *, run_id: str, config: LearningConfig, ev
         f"- Run ID: `{run_id}`",
         f"- Seed: `{config.seed}`",
         f"- Near-tie threshold: `{config.near_tie_margin}`",
+        f"- Pairwise near-tie handling: `{config.pairwise_near_tie_action}`",
+        f"- Uncertainty weighting enabled: `{config.uncertainty_weighting}`",
         "",
         "## Safe interpretation",
         "",

@@ -99,3 +99,25 @@ Not safe to claim yet:
 - that scaled labels fully close supervision-target mismatch,
 - that exact-slice results are conclusive given current sparse exact coverage,
 - that cross-dataset robustness is solved or that any learner is a robust universal winner.
+
+## GBDT branch-allocator claims (2026-04-16 bounded update)
+
+Safe to claim now:
+- LightGBM LambdaRank and CatBoost YetiRankPairwise are integrated in-repo as matched branch-allocation ranking baselines with auditable artifacts.
+- Pairwise near-tie filtering/downweighting and uncertainty-aware weighting are implemented with explicit configuration traces.
+
+Not safe to claim yet:
+- that GBDT ranking materially and universally outperforms current linear branch-allocation baselines across datasets/budgets/seeds,
+- that uncertainty-aware weighting is already a robust universal improvement.
+
+## Target-fidelity branch-comparison claims (2026-04-16 bounded update)
+
+Safe to claim now:
+- manifest-backed pair-construction regimes and pair-quality metadata are integrated for branch-comparison supervision,
+- exact-vs-approx disagreement can now be audited with explicit dataset/budget/margin/pair-type/branch-count slices,
+- bounded matched evidence indicates supervision-regime changes can move pairwise-learning outcomes more than model-class changes in the same all-pairs setup.
+
+Not safe to claim yet:
+- that supervision-target bottleneck is fully solved,
+- that one pair-construction regime is a robust universal winner across all datasets/budgets/seeds,
+- that approximate labels are broadly interchangeable with exact labels outside bounded, audited slices.
