@@ -2,7 +2,7 @@
 
 ## Project identity
 
-This repository is the canonical home for the **new NeurIPS-oriented project** on:
+This repository is the canonical home for the current NeurIPS-oriented project on:
 - fixed-budget adaptive test-time compute allocation for LLM reasoning,
 - cross-controller frontier allocation,
 - branch-priority / next-step allocation over active branches,
@@ -26,7 +26,7 @@ The real goal is to show that:
 1. test-time compute should be treated as a scarce budgeted resource,
 2. that resource can be allocated more effectively than uniform spending,
 3. the most useful near-term learned object is a branch-priority / next-step allocation policy,
-4. and the main obstacle is not infrastructure but **supervision-target quality**.
+4. and the main obstacle is not raw scale but **decision-aligned supervision quality**.
 
 ## What the repo already has
 
@@ -35,28 +35,32 @@ The repository already provides:
 - anti-collapse controller mechanisms and audits,
 - branch-scorer experimentation paths,
 - local-gate / stop-vs-act experimentation machinery,
+- canonical branch-learning corpus construction and matched evaluation paths,
 - dataset and baseline integration readiness tooling,
-- oracle-label pilot infrastructure,
+- conservative external process-supervision ingestion,
 - provenance-aware outputs and documentation.
 
 These are meaningful assets. The repository is already a strong research platform.
 
 ## What is still missing
 
-The current gap is **not** that the project lacks ideas or code. The main missing piece is a stable supervision signal that teaches the allocator which branch should receive the next unit of compute.
+The current gap is **not** that the project lacks ideas or code. The main missing piece is a supervision and evaluation picture that fully matches the real decision:
+
+> **Which active branch should receive the next unit of compute under the remaining budget?**
 
 This appears as:
 - proxy-label mismatch,
 - noisy branch-comparison targets,
-- shallow local comparator definitions,
-- unstable calibration across budgets / seeds / datasets,
-- inconsistent controller-level wins over strong heuristics.
+- incomplete opportunity-cost awareness,
+- weak held-out support on exact-promoted and related hard slices,
+- broad-vs-aligned external supervision that still does not separate clearly,
+- inconsistent controller-level wins over strong internal anchors.
 
 ## Canonical paper story
 
 The strongest current paper story is:
 
-**fixed-budget cross-controller frontier allocation for LLM reasoning, where the core methodological problem is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget.**
+**fixed-budget cross-controller frontier allocation for LLM reasoning, where the core methodological problem is learning how to rank active branches and allocate the next unit of compute under uncertainty, limited budget, and imperfect supervision.**
 
 A local stop-vs-act gate can still be useful as an implementation simplification, but it should not be treated as the full conceptual center of the paper.
 
@@ -70,56 +74,64 @@ A local stop-vs-act gate can still be useful as an implementation simplification
 ### Layer 2: mechanism
 - Anti-collapse controller design.
 - Branch-priority / next-step allocation over active branches.
-- Pairwise BT branch scoring as a strong active baseline / companion line.
+- Pairwise and pointwise branch scoring as strong active learned lines.
 - Optional local continuation gate as a simplification, not the main conceptual primitive.
 
-### Layer 3: evaluation lens
-- Oracle frontier headroom.
-- Matched controller-level comparisons.
-- Budget-aware frontier summaries.
-- Real-model evidence where feasible, with simulator evidence interpreted honestly as process-proxy evidence.
+### Layer 3: evidence
+- Canonical processed corpora and matched branch-learning passes.
+- Hard-slice diagnostics: near-tie, adjacent-rank, small-margin, exact-promoted.
+- Oracle frontier headroom and matched controller-level comparisons.
+- Real-model and external-supervision evidence interpreted honestly and conservatively.
 
 ## What we have learned so far
 
 1. The new framing is real and distinct from the old binary revise-routing manuscript.
 2. Anti-collapse design matters.
-3. Pairwise BT remains one of the strongest active learned directions.
-4. The cleanest conceptual center is branch ranking / next-step allocation over active branches.
-5. A standalone stop-vs-act story is useful only as a local approximation, not as the full allocation formulation.
-6. Scaling up before target quality improves is unlikely to be the most efficient next move.
+3. Target construction and comparator semantics often matter more than model-class swaps.
+4. Hard-case representation and hard-slice evaluation matter materially.
+5. External process supervision can be integrated and made non-degenerate, but transfer to the true branch-allocation decision is not automatic.
+6. Scaling up before supervision and evaluation quality improve is unlikely to be the most efficient next move.
+
+## Current best evidence picture
+
+- Internal supervision is substantially stronger than earlier in the repo’s history.
+- Canonical corpora and matched learning passes are now mature enough for a careful paper-facing story.
+- PRM800K-assisted methods can show small stable gains over the internal anchor in rebuilt corpus families.
+- However, broad vs aligned PRM usage still does not separate clearly, and exact-promoted evidence is still too thin to overinterpret.
 
 ## What we should do next
 
 ### Near-term
 - strengthen branch-comparison and next-step allocation target design,
-- improve uncertainty-aware filtering / reweighting,
-- run matched bounded comparisons against strong heuristics and BT baseline,
-- integrate the most important external paper baselines fairly,
+- improve held-out evidence on low-budget, exact-promoted, and comparator-fragile slices,
+- keep the same matched method family long enough to understand where broad vs aligned external supervision truly differs,
 - sharpen manuscript-safe claims and evaluation protocols.
 
 ### Mid-term
-- expand oracle-label pilot runs,
-- test selective distillation paths,
-- broaden real-model evidence,
+- broaden hard-slice support further,
+- improve transfer alignment from external process supervision to internal branch comparison,
+- expand real-model evidence on high-value hard states,
 - tighten controller-level robustness across seeds / budgets / datasets.
 
 ### Later
-- only after target quality improves, scale to heavier runs,
+- only after evidence quality improves, scale to heavier runs,
+- revisit Math-Shepherd or other external supervision families,
 - broaden benchmark coverage,
 - test richer action spaces and stronger learned allocators.
 
 ## Explicit non-goals for now
 
 - Do not market the repo as if a final universal winning controller already exists.
-- Do not let heavy scaling substitute for target-quality work.
+- Do not let heavy scaling substitute for supervision/evaluation quality work.
 - Do not collapse the paper story back into the old “when to revise” binary-routing manuscript.
-- Do not overclaim exact comparability to external methods where the action space differs.
+- Do not overclaim that external process supervision already solves the problem.
+- Do not move to new external datasets merely because they are available.
 
 ## Safe high-level claim
 
 The safest current top-line statement is:
 
-**This repository already supports a serious paper on fixed-budget adaptive test-time compute allocation, but the strongest honest contribution is currently the framing, evaluation lens, and supervision-target diagnosis rather than a final universally dominant controller.**
+**This repository already supports a serious paper on fixed-budget adaptive test-time compute allocation, but the strongest honest contribution is still the framing, evaluation lens, and diagnosis of decision-aligned branch-allocation supervision rather than a final universally dominant controller.**
 
 ## Recommended collaborator reading order
 
@@ -128,8 +140,6 @@ The safest current top-line statement is:
 3. `docs/CURRENT_PROJECT_STATUS.md`
 4. `docs/CURRENT_BOTTLENECKS.md`
 5. `docs/CURRENT_SAFE_CLAIMS.md`
-6. `docs/STOP_VS_ACT_DIRECTION.md`
-7. `docs/NEXT_LIGHTWEIGHT_STEPS.md`
-8. `docs/LATER_HEAVIER_STEPS.md`
-9. `docs/PAPER_POSITIONING_NOTE.md`
-10. `docs/REPO_MAP.md`
+6. `docs/PAPER_POSITIONING_NOTE.md`
+7. `docs/EXPERIMENT_STATUS.md`
+8. `docs/REPO_MAP.md`
