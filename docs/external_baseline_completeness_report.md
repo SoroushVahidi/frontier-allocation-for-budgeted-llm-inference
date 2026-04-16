@@ -1,6 +1,6 @@
 # External baseline completeness report
 
-- Generated (UTC): `2026-04-15T23:49:46.038479+00:00`
+- Generated (UTC): `2026-04-16T01:40:40.095423+00:00`
 - Scope: external baseline completeness for reviewer-defensible reporting.
 
 ## Classification taxonomy
@@ -16,12 +16,12 @@
 
 | Baseline | Category | Direct vs adjacent | Usable now | MODE A | MODE B |
 |---|---|---|---|---|---|
-| s1 (`s1_simple_test_time_scaling`) | mode_b_partial | direct | yes_mode_a | runnable | usable_with_verified_official_results_import |
-| TALE (`tale_token_budget_aware_reasoning`) | mode_b_partial | adjacent | yes_mode_a | runnable | usable_with_verified_official_results_import_with_variant_separation |
-| L1 (`l1_length_control_rl`) | mode_b_partial | direct | yes_mode_a | runnable | usable_with_verified_official_results_import |
-| BEST-Route (`best_route_microsoft`) | blocked | adjacent | no | not_applicable | not_applicable |
+| s1 (`s1_simple_test_time_scaling`) | mode_b_partial | direct | yes_mode_a | runnable | blocked_without_official_results_import |
+| TALE (`tale_token_budget_aware_reasoning`) | mode_b_partial | adjacent | yes_mode_a | runnable | blocked_without_official_results_import |
+| L1 (`l1_length_control_rl`) | mode_b_partial | direct | yes_mode_a | runnable | blocked_without_official_results_import |
+| BEST-Route (`best_route_microsoft`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | Compute-optimal TTS (`compute_optimal_tts`) | blocked | adjacent | no | not_applicable | not_applicable |
-| When To Solve, When To Verify (`when_solve_when_verify`) | link_only | adjacent | no | not_applicable | not_applicable |
+| When To Solve, When To Verify (`when_solve_when_verify`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | Cascade routing (`cascade_routing`) | link_only | adjacent | no | not_applicable | not_applicable |
 | MoB (`mob_majority_of_bests`) | link_only | adjacent | no | not_applicable | not_applicable |
 | ReST-MCTS* (`rest_mcts`) | link_only | adjacent | no | not_applicable | not_applicable |
@@ -36,19 +36,19 @@
 - s1 MODE A (`inference_only`) through `scripts/run_s1_budget_forcing_baseline.py`.
 - TALE MODE A (`prompt_budgeting_inference_only`) through `scripts/run_tale_baseline.py`.
 - L1 MODE A (`inference_only_adapter`) through `scripts/run_l1_baseline.py`.
+- BEST-Route adjacent import path through `scripts/verify_best_route_import.py` (strict validator; adjacent-only claims).
+- when_solve_when_verify adjacent import path through `scripts/verify_when_solve_when_verify_import.py` (strict validator; adjacent-only claims).
 
 ## Partially usable
-- s1 MODE B is now a strict official/full import + verification path: usable when `official.results_path` points to a valid package and rejected otherwise.
-- TALE MODE B is now a strict official/full import + verification path (including explicit TALE vs TALE-PT variant checks): usable when `official.results_path` points to a valid package and rejected otherwise.
-- L1 MODE B remains adapter-reporting only and blocked unless official/full externally-produced outputs are provided via `official.results_path`.
+- s1 / TALE / L1 MODE B paths are adapter-reporting only and remain blocked unless official/full externally-produced outputs are provided via `official.results_path`.
 
 ## BEST-Route integration decision in this pass
-- Status: `blocked` (explicit non-runnable integration record for now).
-- Why blocked now: the upstream BEST-Route workflow is multi-stage and relies on external response-bank generation + reward-model scoring + router training that are not yet mapped to this repo's frontier/action substrate in a fair apples-to-apples protocol.
-- What is required later: shared prompt set, shared candidate model set, normalized cost accounting, and a common scoring/evaluation interface before claiming comparability.
+- Status: `runnable_adjacent` (verified import protocol available).
+- Interpretation: usable for adjacent comparisons only; not a direct control-space-equivalent reproduction.
+- Guardrail: imported outputs must pass `scripts/verify_best_route_import.py` and be labeled `adjacent_only`.
 
 ## Single next highest-priority baseline after this pass
-- `when_solve_when_verify` (next adjacent baseline to move beyond link-only after this compute_optimal_tts pass).
+- `cascade_routing` (next adjacent baseline to move beyond link-only after this solve-vs-verify protocol pass).
 
 ## Machine-readable companion artifacts
 - `outputs/external_baseline_completeness_summary.json`

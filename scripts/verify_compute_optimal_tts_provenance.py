@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Verify provenance signals for compute_optimal_tts baseline mapping.
 
-This script does NOT claim official paper-repo identity. It only records auditable facts.
+This script does NOT claim official paper-repo identity. It records auditable facts,
+including optional online-linkage checks across OpenReview / project page / linked repo.
 """
 
 from __future__ import annotations
@@ -10,8 +11,11 @@ import argparse
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import re
 import subprocess
 from typing import Any
+from urllib.error import URLError
+from urllib.request import Request, urlopen
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -22,6 +26,24 @@ def _safe_cmd(cmd: list[str], cwd: Path) -> str:
         return out.strip()
     except Exception:
         return ""
+
+
+def _fetch_text(url: str, timeout_seconds: int) -> tuple[bool, str, str]:
+    req = Request(url, headers={"User-Agent": "Mozilla/5.0 (baseline-provenance-check)"})
+    try:
+        with urlopen(req, timeout=timeout_seconds) as resp:  # noqa: S310
+            raw = resp.read()
+        text = raw.decode("utf-8", errors="ignore")
+        return True, text, ""
+    except URLError as exc:
+        return False, "", f"url_error: {exc}"
+    except Exception as exc:  # pragma: no cover - defensive
+        return False, "", f"fetch_error: {exc}"
+
+
+def _contains_any(text: str, patterns: list[str]) -> bool:
+    low = text.lower()
+    return any(p.lower() in low for p in patterns)
 
 
 def parse_args() -> argparse.Namespace:
@@ -35,6 +57,12 @@ def parse_args() -> argparse.Namespace:
         "--output-json",
         default="outputs/external_baseline_completeness/compute_optimal_tts_provenance_check.json",
     )
+    p.add_argument(
+        "--check-online",
+        action="store_true",
+        help="Enable network checks for OpenReview/project/repo cross-linkage signals.",
+    )
+    p.add_argument("--timeout-seconds", type=int, default=12)
     return p.parse_args()
 
 
@@ -60,13 +88,14 @@ def main() -> None:
         "readme_title": None,
         "readme_mentions_arxiv_2502_06703": False,
         "readme_mentions_openreview_4FWAwZtd2n": False,
+        "readme_mentions_openreview_url": False,
     }
 
     if clone_path.exists():
         linked_repo["head_commit"] = _safe_cmd(["git", "rev-parse", "HEAD"], clone_path) or None
         linked_repo["license_file_present"] = (clone_path / "LICENSE").exists() or (clone_path / "LICENSE.md").exists()
 
-        readme = (clone_path / "README.md")
+        readme = clone_path / "README.md"
         if readme.exists():
             text = readme.read_text(encoding="utf-8", errors="ignore")
             readme_title = None
@@ -77,6 +106,37 @@ def main() -> None:
             linked_repo["readme_title"] = readme_title
             linked_repo["readme_mentions_arxiv_2502_06703"] = "2502.06703" in text
             linked_repo["readme_mentions_openreview_4FWAwZtd2n"] = "4FWAwZtd2n" in text
+            linked_repo["readme_mentions_openreview_url"] = "openreview.net/forum?id=4FWAwZtd2n" in text
+
+    online_signals: dict[str, Any] = {"enabled": bool(args.check_online)}
+    if args.check_online:
+        targets = {
+            "openreview_forum": paper["openreview_url"],
+            "openreview_pdf": paper["pdf_url"],
+            "project_page": "https://ryanliu112.github.io/compute-optimal-tts/",
+            "linked_repo_readme": "https://raw.githubusercontent.com/RyanLiu112/compute-optimal-tts/main/README.md",
+        }
+        fetches: dict[str, Any] = {}
+        for key, url in targets.items():
+            ok, text, err = _fetch_text(url, args.timeout_seconds)
+            fetches[key] = {
+                "url": url,
+                "fetched": ok,
+                "error": err,
+                "mentions_openreview_id": "4FWAwZtd2n" in text,
+                "mentions_repo": _contains_any(text, ["RyanLiu112/compute-optimal-tts", "compute-optimal-tts"]),
+                "mentions_arxiv_2502_06703": "2502.06703" in text,
+                "mentions_iclr_2025": _contains_any(text, ["ICLR 2025", "Published as a conference paper at ICLR 2025"]),
+            }
+
+            if key == "openreview_forum":
+                # detect any explicit code link hints in page html
+                code_like_links = sorted(
+                    set(re.findall(r"https?://[^\"'\s>]*github\.com/[^\"'\s<]+", text))
+                )
+                fetches[key]["github_links_detected"] = code_like_links
+
+        online_signals["fetches"] = fetches
 
     findings = [
         "OpenReview paper target is ICLR 2025 paper id 4FWAwZtd2n (Snell et al.).",
@@ -84,22 +144,28 @@ def main() -> None:
         "Therefore paper-repo mapping is not established as identical/official for Snell et al. by this check.",
     ]
 
+    if args.check_online:
+        findings.append(
+            "Online checks were performed for OpenReview/project/repo cross-linkage, but they are treated as signals only (not authoritative author confirmation)."
+        )
+
     result = {
         "generated_utc": now,
         "baseline_key": "compute_optimal_tts",
         "paper_target": paper,
         "linked_repo": linked_repo,
+        "online_signals": online_signals,
         "provenance_assessment": {
             "paper_repo_match_strength": "weak",
             "classification": "related_repo_not_verified_as_official_for_target_paper",
-            "official_status": "unclear",
+            "official_status": "unverified",
             "notes": findings,
         },
     }
 
     out_path = REPO_ROOT / args.output_json
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
+    out_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(str(out_path))
 
 

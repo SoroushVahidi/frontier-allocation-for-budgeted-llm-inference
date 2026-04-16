@@ -5,6 +5,8 @@ This script intentionally runs tiny, deterministic checks for:
 - s1 MODE A + MODE B
 - TALE MODE A + MODE B
 - L1 MODE A + MODE B
+- BEST-Route adjacent import validator against a local fixture package
+- when_solve_when_verify adjacent import validator against a local fixture package
 
 Outputs:
 - outputs/external_baseline_runnability/<run_id>/verification_summary.json
@@ -70,6 +72,22 @@ BASELINE_CASES: list[dict[str, str]] = [
         "expected_mode_b_status": "blocked",
     },
 ]
+
+BEST_ROUTE_FIXTURE_CASE = {
+    "baseline": "best_route",
+    "mode": "adjacent_import",
+    "script": "scripts/verify_best_route_import.py",
+    "results_path": "tests/fixtures/best_route_import_valid",
+    "expected_status": "valid",
+}
+
+WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE = {
+    "baseline": "when_solve_when_verify",
+    "mode": "adjacent_import",
+    "script": "scripts/verify_when_solve_when_verify_import.py",
+    "results_path": "tests/fixtures/when_solve_when_verify_import_valid",
+    "expected_status": "valid",
+}
 
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -137,6 +155,80 @@ def main() -> None:
             }
         )
 
+    best_route_cmd = [
+        sys.executable,
+        str(REPO_ROOT / BEST_ROUTE_FIXTURE_CASE["script"]),
+        "--results-path",
+        str(REPO_ROOT / BEST_ROUTE_FIXTURE_CASE["results_path"]),
+        "--expected-dataset",
+        "gsm8k",
+        "--expected-split",
+        "test",
+        "--expected-budgets",
+        "1,2",
+    ]
+    best_route_proc = subprocess.run(best_route_cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+    best_route_parsed: dict[str, Any] = {}
+    if best_route_proc.stdout.strip():
+        try:
+            best_route_parsed = json.loads(best_route_proc.stdout.strip())
+        except json.JSONDecodeError:
+            best_route_parsed = {"raw_stdout": best_route_proc.stdout.strip()}
+
+    best_route_status = str(best_route_parsed.get("status", "unknown"))
+    results.append(
+        {
+            "baseline": BEST_ROUTE_FIXTURE_CASE["baseline"],
+            "mode": BEST_ROUTE_FIXTURE_CASE["mode"],
+            "script": BEST_ROUTE_FIXTURE_CASE["script"],
+            "config": BEST_ROUTE_FIXTURE_CASE["results_path"],
+            "return_code": int(best_route_proc.returncode),
+            "runnable": best_route_proc.returncode == 0 and best_route_status == "valid",
+            "run_dir": "",
+            "observed_mode_b_status": best_route_status,
+            "expected_mode_b_status": BEST_ROUTE_FIXTURE_CASE["expected_status"],
+            "mode_b_status_matches_expectation": best_route_status == BEST_ROUTE_FIXTURE_CASE["expected_status"],
+            "mode_b_notes": "BEST-Route adjacent import fixture validation",
+            "stderr_tail": "\n".join(best_route_proc.stderr.strip().splitlines()[-6:]),
+        }
+    )
+
+    wswv_cmd = [
+        sys.executable,
+        str(REPO_ROOT / WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE["script"]),
+        "--results-path",
+        str(REPO_ROOT / WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE["results_path"]),
+        "--expected-dataset",
+        "math128",
+        "--expected-split",
+        "test",
+    ]
+    wswv_proc = subprocess.run(wswv_cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+    wswv_parsed: dict[str, Any] = {}
+    if wswv_proc.stdout.strip():
+        try:
+            wswv_parsed = json.loads(wswv_proc.stdout.strip())
+        except json.JSONDecodeError:
+            wswv_parsed = {"raw_stdout": wswv_proc.stdout.strip()}
+
+    wswv_status = str(wswv_parsed.get("status", "unknown"))
+    results.append(
+        {
+            "baseline": WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE["baseline"],
+            "mode": WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE["mode"],
+            "script": WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE["script"],
+            "config": WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE["results_path"],
+            "return_code": int(wswv_proc.returncode),
+            "runnable": wswv_proc.returncode == 0 and wswv_status == "valid",
+            "run_dir": "",
+            "observed_mode_b_status": wswv_status,
+            "expected_mode_b_status": WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE["expected_status"],
+            "mode_b_status_matches_expectation": wswv_status == WHEN_SOLVE_WHEN_VERIFY_FIXTURE_CASE["expected_status"],
+            "mode_b_notes": "when_solve_when_verify adjacent import fixture validation",
+            "stderr_tail": "\n".join(wswv_proc.stderr.strip().splitlines()[-6:]),
+        }
+    )
+
     summary = {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "run_id": run_id,
@@ -151,7 +243,7 @@ def main() -> None:
         "# External baseline runnability verification note",
         "",
         f"- run_id: `{run_id}`",
-        "- scope: s1 / TALE / L1 mode-A and mode-B adapter paths",
+        "- scope: s1 / TALE / L1 mode-A and mode-B adapter paths + BEST-Route + when_solve_when_verify adjacent import validators",
         "- interpretation: smoke verification only (runnability + blocker-state consistency)",
         "",
         "| baseline | mode | runnable | mode_b_status | expected | matches |",

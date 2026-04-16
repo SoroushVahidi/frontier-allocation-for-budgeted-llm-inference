@@ -1,0 +1,259 @@
+#!/usr/bin/env python3
+"""Verify When-To-Solve-When-To-Verify adjacent import package.
+
+Conservative scope:
+- Adjacent import only (not direct in-repo reproduction claim).
+- Requires explicit SC-vs-GenRM strategy coverage and fixed-budget fields.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+from pathlib import Path
+from typing import Any
+
+REQUIRED_METADATA_FIELDS = [
+    "source.type",
+    "upstream.repo_url",
+    "upstream.paper_url",
+    "upstream.workflow_stages_completed",
+    "dataset.name",
+    "dataset.split",
+    "budget.unit",
+    "budget.fixed_budget_interpretation",
+    "strategy_space",
+    "provenance.exported_at_utc",
+    "provenance.source_uri",
+    "provenance.artifact_id",
+    "provenance.commit_or_version_if_available",
+]
+
+REQUIRED_WORKFLOW_STAGES = [
+    "solution_generation",
+    "verification_generation",
+    "fixed_budget_evaluation",
+]
+
+REQUIRED_RESULTS_COLUMNS = [
+    "mode",
+    "source_type",
+    "dataset",
+    "split",
+    "generator_model",
+    "verifier_model",
+    "strategy_family",
+    "num_solutions",
+    "num_verifications",
+    "compute_budget_tokens",
+    "success_rate",
+    "artifact_id",
+    "commit_or_version",
+    "comparability_scope",
+]
+
+ALLOWED_SOURCE_TYPES = {"official", "author-produced", "imported"}
+ALLOWED_STRATEGY_FAMILIES = {"self_consistency", "genrm_best_of_n", "genrm_weighted_sc"}
+
+
+def _get_nested(data: dict[str, Any], dotted: str) -> Any:
+    cur: Any = data
+    for part in dotted.split("."):
+        if not isinstance(cur, dict) or part not in cur:
+            return None
+        cur = cur[part]
+    return cur
+
+
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Verify when_solve_when_verify adjacent import package")
+    p.add_argument("--results-path", required=True, help="Path to package dir or results.csv")
+    p.add_argument("--expected-dataset", required=True)
+    p.add_argument("--expected-split", default="test")
+    p.add_argument("--output-json", default=None)
+    return p.parse_args()
+
+
+def verify_when_solve_when_verify_import(
+    *, requested_path: Path, expected_dataset: str, expected_split: str
+) -> dict[str, Any]:
+    issues: list[str] = []
+    errors: list[str] = []
+
+    if requested_path.is_dir():
+        package_dir = requested_path
+        metadata_json = package_dir / "metadata.json"
+        results_csv = package_dir / "results.csv"
+    else:
+        package_dir = requested_path.parent
+        metadata_json = package_dir / "metadata.json"
+        results_csv = requested_path
+
+    if not metadata_json.exists():
+        issues.append(f"missing_required_file: {metadata_json}")
+    if not results_csv.exists():
+        issues.append(f"missing_required_file: {results_csv}")
+
+    metadata: dict[str, Any] = {}
+    if metadata_json.exists():
+        try:
+            metadata = json.loads(metadata_json.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            errors.append(f"invalid_metadata_json: {exc}")
+
+    if metadata:
+        for field in REQUIRED_METADATA_FIELDS:
+            value = _get_nested(metadata, field)
+            if value is None or (isinstance(value, str) and not value.strip()):
+                issues.append(f"missing_metadata_field: {field}")
+
+        source_type = str(_get_nested(metadata, "source.type") or "")
+        if source_type not in ALLOWED_SOURCE_TYPES:
+            issues.append("invalid_source_type")
+
+        upstream_repo = str(_get_nested(metadata, "upstream.repo_url") or "")
+        if "nishadsinghi/sc-genrm-scaling" not in upstream_repo:
+            issues.append("upstream_repo_mismatch")
+
+        observed_stages = _get_nested(metadata, "upstream.workflow_stages_completed")
+        if not isinstance(observed_stages, list):
+            issues.append("workflow_stages_not_list")
+            observed_stages = []
+        missing_stages = [s for s in REQUIRED_WORKFLOW_STAGES if s not in observed_stages]
+        if missing_stages:
+            issues.append(f"missing_required_workflow_stages: {missing_stages}")
+
+        strategy_space = _get_nested(metadata, "strategy_space")
+        if not isinstance(strategy_space, list) or not strategy_space:
+            issues.append("strategy_space_missing_or_empty")
+
+        dataset_name = str(_get_nested(metadata, "dataset.name") or "")
+        dataset_split = str(_get_nested(metadata, "dataset.split") or "")
+        if dataset_name != expected_dataset:
+            issues.append(f"dataset_mismatch: expected={expected_dataset}, observed={dataset_name}")
+        if dataset_split != expected_split:
+            issues.append(f"split_mismatch: expected={expected_split}, observed={dataset_split}")
+
+    rows: list[dict[str, Any]] = []
+    if results_csv.exists():
+        with results_csv.open("r", encoding="utf-8", newline="") as f:
+            reader = csv.DictReader(f)
+            header = reader.fieldnames or []
+            for col in REQUIRED_RESULTS_COLUMNS:
+                if col not in header:
+                    issues.append(f"missing_results_column: {col}")
+            rows = [dict(r) for r in reader]
+
+    if not rows:
+        issues.append("no_results_rows")
+
+    observed_strategies: set[str] = set()
+    normalized_rows: list[dict[str, Any]] = []
+
+    for idx, row in enumerate(rows):
+        mode = str(row.get("mode", "")).strip()
+        source_type = str(row.get("source_type", "")).strip()
+        dataset = str(row.get("dataset", "")).strip()
+        split = str(row.get("split", "")).strip()
+        strategy = str(row.get("strategy_family", "")).strip()
+        scope = str(row.get("comparability_scope", "")).strip().lower()
+
+        if mode != "when_solve_when_verify_adjacent_import":
+            issues.append(f"invalid_mode_row_{idx}")
+        if source_type and source_type not in ALLOWED_SOURCE_TYPES:
+            issues.append(f"invalid_source_type_row_{idx}")
+        if dataset != expected_dataset:
+            issues.append(f"dataset_row_mismatch_{idx}")
+        if split != expected_split:
+            issues.append(f"split_row_mismatch_{idx}")
+        if strategy not in ALLOWED_STRATEGY_FAMILIES:
+            issues.append(f"invalid_strategy_family_row_{idx}")
+        if scope != "adjacent_only":
+            issues.append(f"invalid_comparability_scope_row_{idx}")
+
+        observed_strategies.add(strategy)
+
+        for int_col in ["num_solutions", "num_verifications", "compute_budget_tokens"]:
+            value = str(row.get(int_col, "")).strip()
+            try:
+                parsed = int(float(value))
+                if parsed < 0:
+                    issues.append(f"negative_{int_col}_row_{idx}")
+            except ValueError:
+                issues.append(f"non_numeric_{int_col}_row_{idx}")
+
+        success_rate = str(row.get("success_rate", "")).strip()
+        try:
+            sr = float(success_rate)
+            if not (0.0 <= sr <= 1.0):
+                issues.append(f"success_rate_out_of_range_row_{idx}")
+        except ValueError:
+            issues.append(f"non_numeric_success_rate_row_{idx}")
+
+        normalized_rows.append(
+            {
+                "mode": "when_solve_when_verify_adjacent_import",
+                "source": "when_solve_when_verify_import_verified",
+                "source_type": source_type,
+                "dataset": dataset,
+                "dataset_split": split,
+                "generator_model": row.get("generator_model", ""),
+                "verifier_model": row.get("verifier_model", ""),
+                "strategy_family": strategy,
+                "num_solutions": row.get("num_solutions", ""),
+                "num_verifications": row.get("num_verifications", ""),
+                "compute_budget_tokens": row.get("compute_budget_tokens", ""),
+                "success_rate": row.get("success_rate", ""),
+                "artifact_id": row.get("artifact_id", ""),
+                "commit_or_version": row.get("commit_or_version", ""),
+                "comparability_scope": "adjacent_only",
+            }
+        )
+
+    if "self_consistency" not in observed_strategies:
+        issues.append("missing_self_consistency_strategy")
+    if not any(s.startswith("genrm_") for s in observed_strategies):
+        issues.append("missing_genrm_strategy")
+
+    return {
+        "status": "valid" if not issues and not errors else "invalid",
+        "requested_results_path": str(requested_path),
+        "resolved_package_dir": str(package_dir),
+        "required_files": {
+            "metadata_json": str(metadata_json),
+            "results_csv": str(results_csv),
+        },
+        "expected": {
+            "dataset": expected_dataset,
+            "split": expected_split,
+            "required_workflow_stages": REQUIRED_WORKFLOW_STAGES,
+            "required_strategies": ["self_consistency", "genrm_best_of_n_or_genrm_weighted_sc"],
+            "comparability_scope": "adjacent_only",
+        },
+        "observed": {
+            "num_rows": len(rows),
+            "observed_strategy_families": sorted(observed_strategies),
+        },
+        "issues": sorted(set(issues)),
+        "errors": errors,
+        "imported_rows": normalized_rows if not issues and not errors else [],
+    }
+
+
+def main() -> None:
+    args = parse_args()
+    verification = verify_when_solve_when_verify_import(
+        requested_path=Path(args.results_path),
+        expected_dataset=args.expected_dataset,
+        expected_split=args.expected_split,
+    )
+
+    out = json.dumps(verification, indent=2)
+    if args.output_json:
+        Path(args.output_json).write_text(out + "\n", encoding="utf-8")
+    print(out)
+
+
+if __name__ == "__main__":
+    main()

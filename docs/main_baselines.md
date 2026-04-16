@@ -147,7 +147,8 @@ For manuscript-safe claims, treat external baselines as follows:
   - TALE via `configs/tale_prompt_budgeting_v1.json` + `scripts/run_tale_baseline.py`
   - L1 via `configs/l1_inference_adapter_v1.json` + `scripts/run_l1_baseline.py`
 - **Partially usable:** s1 and TALE MODE B are strict official/full-results import + verification paths (usable when valid official packages are supplied); TALE MODE B additionally enforces explicit TALE-vs-TALE-PT variant separation. L1 MODE B remains blocked adapter/reporting path unless externally-produced official/full outputs are imported through `official.results_path`.
-- **BEST-Route status in this pass:** blocked for fair comparability claims; kept as explicit non-runnable integration record rather than forcing a weak adapter.
+- **BEST-Route status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_best_route_import.py`) with explicit adjacent-only claim boundaries.
+- **when_solve_when_verify status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_when_solve_when_verify_import.py`) for SC-vs-GenRM fixed-budget adjacent comparisons only.
 
 Companion artifacts:
 - `docs/external_baseline_completeness_report.md`
