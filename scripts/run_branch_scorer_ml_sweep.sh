@@ -130,15 +130,18 @@ summary_csv="$OUT_ROOT/manuscript_controller_regime_table.csv"
 python - <<'PY'
 import csv
 import json
+import re
 from pathlib import Path
 
 root = Path("outputs/branch_scorer_v3_heavy_ml/controller_eval")
 rows = []
 for p in sorted(root.glob("controller_eval_seed*_b*_i*.json")):
     obj = json.loads(p.read_text(encoding="utf-8"))
-    seed = int(p.stem.split("_")[3].replace("seed", ""))
-    budget = int(p.stem.split("_")[4].replace("b", ""))
-    init_b = int(p.stem.split("_")[5].replace("i", ""))
+    # Basename is controller_eval_seed{N}_b{B}_i{I} (five "_" segments, not six).
+    m = re.match(r"^controller_eval_seed(\d+)_b(\d+)_i(\d+)$", p.stem)
+    if not m:
+        raise ValueError(f"unexpected controller_eval filename stem: {p.stem!r}")
+    seed, budget, init_b = (int(m.group(1)), int(m.group(2)), int(m.group(3)))
     results = obj.get("results", {})
     rr = float(results.get("adaptive_relative_rank", {}).get("accuracy", 0.0))
     v4 = float(results.get("adaptive_learned_branch_score_v4", {}).get("accuracy", 0.0))

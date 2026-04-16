@@ -10,7 +10,8 @@
 
 set -euo pipefail
 
-REPO_DIR="/home/sv96/adaptive-reasoning-budget-allocation"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_DIR"
 
 mkdir -p logs/slurm outputs/branch_scorer_v3_final_eval
