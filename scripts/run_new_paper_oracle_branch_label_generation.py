@@ -33,6 +33,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--tie-margin", type=float, default=0.02)
     p.add_argument("--value-aggregation", choices=["max", "robust_blend"], default="max")
     p.add_argument("--value-std-penalty", type=float, default=0.0)
+    p.add_argument("--mode", choices=["exact_tiny_state", "approx_large_state"], default="approx_large_state")
     return p.parse_args()
 
 
@@ -49,6 +50,7 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     cfg = OracleLabelConfig(
+        mode=args.mode,
         episodes=args.episodes,
         seed=args.seed,
         decision_budget=args.decision_budget,
@@ -83,11 +85,21 @@ def main() -> None:
     manifest = {
         "run_id": run_id,
         "track": "new-paper",
+        "mode": cfg.mode,
         "label_name": "approx_oracle_continuation_value",
         "label_definition": (
             "Best continuation-outcome value found among bounded high-budget rollouts and small action-enumeration "
             "when remaining budget is tiny. Approximate unless branch is already terminal or budget is zero."
         ),
+        "mode_definition": {
+            "exact_tiny_state": (
+                "Use exhaustive tiny-state action enumeration when remaining budget is within the exhaustive cap; "
+                "emit exact/near-exact diagnostic flags and counters."
+            ),
+            "approx_large_state": (
+                "Use rollout/sampler estimates for continuation utility with confidence intervals and approximation metadata."
+            ),
+        },
         "output_files": {
             "branch_oracle_labels": str(branch_path),
             "pairwise_oracle_preferences": str(pair_path),
@@ -105,6 +117,7 @@ def main() -> None:
 - `approx_oracle_continuation_value` = maximum continuation-outcome value found under a bounded high-budget continuation set.
 - It is **not exact** in general; it is an estimate from finite policies/rollouts.
 - It is marked exact only for trivial cases (`branch.is_done` or `remaining_budget == 0`).
+- Mode: `{cfg.mode}`.
 
 ## Pilot scope
 - Episodes: {cfg.episodes}
@@ -118,6 +131,7 @@ def main() -> None:
 - Pairwise labels generated: {summary['n_pairwise_labels']}
 - Approximate labels: {summary['n_approximate_labels']}
 - Exact labels: {summary['n_exact_labels']}
+- Near-exact labels: {summary.get('n_near_exact_labels', 0)}
 
 ## Proxy vs oracle-ish comparison
 - Pairwise agreement rate: {summary['oracle_proxy_pair_agreement_rate']:.4f}
