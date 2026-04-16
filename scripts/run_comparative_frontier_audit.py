@@ -611,6 +611,8 @@ def main() -> None:
             "gemini_or_google": bool(os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")),
         },
         "comparison_principle": "Same eval examples, same budget cap per method, same RNG policy per dataset seed; single API provider per run.",
+        "slurm_job_id": os.getenv("SLURM_JOB_ID"),
+        "slurm_submit_dir": os.getenv("SLURM_SUBMIT_DIR"),
         "include_prm_variants": args.include_prm_variants,
         "prm_early_reject_threshold": args.prm_early_reject_threshold,
         "prm_early_reject_min_expansions": args.prm_early_reject_min_expansions,

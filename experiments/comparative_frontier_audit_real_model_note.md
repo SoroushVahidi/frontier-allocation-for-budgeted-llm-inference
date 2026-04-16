@@ -28,5 +28,6 @@ Full eight-family × multi-budget × multi-dataset audits are **API-heavy** (man
 
 ## Related
 
-- Simulator + audit mechanics: `experiments/comparative_frontier_audit_result_note.md`
+- **Slurm / Wulver batch:** [`comparative_frontier_audit_wulver_note.md`](comparative_frontier_audit_wulver_note.md)
+- Simulator + audit mechanics: [`comparative_frontier_audit_result_note.md`](comparative_frontier_audit_result_note.md)
 - Implementation: `scripts/run_comparative_frontier_audit.py`, `experiments/frontier_matrix_core.py` (`resolve_api_key_for_provider`, `api_provider` on the generator factory).
