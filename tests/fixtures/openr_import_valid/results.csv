@@ -1,0 +1,3 @@
+mode,source_type,dataset,split,generator_model,reward_model,method,budget_setting,majority_vote,total_completion_tokens,artifact_id,commit_or_version,comparability_scope
+openr_adjacent_import,official,MATH,test,Qwen2.5-Math-1.5B-Instruct,dummy,cot,2^0,0.734,559.13,openr_fixture_v1,main,adjacent_only
+openr_adjacent_import,official,MATH,test,Qwen2.5-Math-1.5B-Instruct,checkpoint-2127,vanila_mcts,2^6,0.768,4620.40,openr_fixture_v1,main,adjacent_only

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import importlib
+import json
 import os
 from pathlib import Path
+import random
 import sys
 from typing import Any
 
@@ -21,6 +23,17 @@ class HFDatasetSpec:
     gated: bool = False
     optional: bool = False
     # Short provenance / caveat for docs and reports (not used by loaders).
+    provenance_note: str | None = None
+
+
+@dataclass(frozen=True)
+class GitDatasetSpec:
+    key: str
+    repo_url: str
+    default_local_path: str
+    required_files: tuple[str, ...]
+    question_fields: tuple[str, ...]
+    answer_fields: tuple[str, ...]
     provenance_note: str | None = None
 
 
@@ -97,6 +110,48 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         optional=True,
         provenance_note=None,
     ),
+    "HuggingFaceH4/MATH-500": HFDatasetSpec(
+        key="HuggingFaceH4/MATH-500",
+        repo_id="HuggingFaceH4/MATH-500",
+        default_config=None,
+        default_split="test",
+        question_fields=("problem",),
+        answer_fields=("answer", "solution"),
+        optional=False,
+        provenance_note="Chosen canonical MATH-500 id in this repo due stronger maintenance signal and broad community usage; schema matches other mirrors.",
+    ),
+    "meituan-longcat/AMO-Bench": HFDatasetSpec(
+        key="meituan-longcat/AMO-Bench",
+        repo_id="meituan-longcat/AMO-Bench",
+        default_config=None,
+        default_split="test",
+        question_fields=("prompt", "question"),
+        answer_fields=("answer",),
+        optional=False,
+        provenance_note="AMO-Bench HF release with MIT license tag and 50-item hard-math test split.",
+    ),
+}
+
+GIT_DATASET_SPECS: dict[str, GitDatasetSpec] = {
+    "google-deepmind/natural-plan": GitDatasetSpec(
+        key="google-deepmind/natural-plan",
+        repo_url="https://github.com/google-deepmind/natural-plan",
+        default_local_path="external_datasets/natural-plan",
+        required_files=(
+            "data/trip_planning.json",
+            "data/meeting_planning.json",
+            "data/calendar_scheduling.json",
+            "evaluate_trip_planning.py",
+            "evaluate_meeting_planning.py",
+            "evaluate_calendar_scheduling.py",
+        ),
+        question_fields=("prompt_0shot", "prompt_5shot"),
+        answer_fields=("golden_plan",),
+        provenance_note=(
+            "Upstream clone-based access only. Do not vendor raw NaturalPlan data into this repository; "
+            "pin upstream commit in run manifests."
+        ),
+    ),
 }
 
 # Alternate names / paper shorthand -> canonical registry key
@@ -110,6 +165,15 @@ DATASET_KEY_ALIASES: dict[str, str] = {
     "olympiadbench_thudm": "Hothan/OlympiadBench",
     "aime": "HuggingFaceH4/aime_2024",
     "aime_2024": "HuggingFaceH4/aime_2024",
+    "math500": "HuggingFaceH4/MATH-500",
+    "math-500": "HuggingFaceH4/MATH-500",
+    "MATH-500": "HuggingFaceH4/MATH-500",
+    "amo-bench": "meituan-longcat/AMO-Bench",
+    "amo_bench": "meituan-longcat/AMO-Bench",
+    "AMO-Bench": "meituan-longcat/AMO-Bench",
+    "naturalplan": "google-deepmind/natural-plan",
+    "natural_plan": "google-deepmind/natural-plan",
+    "NaturalPlan": "google-deepmind/natural-plan",
 }
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -160,6 +224,16 @@ def resolve_dataset_spec(dataset_name: str) -> HFDatasetSpec:
     if dataset_name.lower() in lower_map:
         return lower_map[dataset_name.lower()]
     raise KeyError(f"Unsupported HF dataset: {dataset_name}")
+
+
+def resolve_git_dataset_spec(dataset_name: str) -> GitDatasetSpec:
+    dataset_name = _resolve_alias(dataset_name)
+    if dataset_name in GIT_DATASET_SPECS:
+        return GIT_DATASET_SPECS[dataset_name]
+    lower_map = {k.lower(): v for k, v in GIT_DATASET_SPECS.items()}
+    if dataset_name.lower() in lower_map:
+        return lower_map[dataset_name.lower()]
+    raise KeyError(f"Unsupported git-clone dataset: {dataset_name}")
 
 
 def check_hf_dataset_access(
@@ -324,3 +398,83 @@ def sample_hf_examples(
                     break
         records.append(rec)
     return records
+
+
+def _resolve_local_clone_path(spec: GitDatasetSpec, local_path: str | None = None) -> Path:
+    if local_path:
+        return Path(local_path).expanduser().resolve()
+    env_path = os.getenv("NATURAL_PLAN_DIR")
+    if env_path:
+        return Path(env_path).expanduser().resolve()
+    return (REPO_ROOT / spec.default_local_path).resolve()
+
+
+def check_git_dataset_access(dataset_name: str, local_path: str | None = None) -> dict[str, Any]:
+    spec = resolve_git_dataset_spec(dataset_name)
+    clone_path = _resolve_local_clone_path(spec, local_path=local_path)
+    missing = [rel for rel in spec.required_files if not (clone_path / rel).exists()]
+    ok = clone_path.exists() and not missing
+    return {
+        "dataset": spec.key,
+        "repo_url": spec.repo_url,
+        "ok": ok,
+        "source_type": "git_clone",
+        "clone_path": str(clone_path),
+        "required_files": list(spec.required_files),
+        "missing_files": missing,
+        "clone_command": f"git clone {spec.repo_url} {clone_path}",
+        "provenance_note": spec.provenance_note,
+    }
+
+
+def sample_git_dataset_examples(
+    dataset_name: str,
+    pilot_size: int,
+    seed: int,
+    local_path: str | None = None,
+) -> list[dict[str, str]]:
+    spec = resolve_git_dataset_spec(dataset_name)
+    clone_path = _resolve_local_clone_path(spec, local_path=local_path)
+    access = check_git_dataset_access(dataset_name, local_path=str(clone_path))
+    if not access.get("ok"):
+        missing = ", ".join(access.get("missing_files", []))
+        raise FileNotFoundError(
+            f"Git dataset clone missing or incomplete at {clone_path}. Missing: {missing}"
+        )
+
+    merged_rows: list[dict[str, str]] = []
+    for task_name, rel_path in [
+        ("trip_planning", "data/trip_planning.json"),
+        ("meeting_planning", "data/meeting_planning.json"),
+        ("calendar_scheduling", "data/calendar_scheduling.json"),
+    ]:
+        data_obj = json.loads((clone_path / rel_path).read_text(encoding="utf-8"))
+        if not isinstance(data_obj, dict):
+            continue
+        for item_id, payload in data_obj.items():
+            if not isinstance(payload, dict):
+                continue
+            question = ""
+            for qf in spec.question_fields:
+                qval = payload.get(qf)
+                if qval is not None and str(qval).strip():
+                    question = str(qval)
+                    break
+            answer = ""
+            for af in spec.answer_fields:
+                aval = payload.get(af)
+                if aval is not None and str(aval).strip():
+                    answer = str(aval)
+                    break
+            merged_rows.append(
+                {
+                    "example_id": f"{spec.key.replace('/', '_')}_{task_name}_{item_id}",
+                    "task_name": task_name,
+                    "question": question,
+                    "answer": answer,
+                }
+            )
+
+    rng = random.Random(seed)
+    rng.shuffle(merged_rows)
+    return merged_rows[: max(0, pilot_size)]

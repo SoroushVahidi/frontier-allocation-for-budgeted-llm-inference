@@ -9,6 +9,8 @@ This script intentionally runs tiny, deterministic checks for:
 - when_solve_when_verify adjacent import validator against a local fixture package
 - cascade_routing adjacent import validator against a local fixture package
 - mob_majority_of_bests adjacent import validator against a local fixture package
+- rest_mcts adjacent import validator against a local fixture package
+- openr adjacent import validator against a local fixture package
 
 Outputs:
 - outputs/external_baseline_runnability/<run_id>/verification_summary.json
@@ -98,6 +100,22 @@ MOB_FIXTURE_CASE = {
     "mode": "adjacent_import",
     "script": "scripts/verify_mob_import.py",
     "results_path": "tests/fixtures/mob_import_valid",
+    "expected_status": "valid",
+}
+
+REST_MCTS_FIXTURE_CASE = {
+    "baseline": "rest_mcts",
+    "mode": "adjacent_import",
+    "script": "scripts/verify_rest_mcts_import.py",
+    "results_path": "tests/fixtures/rest_mcts_import_valid",
+    "expected_status": "valid",
+}
+
+OPENR_FIXTURE_CASE = {
+    "baseline": "openr",
+    "mode": "adjacent_import",
+    "script": "scripts/verify_openr_import.py",
+    "results_path": "tests/fixtures/openr_import_valid",
     "expected_status": "valid",
 }
 
@@ -326,6 +344,78 @@ def main() -> None:
         }
     )
 
+    rest_mcts_cmd = [
+        sys.executable,
+        str(REPO_ROOT / REST_MCTS_FIXTURE_CASE["script"]),
+        "--results-path",
+        str(REPO_ROOT / REST_MCTS_FIXTURE_CASE["results_path"]),
+        "--expected-dataset",
+        "math",
+        "--expected-split",
+        "test",
+    ]
+    rest_mcts_proc = subprocess.run(rest_mcts_cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+    rest_mcts_parsed: dict[str, Any] = {}
+    if rest_mcts_proc.stdout.strip():
+        try:
+            rest_mcts_parsed = json.loads(rest_mcts_proc.stdout.strip())
+        except json.JSONDecodeError:
+            rest_mcts_parsed = {"raw_stdout": rest_mcts_proc.stdout.strip()}
+
+    rest_mcts_status = str(rest_mcts_parsed.get("status", "unknown"))
+    results.append(
+        {
+            "baseline": REST_MCTS_FIXTURE_CASE["baseline"],
+            "mode": REST_MCTS_FIXTURE_CASE["mode"],
+            "script": REST_MCTS_FIXTURE_CASE["script"],
+            "config": REST_MCTS_FIXTURE_CASE["results_path"],
+            "return_code": int(rest_mcts_proc.returncode),
+            "runnable": rest_mcts_proc.returncode == 0 and rest_mcts_status == "valid",
+            "run_dir": "",
+            "observed_mode_b_status": rest_mcts_status,
+            "expected_mode_b_status": REST_MCTS_FIXTURE_CASE["expected_status"],
+            "mode_b_status_matches_expectation": rest_mcts_status == REST_MCTS_FIXTURE_CASE["expected_status"],
+            "mode_b_notes": "rest_mcts adjacent import fixture validation",
+            "stderr_tail": "\n".join(rest_mcts_proc.stderr.strip().splitlines()[-6:]),
+        }
+    )
+
+    openr_cmd = [
+        sys.executable,
+        str(REPO_ROOT / OPENR_FIXTURE_CASE["script"]),
+        "--results-path",
+        str(REPO_ROOT / OPENR_FIXTURE_CASE["results_path"]),
+        "--expected-dataset",
+        "MATH",
+        "--expected-split",
+        "test",
+    ]
+    openr_proc = subprocess.run(openr_cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+    openr_parsed: dict[str, Any] = {}
+    if openr_proc.stdout.strip():
+        try:
+            openr_parsed = json.loads(openr_proc.stdout.strip())
+        except json.JSONDecodeError:
+            openr_parsed = {"raw_stdout": openr_proc.stdout.strip()}
+
+    openr_status = str(openr_parsed.get("status", "unknown"))
+    results.append(
+        {
+            "baseline": OPENR_FIXTURE_CASE["baseline"],
+            "mode": OPENR_FIXTURE_CASE["mode"],
+            "script": OPENR_FIXTURE_CASE["script"],
+            "config": OPENR_FIXTURE_CASE["results_path"],
+            "return_code": int(openr_proc.returncode),
+            "runnable": openr_proc.returncode == 0 and openr_status == "valid",
+            "run_dir": "",
+            "observed_mode_b_status": openr_status,
+            "expected_mode_b_status": OPENR_FIXTURE_CASE["expected_status"],
+            "mode_b_status_matches_expectation": openr_status == OPENR_FIXTURE_CASE["expected_status"],
+            "mode_b_notes": "openr adjacent import fixture validation",
+            "stderr_tail": "\n".join(openr_proc.stderr.strip().splitlines()[-6:]),
+        }
+    )
+
     summary = {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "run_id": run_id,
@@ -340,7 +430,7 @@ def main() -> None:
         "# External baseline runnability verification note",
         "",
         f"- run_id: `{run_id}`",
-        "- scope: s1 / TALE / L1 mode-A and mode-B adapter paths + BEST-Route + when_solve_when_verify + cascade_routing + mob_majority_of_bests adjacent import validators",
+        "- scope: s1 / TALE / L1 mode-A and mode-B adapter paths + BEST-Route + when_solve_when_verify + cascade_routing + mob_majority_of_bests + rest_mcts + openr adjacent import validators",
         "- interpretation: smoke verification only (runnability + blocker-state consistency)",
         "",
         "| baseline | mode | runnable | mode_b_status | expected | matches |",

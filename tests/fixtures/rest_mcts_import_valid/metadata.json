@@ -1,0 +1,43 @@
+{
+  "source": {
+    "type": "official"
+  },
+  "upstream": {
+    "repo_url": "https://github.com/THUDM/ReST-MCTS",
+    "paper_url": "https://arxiv.org/abs/2406.03816",
+    "workflow_stages_completed": [
+      "value_model_bootstrap_or_training",
+      "mcts_trace_generation",
+      "policy_self_training",
+      "benchmark_evaluation"
+    ]
+  },
+  "dataset": {
+    "name": "math",
+    "split": "test"
+  },
+  "models": {
+    "policy_model_family": "llama3-8b-instruct",
+    "value_model_family": "mistral-7b"
+  },
+  "search": {
+    "iteration_limits": [
+      50
+    ],
+    "branch_factors": [
+      3
+    ]
+  },
+  "self_training": {
+    "iterations_completed": [
+      1,
+      2
+    ]
+  },
+  "provenance": {
+    "exported_at_utc": "2026-04-16T00:00:00Z",
+    "source_uri": "https://github.com/THUDM/ReST-MCTS",
+    "artifact_id": "rest_mcts_fixture_v1",
+    "commit_or_version_if_available": "main"
+  }
+}

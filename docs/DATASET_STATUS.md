@@ -7,10 +7,12 @@ This note clarifies dataset roles for the repository.
 These are the primary datasets used for evaluating controller/frontier behavior:
 - GSM8K
 - MATH (canonical + mirror wiring)
+- MATH-500 (canonical HF id wiring)
 - GPQA Diamond
 - AIME 2024 slice
 - OlympiadBench mirror
-- NaturalPlan (documentation/upstream path)
+- AMO-Bench
+- NaturalPlan (git-clone-based integration path)
 - LiveCodeBench (optional/extended)
 
 References: `docs/main_datasets.md`, `docs/datasets_access.md`, `experiments/hf_datasets.py`.

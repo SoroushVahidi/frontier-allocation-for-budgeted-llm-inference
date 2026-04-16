@@ -1,0 +1,37 @@
+{
+  "source": {
+    "type": "official"
+  },
+  "upstream": {
+    "repo_url": "https://github.com/openreasoner/openr",
+    "paper_url": "https://arxiv.org/abs/2410.09671",
+    "workflow_stages_completed": [
+      "lm_rm_service_startup",
+      "inference_evaluation_run",
+      "result_artifact_export"
+    ]
+  },
+  "dataset": {
+    "name": "MATH",
+    "split": "test"
+  },
+  "models": {
+    "generator_model": "Qwen2.5-Math-1.5B-Instruct",
+    "reward_model": "checkpoint-2127"
+  },
+  "search": {
+    "methods_evaluated": [
+      "cot",
+      "vanila_mcts"
+    ]
+  },
+  "service": {
+    "controller_addr": "http://0.0.0.0:28777"
+  },
+  "provenance": {
+    "exported_at_utc": "2026-04-16T00:00:00Z",
+    "source_uri": "https://github.com/openreasoner/openr",
+    "artifact_id": "openr_fixture_v1",
+    "commit_or_version_if_available": "main"
+  }
+}

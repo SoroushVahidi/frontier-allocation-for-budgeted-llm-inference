@@ -1,6 +1,6 @@
 # External baseline completeness report
 
-- Generated (UTC): `2026-04-16T02:06:46.665260+00:00`
+- Generated (UTC): `2026-04-16T02:26:44.110891+00:00`
 - Scope: external baseline completeness for reviewer-defensible reporting.
 
 ## Classification taxonomy
@@ -24,9 +24,9 @@
 | When To Solve, When To Verify (`when_solve_when_verify`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | Cascade routing (`cascade_routing`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | MoB (`mob_majority_of_bests`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
-| ReST-MCTS* (`rest_mcts`) | link_only | adjacent | no | not_applicable | not_applicable |
+| ReST-MCTS* (`rest_mcts`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | MCTS-LLM (community) (`mcts_llm_community`) | link_only | adjacent | no | not_applicable | not_applicable |
-| OpenR (`openr`) | link_only | adjacent | no | not_applicable | not_applicable |
+| OpenR (`openr`) | runnable_adjacent | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | Tree-PLV (`tree_plv`) | discuss_only | adjacent | no | not_applicable | not_applicable |
 | PGTS (`pgts`) | discuss_only | adjacent | no | not_applicable | not_applicable |
 | Scaling Automated Process Verifiers (`scaling_automated_process_verifiers`) | discuss_only | adjacent | no | not_applicable | not_applicable |
@@ -40,6 +40,8 @@
 - when_solve_when_verify adjacent import path through `scripts/verify_when_solve_when_verify_import.py` (strict validator; adjacent-only claims).
 - Cascade Routing adjacent import path through `scripts/verify_cascade_routing_import.py` (strict validator; adjacent-only claims).
 - MoB adjacent import path through `scripts/verify_mob_import.py` (strict validator; adjacent-only claims).
+- ReST-MCTS adjacent import path through `scripts/verify_rest_mcts_import.py` (strict validator; adjacent-only claims).
+- OpenR adjacent import path through `scripts/verify_openr_import.py` (strict validator; adjacent-only claims).
 
 ## Partially usable
 - s1 / TALE / L1 MODE B paths are adapter-reporting only and remain blocked unless official/full externally-produced outputs are provided via `official.results_path`.
@@ -64,8 +66,18 @@
 - Interpretation: usable for adjacent comparisons only; not a direct in-repo full-stack reproduction.
 - Guardrail: imported outputs must pass `scripts/verify_mob_import.py` and be labeled `adjacent_only`.
 
+## ReST-MCTS integration decision in this pass
+- Status: `runnable_adjacent` (verified import protocol available).
+- Interpretation: usable for adjacent comparisons only; not a direct in-repo full-stack reproduction.
+- Guardrail: imported outputs must pass `scripts/verify_rest_mcts_import.py` and be labeled `adjacent_only`.
+
+## OpenR integration decision in this pass
+- Status: `runnable_adjacent` (verified import protocol available).
+- Interpretation: usable for adjacent comparisons only; not a direct in-repo full-stack reproduction.
+- Guardrail: imported outputs must pass `scripts/verify_openr_import.py` and be labeled `adjacent_only`.
+
 ## Single next highest-priority baseline after this pass
-- `rest_mcts` (next high-priority baseline still at link-only after unblocking MoB).
+- `mcts_llm_community` (next high-priority baseline still at link-only after unblocking OpenR).
 
 ## Machine-readable companion artifacts
 - `outputs/external_baseline_completeness_summary.json`

@@ -1,0 +1,46 @@
+{
+  "generated_utc": "2026-04-16T02:17:13.689937+00:00",
+  "baseline_key": "rest_mcts",
+  "status": "runnable_adjacent",
+  "integration_kind": "verified_import_only",
+  "status_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ],
+  "upstream": {
+    "repo": "https://github.com/THUDM/ReST-MCTS",
+    "readme": "https://github.com/THUDM/ReST-MCTS/blob/main/README.md",
+    "paper": "https://arxiv.org/abs/2406.03816",
+    "project_page": "https://rest-mcts.github.io/"
+  },
+  "protocol": {
+    "validator_script": "scripts/verify_rest_mcts_import.py",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "value_model_bootstrap_or_training",
+      "mcts_trace_generation",
+      "policy_self_training",
+      "benchmark_evaluation"
+    ],
+    "required_search_coverage": [
+      "mcts"
+    ],
+    "comparability_scope": "adjacent_only"
+  },
+  "safe_claims": [
+    "This repo supports reviewer-auditable adjacent import of ReST-MCTS outputs.",
+    "Imported outputs are validated for upstream workflow declarations, fixed search metadata, and explicit adjacent-only scope."
+  ],
+  "not_safe_claims": [
+    "Direct in-repo full reproduction of upstream ReST-MCTS self-training and training-stack results.",
+    "Control-equivalent direct comparability claims with frontier/action-native controllers."
+  ]
+}

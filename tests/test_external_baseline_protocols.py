@@ -8,6 +8,8 @@ from scripts.verify_best_route_import import verify_best_route_import
 from scripts.verify_when_solve_when_verify_import import verify_when_solve_when_verify_import
 from scripts.verify_cascade_routing_import import verify_cascade_routing_import
 from scripts.verify_mob_import import verify_mob_import
+from scripts.verify_rest_mcts_import import verify_rest_mcts_import
+from scripts.verify_openr_import import verify_openr_import
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -272,3 +274,117 @@ def test_verify_mob_import_rejects_missing_bon(tmp_path: Path) -> None:
 
     assert report["status"] == "invalid"
     assert "missing_bon_algorithm" in report["issues"]
+
+
+def test_verify_rest_mcts_import_valid_fixture() -> None:
+    fixture = REPO_ROOT / "tests" / "fixtures" / "rest_mcts_import_valid"
+    report = verify_rest_mcts_import(
+        requested_path=fixture,
+        expected_dataset="math",
+        expected_split="test",
+    )
+    assert report["status"] == "valid"
+    assert report["issues"] == []
+    assert len(report["imported_rows"]) == 2
+
+
+def test_verify_rest_mcts_import_rejects_missing_mcts_mode(tmp_path: Path) -> None:
+    package = tmp_path / "bad_rest_mcts_package"
+    package.mkdir(parents=True, exist_ok=True)
+
+    metadata = {
+        "source": {"type": "official"},
+        "upstream": {
+            "repo_url": "https://github.com/THUDM/ReST-MCTS",
+            "paper_url": "https://arxiv.org/abs/2406.03816",
+            "workflow_stages_completed": [
+                "value_model_bootstrap_or_training",
+                "mcts_trace_generation",
+                "policy_self_training",
+                "benchmark_evaluation",
+            ],
+        },
+        "dataset": {"name": "math", "split": "test"},
+        "models": {
+            "policy_model_family": "llama3-8b-instruct",
+            "value_model_family": "mistral-7b",
+        },
+        "search": {"iteration_limits": [50], "branch_factors": [3]},
+        "self_training": {"iterations_completed": [1]},
+        "provenance": {
+            "exported_at_utc": "2026-04-16T00:00:00Z",
+            "source_uri": "https://example.org",
+            "artifact_id": "x",
+            "commit_or_version_if_available": "y",
+        },
+    }
+    (package / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    (package / "results.csv").write_text(
+        "mode,source_type,dataset,split,policy_model,value_model,search_mode,self_training_iteration,iteration_limit,branch,accuracy,num_examples,artifact_id,commit_or_version,comparability_scope\n"
+        "rest_mcts_adjacent_import,official,math,test,llama3-8b-instruct,mistral-7b,cot,1,50,1,0.58,500,x,y,adjacent_only\n",
+        encoding="utf-8",
+    )
+
+    report = verify_rest_mcts_import(
+        requested_path=package,
+        expected_dataset="math",
+        expected_split="test",
+    )
+
+    assert report["status"] == "invalid"
+    assert "missing_mcts_search_mode" in report["issues"]
+
+
+def test_verify_openr_import_valid_fixture() -> None:
+    fixture = REPO_ROOT / "tests" / "fixtures" / "openr_import_valid"
+    report = verify_openr_import(
+        requested_path=fixture,
+        expected_dataset="MATH",
+        expected_split="test",
+    )
+    assert report["status"] == "valid"
+    assert report["issues"] == []
+    assert len(report["imported_rows"]) == 2
+
+
+def test_verify_openr_import_rejects_missing_tree_search_method(tmp_path: Path) -> None:
+    package = tmp_path / "bad_openr_package"
+    package.mkdir(parents=True, exist_ok=True)
+
+    metadata = {
+        "source": {"type": "official"},
+        "upstream": {
+            "repo_url": "https://github.com/openreasoner/openr",
+            "paper_url": "https://arxiv.org/abs/2410.09671",
+            "workflow_stages_completed": [
+                "lm_rm_service_startup",
+                "inference_evaluation_run",
+                "result_artifact_export",
+            ],
+        },
+        "dataset": {"name": "MATH", "split": "test"},
+        "models": {"generator_model": "Qwen2.5-Math-1.5B-Instruct"},
+        "search": {"methods_evaluated": ["cot"]},
+        "service": {"controller_addr": "http://0.0.0.0:28777"},
+        "provenance": {
+            "exported_at_utc": "2026-04-16T00:00:00Z",
+            "source_uri": "https://example.org",
+            "artifact_id": "x",
+            "commit_or_version_if_available": "y",
+        },
+    }
+    (package / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    (package / "results.csv").write_text(
+        "mode,source_type,dataset,split,generator_model,reward_model,method,budget_setting,majority_vote,total_completion_tokens,artifact_id,commit_or_version,comparability_scope\n"
+        "openr_adjacent_import,official,MATH,test,Qwen2.5-Math-1.5B-Instruct,dummy,cot,2^0,0.734,559.13,x,y,adjacent_only\n",
+        encoding="utf-8",
+    )
+
+    report = verify_openr_import(
+        requested_path=package,
+        expected_dataset="MATH",
+        expected_split="test",
+    )
+
+    assert report["status"] == "invalid"
+    assert "missing_tree_search_method" in report["issues"]

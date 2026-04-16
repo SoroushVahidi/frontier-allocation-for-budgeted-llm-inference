@@ -1,0 +1,46 @@
+{
+  "generated_utc": "2026-04-16T02:26:43.091749+00:00",
+  "baseline_key": "openr",
+  "status": "runnable_adjacent",
+  "integration_kind": "verified_import_only",
+  "status_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ],
+  "upstream": {
+    "repo": "https://github.com/openreasoner/openr",
+    "readme": "https://github.com/openreasoner/openr/blob/main/README.md",
+    "paper": "https://arxiv.org/abs/2410.09671",
+    "project_page": "https://openreasoner.github.io/"
+  },
+  "protocol": {
+    "validator_script": "scripts/verify_openr_import.py",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "lm_rm_service_startup",
+      "inference_evaluation_run",
+      "result_artifact_export"
+    ],
+    "required_strategy_coverage": [
+      "cot",
+      "at_least_one_tree_search_method"
+    ],
+    "comparability_scope": "adjacent_only"
+  },
+  "safe_claims": [
+    "This repo supports reviewer-auditable adjacent import of OpenR inference outputs.",
+    "Imported outputs are validated for workflow declarations, strategy coverage, and adjacent-only comparability scope."
+  ],
+  "not_safe_claims": [
+    "Direct in-repo full reproduction of upstream OpenR training/serving stack.",
+    "Control-equivalent direct comparability claims with frontier/action-native controllers."
+  ]
+}
