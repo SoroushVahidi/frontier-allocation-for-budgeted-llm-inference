@@ -1,101 +1,110 @@
 # s1 baseline integration (reviewer-defensible split)
 
-This document defines the repository's **fair and conservative** s1 integration for the NeurIPS-oriented fixed-budget allocation project.
-
-## Why this split is required
-
-The s1 paper combines two ingredients:
-1. **Post-training / supervised finetuning** on s1K-family data.
-2. **Inference-time budget forcing** (e.g., forcing continued thinking by ignoring an early think-end boundary and appending a continuation cue like `Wait`).
-
-For our controller paper, these must be separated to avoid unfair comparisons.
-
----
+This document defines the repository's **fair and conservative** s1 integration for the fixed-budget allocation project.
 
 ## Mode definitions
 
 ## MODE A (primary): inference-only s1 budget forcing
 
 - Name: **`inference_only`**.
-- Goal: apples-to-apples comparison with our unchanged-base-model controller.
-- What it does in this repo:
-  - Runs our local method family and the in-repo s1-style adapter (`external_s1_budget_forcing`) under matched dataset splits, seeds, and budget grid.
-  - Uses the same base model family settings used by our method path.
-  - Does **not** require or claim s1K post-training reproduction.
+- Goal: apples-to-apples comparison with unchanged-base-model controller baselines.
+- Status: **implemented and runnable in this repository**.
 - Runner:
   - `python scripts/run_s1_budget_forcing_baseline.py --config configs/s1_budget_forcing_inference_only_v1.json`
-- Status: **implemented and runnable in this repository**.
 
-## MODE B (secondary): full/official s1 path (includes post-training)
+## MODE B (secondary): official/full results import + verification
 
 - Name: **`full_or_official`**.
-- Goal: side-by-side reporting with official/full s1 outputs where feasible.
-- What it does in this repo:
-  - Keeps labels and reporting separate from MODE A.
-  - Accepts imported official/full s1 metrics via `official.results_path` in config.
-  - Records explicit `blocked` status if official assets/results are unavailable.
+- Goal: side-by-side reporting for official/full s1 outputs when those outputs are externally produced.
+- Status: **usable when verified official/full results package is provided**.
 - Runner:
   - `python scripts/run_s1_budget_forcing_baseline.py --config configs/s1_full_or_official_adapter_v1.json`
-- Status: **partial adapter/reporting path** (no automatic in-repo reproduction of full s1 post-training stack).
+
+Critical boundary:
+- MODE B in this repo is **not** local full post-training reproduction.
+- MODE B is a strict import contract with verification gates.
 
 ---
 
-## Implemented artifacts
+## MODE B official import contract (`s1_mode_b_official_import_v1`)
 
-- Configs:
-  - `configs/s1_budget_forcing_inference_only_v1.json`
-  - `configs/s1_full_or_official_adapter_v1.json`
-- Scripts:
-  - `scripts/run_s1_budget_forcing_baseline.py`
-  - `scripts/run_s1_baseline_comparison_bundle.py`
-- Outputs (per run):
-  - `outputs/s1_baseline/<run_id>/manifest.json`
-  - `outputs/s1_baseline/<run_id>/summary.csv`
-  - `outputs/s1_baseline/<run_id>/summary_per_seed.csv`
-  - `outputs/s1_baseline/<run_id>/per_example.jsonl`
-  - `outputs/s1_baseline/<run_id>/note.md`
-  - `outputs/s1_baseline/<run_id>/fairness_report.md`
-  - `outputs/s1_baseline/<run_id>/comparison_to_ours.csv`
-  - `outputs/s1_baseline/<run_id>/frontier_summary.csv`
+Required package at `official.results_path`:
+- `metadata.json`
+- `results.csv`
 
----
+### Required metadata coverage
 
-## Fairness and budget matching policy
+The metadata must include explicit fields for:
+- source type (`official` / `author-produced` / `imported`),
+- model/checkpoint identity,
+- dataset identity + split,
+- prompt template + prompt family,
+- budget unit + budget settings,
+- token accounting field mapping,
+- decoding settings,
+- metrics schema + primary metrics,
+- provenance fields (`source_uri`, `exported_at_utc`, artifact id),
+- commit/version/artifact identifiers (or explicit `..._if_available` field).
 
-Primary comparison (manuscript-safe):
-- `adaptive_min_expand_1` (ours anchor) vs `external_s1_budget_forcing` (s1 inference-only adapter).
-- Same dataset, seeds, and budget grid.
+Canonical required keys are defined in:
+- `configs/s1_full_or_official_adapter_v1.json` (`official.required_metadata_fields`)
+- `scripts/verify_s1_mode_b_import.py`
 
-Budget matching:
-- Internal budget unit is `action`.
-- We also report a token-equivalent column via fixed mapping:
-  - `token_equivalent_cost = actions * action_to_token_equivalent`.
-- This is a **reporting conversion**, not a claim of exact token-level engine parity.
+### Required results table coverage
 
-Secondary comparison:
-- Full/official s1 results are reported only when provided/imported, and explicitly labeled as potentially including post-training.
+`results.csv` must include comparison-safe columns (including mode/source, dataset/split, model/prompt identity, budget setting, metrics, decoding settings, provenance ids).
+
+Canonical required columns are defined in:
+- `configs/s1_full_or_official_adapter_v1.json` (`official.required_results_columns`)
+- `scripts/verify_s1_mode_b_import.py`
 
 ---
 
-## Metrics and table-ready fields
+## Verification behavior
 
-At minimum, runs report:
-- `accuracy` and `exact_match` (equal in current task extraction path),
-- `avg_token_cost_equivalent` (plus `avg_actions`),
-- `budget_adherence_rate`,
-- `budget_violation_rate`,
-- `budget_exhaustion_rate`,
-- frontier summaries (Pareto on cost vs quality).
+Verifier scripts:
+- `scripts/verify_s1_mode_b_import.py`
+- `scripts/generate_s1_mode_b_import_report.py`
 
-These are emitted in CSV/JSONL files suitable for manuscript table assembly.
+Checks include:
+- required files exist,
+- metadata schema completeness,
+- results schema completeness,
+- dataset + split match run declaration,
+- budget fields are parseable and cover expected budget grid,
+- no MODE A mixing (`inference_only`, MODE A method markers),
+- numeric metric/decode fields are interpretable,
+- result rows are normalized for comparison tables.
+
+Decision policy:
+- no `official.results_path` → MODE B `blocked` with explicit reason,
+- provided + valid package → MODE B `validated_imported_results`,
+- provided + invalid package → MODE B `invalid_import_rejected` with report.
 
 ---
 
-## Explicit non-claims
+## MODE B run artifacts
 
-- No claim that this repo fully reproduces s1/s1.1 paper numbers.
-- No claim of exact parity with upstream tokenizer/serving/stop-token internals.
-- MODE B is not marked complete unless official/full outputs are supplied and recorded.
+Each run emits:
+- `outputs/s1_baseline/<run_id>/official_mode_import.csv`
+- `outputs/s1_baseline/<run_id>/official_mode_import_report.md`
+- `outputs/s1_baseline/<run_id>/fairness_report.md`
+- `outputs/s1_baseline/<run_id>/manifest.json`
+
+Additional run artifacts still include:
+- `summary.csv`, `summary_per_seed.csv`, `per_example.jsonl`, `comparison_to_ours.csv`, `frontier_summary.csv`, `note.md`.
+
+---
+
+## Manuscript-safe wording
+
+Safe wording:
+- “MODE A is the in-repo inference-only fair adapter.”
+- “MODE B is an official/full-results import path with strict verification gates.”
+- “MODE B does not imply local full s1 post-training reproduction in this repository.”
+
+Not safe wording:
+- “this repo fully reproduces official s1 training results” (unless that stack is actually added and auditable).
 
 ---
 

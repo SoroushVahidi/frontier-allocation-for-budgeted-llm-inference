@@ -146,7 +146,7 @@ For manuscript-safe claims, treat external baselines as follows:
   - s1 via `configs/s1_budget_forcing_inference_only_v1.json` + `scripts/run_s1_budget_forcing_baseline.py`
   - TALE via `configs/tale_prompt_budgeting_v1.json` + `scripts/run_tale_baseline.py`
   - L1 via `configs/l1_inference_adapter_v1.json` + `scripts/run_l1_baseline.py`
-- **Partially usable:** MODE B adapters for s1/TALE/L1 are reporting paths only and remain blocked unless externally-produced official/full outputs are imported through `official.results_path`.
+- **Partially usable:** s1 and TALE MODE B are strict official/full-results import + verification paths (usable when valid official packages are supplied); TALE MODE B additionally enforces explicit TALE-vs-TALE-PT variant separation. L1 MODE B remains blocked adapter/reporting path unless externally-produced official/full outputs are imported through `official.results_path`.
 - **BEST-Route status in this pass:** blocked for fair comparability claims; kept as explicit non-runnable integration record rather than forcing a weak adapter.
 
 Companion artifacts:

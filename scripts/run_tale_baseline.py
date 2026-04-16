@@ -5,7 +5,7 @@ MODE A (prompt_budgeting_inference_only):
 - In-repo TALE-style prompt-level adaptive token budgeting adapter.
 
 MODE B (official_full_adapter):
-- Optional adapter path for externally produced official/full TALE results.
+- Strict official/full results import + verification path (no local full TALE/TALE-PT reproduction claim).
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 import random
 import statistics
+import subprocess
 import sys
 from typing import Any
 
@@ -46,6 +47,7 @@ DEFAULT_METHODS = [
 class RunConfig:
     mode: str
     dataset: str
+    dataset_split: str
     subset_size: int
     seeds: list[int]
     budgets: list[int]
@@ -73,11 +75,13 @@ def _load_config(path: Path) -> RunConfig:
     mode = str(data.get("mode", "prompt_budgeting_inference_only"))
     official = data.get("official", {}) or {}
     tale = data.get("tale", {})
+    dataset_cfg = data["dataset"]
     return RunConfig(
         mode=mode,
-        dataset=str(data["dataset"]["name"]),
-        subset_size=int(data["dataset"].get("subset_size", 32)),
-        seeds=[int(s) for s in data["dataset"].get("seeds", [11, 23, 37])],
+        dataset=str(dataset_cfg["name"]),
+        dataset_split=str(dataset_cfg.get("split", "test")),
+        subset_size=int(dataset_cfg.get("subset_size", 32)),
+        seeds=[int(s) for s in dataset_cfg.get("seeds", [11, 23, 37])],
         budgets=[int(b) for b in data["budget"]["grid"]],
         adaptive_grid=[int(k) for k in data["methods"].get("adaptive_min_expand_grid", [1])],
         use_openai_api=bool(data["model"].get("use_openai_api", False)),
@@ -138,20 +142,60 @@ def _pareto_frontier(rows: list[dict[str, Any]], acc_key: str, cost_key: str) ->
     return frontier
 
 
-def _load_official_results(path: Path) -> list[dict[str, Any]]:
-    if not path.exists():
-        return []
-    if path.suffix.lower() == ".json":
-        loaded = json.loads(path.read_text(encoding="utf-8"))
-        if isinstance(loaded, list):
-            return [dict(x) for x in loaded]
-        if isinstance(loaded, dict) and isinstance(loaded.get("rows"), list):
-            return [dict(x) for x in loaded["rows"]]
-        return []
-    if path.suffix.lower() == ".csv":
-        with path.open("r", encoding="utf-8", newline="") as f:
-            return [dict(r) for r in csv.DictReader(f)]
-    return []
+def _verify_mode_b_import(
+    *,
+    official_results_path: str,
+    run_dir: Path,
+    dataset: str,
+    dataset_split: str,
+    budgets: list[int],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    verify_script = REPO_ROOT / "scripts/verify_tale_mode_b_import.py"
+    report_script = REPO_ROOT / "scripts/generate_tale_mode_b_import_report.py"
+    verification_json = run_dir / "official_mode_import_verification.json"
+
+    cmd = [
+        sys.executable,
+        str(verify_script),
+        "--results-path",
+        official_results_path,
+        "--expected-dataset",
+        dataset,
+        "--expected-split",
+        dataset_split,
+        "--expected-budgets",
+        ",".join(str(b) for b in budgets),
+        "--output-json",
+        str(verification_json),
+    ]
+    completed = subprocess.run(cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+
+    verification: dict[str, Any]
+    if verification_json.exists():
+        verification = json.loads(verification_json.read_text(encoding="utf-8"))
+    else:
+        verification = {
+            "status": "invalid",
+            "issues": ["verification_script_failed"],
+            "errors": [completed.stderr[-4000:] if completed.stderr else ""],
+            "imported_rows": [],
+        }
+
+    report_cmd = [
+        sys.executable,
+        str(report_script),
+        "--verification-json",
+        str(verification_json),
+        "--output-md",
+        str(run_dir / "official_mode_import_report.md"),
+    ]
+    subprocess.run(report_cmd, cwd=REPO_ROOT, text=True, capture_output=True)
+
+    imported_rows = verification.get("imported_rows", []) if isinstance(verification, dict) else []
+    if not isinstance(imported_rows, list):
+        imported_rows = []
+    normalized_rows = [dict(r) for r in imported_rows if isinstance(r, dict)]
+    return verification, normalized_rows
 
 
 def _mean(values: list[float]) -> float:
@@ -237,6 +281,7 @@ def main() -> None:
                     {
                         "mode": cfg.mode,
                         "dataset": cfg.dataset,
+                        "dataset_split": cfg.dataset_split,
                         "seed": seed,
                         "budget_actions": budget,
                         "budget_token_equivalent": budget * cfg.action_to_token_equivalent,
@@ -263,6 +308,7 @@ def main() -> None:
                     {
                         "mode": cfg.mode,
                         "dataset": cfg.dataset,
+                        "dataset_split": cfg.dataset_split,
                         "seed": seed,
                         "budget_actions": budget,
                         "budget_token_equivalent": budget * cfg.action_to_token_equivalent,
@@ -288,6 +334,7 @@ def main() -> None:
             {
                 "mode": cfg.mode,
                 "dataset": cfg.dataset,
+                "dataset_split": cfg.dataset_split,
                 "budget_actions": budget,
                 "budget_token_equivalent": budget * cfg.action_to_token_equivalent,
                 "method": method,
@@ -316,6 +363,7 @@ def main() -> None:
                 "mode": cfg.mode,
                 "comparison_type": "fixed_budget",
                 "dataset": cfg.dataset,
+                "dataset_split": cfg.dataset_split,
                 "budget_actions": budget,
                 "our_method": "adaptive_min_expand_1",
                 "baseline_method": "external_tale_prompt_budgeting",
@@ -328,8 +376,6 @@ def main() -> None:
             }
         )
 
-    # Matched average compute protocol: for each TALE budget point, compare against the OURS point
-    # with closest mean generated-token cost.
     ours_rows = [r for r in summary_rows if str(r["method"]) == "adaptive_min_expand_1"]
     tale_rows = [r for r in summary_rows if str(r["method"]) == "external_tale_prompt_budgeting"]
     for trow in tale_rows:
@@ -344,6 +390,7 @@ def main() -> None:
                 "mode": cfg.mode,
                 "comparison_type": "matched_average_compute",
                 "dataset": cfg.dataset,
+                "dataset_split": cfg.dataset_split,
                 "budget_actions": int(trow["budget_actions"]),
                 "our_method": "adaptive_min_expand_1",
                 "baseline_method": "external_tale_prompt_budgeting",
@@ -370,27 +417,59 @@ def main() -> None:
     mode_b_state = {"enabled": cfg.mode == "official_full_adapter", "status": "not_requested", "notes": ""}
     if cfg.mode == "official_full_adapter":
         if cfg.official_results_path:
-            imported = _load_official_results(REPO_ROOT / cfg.official_results_path)
-            if imported:
-                mode_b_state["status"] = "imported_results"
-                mode_b_state["notes"] = "Loaded externally-produced official/full TALE results for side-by-side reporting."
-                for r in imported:
-                    mode_b_official_rows.append({"mode": "official_full_adapter", "source": "official_import", **r})
+            verification, imported_rows = _verify_mode_b_import(
+                official_results_path=cfg.official_results_path,
+                run_dir=run_dir,
+                dataset=cfg.dataset,
+                dataset_split=cfg.dataset_split,
+                budgets=cfg.budgets,
+            )
+            mode_b_state["verification"] = {
+                "status": str(verification.get("status", "invalid")),
+                "verification_file": "official_mode_import_verification.json",
+            }
+            if str(verification.get("status", "invalid")) == "valid":
+                mode_b_state["status"] = "validated_imported_results"
+                mode_b_state["notes"] = (
+                    "Loaded externally-produced official/full TALE results after strict schema, metadata, "
+                    "provenance, variant-separation, and fairness validation."
+                )
+                mode_b_official_rows = imported_rows
             else:
-                mode_b_state["status"] = "blocked"
-                mode_b_state["notes"] = "Official/full TALE mode requested but results file missing/empty/unreadable."
+                mode_b_state["status"] = "invalid_import_rejected"
+                issues = verification.get("issues", [])
+                issue_text = "; ".join(str(x) for x in issues[:6]) if isinstance(issues, list) else "unknown"
+                mode_b_state["notes"] = (
+                    "Official TALE results path was provided but verification failed. "
+                    f"Import rejected. First issues: {issue_text}"
+                )
         else:
             mode_b_state["status"] = "blocked"
             mode_b_state["notes"] = (
-                "Official/full TALE mode requested, but this repo does not automatically reproduce TALE-PT or full TALE stack. "
-                "Provide `official.results_path` with exported official run metrics to complete MODE B reporting."
+                "Official/full TALE mode requested, but no `official.results_path` was provided. "
+                "MODE B here is strict official/full import + verification, not local TALE/TALE-PT reproduction."
             )
+            (run_dir / "official_mode_import_report.md").write_text(
+                "# TALE MODE B official import report\n\n"
+                "- status: `blocked`\n"
+                "- reason: missing `official.results_path`\n"
+                "- policy: MODE B only runs when an official/full TALE package is supplied and verified.\n",
+                encoding="utf-8",
+            )
+    else:
+        (run_dir / "official_mode_import_report.md").write_text(
+            "# TALE MODE B official import report\n\n"
+            "- status: `not_requested`\n"
+            "- reason: run mode is MODE A (`prompt_budgeting_inference_only`)\n",
+            encoding="utf-8",
+        )
 
     manifest = {
         "run_id": run_id,
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "mode": cfg.mode,
         "dataset": cfg.dataset,
+        "dataset_split": cfg.dataset_split,
         "subset_size": cfg.subset_size,
         "seeds": cfg.seeds,
         "budget_grid_actions": cfg.budgets,
@@ -416,8 +495,8 @@ def main() -> None:
         },
         "mode_b_official": mode_b_state,
         "guardrail": (
-            "TALE is treated as a strong published adjacent baseline (per-instance token budgeting), "
-            "not an identical frontier stop-vs-act controller."
+            "MODE A is the in-repo TALE prompt-budgeting adapter. MODE B is strict verified official/full import "
+            "with explicit TALE-vs-TALE-PT variant identity and no local full reproduction claim."
         ),
     }
 
@@ -427,13 +506,15 @@ def main() -> None:
         f"- run_id: `{run_id}`",
         f"- mode: `{cfg.mode}`",
         f"- dataset: `{cfg.dataset}`",
+        f"- dataset_split: `{cfg.dataset_split}`",
         f"- subset_size_per_seed: `{cfg.subset_size}`",
         f"- seeds: `{', '.join(str(x) for x in cfg.seeds)}`",
         f"- budgets(actions): `{', '.join(str(x) for x in cfg.budgets)}`",
         "",
         "## Methodological honesty",
         "- MODE A is a faithful in-repo TALE-style prompt budgeting adapter, not full TALE-PT reproduction.",
-        "- MODE B is separately labeled official/full adapter reporting and may include post-training assets.",
+        "- MODE B is separately labeled official/full import path and may include TALE-PT assets.",
+        "- TALE vs TALE-PT identity must be explicit in MODE B metadata and rows.",
         "- Comparisons report matched-average-compute rows to reduce action-space mismatch bias.",
     ]
 
@@ -447,9 +528,13 @@ def main() -> None:
         "## Primary comparison protocol",
         "- Compare `adaptive_min_expand_1` vs `external_tale_prompt_budgeting` at fixed budget grid and matched-average-compute rows.",
         "",
+        "## MODE B import guardrails",
+        "- MODE B is a strict official/full import path requiring schema + provenance + variant identity validation.",
+        "- Imports are rejected if metadata is incomplete/inconsistent or if TALE and TALE-PT variants are mixed/blurred.",
+        "",
         "## Caveats",
         "- Prompt-level TALE adapter here does not include TALE-PT post-training.",
-        "- MODE B remains blocked unless official/full TALE outputs are provided.",
+        "- MODE B does not claim local full TALE/TALE-PT reproduction.",
     ]
 
     _write_csv(run_dir / "summary.csv", summary_rows)
