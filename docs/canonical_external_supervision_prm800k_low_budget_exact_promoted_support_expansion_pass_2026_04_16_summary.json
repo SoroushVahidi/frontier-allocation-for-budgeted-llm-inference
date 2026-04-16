@@ -1,0 +1,132 @@
+{
+  "date": "2026-04-16",
+  "pass": "canonical_external_supervision_prm800k_low_budget_exact_promoted_support_expansion",
+  "artifacts": {
+    "canonical_corpus_new": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_lowbudget_exactpromoted_v1",
+    "canonical_corpus_previous": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_harder_uncertainty_v1",
+    "external_prm": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+    "transfer_run": "outputs/canonical_branch_learning_pass/lowbudget_exactpromoted_transfer_alignment_20260416",
+    "boundary_run": "outputs/canonical_branch_learning_pass/lowbudget_exactpromoted_boundary_20260416"
+  },
+  "support_gap_audit_before": {
+    "test_pairs": 18,
+    "top1_test_states": 4,
+    "near_tie": 5,
+    "adjacent_rank": 10,
+    "small_margin": 14,
+    "exact_promoted": 1,
+    "exact_only": 1,
+    "approx_only": 17,
+    "dataset_slices": {
+      "HuggingFaceH4/MATH-500": 6,
+      "openai/gsm8k": 12
+    },
+    "budget_slices": {
+      "2": 6,
+      "3": 6,
+      "4": 6
+    },
+    "boundary_eligible_pairs": 5,
+    "too_small": [
+      "exact_promoted",
+      "exact_only",
+      "top1_states",
+      "budget_1_absent"
+    ]
+  },
+  "corpus_expansion": {
+    "previous": {
+      "pairwise_rows": 194,
+      "pairwise_test_rows": 29,
+      "near_tie_pairs": 58,
+      "adjacent_rank_pairs": 110,
+      "small_margin_pairs": 140,
+      "exact_promoted_pairs": 16
+    },
+    "new": {
+      "pairwise_rows": 262,
+      "pairwise_test_rows": 85,
+      "near_tie_pairs": 112,
+      "adjacent_rank_pairs": 160,
+      "small_margin_pairs": 191,
+      "exact_promoted_pairs": 16
+    }
+  },
+  "support_after": {
+    "test_pairs": 30,
+    "top1_test_states": 9,
+    "near_tie": 12,
+    "adjacent_rank": 18,
+    "small_margin": 22,
+    "exact_promoted": 2,
+    "exact_only": 2,
+    "approx_only": 28,
+    "dataset_slices": {
+      "HuggingFaceH4/MATH-500": 15,
+      "openai/gsm8k": 15
+    },
+    "budget_slices": {
+      "1": 2,
+      "2": 6,
+      "3": 9,
+      "4": 13
+    },
+    "boundary_eligible_pairs": 9,
+    "still_small": [
+      "exact_promoted",
+      "exact_only",
+      "budget_1"
+    ]
+  },
+  "methods": {
+    "anchor": "intervention::pointwise",
+    "broad": "external::prm800k_pointwise_blend_from_reweighted_pointwise",
+    "aligned": "external::prm800k_uncertainty_gated_blend_from_reweighted_pointwise",
+    "boundary": "external::prm800k_comparator_boundary_tiebreak_from_reweighted_pointwise"
+  },
+  "comparison": {
+    "aggregate": {
+      "anchor": {"pairwise_acc": 0.5666666666666667, "top1_acc": 0.3333333333333333},
+      "broad": {"pairwise_acc": 0.6, "top1_acc": 0.3333333333333333},
+      "aligned": {"pairwise_acc": 0.6, "top1_acc": 0.4444444444444444},
+      "boundary": {"pairwise_acc": 0.6333333333333333, "top1_acc": 0.3333333333333333}
+    },
+    "hard_slices": {
+      "near_tie": {"anchor": 0.4166666666666667, "broad": 0.4166666666666667, "aligned": 0.4166666666666667, "boundary": 0.5},
+      "adjacent_rank": {"anchor": 0.5555555555555556, "broad": 0.5, "aligned": 0.5, "boundary": 0.5555555555555556},
+      "small_margin": {"anchor": 0.45454545454545453, "broad": 0.5, "aligned": 0.5, "boundary": 0.5454545454545454}
+    },
+    "provenance_slices": {
+      "exact_promoted_n": 2,
+      "exact_promoted": {"anchor": 0.0, "broad": 0.5, "aligned": 0.5, "boundary": 0.5},
+      "exact_only_n": 2,
+      "exact_only": {"anchor": 0.0, "broad": 0.5, "aligned": 0.5, "boundary": 0.5},
+      "approx_only_n": 28,
+      "approx_only": {"anchor": 0.6071428571428571, "broad": 0.6071428571428571, "aligned": 0.6071428571428571, "boundary": 0.6428571428571429}
+    },
+    "budget_slices": {
+      "1": {"n": 2, "anchor": 1.0, "broad": 0.5, "aligned": 0.5, "boundary": 1.0},
+      "2": {"n": 6, "anchor": 0.5, "broad": 0.5, "aligned": 0.5, "boundary": 0.5},
+      "3": {"n": 9, "anchor": 0.4444444444444444, "broad": 0.5555555555555556, "aligned": 0.5555555555555556, "boundary": 0.5555555555555556},
+      "4": {"n": 13, "anchor": 0.6153846153846154, "broad": 0.6923076923076923, "aligned": 0.6923076923076923, "boundary": 0.6923076923076923}
+    }
+  },
+  "boundary_diagnostics": {
+    "pair_test_n": 30,
+    "eligible_pair_n": 9,
+    "changed_pair_n": 2,
+    "changed_pair_helpful_n": 2,
+    "changed_pair_harmful_n": 0,
+    "changed_pair_hard_slice_n": 2,
+    "top1_test_state_n": 9,
+    "top1_changed_state_n": 0
+  },
+  "conclusion": {
+    "evaluation_support_improved": true,
+    "clear_method_gain_proven": false,
+    "broad_ties_aligned_pairwise": true,
+    "aligned_top1_above_broad": true,
+    "boundary_still_diagnostic_for_top1": true,
+    "math_shepherd_recommendation": "wait"
+  }
+}
