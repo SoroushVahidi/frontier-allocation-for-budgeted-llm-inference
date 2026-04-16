@@ -140,6 +140,10 @@ The integration layer now also attempts the remaining requested candidate family
 - `prometheus-eval/Preference-Collection`
 - `HuggingFaceH4/s1k_r1_math_verify` (math_verify-style public release)
 - `SejinKimm/ARCTraj`
+- `codeparrot/apps` (APPS; verifier-backed coding dataset, currently loader-caveated in this environment)
+
+
+- **APPS (`codeparrot/apps`)**: integrated as verifier-backed coding dataset candidate; this environment currently reports loader incompatibility (`Dataset scripts are no longer supported`) so treat as partial/blocked until adapter path is fixed.
 
 Attempted but not integrated:
 

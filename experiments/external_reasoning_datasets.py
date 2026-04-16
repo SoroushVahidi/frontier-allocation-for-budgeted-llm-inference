@@ -249,6 +249,24 @@ EXTERNAL_REASONING_DATASET_SPECS: dict[str, ExternalReasoningDatasetSpec] = {
         variant_candidates=("SejinKimm/ARCTraj",),
         note="Public ARCTraj dataset card is accessible; schema is table-centric and needs task-specific parsing later.",
     ),
+    "apps": ExternalReasoningDatasetSpec(
+        key="apps",
+        hf_dataset_id="codeparrot/apps",
+        preferred_config="all",
+        preferred_split="train",
+        supervision_type="verifier_backed_code_reasoning",
+        structure_type="coding_problem_with_testcase_verifier",
+        branch_scoring_fit="medium",
+        verifier_training_fit="high",
+        pairwise_branch_ranking_fit="medium",
+        trajectory_supervision_fit="low",
+        frontier_label_distance="high",
+        variant_candidates=("codeparrot/apps",),
+        note=(
+            "APPS provides coding tasks with public/private testcase fields and reference solutions. "
+            "Useful primarily as verifier-backed supervision source; branch-allocation labels are derived, not native."
+        ),
+    ),
 }
 
 
@@ -332,6 +350,14 @@ CANDIDATE_AUDIT_STATUSES: tuple[CandidateAuditStatus, ...] = (
         integration_status="integrated",
         dataset_key="arctraj",
         reason="Public HF dataset is accessible and supports loader-based schema/sample inspection.",
+    ),
+    CandidateAuditStatus(
+        candidate_name="APPS",
+        requested_source="HF coding benchmark with executable verification signal",
+        chosen_source="HF: codeparrot/apps",
+        integration_status="integrated",
+        dataset_key="apps",
+        reason="Public HF dataset is accessible; testcase fields support verifier-backed derived supervision paths.",
     ),
 )
 

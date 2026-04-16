@@ -51,6 +51,9 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `generate_dataset_integration_report.py` | Main evaluation-dataset integration report (includes MATH-500, AMO-Bench, and NaturalPlan clone-path status) |
 | `verify_external_reasoning_datasets.py` | External supervision access/schema checks |
 | `generate_external_reasoning_dataset_integration_report.py` | External supervision integration report |
+| `build_canonical_branch_learning_corpus.py` | Build canonical processed branch-learning corpora (candidate/pairwise/outside-option rows, manifests, checksums, hard-slice summaries) |
+| `run_canonical_branch_learning_pass.py` | Run a matched canonical learning pass from canonical corpora with aggregate + hard-slice metrics and machine-readable summaries |
+| `build_external_prm_mathshepherd_apps_corpus.py` | Build conservative canonical-aligned external rows (PRM800K/Math-Shepherd/APPS) with provenance and readiness summary |
 | `prepare_external_reasoning_datasets.py` | Readiness ranking and normalized previews |
 | `generate_external_baseline_integration_report.py` | External baseline integration report |
 | `list_external_baselines.py` | Print external baseline registry |

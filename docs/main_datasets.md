@@ -48,6 +48,6 @@ These are integrated in a license-aware, download-on-demand way only (see `exper
 
 ### Expanded external reasoning-supervision set (new-paper prep)
 
-Beyond the initial four integrations, the new-paper prep layer now includes additional public candidates for judge/verifier/process supervision and trajectory data: `DeepStep-Math-5K`, `WebInstruct-verified`, `JudgeLM-data-collection-v1.0`, `JudgeLM-100K`, `lmsys/mt_bench_human_judgments`, `prometheus-eval/Feedback-Collection`, `prometheus-eval/Preference-Collection`, `HuggingFaceH4/s1k_r1_math_verify`, and `SejinKimm/ARCTraj`.
+Beyond the initial four integrations, the new-paper prep layer now includes additional public candidates for judge/verifier/process supervision and trajectory data: `DeepStep-Math-5K`, `WebInstruct-verified`, `JudgeLM-data-collection-v1.0`, `JudgeLM-100K`, `lmsys/mt_bench_human_judgments`, `prometheus-eval/Feedback-Collection`, `prometheus-eval/Preference-Collection`, `HuggingFaceH4/s1k_r1_math_verify`, `SejinKimm/ARCTraj`, and `codeparrot/apps` (APPS; verifier-backed coding dataset, currently environment-caveated in loader checks).
 
 Non-integrated candidates are tracked explicitly in the candidate audit output (currently: PairS dataset artifact unresolved; AgentPRM gated + no clear InversePRM dataset release).
