@@ -94,3 +94,15 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - Runnability artifact: `outputs/external_baseline_runnability/<run_id>/verification_summary.json`.
 
 - compute_optimal_tts: moved from vague link-only to explicit blocked/protocol status with machine-readable artifacts and provenance checks.
+
+## GBDT branch-allocator integration status (2026-04-16 bounded implementation pass)
+
+- LightGBM LambdaRank and CatBoost YetiRankPairwise were integrated into the brute-force branch-allocator learning pipeline as matched tabular ranking baselines alongside existing linear anchors.
+- Pairwise near-tie handling and uncertainty-aware weighting controls were added to training configuration/manifest paths for explicit reproducibility.
+- A bounded in-workspace evaluation pass was completed and documented in `docs/GBDT_BRANCH_ALLOCATOR_STATUS.md`; results were mixed and did not justify changing the core bottleneck interpretation.
+
+## Target-fidelity branch-comparison status (2026-04-16 bounded implementation pass)
+
+- A manifest-backed target-construction layer now exists for branch-comparison supervision (`all_pairs`, `top_vs_rest`, `adjacent_rank`, `high_margin_only`, `uncertainty_filtered`) with pair-quality metadata.
+- A targeted exact-vs-approx disagreement audit path now reports dataset/budget/margin/pair-type/branch-count slices.
+- A matched regime-comparison run indicates supervision-regime choice can move pairwise learner metrics more than model-class swap alone in this bounded setting; see `docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`.

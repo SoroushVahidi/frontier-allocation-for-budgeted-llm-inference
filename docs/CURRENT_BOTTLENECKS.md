@@ -59,3 +59,15 @@ The next efficient progress is expected to come from **better branch-allocation 
 - Learned allocator metrics improved to moderate levels and remain dataset-sensitive, with non-trivial but not robustly high cross-dataset transfer.
 - Exact-mode coverage is now present but still sparse, so exact-slice conclusions are still low-confidence.
 - Updated bottleneck interpretation: supervision-data quantity is less limiting than before, but supervision-target fidelity/calibration remains a central unresolved issue; bottleneck remains **partially resolved**.
+
+## Evidence update from GBDT branch-allocator integration pass (2026-04-16 bounded)
+
+- Stronger tabular ranking model families (LightGBM LambdaRank, CatBoost YetiRankPairwise) are now integrated as matched baselines in the branch-allocator learning stack.
+- Bounded matched runs (documented in `docs/GBDT_BRANCH_ALLOCATOR_STATUS.md`) showed mixed gains and no robust universal improvement over linear anchors.
+- This is consistent with the current interpretation that model class alone is not the dominant unresolved issue; supervision-target fidelity/noise remains central.
+
+## Evidence update from target-fidelity branch-comparison pass (2026-04-16 bounded)
+
+- A new pair-construction/target-fidelity layer plus exact-vs-approx disagreement audit is now integrated and auditable (`docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`).
+- Bounded matched regime runs show large performance shifts from pair-construction regime changes (especially margin/uncertainty filtering and pair-type choice), often larger than model-class-only differences in the same all-pairs setting.
+- Updated interpretation remains conservative: bottleneck is still partially resolved and is now more sharply localized to near-tie ambiguity and supervision-target fidelity rather than missing model complexity alone.
