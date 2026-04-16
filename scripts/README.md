@@ -82,6 +82,84 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `compare_oracle_distilled_stop_vs_act_runs.py` | Matched-control comparison scaffold with required roles (anchor, accepted-only, accepted+borderline, matched random), repeated-random variance summaries, and readiness gates |
 | `run_oracle_distilled_regime_bundle.py` | Regime-level orchestration runner that bundles repeated random draws, selective/anchor/random student runs, and one comparison-ready package |
 
+
+### Frontier target-construction command examples
+
+#### Tiny pilot (local exact-mode smoke)
+
+Use a tiny deterministic state-manifest build and a tiny generation pass for local validation.
+
+```bash
+RUN_ID="tiny_$(date -u +%Y%m%dT%H%M%SZ)"
+OUT_ROOT="outputs/frontier_target_construction/${RUN_ID}"
+
+python3 scripts/build_oracle_label_pilot_state_manifest.py \
+  --selection-config configs/stop_vs_act_oracle_pilot_state_selection_v1.json \
+  --output-dir "${OUT_ROOT}/state_manifest" \
+  --max-candidate-rows 64
+
+python3 scripts/run_oracle_label_generator_heavy.py \
+  --pilot-config configs/stop_vs_act_oracle_label_pilot_v1.json \
+  --selection-config configs/stop_vs_act_oracle_pilot_state_selection_v1.json \
+  --state-manifest "${OUT_ROOT}/state_manifest/pilot_state_manifest.jsonl" \
+  --output-dir "${OUT_ROOT}/labels" \
+  --max-states 32 \
+  --paired-rollouts 2
+```
+
+> Note: branch-value exactness is still row-level (`value_is_exact`) and only exact for trivial terminal/zero-budget cases.
+
+#### Heavy long-run (approximate mode, resume, shard-aware)
+
+For longer runs, use deterministic sharding and heavy generator resume support.
+
+```bash
+RUN_ID="heavy_$(date -u +%Y%m%dT%H%M%SZ)"
+OUT_ROOT="outputs/frontier_target_construction/${RUN_ID}"
+
+python3 scripts/oracle_label_pilot_sharding.py split \
+  --state-manifest outputs/stop_vs_act_oracle_pilot_state_manifest/pilot_state_manifest.jsonl \
+  --num-shards 16 \
+  --output-dir "${OUT_ROOT}/split"
+
+python3 scripts/run_oracle_label_generator_heavy.py \
+  --pilot-config configs/stop_vs_act_oracle_label_pilot_v1.json \
+  --selection-config configs/stop_vs_act_oracle_pilot_state_selection_v1.json \
+  --state-manifest "${OUT_ROOT}/split/shard_manifests/shard_000.jsonl" \
+  --output-dir "${OUT_ROOT}/shards/shard_000" \
+  --split-manifest "${OUT_ROOT}/split/shard_split_manifest.json" \
+  --shard-name shard_000 \
+  --shard-id 0 \
+  --expected-state-count 75 \
+  --paired-rollouts 8 \
+  --resume \
+  --continue-on-state-error \
+  --max-state-errors 10
+```
+
+#### Output tree + manifest quick reference
+
+```text
+outputs/frontier_target_construction/<run_id>/
+  state_manifest/
+    pilot_state_manifest.jsonl
+    pilot_state_manifest_meta.json
+    pilot_state_manifest_schema.json
+  split/                               # optional sharded runs
+    shard_split_manifest.json
+    shard_manifests/shard_XXX.jsonl
+  labels/ or shards/shard_XXX/
+    oracle_stop_vs_act_labels.jsonl
+    oracle_label_manifest.json
+    oracle_label_progress.json
+    oracle_label_state_errors.jsonl
+```
+
+Manifest notes:
+- `oracle_label_manifest.json`: run provenance, config pointers, output completeness, and error stats.
+- `oracle_label_progress.json`: rolling progress, including resume skips and last processed `state_id`.
+- `shard_split_manifest.json`: deterministic shard membership and source-manifest hash for merge-time verification.
+
 ## s1 baseline integration scripts (fair split)
 
 | Script | Role |
