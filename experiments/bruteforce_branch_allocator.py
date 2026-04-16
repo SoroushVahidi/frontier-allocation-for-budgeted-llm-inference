@@ -24,7 +24,7 @@ except Exception:  # pragma: no cover - optional dependency
     Pool = None
 
 
-ALLOC_FEATURE_NAMES = [
+ALLOC_FEATURE_NAMES_V1 = [
     "remaining_budget",
     "score",
     "depth",
@@ -39,6 +39,29 @@ ALLOC_FEATURE_NAMES = [
     "mode_approx",
     "mode_degenerate",
     "branch_hash",
+]
+
+ALLOC_FEATURE_NAMES_V2 = ALLOC_FEATURE_NAMES_V1 + [
+    # hard-case representation features (feature set v2)
+    "frontier_branch_count",
+    "frontier_score_mean",
+    "frontier_score_std",
+    "frontier_score_entropy",
+    "frontier_score_hhi",
+    "frontier_top2_gap",
+    "branch_rank",
+    "branch_rank_norm",
+    "score_gap_to_top",
+    "score_gap_to_prev",
+    "score_gap_to_next",
+    "score_z",
+    "verify_rate",
+    "verify_recent_delta_interaction",
+    "recent_delta_per_depth",
+    "stalled_ratio",
+    "budget_norm_in_state",
+    "score_budget_interaction",
+    "uncertainty_rel_to_score_std",
 ]
 
 
@@ -69,6 +92,7 @@ class LearningConfig:
     catboost_iterations: int = 250
     catboost_learning_rate: float = 0.05
     catboost_depth: int = 6
+    feature_set: str = "v1"  # one of: v1, v2
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -108,8 +132,17 @@ def load_label_artifacts(labels_dir: Path) -> dict[str, list[dict[str, Any]]]:
     return data
 
 
-def build_candidate_feature_vector(row: dict[str, Any]) -> list[float]:
+def _feature_names_for_set(feature_set: str) -> list[str]:
+    if feature_set == "v1":
+        return ALLOC_FEATURE_NAMES_V1
+    if feature_set == "v2":
+        return ALLOC_FEATURE_NAMES_V2
+    raise ValueError(f"Unknown feature_set: {feature_set}")
+
+
+def build_candidate_feature_vector(row: dict[str, Any], *, feature_set: str = "v1") -> list[float]:
     f = row.get("features_branch_v1", {}) if isinstance(row.get("features_branch_v1"), dict) else {}
+    f2 = row.get("features_branch_v2", {}) if isinstance(row.get("features_branch_v2"), dict) else {}
     mode = str(row.get("mode", "approx"))
     out = {
         "remaining_budget": float(row.get("remaining_budget", 0.0)),
@@ -126,8 +159,83 @@ def build_candidate_feature_vector(row: dict[str, Any]) -> list[float]:
         "mode_approx": 1.0 if mode == "approx" else 0.0,
         "mode_degenerate": 1.0 if mode == "degenerate" else 0.0,
         "branch_hash": _branch_hash(str(row.get("branch_id", ""))),
+        **{k: float(f2.get(k, 0.0)) for k in ALLOC_FEATURE_NAMES_V2 if k not in ALLOC_FEATURE_NAMES_V1},
     }
-    return [float(out[name]) for name in ALLOC_FEATURE_NAMES]
+    return [float(out[name]) for name in _feature_names_for_set(feature_set)]
+
+
+def _distribution_entropy(vals: list[float]) -> float:
+    if not vals:
+        return 0.0
+    total = sum(max(float(v), 0.0) for v in vals)
+    if total <= 1e-12:
+        return 0.0
+    probs = [max(float(v), 0.0) / total for v in vals if max(float(v), 0.0) > 0.0]
+    return -sum(p * math.log(max(p, 1e-12)) for p in probs)
+
+
+def _build_state_context_features(state_rows: list[dict[str, Any]]) -> None:
+    """Attach richer hard-case context features to candidate rows.
+
+    Feature-audit rationale:
+    v1 captures local branch state but misses hard-slice context (near-tie/adjacent):
+    rank structure, frontier competition concentration, relative top/neighbor gaps,
+    verification dynamics normalized by branch age, and budget-context interactions.
+    """
+    if not state_rows:
+        return
+    by_score = sorted(state_rows, key=lambda r: float(r.get("features_branch_v1", {}).get("score", 0.0)), reverse=True)
+    score_vals = [float(r.get("features_branch_v1", {}).get("score", 0.0)) for r in state_rows]
+    score_mean = float(np.mean(score_vals)) if score_vals else 0.0
+    score_std = float(np.std(score_vals)) if len(score_vals) > 1 else 0.0
+    score_top = float(by_score[0].get("features_branch_v1", {}).get("score", 0.0))
+    top2_gap = 0.0
+    if len(by_score) >= 2:
+        top2_gap = float(by_score[0].get("features_branch_v1", {}).get("score", 0.0)) - float(
+            by_score[1].get("features_branch_v1", {}).get("score", 0.0)
+        )
+    score_nonneg = [max(v, 0.0) for v in score_vals]
+    score_sum = sum(score_nonneg)
+    score_hhi = sum((v / max(score_sum, 1e-12)) ** 2 for v in score_nonneg) if score_nonneg else 0.0
+    budget_max = max(float(r.get("remaining_budget", 0.0)) for r in state_rows)
+    score_rank = {str(r.get("branch_id", "")): idx for idx, r in enumerate(by_score)}
+
+    for row in state_rows:
+        bid = str(row.get("branch_id", ""))
+        f = row.get("features_branch_v1", {}) if isinstance(row.get("features_branch_v1"), dict) else {}
+        score = float(f.get("score", 0.0))
+        rank = int(score_rank.get(bid, 0))
+        rank_norm = rank / max(1, len(state_rows) - 1)
+        prev_score = float(by_score[rank - 1].get("features_branch_v1", {}).get("score", score)) if rank > 0 else score
+        next_score = float(by_score[rank + 1].get("features_branch_v1", {}).get("score", score)) if (rank + 1) < len(by_score) else score
+        verify_count = float(f.get("verify_count", 0.0))
+        branch_age = float(f.get("branch_age", 0.0))
+        recent_delta = float(f.get("recent_delta", 0.0))
+        depth = float(f.get("depth", 0.0))
+        stalled = float(f.get("stalled_steps", 0.0))
+        budget = float(row.get("remaining_budget", 0.0))
+
+        row["features_branch_v2"] = {
+            "frontier_branch_count": float(len(state_rows)),
+            "frontier_score_mean": score_mean,
+            "frontier_score_std": score_std,
+            "frontier_score_entropy": _distribution_entropy(score_nonneg),
+            "frontier_score_hhi": score_hhi,
+            "frontier_top2_gap": top2_gap,
+            "branch_rank": float(rank),
+            "branch_rank_norm": float(rank_norm),
+            "score_gap_to_top": score_top - score,
+            "score_gap_to_prev": prev_score - score,
+            "score_gap_to_next": score - next_score,
+            "score_z": (score - score_mean) / max(score_std, 1e-6),
+            "verify_rate": verify_count / max(1.0, branch_age + 1.0),
+            "verify_recent_delta_interaction": verify_count * recent_delta,
+            "recent_delta_per_depth": recent_delta / max(1.0, depth + 1.0),
+            "stalled_ratio": stalled / max(1.0, depth + 1.0),
+            "budget_norm_in_state": budget / max(1.0, budget_max),
+            "score_budget_interaction": score * (budget / max(1.0, budget_max)),
+            "uncertainty_rel_to_score_std": float(row.get("allocation_value_std", 0.0)) / max(score_std, 1e-6),
+        }
 
 
 def assign_split(state_id: str, cfg: LearningConfig) -> str:
@@ -167,12 +275,18 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
     pairwise = [dict(row) for row in data["pairwise_labels"]]
     states = [dict(row) for row in data["state_summaries"]]
 
+    by_state_rows: dict[str, list[dict[str, Any]]] = {}
+    for row in candidates:
+        by_state_rows.setdefault(str(row["state_id"]), []).append(row)
+    for rows in by_state_rows.values():
+        _build_state_context_features(rows)
+
     cand_by_key: dict[tuple[str, str], dict[str, Any]] = {}
     for row in candidates:
         state_id = str(row["state_id"])
         branch_id = str(row["branch_id"])
         row["split"] = assign_split(state_id, cfg)
-        row["x"] = build_candidate_feature_vector(row)
+        row["x"] = build_candidate_feature_vector(row, feature_set=str(cfg.feature_set))
         cand_by_key[(state_id, branch_id)] = row
 
     for row in pairwise:
@@ -189,6 +303,17 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         row["x_i"] = xi
         row["x_j"] = xj
         row["x_diff"] = [float(a - b) for a, b in zip(xi, xj)]
+        fi = ci.get("features_branch_v2", {}) if isinstance(ci.get("features_branch_v2"), dict) else {}
+        fj = cj.get("features_branch_v2", {}) if isinstance(cj.get("features_branch_v2"), dict) else {}
+        row["pair_relational_v2"] = {
+            "rank_gap_abs": abs(float(fi.get("branch_rank", 0.0)) - float(fj.get("branch_rank", 0.0))),
+            "score_gap_abs": abs(float(ci.get("features_branch_v1", {}).get("score", 0.0)) - float(cj.get("features_branch_v1", {}).get("score", 0.0))),
+            "score_z_gap_abs": abs(float(fi.get("score_z", 0.0)) - float(fj.get("score_z", 0.0))),
+            "verify_rate_gap_abs": abs(float(fi.get("verify_rate", 0.0)) - float(fj.get("verify_rate", 0.0))),
+            "uncertainty_gap_abs": abs(float(ci.get("allocation_value_std", 0.0)) - float(cj.get("allocation_value_std", 0.0))),
+            "score_to_top_gap_abs_diff": abs(float(fi.get("score_gap_to_top", 0.0)) - float(fj.get("score_gap_to_top", 0.0))),
+            "adjacent_rank_flag": 1.0 if abs(float(fi.get("branch_rank", 0.0)) - float(fj.get("branch_rank", 0.0))) <= 1.0 else 0.0,
+        }
         if "label" not in row:
             row["label"] = int(row.get("preference", 0))
         row["pair_allocation_value_std"] = 0.5 * (
@@ -217,6 +342,8 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         "state_to_candidates": state_to_candidates,
         "state_to_mode": state_to_mode,
         "state_to_dataset": state_to_dataset,
+        "feature_set": str(cfg.feature_set),
+        "feature_names": _feature_names_for_set(str(cfg.feature_set)),
     }
 
 
@@ -239,7 +366,8 @@ def _fit_pairwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dict
     return {
         "model_type": "pairwise_logreg",
         "status": "ok",
-        "feature_names": ALLOC_FEATURE_NAMES,
+        "feature_names": _feature_names_for_set(str(cfg.feature_set)),
+        "feature_set": str(cfg.feature_set),
         "weights": coef,
         "intercept": float(model.intercept_[0]),
         "training_rows": len(train),
@@ -262,7 +390,8 @@ def _fit_pointwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dic
     return {
         "model_type": "pointwise_ridge",
         "status": "ok",
-        "feature_names": ALLOC_FEATURE_NAMES,
+        "feature_names": _feature_names_for_set(str(cfg.feature_set)),
+        "feature_set": str(cfg.feature_set),
         "weights": [float(v) for v in model.coef_],
         "intercept": float(model.intercept_),
     }
@@ -285,7 +414,8 @@ def _fit_outside_option_model(rows: list[dict[str, Any]], cfg: LearningConfig) -
     return {
         "model_type": "outside_option_logreg",
         "status": "ok",
-        "feature_names": ALLOC_FEATURE_NAMES,
+        "feature_names": _feature_names_for_set(str(cfg.feature_set)),
+        "feature_set": str(cfg.feature_set),
         "weights": [float(v) for v in model.coef_[0]],
         "intercept": float(model.intercept_[0]),
     }
@@ -298,7 +428,8 @@ def _grouped_candidate_arrays(candidates: list[dict[str, Any]]) -> tuple[np.ndar
         by_state.setdefault(str(row["state_id"]), []).append(row)
     ordered_groups = [rows for _sid, rows in sorted(by_state.items()) if len(rows) >= 2]
     if not ordered_groups:
-        return np.zeros((0, len(ALLOC_FEATURE_NAMES))), np.zeros((0,)), [], np.zeros((0,))
+        n_feats = len(candidates[0].get("x", [])) if candidates else 0
+        return np.zeros((0, n_feats)), np.zeros((0,)), [], np.zeros((0,))
     x = np.array([r["x"] for grp in ordered_groups for r in grp], dtype=float)
     y = np.array([float(r["estimated_value_if_allocate_next"]) for grp in ordered_groups for r in grp], dtype=float)
     group = [len(grp) for grp in ordered_groups]
@@ -345,7 +476,8 @@ def _fit_lightgbm_ranker(candidates: list[dict[str, Any]], cfg: LearningConfig, 
     return {
         "model_type": "lightgbm_lambdarank",
         "status": "ok",
-        "feature_names": ALLOC_FEATURE_NAMES,
+        "feature_names": _feature_names_for_set(str(cfg.feature_set)),
+        "feature_set": str(cfg.feature_set),
         "model_path": str(model_path),
         "training_rows": int(x.shape[0]),
         "training_groups": int(len(group)),
@@ -392,7 +524,8 @@ def _fit_catboost_ranker(candidates: list[dict[str, Any]], cfg: LearningConfig, 
     return {
         "model_type": "catboost_yetirankpairwise",
         "status": "ok",
-        "feature_names": ALLOC_FEATURE_NAMES,
+        "feature_names": _feature_names_for_set(str(cfg.feature_set)),
+        "feature_set": str(cfg.feature_set),
         "model_path": str(model_path),
         "training_rows": int(x.shape[0]),
         "training_groups": int(len(groups)),
@@ -599,6 +732,7 @@ def write_markdown_report(path: Path, *, run_id: str, config: LearningConfig, ev
         f"- Run ID: `{run_id}`",
         f"- Seed: `{config.seed}`",
         f"- Near-tie threshold: `{config.near_tie_margin}`",
+        f"- Feature set: `{config.feature_set}`",
         f"- Pairwise near-tie handling: `{config.pairwise_near_tie_action}`",
         f"- Uncertainty weighting enabled: `{config.uncertainty_weighting}`",
         "",

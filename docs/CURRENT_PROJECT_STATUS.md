@@ -106,3 +106,17 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - A manifest-backed target-construction layer now exists for branch-comparison supervision (`all_pairs`, `top_vs_rest`, `adjacent_rank`, `high_margin_only`, `uncertainty_filtered`) with pair-quality metadata.
 - A targeted exact-vs-approx disagreement audit path now reports dataset/budget/margin/pair-type/branch-count slices.
 - A matched regime-comparison run indicates supervision-regime choice can move pairwise learner metrics more than model-class swap alone in this bounded setting; see `docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`.
+
+## Hard-region exact-supervision expansion status (2026-04-16 bounded implementation pass)
+
+- A hard-region pipeline is now integrated end-to-end: hard-pair mining, bounded targeted exact relabeling, exact-augmented regime materialization, and matched multi-seed evaluation (`docs/HARD_REGION_EXACT_SUPERVISION_STATUS.md`).
+- The implementation is provenance-preserving and resumable (priority-scored mined candidates; exact relabel manifests/checksums; explicit `replaced_approx_label` tracking in promoted regimes).
+- In this bounded run, targeted exact promotion on mined hard regions did not produce clear improvements over all-pairs approximate baseline on the hardest reported slices (near-tie and adjacent-rank remained difficult).
+- Canonical interpretation remains conservative: bottleneck is better localized and better instrumented, but not solved.
+
+## Hard-case feature-representation status (2026-04-16 bounded implementation pass)
+
+- Feature-set versioning (`v1` vs `v2`) is now integrated in the brute-force branch-allocation learning pipeline with a hard-case-focused feature audit path (`docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md`).
+- New engineered representation adds frontier competition context, branch rank/gap structure, verification dynamics normalization, trend/stagnation interactions, and budget-context interactions while preserving backward compatibility.
+- In this bounded run, richer features materially improved the pairwise logistic baseline on near-tie and adjacent-rank slices under fixed supervision; CatBoost did not show the same lift signal.
+- Conservative interpretation: representation quality is a meaningful part of the remaining bottleneck, but hard-case ambiguity is not fully resolved.

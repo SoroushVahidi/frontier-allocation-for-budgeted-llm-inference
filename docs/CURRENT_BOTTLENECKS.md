@@ -71,3 +71,17 @@ The next efficient progress is expected to come from **better branch-allocation 
 - A new pair-construction/target-fidelity layer plus exact-vs-approx disagreement audit is now integrated and auditable (`docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`).
 - Bounded matched regime runs show large performance shifts from pair-construction regime changes (especially margin/uncertainty filtering and pair-type choice), often larger than model-class-only differences in the same all-pairs setting.
 - Updated interpretation remains conservative: bottleneck is still partially resolved and is now more sharply localized to near-tie ambiguity and supervision-target fidelity rather than missing model complexity alone.
+
+## Evidence update from hard-region exact-supervision expansion pass (2026-04-16 bounded)
+
+- A new auditable pipeline now mines difficult pair regions and selectively promotes exact labels only for mined hard comparisons (`docs/HARD_REGION_EXACT_SUPERVISION_STATUS.md`).
+- This reduces process ambiguity around where exact supervision is spent and provides explicit per-row replacement provenance.
+- In the bounded matched run, direct hard-region exact promotion did not clearly improve near-tie or adjacent-rank slices versus the all-pairs approximate baseline.
+- Updated bottleneck interpretation: supervision-fidelity weakness in hard ambiguous regions remains central; the pass improved localization/instrumentation more than end-metric closure.
+
+## Evidence update from hard-case feature-representation pass (2026-04-16 bounded)
+
+- A richer hard-case feature set is now integrated and auditable, including frontier context, rank/gap structure, verification dynamics normalization, and trend/stagnation/budget interactions (`docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md`).
+- Under fixed supervision regimes, the pairwise logistic baseline improved strongly on near-tie and adjacent-rank slices when using richer features versus the prior v1 representation.
+- In the same bounded pass, CatBoost did not show a clear corresponding lift, so gains are model-path dependent.
+- Updated bottleneck interpretation: remaining weakness now looks more like a mix of representation quality and irreducible hard-case ambiguity/modeling limits, rather than label provenance alone.

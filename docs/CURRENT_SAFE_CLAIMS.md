@@ -121,3 +121,27 @@ Not safe to claim yet:
 - that supervision-target bottleneck is fully solved,
 - that one pair-construction regime is a robust universal winner across all datasets/budgets/seeds,
 - that approximate labels are broadly interchangeable with exact labels outside bounded, audited slices.
+
+## Hard-region exact-supervision claims (2026-04-16 bounded update)
+
+Safe to claim now:
+- hard-region mining and bounded targeted exact relabeling are integrated with resumable, manifest-backed artifacts and per-row replacement provenance,
+- exact-augmented supervision regimes are reproducibly materialized and can be compared in matched multi-seed runs,
+- in the bounded run, hard-region exact promotion did not clearly improve the hardest slices (near-tie/adjacent-rank) versus all-pairs approximate baseline.
+
+Not safe to claim yet:
+- that targeted exact relabeling has already reduced the core bottleneck broadly,
+- that hard-region exact promotion is a robust universal improvement across datasets/budgets/seeds,
+- that difficult-slice supervision noise is solved.
+
+## Hard-case feature-representation claims (2026-04-16 bounded update)
+
+Safe to claim now:
+- hard-case-focused feature-set versioning (`v1` vs `v2`) is integrated with auditable feature-coverage artifacts and matched evaluation outputs,
+- richer engineered features improved pairwise logistic near-tie/adjacent slices in a bounded fixed-supervision run,
+- evidence is consistent with representation quality being a meaningful part of the remaining bottleneck.
+
+Not safe to claim yet:
+- that richer features universally improve all integrated model families,
+- that hard-case ambiguity is solved,
+- that current bounded run results establish robust cross-dataset universal closure.
