@@ -169,3 +169,27 @@ Not safe to claim yet:
 - that probability calibration is universally improved by current simple calibrators in this setup,
 - that calibrated abstention reliably improves hardest near-tie slices across settings,
 - that ambiguity-handling bottleneck is solved.
+
+## Dedicated near-tie policy claims (2026-04-16 bounded update)
+
+Safe to claim now:
+- a dedicated near-tie detection + routing path is integrated with configurable trigger signals (margin/relative-margin/std/calibrated-confidence/supervised near-tie flag) and manifest-backed provenance,
+- multiple explicit near-tie routing policies are runnable in matched comparisons, including pairwise backup, pointwise fallback, heuristic/score-gap fallback, and a deterministic balanced/shared proxy policy,
+- bounded evidence shows routing policy choice can materially change near-tie forced behavior; pointwise fallback improved near-tie slice in this run.
+
+Not safe to claim yet:
+- that dedicated near-tie routing is already a robust universal winner across datasets/budgets/seeds,
+- that balanced/shared non-forced tie handling is universally better than sharp winner selection,
+- that the near-tie bottleneck is solved.
+
+## Near-tie pointwise-expert claims (2026-04-16 bounded update)
+
+Safe to claim now:
+- dedicated near-tie pointwise-expert experiments are integrated with explicit model-provenance variants (generic/specialized/reweighted) and routing-gate controls,
+- a near-tie diagnostic audit now compares pairwise-vs-pointwise success/failure buckets with feature summaries (margin/relative-margin/std/rank-gap/pointwise-gap/frontier-context),
+- bounded evidence indicates specialized pointwise fallback can retain the strongest near-tie forced signal while generic/reweighted variants can underperform under the same routing setup.
+
+Not safe to claim yet:
+- that near-tie-specialized pointwise is already a robust universal winner across datasets/budgets/seeds,
+- that current near-tie pointwise expert quality/routing is fully calibrated and solved,
+- that residual hard-case ambiguity is no longer a central bottleneck.

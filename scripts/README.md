@@ -88,6 +88,8 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `run_hard_case_feature_representation_experiment.py` | Runs matched old-vs-richer feature-set experiments on fixed supervision regimes and reports hard-slice metrics. |
 | `run_ternary_or_abstain_branch_comparison_experiment.py` | Runs matched binary-forced vs ternary tie-aware vs selective-abstention branch-comparison experiments with configurable tie-band rules and explicit fallback semantics. |
 | `run_ambiguity_calibration_and_fallback_experiment.py` | Runs matched ambiguity-handling experiments for abstention/tie decisions with confidence calibration (none/temperature/Platt/isotonic) and configurable fallback policies. |
+| `run_near_tie_policy_experiment.py` | Runs matched dedicated near-tie detection/routing experiments, including non-forced balanced/shared fallback policy comparisons against binary and calibrated-abstention baselines. |
+| `run_near_tie_pointwise_expert_experiment.py` | Runs matched dedicated near-tie pointwise-expert experiments with specialized/reweighted pointwise fallbacks, routing gates, and near-tie pairwise-vs-pointwise diagnostic artifacts. |
 
 ### Brute-force allocator learning: GBDT ranking + uncertainty-aware options
 
@@ -290,6 +292,48 @@ python scripts/run_ambiguity_calibration_and_fallback_experiment.py \
   --primary-calibration temperature \
   --abstain-confidence-threshold 0.20 \
   --ternary-fallback-policy outside_option_aware
+```
+
+### Dedicated near-tie policy workflow
+
+Run matched dedicated near-tie routing comparisons under fixed representation (`v2`):
+
+```bash
+python scripts/run_near_tie_policy_experiment.py \
+  --targets-root outputs/branch_label_bruteforce_targets/<regime_root> \
+  --run-id near_tie_policy_v1 \
+  --seeds 11,29,47 \
+  --feature-set v2 \
+  --regimes all_pairs_approx,promoted_exact_hard_region \
+  --primary-calibration temperature \
+  --abstain-confidence-threshold 0.20 \
+  --near-tie-detector-abs-margin 0.03 \
+  --near-tie-detector-relative-margin 0.15 \
+  --near-tie-detector-std 0.08 \
+  --near-tie-detector-confidence-max 0.30 \
+  --near-tie-detector-use-near-tie-flag \
+  --near-tie-detector-min-signals 2
+```
+
+### Dedicated near-tie pointwise expert workflow
+
+Run matched near-tie pointwise-expert comparisons (generic vs specialized vs reweighted pointwise fallback):
+
+```bash
+python scripts/run_near_tie_pointwise_expert_experiment.py \
+  --targets-root outputs/branch_label_bruteforce_targets/<regime_root> \
+  --run-id near_tie_pointwise_expert_v1 \
+  --seeds 11,29,47 \
+  --feature-set v2 \
+  --regimes all_pairs_approx,promoted_exact_hard_region \
+  --primary-calibration temperature \
+  --detector-threshold-mode base \
+  --pointwise-margin-min 0.03 \
+  --pointwise-fallback-if-uncertain pairwise_binary \
+  --near-tie-specialized-margin-max 0.08 \
+  --near-tie-specialized-min-states 6 \
+  --near-tie-reweight-factor 2.5 \
+  --adjacent-reweight-factor 1.5
 ```
 | `run_oracle_label_pilot_hpc.sh` | HPC-oriented wrapper: preflight, optional manifest build, generator hook, validator gate, run summary |
 | `run_oracle_label_generator_interface_stub.py` | Interface-stabilization stub CLI for heavy generator contract; supports testing-only `--mock-mode` outputs |

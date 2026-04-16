@@ -134,3 +134,16 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - Calibration provenance is explicit (fit on `val`, evaluated on `test`) with stored calibration-quality summaries (Brier/ECE/NLL) and accepted-accuracy-vs-threshold traces.
 - In this bounded run (`docs/AMBIGUITY_CALIBRATION_AND_FALLBACK_STATUS.md`), calibration quality metrics did not uniformly improve, but calibrated abstention operating behavior improved accepted-accuracy/coverage tradeoff versus prior uncalibrated abstention baseline.
 - Conservative interpretation: ambiguity handling became more controllable and auditable, but hard near-tie behavior remains weak and the bottleneck is still not closed.
+
+## Dedicated near-tie policy status (2026-04-16 bounded implementation pass)
+
+- A dedicated near-tie routing runner is now integrated (`scripts/run_near_tie_policy_experiment.py`) with configurable detector logic over margin/relative-margin/std/calibrated-confidence/supervised near-tie flag and manifest-backed detector provenance.
+- Multiple explicit near-tie routing policies are now runnable and auditable in matched comparisons: pairwise-binary backup, pointwise-value fallback, score-gap heuristic fallback, and a deterministic balanced/shared proxy fallback.
+- In this bounded run (`docs/NEAR_TIE_POLICY_STATUS.md`), dedicated routing with pointwise fallback improved near-tie forced accuracy and top-1 over binary-forced and calibrated-abstention+binary-backup anchors, while balanced/shared routing improved near-tie slice but reduced overall forced/top-1 metrics.
+- Conservative interpretation: dedicated near-tie policy is a meaningful new lever, but gains are policy-dependent and do not justify a solved claim.
+
+## Near-tie pointwise-expert status (2026-04-16 bounded implementation pass)
+
+- A dedicated near-tie pointwise-expert runner is now integrated (`scripts/run_near_tie_pointwise_expert_experiment.py`) with explicit pointwise-model provenance (generic vs near-tie-specialized vs reweighted), routing gates, and near-tie pairwise-vs-pointwise diagnostic buckets.
+- In this bounded run (`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`), near-tie-specialized pointwise routing matched the strongest prior near-tie slice signal and improved top-1/overall forced over binary anchors, while generic and reweighted pointwise variants were weaker under the tested routing gate.
+- Conservative interpretation: pointwise fallback remains promising but brittle; evidence indicates near-tie expert quality and routing quality are now first-order unresolved levers.
