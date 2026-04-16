@@ -70,6 +70,11 @@ def _external_prm_candidate_to_x(row: dict[str, Any], *, feature_names: list[str
     feat["parent_relative_score"] = -float(comp_idx)
     feat["allocation_candidates_evaluated"] = float(comp_idx + 1)
     feat["allocation_value_std"] = quality * (1.0 - quality)
+    budget = float(row.get("remaining_budget", 1.0))
+    feat["score_per_budget"] = quality / max(1.0, budget)
+    feat["score_x_budget_low"] = quality if budget <= 2.0 else 0.0
+    feat["score_x_budget_mid"] = quality if 2.0 < budget <= 3.0 else 0.0
+    feat["score_x_budget_high"] = quality if budget > 3.0 else 0.0
     feat["mode_exact"] = 1.0 if supervision_origin.startswith("native") else 0.0
     feat["mode_approx"] = 0.0 if feat["mode_exact"] > 0 else 1.0
     feat["mode_degenerate"] = 0.0
@@ -82,6 +87,7 @@ def _fit_external_prm_pointwise_prior(
     feature_names: list[str],
     source_dataset_key: str,
     source_split: str,
+    max_uncertainty_std: float,
 ) -> dict[str, Any]:
     path = external_corpus_dir / "rows" / "candidate_rows.jsonl"
     if not path.exists():
@@ -92,8 +98,21 @@ def _fit_external_prm_pointwise_prior(
         for r in rows
         if str(r.get("source_dataset_key", "")) == source_dataset_key and str(r.get("source_split", "")) == source_split
     ]
+    n_prefilter = len(rows)
+    if float(max_uncertainty_std) < 1.0:
+        rows = [
+            r
+            for r in rows
+            if float(float(r.get("quality_score", 0.0)) * (1.0 - float(r.get("quality_score", 0.0))))
+            <= float(max_uncertainty_std)
+        ]
     if len(rows) < 8:
-        return {"status": "insufficient_external_rows", "n": len(rows)}
+        return {
+            "status": "insufficient_external_rows",
+            "n": len(rows),
+            "n_prefilter": n_prefilter,
+            "max_uncertainty_std": float(max_uncertainty_std),
+        }
     x = [_external_prm_candidate_to_x(r, feature_names=feature_names) for r in rows]
     y = [float(r.get("quality_score", 0.0)) for r in rows]
     y_mean = float(np.mean(y))
@@ -114,6 +133,7 @@ def _fit_external_prm_pointwise_prior(
     return {
         "status": "ok",
         "n": len(rows),
+        "n_prefilter": n_prefilter,
         "target_mean": y_mean,
         "target_std": y_std,
         "nonconstant_feature_count": nonconstant_features,
@@ -122,6 +142,7 @@ def _fit_external_prm_pointwise_prior(
         "intercept": float(model.intercept_),
         "source_dataset_key": source_dataset_key,
         "source_split": source_split,
+        "max_uncertainty_std": float(max_uncertainty_std),
     }
 
 
@@ -634,6 +655,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--external-gate-top-gap-threshold", type=float, default=0.04)
     p.add_argument("--external-boundary-pair-margin-threshold", type=float, default=0.02)
     p.add_argument("--external-boundary-pair-uncertainty-std-threshold", type=float, default=0.02)
+    p.add_argument(
+        "--external-prm-max-uncertainty-std",
+        type=float,
+        default=1.0,
+        help="If <1, keep only external PRM rows with derived uncertainty std<=threshold before prior fit.",
+    )
     return p.parse_args()
 
 
@@ -735,6 +762,7 @@ def main() -> None:
                 feature_names=list(tables.get("feature_names", [])),
                 source_dataset_key=str(args.external_source_key),
                 source_split=str(args.external_source_split),
+                max_uncertainty_std=float(args.external_prm_max_uncertainty_std),
             )
             external_meta = {
                 "external_supervision": str(args.external_supervision),
@@ -746,6 +774,7 @@ def main() -> None:
                 "external_gate_top_gap_threshold": float(args.external_gate_top_gap_threshold),
                 "external_boundary_pair_margin_threshold": float(args.external_boundary_pair_margin_threshold),
                 "external_boundary_pair_uncertainty_std_threshold": float(args.external_boundary_pair_uncertainty_std_threshold),
+                "external_prm_max_uncertainty_std": float(args.external_prm_max_uncertainty_std),
                 "prior_fit": ext_prior,
                 "status": "base_or_prior_unavailable",
             }
@@ -856,6 +885,7 @@ def main() -> None:
             "external_gate_top_gap_threshold": float(args.external_gate_top_gap_threshold),
             "external_boundary_pair_margin_threshold": float(args.external_boundary_pair_margin_threshold),
             "external_boundary_pair_uncertainty_std_threshold": float(args.external_boundary_pair_uncertainty_std_threshold),
+            "external_prm_max_uncertainty_std": float(args.external_prm_max_uncertainty_std),
         },
         "intervention_meta": intervention_meta,
         "external_meta": external_meta,

@@ -221,9 +221,12 @@ def main() -> None:
                         base["label"] = int(base["preference"])
                         base["margin"] = float(ex.get("margin", base["margin"]))
                         base["label_source"] = "exact_promoted"
+                        base["replaced_approx_label"] = True
+                        base["pair_mode_provenance"] = "exact"
                     else:
                         src_mode = str(cand_map[(sid, bi)].get("mode", "unknown"))
                         base["label_source"] = "exact_original" if src_mode == "exact" else "approx_original"
+                        base["replaced_approx_label"] = False
 
                     pair_type = "generic"
                     if bi == top_branch or bj == top_branch:

@@ -61,6 +61,10 @@ ALLOC_FEATURE_NAMES_V2 = ALLOC_FEATURE_NAMES_V1 + [
     "stalled_ratio",
     "budget_norm_in_state",
     "score_budget_interaction",
+    "score_per_budget",
+    "score_x_budget_low",
+    "score_x_budget_mid",
+    "score_x_budget_high",
     "uncertainty_rel_to_score_std",
 ]
 
@@ -241,6 +245,10 @@ def _build_state_context_features(state_rows: list[dict[str, Any]]) -> None:
             "stalled_ratio": stalled / max(1.0, depth + 1.0),
             "budget_norm_in_state": budget / max(1.0, budget_max),
             "score_budget_interaction": score * (budget / max(1.0, budget_max)),
+            "score_per_budget": score / max(1.0, budget),
+            "score_x_budget_low": score if budget <= 2.0 else 0.0,
+            "score_x_budget_mid": score if 2.0 < budget <= 3.0 else 0.0,
+            "score_x_budget_high": score if budget > 3.0 else 0.0,
             "uncertainty_rel_to_score_std": float(row.get("allocation_value_std", 0.0)) / max(score_std, 1e-6),
         }
 
