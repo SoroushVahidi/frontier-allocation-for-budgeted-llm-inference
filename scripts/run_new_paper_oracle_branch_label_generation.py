@@ -31,6 +31,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--high-budget-multiplier", type=float, default=1.5)
     p.add_argument("--exhaustive-action-budget-cap", type=int, default=2)
     p.add_argument("--tie-margin", type=float, default=0.02)
+    p.add_argument("--uncertainty-margin-band", type=float, default=None)
+    p.add_argument("--disable-margin-uncertainty-rule", action="store_true")
+    p.add_argument("--disable-ci-uncertainty-rule", action="store_true")
+    p.add_argument("--disable-disagreement-uncertainty-rule", action="store_true")
     p.add_argument("--value-aggregation", choices=["max", "robust_blend"], default="max")
     p.add_argument("--value-std-penalty", type=float, default=0.0)
     return p.parse_args()
@@ -59,6 +63,10 @@ def main() -> None:
         high_budget_multiplier=args.high_budget_multiplier,
         exhaustive_action_budget_cap=args.exhaustive_action_budget_cap,
         tie_margin=args.tie_margin,
+        uncertainty_margin_band=args.uncertainty_margin_band,
+        enable_margin_uncertainty_rule=not bool(args.disable_margin_uncertainty_rule),
+        enable_ci_uncertainty_rule=not bool(args.disable_ci_uncertainty_rule),
+        enable_disagreement_uncertainty_rule=not bool(args.disable_disagreement_uncertainty_rule),
         value_aggregation=args.value_aggregation,
         value_std_penalty=args.value_std_penalty,
     )

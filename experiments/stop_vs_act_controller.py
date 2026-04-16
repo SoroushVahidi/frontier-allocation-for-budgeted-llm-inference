@@ -62,12 +62,34 @@ class StopVsActLabelConfig:
     small_horizon_steps: int = 2
     target_stabilization_mode: Literal["none", "repeated_local_averaging"] = "none"
     stabilization_repeats: int = 3
+    near_tie_margin: float | None = None
+    uncertainty_margin_band: float | None = None
+    enable_margin_uncertainty_rule: bool = True
+    enable_ci_uncertainty_rule: bool = True
+    enable_disagreement_uncertainty_rule: bool = True
+    disagreement_rate_threshold: float = 0.34
 
 
 @dataclass
 class StopVsActEvalArtifacts:
     metrics: dict[str, float]
     comparison_rows: list[dict[str, Any]]
+
+
+def _ci95(mean: float, std: float, n: int) -> tuple[float, float]:
+    if n <= 0:
+        return float(mean), float(mean)
+    se = float(std) / math.sqrt(float(max(1, n)))
+    z = 1.96
+    return float(mean - z * se), float(mean + z * se)
+
+
+def _budget_bucket(remaining_budget: int) -> str:
+    if remaining_budget <= 2:
+        return "0-2"
+    if remaining_budget <= 5:
+        return "3-5"
+    return "6+"
 
 
 def _safe_entropy(prob: float) -> float:
@@ -510,13 +532,32 @@ def build_stop_vs_act_dataset(
                 else:
                     raise ValueError(f"Unsupported target_stabilization_mode: {label_cfg.target_stabilization_mode}")
 
+                n_rollouts = int(label_cfg.rollout_samples)
+                if label_cfg.target_stabilization_mode == "repeated_local_averaging":
+                    n_rollouts *= max(2, int(label_cfg.stabilization_repeats))
+                tie_margin = float(label_cfg.near_tie_margin if label_cfg.near_tie_margin is not None else label_cfg.gain_margin)
+                margin_band = float(
+                    label_cfg.uncertainty_margin_band
+                    if label_cfg.uncertainty_margin_band is not None
+                    else label_cfg.uncertainty_band
+                )
+                abs_margin = abs(float(delta_mean))
+                ci_low, ci_high = _ci95(float(delta_mean), float(delta_estimator_std), int(n_rollouts))
+                ci_overlaps_zero = (ci_low <= 0.0 <= ci_high)
+                high_disagreement = float(delta_sign_flip_rate) >= float(label_cfg.disagreement_rate_threshold)
+
                 label_act = int(delta_mean > label_cfg.gain_margin)
-                near_zero = abs(delta_mean) <= label_cfg.uncertainty_band
+                near_zero = abs_margin <= label_cfg.uncertainty_band
                 unstable = delta_std >= label_cfg.instability_std_threshold
                 instability_relevant = True
                 if label_cfg.instability_guard_band is not None:
                     instability_relevant = abs(delta_mean) <= float(label_cfg.instability_guard_band)
-                uncertain = bool(near_zero or (unstable and instability_relevant))
+                uncertain = bool(
+                    (label_cfg.enable_margin_uncertainty_rule and (abs_margin <= margin_band))
+                    or (label_cfg.enable_ci_uncertainty_rule and ci_overlaps_zero)
+                    or (label_cfg.enable_disagreement_uncertainty_rule and high_disagreement)
+                    or (unstable and instability_relevant)
+                )
 
                 weight = 1.0
                 if uncertain:
@@ -542,6 +583,14 @@ def build_stop_vs_act_dataset(
                     "target_reliability_weight": 1.0 / (1.0 + max(0.0, delta_estimator_std)),
                     "delta_sign_flip_rate": delta_sign_flip_rate,
                     "stop_reference_gain": stop_ref,
+                    "outside_option_type": label_cfg.target_mode,
+                    "is_near_tie": int(abs_margin <= tie_margin),
+                    "tie_margin": tie_margin,
+                    "abs_margin": abs_margin,
+                    "utility_std": delta_estimator_std,
+                    "ci_low": ci_low,
+                    "ci_high": ci_high,
+                    "n_rollouts": int(n_rollouts),
                     "is_uncertain": int(uncertain),
                     "sample_weight": weight,
                     "uncertain_near_zero": int(near_zero),
@@ -556,6 +605,54 @@ def build_stop_vs_act_dataset(
                 maybe_verify(chosen, rng)
 
     return rows
+
+
+def summarize_stop_vs_act_slices(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    total = max(1, len(rows))
+    near_tie_cov = sum(int(r.get("is_near_tie", 0)) for r in rows) / total
+    uncertainty_cov = sum(int(r.get("is_uncertain", 0)) for r in rows) / total
+
+    by_budget: dict[str, list[dict[str, Any]]] = {}
+    for r in rows:
+        key = _budget_bucket(int(r.get("remaining_budget", 0)))
+        by_budget.setdefault(key, []).append(r)
+
+    label_polarity_by_budget = {
+        key: {
+            "count": len(sub),
+            "act_rate": sum(int(x.get("label_act", 0)) for x in sub) / max(1, len(sub)),
+            "stop_rate": 1.0 - (sum(int(x.get("label_act", 0)) for x in sub) / max(1, len(sub))),
+        }
+        for key, sub in by_budget.items()
+    }
+
+    near_tie_by_budget = {
+        key: sum(int(x.get("is_near_tie", 0)) for x in sub) / max(1, len(sub)) for key, sub in by_budget.items()
+    }
+    uncertainty_by_budget = {
+        key: sum(int(x.get("is_uncertain", 0)) for x in sub) / max(1, len(sub)) for key, sub in by_budget.items()
+    }
+
+    by_outside_option: dict[str, list[dict[str, Any]]] = {}
+    for r in rows:
+        key = str(r.get("outside_option_type", "unknown"))
+        by_outside_option.setdefault(key, []).append(r)
+    uncertainty_by_outside_option_type = {
+        key: {
+            "count": len(sub),
+            "uncertainty_rate": sum(int(x.get("is_uncertain", 0)) for x in sub) / max(1, len(sub)),
+        }
+        for key, sub in by_outside_option.items()
+    }
+
+    return {
+        "near_tie_coverage": near_tie_cov,
+        "uncertainty_coverage": uncertainty_cov,
+        "near_tie_coverage_by_budget_bucket": near_tie_by_budget,
+        "uncertainty_coverage_by_budget_bucket": uncertainty_by_budget,
+        "label_polarity_by_budget_bucket": label_polarity_by_budget,
+        "uncertainty_by_outside_option_type": uncertainty_by_outside_option_type,
+    }
 
 
 def fit_stop_vs_act_model(

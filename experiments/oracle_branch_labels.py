@@ -45,6 +45,10 @@ class OracleLabelConfig:
     train_ratio: float = 0.8
     value_aggregation: str = "max"
     value_std_penalty: float = 0.0
+    uncertainty_margin_band: float | None = None
+    enable_margin_uncertainty_rule: bool = True
+    enable_ci_uncertainty_rule: bool = True
+    enable_disagreement_uncertainty_rule: bool = True
 
 
 @dataclass
@@ -169,6 +173,10 @@ def approximate_oracle_continuation_value(
             "best_rollout": None,
             "rollout_value_mean": float(exact_value),
             "rollout_value_std": 0.0,
+            "utility_std": 0.0,
+            "ci_low": float(exact_value),
+            "ci_high": float(exact_value),
+            "n_rollouts": 0,
         }
 
     high_budget = max(1, int(round(remaining_budget * cfg.high_budget_multiplier)))
@@ -247,6 +255,10 @@ def approximate_oracle_continuation_value(
         agg_value = float(best.continuation_outcome_value)
         label_kind = "approx_high_budget_rollout_max"
 
+    n_rollouts = len(outcomes)
+    ci_half = 0.0
+    if n_rollouts > 0:
+        ci_half = 1.96 * value_std / (max(1, n_rollouts) ** 0.5)
     return {
         "approx_oracle_continuation_value": float(agg_value),
         "label_kind": label_kind,
@@ -258,6 +270,10 @@ def approximate_oracle_continuation_value(
         "rollout_value_std": value_std,
         "rollout_value_q50": float(q50),
         "rollout_value_q75": float(q75),
+        "utility_std": value_std,
+        "ci_low": float(agg_value - ci_half),
+        "ci_high": float(agg_value + ci_half),
+        "n_rollouts": int(n_rollouts),
     }
 
 
@@ -379,6 +395,28 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
                 else:
                     disagreements += 1
 
+                pair_abs_margin = abs(oracle_delta)
+                pair_tie_margin = float(cfg.tie_margin)
+                pair_std = (float(a.get("utility_std", 0.0)) ** 2 + float(b.get("utility_std", 0.0)) ** 2) ** 0.5
+                pair_n_rollouts = min(int(a.get("n_rollouts", 0)), int(b.get("n_rollouts", 0)))
+                if pair_n_rollouts > 0:
+                    pair_ci_half = 1.96 * pair_std / (max(1, pair_n_rollouts) ** 0.5)
+                    pair_ci_low = float(oracle_delta - pair_ci_half)
+                    pair_ci_high = float(oracle_delta + pair_ci_half)
+                else:
+                    pair_ci_low = float(oracle_delta)
+                    pair_ci_high = float(oracle_delta)
+                margin_band = (
+                    float(cfg.uncertainty_margin_band) if cfg.uncertainty_margin_band is not None else float(cfg.tie_margin)
+                )
+                ci_overlaps_zero = pair_ci_low <= 0.0 <= pair_ci_high
+                disagreement_rate = 0.0 if agree else 1.0
+                is_uncertain = int(
+                    (cfg.enable_margin_uncertainty_rule and pair_abs_margin <= margin_band)
+                    or (cfg.enable_ci_uncertainty_rule and ci_overlaps_zero)
+                    or (cfg.enable_disagreement_uncertainty_rule and disagreement_rate > 0.0)
+                )
+
                 pair_rows.append(
                     {
                         "episode_id": episode_id,
@@ -397,6 +435,15 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
                         "proxy_tie": int(proxy_tie),
                         "oracle_margin": abs(oracle_delta),
                         "proxy_margin": abs(proxy_delta),
+                        "is_near_tie": int(pair_abs_margin <= pair_tie_margin),
+                        "tie_margin": pair_tie_margin,
+                        "abs_margin": pair_abs_margin,
+                        "utility_std": pair_std,
+                        "ci_low": pair_ci_low,
+                        "ci_high": pair_ci_high,
+                        "n_rollouts": int(pair_n_rollouts),
+                        "disagreement_rate": disagreement_rate,
+                        "is_uncertain": is_uncertain,
                         "label_source": "approx_oracle_continuation_value_vs_proxy_continuation_value",
                     }
                 )
@@ -423,6 +470,21 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
         "oracle_proxy_pair_disagreement_rate": (disagreements / max(1, agreements + disagreements)),
         "oracle_proxy_confident_disagreements": confident_disagreements,
         "oracle_pair_tie_rate": ties / max(1, len(pair_rows)),
+        "near_tie_coverage": sum(int(r.get("is_near_tie", 0)) for r in pair_rows) / max(1, len(pair_rows)),
+        "uncertainty_coverage": sum(int(r.get("is_uncertain", 0)) for r in pair_rows) / max(1, len(pair_rows)),
+        "label_polarity_by_budget_bucket": {
+            k: {
+                "count": len(v),
+                "prefer_a_rate": sum(1 for x in v if int(x.get("oracle_preference", 0)) > 0) / max(1, len(v)),
+                "prefer_b_rate": sum(1 for x in v if int(x.get("oracle_preference", 0)) < 0) / max(1, len(v)),
+                "tie_rate": sum(1 for x in v if int(x.get("oracle_preference", 0)) == 0) / max(1, len(v)),
+            }
+            for k, v in {
+                "0-2": [r for r in pair_rows if int(r.get("remaining_budget", 0)) <= 2],
+                "3-5": [r for r in pair_rows if 3 <= int(r.get("remaining_budget", 0)) <= 5],
+                "6+": [r for r in pair_rows if int(r.get("remaining_budget", 0)) >= 6],
+            }.items()
+        },
         "branch_depth_distribution": depth_bins,
         "remaining_budget_distribution": budget_bins,
     }

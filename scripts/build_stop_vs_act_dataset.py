@@ -12,7 +12,12 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from experiments.stop_vs_act_controller import STOP_VS_ACT_FEATURE_NAMES, StopVsActLabelConfig, build_stop_vs_act_dataset
+from experiments.stop_vs_act_controller import (
+    STOP_VS_ACT_FEATURE_NAMES,
+    StopVsActLabelConfig,
+    build_stop_vs_act_dataset,
+    summarize_stop_vs_act_slices,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -36,6 +41,15 @@ def parse_args() -> argparse.Namespace:
         help="If set, instability contributes to uncertainty only when |delta_mean| <= this band.",
     )
     parser.add_argument("--rollout-samples", type=int, default=6)
+    parser.add_argument("--near-tie-margin", type=float, default=None)
+    parser.add_argument("--uncertainty-margin-band", type=float, default=None)
+    parser.add_argument("--enable-margin-uncertainty-rule", action="store_true", default=False)
+    parser.add_argument("--disable-margin-uncertainty-rule", action="store_true", default=False)
+    parser.add_argument("--enable-ci-uncertainty-rule", action="store_true", default=False)
+    parser.add_argument("--disable-ci-uncertainty-rule", action="store_true", default=False)
+    parser.add_argument("--enable-disagreement-uncertainty-rule", action="store_true", default=False)
+    parser.add_argument("--disable-disagreement-uncertainty-rule", action="store_true", default=False)
+    parser.add_argument("--disagreement-rate-threshold", type=float, default=0.34)
     parser.add_argument(
         "--target-mode",
         default="proxy_best_other_gain",
@@ -69,12 +83,36 @@ def main() -> None:
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    margin_rule = True
+    if args.disable_margin_uncertainty_rule:
+        margin_rule = False
+    if args.enable_margin_uncertainty_rule:
+        margin_rule = True
+
+    ci_rule = True
+    if args.disable_ci_uncertainty_rule:
+        ci_rule = False
+    if args.enable_ci_uncertainty_rule:
+        ci_rule = True
+
+    disagreement_rule = True
+    if args.disable_disagreement_uncertainty_rule:
+        disagreement_rule = False
+    if args.enable_disagreement_uncertainty_rule:
+        disagreement_rule = True
+
     label_cfg = StopVsActLabelConfig(
         gain_margin=args.gain_margin,
         uncertainty_band=args.uncertainty_band,
         instability_std_threshold=args.instability_std_threshold,
         instability_guard_band=args.instability_guard_band,
         rollout_samples=args.rollout_samples,
+        near_tie_margin=args.near_tie_margin,
+        uncertainty_margin_band=args.uncertainty_margin_band,
+        enable_margin_uncertainty_rule=margin_rule,
+        enable_ci_uncertainty_rule=ci_rule,
+        enable_disagreement_uncertainty_rule=disagreement_rule,
+        disagreement_rate_threshold=args.disagreement_rate_threshold,
         target_mode=args.target_mode,
         small_horizon_steps=args.small_horizon_steps,
         target_stabilization_mode=args.target_stabilization_mode,
@@ -99,6 +137,7 @@ def main() -> None:
 
     uncertain_count = sum(int(bool(r["is_uncertain"])) for r in rows)
     pos = sum(int(r["label_act"]) for r in rows)
+    slice_summary = summarize_stop_vs_act_slices(rows)
     meta = {
         "rows": len(rows),
         "train_rows": sum(1 for r in rows if r["split"] == "train"),
@@ -127,14 +166,32 @@ def main() -> None:
         },
         "uncertainty_rule": {
             "uncertain_if": (
-                "abs(delta_mean) <= uncertainty_band OR "
-                "((delta_std >= instability_std_threshold) AND (|delta_mean| <= instability_guard_band if provided else True))"
+                "enabled_rules_any_true where rules are: margin-band, CI-overlap-with-zero, disagreement-rate-threshold; "
+                "plus instability guard ((delta_std >= instability_std_threshold) AND "
+                "(|delta_mean| <= instability_guard_band if provided else True))"
             ),
             "uncertainty_band": args.uncertainty_band,
+            "uncertainty_margin_band": args.uncertainty_margin_band,
+            "enable_margin_uncertainty_rule": margin_rule,
+            "enable_ci_uncertainty_rule": ci_rule,
+            "enable_disagreement_uncertainty_rule": disagreement_rule,
+            "disagreement_rate_threshold": args.disagreement_rate_threshold,
             "instability_std_threshold": args.instability_std_threshold,
             "instability_guard_band": args.instability_guard_band,
             "weighting": "sample_weight reduced for uncertain examples (near-zero:0.35, unstable:0.50, both:0.20)",
         },
+        "canonical_uncertainty_fields": {
+            "is_near_tie": "1 iff abs_margin <= tie_margin",
+            "tie_margin": "Near-tie threshold; --near-tie-margin if set else gain_margin.",
+            "abs_margin": "abs(delta_mean).",
+            "utility_std": "Estimator std for delta_mean (delta_estimator_std).",
+            "ci_low": "95% normal-approximation lower bound for delta_mean.",
+            "ci_high": "95% normal-approximation upper bound for delta_mean.",
+            "n_rollouts": "Effective rollout sample count used by the estimator.",
+            "is_uncertain": "1 when any enabled uncertainty rule fires.",
+            "outside_option_type": "Identifier of STOP outside-option semantics (target_mode).",
+        },
+        "slice_summary": slice_summary,
         "stabilization_outputs": {
             "delta_repeat_std": "Std-dev across repeated local delta_mean estimates (0 when disabled).",
             "delta_within_std_mean": "Mean within-repeat rollout std estimate.",

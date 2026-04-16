@@ -92,6 +92,10 @@ Rows may include optional uncertainty/diagnostic metadata, for example:
 - `gap_ci_high`
 - `agreement_rate`
 - `rollout_count`
+- canonical uncertainty fields for downstream consistency:
+  - `is_near_tie`, `tie_margin`, `abs_margin`,
+  - `utility_std`, `ci_low`, `ci_high`, `n_rollouts`,
+  - `is_uncertain` (derived from configured uncertainty rules)
 - `trace_id`
 - `runtime_ms`
 
