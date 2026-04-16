@@ -35,16 +35,26 @@
     "cascade_routing": {
       "clone_url": "https://github.com/eth-sri/cascade-routing.git",
       "doc": "external/cascade_routing/README.md",
-      "integration": "link_only",
-      "completeness_class": "link_only",
-      "blocker": "no_in_repo_adapter"
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration_doc": "docs/cascade_routing_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/cascade_routing_status.json",
+        "outputs/external_baseline_completeness/cascade_routing_status.md"
+      ]
     },
     "mob_majority_of_bests": {
       "clone_url": "https://github.com/arakhsha/mob.git",
       "doc": "external/mob_majority_of_bests/README.md",
-      "integration": "link_only",
-      "completeness_class": "link_only",
-      "blocker": "no_in_repo_adapter"
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration_doc": "docs/mob_majority_of_bests_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/mob_majority_of_bests_status.json",
+        "outputs/external_baseline_completeness/mob_majority_of_bests_status.md"
+      ]
     },
     "mcts_llm_community": {
       "clone_url": "https://github.com/NumberChiffre/mcts-llm.git",

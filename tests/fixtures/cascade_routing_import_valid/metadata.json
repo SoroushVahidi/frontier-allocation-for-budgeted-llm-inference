@@ -1,0 +1,25 @@
+{
+  "source": {"type": "official"},
+  "upstream": {
+    "repo_url": "https://github.com/eth-sri/cascade-routing",
+    "paper_url": "https://proceedings.mlr.press/v267/dekoninck25a.html",
+    "workflow_stages_completed": [
+      "query_generation_or_data_download",
+      "dataset_preprocessing",
+      "routing_and_cascading_experiment_execution",
+      "postprocess_result_aggregation"
+    ]
+  },
+  "dataset": {"name": "routerbench", "split": "test"},
+  "budget": {
+    "unit": "usd_per_query",
+    "metric": "max_expected_cost"
+  },
+  "strategy_space": ["routing", "cascading", "cascade_routing"],
+  "provenance": {
+    "exported_at_utc": "2026-04-16T00:00:00Z",
+    "source_uri": "https://example.org/cascade-routing/export",
+    "artifact_id": "cascade-routing-demo-001",
+    "commit_or_version_if_available": "demo"
+  }
+}

@@ -60,10 +60,14 @@ Safe to claim now:
 - s1 MODE B is a strict official/full import + verification path and is usable only when a valid package passes verification; TALE and L1 MODE B remain blocked adapter/reporting paths unless official/full outputs are imported.
 - BEST-Route has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_best_route_import.py`).
 - when_solve_when_verify has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_when_solve_when_verify_import.py`).
+- cascade_routing has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_cascade_routing_import.py`).
+- mob_majority_of_bests has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_mob_import.py`).
 
 Not safe to claim yet:
 - that BEST-Route is a direct apples-to-apples control-equivalent reproduction in this repository,
 - that when_solve_when_verify is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
+- that cascade_routing is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
+- that mob_majority_of_bests is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
 - that any s1/TALE/L1 MODE B full official reproduction has been completed in-repo.
 
 - compute_optimal_tts is explicitly blocked (provenance and fairness protocol incomplete) rather than ambiguously link-only.

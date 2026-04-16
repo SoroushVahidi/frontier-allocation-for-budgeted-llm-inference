@@ -6,6 +6,8 @@ from pathlib import Path
 from scripts.generate_compute_optimal_tts_blocker_report import main as compute_blocker_main
 from scripts.verify_best_route_import import verify_best_route_import
 from scripts.verify_when_solve_when_verify_import import verify_when_solve_when_verify_import
+from scripts.verify_cascade_routing_import import verify_cascade_routing_import
+from scripts.verify_mob_import import verify_mob_import
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -152,3 +154,121 @@ def test_verify_when_solve_when_verify_import_rejects_missing_sc(tmp_path: Path)
 
     assert report["status"] == "invalid"
     assert "missing_self_consistency_strategy" in report["issues"]
+
+
+def test_verify_cascade_routing_import_valid_fixture() -> None:
+    fixture = REPO_ROOT / "tests" / "fixtures" / "cascade_routing_import_valid"
+    report = verify_cascade_routing_import(
+        requested_path=fixture,
+        expected_dataset="routerbench",
+        expected_split="test",
+    )
+    assert report["status"] == "valid"
+    assert report["issues"] == []
+    assert len(report["imported_rows"]) == 3
+
+
+def test_verify_cascade_routing_import_rejects_missing_strategy_family(tmp_path: Path) -> None:
+    package = tmp_path / "bad_cascade_package"
+    package.mkdir(parents=True, exist_ok=True)
+
+    metadata = {
+        "source": {"type": "official"},
+        "upstream": {
+            "repo_url": "https://github.com/eth-sri/cascade-routing",
+            "paper_url": "https://proceedings.mlr.press/v267/dekoninck25a.html",
+            "workflow_stages_completed": [
+                "query_generation_or_data_download",
+                "dataset_preprocessing",
+                "routing_and_cascading_experiment_execution",
+                "postprocess_result_aggregation",
+            ],
+        },
+        "dataset": {"name": "routerbench", "split": "test"},
+        "budget": {"unit": "usd_per_query", "metric": "max_expected_cost"},
+        "strategy_space": ["routing", "cascading"],
+        "provenance": {
+            "exported_at_utc": "2026-04-16T00:00:00Z",
+            "source_uri": "https://example.org",
+            "artifact_id": "x",
+            "commit_or_version_if_available": "y",
+        },
+    }
+    (package / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    (package / "results.csv").write_text(
+        "mode,source_type,dataset,split,benchmark,strategy_family,max_expected_cost,quality_metric,quality_value,cost_metric,cost_value,artifact_id,commit_or_version,comparability_scope\n"
+        "cascade_routing_adjacent_import,official,routerbench,test,routerbench_0shot,routing,0.003,accuracy,0.67,avg_cost_usd,0.0018,x,y,adjacent_only\n"
+        "cascade_routing_adjacent_import,official,routerbench,test,routerbench_0shot,cascading,0.003,accuracy,0.69,avg_cost_usd,0.0023,x,y,adjacent_only\n",
+        encoding="utf-8",
+    )
+
+    report = verify_cascade_routing_import(
+        requested_path=package,
+        expected_dataset="routerbench",
+        expected_split="test",
+    )
+
+    assert report["status"] == "invalid"
+    assert "missing_strategy_family_cascade_routing" in report["issues"]
+
+
+def test_verify_mob_import_valid_fixture() -> None:
+    fixture = REPO_ROOT / "tests" / "fixtures" / "mob_import_valid"
+    report = verify_mob_import(
+        requested_path=fixture,
+        expected_benchmark="gsm8k",
+        expected_gen_model="qwen2.5-3b-instruct",
+        expected_reward_model="grm3b",
+        expected_num_samples=128,
+    )
+    assert report["status"] == "valid"
+    assert report["issues"] == []
+    assert len(report["imported_rows"]) == 2
+
+
+def test_verify_mob_import_rejects_missing_bon(tmp_path: Path) -> None:
+    package = tmp_path / "bad_mob_package"
+    package.mkdir(parents=True, exist_ok=True)
+
+    metadata = {
+        "source": {"type": "official"},
+        "upstream": {
+            "repo_url": "https://github.com/arakhsha/mob",
+            "paper_url": "https://openreview.net/forum?id=aEAbRPXV37",
+            "workflow_stages_completed": [
+                "dataset_loading_from_jsonl_gz",
+                "algorithm_evaluation_via_main_py",
+                "aggregated_csv_export",
+            ],
+        },
+        "dataset": {"benchmarks": ["gsm8k"]},
+        "models": {
+            "generator_models": ["qwen2.5-3b-instruct"],
+            "reward_models": ["grm3b"],
+        },
+        "budget": {"unit": "samples", "num_samples": [128]},
+        "algorithm_set": ["mob_adaptive_m"],
+        "provenance": {
+            "exported_at_utc": "2026-04-16T00:00:00Z",
+            "source_uri": "https://example.org",
+            "artifact_id": "x",
+            "commit_or_version_if_available": "y",
+        },
+    }
+    (package / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    (package / "results.csv").write_text(
+        "mode,source_type,benchmark,gen_model,reward_model,num_samples,algorithm,accuracy,num_trials,artifact_id,commit_or_version,comparability_scope\n"
+        "mob_adjacent_import,official,gsm8k,qwen2.5-3b-instruct,grm3b,128,mob_adaptive_m,0.761,500,x,y,adjacent_only\n",
+        encoding="utf-8",
+    )
+
+    report = verify_mob_import(
+        requested_path=package,
+        expected_benchmark="gsm8k",
+        expected_gen_model="qwen2.5-3b-instruct",
+        expected_reward_model="grm3b",
+        expected_num_samples=128,
+    )
+
+    assert report["status"] == "invalid"
+    assert "missing_bon_algorithm" in report["issues"]

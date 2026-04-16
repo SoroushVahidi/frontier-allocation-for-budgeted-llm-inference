@@ -1,0 +1,30 @@
+{
+  "source": {"type": "official"},
+  "upstream": {
+    "repo_url": "https://github.com/arakhsha/mob",
+    "paper_url": "https://openreview.net/forum?id=aEAbRPXV37",
+    "workflow_stages_completed": [
+      "dataset_loading_from_jsonl_gz",
+      "algorithm_evaluation_via_main_py",
+      "aggregated_csv_export"
+    ]
+  },
+  "dataset": {
+    "benchmarks": ["gsm8k"]
+  },
+  "models": {
+    "generator_models": ["qwen2.5-3b-instruct"],
+    "reward_models": ["grm3b"]
+  },
+  "budget": {
+    "unit": "samples",
+    "num_samples": [128]
+  },
+  "algorithm_set": ["bon", "sc", "wbon", "mob_adaptive_m", "mob_poly_m"],
+  "provenance": {
+    "exported_at_utc": "2026-04-16T00:00:00Z",
+    "source_uri": "https://example.org/mob/export",
+    "artifact_id": "mob-demo-001",
+    "commit_or_version_if_available": "demo"
+  }
+}

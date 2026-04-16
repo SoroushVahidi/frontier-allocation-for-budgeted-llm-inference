@@ -1,12 +1,12 @@
 # Majority-of-the-Bests (MoB) — Rakhsha et al.
 
 - **Canonical title:** *Majority of the Bests: Improving Best-of-N via Bootstrapping* (NeurIPS 2025 presentation; OpenReview listing).
-- **OpenReview:** https://openreview.net/forum?id=ZVtHNM3Dd2
+- **OpenReview (paper URL from upstream repo citation):** https://openreview.net/forum?id=aEAbRPXV37
 - **NeurIPS2025 poster:** https://neurips.cc/virtual/2025/poster/117285
 - **Code repository (author GitHub org; widely cited as implementation):** https://github.com/arakhsha/mob
 - **License (GitHub API, verification time):** **MIT**
 - **Paper license note:** OpenReview lists **CC BY-NC-SA 4.0** for the paper PDF; repository license is MIT — respect both when redistributing **paper text** vs **code**.
-- **Import status:** **Linked only** — no submodule, no vendored code in this repo.
+- **Import status:** **Runnable adjacent (validated import protocol)** — no submodule, no vendored code in this repo.
 - **Official status note:** The arXiv abstract for this line of work should be cross-checked for an explicit “code at …” line; this README records the **author-affiliated** `arakhsha/mob` repo as the practical integration target. If the camera-ready or NeurIPS page lists a different URL, prefer that URL and update this file.
 
 ## Role for this project
@@ -24,4 +24,8 @@ git clone https://github.com/arakhsha/mob.git
 ## Integration scaffold (this repo)
 
 - Registry entry: `configs/external_baselines_registry.json` → `mob_majority_of_bests`
-- This directory contains **documentation only**.
+- Canonical integration note: `docs/mob_majority_of_bests_integration.md`
+- Import validator: `scripts/verify_mob_import.py`
+- Status artifacts:
+  - `outputs/external_baseline_completeness/mob_majority_of_bests_status.json`
+  - `outputs/external_baseline_completeness/mob_majority_of_bests_status.md`

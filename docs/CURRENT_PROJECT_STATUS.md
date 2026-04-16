@@ -71,6 +71,8 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - s1 / TALE / L1: integrated with runnable MODE A and partial MODE B adapters with explicit blocker state reporting.
 - BEST-Route: upgraded to runnable-adjacent via strict import validation protocol (`scripts/verify_best_route_import.py`), with explicit adjacent-only claim boundaries.
 - when_solve_when_verify: upgraded from link-only to runnable-adjacent via strict import validation protocol (`scripts/verify_when_solve_when_verify_import.py`) for SC-vs-GenRM fixed-budget adjacent comparisons.
+- cascade_routing: upgraded from link-only to runnable-adjacent via strict import validation protocol (`scripts/verify_cascade_routing_import.py`) for adjacent routing/cascading/cascade-routing comparisons.
+- mob_majority_of_bests: upgraded from link-only to runnable-adjacent via strict import validation protocol (`scripts/verify_mob_import.py`) for adjacent best-of-N/MoB comparisons.
 - Completeness artifact: `docs/external_baseline_completeness_report.md` plus machine-readable `outputs/external_baseline_completeness_summary.{json,csv}`.
 - Runnability artifact: `outputs/external_baseline_runnability/<run_id>/verification_summary.json`.
 

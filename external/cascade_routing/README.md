@@ -7,7 +7,7 @@
 - **ETH SRI publication page:** https://www.sri.inf.ethz.ch/publications/dekoninck2024cascaderouting
 - **Official code (ETH SRI org):** https://github.com/eth-sri/cascade-routing
 - **License (GitHub API, verification time):** **Apache-2.0**
-- **Import status:** **Linked only** — no submodule, no vendored code in this repo.
+- **Import status:** **Runnable adjacent (validated import protocol)** — no submodule, no vendored code in this repo.
 - **Role for this project:** Baseline for **routing and cascading across model tiers** under cost constraints; complements cross-controller frontier allocation (heterogeneous families, budget-aware selection).
 
 ## Setup notes (upstream)
@@ -19,4 +19,8 @@ git clone https://github.com/eth-sri/cascade-routing.git
 ## Integration scaffold (this repo)
 
 - Registry entry: `configs/external_baselines_registry.json` → `cascade_routing`
-- This directory contains **documentation only**.
+- Canonical integration note: `docs/cascade_routing_integration.md`
+- Import validator: `scripts/verify_cascade_routing_import.py`
+- Status artifacts:
+  - `outputs/external_baseline_completeness/cascade_routing_status.json`
+  - `outputs/external_baseline_completeness/cascade_routing_status.md`

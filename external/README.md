@@ -40,8 +40,8 @@ These strengthen comparisons for **fixed test-time compute**, **verifier vs gene
 |---|---|---|---|---|
 | Snell et al. compute-optimal TTS (ICLR 2025) | Optimal test-time compute scaling | `BLOCKED` | **Paper:** OpenReview `4FWAwZtd2n`. **Code in registry:** [RyanLiu112/compute-optimal-tts](https://github.com/RyanLiu112/compute-optimal-tts) self-identifies with arXiv `2502.06703`; official mapping to target paper remains unverified. | **MIT** (on linked repo) |
 | When To Solve, When To Verify | SC vs GenRM under budget | `RUNNABLE_ADJACENT` | https://github.com/nishadsinghi/sc-genrm-scaling (linked from arXiv abstract) | **Apache-2.0** |
-| Cascade routing (ICML 2025) | Unified routing + cascading | `LINK_ONLY` | https://github.com/eth-sri/cascade-routing | **Apache-2.0** |
-| MoB (Majority-of-the-Bests) | Bootstrapped Best-of-N improvement | `LINK_ONLY` | https://github.com/arakhsha/mob | **MIT** (repo); paper CC BY-NC-SA on OpenReview |
+| Cascade routing (ICML 2025) | Unified routing + cascading | `RUNNABLE_ADJACENT` | https://github.com/eth-sri/cascade-routing | **Apache-2.0** |
+| MoB (Majority-of-the-Bests) | Bootstrapped Best-of-N improvement | `RUNNABLE_ADJACENT` | https://github.com/arakhsha/mob | **MIT** (repo); paper CC BY-NC-SA on OpenReview |
 | s1: Simple test-time scaling (EMNLP 2025) | Test-time budget forcing / thinking-length scaling | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/simplescaling/s1 | **Apache-2.0** |
 | TALE (Token-Budget-Aware LLM Reasoning) | Per-instance token-budget-aware reasoning | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/GeniusHTX/TALE | Unknown (re-check upstream) |
 | L1 (LCPO length control) | RL-trained controllable reasoning length (Exact/Max) | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/cmu-l3/l1 | **Apache-2.0** |
@@ -53,7 +53,9 @@ Per-baseline notes:
 - `external/when_solve_when_verify/README.md`
 - `docs/when_solve_when_verify_integration.md`
 - `external/cascade_routing/README.md`
+- `docs/cascade_routing_integration.md`
 - `external/mob_majority_of_bests/README.md`
+- `docs/mob_majority_of_bests_integration.md`
 - `external/s1_simple_test_time_scaling/README.md`
 - `external/tale_token_budget_aware_reasoning/README.md`
 - `external/l1_length_control_rl/README.md`
@@ -106,6 +108,8 @@ This pass makes the currently integrated baselines fully auditable and keeps com
 - **s1 / TALE / L1**: `MODE_A_COMPLETE_MODE_B_PARTIAL` with runnable MODE A scripts in-repo; s1 and TALE MODE B are usable via strict verified official import (TALE includes variant-separation checks), while L1 MODE B remains blocked without imported official/full outputs.
 - **BEST-Route**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_best_route_import.py`), with explicit adjacent-only claim boundaries and no direct reproduction claim.
 - **When To Solve, When To Verify**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_when_solve_when_verify_import.py`) for SC-vs-GenRM fixed-budget adjacent comparisons only.
+- **Cascade Routing**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_cascade_routing_import.py`) for adjacent routing/cascading/cascade-routing comparisons only.
+- **MoB (Majority-of-the-Bests)**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_mob_import.py`) for adjacent best-of-N selection comparisons only.
 
 Use these artifacts to audit runnability and status:
 

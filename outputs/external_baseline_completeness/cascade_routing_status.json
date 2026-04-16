@@ -1,0 +1,48 @@
+{
+  "generated_utc": "2026-04-16T01:51:52.361139+00:00",
+  "baseline_key": "cascade_routing",
+  "status": "runnable_adjacent",
+  "integration_kind": "verified_import_only",
+  "status_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ],
+  "upstream": {
+    "repo": "https://github.com/eth-sri/cascade-routing",
+    "paper": "https://proceedings.mlr.press/v267/dekoninck25a.html",
+    "openreview": "https://openreview.net/forum?id=rgDwRdMwoS",
+    "project_page": "https://www.sri.inf.ethz.ch/publications/dekoninck2024cascaderouting"
+  },
+  "protocol": {
+    "validator_script": "scripts/verify_cascade_routing_import.py",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "query_generation_or_data_download",
+      "dataset_preprocessing",
+      "routing_and_cascading_experiment_execution",
+      "postprocess_result_aggregation"
+    ],
+    "required_strategy_coverage": [
+      "routing",
+      "cascading",
+      "cascade_routing"
+    ],
+    "comparability_scope": "adjacent_only"
+  },
+  "safe_claims": [
+    "This repo supports reviewer-auditable adjacent import of cascade-routing outputs.",
+    "Imported outputs are validated for upstream workflow-stage declarations, strategy-family coverage, and adjacent-only scope."
+  ],
+  "not_safe_claims": [
+    "Direct in-repo full reproduction of the upstream cascade-routing experiment stack.",
+    "Control-equivalent direct comparability claims with frontier/action-native controllers."
+  ]
+}
