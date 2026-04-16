@@ -1,72 +1,87 @@
 # Documentation index
 
-This index defines the **canonical**, **exploratory**, and **historical** documentation for the current project.
+This index separates the repository documentation into **canonical**, **supporting**, **exploratory**, and **historical** material.
 
-## Canonical docs (read in this order)
+## Read this first
+
+If you want the current interpretation of the project, start here:
 
 1. [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)
 2. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
 3. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
 4. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-5. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
-6. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
-7. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
-8. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
-9. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
-10. [`REPO_MAP.md`](REPO_MAP.md)
-11. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
-12. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+5. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+6. [`REPO_MAP.md`](REPO_MAP.md)
+
+## Canonical docs
+
+These define the current project identity, current status, and manuscript-safe interpretation.
+
+- [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)
+- [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+- [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+- [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+- [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
+- [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
+- [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
+- [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
+- [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+- [`REPO_MAP.md`](REPO_MAP.md)
+- [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
+- [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+- [`CURRENT_DATASET_AUDIT_STATUS.md`](CURRENT_DATASET_AUDIT_STATUS.md)
+- [`CURRENT_BRANCH_LEARNING_DATASET_READINESS.md`](CURRENT_BRANCH_LEARNING_DATASET_READINESS.md)
 
 ## Canonical supporting references
+
+These are useful once you already understand the main project interpretation.
 
 - [`cross_controller_frontier.md`](cross_controller_frontier.md)
 - [`main_datasets.md`](main_datasets.md)
 - [`main_baselines.md`](main_baselines.md)
+- [`datasets_access.md`](datasets_access.md)
+- [`DATASET_STATUS.md`](DATASET_STATUS.md)
+- [`EXTERNAL_DATASET_PRM_MATHSHEPHERD_APPS_STATUS_2026_04_16.md`](EXTERNAL_DATASET_PRM_MATHSHEPHERD_APPS_STATUS_2026_04_16.md)
+- [`CANONICAL_BRANCH_LEARNING_PASS_2026_04_16.md`](CANONICAL_BRANCH_LEARNING_PASS_2026_04_16.md)
+- [`CANONICAL_BRANCH_LEARNING_INTERVENTION_PASS_2026_04_16.md`](CANONICAL_BRANCH_LEARNING_INTERVENTION_PASS_2026_04_16.md)
+- [`CANONICAL_EXTERNAL_SUPERVISION_PRM800K_ROBUSTNESS_PASS_2026_04_16.md`](CANONICAL_EXTERNAL_SUPERVISION_PRM800K_ROBUSTNESS_PASS_2026_04_16.md)
+- [`CANONICAL_EXTERNAL_SUPERVISION_PRM800K_HARD_SLICE_COVERAGE_PASS_2026_04_16.md`](CANONICAL_EXTERNAL_SUPERVISION_PRM800K_HARD_SLICE_COVERAGE_PASS_2026_04_16.md)
+- [`CANONICAL_EXTERNAL_SUPERVISION_PRM800K_COMPARATOR_BOUNDARY_RECOVERY_EXECUTION_PASS_2026_04_16.md`](CANONICAL_EXTERNAL_SUPERVISION_PRM800K_COMPARATOR_BOUNDARY_RECOVERY_EXECUTION_PASS_2026_04_16.md)
+- [`CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`](CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md)
 - [`cascade_routing_integration.md`](cascade_routing_integration.md)
 - [`mob_majority_of_bests_integration.md`](mob_majority_of_bests_integration.md)
 - [`rest_mcts_integration.md`](rest_mcts_integration.md)
 - [`openr_integration.md`](openr_integration.md)
 - [`l1_baseline_integration.md`](l1_baseline_integration.md)
-- [`datasets_access.md`](datasets_access.md)
-- [`DATASET_STATUS.md`](DATASET_STATUS.md)
-- [`CURRENT_DATASET_AUDIT_STATUS.md`](CURRENT_DATASET_AUDIT_STATUS.md)
-- [`CURRENT_BRANCH_LEARNING_DATASET_READINESS.md`](CURRENT_BRANCH_LEARNING_DATASET_READINESS.md)
-- [`CANONICAL_BRANCH_LEARNING_PASS_2026_04_16.md`](CANONICAL_BRANCH_LEARNING_PASS_2026_04_16.md)
-- [`CANONICAL_BRANCH_LEARNING_INTERVENTION_PASS_2026_04_16.md`](CANONICAL_BRANCH_LEARNING_INTERVENTION_PASS_2026_04_16.md)
-- [`EXTERNAL_DATASET_PRM_MATHSHEPHERD_APPS_STATUS_2026_04_16.md`](EXTERNAL_DATASET_PRM_MATHSHEPHERD_APPS_STATUS_2026_04_16.md)
-- [`CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`](CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md)
 
-## How to interpret the canonical docs
+## Current interpretation in one paragraph
 
-- `PROJECT_MASTER_PLAN.md` gives the full project identity, final goal, and roadmap.
-- `CURRENT_PROJECT_STATUS.md` says what is genuinely built and what is still unresolved.
-- `CURRENT_BOTTLENECKS.md` explains the main obstacle.
-- `CURRENT_SAFE_CLAIMS.md` tells you what is manuscript-safe to say now.
-- `STOP_VS_ACT_DIRECTION.md` defines the main near-term controller direction.
-- `NEXT_LIGHTWEIGHT_STEPS.md` and `LATER_HEAVIER_STEPS.md` describe what to do next.
-- `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
-- `REPO_MAP.md` tells collaborators where to start in code and docs.
+The repository is now best understood as a strong research platform for **fixed-budget branch-priority / next-step allocation** in LLM reasoning. Internal supervision, canonical corpora, and matched evaluation are now substantially more mature than before. The main unresolved issue is not infrastructure but **decision-aligned supervision quality and hard-slice evidence**, including near-tie, adjacent-rank, exact-promoted, and external-to-internal transfer alignment.
 
-## Exploratory / active-branch notes
+## Exploratory docs
 
-These notes are useful, but they are **not** the default interpretation of the project.
+These are useful for specific method lines, but they are **not** the default interpretation of the repository.
 
-- Oracle generator interface / productionization / pilot protocols.
-- Oracle selective distillation and oracle-distilled student notes.
-- Branch-scorer line status and method-specific result notes.
-- Tie-aware, reliability-aware, warm-start, and ambiguity-targeted experimental notes.
+Typical examples include:
+- oracle generator productionization notes,
+- oracle selective-distillation notes,
+- branch-scorer line status notes,
+- tie-aware and ambiguity-aware experiment notes,
+- reliability-aware and warm-start variants,
+- narrower method-specific diagnostics.
 
-Use these when you need traceability for a specific experiment line, not as the first summary of the repo.
+## Historical docs
 
-## Historical / provenance notes
+These are kept for provenance rather than as the current project view.
 
-These remain valuable for traceability but are not canonical:
+Typical examples include:
 - old-track separation notes,
-- dated memo snapshots,
-- earlier summaries superseded by the current canonical docs.
+- superseded memo snapshots,
+- older summaries replaced by the current canonical docs.
 
 ## Interpretation rule
 
-- Use the **canonical docs** for current project interpretation and paper planning.
-- Use **exploratory notes** for experiment-specific context.
-- Use **historical notes** only for provenance or comparison with older directions.
+- Use the **canonical docs** to understand the project and write about it.
+- Use the **supporting references** when you need dataset, baseline, or evaluation context.
+- Use **exploratory docs** for a specific experiment line only.
+- Use **historical docs** only for provenance.
