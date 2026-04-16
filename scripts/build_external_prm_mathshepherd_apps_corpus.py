@@ -182,6 +182,135 @@ def _prm_or_shepherd_candidates(dataset_key: str, dataset_id: str, split: str, m
     return cands, pairs, outside
 
 
+def _prm800k_candidates(dataset_id: str, split: str, max_rows: int) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    """Parse PRM800K native step-level ratings into candidate-first supervision rows."""
+    ds_rows = _load_rows(dataset_id, split=split, max_rows=max_rows)
+    cands: list[dict[str, Any]] = []
+    pairs: list[dict[str, Any]] = []
+    outside: list[dict[str, Any]] = []
+
+    for idx, row in enumerate(ds_rows):
+        question = row.get("question")
+        if isinstance(question, dict):
+            problem = str(question.get("problem", ""))
+        else:
+            problem = str(question or row.get("problem") or "")
+
+        label = row.get("label")
+        steps = label.get("steps") if isinstance(label, dict) else []
+        if not isinstance(steps, list) or not steps:
+            continue
+        sid = f"prm800k_state_{idx}"
+        branch_ids_by_step: dict[int, list[tuple[str, float]]] = {}
+
+        for step_idx, step in enumerate(steps):
+            comps = step.get("completions") if isinstance(step, dict) else []
+            chosen = step.get("chosen_completion") if isinstance(step, dict) else None
+            if not isinstance(comps, list):
+                continue
+            local_ids: list[tuple[str, float]] = []
+            for comp_idx, comp in enumerate(comps):
+                if not isinstance(comp, dict):
+                    continue
+                txt = str(comp.get("text", ""))
+                rating = comp.get("rating", None)
+                if isinstance(rating, bool):
+                    rating_f = 1.0 if rating else 0.0
+                elif isinstance(rating, (int, float)):
+                    rating_f = float(rating)
+                else:
+                    continue
+                # PRM800K rating range includes {-1, 0, 1}; normalize to [0,1].
+                quality = (rating_f + 1.0) / 2.0
+                bid = f"{sid}_step{step_idx}_cand{comp_idx}"
+                local_ids.append((bid, quality))
+                cands.append(
+                    {
+                        "schema_version": "branch_learning_corpus_v1",
+                        "row_type": "candidate",
+                        "row_uid": _hash(f"prm800k|{sid}|{bid}"),
+                        "state_id": sid,
+                        "branch_id": bid,
+                        "dataset_name": dataset_id,
+                        "source_dataset_key": "prm800k",
+                        "source_split": split,
+                        "supervision_origin": "native_step_label",
+                        "supervision_signal_type": "step_quality",
+                        "is_human_labeled": True,
+                        "is_rollout_estimated": bool(row.get("generation") is not None),
+                        "is_verifier_backed": False,
+                        "question_or_problem": problem,
+                        "branch_text": txt,
+                        "quality_score": quality,
+                        "raw_step_rating": rating_f,
+                        "step_index": int(step_idx),
+                        "completion_index": int(comp_idx),
+                        "is_chosen_completion": bool(chosen == comp_idx),
+                        "remaining_budget": 1,
+                    }
+                )
+                outside.append(
+                    {
+                        "schema_version": "branch_learning_corpus_v1",
+                        "row_type": "outside_option",
+                        "row_uid": _hash(f"outside|prm800k|{sid}|{bid}"),
+                        "state_id": sid,
+                        "branch_id": bid,
+                        "dataset_name": dataset_id,
+                        "source_dataset_key": "prm800k",
+                        "source_split": split,
+                        "supervision_origin": "derived_from_native_step_labels",
+                        "is_human_labeled": True,
+                        "is_rollout_estimated": bool(row.get("generation") is not None),
+                        "is_verifier_backed": False,
+                        "continue_over_stop_label": 1 if quality >= 0.5 else 0,
+                        "quality_score": quality,
+                        "remaining_budget": 1,
+                    }
+                )
+            if local_ids:
+                branch_ids_by_step[step_idx] = local_ids
+
+        # Conservative pairwise rows: only within-step comparisons when >1 completion exists.
+        for step_idx, local_ids in branch_ids_by_step.items():
+            if len(local_ids) < 2:
+                continue
+            sorted_ids = sorted(local_ids, key=lambda x: x[1], reverse=True)
+            best, worst = sorted_ids[0], sorted_ids[-1]
+            if abs(best[1] - worst[1]) < 1e-8:
+                continue
+            bi, bj = best[0], worst[0]
+            margin = float(best[1] - worst[1])
+            pairs.append(
+                {
+                    "schema_version": "branch_learning_corpus_v1",
+                    "row_type": "pairwise",
+                    "row_uid": _hash(f"pair|prm800k|{sid}|{bi}|{bj}|s{step_idx}"),
+                    "canonical_pair_uid": _hash(f"pairc|prm800k|{sid}|{min(bi,bj)}|{max(bi,bj)}|s{step_idx}"),
+                    "state_id": sid,
+                    "branch_i": bi,
+                    "branch_j": bj,
+                    "dataset_name": dataset_id,
+                    "source_dataset_key": "prm800k",
+                    "source_split": split,
+                    "supervision_origin": "derived_from_native_step_labels",
+                    "is_human_labeled": True,
+                    "is_rollout_estimated": bool(row.get("generation") is not None),
+                    "is_verifier_backed": False,
+                    "label": 1,
+                    "preference": 1,
+                    "margin": margin,
+                    "margin_abs": abs(margin),
+                    "near_tie_flag": abs(margin) <= 0.05,
+                    "adjacent_rank_flag": True,
+                    "small_margin_flag": abs(margin) <= 0.15,
+                    "remaining_budget": 1,
+                }
+            )
+
+    return cands, pairs, outside
+
+
 def _apps_candidates(dataset_id: str, split: str, max_rows: int) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], str | None]:
     try:
         ds_rows = _load_rows(dataset_id, config_name="all", split=split, max_rows=max_rows)
@@ -275,8 +404,7 @@ def main() -> None:
     all_outside: list[dict[str, Any]] = []
     dataset_errors: dict[str, str] = {}
 
-    prm_c, prm_p, prm_o = _prm_or_shepherd_candidates(
-        dataset_key="prm800k",
+    prm_c, prm_p, prm_o = _prm800k_candidates(
         dataset_id="tasksource/PRM800K",
         split="train",
         max_rows=int(args.max_rows_per_dataset),
@@ -318,6 +446,18 @@ def main() -> None:
             "outside_option_rows": sum(1 for r in all_outside if r.get("source_dataset_key") == key),
         }
 
+    provenance_by_dataset: dict[str, dict[str, int]] = {}
+    for key in ["prm800k", "math_shepherd", "apps"]:
+        crows = [r for r in all_candidates if r.get("source_dataset_key") == key]
+        provenance_by_dataset[key] = {
+            "source_split_train": sum(1 for r in crows if str(r.get("source_split", "")) == "train"),
+            "human_labeled_true": sum(1 for r in crows if bool(r.get("is_human_labeled", False))),
+            "rollout_estimated_true": sum(1 for r in crows if bool(r.get("is_rollout_estimated", False))),
+            "verifier_backed_true": sum(1 for r in crows if bool(r.get("is_verifier_backed", False))),
+            "native_supervision_interpretation": sum(1 for r in crows if str(r.get("supervision_origin", "")).startswith("native")),
+            "derived_supervision_interpretation": sum(1 for r in crows if not str(r.get("supervision_origin", "")).startswith("native")),
+        }
+
     summary = {
         "run_id": args.run_id,
         "datasets": ["prm800k", "math_shepherd", "apps"],
@@ -327,6 +467,7 @@ def main() -> None:
             "outside_option_rows": len(all_outside),
         },
         "counts_by_dataset_key": counts_by_key,
+        "provenance_by_dataset_key": provenance_by_dataset,
         "notes": {
             "prm800k": "native step labels; pairwise/outside labels are derived conservatively",
             "math_shepherd": "native step labels; pairwise/outside labels are derived conservatively",

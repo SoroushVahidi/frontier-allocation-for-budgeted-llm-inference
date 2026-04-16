@@ -1,0 +1,176 @@
+{
+  "date": "2026-04-16",
+  "run_id": "real_canonical_learning_20260416_external_prm800k_transfer_alignment",
+  "internal_eval_corpus_path": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_v1",
+  "external_artifact_path": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+  "alignment_intervention": {
+    "name": "prm800k_uncertainty_gated_blend",
+    "gating": "apply PRM blend only when allocation_value_std >= threshold OR score_gap_to_top <= threshold",
+    "thresholds": {
+      "uncertainty_std_threshold": 0.03,
+      "top_gap_threshold": 0.04
+    }
+  },
+  "models_compared": [
+    "reweighted::pointwise",
+    "external::prm800k_pointwise_blend_from_reweighted_pointwise",
+    "external::prm800k_uncertainty_gated_blend_from_reweighted_pointwise"
+  ],
+  "aggregate": {
+    "anchor": {
+      "pairwise_acc": 1.0,
+      "pairwise_n": 21.0,
+      "top1_acc": 1.0
+    },
+    "broad_blend": {
+      "pairwise_acc": 1.0,
+      "pairwise_n": 21.0,
+      "top1_acc": 1.0
+    },
+    "aligned_transfer": {
+      "pairwise_acc": 1.0,
+      "pairwise_n": 21.0,
+      "top1_acc": 1.0
+    }
+  },
+  "hard_slices": {
+    "near_tie": {
+      "anchor_acc": 1.0,
+      "anchor_n": 2.0,
+      "broad_acc": 1.0,
+      "broad_n": 2.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 2.0,
+      "aligned_vs_anchor_delta": 0.0,
+      "aligned_vs_broad_delta": 0.0
+    },
+    "adjacent_rank": {
+      "anchor_acc": 1.0,
+      "anchor_n": 14.0,
+      "broad_acc": 1.0,
+      "broad_n": 14.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 14.0,
+      "aligned_vs_anchor_delta": 0.0,
+      "aligned_vs_broad_delta": 0.0
+    },
+    "small_margin": {
+      "anchor_acc": 1.0,
+      "anchor_n": 11.0,
+      "broad_acc": 1.0,
+      "broad_n": 11.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 11.0,
+      "aligned_vs_anchor_delta": 0.0,
+      "aligned_vs_broad_delta": 0.0
+    },
+    "exact_promoted": {
+      "anchor_acc": 1.0,
+      "anchor_n": 1.0,
+      "broad_acc": 1.0,
+      "broad_n": 1.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 1.0,
+      "aligned_vs_anchor_delta": 0.0,
+      "aligned_vs_broad_delta": 0.0
+    },
+    "exact_only": {
+      "anchor_acc": 1.0,
+      "anchor_n": 12.0,
+      "broad_acc": 1.0,
+      "broad_n": 12.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 12.0,
+      "aligned_vs_anchor_delta": 0.0,
+      "aligned_vs_broad_delta": 0.0
+    },
+    "approx_only": {
+      "anchor_acc": 1.0,
+      "anchor_n": 9.0,
+      "broad_acc": 1.0,
+      "broad_n": 9.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 9.0,
+      "aligned_vs_anchor_delta": 0.0,
+      "aligned_vs_broad_delta": 0.0
+    }
+  },
+  "dataset_slices": {
+    "HuggingFaceH4/MATH-500": {
+      "anchor_acc": 1.0,
+      "anchor_n": 9.0,
+      "broad_acc": 1.0,
+      "broad_n": 9.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 9.0
+    },
+    "openai/gsm8k": {
+      "anchor_acc": 1.0,
+      "anchor_n": 12.0,
+      "broad_acc": 1.0,
+      "broad_n": 12.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 12.0
+    }
+  },
+  "budget_slices": {
+    "2": {
+      "anchor_acc": 1.0,
+      "anchor_n": 12.0,
+      "broad_acc": 1.0,
+      "broad_n": 12.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 12.0
+    },
+    "3": {
+      "anchor_acc": 1.0,
+      "anchor_n": 3.0,
+      "broad_acc": 1.0,
+      "broad_n": 3.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 3.0
+    },
+    "4": {
+      "anchor_acc": 1.0,
+      "anchor_n": 6.0,
+      "broad_acc": 1.0,
+      "broad_n": 6.0,
+      "aligned_acc": 1.0,
+      "aligned_n": 6.0
+    }
+  },
+  "activity_diagnostics": {
+    "broad_blend_activity": {
+      "status": "ok",
+      "candidate_test_n": 21,
+      "candidate_score_shift_mean_abs": 0.031065458387726758,
+      "candidate_score_shift_max_abs": 0.04752924742482345,
+      "candidate_changed_fraction": 1.0,
+      "targeted_candidate_n": 14,
+      "targeted_candidate_fraction": 0.6666666666666666,
+      "targeted_changed_fraction": 1.0,
+      "pair_test_n": 21,
+      "pair_decision_changed_n": 0,
+      "pair_decision_changed_fraction": 0.0,
+      "pair_hard_slice_n": 14,
+      "pair_hard_slice_changed_n": 0
+    },
+    "aligned_blend_activity": {
+      "status": "ok",
+      "candidate_test_n": 21,
+      "candidate_score_shift_mean_abs": 0.025035183167812253,
+      "candidate_score_shift_max_abs": 0.04752924742482345,
+      "candidate_changed_fraction": 0.6666666666666666,
+      "targeted_candidate_n": 14,
+      "targeted_candidate_fraction": 0.6666666666666666,
+      "targeted_changed_fraction": 1.0,
+      "pair_test_n": 21,
+      "pair_decision_changed_n": 0,
+      "pair_decision_changed_fraction": 0.0,
+      "pair_hard_slice_n": 14,
+      "pair_hard_slice_changed_n": 0
+    }
+  },
+  "diagnosis": "Aligned gating is behaviorally active on targeted candidates (2/3 of test candidates changed score), but did not flip any pairwise decisions and therefore produced zero metric deltas vs broad blend and anchor.",
+  "recommendation_next": "Keep Math-Shepherd waiting. Next pass should target decision-boundary movement (e.g., tie-break-only override near comparator indifference) or harder internal splits where score shifts can alter pairwise ordering."
+}

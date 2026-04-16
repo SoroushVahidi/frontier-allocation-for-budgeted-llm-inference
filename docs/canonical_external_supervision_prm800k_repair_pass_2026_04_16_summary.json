@@ -1,0 +1,130 @@
+{
+  "date": "2026-04-16",
+  "external_artifact_path": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+  "internal_eval_corpus_path": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_v1",
+  "diagnosis": {
+    "root_cause": "PRM800K extraction path treated nested label/question fields as flat strings/lists, producing empty step text and constant quality_score=0.0 for all sampled PRM rows in the prior pass.",
+    "evidence_after_repair": {
+      "prm_candidate_rows": 6616,
+      "quality_unique_values": 3,
+      "quality_counts": {
+        "1.0": 2431,
+        "0.5": 1379,
+        "0.0": 2806
+      },
+      "question_nonempty_rows": 6616,
+      "branch_text_nonempty_rows": 6616,
+      "supervision_origin_counts": {
+        "native_step_label": 6616
+      },
+      "prior_fit_status": "ok",
+      "prior_target_std": 0.44394627792071506,
+      "prior_nonconstant_feature_count": 8,
+      "score_shift_test_mean_abs": 0.031065458387726758,
+      "score_shift_test_max_abs": 0.04752924742482345
+    }
+  },
+  "fixes": [
+    "Implemented dedicated PRM800K parser over label.steps[].completions[] with raw rating extraction and normalized quality_score=(rating+1)/2.",
+    "Preserved explicit provenance flags and step/completion metadata on candidate rows; derived outside/pairwise rows conservatively from native step labels.",
+    "Improved external-to-canonical feature mapping with step/completion-derived features and added prior degeneracy diagnostics (target variance, nonconstant feature count).",
+    "Added norm-matching safeguard in blend path and score-shift diagnostics on internal test candidates."
+  ],
+  "comparison": {
+    "baseline_anchor": "reweighted::pointwise",
+    "external_anchor": "external::prm800k_pointwise_blend_from_reweighted_pointwise",
+    "aggregate": {
+      "baseline_pairwise_acc": 1.0,
+      "external_pairwise_acc": 1.0,
+      "delta_pairwise_acc": 0.0,
+      "baseline_top1_acc": 1.0,
+      "external_top1_acc": 1.0,
+      "delta_top1_acc": 0.0
+    },
+    "hard_slices": {
+      "near_tie": {
+        "baseline_acc": 1.0,
+        "baseline_n": 2.0,
+        "external_acc": 1.0,
+        "external_n": 2.0,
+        "delta_acc": 0.0
+      },
+      "adjacent_rank": {
+        "baseline_acc": 1.0,
+        "baseline_n": 14.0,
+        "external_acc": 1.0,
+        "external_n": 14.0,
+        "delta_acc": 0.0
+      },
+      "small_margin": {
+        "baseline_acc": 1.0,
+        "baseline_n": 11.0,
+        "external_acc": 1.0,
+        "external_n": 11.0,
+        "delta_acc": 0.0
+      },
+      "exact_promoted": {
+        "baseline_acc": 1.0,
+        "baseline_n": 1.0,
+        "external_acc": 1.0,
+        "external_n": 1.0,
+        "delta_acc": 0.0
+      },
+      "exact_only": {
+        "baseline_acc": 1.0,
+        "baseline_n": 12.0,
+        "external_acc": 1.0,
+        "external_n": 12.0,
+        "delta_acc": 0.0
+      },
+      "approx_only": {
+        "baseline_acc": 1.0,
+        "baseline_n": 9.0,
+        "external_acc": 1.0,
+        "external_n": 9.0,
+        "delta_acc": 0.0
+      }
+    },
+    "dataset_slices": {
+      "HuggingFaceH4/MATH-500": {
+        "baseline_acc": 1.0,
+        "baseline_n": 9.0,
+        "external_acc": 1.0,
+        "external_n": 9.0,
+        "delta_acc": 0.0
+      },
+      "openai/gsm8k": {
+        "baseline_acc": 1.0,
+        "baseline_n": 12.0,
+        "external_acc": 1.0,
+        "external_n": 12.0,
+        "delta_acc": 0.0
+      }
+    },
+    "budget_slices": {
+      "2": {
+        "baseline_acc": 1.0,
+        "baseline_n": 12.0,
+        "external_acc": 1.0,
+        "external_n": 12.0,
+        "delta_acc": 0.0
+      },
+      "3": {
+        "baseline_acc": 1.0,
+        "baseline_n": 3.0,
+        "external_acc": 1.0,
+        "external_n": 3.0,
+        "delta_acc": 0.0
+      },
+      "4": {
+        "baseline_acc": 1.0,
+        "baseline_n": 6.0,
+        "external_acc": 1.0,
+        "external_n": 6.0,
+        "delta_acc": 0.0
+      }
+    }
+  },
+  "conclusion": "External signal is now non-degenerate and measurably shifts scores, but no branch-allocation metric gains were observed in this matched pass.",
+  "recommendation_next": "Do not proceed to Math-Shepherd yet; first increase internal evaluation hardness/coverage or redesign transfer alignment so non-degenerate external signal can affect branch-comparison bottlenecks."
+}
