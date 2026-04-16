@@ -1,0 +1,60 @@
+{
+  "date": "2026-04-16",
+  "pass": "canonical_protected_strata_holdout_expansion",
+  "status": "blocked_missing_corpus_artifacts",
+  "inputs": {
+    "canonical_corpus": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_lowbudget_exactpromoted_v1",
+    "external_prm": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+    "protocol_script": "scripts/run_canonical_boundary_sensitive_evaluation.py"
+  },
+  "strategy": {
+    "name": "split_seed_selection_for_protected_strata_support",
+    "script": "scripts/run_protected_strata_holdout_expansion.py",
+    "description": "Scan bounded split-seed range, maximize protected-strata support score, materialize split-frozen corpus, freeze holdout manifest-backed strata rows"
+  },
+  "baseline_counts_from_prior_boundary_summary": {
+    "total_test_pairs": 30,
+    "total_top1_states": 9,
+    "near_tie": 12,
+    "adjacent_rank": 18,
+    "small_margin": 22,
+    "exact_promoted": 2,
+    "exact_only": 2,
+    "approx_only": 28,
+    "low_budget": 8,
+    "extreme_low_budget_budget_eq_1": 2,
+    "boundary_eligible": 4,
+    "protected_strata": {
+      "exact_promoted_near_boundary": 1,
+      "exact_promoted_non_boundary": 1,
+      "approx_near_boundary": 3,
+      "approx_non_boundary": 25,
+      "low_budget_near_boundary": 1,
+      "low_budget_non_boundary": 7
+    }
+  },
+  "support_threshold": 5,
+  "underpowered_strata": [
+    "exact_promoted_near_boundary",
+    "exact_promoted_non_boundary",
+    "approx_near_boundary",
+    "low_budget_near_boundary",
+    "extreme_low_budget_boundary_eligible"
+  ],
+  "commands": [
+    "python -m py_compile scripts/run_protected_strata_holdout_expansion.py",
+    "python scripts/run_protected_strata_holdout_expansion.py --help | head -n 60",
+    "python scripts/run_protected_strata_holdout_expansion.py --canonical-corpus-dir outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_lowbudget_exactpromoted_v1 --output-corpus-dir outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_protected_strata_holdout_v1 --output-manifest-json outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_manifest.json --output-holdout-jsonl outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_holdout.jsonl --output-audit-json outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_audit.json --baseline-seed 17 --seed-min 1 --seed-max 128 --near-tie-margin 0.05 --feature-set v2 --hard-case-mult 1.75 --exact-promoted-mult 2.0"
+  ],
+  "blocker": "FileNotFoundError: canonical corpus rows/ missing required jsonl files",
+  "new_counts": null,
+  "metrics": null,
+  "paired_uncertainty": null,
+  "conclusion": {
+    "heldout_support_improved": null,
+    "interpretability_improved": null,
+    "real_method_improvement_proven": false,
+    "broad_ties_aligned": null,
+    "math_shepherd_recommendation": "wait"
+  }
+}

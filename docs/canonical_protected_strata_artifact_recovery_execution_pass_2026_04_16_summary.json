@@ -1,0 +1,586 @@
+{
+  "date": "2026-04-16",
+  "pass": "canonical_protected_strata_artifact_recovery_execution",
+  "diagnosis": {
+    "missing_reason": "outputs artifacts were not materialized in this workspace and outputs/* is gitignored",
+    "canonical_corpus_found_initially": false,
+    "canonical_rows_found_initially": false,
+    "branch_environment_mismatch": "possible fresh workspace checkout without prior output artifacts"
+  },
+  "artifact_recovery": {
+    "canonical_corpus_path": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_lowbudget_exactpromoted_v1",
+    "external_prm_path": "outputs/branch_learning_corpora_external/external_prm_mathshepherd_apps_20260416",
+    "recovered_by": "faithful_rebuild_from_recorded_pipeline",
+    "exact_identity_preserved": true
+  },
+  "validation": {
+    "required_files_present": true,
+    "expanded_artifacts_present": true,
+    "expanded_holdout_paths": {
+      "expanded_corpus": "outputs/branch_learning_corpora/real_branch_learning_corpus_20260416_protected_strata_holdout_v1",
+      "holdout_jsonl": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_holdout.jsonl",
+      "audit_json": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_audit.json",
+      "manifest_json": "outputs/canonical_branch_learning_pass/protected_strata_holdout_expansion_20260416_manifest.json"
+    }
+  },
+  "expansion": {
+    "baseline_seed": 17,
+    "selected_seed": 56,
+    "baseline_counts": {
+      "total_test_pairs": 30,
+      "near_tie": 12,
+      "adjacent_rank": 18,
+      "small_margin": 22,
+      "exact_promoted": 2,
+      "exact_only": 2,
+      "approx_only": 28,
+      "low_budget": 8,
+      "extreme_low_budget": 2,
+      "boundary_eligible": 4,
+      "exact_promoted_near_boundary": 1,
+      "exact_promoted_non_boundary": 1,
+      "approx_near_boundary": 3,
+      "approx_non_boundary": 25,
+      "low_budget_near_boundary": 1,
+      "low_budget_non_boundary": 7,
+      "extreme_low_budget_boundary_eligible": 0
+    },
+    "selected_counts": {
+      "total_test_pairs": 41,
+      "near_tie": 23,
+      "adjacent_rank": 25,
+      "small_margin": 35,
+      "exact_promoted": 2,
+      "exact_only": 2,
+      "approx_only": 39,
+      "low_budget": 16,
+      "extreme_low_budget": 3,
+      "boundary_eligible": 16,
+      "exact_promoted_near_boundary": 1,
+      "exact_promoted_non_boundary": 1,
+      "approx_near_boundary": 15,
+      "approx_non_boundary": 24,
+      "low_budget_near_boundary": 6,
+      "low_budget_non_boundary": 10,
+      "extreme_low_budget_boundary_eligible": 0
+    }
+  },
+  "old_vs_new_support": {
+    "old_eval_json": "outputs/canonical_branch_learning_pass/boundary_sensitive_eval_20260416_recovered_baseline.json",
+    "new_eval_json": "outputs/canonical_branch_learning_pass/boundary_sensitive_eval_20260416_protected_strata_expanded_seed56.json",
+    "total_test_pairs": [
+      30,
+      41
+    ],
+    "total_top1_states": [
+      9,
+      12
+    ],
+    "near_tie": [
+      12,
+      23
+    ],
+    "adjacent_rank": [
+      18,
+      25
+    ],
+    "small_margin": [
+      22,
+      35
+    ],
+    "exact_promoted": [
+      2,
+      2
+    ],
+    "exact_only": [
+      2,
+      2
+    ],
+    "approx_only": [
+      28,
+      39
+    ],
+    "low_budget": [
+      8,
+      16
+    ],
+    "extreme_low_budget_le_1": [
+      2,
+      3
+    ],
+    "boundary_eligible": [
+      4,
+      16
+    ],
+    "protected_strata": {
+      "exact_promoted_near_boundary": [
+        1,
+        1
+      ],
+      "exact_promoted_non_boundary": [
+        1,
+        1
+      ],
+      "approx_near_boundary": [
+        3,
+        15
+      ],
+      "approx_non_boundary": [
+        25,
+        24
+      ],
+      "low_budget_near_boundary": [
+        1,
+        6
+      ],
+      "low_budget_non_boundary": [
+        7,
+        10
+      ],
+      "extreme_low_budget_boundary_eligible": [
+        0,
+        0
+      ]
+    }
+  },
+  "metrics": {
+    "aggregate_old": {
+      "n": 30,
+      "anchor": 0.5333333333333333,
+      "broad": 0.6,
+      "aligned": 0.6,
+      "boundary": 0.6333333333333333
+    },
+    "aggregate_new": {
+      "n": 41,
+      "anchor": 0.8048780487804879,
+      "broad": 0.7804878048780488,
+      "aligned": 0.7804878048780488,
+      "boundary": 0.7804878048780488
+    },
+    "hard_slices_old": {
+      "near_tie": {
+        "n": 12,
+        "anchor": 0.4166666666666667,
+        "broad": 0.4166666666666667,
+        "aligned": 0.4166666666666667,
+        "boundary": 0.5
+      },
+      "adjacent_rank": {
+        "n": 18,
+        "anchor": 0.5555555555555556,
+        "broad": 0.5,
+        "aligned": 0.5,
+        "boundary": 0.5555555555555556
+      },
+      "small_margin": {
+        "n": 22,
+        "anchor": 0.45454545454545453,
+        "broad": 0.5,
+        "aligned": 0.5,
+        "boundary": 0.5454545454545454
+      }
+    },
+    "hard_slices_new": {
+      "near_tie": {
+        "n": 23,
+        "anchor": 0.7391304347826086,
+        "broad": 0.7391304347826086,
+        "aligned": 0.7391304347826086,
+        "boundary": 0.7391304347826086
+      },
+      "adjacent_rank": {
+        "n": 25,
+        "anchor": 0.76,
+        "broad": 0.68,
+        "aligned": 0.68,
+        "boundary": 0.68
+      },
+      "small_margin": {
+        "n": 35,
+        "anchor": 0.8,
+        "broad": 0.7714285714285715,
+        "aligned": 0.7714285714285715,
+        "boundary": 0.7714285714285715
+      }
+    },
+    "protected_strata_old": {
+      "exact_promoted_near_boundary": {
+        "n": 1,
+        "anchor": 0.0,
+        "broad": 1.0,
+        "aligned": 1.0,
+        "boundary": 1.0
+      },
+      "exact_promoted_non_boundary": {
+        "n": 1,
+        "anchor": 0.0,
+        "broad": 0.0,
+        "aligned": 0.0,
+        "boundary": 0.0
+      },
+      "approx_near_boundary": {
+        "n": 3,
+        "anchor": 0.0,
+        "broad": 0.6666666666666666,
+        "aligned": 0.6666666666666666,
+        "boundary": 0.6666666666666666
+      },
+      "approx_non_boundary": {
+        "n": 25,
+        "anchor": 0.64,
+        "broad": 0.6,
+        "aligned": 0.6,
+        "boundary": 0.64
+      },
+      "low_budget_near_boundary": {
+        "n": 1,
+        "anchor": 0.0,
+        "broad": 1.0,
+        "aligned": 1.0,
+        "boundary": 1.0
+      },
+      "low_budget_non_boundary": {
+        "n": 7,
+        "anchor": 0.5714285714285714,
+        "broad": 0.42857142857142855,
+        "aligned": 0.42857142857142855,
+        "boundary": 0.5714285714285714
+      }
+    },
+    "protected_strata_new": {
+      "exact_promoted_near_boundary": {
+        "n": 1,
+        "anchor": 1.0,
+        "broad": 1.0,
+        "aligned": 1.0,
+        "boundary": 1.0
+      },
+      "exact_promoted_non_boundary": {
+        "n": 1,
+        "anchor": 1.0,
+        "broad": 1.0,
+        "aligned": 1.0,
+        "boundary": 1.0
+      },
+      "approx_near_boundary": {
+        "n": 15,
+        "anchor": 0.8,
+        "broad": 0.7333333333333333,
+        "aligned": 0.7333333333333333,
+        "boundary": 0.7333333333333333
+      },
+      "approx_non_boundary": {
+        "n": 24,
+        "anchor": 0.7916666666666666,
+        "broad": 0.7916666666666666,
+        "aligned": 0.7916666666666666,
+        "boundary": 0.7916666666666666
+      },
+      "low_budget_near_boundary": {
+        "n": 6,
+        "anchor": 0.8333333333333334,
+        "broad": 0.8333333333333334,
+        "aligned": 0.8333333333333334,
+        "boundary": 0.8333333333333334
+      },
+      "low_budget_non_boundary": {
+        "n": 10,
+        "anchor": 0.8,
+        "broad": 0.8,
+        "aligned": 0.8,
+        "boundary": 0.8
+      }
+    },
+    "pivot_boundary_consistency_old": {
+      "anchor": {
+        "eligible_state_n": 4,
+        "consistency": 0.25
+      },
+      "broad": {
+        "eligible_state_n": 4,
+        "consistency": 0.5
+      },
+      "aligned": {
+        "eligible_state_n": 4,
+        "consistency": 0.5
+      },
+      "boundary": {
+        "eligible_state_n": 4,
+        "consistency": 0.5
+      }
+    },
+    "pivot_boundary_consistency_new": {
+      "anchor": {
+        "eligible_state_n": 6,
+        "consistency": 0.6666666666666666
+      },
+      "broad": {
+        "eligible_state_n": 6,
+        "consistency": 0.6666666666666666
+      },
+      "aligned": {
+        "eligible_state_n": 6,
+        "consistency": 0.6666666666666666
+      },
+      "boundary": {
+        "eligible_state_n": 6,
+        "consistency": 0.6666666666666666
+      }
+    },
+    "paired_uncertainty_old": {
+      "all": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.06666666666666667,
+          "ci_low": -0.06666666666666667,
+          "ci_high": 0.2,
+          "n": 30
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.06666666666666667,
+          "ci_low": -0.06666666666666667,
+          "ci_high": 0.2,
+          "n": 30
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.1,
+          "ci_low": 0.0,
+          "ci_high": 0.23333333333333334,
+          "n": 30
+        }
+      },
+      "near_tie": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": -0.25,
+          "ci_high": 0.25,
+          "n": 12
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": -0.25,
+          "ci_high": 0.25,
+          "n": 12
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.08333333333333333,
+          "ci_low": 0.0,
+          "ci_high": 0.25,
+          "n": 12
+        }
+      },
+      "adjacent_rank": {
+        "anchor_vs_broad": {
+          "mean_delta": -0.05555555555555555,
+          "ci_low": -0.16666666666666666,
+          "ci_high": 0.0,
+          "n": 18
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": -0.05555555555555555,
+          "ci_low": -0.16666666666666666,
+          "ci_high": 0.0,
+          "n": 18
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 18
+        }
+      },
+      "small_margin": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.045454545454545456,
+          "ci_low": -0.09090909090909091,
+          "ci_high": 0.18181818181818182,
+          "n": 22
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.045454545454545456,
+          "ci_low": -0.09090909090909091,
+          "ci_high": 0.18181818181818182,
+          "n": 22
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.09090909090909091,
+          "ci_low": 0.0,
+          "ci_high": 0.22727272727272727,
+          "n": 22
+        }
+      },
+      "low_budget": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": -0.375,
+          "ci_high": 0.375,
+          "n": 8
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": -0.375,
+          "ci_high": 0.375,
+          "n": 8
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.125,
+          "ci_low": 0.0,
+          "ci_high": 0.375,
+          "n": 8
+        }
+      },
+      "boundary_eligible": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.75,
+          "ci_low": 0.25,
+          "ci_high": 1.0,
+          "n": 4
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.75,
+          "ci_low": 0.25,
+          "ci_high": 1.0,
+          "n": 4
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.75,
+          "ci_low": 0.25,
+          "ci_high": 1.0,
+          "n": 4
+        }
+      }
+    },
+    "paired_uncertainty_new": {
+      "all": {
+        "anchor_vs_broad": {
+          "mean_delta": -0.024390243902439025,
+          "ci_low": -0.14634146341463414,
+          "ci_high": 0.0975609756097561,
+          "n": 41
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": -0.024390243902439025,
+          "ci_low": -0.14634146341463414,
+          "ci_high": 0.0975609756097561,
+          "n": 41
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": -0.024390243902439025,
+          "ci_low": -0.14634146341463414,
+          "ci_high": 0.0975609756097561,
+          "n": 41
+        }
+      },
+      "near_tie": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": -0.13043478260869565,
+          "ci_high": 0.13043478260869565,
+          "n": 23
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": -0.13043478260869565,
+          "ci_high": 0.13043478260869565,
+          "n": 23
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": -0.13043478260869565,
+          "ci_high": 0.13043478260869565,
+          "n": 23
+        }
+      },
+      "adjacent_rank": {
+        "anchor_vs_broad": {
+          "mean_delta": -0.08,
+          "ci_low": -0.2,
+          "ci_high": 0.0,
+          "n": 25
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": -0.08,
+          "ci_low": -0.2,
+          "ci_high": 0.0,
+          "n": 25
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": -0.08,
+          "ci_low": -0.2,
+          "ci_high": 0.0,
+          "n": 25
+        }
+      },
+      "small_margin": {
+        "anchor_vs_broad": {
+          "mean_delta": -0.02857142857142857,
+          "ci_low": -0.11428571428571428,
+          "ci_high": 0.05714285714285714,
+          "n": 35
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": -0.02857142857142857,
+          "ci_low": -0.11428571428571428,
+          "ci_high": 0.05714285714285714,
+          "n": 35
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": -0.02857142857142857,
+          "ci_low": -0.11428571428571428,
+          "ci_high": 0.05714285714285714,
+          "n": 35
+        }
+      },
+      "low_budget": {
+        "anchor_vs_broad": {
+          "mean_delta": 0.0,
+          "ci_low": -0.1875,
+          "ci_high": 0.1875,
+          "n": 16
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": 0.0,
+          "ci_low": -0.1875,
+          "ci_high": 0.1875,
+          "n": 16
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": 0.0,
+          "ci_low": -0.1875,
+          "ci_high": 0.1875,
+          "n": 16
+        }
+      },
+      "boundary_eligible": {
+        "anchor_vs_broad": {
+          "mean_delta": -0.0625,
+          "ci_low": -0.3125,
+          "ci_high": 0.1875,
+          "n": 16
+        },
+        "anchor_vs_aligned": {
+          "mean_delta": -0.0625,
+          "ci_low": -0.3125,
+          "ci_high": 0.1875,
+          "n": 16
+        },
+        "anchor_vs_boundary": {
+          "mean_delta": -0.0625,
+          "ci_low": -0.3125,
+          "ci_high": 0.1875,
+          "n": 16
+        }
+      }
+    }
+  },
+  "conclusion": {
+    "artifact_recovery_succeeded": true,
+    "expansion_succeeded": true,
+    "support_improved_on_targeted_slices": true,
+    "exact_promoted_still_sparse": true,
+    "extreme_low_budget_boundary_still_sparse": true,
+    "broad_ties_aligned": true,
+    "robust_method_gain_proven": false,
+    "math_shepherd_recommendation": "wait"
+  }
+}
