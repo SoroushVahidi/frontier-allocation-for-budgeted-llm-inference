@@ -15,6 +15,7 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 9. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
 10. [`REPO_MAP.md`](REPO_MAP.md)
 11. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
+12. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
 
 ## Canonical supporting references
 

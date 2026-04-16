@@ -87,3 +87,15 @@ Not safe to claim yet:
 - that label-data bottleneck is fully solved,
 - that approximate labels are exact substitutes for tiny-state exact labels,
 - that current learned allocators trained on these labels are robust universal winners.
+
+## Brute-force label-data scaling claims (2026-04-16 multi-dataset run)
+
+Safe to claim now:
+- a larger merged supervision corpus has been generated in-repo across GSM8K, MATH-500, and AMO-Bench with multi-seed/multi-budget coverage and explicit per-row provenance,
+- merged corpus scale is materially larger than the prior medium GSM8K corpus (about 3.1x on states/candidate/pairwise row counts),
+- learned branch allocators trained on this corpus achieve non-trivial held-out and leave-one-dataset-out performance, with measurable near-tie sensitivity diagnostics.
+
+Not safe to claim yet:
+- that scaled labels fully close supervision-target mismatch,
+- that exact-slice results are conclusive given current sparse exact coverage,
+- that cross-dataset robustness is solved or that any learner is a robust universal winner.
