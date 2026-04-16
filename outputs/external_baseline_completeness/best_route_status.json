@@ -1,0 +1,44 @@
+{
+  "generated_utc": "2026-04-16T01:29:17.824519+00:00",
+  "baseline_key": "best_route_microsoft",
+  "status": "runnable_adjacent",
+  "integration_kind": "verified_import_only",
+  "status_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ],
+  "upstream": {
+    "repo": "https://github.com/microsoft/best-route-llm",
+    "paper": "https://arxiv.org/abs/2506.22716",
+    "project_page": "https://www.microsoft.com/en-us/research/publication/best-route-adaptive-llm-routing-with-test-time-optimal-compute/"
+  },
+  "protocol": {
+    "validator_script": "scripts/verify_best_route_import.py",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "mixed_prompt_construction",
+      "multi_sample_response_generation",
+      "armoRM_scoring",
+      "proxy_reward_model_scoring",
+      "router_training"
+    ],
+    "candidate_arm_requirement": "model+best-of-n arms must include bo1 and at least one bo>1",
+    "comparability_scope": "adjacent_only"
+  },
+  "safe_claims": [
+    "This repo now supports a reviewer-auditable BEST-Route adjacent import path.",
+    "Imports are validated for workflow-stage declarations, candidate-arm structure, and explicit adjacent-only scope."
+  ],
+  "not_safe_claims": [
+    "Direct apples-to-apples BEST-Route reproduction inside this repo.",
+    "Control-space equivalence between BEST-Route bo-arm routing and this repo's frontier/action substrate."
+  ]
+}

@@ -114,5 +114,9 @@ All scripts write run artifacts under `outputs/` unless overridden.
 |---|---|
 | `verify_external_baseline_runnability.py` | Smoke-verifies that s1/TALE/L1 MODE A runners execute and that MODE B adapters correctly report blocked/import status boundaries. Writes artifacts under `outputs/external_baseline_runnability/<run_id>/`. |
 | `generate_external_baseline_completeness_report.py` | Generates repository-facing external-baseline completeness report and machine-readable summary artifacts (`docs/external_baseline_completeness_report.md`, `outputs/external_baseline_completeness_summary.{json,csv}`). |
+| `verify_best_route_import.py` | Strict validator for BEST-Route adjacent import packages (`metadata.json` + `results.csv`) with workflow-stage, bo-arm schema, and adjacent-only comparability checks. |
+| `generate_best_route_status_report.py` | Generates conservative BEST-Route status artifacts under `outputs/external_baseline_completeness/` and documents safe vs unsafe claims. |
+| `verify_when_solve_when_verify_import.py` | Strict validator for When-To-Solve-When-To-Verify adjacent import packages (SC-vs-GenRM strategy coverage, fixed-budget fields, and adjacent-only comparability checks). |
+| `generate_when_solve_when_verify_status_report.py` | Generates conservative when_solve_when_verify status artifacts under `outputs/external_baseline_completeness/`. |
 | `verify_compute_optimal_tts_provenance.py` | Audits paper↔repo provenance signals for compute_optimal_tts (target OpenReview paper vs linked repo identity) and emits machine-readable provenance checks. |
 | `generate_compute_optimal_tts_blocker_report.py` | Generates conservative blocker/status artifacts for compute_optimal_tts under `outputs/external_baseline_completeness/`. |

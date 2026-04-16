@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-04-15T23:49:35.778701+00:00",
+  "generated_utc": "2026-04-16T01:29:16.615182+00:00",
   "baseline_key": "compute_optimal_tts",
   "status": "blocked",
   "status_taxonomy": [
@@ -19,7 +19,7 @@
     },
     "linked_repo": {
       "url": "https://github.com/RyanLiu112/compute-optimal-tts",
-      "observed_head_commit": "0ee2578af1f8d6cac445c9c4c72780528bb94556",
+      "observed_head_commit": null,
       "paper_repo_match_strength": "weak",
       "official_for_target_paper": "unverified",
       "reason": "Linked repo self-identifies around arXiv:2502.06703; target paper in this repo is OpenReview 4FWAwZtd2n."
@@ -35,5 +35,42 @@
     "recommended": "discussion_only_not_empirical",
     "safe_claim": "Conceptual adjacent baseline for compute-optimal allocation framing; not runnable in this repo yet."
   },
-  "next_exact_step": "Pin an author-verified official code release (or explicit author confirmation), then implement a minimal import-only adapter protocol on shared prompts and matched cost accounting before any empirical claim."
+  "future_official_import_contract": {
+    "required_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_metadata_fields": [
+      "source.type",
+      "source.official_mapping_evidence",
+      "paper.openreview_id",
+      "paper.title",
+      "model.checkpoint",
+      "dataset.name",
+      "dataset.split",
+      "budget.unit",
+      "budget.settings",
+      "token_accounting.prompt_tokens_field",
+      "token_accounting.completion_tokens_field",
+      "token_accounting.total_tokens_field",
+      "provenance.exported_at_utc",
+      "provenance.source_uri",
+      "provenance.artifact_id",
+      "provenance.commit_or_version_if_available"
+    ],
+    "required_results_columns": [
+      "mode",
+      "source_type",
+      "dataset",
+      "split",
+      "model_checkpoint",
+      "budget_setting",
+      "accuracy",
+      "avg_token_cost",
+      "artifact_id",
+      "commit_or_version"
+    ],
+    "required_scope_label": "adjacent_only_until_control_space_match_is_established"
+  },
+  "next_exact_step": "Pin an author-verified official code release (or explicit author confirmation), then implement a strict official-import validator against this contract on shared prompts and matched cost accounting before any empirical claim."
 }

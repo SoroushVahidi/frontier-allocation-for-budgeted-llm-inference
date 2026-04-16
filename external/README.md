@@ -39,7 +39,7 @@ These strengthen comparisons for **fixed test-time compute**, **verifier vs gene
 | Baseline | Topic | Integration | Official / cited code | License (GitHub API) |
 |---|---|---|---|---|
 | Snell et al. compute-optimal TTS (ICLR 2025) | Optimal test-time compute scaling | `BLOCKED` | **Paper:** OpenReview `4FWAwZtd2n`. **Code in registry:** [RyanLiu112/compute-optimal-tts](https://github.com/RyanLiu112/compute-optimal-tts) self-identifies with arXiv `2502.06703`; official mapping to target paper remains unverified. | **MIT** (on linked repo) |
-| When To Solve, When To Verify | SC vs GenRM under budget | `LINK_ONLY` | https://github.com/nishadsinghi/sc-genrm-scaling (linked from arXiv abstract) | **Apache-2.0** |
+| When To Solve, When To Verify | SC vs GenRM under budget | `RUNNABLE_ADJACENT` | https://github.com/nishadsinghi/sc-genrm-scaling (linked from arXiv abstract) | **Apache-2.0** |
 | Cascade routing (ICML 2025) | Unified routing + cascading | `LINK_ONLY` | https://github.com/eth-sri/cascade-routing | **Apache-2.0** |
 | MoB (Majority-of-the-Bests) | Bootstrapped Best-of-N improvement | `LINK_ONLY` | https://github.com/arakhsha/mob | **MIT** (repo); paper CC BY-NC-SA on OpenReview |
 | s1: Simple test-time scaling (EMNLP 2025) | Test-time budget forcing / thinking-length scaling | `MODE_A_COMPLETE_MODE_B_PARTIAL` | https://github.com/simplescaling/s1 | **Apache-2.0** |
@@ -51,6 +51,7 @@ Per-baseline notes:
 - `external/compute_optimal_tts/README.md`
 - `docs/compute_optimal_tts_integration.md`
 - `external/when_solve_when_verify/README.md`
+- `docs/when_solve_when_verify_integration.md`
 - `external/cascade_routing/README.md`
 - `external/mob_majority_of_bests/README.md`
 - `external/s1_simple_test_time_scaling/README.md`
@@ -65,7 +66,7 @@ Per-baseline notes:
 |---|---|---|---|---|
 | MCTS + LLM (community) | `LINK_ONLY` | https://github.com/NumberChiffre/mcts-llm | MIT | Not bound to a single canonical paper in this README; cite carefully. |
 | LLM_Tree_Search (Waterhorse) | `discuss_only` | https://github.com/waterhorse1/LLM_Tree_Search | **Unclear** | Do not submodule until license confirmed. |
-| BEST-Route (Microsoft) | `BLOCKED` | https://github.com/microsoft/best-route-llm | MIT (API); re-verify `LICENSE` in clone | Routing baseline. |
+| BEST-Route (Microsoft) | `RUNNABLE_ADJACENT` | https://github.com/microsoft/best-route-llm | MIT (API); re-verify `LICENSE` in clone | Routing baseline via verified import-only adjacent protocol. |
 | OpenR | `LINK_ONLY` | https://github.com/openreasoner/openr | MIT | Optional ecosystem / process reasoning stack. |
 
 ---
@@ -103,7 +104,8 @@ Per-baseline notes:
 This pass makes the currently integrated baselines fully auditable and keeps comparability claims conservative:
 
 - **s1 / TALE / L1**: `MODE_A_COMPLETE_MODE_B_PARTIAL` with runnable MODE A scripts in-repo; s1 and TALE MODE B are usable via strict verified official import (TALE includes variant-separation checks), while L1 MODE B remains blocked without imported official/full outputs.
-- **BEST-Route**: currently **`BLOCKED` for fair in-repo comparison claims**, not because upstream code is missing, but because the upstream response-bank + reward-model + router-training workflow is not yet mapped to this repo's frontier/action substrate under a shared cost protocol.
+- **BEST-Route**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_best_route_import.py`), with explicit adjacent-only claim boundaries and no direct reproduction claim.
+- **When To Solve, When To Verify**: now **`RUNNABLE_ADJACENT` via verified import protocol** (`scripts/verify_when_solve_when_verify_import.py`) for SC-vs-GenRM fixed-budget adjacent comparisons only.
 
 Use these artifacts to audit runnability and status:
 

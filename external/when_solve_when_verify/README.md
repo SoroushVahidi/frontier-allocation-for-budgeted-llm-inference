@@ -2,20 +2,33 @@
 
 - **Canonical title:** *When To Solve, When To Verify: Compute-Optimal Problem Solving and Generative Verification for LLM Reasoning*
 - **Paper:** https://arxiv.org/abs/2504.01005
-- **Official code (linked from arXiv abstract v2):** https://github.com/nishadsinghi/sc-genrm-scaling
-- **License (GitHub API, verification time):** **Apache-2.0**
-- **Import status:** **Linked only** — no submodule, no vendored code in this repo.
-- **Role for this project:** Baseline for **splitting fixed inference budget** between solution generation (e.g. self-consistency) and **generative verification (GenRM)**; directly relevant to verifier-guided search and frontier methods.
+- **Official code (linked from arXiv abstract):** https://github.com/nishadsinghi/sc-genrm-scaling
+- **License (upstream repo):** **Apache-2.0**
+- **Import status in this repo:** **`RUNNABLE_ADJACENT` via verified import protocol only**.
 
-## Setup notes (upstream)
+## Why this is adjacent (not direct) here
 
-```bash
-git clone https://github.com/nishadsinghi/sc-genrm-scaling.git
-```
+Upstream SC-vs-GenRM evaluation relies on a specific generation + verification + evaluation stack (vLLM-heavy workflows and upstream data/model conventions). This repo does not reproduce that full stack end-to-end as native methods.
 
-Follow upstream README for vLLM / Large Language Monkeys dependencies.
+Therefore, this baseline is integrated as an adjacent import protocol with explicit claim boundaries.
 
-## Integration scaffold (this repo)
+## What is now unblocked
 
-- Registry entry: `configs/external_baselines_registry.json` → `when_solve_when_verify`
-- This directory contains **documentation only**.
+A strict import-validation protocol now exists:
+
+- validator: `scripts/verify_when_solve_when_verify_import.py`
+- canonical integration note: `docs/when_solve_when_verify_integration.md`
+- status artifacts:
+  - `outputs/external_baseline_completeness/when_solve_when_verify_status.json`
+  - `outputs/external_baseline_completeness/when_solve_when_verify_status.md`
+
+## Non-overclaim boundary
+
+Safe:
+
+- reviewer-auditable adjacent import comparisons after validation.
+
+Not safe:
+
+- claiming full in-repo reproduction,
+- claiming direct control-equivalent comparability with frontier/action-native controllers.

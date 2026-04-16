@@ -1,0 +1,3 @@
+mode,source_type,dataset,split,generator_model,verifier_model,strategy_family,num_solutions,num_verifications,compute_budget_tokens,success_rate,artifact_id,commit_or_version,comparability_scope
+when_solve_when_verify_adjacent_import,official,math128,test,meta-llama/Llama-3.1-8B-Instruct,none,self_consistency,64,0,65536,0.56,sc-genrm-demo-001,demo,adjacent_only
+when_solve_when_verify_adjacent_import,official,math128,test,meta-llama/Llama-3.1-8B-Instruct,sc-genrm-scaling/llama_3.1_8b_genrm_ft,genrm_best_of_n,32,16,65536,0.53,sc-genrm-demo-001,demo,adjacent_only

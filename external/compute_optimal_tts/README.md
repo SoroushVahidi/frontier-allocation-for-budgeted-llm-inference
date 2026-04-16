@@ -44,3 +44,10 @@ git clone --depth 1 https://github.com/RyanLiu112/compute-optimal-tts.git .tmp_c
 - Do not claim this baseline is implemented/runnable in this repo today.
 - Do not claim official reproduction for Snell et al. ICLR 2025 from this linked repo unless author-level mapping is verified.
 - Use as adjacent discussion baseline until provenance and fairness protocol are both upgraded.
+
+## Strengthened automation in this pass
+
+- Provenance checker supports optional online signal checks:
+  - `python scripts/verify_compute_optimal_tts_provenance.py --check-online`
+- Blocker report includes an exact future official-import contract (required files/schema/scope):
+  - `python scripts/generate_compute_optimal_tts_blocker_report.py`

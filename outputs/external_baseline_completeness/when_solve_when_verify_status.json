@@ -1,0 +1,45 @@
+{
+  "generated_utc": "2026-04-16T01:40:38.992096+00:00",
+  "baseline_key": "when_solve_when_verify",
+  "status": "runnable_adjacent",
+  "integration_kind": "verified_import_only",
+  "status_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "mode_a_only",
+    "mode_b_partial",
+    "link_only",
+    "discuss_only",
+    "blocked"
+  ],
+  "upstream": {
+    "repo": "https://github.com/nishadsinghi/sc-genrm-scaling",
+    "paper": "https://arxiv.org/abs/2504.01005",
+    "hf_org": "https://huggingface.co/sc-genrm-scaling"
+  },
+  "protocol": {
+    "validator_script": "scripts/verify_when_solve_when_verify_import.py",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "solution_generation",
+      "verification_generation",
+      "fixed_budget_evaluation"
+    ],
+    "required_strategy_coverage": [
+      "self_consistency",
+      "at_least_one_genrm_strategy"
+    ],
+    "comparability_scope": "adjacent_only"
+  },
+  "safe_claims": [
+    "This repo supports reviewer-auditable adjacent import of SC-vs-GenRM fixed-budget results.",
+    "Imported outputs are validated for stage declarations, strategy-family coverage, and adjacent-only scope."
+  ],
+  "not_safe_claims": [
+    "Direct in-repo reproduction of full upstream generation+verification stack.",
+    "Control-space equivalence with this repo's frontier/action-native methods."
+  ]
+}

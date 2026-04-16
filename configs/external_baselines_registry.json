@@ -7,7 +7,7 @@
       "doc": "external/compute_optimal_tts/README.md",
       "integration": "blocked",
       "completeness_class": "blocked",
-      "blocker": "unverified_paper_repo_mapping_plus_no_fair_adapter_protocol",
+      "blocker": "unverified_paper_repo_mapping_plus_missing_verified_official_import_contract_execution",
       "provenance": {
         "target_paper": "https://openreview.net/forum?id=4FWAwZtd2n",
         "linked_repo": "https://github.com/RyanLiu112/compute-optimal-tts",
@@ -23,9 +23,14 @@
     "when_solve_when_verify": {
       "clone_url": "https://github.com/nishadsinghi/sc-genrm-scaling.git",
       "doc": "external/when_solve_when_verify/README.md",
-      "integration": "link_only",
-      "completeness_class": "link_only",
-      "blocker": "no_in_repo_adapter"
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_stack_reproduction_claim",
+      "integration_doc": "docs/when_solve_when_verify_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/when_solve_when_verify_status.json",
+        "outputs/external_baseline_completeness/when_solve_when_verify_status.md"
+      ]
     },
     "cascade_routing": {
       "clone_url": "https://github.com/eth-sri/cascade-routing.git",
@@ -58,9 +63,14 @@
     "best_route_microsoft": {
       "clone_url": "https://github.com/microsoft/best-route-llm.git",
       "doc": "external/best_route_microsoft/README.md",
-      "integration": "blocked",
-      "completeness_class": "blocked",
-      "blocker": "requires_fair_adapter_protocol_before_claiming_comparability"
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration_doc": "docs/best_route_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/best_route_status.json",
+        "outputs/external_baseline_completeness/best_route_status.md"
+      ]
     },
     "openr": {
       "clone_url": "https://github.com/openreasoner/openr.git",

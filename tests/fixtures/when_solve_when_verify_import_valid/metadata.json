@@ -1,0 +1,24 @@
+{
+  "source": {"type": "official"},
+  "upstream": {
+    "repo_url": "https://github.com/nishadsinghi/sc-genrm-scaling",
+    "paper_url": "https://arxiv.org/abs/2504.01005",
+    "workflow_stages_completed": [
+      "solution_generation",
+      "verification_generation",
+      "fixed_budget_evaluation"
+    ]
+  },
+  "dataset": {"name": "math128", "split": "test"},
+  "budget": {
+    "unit": "tokens",
+    "fixed_budget_interpretation": "generator_and_verifier_token_budget_joint"
+  },
+  "strategy_space": ["self_consistency", "genrm_best_of_n"],
+  "provenance": {
+    "exported_at_utc": "2026-04-16T00:00:00Z",
+    "source_uri": "https://example.org/sc-genrm/export",
+    "artifact_id": "sc-genrm-demo-001",
+    "commit_or_version_if_available": "demo"
+  }
+}
