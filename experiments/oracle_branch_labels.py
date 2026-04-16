@@ -44,6 +44,10 @@ class OracleLabelConfig:
     high_budget_multiplier: float = 1.5
     exhaustive_action_budget_cap: int = 2
     tie_margin: float = 0.02
+    uncertainty_use_margin_band: bool = True
+    uncertainty_use_ci_overlap_zero: bool = True
+    uncertainty_use_disagreement_rate: bool = True
+    uncertainty_disagreement_rate_threshold: float = 0.5
     train_ratio: float = 0.8
     value_aggregation: str = "max"
     value_std_penalty: float = 0.0
@@ -455,6 +459,19 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
                 b = rows[j]
                 oracle_delta = float(a["approx_oracle_continuation_value"]) - float(b["approx_oracle_continuation_value"])
                 proxy_delta = float(a["proxy_continuation_value"]) - float(b["proxy_continuation_value"])
+                std_a = float(a.get("rollout_value_std", 0.0))
+                std_b = float(b.get("rollout_value_std", 0.0))
+                utility_std = (std_a * std_a + std_b * std_b) ** 0.5
+                n_rollouts_a = int(a.get("rollout_count", 0))
+                n_rollouts_b = int(b.get("rollout_count", 0))
+                n_rollouts = max(0, min(n_rollouts_a, n_rollouts_b))
+                if n_rollouts > 0:
+                    ci_half_width = 1.96 * (utility_std / (n_rollouts**0.5))
+                    ci_low = float(oracle_delta - ci_half_width)
+                    ci_high = float(oracle_delta + ci_half_width)
+                else:
+                    ci_low = float(oracle_delta)
+                    ci_high = float(oracle_delta)
                 oracle_tie = abs(oracle_delta) <= cfg.tie_margin
                 proxy_tie = abs(proxy_delta) <= cfg.tie_margin
                 if oracle_tie:
@@ -472,6 +489,15 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
                     agreements += 1
                 else:
                     disagreements += 1
+                disagreement_rate = 0.0 if agree else 1.0
+                is_near_tie = abs(oracle_delta) <= cfg.tie_margin
+                margin_uncertain = cfg.uncertainty_use_margin_band and is_near_tie
+                ci_uncertain = cfg.uncertainty_use_ci_overlap_zero and (ci_low <= 0.0 <= ci_high)
+                disagreement_uncertain = (
+                    cfg.uncertainty_use_disagreement_rate
+                    and disagreement_rate >= float(cfg.uncertainty_disagreement_rate_threshold)
+                )
+                is_uncertain = bool(margin_uncertain or ci_uncertain or disagreement_uncertain)
 
                 pair_rows.append(
                     {
@@ -491,6 +517,15 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
                         "proxy_tie": int(proxy_tie),
                         "oracle_margin": abs(oracle_delta),
                         "proxy_margin": abs(proxy_delta),
+                        "is_near_tie": int(is_near_tie),
+                        "tie_margin": float(cfg.tie_margin),
+                        "abs_margin": float(abs(oracle_delta)),
+                        "utility_std": float(utility_std),
+                        "ci_low": float(ci_low),
+                        "ci_high": float(ci_high),
+                        "n_rollouts": int(n_rollouts),
+                        "disagreement_rate": float(disagreement_rate),
+                        "is_uncertain": int(is_uncertain),
                         "label_source": "approx_oracle_continuation_value_vs_proxy_continuation_value",
                         "mode": str(cfg.mode),
                         "value_is_exact_a": bool(a["value_is_exact"]),
@@ -528,8 +563,43 @@ def generate_oracle_branch_labels(cfg: OracleLabelConfig) -> tuple[list[dict[str
         "oracle_proxy_pair_disagreement_rate": (disagreements / max(1, agreements + disagreements)),
         "oracle_proxy_confident_disagreements": confident_disagreements,
         "oracle_pair_tie_rate": ties / max(1, len(pair_rows)),
+        "pair_near_tie_coverage": (
+            sum(int(bool(r.get("is_near_tie", 0))) for r in pair_rows) / max(1, len(pair_rows))
+        ),
+        "pair_uncertainty_coverage": (
+            sum(int(bool(r.get("is_uncertain", 0))) for r in pair_rows) / max(1, len(pair_rows))
+        ),
+        "pair_label_polarity_by_budget_bucket": {
+            bucket: {
+                "rows": len(bucket_rows),
+                "prefer_a_rate": sum(1 for r in bucket_rows if int(r.get("oracle_preference", 0)) > 0) / max(1, len(bucket_rows)),
+                "prefer_b_rate": sum(1 for r in bucket_rows if int(r.get("oracle_preference", 0)) < 0) / max(1, len(bucket_rows)),
+                "tie_rate": sum(1 for r in bucket_rows if int(r.get("oracle_preference", 0)) == 0) / max(1, len(bucket_rows)),
+            }
+            for bucket in ("0-2", "3-5", "6+")
+            for bucket_rows in [[
+                r
+                for r in pair_rows
+                if (
+                    ("0-2" if int(r.get("remaining_budget", 0)) <= 2 else ("3-5" if int(r.get("remaining_budget", 0)) <= 5 else "6+"))
+                    == bucket
+                )
+            ]]
+        },
         "branch_depth_distribution": depth_bins,
         "remaining_budget_distribution": budget_bins,
+        "uncertainty_rule_config": {
+            "or_semantics": True,
+            "margin_band_rule": {
+                "enabled": bool(cfg.uncertainty_use_margin_band),
+                "threshold_abs_margin_leq": float(cfg.tie_margin),
+            },
+            "ci_overlap_with_zero_rule": {"enabled": bool(cfg.uncertainty_use_ci_overlap_zero)},
+            "disagreement_rate_rule": {
+                "enabled": bool(cfg.uncertainty_use_disagreement_rate),
+                "threshold_geq": float(cfg.uncertainty_disagreement_rate_threshold),
+            },
+        },
     }
     return branch_rows, pair_rows, summary
 

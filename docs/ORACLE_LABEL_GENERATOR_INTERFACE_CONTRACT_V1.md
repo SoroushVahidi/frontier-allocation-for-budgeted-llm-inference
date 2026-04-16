@@ -95,6 +95,27 @@ Rows may include optional uncertainty/diagnostic metadata, for example:
 - `trace_id`
 - `runtime_ms`
 
+For canonical downstream compatibility, pairwise and outside-option exports should now
+include the canonical uncertainty fields documented in
+`docs/CANONICAL_UNCERTAINTY_FIELDS_SCHEMA.md`:
+- `is_near_tie`
+- `tie_margin`
+- `abs_margin`
+- `utility_std`
+- `ci_low`
+- `ci_high`
+- `n_rollouts`
+- `is_uncertain`
+
+Outside-option rows additionally include:
+- `outside_option_type`
+
+Recommended rule metadata (run-level manifest/config):
+- margin-band rule (enabled + threshold),
+- CI-overlap-with-zero rule (enabled),
+- disagreement-rate rule (enabled + threshold),
+- and explicit OR semantics across enabled rules.
+
 Run-level manifest may include:
 - code/version hash,
 - hostname/job id,
