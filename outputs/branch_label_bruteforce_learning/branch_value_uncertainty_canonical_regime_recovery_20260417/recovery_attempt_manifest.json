@@ -1,0 +1,13 @@
+{
+  "artifacts": [
+    "recovery_diagnosis_summary.json",
+    "recovery_attempt_manifest.json",
+    "recovery_commands.md"
+  ],
+  "strict_validation_probe_run_id": "branch_value_uncertainty_strict_validation_canonical_recovery_probe_20260417",
+  "strict_validation_probe_summary": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_strict_validation_canonical_recovery_probe_20260417/strict_validation_summary.json",
+  "notes": [
+    "Strict validation script was re-run unchanged against the strongest canonical root candidate.",
+    "No canonical regime directories were restorable from current checked-in artifacts."
+  ]
+}

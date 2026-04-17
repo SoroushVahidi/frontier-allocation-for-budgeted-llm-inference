@@ -1,0 +1,259 @@
+{
+  "run_id": "branch_value_uncertainty_canonical_regime_rebuild_20260417",
+  "strict_validation_run_id": "branch_value_uncertainty_strict_validation_canonical_rebuild_20260417",
+  "canonical_targets_root": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root",
+  "upstream_chain": [
+    {
+      "step": 1,
+      "script": "scripts/run_bruteforce_branch_label_generator.py",
+      "output": "outputs/branch_label_bruteforce/canonical_rebuild_base_labels_20260417"
+    },
+    {
+      "step": 2,
+      "script": "scripts/mine_bruteforce_hard_regions.py",
+      "output": "outputs/branch_label_bruteforce_targets/canonical_rebuild_hard_region_mining_20260417"
+    },
+    {
+      "step": 3,
+      "script": "scripts/expand_bruteforce_exact_hard_regions.py",
+      "output": "outputs/branch_label_bruteforce_targets/canonical_rebuild_exact_hard_region_expansion_20260417"
+    },
+    {
+      "step": 4,
+      "script": "scripts/build_exact_augmented_target_regimes.py",
+      "output": "outputs/branch_label_bruteforce_targets/canonical_rebuild_exact_augmented_regimes_20260417"
+    },
+    {
+      "step": 5,
+      "script": "scripts/build_bruteforce_target_regimes.py",
+      "output": "outputs/branch_label_bruteforce_targets/canonical_rebuild_penalized_regimes_20260417"
+    },
+    {
+      "step": 6,
+      "script": "assemble copy",
+      "output": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root"
+    }
+  ],
+  "strict_replay_missing_regimes": [],
+  "aggregate_full_method": {
+    "accepted_pair_accuracy": 0.9333333333333333,
+    "coverage": 0.2698412698412699,
+    "defer_rate": 0.7301587301587301,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+  },
+  "aggregate_pairwise_binary_baseline": {
+    "accepted_pair_accuracy": 0.7936507936507937,
+    "coverage": 1.0,
+    "defer_rate": 0.0
+  },
+  "aggregate_penalized_marginal_proxy_baseline": {
+    "accepted_pair_accuracy": 0.7666666666666667,
+    "coverage": 0.49074074074074076,
+    "defer_rate": 0.5092592592592592
+  },
+  "aggregate_deltas": {
+    "full_vs_pairwise_accuracy": 0.13968253968253963,
+    "full_vs_value_only_accuracy": 0.3380952380952381
+  },
+  "regime_specific_full_method_seed_rows": {
+    "all_pairs_approx": [
+      {
+        "seed": 11,
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.14285714285714285,
+        "defer_rate": 0.8571428571428571,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "budget_slices": {
+          "3": {
+            "coverage": 0.3333333333333333,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          },
+          "5": {
+            "coverage": 0.0,
+            "accepted_pair_accuracy": 0.0,
+            "rows": 4.0
+          }
+        }
+      },
+      {
+        "seed": 29,
+        "accepted_pair_accuracy": 0.8,
+        "coverage": 0.4166666666666667,
+        "defer_rate": 0.5833333333333334,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "budget_slices": {
+          "4": {
+            "coverage": 0.6666666666666666,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          },
+          "5": {
+            "coverage": 0.3333333333333333,
+            "accepted_pair_accuracy": 0.6666666666666666,
+            "rows": 9.0
+          }
+        }
+      },
+      {
+        "seed": 47,
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.25,
+        "defer_rate": 0.75,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "budget_slices": {
+          "4": {
+            "coverage": 0.25,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 4.0
+          }
+        }
+      }
+    ],
+    "promoted_exact_hard_region": [
+      {
+        "seed": 11,
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.14285714285714285,
+        "defer_rate": 0.8571428571428571,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "budget_slices": {
+          "3": {
+            "coverage": 0.3333333333333333,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          },
+          "5": {
+            "coverage": 0.0,
+            "accepted_pair_accuracy": 0.0,
+            "rows": 4.0
+          }
+        }
+      },
+      {
+        "seed": 29,
+        "accepted_pair_accuracy": 0.8,
+        "coverage": 0.4166666666666667,
+        "defer_rate": 0.5833333333333334,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "budget_slices": {
+          "4": {
+            "coverage": 0.6666666666666666,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          },
+          "5": {
+            "coverage": 0.3333333333333333,
+            "accepted_pair_accuracy": 0.6666666666666666,
+            "rows": 9.0
+          }
+        }
+      },
+      {
+        "seed": 47,
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.25,
+        "defer_rate": 0.75,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "budget_slices": {
+          "4": {
+            "coverage": 0.25,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 4.0
+          }
+        }
+      }
+    ],
+    "penalized_marginal_defer": [
+      {
+        "seed": 11,
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.14285714285714285,
+        "defer_rate": 0.8571428571428571,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "budget_slices": {
+          "3": {
+            "coverage": 0.3333333333333333,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          },
+          "5": {
+            "coverage": 0.0,
+            "accepted_pair_accuracy": 0.0,
+            "rows": 4.0
+          }
+        }
+      },
+      {
+        "seed": 29,
+        "accepted_pair_accuracy": 0.8,
+        "coverage": 0.4166666666666667,
+        "defer_rate": 0.5833333333333334,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "budget_slices": {
+          "4": {
+            "coverage": 0.6666666666666666,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          },
+          "5": {
+            "coverage": 0.3333333333333333,
+            "accepted_pair_accuracy": 0.6666666666666666,
+            "rows": 9.0
+          }
+        }
+      },
+      {
+        "seed": 47,
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.25,
+        "defer_rate": 0.75,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "budget_slices": {
+          "4": {
+            "coverage": 0.25,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 4.0
+          }
+        }
+      }
+    ]
+  },
+  "regime_specific_full_method_means": {
+    "all_pairs_approx": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+    },
+    "promoted_exact_hard_region": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+    },
+    "penalized_marginal_defer": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+    }
+  },
+  "caveats": [
+    "This rebuild was executed in the current checkout with scripts frozen and no threshold retuning.",
+    "Base labels were regenerated in this environment from the repository generator configuration rather than restored from prior archived canonical outputs."
+  ]
+}
