@@ -1,0 +1,33 @@
+{
+  "run_id": "repository_polish_2026_04_18",
+  "date": "2026-04-18",
+  "goal": "make repository state, history, experiment status, references, and continuation path clearer and easier to recover",
+  "artifacts_added": [
+    "docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md",
+    "docs/EXPERIMENT_LEDGER_2026_04_18.md",
+    "docs/CONTINUATION_PLAN_2026_04_18.md",
+    "docs/REFERENCES_ORGANIZATION_2026_04_18.md"
+  ],
+  "supporting_existing_artifacts": [
+    "docs/PROJECT_MASTER_PLAN.md",
+    "docs/CURRENT_PROJECT_STATUS.md",
+    "docs/CURRENT_BOTTLENECKS.md",
+    "docs/CURRENT_SAFE_CLAIMS.md",
+    "docs/FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md",
+    "docs/RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md",
+    "docs/RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md"
+  ],
+  "main_points": {
+    "project_identity": "fixed-budget adaptive test-time compute allocation for LLM reasoning centered on which active branch should receive the next unit of compute",
+    "current_best_scaffold": "pairwise default plus tie-aware post-hoc deferral plus specialist pointwise fallback",
+    "primary_bottleneck": "supervision target quality and selective ambiguity handling for hard branch comparisons",
+    "most_promising_next_direction": "budget-conditioned selective marginal allocation using branch-level continuation-value signals and explicit defer or unresolved handling"
+  },
+  "organization_improvements": [
+    "single-page repository dashboard",
+    "compact experiment-family ledger with success or mixed or weak interpretation",
+    "clear continuation plan",
+    "reference-category organization"
+  ],
+  "recommended_next_step": "wire these new notes into the main documentation index and top-level navigation, then continue preserving future method passes through compact continuation-oriented notes and machine-readable summaries"
+}
