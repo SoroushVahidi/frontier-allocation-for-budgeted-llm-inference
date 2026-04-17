@@ -45,6 +45,7 @@ Canonical scope is the current NeurIPS-oriented project on:
 - `docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`
 - `docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`
 - `docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md`
+- `docs/DEFER_CONDITIONED_FALLBACK_STATUS.md`
 - `docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`
 
 ## Grouped navigation pages
@@ -75,6 +76,7 @@ Canonical scope is the current NeurIPS-oriented project on:
 - `scripts/run_near_tie_pointwise_expert_experiment.py`
 - `scripts/run_pairwise_svm_margin_experiment.py`
 - `scripts/run_structured_ambiguity_experiment.py`
+- `scripts/run_defer_fallback_experiment.py`
 
 ### Supporting active lines
 - pairwise BT branch-scorer pipelines,
@@ -89,7 +91,7 @@ Canonical scope is the current NeurIPS-oriented project on:
 - branch-priority / next-step allocation framing,
 - canonical status / planning docs,
 - matched evaluation and audit pathways,
-- structured ambiguity and oracle-proxy defer work as the current hard-case line.
+- structured ambiguity, oracle-proxy defer, and defer-conditioned fallback work as the current hard-case line.
 
 ### Exploratory
 - reliability-aware BT variants,
