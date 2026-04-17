@@ -2,12 +2,27 @@
 
 This is the fastest script-level entry point for the current project.
 
+## Smallest runnable paths
+
+### If you want one script that best reflects the paper direction
+Start with:
+- `run_cross_strategy_frontier_allocation.py`
+
+### If you want one script for the current hard-case bottleneck
+Start with:
+- `run_structured_ambiguity_experiment.py`
+
+### If you want one script for the current value-supervision line
+Start with:
+- `run_branch_value_uncertainty_strict_validation_pass.py`
+
 ## Before you run scripts
 
 For the shortest current repository-facing orientation, read:
 - `../docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
 - `../docs/MAIN_BOTTLENECK_FOCUS_2026_04_18.md`
 - `../docs/DAILY_OPERATOR_PATH_2026_04_18.md`
+- `../docs/REPOSITORY_POLISH_PASS_2026_04_17.md`
 
 ## If you want the current paper path
 
