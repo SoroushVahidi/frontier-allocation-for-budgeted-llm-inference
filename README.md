@@ -35,8 +35,9 @@ Read these first:
 7. [`docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md`](docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md)
 8. [`docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 9. [`docs/OUTPUTS_INTERPRETATION_GUIDE.md`](docs/OUTPUTS_INTERPRETATION_GUIDE.md)
-10. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
-11. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+10. [`docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
+11. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+12. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 ### If you want to run code
 Start with:
@@ -95,7 +96,8 @@ The recommended current direction is:
 - a branch-priority / next-step allocation policy over active branches,
 - pairwise branch comparison as the main learned decision object,
 - `v2` hard-case representation as the stronger default substrate,
-- and a cleaner selective accept/defer rule for hard ambiguous cases.
+- a cleaner selective accept/defer rule for hard ambiguous cases,
+- and a more principled hard-pair supervision cleanup path.
 
 The conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
