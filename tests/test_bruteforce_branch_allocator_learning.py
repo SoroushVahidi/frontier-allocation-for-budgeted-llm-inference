@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import json
+import importlib.util
 from pathlib import Path
+
+import pytest
 
 from experiments.bruteforce_branch_allocator import (
     ALLOC_FEATURE_NAMES,
+    ALLOC_FEATURE_NAMES_V3,
+    _deterministic_cap_rows,
+    _fit_pairwise_svm_model,
     LearningConfig,
     build_candidate_feature_vector,
     evaluate_models,
@@ -241,3 +247,157 @@ def test_metric_computation_contains_slices(tmp_path: Path) -> None:
     assert "pairwise_accuracy_by_mode" in pairwise_metrics
     assert "pairwise_accuracy_by_budget" in pairwise_metrics
     assert "pairwise_accuracy_by_dataset" in pairwise_metrics
+
+
+def test_pairwise_svm_linear_train_and_eval(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(seed=17, train_ratio=0.67, val_ratio=0.0, train_lightgbm_ranker=False, train_catboost_ranker=False)
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    models = train_models(tables, cfg, model_artifact_dir=tmp_path / "models")
+    assert models["pairwise_svm_linear"]["model_type"] == "pairwise_linear_svm"
+    summary = evaluate_models(models, tables, cfg)
+    assert "pairwise_svm_linear" in summary
+    assert summary["pairwise_svm_linear"]["pairwise_accuracy_test"] >= 0.0
+
+
+def test_pairwise_svm_nystroem_capped_subsampling_deterministic(tmp_path: Path) -> None:
+    rows = [
+        {"state_id": f"s{i}", "branch_i": "bi", "branch_j": "bj", "example_id": f"e{i}"}
+        for i in range(64)
+    ]
+    a, capped_a = _deterministic_cap_rows(rows, cap=10, seed=123)
+    b, capped_b = _deterministic_cap_rows(rows, cap=10, seed=123)
+    c, _ = _deterministic_cap_rows(rows, cap=10, seed=124)
+    assert capped_a and capped_b
+    assert [r["state_id"] for r in a] == [r["state_id"] for r in b]
+    assert [r["state_id"] for r in a] != [r["state_id"] for r in c]
+
+
+def test_pairwise_svm_nystroem_variant_train(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(
+        seed=17,
+        train_ratio=0.67,
+        val_ratio=0.0,
+        train_pairwise=False,
+        train_pairwise_svm=True,
+        train_pairwise_svm_nystroem=True,
+        svm_max_train_rows_for_nystroem=2,
+        svm_nystroem_components=8,
+        train_lightgbm_ranker=False,
+        train_catboost_ranker=False,
+    )
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    model = _fit_pairwise_svm_model(tables["pairwise"], cfg, tmp_path / "artifacts")
+    assert model["model_type"] == "pairwise_nystroem_svm"
+    assert model["status"] in {"ok", "single_class_train", "insufficient_train_rows"}
+
+
+def test_train_cli_parser_supports_svm_flags() -> None:
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "train_bruteforce_branch_allocator.py"
+    spec = importlib.util.spec_from_file_location("train_bruteforce_branch_allocator_script", script_path)
+    assert spec and spec.loader
+    parser_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser_module)
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(
+            "sys.argv",
+            [
+                "train_bruteforce_branch_allocator.py",
+                "--labels-dir",
+                "dummy",
+                "--train-pairwise-svm-nystroem",
+                "--svm-c",
+                "0.7",
+                "--svm-use-sample-weight",
+                "--svm-nystroem-gamma",
+                "0.05",
+                "--svm-max-train-rows-for-nystroem",
+                "123",
+                "--svm-nystroem-components",
+                "64",
+                "--svm-class-weight-balanced",
+                "--svm-margin-calibration",
+                "platt",
+            ],
+        )
+        args = parser_module.parse_args()
+    assert args.train_pairwise_svm_nystroem
+    assert args.svm_c == 0.7
+    assert args.svm_nystroem_gamma == 0.05
+
+
+def test_v3_feature_construction_present(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(seed=17, train_ratio=0.67, val_ratio=0.0, feature_set="v3")
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    x = tables["candidates"][0]["x"]
+    assert len(x) == len(ALLOC_FEATURE_NAMES_V3)
+    assert "frontier_topk_gap_1" in ALLOC_FEATURE_NAMES_V3
+
+
+def test_ternary_defer_label_materialization(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(seed=17, train_ratio=0.67, val_ratio=0.0, feature_set="v3", defer_use_outside_option=True)
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    row = tables["pairwise"][0]
+    assert "ternary_defer_label" in row
+    assert "ternary_defer_label_name" in row
+
+
+def test_pairwise_defer_classifier_training_and_metrics(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(
+        seed=17,
+        train_ratio=0.67,
+        val_ratio=0.0,
+        feature_set="v3",
+        train_pairwise=False,
+        train_pairwise_defer_classifier=True,
+        train_lightgbm_ranker=False,
+        train_catboost_ranker=False,
+    )
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    models = train_models(tables, cfg, model_artifact_dir=tmp_path / "models")
+    assert "pairwise_defer_classifier" in models
+    summary = evaluate_models(models, tables, cfg)["pairwise_defer_classifier"]
+    if summary.get("model_status") == "ok":
+        assert "accepted_only_accuracy_test" in summary
+        assert "coverage_test" in summary
+        assert "defer_f1_test" in summary
+    else:
+        assert summary.get("model_status") in {"insufficient_train_rows", "single_class_train"}
+
+
+def test_train_cli_parser_supports_defer_flags() -> None:
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "train_bruteforce_branch_allocator.py"
+    spec = importlib.util.spec_from_file_location("train_bruteforce_branch_allocator_script_defer", script_path)
+    assert spec and spec.loader
+    parser_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser_module)
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(
+            "sys.argv",
+            [
+                "train_bruteforce_branch_allocator.py",
+                "--labels-dir",
+                "dummy",
+                "--feature-set",
+                "v3",
+                "--train-pairwise-defer-classifier",
+                "--defer-abs-margin-threshold",
+                "0.02",
+                "--defer-relative-margin-threshold",
+                "0.12",
+                "--defer-std-threshold",
+                "0.05",
+                "--defer-outside-gap-threshold",
+                "0.01",
+                "--defer-model-type",
+                "multinomial_logreg",
+            ],
+        )
+        args = parser_module.parse_args()
+    assert args.feature_set == "v3"
+    assert args.train_pairwise_defer_classifier
+    assert args.defer_abs_margin_threshold == 0.02
