@@ -1,0 +1,8 @@
+{
+  "main_vs_no_outside": {
+    "accepted_pair_accuracy_delta": 0.0,
+    "coverage_delta": 0.0,
+    "near_tie_accepted_pair_accuracy_delta": 0.0,
+    "adjacent_rank_accepted_pair_accuracy_delta": 0.0
+  }
+}

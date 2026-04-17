@@ -1,0 +1,92 @@
+[
+  {
+    "regime": "all_pairs",
+    "seed": 11,
+    "accepted_pair_accuracy": 1.0,
+    "coverage": 0.14285714285714285,
+    "defer_rate": 0.8571428571428571,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 1.0,
+    "test_pairs": 7.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 29,
+    "accepted_pair_accuracy": 0.8,
+    "coverage": 0.4166666666666667,
+    "defer_rate": 0.5833333333333334,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+    "test_pairs": 12.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 47,
+    "accepted_pair_accuracy": 1.0,
+    "coverage": 0.25,
+    "defer_rate": 0.75,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 1.0,
+    "test_pairs": 4.0
+  },
+  {
+    "regime": "allocation_regret_target",
+    "seed": 11,
+    "accepted_pair_accuracy": 1.0,
+    "coverage": 0.14285714285714285,
+    "defer_rate": 0.8571428571428571,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 1.0,
+    "test_pairs": 7.0
+  },
+  {
+    "regime": "allocation_regret_target",
+    "seed": 29,
+    "accepted_pair_accuracy": 0.8,
+    "coverage": 0.4166666666666667,
+    "defer_rate": 0.5833333333333334,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+    "test_pairs": 12.0
+  },
+  {
+    "regime": "allocation_regret_target",
+    "seed": 47,
+    "accepted_pair_accuracy": 1.0,
+    "coverage": 0.25,
+    "defer_rate": 0.75,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 1.0,
+    "test_pairs": 4.0
+  },
+  {
+    "regime": "allocation_regret_target_no_outside",
+    "seed": 11,
+    "accepted_pair_accuracy": 1.0,
+    "coverage": 0.14285714285714285,
+    "defer_rate": 0.8571428571428571,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 1.0,
+    "test_pairs": 7.0
+  },
+  {
+    "regime": "allocation_regret_target_no_outside",
+    "seed": 29,
+    "accepted_pair_accuracy": 0.8,
+    "coverage": 0.4166666666666667,
+    "defer_rate": 0.5833333333333334,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+    "test_pairs": 12.0
+  },
+  {
+    "regime": "allocation_regret_target_no_outside",
+    "seed": 47,
+    "accepted_pair_accuracy": 1.0,
+    "coverage": 0.25,
+    "defer_rate": 0.75,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 1.0,
+    "test_pairs": 4.0
+  }
+]

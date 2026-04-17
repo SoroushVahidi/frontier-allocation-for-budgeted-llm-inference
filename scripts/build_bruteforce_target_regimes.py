@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--run-id", required=True)
     p.add_argument(
         "--pair-strategies",
-        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm",
+        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm,allocation_regret_target,allocation_regret_target_no_outside",
         help="comma-separated strategies",
     )
     p.add_argument("--near-tie-margin", type=float, default=0.03)
@@ -520,6 +520,63 @@ def _annotate_opportunity_intensity_weight(
     return out
 
 
+def _annotate_allocation_regret_target(
+    row: dict[str, Any],
+    *,
+    cand_i: dict[str, Any],
+    cand_j: dict[str, Any],
+    state_best_value: float,
+    use_outside_option: bool,
+    near_tie_margin: float,
+) -> dict[str, Any]:
+    """Consequence-aware allocation regret target.
+
+    Direction remains pairwise-preference compatible, but supervision magnitude
+    explicitly carries projected regret cost relative to best available utility.
+    """
+    out = dict(row)
+    value_i = float(cand_i.get("estimated_value_if_allocate_next", out.get("pair_value_i", 0.0)))
+    value_j = float(cand_j.get("estimated_value_if_allocate_next", out.get("pair_value_j", 0.0)))
+    outside = float(out.get("outside_option_value_estimate", cand_i.get("outside_option_value", cand_j.get("outside_option_value", 0.0))))
+    best_available = max(float(state_best_value), float(outside)) if use_outside_option else float(state_best_value)
+
+    regret_i = max(0.0, best_available - value_i)
+    regret_j = max(0.0, best_available - value_j)
+    better_regret = min(regret_i, regret_j)
+    worse_regret = max(regret_i, regret_j)
+    regret_gap = abs(regret_i - regret_j)
+    regret_gap_rel = regret_gap / max(abs(best_available), abs(value_i), abs(value_j), 1e-6)
+
+    # Prefer lower-regret branch (equivalent direction to higher value under fixed best_available).
+    prefer_i = regret_i <= regret_j
+    out["label"] = 1 if prefer_i else 0
+    out["preference"] = int(out["label"])
+    out["margin"] = float(regret_j - regret_i)
+    out["margin_abs"] = abs(float(out["margin"]))
+    out["relative_margin"] = float(regret_gap_rel)
+    out["near_tie_flag"] = bool(regret_gap <= float(near_tie_margin))
+
+    out["allocation_regret_target_enabled"] = True
+    out["allocation_regret_target_source"] = "best_available_regret_v1"
+    out["allocation_regret_use_outside_option"] = bool(use_outside_option)
+    out["allocation_regret_best_value_in_state"] = float(state_best_value)
+    out["allocation_regret_outside_option_value"] = float(outside)
+    out["allocation_regret_best_available_value"] = float(best_available)
+    out["allocation_regret_i"] = float(regret_i)
+    out["allocation_regret_j"] = float(regret_j)
+    out["allocation_regret_best_pair"] = float(better_regret)
+    out["allocation_regret_worse_pair"] = float(worse_regret)
+    out["allocation_regret_gap"] = float(regret_gap)
+    out["allocation_regret_gap_relative"] = float(regret_gap_rel)
+
+    # Explicit consequence-aware supervision magnitude (cost of wrong allocation choice).
+    # Keep this bounded and compositional with existing pairwise weighting path.
+    regret_cost_weight = 1.0 + min(2.0, worse_regret / max(abs(best_available), 1e-6))
+    out["allocation_regret_cost_weight"] = float(regret_cost_weight)
+    out["supervision_reliability_weight"] = float(out.get("supervision_reliability_weight", 1.0)) * float(regret_cost_weight)
+    return out
+
+
 def _apply_opportunity_weight_normalization(
     rows: list[dict[str, Any]],
     *,
@@ -568,6 +625,12 @@ def main() -> None:
         bid = str(c["branch_id"])
         cand_map[(sid, bid)] = c
         state_to_cands.setdefault(sid, []).append(c)
+    state_best_value_map: dict[str, float] = {}
+    for sid, cand_rows in state_to_cands.items():
+        if not cand_rows:
+            state_best_value_map[sid] = 0.0
+            continue
+        state_best_value_map[sid] = max(float(r.get("estimated_value_if_allocate_next", 0.0)) for r in cand_rows)
 
     base_pair_map: dict[tuple[str, str, str], dict[str, Any]] = {}
     for p in pairwise:
@@ -720,6 +783,10 @@ def main() -> None:
                         keep = True
                     elif strat == "opportunity_intensity_weighted_no_outside_norm":
                         keep = True
+                    elif strat == "allocation_regret_target":
+                        keep = True
+                    elif strat == "allocation_regret_target_no_outside":
+                        keep = True
                     else:
                         raise ValueError(f"Unknown strategy: {strat}")
 
@@ -793,6 +860,15 @@ def main() -> None:
                                 w_min=float(args.opportunity_intensity_w_min),
                                 w_max=float(args.opportunity_intensity_w_max),
                                 use_outside_norm=(strat == "opportunity_intensity_weighted"),
+                            )
+                        if strat in {"allocation_regret_target", "allocation_regret_target_no_outside"}:
+                            annotated = _annotate_allocation_regret_target(
+                                annotated,
+                                cand_i=cand_map[(sid, str(annotated["branch_i"]))],
+                                cand_j=cand_map[(sid, str(annotated["branch_j"]))],
+                                state_best_value=float(state_best_value_map.get(sid, 0.0)),
+                                use_outside_option=(strat == "allocation_regret_target"),
+                                near_tie_margin=float(args.near_tie_margin),
                             )
                         kept.append(annotated)
 
@@ -868,6 +944,31 @@ def main() -> None:
                     if str(r.get("pair_type", "")) != "adjacent_rank"
                 )
                 / max(1, sum(1 for r in kept if str(r.get("pair_type", "")) != "adjacent_rank"))
+            ),
+            "allocation_regret_gap_mean": (
+                sum(float(r.get("allocation_regret_gap", 0.0)) for r in kept) / max(1, len(kept))
+            ),
+            "allocation_regret_gap_near_tie_mean": (
+                sum(float(r.get("allocation_regret_gap", 0.0)) for r in kept if bool(r.get("near_tie_flag", False)))
+                / max(1, sum(1 for r in kept if bool(r.get("near_tie_flag", False))))
+            ),
+            "allocation_regret_gap_non_near_tie_mean": (
+                sum(float(r.get("allocation_regret_gap", 0.0)) for r in kept if (not bool(r.get("near_tie_flag", False))))
+                / max(1, sum(1 for r in kept if (not bool(r.get("near_tie_flag", False)))))
+            ),
+            "allocation_regret_worse_pair_mean": (
+                sum(float(r.get("allocation_regret_worse_pair", 0.0)) for r in kept) / max(1, len(kept))
+            ),
+            "allocation_regret_worse_pair_near_tie_mean": (
+                sum(float(r.get("allocation_regret_worse_pair", 0.0)) for r in kept if bool(r.get("near_tie_flag", False)))
+                / max(1, sum(1 for r in kept if bool(r.get("near_tie_flag", False))))
+            ),
+            "allocation_regret_worse_pair_non_near_tie_mean": (
+                sum(float(r.get("allocation_regret_worse_pair", 0.0)) for r in kept if (not bool(r.get("near_tie_flag", False))))
+                / max(1, sum(1 for r in kept if (not bool(r.get("near_tie_flag", False)))))
+            ),
+            "allocation_regret_cost_weight_mean": (
+                sum(float(r.get("allocation_regret_cost_weight", 1.0)) for r in kept) / max(1, len(kept))
             ),
         }
         (out_dir / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

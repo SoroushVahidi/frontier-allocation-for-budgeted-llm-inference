@@ -1,0 +1,25 @@
+{
+  "targets_root": "outputs/branch_label_bruteforce_targets/allocation_regret_target_20260417",
+  "run_id": "allocation_regret_target_strict_validation_20260417",
+  "regimes": [
+    "all_pairs",
+    "allocation_regret_target",
+    "allocation_regret_target_no_outside"
+  ],
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "feature_set": "v3",
+  "coverage_floor": 0.55,
+  "ablation_variants": [
+    "value_only",
+    "value_raw_uncertainty",
+    "value_learned_risk",
+    "value_outside_option",
+    "full_method"
+  ],
+  "outside_gap_threshold": 0.03,
+  "oracle_defer_score_threshold": 2.0
+}

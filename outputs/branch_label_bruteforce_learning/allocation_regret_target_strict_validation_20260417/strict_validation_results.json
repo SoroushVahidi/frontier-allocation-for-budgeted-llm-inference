@@ -1,0 +1,2143 @@
+{
+  "config": {
+    "targets_root": "outputs/branch_label_bruteforce_targets/allocation_regret_target_20260417",
+    "run_id": "allocation_regret_target_strict_validation_20260417",
+    "regimes": [
+      "all_pairs",
+      "allocation_regret_target",
+      "allocation_regret_target_no_outside"
+    ],
+    "seeds": [
+      11,
+      29,
+      47
+    ],
+    "feature_set": "v3",
+    "coverage_floor": 0.55,
+    "ablation_variants": [
+      "value_only",
+      "value_raw_uncertainty",
+      "value_learned_risk",
+      "value_outside_option",
+      "full_method"
+    ],
+    "outside_gap_threshold": 0.03,
+    "oracle_defer_score_threshold": 2.0
+  },
+  "aggregate": {
+    "variants": {
+      "value_only": {
+        "accepted_pair_accuracy": 0.5952380952380952,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.19999999999999998,
+        "adjacent_rank_accepted_pair_accuracy": 0.4793650793650793
+      },
+      "value_raw_uncertainty": {
+        "accepted_pair_accuracy": 0.9333333333333333,
+        "coverage": 0.2698412698412699,
+        "defer_rate": 0.7301587301587301,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+      },
+      "value_learned_risk": {
+        "accepted_pair_accuracy": 0.9333333333333333,
+        "coverage": 0.2698412698412699,
+        "defer_rate": 0.7301587301587301,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+      },
+      "value_outside_option": {
+        "accepted_pair_accuracy": 0.6666666666666666,
+        "coverage": 0.36507936507936506,
+        "defer_rate": 0.6349206349206349,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666
+      },
+      "full_method": {
+        "accepted_pair_accuracy": 0.9333333333333333,
+        "coverage": 0.2698412698412699,
+        "defer_rate": 0.7301587301587301,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+      }
+    },
+    "pairwise_binary_baseline": {
+      "accepted_pair_accuracy": 0.7380952380952381,
+      "coverage": 1.0,
+      "defer_rate": 0.0
+    },
+    "penalized_marginal_proxy_baseline": {
+      "accepted_pair_accuracy": 0.7333333333333333,
+      "coverage": 0.5436507936507937,
+      "defer_rate": 0.4563492063492064
+    },
+    "deltas": {
+      "full_vs_pairwise_accuracy": 0.1952380952380952,
+      "full_vs_value_only_accuracy": 0.3380952380952381
+    }
+  },
+  "rows": [
+    {
+      "regime": "all_pairs",
+      "seed": 11,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.2857142857142857,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.2,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.2857142857142857,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.42857142857142855,
+          "defer_rate": 0.5714285714285714,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.0,
+          "accepted_mean_true_value_gap": 0.13332657874542833,
+          "deferred_mean_true_value_gap": 0.10712766432972343,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 3.0,
+          "forced_accuracy_on_deferred": 0.5,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.42857142857142855,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "full_method": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.7142857142857143,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.5,
+        "adjacent_rank_accepted_pair_accuracy": 0.6,
+        "test_pairs": 7.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.2,
+        "coverage": 0.7142857142857143,
+        "defer_rate": 0.2857142857142857,
+        "test_pairs": 7.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "all_pairs",
+      "seed": 29,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.75,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.6,
+          "adjacent_rank_accepted_pair_accuracy": 0.5714285714285714,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.7777777777777778,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.16666666666666666,
+          "defer_rate": 0.8333333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.22119027744193054,
+          "deferred_mean_true_value_gap": 0.07162331754618485,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 3.2,
+          "forced_accuracy_on_deferred": 0.7,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.16666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.8,
+        "adjacent_rank_accepted_pair_accuracy": 0.7142857142857143,
+        "test_pairs": 12.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.16666666666666666,
+        "defer_rate": 0.8333333333333334,
+        "test_pairs": 12.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "all_pairs",
+      "seed": 47,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.75,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.5,
+          "defer_rate": 0.5,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1410929975136021,
+          "deferred_mean_true_value_gap": 0.07269627569833981,
+          "accepted_mean_pair_oracle_defer_score": 0.5,
+          "deferred_mean_pair_oracle_defer_score": 2.5,
+          "forced_accuracy_on_deferred": 0.5,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.02,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "test_pairs": 4.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.75,
+        "defer_rate": 0.25,
+        "test_pairs": 4.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "allocation_regret_target",
+      "seed": 11,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.2857142857142857,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.2,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.2857142857142857,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.42857142857142855,
+          "defer_rate": 0.5714285714285714,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.0,
+          "accepted_mean_true_value_gap": 0.13332657874542833,
+          "deferred_mean_true_value_gap": 0.10712766432972343,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 3.0,
+          "forced_accuracy_on_deferred": 0.5,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.42857142857142855,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "full_method": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.7142857142857143,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.5,
+        "adjacent_rank_accepted_pair_accuracy": 0.6,
+        "test_pairs": 7.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.2,
+        "coverage": 0.7142857142857143,
+        "defer_rate": 0.2857142857142857,
+        "test_pairs": 7.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "allocation_regret_target",
+      "seed": 29,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.75,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.6,
+          "adjacent_rank_accepted_pair_accuracy": 0.5714285714285714,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.7777777777777778,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.16666666666666666,
+          "defer_rate": 0.8333333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.22119027744193054,
+          "deferred_mean_true_value_gap": 0.07162331754618485,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 3.2,
+          "forced_accuracy_on_deferred": 0.7,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.16666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.8,
+        "adjacent_rank_accepted_pair_accuracy": 0.7142857142857143,
+        "test_pairs": 12.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.16666666666666666,
+        "defer_rate": 0.8333333333333334,
+        "test_pairs": 12.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "allocation_regret_target",
+      "seed": 47,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.75,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.5,
+          "defer_rate": 0.5,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1410929975136021,
+          "deferred_mean_true_value_gap": 0.07269627569833981,
+          "accepted_mean_pair_oracle_defer_score": 0.5,
+          "deferred_mean_pair_oracle_defer_score": 2.5,
+          "forced_accuracy_on_deferred": 0.5,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.02,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "test_pairs": 4.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.75,
+        "defer_rate": 0.25,
+        "test_pairs": 4.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "allocation_regret_target_no_outside",
+      "seed": 11,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.2857142857142857,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.2,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.2857142857142857,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.42857142857142855,
+          "defer_rate": 0.5714285714285714,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.0,
+          "accepted_mean_true_value_gap": 0.13332657874542833,
+          "deferred_mean_true_value_gap": 0.10712766432972343,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 3.0,
+          "forced_accuracy_on_deferred": 0.5,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.42857142857142855,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 7.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.14285714285714285,
+          "defer_rate": 0.8571428571428571,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18557045124282956,
+          "deferred_mean_true_value_gap": 0.10715332371872484,
+          "accepted_mean_pair_oracle_defer_score": 2.0,
+          "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+          "forced_accuracy_on_deferred": 0.16666666666666666,
+          "test_pairs": 7.0,
+          "budget_slices": {
+            "3": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.14285714285714285,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 7.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "full_method": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.7142857142857143,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.5,
+        "adjacent_rank_accepted_pair_accuracy": 0.6,
+        "test_pairs": 7.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.2,
+        "coverage": 0.7142857142857143,
+        "defer_rate": 0.2857142857142857,
+        "test_pairs": 7.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "allocation_regret_target_no_outside",
+      "seed": 29,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.75,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.6,
+          "adjacent_rank_accepted_pair_accuracy": 0.5714285714285714,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.7777777777777778,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.16666666666666666,
+          "defer_rate": 0.8333333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.22119027744193054,
+          "deferred_mean_true_value_gap": 0.07162331754618485,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 3.2,
+          "forced_accuracy_on_deferred": 0.7,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.16666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.8,
+          "coverage": 0.4166666666666667,
+          "defer_rate": 0.5833333333333334,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.15151117680132015,
+          "deferred_mean_true_value_gap": 0.05729397804844411,
+          "accepted_mean_pair_oracle_defer_score": 1.6,
+          "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 12.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 9.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.8,
+        "adjacent_rank_accepted_pair_accuracy": 0.7142857142857143,
+        "test_pairs": 12.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.16666666666666666,
+        "defer_rate": 0.8333333333333334,
+        "test_pairs": 12.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "allocation_regret_target_no_outside",
+      "seed": 47,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.75,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.75,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.5,
+          "defer_rate": 0.5,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1410929975136021,
+          "deferred_mean_true_value_gap": 0.07269627569833981,
+          "accepted_mean_pair_oracle_defer_score": 0.5,
+          "deferred_mean_pair_oracle_defer_score": 2.5,
+          "forced_accuracy_on_deferred": 0.5,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.25,
+          "defer_rate": 0.75,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.1858335440185609,
+          "deferred_mean_true_value_gap": 0.08058166746844098,
+          "accepted_mean_pair_oracle_defer_score": 0.0,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 4.0,
+          "budget_slices": {
+            "4": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          },
+          "dataset_slices": {
+            "openai/gsm8k": {
+              "coverage": 0.25,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 4.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.02,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "test_pairs": 4.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.75,
+        "defer_rate": 0.25,
+        "test_pairs": 4.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    }
+  ],
+  "missing_regimes": [],
+  "reference_strong_tie_aware_baseline": {
+    "status": "ok",
+    "source": "outputs/branch_label_bruteforce_learning/near_tie_two_stage_complementarity_audit_upgrade_20260417/near_tie_pointwise_expert_summary.json",
+    "summary": [
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "binary_forced_baseline",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "pairwise_binary"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "abstain_calibrated_pairwise_backup",
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.07692307692307693,
+        "abstention_rate": 0.9230769230769231,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "pairwise_binary"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "near_tie_generic_pointwise",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "generic_pointwise"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "near_tie_specialized_pointwise",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "specialized_pointwise"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "near_tie_reweighted_pointwise",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "reweighted_pointwise"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_near_tie_specialized_pointwise_v1",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "strict_coupled_specialized_pointwise"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_near_tie_specialized_pointwise_improved_v1",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "strict_coupled_specialized_pointwise_improved"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_posthoc_deferral_v1",
+        "accepted_pair_accuracy": 0.42857142857142855,
+        "coverage": 0.5384615384615384,
+        "abstention_rate": 0.46153846153846156,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.46153846153846156,
+        "deferred_test_pairs": 6,
+        "deferred_non_near_tie_count": 5,
+        "deferred_subset_forced_accuracy": 0.3333333333333333,
+        "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_posthoc_deferral_improved_expert_v1",
+        "accepted_pair_accuracy": 0.42857142857142855,
+        "coverage": 0.5384615384615384,
+        "abstention_rate": 0.46153846153846156,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.5,
+        "test_pairs": 13.0,
+        "top1_test": 0.2857142857142857,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.46153846153846156,
+        "deferred_test_pairs": 6,
+        "deferred_non_near_tie_count": 5,
+        "deferred_subset_forced_accuracy": 0.3333333333333333,
+        "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral_improved_expert"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert_v1",
+        "accepted_pair_accuracy": 0.42857142857142855,
+        "coverage": 0.5384615384615384,
+        "abstention_rate": 0.46153846153846156,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.46153846153846156,
+        "deferred_test_pairs": 6,
+        "deferred_non_near_tie_count": 5,
+        "deferred_subset_forced_accuracy": 0.3333333333333333,
+        "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_learned_two_stage_deferral_v1",
+        "accepted_pair_accuracy": 0.2727272727272727,
+        "coverage": 0.8461538461538461,
+        "abstention_rate": 0.15384615384615385,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.15384615384615385,
+        "deferred_test_pairs": 2,
+        "deferred_non_near_tie_count": 2,
+        "deferred_subset_forced_accuracy": 1.0,
+        "fallback_policy": "strict_coupled_tie_aware_learned_two_stage_deferral"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_learned_two_stage_deferral_calibrated_threshold_v1",
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.9230769230769231,
+        "abstention_rate": 0.07692307692307687,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.07692307692307693,
+        "deferred_test_pairs": 1,
+        "deferred_non_near_tie_count": 1,
+        "deferred_subset_forced_accuracy": 1.0,
+        "fallback_policy": "strict_coupled_tie_aware_learned_two_stage_deferral"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_learned_two_stage_deferral_complementarity_target_v1",
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.9230769230769231,
+        "abstention_rate": 0.07692307692307687,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.07692307692307693,
+        "deferred_test_pairs": 1,
+        "deferred_non_near_tie_count": 1,
+        "deferred_subset_forced_accuracy": 1.0,
+        "fallback_policy": "strict_coupled_tie_aware_learned_two_stage_deferral"
+      }
+    ]
+  },
+  "assumptions": {
+    "value_target": "estimated_value_if_allocate_next",
+    "raw_uncertainty": "allocation_value_std",
+    "learned_risk": "ridge absolute residual proxy",
+    "outside_option": "pair_best_vs_outside_gap"
+  },
+  "caveats": []
+}
