@@ -7,7 +7,7 @@
 - Anti-collapse design matters for realized budget use and controller behavior.
 - Pairwise BT branch scoring is a strong active learned direction and a meaningful baseline line.
 - The current bottleneck is supervision-target quality / proxy-label mismatch.
-- The most promising near-term controller direction is budget-conditioned binary stop-vs-act with uncertainty-aware handling.
+- Tie-aware post-hoc deferral is a cleaner ambiguity-handling scaffold than earlier hard-case routing heuristics.
 - The repo already supports a serious paper story built around framing, evaluation lens, and supervision-target diagnosis.
 
 ## Not safe to claim yet
@@ -18,6 +18,7 @@
 - That broader scale or heavier models alone will resolve current weaknesses.
 - That current real-model evidence is already broad and decisive.
 - That external baseline comparisons are already complete and reviewer-proof.
+- That current tie-aware / strict-coupled controller refinements already constitute a decisive headline performance win.
 
 ## Preferred wording
 
@@ -29,7 +30,8 @@ Prefer language such as:
 - “bounded matched comparisons”,
 - “proxy-label mismatch”,
 - “approximate marginal labels”,
-- “opportunity-cost-aware STOP semantics”.
+- “selective pairwise control”,
+- “cleaner ambiguity-handling scaffold”.
 
 ## Wording to avoid
 
@@ -52,6 +54,17 @@ Every central claim in the paper should map cleanly to one of the following supp
 
 If a claim does not map to one of these, it is probably not safe to present as established.
 
+## Current controller-family claims (2026-04-17 update)
+
+Safe to claim now:
+- strict-coupled near-tie controller refinements can reduce spillover while preserving the strongest prior near-tie-specialist behavior,
+- tie-aware post-hoc deferral can preserve forced/top-1/hard-slice behavior while adding cleaner unresolved/deferred accounting,
+- accepted/coverage and deferred-subset metrics provide a more honest view of ambiguity handling than forced accuracy alone.
+
+Not safe to claim yet:
+- that the newer tie-aware / strict-coupled variants are already stronger on headline forced metrics than all prior strong baselines,
+- that deferred-subset expert quality is solved,
+- that the current hard-case controller should already be presented as a statistically grounded selective pairwise judge.
 
 ## External baseline claims (2026-04-16 update)
 
@@ -64,6 +77,7 @@ Safe to claim now:
 - mob_majority_of_bests has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_mob_import.py`).
 - rest_mcts has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_rest_mcts_import.py`).
 - openr has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_openr_import.py`).
+- compute_optimal_tts is explicitly blocked (provenance and fairness protocol incomplete) rather than ambiguously link-only.
 
 Not safe to claim yet:
 - that BEST-Route is a direct apples-to-apples control-equivalent reproduction in this repository,
@@ -73,8 +87,6 @@ Not safe to claim yet:
 - that rest_mcts is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
 - that openr is fully reproduced in-repo or control-equivalent to frontier/action-native controllers,
 - that any s1/TALE/L1 MODE B full official reproduction has been completed in-repo.
-
-- compute_optimal_tts is explicitly blocked (provenance and fairness protocol incomplete) rather than ambiguously link-only.
 
 ## Brute-force label-data claims (2026-04-16 medium run)
 
