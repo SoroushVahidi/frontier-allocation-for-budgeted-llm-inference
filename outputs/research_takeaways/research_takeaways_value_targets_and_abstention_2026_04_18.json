@@ -1,0 +1,40 @@
+{
+  "run_id": "research_takeaways_value_targets_and_abstention_2026_04_18",
+  "date": "2026-04-18",
+  "main_conclusion": "The method should increasingly be framed as budget-conditioned selective marginal allocation rather than ordinary binary pair classification.",
+  "core_shift": "Predict budget-conditioned branch-level residual or marginal continuation value and derive compare/defer decisions from value separation and uncertainty rather than supervising primarily on hard pairwise wins.",
+  "important_points": [
+    "per-branch value is more faithful than direct pairwise winner labels",
+    "pairwise decisions should increasingly be derived rather than primary",
+    "hard ambiguous cases should not always be forced into total orders",
+    "raw value-gap magnitude is not automatically confidence",
+    "existing label pools should be reused more selectively before broad expansion"
+  ],
+  "promising_target_families": [
+    "budget-conditioned branch-level value target",
+    "penalized marginal value target",
+    "relaxed pairwise targets",
+    "partial-order or unresolved supervision"
+  ],
+  "best_training_ideas": [
+    "value head plus uncertainty or defer head",
+    "provenance-aware weighting",
+    "hybrid listwise plus pairwise training",
+    "coverage-aware abstention objectives"
+  ],
+  "practical_experiment_ideas": [
+    "branch-level value-head experiment with derived pairwise/defer decisions",
+    "relaxed pairwise target experiment on low-margin and disagreement pairs",
+    "partial-order experiment on hardest slices",
+    "provenance-aware supervision mix",
+    "selective relabeling by decision value"
+  ],
+  "safe_wording": "The most promising next target-design direction is to model next-step branch allocation as budget-conditioned selective marginal allocation, using branch-level continuation-value signals, softer or structured supervision on ambiguous pairs, and explicit defer or unresolved handling rather than forcing all hard comparisons into binary winner labels.",
+  "not_yet_safe": [
+    "branch-level value supervision is already the settled empirical winner",
+    "abstention or partial-order formulations are already closed",
+    "raw predicted value-gap magnitude is already a calibrated confidence measure"
+  ],
+  "recommended_next_step": "Run a bounded experiment on branch-level budget-conditioned value prediction with derived compare/defer, relaxed pairwise targets tied to provenance/disagreement metadata, or partial-order/unresolved treatment on hardest slices.",
+  "related_doc": "docs/RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md"
+}
