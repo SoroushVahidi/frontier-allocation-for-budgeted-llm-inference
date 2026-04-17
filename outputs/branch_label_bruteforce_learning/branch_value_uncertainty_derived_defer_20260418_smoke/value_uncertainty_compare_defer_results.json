@@ -1,0 +1,178 @@
+{
+  "rows": [
+    {
+      "regime": "all_pairs_approx",
+      "seed": 11,
+      "selected_thresholds": {
+        "gap_threshold": 0.0,
+        "z_threshold": 0.0
+      },
+      "value_target": "estimated_value_if_allocate_next",
+      "uncertainty_head": {
+        "type": "ridge_residual_proxy",
+        "status": "ok"
+      },
+      "derived_value_uncertainty_defer": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "forced_accuracy_on_deferred": 0.0,
+        "near_tie_accepted_pair_accuracy": 1.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.13581599906407205,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_gap_z": 2.2185564985979407,
+        "deferred_mean_gap_z": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 2.3333333333333335,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "test_pairs": 3.0,
+        "budget_slices": {
+          "1": {
+            "coverage": 1.0,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          }
+        }
+      },
+      "baseline_pairwise_binary": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 1.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "test_pairs": 3.0
+      },
+      "baseline_value_only_forced": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 1.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "test_pairs": 3.0
+      }
+    },
+    {
+      "regime": "all_pairs_approx",
+      "seed": 29,
+      "selected_thresholds": {
+        "gap_threshold": 0.0,
+        "z_threshold": 0.25
+      },
+      "value_target": "estimated_value_if_allocate_next",
+      "uncertainty_head": {
+        "type": "ridge_residual_proxy",
+        "status": "ok"
+      },
+      "derived_value_uncertainty_defer": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.6666666666666666,
+        "defer_rate": 0.3333333333333333,
+        "forced_accuracy_on_deferred": 1.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.18204141301837468,
+        "deferred_mean_true_value_gap": 0.08612916856831432,
+        "accepted_mean_gap_z": 1.985889332894253,
+        "deferred_mean_gap_z": 0.5056712353861466,
+        "accepted_mean_pair_oracle_defer_score": 1.0,
+        "deferred_mean_pair_oracle_defer_score": 3.0,
+        "test_pairs": 3.0,
+        "budget_slices": {
+          "2": {
+            "coverage": 0.6666666666666666,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          }
+        }
+      },
+      "baseline_pairwise_binary": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "test_pairs": 3.0
+      },
+      "baseline_value_only_forced": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "test_pairs": 3.0
+      }
+    },
+    {
+      "regime": "all_pairs_approx",
+      "seed": 47,
+      "selected_thresholds": {
+        "gap_threshold": 0.0,
+        "z_threshold": 0.75
+      },
+      "value_target": "estimated_value_if_allocate_next",
+      "uncertainty_head": {
+        "type": "ridge_residual_proxy",
+        "status": "ok"
+      },
+      "derived_value_uncertainty_defer": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.6666666666666666,
+        "defer_rate": 0.3333333333333333,
+        "forced_accuracy_on_deferred": 0.75,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.22282142636336327,
+        "deferred_mean_true_value_gap": 0.03030628329216606,
+        "accepted_mean_gap_z": 2.352236185676908,
+        "deferred_mean_gap_z": 0.17470527432061803,
+        "accepted_mean_pair_oracle_defer_score": 0.875,
+        "deferred_mean_pair_oracle_defer_score": 2.5,
+        "test_pairs": 12.0,
+        "budget_slices": {
+          "1": {
+            "coverage": 1.0,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          },
+          "3": {
+            "coverage": 1.0,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 3.0
+          },
+          "4": {
+            "coverage": 0.3333333333333333,
+            "accepted_pair_accuracy": 1.0,
+            "rows": 6.0
+          }
+        }
+      },
+      "baseline_pairwise_binary": {
+        "accepted_pair_accuracy": 0.8333333333333334,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.3333333333333333,
+        "adjacent_rank_accepted_pair_accuracy": 0.75,
+        "test_pairs": 12.0
+      },
+      "baseline_value_only_forced": {
+        "accepted_pair_accuracy": 0.9166666666666666,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.6666666666666666,
+        "adjacent_rank_accepted_pair_accuracy": 0.875,
+        "test_pairs": 12.0
+      }
+    }
+  ],
+  "aggregate": {
+    "derived_accuracy": 1.0,
+    "derived_coverage": 0.7777777777777777,
+    "derived_defer_rate": 0.2222222222222222,
+    "pairwise_accuracy": 0.9444444444444445,
+    "value_forced_accuracy": 0.9722222222222222,
+    "near_tie_derived_accuracy": 0.3333333333333333,
+    "adjacent_derived_accuracy": 1.0,
+    "paired_delta_accuracy_vs_pairwise": 0.05555555555555547,
+    "paired_delta_accuracy_vs_value_forced": 0.02777777777777779
+  }
+}

@@ -138,6 +138,8 @@ Historical script entry points have been moved to:
 | `run_pairwise_svm_margin_experiment.py` | Runs matched logistic-vs-SVM bounded margin comparisons on hard branch-comparison regimes. |
 | `run_structured_ambiguity_experiment.py` | Runs matched v2/v3 representation, defer-target, and oracle-proxy defer comparisons focused on ambiguous hard cases. |
 | `run_defer_fallback_experiment.py` | Runs matched defer-only vs defer-plus-fallback policy comparisons, including binary, pointwise, outside-option-aware, and optional deferred-specialist backups. |
+| `run_branch_value_uncertainty_derived_defer_experiment.py` | Bounded branch-level value-target + uncertainty-head pass; derives pairwise preference vs defer from predicted value-gap and uncertainty-adjusted separation, then reports coverage/accepted-accuracy hard slices. |
+| `run_branch_value_uncertainty_strict_validation_pass.py` | Strict validation harness for the branch-value+uncertainty method: matched ablations (value-only/raw-uncertainty/learned-risk/outside-option/full), baseline comparisons, and hard-slice budget/dataset diagnostics. |
 | `run_cohere_rerank_branch_allocation_experiment.py` | Bounded Cohere Rerank listwise branch-scoring comparison over canonical candidate sets with matched top-1 proxy metrics vs heuristic/pairwise baselines. |
 
 ## Notes on learning workflows
