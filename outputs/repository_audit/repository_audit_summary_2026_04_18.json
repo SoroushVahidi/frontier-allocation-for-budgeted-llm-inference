@@ -1,0 +1,44 @@
+{
+  "run_id": "repository_audit_2026_04_18",
+  "date": "2026-04-18",
+  "repository": "adaptive-reasoning-budget-allocation",
+  "canonical_identity": "fixed-budget adaptive test-time compute allocation for LLM reasoning centered on which active branch should receive the next unit of compute",
+  "not_centered_on": "old binary revise-routing manuscript",
+  "strong_points": [
+    "clear canonical repository identity",
+    "explicit canonical/exploratory/historical interpretation",
+    "strong documentation of the current bottleneck",
+    "substantial runnable branch-allocation experiment stack",
+    "good provenance and safe-claims discipline"
+  ],
+  "remaining_risks": [
+    "large repository surface area",
+    "dense scripts index",
+    "many bounded hard-case passes that are easy to overread as settled",
+    "no single robust universally winning learned allocator yet",
+    "possible accidental drift into old-track framing if canonical docs are skipped"
+  ],
+  "best_reading_path": [
+    "docs/CANONICAL_START_HERE.md",
+    "docs/CURRENT_PROJECT_STATUS.md",
+    "docs/CURRENT_BOTTLENECKS.md",
+    "docs/CURRENT_SAFE_CLAIMS.md",
+    "docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md",
+    "docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md",
+    "docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md",
+    "scripts/CANONICAL_START_HERE.md",
+    "scripts/README.md"
+  ],
+  "best_code_path": [
+    "scripts/run_bruteforce_branch_label_generator.py",
+    "scripts/build_bruteforce_target_regimes.py",
+    "scripts/train_bruteforce_branch_allocator.py",
+    "scripts/run_target_fidelity_regime_experiment.py",
+    "scripts/run_ternary_or_abstain_branch_comparison_experiment.py",
+    "scripts/run_structured_ambiguity_experiment.py",
+    "scripts/run_defer_fallback_experiment.py"
+  ],
+  "current_repo_interpretation": "The repository is a strong research platform for fixed-budget branch allocation in LLM reasoning. The main remaining challenge is improving supervision semantics and selective ambiguity handling for hard branch comparisons.",
+  "recommended_next_polish_step": "Continue adding compact continuation-oriented audit notes and summary artifacts after bounded method passes rather than attempting a major structural reorganization.",
+  "related_note": "docs/FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md"
+}
