@@ -13,11 +13,18 @@ These are the main method notes for the current strongest scaffold:
 - `STRICT_COUPLED_TIE_AWARE_DEFERRED_EXPERT_IMPROVEMENT_STATUS.md`
 - `STRICT_COUPLED_TIE_AWARE_LEARNED_TWO_STAGE_DEFERRAL_STATUS.md`
 - `LEARNED_TWO_STAGE_DEFERRAL_CALIBRATION_POLICY_STATUS.md`
+- `HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`
+- `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`
 
 ## Evaluation-bridge note
 
 This note links old-manuscript evaluation discipline to the current project:
 - `imported_methodology_frontier_integration_report.md`
+
+## Audit / continuation note
+
+For the most recent repository-facing audit and recommended continuation path:
+- `REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`
 
 ## How to use this page
 
@@ -26,7 +33,9 @@ Use this page when you already understand the canonical project direction and wa
 Recommended order:
 1. `CURRENT_METHOD_SUMMARY_AND_GAPS.md`
 2. `WHAT_IS_NOT_WORKING_NOW.md`
-3. one or more notes from this page depending on the method question.
+3. `HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`
+4. `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`
+5. one or more notes from this page depending on the method question.
 
 ## What this page is not
 
