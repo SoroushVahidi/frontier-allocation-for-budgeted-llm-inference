@@ -1,0 +1,32 @@
+{
+  "anchor_model": "pairwise",
+  "regimes": {
+    "all_pairs_baseline": {
+      "pairwise_accuracy_test": 0.657211501201271,
+      "ranking_top1_accuracy_test": 0.6516816516816517,
+      "near_tie_pairwise_accuracy_test": 0.16666666666666666,
+      "adjacent_rank_pairwise_accuracy_test": 0.6534391534391535,
+      "exact_promoted_pairwise_accuracy_test": 0.0,
+      "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+      "pairwise_margin_brier_test": 0.2170335908392651
+    },
+    "cl_hardpair_excluded": {
+      "pairwise_accuracy_test": 0.8352941176470589,
+      "ranking_top1_accuracy_test": 0.7332667332667332,
+      "near_tie_pairwise_accuracy_test": 0.16666666666666666,
+      "adjacent_rank_pairwise_accuracy_test": 0.7939560439560439,
+      "exact_promoted_pairwise_accuracy_test": 0.0,
+      "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+      "pairwise_margin_brier_test": 0.14332067732139184
+    }
+  },
+  "delta_clean_minus_baseline": {
+    "pairwise_accuracy_test": 0.17808261644578782,
+    "ranking_top1_accuracy_test": 0.08158508158508149,
+    "near_tie_pairwise_accuracy_test": 0.0,
+    "adjacent_rank_pairwise_accuracy_test": 0.14051689051689042,
+    "exact_promoted_pairwise_accuracy_test": 0.0,
+    "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+    "pairwise_margin_brier_test": -0.07371291351787326
+  }
+}

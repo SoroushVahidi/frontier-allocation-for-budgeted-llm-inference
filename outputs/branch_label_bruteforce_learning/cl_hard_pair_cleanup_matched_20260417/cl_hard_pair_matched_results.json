@@ -1,0 +1,994 @@
+{
+  "run_id": "cl_hard_pair_cleanup_matched_20260417",
+  "targets_root": "outputs/branch_label_bruteforce_targets/cl_hard_pair_cleanup_20260417",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "feature_set": "v2",
+  "regimes": {
+    "all_pairs_baseline": {
+      "11": {
+        "config": {
+          "near_tie_margin": 0.03,
+          "feature_set": "v2"
+        },
+        "evaluation": {
+          "pairwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.5882352941176471,
+            "ranking_top1_accuracy_test": 0.6363636363636364,
+            "agreement_with_bruteforce_labels": 0.5882352941176471,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.5882352941176471,
+            "pairwise_margin_brier_test": 0.22259838046744437,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.5714285714285714,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.6666666666666666,
+              "3": 0.0,
+              "4": 0.8
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.5882352941176471
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.5882352941176471
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.5714285714285714,
+              "top_vs_rest": 0.6666666666666666
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.5882352941176471
+            }
+          },
+          "pointwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.7058823529411765,
+            "ranking_top1_accuracy_test": 0.6363636363636364,
+            "agreement_with_bruteforce_labels": 0.7058823529411765,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.7058823529411765,
+            "pairwise_margin_brier_test": 0.24587243421078528,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.6428571428571429,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.5,
+              "4": 0.9
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.7058823529411765
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.7058823529411765
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.6428571428571429,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.7058823529411765
+            }
+          },
+          "outside_option": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.47058823529411764,
+            "ranking_top1_accuracy_test": 0.36363636363636365,
+            "agreement_with_bruteforce_labels": 0.47058823529411764,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.47058823529411764,
+            "pairwise_margin_brier_test": 0.27776886975367043,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.5,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.25,
+              "4": 0.6
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.47058823529411764
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.47058823529411764
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.5,
+              "top_vs_rest": 0.3333333333333333
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.47058823529411764
+            }
+          },
+          "lightgbm_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.4117647058823529,
+            "ranking_top1_accuracy_test": 0.2727272727272727,
+            "agreement_with_bruteforce_labels": 0.4117647058823529,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.4117647058823529,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.35714285714285715,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.5,
+              "4": 0.4
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.35714285714285715,
+              "top_vs_rest": 0.6666666666666666
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.4117647058823529
+            }
+          },
+          "catboost_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.4117647058823529,
+            "ranking_top1_accuracy_test": 0.2727272727272727,
+            "agreement_with_bruteforce_labels": 0.4117647058823529,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.4117647058823529,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.35714285714285715,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.5,
+              "4": 0.4
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.35714285714285715,
+              "top_vs_rest": 0.6666666666666666
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.4117647058823529
+            }
+          }
+        }
+      },
+      "29": {
+        "config": {
+          "near_tie_margin": 0.03,
+          "feature_set": "v2"
+        },
+        "evaluation": {
+          "pairwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.8181818181818182,
+            "ranking_top1_accuracy_test": 0.8571428571428571,
+            "agreement_with_bruteforce_labels": 0.8181818181818182,
+            "near_tie_pairwise_accuracy_test": 0.5,
+            "far_margin_pairwise_accuracy_test": 0.8888888888888888,
+            "pairwise_margin_brier_test": 0.19472333440207895,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.7777777777777778,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.0,
+              "4": 0.8571428571428571
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.8181818181818182
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.8181818181818182
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.7777777777777778,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.8181818181818182
+            }
+          },
+          "pointwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.7272727272727273,
+            "ranking_top1_accuracy_test": 0.7142857142857143,
+            "agreement_with_bruteforce_labels": 0.7272727272727273,
+            "near_tie_pairwise_accuracy_test": 0.5,
+            "far_margin_pairwise_accuracy_test": 0.7777777777777778,
+            "pairwise_margin_brier_test": 0.2470681616688177,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.6666666666666666,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.0,
+              "4": 0.7142857142857143
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.7272727272727273
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.7272727272727273
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.6666666666666666,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.7272727272727273
+            }
+          },
+          "outside_option": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.7272727272727273,
+            "ranking_top1_accuracy_test": 0.5714285714285714,
+            "agreement_with_bruteforce_labels": 0.7272727272727273,
+            "near_tie_pairwise_accuracy_test": 1.0,
+            "far_margin_pairwise_accuracy_test": 0.6666666666666666,
+            "pairwise_margin_brier_test": 0.16085766675920402,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.6666666666666666,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.6666666666666666,
+              "3": 0.0,
+              "4": 0.8571428571428571
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.7272727272727273
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.7272727272727273
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.6666666666666666,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.7272727272727273
+            }
+          },
+          "lightgbm_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.36363636363636365,
+            "ranking_top1_accuracy_test": 0.2857142857142857,
+            "agreement_with_bruteforce_labels": 0.36363636363636365,
+            "near_tie_pairwise_accuracy_test": 1.0,
+            "far_margin_pairwise_accuracy_test": 0.2222222222222222,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.4444444444444444,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.0,
+              "4": 0.42857142857142855
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.36363636363636365
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.36363636363636365
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.4444444444444444,
+              "top_vs_rest": 0.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.36363636363636365
+            }
+          },
+          "catboost_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.36363636363636365,
+            "ranking_top1_accuracy_test": 0.2857142857142857,
+            "agreement_with_bruteforce_labels": 0.36363636363636365,
+            "near_tie_pairwise_accuracy_test": 1.0,
+            "far_margin_pairwise_accuracy_test": 0.2222222222222222,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.4444444444444444,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.0,
+              "4": 0.42857142857142855
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.36363636363636365
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.36363636363636365
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.4444444444444444,
+              "top_vs_rest": 0.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.36363636363636365
+            }
+          }
+        }
+      },
+      "47": {
+        "config": {
+          "near_tie_margin": 0.03,
+          "feature_set": "v2"
+        },
+        "evaluation": {
+          "pairwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.5652173913043478,
+            "ranking_top1_accuracy_test": 0.46153846153846156,
+            "agreement_with_bruteforce_labels": 0.5652173913043478,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.5909090909090909,
+            "pairwise_margin_brier_test": 0.23377905764827192,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.6111111111111112,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.5714285714285714,
+              "3": 0.75,
+              "4": 0.5
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.5652173913043478
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.5652173913043478
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.6111111111111112,
+              "top_vs_rest": 0.4
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.5652173913043478
+            }
+          },
+          "pointwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.5217391304347826,
+            "ranking_top1_accuracy_test": 0.6153846153846154,
+            "agreement_with_bruteforce_labels": 0.5217391304347826,
+            "near_tie_pairwise_accuracy_test": 1.0,
+            "far_margin_pairwise_accuracy_test": 0.5,
+            "pairwise_margin_brier_test": 0.24999009441206835,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.6111111111111112,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.8571428571428571,
+              "3": 0.5,
+              "4": 0.3333333333333333
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.5217391304347826
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.5217391304347826
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.6111111111111112,
+              "top_vs_rest": 0.2
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.5217391304347826
+            }
+          },
+          "outside_option": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.43478260869565216,
+            "ranking_top1_accuracy_test": 0.46153846153846156,
+            "agreement_with_bruteforce_labels": 0.43478260869565216,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.45454545454545453,
+            "pairwise_margin_brier_test": 0.30714203621287545,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.4444444444444444,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.42857142857142855,
+              "3": 0.5,
+              "4": 0.4166666666666667
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.43478260869565216
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.43478260869565216
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.4444444444444444,
+              "top_vs_rest": 0.4
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.43478260869565216
+            }
+          },
+          "lightgbm_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.43478260869565216,
+            "ranking_top1_accuracy_test": 0.3076923076923077,
+            "agreement_with_bruteforce_labels": 0.43478260869565216,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.45454545454545453,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.3888888888888889,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.14285714285714285,
+              "3": 0.5,
+              "4": 0.5833333333333334
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.43478260869565216
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.43478260869565216
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.3888888888888889,
+              "top_vs_rest": 0.6
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.43478260869565216
+            }
+          },
+          "catboost_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.43478260869565216,
+            "ranking_top1_accuracy_test": 0.3076923076923077,
+            "agreement_with_bruteforce_labels": 0.43478260869565216,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.45454545454545453,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.3888888888888889,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.14285714285714285,
+              "3": 0.5,
+              "4": 0.5833333333333334
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.43478260869565216
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.43478260869565216
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.3888888888888889,
+              "top_vs_rest": 0.6
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.43478260869565216
+            }
+          }
+        }
+      }
+    },
+    "cl_hardpair_excluded": {
+      "11": {
+        "config": {
+          "near_tie_margin": 0.03,
+          "feature_set": "v2"
+        },
+        "evaluation": {
+          "pairwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.8235294117647058,
+            "ranking_top1_accuracy_test": 0.7272727272727273,
+            "agreement_with_bruteforce_labels": 0.8235294117647058,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.8235294117647058,
+            "pairwise_margin_brier_test": 0.13775642130887003,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.7857142857142857,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.5,
+              "4": 0.9
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.8235294117647058
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.8235294117647058
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.7857142857142857,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.8235294117647058
+            }
+          },
+          "pointwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.7058823529411765,
+            "ranking_top1_accuracy_test": 0.6363636363636364,
+            "agreement_with_bruteforce_labels": 0.7058823529411765,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.7058823529411765,
+            "pairwise_margin_brier_test": 0.24587243421078528,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.6428571428571429,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.5,
+              "4": 0.9
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.7058823529411765
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.7058823529411765
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.6428571428571429,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.7058823529411765
+            }
+          },
+          "outside_option": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.47058823529411764,
+            "ranking_top1_accuracy_test": 0.36363636363636365,
+            "agreement_with_bruteforce_labels": 0.47058823529411764,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.47058823529411764,
+            "pairwise_margin_brier_test": 0.27776886975367043,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.5,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.25,
+              "4": 0.6
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.47058823529411764
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.47058823529411764
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.5,
+              "top_vs_rest": 0.3333333333333333
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.47058823529411764
+            }
+          },
+          "lightgbm_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.4117647058823529,
+            "ranking_top1_accuracy_test": 0.2727272727272727,
+            "agreement_with_bruteforce_labels": 0.4117647058823529,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.4117647058823529,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.35714285714285715,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.5,
+              "4": 0.4
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.35714285714285715,
+              "top_vs_rest": 0.6666666666666666
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.4117647058823529
+            }
+          },
+          "catboost_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.4117647058823529,
+            "ranking_top1_accuracy_test": 0.2727272727272727,
+            "agreement_with_bruteforce_labels": 0.4117647058823529,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.4117647058823529,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.35714285714285715,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.3333333333333333,
+              "3": 0.5,
+              "4": 0.4
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.35714285714285715,
+              "top_vs_rest": 0.6666666666666666
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.4117647058823529
+            }
+          }
+        }
+      },
+      "29": {
+        "config": {
+          "near_tie_margin": 0.03,
+          "feature_set": "v2"
+        },
+        "evaluation": {
+          "pairwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.8,
+            "ranking_top1_accuracy_test": 0.8571428571428571,
+            "agreement_with_bruteforce_labels": 0.8,
+            "near_tie_pairwise_accuracy_test": 0.5,
+            "far_margin_pairwise_accuracy_test": 0.875,
+            "pairwise_margin_brier_test": 0.18293671349379342,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.75,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.0,
+              "4": 0.8571428571428571
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.8
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.8
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.75,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.8
+            }
+          },
+          "pointwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.7,
+            "ranking_top1_accuracy_test": 0.7142857142857143,
+            "agreement_with_bruteforce_labels": 0.7,
+            "near_tie_pairwise_accuracy_test": 0.5,
+            "far_margin_pairwise_accuracy_test": 0.75,
+            "pairwise_margin_brier_test": 0.24733608540132712,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.625,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.0,
+              "4": 0.7142857142857143
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.7
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.7
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.625,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.7
+            }
+          },
+          "outside_option": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.8,
+            "ranking_top1_accuracy_test": 0.5714285714285714,
+            "agreement_with_bruteforce_labels": 0.8,
+            "near_tie_pairwise_accuracy_test": 1.0,
+            "far_margin_pairwise_accuracy_test": 0.75,
+            "pairwise_margin_brier_test": 0.14992015918403157,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.75,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.0,
+              "4": 0.8571428571428571
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.8
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.8
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.75,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.8
+            }
+          },
+          "lightgbm_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.3,
+            "ranking_top1_accuracy_test": 0.2857142857142857,
+            "agreement_with_bruteforce_labels": 0.3,
+            "near_tie_pairwise_accuracy_test": 1.0,
+            "far_margin_pairwise_accuracy_test": 0.125,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.375,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.0,
+              "3": 0.0,
+              "4": 0.42857142857142855
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.3
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.3
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.375,
+              "top_vs_rest": 0.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.3
+            }
+          },
+          "catboost_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.3,
+            "ranking_top1_accuracy_test": 0.2857142857142857,
+            "agreement_with_bruteforce_labels": 0.3,
+            "near_tie_pairwise_accuracy_test": 1.0,
+            "far_margin_pairwise_accuracy_test": 0.125,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.375,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.0,
+              "3": 0.0,
+              "4": 0.42857142857142855
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.3
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.3
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.375,
+              "top_vs_rest": 0.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.3
+            }
+          }
+        }
+      },
+      "47": {
+        "config": {
+          "near_tie_margin": 0.03,
+          "feature_set": "v2"
+        },
+        "evaluation": {
+          "pairwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.8823529411764706,
+            "ranking_top1_accuracy_test": 0.6153846153846154,
+            "agreement_with_bruteforce_labels": 0.8823529411764706,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.8823529411764706,
+            "pairwise_margin_brier_test": 0.10926889716151202,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.8461538461538461,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 1.0,
+              "4": 0.75
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.8823529411764706
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.8823529411764706
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.8461538461538461,
+              "top_vs_rest": 1.0
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.8823529411764706
+            }
+          },
+          "pointwise": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.5294117647058824,
+            "ranking_top1_accuracy_test": 0.6153846153846154,
+            "agreement_with_bruteforce_labels": 0.5294117647058824,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.5294117647058824,
+            "pairwise_margin_brier_test": 0.24927943761213692,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.6153846153846154,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.8333333333333334,
+              "3": 0.3333333333333333,
+              "4": 0.375
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.5294117647058824
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.5294117647058824
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.6153846153846154,
+              "top_vs_rest": 0.25
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.5294117647058824
+            }
+          },
+          "outside_option": {
+            "model_status": "ok",
+            "pairwise_accuracy_test": 0.5882352941176471,
+            "ranking_top1_accuracy_test": 0.46153846153846156,
+            "agreement_with_bruteforce_labels": 0.5882352941176471,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.5882352941176471,
+            "pairwise_margin_brier_test": 0.24744829802688498,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.6153846153846154,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.5,
+              "3": 0.6666666666666666,
+              "4": 0.625
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.5882352941176471
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.5882352941176471
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.6153846153846154,
+              "top_vs_rest": 0.5
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.5882352941176471
+            }
+          },
+          "lightgbm_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.4117647058823529,
+            "ranking_top1_accuracy_test": 0.3076923076923077,
+            "agreement_with_bruteforce_labels": 0.4117647058823529,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.4117647058823529,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.38461538461538464,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.16666666666666666,
+              "3": 0.6666666666666666,
+              "4": 0.5
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.38461538461538464,
+              "top_vs_rest": 0.5
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.4117647058823529
+            }
+          },
+          "catboost_ranker": {
+            "model_status": "dependency_unavailable",
+            "pairwise_accuracy_test": 0.4117647058823529,
+            "ranking_top1_accuracy_test": 0.3076923076923077,
+            "agreement_with_bruteforce_labels": 0.4117647058823529,
+            "near_tie_pairwise_accuracy_test": 0.0,
+            "far_margin_pairwise_accuracy_test": 0.4117647058823529,
+            "pairwise_margin_brier_test": 0.25,
+            "exact_only_pairwise_accuracy_test": 0.0,
+            "adjacent_rank_pairwise_accuracy_test": 0.38461538461538464,
+            "exact_promoted_pairwise_accuracy_test": 0.0,
+            "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+            "pairwise_accuracy_by_budget": {
+              "2": 0.16666666666666666,
+              "3": 0.6666666666666666,
+              "4": 0.5
+            },
+            "pairwise_accuracy_by_mode": {
+              "approx": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_dataset": {
+              "openai/gsm8k": 0.4117647058823529
+            },
+            "pairwise_accuracy_by_pair_type": {
+              "adjacent_rank": 0.38461538461538464,
+              "top_vs_rest": 0.5
+            },
+            "pairwise_accuracy_by_label_source": {
+              "approx_original": 0.4117647058823529
+            }
+          }
+        }
+      }
+    }
+  }
+}
