@@ -401,3 +401,172 @@ def test_train_cli_parser_supports_defer_flags() -> None:
     assert args.feature_set == "v3"
     assert args.train_pairwise_defer_classifier
     assert args.defer_abs_margin_threshold == 0.02
+
+
+def test_oracle_proxy_target_materialization(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(
+        seed=17,
+        train_ratio=0.67,
+        val_ratio=0.0,
+        feature_set="v3",
+        defer_target_mode="oracle_proxy",
+        defer_oracle_gap_threshold=0.05,
+        defer_oracle_gap_over_std_threshold=1.0,
+        defer_oracle_best_vs_outside_threshold=0.06,
+    )
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    row = tables["pairwise"][-1]
+    assert "pair_best_estimated_value" in row
+    assert "pair_value_gap" in row
+    assert "pair_oracle_defer_score" in row
+    assert row["ternary_defer_label_name"] in {"defer_or_outside_option", "allocate_to_branch_i", "allocate_to_branch_j"}
+
+
+def test_defer_calibration_and_threshold_trace(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(
+        seed=17,
+        train_ratio=0.67,
+        val_ratio=0.33,
+        feature_set="v3",
+        train_pairwise=False,
+        train_pairwise_defer_classifier=True,
+        train_lightgbm_ranker=False,
+        train_catboost_ranker=False,
+        defer_target_mode="oracle_proxy",
+        defer_calibration="temperature",
+        threshold_grid_size=5,
+    )
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    models = train_models(tables, cfg, model_artifact_dir=tmp_path / "models")
+    summary = evaluate_models(models, tables, cfg)["pairwise_defer_classifier"]
+    if summary.get("model_status") == "ok":
+        assert "threshold_trace_test" in summary
+        assert len(summary["threshold_trace_test"]) >= 3
+        assert "best_accepted_accuracy_under_min_coverage_test" in summary
+        assert "best_coverage_under_min_accepted_accuracy_test" in summary
+    else:
+        assert summary.get("model_status") in {"insufficient_train_rows", "single_class_train"}
+
+
+def test_train_cli_parser_supports_oracle_proxy_and_calibration_flags() -> None:
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "train_bruteforce_branch_allocator.py"
+    spec = importlib.util.spec_from_file_location("train_bruteforce_branch_allocator_script_oracle_proxy", script_path)
+    assert spec and spec.loader
+    parser_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser_module)
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(
+            "sys.argv",
+            [
+                "train_bruteforce_branch_allocator.py",
+                "--labels-dir",
+                "dummy",
+                "--train-pairwise-defer-classifier",
+                "--defer-target-mode",
+                "oracle_proxy",
+                "--defer-oracle-gap-threshold",
+                "0.04",
+                "--defer-oracle-gap-over-std-threshold",
+                "0.9",
+                "--defer-oracle-best-vs-outside-threshold",
+                "0.02",
+                "--defer-calibration",
+                "platt",
+                "--defer-decision-threshold",
+                "0.6",
+                "--min-commit-confidence",
+                "0.5",
+                "--commit-margin-threshold",
+                "0.08",
+            ],
+        )
+        args = parser_module.parse_args()
+    assert args.defer_target_mode == "oracle_proxy"
+    assert args.defer_calibration == "platt"
+    assert args.defer_decision_threshold == 0.6
+
+
+def test_defer_fallback_policy_metrics_and_unresolved_accounting(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(
+        seed=17,
+        train_ratio=0.67,
+        val_ratio=0.33,
+        feature_set="v3",
+        train_pairwise=True,
+        train_pointwise=True,
+        train_pairwise_defer_classifier=True,
+        train_lightgbm_ranker=False,
+        train_catboost_ranker=False,
+        defer_target_mode="oracle_proxy",
+        enable_defer_fallback=True,
+        defer_fallback_policy="outside_option_aware_backup",
+    )
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    models = train_models(tables, cfg, model_artifact_dir=tmp_path / "models")
+    summary = evaluate_models(models, tables, cfg)["pairwise_defer_classifier"]
+    if summary.get("model_status") == "ok":
+        assert "resolved_accuracy_test" in summary
+        assert "resolved_coverage_test" in summary
+        assert "unresolved_rate_after_fallback_test" in summary
+        assert summary["resolved_coverage_test"] <= 1.0
+        assert summary["unresolved_rate_after_fallback_test"] >= 0.0
+    else:
+        assert summary.get("model_status") in {"insufficient_train_rows", "single_class_train"}
+
+
+def test_deferred_specialist_training_and_eval(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    cfg = LearningConfig(
+        seed=17,
+        train_ratio=0.67,
+        val_ratio=0.33,
+        feature_set="v3",
+        train_pairwise=False,
+        train_pairwise_deferred_specialist=True,
+        deferred_specialist_target_mode="hybrid",
+        train_lightgbm_ranker=False,
+        train_catboost_ranker=False,
+    )
+    tables = prepare_learning_tables(load_label_artifacts(labels_dir), cfg)
+    models = train_models(tables, cfg, model_artifact_dir=tmp_path / "models")
+    assert "pairwise_deferred_specialist" in models
+    summary = evaluate_models(models, tables, cfg)["pairwise_deferred_specialist"]
+    if summary.get("model_status") == "ok":
+        assert "deferred_subset_accuracy" in summary
+    else:
+        assert summary.get("model_status") in {"insufficient_train_rows", "single_class_train"}
+
+
+def test_train_cli_parser_supports_fallback_flags() -> None:
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "train_bruteforce_branch_allocator.py"
+    spec = importlib.util.spec_from_file_location("train_bruteforce_branch_allocator_script_fallback", script_path)
+    assert spec and spec.loader
+    parser_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser_module)
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(
+            "sys.argv",
+            [
+                "train_bruteforce_branch_allocator.py",
+                "--labels-dir",
+                "dummy",
+                "--enable-defer-fallback",
+                "--defer-fallback-policy",
+                "pointwise_value_backup",
+                "--fallback-min-confidence",
+                "0.61",
+                "--outside-option-keep-unresolved-threshold",
+                "0.04",
+                "--train-pairwise-deferred-specialist",
+                "--deferred-specialist-target-mode",
+                "hybrid",
+            ],
+        )
+        args = parser_module.parse_args()
+    assert args.enable_defer_fallback
+    assert args.defer_fallback_policy == "pointwise_value_backup"
+    assert args.fallback_min_confidence == 0.61
+    assert args.train_pairwise_deferred_specialist
