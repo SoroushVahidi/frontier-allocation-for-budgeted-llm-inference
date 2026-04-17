@@ -2,6 +2,13 @@
 
 This is the fastest script-level entry point for the current project.
 
+## Before you run scripts
+
+For the shortest current repository-facing orientation, read:
+- `../docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
+- `../docs/MAIN_BOTTLENECK_FOCUS_2026_04_18.md`
+- `../docs/DAILY_OPERATOR_PATH_2026_04_18.md`
+
 ## If you want the current paper path
 
 Start with these scripts:
@@ -20,6 +27,16 @@ Start with these scripts:
 - `run_ambiguity_calibration_and_fallback_experiment.py`
 - `train_bruteforce_branch_allocator.py`
 - `run_target_fidelity_regime_experiment.py`
+- `run_structured_ambiguity_experiment.py`
+- `run_defer_fallback_experiment.py`
+
+## If you want the current target-design / value-supervision line
+
+Start with these scripts:
+- `run_branch_value_uncertainty_derived_defer_experiment.py`
+- `run_branch_value_uncertainty_strict_validation_pass.py`
+- `build_bruteforce_target_regimes.py`
+- `train_bruteforce_branch_allocator.py`
 
 ## If you want dataset / supervision preparation
 
@@ -43,3 +60,4 @@ Start with these scripts:
 - Use [`README.md`](README.md) for the full script index.
 - Use `run_imported_methodology_frontier_eval.py` when you need cleaner manuscript-style fixed/adaptive/oracle summaries.
 - Treat historical script paths as provenance support, not the default path.
+- The current highest-leverage code path is usually the one that sharpens supervision-target semantics and selective ambiguity handling, not broad controller proliferation.
