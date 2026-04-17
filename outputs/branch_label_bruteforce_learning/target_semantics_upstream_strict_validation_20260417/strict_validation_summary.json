@@ -1,0 +1,59 @@
+{
+  "run_id": "target_semantics_upstream_strict_validation_20260417",
+  "targets_root": "outputs/branch_label_bruteforce_targets/target_semantics_upstream_20260417",
+  "aggregate": {
+    "variants": {
+      "value_only": {
+        "accepted_pair_accuracy": 0.5952380952380952,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.19999999999999998,
+        "adjacent_rank_accepted_pair_accuracy": 0.4793650793650793
+      },
+      "value_raw_uncertainty": {
+        "accepted_pair_accuracy": 0.9333333333333333,
+        "coverage": 0.2698412698412699,
+        "defer_rate": 0.7301587301587301,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+      },
+      "value_learned_risk": {
+        "accepted_pair_accuracy": 0.9333333333333333,
+        "coverage": 0.2698412698412699,
+        "defer_rate": 0.7301587301587301,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+      },
+      "value_outside_option": {
+        "accepted_pair_accuracy": 0.6666666666666666,
+        "coverage": 0.36507936507936506,
+        "defer_rate": 0.6349206349206349,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666
+      },
+      "full_method": {
+        "accepted_pair_accuracy": 0.9333333333333333,
+        "coverage": 0.2698412698412699,
+        "defer_rate": 0.7301587301587301,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888
+      }
+    },
+    "pairwise_binary_baseline": {
+      "accepted_pair_accuracy": 0.8214285714285715,
+      "coverage": 1.0,
+      "defer_rate": 0.0
+    },
+    "penalized_marginal_proxy_baseline": {
+      "accepted_pair_accuracy": 0.7333333333333333,
+      "coverage": 0.5436507936507937,
+      "defer_rate": 0.4563492063492064
+    },
+    "deltas": {
+      "full_vs_pairwise_accuracy": 0.11190476190476184,
+      "full_vs_value_only_accuracy": 0.3380952380952381
+    }
+  },
+  "missing_regimes": [],
+  "caveats": []
+}

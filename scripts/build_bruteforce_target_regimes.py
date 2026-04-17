@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--run-id", required=True)
     p.add_argument(
         "--pair-strategies",
-        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer",
+        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm",
         help="comma-separated strategies",
     )
     p.add_argument("--near-tie-margin", type=float, default=0.03)
@@ -86,6 +86,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--penalized-tau-easy-uncertainty-multiplier", type=float, default=0.20)
     p.add_argument("--penalized-tau-easy-budget-multiplier", type=float, default=0.00)
     p.add_argument("--penalized-tau-gap-cap-multiplier", type=float, default=0.0)
+    p.add_argument("--opportunity-intensity-eps", type=float, default=1e-6)
+    p.add_argument("--opportunity-intensity-tau", type=float, default=0.05)
+    p.add_argument("--opportunity-intensity-w-min", type=float, default=0.50)
+    p.add_argument("--opportunity-intensity-w-max", type=float, default=4.00)
+    p.add_argument("--opportunity-intensity-final-min", type=float, default=0.70)
+    p.add_argument("--opportunity-intensity-final-max", type=float, default=1.60)
     return p.parse_args()
 
 
@@ -479,6 +485,72 @@ def _annotate_penalized_marginal_defer_pair(
     return out
 
 
+def _annotate_opportunity_intensity_weight(
+    row: dict[str, Any],
+    *,
+    cand_i: dict[str, Any],
+    cand_j: dict[str, Any],
+    tau: float,
+    eps: float,
+    w_min: float,
+    w_max: float,
+    use_outside_norm: bool,
+) -> dict[str, Any]:
+    out = dict(row)
+    vi = float(cand_i.get("estimated_value_if_allocate_next", out.get("pair_value_i", 0.0)))
+    vj = float(cand_j.get("estimated_value_if_allocate_next", out.get("pair_value_j", 0.0)))
+    outside = float(out.get("outside_option_value_estimate", 0.0)) if use_outside_norm else 0.0
+    denom = abs(vi) + abs(vj) + (abs(outside) if use_outside_norm else 0.0) + max(float(eps), 1e-12)
+    intensity = abs(vi - vj) / max(denom, 1e-12)
+    raw_weight = 1.0 / max(float(intensity) + float(tau), 1e-12)
+    clipped_weight = min(max(float(raw_weight), float(w_min)), float(w_max))
+
+    out["opportunity_value_i"] = float(vi)
+    out["opportunity_value_j"] = float(vj)
+    out["opportunity_outside_value"] = float(outside)
+    out["opportunity_intensity_raw"] = float(intensity)
+    out["opportunity_intensity_weight_raw"] = float(raw_weight)
+    out["opportunity_intensity_weight"] = float(clipped_weight)
+    out["opportunity_intensity_used_outside_norm"] = bool(use_outside_norm)
+    out["opportunity_intensity_weight_source"] = "opportunity_intensity_v1"
+    out["opportunity_intensity_tau"] = float(tau)
+    out["opportunity_intensity_eps"] = float(eps)
+    out["opportunity_intensity_w_min"] = float(w_min)
+    out["opportunity_intensity_w_max"] = float(w_max)
+    return out
+
+
+def _apply_opportunity_weight_normalization(
+    rows: list[dict[str, Any]],
+    *,
+    final_min: float,
+    final_max: float,
+) -> list[dict[str, Any]]:
+    if not rows:
+        return rows
+
+    raw_weights = [float(r.get("opportunity_intensity_weight", 1.0)) for r in rows]
+    w_lo = min(raw_weights)
+    w_hi = max(raw_weights)
+    target_span = max(float(final_max) - float(final_min), 0.0)
+
+    for r in rows:
+        w = float(r.get("opportunity_intensity_weight", 1.0))
+        if (w_hi - w_lo) <= 1e-12 or target_span <= 1e-12:
+            final_mult = 1.0
+        else:
+            final_mult = float(final_min) + target_span * ((w - w_lo) / max(w_hi - w_lo, 1e-12))
+        r["opportunity_intensity_weight_final"] = float(final_mult)
+        r["opportunity_intensity_weight_final_min"] = float(final_min)
+        r["opportunity_intensity_weight_final_max"] = float(final_max)
+        r["opportunity_intensity_weight_global_min_observed"] = float(w_lo)
+        r["opportunity_intensity_weight_global_max_observed"] = float(w_hi)
+        r["opportunity_intensity_weight_normalization"] = "global_minmax_v1"
+        r["supervision_reliability_weight"] = float(r.get("supervision_reliability_weight", 1.0)) * float(final_mult)
+        r["opportunity_intensity_baked_into_supervision_reliability_weight"] = True
+    return rows
+
+
 def main() -> None:
     args = parse_args()
     labels_dir = Path(args.labels_dir)
@@ -542,6 +614,12 @@ def main() -> None:
             "penalized_tau_easy_uncertainty_multiplier": args.penalized_tau_easy_uncertainty_multiplier,
             "penalized_tau_easy_budget_multiplier": args.penalized_tau_easy_budget_multiplier,
             "penalized_tau_gap_cap_multiplier": args.penalized_tau_gap_cap_multiplier,
+            "opportunity_intensity_eps": args.opportunity_intensity_eps,
+            "opportunity_intensity_tau": args.opportunity_intensity_tau,
+            "opportunity_intensity_w_min": args.opportunity_intensity_w_min,
+            "opportunity_intensity_w_max": args.opportunity_intensity_w_max,
+            "opportunity_intensity_final_min": args.opportunity_intensity_final_min,
+            "opportunity_intensity_final_max": args.opportunity_intensity_final_max,
         },
         "regimes": {},
     }
@@ -638,6 +716,10 @@ def main() -> None:
                         keep = True
                     elif strat == "penalized_marginal_defer":
                         keep = True
+                    elif strat == "opportunity_intensity_weighted":
+                        keep = True
+                    elif strat == "opportunity_intensity_weighted_no_outside_norm":
+                        keep = True
                     else:
                         raise ValueError(f"Unknown strategy: {strat}")
 
@@ -701,7 +783,25 @@ def main() -> None:
                                 tau_gap_cap_multiplier=float(args.penalized_tau_gap_cap_multiplier),
                                 near_tie_margin=float(args.near_tie_margin),
                             )
+                        if strat in {"opportunity_intensity_weighted", "opportunity_intensity_weighted_no_outside_norm"}:
+                            annotated = _annotate_opportunity_intensity_weight(
+                                annotated,
+                                cand_i=cand_map[(sid, str(annotated["branch_i"]))],
+                                cand_j=cand_map[(sid, str(annotated["branch_j"]))],
+                                tau=float(args.opportunity_intensity_tau),
+                                eps=float(args.opportunity_intensity_eps),
+                                w_min=float(args.opportunity_intensity_w_min),
+                                w_max=float(args.opportunity_intensity_w_max),
+                                use_outside_norm=(strat == "opportunity_intensity_weighted"),
+                            )
                         kept.append(annotated)
+
+        if strat in {"opportunity_intensity_weighted", "opportunity_intensity_weighted_no_outside_norm"}:
+            kept = _apply_opportunity_weight_normalization(
+                kept,
+                final_min=float(args.opportunity_intensity_final_min),
+                final_max=float(args.opportunity_intensity_final_max),
+            )
 
         out_dir = out_root / f"regime_{strat}"
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -736,6 +836,38 @@ def main() -> None:
             ),
             "penalized_defer_rate": (
                 sum(1 for r in kept if str(r.get("penalized_ternary_label_name", "")) == "defer") / max(1, len(kept))
+            ),
+            "opportunity_intensity_weight_mean": (
+                sum(float(r.get("opportunity_intensity_weight_final", r.get("opportunity_intensity_weight", 1.0))) for r in kept)
+                / max(1, len(kept))
+            ),
+            "opportunity_intensity_weight_near_tie_mean": (
+                sum(float(r.get("opportunity_intensity_weight_final", r.get("opportunity_intensity_weight", 1.0))) for r in kept if bool(r.get("near_tie_flag", False)))
+                / max(1, sum(1 for r in kept if bool(r.get("near_tie_flag", False))))
+            ),
+            "opportunity_intensity_weight_non_near_tie_mean": (
+                sum(
+                    float(r.get("opportunity_intensity_weight_final", r.get("opportunity_intensity_weight", 1.0)))
+                    for r in kept
+                    if (not bool(r.get("near_tie_flag", False)))
+                )
+                / max(1, sum(1 for r in kept if (not bool(r.get("near_tie_flag", False)))))
+            ),
+            "opportunity_intensity_weight_adjacent_mean": (
+                sum(
+                    float(r.get("opportunity_intensity_weight_final", r.get("opportunity_intensity_weight", 1.0)))
+                    for r in kept
+                    if str(r.get("pair_type", "")) == "adjacent_rank"
+                )
+                / max(1, sum(1 for r in kept if str(r.get("pair_type", "")) == "adjacent_rank"))
+            ),
+            "opportunity_intensity_weight_non_adjacent_mean": (
+                sum(
+                    float(r.get("opportunity_intensity_weight_final", r.get("opportunity_intensity_weight", 1.0)))
+                    for r in kept
+                    if str(r.get("pair_type", "")) != "adjacent_rank"
+                )
+                / max(1, sum(1 for r in kept if str(r.get("pair_type", "")) != "adjacent_rank"))
             ),
         }
         (out_dir / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

@@ -1,0 +1,10 @@
+{
+  "run_id": "target_semantics_upstream_strict_validation_20260417",
+  "artifacts": [
+    "upstream_target_semantics_summary.json",
+    "upstream_target_semantics_per_seed_summary.json",
+    "upstream_target_semantics_aggregate_comparison.json",
+    "upstream_target_semantics_weight_diagnostics.json",
+    "upstream_target_semantics_manifest.json"
+  ]
+}

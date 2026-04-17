@@ -426,6 +426,9 @@ def _pairwise_weight(row: dict[str, Any], cfg: LearningConfig) -> tuple[bool, fl
         elif pair_mode == "exact":
             weight *= float(cfg.exact_mode_weight)
 
+    # Optional upstream target-semantics multiplier (regime-provided).
+    if not bool(row.get("opportunity_intensity_baked_into_supervision_reliability_weight", False)):
+        weight *= float(row.get("opportunity_intensity_weight_final", 1.0))
     weight *= float(row.get("supervision_reliability_weight", 1.0))
     return (True, max(weight, 1e-8))
 

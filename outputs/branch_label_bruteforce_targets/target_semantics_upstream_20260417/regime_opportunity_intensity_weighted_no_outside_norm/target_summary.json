@@ -1,0 +1,22 @@
+{
+  "strategy": "opportunity_intensity_weighted_no_outside_norm",
+  "pairs": 91,
+  "near_tie_rate": 0.27472527472527475,
+  "ambiguous_tie_rate": 0.0,
+  "exact_or_promoted_rate": 0.0,
+  "pair_type_counts": {
+    "top_vs_rest": 26,
+    "adjacent_rank": 62,
+    "generic": 3
+  },
+  "mean_soft_tie_prob": 0.0,
+  "partial_order_incomparable_rate": 0.0,
+  "penalized_left_better_rate": 0.0,
+  "penalized_right_better_rate": 0.0,
+  "penalized_defer_rate": 0.0,
+  "opportunity_intensity_weight_mean": 1.2787615191367379,
+  "opportunity_intensity_weight_near_tie_mean": 1.6,
+  "opportunity_intensity_weight_non_near_tie_mean": 1.1570802763855024,
+  "opportunity_intensity_weight_adjacent_mean": 1.3617172270454243,
+  "opportunity_intensity_weight_non_adjacent_mean": 1.1014079367112708
+}

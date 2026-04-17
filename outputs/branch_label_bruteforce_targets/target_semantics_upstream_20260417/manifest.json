@@ -1,0 +1,95 @@
+{
+  "run_id": "target_semantics_upstream_20260417",
+  "labels_dir": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_all_pairs_approx",
+  "strategies": [
+    "opportunity_intensity_weighted",
+    "opportunity_intensity_weighted_no_outside_norm"
+  ],
+  "config": {
+    "near_tie_margin": 0.03,
+    "high_margin_threshold": 0.08,
+    "max_pair_std": 0.08,
+    "promote_exact_over_approx": false,
+    "min_relative_margin": 0.0,
+    "exact_labels_dir": "",
+    "tie_abs_margin_threshold": 0.03,
+    "tie_relative_margin_threshold": 0.15,
+    "tie_std_threshold": 0.08,
+    "tie_use_near_tie_flag": true,
+    "tie_include_approx": false,
+    "tie_require_exact_or_mixed": false,
+    "low_trust_near_tie_approx_weight": 0.35,
+    "medium_trust_approx_weight": 0.7,
+    "exact_trust_weight": 1.15,
+    "low_trust_std_threshold": 0.08,
+    "tie_policy": "legacy_or",
+    "penalized_lambda": 0.1,
+    "penalized_delta_c_mode": "constant_one",
+    "penalized_tau_base": 0.02,
+    "penalized_tau_relative_scale": 0.1,
+    "penalized_tau_uncertainty_scale": 0.5,
+    "penalized_tau_budget_scale": 0.05,
+    "penalized_tau_mode": "legacy_additive_v1",
+    "penalized_tau_easy_uncertainty_multiplier": 0.2,
+    "penalized_tau_easy_budget_multiplier": 0.0,
+    "penalized_tau_gap_cap_multiplier": 0.0,
+    "opportunity_intensity_eps": 1e-06,
+    "opportunity_intensity_tau": 0.01,
+    "opportunity_intensity_w_min": 0.5,
+    "opportunity_intensity_w_max": 20.0,
+    "opportunity_intensity_final_min": 0.7,
+    "opportunity_intensity_final_max": 1.6
+  },
+  "regimes": {
+    "opportunity_intensity_weighted": {
+      "output_dir": "outputs/branch_label_bruteforce_targets/target_semantics_upstream_20260417/regime_opportunity_intensity_weighted",
+      "summary": {
+        "strategy": "opportunity_intensity_weighted",
+        "pairs": 91,
+        "near_tie_rate": 0.27472527472527475,
+        "ambiguous_tie_rate": 0.0,
+        "exact_or_promoted_rate": 0.0,
+        "pair_type_counts": {
+          "top_vs_rest": 26,
+          "adjacent_rank": 62,
+          "generic": 3
+        },
+        "mean_soft_tie_prob": 0.0,
+        "partial_order_incomparable_rate": 0.0,
+        "penalized_left_better_rate": 0.0,
+        "penalized_right_better_rate": 0.0,
+        "penalized_defer_rate": 0.0,
+        "opportunity_intensity_weight_mean": 1.2787615191367379,
+        "opportunity_intensity_weight_near_tie_mean": 1.6,
+        "opportunity_intensity_weight_non_near_tie_mean": 1.1570802763855024,
+        "opportunity_intensity_weight_adjacent_mean": 1.3617172270454243,
+        "opportunity_intensity_weight_non_adjacent_mean": 1.1014079367112708
+      }
+    },
+    "opportunity_intensity_weighted_no_outside_norm": {
+      "output_dir": "outputs/branch_label_bruteforce_targets/target_semantics_upstream_20260417/regime_opportunity_intensity_weighted_no_outside_norm",
+      "summary": {
+        "strategy": "opportunity_intensity_weighted_no_outside_norm",
+        "pairs": 91,
+        "near_tie_rate": 0.27472527472527475,
+        "ambiguous_tie_rate": 0.0,
+        "exact_or_promoted_rate": 0.0,
+        "pair_type_counts": {
+          "top_vs_rest": 26,
+          "adjacent_rank": 62,
+          "generic": 3
+        },
+        "mean_soft_tie_prob": 0.0,
+        "partial_order_incomparable_rate": 0.0,
+        "penalized_left_better_rate": 0.0,
+        "penalized_right_better_rate": 0.0,
+        "penalized_defer_rate": 0.0,
+        "opportunity_intensity_weight_mean": 1.2787615191367379,
+        "opportunity_intensity_weight_near_tie_mean": 1.6,
+        "opportunity_intensity_weight_non_near_tie_mean": 1.1570802763855024,
+        "opportunity_intensity_weight_adjacent_mean": 1.3617172270454243,
+        "opportunity_intensity_weight_non_adjacent_mean": 1.1014079367112708
+      }
+    }
+  }
+}
