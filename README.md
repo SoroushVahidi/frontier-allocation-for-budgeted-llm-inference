@@ -44,6 +44,7 @@ Read next:
 - [`docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
 - [`docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
 - [`docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md`](docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md)
+- [`docs/DEFER_CONDITIONED_FALLBACK_STATUS.md`](docs/DEFER_CONDITIONED_FALLBACK_STATUS.md)
 - [`docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
 
 ### Evaluation and outputs
@@ -90,7 +91,8 @@ The recommended current direction is:
 - pairwise branch comparison as the main learned decision object,
 - `v3` structured ambiguity features and defer-aware representations as the current stronger hard-case line,
 - a cleaner selective accept/defer rule for hard ambiguous cases,
-- and a more principled oracle-proxy defer target rather than only heuristic ambiguity bands.
+- a more principled oracle-proxy defer target rather than only heuristic ambiguity bands,
+- and defer-conditioned fallback policies that test what should happen after unresolved states are detected.
 
 The conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
