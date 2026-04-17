@@ -41,6 +41,11 @@ outputs/*
 # Branch scorer v3 final manuscript eval (job 935482; small CSV/JSON/MD only)
 !outputs/branch_scorer_v3_final_eval/
 !outputs/branch_scorer_v3_final_eval/**/*
+!outputs/imported_methodology_frontier_eval/
+!outputs/imported_methodology_frontier_eval/**/*
+!outputs/branch_label_bruteforce_learning/
+!outputs/branch_label_bruteforce_learning/near_tie_two_stage_defer_head_20260417/
+!outputs/branch_label_bruteforce_learning/near_tie_two_stage_defer_head_20260417/**/*
 
 # Legacy singular output directory (prefer outputs/ for all new runs)
 output/

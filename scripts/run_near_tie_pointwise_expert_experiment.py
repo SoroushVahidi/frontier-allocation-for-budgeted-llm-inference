@@ -232,6 +232,39 @@ def _pointwise_scorer(model: dict[str, Any], fallback: Callable[[dict[str, Any]]
     return lambda row: float(sum(float(a) * float(bi) for a, bi in zip(w, row["x"])) + b)
 
 
+def _fit_binary_head(x: list[list[float]], y: list[int], *, seed: int) -> dict[str, Any]:
+    if len(x) < 12:
+        return {"status": "insufficient_rows", "n_rows": len(x)}
+    if len(set(y)) < 2:
+        return {
+            "status": "single_class",
+            "n_rows": len(x),
+            "constant_probability": float(y[0]) if y else 0.0,
+        }
+    model = LogisticRegression(max_iter=400, random_state=seed, class_weight="balanced")
+    model.fit(np.array(x, dtype=float), np.array(y, dtype=int))
+    return {
+        "status": "ok",
+        "model": model,
+        "n_rows": len(x),
+        "positive_rate": float(sum(y) / max(1, len(y))),
+    }
+
+
+def _binary_head_predict_proba(head: dict[str, Any], x: list[list[float]]) -> list[float]:
+    if not x:
+        return []
+    status = str(head.get("status", ""))
+    if status == "ok":
+        model = head["model"]
+        probs = model.predict_proba(np.array(x, dtype=float))[:, 1]
+        return [float(p) for p in probs]
+    if status == "single_class":
+        p = float(head.get("constant_probability", 0.0))
+        return [p for _ in x]
+    return [0.0 for _ in x]
+
+
 def _slice_acc(rows: list[dict[str, Any]], pred_fn: Callable[[dict[str, Any]], int], key_fn: Callable[[dict[str, Any]], str]) -> dict[str, float]:
     subset = [r for r in rows if str(r.get("split")) == "test"]
     keys = sorted(set(key_fn(r) for r in subset))
@@ -741,6 +774,146 @@ def main() -> None:
                     return p_pred
                 return _pairwise_binary(row)
 
+            def _specialist_forced_for_defer_target(row: dict[str, Any]) -> int:
+                p_pred, pgap = _point_decision(row, point_specialized_score)
+                if pgap >= float(args.pointwise_margin_min):
+                    return p_pred
+                return _pairwise_binary(row)
+
+            def _defer_feature_vector(row: dict[str, Any]) -> list[float]:
+                ci = candidate_lookup.get((str(row["state_id"]), str(row["branch_i"])), {})
+                cj = candidate_lookup.get((str(row["state_id"]), str(row["branch_j"])), {})
+                fi = ci.get("features_branch_v2", {}) if isinstance(ci.get("features_branch_v2"), dict) else {}
+                fj = cj.get("features_branch_v2", {}) if isinstance(cj.get("features_branch_v2"), dict) else {}
+                pair_i = float(pair_score({"x": row["x_i"]}))
+                pair_j = float(pair_score({"x": row["x_j"]}))
+                pair_margin = pair_i - pair_j
+                pair_prob = _sigmoid(pair_margin)
+                pair_pred = 1 if pair_margin >= 0.0 else 0
+                pair_conf = abs(pair_prob - 0.5) * 2.0
+                p_i = float(point_specialized_score({"x": row["x_i"]}))
+                p_j = float(point_specialized_score({"x": row["x_j"]}))
+                p_gap = p_i - p_j
+                p_pred = 1 if p_gap >= 0.0 else 0
+                strict_on, strict_meta = _strict_coupled_gate(row)
+                posthoc_on, _ = _posthoc_deferral_gate(row)
+                margin_abs = float(row.get("margin_abs", abs(float(row.get("margin", 0.0)))))
+                rel_margin = float(row.get("relative_margin", 1e9))
+                pair_std = float(row.get("pair_uncertainty_std_mean", row.get("pair_allocation_value_std", 0.0)))
+                rank_gap_abs = abs(float(fi.get("branch_rank", 0.0)) - float(fj.get("branch_rank", 0.0)))
+                frontier_std_mean = 0.5 * (float(fi.get("frontier_score_std", 0.0)) + float(fj.get("frontier_score_std", 0.0)))
+                frontier_entropy_mean = 0.5 * (float(fi.get("frontier_score_entropy", 0.0)) + float(fj.get("frontier_score_entropy", 0.0)))
+                return [
+                    margin_abs,
+                    rel_margin,
+                    pair_std,
+                    pair_conf,
+                    float(pair_prob),
+                    abs(pair_margin),
+                    rank_gap_abs,
+                    frontier_std_mean,
+                    frontier_entropy_mean,
+                    1.0 if bool(row.get("near_tie_flag", False)) else 0.0,
+                    1.0 if str(row.get("pair_type", "")) == "adjacent_rank" else 0.0,
+                    1.0 if strict_on else 0.0,
+                    1.0 if posthoc_on else 0.0,
+                    float(strict_meta.get("strict_gate_triggered_signals", 0.0)),
+                    p_i,
+                    p_j,
+                    abs(p_gap),
+                    1.0 if pair_pred != p_pred else 0.0,
+                    abs(pair_margin) - abs(p_gap),
+                ]
+
+            defer_feature_names = [
+                "margin_abs",
+                "relative_margin",
+                "pair_uncertainty_std",
+                "pair_confidence",
+                "pair_probability",
+                "pair_margin_abs",
+                "rank_gap_abs",
+                "frontier_score_std_mean",
+                "frontier_entropy_mean",
+                "near_tie_flag",
+                "adjacent_rank_flag",
+                "strict_gate_on",
+                "posthoc_gate_on",
+                "strict_gate_triggered_signals",
+                "pointwise_value_i",
+                "pointwise_value_j",
+                "pointwise_gap_abs",
+                "pairwise_pointwise_disagree",
+                "pair_margin_minus_point_gap",
+            ]
+
+            def _build_defer_targets(row: dict[str, Any]) -> tuple[int, int]:
+                y = int(row.get("label", 0))
+                pair_pred = _pairwise_binary(row)
+                spec_pred = _specialist_forced_for_defer_target(row)
+                pair_err = int(pair_pred != y)
+                defer_utility = int((spec_pred == y) and (pair_pred != y))
+                return pair_err, defer_utility
+
+            train_rows = [r for r in tables["pairwise"] if str(r.get("split")) == "train"]
+            val_rows = [r for r in tables["pairwise"] if str(r.get("split")) == "val"]
+
+            x_train = [_defer_feature_vector(r) for r in train_rows]
+            y_train_err = [_build_defer_targets(r)[0] for r in train_rows]
+            y_train_defer = [_build_defer_targets(r)[1] for r in train_rows]
+            x_val = [_defer_feature_vector(r) for r in val_rows]
+
+            stage1_error_head = _fit_binary_head(x_train, y_train_err, seed=seed)
+            # stage-2 defer-benefit head is trained post-hoc on same features + stage-1 risk score.
+            stage1_train_probs = _binary_head_predict_proba(stage1_error_head, x_train)
+            x_train_stage2 = [xi + [float(p1)] for xi, p1 in zip(x_train, stage1_train_probs)]
+            stage2_defer_head = _fit_binary_head(x_train_stage2, y_train_defer, seed=seed + 91)
+            stage1_val_probs = _binary_head_predict_proba(stage1_error_head, x_val)
+            x_val_stage2 = [xi + [float(p1)] for xi, p1 in zip(x_val, stage1_val_probs)]
+            stage2_val_probs = _binary_head_predict_proba(stage2_defer_head, x_val_stage2)
+
+            baseline_val_defer_rate = _mean([1.0 if _posthoc_deferral_gate(r)[0] else 0.0 for r in val_rows]) if val_rows else 0.0
+            defer_threshold = 0.5
+            threshold_grid = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70]
+            best_score = -1e9
+            allowed_max_rate = min(0.95, baseline_val_defer_rate + 0.08)
+            for thr in threshold_grid:
+                chosen = []
+                deferred = 0
+                for r, p1, p2 in zip(val_rows, stage1_val_probs, stage2_val_probs):
+                    should_defer = (float(p1) >= 0.5) and (float(p2) >= float(thr))
+                    y = int(r.get("label", 0))
+                    pred = _specialist_forced_for_defer_target(r) if should_defer else _pairwise_binary(r)
+                    chosen.append(int(pred == y))
+                    deferred += int(should_defer)
+                if not chosen:
+                    continue
+                defer_rate = deferred / len(chosen)
+                if defer_rate > allowed_max_rate:
+                    continue
+                score = (sum(chosen) / len(chosen)) - 0.05 * defer_rate
+                if score > best_score:
+                    best_score = score
+                    defer_threshold = float(thr)
+
+            def _learned_two_stage_defer_gate(row: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+                x = _defer_feature_vector(row)
+                p1 = _binary_head_predict_proba(stage1_error_head, [x])[0]
+                x2 = x + [float(p1)]
+                p2 = _binary_head_predict_proba(stage2_defer_head, [x2])[0]
+                defer = bool((float(p1) >= 0.5) and (float(p2) >= float(defer_threshold)))
+                return defer, {
+                    "p_pairwise_error": float(p1),
+                    "p_defer_utility": float(p2),
+                    "defer_threshold": float(defer_threshold),
+                }
+
+            def _tie_aware_forced_learned_two_stage(row: dict[str, Any]) -> int:
+                is_deferred, _ = _learned_two_stage_defer_gate(row)
+                if not is_deferred:
+                    return _pairwise_binary(row)
+                return _specialist_forced_for_defer_target(row)
+
             variant_specs: list[
                 tuple[
                     str,
@@ -824,6 +997,13 @@ def main() -> None:
                     lambda r: _tie_aware_forced_reliability_weighted(r),
                     "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert",
                     lambda r: _posthoc_deferral_gate(r)[0],
+                ),
+                (
+                    "strict_coupled_tie_aware_learned_two_stage_deferral_v1",
+                    lambda r: (None if _learned_two_stage_defer_gate(r)[0] else _pairwise_binary(r)),
+                    lambda r: _tie_aware_forced_learned_two_stage(r),
+                    "strict_coupled_tie_aware_learned_two_stage_deferral",
+                    lambda r: _learned_two_stage_defer_gate(r)[0],
                 )
             ]
             if str(args.controller_policy) == "legacy_variants":
@@ -926,6 +1106,20 @@ def main() -> None:
                         **reliability_weighted_model,
                         "states_with_reliability_weight": len(state_reliability_weight),
                     },
+                },
+                "learned_two_stage_defer_head": {
+                    "feature_names_stage1": defer_feature_names,
+                    "feature_names_stage2": defer_feature_names + ["stage1_pairwise_error_probability"],
+                    "stage1_pairwise_error_head": {
+                        **{k: v for k, v in stage1_error_head.items() if k != "model"},
+                    },
+                    "stage2_defer_utility_head": {
+                        **{k: v for k, v in stage2_defer_head.items() if k != "model"},
+                    },
+                    "target_definition": "defer=1 iff specialized fallback is correct and pairwise winner is incorrect on the same pair row",
+                    "selected_threshold": float(defer_threshold),
+                    "baseline_posthoc_val_defer_rate": float(baseline_val_defer_rate),
+                    "allowed_max_val_defer_rate": float(allowed_max_rate),
                 },
                 "near_tie_pairwise_vs_pointwise_diagnostic": {
                     "rows": len(diag_rows),
