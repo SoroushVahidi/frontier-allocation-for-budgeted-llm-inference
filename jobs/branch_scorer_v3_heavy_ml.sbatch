@@ -10,8 +10,22 @@
 
 set -euo pipefail
 
-# Slurm starts the batch script in SLURM_SUBMIT_DIR (the directory you ran sbatch from).
-cd "${SLURM_SUBMIT_DIR:?SLURM_SUBMIT_DIR unset}"
+# Prefer submit dir only when it looks like the repo root and is writable.
+SUBMIT_DIR="${SLURM_SUBMIT_DIR:-}"
+DEFAULT_REPO_ROOT="${HOME}/adaptive-reasoning-budget-allocation"
+if [[ -n "${SUBMIT_DIR}" && -d "${SUBMIT_DIR}/scripts" && -w "${SUBMIT_DIR}" ]]; then
+  REPO_ROOT="${SUBMIT_DIR}"
+else
+  REPO_ROOT="${DEFAULT_REPO_ROOT}"
+fi
+
+if [[ ! -d "${REPO_ROOT}/scripts" ]]; then
+  echo "ERROR: Could not locate repository root with scripts/ directory." >&2
+  echo "Checked REPO_ROOT='${REPO_ROOT}' (from SLURM_SUBMIT_DIR='${SUBMIT_DIR}')." >&2
+  exit 2
+fi
+
+cd "${REPO_ROOT}"
 
 mkdir -p logs/slurm outputs/branch_scorer_v3_heavy_ml
 

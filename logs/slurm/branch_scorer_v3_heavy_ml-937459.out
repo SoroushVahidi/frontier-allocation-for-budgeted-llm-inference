@@ -1,0 +1,37 @@
+Starting branch_scorer_v3 ML sweep.
+Output root: outputs/branch_scorer_v3_heavy_ml
+Dataset exists, skipping build: seed=7
+Dataset exists, skipping build: seed=19
+Dataset exists, skipping build: seed=23
+Pooled dataset already exists, skipping assembly.
+Training artifacts already exist, skipping retrain.
+Controller eval exists, skipping: seed=7 budget=8 init=3
+Controller eval exists, skipping: seed=7 budget=8 init=5
+Controller eval exists, skipping: seed=7 budget=8 init=7
+Controller eval exists, skipping: seed=7 budget=10 init=3
+Controller eval exists, skipping: seed=7 budget=10 init=5
+Controller eval exists, skipping: seed=7 budget=10 init=7
+Controller eval exists, skipping: seed=7 budget=12 init=3
+Controller eval exists, skipping: seed=7 budget=12 init=5
+Controller eval exists, skipping: seed=7 budget=12 init=7
+Controller eval exists, skipping: seed=19 budget=8 init=3
+Controller eval exists, skipping: seed=19 budget=8 init=5
+Controller eval exists, skipping: seed=19 budget=8 init=7
+Controller eval exists, skipping: seed=19 budget=10 init=3
+Controller eval exists, skipping: seed=19 budget=10 init=5
+Controller eval exists, skipping: seed=19 budget=10 init=7
+Controller eval exists, skipping: seed=19 budget=12 init=3
+Controller eval exists, skipping: seed=19 budget=12 init=5
+Controller eval exists, skipping: seed=19 budget=12 init=7
+Controller eval exists, skipping: seed=23 budget=8 init=3
+Controller eval exists, skipping: seed=23 budget=8 init=5
+Controller eval exists, skipping: seed=23 budget=8 init=7
+Controller eval exists, skipping: seed=23 budget=10 init=3
+Controller eval exists, skipping: seed=23 budget=10 init=5
+Controller eval exists, skipping: seed=23 budget=10 init=7
+Controller eval exists, skipping: seed=23 budget=12 init=3
+Controller eval exists, skipping: seed=23 budget=12 init=5
+Controller eval exists, skipping: seed=23 budget=12 init=7
+Robustness summary already exists, skipping.
+Wrote: outputs/branch_scorer_v3_heavy_ml/manuscript_controller_regime_table.csv
+Branch_scorer_v3 ML sweep complete.
