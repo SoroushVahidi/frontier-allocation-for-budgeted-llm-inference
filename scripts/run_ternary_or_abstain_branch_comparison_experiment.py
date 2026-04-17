@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 from pathlib import Path
 import sys
@@ -48,6 +49,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--abstention-cost-unresolved-to-directional", type=float, default=0.70)
     p.add_argument("--abstention-cost-correct-unresolved", type=float, default=0.10)
     p.add_argument("--abstention-unresolved-class-upweight", type=float, default=1.35)
+    p.add_argument("--calibration-enable-sweep", action="store_true")
+    p.add_argument("--calibration-coverage-floor", type=float, default=0.40)
+    p.add_argument("--calibration-grid-unresolved-upweight", default="1.00,1.20,1.35")
+    p.add_argument("--calibration-grid-cost-directional-to-unresolved", default="0.35,0.45")
+    p.add_argument("--calibration-grid-cost-unresolved-to-directional", default="0.70,0.55")
+    p.add_argument("--calibration-grid-decision-margin", default="0.00,0.03")
     return p.parse_args()
 
 
@@ -122,7 +129,35 @@ def _build_abstention_costs(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
-def _cost_sensitive_partial_order_predictor(model: LogisticRegression, costs: dict[str, Any]) -> Callable[[dict[str, Any]], int | None]:
+def _parse_float_list(csv_text: str) -> list[float]:
+    vals = [float(x.strip()) for x in str(csv_text).split(",") if x.strip()]
+    return vals if vals else [0.0]
+
+
+def _build_calibration_candidates(args: argparse.Namespace) -> list[dict[str, float]]:
+    upweights = _parse_float_list(args.calibration_grid_unresolved_upweight)
+    dir_to_unres = _parse_float_list(args.calibration_grid_cost_directional_to_unresolved)
+    unres_to_dir = _parse_float_list(args.calibration_grid_cost_unresolved_to_directional)
+    margins = _parse_float_list(args.calibration_grid_decision_margin)
+    out: list[dict[str, float]] = []
+    for uw, c_du, c_ud, dm in itertools.product(upweights, dir_to_unres, unres_to_dir, margins):
+        out.append(
+            {
+                "abstention_unresolved_class_upweight": float(uw),
+                "abstention_cost_directional_to_unresolved": float(c_du),
+                "abstention_cost_unresolved_to_directional": float(c_ud),
+                "abstention_decision_margin": float(dm),
+            }
+        )
+    return out
+
+
+def _cost_sensitive_partial_order_predictor(
+    model: LogisticRegression,
+    costs: dict[str, Any],
+    *,
+    decision_margin: float = 0.0,
+) -> Callable[[dict[str, Any]], int | None]:
     class_order = [int(c) for c in model.classes_]
 
     def _predict(row: dict[str, Any]) -> int | None:
@@ -148,14 +183,15 @@ def _cost_sensitive_partial_order_predictor(model: LogisticRegression, costs: di
             + p_i * float(costs["matrix"]["i_wins"]["predict_i_wins"])
         )
 
-        action = min(
-            [
-                ("predict_j_wins", exp_cost_j),
-                ("predict_unresolved", exp_cost_u),
-                ("predict_i_wins", exp_cost_i),
-            ],
-            key=lambda x: x[1],
-        )[0]
+        action_costs = [
+            ("predict_j_wins", exp_cost_j),
+            ("predict_unresolved", exp_cost_u),
+            ("predict_i_wins", exp_cost_i),
+        ]
+        action = min(action_costs, key=lambda x: x[1])[0]
+        best_directional = min(exp_cost_j, exp_cost_i)
+        if (exp_cost_u <= (best_directional + float(decision_margin))) and action != "predict_unresolved":
+            action = "predict_unresolved"
         if action == "predict_unresolved":
             return None
         return 1 if action == "predict_i_wins" else 0
@@ -209,8 +245,9 @@ def _metrics_for_predictions(
     pred_fn: Callable[[dict[str, Any]], int | None],
     forced_pred_fn: Callable[[dict[str, Any]], int],
     ambiguity_truth_key: str = "ambiguous_target_flag",
+    split: str = "test",
 ) -> dict[str, float]:
-    subset = [r for r in rows if r.get("split") == "test"]
+    subset = [r for r in rows if r.get("split") == split]
     accepted = [r for r in subset if pred_fn(r) is not None]
     truth_tie = [bool(r.get(ambiguity_truth_key, False)) for r in subset]
     pred_tie = [pred_fn(r) is None for r in subset]
@@ -250,6 +287,13 @@ def _metrics_for_predictions(
     }
 
 
+def _calibration_objective(metrics: dict[str, float], coverage_floor: float) -> float:
+    coverage = float(metrics.get("coverage", 0.0))
+    if coverage < float(coverage_floor):
+        return float("-inf")
+    return float(metrics.get("accepted_pair_accuracy", 0.0))
+
+
 def main() -> None:
     args = parse_args()
     out_dir = Path(args.output_dir) / args.run_id
@@ -260,6 +304,7 @@ def main() -> None:
 
     flat: list[dict[str, Any]] = []
     detailed: dict[str, Any] = {"run_id": args.run_id, "seeds": seeds, "regimes": {}}
+    calibration_records: list[dict[str, Any]] = []
 
     for regime in regimes:
         regime_dir = Path(args.targets_root) / f"regime_{regime}"
@@ -396,7 +441,7 @@ def main() -> None:
                 pointwise_fallback,
             )
 
-            partial_rows = tables["pairwise"]
+            partial_rows = [dict(r) for r in tables["pairwise"]]
             for _r in partial_rows:
                 base_w = float(_r.get("pair_train_weight", 1.0))
                 if int(_r.get("partial_order_label", 1)) == 1:
@@ -428,18 +473,138 @@ def main() -> None:
                 )
 
                 abstention_costs = _build_abstention_costs(args)
-                cost_sensitive_pred = _cost_sensitive_partial_order_predictor(pm, abstention_costs)
+                cost_sensitive_prev_pred = _cost_sensitive_partial_order_predictor(pm, abstention_costs, decision_margin=0.0)
                 partial_order_cost_metrics = _metrics_for_predictions(
                     tables["pairwise"],
-                    pred_fn=cost_sensitive_pred,
-                    forced_pred_fn=lambda r: pointwise_fallback(r) if cost_sensitive_pred(r) is None else int(cost_sensitive_pred(r) or 0),
+                    pred_fn=cost_sensitive_prev_pred,
+                    forced_pred_fn=lambda r: pointwise_fallback(r) if cost_sensitive_prev_pred(r) is None else int(cost_sensitive_prev_pred(r) or 0),
                     ambiguity_truth_key="partial_order_incomparable_target",
                 )
                 partial_order_cost_top1 = _top1_from_pairwise_rows(
                     tables["pairwise"],
                     tables["state_to_candidates"],
-                    cost_sensitive_pred,
+                    cost_sensitive_prev_pred,
                     pointwise_fallback,
+                )
+
+                selected_calibration: dict[str, Any] = {
+                    "selected": {
+                        "abstention_unresolved_class_upweight": float(args.abstention_unresolved_class_upweight),
+                        "abstention_cost_directional_to_unresolved": float(args.abstention_cost_directional_to_unresolved),
+                        "abstention_cost_unresolved_to_directional": float(args.abstention_cost_unresolved_to_directional),
+                        "abstention_decision_margin": 0.0,
+                    },
+                    "selection_rule": {
+                        "type": "max_accepted_accuracy_subject_to_coverage_floor",
+                        "coverage_floor": float(args.calibration_coverage_floor),
+                    },
+                    "candidates_evaluated": [],
+                }
+                calibrated_metrics = dict(partial_order_cost_metrics)
+                calibrated_top1 = float(partial_order_cost_top1)
+                if bool(args.calibration_enable_sweep):
+                    candidate_rows: list[dict[str, Any]] = []
+                    best_obj = float("-inf")
+                    best_pick: dict[str, Any] | None = None
+                    candidates = _build_calibration_candidates(args)
+                    for cand in candidates:
+                        train_rows = [dict(r) for r in tables["pairwise"]]
+                        for tr in train_rows:
+                            base_w = float(tr.get("pair_train_weight", 1.0))
+                            if int(tr.get("partial_order_label", 1)) == 1:
+                                tr["partial_order_train_weight"] = base_w * float(cand["abstention_unresolved_class_upweight"])
+                            else:
+                                tr["partial_order_train_weight"] = base_w
+                        cand_model = _train_ternary_pair_model(
+                            train_rows,
+                            seed,
+                            label_key="partial_order_label",
+                            weight_key="partial_order_train_weight",
+                        )
+                        if cand_model.get("status") != "ok":
+                            candidate_rows.append({"candidate": cand, "status": str(cand_model.get("status", "unknown"))})
+                            continue
+                        cand_costs = _build_abstention_costs(args)
+                        cand_costs["matrix"]["j_wins"]["predict_unresolved"] = float(cand["abstention_cost_directional_to_unresolved"])
+                        cand_costs["matrix"]["i_wins"]["predict_unresolved"] = float(cand["abstention_cost_directional_to_unresolved"])
+                        cand_costs["matrix"]["unresolved"]["predict_j_wins"] = float(cand["abstention_cost_unresolved_to_directional"])
+                        cand_costs["matrix"]["unresolved"]["predict_i_wins"] = float(cand["abstention_cost_unresolved_to_directional"])
+                        cand_pred = _cost_sensitive_partial_order_predictor(
+                            cand_model["model"],
+                            cand_costs,
+                            decision_margin=float(cand["abstention_decision_margin"]),
+                        )
+                        val_metrics = _metrics_for_predictions(
+                            tables["pairwise"],
+                            pred_fn=cand_pred,
+                            forced_pred_fn=lambda r: pointwise_fallback(r) if cand_pred(r) is None else int(cand_pred(r) or 0),
+                            ambiguity_truth_key="partial_order_incomparable_target",
+                            split="val",
+                        )
+                        obj = _calibration_objective(val_metrics, float(args.calibration_coverage_floor))
+                        row = {"candidate": cand, "status": "ok", "val_metrics": val_metrics, "objective": obj}
+                        candidate_rows.append(row)
+                        if obj > best_obj:
+                            best_obj = obj
+                            best_pick = row
+                    if best_pick is None:
+                        feasible = [c for c in candidate_rows if c.get("status") == "ok"]
+                        if feasible:
+                            best_pick = max(
+                                feasible,
+                                key=lambda c: (
+                                    float(c.get("val_metrics", {}).get("coverage", 0.0)),
+                                    float(c.get("val_metrics", {}).get("accepted_pair_accuracy", 0.0)),
+                                ),
+                            )
+                    if best_pick is not None and best_pick.get("status") == "ok":
+                        pick = best_pick["candidate"]
+                        selected_calibration["selected"] = dict(pick)
+                        selected_calibration["selected"]["objective"] = float(best_pick.get("objective", float("-inf")))
+                        selected_calibration["selected"]["selection_split"] = "val"
+                        final_rows = [dict(r) for r in tables["pairwise"]]
+                        for fr in final_rows:
+                            base_w = float(fr.get("pair_train_weight", 1.0))
+                            if int(fr.get("partial_order_label", 1)) == 1:
+                                fr["partial_order_train_weight"] = base_w * float(pick["abstention_unresolved_class_upweight"])
+                            else:
+                                fr["partial_order_train_weight"] = base_w
+                        final_model = _train_ternary_pair_model(
+                            final_rows,
+                            seed,
+                            label_key="partial_order_label",
+                            weight_key="partial_order_train_weight",
+                        )
+                        if final_model.get("status") == "ok":
+                            final_costs = _build_abstention_costs(args)
+                            final_costs["matrix"]["j_wins"]["predict_unresolved"] = float(pick["abstention_cost_directional_to_unresolved"])
+                            final_costs["matrix"]["i_wins"]["predict_unresolved"] = float(pick["abstention_cost_directional_to_unresolved"])
+                            final_costs["matrix"]["unresolved"]["predict_j_wins"] = float(pick["abstention_cost_unresolved_to_directional"])
+                            final_costs["matrix"]["unresolved"]["predict_i_wins"] = float(pick["abstention_cost_unresolved_to_directional"])
+                            calibrated_pred = _cost_sensitive_partial_order_predictor(
+                                final_model["model"],
+                                final_costs,
+                                decision_margin=float(pick["abstention_decision_margin"]),
+                            )
+                            calibrated_metrics = _metrics_for_predictions(
+                                tables["pairwise"],
+                                pred_fn=calibrated_pred,
+                                forced_pred_fn=lambda r: pointwise_fallback(r) if calibrated_pred(r) is None else int(calibrated_pred(r) or 0),
+                                ambiguity_truth_key="partial_order_incomparable_target",
+                            )
+                            calibrated_top1 = _top1_from_pairwise_rows(
+                                tables["pairwise"],
+                                tables["state_to_candidates"],
+                                calibrated_pred,
+                                pointwise_fallback,
+                            )
+                    selected_calibration["candidates_evaluated"] = candidate_rows
+                calibration_records.append(
+                    {
+                        "regime": regime,
+                        "seed": seed,
+                        **selected_calibration,
+                    }
                 )
             else:
                 partial_order_metrics = {k: 0.0 for k in [
@@ -451,6 +616,21 @@ def main() -> None:
                 partial_order_top1 = 0.0
                 partial_order_cost_metrics = dict(partial_order_metrics)
                 partial_order_cost_top1 = 0.0
+                calibrated_metrics = dict(partial_order_metrics)
+                calibrated_top1 = 0.0
+                calibration_records.append(
+                    {
+                        "regime": regime,
+                        "seed": seed,
+                        "selected": None,
+                        "selection_rule": {
+                            "type": "max_accepted_accuracy_subject_to_coverage_floor",
+                            "coverage_floor": float(args.calibration_coverage_floor),
+                        },
+                        "candidates_evaluated": [],
+                        "status": "partial_order_train_not_ok",
+                    }
+                )
 
             seed_rows = [
                 {"formulation": "binary_forced", "top1_test": binary_top1, **binary_metrics},
@@ -458,7 +638,8 @@ def main() -> None:
                 {"formulation": "soft_ternary_tie", "top1_test": soft_ternary_top1, **soft_ternary_metrics},
                 {"formulation": "selective_abstain", "top1_test": abstain_top1, **abstain_metrics},
                 {"formulation": "partial_order_incomparable", "top1_test": partial_order_top1, **partial_order_metrics},
-                {"formulation": "partial_order_cost_sensitive_abstain", "top1_test": partial_order_cost_top1, **partial_order_cost_metrics},
+                {"formulation": "partial_order_cost_sensitive_abstain_previous", "top1_test": partial_order_cost_top1, **partial_order_cost_metrics},
+                {"formulation": "partial_order_cost_sensitive_abstain_calibrated", "top1_test": calibrated_top1, **calibrated_metrics},
             ]
             detailed["regimes"][regime][str(seed)] = {
                 "config": {
@@ -477,6 +658,8 @@ def main() -> None:
                     "partial_order_train_status": partial_order.get("status", "unknown"),
                     "abstention_unresolved_class_upweight": args.abstention_unresolved_class_upweight,
                     "abstention_costs": _build_abstention_costs(args),
+                    "calibration_enable_sweep": bool(args.calibration_enable_sweep),
+                    "calibration_coverage_floor": float(args.calibration_coverage_floor),
                 },
                 "rows": seed_rows,
             }
@@ -485,6 +668,21 @@ def main() -> None:
 
     (out_dir / "ternary_or_abstain_results.json").write_text(json.dumps(detailed, indent=2), encoding="utf-8")
     (out_dir / "ternary_or_abstain_summary.json").write_text(json.dumps(flat, indent=2), encoding="utf-8")
+    (out_dir / "abstention_cost_calibration_selection.json").write_text(
+        json.dumps(
+            {
+                "run_id": args.run_id,
+                "selection_rule": {
+                    "type": "max_accepted_accuracy_subject_to_coverage_floor",
+                    "coverage_floor": float(args.calibration_coverage_floor),
+                },
+                "calibration_enable_sweep": bool(args.calibration_enable_sweep),
+                "records": calibration_records,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     md = [
         "# Binary vs ternary vs selective-abstention branch comparison",
@@ -496,11 +694,21 @@ def main() -> None:
         f"- fallback_policy: `{args.fallback_policy}`",
         f"- abstain_confidence_threshold: `{args.abstain_confidence_threshold}`",
         f"- abstention_unresolved_class_upweight: `{args.abstention_unresolved_class_upweight}`",
+        f"- calibration_enable_sweep: `{bool(args.calibration_enable_sweep)}`",
+        f"- calibration_coverage_floor: `{float(args.calibration_coverage_floor):.3f}`",
         "",
     ]
     for regime in sorted(set(r["regime"] for r in flat)):
         md.append(f"## Regime `{regime}`")
-        for formulation in ["binary_forced", "ternary_tie", "soft_ternary_tie", "selective_abstain", "partial_order_incomparable", "partial_order_cost_sensitive_abstain"]:
+        for formulation in [
+            "binary_forced",
+            "ternary_tie",
+            "soft_ternary_tie",
+            "selective_abstain",
+            "partial_order_incomparable",
+            "partial_order_cost_sensitive_abstain_previous",
+            "partial_order_cost_sensitive_abstain_calibrated",
+        ]:
             rows = [r for r in flat if r["regime"] == regime and r["formulation"] == formulation]
             if not rows:
                 continue
