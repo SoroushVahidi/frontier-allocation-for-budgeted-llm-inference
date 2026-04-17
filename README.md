@@ -27,12 +27,15 @@ This repository is **not** currently centered on the old binary revise-routing p
 ### If you want the quickest correct overview
 Read these first:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-2. [`docs/PROJECT_MASTER_PLAN.md`](docs/PROJECT_MASTER_PLAN.md)
-3. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
-4. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-5. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
-6. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
-7. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+2. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+3. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+4. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+5. [`docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`](docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md)
+6. [`docs/WHAT_IS_NOT_WORKING_NOW.md`](docs/WHAT_IS_NOT_WORKING_NOW.md)
+7. [`docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md`](docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md)
+8. [`docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
+9. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+10. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 ### If you want to run code
 Start with:
@@ -44,7 +47,13 @@ Read next:
 - [`docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md`](docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md)
 - [`docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`](docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md)
 - [`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`](docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md)
-- [`docs/STRICT_COUPLED_NEAR_TIE_CONTROLLER_STATUS.md`](docs/STRICT_COUPLED_NEAR_TIE_CONTROLLER_STATUS.md)
+- [`docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md`](docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md)
+- [`docs/STRICT_COUPLED_TIE_AWARE_LEARNED_TWO_STAGE_DEFERRAL_STATUS.md`](docs/STRICT_COUPLED_TIE_AWARE_LEARNED_TWO_STAGE_DEFERRAL_STATUS.md)
+- [`docs/imported_methodology_frontier_integration_report.md`](docs/imported_methodology_frontier_integration_report.md)
+
+### If you want to interpret outputs quickly
+Use:
+- [`docs/OUTPUTS_INTERPRETATION_GUIDE.md`](docs/OUTPUTS_INTERPRETATION_GUIDE.md)
 
 ## What is already strong
 
@@ -53,20 +62,21 @@ Read next:
 - branch-scorer experimentation paths,
 - dataset and baseline integration readiness,
 - oracle-label pilot infrastructure,
+- imported manuscript-style evaluation support,
 - careful provenance notes and safe-claim discipline.
 
 ## What is not solved yet
 
 - robust supervision targets for branch-priority allocation,
-- reliable branch-score / continuation calibration across budgets / seeds / datasets,
+- reliable selective pairwise trust/defer control on hard ambiguous cases,
 - broad decisive real-model evidence,
 - a robust universally winning learned allocator.
 
 ## Main bottleneck
 
-The canonical bottleneck is:
+The current bottleneck is best described as:
 
-**supervision target quality / proxy-label mismatch for next-step branch allocation.**
+**principled selective pairwise control and supervision design for ambiguous hard cases.**
 
 The current repository view is that the project is **not** primarily blocked by:
 - missing infrastructure,
@@ -77,8 +87,9 @@ The current repository view is that the project is **not** primarily blocked by:
 
 The recommended current direction is:
 - a branch-priority / next-step allocation policy over active branches,
-- pairwise or pointwise branch scoring as the main learned decision object,
-- and, when useful, a lightweight local gate that asks whether the current candidate branch really deserves the next unit of budget.
+- pairwise branch comparison as the main learned decision object,
+- `v2` hard-case representation as the stronger default substrate,
+- and a cleaner selective accept/defer rule for hard ambiguous cases.
 
 The conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
