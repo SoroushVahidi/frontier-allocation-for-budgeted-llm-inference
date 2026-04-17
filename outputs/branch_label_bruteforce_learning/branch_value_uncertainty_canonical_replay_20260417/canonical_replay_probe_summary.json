@@ -1,0 +1,213 @@
+{
+  "generated_utc": "2026-04-17T20:29:42.006849Z",
+  "script": "scripts/run_branch_value_uncertainty_strict_validation_pass.py",
+  "invocation_template": "python scripts/run_branch_value_uncertainty_strict_validation_pass.py --targets-root <root> --run-id <run_id> --regimes all_pairs_approx,promoted_exact_hard_region,penalized_marginal_defer --seeds 11,29,47 --feature-set v3",
+  "canonical_roots_considered": [
+    {
+      "targets_root": "outputs/branch_label_bruteforce_targets/near_tie_compare_bundle_exact_augmented_regimes_20260417",
+      "root_short_name": "near_tie_compare_bundle_exact_augmented_regimes_20260417",
+      "selection_rationale": "Chosen because it is the canonical near-tie compare bundle exact-augmented target family used by strict coupled tie-aware work.",
+      "run_id": "branch_value_uncertainty_strict_validation_canonical_replay_near_tie_bundle_20260417",
+      "missing_regimes": [
+        "outputs/branch_label_bruteforce_targets/near_tie_compare_bundle_exact_augmented_regimes_20260417/regime_all_pairs_approx",
+        "outputs/branch_label_bruteforce_targets/near_tie_compare_bundle_exact_augmented_regimes_20260417/regime_promoted_exact_hard_region",
+        "outputs/branch_label_bruteforce_targets/near_tie_compare_bundle_exact_augmented_regimes_20260417/regime_penalized_marginal_defer"
+      ],
+      "caveats": [
+        "Some requested regime directories were missing under targets-root; see missing_regimes in summary."
+      ],
+      "aggregate": {
+        "variants": {
+          "value_only": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_raw_uncertainty": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_learned_risk": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_outside_option": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "full_method": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          }
+        },
+        "pairwise_binary_baseline": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_rate": 0.0
+        },
+        "penalized_marginal_proxy_baseline": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_rate": 0.0
+        },
+        "deltas": {
+          "full_vs_pairwise_accuracy": 0.0,
+          "full_vs_value_only_accuracy": 0.0
+        }
+      }
+    },
+    {
+      "targets_root": "outputs/branch_label_bruteforce_targets/incomparability_exact_augmented_regimes_20260417",
+      "root_short_name": "incomparability_exact_augmented_regimes_20260417",
+      "selection_rationale": "Chosen because it is an exact-augmented hard-region regime family on the branch-allocation path and includes promoted hard-region artifacts in prior runs.",
+      "run_id": "branch_value_uncertainty_strict_validation_canonical_replay_incomparability_20260417",
+      "missing_regimes": [
+        "outputs/branch_label_bruteforce_targets/incomparability_exact_augmented_regimes_20260417/regime_all_pairs_approx",
+        "outputs/branch_label_bruteforce_targets/incomparability_exact_augmented_regimes_20260417/regime_promoted_exact_hard_region",
+        "outputs/branch_label_bruteforce_targets/incomparability_exact_augmented_regimes_20260417/regime_penalized_marginal_defer"
+      ],
+      "caveats": [
+        "Some requested regime directories were missing under targets-root; see missing_regimes in summary."
+      ],
+      "aggregate": {
+        "variants": {
+          "value_only": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_raw_uncertainty": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_learned_risk": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_outside_option": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "full_method": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          }
+        },
+        "pairwise_binary_baseline": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_rate": 0.0
+        },
+        "penalized_marginal_proxy_baseline": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_rate": 0.0
+        },
+        "deltas": {
+          "full_vs_pairwise_accuracy": 0.0,
+          "full_vs_value_only_accuracy": 0.0
+        }
+      }
+    },
+    {
+      "targets_root": "outputs/branch_label_bruteforce_targets/validation_penalized_regimes_nt_l0.20_t0.02_eu0.10_cap1.50_20260417",
+      "root_short_name": "validation_penalized_regimes_nt_l0.20_t0.02_eu0.10_cap1.50_20260417",
+      "selection_rationale": "Chosen because it is the strongest current penalized-marginal validation regime root referenced by branch-allocation bounded passes.",
+      "run_id": "branch_value_uncertainty_strict_validation_canonical_replay_penalized_20260417",
+      "missing_regimes": [
+        "outputs/branch_label_bruteforce_targets/validation_penalized_regimes_nt_l0.20_t0.02_eu0.10_cap1.50_20260417/regime_all_pairs_approx",
+        "outputs/branch_label_bruteforce_targets/validation_penalized_regimes_nt_l0.20_t0.02_eu0.10_cap1.50_20260417/regime_promoted_exact_hard_region",
+        "outputs/branch_label_bruteforce_targets/validation_penalized_regimes_nt_l0.20_t0.02_eu0.10_cap1.50_20260417/regime_penalized_marginal_defer"
+      ],
+      "caveats": [
+        "Some requested regime directories were missing under targets-root; see missing_regimes in summary."
+      ],
+      "aggregate": {
+        "variants": {
+          "value_only": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_raw_uncertainty": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_learned_risk": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "value_outside_option": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          },
+          "full_method": {
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_rate": 0.0,
+            "near_tie_accepted_pair_accuracy": 0.0,
+            "adjacent_rank_accepted_pair_accuracy": 0.0
+          }
+        },
+        "pairwise_binary_baseline": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_rate": 0.0
+        },
+        "penalized_marginal_proxy_baseline": {
+          "accepted_pair_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_rate": 0.0
+        },
+        "deltas": {
+          "full_vs_pairwise_accuracy": 0.0,
+          "full_vs_value_only_accuracy": 0.0
+        }
+      }
+    }
+  ],
+  "gating_outcome": "blocked_missing_canonical_regime_dirs",
+  "notes": [
+    "Strict validation path was replayed unchanged against strongest known canonical root candidates; all required regime_* directories were missing in this checkout.",
+    "No metric claim can be upgraded from bounded/proxy status until canonical target artifacts are mounted."
+  ]
+}
