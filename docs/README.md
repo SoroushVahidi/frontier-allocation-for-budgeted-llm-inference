@@ -10,6 +10,8 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 - Master dashboard: [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - Experiment ledger: [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
 - Continuation plan: [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
+- Idea implementation matrix: [`IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md`](IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md)
+- Research and execution log: [`RESEARCH_AND_EXECUTION_LOG_2026_04_18.md`](RESEARCH_AND_EXECUTION_LOG_2026_04_18.md)
 - References organization: [`REFERENCES_ORGANIZATION_2026_04_18.md`](REFERENCES_ORGANIZATION_2026_04_18.md)
 - Current working set / asset summary: [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 - Output-family interpretation: [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
@@ -38,6 +40,8 @@ Read these first for the current project identity:
 - [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
 - [`FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md`](FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md)
 - [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+- [`IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md`](IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md)
+- [`RESEARCH_AND_EXECUTION_LOG_2026_04_18.md`](RESEARCH_AND_EXECUTION_LOG_2026_04_18.md)
 
 ### Method status and next steps
 - [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
@@ -49,6 +53,7 @@ Read these first for the current project identity:
 - [`REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
 - [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
 - [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
+- [`IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md`](IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md)
 
 ### Evaluation, outputs, and assets
 - [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md)
@@ -57,6 +62,7 @@ Read these first for the current project identity:
 - [`DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
 - `../outputs/repository_audit/repository_audit_summary_2026_04_18.json`
 - `../outputs/repository_polish/repository_polish_summary_2026_04_18.json`
+- `../outputs/repository_polish/idea_and_execution_memory_2026_04_18.json`
 
 ### Broader canonical references and support notes
 - [`cross_controller_frontier.md`](cross_controller_frontier.md)
@@ -91,6 +97,8 @@ Read these first for the current project identity:
 - `REPOSITORY_MASTER_DASHBOARD_2026_04_18.md` is the shortest current dashboard for what the project is, what worked, what failed, and what next.
 - `EXPERIMENT_LEDGER_2026_04_18.md` records the main experiment families and their current status.
 - `CONTINUATION_PLAN_2026_04_18.md` gives the recommended next-step order.
+- `IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md` records which major ideas are implemented, partly implemented, or still not yet implemented, with priority guidance.
+- `RESEARCH_AND_EXECUTION_LOG_2026_04_18.md` records the main research, implementation, validation, and recovery steps already completed so they are not rediscovered repeatedly.
 - `REFERENCES_ORGANIZATION_2026_04_18.md` explains how to interpret and organize the repository’s reference base.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
 
