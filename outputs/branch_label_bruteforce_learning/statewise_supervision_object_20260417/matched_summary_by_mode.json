@@ -1,0 +1,35 @@
+{
+  "run_id": "statewise_supervision_object_20260417",
+  "aggregate_by_mode": {
+    "baseline_pairwise_canonical": {
+      "seeds_present": 3,
+      "accepted_accuracy_mean": 0.42063492063492064,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.39999999999999997,
+      "adjacent_rank_accepted_accuracy_mean": 0.4507936507936508,
+      "statewise_top1_agreement_mean": 0.0,
+      "near_tie_heavy_state_top1_agreement_mean": 0.0
+    },
+    "statewise_next_branch_value": {
+      "seeds_present": 3,
+      "accepted_accuracy_mean": 0.40079365079365076,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.19999999999999998,
+      "adjacent_rank_accepted_accuracy_mean": 0.3682539682539683,
+      "statewise_top1_agreement_mean": 0.38888888888888884,
+      "near_tie_heavy_state_top1_agreement_mean": 0.16666666666666666
+    },
+    "statewise_next_branch_binary_top1_only": {
+      "seeds_present": 3,
+      "accepted_accuracy_mean": 0.623015873015873,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.5333333333333333,
+      "adjacent_rank_accepted_accuracy_mean": 0.5428571428571428,
+      "statewise_top1_agreement_mean": 0.5555555555555555,
+      "near_tie_heavy_state_top1_agreement_mean": 0.6666666666666666
+    }
+  }
+}
