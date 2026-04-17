@@ -1,0 +1,70 @@
+{
+  "run_id": "branch_value_uncertainty_canonical_regime_rebuild_20260417",
+  "canonical_targets_root": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root",
+  "regimes": {
+    "regime_all_pairs_approx": {
+      "path": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_all_pairs_approx",
+      "files": {
+        "candidate_labels.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_all_pairs_approx/candidate_labels.jsonl",
+        "pairwise_labels.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_all_pairs_approx/pairwise_labels.jsonl",
+        "state_summaries.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_all_pairs_approx/state_summaries.jsonl"
+      },
+      "exists": true,
+      "line_counts": {
+        "candidate_labels.jsonl": 98,
+        "pairwise_labels.jsonl": 91,
+        "state_summaries.jsonl": 36
+      },
+      "sha256": {
+        "candidate_labels.jsonl": "fe4acdd15897b9606ce34e428775dd224041a9fabeeab42d34f287ef41606e1d",
+        "pairwise_labels.jsonl": "5a9500f1ea6040fde59a21507889d053829e7f1e38bd48a007a3e23618e49acb",
+        "state_summaries.jsonl": "793014f548c392ce36af609fce755dfe3c63051e131ce075ce2405b23c77ac54"
+      }
+    },
+    "regime_promoted_exact_hard_region": {
+      "path": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_promoted_exact_hard_region",
+      "files": {
+        "candidate_labels.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_promoted_exact_hard_region/candidate_labels.jsonl",
+        "pairwise_labels.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_promoted_exact_hard_region/pairwise_labels.jsonl",
+        "state_summaries.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_promoted_exact_hard_region/state_summaries.jsonl"
+      },
+      "exists": true,
+      "line_counts": {
+        "candidate_labels.jsonl": 98,
+        "pairwise_labels.jsonl": 91,
+        "state_summaries.jsonl": 36
+      },
+      "sha256": {
+        "candidate_labels.jsonl": "fe4acdd15897b9606ce34e428775dd224041a9fabeeab42d34f287ef41606e1d",
+        "pairwise_labels.jsonl": "a12fa204c60b2f2b7daa498a27ea7b4fcab6d51e948caaa0770599ac4ddd93b4",
+        "state_summaries.jsonl": "793014f548c392ce36af609fce755dfe3c63051e131ce075ce2405b23c77ac54"
+      }
+    },
+    "regime_penalized_marginal_defer": {
+      "path": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_penalized_marginal_defer",
+      "files": {
+        "candidate_labels.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_penalized_marginal_defer/candidate_labels.jsonl",
+        "pairwise_labels.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_penalized_marginal_defer/pairwise_labels.jsonl",
+        "state_summaries.jsonl": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_canonical_regime_rebuild_20260417/canonical_targets_root/regime_penalized_marginal_defer/state_summaries.jsonl"
+      },
+      "exists": true,
+      "line_counts": {
+        "candidate_labels.jsonl": 98,
+        "pairwise_labels.jsonl": 91,
+        "state_summaries.jsonl": 36
+      },
+      "sha256": {
+        "candidate_labels.jsonl": "fe4acdd15897b9606ce34e428775dd224041a9fabeeab42d34f287ef41606e1d",
+        "pairwise_labels.jsonl": "21e25676e588dd3015b843d1bfeb16824e4de44d566fac5862c77e0de9017b7e",
+        "state_summaries.jsonl": "793014f548c392ce36af609fce755dfe3c63051e131ce075ce2405b23c77ac54"
+      }
+    }
+  },
+  "source_roots": {
+    "base_labels": "outputs/branch_label_bruteforce/canonical_rebuild_base_labels_20260417",
+    "hard_region_mining": "outputs/branch_label_bruteforce_targets/canonical_rebuild_hard_region_mining_20260417",
+    "exact_hard_region_expansion": "outputs/branch_label_bruteforce_targets/canonical_rebuild_exact_hard_region_expansion_20260417",
+    "exact_augmented_regimes": "outputs/branch_label_bruteforce_targets/canonical_rebuild_exact_augmented_regimes_20260417",
+    "penalized_regimes": "outputs/branch_label_bruteforce_targets/canonical_rebuild_penalized_regimes_20260417"
+  }
+}

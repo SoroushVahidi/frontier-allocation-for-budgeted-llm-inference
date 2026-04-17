@@ -1,0 +1,103 @@
+{
+  "run_id": "branch_value_uncertainty_canonical_regime_rebuild_20260417",
+  "diagnosis_chain": [
+    {
+      "name": "base_labels",
+      "producer_script": "scripts/run_bruteforce_branch_label_generator.py",
+      "required_files": [
+        "candidate_labels.jsonl",
+        "pairwise_labels.jsonl",
+        "state_summaries.jsonl"
+      ],
+      "historical_expected_path": "outputs/branch_label_bruteforce/incomparability_base_20260417",
+      "rebuilt_path": "outputs/branch_label_bruteforce/canonical_rebuild_base_labels_20260417",
+      "historical_path_present_in_checkout": false,
+      "historical_missing_files": [
+        "candidate_labels.jsonl",
+        "pairwise_labels.jsonl",
+        "state_summaries.jsonl"
+      ],
+      "rebuilt_path_present": true,
+      "rebuilt_missing_files": [],
+      "likely_origin_classification": "ignored_or_untracked_output_from_prior_local_run"
+    },
+    {
+      "name": "hard_region_mining",
+      "producer_script": "scripts/mine_bruteforce_hard_regions.py",
+      "required_files": [
+        "mined_hard_candidates.jsonl",
+        "hard_region_mining_summary.json"
+      ],
+      "historical_expected_path": "outputs/branch_label_bruteforce_targets/incomparability_hard_region_mining_20260417",
+      "rebuilt_path": "outputs/branch_label_bruteforce_targets/canonical_rebuild_hard_region_mining_20260417",
+      "historical_path_present_in_checkout": false,
+      "historical_missing_files": [
+        "mined_hard_candidates.jsonl",
+        "hard_region_mining_summary.json"
+      ],
+      "rebuilt_path_present": true,
+      "rebuilt_missing_files": [],
+      "likely_origin_classification": "ignored_or_untracked_output_from_prior_local_run"
+    },
+    {
+      "name": "exact_hard_region_expansion",
+      "producer_script": "scripts/expand_bruteforce_exact_hard_regions.py",
+      "required_files": [
+        "exact_pairwise_labels.jsonl",
+        "exact_candidate_labels.jsonl",
+        "manifest.json"
+      ],
+      "historical_expected_path": "outputs/branch_label_bruteforce_targets/incomparability_hard_region_exact_expansion_20260417",
+      "rebuilt_path": "outputs/branch_label_bruteforce_targets/canonical_rebuild_exact_hard_region_expansion_20260417",
+      "historical_path_present_in_checkout": false,
+      "historical_missing_files": [
+        "exact_pairwise_labels.jsonl",
+        "exact_candidate_labels.jsonl",
+        "manifest.json"
+      ],
+      "rebuilt_path_present": true,
+      "rebuilt_missing_files": [],
+      "likely_origin_classification": "ignored_or_untracked_output_from_prior_local_run"
+    },
+    {
+      "name": "exact_augmented_regimes_root",
+      "producer_script": "scripts/build_exact_augmented_target_regimes.py",
+      "required_files": [
+        "regime_all_pairs_approx/pairwise_labels.jsonl",
+        "regime_promoted_exact_hard_region/pairwise_labels.jsonl",
+        "manifest.json"
+      ],
+      "historical_expected_path": "outputs/branch_label_bruteforce_targets/incomparability_exact_augmented_regimes_20260417",
+      "rebuilt_path": "outputs/branch_label_bruteforce_targets/canonical_rebuild_exact_augmented_regimes_20260417",
+      "historical_path_present_in_checkout": false,
+      "historical_missing_files": [
+        "regime_all_pairs_approx/pairwise_labels.jsonl",
+        "regime_promoted_exact_hard_region/pairwise_labels.jsonl",
+        "manifest.json"
+      ],
+      "rebuilt_path_present": true,
+      "rebuilt_missing_files": [],
+      "likely_origin_classification": "ignored_or_untracked_output_from_prior_local_run"
+    },
+    {
+      "name": "penalized_regimes_root",
+      "producer_script": "scripts/build_bruteforce_target_regimes.py",
+      "required_files": [
+        "regime_penalized_marginal_defer/pairwise_labels.jsonl",
+        "manifest.json"
+      ],
+      "historical_expected_path": "outputs/branch_label_bruteforce_targets/validation_penalized_regimes_nt_l0.20_t0.02_eu0.10_cap1.50_20260417",
+      "rebuilt_path": "outputs/branch_label_bruteforce_targets/canonical_rebuild_penalized_regimes_20260417",
+      "historical_path_present_in_checkout": false,
+      "historical_missing_files": [
+        "regime_penalized_marginal_defer/pairwise_labels.jsonl",
+        "manifest.json"
+      ],
+      "rebuilt_path_present": true,
+      "rebuilt_missing_files": [],
+      "likely_origin_classification": "ignored_or_untracked_output_from_prior_local_run"
+    }
+  ],
+  "reproducibility_classification": "reproducible_from_scripts_in_repo_in_this_environment",
+  "external_dependency_blocker_remaining": null
+}

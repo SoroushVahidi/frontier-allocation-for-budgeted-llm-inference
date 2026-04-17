@@ -1,0 +1,159 @@
+{
+  "run_id": "branch_value_uncertainty_canonical_regime_recovery_20260417",
+  "required_regimes": [
+    "all_pairs_approx",
+    "promoted_exact_hard_region",
+    "penalized_marginal_defer"
+  ],
+  "candidate_roots": [
+    {
+      "targets_root": "outputs/branch_label_bruteforce_targets/near_tie_compare_bundle_exact_augmented_regimes_20260417",
+      "root_exists": false,
+      "regimes": {
+        "all_pairs_approx": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        },
+        "promoted_exact_hard_region": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        },
+        "penalized_marginal_defer": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        }
+      }
+    },
+    {
+      "targets_root": "outputs/branch_label_bruteforce_targets/incomparability_exact_augmented_regimes_20260417",
+      "root_exists": false,
+      "regimes": {
+        "all_pairs_approx": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        },
+        "promoted_exact_hard_region": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        },
+        "penalized_marginal_defer": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        }
+      }
+    },
+    {
+      "targets_root": "outputs/branch_label_bruteforce_targets/validation_penalized_regimes_nt_l0.20_t0.02_eu0.10_cap1.50_20260417",
+      "root_exists": false,
+      "regimes": {
+        "all_pairs_approx": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        },
+        "promoted_exact_hard_region": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        },
+        "penalized_marginal_defer": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        }
+      }
+    },
+    {
+      "targets_root": "outputs/branch_label_bruteforce_targets/strict_validation_proxy_20260418",
+      "root_exists": false,
+      "regimes": {
+        "all_pairs_approx": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        },
+        "promoted_exact_hard_region": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        },
+        "penalized_marginal_defer": {
+          "directory_exists": false,
+          "required_files_exist": {
+            "candidate_labels": false,
+            "pairwise_labels": false,
+            "state_summaries": false
+          }
+        }
+      }
+    }
+  ],
+  "compliant_regime_dirs_found_anywhere": [],
+  "upstream_expected_inputs": [
+    {
+      "path": "outputs/branch_label_bruteforce/near_tie_compare_bundle_20260417",
+      "exists": false
+    },
+    {
+      "path": "outputs/branch_label_bruteforce/incomparability_base_20260417",
+      "exists": false
+    },
+    {
+      "path": "outputs/branch_label_bruteforce/validation_penalized_20260417",
+      "exists": false
+    },
+    {
+      "path": "outputs/branch_label_bruteforce_targets/incomparability_hard_region_exact_expansion_20260417",
+      "exists": false
+    },
+    {
+      "path": "outputs/branch_label_bruteforce_targets/hard_region_exact_expansion_20260417",
+      "exists": false
+    },
+    {
+      "path": "outputs/branch_label_bruteforce_targets/validation_penalized_hard_region_exact_expansion_20260417",
+      "exists": false
+    }
+  ],
+  "diagnosis": "No candidate canonical targets root exists in this checkout; no regime_* directories with required label artifacts were found anywhere in repository tree.",
+  "recovery_feasibility": "Not feasible from checked-in artifacts alone because upstream branch_label_bruteforce and exact-expansion inputs are also absent."
+}
