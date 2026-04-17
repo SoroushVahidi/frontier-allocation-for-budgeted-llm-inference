@@ -1,0 +1,40 @@
+{
+  "run_id": "repository_navigation_summary_2026_04_18",
+  "date": "2026-04-18",
+  "purpose": "record the current top-level navigation and orientation structure after repository polish passes",
+  "top_level_orientation_paths": {
+    "fastest_correct_overview": [
+      "docs/CANONICAL_START_HERE.md",
+      "docs/CURRENT_PROJECT_STATUS.md",
+      "docs/CURRENT_BOTTLENECKS.md",
+      "docs/CURRENT_SAFE_CLAIMS.md",
+      "docs/PAPER_POSITIONING_NOTE.md",
+      "docs/REPO_MAP.md"
+    ],
+    "shortest_repository_facing_orientation": [
+      "docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md",
+      "docs/EXPERIMENT_LEDGER_2026_04_18.md",
+      "docs/CONTINUATION_PLAN_2026_04_18.md",
+      "docs/REFERENCES_ORGANIZATION_2026_04_18.md"
+    ],
+    "current_target_design_direction": [
+      "docs/RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md",
+      "docs/RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md",
+      "docs/BRANCH_VALUE_UNCERTAINTY_DERIVED_DEFER_BOUNDED_PASS_2026_04_18.md"
+    ],
+    "hard_ambiguous_case_line": [
+      "docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md",
+      "docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md",
+      "docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md",
+      "docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md",
+      "docs/DEFER_CONDITIONED_FALLBACK_STATUS.md"
+    ]
+  },
+  "main_repo_files_updated": [
+    "README.md",
+    "docs/README.md",
+    "docs/REPOSITORY_START_PATHS.md",
+    "docs/METHOD_STATUS_INDEX.md"
+  ],
+  "goal": "make it clearer where the project started, what has worked, what has failed, what the current bottleneck is, and what should happen next"
+}
