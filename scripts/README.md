@@ -2,6 +2,12 @@
 
 All scripts write run artifacts under `outputs/` unless overridden.
 
+## Fast start
+
+- Current project entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+- Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
+- Full code/document map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
+
 ## Interpretation labels
 
 - **Canonical**: current frontier-allocation path for the NeurIPS-oriented project.
@@ -70,7 +76,7 @@ All scripts write run artifacts under `outputs/` unless overridden.
 ## Notes
 
 - `run_cross_strategy_frontier_allocation.py` keeps a legacy filename for compatibility; docs refer to this as cross-controller frontier allocation.
-- Current canonical method direction is documented in `docs/STOP_VS_ACT_DIRECTION.md` (stop-vs-act), but implementation scripts are still evolving.
+- Current canonical method direction is documented in `../docs/STOP_VS_ACT_DIRECTION.md` and the broader branch-allocation docs; stop-vs-act is a bounded helper formulation, not the whole project identity.
 
 ## Oracle-label pilot execution
 
