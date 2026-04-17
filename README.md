@@ -33,6 +33,14 @@ Read in this order:
 5. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
 6. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
+### Shortest repository-facing orientation path
+Use:
+- [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+- [`docs/EXPERIMENT_LEDGER_2026_04_18.md`](docs/EXPERIMENT_LEDGER_2026_04_18.md)
+- [`docs/CONTINUATION_PLAN_2026_04_18.md`](docs/CONTINUATION_PLAN_2026_04_18.md)
+- [`docs/REFERENCES_ORGANIZATION_2026_04_18.md`](docs/REFERENCES_ORGANIZATION_2026_04_18.md)
+- [`outputs/repository_polish/repository_polish_summary_2026_04_18.json`](outputs/repository_polish/repository_polish_summary_2026_04_18.json)
+
 ### Compact repository-facing audit
 Use:
 - [`docs/FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md`](docs/FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md)
@@ -51,6 +59,13 @@ Read next:
 - [`docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md`](docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md)
 - [`docs/DEFER_CONDITIONED_FALLBACK_STATUS.md`](docs/DEFER_CONDITIONED_FALLBACK_STATUS.md)
 - [`docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
+
+### Current target-design and value-supervision direction
+Use:
+- [`docs/RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md`](docs/RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md)
+- [`docs/RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md`](docs/RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md)
+- `outputs/research_takeaways/research_takeaways_target_design_and_selective_allocation_2026_04_18.json`
+- `outputs/research_takeaways/research_takeaways_value_targets_and_abstention_2026_04_18.json`
 
 ### Evaluation and outputs
 Use:
