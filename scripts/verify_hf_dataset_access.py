@@ -22,6 +22,10 @@ from experiments.hf_datasets import (
 )
 
 DEFAULT_DATASETS = [
+    "allenai/drop",
+    "TAUR-Lab/MuSR",
+    "openeval/BIG-Bench-Hard",
+    "deepmind/aqua_rat",
     "openai/gsm8k",
     "hendrycks/competition_math",
     "EleutherAI/hendrycks_math",

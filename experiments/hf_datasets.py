@@ -130,6 +130,51 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         optional=False,
         provenance_note="AMO-Bench HF release with MIT license tag and 50-item hard-math test split.",
     ),
+    # DROP: requested source `allenai/drop` is not currently resolvable on HF Hub API in this environment.
+    # We keep canonical key `allenai/drop` but load from public mirror `ucinlp/drop` and document this fallback.
+    "allenai/drop": HFDatasetSpec(
+        key="allenai/drop",
+        repo_id="ucinlp/drop",
+        default_config=None,
+        default_split="validation",
+        question_fields=("question",),
+        answer_fields=("answers_spans",),
+        optional=False,
+        provenance_note=(
+            "Requested HF id allenai/drop was not resolvable in this environment; using public HF mirror ucinlp/drop. "
+            "Official AWS registry path is also available: https://registry.opendata.aws/allenai-drop/."
+        ),
+    ),
+    "TAUR-Lab/MuSR": HFDatasetSpec(
+        key="TAUR-Lab/MuSR",
+        repo_id="TAUR-Lab/MuSR",
+        default_config="default",
+        default_split="murder_mysteries",
+        question_fields=("question", "narrative"),
+        answer_fields=("answer_choice", "answer_index"),
+        optional=False,
+        provenance_note="MuSR reasoning benchmark; default split key reflects task family layout in this HF card.",
+    ),
+    "openeval/BIG-Bench-Hard": HFDatasetSpec(
+        key="openeval/BIG-Bench-Hard",
+        repo_id="openeval/BIG-Bench-Hard",
+        default_config="default",
+        default_split="train",
+        question_fields=("input", "question", "examples"),
+        answer_fields=("target", "answer", "examples"),
+        optional=False,
+        provenance_note="BIG-Bench Hard card with task-packed rows (examples nested per task row).",
+    ),
+    "deepmind/aqua_rat": HFDatasetSpec(
+        key="deepmind/aqua_rat",
+        repo_id="deepmind/aqua_rat",
+        default_config="raw",
+        default_split="validation",
+        question_fields=("question",),
+        answer_fields=("correct", "rationale"),
+        optional=False,
+        provenance_note="AQuA-RAT multiple-choice benchmark (raw config).",
+    ),
 }
 
 GIT_DATASET_SPECS: dict[str, GitDatasetSpec] = {
@@ -174,6 +219,16 @@ DATASET_KEY_ALIASES: dict[str, str] = {
     "naturalplan": "google-deepmind/natural-plan",
     "natural_plan": "google-deepmind/natural-plan",
     "NaturalPlan": "google-deepmind/natural-plan",
+    "DROP": "allenai/drop",
+    "drop": "allenai/drop",
+    "MuSR": "TAUR-Lab/MuSR",
+    "musr": "TAUR-Lab/MuSR",
+    "big-bench-hard": "openeval/BIG-Bench-Hard",
+    "bbh": "openeval/BIG-Bench-Hard",
+    "BIG-Bench-Hard": "openeval/BIG-Bench-Hard",
+    "aqua_rat": "deepmind/aqua_rat",
+    "AQuA": "deepmind/aqua_rat",
+    "AQuA-RAT": "deepmind/aqua_rat",
 }
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -354,9 +409,27 @@ def _merge_gpqa_loader_results(
 def _pick_first_present(row: dict[str, Any], candidates: tuple[str, ...]) -> str:
     for field in candidates:
         value = row.get(field)
-        if value is not None and str(value).strip():
-            return str(value)
+        if value is not None:
+            text = _safe_preview(value)
+            if text.strip():
+                return text
     return ""
+
+
+def _safe_preview(value: Any, max_chars: int = 600) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        text = value
+    else:
+        try:
+            text = json.dumps(value, ensure_ascii=False)
+        except Exception:  # noqa: BLE001
+            text = str(value)
+    text = text.replace("\n", " ").strip()
+    if len(text) <= max_chars:
+        return text
+    return f"{text[:max_chars]} …<truncated {len(text) - max_chars} chars>"
 
 
 def sample_hf_examples(
@@ -394,7 +467,7 @@ def sample_hf_examples(
         if spec.key == "Idavidrein/gpqa":
             for k in ("choices", "Choices"):
                 if k in row and row[k] is not None:
-                    rec["choices"] = str(row[k])
+                    rec["choices"] = _safe_preview(row[k], max_chars=600)
                     break
         records.append(rec)
     return records

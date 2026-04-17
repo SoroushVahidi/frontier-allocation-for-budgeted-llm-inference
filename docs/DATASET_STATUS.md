@@ -17,6 +17,18 @@ These are the primary datasets used for evaluating controller/frontier behavior:
 
 References: `docs/main_datasets.md`, `docs/datasets_access.md`, `experiments/hf_datasets.py`.
 
+### Top-priority expansion candidates (2026-04-17 bounded integration pass)
+
+The following high-priority expansion datasets are now tracked in the dataset registry/tooling and have bounded access checks:
+- DROP (`allenai/drop` key with current loader path fallback to `ucinlp/drop`)
+- MuSR (`TAUR-Lab/MuSR`)
+- BIG-Bench Hard (`openeval/BIG-Bench-Hard`)
+- AQuA (`deepmind/aqua_rat`, replacing non-canonical shorthand `aqua_rat`)
+
+Readiness report and artifacts:
+- `docs/TOP_PRIORITY_DATASET_EXPANSION_READINESS_2026_04_17.md`
+- `outputs/dataset_expansion_20260417/`
+
 ## B) External reasoning-supervision datasets (new-paper prep layer)
 
 These are integrated mainly for branch/process supervision experiments and warm-start:

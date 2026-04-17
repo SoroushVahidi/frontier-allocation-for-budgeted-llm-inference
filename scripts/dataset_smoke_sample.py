@@ -25,6 +25,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--datasets",
         default=(
+            "allenai/drop,TAUR-Lab/MuSR,openeval/BIG-Bench-Hard,deepmind/aqua_rat,"
             "openai/gsm8k,hendrycks/competition_math,HuggingFaceH4/MATH-500,"
             "Idavidrein/gpqa,HuggingFaceH4/aime_2024,Hothan/OlympiadBench,"
             "meituan-longcat/AMO-Bench,google-deepmind/natural-plan"

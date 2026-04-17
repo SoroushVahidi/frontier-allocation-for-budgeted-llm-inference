@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 import sys
@@ -16,6 +17,66 @@ from experiments.hf_datasets import check_git_dataset_access, check_hf_dataset_a
 
 # Paper-priority rows (static policy + optional live probe)
 PRIORITY_ROWS: list[dict[str, str | bool | None]] = [
+    {
+        "dataset_name": "DROP",
+        "target_priority": "A",
+        "official_source_link": "https://aclanthology.org/N19-1246/",
+        "access_link": "https://huggingface.co/datasets/allenai/drop (requested) / https://huggingface.co/datasets/ucinlp/drop (current public loader path)",
+        "public_or_gated": "public",
+        "registry_keys": "allenai/drop (+ alias DROP; loader currently uses repo_id ucinlp/drop)",
+        "could_add_to_repository": "YES_WITH_FALLBACK",
+        "what_was_added": "Registered DROP as canonical key `allenai/drop` with environment-verified loader path `ucinlp/drop` plus AWS registry provenance note.",
+        "what_is_still_missing": "Requested HF repo id `allenai/drop` is not resolvable in current environment; resolve with official mirror policy before paper freeze.",
+        "manual_steps": "If strict source policy requires AllenAI ownership, load from AWS Open Data registry and record conversion manifest.",
+        "schema_version_uncertainty": "Validation split row keys verified (`passage`, `question`, `answers_spans`); pin dataset revision in run manifests.",
+        "recommended_for_main_paper_now": True,
+        "recommended_usage": "evaluation-first",
+    },
+    {
+        "dataset_name": "MuSR",
+        "target_priority": "A",
+        "official_source_link": "https://huggingface.co/datasets/TAUR-Lab/MuSR",
+        "access_link": "https://huggingface.co/datasets/TAUR-Lab/MuSR",
+        "public_or_gated": "public",
+        "registry_keys": "TAUR-Lab/MuSR (+ alias MuSR)",
+        "could_add_to_repository": "YES",
+        "what_was_added": "Registered MuSR with default config and split-family handling in access/smoke tooling.",
+        "what_is_still_missing": "No blocker in access checks; downstream task-family balancing policy is still open.",
+        "manual_steps": "Document task-family split selection (`murder_mysteries`, `object_placements`, `team_allocation`) per run.",
+        "schema_version_uncertainty": "Rows include narrative/question/choices metadata; pin revision before benchmark claims.",
+        "recommended_for_main_paper_now": True,
+        "recommended_usage": "evaluation-first",
+    },
+    {
+        "dataset_name": "BIG-Bench Hard",
+        "target_priority": "B",
+        "official_source_link": "https://huggingface.co/datasets/openeval/BIG-Bench-Hard",
+        "access_link": "https://huggingface.co/datasets/openeval/BIG-Bench-Hard",
+        "public_or_gated": "public",
+        "registry_keys": "openeval/BIG-Bench-Hard (+ aliases BIG-Bench-Hard, bbh)",
+        "could_add_to_repository": "YES",
+        "what_was_added": "Registered BBH with default config and train split access checks.",
+        "what_is_still_missing": "HF card does not expose a clear license field; license should be manually confirmed before redistribution-sensitive use.",
+        "manual_steps": "Record task unpacking policy because rows are task-packed (`examples` list per row).",
+        "schema_version_uncertainty": "Current quick probe sees row keys (`canary`, `examples`); conversion into per-item rows is a later pipeline step.",
+        "recommended_for_main_paper_now": True,
+        "recommended_usage": "evaluation-first",
+    },
+    {
+        "dataset_name": "AQuA-RAT",
+        "target_priority": "B",
+        "official_source_link": "https://huggingface.co/datasets/deepmind/aqua_rat",
+        "access_link": "https://huggingface.co/datasets/deepmind/aqua_rat",
+        "public_or_gated": "public",
+        "registry_keys": "deepmind/aqua_rat (+ aliases AQuA, AQuA-RAT, aqua_rat)",
+        "could_add_to_repository": "YES",
+        "what_was_added": "Registered AQuA with raw config and validation split in access/smoke tooling.",
+        "what_is_still_missing": "Requested id `aqua_rat` is not canonical on HF Hub; repository now tracks canonical `deepmind/aqua_rat` id explicitly.",
+        "manual_steps": "Choose and document raw vs tokenized config per run; current default is raw.",
+        "schema_version_uncertainty": "Rows include question/options/correct/rationale; confirm MCQ normalization policy before training use.",
+        "recommended_for_main_paper_now": True,
+        "recommended_usage": "both",
+    },
     {
         "dataset_name": "MATH (Hendrycks et al.)",
         "target_priority": "A",
@@ -118,11 +179,19 @@ PRIORITY_ROWS: list[dict[str, str | bool | None]] = [
 
 
 def main() -> None:
-    out_dir = Path("outputs")
+    parser = argparse.ArgumentParser(description="Generate dataset integration report")
+    parser.add_argument("--output-dir", default="outputs")
+    args = parser.parse_args()
+
+    out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     created = datetime.now(timezone.utc).isoformat()
 
     probe_ids = [
+        "allenai/drop",
+        "TAUR-Lab/MuSR",
+        "openeval/BIG-Bench-Hard",
+        "deepmind/aqua_rat",
         "hendrycks/competition_math",
         "EleutherAI/hendrycks_math",
         "HuggingFaceH4/MATH-500",
@@ -132,11 +201,27 @@ def main() -> None:
         "meituan-longcat/AMO-Bench",
     ]
     probe_results: dict[str, object] = {}
+    hub_metadata: dict[str, object] = {}
     for name in probe_ids:
         try:
             probe_results[name] = check_hf_dataset_access(name)
         except Exception as exc:  # noqa: BLE001
             probe_results[name] = {"dataset": name, "ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        try:
+            from huggingface_hub import dataset_info  # type: ignore
+
+            info = dataset_info(name)
+            card_data = getattr(info, "cardData", None) or {}
+            license_value = card_data.get("license")
+            license_tags = [t for t in (getattr(info, "tags", None) or []) if str(t).startswith("license:")]
+            hub_metadata[name] = {
+                "private": bool(getattr(info, "private", False)),
+                "gated": bool(getattr(info, "gated", False)),
+                "license": license_value,
+                "license_tags": license_tags,
+            }
+        except Exception as exc:  # noqa: BLE001
+            hub_metadata[name] = {"error": f"{type(exc).__name__}: {exc}"}
 
     probe_results["google-deepmind/natural-plan"] = check_git_dataset_access("google-deepmind/natural-plan")
 
@@ -145,6 +230,7 @@ def main() -> None:
         "hf_token_env": hf_token_presence(),
         "priority_datasets": PRIORITY_ROWS,
         "hub_probe": probe_results,
+        "hub_metadata": hub_metadata,
     }
 
     json_path = out_dir / "dataset_integration_report.json"
@@ -157,13 +243,13 @@ def main() -> None:
         "",
         "## Summary",
         "",
-        "| Dataset | Priority | Status | Public / gated | Paper-ready now |",
-        "|---|---:|---|---|---|",
+        "| Dataset | Priority | Status | Public / gated | Usage class | Paper-ready now |",
+        "|---|---:|---|---|---|---|",
     ]
     for row in PRIORITY_ROWS:
         md_lines.append(
             f"| {row['dataset_name']} | {row['target_priority']} | {row['could_add_to_repository']} | "
-            f"{row['public_or_gated']} | {row['recommended_for_main_paper_now']} |"
+            f"{row['public_or_gated']} | {row.get('recommended_usage', 'evaluation-first')} | {row['recommended_for_main_paper_now']} |"
         )
     md_lines.extend(
         [
@@ -177,7 +263,11 @@ def main() -> None:
     for name, r in probe_results.items():
         ok = r.get("ok")
         err = (r.get("error") or "")[:200]
-        md_lines.append(f"- `{name}`: ok={ok} {f'({err})' if err else ''}")
+        meta = hub_metadata.get(name, {})
+        md_lines.append(
+            f"- `{name}`: ok={ok}, license={meta.get('license')}, license_tags={meta.get('license_tags')} "
+            f"{f'({err})' if err else ''}"
+        )
 
     md_lines.extend(
         [
@@ -189,6 +279,7 @@ def main() -> None:
     for row in PRIORITY_ROWS:
         md_lines.append(f"### {row['dataset_name']} ({row['target_priority']})")
         md_lines.append(f"- **Could add**: {row['could_add_to_repository']}")
+        md_lines.append(f"- **Usage class**: {row.get('recommended_usage', 'evaluation-first')}")
         md_lines.append(f"- **Official**: {row['official_source_link']}")
         md_lines.append(f"- **Access**: {row['access_link']}")
         md_lines.append(f"- **What was added**: {row['what_was_added']}")
