@@ -1,0 +1,17 @@
+{
+  "artifacts": [
+    "probabilistic_branch_allocation_config.json",
+    "probabilistic_branch_allocation_per_seed_summary.json",
+    "probabilistic_branch_allocation_matched_summary_by_mode.json",
+    "probabilistic_branch_allocation_aggregate_comparison.json",
+    "probabilistic_branch_allocation_temperature_sweep_summary.json",
+    "probabilistic_branch_allocation_manifest.json",
+    "probabilistic_branch_allocation_commands_and_caveats.md"
+  ],
+  "modes": [
+    "baseline_canonical",
+    "deterministic_value_top1",
+    "probabilistic_value_choice",
+    "probabilistic_value_choice_temperature_sweep"
+  ]
+}

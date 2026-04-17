@@ -1,0 +1,15 @@
+{
+  "probabilistic_vs_baseline": {
+    "delta_accepted_pair_accuracy": -0.47698412698412707,
+    "delta_coverage": 0.7301587301587301,
+    "delta_defer_rate": -0.7301587301587301,
+    "delta_near_tie_accepted_pair_accuracy": 0.25555555555555554,
+    "delta_adjacent_rank_accepted_pair_accuracy": -0.4571428571428571
+  },
+  "probabilistic_vs_deterministic_top1": {
+    "delta_accepted_pair_accuracy": -0.13888888888888895,
+    "delta_near_tie_accepted_pair_accuracy": 0.05555555555555555,
+    "delta_adjacent_rank_accepted_pair_accuracy": -0.04761904761904756,
+    "delta_mean_selection_entropy_nats": 0.691674111845404
+  }
+}

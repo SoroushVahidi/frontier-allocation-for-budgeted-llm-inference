@@ -1,0 +1,902 @@
+[
+  {
+    "regime": "all_pairs_approx",
+    "seed": 11,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.08,
+      "z_threshold": 0.25
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.14285714285714285,
+        "defer_rate": 0.8571428571428571,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.18557045124282956,
+        "deferred_mean_true_value_gap": 0.10715332371872484,
+        "accepted_mean_pair_oracle_defer_score": 2.0,
+        "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 7.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.2857142857142857,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.2,
+        "accepted_mean_true_value_gap": 0.11835577050788267,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 7.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.7142857142857143,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.5,
+        "adjacent_rank_accepted_pair_accuracy": 0.6,
+        "accepted_mean_true_value_gap": 0.11835577050788267,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.692315167233639,
+        "test_pairs": 7.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.7142857142857143,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.6,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.691278502347598,
+          "test_pairs": 7.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.7142857142857143,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.6,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.692315167233639,
+          "test_pairs": 7.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.7142857142857143,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.6,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6926788789178219,
+          "test_pairs": 7.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  },
+  {
+    "regime": "all_pairs_approx",
+    "seed": 29,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.0,
+      "z_threshold": 0.5
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 0.8,
+        "coverage": 0.4166666666666667,
+        "defer_rate": 0.5833333333333334,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "accepted_mean_true_value_gap": 0.15151117680132015,
+        "deferred_mean_true_value_gap": 0.05729397804844411,
+        "accepted_mean_pair_oracle_defer_score": 1.6,
+        "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 12.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.6,
+        "adjacent_rank_accepted_pair_accuracy": 0.5714285714285714,
+        "accepted_mean_true_value_gap": 0.0965511441954758,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 12.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.5,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.4,
+        "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+        "accepted_mean_true_value_gap": 0.0965511441954758,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.6899808442476186,
+        "test_pairs": 12.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.4,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6861008331848953,
+          "test_pairs": 12.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.4,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6899808442476186,
+          "test_pairs": 12.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.4,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6913591957745138,
+          "test_pairs": 12.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  },
+  {
+    "regime": "all_pairs_approx",
+    "seed": 47,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.0,
+      "z_threshold": 0.25
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.25,
+        "defer_rate": 0.75,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.1858335440185609,
+        "deferred_mean_true_value_gap": 0.08058166746844098,
+        "accepted_mean_pair_oracle_defer_score": 0.0,
+        "deferred_mean_pair_oracle_defer_score": 2.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 4.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "accepted_mean_true_value_gap": 0.10689463660597096,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.5,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 4.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.25,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+        "accepted_mean_true_value_gap": 0.10689463660597096,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.5,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.6927263240549544,
+        "test_pairs": 4.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6922017351934613,
+          "test_pairs": 4.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6927263240549544,
+          "test_pairs": 4.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6929103188437525,
+          "test_pairs": 4.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  },
+  {
+    "regime": "promoted_exact_hard_region",
+    "seed": 11,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.08,
+      "z_threshold": 0.25
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.14285714285714285,
+        "defer_rate": 0.8571428571428571,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.18557045124282956,
+        "deferred_mean_true_value_gap": 0.10715332371872484,
+        "accepted_mean_pair_oracle_defer_score": 2.0,
+        "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 7.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.2857142857142857,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.2,
+        "accepted_mean_true_value_gap": 0.11835577050788267,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 7.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.7142857142857143,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.5,
+        "adjacent_rank_accepted_pair_accuracy": 0.6,
+        "accepted_mean_true_value_gap": 0.11835577050788267,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.692315167233639,
+        "test_pairs": 7.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.7142857142857143,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.6,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.691278502347598,
+          "test_pairs": 7.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.7142857142857143,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.6,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.692315167233639,
+          "test_pairs": 7.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.7142857142857143,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.6,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6926788789178219,
+          "test_pairs": 7.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  },
+  {
+    "regime": "promoted_exact_hard_region",
+    "seed": 29,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.0,
+      "z_threshold": 0.5
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 0.8,
+        "coverage": 0.4166666666666667,
+        "defer_rate": 0.5833333333333334,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "accepted_mean_true_value_gap": 0.15151117680132015,
+        "deferred_mean_true_value_gap": 0.05729397804844411,
+        "accepted_mean_pair_oracle_defer_score": 1.6,
+        "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 12.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.6,
+        "adjacent_rank_accepted_pair_accuracy": 0.5714285714285714,
+        "accepted_mean_true_value_gap": 0.0965511441954758,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 12.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.5,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.4,
+        "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+        "accepted_mean_true_value_gap": 0.0965511441954758,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.6899808442476186,
+        "test_pairs": 12.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.4,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6861008331848953,
+          "test_pairs": 12.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.4,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6899808442476186,
+          "test_pairs": 12.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.4,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6913591957745138,
+          "test_pairs": 12.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  },
+  {
+    "regime": "promoted_exact_hard_region",
+    "seed": 47,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.0,
+      "z_threshold": 0.25
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.25,
+        "defer_rate": 0.75,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.1858335440185609,
+        "deferred_mean_true_value_gap": 0.08058166746844098,
+        "accepted_mean_pair_oracle_defer_score": 0.0,
+        "deferred_mean_pair_oracle_defer_score": 2.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 4.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "accepted_mean_true_value_gap": 0.10689463660597096,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.5,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 4.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.25,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+        "accepted_mean_true_value_gap": 0.10689463660597096,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.5,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.6927263240549544,
+        "test_pairs": 4.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6922017351934613,
+          "test_pairs": 4.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6927263240549544,
+          "test_pairs": 4.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6929103188437525,
+          "test_pairs": 4.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  },
+  {
+    "regime": "penalized_marginal_defer",
+    "seed": 11,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.08,
+      "z_threshold": 0.25
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.14285714285714285,
+        "defer_rate": 0.8571428571428571,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.18557045124282956,
+        "deferred_mean_true_value_gap": 0.10715332371872484,
+        "accepted_mean_pair_oracle_defer_score": 2.0,
+        "deferred_mean_pair_oracle_defer_score": 1.6666666666666667,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 7.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.2857142857142857,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.2,
+        "accepted_mean_true_value_gap": 0.11835577050788267,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 7.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.42857142857142855,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.5,
+        "adjacent_rank_accepted_pair_accuracy": 0.4,
+        "accepted_mean_true_value_gap": 0.11835577050788267,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.692315167233639,
+        "test_pairs": 7.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.42857142857142855,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.4,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.691278502347598,
+          "test_pairs": 7.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.42857142857142855,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.4,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.692315167233639,
+          "test_pairs": 7.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.42857142857142855,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.4,
+          "accepted_mean_true_value_gap": 0.11835577050788267,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6926788789178219,
+          "test_pairs": 7.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  },
+  {
+    "regime": "penalized_marginal_defer",
+    "seed": 29,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.0,
+      "z_threshold": 0.5
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 0.8,
+        "coverage": 0.4166666666666667,
+        "defer_rate": 0.5833333333333334,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "accepted_mean_true_value_gap": 0.15151117680132015,
+        "deferred_mean_true_value_gap": 0.05729397804844411,
+        "accepted_mean_pair_oracle_defer_score": 1.6,
+        "deferred_mean_pair_oracle_defer_score": 3.4285714285714284,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 12.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.6,
+        "adjacent_rank_accepted_pair_accuracy": 0.5714285714285714,
+        "accepted_mean_true_value_gap": 0.0965511441954758,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 12.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.5,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+        "accepted_mean_true_value_gap": 0.0965511441954758,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.6899808442476186,
+        "test_pairs": 12.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6861008331848953,
+          "test_pairs": 12.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6899808442476186,
+          "test_pairs": 12.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.5,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.42857142857142855,
+          "accepted_mean_true_value_gap": 0.0965511441954758,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 2.6666666666666665,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6913591957745138,
+          "test_pairs": 12.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  },
+  {
+    "regime": "penalized_marginal_defer",
+    "seed": 47,
+    "selected_thresholds_from_canonical": {
+      "gap_threshold": 0.0,
+      "z_threshold": 0.25
+    },
+    "mode_metrics": {
+      "baseline_canonical": {
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.25,
+        "defer_rate": 0.75,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "accepted_mean_true_value_gap": 0.1858335440185609,
+        "deferred_mean_true_value_gap": 0.08058166746844098,
+        "accepted_mean_pair_oracle_defer_score": 0.0,
+        "deferred_mean_pair_oracle_defer_score": 2.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 4.0
+      },
+      "deterministic_value_top1": {
+        "accepted_pair_accuracy": 0.75,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+        "accepted_mean_true_value_gap": 0.10689463660597096,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.5,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.0,
+        "test_pairs": 4.0
+      },
+      "probabilistic_value_choice": {
+        "accepted_pair_accuracy": 0.25,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+        "accepted_mean_true_value_gap": 0.10689463660597096,
+        "deferred_mean_true_value_gap": 0.0,
+        "accepted_mean_pair_oracle_defer_score": 1.5,
+        "deferred_mean_pair_oracle_defer_score": 0.0,
+        "mean_selection_entropy_nats": 0.6927263240549544,
+        "test_pairs": 4.0
+      }
+    },
+    "probabilistic_temperature_sweep": [
+      {
+        "temperature": 0.5,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6922017351934613,
+          "test_pairs": 4.0
+        }
+      },
+      {
+        "temperature": 0.75,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6927263240549544,
+          "test_pairs": 4.0
+        }
+      },
+      {
+        "temperature": 1.0,
+        "metrics": {
+          "accepted_pair_accuracy": 0.25,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.3333333333333333,
+          "accepted_mean_true_value_gap": 0.10689463660597096,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 1.5,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "mean_selection_entropy_nats": 0.6929103188437525,
+          "test_pairs": 4.0
+        }
+      }
+    ],
+    "risk_head_status": "ok"
+  }
+]

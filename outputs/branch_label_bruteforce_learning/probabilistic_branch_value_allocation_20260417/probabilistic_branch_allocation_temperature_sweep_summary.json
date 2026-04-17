@@ -1,0 +1,29 @@
+[
+  {
+    "temperature": 0.5,
+    "accepted_pair_accuracy": 0.4563492063492063,
+    "coverage": 1.0,
+    "defer_rate": 0.0,
+    "near_tie_accepted_pair_accuracy": 0.25555555555555554,
+    "adjacent_rank_accepted_pair_accuracy": 0.43174603174603177,
+    "mean_selection_entropy_nats": 0.6898603569086516
+  },
+  {
+    "temperature": 0.75,
+    "accepted_pair_accuracy": 0.4563492063492063,
+    "coverage": 1.0,
+    "defer_rate": 0.0,
+    "near_tie_accepted_pair_accuracy": 0.25555555555555554,
+    "adjacent_rank_accepted_pair_accuracy": 0.43174603174603177,
+    "mean_selection_entropy_nats": 0.691674111845404
+  },
+  {
+    "temperature": 1.0,
+    "accepted_pair_accuracy": 0.4563492063492063,
+    "coverage": 1.0,
+    "defer_rate": 0.0,
+    "near_tie_accepted_pair_accuracy": 0.25555555555555554,
+    "adjacent_rank_accepted_pair_accuracy": 0.43174603174603177,
+    "mean_selection_entropy_nats": 0.6923161311786961
+  }
+]
