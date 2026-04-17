@@ -1,0 +1,2 @@
+count_both_right,count_both_wrong,count_pairwise_right_specialist_wrong,count_pairwise_wrong_specialist_right,net_specialist_complementarity_gain_count,rate_both_right,rate_both_wrong,rate_pairwise_right_specialist_wrong,rate_pairwise_wrong_specialist_right,regime,row_count,seed
+5,8,0,0,0,0.38461538461538464,0.6153846153846154,0.0,0.0,all_pairs,13,11
