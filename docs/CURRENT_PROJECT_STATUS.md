@@ -38,6 +38,8 @@ The repo already contains:
 4. The clean conceptual center is branch ranking / next-step allocation over active branches.
 5. A local stop-vs-act formulation is useful only as a bounded approximation or continuation gate.
 6. Larger scale alone is unlikely to fix the current weaknesses without better targets.
+7. Hard-case ambiguity is real and should be treated as a first-class methodological issue rather than as a nuisance thresholding problem.
+8. Tie-aware post-hoc deferral is a cleaner scaffold than earlier hard-case routing heuristics, even when it does not improve headline forced metrics.
 
 ## Main unresolved issue
 
@@ -46,6 +48,10 @@ The main unresolved issue is **supervision target quality** for branch allocatio
 - noisy branch-comparison targets,
 - imperfect opportunity-cost modeling,
 - uneven controller robustness across budgets / seeds / datasets.
+
+A more current phrasing is:
+
+> the repo now has a cleaner ambiguity-handling scaffold, but still lacks a fully principled selective pairwise decision rule and fully reliable specialist-expert supervision on deferred hard cases.
 
 ## Current methodological interpretation
 
@@ -56,14 +62,15 @@ The project should currently be interpreted as:
 ## Current best next implementation direction
 
 - Keep branch-priority / next-step allocation as the canonical conceptual center.
-- Use pairwise or pointwise branch scoring as the main learned object.
-- Treat any local stop-vs-act gate as a helper mechanism, not the full algorithm.
-- Continue matched bounded comparisons versus strong heuristics and BT baseline.
+- Use pairwise branch comparison as the default learned object.
+- Keep `v2` hard-case representation as the default stronger feature substrate.
+- Treat tie-aware post-hoc deferral plus specialist pointwise fallback as the current strongest hard-case scaffold.
+- Improve the selective pairwise accept/defer rule before broadening again into many new expert variants.
 - Integrate the most important external paper baselines carefully and fairly.
 
 ## Practical implication
 
-The repo is already ready for serious paper planning, collaborator onboarding, and baseline integration work. The next phase should focus on sharpening the branch-comparison signal and tightening the evaluation story, not on simply adding more scale.
+The repo is already ready for serious paper planning, collaborator onboarding, and baseline integration work. The next phase should focus on sharpening the branch-comparison signal, improving selective pairwise control, and tightening the evaluation story, not on simply adding more scale.
 
 ## Brute-force label-data status update (2026-04-16 medium run)
 
@@ -80,7 +87,6 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - Multi-seed learned allocator training/evaluation was run on the merged corpus with full-corpus and leave-one-dataset-out slices; results are non-trivial but still mixed across datasets and margins.
 - Canonical interpretation remains: the labeled-data bottleneck is **still partially resolved** (materially improved, not closed). See `docs/BRUTEFORCE_LABEL_SCALING_STATUS.md` for commands, artifacts, and metrics.
 
-
 ## External baseline completeness status (2026-04-16 pass)
 
 - s1 / TALE / L1: integrated with runnable MODE A and partial MODE B adapters with explicit blocker state reporting.
@@ -92,7 +98,6 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - openr: upgraded from link-only to runnable-adjacent via strict import validation protocol (`scripts/verify_openr_import.py`) for adjacent search-strategy comparison scope only.
 - Completeness artifact: `docs/external_baseline_completeness_report.md` plus machine-readable `outputs/external_baseline_completeness_summary.{json,csv}`.
 - Runnability artifact: `outputs/external_baseline_runnability/<run_id>/verification_summary.json`.
-
 - compute_optimal_tts: moved from vague link-only to explicit blocked/protocol status with machine-readable artifacts and provenance checks.
 
 ## GBDT branch-allocator integration status (2026-04-16 bounded implementation pass)
@@ -147,3 +152,21 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - A dedicated near-tie pointwise-expert runner is now integrated (`scripts/run_near_tie_pointwise_expert_experiment.py`) with explicit pointwise-model provenance (generic vs near-tie-specialized vs reweighted), routing gates, and near-tie pairwise-vs-pointwise diagnostic buckets.
 - In this bounded run (`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`), near-tie-specialized pointwise routing matched the strongest prior near-tie slice signal and improved top-1/overall forced over binary anchors, while generic and reweighted pointwise variants were weaker under the tested routing gate.
 - Conservative interpretation: pointwise fallback remains promising but brittle; evidence indicates near-tie expert quality and routing quality are now first-order unresolved levers.
+
+## Strict-coupled near-tie controller refinement status (2026-04-17 bounded pass)
+
+- A stricter coupled controller variant was added to reduce spillover while preserving the strongest prior specialized-pointwise behavior (`docs/STRICT_COUPLED_NEAR_TIE_CONTROLLER_STATUS.md`).
+- In the bounded comparison, harder-slice behavior was preserved while routed rate and non-near-tie routed count were reduced.
+- Conservative interpretation: this was more a controller-quality and selectivity improvement than a new headline performance win.
+
+## Tie-aware post-hoc deferral status (2026-04-17 bounded pass)
+
+- A tie-aware post-hoc deferral controller variant was added, preserving forced/top-1/hard-slice behavior while adding cleaner unresolved/deferred accounting (`docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md`).
+- Accepted/coverage metrics now provide a more honest view of ambiguous-case behavior beyond single-threshold forced accuracy alone.
+- Conservative interpretation: the controller became cleaner and more paper-ready, but not yet stronger on headline forced metrics.
+
+## Deferred-expert improvement status (2026-04-17 bounded pass)
+
+- A deferred-state-only specialist training variant was tested within the tie-aware post-hoc scaffold (`docs/STRICT_COUPLED_TIE_AWARE_DEFERRED_EXPERT_IMPROVEMENT_STATUS.md`).
+- This did **not** improve deferred-subset quality and hurt forced/top-1 versus the stronger tie-aware baseline while routing stayed fixed.
+- Conservative interpretation: the next bottleneck is not merely finding a narrower specialist subset; expert supervision design remains unresolved.
