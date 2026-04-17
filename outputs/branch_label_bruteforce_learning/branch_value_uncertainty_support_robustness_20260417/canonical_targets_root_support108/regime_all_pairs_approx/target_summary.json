@@ -1,0 +1,10 @@
+{
+  "pairs": 252,
+  "promoted_exact_pairs": 0,
+  "promoted_exact_rate": 0.0,
+  "near_tie_rate": 0.24603174603174602,
+  "adjacent_rank_rate": 0.6984126984126984,
+  "ambiguous_tie_rate": 0.6865079365079365,
+  "mean_soft_tie_prob": 0.0,
+  "partial_order_incomparable_rate": 0.0
+}
