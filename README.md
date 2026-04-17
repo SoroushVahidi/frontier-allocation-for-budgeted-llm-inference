@@ -22,51 +22,44 @@ This repository is currently centered on:
 
 This repository is **not** currently centered on the old binary revise-routing paper.
 
-## Fast start
+## Start here by goal
 
-### If you want the quickest correct overview
-Read these first:
+### Fastest correct overview
+Read in this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
 2. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
 3. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
 4. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
-5. [`docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`](docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md)
-6. [`docs/WHAT_IS_NOT_WORKING_NOW.md`](docs/WHAT_IS_NOT_WORKING_NOW.md)
-7. [`docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md`](docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md)
-8. [`docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
-9. [`docs/OUTPUTS_INTERPRETATION_GUIDE.md`](docs/OUTPUTS_INTERPRETATION_GUIDE.md)
-10. [`docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
-11. [`docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
-12. [`docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
-13. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
-14. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+5. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+6. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
-### If you want to run code
+### Runnable code entry path
 Start with:
 - [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
 - [`scripts/README.md`](scripts/README.md)
 
-### If you want to understand method bottlenecks
+### Method and bottleneck interpretation
 Read next:
-- [`docs/METHOD_STATUS_INDEX.md`](docs/METHOD_STATUS_INDEX.md)
-- [`docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md`](docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md)
-- [`docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`](docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md)
-- [`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`](docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md)
-- [`docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md`](docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md)
-- [`docs/STRICT_COUPLED_TIE_AWARE_LEARNED_TWO_STAGE_DEFERRAL_STATUS.md`](docs/STRICT_COUPLED_TIE_AWARE_LEARNED_TWO_STAGE_DEFERRAL_STATUS.md)
-- [`docs/LEARNED_TWO_STAGE_DEFERRAL_CALIBRATION_POLICY_STATUS.md`](docs/LEARNED_TWO_STAGE_DEFERRAL_CALIBRATION_POLICY_STATUS.md)
-- [`docs/imported_methodology_frontier_integration_report.md`](docs/imported_methodology_frontier_integration_report.md)
+- [`docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`](docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md)
+- [`docs/WHAT_IS_NOT_WORKING_NOW.md`](docs/WHAT_IS_NOT_WORKING_NOW.md)
+- [`docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
+- [`docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
+- [`docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
 
-### If you want to interpret outputs quickly
+### Evaluation and outputs
 Use:
+- [`docs/EVALUATION_AND_BASELINES_INDEX.md`](docs/EVALUATION_AND_BASELINES_INDEX.md)
 - [`docs/OUTPUTS_INTERPRETATION_GUIDE.md`](docs/OUTPUTS_INTERPRETATION_GUIDE.md)
+- [`docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 
-### If you want to see current dataset priorities
+### Cleaner collaborator navigation
 Use:
-- [`docs/DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](docs/DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
+- [`docs/REPOSITORY_START_PATHS.md`](docs/REPOSITORY_START_PATHS.md)
+- [`docs/README.md`](docs/README.md)
 
-## What is already strong
+## Current state at a glance
 
+### What is already strong
 - frontier/controller experimentation scaffold,
 - anti-collapse controller mechanisms and audits,
 - branch-scorer experimentation paths,
@@ -75,15 +68,13 @@ Use:
 - imported manuscript-style evaluation support,
 - careful provenance notes and safe-claim discipline.
 
-## What is not solved yet
-
+### What is not solved yet
 - robust supervision targets for branch-priority allocation,
 - reliable selective pairwise trust/defer control on hard ambiguous cases,
 - broad decisive real-model evidence,
 - a robust universally winning learned allocator.
 
-## Main bottleneck
-
+### Main bottleneck
 The current bottleneck is best described as:
 
 **principled selective pairwise control and supervision design for ambiguous hard cases.**
@@ -93,8 +84,7 @@ The current repository view is that the project is **not** primarily blocked by:
 - lack of heavier models,
 - or lack of larger sweeps.
 
-## Best near-term method direction
-
+### Best near-term method direction
 The recommended current direction is:
 - a branch-priority / next-step allocation policy over active branches,
 - pairwise branch comparison as the main learned decision object,
@@ -104,25 +94,26 @@ The recommended current direction is:
 
 The conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
-## Directory map
+## Repository layout
 
-- `docs/`: canonical, exploratory, and historical navigation/docs.
+- `docs/`: canonical interpretation, planning notes, grouped navigation pages, exploratory notes, and historical guidance.
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
 - `configs/`: dataset, baseline, and experiment configuration files.
-- `datasets/`: dataset policy/readme assets.
+- `datasets/`: dataset policy and dataset-readiness assets.
 - `external/`: external baseline references and integration notes.
 - `outputs/`: generated artifacts and paper-support outputs.
-- `archive/`: historical/provenance-only material reserved for non-current paths.
+- `archive/`: provenance-only historical material.
 
-## Canonical vs exploratory vs historical
+## Interpretation rules
 
 - **Canonical**: the current frontier-allocation / branch-allocation path and the docs/scripts that define it.
 - **Exploratory**: active method branches and diagnostics that are useful but not the default summary.
 - **Historical**: superseded or provenance-only materials that should not be read as the current project identity.
 
-For interpretation rules, see:
+For interpretation rules and grouped navigation, see:
 - [`docs/README.md`](docs/README.md)
+- [`docs/REPOSITORY_START_PATHS.md`](docs/REPOSITORY_START_PATHS.md)
 - [`docs/EXPLORATORY_INDEX.md`](docs/EXPLORATORY_INDEX.md)
 - [`docs/HISTORICAL_AND_ARCHIVE_POLICY.md`](docs/HISTORICAL_AND_ARCHIVE_POLICY.md)
 
