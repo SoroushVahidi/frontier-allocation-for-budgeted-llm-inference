@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from pathlib import Path
 import sys
@@ -96,12 +97,44 @@ def parse_args() -> argparse.Namespace:
         default=0.65,
         help="Minimum validation accepted coverage required by the improved threshold policy.",
     )
+    p.add_argument(
+        "--two-stage-defer-cost",
+        type=float,
+        default=0.05,
+        help="Cost applied to deferral utility for complementarity-aware stage-2 target.",
+    )
+    p.add_argument(
+        "--two-stage-utility-gap-margin",
+        type=float,
+        default=0.02,
+        help="Minimum utility gap (defer - accept) required to label defer-positive for complementarity-aware stage-2 target.",
+    )
     p.add_argument("--pointwise-alpha", type=float, default=1.0)
     return p.parse_args()
 
 
 def _mean(xs: list[float]) -> float:
     return sum(xs) / max(1, len(xs))
+
+
+def _margin_bucket(margin_abs: float) -> str:
+    if margin_abs <= 0.02:
+        return "le_0p02"
+    if margin_abs <= 0.05:
+        return "0p02_to_0p05"
+    if margin_abs <= 0.10:
+        return "0p05_to_0p10"
+    return "gt_0p10"
+
+
+def _confidence_bucket(pair_conf: float) -> str:
+    if pair_conf <= 0.20:
+        return "le_0p20"
+    if pair_conf <= 0.40:
+        return "0p20_to_0p40"
+    if pair_conf <= 0.70:
+        return "0p40_to_0p70"
+    return "gt_0p70"
 
 
 def _ece(y: list[int], p: list[float], n_bins: int = 10) -> float:
@@ -546,6 +579,8 @@ def main() -> None:
         "two_stage_threshold_policy_config": {
             "threshold_grid": two_stage_threshold_grid,
             "min_coverage_floor": float(args.two_stage_min_coverage_floor),
+            "defer_cost": float(args.two_stage_defer_cost),
+            "utility_gap_margin": float(args.two_stage_utility_gap_margin),
         },
         "posthoc_deferral_config": {
             "abs_margin_max": float(args.posthoc_deferral_abs_margin_max),
@@ -996,30 +1031,37 @@ def main() -> None:
                 "pair_margin_minus_point_gap",
             ]
 
-            def _build_defer_targets(row: dict[str, Any]) -> tuple[int, int]:
+            def _build_defer_targets(row: dict[str, Any]) -> tuple[int, int, int]:
                 y = int(row.get("label", 0))
                 pair_pred = _pairwise_binary(row)
                 spec_pred = _specialist_forced_for_defer_target(row)
                 pair_err = int(pair_pred != y)
-                defer_utility = int((spec_pred == y) and (pair_pred != y))
-                return pair_err, defer_utility
+                defer_utility_binary = int((spec_pred == y) and (pair_pred != y))
+                accept_utility = 1.0 if pair_pred == y else 0.0
+                defer_utility = (1.0 if spec_pred == y else 0.0) - float(args.two_stage_defer_cost)
+                utility_gap = defer_utility - accept_utility
+                defer_utility_complementarity = int(utility_gap >= float(args.two_stage_utility_gap_margin))
+                return pair_err, defer_utility_binary, defer_utility_complementarity
 
             train_rows = [r for r in tables["pairwise"] if str(r.get("split")) == "train"]
             val_rows = [r for r in tables["pairwise"] if str(r.get("split")) == "val"]
 
             x_train = [_defer_feature_vector(r) for r in train_rows]
             y_train_err = [_build_defer_targets(r)[0] for r in train_rows]
-            y_train_defer = [_build_defer_targets(r)[1] for r in train_rows]
+            y_train_defer_binary = [_build_defer_targets(r)[1] for r in train_rows]
+            y_train_defer_complementarity = [_build_defer_targets(r)[2] for r in train_rows]
             x_val = [_defer_feature_vector(r) for r in val_rows]
 
             stage1_error_head = _fit_binary_head(x_train, y_train_err, seed=seed)
             # stage-2 defer-benefit head is trained post-hoc on same features + stage-1 risk score.
             stage1_train_probs = _binary_head_predict_proba(stage1_error_head, x_train)
             x_train_stage2 = [xi + [float(p1)] for xi, p1 in zip(x_train, stage1_train_probs)]
-            stage2_defer_head = _fit_binary_head(x_train_stage2, y_train_defer, seed=seed + 91)
+            stage2_defer_head = _fit_binary_head(x_train_stage2, y_train_defer_binary, seed=seed + 91)
+            stage2_defer_head_complementarity = _fit_binary_head(x_train_stage2, y_train_defer_complementarity, seed=seed + 191)
             stage1_val_probs = _binary_head_predict_proba(stage1_error_head, x_val)
             x_val_stage2 = [xi + [float(p1)] for xi, p1 in zip(x_val, stage1_val_probs)]
             stage2_val_probs = _binary_head_predict_proba(stage2_defer_head, x_val_stage2)
+            stage2_val_probs_complementarity = _binary_head_predict_proba(stage2_defer_head_complementarity, x_val_stage2)
 
             baseline_val_defer_rate = _mean([1.0 if _posthoc_deferral_gate(r)[0] else 0.0 for r in val_rows]) if val_rows else 0.0
             defer_threshold_legacy, legacy_threshold_meta = _select_two_stage_threshold_defer_rate_constrained(
@@ -1040,22 +1082,38 @@ def main() -> None:
                 threshold_grid=two_stage_threshold_grid,
                 min_coverage_floor=float(args.two_stage_min_coverage_floor),
             )
+            defer_threshold_complementarity, complementarity_threshold_meta = _select_two_stage_threshold_accepted_accuracy_coverage_floor(
+                val_rows=val_rows,
+                stage1_val_probs=stage1_val_probs,
+                stage2_val_probs=stage2_val_probs_complementarity,
+                pairwise_fn=_pairwise_binary,
+                specialist_fn=_specialist_forced_for_defer_target,
+                threshold_grid=two_stage_threshold_grid,
+                min_coverage_floor=float(args.two_stage_min_coverage_floor),
+            )
 
-            def _learned_two_stage_defer_gate(row: dict[str, Any], *, threshold: float, policy_name: str) -> tuple[bool, dict[str, Any]]:
+            def _learned_two_stage_defer_gate(
+                row: dict[str, Any], *, threshold: float, policy_name: str, stage2_head: dict[str, Any], stage2_target_name: str
+            ) -> tuple[bool, dict[str, Any]]:
                 x = _defer_feature_vector(row)
                 p1 = _binary_head_predict_proba(stage1_error_head, [x])[0]
                 x2 = x + [float(p1)]
-                p2 = _binary_head_predict_proba(stage2_defer_head, [x2])[0]
+                p2 = _binary_head_predict_proba(stage2_head, [x2])[0]
                 defer = bool((float(p1) >= 0.5) and (float(p2) >= float(threshold)))
                 return defer, {
                     "p_pairwise_error": float(p1),
                     "p_defer_utility": float(p2),
                     "defer_threshold": float(threshold),
                     "threshold_policy": str(policy_name),
+                    "stage2_target_name": str(stage2_target_name),
                 }
 
-            def _tie_aware_forced_learned_two_stage(row: dict[str, Any], *, threshold: float, policy_name: str) -> int:
-                is_deferred, _ = _learned_two_stage_defer_gate(row, threshold=threshold, policy_name=policy_name)
+            def _tie_aware_forced_learned_two_stage(
+                row: dict[str, Any], *, threshold: float, policy_name: str, stage2_head: dict[str, Any], stage2_target_name: str
+            ) -> int:
+                is_deferred, _ = _learned_two_stage_defer_gate(
+                    row, threshold=threshold, policy_name=policy_name, stage2_head=stage2_head, stage2_target_name=stage2_target_name
+                )
                 if not is_deferred:
                     return _pairwise_binary(row)
                 return _specialist_forced_for_defer_target(row)
@@ -1149,16 +1207,28 @@ def main() -> None:
                     lambda r: (
                         None
                         if _learned_two_stage_defer_gate(
-                            r, threshold=float(defer_threshold_legacy), policy_name="defer_rate_constrained_utility"
+                            r,
+                            threshold=float(defer_threshold_legacy),
+                            policy_name="defer_rate_constrained_utility",
+                            stage2_head=stage2_defer_head,
+                            stage2_target_name="binary_specialist_win",
                         )[0]
                         else _pairwise_binary(r)
                     ),
                     lambda r: _tie_aware_forced_learned_two_stage(
-                        r, threshold=float(defer_threshold_legacy), policy_name="defer_rate_constrained_utility"
+                        r,
+                        threshold=float(defer_threshold_legacy),
+                        policy_name="defer_rate_constrained_utility",
+                        stage2_head=stage2_defer_head,
+                        stage2_target_name="binary_specialist_win",
                     ),
                     "strict_coupled_tie_aware_learned_two_stage_deferral",
                     lambda r: _learned_two_stage_defer_gate(
-                        r, threshold=float(defer_threshold_legacy), policy_name="defer_rate_constrained_utility"
+                        r,
+                        threshold=float(defer_threshold_legacy),
+                        policy_name="defer_rate_constrained_utility",
+                        stage2_head=stage2_defer_head,
+                        stage2_target_name="binary_specialist_win",
                     )[0],
                 ),
                 (
@@ -1166,16 +1236,57 @@ def main() -> None:
                     lambda r: (
                         None
                         if _learned_two_stage_defer_gate(
-                            r, threshold=float(defer_threshold_improved), policy_name="accepted_accuracy_with_coverage_floor"
+                            r,
+                            threshold=float(defer_threshold_improved),
+                            policy_name="accepted_accuracy_with_coverage_floor",
+                            stage2_head=stage2_defer_head,
+                            stage2_target_name="binary_specialist_win",
                         )[0]
                         else _pairwise_binary(r)
                     ),
                     lambda r: _tie_aware_forced_learned_two_stage(
-                        r, threshold=float(defer_threshold_improved), policy_name="accepted_accuracy_with_coverage_floor"
+                        r,
+                        threshold=float(defer_threshold_improved),
+                        policy_name="accepted_accuracy_with_coverage_floor",
+                        stage2_head=stage2_defer_head,
+                        stage2_target_name="binary_specialist_win",
                     ),
                     "strict_coupled_tie_aware_learned_two_stage_deferral",
                     lambda r: _learned_two_stage_defer_gate(
-                        r, threshold=float(defer_threshold_improved), policy_name="accepted_accuracy_with_coverage_floor"
+                        r,
+                        threshold=float(defer_threshold_improved),
+                        policy_name="accepted_accuracy_with_coverage_floor",
+                        stage2_head=stage2_defer_head,
+                        stage2_target_name="binary_specialist_win",
+                    )[0],
+                ),
+                (
+                    "strict_coupled_tie_aware_learned_two_stage_deferral_complementarity_target_v1",
+                    lambda r: (
+                        None
+                        if _learned_two_stage_defer_gate(
+                            r,
+                            threshold=float(defer_threshold_complementarity),
+                            policy_name="accepted_accuracy_with_coverage_floor",
+                            stage2_head=stage2_defer_head_complementarity,
+                            stage2_target_name="utility_gap_margin",
+                        )[0]
+                        else _pairwise_binary(r)
+                    ),
+                    lambda r: _tie_aware_forced_learned_two_stage(
+                        r,
+                        threshold=float(defer_threshold_complementarity),
+                        policy_name="accepted_accuracy_with_coverage_floor",
+                        stage2_head=stage2_defer_head_complementarity,
+                        stage2_target_name="utility_gap_margin",
+                    ),
+                    "strict_coupled_tie_aware_learned_two_stage_deferral",
+                    lambda r: _learned_two_stage_defer_gate(
+                        r,
+                        threshold=float(defer_threshold_complementarity),
+                        policy_name="accepted_accuracy_with_coverage_floor",
+                        stage2_head=stage2_defer_head_complementarity,
+                        stage2_target_name="utility_gap_margin",
                     )[0],
                 )
             ]
@@ -1227,6 +1338,106 @@ def main() -> None:
                     "frontier_score_std_mean": _mean([x["frontier_score_std_mean"] for x in rows_b]),
                     "frontier_entropy_mean": _mean([x["frontier_entropy_mean"] for x in rows_b]),
                 }
+
+            def _complementarity_bucket(row: dict[str, Any]) -> str:
+                y = int(row.get("label", 0))
+                pair_ok = int(_pairwise_binary(row) == y)
+                spec_ok = int(_specialist_forced_for_defer_target(row) == y)
+                if pair_ok and not spec_ok:
+                    return "pairwise_right_specialist_wrong"
+                if (not pair_ok) and spec_ok:
+                    return "pairwise_wrong_specialist_right"
+                if pair_ok and spec_ok:
+                    return "both_right"
+                return "both_wrong"
+
+            current_defer_fn = lambda rr: _learned_two_stage_defer_gate(  # noqa: E731
+                rr,
+                threshold=float(defer_threshold_improved),
+                policy_name="accepted_accuracy_with_coverage_floor",
+                stage2_head=stage2_defer_head,
+                stage2_target_name="binary_specialist_win",
+            )[0]
+            comp_rows: list[dict[str, Any]] = []
+            for r in test_rows:
+                pair_prob = _sigmoid(float(pair_score({"x": r["x_i"]}) - pair_score({"x": r["x_j"]}))
+                )
+                pair_conf = abs(pair_prob - 0.5) * 2.0
+                margin_abs = float(r.get("margin_abs", abs(float(r.get("margin", 0.0)))))
+                comp_rows.append(
+                    {
+                        "bucket": _complementarity_bucket(r),
+                        "near_tie": bool(r.get("near_tie_flag", False)),
+                        "adjacent": str(r.get("pair_type", "")) == "adjacent_rank",
+                        "deferred_under_current_learned": bool(current_defer_fn(r)),
+                        "margin_bucket": _margin_bucket(margin_abs),
+                        "confidence_bucket": _confidence_bucket(pair_conf),
+                    }
+                )
+
+            comp_bucket_counts: dict[str, int] = {}
+            for cr in comp_rows:
+                comp_bucket_counts[cr["bucket"]] = comp_bucket_counts.get(cr["bucket"], 0) + 1
+            total_comp = max(1, len(comp_rows))
+            comp_bucket_rates = {k: float(v / total_comp) for k, v in comp_bucket_counts.items()}
+            net_gain = (
+                comp_bucket_counts.get("pairwise_wrong_specialist_right", 0)
+                - comp_bucket_counts.get("pairwise_right_specialist_wrong", 0)
+            )
+
+            slice_counts: dict[str, dict[str, int]] = {}
+            slice_dims = [
+                ("near_tie", lambda cr: "near_tie" if cr["near_tie"] else "non_near_tie"),
+                ("adjacent", lambda cr: "adjacent" if cr["adjacent"] else "non_adjacent"),
+                ("defer_status", lambda cr: "deferred" if cr["deferred_under_current_learned"] else "accepted"),
+                ("margin_bucket", lambda cr: str(cr["margin_bucket"])),
+                ("confidence_bucket", lambda cr: str(cr["confidence_bucket"])),
+            ]
+            for dim_name, dim_fn in slice_dims:
+                dim_map: dict[str, dict[str, int]] = {}
+                for cr in comp_rows:
+                    k = dim_fn(cr)
+                    dim_bucket = dim_map.setdefault(
+                        k,
+                        {
+                            "pairwise_right_specialist_wrong": 0,
+                            "pairwise_wrong_specialist_right": 0,
+                            "both_right": 0,
+                            "both_wrong": 0,
+                            "total": 0,
+                        },
+                    )
+                    dim_bucket[cr["bucket"]] += 1
+                    dim_bucket["total"] += 1
+                slice_counts[dim_name] = dim_map
+
+            cross_slice_counts: dict[str, dict[str, int]] = {}
+            for cr in comp_rows:
+                k = (
+                    f"{'near_tie' if cr['near_tie'] else 'non_near_tie'}|"
+                    f"{'adjacent' if cr['adjacent'] else 'non_adjacent'}|"
+                    f"{'deferred' if cr['deferred_under_current_learned'] else 'accepted'}|"
+                    f"{cr['margin_bucket']}|{cr['confidence_bucket']}"
+                )
+                if k not in cross_slice_counts:
+                    cross_slice_counts[k] = {
+                        "pairwise_right_specialist_wrong": 0,
+                        "pairwise_wrong_specialist_right": 0,
+                        "both_right": 0,
+                        "both_wrong": 0,
+                        "total": 0,
+                    }
+                cross_slice_counts[k][cr["bucket"]] += 1
+                cross_slice_counts[k]["total"] += 1
+
+            complementarity_audit_payload = {
+                "row_count": len(comp_rows),
+                "bucket_counts": comp_bucket_counts,
+                "bucket_rates": comp_bucket_rates,
+                "net_specialist_complementarity_gain_count": int(net_gain),
+                "slice_counts": slice_counts,
+                "cross_slice_counts": cross_slice_counts,
+            }
 
             seed_payload: dict[str, Any] = {
                 "calibration_fit": {
@@ -1286,12 +1497,23 @@ def main() -> None:
                     "stage1_pairwise_error_head": {
                         **{k: v for k, v in stage1_error_head.items() if k != "model"},
                     },
-                    "stage2_defer_utility_head": {
+                    "stage2_defer_utility_head_binary_specialist_win": {
                         **{k: v for k, v in stage2_defer_head.items() if k != "model"},
                     },
-                    "target_definition": "defer=1 iff specialized fallback is correct and pairwise winner is incorrect on the same pair row",
+                    "stage2_defer_utility_head_complementarity_aware": {
+                        **{k: v for k, v in stage2_defer_head_complementarity.items() if k != "model"},
+                    },
+                    "target_definition_binary": "defer=1 iff specialized fallback is correct and pairwise winner is incorrect on the same pair row",
+                    "target_definition_complementarity_aware": (
+                        "defer=1 iff ((1[specialist_correct]-defer_cost) - 1[pairwise_correct]) >= utility_gap_margin"
+                    ),
+                    "target_params": {
+                        "defer_cost": float(args.two_stage_defer_cost),
+                        "utility_gap_margin": float(args.two_stage_utility_gap_margin),
+                    },
                     "legacy_threshold_selection": legacy_threshold_meta,
                     "improved_threshold_selection": improved_threshold_meta,
+                    "complementarity_threshold_selection": complementarity_threshold_meta,
                     "baseline_posthoc_val_defer_rate": float(baseline_val_defer_rate),
                     "threshold_grid": two_stage_threshold_grid,
                 },
@@ -1299,6 +1521,7 @@ def main() -> None:
                     "rows": len(diag_rows),
                     "summary": diag_summary,
                 },
+                "complementarity_audit": complementarity_audit_payload,
                 "variants": {},
             }
 
@@ -1355,6 +1578,52 @@ def main() -> None:
 
     (out_dir / "near_tie_pointwise_expert_results.json").write_text(json.dumps(detailed, indent=2), encoding="utf-8")
     (out_dir / "near_tie_pointwise_expert_summary.json").write_text(json.dumps(summary_rows, indent=2), encoding="utf-8")
+
+    required_variants = [
+        "binary_forced_baseline",
+        "strict_coupled_tie_aware_posthoc_deferral_v1",
+        "strict_coupled_tie_aware_learned_two_stage_deferral_calibrated_threshold_v1",
+        "strict_coupled_tie_aware_learned_two_stage_deferral_complementarity_target_v1",
+    ]
+    matched_rows = [r for r in summary_rows if str(r.get("variant")) in set(required_variants)]
+    (out_dir / "required_matched_rows.json").write_text(json.dumps(matched_rows, indent=2), encoding="utf-8")
+    if matched_rows:
+        fieldnames = sorted({k for row in matched_rows for k in row.keys()})
+        with (out_dir / "required_matched_rows.csv").open("w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(matched_rows)
+
+    complementarity_rows: list[dict[str, Any]] = []
+    for regime, seeds_payload in detailed.get("results", {}).items():
+        if not isinstance(seeds_payload, dict):
+            continue
+        for seed, payload in seeds_payload.items():
+            if not isinstance(payload, dict):
+                continue
+            audit = payload.get("complementarity_audit", {})
+            row = {
+                "regime": regime,
+                "seed": int(seed),
+                "row_count": int(audit.get("row_count", 0)),
+                "net_specialist_complementarity_gain_count": int(audit.get("net_specialist_complementarity_gain_count", 0)),
+            }
+            for bucket in [
+                "pairwise_right_specialist_wrong",
+                "pairwise_wrong_specialist_right",
+                "both_right",
+                "both_wrong",
+            ]:
+                row[f"count_{bucket}"] = int(audit.get("bucket_counts", {}).get(bucket, 0))
+                row[f"rate_{bucket}"] = float(audit.get("bucket_rates", {}).get(bucket, 0.0))
+            complementarity_rows.append(row)
+    (out_dir / "complementarity_audit_summary.json").write_text(json.dumps(complementarity_rows, indent=2), encoding="utf-8")
+    if complementarity_rows:
+        comp_fieldnames = sorted({k for row in complementarity_rows for k in row.keys()})
+        with (out_dir / "complementarity_audit_summary.csv").open("w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=comp_fieldnames)
+            writer.writeheader()
+            writer.writerows(complementarity_rows)
 
     md = [
         "# Near-tie pointwise expert matched experiment",

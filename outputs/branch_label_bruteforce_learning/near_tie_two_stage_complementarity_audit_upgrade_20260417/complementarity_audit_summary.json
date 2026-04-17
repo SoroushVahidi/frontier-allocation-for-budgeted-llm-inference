@@ -1,0 +1,16 @@
+[
+  {
+    "regime": "all_pairs",
+    "seed": 11,
+    "row_count": 13,
+    "net_specialist_complementarity_gain_count": 0,
+    "count_pairwise_right_specialist_wrong": 0,
+    "rate_pairwise_right_specialist_wrong": 0.0,
+    "count_pairwise_wrong_specialist_right": 0,
+    "rate_pairwise_wrong_specialist_right": 0.0,
+    "count_both_right": 5,
+    "rate_both_right": 0.38461538461538464,
+    "count_both_wrong": 8,
+    "rate_both_wrong": 0.6153846153846154
+  }
+]
