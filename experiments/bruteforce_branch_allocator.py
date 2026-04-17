@@ -282,6 +282,7 @@ def _pairwise_weight(row: dict[str, Any], cfg: LearningConfig) -> tuple[bool, fl
         elif pair_mode == "exact":
             weight *= float(cfg.exact_mode_weight)
 
+    weight *= float(row.get("supervision_reliability_weight", 1.0))
     return (True, max(weight, 1e-8))
 
 
@@ -759,10 +760,22 @@ def _slice_pairwise_accuracy(
         d: acc_for(lambda r, dd=d: state_to_dataset.get(str(r["state_id"]), "unknown") == dd)
         for d in datasets
     }
+    pair_types = sorted({str(r.get("pair_type", "unknown")) for r in subset})
+    by_pair_type = {
+        p: acc_for(lambda r, pp=p: str(r.get("pair_type", "unknown")) == pp)
+        for p in pair_types
+    }
+    label_sources = sorted({str(r.get("label_source", "unknown")) for r in subset})
+    by_label_source = {
+        s: acc_for(lambda r, ss=s: str(r.get("label_source", "unknown")) == ss)
+        for s in label_sources
+    }
     return {
         "pairwise_accuracy_by_budget": by_budget,
         "pairwise_accuracy_by_mode": by_mode,
         "pairwise_accuracy_by_dataset": by_dataset,
+        "pairwise_accuracy_by_pair_type": by_pair_type,
+        "pairwise_accuracy_by_label_source": by_label_source,
     }
 
 
@@ -799,6 +812,9 @@ def evaluate_models(models: dict[str, Any], tables: dict[str, Any], cfg: Learnin
             "far_margin_pairwise_accuracy_test": far_acc,
             "pairwise_margin_brier_test": brier,
             "exact_only_pairwise_accuracy_test": slices.get("pairwise_accuracy_by_mode", {}).get("exact", 0.0),
+            "adjacent_rank_pairwise_accuracy_test": slices.get("pairwise_accuracy_by_pair_type", {}).get("adjacent_rank", 0.0),
+            "exact_promoted_pairwise_accuracy_test": slices.get("pairwise_accuracy_by_label_source", {}).get("exact_promoted", 0.0),
+            "exact_promoted_hard_region_pairwise_accuracy_test": slices.get("pairwise_accuracy_by_label_source", {}).get("exact_promoted_hard_region", 0.0),
             **slices,
         }
     return out

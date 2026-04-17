@@ -1,0 +1,40 @@
+{
+  "run_id": "cohere_hard_adjudication_matched_v3_20260417",
+  "baseline_regime": "all_pairs",
+  "improved_regime": "cohere_hard_adjudicated",
+  "pairwise_model_mean": {
+    "pairwise_accuracy_test": {
+      "baseline": 0.6313131313131314,
+      "improved": 0.45815295815295815,
+      "delta": -0.17316017316017324
+    },
+    "top1_test": {
+      "baseline": 0.6388888888888888,
+      "improved": 0.5555555555555555,
+      "delta": -0.08333333333333337
+    },
+    "near_tie_test": {
+      "baseline": 0.16666666666666666,
+      "improved": 0.16666666666666666,
+      "delta": 0.0
+    },
+    "adjacent_rank_test": {
+      "baseline": 0.6171122994652406,
+      "improved": 0.4944741532976827,
+      "delta": -0.12263814616755792
+    },
+    "exact_promoted_test": {
+      "baseline": 0.0,
+      "improved": 0.0,
+      "delta": 0.0
+    },
+    "brier_test": {
+      "baseline": 0.24920790682626762,
+      "improved": 0.2657584431159657,
+      "delta": 0.016550536289698076
+    }
+  },
+  "cohere_replaced_pairs": 10,
+  "cohere_selected_pairs": 18,
+  "cohere_model": "command-r-plus-08-2024"
+}

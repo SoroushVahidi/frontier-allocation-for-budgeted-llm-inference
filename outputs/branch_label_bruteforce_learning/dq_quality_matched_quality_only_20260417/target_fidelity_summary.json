@@ -1,0 +1,302 @@
+[
+  {
+    "regime": "all_pairs",
+    "seed": 11,
+    "model": "pairwise",
+    "pairwise_accuracy_test": 0.6428571428571429,
+    "top1_test": 0.75,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.6923076923076923,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 11,
+    "model": "pointwise",
+    "pairwise_accuracy_test": 0.5714285714285714,
+    "top1_test": 0.375,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.6153846153846154,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 11,
+    "model": "outside_option",
+    "pairwise_accuracy_test": 0.35714285714285715,
+    "top1_test": 0.375,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.38461538461538464,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 11,
+    "model": "lightgbm_ranker",
+    "pairwise_accuracy_test": 0.5,
+    "top1_test": 0.375,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.46153846153846156,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 11,
+    "model": "catboost_ranker",
+    "pairwise_accuracy_test": 0.5,
+    "top1_test": 0.375,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.46153846153846156,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 29,
+    "model": "pairwise",
+    "pairwise_accuracy_test": 0.5,
+    "top1_test": 0.25,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.6,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 29,
+    "model": "pointwise",
+    "pairwise_accuracy_test": 0.3333333333333333,
+    "top1_test": 0.5,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.2,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 29,
+    "model": "outside_option",
+    "pairwise_accuracy_test": 0.6666666666666666,
+    "top1_test": 0.5,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.6,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 29,
+    "model": "lightgbm_ranker",
+    "pairwise_accuracy_test": 0.5,
+    "top1_test": 0.5,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.4,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 29,
+    "model": "catboost_ranker",
+    "pairwise_accuracy_test": 0.5,
+    "top1_test": 0.5,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.4,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 47,
+    "model": "pairwise",
+    "pairwise_accuracy_test": 0.6363636363636364,
+    "top1_test": 0.5833333333333334,
+    "near_tie_test": 0.5,
+    "far_margin_test": 0.6666666666666666,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 47,
+    "model": "pointwise",
+    "pairwise_accuracy_test": 0.5909090909090909,
+    "top1_test": 0.5833333333333334,
+    "near_tie_test": 0.75,
+    "far_margin_test": 0.5555555555555556,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 47,
+    "model": "outside_option",
+    "pairwise_accuracy_test": 0.45454545454545453,
+    "top1_test": 0.5,
+    "near_tie_test": 0.25,
+    "far_margin_test": 0.5,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 47,
+    "model": "lightgbm_ranker",
+    "pairwise_accuracy_test": 0.3181818181818182,
+    "top1_test": 0.25,
+    "near_tie_test": 0.25,
+    "far_margin_test": 0.3333333333333333,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "all_pairs",
+    "seed": 47,
+    "model": "catboost_ranker",
+    "pairwise_accuracy_test": 0.3181818181818182,
+    "top1_test": 0.25,
+    "near_tie_test": 0.25,
+    "far_margin_test": 0.3333333333333333,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 11,
+    "model": "pairwise",
+    "pairwise_accuracy_test": 0.6923076923076923,
+    "top1_test": 0.75,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.6923076923076923,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 11,
+    "model": "pointwise",
+    "pairwise_accuracy_test": 0.6153846153846154,
+    "top1_test": 0.375,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.6153846153846154,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 11,
+    "model": "outside_option",
+    "pairwise_accuracy_test": 0.38461538461538464,
+    "top1_test": 0.375,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.38461538461538464,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 11,
+    "model": "lightgbm_ranker",
+    "pairwise_accuracy_test": 0.46153846153846156,
+    "top1_test": 0.375,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.46153846153846156,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 11,
+    "model": "catboost_ranker",
+    "pairwise_accuracy_test": 0.46153846153846156,
+    "top1_test": 0.375,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.46153846153846156,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 29,
+    "model": "pairwise",
+    "pairwise_accuracy_test": 0.5,
+    "top1_test": 0.25,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.6,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 29,
+    "model": "pointwise",
+    "pairwise_accuracy_test": 0.3333333333333333,
+    "top1_test": 0.5,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.2,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 29,
+    "model": "outside_option",
+    "pairwise_accuracy_test": 0.6666666666666666,
+    "top1_test": 0.5,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.6,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 29,
+    "model": "lightgbm_ranker",
+    "pairwise_accuracy_test": 0.5,
+    "top1_test": 0.5,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.4,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 29,
+    "model": "catboost_ranker",
+    "pairwise_accuracy_test": 0.5,
+    "top1_test": 0.5,
+    "near_tie_test": 1.0,
+    "far_margin_test": 0.4,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 47,
+    "model": "pairwise",
+    "pairwise_accuracy_test": 0.65,
+    "top1_test": 0.6666666666666666,
+    "near_tie_test": 0.5,
+    "far_margin_test": 0.6666666666666666,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 47,
+    "model": "pointwise",
+    "pairwise_accuracy_test": 0.55,
+    "top1_test": 0.5833333333333334,
+    "near_tie_test": 0.5,
+    "far_margin_test": 0.5555555555555556,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 47,
+    "model": "outside_option",
+    "pairwise_accuracy_test": 0.45,
+    "top1_test": 0.5,
+    "near_tie_test": 0.0,
+    "far_margin_test": 0.5,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 47,
+    "model": "lightgbm_ranker",
+    "pairwise_accuracy_test": 0.35,
+    "top1_test": 0.25,
+    "near_tie_test": 0.5,
+    "far_margin_test": 0.3333333333333333,
+    "exact_mode_test": 0.0
+  },
+  {
+    "regime": "quality_mixed_trust",
+    "seed": 47,
+    "model": "catboost_ranker",
+    "pairwise_accuracy_test": 0.35,
+    "top1_test": 0.25,
+    "near_tie_test": 0.5,
+    "far_margin_test": 0.3333333333333333,
+    "exact_mode_test": 0.0
+  }
+]
