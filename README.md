@@ -36,8 +36,10 @@ Read these first:
 8. [`docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 9. [`docs/OUTPUTS_INTERPRETATION_GUIDE.md`](docs/OUTPUTS_INTERPRETATION_GUIDE.md)
 10. [`docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
-11. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
-12. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+11. [`docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
+12. [`docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
+13. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+14. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 ### If you want to run code
 Start with:
@@ -46,6 +48,7 @@ Start with:
 
 ### If you want to understand method bottlenecks
 Read next:
+- [`docs/METHOD_STATUS_INDEX.md`](docs/METHOD_STATUS_INDEX.md)
 - [`docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md`](docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md)
 - [`docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`](docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md)
 - [`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`](docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md)
@@ -97,7 +100,7 @@ The recommended current direction is:
 - pairwise branch comparison as the main learned decision object,
 - `v2` hard-case representation as the stronger default substrate,
 - a cleaner selective accept/defer rule for hard ambiguous cases,
-- and a more principled hard-pair supervision cleanup path.
+- and a more principled hard-pair supervision cleanup / structured ambiguity path.
 
 The conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
