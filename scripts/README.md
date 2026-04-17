@@ -2,10 +2,11 @@
 
 All scripts write run artifacts under `outputs/` unless overridden.
 
-## Fast start
+## Short entry paths
 
 - Current project entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
+- Goal-based repo navigation: [`../docs/REPOSITORY_START_PATHS.md`](../docs/REPOSITORY_START_PATHS.md)
 - Full code/document map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
 - Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
@@ -15,6 +16,35 @@ All scripts write run artifacts under `outputs/` unless overridden.
 - **Exploratory**: useful active branches and diagnostics, not settled default winners.
 - **Integration/prep**: dataset/baseline readiness tooling.
 - **Historical**: older-track support scripts retained only for provenance.
+
+## Most common workflows
+
+### 1. Run the current paper path
+Use:
+- `run_cross_strategy_frontier_allocation.py`
+- `run_multi_action_allocation_pass.sh`
+- `evaluate_branch_scorer_controller.py`
+- `evaluate_branch_scorer_robustness.py`
+- `run_new_paper_frontier_matrix.py`
+- `run_comparative_frontier_audit.py`
+- `run_imported_methodology_frontier_eval.py`
+
+### 2. Work on hard ambiguous cases / branch-allocation learning
+Use:
+- `build_bruteforce_target_regimes.py`
+- `train_bruteforce_branch_allocator.py`
+- `run_target_fidelity_regime_experiment.py`
+- `run_hard_case_feature_representation_experiment.py`
+- `run_ambiguity_calibration_and_fallback_experiment.py`
+- `run_near_tie_policy_experiment.py`
+- `run_near_tie_pointwise_expert_experiment.py`
+
+### 3. Check datasets and external baselines
+Use:
+- `verify_hf_dataset_access.py`
+- `generate_dataset_integration_report.py`
+- `generate_external_baseline_integration_report.py`
+- `list_external_baselines.py`
 
 ## Canonical scripts (current project path)
 
@@ -79,7 +109,7 @@ Historical script entry points have been moved to:
 - `run_cross_strategy_frontier_allocation.py` keeps a legacy filename for compatibility; docs refer to this as cross-controller frontier allocation.
 - Current canonical method direction is documented in `../docs/STOP_VS_ACT_DIRECTION.md` and the broader branch-allocation docs; stop-vs-act is a bounded helper formulation, not the whole project identity.
 
-## Oracle-label pilot execution
+## Oracle-label pilot execution and hard-case learning path
 
 | Script | Role |
 |---|---|
@@ -102,248 +132,11 @@ Historical script entry points have been moved to:
 | `run_ambiguity_calibration_and_fallback_experiment.py` | Runs matched ambiguity-handling experiments for abstention/tie decisions with confidence calibration (none/temperature/Platt/isotonic) and configurable fallback policies. |
 | `run_near_tie_policy_experiment.py` | Runs matched dedicated near-tie detection/routing experiments, including non-forced balanced/shared fallback policy comparisons against binary and calibrated-abstention baselines. |
 | `run_near_tie_pointwise_expert_experiment.py` | Runs matched dedicated near-tie pointwise-expert experiments with specialized/reweighted pointwise fallbacks, routing gates, and near-tie pairwise-vs-pointwise diagnostic artifacts. |
+| `run_pairwise_svm_margin_experiment.py` | Runs matched logistic-vs-SVM bounded margin comparisons on hard branch-comparison regimes. |
+| `run_structured_ambiguity_experiment.py` | Runs matched v2/v3 representation and three-way defer comparisons focused on ambiguous hard cases. |
 
-### Brute-force allocator learning: GBDT ranking + uncertainty-aware options
+## Notes on learning workflows
 
-`train_bruteforce_branch_allocator.py` now supports:
-
-- **GBDT ranking baselines**:
-  - LightGBM LambdaRank (`lightgbm_ranker`)
-  - CatBoost YetiRankPairwise (`catboost_ranker`)
-- **Near-tie handling for pairwise linear learner**:
-  - `--pairwise-near-tie-action {none,filter,downweight}`
-  - `--pairwise-near-tie-downweight <float>`
-- **Uncertainty-aware pairwise weighting**:
-  - `--uncertainty-weighting`
-  - `--margin-weight-power`
-  - `--std-weight-scale`
-  - `--approx-mode-weight`
-  - `--exact-mode-weight`
-
-Example (matched linear + GBDT run):
-
-```bash
-python scripts/train_bruteforce_branch_allocator.py \
-  --labels-dir outputs/branch_label_bruteforce_merged/<merged_run_id> \
-  --run-id gbdt_matched_baseline \
-  --seed 17 \
-  --near-tie-margin 0.03
-```
-
-Example (uncertainty-aware pairwise weighting):
-
-```bash
-python scripts/train_bruteforce_branch_allocator.py \
-  --labels-dir outputs/branch_label_bruteforce_merged/<merged_run_id> \
-  --run-id gbdt_uncertainty_weighted \
-  --seed 17 \
-  --near-tie-margin 0.03 \
-  --pairwise-near-tie-action downweight \
-  --pairwise-near-tie-downweight 0.2 \
-  --uncertainty-weighting
-```
-
-Example (multi-seed matched scaling + leave-one-dataset-out):
-
-```bash
-python scripts/run_bruteforce_allocator_scaling_experiment.py \
-  --labels-dir outputs/branch_label_bruteforce_merged/<merged_run_id> \
-  --run-id gbdt_scaling_matched \
-  --seeds 11,29,47 \
-  --near-tie-margin 0.03
-```
-
-### Target-fidelity / pair-construction workflow
-
-Build pair-construction regimes with pair-quality metadata:
-
-```bash
-python scripts/build_bruteforce_target_regimes.py \
-  --labels-dir outputs/branch_label_bruteforce_merged/<approx_run> \
-  --run-id target_regimes_v1 \
-  --exact-labels-dir outputs/branch_label_bruteforce_merged/<exact_run> \
-  --promote-exact-over-approx
-```
-
-Run exact-vs-approx targeted disagreement audit:
-
-```bash
-python scripts/audit_bruteforce_exact_vs_approx_pairs.py \
-  --approx-labels-dir outputs/branch_label_bruteforce_targets/target_regimes_v1/regime_all_pairs \
-  --exact-labels-dir outputs/branch_label_bruteforce_targets/target_regimes_exact_v1/regime_all_pairs \
-  --output-dir outputs/branch_label_bruteforce_targets/target_regimes_v1/exact_vs_approx_audit
-```
-
-Run matched multi-seed learning across regimes:
-
-```bash
-python scripts/run_target_fidelity_regime_experiment.py \
-  --targets-root outputs/branch_label_bruteforce_targets/target_regimes_v1 \
-  --run-id target_fidelity_learning_v1 \
-  --seeds 11,29,47 \
-  --near-tie-margin 0.03
-```
-
-### Hard-region exact-supervision workflow
-
-Mine hard relabeling candidates:
-
-```bash
-python scripts/mine_bruteforce_hard_regions.py \
-  --labels-dir outputs/branch_label_bruteforce/<base_run_id> \
-  --run-id hard_region_mining_v1 \
-  --near-tie-margin 0.03 \
-  --small-margin-threshold 0.08 \
-  --high-std-threshold 0.07 \
-  --max-candidates 200
-```
-
-Run targeted exact relabeling for mined hard pairs:
-
-```bash
-python scripts/expand_bruteforce_exact_hard_regions.py \
-  --base-labels-dir outputs/branch_label_bruteforce/<base_run_id> \
-  --mined-candidates-jsonl outputs/branch_label_bruteforce_targets/hard_region_mining_v1/mined_hard_candidates.jsonl \
-  --run-id hard_region_exact_expansion_v1 \
-  --max-target-pairs 200
-```
-
-Build exact-augmented regimes and run matched evaluation:
-
-```bash
-python scripts/build_exact_augmented_target_regimes.py \
-  --labels-dir outputs/branch_label_bruteforce/<base_run_id> \
-  --exact-expansion-dir outputs/branch_label_bruteforce_targets/hard_region_exact_expansion_v1 \
-  --run-id hard_region_exact_augmented_regimes_v1
-
-python scripts/run_hard_region_exact_supervision_experiment.py \
-  --targets-root outputs/branch_label_bruteforce_targets/hard_region_exact_augmented_regimes_v1 \
-  --run-id hard_region_exact_matched_v1 \
-  --seeds 11,29,47 \
-  --near-tie-margin 0.03
-```
-
-### Hard-case feature-representation workflow
-
-Run feature audit on a fixed regime:
-
-```bash
-python scripts/audit_bruteforce_feature_representation.py \
-  --labels-dir outputs/branch_label_bruteforce_targets/<regime_root>/regime_promoted_exact_hard_region \
-  --run-id hard_case_feature_audit_v1 \
-  --near-tie-margin 0.03
-```
-
-Run matched v1-vs-v2 feature experiments (same supervision):
-
-```bash
-python scripts/run_hard_case_feature_representation_experiment.py \
-  --targets-root outputs/branch_label_bruteforce_targets/<regime_root> \
-  --run-id hard_case_feature_representation_v1 \
-  --seeds 11,29,47 \
-  --feature-sets v1,v2 \
-  --regimes all_pairs_approx,promoted_exact_hard_region \
-  --near-tie-margin 0.03
-```
-
-Direct learner training with richer features is also available:
-
-```bash
-python scripts/train_bruteforce_branch_allocator.py \
-  --labels-dir outputs/branch_label_bruteforce_targets/<regime_root>/regime_promoted_exact_hard_region \
-  --run-id hard_case_feature_train_v2 \
-  --feature-set v2
-```
-
-### Ternary / selective-abstention branch-comparison workflow
-
-Build exact-augmented regimes with tie/ambiguous annotations:
-
-```bash
-python scripts/build_exact_augmented_target_regimes.py \
-  --labels-dir outputs/branch_label_bruteforce/<base_run_id> \
-  --exact-expansion-dir outputs/branch_label_bruteforce_targets/<exact_expansion_run_id> \
-  --run-id ternary_abstain_regimes_v1 \
-  --tie-abs-margin-threshold 0.03 \
-  --tie-relative-margin-threshold 0.15 \
-  --tie-std-threshold 0.08 \
-  --tie-use-near-tie-flag \
-  --tie-include-approx
-```
-
-Run matched binary vs ternary vs abstaining comparison with fixed feature representation (`v2`):
-
-```bash
-python scripts/run_ternary_or_abstain_branch_comparison_experiment.py \
-  --targets-root outputs/branch_label_bruteforce_targets/ternary_abstain_regimes_v1 \
-  --run-id ternary_or_abstain_v1 \
-  --seeds 11,29,47 \
-  --feature-set v2 \
-  --regimes all_pairs_approx,promoted_exact_hard_region \
-  --tie-abs-margin-threshold 0.03 \
-  --tie-relative-margin-threshold 0.15 \
-  --tie-std-threshold 0.08 \
-  --tie-use-near-tie-flag \
-  --tie-include-approx \
-  --abstain-confidence-threshold 0.20 \
-  --fallback-policy pointwise_value
-```
-
-### Ambiguity calibration + fallback workflow
-
-Run matched calibration/fallback comparisons on fixed feature representation (`v2`):
-
-```bash
-python scripts/run_ambiguity_calibration_and_fallback_experiment.py \
-  --targets-root outputs/branch_label_bruteforce_targets/<regime_root> \
-  --run-id ambiguity_calibration_fallback_v1 \
-  --seeds 11,29,47 \
-  --feature-set v2 \
-  --regimes all_pairs_approx,promoted_exact_hard_region \
-  --calibration-methods none,temperature,platt,isotonic \
-  --primary-calibration temperature \
-  --abstain-confidence-threshold 0.20 \
-  --ternary-fallback-policy outside_option_aware
-```
-
-### Dedicated near-tie policy workflow
-
-Run matched dedicated near-tie routing comparisons under fixed representation (`v2`):
-
-```bash
-python scripts/run_near_tie_policy_experiment.py \
-  --targets-root outputs/branch_label_bruteforce_targets/<regime_root> \
-  --run-id near_tie_policy_v1 \
-  --seeds 11,29,47 \
-  --feature-set v2 \
-  --regimes all_pairs_approx,promoted_exact_hard_region \
-  --primary-calibration temperature \
-  --abstain-confidence-threshold 0.20 \
-  --near-tie-detector-abs-margin 0.03 \
-  --near-tie-detector-relative-margin 0.15 \
-  --near-tie-detector-std 0.08 \
-  --near-tie-detector-confidence-max 0.30 \
-  --near-tie-detector-use-near-tie-flag \
-  --near-tie-detector-min-signals 2
-```
-
-### Dedicated near-tie pointwise expert workflow
-
-Run matched near-tie pointwise-expert comparisons (generic vs specialized vs reweighted pointwise fallback):
-
-```bash
-python scripts/run_near_tie_pointwise_expert_experiment.py \
-  --targets-root outputs/branch_label_bruteforce_targets/<regime_root> \
-  --run-id near_tie_pointwise_expert_v1 \
-  --seeds 11,29,47 \
-  --feature-set v2 \
-  --regimes all_pairs_approx,promoted_exact_hard_region \
-  --primary-calibration temperature \
-  --detector-threshold-mode base \
-  --pointwise-margin-min 0.03 \
-  --pointwise-fallback-if-uncertain pairwise_binary \
-  --near-tie-specialized-margin-max 0.08 \
-  --near-tie-specialized-min-states 6 \
-  --near-tie-reweight-factor 2.5 \
-  --adjacent-reweight-factor 1.5
-```
+- `train_bruteforce_branch_allocator.py` is the main unified training entrypoint for branch-allocation learning from brute-force supervision artifacts.
+- Hard-case experiments should usually be interpreted together with the relevant docs notes in `../docs/` rather than as standalone headline results.
+- Use `../docs/OUTPUTS_INTERPRETATION_GUIDE.md` when reviewing generated artifacts under `outputs/`.
