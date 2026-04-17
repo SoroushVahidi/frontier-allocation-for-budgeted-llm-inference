@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -70,12 +71,19 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--tie-use-near-tie-flag", action="store_true")
     p.add_argument("--tie-include-approx", action="store_true")
     p.add_argument("--tie-require-exact-or-mixed", action="store_true")
+    p.add_argument(
+        "--tie-policy",
+        choices=["legacy_or", "davidson_close_call"],
+        default="legacy_or",
+        help="Tie-assignment policy. davidson_close_call requires closeness + ambiguity risk.",
+    )
     return p.parse_args()
 
 
 def _annotate_ambiguous_pair(
     row: dict[str, Any],
     *,
+    tie_policy: str,
     tie_abs_margin_threshold: float,
     tie_relative_margin_threshold: float,
     tie_std_threshold: float,
@@ -90,22 +98,102 @@ def _annotate_ambiguous_pair(
         eligible_mode = False
     if tie_require_exact_or_mixed and pair_mode not in {"exact", "mixed"}:
         eligible_mode = False
+    margin_close = float(out.get("margin_abs", 0.0)) <= float(tie_abs_margin_threshold)
+    relative_close = float(out.get("relative_margin", 1e9)) <= float(tie_relative_margin_threshold)
+    near_close = bool(out.get("near_tie_flag", False)) if tie_use_near_tie_flag else False
+    std_high = float(out.get("pair_uncertainty_std_mean", 0.0)) >= float(tie_std_threshold)
+    adjacent = str(out.get("pair_type", "")) == "adjacent_rank"
+    disagreement_risk = bool(out.get("exact_vs_approx_disagreement_risk", False))
+    close_call = bool(margin_close or relative_close or near_close)
+    ambiguous_risk = bool(std_high or adjacent or disagreement_risk)
+
     triggers: list[str] = []
-    if float(out.get("margin_abs", 0.0)) <= float(tie_abs_margin_threshold):
+    if margin_close:
         triggers.append("abs_margin")
-    if float(out.get("relative_margin", 1e9)) <= float(tie_relative_margin_threshold):
+    if relative_close:
         triggers.append("relative_margin")
-    if float(out.get("pair_uncertainty_std_mean", 0.0)) >= float(tie_std_threshold):
-        triggers.append("uncertainty_std")
-    if tie_use_near_tie_flag and bool(out.get("near_tie_flag", False)):
+    if near_close:
         triggers.append("near_tie_flag")
-    out["ambiguous_tie_target"] = bool(eligible_mode and len(triggers) > 0)
+    if std_high:
+        triggers.append("uncertainty_std")
+    if adjacent:
+        triggers.append("adjacent_rank")
+    if disagreement_risk:
+        triggers.append("exact_vs_approx_disagreement_risk")
+
+    if tie_policy == "davidson_close_call":
+        ambiguous = bool(eligible_mode and close_call and ambiguous_risk)
+    else:
+        ambiguous = bool(eligible_mode and len(triggers) > 0)
+
+    out["ambiguous_tie_target"] = ambiguous
     out["ambiguous_tie_reasons"] = triggers
-    out["ternary_label_name"] = (
-        "tie_ambiguous"
-        if out["ambiguous_tie_target"]
-        else ("prefer_branch_i" if int(out.get("label", out.get("preference", 0))) == 1 else "prefer_branch_j")
+    out["tie_policy"] = str(tie_policy)
+    out["davidson_close_call_flag"] = bool(close_call and ambiguous_risk)
+    out["ternary_label_name"] = "tie" if ambiguous else ("i_wins" if int(out.get("label", out.get("preference", 0))) == 1 else "j_wins")
+    return out
+
+
+def _annotate_soft_probabilistic_target(
+    row: dict[str, Any],
+    *,
+    tie_abs_margin_threshold: float,
+    tie_relative_margin_threshold: float,
+    tie_std_threshold: float,
+    tie_use_near_tie_flag: bool,
+) -> dict[str, Any]:
+    out = dict(row)
+    margin_abs = float(out.get("margin_abs", 0.0))
+    rel_margin = float(out.get("relative_margin", 1e9))
+    pair_std = float(out.get("pair_uncertainty_std_mean", 0.0))
+    near_tie = bool(out.get("near_tie_flag", False)) if tie_use_near_tie_flag else False
+    adjacent = str(out.get("pair_type", "")) == "adjacent_rank"
+    disagreement_risk = bool(out.get("exact_vs_approx_disagreement_risk", False))
+
+    abs_scale = max(float(tie_abs_margin_threshold), 1e-6)
+    rel_scale = max(float(tie_relative_margin_threshold), 1e-6)
+    std_scale = max(float(tie_std_threshold), 1e-6)
+
+    abs_close = math.exp(-margin_abs / abs_scale)
+    rel_close = math.exp(-rel_margin / rel_scale)
+    near_close = 0.95 if near_tie else 0.0
+    close_strength = max(abs_close, rel_close, near_close)
+
+    std_strength = min(1.0, pair_std / std_scale)
+    adjacent_strength = 0.85 if adjacent else 0.0
+    disagreement_strength = 1.0 if disagreement_risk else 0.0
+    ambiguity_strength = max(std_strength, adjacent_strength, disagreement_strength)
+
+    tie_prob = close_strength * (0.55 + 0.45 * ambiguity_strength)
+    easy_pair = (
+        margin_abs > (2.0 * abs_scale)
+        and rel_margin > (2.0 * rel_scale)
+        and pair_std < (0.5 * std_scale)
+        and (not adjacent)
     )
+    if easy_pair:
+        tie_prob = min(tie_prob, 0.02)
+    tie_prob = min(max(tie_prob, 0.01), 0.98)
+
+    directional_mass = 1.0 - tie_prob
+    directional_softness = max(0.0, 1.0 - min(1.0, margin_abs / max(2.0 * abs_scale, 1e-6)))
+    loser_spill = directional_mass * 0.25 * directional_softness
+    winner_mass = directional_mass - loser_spill
+    label = int(out.get("label", out.get("preference", 0)))
+    if label == 1:
+        p_i, p_j = winner_mass, loser_spill
+    else:
+        p_i, p_j = loser_spill, winner_mass
+
+    z = max(1e-8, p_i + tie_prob + p_j)
+    p_i /= z
+    tie_prob /= z
+    p_j /= z
+    out["soft_target_prob_i_wins"] = p_i
+    out["soft_target_prob_tie"] = tie_prob
+    out["soft_target_prob_j_wins"] = p_j
+    out["soft_target_entropy"] = -sum(p * math.log(max(p, 1e-12)) for p in [p_i, tie_prob, p_j])
+    out["soft_target_source"] = "davidson_soft_prob_v1"
     return out
 
 
@@ -173,6 +261,7 @@ def main() -> None:
         promoted.append(
             _annotate_ambiguous_pair(
                 out,
+                tie_policy=str(args.tie_policy),
                 tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
                 tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
                 tie_std_threshold=float(args.tie_std_threshold),
@@ -213,6 +302,7 @@ def main() -> None:
         baseline_rows.append(
             _annotate_ambiguous_pair(
                 b,
+                tie_policy=str(args.tie_policy),
                 tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
                 tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
                 tie_std_threshold=float(args.tie_std_threshold),
@@ -222,9 +312,21 @@ def main() -> None:
             )
         )
 
+    promoted_soft = [
+        _annotate_soft_probabilistic_target(
+            r,
+            tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
+            tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
+            tie_std_threshold=float(args.tie_std_threshold),
+            tie_use_near_tie_flag=bool(args.tie_use_near_tie_flag),
+        )
+        for r in promoted
+    ]
+
     regimes: dict[str, list[dict[str, Any]]] = {
         "all_pairs_approx": baseline_rows,
         "promoted_exact_hard_region": promoted,
+        "soft_prob_promoted_exact_hard_region": promoted_soft,
         "promoted_exact_top_vs_rest": [r for r in promoted if str(r.get("pair_type")) == "top_vs_rest"],
         "promoted_exact_high_margin_only": [r for r in promoted if float(r.get("margin_abs", 0.0)) >= float(args.high_margin_threshold)],
         "promoted_exact_uncertainty_filtered": [
@@ -248,6 +350,7 @@ def main() -> None:
             "tie_use_near_tie_flag": bool(args.tie_use_near_tie_flag),
             "tie_include_approx": bool(args.tie_include_approx),
             "tie_require_exact_or_mixed": bool(args.tie_require_exact_or_mixed),
+            "tie_policy": str(args.tie_policy),
         },
     }
 
@@ -266,6 +369,7 @@ def main() -> None:
             "near_tie_rate": sum(1 for r in rows if bool(r.get("near_tie_flag", False))) / max(1, len(rows)),
             "adjacent_rank_rate": sum(1 for r in rows if str(r.get("pair_type", "")) == "adjacent_rank") / max(1, len(rows)),
             "ambiguous_tie_rate": sum(1 for r in rows if bool(r.get("ambiguous_tie_target", False))) / max(1, len(rows)),
+            "mean_soft_tie_prob": sum(float(r.get("soft_target_prob_tie", 0.0)) for r in rows) / max(1, len(rows)),
         }
         (d / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
         manifest["regimes"][regime] = {"output_dir": str(d), "summary": summary}

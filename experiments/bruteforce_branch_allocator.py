@@ -287,6 +287,8 @@ def _pairwise_weight(row: dict[str, Any], cfg: LearningConfig) -> tuple[bool, fl
 
 
 def _is_ambiguous_pair(row: dict[str, Any], cfg: LearningConfig) -> bool:
+    if "ambiguous_tie_target" in row:
+        return bool(row.get("ambiguous_tie_target", False))
     margin_abs = float(row.get("margin_abs", abs(float(row.get("margin", 0.0)))))
     rel_margin = float(row.get("relative_margin", 1e9))
     pair_std = float(row.get("pair_uncertainty_std_mean", row.get("pair_allocation_value_std", 0.0)))

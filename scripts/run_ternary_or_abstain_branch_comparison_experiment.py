@@ -62,6 +62,36 @@ def _train_ternary_pair_model(rows: list[dict[str, Any]], seed: int) -> dict[str
     return {"status": "ok", "model": model}
 
 
+def _train_soft_ternary_pair_model(rows: list[dict[str, Any]], seed: int) -> dict[str, Any]:
+    train = [r for r in rows if r.get("split") == "train"]
+    if len(train) < 3:
+        return {"status": "insufficient_train_rows"}
+    x: list[list[float]] = []
+    y: list[int] = []
+    w: list[float] = []
+    for r in train:
+        p_i = float(r.get("soft_target_prob_i_wins", 0.0))
+        p_t = float(r.get("soft_target_prob_tie", 0.0))
+        p_j = float(r.get("soft_target_prob_j_wins", 0.0))
+        total = p_i + p_t + p_j
+        if total <= 1e-8:
+            t = int(r.get("ternary_label", 1))
+            p_j, p_t, p_i = (1.0, 0.0, 0.0) if t == 0 else ((0.0, 1.0, 0.0) if t == 1 else (0.0, 0.0, 1.0))
+            total = 1.0
+        p_i, p_t, p_j = p_i / total, p_t / total, p_j / total
+        base_w = float(r.get("pair_train_weight", 1.0))
+        for cls, p in [(0, p_j), (1, p_t), (2, p_i)]:
+            if p > 1e-8:
+                x.append(r["x_diff"])
+                y.append(cls)
+                w.append(base_w * p)
+    if len(x) < 3 or len(set(y)) < 2:
+        return {"status": "single_class_train_or_empty"}
+    model = LogisticRegression(max_iter=800, random_state=seed)
+    model.fit(x, y, sample_weight=w)
+    return {"status": "ok", "model": model}
+
+
 def _top1_from_pairwise_rows(
     pair_rows: list[dict[str, Any]],
     state_to_candidates: dict[str, list[dict[str, Any]]],
@@ -233,6 +263,40 @@ def main() -> None:
                 ]}
                 ternary_top1 = 0.0
 
+            soft_ternary = _train_soft_ternary_pair_model(tables["pairwise"], seed)
+            if soft_ternary.get("status") == "ok":
+                sm = soft_ternary["model"]
+
+                def soft_ternary_pred(row: dict[str, Any]) -> int | None:
+                    cls = [int(c) for c in sm.classes_]
+                    probs = sm.predict_proba([row["x_diff"]])[0]
+                    by_cls = {c: float(p) for c, p in zip(cls, probs)}
+                    p_tie = by_cls.get(1, 0.0)
+                    p_i = by_cls.get(2, 0.0)
+                    p_j = by_cls.get(0, 0.0)
+                    if p_tie >= max(p_i, p_j):
+                        return None
+                    return 1 if p_i >= p_j else 0
+
+                soft_ternary_metrics = _metrics_for_predictions(
+                    tables["pairwise"],
+                    pred_fn=soft_ternary_pred,
+                    forced_pred_fn=lambda r: pointwise_fallback(r) if soft_ternary_pred(r) is None else int(soft_ternary_pred(r) or 0),
+                )
+                soft_ternary_top1 = _top1_from_pairwise_rows(
+                    tables["pairwise"],
+                    tables["state_to_candidates"],
+                    soft_ternary_pred,
+                    pointwise_fallback,
+                )
+            else:
+                soft_ternary_metrics = {k: 0.0 for k in [
+                    "accepted_pair_accuracy", "coverage", "abstention_rate", "forced_pairwise_accuracy", "tie_detection_precision",
+                    "tie_detection_recall", "tie_detection_f1", "near_tie_accepted_accuracy", "near_tie_forced_accuracy",
+                    "adjacent_accepted_accuracy", "adjacent_forced_accuracy", "test_pairs",
+                ]}
+                soft_ternary_top1 = 0.0
+
             def abstain_pred(row: dict[str, Any]) -> int | None:
                 si = pair_score({"x": row["x_i"]})
                 sj = pair_score({"x": row["x_j"]})
@@ -257,6 +321,7 @@ def main() -> None:
             seed_rows = [
                 {"formulation": "binary_forced", "top1_test": binary_top1, **binary_metrics},
                 {"formulation": "ternary_tie", "top1_test": ternary_top1, **ternary_metrics},
+                {"formulation": "soft_ternary_tie", "top1_test": soft_ternary_top1, **soft_ternary_metrics},
                 {"formulation": "selective_abstain", "top1_test": abstain_top1, **abstain_metrics},
             ]
             detailed["regimes"][regime][str(seed)] = {
@@ -272,6 +337,7 @@ def main() -> None:
                     "abstain_confidence_threshold": args.abstain_confidence_threshold,
                     "fallback_policy": args.fallback_policy,
                     "ternary_train_status": ternary.get("status", "unknown"),
+                    "soft_ternary_train_status": soft_ternary.get("status", "unknown"),
                 },
                 "rows": seed_rows,
             }
@@ -294,7 +360,7 @@ def main() -> None:
     ]
     for regime in sorted(set(r["regime"] for r in flat)):
         md.append(f"## Regime `{regime}`")
-        for formulation in ["binary_forced", "ternary_tie", "selective_abstain"]:
+        for formulation in ["binary_forced", "ternary_tie", "soft_ternary_tie", "selective_abstain"]:
             rows = [r for r in flat if r["regime"] == regime and r["formulation"] == formulation]
             if not rows:
                 continue
