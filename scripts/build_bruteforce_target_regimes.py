@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--run-id", required=True)
     p.add_argument(
         "--pair-strategies",
-        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm,allocation_regret_target,allocation_regret_target_no_outside",
+        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm,allocation_regret_target,allocation_regret_target_no_outside,multistep_branch_utility_target_k1,multistep_branch_utility_target_k3",
         help="comma-separated strategies",
     )
     p.add_argument("--near-tie-margin", type=float, default=0.03)
@@ -92,7 +92,57 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--opportunity-intensity-w-max", type=float, default=4.00)
     p.add_argument("--opportunity-intensity-final-min", type=float, default=0.70)
     p.add_argument("--opportunity-intensity-final-max", type=float, default=1.60)
+    p.add_argument("--multistep-utility-lambda", type=float, default=0.35)
     return p.parse_args()
+
+
+def _build_state_branch_index(candidates: list[dict[str, Any]]) -> dict[tuple[str, str], int]:
+    out: dict[tuple[str, str], int] = {}
+    per_state: dict[str, list[str]] = {}
+    for row in candidates:
+        sid = str(row.get("state_id", ""))
+        bid = str(row.get("branch_id", ""))
+        per_state.setdefault(sid, [])
+        if bid not in per_state[sid]:
+            per_state[sid].append(bid)
+    for sid, bids in per_state.items():
+        for idx, bid in enumerate(bids):
+            out[(sid, bid)] = int(idx)
+    return out
+
+
+def _multistep_utility_target_for_candidate(
+    candidate_row: dict[str, Any],
+    *,
+    state_id: str,
+    branch_id: str,
+    branch_index_map: dict[tuple[str, str], int],
+    horizon_k: int,
+    utility_lambda: float,
+) -> dict[str, float]:
+    est = float(candidate_row.get("estimated_value_if_allocate_next", 0.0))
+    alloc = candidate_row.get("best_followup_allocation", [])
+    alloc_vec = alloc if isinstance(alloc, list) else []
+    branch_idx = int(branch_index_map.get((state_id, branch_id), 0))
+    self_followup = float(alloc_vec[branch_idx]) if 0 <= branch_idx < len(alloc_vec) else 0.0
+    if horizon_k <= 1:
+        ratio = 0.0
+        capped = 0.0
+    else:
+        capped = float(min(max(self_followup, 0.0), horizon_k - 1))
+        ratio = capped / max(1.0, float(horizon_k - 1))
+    utility_k = est * (1.0 + float(utility_lambda) * ratio)
+    return {
+        "multistep_target_horizon_k": float(horizon_k),
+        "multistep_target_source": "best_followup_allocation_self_mass_proxy_v1",
+        "multistep_target_utility_lambda": float(utility_lambda),
+        "multistep_target_one_step_value": float(est),
+        "multistep_target_self_followup_units_raw": float(self_followup),
+        "multistep_target_self_followup_units_capped": float(capped),
+        "multistep_target_self_followup_ratio": float(ratio),
+        "multistep_branch_utility_target": float(utility_k),
+        "multistep_branch_utility_delta_vs_onestep": float(utility_k - est),
+    }
 
 
 def _augment_pair_row(
@@ -631,6 +681,7 @@ def main() -> None:
             state_best_value_map[sid] = 0.0
             continue
         state_best_value_map[sid] = max(float(r.get("estimated_value_if_allocate_next", 0.0)) for r in cand_rows)
+    state_branch_index_map = _build_state_branch_index(candidates)
 
     base_pair_map: dict[tuple[str, str, str], dict[str, Any]] = {}
     for p in pairwise:
@@ -683,6 +734,7 @@ def main() -> None:
             "opportunity_intensity_w_max": args.opportunity_intensity_w_max,
             "opportunity_intensity_final_min": args.opportunity_intensity_final_min,
             "opportunity_intensity_final_max": args.opportunity_intensity_final_max,
+            "multistep_utility_lambda": args.multistep_utility_lambda,
         },
         "regimes": {},
     }
@@ -787,6 +839,8 @@ def main() -> None:
                         keep = True
                     elif strat == "allocation_regret_target_no_outside":
                         keep = True
+                    elif strat in {"multistep_branch_utility_target_k1", "multistep_branch_utility_target_k2", "multistep_branch_utility_target_k3"}:
+                        keep = True
                     else:
                         raise ValueError(f"Unknown strategy: {strat}")
 
@@ -870,6 +924,45 @@ def main() -> None:
                                 use_outside_option=(strat == "allocation_regret_target"),
                                 near_tie_margin=float(args.near_tie_margin),
                             )
+                        if strat in {"multistep_branch_utility_target_k1", "multistep_branch_utility_target_k2", "multistep_branch_utility_target_k3"}:
+                            horizon_k = int(strat.rsplit("_k", 1)[1])
+                            ci = cand_map[(sid, str(annotated["branch_i"]))]
+                            cj = cand_map[(sid, str(annotated["branch_j"]))]
+                            ui = _multistep_utility_target_for_candidate(
+                                ci,
+                                state_id=sid,
+                                branch_id=str(annotated["branch_i"]),
+                                branch_index_map=state_branch_index_map,
+                                horizon_k=horizon_k,
+                                utility_lambda=float(args.multistep_utility_lambda),
+                            )
+                            uj = _multistep_utility_target_for_candidate(
+                                cj,
+                                state_id=sid,
+                                branch_id=str(annotated["branch_j"]),
+                                branch_index_map=state_branch_index_map,
+                                horizon_k=horizon_k,
+                                utility_lambda=float(args.multistep_utility_lambda),
+                            )
+                            multistep_margin = float(ui["multistep_branch_utility_target"] - uj["multistep_branch_utility_target"])
+                            annotated["label"] = 1 if multistep_margin >= 0.0 else 0
+                            annotated["preference"] = int(annotated["label"])
+                            annotated["margin"] = float(multistep_margin)
+                            annotated["margin_abs"] = abs(float(multistep_margin))
+                            denom = max(
+                                abs(float(ui["multistep_branch_utility_target"])),
+                                abs(float(uj["multistep_branch_utility_target"])),
+                                1e-6,
+                            )
+                            annotated["relative_margin"] = abs(float(multistep_margin)) / float(denom)
+                            annotated["near_tie_flag"] = bool(abs(float(multistep_margin)) <= float(args.near_tie_margin))
+                            annotated["label_source"] = "multistep_branch_utility_target"
+                            annotated["multistep_target_horizon_k"] = float(horizon_k)
+                            annotated["multistep_target_utility_lambda"] = float(args.multistep_utility_lambda)
+                            annotated["pair_multistep_utility_i"] = float(ui["multistep_branch_utility_target"])
+                            annotated["pair_multistep_utility_j"] = float(uj["multistep_branch_utility_target"])
+                            annotated["pair_multistep_utility_gap"] = float(abs(multistep_margin))
+                            annotated["pair_multistep_target_source"] = "best_followup_allocation_self_mass_proxy_v1"
                         kept.append(annotated)
 
         if strat in {"opportunity_intensity_weighted", "opportunity_intensity_weighted_no_outside_norm"}:
@@ -879,9 +972,25 @@ def main() -> None:
                 final_max=float(args.opportunity_intensity_final_max),
             )
 
+        regime_candidates = [dict(c) for c in candidates]
+        if strat in {"multistep_branch_utility_target_k1", "multistep_branch_utility_target_k2", "multistep_branch_utility_target_k3"}:
+            horizon_k = int(strat.rsplit("_k", 1)[1])
+            for rc in regime_candidates:
+                sid = str(rc.get("state_id", ""))
+                bid = str(rc.get("branch_id", ""))
+                rc.update(
+                    _multistep_utility_target_for_candidate(
+                        rc,
+                        state_id=sid,
+                        branch_id=bid,
+                        branch_index_map=state_branch_index_map,
+                        horizon_k=horizon_k,
+                        utility_lambda=float(args.multistep_utility_lambda),
+                    )
+                )
         out_dir = out_root / f"regime_{strat}"
         out_dir.mkdir(parents=True, exist_ok=True)
-        _write_jsonl(out_dir / "candidate_labels.jsonl", candidates)
+        _write_jsonl(out_dir / "candidate_labels.jsonl", regime_candidates)
         _write_jsonl(out_dir / "pairwise_labels.jsonl", kept)
         _write_jsonl(out_dir / "state_summaries.jsonl", states)
 
@@ -969,6 +1078,13 @@ def main() -> None:
             ),
             "allocation_regret_cost_weight_mean": (
                 sum(float(r.get("allocation_regret_cost_weight", 1.0)) for r in kept) / max(1, len(kept))
+            ),
+            "pair_multistep_utility_gap_mean": (
+                sum(float(r.get("pair_multistep_utility_gap", 0.0)) for r in kept) / max(1, len(kept))
+            ),
+            "pair_multistep_utility_gap_near_tie_mean": (
+                sum(float(r.get("pair_multistep_utility_gap", 0.0)) for r in kept if bool(r.get("near_tie_flag", False)))
+                / max(1, sum(1 for r in kept if bool(r.get("near_tie_flag", False))))
             ),
         }
         (out_dir / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

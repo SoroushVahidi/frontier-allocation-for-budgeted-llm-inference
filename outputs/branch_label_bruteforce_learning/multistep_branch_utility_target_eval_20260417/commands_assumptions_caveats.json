@@ -1,0 +1,16 @@
+{
+  "commands": [
+    "python scripts/build_bruteforce_target_regimes.py --labels-dir outputs/branch_label_bruteforce_targets/target_semantics_upstream_20260417/regime_all_pairs_approx --output-dir outputs/branch_label_bruteforce_targets --run-id multistep_branch_utility_target_20260417 --pair-strategies all_pairs,multistep_branch_utility_target_k1,multistep_branch_utility_target_k3 --near-tie-margin 0.03",
+    "python scripts/run_multistep_branch_utility_target_experiment.py --targets-root outputs/branch_label_bruteforce_targets/multistep_branch_utility_target_20260417 --run-id multistep_branch_utility_target_eval_20260417 --output-root outputs/branch_label_bruteforce_learning --seeds 11,29,47 --feature-set v3 --near-tie-margin 0.03"
+  ],
+  "assumptions": [
+    "best_followup_allocation index order matches per-state candidate row order",
+    "multistep_branch_utility_target is a bounded proxy and not exact forced-k continuation",
+    "canonical evaluation labels are from regime_all_pairs and reused as matched truth"
+  ],
+  "caveats": [
+    "small support in this bounded run (test pair counts by seed: 7, 12, 4)",
+    "state-level disagreement diagnostic has very low denominator",
+    "results should be treated as directional rather than conclusive"
+  ]
+}

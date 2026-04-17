@@ -1,0 +1,7 @@
+{
+  "k1_vs_k3": {
+    "accepted_accuracy_delta": 0.11111111111111116,
+    "near_tie_accuracy_delta": 0.4,
+    "adjacent_accuracy_delta": 0.15873015873015878
+  }
+}

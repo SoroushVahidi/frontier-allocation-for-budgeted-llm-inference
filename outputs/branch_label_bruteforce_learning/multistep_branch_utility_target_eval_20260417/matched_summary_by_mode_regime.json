@@ -1,0 +1,42 @@
+{
+  "aggregate": {
+    "canonical_pairwise_baseline": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.5595238095238095,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.19999999999999998,
+      "adjacent_rank_accepted_accuracy_mean": 0.546031746031746
+    },
+    "multistep_branch_utility_target_k1": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.5952380952380952,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.19999999999999998,
+      "adjacent_rank_accepted_accuracy_mean": 0.4793650793650794
+    },
+    "multistep_branch_utility_target_k3": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.7063492063492064,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.6,
+      "adjacent_rank_accepted_accuracy_mean": 0.6380952380952382
+    }
+  },
+  "comparison_vs_baseline": {
+    "multistep_branch_utility_target_k1": {
+      "delta_accepted_accuracy_vs_baseline": 0.0357142857142857,
+      "delta_near_tie_accepted_accuracy_vs_baseline": 0.0,
+      "delta_adjacent_rank_accepted_accuracy_vs_baseline": -0.0666666666666666,
+      "delta_coverage_vs_baseline": 0.0
+    },
+    "multistep_branch_utility_target_k3": {
+      "delta_accepted_accuracy_vs_baseline": 0.14682539682539686,
+      "delta_near_tie_accepted_accuracy_vs_baseline": 0.4,
+      "delta_adjacent_rank_accepted_accuracy_vs_baseline": 0.09206349206349218,
+      "delta_coverage_vs_baseline": 0.0
+    }
+  }
+}
