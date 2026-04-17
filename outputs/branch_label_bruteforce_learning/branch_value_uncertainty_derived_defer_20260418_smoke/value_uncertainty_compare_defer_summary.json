@@ -1,0 +1,24 @@
+{
+  "run_id": "branch_value_uncertainty_derived_defer_20260418_smoke",
+  "targets_root": "outputs/branch_label_bruteforce_targets/value_uncertainty_bounded_smoke_20260418",
+  "aggregate": {
+    "derived_accuracy": 1.0,
+    "derived_coverage": 0.7777777777777777,
+    "derived_defer_rate": 0.2222222222222222,
+    "pairwise_accuracy": 0.9444444444444445,
+    "value_forced_accuracy": 0.9722222222222222,
+    "near_tie_derived_accuracy": 0.3333333333333333,
+    "adjacent_derived_accuracy": 1.0,
+    "paired_delta_accuracy_vs_pairwise": 0.05555555555555547,
+    "paired_delta_accuracy_vs_value_forced": 0.02777777777777779
+  },
+  "assumptions": {
+    "value_target": "estimated_value_if_allocate_next as budget-conditioned branch-value proxy",
+    "uncertainty": "allocation_value_std + residual-risk head",
+    "defer_rule": "defer when low absolute gap or low gap-z or outside-option is competitive under low-confidence"
+  },
+  "caveats": [
+    "This is a bounded experiment pass, not a full canonical replacement.",
+    "Pairwise baselines are limited to in-repo runnable baselines available from the same target artifacts."
+  ]
+}

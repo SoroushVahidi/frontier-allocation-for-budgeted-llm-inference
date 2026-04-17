@@ -1,0 +1,3568 @@
+{
+  "config": {
+    "targets_root": "outputs/branch_label_bruteforce_targets/strict_validation_proxy_20260418",
+    "run_id": "branch_value_uncertainty_strict_validation_20260418",
+    "regimes": [
+      "all_pairs_approx",
+      "promoted_exact_hard_region",
+      "penalized_marginal_defer"
+    ],
+    "seeds": [
+      11,
+      29,
+      47
+    ],
+    "feature_set": "v3",
+    "coverage_floor": 0.55,
+    "ablation_variants": [
+      "value_only",
+      "value_raw_uncertainty",
+      "value_learned_risk",
+      "value_outside_option",
+      "full_method"
+    ],
+    "outside_gap_threshold": 0.03,
+    "oracle_defer_score_threshold": 2.0
+  },
+  "aggregate": {
+    "variants": {
+      "value_only": {
+        "accepted_pair_accuracy": 0.8967476341872476,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.6822751322751324,
+        "adjacent_rank_accepted_pair_accuracy": 0.9260262046773202
+      },
+      "value_raw_uncertainty": {
+        "accepted_pair_accuracy": 0.9573328610942453,
+        "coverage": 0.7596088470484605,
+        "defer_rate": 0.24039115295153943,
+        "near_tie_accepted_pair_accuracy": 0.6944444444444444,
+        "adjacent_rank_accepted_pair_accuracy": 0.9718627450980392
+      },
+      "value_learned_risk": {
+        "accepted_pair_accuracy": 0.9226301457538779,
+        "coverage": 0.8389357824140433,
+        "defer_rate": 0.1610642175859567,
+        "near_tie_accepted_pair_accuracy": 0.5833333333333334,
+        "adjacent_rank_accepted_pair_accuracy": 0.9469562695369148
+      },
+      "value_outside_option": {
+        "accepted_pair_accuracy": 0.910957190957191,
+        "coverage": 0.7542889388300016,
+        "defer_rate": 0.24571106116999836,
+        "near_tie_accepted_pair_accuracy": 0.582010582010582,
+        "adjacent_rank_accepted_pair_accuracy": 0.9471916971916973
+      },
+      "full_method": {
+        "accepted_pair_accuracy": 0.9646249972939569,
+        "coverage": 0.7580142705746571,
+        "defer_rate": 0.24198572942534297,
+        "near_tie_accepted_pair_accuracy": 0.6092592592592593,
+        "adjacent_rank_accepted_pair_accuracy": 0.9735182059319991
+      }
+    },
+    "pairwise_binary_baseline": {
+      "accepted_pair_accuracy": 0.8907892072143279,
+      "coverage": 1.0,
+      "defer_rate": 0.0
+    },
+    "penalized_marginal_proxy_baseline": {
+      "accepted_pair_accuracy": 0.9032361521365603,
+      "coverage": 0.8315111708831515,
+      "defer_rate": 0.16848882911684843
+    },
+    "deltas": {
+      "full_vs_pairwise_accuracy": 0.07383579007962904,
+      "full_vs_value_only_accuracy": 0.06787736310670933
+    }
+  },
+  "rows": [
+    {
+      "regime": "all_pairs_approx",
+      "seed": 11,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.8888888888888888,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5833333333333334,
+          "adjacent_rank_accepted_pair_accuracy": 0.8620689655172413,
+          "accepted_mean_true_value_gap": 0.25100991983089366,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.8148148148148148,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 54.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            },
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 18.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.9545454545454546,
+          "coverage": 0.8148148148148148,
+          "defer_rate": 0.18518518518518517,
+          "near_tie_accepted_pair_accuracy": 0.6,
+          "adjacent_rank_accepted_pair_accuracy": 0.9583333333333334,
+          "accepted_mean_true_value_gap": 0.29098158541852737,
+          "deferred_mean_true_value_gap": 0.0751345912453052,
+          "accepted_mean_pair_oracle_defer_score": 0.5227272727272727,
+          "deferred_mean_pair_oracle_defer_score": 2.1,
+          "forced_accuracy_on_deferred": 0.6,
+          "test_pairs": 54.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "3": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "4": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 0.9090909090909091,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 0.9090909090909091,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 0.7222222222222222,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 18.0
+            },
+            "math500": {
+              "coverage": 0.8,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.9166666666666666,
+          "coverage": 0.8888888888888888,
+          "defer_rate": 0.1111111111111111,
+          "near_tie_accepted_pair_accuracy": 0.5714285714285714,
+          "adjacent_rank_accepted_pair_accuracy": 0.9230769230769231,
+          "accepted_mean_true_value_gap": 0.2762829879520188,
+          "deferred_mean_true_value_gap": 0.048825374861892555,
+          "accepted_mean_pair_oracle_defer_score": 0.625,
+          "deferred_mean_pair_oracle_defer_score": 2.3333333333333335,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 54.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 18.0
+            },
+            "math500": {
+              "coverage": 0.8666666666666667,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.9090909090909091,
+          "coverage": 0.8148148148148148,
+          "defer_rate": 0.18518518518518517,
+          "near_tie_accepted_pair_accuracy": 0.6666666666666666,
+          "adjacent_rank_accepted_pair_accuracy": 0.9166666666666666,
+          "accepted_mean_true_value_gap": 0.256815654619257,
+          "deferred_mean_true_value_gap": 0.22546468676209494,
+          "accepted_mean_pair_oracle_defer_score": 0.5454545454545454,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.8,
+          "test_pairs": 54.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "4": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 0.7777777777777778,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 18.0
+            },
+            "math500": {
+              "coverage": 0.9333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.9565217391304348,
+          "coverage": 0.8518518518518519,
+          "defer_rate": 0.14814814814814814,
+          "near_tie_accepted_pair_accuracy": 0.6666666666666666,
+          "adjacent_rank_accepted_pair_accuracy": 0.96,
+          "accepted_mean_true_value_gap": 0.28302050237965853,
+          "deferred_mean_true_value_gap": 0.06694907017549534,
+          "accepted_mean_pair_oracle_defer_score": 0.5652173913043478,
+          "deferred_mean_pair_oracle_defer_score": 2.25,
+          "forced_accuracy_on_deferred": 0.5,
+          "test_pairs": 54.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "3": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 0.9090909090909091,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 18.0
+            },
+            "math500": {
+              "coverage": 0.8666666666666667,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.75
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.8703703703703703,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.5833333333333334,
+        "adjacent_rank_accepted_pair_accuracy": 0.8620689655172413,
+        "test_pairs": 54.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.8979591836734694,
+        "coverage": 0.9074074074074074,
+        "defer_rate": 0.09259259259259259,
+        "test_pairs": 54.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "all_pairs_approx",
+      "seed": 29,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.873015873015873,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.375,
+          "adjacent_rank_accepted_pair_accuracy": 0.9696969696969697,
+          "accepted_mean_true_value_gap": 0.243539012481863,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.8253968253968254,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 12.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 15.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.7619047619047619,
+              "rows": 21.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.7333333333333333,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8518518518518519,
+              "rows": 27.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.9454545454545454,
+          "coverage": 0.873015873015873,
+          "defer_rate": 0.12698412698412698,
+          "near_tie_accepted_pair_accuracy": 0.4,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.2667952944208021,
+          "deferred_mean_true_value_gap": 0.083652074151657,
+          "accepted_mean_pair_oracle_defer_score": 0.6727272727272727,
+          "deferred_mean_pair_oracle_defer_score": 1.875,
+          "forced_accuracy_on_deferred": 0.375,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 0.9090909090909091,
+              "rows": 12.0
+            },
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.9333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "6": {
+              "coverage": 0.8095238095238095,
+              "accepted_pair_accuracy": 0.8823529411764706,
+              "rows": 21.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.7333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 0.8518518518518519,
+              "accepted_pair_accuracy": 0.8695652173913043,
+              "rows": 27.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.8833333333333333,
+          "coverage": 0.9523809523809523,
+          "defer_rate": 0.047619047619047616,
+          "near_tie_accepted_pair_accuracy": 0.42857142857142855,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.25213648115735016,
+          "deferred_mean_true_value_gap": 0.07158963897212,
+          "accepted_mean_pair_oracle_defer_score": 0.75,
+          "deferred_mean_pair_oracle_defer_score": 2.3333333333333335,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 12.0
+            },
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 15.0
+            },
+            "6": {
+              "coverage": 0.9523809523809523,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 21.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.9333333333333333,
+              "accepted_pair_accuracy": 0.7857142857142857,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 0.9259259259259259,
+              "accepted_pair_accuracy": 0.84,
+              "rows": 27.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.9111111111111111,
+          "coverage": 0.7142857142857143,
+          "defer_rate": 0.2857142857142857,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.24710262016255563,
+          "deferred_mean_true_value_gap": 0.23462999328013145,
+          "accepted_mean_pair_oracle_defer_score": 0.5777777777777777,
+          "deferred_mean_pair_oracle_defer_score": 1.4444444444444444,
+          "forced_accuracy_on_deferred": 0.7777777777777778,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 0.8181818181818182,
+              "rows": 12.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "6": {
+              "coverage": 0.7142857142857143,
+              "accepted_pair_accuracy": 0.8666666666666667,
+              "rows": 21.0
+            },
+            "7": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.9333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 0.8518518518518519,
+              "accepted_pair_accuracy": 0.8260869565217391,
+              "rows": 27.0
+            },
+            "olympiad": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.9454545454545454,
+          "coverage": 0.873015873015873,
+          "defer_rate": 0.12698412698412698,
+          "near_tie_accepted_pair_accuracy": 0.4,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.2667952944208021,
+          "deferred_mean_true_value_gap": 0.083652074151657,
+          "accepted_mean_pair_oracle_defer_score": 0.6727272727272727,
+          "deferred_mean_pair_oracle_defer_score": 1.875,
+          "forced_accuracy_on_deferred": 0.375,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 0.9090909090909091,
+              "rows": 12.0
+            },
+            "4": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "5": {
+              "coverage": 0.9333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "6": {
+              "coverage": 0.8095238095238095,
+              "accepted_pair_accuracy": 0.8823529411764706,
+              "rows": 21.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.7333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 0.8518518518518519,
+              "accepted_pair_accuracy": 0.8695652173913043,
+              "rows": 27.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.8888888888888888,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.5,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "test_pairs": 63.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.8703703703703703,
+        "coverage": 0.8571428571428571,
+        "defer_rate": 0.14285714285714285,
+        "test_pairs": 63.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "all_pairs_approx",
+      "seed": 47,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.9111111111111111,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.9583333333333334,
+          "accepted_mean_true_value_gap": 0.22515512129886572,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.9555555555555556,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 45.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 18.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.9629629629629629,
+          "coverage": 0.6,
+          "defer_rate": 0.4,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.29760019562305556,
+          "deferred_mean_true_value_gap": 0.11648750981258092,
+          "accepted_mean_pair_oracle_defer_score": 0.6666666666666666,
+          "deferred_mean_pair_oracle_defer_score": 1.3888888888888888,
+          "forced_accuracy_on_deferred": 0.8333333333333334,
+          "test_pairs": 45.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.5333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.6111111111111112,
+              "accepted_pair_accuracy": 0.9090909090909091,
+              "rows": 18.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.95,
+          "coverage": 0.8888888888888888,
+          "defer_rate": 0.1111111111111111,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.9545454545454546,
+          "accepted_mean_true_value_gap": 0.23671752525081602,
+          "deferred_mean_true_value_gap": 0.13265588968326342,
+          "accepted_mean_pair_oracle_defer_score": 1.0,
+          "deferred_mean_pair_oracle_defer_score": 0.6,
+          "forced_accuracy_on_deferred": 0.6,
+          "test_pairs": 45.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.7333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.9444444444444444,
+              "accepted_pair_accuracy": 0.8823529411764706,
+              "rows": 18.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.88,
+          "coverage": 0.5555555555555556,
+          "defer_rate": 0.4444444444444444,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9230769230769231,
+          "accepted_mean_true_value_gap": 0.26189923368903867,
+          "deferred_mean_true_value_gap": 0.17922498081114951,
+          "accepted_mean_pair_oracle_defer_score": 0.24,
+          "deferred_mean_pair_oracle_defer_score": 1.85,
+          "forced_accuracy_on_deferred": 0.95,
+          "test_pairs": 45.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.2222222222222222,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.6,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 0.5833333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.5333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.7222222222222222,
+              "accepted_pair_accuracy": 0.7692307692307693,
+              "rows": 18.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.9655172413793104,
+          "coverage": 0.6444444444444445,
+          "defer_rate": 0.35555555555555557,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.2884771004861192,
+          "deferred_mean_true_value_gap": 0.11038403402196881,
+          "accepted_mean_pair_oracle_defer_score": 0.6206896551724138,
+          "deferred_mean_pair_oracle_defer_score": 1.5625,
+          "forced_accuracy_on_deferred": 0.8125,
+          "test_pairs": 45.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 0.5833333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "5": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.5333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 18.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.75
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.05,
+          "z_threshold": 0.25
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.02,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 1.0
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.9333333333333333,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.9166666666666666,
+        "test_pairs": 45.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.8823529411764706,
+        "coverage": 0.7555555555555555,
+        "defer_rate": 0.24444444444444444,
+        "test_pairs": 45.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "promoted_exact_hard_region",
+      "seed": 11,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.9259259259259259,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9285714285714286,
+          "accepted_mean_true_value_gap": 0.2360286862480806,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.48148148148148145,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 27.0,
+          "budget_slices": {
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.7777777777777778,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9444444444444444,
+              "rows": 18.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.7777777777777778,
+          "defer_rate": 0.2222222222222222,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.2794454530132262,
+          "deferred_mean_true_value_gap": 0.08407000257007102,
+          "accepted_mean_pair_oracle_defer_score": 0.2857142857142857,
+          "deferred_mean_pair_oracle_defer_score": 1.1666666666666667,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 27.0,
+          "budget_slices": {
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "math500": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 18.0
+            },
+            "olympiad": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.9166666666666666,
+          "coverage": 0.8888888888888888,
+          "defer_rate": 0.1111111111111111,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9230769230769231,
+          "accepted_mean_true_value_gap": 0.2526936564759793,
+          "deferred_mean_true_value_gap": 0.10270892442489105,
+          "accepted_mean_pair_oracle_defer_score": 0.4166666666666667,
+          "deferred_mean_pair_oracle_defer_score": 1.0,
+          "forced_accuracy_on_deferred": 1.0,
+          "test_pairs": 27.0,
+          "budget_slices": {
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.7777777777777778,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "math500": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.9375,
+              "rows": 18.0
+            },
+            "olympiad": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.9523809523809523,
+          "coverage": 0.7777777777777778,
+          "defer_rate": 0.2222222222222222,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9230769230769231,
+          "accepted_mean_true_value_gap": 0.26307657616549157,
+          "deferred_mean_true_value_gap": 0.14136107153714225,
+          "accepted_mean_pair_oracle_defer_score": 0.3333333333333333,
+          "deferred_mean_pair_oracle_defer_score": 1.0,
+          "forced_accuracy_on_deferred": 0.8333333333333334,
+          "test_pairs": 27.0,
+          "budget_slices": {
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 0.8571428571428571,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "math500": {
+              "coverage": 0.7222222222222222,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 18.0
+            },
+            "olympiad": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.7777777777777778,
+          "defer_rate": 0.2222222222222222,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.2794454530132262,
+          "deferred_mean_true_value_gap": 0.08407000257007102,
+          "accepted_mean_pair_oracle_defer_score": 0.2857142857142857,
+          "deferred_mean_pair_oracle_defer_score": 1.1666666666666667,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 27.0,
+          "budget_slices": {
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "math500": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 18.0
+            },
+            "olympiad": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.75
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.05,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 1.0
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.8888888888888888,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 1.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.8571428571428571,
+        "test_pairs": 27.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.9259259259259259,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "test_pairs": 27.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "promoted_exact_hard_region",
+      "seed": 29,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.8840579710144928,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.6,
+          "adjacent_rank_accepted_pair_accuracy": 0.8648648648648649,
+          "accepted_mean_true_value_gap": 0.19805476802398478,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.782608695652174,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 69.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 24.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8571428571428571,
+              "rows": 21.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 24.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.9180327868852459,
+          "coverage": 0.8840579710144928,
+          "defer_rate": 0.11594202898550725,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.9117647058823529,
+          "accepted_mean_true_value_gap": 0.21698470560112762,
+          "deferred_mean_true_value_gap": 0.05371399399827069,
+          "accepted_mean_pair_oracle_defer_score": 0.6065573770491803,
+          "deferred_mean_pair_oracle_defer_score": 2.125,
+          "forced_accuracy_on_deferred": 0.625,
+          "test_pairs": 69.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "3": {
+              "coverage": 0.5555555555555556,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 24.0
+            },
+            "7": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 0.8571428571428571,
+              "accepted_pair_accuracy": 0.9444444444444444,
+              "rows": 21.0
+            },
+            "math500": {
+              "coverage": 0.9333333333333333,
+              "accepted_pair_accuracy": 0.9285714285714286,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.85,
+              "rows": 24.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.9285714285714286,
+          "coverage": 0.8115942028985508,
+          "defer_rate": 0.18840579710144928,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9032258064516129,
+          "accepted_mean_true_value_gap": 0.2323531571827211,
+          "deferred_mean_true_value_gap": 0.0503078608786591,
+          "accepted_mean_pair_oracle_defer_score": 0.48214285714285715,
+          "deferred_mean_pair_oracle_defer_score": 2.076923076923077,
+          "forced_accuracy_on_deferred": 0.6923076923076923,
+          "test_pairs": 69.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "3": {
+              "coverage": 0.5555555555555556,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 0.9583333333333334,
+              "accepted_pair_accuracy": 0.8695652173913043,
+              "rows": 24.0
+            },
+            "7": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 0.8095238095238095,
+              "accepted_pair_accuracy": 0.9411764705882353,
+              "rows": 21.0
+            },
+            "math500": {
+              "coverage": 0.9333333333333333,
+              "accepted_pair_accuracy": 0.9285714285714286,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 0.7083333333333334,
+              "accepted_pair_accuracy": 0.8823529411764706,
+              "rows": 24.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.9555555555555556,
+          "coverage": 0.6521739130434783,
+          "defer_rate": 0.34782608695652173,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9583333333333334,
+          "accepted_mean_true_value_gap": 0.24471578649516185,
+          "deferred_mean_true_value_gap": 0.11056535839052777,
+          "accepted_mean_pair_oracle_defer_score": 0.17777777777777778,
+          "deferred_mean_pair_oracle_defer_score": 1.9166666666666667,
+          "forced_accuracy_on_deferred": 0.75,
+          "test_pairs": 69.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.5555555555555556,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "3": {
+              "coverage": 0.4444444444444444,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 0.9444444444444444,
+              "rows": 24.0
+            },
+            "7": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 0.7619047619047619,
+              "accepted_pair_accuracy": 0.9375,
+              "rows": 21.0
+            },
+            "math500": {
+              "coverage": 0.6,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 24.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.9444444444444444,
+          "coverage": 0.782608695652174,
+          "defer_rate": 0.21739130434782608,
+          "near_tie_accepted_pair_accuracy": 0.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9310344827586207,
+          "accepted_mean_true_value_gap": 0.2388670918364274,
+          "deferred_mean_true_value_gap": 0.051130402299191344,
+          "accepted_mean_pair_oracle_defer_score": 0.4074074074074074,
+          "deferred_mean_pair_oracle_defer_score": 2.1333333333333333,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 69.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "3": {
+              "coverage": 0.5555555555555556,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "6": {
+              "coverage": 0.875,
+              "accepted_pair_accuracy": 0.9047619047619048,
+              "rows": 24.0
+            },
+            "7": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 0.7619047619047619,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 21.0
+            },
+            "math500": {
+              "coverage": 0.8666666666666667,
+              "accepted_pair_accuracy": 0.9230769230769231,
+              "rows": 15.0
+            },
+            "olympiad": {
+              "coverage": 0.7083333333333334,
+              "accepted_pair_accuracy": 0.8823529411764706,
+              "rows": 24.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.75
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.05,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.8695652173913043,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.6,
+        "adjacent_rank_accepted_pair_accuracy": 0.8648648648648649,
+        "test_pairs": 69.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.890625,
+        "coverage": 0.927536231884058,
+        "defer_rate": 0.07246376811594203,
+        "test_pairs": 69.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "promoted_exact_hard_region",
+      "seed": 47,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.9,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.8571428571428571,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.18413733919559763,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.8666666666666667,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 30.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.7,
+          "defer_rate": 0.3,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.24326286898021396,
+          "deferred_mean_true_value_gap": 0.04617776969815954,
+          "accepted_mean_pair_oracle_defer_score": 0.38095238095238093,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 30.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.9545454545454546,
+          "coverage": 0.7333333333333333,
+          "defer_rate": 0.26666666666666666,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.2330661587561529,
+          "deferred_mean_true_value_gap": 0.04958308540407062,
+          "accepted_mean_pair_oracle_defer_score": 0.5,
+          "deferred_mean_pair_oracle_defer_score": 1.875,
+          "forced_accuracy_on_deferred": 0.75,
+          "test_pairs": 30.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.8928571428571429,
+          "coverage": 0.9333333333333333,
+          "defer_rate": 0.06666666666666667,
+          "near_tie_accepted_pair_accuracy": 0.8333333333333334,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.19283464505883813,
+          "deferred_mean_true_value_gap": 0.062375057110230614,
+          "accepted_mean_pair_oracle_defer_score": 0.7142857142857143,
+          "deferred_mean_pair_oracle_defer_score": 3.0,
+          "forced_accuracy_on_deferred": 1.0,
+          "test_pairs": 30.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 0.9333333333333333,
+              "accepted_pair_accuracy": 0.9285714285714286,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.9565217391304348,
+          "coverage": 0.7666666666666667,
+          "defer_rate": 0.23333333333333334,
+          "near_tie_accepted_pair_accuracy": 0.6666666666666666,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.2239344681053965,
+          "deferred_mean_true_value_gap": 0.053375344206258495,
+          "accepted_mean_pair_oracle_defer_score": 0.6086956521739131,
+          "deferred_mean_pair_oracle_defer_score": 1.7142857142857142,
+          "forced_accuracy_on_deferred": 0.7142857142857143,
+          "test_pairs": 30.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "4": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "gsm8k": {
+              "coverage": 0.7333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 15.0
+            },
+            "math500": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 1.0
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.9,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.7142857142857143,
+        "adjacent_rank_accepted_pair_accuracy": 1.0,
+        "test_pairs": 30.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.896551724137931,
+        "coverage": 0.9666666666666667,
+        "defer_rate": 0.03333333333333333,
+        "test_pairs": 30.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "penalized_marginal_defer",
+      "seed": 11,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.9722222222222222,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.29319729096352215,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.8333333333333334,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 36.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.7777777777777778,
+          "defer_rate": 0.2222222222222222,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.3531203038885928,
+          "deferred_mean_true_value_gap": 0.08346674572577502,
+          "accepted_mean_pair_oracle_defer_score": 0.6785714285714286,
+          "deferred_mean_pair_oracle_defer_score": 1.375,
+          "forced_accuracy_on_deferred": 0.875,
+          "test_pairs": 36.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "6": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "math500": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "olympiad": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.8333333333333334,
+          "defer_rate": 0.16666666666666666,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.33411910085159857,
+          "deferred_mean_true_value_gap": 0.08858824152314015,
+          "accepted_mean_pair_oracle_defer_score": 0.7333333333333333,
+          "deferred_mean_pair_oracle_defer_score": 1.3333333333333333,
+          "forced_accuracy_on_deferred": 0.8333333333333334,
+          "test_pairs": 36.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "6": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "math500": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "olympiad": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.9642857142857143,
+          "coverage": 0.7777777777777778,
+          "defer_rate": 0.2222222222222222,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.31078037373181117,
+          "deferred_mean_true_value_gap": 0.2316565012745108,
+          "accepted_mean_pair_oracle_defer_score": 0.5,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 1.0,
+          "test_pairs": 36.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "6": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "olympiad": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 9.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 1.0,
+          "coverage": 0.7777777777777778,
+          "defer_rate": 0.2222222222222222,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 1.0,
+          "accepted_mean_true_value_gap": 0.3531203038885928,
+          "deferred_mean_true_value_gap": 0.08346674572577502,
+          "accepted_mean_pair_oracle_defer_score": 0.6785714285714286,
+          "deferred_mean_pair_oracle_defer_score": 1.375,
+          "forced_accuracy_on_deferred": 0.875,
+          "test_pairs": 36.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "2": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "5": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "6": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "gsm8k": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "math500": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "olympiad": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 1.0
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.01,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.75
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.9444444444444444,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 1.0,
+        "adjacent_rank_accepted_pair_accuracy": 0.9473684210526315,
+        "test_pairs": 36.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.96,
+        "coverage": 0.6944444444444444,
+        "defer_rate": 0.3055555555555556,
+        "test_pairs": 36.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "penalized_marginal_defer",
+      "seed": 29,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.7948717948717948,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.6,
+          "adjacent_rank_accepted_pair_accuracy": 0.8095238095238095,
+          "accepted_mean_true_value_gap": 0.2054227081470998,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.8205128205128205,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 39.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6,
+              "rows": 15.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.5,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9047619047619048,
+              "rows": 21.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.875,
+          "coverage": 0.6153846153846154,
+          "defer_rate": 0.38461538461538464,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9166666666666666,
+          "accepted_mean_true_value_gap": 0.27608112379771393,
+          "deferred_mean_true_value_gap": 0.09236924310611715,
+          "accepted_mean_pair_oracle_defer_score": 0.375,
+          "deferred_mean_pair_oracle_defer_score": 1.5333333333333334,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 39.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 0.5,
+              "rows": 3.0
+            },
+            "2": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 0.4666666666666667,
+              "accepted_pair_accuracy": 0.7142857142857143,
+              "rows": 15.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.6,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.7142857142857143,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 21.0
+            },
+            "olympiad": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.7931034482758621,
+          "coverage": 0.7435897435897436,
+          "defer_rate": 0.2564102564102564,
+          "near_tie_accepted_pair_accuracy": 0.5,
+          "adjacent_rank_accepted_pair_accuracy": 0.8571428571428571,
+          "accepted_mean_true_value_gap": 0.23977696041844707,
+          "deferred_mean_true_value_gap": 0.10579537656019262,
+          "accepted_mean_pair_oracle_defer_score": 0.6551724137931034,
+          "deferred_mean_pair_oracle_defer_score": 1.3,
+          "forced_accuracy_on_deferred": 0.8,
+          "test_pairs": 39.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 0.5,
+              "rows": 3.0
+            },
+            "2": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 0.8888888888888888,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 0.7333333333333333,
+              "accepted_pair_accuracy": 0.5454545454545454,
+              "rows": 15.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "gsm8k": {
+              "coverage": 0.75,
+              "accepted_pair_accuracy": 0.4444444444444444,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.7619047619047619,
+              "accepted_pair_accuracy": 0.9375,
+              "rows": 21.0
+            },
+            "olympiad": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.8333333333333334,
+          "coverage": 0.7692307692307693,
+          "defer_rate": 0.23076923076923078,
+          "near_tie_accepted_pair_accuracy": 0.6666666666666666,
+          "adjacent_rank_accepted_pair_accuracy": 0.875,
+          "accepted_mean_true_value_gap": 0.2163709345525665,
+          "deferred_mean_true_value_gap": 0.1689286201288774,
+          "accepted_mean_pair_oracle_defer_score": 0.5333333333333333,
+          "deferred_mean_pair_oracle_defer_score": 1.7777777777777777,
+          "forced_accuracy_on_deferred": 0.6666666666666666,
+          "test_pairs": 39.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 3.0
+            },
+            "2": {
+              "coverage": 0.3333333333333333,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 0.7333333333333333,
+              "accepted_pair_accuracy": 0.7272727272727273,
+              "rows": 15.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "gsm8k": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 0.625,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.7619047619047619,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 21.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.9523809523809523,
+          "coverage": 0.5384615384615384,
+          "defer_rate": 0.46153846153846156,
+          "near_tie_accepted_pair_accuracy": 1.0,
+          "adjacent_rank_accepted_pair_accuracy": 0.9090909090909091,
+          "accepted_mean_true_value_gap": 0.2908544959679634,
+          "deferred_mean_true_value_gap": 0.10575228902275885,
+          "accepted_mean_pair_oracle_defer_score": 0.3333333333333333,
+          "deferred_mean_pair_oracle_defer_score": 1.3888888888888888,
+          "forced_accuracy_on_deferred": 0.6111111111111112,
+          "test_pairs": 39.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.0,
+              "accepted_pair_accuracy": 0.0,
+              "rows": 3.0
+            },
+            "2": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "3": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 9.0
+            },
+            "4": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "6": {
+              "coverage": 0.4666666666666667,
+              "accepted_pair_accuracy": 0.8571428571428571,
+              "rows": 15.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            },
+            "gsm8k": {
+              "coverage": 0.4166666666666667,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.5714285714285714,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 21.0
+            },
+            "olympiad": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 3.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.08,
+          "z_threshold": 0.25
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 1.0
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.03,
+          "z_threshold": 0.25
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 1.0
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.7692307692307693,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.6,
+        "adjacent_rank_accepted_pair_accuracy": 0.7619047619047619,
+        "test_pairs": 39.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.8518518518518519,
+        "coverage": 0.6923076923076923,
+        "defer_rate": 0.3076923076923077,
+        "test_pairs": 39.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    },
+    {
+      "regime": "penalized_marginal_defer",
+      "seed": 47,
+      "variant_metrics": {
+        "value_only": {
+          "accepted_pair_accuracy": 0.9206349206349206,
+          "coverage": 1.0,
+          "defer_rate": 0.0,
+          "near_tie_accepted_pair_accuracy": 0.625,
+          "adjacent_rank_accepted_pair_accuracy": 0.9411764705882353,
+          "accepted_mean_true_value_gap": 0.2247898373096368,
+          "deferred_mean_true_value_gap": 0.0,
+          "accepted_mean_pair_oracle_defer_score": 0.873015873015873,
+          "deferred_mean_pair_oracle_defer_score": 0.0,
+          "forced_accuracy_on_deferred": 0.0,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9047619047619048,
+              "rows": 21.0
+            },
+            "4": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8888888888888888,
+              "rows": 18.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.9333333333333333,
+              "rows": 30.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_raw_uncertainty": {
+          "accepted_pair_accuracy": 0.96,
+          "coverage": 0.7936507936507936,
+          "defer_rate": 0.20634920634920634,
+          "near_tie_accepted_pair_accuracy": 0.75,
+          "adjacent_rank_accepted_pair_accuracy": 0.96,
+          "accepted_mean_true_value_gap": 0.2660181252241954,
+          "deferred_mean_true_value_gap": 0.06621949917671918,
+          "accepted_mean_pair_oracle_defer_score": 0.52,
+          "deferred_mean_pair_oracle_defer_score": 2.230769230769231,
+          "forced_accuracy_on_deferred": 0.7692307692307693,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.8095238095238095,
+              "accepted_pair_accuracy": 0.9411764705882353,
+              "rows": 21.0
+            },
+            "4": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 18.0
+            },
+            "6": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.7333333333333333,
+              "accepted_pair_accuracy": 0.9090909090909091,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.5833333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.8666666666666667,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 30.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_learned_risk": {
+          "accepted_pair_accuracy": 0.9607843137254902,
+          "coverage": 0.8095238095238095,
+          "defer_rate": 0.19047619047619047,
+          "near_tie_accepted_pair_accuracy": 0.75,
+          "adjacent_rank_accepted_pair_accuracy": 0.9615384615384616,
+          "accepted_mean_true_value_gap": 0.26547713551564345,
+          "deferred_mean_true_value_gap": 0.0518688199341087,
+          "accepted_mean_pair_oracle_defer_score": 0.5294117647058824,
+          "deferred_mean_pair_oracle_defer_score": 2.3333333333333335,
+          "forced_accuracy_on_deferred": 0.75,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.8571428571428571,
+              "accepted_pair_accuracy": 0.9444444444444444,
+              "rows": 21.0
+            },
+            "4": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 18.0
+            },
+            "6": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.8,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.5833333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.9,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 30.0
+            },
+            "olympiad": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.8,
+              "rows": 6.0
+            }
+          }
+        },
+        "value_outside_option": {
+          "accepted_pair_accuracy": 0.9,
+          "coverage": 0.7936507936507936,
+          "defer_rate": 0.20634920634920634,
+          "near_tie_accepted_pair_accuracy": 0.5714285714285714,
+          "adjacent_rank_accepted_pair_accuracy": 0.9285714285714286,
+          "accepted_mean_true_value_gap": 0.2289029909310549,
+          "deferred_mean_true_value_gap": 0.208970015688798,
+          "accepted_mean_pair_oracle_defer_score": 0.58,
+          "deferred_mean_pair_oracle_defer_score": 2.0,
+          "forced_accuracy_on_deferred": 1.0,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.6666666666666666,
+              "accepted_pair_accuracy": 0.8571428571428571,
+              "rows": 21.0
+            },
+            "4": {
+              "coverage": 0.7777777777777778,
+              "accepted_pair_accuracy": 0.8571428571428571,
+              "rows": 18.0
+            },
+            "6": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.5333333333333333,
+              "accepted_pair_accuracy": 0.875,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 0.9090909090909091,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 0.92,
+              "rows": 30.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          }
+        },
+        "full_method": {
+          "accepted_pair_accuracy": 0.9607843137254902,
+          "coverage": 0.8095238095238095,
+          "defer_rate": 0.19047619047619047,
+          "near_tie_accepted_pair_accuracy": 0.75,
+          "adjacent_rank_accepted_pair_accuracy": 0.9615384615384616,
+          "accepted_mean_true_value_gap": 0.2636393051497374,
+          "deferred_mean_true_value_gap": 0.059679598989209486,
+          "accepted_mean_pair_oracle_defer_score": 0.5294117647058824,
+          "deferred_mean_pair_oracle_defer_score": 2.3333333333333335,
+          "forced_accuracy_on_deferred": 0.75,
+          "test_pairs": 63.0,
+          "budget_slices": {
+            "1": {
+              "coverage": 0.5,
+              "accepted_pair_accuracy": 0.6666666666666666,
+              "rows": 6.0
+            },
+            "2": {
+              "coverage": 0.8095238095238095,
+              "accepted_pair_accuracy": 0.9411764705882353,
+              "rows": 21.0
+            },
+            "4": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 18.0
+            },
+            "6": {
+              "coverage": 0.8333333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 6.0
+            },
+            "7": {
+              "coverage": 0.9166666666666666,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            }
+          },
+          "dataset_slices": {
+            "aime": {
+              "coverage": 0.8,
+              "accepted_pair_accuracy": 0.9166666666666666,
+              "rows": 15.0
+            },
+            "gsm8k": {
+              "coverage": 0.5833333333333334,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 12.0
+            },
+            "math500": {
+              "coverage": 0.8666666666666667,
+              "accepted_pair_accuracy": 1.0,
+              "rows": 30.0
+            },
+            "olympiad": {
+              "coverage": 1.0,
+              "accepted_pair_accuracy": 0.8333333333333334,
+              "rows": 6.0
+            }
+          }
+        }
+      },
+      "selected_thresholds": {
+        "value_only": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "value_raw_uncertainty": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.5
+        },
+        "value_learned_risk": {
+          "gap_threshold": 0.0,
+          "z_threshold": 1.25
+        },
+        "value_outside_option": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.0
+        },
+        "full_method": {
+          "gap_threshold": 0.0,
+          "z_threshold": 0.75
+        }
+      },
+      "pairwise_binary_baseline": {
+        "accepted_pair_accuracy": 0.9523809523809523,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "near_tie_accepted_pair_accuracy": 0.875,
+        "adjacent_rank_accepted_pair_accuracy": 0.9411764705882353,
+        "test_pairs": 63.0
+      },
+      "penalized_marginal_proxy_baseline": {
+        "accepted_pair_accuracy": 0.9534883720930233,
+        "coverage": 0.6825396825396826,
+        "defer_rate": 0.31746031746031744,
+        "test_pairs": 63.0,
+        "notes": "Proxy-only comparable baseline: defer from ternary_defer_label (if present) or pair_oracle_defer_score threshold; direction from model value difference."
+      },
+      "risk_head_status": "ok"
+    }
+  ],
+  "missing_regimes": [],
+  "reference_strong_tie_aware_baseline": {
+    "status": "ok",
+    "source": "outputs/branch_label_bruteforce_learning/near_tie_two_stage_complementarity_audit_upgrade_20260417/near_tie_pointwise_expert_summary.json",
+    "summary": [
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "binary_forced_baseline",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "pairwise_binary"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "abstain_calibrated_pairwise_backup",
+        "accepted_pair_accuracy": 1.0,
+        "coverage": 0.07692307692307693,
+        "abstention_rate": 0.9230769230769231,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "pairwise_binary"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "near_tie_generic_pointwise",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "generic_pointwise"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "near_tie_specialized_pointwise",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "specialized_pointwise"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "near_tie_reweighted_pointwise",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "reweighted_pointwise"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_near_tie_specialized_pointwise_v1",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "strict_coupled_specialized_pointwise"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_near_tie_specialized_pointwise_improved_v1",
+        "accepted_pair_accuracy": 0.38461538461538464,
+        "coverage": 1.0,
+        "abstention_rate": 0.0,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.0,
+        "deferred_test_pairs": 0,
+        "deferred_non_near_tie_count": 0,
+        "deferred_subset_forced_accuracy": 0.0,
+        "fallback_policy": "strict_coupled_specialized_pointwise_improved"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_posthoc_deferral_v1",
+        "accepted_pair_accuracy": 0.42857142857142855,
+        "coverage": 0.5384615384615384,
+        "abstention_rate": 0.46153846153846156,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.46153846153846156,
+        "deferred_test_pairs": 6,
+        "deferred_non_near_tie_count": 5,
+        "deferred_subset_forced_accuracy": 0.3333333333333333,
+        "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_posthoc_deferral_improved_expert_v1",
+        "accepted_pair_accuracy": 0.42857142857142855,
+        "coverage": 0.5384615384615384,
+        "abstention_rate": 0.46153846153846156,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.5,
+        "test_pairs": 13.0,
+        "top1_test": 0.2857142857142857,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.46153846153846156,
+        "deferred_test_pairs": 6,
+        "deferred_non_near_tie_count": 5,
+        "deferred_subset_forced_accuracy": 0.3333333333333333,
+        "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral_improved_expert"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert_v1",
+        "accepted_pair_accuracy": 0.42857142857142855,
+        "coverage": 0.5384615384615384,
+        "abstention_rate": 0.46153846153846156,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.46153846153846156,
+        "deferred_test_pairs": 6,
+        "deferred_non_near_tie_count": 5,
+        "deferred_subset_forced_accuracy": 0.3333333333333333,
+        "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_learned_two_stage_deferral_v1",
+        "accepted_pair_accuracy": 0.2727272727272727,
+        "coverage": 0.8461538461538461,
+        "abstention_rate": 0.15384615384615385,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.15384615384615385,
+        "deferred_test_pairs": 2,
+        "deferred_non_near_tie_count": 2,
+        "deferred_subset_forced_accuracy": 1.0,
+        "fallback_policy": "strict_coupled_tie_aware_learned_two_stage_deferral"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_learned_two_stage_deferral_calibrated_threshold_v1",
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.9230769230769231,
+        "abstention_rate": 0.07692307692307687,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.07692307692307693,
+        "deferred_test_pairs": 1,
+        "deferred_non_near_tie_count": 1,
+        "deferred_subset_forced_accuracy": 1.0,
+        "fallback_policy": "strict_coupled_tie_aware_learned_two_stage_deferral"
+      },
+      {
+        "regime": "all_pairs",
+        "seed": 11,
+        "variant": "strict_coupled_tie_aware_learned_two_stage_deferral_complementarity_target_v1",
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.9230769230769231,
+        "abstention_rate": 0.07692307692307687,
+        "forced_pairwise_accuracy": 0.38461538461538464,
+        "near_tie_forced_accuracy": 0.0,
+        "adjacent_forced_accuracy": 0.4,
+        "test_pairs": 13.0,
+        "top1_test": 0.42857142857142855,
+        "strict_routed_forced_accuracy": 0.3333333333333333,
+        "strict_routed_near_tie_forced_accuracy": 0.0,
+        "strict_routed_test_pairs": 6,
+        "strict_routed_near_tie_test_pairs": 1,
+        "deferred_rate": 0.07692307692307693,
+        "deferred_test_pairs": 1,
+        "deferred_non_near_tie_count": 1,
+        "deferred_subset_forced_accuracy": 1.0,
+        "fallback_policy": "strict_coupled_tie_aware_learned_two_stage_deferral"
+      }
+    ]
+  },
+  "assumptions": {
+    "value_target": "estimated_value_if_allocate_next",
+    "raw_uncertainty": "allocation_value_std",
+    "learned_risk": "ridge absolute residual proxy",
+    "outside_option": "pair_best_vs_outside_gap"
+  },
+  "caveats": []
+}

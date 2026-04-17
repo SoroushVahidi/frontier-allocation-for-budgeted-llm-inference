@@ -1,0 +1,22 @@
+{
+  "run_dir": "outputs/branch_label_bruteforce_learning/branch_value_uncertainty_derived_defer_20260418_smoke",
+  "artifacts": [
+    "value_uncertainty_compare_defer_config.json",
+    "value_uncertainty_compare_defer_results.json",
+    "value_uncertainty_compare_defer_summary.json",
+    "value_uncertainty_compare_defer_manifest.json"
+  ],
+  "invocation": "python scripts/run_branch_value_uncertainty_derived_defer_experiment.py --targets-root <targets_root> --run-id <run_id>",
+  "notes": [
+    "Primary supervision is branch-level value target + residual-risk uncertainty head.",
+    "Pairwise winner prediction is derived from value gap and uncertainty-adjusted defer gating."
+  ],
+  "assumptions": [
+    "estimated_value_if_allocate_next is a proxy for budget-conditioned branch continuation value.",
+    "allocation_value_std and residual-risk head together approximate predictive uncertainty."
+  ],
+  "caveats": [
+    "Thresholds are selected on validation split with a coverage floor.",
+    "This script is bounded and does not claim final canonical replacement."
+  ]
+}
