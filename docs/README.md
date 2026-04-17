@@ -37,6 +37,7 @@ Read these first for the current project identity:
 - [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
 - [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
 - [`STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
+- [`ORACLE_PROXY_DEFER_TARGET_STATUS.md`](ORACLE_PROXY_DEFER_TARGET_STATUS.md)
 - [`REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
 
 ### Evaluation, outputs, and assets
@@ -68,6 +69,8 @@ Read these first for the current project identity:
 - `CURRENT_SAFE_CLAIMS.md` tells you what is manuscript-safe to say now.
 - `CURRENT_METHOD_SUMMARY_AND_GAPS.md` is the shortest current method-state summary.
 - `WHAT_IS_NOT_WORKING_NOW.md` records directions that are currently weak or explicitly not validated enough.
+- `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md` records the current strongest interpretation of hard close-call comparisons as structured ambiguity states.
+- `ORACLE_PROXY_DEFER_TARGET_STATUS.md` records the bounded oracle-proxy defer-target path, calibration layer, and selective-decision interpretation.
 - `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
 
