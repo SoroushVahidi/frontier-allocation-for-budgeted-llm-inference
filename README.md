@@ -22,6 +22,35 @@ This repository is currently centered on:
 
 This repository is **not** currently centered on the old binary revise-routing paper.
 
+## Fastest reliable start
+
+If you only read a few files, use this order:
+1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
+2. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+3. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+4. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+5. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
+
+If you want the shortest repository-facing summary instead, use:
+- [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+- [`docs/EXPERIMENT_LEDGER_2026_04_18.md`](docs/EXPERIMENT_LEDGER_2026_04_18.md)
+- [`docs/CONTINUATION_PLAN_2026_04_18.md`](docs/CONTINUATION_PLAN_2026_04_18.md)
+- [`docs/REPOSITORY_POLISH_PASS_2026_04_17.md`](docs/REPOSITORY_POLISH_PASS_2026_04_17.md)
+
+## What to avoid at first
+
+Do **not** start by reading arbitrary experiment notes, historical memos, or one-off outputs in isolation.
+
+Use these interpretation rules instead:
+- **Canonical** docs/scripts define the current project identity.
+- **Exploratory** materials are useful active branches, but not the default summary.
+- **Historical** materials are provenance-only and should not define the current paper story.
+
+For the formal interpretation rules, see:
+- [`docs/README.md`](docs/README.md)
+- [`docs/EXPLORATORY_INDEX.md`](docs/EXPLORATORY_INDEX.md)
+- [`docs/HISTORICAL_AND_ARCHIVE_POLICY.md`](docs/HISTORICAL_AND_ARCHIVE_POLICY.md)
+
 ## Start here by goal
 
 ### Fastest correct overview
@@ -45,6 +74,7 @@ Use:
 Use:
 - [`docs/FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md`](docs/FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md)
 - [`outputs/repository_audit/repository_audit_summary_2026_04_18.json`](outputs/repository_audit/repository_audit_summary_2026_04_18.json)
+- [`docs/REPOSITORY_POLISH_PASS_2026_04_17.md`](docs/REPOSITORY_POLISH_PASS_2026_04_17.md)
 
 ### Runnable code entry path
 Start with:
