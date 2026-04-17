@@ -30,6 +30,7 @@ This repository is **not** currently centered on the old binary revise-routing p
 ## If your goal is method improvement
 
 Then read next:
+- [`METHOD_STATUS_INDEX.md`](METHOD_STATUS_INDEX.md)
 - [`HARD_CASE_FEATURE_REPRESENTATION_STATUS.md`](HARD_CASE_FEATURE_REPRESENTATION_STATUS.md)
 - [`TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`](TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md)
 - [`NEAR_TIE_POINTWISE_EXPERT_STATUS.md`](NEAR_TIE_POINTWISE_EXPERT_STATUS.md)
@@ -41,6 +42,7 @@ Then read next:
 ## If your goal is baselines / comparison
 
 Then read next:
+- [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md)
 - `external_baseline_completeness_report.md`
 - [`CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`](CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md)
 - baseline integration notes listed in [`README.md`](README.md)
@@ -50,6 +52,7 @@ Then read next:
 Start with:
 - [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
 - [`../scripts/README.md`](../scripts/README.md)
+- [`../scripts/HISTORICAL_INDEX.md`](../scripts/HISTORICAL_INDEX.md) if you specifically need old script entry points
 
 ## Interpretation rules
 
