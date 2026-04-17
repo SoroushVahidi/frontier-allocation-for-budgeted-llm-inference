@@ -1,0 +1,5 @@
+variant,accepted_pair_accuracy,coverage,forced_pairwise_accuracy,top1_test,near_tie_forced_accuracy,adjacent_forced_accuracy,deferred_rate,deferred_non_near_tie_count,deferred_subset_forced_accuracy
+binary_forced_baseline,0.38461538461538464,1.0,0.38461538461538464,0.42857142857142855,0.0,0.4,0.0,0,0.0
+strict_coupled_tie_aware_posthoc_deferral_v1,0.42857142857142855,0.5384615384615384,0.38461538461538464,0.42857142857142855,0.0,0.4,0.46153846153846156,5,0.3333333333333333
+strict_coupled_tie_aware_learned_two_stage_deferral_v1,0.2727272727272727,0.8461538461538461,0.38461538461538464,0.42857142857142855,0.0,0.4,0.15384615384615385,2,1.0
+strict_coupled_tie_aware_learned_two_stage_deferral_calibrated_threshold_v1,0.3333333333333333,0.9230769230769231,0.38461538461538464,0.42857142857142855,0.0,0.4,0.07692307692307693,1,1.0

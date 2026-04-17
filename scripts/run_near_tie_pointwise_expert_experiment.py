@@ -85,6 +85,17 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--improved-adjacent-reweight-factor", type=float, default=1.75)
     p.add_argument("--improved-uncertainty-weight-scale", type=float, default=1.5)
     p.add_argument("--improved-uncertainty-weight-cap", type=float, default=3.0)
+    p.add_argument(
+        "--two-stage-threshold-grid",
+        default="0.30,0.35,0.40,0.45,0.50,0.55,0.60,0.65,0.70",
+        help="Comma-separated threshold grid for stage-2 defer probability threshold selection.",
+    )
+    p.add_argument(
+        "--two-stage-min-coverage-floor",
+        type=float,
+        default=0.65,
+        help="Minimum validation accepted coverage required by the improved threshold policy.",
+    )
     p.add_argument("--pointwise-alpha", type=float, default=1.0)
     return p.parse_args()
 
@@ -265,6 +276,139 @@ def _binary_head_predict_proba(head: dict[str, Any], x: list[list[float]]) -> li
     return [0.0 for _ in x]
 
 
+def _select_two_stage_threshold_defer_rate_constrained(
+    *,
+    val_rows: list[dict[str, Any]],
+    stage1_val_probs: list[float],
+    stage2_val_probs: list[float],
+    pairwise_fn: Callable[[dict[str, Any]], int],
+    specialist_fn: Callable[[dict[str, Any]], int],
+    threshold_grid: list[float],
+    baseline_val_defer_rate: float,
+) -> tuple[float, dict[str, Any]]:
+    if not val_rows:
+        return 0.5, {"status": "no_val_rows", "policy": "defer_rate_constrained_utility"}
+    defer_threshold = 0.5
+    best_score = -1e9
+    allowed_max_rate = min(0.95, float(baseline_val_defer_rate) + 0.08)
+    selected_meta = {
+        "status": "ok",
+        "policy": "defer_rate_constrained_utility",
+        "selected_threshold": float(defer_threshold),
+        "selected_forced_accuracy": 0.0,
+        "selected_defer_rate": 0.0,
+        "allowed_max_defer_rate": float(allowed_max_rate),
+        "objective": -1e9,
+    }
+    for thr in threshold_grid:
+        chosen = []
+        deferred = 0
+        for r, p1, p2 in zip(val_rows, stage1_val_probs, stage2_val_probs):
+            should_defer = (float(p1) >= 0.5) and (float(p2) >= float(thr))
+            y = int(r.get("label", 0))
+            pred = specialist_fn(r) if should_defer else pairwise_fn(r)
+            chosen.append(int(pred == y))
+            deferred += int(should_defer)
+        if not chosen:
+            continue
+        defer_rate = deferred / len(chosen)
+        if defer_rate > allowed_max_rate:
+            continue
+        forced_acc = sum(chosen) / len(chosen)
+        score = forced_acc - 0.05 * defer_rate
+        if score > best_score:
+            best_score = score
+            defer_threshold = float(thr)
+            selected_meta = {
+                "status": "ok",
+                "policy": "defer_rate_constrained_utility",
+                "selected_threshold": float(thr),
+                "selected_forced_accuracy": float(forced_acc),
+                "selected_defer_rate": float(defer_rate),
+                "allowed_max_defer_rate": float(allowed_max_rate),
+                "objective": float(score),
+            }
+    return defer_threshold, selected_meta
+
+
+def _select_two_stage_threshold_accepted_accuracy_coverage_floor(
+    *,
+    val_rows: list[dict[str, Any]],
+    stage1_val_probs: list[float],
+    stage2_val_probs: list[float],
+    pairwise_fn: Callable[[dict[str, Any]], int],
+    specialist_fn: Callable[[dict[str, Any]], int],
+    threshold_grid: list[float],
+    min_coverage_floor: float,
+) -> tuple[float, dict[str, Any]]:
+    if not val_rows:
+        return 0.5, {"status": "no_val_rows", "policy": "accepted_accuracy_with_coverage_floor"}
+    best_threshold = 0.5
+    best_tuple = (-1.0, -1.0, -1.0, -1.0)  # accepted_acc, coverage, forced_acc, threshold
+    floor = min(1.0, max(0.05, float(min_coverage_floor)))
+    any_floor_satisfying = False
+    for thr in threshold_grid:
+        accepted_correct = 0
+        accepted_count = 0
+        forced_correct = 0
+        deferred = 0
+        for r, p1, p2 in zip(val_rows, stage1_val_probs, stage2_val_probs):
+            should_defer = (float(p1) >= 0.5) and (float(p2) >= float(thr))
+            y = int(r.get("label", 0))
+            pair_pred = pairwise_fn(r)
+            forced_pred = specialist_fn(r) if should_defer else pair_pred
+            forced_correct += int(forced_pred == y)
+            if should_defer:
+                deferred += 1
+                continue
+            accepted_count += 1
+            accepted_correct += int(pair_pred == y)
+        n = len(val_rows)
+        coverage = accepted_count / max(1, n)
+        accepted_acc = accepted_correct / max(1, accepted_count)
+        forced_acc = forced_correct / max(1, n)
+        candidate_tuple = (float(accepted_acc), float(coverage), float(forced_acc), -float(thr))
+        if coverage >= floor:
+            any_floor_satisfying = True
+            if candidate_tuple > best_tuple:
+                best_tuple = candidate_tuple
+                best_threshold = float(thr)
+    if not any_floor_satisfying:
+        for thr in threshold_grid:
+            accepted_correct = 0
+            accepted_count = 0
+            forced_correct = 0
+            for r, p1, p2 in zip(val_rows, stage1_val_probs, stage2_val_probs):
+                should_defer = (float(p1) >= 0.5) and (float(p2) >= float(thr))
+                y = int(r.get("label", 0))
+                pair_pred = pairwise_fn(r)
+                forced_pred = specialist_fn(r) if should_defer else pair_pred
+                forced_correct += int(forced_pred == y)
+                if not should_defer:
+                    accepted_count += 1
+                    accepted_correct += int(pair_pred == y)
+            n = len(val_rows)
+            coverage = accepted_count / max(1, n)
+            accepted_acc = accepted_correct / max(1, accepted_count)
+            forced_acc = forced_correct / max(1, n)
+            candidate_tuple = (float(coverage), float(accepted_acc), float(forced_acc), -float(thr))
+            if candidate_tuple > best_tuple:
+                best_tuple = candidate_tuple
+                best_threshold = float(thr)
+    selected_accept_acc = max(0.0, best_tuple[0] if any_floor_satisfying else best_tuple[1])
+    selected_coverage = max(0.0, best_tuple[1] if any_floor_satisfying else best_tuple[0])
+    return best_threshold, {
+        "status": "ok",
+        "policy": "accepted_accuracy_with_coverage_floor",
+        "selected_threshold": float(best_threshold),
+        "selected_accepted_accuracy": float(selected_accept_acc),
+        "selected_coverage": float(selected_coverage),
+        "selected_forced_accuracy": float(best_tuple[2]),
+        "min_coverage_floor": float(floor),
+        "coverage_floor_satisfied": bool(any_floor_satisfying),
+    }
+
+
 def _slice_acc(rows: list[dict[str, Any]], pred_fn: Callable[[dict[str, Any]], int], key_fn: Callable[[dict[str, Any]], str]) -> dict[str, float]:
     subset = [r for r in rows if str(r.get("split")) == "test"]
     keys = sorted(set(key_fn(r) for r in subset))
@@ -342,6 +486,7 @@ def main() -> None:
     seeds = [int(x.strip()) for x in str(args.seeds).split(",") if x.strip()]
     regimes = [x.strip() for x in str(args.regimes).split(",") if x.strip()]
     calib_methods = [x.strip() for x in str(args.calibration_methods).split(",") if x.strip()]
+    two_stage_threshold_grid = [float(x.strip()) for x in str(args.two_stage_threshold_grid).split(",") if x.strip()]
 
     detector_cfg = {
         "base": {
@@ -397,6 +542,10 @@ def main() -> None:
             "adjacent_reweight_factor": float(args.improved_adjacent_reweight_factor),
             "uncertainty_weight_scale": float(args.improved_uncertainty_weight_scale),
             "uncertainty_weight_cap": float(args.improved_uncertainty_weight_cap),
+        },
+        "two_stage_threshold_policy_config": {
+            "threshold_grid": two_stage_threshold_grid,
+            "min_coverage_floor": float(args.two_stage_min_coverage_floor),
         },
         "posthoc_deferral_config": {
             "abs_margin_max": float(args.posthoc_deferral_abs_margin_max),
@@ -873,43 +1022,40 @@ def main() -> None:
             stage2_val_probs = _binary_head_predict_proba(stage2_defer_head, x_val_stage2)
 
             baseline_val_defer_rate = _mean([1.0 if _posthoc_deferral_gate(r)[0] else 0.0 for r in val_rows]) if val_rows else 0.0
-            defer_threshold = 0.5
-            threshold_grid = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70]
-            best_score = -1e9
-            allowed_max_rate = min(0.95, baseline_val_defer_rate + 0.08)
-            for thr in threshold_grid:
-                chosen = []
-                deferred = 0
-                for r, p1, p2 in zip(val_rows, stage1_val_probs, stage2_val_probs):
-                    should_defer = (float(p1) >= 0.5) and (float(p2) >= float(thr))
-                    y = int(r.get("label", 0))
-                    pred = _specialist_forced_for_defer_target(r) if should_defer else _pairwise_binary(r)
-                    chosen.append(int(pred == y))
-                    deferred += int(should_defer)
-                if not chosen:
-                    continue
-                defer_rate = deferred / len(chosen)
-                if defer_rate > allowed_max_rate:
-                    continue
-                score = (sum(chosen) / len(chosen)) - 0.05 * defer_rate
-                if score > best_score:
-                    best_score = score
-                    defer_threshold = float(thr)
+            defer_threshold_legacy, legacy_threshold_meta = _select_two_stage_threshold_defer_rate_constrained(
+                val_rows=val_rows,
+                stage1_val_probs=stage1_val_probs,
+                stage2_val_probs=stage2_val_probs,
+                pairwise_fn=_pairwise_binary,
+                specialist_fn=_specialist_forced_for_defer_target,
+                threshold_grid=two_stage_threshold_grid,
+                baseline_val_defer_rate=baseline_val_defer_rate,
+            )
+            defer_threshold_improved, improved_threshold_meta = _select_two_stage_threshold_accepted_accuracy_coverage_floor(
+                val_rows=val_rows,
+                stage1_val_probs=stage1_val_probs,
+                stage2_val_probs=stage2_val_probs,
+                pairwise_fn=_pairwise_binary,
+                specialist_fn=_specialist_forced_for_defer_target,
+                threshold_grid=two_stage_threshold_grid,
+                min_coverage_floor=float(args.two_stage_min_coverage_floor),
+            )
 
-            def _learned_two_stage_defer_gate(row: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+            def _learned_two_stage_defer_gate(row: dict[str, Any], *, threshold: float, policy_name: str) -> tuple[bool, dict[str, Any]]:
                 x = _defer_feature_vector(row)
                 p1 = _binary_head_predict_proba(stage1_error_head, [x])[0]
                 x2 = x + [float(p1)]
                 p2 = _binary_head_predict_proba(stage2_defer_head, [x2])[0]
-                defer = bool((float(p1) >= 0.5) and (float(p2) >= float(defer_threshold)))
+                defer = bool((float(p1) >= 0.5) and (float(p2) >= float(threshold)))
                 return defer, {
                     "p_pairwise_error": float(p1),
                     "p_defer_utility": float(p2),
-                    "defer_threshold": float(defer_threshold),
+                    "defer_threshold": float(threshold),
+                    "threshold_policy": str(policy_name),
                 }
 
-            def _tie_aware_forced_learned_two_stage(row: dict[str, Any]) -> int:
-                is_deferred, _ = _learned_two_stage_defer_gate(row)
+            def _tie_aware_forced_learned_two_stage(row: dict[str, Any], *, threshold: float, policy_name: str) -> int:
+                is_deferred, _ = _learned_two_stage_defer_gate(row, threshold=threshold, policy_name=policy_name)
                 if not is_deferred:
                     return _pairwise_binary(row)
                 return _specialist_forced_for_defer_target(row)
@@ -1000,10 +1146,37 @@ def main() -> None:
                 ),
                 (
                     "strict_coupled_tie_aware_learned_two_stage_deferral_v1",
-                    lambda r: (None if _learned_two_stage_defer_gate(r)[0] else _pairwise_binary(r)),
-                    lambda r: _tie_aware_forced_learned_two_stage(r),
+                    lambda r: (
+                        None
+                        if _learned_two_stage_defer_gate(
+                            r, threshold=float(defer_threshold_legacy), policy_name="defer_rate_constrained_utility"
+                        )[0]
+                        else _pairwise_binary(r)
+                    ),
+                    lambda r: _tie_aware_forced_learned_two_stage(
+                        r, threshold=float(defer_threshold_legacy), policy_name="defer_rate_constrained_utility"
+                    ),
                     "strict_coupled_tie_aware_learned_two_stage_deferral",
-                    lambda r: _learned_two_stage_defer_gate(r)[0],
+                    lambda r: _learned_two_stage_defer_gate(
+                        r, threshold=float(defer_threshold_legacy), policy_name="defer_rate_constrained_utility"
+                    )[0],
+                ),
+                (
+                    "strict_coupled_tie_aware_learned_two_stage_deferral_calibrated_threshold_v1",
+                    lambda r: (
+                        None
+                        if _learned_two_stage_defer_gate(
+                            r, threshold=float(defer_threshold_improved), policy_name="accepted_accuracy_with_coverage_floor"
+                        )[0]
+                        else _pairwise_binary(r)
+                    ),
+                    lambda r: _tie_aware_forced_learned_two_stage(
+                        r, threshold=float(defer_threshold_improved), policy_name="accepted_accuracy_with_coverage_floor"
+                    ),
+                    "strict_coupled_tie_aware_learned_two_stage_deferral",
+                    lambda r: _learned_two_stage_defer_gate(
+                        r, threshold=float(defer_threshold_improved), policy_name="accepted_accuracy_with_coverage_floor"
+                    )[0],
                 )
             ]
             if str(args.controller_policy) == "legacy_variants":
@@ -1117,9 +1290,10 @@ def main() -> None:
                         **{k: v for k, v in stage2_defer_head.items() if k != "model"},
                     },
                     "target_definition": "defer=1 iff specialized fallback is correct and pairwise winner is incorrect on the same pair row",
-                    "selected_threshold": float(defer_threshold),
+                    "legacy_threshold_selection": legacy_threshold_meta,
+                    "improved_threshold_selection": improved_threshold_meta,
                     "baseline_posthoc_val_defer_rate": float(baseline_val_defer_rate),
-                    "allowed_max_val_defer_rate": float(allowed_max_rate),
+                    "threshold_grid": two_stage_threshold_grid,
                 },
                 "near_tie_pairwise_vs_pointwise_diagnostic": {
                     "rows": len(diag_rows),
