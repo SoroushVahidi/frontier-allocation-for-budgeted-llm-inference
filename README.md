@@ -33,6 +33,11 @@ Read in this order:
 5. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
 6. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
+### Compact repository-facing audit
+Use:
+- [`docs/FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md`](docs/FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md)
+- [`outputs/repository_audit/repository_audit_summary_2026_04_18.json`](outputs/repository_audit/repository_audit_summary_2026_04_18.json)
+
 ### Runnable code entry path
 Start with:
 - [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
