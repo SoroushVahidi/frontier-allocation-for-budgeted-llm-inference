@@ -2,19 +2,18 @@
 
 This index defines the **canonical**, **exploratory**, and **historical** documentation for the current project.
 
-## Fast start
+## Short entry paths
 
-- New collaborators: start with [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
-- Current working set / asset summary: see [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
-- Output-family interpretation: see [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
-- Current dataset priorities: see [`DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
-- Current hard-pair cleanup direction: see [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
-- Current structured ambiguity note: see [`STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
-- Current repo-facing audit: see [`REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
-- Active but non-default method lines: see [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
-- Historical/provenance interpretation: see [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
+- Fastest reliable collaborator start: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+- Goal-based navigation guide: [`REPOSITORY_START_PATHS.md`](REPOSITORY_START_PATHS.md)
+- Current working set / asset summary: [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
+- Output-family interpretation: [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
+- Active but non-default method lines: [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
+- Historical/provenance interpretation: [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
 
-## Canonical docs (read in this order)
+## Canonical docs (core reading path)
+
+Read these first for the current project identity:
 
 1. [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)
 2. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
@@ -22,40 +21,44 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 4. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
 5. [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
 6. [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
-7. [`RESEARCH_UPGRADE_NOTE_2026_04_17.md`](RESEARCH_UPGRADE_NOTE_2026_04_17.md)
-8. [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
-9. [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
-10. [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
-11. [`STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
-12. [`REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
-13. [`DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
-14. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
-15. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
-16. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
-17. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
-18. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
-19. [`REPO_MAP.md`](REPO_MAP.md)
-20. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
-21. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+7. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+8. [`REPO_MAP.md`](REPO_MAP.md)
 
-## Canonical supporting references
+## Canonical docs by purpose
 
+### Project state and writing discipline
+- [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+- [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+- [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+- [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+
+### Method status and next steps
+- [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
+- [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
+- [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
+- [`STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
+- [`REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
+
+### Evaluation, outputs, and assets
+- [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md)
+- [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
+- [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
+- [`DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
+
+### Broader canonical references and support notes
 - [`cross_controller_frontier.md`](cross_controller_frontier.md)
 - [`main_datasets.md`](main_datasets.md)
 - [`main_baselines.md`](main_baselines.md)
-- [`cascade_routing_integration.md`](cascade_routing_integration.md)
-- [`mob_majority_of_bests_integration.md`](mob_majority_of_bests_integration.md)
-- [`rest_mcts_integration.md`](rest_mcts_integration.md)
-- [`openr_integration.md`](openr_integration.md)
-- [`l1_baseline_integration.md`](l1_baseline_integration.md)
 - [`datasets_access.md`](datasets_access.md)
-- [`DATASET_STATUS.md`](DATASET_STATUS.md)
-- [`CURRENT_DATASET_AUDIT_STATUS.md`](CURRENT_DATASET_AUDIT_STATUS.md)
-- [`CURRENT_BRANCH_LEARNING_DATASET_READINESS.md`](CURRENT_BRANCH_LEARNING_DATASET_READINESS.md)
-- [`CANONICAL_BRANCH_LEARNING_PASS_2026_04_16.md`](CANONICAL_BRANCH_LEARNING_PASS_2026_04_16.md)
-- [`CANONICAL_BRANCH_LEARNING_INTERVENTION_PASS_2026_04_16.md`](CANONICAL_BRANCH_LEARNING_INTERVENTION_PASS_2026_04_16.md)
-- [`EXTERNAL_DATASET_PRM_MATHSHEPHERD_APPS_STATUS_2026_04_16.md`](EXTERNAL_DATASET_PRM_MATHSHEPHERD_APPS_STATUS_2026_04_16.md)
 - [`CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`](CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md)
+- [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
+- [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+
+## Supporting grouped navigation pages
+
+- [`METHOD_STATUS_INDEX.md`](METHOD_STATUS_INDEX.md)
+- [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md)
+- [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
 
 ## How to interpret the canonical docs
 
@@ -65,14 +68,6 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 - `CURRENT_SAFE_CLAIMS.md` tells you what is manuscript-safe to say now.
 - `CURRENT_METHOD_SUMMARY_AND_GAPS.md` is the shortest current method-state summary.
 - `WHAT_IS_NOT_WORKING_NOW.md` records directions that are currently weak or explicitly not validated enough.
-- `RESEARCH_UPGRADE_NOTE_2026_04_17.md` records the strongest current outside-research upgrade directions.
-- `ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md` records which repo assets currently matter most for continuation work.
-- `OUTPUTS_INTERPRETATION_GUIDE.md` explains how to read the main outputs families quickly.
-- `HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md` records the current best supervision-oriented next step for hard ambiguous pairs.
-- `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md` records the current strongest interpretation of hard close-call comparisons as structured ambiguity cases.
-- `REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md` records the latest repository-facing audit and continuation path.
-- `DATASET_EXPANSION_PRIORITIES_2026_04_17.md` records which datasets should be added next and why.
-- `STOP_VS_ACT_DIRECTION.md` defines one important near-term controller direction, but it is no longer the whole project identity.
 - `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
 
