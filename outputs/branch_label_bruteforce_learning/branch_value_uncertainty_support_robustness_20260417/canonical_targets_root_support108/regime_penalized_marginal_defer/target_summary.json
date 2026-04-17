@@ -1,0 +1,17 @@
+{
+  "strategy": "penalized_marginal_defer",
+  "pairs": 252,
+  "near_tie_rate": 0.24603174603174602,
+  "ambiguous_tie_rate": 0.7857142857142857,
+  "exact_or_promoted_rate": 0.0,
+  "pair_type_counts": {
+    "top_vs_rest": 68,
+    "adjacent_rank": 176,
+    "generic": 8
+  },
+  "mean_soft_tie_prob": 0.0,
+  "partial_order_incomparable_rate": 0.0,
+  "penalized_left_better_rate": 0.1111111111111111,
+  "penalized_right_better_rate": 0.10317460317460317,
+  "penalized_defer_rate": 0.7857142857142857
+}
