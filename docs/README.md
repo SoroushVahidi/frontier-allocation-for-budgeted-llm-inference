@@ -5,6 +5,8 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 ## Fast start
 
 - New collaborators: start with [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+- Current working set / asset summary: see [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
+- Output-family interpretation: see [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
 - Active but non-default method lines: see [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
 - Historical/provenance interpretation: see [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
 
@@ -17,14 +19,16 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 5. [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
 6. [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
 7. [`RESEARCH_UPGRADE_NOTE_2026_04_17.md`](RESEARCH_UPGRADE_NOTE_2026_04_17.md)
-8. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
-9. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
-10. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
-11. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
-12. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
-13. [`REPO_MAP.md`](REPO_MAP.md)
-14. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
-15. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+8. [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
+9. [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
+10. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
+11. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
+12. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
+13. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
+14. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+15. [`REPO_MAP.md`](REPO_MAP.md)
+16. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
+17. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
 
 ## Canonical supporting references
 
@@ -54,6 +58,8 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 - `CURRENT_METHOD_SUMMARY_AND_GAPS.md` is the shortest current method-state summary.
 - `WHAT_IS_NOT_WORKING_NOW.md` records directions that are currently weak or explicitly not validated enough.
 - `RESEARCH_UPGRADE_NOTE_2026_04_17.md` records the strongest current outside-research upgrade directions.
+- `ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md` records which repo assets currently matter most for continuation work.
+- `OUTPUTS_INTERPRETATION_GUIDE.md` explains how to read the main outputs families quickly.
 - `STOP_VS_ACT_DIRECTION.md` defines one important near-term controller direction, but it is no longer the whole project identity.
 - `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
