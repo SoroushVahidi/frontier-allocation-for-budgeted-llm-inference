@@ -136,9 +136,14 @@ The current bottleneck is:
 - **Priority:** low-medium
 
 ### 18. Branch-level value + uncertainty + derived compare/defer
-- **Status:** implemented in bounded and canonical-replayable form
-- **Strength:** serious continuation line, but still mixed because it currently over-defers and remains weak on near-ties
-- **Interpretation:** one of the most important current method lines
+- **Status:** implemented in bounded, strict-validation, and canonical-replayable form
+- **Latest evidence:** canonical replay now succeeds on a rebuilt root, and a support-size robustness pass was completed on support sizes 36, 72, and 108
+- **Strength:** serious continuation line, but still mixed because it remains too conservative and near-tie behavior is fragile
+- **Current behavior:**
+  - support 36: accepted accuracy high, but defer very high
+  - support 72: accepted accuracy still high, coverage improves materially, defer drops but remains substantial
+  - support 108: accepted-accuracy advantage over pairwise survives but narrows, and near-tie improvement remains weak/unstable
+- **Interpretation:** this is a real method line, not a blocked idea, but it currently looks like a strong selective model that still over-defers and does not yet solve the hardest near-tie region robustly
 - **Priority:** very high
 
 ### 19. Direct signed pairwise gap supervision (“how much A is better than B” as the main target)
@@ -165,8 +170,14 @@ The current bottleneck is:
 
 ### 23. Canonical replay of branch-value + uncertainty line
 - **Status:** now implemented through rebuilt canonical root and strict replay path
-- **Interpretation:** no longer blocked by missing canonical regime root construction; current issue is method behavior, not replay availability
+- **Interpretation:** no longer blocked by missing canonical regime root construction; current issue is method behavior and calibration, not replay availability
 - **Priority:** keep using for fair continuation decisions
+
+### 24. Support-size robustness diagnosis for the branch-value + uncertainty line
+- **Status:** implemented
+- **Strength:** strong diagnostic layer
+- **Interpretation:** important because it shows the high defer rate is not purely a tiny-support artifact; defer improves with larger support but remains high, while near-tie gains remain weak and unstable
+- **Priority:** high as a continuation-diagnosis tool, not a separate method family
 
 ## Current strongest scaffold
 
@@ -186,7 +197,7 @@ The strongest next target-design direction remains:
 1. branch-level value + uncertainty + derived compare/defer continuation
 2. penalized marginal target refinement
 3. mixed-fidelity supervision redesign
-4. robust canonical validation and robustness passes on the current value-target line
+4. strict calibration diagnosis and robustness analysis on the current value-target line
 
 ### Tier 2: strong next ideas after current lines are decided
 5. direct signed pairwise gap supervision
@@ -205,4 +216,4 @@ The strongest next target-design direction remains:
 
 A safe repository-facing summary is:
 
-> The repository already contains many serious ideas and experiments. The highest-value remaining work is to decide the strongest current target-design lines—especially branch-level value plus uncertainty, penalized marginal targets, and better mixed-fidelity supervision—before searching for many new ideas.
+> The repository already contains many serious ideas and experiments. The highest-value remaining work is to decide and refine the strongest current target-design lines—especially branch-level value plus uncertainty, penalized marginal targets, and better mixed-fidelity supervision—before searching for many new ideas.
