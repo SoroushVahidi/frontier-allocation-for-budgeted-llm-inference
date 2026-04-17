@@ -1,0 +1,23 @@
+{
+  "run_id": "operator_path_summary_2026_04_18",
+  "date": "2026-04-18",
+  "purpose": "record the shortest daily operator path and single-page bottleneck focus for the current repository state",
+  "new_artifacts": [
+    "docs/DAILY_OPERATOR_PATH_2026_04_18.md",
+    "docs/MAIN_BOTTLENECK_FOCUS_2026_04_18.md"
+  ],
+  "updated_artifacts": [
+    "docs/CANONICAL_START_HERE.md",
+    "scripts/CANONICAL_START_HERE.md"
+  ],
+  "shortest_orientation_path": [
+    "docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md",
+    "docs/CURRENT_PROJECT_STATUS.md",
+    "docs/CURRENT_BOTTLENECKS.md",
+    "docs/EXPERIMENT_LEDGER_2026_04_18.md",
+    "docs/CONTINUATION_PLAN_2026_04_18.md"
+  ],
+  "single_most_important_issue": "supervision target quality and selective ambiguity handling for next-step branch allocation, especially on hard ambiguous pairs",
+  "current_strongest_scaffold": "pairwise default plus tie-aware post-hoc deferral plus specialist pointwise fallback",
+  "current_most_promising_next_direction": "budget-conditioned branch-level value or penalized marginal continuation value with explicit uncertainty and derived compare/defer decisions"
+}
