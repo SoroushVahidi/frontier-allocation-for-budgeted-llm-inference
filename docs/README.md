@@ -2,6 +2,12 @@
 
 This index defines the **canonical**, **exploratory**, and **historical** documentation for the current project.
 
+## Fast start
+
+- New collaborators: start with [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+- Active but non-default method lines: see [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
+- Historical/provenance interpretation: see [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
+
 ## Canonical docs (read in this order)
 
 1. [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)
@@ -51,10 +57,12 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 
 These notes are useful, but they are **not** the default interpretation of the project.
 
-- Oracle generator interface / productionization / pilot protocols.
-- Oracle selective distillation and oracle-distilled student notes.
-- Branch-scorer line status and method-specific result notes.
-- Tie-aware, reliability-aware, warm-start, and ambiguity-targeted experimental notes.
+Examples include:
+- oracle generator interface / productionization / pilot protocols,
+- oracle selective distillation and oracle-distilled student notes,
+- branch-scorer line status and method-specific result notes,
+- tie-aware, reliability-aware, warm-start, and ambiguity-targeted experimental notes,
+- stricter hard-case / near-tie controller refinements.
 
 Use these when you need traceability for a specific experiment line, not as the first summary of the repo.
 
@@ -64,6 +72,8 @@ These remain valuable for traceability but are not canonical:
 - old-track separation notes,
 - dated memo snapshots,
 - earlier summaries superseded by the current canonical docs.
+
+For historical interpretation rules, see [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md).
 
 ## Interpretation rule
 
