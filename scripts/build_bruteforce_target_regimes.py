@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--run-id", required=True)
     p.add_argument(
         "--pair-strategies",
-        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust",
+        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable",
         help="comma-separated strategies",
     )
     p.add_argument("--near-tie-margin", type=float, default=0.03)
@@ -257,6 +257,68 @@ def _assign_supervision_reliability(
     return out
 
 
+def _annotate_incomparable_pair(
+    row: dict[str, Any],
+    *,
+    tie_abs_margin_threshold: float,
+    tie_relative_margin_threshold: float,
+    tie_std_threshold: float,
+    tie_include_approx: bool,
+    tie_require_exact_or_mixed: bool,
+) -> dict[str, Any]:
+    """Conservative unresolved/incomparability annotation.
+
+    Semantics:
+    - "tie" (Davidson-style) is a close preference.
+    - "incomparable" here means insufficient evidence to force ordering.
+    """
+    out = dict(row)
+    pair_mode = str(out.get("pair_mode_provenance", "unknown"))
+    eligible_mode = True
+    if (not tie_include_approx) and pair_mode == "approx":
+        eligible_mode = False
+    if tie_require_exact_or_mixed and pair_mode not in {"exact", "mixed"}:
+        eligible_mode = False
+
+    margin_abs = float(out.get("margin_abs", 0.0))
+    rel_margin = float(out.get("relative_margin", 1e9))
+    pair_std = float(out.get("pair_uncertainty_std_mean", 0.0))
+    near_tie = bool(out.get("near_tie_flag", False))
+    adjacent = str(out.get("pair_type", "")) == "adjacent_rank"
+    disagreement_risk = bool(out.get("exact_vs_approx_disagreement_risk", False))
+
+    # Conservative unresolved zone: require simultaneous absolute+relative closeness
+    # plus at least one explicit ambiguity risk signal.
+    abs_close = margin_abs <= float(tie_abs_margin_threshold)
+    rel_close = rel_margin <= float(tie_relative_margin_threshold)
+    std_high = pair_std >= float(tie_std_threshold)
+    risk_signal = bool(std_high or adjacent or disagreement_risk)
+
+    incomparable = bool(eligible_mode and abs_close and rel_close and near_tie and risk_signal)
+
+    reasons: list[str] = []
+    if abs_close:
+        reasons.append("abs_margin")
+    if rel_close:
+        reasons.append("relative_margin")
+    if near_tie:
+        reasons.append("near_tie_flag")
+    if std_high:
+        reasons.append("uncertainty_std")
+    if adjacent:
+        reasons.append("adjacent_rank")
+    if disagreement_risk:
+        reasons.append("exact_vs_approx_disagreement_risk")
+
+    label = int(out.get("label", out.get("preference", 0)))
+    out["partial_order_incomparable_target"] = incomparable
+    out["partial_order_incomparable_reasons"] = reasons
+    out["partial_order_label"] = 1 if incomparable else (2 if label == 1 else 0)
+    out["partial_order_label_name"] = "incomparable" if incomparable else ("i_wins" if label == 1 else "j_wins")
+    out["partial_order_policy"] = "conservative_close_call_incomparable_v1"
+    return out
+
+
 def main() -> None:
     args = parse_args()
     labels_dir = Path(args.labels_dir)
@@ -402,6 +464,8 @@ def main() -> None:
                         keep = True
                     elif strat == "soft_prob_tie_aware":
                         keep = True
+                    elif strat == "partial_order_incomparable":
+                        keep = True
                     else:
                         raise ValueError(f"Unknown strategy: {strat}")
 
@@ -439,6 +503,15 @@ def main() -> None:
                                 tie_std_threshold=float(args.tie_std_threshold),
                                 tie_use_near_tie_flag=bool(args.tie_use_near_tie_flag),
                             )
+                        if strat == "partial_order_incomparable":
+                            annotated = _annotate_incomparable_pair(
+                                annotated,
+                                tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
+                                tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
+                                tie_std_threshold=float(args.tie_std_threshold),
+                                tie_include_approx=bool(args.tie_include_approx),
+                                tie_require_exact_or_mixed=bool(args.tie_require_exact_or_mixed),
+                            )
                         kept.append(annotated)
 
         out_dir = out_root / f"regime_{strat}"
@@ -462,6 +535,9 @@ def main() -> None:
             },
             "mean_soft_tie_prob": (
                 sum(float(r.get("soft_target_prob_tie", 0.0)) for r in kept) / max(1, len(kept))
+            ),
+            "partial_order_incomparable_rate": (
+                sum(1 for r in kept if bool(r.get("partial_order_incomparable_target", False))) / max(1, len(kept))
             ),
         }
         (out_dir / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

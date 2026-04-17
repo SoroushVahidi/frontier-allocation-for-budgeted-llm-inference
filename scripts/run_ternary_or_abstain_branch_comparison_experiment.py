@@ -49,12 +49,12 @@ def _mean(xs: list[float]) -> float:
     return sum(xs) / max(1, len(xs))
 
 
-def _train_ternary_pair_model(rows: list[dict[str, Any]], seed: int) -> dict[str, Any]:
+def _train_ternary_pair_model(rows: list[dict[str, Any]], seed: int, *, label_key: str = "ternary_label") -> dict[str, Any]:
     train = [r for r in rows if r.get("split") == "train"]
     if len(train) < 3:
         return {"status": "insufficient_train_rows"}
     x = [r["x_diff"] for r in train]
-    y = [int(r.get("ternary_label", 1)) for r in train]
+    y = [int(r.get(label_key, 1)) for r in train]
     if len(set(y)) < 2:
         return {"status": "single_class_train", "constant": int(y[0])}
     model = LogisticRegression(max_iter=600, random_state=seed)
@@ -135,10 +135,11 @@ def _metrics_for_predictions(
     *,
     pred_fn: Callable[[dict[str, Any]], int | None],
     forced_pred_fn: Callable[[dict[str, Any]], int],
+    ambiguity_truth_key: str = "ambiguous_target_flag",
 ) -> dict[str, float]:
     subset = [r for r in rows if r.get("split") == "test"]
     accepted = [r for r in subset if pred_fn(r) is not None]
-    truth_tie = [bool(r.get("ambiguous_target_flag", False)) for r in subset]
+    truth_tie = [bool(r.get(ambiguity_truth_key, False)) for r in subset]
     pred_tie = [pred_fn(r) is None for r in subset]
 
     def _acc(items: list[dict[str, Any]], fn: Callable[[dict[str, Any]], int | None]) -> float:
@@ -160,10 +161,14 @@ def _metrics_for_predictions(
         "accepted_pair_accuracy": _acc(accepted, pred_fn),
         "coverage": len(accepted) / max(1, len(subset)),
         "abstention_rate": 1.0 - (len(accepted) / max(1, len(subset))),
+        "unresolved_rate": 1.0 - (len(accepted) / max(1, len(subset))),
         "forced_pairwise_accuracy": _acc(subset, lambda r: forced_pred_fn(r)),
         "tie_detection_precision": prec,
         "tie_detection_recall": rec,
         "tie_detection_f1": f1,
+        "ambiguity_detection_precision": prec,
+        "ambiguity_detection_recall": rec,
+        "ambiguity_detection_f1": f1,
         "near_tie_accepted_accuracy": _acc([r for r in near if pred_fn(r) is not None], pred_fn),
         "near_tie_forced_accuracy": _acc(near, lambda r: forced_pred_fn(r)),
         "adjacent_accepted_accuracy": _acc([r for r in adjacent if pred_fn(r) is not None], pred_fn),
@@ -224,7 +229,7 @@ def main() -> None:
             )
             binary_top1 = _top1_from_pairwise_rows(tables["pairwise"], tables["state_to_candidates"], lambda r: binary_pred(r), binary_fallback)
 
-            ternary = _train_ternary_pair_model(tables["pairwise"], seed)
+            ternary = _train_ternary_pair_model(tables["pairwise"], seed, label_key="ternary_label")
 
             def pointwise_fallback(row: dict[str, Any]) -> int:
                 if str(args.fallback_policy) == "heuristic_margin":
@@ -318,11 +323,43 @@ def main() -> None:
                 pointwise_fallback,
             )
 
+            partial_order = _train_ternary_pair_model(tables["pairwise"], seed, label_key="partial_order_label")
+            if partial_order.get("status") == "ok":
+                pm = partial_order["model"]
+
+                def partial_order_pred(row: dict[str, Any]) -> int | None:
+                    pred = int(pm.predict([row["x_diff"]])[0])
+                    if pred == 1:
+                        return None
+                    return 1 if pred == 2 else 0
+
+                partial_order_metrics = _metrics_for_predictions(
+                    tables["pairwise"],
+                    pred_fn=partial_order_pred,
+                    forced_pred_fn=lambda r: pointwise_fallback(r) if partial_order_pred(r) is None else int(partial_order_pred(r) or 0),
+                    ambiguity_truth_key="partial_order_incomparable_target",
+                )
+                partial_order_top1 = _top1_from_pairwise_rows(
+                    tables["pairwise"],
+                    tables["state_to_candidates"],
+                    partial_order_pred,
+                    pointwise_fallback,
+                )
+            else:
+                partial_order_metrics = {k: 0.0 for k in [
+                    "accepted_pair_accuracy", "coverage", "abstention_rate", "unresolved_rate", "forced_pairwise_accuracy",
+                    "tie_detection_precision", "tie_detection_recall", "tie_detection_f1", "ambiguity_detection_precision",
+                    "ambiguity_detection_recall", "ambiguity_detection_f1", "near_tie_accepted_accuracy", "near_tie_forced_accuracy",
+                    "adjacent_accepted_accuracy", "adjacent_forced_accuracy", "test_pairs",
+                ]}
+                partial_order_top1 = 0.0
+
             seed_rows = [
                 {"formulation": "binary_forced", "top1_test": binary_top1, **binary_metrics},
                 {"formulation": "ternary_tie", "top1_test": ternary_top1, **ternary_metrics},
                 {"formulation": "soft_ternary_tie", "top1_test": soft_ternary_top1, **soft_ternary_metrics},
                 {"formulation": "selective_abstain", "top1_test": abstain_top1, **abstain_metrics},
+                {"formulation": "partial_order_incomparable", "top1_test": partial_order_top1, **partial_order_metrics},
             ]
             detailed["regimes"][regime][str(seed)] = {
                 "config": {
@@ -338,6 +375,7 @@ def main() -> None:
                     "fallback_policy": args.fallback_policy,
                     "ternary_train_status": ternary.get("status", "unknown"),
                     "soft_ternary_train_status": soft_ternary.get("status", "unknown"),
+                    "partial_order_train_status": partial_order.get("status", "unknown"),
                 },
                 "rows": seed_rows,
             }
@@ -360,7 +398,7 @@ def main() -> None:
     ]
     for regime in sorted(set(r["regime"] for r in flat)):
         md.append(f"## Regime `{regime}`")
-        for formulation in ["binary_forced", "ternary_tie", "soft_ternary_tie", "selective_abstain"]:
+        for formulation in ["binary_forced", "ternary_tie", "soft_ternary_tie", "selective_abstain", "partial_order_incomparable"]:
             rows = [r for r in flat if r["regime"] == regime and r["formulation"] == formulation]
             if not rows:
                 continue
