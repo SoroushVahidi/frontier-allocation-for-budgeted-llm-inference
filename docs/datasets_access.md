@@ -7,6 +7,10 @@ This guide describes a conservative, reproducible access workflow for the curren
 ## Hugging Face datasets
 
 Primary Hugging Face datasets in scope (wired in `experiments/hf_datasets.py`):
+- `allenai/drop` (current loader path fallback to `ucinlp/drop`; see notes)
+- `TAUR-Lab/MuSR`
+- `openeval/BIG-Bench-Hard`
+- `deepmind/aqua_rat` (AQuA-RAT)
 - `openai/gsm8k`
 - `hendrycks/competition_math` (canonical MATH; aliases: `math`, `MATH`, `hendrycks/math`)
 - `EleutherAI/hendrycks_math` (MATH mirror)

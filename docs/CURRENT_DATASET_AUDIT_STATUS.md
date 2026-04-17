@@ -7,6 +7,26 @@ Scope checked:
 - External supervision / warm-start / process-supervision datasets in `experiments/external_reasoning_datasets.py` and `configs/external_reasoning_datasets_registry.json`.
 - Verification artifacts generated on **2026-04-16** under `outputs/`.
 
+## 2026-04-17 bounded top-priority expansion update
+
+A focused expansion pass was run for the current top-priority additions (DROP, MuSR, BIG-Bench Hard, AQuA), without broadening to lower-priority datasets.
+
+Tracked keys added to `experiments/hf_datasets.py` and tooling defaults:
+- `allenai/drop` (with explicit runtime loader fallback to `ucinlp/drop` in this environment)
+- `TAUR-Lab/MuSR`
+- `openeval/BIG-Bench-Hard`
+- `deepmind/aqua_rat`
+
+Bounded access checks for these four all passed in this environment; see:
+- `outputs/dataset_expansion_20260417/hf_access/hf_access_summary.json`
+- `outputs/dataset_expansion_20260417/smoke/smoke_summary.json`
+- `outputs/dataset_expansion_20260417/integration_report/dataset_integration_report.json`
+- `docs/TOP_PRIORITY_DATASET_EXPANSION_READINESS_2026_04_17.md`
+
+Conservative caveats recorded:
+- DROP requested HF id `allenai/drop` remains unresolved here; current clean loader path is `ucinlp/drop` (plus AWS registry path available).
+- BIG-Bench Hard card metadata does not expose a clear license value in this bounded probe, so manual confirmation is still required before redistribution-sensitive use.
+
 Guardrails followed:
 - Keep **fixed-budget next-step branch allocation** as conceptual center.
 - Keep **evaluation** and **supervision** layers explicitly separated.
@@ -187,4 +207,3 @@ It is trustworthy enough to continue core work **if** we treat it as a layered s
 - `outputs/external_reasoning_datasets/dataset_audit_20260416/dataset_integration_report.csv`
 - `outputs/external_reasoning_datasets/dataset_audit_20260416/dataset_access_status.json`
 - `outputs/dataset_layer_audit_20260416.json`
-

@@ -123,6 +123,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-pairs", type=int, default=24)
     p.add_argument("--near-tie-margin", type=float, default=0.03)
     p.add_argument("--replace-confidence-min", type=float, default=0.60)
+    p.add_argument("--strict-hard-slice-only", action="store_true")
+    p.add_argument("--strict-near-tie-required", action="store_true")
+    p.add_argument("--strict-adjacent-required", action="store_true")
+    p.add_argument("--strict-min-pair-std", type=float, default=0.0)
+    p.add_argument("--soft-weight-confidence-min", type=float, default=0.75)
+    p.add_argument("--soft-disagree-weight", type=float, default=0.85)
+    p.add_argument("--soft-agree-weight", type=float, default=1.05)
     p.add_argument("--temperature", type=float, default=0.0)
     p.add_argument("--max-retries", type=int, default=6)
     p.add_argument("--retry-sleep-sec", type=float, default=3.5)
@@ -212,20 +219,42 @@ def main() -> None:
         elif winner == "branch_j":
             cohere_label = 0
 
-        replace = winner in {"branch_i", "branch_j"} and conf >= float(args.replace_confidence_min)
+        near_tie_flag = bool(abs(float(row.get("margin", 0.0))) <= float(args.near_tie_margin))
+        adjacent_flag = bool(row.get("adjacent_rank_flag", False))
+        pair_std = float(row.get("pair_uncertainty_std_mean", 0.0))
+        strict_gate_ok = True
+        if bool(args.strict_hard_slice_only):
+            if bool(args.strict_near_tie_required):
+                strict_gate_ok = strict_gate_ok and near_tie_flag
+            if bool(args.strict_adjacent_required):
+                strict_gate_ok = strict_gate_ok and adjacent_flag
+            strict_gate_ok = strict_gate_ok and (pair_std >= float(args.strict_min_pair_std))
+
+        replace = (
+            winner in {"branch_i", "branch_j"}
+            and conf >= float(args.replace_confidence_min)
+            and strict_gate_ok
+        )
         adjud = {
             "state_id": sid,
             "branch_i": bi,
             "branch_j": bj,
             "hard_score": float(row.get("hard_score", 0.0)),
-            "near_tie_flag": bool(abs(float(row.get("margin", 0.0))) <= float(args.near_tie_margin)),
-            "adjacent_rank_flag": bool(row.get("adjacent_rank_flag", False)),
-            "pair_uncertainty_std_mean": float(row.get("pair_uncertainty_std_mean", 0.0)),
+            "near_tie_flag": near_tie_flag,
+            "adjacent_rank_flag": adjacent_flag,
+            "pair_uncertainty_std_mean": pair_std,
             "original_label": original_label,
             "cohere_winner": winner,
             "cohere_label": cohere_label,
             "cohere_confidence": conf,
             "replace_label": bool(replace),
+            "strict_gate_ok": bool(strict_gate_ok),
+            "strict_policy": {
+                "strict_hard_slice_only": bool(args.strict_hard_slice_only),
+                "strict_near_tie_required": bool(args.strict_near_tie_required),
+                "strict_adjacent_required": bool(args.strict_adjacent_required),
+                "strict_min_pair_std": float(args.strict_min_pair_std),
+            },
             "cohere_model": str(args.model),
             "rationale_short": rationale,
             "prompt_json": prompt,
@@ -249,6 +278,8 @@ def main() -> None:
     base_pairs: list[dict[str, Any]] = []
     improved_pairs: list[dict[str, Any]] = []
     replacements = 0
+    soft_disagree_downweights = 0
+    soft_agree_upweights = 0
     for r in pairwise:
         b = dict(r)
         sid = str(b["state_id"])
@@ -275,6 +306,46 @@ def main() -> None:
             rr["replaced_approx_label"] = True
             rr["supervision_reliability_weight"] = min(1.3, 1.0 + 0.3 * float(picked["cohere_confidence"]))
             replacements += 1
+        else:
+            all_picked = next(
+                (
+                    a
+                    for a in adjudications
+                    if _pair_key(str(a["state_id"]), str(a["branch_i"]), str(a["branch_j"])) == key
+                ),
+                None,
+            )
+            if all_picked is not None:
+                conf = float(all_picked.get("cohere_confidence", 0.0))
+                winner = str(all_picked.get("cohere_winner", "tie"))
+                coh_lbl = int(all_picked.get("cohere_label", rr.get("preference", rr.get("label", 0))))
+                if (
+                    winner in {"branch_i", "branch_j"}
+                    and conf >= float(args.soft_weight_confidence_min)
+                    and bool(all_picked.get("strict_gate_ok", False))
+                ):
+                    if int(rr.get("preference", rr.get("label", 0))) == coh_lbl:
+                        rr["supervision_reliability_weight"] = max(
+                            rr.get("supervision_reliability_weight", 1.0),
+                            float(args.soft_agree_weight),
+                        )
+                        rr["cohere_adjudicated"] = True
+                        rr["cohere_replaced"] = False
+                        rr["cohere_model"] = str(args.model)
+                        rr["cohere_confidence"] = conf
+                        rr["label_source"] = "cohere_soft_agree_weighted"
+                        soft_agree_upweights += 1
+                    else:
+                        rr["supervision_reliability_weight"] = min(
+                            rr.get("supervision_reliability_weight", 1.0),
+                            float(args.soft_disagree_weight),
+                        )
+                        rr["cohere_adjudicated"] = True
+                        rr["cohere_replaced"] = False
+                        rr["cohere_model"] = str(args.model)
+                        rr["cohere_confidence"] = conf
+                        rr["label_source"] = "cohere_soft_disagree_downweighted"
+                        soft_disagree_downweights += 1
         improved_pairs.append(rr)
 
     for d, rows in [(base_dir, base_pairs), (improved_dir, improved_pairs)]:
@@ -292,6 +363,8 @@ def main() -> None:
         "strategy": "cohere_hard_adjudicated",
         "pairs": len(improved_pairs),
         "cohere_replaced_pairs": replacements,
+        "cohere_soft_disagree_downweights": soft_disagree_downweights,
+        "cohere_soft_agree_upweights": soft_agree_upweights,
         "cohere_coverage": replacements / max(1, len(improved_pairs)),
     }
     (base_dir / "target_summary.json").write_text(json.dumps(base_summary, indent=2), encoding="utf-8")
@@ -305,7 +378,16 @@ def main() -> None:
         "selected_pairs": len(selected),
         "adjudicated_pairs": len(adjudications),
         "replaced_pairs": replacements,
+        "soft_disagree_downweights": soft_disagree_downweights,
+        "soft_agree_upweights": soft_agree_upweights,
         "replace_confidence_min": float(args.replace_confidence_min),
+        "strict_hard_slice_only": bool(args.strict_hard_slice_only),
+        "strict_near_tie_required": bool(args.strict_near_tie_required),
+        "strict_adjacent_required": bool(args.strict_adjacent_required),
+        "strict_min_pair_std": float(args.strict_min_pair_std),
+        "soft_weight_confidence_min": float(args.soft_weight_confidence_min),
+        "soft_disagree_weight": float(args.soft_disagree_weight),
+        "soft_agree_weight": float(args.soft_agree_weight),
         "outputs": {
             "adjudication_dir": str(adjud_dir),
             "targets_root": str(targets_root),
@@ -316,7 +398,18 @@ def main() -> None:
     (adjud_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     (targets_root / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
-    print(json.dumps({"adjudication_dir": str(adjud_dir), "targets_root": str(targets_root), "replaced_pairs": replacements}, indent=2))
+    print(
+        json.dumps(
+            {
+                "adjudication_dir": str(adjud_dir),
+                "targets_root": str(targets_root),
+                "replaced_pairs": replacements,
+                "soft_disagree_downweights": soft_disagree_downweights,
+                "soft_agree_upweights": soft_agree_upweights,
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

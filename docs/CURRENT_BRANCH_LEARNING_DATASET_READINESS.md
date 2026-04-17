@@ -7,6 +7,12 @@ Project framing preserved:
 - this data layer is for learning branch-comparison / branch-priority decisions;
 - supervision-target quality remains a central bottleneck (not solved by integration alone).
 
+## 2026-04-17 note on top-priority dataset expansion
+
+A bounded evaluation-layer expansion pass added tracked support for DROP, MuSR, BIG-Bench Hard, and AQuA in the HF registry/tooling layer (`experiments/hf_datasets.py`, verification/smoke/report scripts), documented in `docs/TOP_PRIORITY_DATASET_EXPANSION_READINESS_2026_04_17.md`.
+
+This does **not** mean these four datasets have already been promoted into canonical branch-learning corpus materialization (`outputs/branch_learning_corpora/*`). Their current status is integration/readiness first; branch-learning usage policy remains a separate follow-up decision.
+
 ## 1) Code-path audit summary (processing + labels)
 
 Audited code paths feeding branch-allocation learning:
