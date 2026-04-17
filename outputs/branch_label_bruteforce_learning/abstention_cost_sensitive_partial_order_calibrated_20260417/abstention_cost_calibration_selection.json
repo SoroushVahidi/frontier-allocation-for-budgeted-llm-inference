@@ -1,0 +1,9 @@
+{
+  "run_id": "abstention_cost_sensitive_partial_order_calibrated_20260417",
+  "selection_rule": {
+    "type": "max_accepted_accuracy_subject_to_coverage_floor",
+    "coverage_floor": 0.4
+  },
+  "calibration_enable_sweep": true,
+  "records": []
+}
