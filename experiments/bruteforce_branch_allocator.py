@@ -134,6 +134,7 @@ class LearningConfig:
     pairwise_max_iter: int = 500
     outside_max_iter: int = 500
     pointwise_alpha: float = 1.0
+    pointwise_target_field: str = "estimated_value_if_allocate_next"
     train_pairwise: bool = True
     train_pointwise: bool = True
     train_outside_option: bool = True
@@ -1006,7 +1007,8 @@ def _fit_pointwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dic
     if len(train) < 2:
         return {"model_type": "pointwise_ridge", "status": "insufficient_train_rows"}
     x = [r["x"] for r in train]
-    y = [float(r["estimated_value_if_allocate_next"]) for r in train]
+    target_field = str(getattr(cfg, "pointwise_target_field", "estimated_value_if_allocate_next"))
+    y = [float(r.get(target_field, r.get("estimated_value_if_allocate_next", 0.0))) for r in train]
     model = Ridge(alpha=cfg.pointwise_alpha, random_state=cfg.seed)
     model.fit(x, y)
     return {
@@ -1014,6 +1016,7 @@ def _fit_pointwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dic
         "status": "ok",
         "feature_names": _feature_names_for_set(str(cfg.feature_set)),
         "feature_set": str(cfg.feature_set),
+        "target_field": target_field,
         "weights": [float(v) for v in model.coef_],
         "intercept": float(model.intercept_),
     }

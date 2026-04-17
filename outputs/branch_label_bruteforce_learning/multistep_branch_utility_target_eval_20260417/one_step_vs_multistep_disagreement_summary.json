@@ -1,0 +1,76 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "mode": "multistep_branch_utility_target_k1",
+      "regime": "multistep_branch_utility_target_k1",
+      "target_field": "multistep_branch_utility_target",
+      "test_state_n": 3,
+      "disagreement_n": 0,
+      "disagreement_rate": 0.0,
+      "examples": []
+    },
+    {
+      "seed": 11,
+      "mode": "multistep_branch_utility_target_k3",
+      "regime": "multistep_branch_utility_target_k3",
+      "target_field": "multistep_branch_utility_target",
+      "test_state_n": 3,
+      "disagreement_n": 1,
+      "disagreement_rate": 0.3333333333333333,
+      "examples": [
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "one_step_best_branch": "b2",
+          "multistep_best_branch": "b0"
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "multistep_branch_utility_target_k1",
+      "regime": "multistep_branch_utility_target_k1",
+      "target_field": "multistep_branch_utility_target",
+      "test_state_n": 3,
+      "disagreement_n": 0,
+      "disagreement_rate": 0.0,
+      "examples": []
+    },
+    {
+      "seed": 29,
+      "mode": "multistep_branch_utility_target_k3",
+      "regime": "multistep_branch_utility_target_k3",
+      "target_field": "multistep_branch_utility_target",
+      "test_state_n": 3,
+      "disagreement_n": 1,
+      "disagreement_rate": 0.3333333333333333,
+      "examples": [
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "one_step_best_branch": "b0",
+          "multistep_best_branch": "b2"
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "multistep_branch_utility_target_k1",
+      "regime": "multistep_branch_utility_target_k1",
+      "target_field": "multistep_branch_utility_target",
+      "test_state_n": 2,
+      "disagreement_n": 0,
+      "disagreement_rate": 0.0,
+      "examples": []
+    },
+    {
+      "seed": 47,
+      "mode": "multistep_branch_utility_target_k3",
+      "regime": "multistep_branch_utility_target_k3",
+      "target_field": "multistep_branch_utility_target",
+      "test_state_n": 2,
+      "disagreement_n": 0,
+      "disagreement_rate": 0.0,
+      "examples": []
+    }
+  ]
+}

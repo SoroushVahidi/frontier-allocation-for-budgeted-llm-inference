@@ -1,0 +1,17 @@
+{
+  "run_id": "multistep_branch_utility_target_eval_20260417",
+  "targets_root": "outputs/branch_label_bruteforce_targets/multistep_branch_utility_target_20260417",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "feature_set": "v3",
+  "near_tie_margin": 0.03,
+  "regime_to_mode": {
+    "all_pairs": "canonical_pairwise_baseline",
+    "multistep_branch_utility_target_k1": "multistep_branch_utility_target_k1",
+    "multistep_branch_utility_target_k3": "multistep_branch_utility_target_k3"
+  },
+  "multistep_target_field": "multistep_branch_utility_target"
+}
