@@ -2,6 +2,37 @@
 
 This index defines the **canonical**, **exploratory**, and **historical** documentation for the current project.
 
+## Shortest reading paths
+
+### If you only want the current truth
+Read:
+1. [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+2. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+3. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+4. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+5. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+
+### If you only want the shortest dashboard
+Read:
+- [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+- [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
+- [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
+- [`REPOSITORY_POLISH_PASS_2026_04_17.md`](REPOSITORY_POLISH_PASS_2026_04_17.md)
+
+### If you only want runnable code entry points
+Read:
+- [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
+- [`../scripts/README.md`](../scripts/README.md)
+
+## Do not start here
+
+Avoid starting with:
+- isolated one-off method notes,
+- historical memos,
+- or arbitrary `outputs/` artifacts without reading the canonical docs first.
+
+Those materials are still useful, but they are easy to overread without the canonical interpretation path.
+
 ## Short entry paths
 
 - Fastest reliable collaborator start: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
@@ -103,6 +134,7 @@ Read these first for the current project identity:
 - `BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md` records the current support-size robustness diagnosis for the branch-value + uncertainty line.
 - `REFERENCES_ORGANIZATION_2026_04_18.md` explains how to interpret and organize the repository’s reference base.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
+- `REPOSITORY_POLISH_PASS_2026_04_17.md` records the latest bounded repository polish pass and the intended reading and maintenance rules.
 
 ## Exploratory / active-branch notes
 
