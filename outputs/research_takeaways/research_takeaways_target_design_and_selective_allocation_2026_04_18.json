@@ -1,0 +1,34 @@
+{
+  "run_id": "research_takeaways_target_design_and_selective_allocation_2026_04_18",
+  "date": "2026-04-18",
+  "main_conclusion": "The bottleneck is best framed as a selective marginal-allocation problem rather than ordinary routing or plain binary pair classification.",
+  "core_shift": "Move away from brittle binary pairwise winner labels and toward budget-conditioned marginal continuation value with an explicit unresolved/defer region.",
+  "important_points": [
+    "branch-level budget-conditioned value is more faithful than forced pairwise wins",
+    "pairwise decisions should increasingly be derived from value separation",
+    "hardest pairs should not always be forced into a total order",
+    "raw predicted magnitude is not automatically confidence",
+    "existing data should be reused more intelligently before broad new data expansion"
+  ],
+  "promising_target_directions": [
+    "penalized marginal continuation value",
+    "soft or relaxed pairwise supervision",
+    "partial-order or unresolved supervision",
+    "branch-level value plus explicit defer"
+  ],
+  "practical_experiment_ideas": [
+    "budget-conditioned branch-level value-head experiment with derived compare/defer",
+    "relaxed pairwise labels on current artifacts using provenance and disagreement metadata",
+    "partial-order supervision on hardest slices",
+    "provenance-aware weighting across exact and approximate labels",
+    "selective relabeling by decision value on near-ties and disagreement states"
+  ],
+  "safe_wording": "The most promising target-design direction is to model next-step branch allocation as budget-conditioned selective marginal allocation, using branch-level continuation-value signals, softer or structured supervision on ambiguous pairs, and explicit defer/unresolved handling rather than forcing all hard comparisons into binary winner labels.",
+  "not_yet_safe": [
+    "branch-level value supervision is already the settled canonical winner",
+    "partial-order or abstention formulations are already empirically closed",
+    "raw predicted value magnitude can already be trusted as confidence"
+  ],
+  "recommended_next_step": "Run a bounded auditable experiment on one of: branch-level budget-conditioned value prediction with derived compare/defer, relaxed pairwise targets tied to provenance and disagreement, or partial-order/unresolved treatment on hardest slices.",
+  "related_doc": "docs/RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md"
+}
