@@ -10,6 +10,7 @@ Start with these scripts:
 - `evaluate_branch_scorer_robustness.py`
 - `run_new_paper_frontier_matrix.py`
 - `run_comparative_frontier_audit.py`
+- `run_imported_methodology_frontier_eval.py`
 
 ## If you want the current hard-case / near-tie method line
 
@@ -40,4 +41,5 @@ Start with these scripts:
 
 - Use this page first.
 - Use [`README.md`](README.md) for the full script index.
+- Use `run_imported_methodology_frontier_eval.py` when you need cleaner manuscript-style fixed/adaptive/oracle summaries.
 - Treat historical script paths as provenance support, not the default path.
