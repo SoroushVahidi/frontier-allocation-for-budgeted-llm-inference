@@ -10,6 +10,10 @@ Place here:
 - provenance-only experiment summaries,
 - historical support files that should not be read as current project guidance.
 
+## Current archived subpaths
+
+- `historical_scripts/` — preserved old-track script entry points that no longer belong in the canonical scripts path.
+
 ## Interpretation rule
 
 Anything in `archive/` should be treated as:
@@ -21,3 +25,4 @@ For the current project path, start instead with:
 - `README.md`
 - `docs/CANONICAL_START_HERE.md`
 - `docs/REPO_MAP.md`
+- `scripts/HISTORICAL_INDEX.md` if you specifically need old script entry points.
