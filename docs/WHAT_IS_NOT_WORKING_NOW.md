@@ -26,7 +26,10 @@ Pointwise fallback helps only in some settings; generic fallback is brittle and 
 ### 6. Deferred-only specialist training
 Training the specialist only on post-hoc deferred train states was a useful test, but it was not the right fix; it hurt forced/top-1 and did not improve deferred-subset quality enough.
 
-### 7. Broadening scope too early
+### 7. Broad hard-pair replacement
+Recent hard-pair relabeling/adjudication attempts did not justify broad label overrides as the default fix, especially under loose acceptance/replacement policies.
+
+### 8. Broadening scope too early
 The repo already has many strong active lines. Broadening into more variants before tightening the current strongest scaffold is not the best use of effort.
 
 ## Not yet strong enough for a NeurIPS-level claim
@@ -41,6 +44,7 @@ The repo already has many strong active lines. Broadening into more variants bef
 Do not spend the next pass on:
 - another broad model-class sweep,
 - another generic fallback policy,
+- another loose hard-label replacement pass,
 - or another repo-wide method branch unless it directly strengthens the current strongest scaffold.
 
 ## Current discipline rule
@@ -48,6 +52,6 @@ Do not spend the next pass on:
 Before launching a new method pass, ask:
 1. does it improve the current strongest scaffold,
 2. does it address ambiguous hard-case supervision or selective pairwise control,
-3. and does it make the paper look more principled rather than just more complex?
+3. does it make the paper look more principled rather than just more complex?
 
 If the answer is no, it is probably not the best next move.
