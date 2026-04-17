@@ -57,6 +57,9 @@ Ternary / abstention / fallback variations did not by themselves solve forced ne
 ### 4. Deferred-state-only specialist training
 Training the specialist only on deferred train states did not improve deferred-subset quality and hurt overall forced/top-1 versus the stronger tie-aware baseline.
 
+### 5. Broad hard-pair replacement
+Recent bounded hard-case adjudication/relabeling passes, including a bounded Cohere pass, did not provide a clean win under the tested replacement policies.
+
 ## Current best interpretation of the bottleneck
 
 The bottleneck is no longer best described as “we need another controller family” or “we need another model class.”
@@ -90,6 +93,12 @@ If implementing the next method pass, keep fixed unless there is strong new evid
 
 The best current next step is:
 
-> **upgrade the tie-aware post-hoc deferral controller into a more principled selective pairwise judge, while keeping the rest of the current scaffold stable.**
+> **upgrade the hard-pair supervision pipeline before broadening again into more controller complexity.**
 
-That means improving the controller’s acceptance/defer rule before broadening again into many new expert variants.
+Concretely, this means building a more principled hard-pair cleanup path:
+- suspicious-pair ranking,
+- selective cleanup,
+- reliability-aware weighting,
+- and only then more targeted exact review or multi-judge aggregation if needed.
+
+That direction is now more urgent than another generic controller-family expansion.
