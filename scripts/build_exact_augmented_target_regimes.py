@@ -251,6 +251,52 @@ def _annotate_incomparable_pair(
     return out
 
 
+def _annotate_allocation_regret_target(
+    row: dict[str, Any],
+    *,
+    cand_i: dict[str, Any],
+    cand_j: dict[str, Any],
+    state_best_value: float,
+    use_outside_option: bool,
+    near_tie_margin: float,
+) -> dict[str, Any]:
+    out = dict(row)
+    value_i = float(cand_i.get("estimated_value_if_allocate_next", out.get("pair_value_i", 0.0)))
+    value_j = float(cand_j.get("estimated_value_if_allocate_next", out.get("pair_value_j", 0.0)))
+    outside = float(out.get("outside_option_value_estimate", cand_i.get("outside_option_value", cand_j.get("outside_option_value", 0.0))))
+    best_available = max(float(state_best_value), float(outside)) if use_outside_option else float(state_best_value)
+
+    regret_i = max(0.0, best_available - value_i)
+    regret_j = max(0.0, best_available - value_j)
+    better_regret = min(regret_i, regret_j)
+    worse_regret = max(regret_i, regret_j)
+    regret_gap = abs(regret_i - regret_j)
+    regret_gap_rel = regret_gap / max(abs(best_available), abs(value_i), abs(value_j), 1e-6)
+    prefer_i = regret_i <= regret_j
+
+    out["label"] = 1 if prefer_i else 0
+    out["preference"] = int(out["label"])
+    out["margin"] = float(regret_j - regret_i)
+    out["margin_abs"] = abs(float(out["margin"]))
+    out["relative_margin"] = float(regret_gap_rel)
+    out["near_tie_flag"] = bool(regret_gap <= float(near_tie_margin))
+
+    out["allocation_regret_target_enabled"] = True
+    out["allocation_regret_target_source"] = "best_available_regret_v1"
+    out["allocation_regret_use_outside_option"] = bool(use_outside_option)
+    out["allocation_regret_best_value_in_state"] = float(state_best_value)
+    out["allocation_regret_outside_option_value"] = float(outside)
+    out["allocation_regret_best_available_value"] = float(best_available)
+    out["allocation_regret_i"] = float(regret_i)
+    out["allocation_regret_j"] = float(regret_j)
+    out["allocation_regret_best_pair"] = float(better_regret)
+    out["allocation_regret_worse_pair"] = float(worse_regret)
+    out["allocation_regret_gap"] = float(regret_gap)
+    out["allocation_regret_gap_relative"] = float(regret_gap_rel)
+    out["allocation_regret_cost_weight"] = float(1.0 + min(2.0, worse_regret / max(abs(best_available), 1e-6)))
+    return out
+
+
 def main() -> None:
     args = parse_args()
     labels_dir = Path(args.labels_dir)
@@ -270,6 +316,13 @@ def main() -> None:
     }
 
     pair_type_map = _pair_type_for_state_pairs(candidates)
+    by_state: dict[str, list[dict[str, Any]]] = {}
+    for c in candidates:
+        by_state.setdefault(str(c["state_id"]), []).append(c)
+    state_best_value_map = {
+        sid: (max(float(r.get("estimated_value_if_allocate_next", 0.0)) for r in rows) if rows else 0.0)
+        for sid, rows in by_state.items()
+    }
 
     promoted: list[dict[str, Any]] = []
     for row in pairs:
@@ -387,10 +440,34 @@ def main() -> None:
         )
         for r in promoted
     ]
+    promoted_allocation_regret = [
+        _annotate_allocation_regret_target(
+            r,
+            cand_i=cand_map.get((str(r["state_id"]), str(r["branch_i"])), {}),
+            cand_j=cand_map.get((str(r["state_id"]), str(r["branch_j"])), {}),
+            state_best_value=float(state_best_value_map.get(str(r["state_id"]), 0.0)),
+            use_outside_option=True,
+            near_tie_margin=float(args.near_tie_margin),
+        )
+        for r in promoted
+    ]
+    promoted_allocation_regret_no_outside = [
+        _annotate_allocation_regret_target(
+            r,
+            cand_i=cand_map.get((str(r["state_id"]), str(r["branch_i"])), {}),
+            cand_j=cand_map.get((str(r["state_id"]), str(r["branch_j"])), {}),
+            state_best_value=float(state_best_value_map.get(str(r["state_id"]), 0.0)),
+            use_outside_option=False,
+            near_tie_margin=float(args.near_tie_margin),
+        )
+        for r in promoted
+    ]
 
     regimes: dict[str, list[dict[str, Any]]] = {
         "all_pairs_approx": baseline_rows,
         "promoted_exact_hard_region": promoted,
+        "allocation_regret_target": promoted_allocation_regret,
+        "allocation_regret_target_no_outside": promoted_allocation_regret_no_outside,
         "soft_prob_promoted_exact_hard_region": promoted_soft,
         "partial_order_promoted_exact_hard_region": promoted_partial_order,
         "promoted_exact_top_vs_rest": [r for r in promoted if str(r.get("pair_type")) == "top_vs_rest"],
@@ -439,6 +516,9 @@ def main() -> None:
             "partial_order_incomparable_rate": (
                 sum(1 for r in rows if bool(r.get("partial_order_incomparable_target", False))) / max(1, len(rows))
             ),
+            "allocation_regret_gap_mean": sum(float(r.get("allocation_regret_gap", 0.0)) for r in rows) / max(1, len(rows)),
+            "allocation_regret_worse_pair_mean": sum(float(r.get("allocation_regret_worse_pair", 0.0)) for r in rows) / max(1, len(rows)),
+            "allocation_regret_cost_weight_mean": sum(float(r.get("allocation_regret_cost_weight", 1.0)) for r in rows) / max(1, len(rows)),
         }
         (d / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
         manifest["regimes"][regime] = {"output_dir": str(d), "summary": summary}

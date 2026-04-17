@@ -1,0 +1,22 @@
+{
+  "experiment": "allocation_regret_target_bounded",
+  "date_utc": "2026-04-17",
+  "target_root": "outputs/branch_label_bruteforce_targets/allocation_regret_target_20260417",
+  "strict_validation_run_dir": "outputs/branch_label_bruteforce_learning/allocation_regret_target_strict_validation_20260417",
+  "regimes": [
+    "all_pairs",
+    "allocation_regret_target",
+    "allocation_regret_target_no_outside"
+  ],
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "feature_set": "v3",
+  "primary_metric_variant": "full_method",
+  "inputs": {
+    "target_manifest": "outputs/branch_label_bruteforce_targets/allocation_regret_target_20260417/manifest.json",
+    "strict_validation_results": "outputs/branch_label_bruteforce_learning/allocation_regret_target_strict_validation_20260417/strict_validation_results.json"
+  }
+}

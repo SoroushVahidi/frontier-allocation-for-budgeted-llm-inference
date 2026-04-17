@@ -1,0 +1,29 @@
+{
+  "all_pairs": {
+    "accepted_pair_accuracy": 0.9333333333333332,
+    "coverage": 0.2698412698412698,
+    "defer_rate": 0.7301587301587302,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+    "test_pairs": 7.666666666666667,
+    "n_rows": 3
+  },
+  "allocation_regret_target": {
+    "accepted_pair_accuracy": 0.9333333333333332,
+    "coverage": 0.2698412698412698,
+    "defer_rate": 0.7301587301587302,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+    "test_pairs": 7.666666666666667,
+    "n_rows": 3
+  },
+  "allocation_regret_target_no_outside": {
+    "accepted_pair_accuracy": 0.9333333333333332,
+    "coverage": 0.2698412698412698,
+    "defer_rate": 0.7301587301587302,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+    "test_pairs": 7.666666666666667,
+    "n_rows": 3
+  }
+}
