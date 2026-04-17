@@ -19,6 +19,13 @@ Read in this order:
 5. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
 6. [`REPO_MAP.md`](REPO_MAP.md)
 
+### 1b. I want a compact repository-facing audit first
+Read:
+1. [`FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md`](FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md)
+2. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+3. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+4. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+
 ### 2. I want to understand the current method and where it is weak
 Read next:
 1. [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
@@ -57,6 +64,7 @@ Read:
 Use:
 - [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
 - [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
+- `../outputs/repository_audit/repository_audit_summary_2026_04_18.json`
 
 ## Directory-level interpretation
 
