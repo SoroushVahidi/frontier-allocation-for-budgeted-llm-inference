@@ -34,8 +34,9 @@ Read these first:
 6. [`docs/WHAT_IS_NOT_WORKING_NOW.md`](docs/WHAT_IS_NOT_WORKING_NOW.md)
 7. [`docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md`](docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md)
 8. [`docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
-9. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
-10. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+9. [`docs/OUTPUTS_INTERPRETATION_GUIDE.md`](docs/OUTPUTS_INTERPRETATION_GUIDE.md)
+10. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+11. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 ### If you want to run code
 Start with:
@@ -49,11 +50,16 @@ Read next:
 - [`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`](docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md)
 - [`docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md`](docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md)
 - [`docs/STRICT_COUPLED_TIE_AWARE_LEARNED_TWO_STAGE_DEFERRAL_STATUS.md`](docs/STRICT_COUPLED_TIE_AWARE_LEARNED_TWO_STAGE_DEFERRAL_STATUS.md)
+- [`docs/LEARNED_TWO_STAGE_DEFERRAL_CALIBRATION_POLICY_STATUS.md`](docs/LEARNED_TWO_STAGE_DEFERRAL_CALIBRATION_POLICY_STATUS.md)
 - [`docs/imported_methodology_frontier_integration_report.md`](docs/imported_methodology_frontier_integration_report.md)
 
 ### If you want to interpret outputs quickly
 Use:
 - [`docs/OUTPUTS_INTERPRETATION_GUIDE.md`](docs/OUTPUTS_INTERPRETATION_GUIDE.md)
+
+### If you want to see current dataset priorities
+Use:
+- [`docs/DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](docs/DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
 
 ## What is already strong
 
