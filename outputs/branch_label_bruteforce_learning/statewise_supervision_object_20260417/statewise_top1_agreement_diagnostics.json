@@ -1,0 +1,101 @@
+{
+  "run_id": "statewise_supervision_object_20260417",
+  "diagnostics_by_seed": {
+    "11": {
+      "baseline_pairwise_canonical": {
+        "type": "pairwise_canonical",
+        "statewise_top1_from_pairwise_not_computed": true
+      },
+      "statewise_next_branch_value": {
+        "test_state_n": 3,
+        "top1_agreement": 0.0,
+        "near_tie_heavy_state_n": 2,
+        "near_tie_heavy_top1_agreement": 0.0,
+        "candidate_count_summary": {
+          "min": 2,
+          "max": 3,
+          "mean": 2.6666666666666665,
+          "median": 3.0,
+          "p90": 3.0
+        }
+      },
+      "statewise_next_branch_binary_top1_only": {
+        "test_state_n": 3,
+        "top1_agreement": 0.0,
+        "near_tie_heavy_state_n": 2,
+        "near_tie_heavy_top1_agreement": 0.0,
+        "candidate_count_summary": {
+          "min": 2,
+          "max": 3,
+          "mean": 2.6666666666666665,
+          "median": 3.0,
+          "p90": 3.0
+        }
+      }
+    },
+    "29": {
+      "baseline_pairwise_canonical": {
+        "type": "pairwise_canonical",
+        "statewise_top1_from_pairwise_not_computed": true
+      },
+      "statewise_next_branch_value": {
+        "test_state_n": 3,
+        "top1_agreement": 0.6666666666666666,
+        "near_tie_heavy_state_n": 2,
+        "near_tie_heavy_top1_agreement": 0.5,
+        "candidate_count_summary": {
+          "min": 3,
+          "max": 4,
+          "mean": 3.3333333333333335,
+          "median": 3.0,
+          "p90": 3.8
+        }
+      },
+      "statewise_next_branch_binary_top1_only": {
+        "test_state_n": 3,
+        "top1_agreement": 0.6666666666666666,
+        "near_tie_heavy_state_n": 2,
+        "near_tie_heavy_top1_agreement": 1.0,
+        "candidate_count_summary": {
+          "min": 3,
+          "max": 4,
+          "mean": 3.3333333333333335,
+          "median": 3.0,
+          "p90": 3.8
+        }
+      }
+    },
+    "47": {
+      "baseline_pairwise_canonical": {
+        "type": "pairwise_canonical",
+        "statewise_top1_from_pairwise_not_computed": true
+      },
+      "statewise_next_branch_value": {
+        "test_state_n": 2,
+        "top1_agreement": 0.5,
+        "near_tie_heavy_state_n": 1,
+        "near_tie_heavy_top1_agreement": 0.0,
+        "candidate_count_summary": {
+          "min": 2,
+          "max": 3,
+          "mean": 2.5,
+          "median": 2.5,
+          "p90": 2.9
+        }
+      },
+      "statewise_next_branch_binary_top1_only": {
+        "test_state_n": 2,
+        "top1_agreement": 1.0,
+        "near_tie_heavy_state_n": 1,
+        "near_tie_heavy_top1_agreement": 1.0,
+        "candidate_count_summary": {
+          "min": 2,
+          "max": 3,
+          "mean": 2.5,
+          "median": 2.5,
+          "p90": 2.9
+        }
+      }
+    }
+  }
+}

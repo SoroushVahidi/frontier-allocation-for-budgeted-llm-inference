@@ -1,0 +1,25 @@
+{
+  "run_id": "statewise_supervision_object_20260417",
+  "baseline": {
+    "seeds_present": 3,
+    "accepted_accuracy_mean": 0.42063492063492064,
+    "coverage_mean": 1.0,
+    "defer_rate_mean": 0.0,
+    "near_tie_accepted_accuracy_mean": 0.39999999999999997,
+    "adjacent_rank_accepted_accuracy_mean": 0.4507936507936508,
+    "statewise_top1_agreement_mean": 0.0,
+    "near_tie_heavy_state_top1_agreement_mean": 0.0
+  },
+  "comparison": {
+    "statewise_next_branch_value": {
+      "delta_accepted_accuracy_vs_baseline": -0.019841269841269882,
+      "delta_near_tie_accepted_accuracy_vs_baseline": -0.19999999999999998,
+      "delta_adjacent_rank_accepted_accuracy_vs_baseline": -0.08253968253968252
+    },
+    "statewise_next_branch_binary_top1_only": {
+      "delta_accepted_accuracy_vs_baseline": 0.20238095238095238,
+      "delta_near_tie_accepted_accuracy_vs_baseline": 0.13333333333333336,
+      "delta_adjacent_rank_accepted_accuracy_vs_baseline": 0.09206349206349201
+    }
+  }
+}
