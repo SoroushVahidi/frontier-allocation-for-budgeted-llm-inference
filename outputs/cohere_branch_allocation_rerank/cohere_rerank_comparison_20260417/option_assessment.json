@@ -1,0 +1,37 @@
+{
+  "option_a_candidate_set_rerank": {
+    "match_to_bottleneck": "high: listwise next-step ranking directly targets branch selection and reduces strict dependence on binary pair labels",
+    "reuse_assets": [
+      "candidate_labels.jsonl",
+      "pairwise_labels.jsonl",
+      "existing hard-slice/near-tie definitions",
+      "existing top1 proxy metrics"
+    ],
+    "implementation_effort": "small-to-medium",
+    "repo_status": "bounded_experimental"
+  },
+  "option_b_rerank_fallback_for_ambiguous": {
+    "match_to_bottleneck": "high for ambiguity slices; lower direct coverage on easy states",
+    "reuse_assets": [
+      "existing near-tie/hard-slice gates",
+      "existing pairwise_vote fallback"
+    ],
+    "implementation_effort": "small",
+    "repo_status": "bounded_experimental_helper"
+  },
+  "option_c_embeddings_case_retrieval": {
+    "match_to_bottleneck": "medium; indirect to branch-selection objective and needs retrieval corpus design",
+    "reuse_assets": [
+      "historical states/candidates"
+    ],
+    "implementation_effort": "medium-to-large",
+    "repo_status": "exploratory"
+  },
+  "option_d_other": {
+    "match_to_bottleneck": "not selected; no cleaner minimal path than rerank in current repo layout",
+    "implementation_effort": "n/a",
+    "repo_status": "n/a"
+  },
+  "chosen_primary_path": "option_a_candidate_set_rerank",
+  "rationale": "Most direct listwise baseline against pairwise controllers with minimal repo changes; option B also executed as supportive fallback variant for ambiguity slices."
+}

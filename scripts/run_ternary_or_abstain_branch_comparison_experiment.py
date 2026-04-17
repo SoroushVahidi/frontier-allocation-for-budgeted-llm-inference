@@ -266,6 +266,14 @@ def _metrics_for_predictions(
 
     near = [r for r in subset if bool(r.get("near_tie_flag", False))]
     adjacent = [r for r in subset if str(r.get("pair_type", "")) == "adjacent_rank"]
+    deferred = [r for r in subset if pred_fn(r) is None]
+    forced_on_deferred = _acc(deferred, lambda r: forced_pred_fn(r))
+    accepted_value_gap = (
+        sum(float(r.get("pair_value_gap", 0.0)) for r in accepted) / max(1, len(accepted))
+    )
+    deferred_value_gap = (
+        sum(float(r.get("pair_value_gap", 0.0)) for r in deferred) / max(1, len(deferred))
+    )
 
     return {
         "accepted_pair_accuracy": _acc(accepted, pred_fn),
@@ -283,6 +291,10 @@ def _metrics_for_predictions(
         "near_tie_forced_accuracy": _acc(near, lambda r: forced_pred_fn(r)),
         "adjacent_accepted_accuracy": _acc([r for r in adjacent if pred_fn(r) is not None], pred_fn),
         "adjacent_forced_accuracy": _acc(adjacent, lambda r: forced_pred_fn(r)),
+        "fallback_on_deferred_accuracy": forced_on_deferred,
+        "accepted_mean_pair_value_gap": accepted_value_gap,
+        "deferred_mean_pair_value_gap": deferred_value_gap,
+        "realized_spend_proxy_per_pair": len(accepted) / max(1, len(subset)),
         "test_pairs": float(len(subset)),
     }
 
@@ -632,6 +644,38 @@ def main() -> None:
                     }
                 )
 
+            penalized_defer = _train_ternary_pair_model(tables["pairwise"], seed, label_key="ternary_defer_label")
+            if penalized_defer.get("status") == "ok":
+                pdm = penalized_defer["model"]
+
+                def penalized_defer_pred(row: dict[str, Any]) -> int | None:
+                    pred = int(pdm.predict([row["x_diff"]])[0])
+                    if pred == 1:
+                        return None
+                    return 1 if pred == 2 else 0
+
+                penalized_defer_metrics = _metrics_for_predictions(
+                    tables["pairwise"],
+                    pred_fn=penalized_defer_pred,
+                    forced_pred_fn=lambda r: pointwise_fallback(r) if penalized_defer_pred(r) is None else int(penalized_defer_pred(r) or 0),
+                    ambiguity_truth_key="penalized_marginal_defer_target",
+                )
+                penalized_defer_top1 = _top1_from_pairwise_rows(
+                    tables["pairwise"],
+                    tables["state_to_candidates"],
+                    penalized_defer_pred,
+                    pointwise_fallback,
+                )
+            else:
+                penalized_defer_metrics = {k: 0.0 for k in [
+                    "accepted_pair_accuracy", "coverage", "abstention_rate", "unresolved_rate", "forced_pairwise_accuracy",
+                    "tie_detection_precision", "tie_detection_recall", "tie_detection_f1", "ambiguity_detection_precision",
+                    "ambiguity_detection_recall", "ambiguity_detection_f1", "near_tie_accepted_accuracy", "near_tie_forced_accuracy",
+                    "adjacent_accepted_accuracy", "adjacent_forced_accuracy", "fallback_on_deferred_accuracy",
+                    "accepted_mean_pair_value_gap", "deferred_mean_pair_value_gap", "realized_spend_proxy_per_pair", "test_pairs",
+                ]}
+                penalized_defer_top1 = 0.0
+
             seed_rows = [
                 {"formulation": "binary_forced", "top1_test": binary_top1, **binary_metrics},
                 {"formulation": "ternary_tie", "top1_test": ternary_top1, **ternary_metrics},
@@ -640,6 +684,7 @@ def main() -> None:
                 {"formulation": "partial_order_incomparable", "top1_test": partial_order_top1, **partial_order_metrics},
                 {"formulation": "partial_order_cost_sensitive_abstain_previous", "top1_test": partial_order_cost_top1, **partial_order_cost_metrics},
                 {"formulation": "partial_order_cost_sensitive_abstain_calibrated", "top1_test": calibrated_top1, **calibrated_metrics},
+                {"formulation": "penalized_marginal_defer", "top1_test": penalized_defer_top1, **penalized_defer_metrics},
             ]
             detailed["regimes"][regime][str(seed)] = {
                 "config": {
@@ -656,6 +701,7 @@ def main() -> None:
                     "ternary_train_status": ternary.get("status", "unknown"),
                     "soft_ternary_train_status": soft_ternary.get("status", "unknown"),
                     "partial_order_train_status": partial_order.get("status", "unknown"),
+                    "penalized_marginal_defer_train_status": penalized_defer.get("status", "unknown"),
                     "abstention_unresolved_class_upweight": args.abstention_unresolved_class_upweight,
                     "abstention_costs": _build_abstention_costs(args),
                     "calibration_enable_sweep": bool(args.calibration_enable_sweep),
@@ -708,6 +754,7 @@ def main() -> None:
             "partial_order_incomparable",
             "partial_order_cost_sensitive_abstain_previous",
             "partial_order_cost_sensitive_abstain_calibrated",
+            "penalized_marginal_defer",
         ]:
             rows = [r for r in flat if r["regime"] == regime and r["formulation"] == formulation]
             if not rows:

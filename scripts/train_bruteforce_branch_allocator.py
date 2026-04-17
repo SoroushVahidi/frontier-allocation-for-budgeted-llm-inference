@@ -65,7 +65,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--svm-class-weight-balanced", action="store_true")
     p.add_argument("--svm-margin-calibration", choices=["none", "platt"], default="none")
     p.add_argument("--train-pairwise-defer-classifier", action="store_true")
-    p.add_argument("--defer-target-mode", choices=["heuristic", "oracle_proxy", "hybrid"], default="heuristic")
+    p.add_argument("--defer-target-mode", choices=["heuristic", "oracle_proxy", "hybrid", "precomputed"], default="heuristic")
     p.add_argument("--defer-abs-margin-threshold", type=float, default=0.03)
     p.add_argument("--defer-relative-margin-threshold", type=float, default=0.15)
     p.add_argument("--defer-std-threshold", type=float, default=0.08)

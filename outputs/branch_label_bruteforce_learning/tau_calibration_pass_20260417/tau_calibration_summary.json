@@ -1,0 +1,235 @@
+{
+  "objective": "reduce defer diffusion while preserving hard-case defer and improving acted-accuracy/coverage tradeoff",
+  "comparison_three_stage": {
+    "before_branch_specific_old_tau": {
+      "config": "l0.10_t0.02_u0.50",
+      "semantics": {
+        "n": 181,
+        "class_balance": {
+          "defer": 172,
+          "left_better": 4,
+          "right_better": 5
+        },
+        "defer_rate": 0.9502762430939227,
+        "near_tie_defer_rate": 1.0,
+        "non_near_tie_defer_rate": 0.9256198347107438,
+        "tau_dominated_rate": 0.9502762430939227,
+        "winner_agreement_with_all_pairs": 1.0,
+        "tau_mean": 0.1501829289726375,
+        "penalized_margin_abs_mean": 0.059263967601247323
+      },
+      "evaluation": {
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.015873015873015872,
+        "defer_rate_eval": 0.9841269841269842,
+        "fallback_on_deferred_accuracy": 0.5961538461538461,
+        "near_tie_accepted_accuracy": 0.0,
+        "adjacent_accepted_accuracy": 0.3333333333333333,
+        "forced_pairwise_accuracy": 0.6048840048840048,
+        "top1_test": 0.5396825396825397
+      }
+    },
+    "after_branch_specific_old_tau": {
+      "config": "bf_l0.10_t0.02",
+      "semantics": {
+        "n": 181,
+        "class_balance": {
+          "defer": 153,
+          "left_better": 14,
+          "right_better": 14
+        },
+        "defer_rate": 0.8453038674033149,
+        "near_tie_defer_rate": 1.0,
+        "non_near_tie_defer_rate": 0.7878787878787878,
+        "tau_dominated_rate": 0.8453038674033149,
+        "winner_agreement_with_all_pairs": 0.8729281767955801,
+        "tau_mean": 0.1501829289726375,
+        "penalized_margin_abs_mean": 0.07455975917327648
+      },
+      "evaluation": {
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.047619047619047616,
+        "defer_rate_eval": 0.9523809523809524,
+        "fallback_on_deferred_accuracy": 0.5680911680911681,
+        "near_tie_accepted_accuracy": 0.0,
+        "adjacent_accepted_accuracy": 0.3333333333333333,
+        "forced_pairwise_accuracy": 0.5971916971916972,
+        "top1_test": 0.5396825396825397
+      }
+    },
+    "after_branch_specific_new_tau": {
+      "config": "nt_l0.10_t0.02_eu0.10_cap1.50",
+      "semantics": {
+        "n": 181,
+        "class_balance": {
+          "defer": 148,
+          "left_better": 19,
+          "right_better": 14
+        },
+        "defer_rate": 0.8176795580110497,
+        "near_tie_defer_rate": 1.0,
+        "non_near_tie_defer_rate": 0.75,
+        "tau_dominated_rate": 0.8176795580110497,
+        "winner_agreement_with_all_pairs": 0.8729281767955801,
+        "tau_mean": 0.08588973742019695,
+        "penalized_margin_abs_mean": 0.07455975917327648
+      },
+      "evaluation": {
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.047619047619047616,
+        "defer_rate_eval": 0.9523809523809524,
+        "fallback_on_deferred_accuracy": 0.5680911680911681,
+        "near_tie_accepted_accuracy": 0.0,
+        "adjacent_accepted_accuracy": 0.3333333333333333,
+        "forced_pairwise_accuracy": 0.5971916971916972,
+        "top1_test": 0.5396825396825397
+      }
+    }
+  },
+  "sweep": {
+    "nt_l0.10_t0.02_eu0.20_cap0.00": {
+      "semantics": {
+        "n": 181,
+        "class_balance": {
+          "defer": 149,
+          "left_better": 18,
+          "right_better": 14
+        },
+        "defer_rate": 0.8232044198895028,
+        "near_tie_defer_rate": 1.0,
+        "non_near_tie_defer_rate": 0.7575757575757576,
+        "tau_dominated_rate": 0.8232044198895028,
+        "winner_agreement_with_all_pairs": 0.8729281767955801,
+        "tau_mean": 0.14561768747268097,
+        "penalized_margin_abs_mean": 0.07455975917327648
+      },
+      "evaluation": {
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.047619047619047616,
+        "defer_rate_eval": 0.9523809523809524,
+        "fallback_on_deferred_accuracy": 0.5680911680911681,
+        "near_tie_accepted_accuracy": 0.0,
+        "adjacent_accepted_accuracy": 0.3333333333333333,
+        "forced_pairwise_accuracy": 0.5971916971916972,
+        "top1_test": 0.5396825396825397
+      }
+    },
+    "nt_l0.10_t0.02_eu0.10_cap1.50": {
+      "semantics": {
+        "n": 181,
+        "class_balance": {
+          "defer": 148,
+          "left_better": 19,
+          "right_better": 14
+        },
+        "defer_rate": 0.8176795580110497,
+        "near_tie_defer_rate": 1.0,
+        "non_near_tie_defer_rate": 0.75,
+        "tau_dominated_rate": 0.8176795580110497,
+        "winner_agreement_with_all_pairs": 0.8729281767955801,
+        "tau_mean": 0.08588973742019695,
+        "penalized_margin_abs_mean": 0.07455975917327648
+      },
+      "evaluation": {
+        "accepted_pair_accuracy": 0.3333333333333333,
+        "coverage": 0.047619047619047616,
+        "defer_rate_eval": 0.9523809523809524,
+        "fallback_on_deferred_accuracy": 0.5680911680911681,
+        "near_tie_accepted_accuracy": 0.0,
+        "adjacent_accepted_accuracy": 0.3333333333333333,
+        "forced_pairwise_accuracy": 0.5971916971916972,
+        "top1_test": 0.5396825396825397
+      }
+    },
+    "nt_l0.20_t0.02_eu0.10_cap1.50": {
+      "semantics": {
+        "n": 181,
+        "class_balance": {
+          "defer": 131,
+          "left_better": 20,
+          "right_better": 30
+        },
+        "defer_rate": 0.7237569060773481,
+        "near_tie_defer_rate": 1.0,
+        "non_near_tie_defer_rate": 0.6453900709219859,
+        "tau_dominated_rate": 0.7237569060773481,
+        "winner_agreement_with_all_pairs": 0.7900552486187845,
+        "tau_mean": 0.09708025945474584,
+        "penalized_margin_abs_mean": 0.10080667247808527
+      },
+      "evaluation": {
+        "accepted_pair_accuracy": 0.6666666666666666,
+        "coverage": 0.15018315018315018,
+        "defer_rate_eval": 0.8498168498168498,
+        "fallback_on_deferred_accuracy": 0.4777777777777778,
+        "near_tie_accepted_accuracy": 0.0,
+        "adjacent_accepted_accuracy": 0.6666666666666666,
+        "forced_pairwise_accuracy": 0.5638583638583639,
+        "top1_test": 0.6349206349206349
+      }
+    },
+    "nt_l0.10_t0.01_eu0.10_cap1.50": {
+      "semantics": {
+        "n": 181,
+        "class_balance": {
+          "defer": 145,
+          "left_better": 20,
+          "right_better": 16
+        },
+        "defer_rate": 0.8011049723756906,
+        "near_tie_defer_rate": 1.0,
+        "non_near_tie_defer_rate": 0.7272727272727273,
+        "tau_dominated_rate": 0.8011049723756906,
+        "winner_agreement_with_all_pairs": 0.8729281767955801,
+        "tau_mean": 0.08050665866039039,
+        "penalized_margin_abs_mean": 0.07455975917327648
+      },
+      "evaluation": {
+        "accepted_pair_accuracy": 0.6666666666666666,
+        "coverage": 0.07326007326007326,
+        "defer_rate_eval": 0.9267399267399267,
+        "fallback_on_deferred_accuracy": 0.5574074074074075,
+        "near_tie_accepted_accuracy": 0.3333333333333333,
+        "adjacent_accepted_accuracy": 0.3333333333333333,
+        "forced_pairwise_accuracy": 0.5971916971916972,
+        "top1_test": 0.5396825396825397
+      }
+    }
+  },
+  "best_operating_point": {
+    "config": "nt_l0.20_t0.02_eu0.10_cap1.50",
+    "semantics": {
+      "n": 181,
+      "class_balance": {
+        "defer": 131,
+        "left_better": 20,
+        "right_better": 30
+      },
+      "defer_rate": 0.7237569060773481,
+      "near_tie_defer_rate": 1.0,
+      "non_near_tie_defer_rate": 0.6453900709219859,
+      "tau_dominated_rate": 0.7237569060773481,
+      "winner_agreement_with_all_pairs": 0.7900552486187845,
+      "tau_mean": 0.09708025945474584,
+      "penalized_margin_abs_mean": 0.10080667247808527
+    },
+    "evaluation": {
+      "accepted_pair_accuracy": 0.6666666666666666,
+      "coverage": 0.15018315018315018,
+      "defer_rate_eval": 0.8498168498168498,
+      "fallback_on_deferred_accuracy": 0.4777777777777778,
+      "near_tie_accepted_accuracy": 0.0,
+      "adjacent_accepted_accuracy": 0.6666666666666666,
+      "forced_pairwise_accuracy": 0.5638583638583639,
+      "top1_test": 0.6349206349206349
+    }
+  },
+  "commands": [
+    "python scripts/build_bruteforce_target_regimes.py ... --penalized-delta-c-mode branch_feature_proxy_v1 --penalized-tau-mode selective_ambiguity_gate_v1",
+    "python scripts/run_ternary_or_abstain_branch_comparison_experiment.py ... --regimes all_pairs,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer --feature-set v2"
+  ],
+  "caveats": [
+    "bounded validation corpus only (80 states, gsm8k-only, approx-only)",
+    "results should be rechecked on larger multi-dataset canonical corpora before broader claims"
+  ]
+}
