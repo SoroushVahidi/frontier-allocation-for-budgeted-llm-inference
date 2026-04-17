@@ -1,0 +1,26 @@
+{
+  "run_id": "conditional_near_tie_info_expansion_20260417",
+  "run_dir": "outputs/branch_label_bruteforce_learning/conditional_near_tie_info_expansion_20260417",
+  "artifacts": {
+    "config": "conditional_near_tie_info_expansion_config.json",
+    "per_seed_mode": "conditional_near_tie_info_expansion_per_seed_mode.json",
+    "matched_summary_by_mode": "conditional_near_tie_info_expansion_matched_summary_by_mode.json",
+    "aggregate_comparison": "conditional_near_tie_info_expansion_aggregate_comparison_summary.json",
+    "trigger_diagnostics": "conditional_near_tie_info_expansion_trigger_diagnostics.json",
+    "manifest": "conditional_near_tie_info_expansion_manifest.json"
+  },
+  "modes": [
+    "baseline",
+    "conditional_expand_then_decide",
+    "conditional_expand_then_decide_oracleish"
+  ],
+  "assumptions": [
+    "Coarse path remains branch-value + uncertainty defer gating.",
+    "Extra information is a small pair-level tiebreak model on existing x_pair_v3 features.",
+    "Triggering is bounded to near-tie/deferred comparisons only."
+  ],
+  "caveats": [
+    "Oracle-ish mode is bounded headroom context, not production policy.",
+    "This is a go/no-go pass; no broader architecture changes are included."
+  ]
+}
