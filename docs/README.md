@@ -7,6 +7,10 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 - Fastest reliable collaborator start: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Goal-based navigation guide: [`REPOSITORY_START_PATHS.md`](REPOSITORY_START_PATHS.md)
 - Compact repository audit: [`FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md`](FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md)
+- Master dashboard: [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+- Experiment ledger: [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
+- Continuation plan: [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
+- References organization: [`REFERENCES_ORGANIZATION_2026_04_18.md`](REFERENCES_ORGANIZATION_2026_04_18.md)
 - Current working set / asset summary: [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 - Output-family interpretation: [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
 - Active but non-default method lines: [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
@@ -33,6 +37,7 @@ Read these first for the current project identity:
 - [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
 - [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
 - [`FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md`](FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md)
+- [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 
 ### Method status and next steps
 - [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
@@ -41,6 +46,8 @@ Read these first for the current project identity:
 - [`STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
 - [`ORACLE_PROXY_DEFER_TARGET_STATUS.md`](ORACLE_PROXY_DEFER_TARGET_STATUS.md)
 - [`REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
+- [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
+- [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
 
 ### Evaluation, outputs, and assets
 - [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md)
@@ -48,6 +55,7 @@ Read these first for the current project identity:
 - [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 - [`DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
 - `../outputs/repository_audit/repository_audit_summary_2026_04_18.json`
+- `../outputs/repository_polish/repository_polish_summary_2026_04_18.json`
 
 ### Broader canonical references and support notes
 - [`cross_controller_frontier.md`](cross_controller_frontier.md)
@@ -57,6 +65,9 @@ Read these first for the current project identity:
 - [`CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`](CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md)
 - [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
 - [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+- [`REFERENCES_ORGANIZATION_2026_04_18.md`](REFERENCES_ORGANIZATION_2026_04_18.md)
+- [`RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md`](RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md)
+- [`RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md`](RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md)
 
 ## Supporting grouped navigation pages
 
@@ -76,6 +87,10 @@ Read these first for the current project identity:
 - `ORACLE_PROXY_DEFER_TARGET_STATUS.md` records the bounded oracle-proxy defer-target path, calibration layer, and selective-decision interpretation.
 - `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
 - `FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md` gives a compact current-state repository audit and continuation-oriented polish summary.
+- `REPOSITORY_MASTER_DASHBOARD_2026_04_18.md` is the shortest current dashboard for what the project is, what worked, what failed, and what next.
+- `EXPERIMENT_LEDGER_2026_04_18.md` records the main experiment families and their current status.
+- `CONTINUATION_PLAN_2026_04_18.md` gives the recommended next-step order.
+- `REFERENCES_ORGANIZATION_2026_04_18.md` explains how to interpret and organize the repository’s reference base.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
 
 ## Exploratory / active-branch notes
