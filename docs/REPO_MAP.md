@@ -8,15 +8,23 @@ Canonical scope is the current NeurIPS-oriented project on:
 - budget-conditioned stop-vs-act control,
 - oracle frontier headroom and anti-collapse design.
 
+## Fast start
+
+- Start here: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+- Then use [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md) for runnable entry points.
+- For non-default active lines, see [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md).
+- For provenance-only interpretation, see [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md).
+
 ## Directory map
 
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
-- `docs/`: canonical status / planning notes plus exploratory and historical memos.
+- `docs/`: canonical status / planning notes plus exploratory and historical guidance.
 - `configs/`: dataset, baseline, and experiment configuration files.
 - `datasets/`: dataset policy/readme assets.
 - `external/`: external baseline references and integration notes.
 - `outputs/`: generated artifacts and paper-support outputs.
+- `archive/`: preserved historical / provenance-only material.
 
 ## Canonical docs now
 
@@ -68,11 +76,12 @@ Canonical scope is the current NeurIPS-oriented project on:
 
 ### Historical
 - old manuscript / binary revise-routing material,
-- dated memos superseded by the current canonical docs.
+- dated memos superseded by the current canonical docs,
+- provenance-only assets that should not define the current project.
 
 ## Practical collaborator start path
 
-1. Read the canonical docs in order from the README.
-2. Use `scripts/README.md` to find the current runnable entry points.
+1. Read the canonical docs in order from `docs/CANONICAL_START_HERE.md`.
+2. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
 3. Treat exploratory notes as evidence traces, not as the default project interpretation.
-4. When writing the paper, use `CURRENT_SAFE_CLAIMS.md` and `PAPER_POSITIONING_NOTE.md` as the first constraints.
+4. When writing the paper, use `CURRENT_SAFE_CLAIMS.md` and `PAPER_POSITIONING_NOTE.md` as first constraints.
