@@ -42,6 +42,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--tie-require-exact-or-mixed", action="store_true")
     p.add_argument("--abstain-confidence-threshold", type=float, default=0.20)
     p.add_argument("--fallback-policy", choices=["pointwise_value", "heuristic_margin", "unresolved"], default="pointwise_value")
+    p.add_argument("--abstention-cost-correct-directional", type=float, default=0.0)
+    p.add_argument("--abstention-cost-wrong-directional", type=float, default=1.0)
+    p.add_argument("--abstention-cost-directional-to-unresolved", type=float, default=0.35)
+    p.add_argument("--abstention-cost-unresolved-to-directional", type=float, default=0.70)
+    p.add_argument("--abstention-cost-correct-unresolved", type=float, default=0.10)
+    p.add_argument("--abstention-unresolved-class-upweight", type=float, default=1.35)
     return p.parse_args()
 
 
@@ -49,7 +55,7 @@ def _mean(xs: list[float]) -> float:
     return sum(xs) / max(1, len(xs))
 
 
-def _train_ternary_pair_model(rows: list[dict[str, Any]], seed: int, *, label_key: str = "ternary_label") -> dict[str, Any]:
+def _train_ternary_pair_model(rows: list[dict[str, Any]], seed: int, *, label_key: str = "ternary_label", weight_key: str = "pair_train_weight") -> dict[str, Any]:
     train = [r for r in rows if r.get("split") == "train"]
     if len(train) < 3:
         return {"status": "insufficient_train_rows"}
@@ -57,8 +63,9 @@ def _train_ternary_pair_model(rows: list[dict[str, Any]], seed: int, *, label_ke
     y = [int(r.get(label_key, 1)) for r in train]
     if len(set(y)) < 2:
         return {"status": "single_class_train", "constant": int(y[0])}
+    weights = [float(r.get(weight_key, r.get("pair_train_weight", 1.0))) for r in train]
     model = LogisticRegression(max_iter=600, random_state=seed)
-    model.fit(x, y)
+    model.fit(x, y, sample_weight=weights)
     return {"status": "ok", "model": model}
 
 
@@ -90,6 +97,72 @@ def _train_soft_ternary_pair_model(rows: list[dict[str, Any]], seed: int) -> dic
     model = LogisticRegression(max_iter=800, random_state=seed)
     model.fit(x, y, sample_weight=w)
     return {"status": "ok", "model": model}
+def _build_abstention_costs(args: argparse.Namespace) -> dict[str, Any]:
+    return {
+        "labels": ["j_wins", "unresolved", "i_wins"],
+        "pred_actions": ["predict_j_wins", "predict_unresolved", "predict_i_wins"],
+        "matrix": {
+            "j_wins": {
+                "predict_j_wins": float(args.abstention_cost_correct_directional),
+                "predict_unresolved": float(args.abstention_cost_directional_to_unresolved),
+                "predict_i_wins": float(args.abstention_cost_wrong_directional),
+            },
+            "unresolved": {
+                "predict_j_wins": float(args.abstention_cost_unresolved_to_directional),
+                "predict_unresolved": float(args.abstention_cost_correct_unresolved),
+                "predict_i_wins": float(args.abstention_cost_unresolved_to_directional),
+            },
+            "i_wins": {
+                "predict_j_wins": float(args.abstention_cost_wrong_directional),
+                "predict_unresolved": float(args.abstention_cost_directional_to_unresolved),
+                "predict_i_wins": float(args.abstention_cost_correct_directional),
+            },
+        },
+        "notes": "Conservative abstention utility: wrong confident directional > unresolved-on-directional > correct unresolved > correct directional.",
+    }
+
+
+def _cost_sensitive_partial_order_predictor(model: LogisticRegression, costs: dict[str, Any]) -> Callable[[dict[str, Any]], int | None]:
+    class_order = [int(c) for c in model.classes_]
+
+    def _predict(row: dict[str, Any]) -> int | None:
+        probs = model.predict_proba([row["x_diff"]])[0]
+        by_cls = {c: float(p) for c, p in zip(class_order, probs)}
+        p_j = by_cls.get(0, 0.0)
+        p_u = by_cls.get(1, 0.0)
+        p_i = by_cls.get(2, 0.0)
+
+        exp_cost_j = (
+            p_j * float(costs["matrix"]["j_wins"]["predict_j_wins"])
+            + p_u * float(costs["matrix"]["unresolved"]["predict_j_wins"])
+            + p_i * float(costs["matrix"]["i_wins"]["predict_j_wins"])
+        )
+        exp_cost_u = (
+            p_j * float(costs["matrix"]["j_wins"]["predict_unresolved"])
+            + p_u * float(costs["matrix"]["unresolved"]["predict_unresolved"])
+            + p_i * float(costs["matrix"]["i_wins"]["predict_unresolved"])
+        )
+        exp_cost_i = (
+            p_j * float(costs["matrix"]["j_wins"]["predict_i_wins"])
+            + p_u * float(costs["matrix"]["unresolved"]["predict_i_wins"])
+            + p_i * float(costs["matrix"]["i_wins"]["predict_i_wins"])
+        )
+
+        action = min(
+            [
+                ("predict_j_wins", exp_cost_j),
+                ("predict_unresolved", exp_cost_u),
+                ("predict_i_wins", exp_cost_i),
+            ],
+            key=lambda x: x[1],
+        )[0]
+        if action == "predict_unresolved":
+            return None
+        return 1 if action == "predict_i_wins" else 0
+
+    return _predict
+
+
 
 
 def _top1_from_pairwise_rows(
@@ -323,7 +396,15 @@ def main() -> None:
                 pointwise_fallback,
             )
 
-            partial_order = _train_ternary_pair_model(tables["pairwise"], seed, label_key="partial_order_label")
+            partial_rows = tables["pairwise"]
+            for _r in partial_rows:
+                base_w = float(_r.get("pair_train_weight", 1.0))
+                if int(_r.get("partial_order_label", 1)) == 1:
+                    _r["partial_order_train_weight"] = base_w * float(args.abstention_unresolved_class_upweight)
+                else:
+                    _r["partial_order_train_weight"] = base_w
+
+            partial_order = _train_ternary_pair_model(partial_rows, seed, label_key="partial_order_label", weight_key="partial_order_train_weight")
             if partial_order.get("status") == "ok":
                 pm = partial_order["model"]
 
@@ -345,6 +426,21 @@ def main() -> None:
                     partial_order_pred,
                     pointwise_fallback,
                 )
+
+                abstention_costs = _build_abstention_costs(args)
+                cost_sensitive_pred = _cost_sensitive_partial_order_predictor(pm, abstention_costs)
+                partial_order_cost_metrics = _metrics_for_predictions(
+                    tables["pairwise"],
+                    pred_fn=cost_sensitive_pred,
+                    forced_pred_fn=lambda r: pointwise_fallback(r) if cost_sensitive_pred(r) is None else int(cost_sensitive_pred(r) or 0),
+                    ambiguity_truth_key="partial_order_incomparable_target",
+                )
+                partial_order_cost_top1 = _top1_from_pairwise_rows(
+                    tables["pairwise"],
+                    tables["state_to_candidates"],
+                    cost_sensitive_pred,
+                    pointwise_fallback,
+                )
             else:
                 partial_order_metrics = {k: 0.0 for k in [
                     "accepted_pair_accuracy", "coverage", "abstention_rate", "unresolved_rate", "forced_pairwise_accuracy",
@@ -353,6 +449,8 @@ def main() -> None:
                     "adjacent_accepted_accuracy", "adjacent_forced_accuracy", "test_pairs",
                 ]}
                 partial_order_top1 = 0.0
+                partial_order_cost_metrics = dict(partial_order_metrics)
+                partial_order_cost_top1 = 0.0
 
             seed_rows = [
                 {"formulation": "binary_forced", "top1_test": binary_top1, **binary_metrics},
@@ -360,6 +458,7 @@ def main() -> None:
                 {"formulation": "soft_ternary_tie", "top1_test": soft_ternary_top1, **soft_ternary_metrics},
                 {"formulation": "selective_abstain", "top1_test": abstain_top1, **abstain_metrics},
                 {"formulation": "partial_order_incomparable", "top1_test": partial_order_top1, **partial_order_metrics},
+                {"formulation": "partial_order_cost_sensitive_abstain", "top1_test": partial_order_cost_top1, **partial_order_cost_metrics},
             ]
             detailed["regimes"][regime][str(seed)] = {
                 "config": {
@@ -376,6 +475,8 @@ def main() -> None:
                     "ternary_train_status": ternary.get("status", "unknown"),
                     "soft_ternary_train_status": soft_ternary.get("status", "unknown"),
                     "partial_order_train_status": partial_order.get("status", "unknown"),
+                    "abstention_unresolved_class_upweight": args.abstention_unresolved_class_upweight,
+                    "abstention_costs": _build_abstention_costs(args),
                 },
                 "rows": seed_rows,
             }
@@ -394,11 +495,12 @@ def main() -> None:
         f"- feature_set: `{args.feature_set}`",
         f"- fallback_policy: `{args.fallback_policy}`",
         f"- abstain_confidence_threshold: `{args.abstain_confidence_threshold}`",
+        f"- abstention_unresolved_class_upweight: `{args.abstention_unresolved_class_upweight}`",
         "",
     ]
     for regime in sorted(set(r["regime"] for r in flat)):
         md.append(f"## Regime `{regime}`")
-        for formulation in ["binary_forced", "ternary_tie", "soft_ternary_tie", "selective_abstain", "partial_order_incomparable"]:
+        for formulation in ["binary_forced", "ternary_tie", "soft_ternary_tie", "selective_abstain", "partial_order_incomparable", "partial_order_cost_sensitive_abstain"]:
             rows = [r for r in flat if r["regime"] == regime and r["formulation"] == formulation]
             if not rows:
                 continue
@@ -413,6 +515,7 @@ def main() -> None:
             )
         md.append("")
     (out_dir / "ternary_or_abstain_report.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    (out_dir / "abstention_cost_config.json").write_text(json.dumps(_build_abstention_costs(args), indent=2), encoding="utf-8")
 
     print(json.dumps({"output_dir": str(out_dir), "rows": len(flat)}, indent=2))
 

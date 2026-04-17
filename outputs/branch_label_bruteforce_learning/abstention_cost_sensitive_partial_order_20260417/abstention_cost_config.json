@@ -1,0 +1,30 @@
+{
+  "labels": [
+    "j_wins",
+    "unresolved",
+    "i_wins"
+  ],
+  "pred_actions": [
+    "predict_j_wins",
+    "predict_unresolved",
+    "predict_i_wins"
+  ],
+  "matrix": {
+    "j_wins": {
+      "predict_j_wins": 0.0,
+      "predict_unresolved": 0.35,
+      "predict_i_wins": 1.0
+    },
+    "unresolved": {
+      "predict_j_wins": 0.7,
+      "predict_unresolved": 0.1,
+      "predict_i_wins": 0.7
+    },
+    "i_wins": {
+      "predict_j_wins": 1.0,
+      "predict_unresolved": 0.35,
+      "predict_i_wins": 0.0
+    }
+  },
+  "notes": "Conservative abstention utility: wrong confident directional > unresolved-on-directional > correct unresolved > correct directional."
+}
