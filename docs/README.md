@@ -8,6 +8,7 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 - Current working set / asset summary: see [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 - Output-family interpretation: see [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
 - Current dataset priorities: see [`DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
+- Current hard-pair cleanup direction: see [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
 - Active but non-default method lines: see [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
 - Historical/provenance interpretation: see [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
 
@@ -22,15 +23,16 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 7. [`RESEARCH_UPGRADE_NOTE_2026_04_17.md`](RESEARCH_UPGRADE_NOTE_2026_04_17.md)
 8. [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 9. [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
-10. [`DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
-11. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
-12. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
-13. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
-14. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
-15. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
-16. [`REPO_MAP.md`](REPO_MAP.md)
-17. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
-18. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+10. [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
+11. [`DATASET_EXPANSION_PRIORITIES_2026_04_17.md`](DATASET_EXPANSION_PRIORITIES_2026_04_17.md)
+12. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
+13. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
+14. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
+15. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
+16. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+17. [`REPO_MAP.md`](REPO_MAP.md)
+18. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
+19. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
 
 ## Canonical supporting references
 
@@ -62,6 +64,7 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 - `RESEARCH_UPGRADE_NOTE_2026_04_17.md` records the strongest current outside-research upgrade directions.
 - `ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md` records which repo assets currently matter most for continuation work.
 - `OUTPUTS_INTERPRETATION_GUIDE.md` explains how to read the main outputs families quickly.
+- `HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md` records the current best supervision-oriented next step for hard ambiguous pairs.
 - `DATASET_EXPANSION_PRIORITIES_2026_04_17.md` records which datasets should be added next and why.
 - `STOP_VS_ACT_DIRECTION.md` defines one important near-term controller direction, but it is no longer the whole project identity.
 - `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
