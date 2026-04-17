@@ -14,14 +14,17 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 2. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
 3. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
 4. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-5. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
-6. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
-7. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
-8. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
-9. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
-10. [`REPO_MAP.md`](REPO_MAP.md)
-11. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
-12. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+5. [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
+6. [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
+7. [`RESEARCH_UPGRADE_NOTE_2026_04_17.md`](RESEARCH_UPGRADE_NOTE_2026_04_17.md)
+8. [`STOP_VS_ACT_DIRECTION.md`](STOP_VS_ACT_DIRECTION.md)
+9. [`NEXT_LIGHTWEIGHT_STEPS.md`](NEXT_LIGHTWEIGHT_STEPS.md)
+10. [`LATER_HEAVIER_STEPS.md`](LATER_HEAVIER_STEPS.md)
+11. [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md)
+12. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+13. [`REPO_MAP.md`](REPO_MAP.md)
+14. [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
+15. [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
 
 ## Canonical supporting references
 
@@ -48,8 +51,10 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 - `CURRENT_PROJECT_STATUS.md` says what is genuinely built and what is still unresolved.
 - `CURRENT_BOTTLENECKS.md` explains the main obstacle.
 - `CURRENT_SAFE_CLAIMS.md` tells you what is manuscript-safe to say now.
-- `STOP_VS_ACT_DIRECTION.md` defines the main near-term controller direction.
-- `NEXT_LIGHTWEIGHT_STEPS.md` and `LATER_HEAVIER_STEPS.md` describe what to do next.
+- `CURRENT_METHOD_SUMMARY_AND_GAPS.md` is the shortest current method-state summary.
+- `WHAT_IS_NOT_WORKING_NOW.md` records directions that are currently weak or explicitly not validated enough.
+- `RESEARCH_UPGRADE_NOTE_2026_04_17.md` records the strongest current outside-research upgrade directions.
+- `STOP_VS_ACT_DIRECTION.md` defines one important near-term controller direction, but it is no longer the whole project identity.
 - `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
 
