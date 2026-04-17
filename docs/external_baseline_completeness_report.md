@@ -1,6 +1,6 @@
 # External baseline completeness report
 
-- Generated (UTC): `2026-04-16T02:26:44.110891+00:00`
+- Generated (UTC): `2026-04-17T01:31:15.027658+00:00`
 - Scope: external baseline completeness for reviewer-defensible reporting.
 
 ## Classification taxonomy

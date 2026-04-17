@@ -51,12 +51,40 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--near-tie-detector-use-near-tie-flag", action="store_true")
     p.add_argument("--near-tie-detector-min-signals", type=int, default=2)
     p.add_argument("--detector-threshold-mode", choices=["base", "strict", "loose"], default="base")
+    p.add_argument(
+        "--controller-policy",
+        choices=["legacy_variants", "strict_coupled_v1", "all"],
+        default="all",
+        help="Which controller-policy family to evaluate; strict_coupled_v1 is the new stricter routed policy.",
+    )
     p.add_argument("--pointwise-margin-min", type=float, default=0.03)
     p.add_argument("--pointwise-fallback-if-uncertain", choices=["pairwise_binary", "generic_pointwise"], default="pairwise_binary")
     p.add_argument("--near-tie-specialized-margin-max", type=float, default=0.08)
     p.add_argument("--near-tie-specialized-min-states", type=int, default=6)
     p.add_argument("--near-tie-reweight-factor", type=float, default=2.5)
     p.add_argument("--adjacent-reweight-factor", type=float, default=1.5)
+    p.add_argument("--strict-coupled-rank-gap-max", type=float, default=1.25)
+    p.add_argument("--strict-coupled-frontier-std-min", type=float, default=0.09)
+    p.add_argument("--strict-coupled-frontier-entropy-min", type=float, default=0.70)
+    p.add_argument("--strict-coupled-min-signals", type=int, default=4)
+    p.add_argument("--posthoc-deferral-abs-margin-max", type=float, default=0.03)
+    p.add_argument("--posthoc-deferral-relative-margin-max", type=float, default=0.15)
+    p.add_argument("--posthoc-deferral-std-min", type=float, default=0.08)
+    p.add_argument("--posthoc-deferral-confidence-max", type=float, default=0.30)
+    p.add_argument("--posthoc-deferral-rank-gap-max", type=float, default=1.25)
+    p.add_argument("--posthoc-deferral-frontier-std-min", type=float, default=0.09)
+    p.add_argument("--posthoc-deferral-frontier-entropy-min", type=float, default=0.70)
+    p.add_argument("--posthoc-deferral-min-signals", type=int, default=4)
+    p.add_argument("--posthoc-deferral-require-strict-gate", action="store_true")
+    p.add_argument("--deferred-specialized-min-states", type=int, default=6)
+    p.add_argument("--reliability-weight-std-scale", type=float, default=6.0)
+    p.add_argument("--reliability-weight-min", type=float, default=0.25)
+    p.add_argument("--reliability-weight-max", type=float, default=3.0)
+    p.add_argument("--improved-specialized-min-states", type=int, default=6)
+    p.add_argument("--improved-near-tie-reweight-factor", type=float, default=2.0)
+    p.add_argument("--improved-adjacent-reweight-factor", type=float, default=1.75)
+    p.add_argument("--improved-uncertainty-weight-scale", type=float, default=1.5)
+    p.add_argument("--improved-uncertainty-weight-cap", type=float, default=3.0)
     p.add_argument("--pointwise-alpha", type=float, default=1.0)
     return p.parse_args()
 
@@ -324,6 +352,36 @@ def main() -> None:
             "near_tie_reweight_factor": float(args.near_tie_reweight_factor),
             "adjacent_reweight_factor": float(args.adjacent_reweight_factor),
         },
+        "strict_coupled_gate_config": {
+            "rank_gap_abs_max": float(args.strict_coupled_rank_gap_max),
+            "frontier_score_std_min": float(args.strict_coupled_frontier_std_min),
+            "frontier_entropy_min": float(args.strict_coupled_frontier_entropy_min),
+            "min_triggered_signals": int(args.strict_coupled_min_signals),
+        },
+        "improved_specialized_expert_config": {
+            "min_states": int(args.improved_specialized_min_states),
+            "near_tie_reweight_factor": float(args.improved_near_tie_reweight_factor),
+            "adjacent_reweight_factor": float(args.improved_adjacent_reweight_factor),
+            "uncertainty_weight_scale": float(args.improved_uncertainty_weight_scale),
+            "uncertainty_weight_cap": float(args.improved_uncertainty_weight_cap),
+        },
+        "posthoc_deferral_config": {
+            "abs_margin_max": float(args.posthoc_deferral_abs_margin_max),
+            "relative_margin_max": float(args.posthoc_deferral_relative_margin_max),
+            "uncertainty_std_min": float(args.posthoc_deferral_std_min),
+            "calibrated_confidence_max": float(args.posthoc_deferral_confidence_max),
+            "rank_gap_abs_max": float(args.posthoc_deferral_rank_gap_max),
+            "frontier_score_std_min": float(args.posthoc_deferral_frontier_std_min),
+            "frontier_entropy_min": float(args.posthoc_deferral_frontier_entropy_min),
+            "min_triggered_signals": int(args.posthoc_deferral_min_signals),
+            "require_strict_coupled_gate": bool(args.posthoc_deferral_require_strict_gate),
+            "deferred_specialized_min_states": int(args.deferred_specialized_min_states),
+        },
+        "reliability_weight_config": {
+            "std_scale": float(args.reliability_weight_std_scale),
+            "weight_min": float(args.reliability_weight_min),
+            "weight_max": float(args.reliability_weight_max),
+        },
         "results": {},
     }
     summary_rows: list[dict[str, Any]] = []
@@ -356,6 +414,10 @@ def main() -> None:
                 continue
             pair_score = scorer_from_model(pair_model)
             point_generic_score = scorer_from_model(point_model)
+            candidate_lookup = {
+                (str(c["state_id"]), str(c["branch_id"])): c
+                for c in tables["candidates"]
+            }
 
             calibrators = _fit_calibrators(tables["pairwise"], pair_score, calib_methods)
             test_logits, test_y = _prepare_logits(tables["pairwise"], pair_score, "test")
@@ -398,6 +460,83 @@ def main() -> None:
                     "triggered_signals": trig,
                 }
 
+            def _strict_coupled_gate(row: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+                is_base, base_meta = _is_near_tie(row)
+                if not is_base:
+                    return False, {
+                        **base_meta,
+                        "strict_gate_signals": {},
+                        "strict_gate_triggered_signals": 0,
+                        "strict_gate_reason": "base_detector_off",
+                    }
+                ci = candidate_lookup.get((str(row["state_id"]), str(row["branch_i"])), {})
+                cj = candidate_lookup.get((str(row["state_id"]), str(row["branch_j"])), {})
+                fi = ci.get("features_branch_v2", {}) if isinstance(ci.get("features_branch_v2"), dict) else {}
+                fj = cj.get("features_branch_v2", {}) if isinstance(cj.get("features_branch_v2"), dict) else {}
+                rank_gap_abs = abs(float(fi.get("branch_rank", 0.0)) - float(fj.get("branch_rank", 0.0)))
+                frontier_std_mean = 0.5 * (float(fi.get("frontier_score_std", 0.0)) + float(fj.get("frontier_score_std", 0.0)))
+                frontier_entropy_mean = 0.5 * (float(fi.get("frontier_score_entropy", 0.0)) + float(fj.get("frontier_score_entropy", 0.0)))
+                # Stricter routed ambiguity gate:
+                # 1) require base near-tie detector,
+                # 2) require pair-level ambiguity signature + frontier-dispersion context.
+                strict_signals = {
+                    "abs_margin_tight": float(base_meta["margin_abs"]) <= float(active_detector["abs_margin_max"]) * 0.9,
+                    "relative_margin_tight": float(base_meta["relative_margin"]) <= float(active_detector["relative_margin_max"]) * 0.9,
+                    "high_uncertainty": float(base_meta["pair_std"]) >= float(active_detector["uncertainty_std_min"]) * 1.1,
+                    "low_confidence": float(base_meta["confidence"]) <= float(active_detector["calibrated_confidence_max"]) * 0.9,
+                    "rank_gap_small": rank_gap_abs <= float(args.strict_coupled_rank_gap_max),
+                    "frontier_dispersion": (
+                        frontier_std_mean >= float(args.strict_coupled_frontier_std_min)
+                        or frontier_entropy_mean >= float(args.strict_coupled_frontier_entropy_min)
+                    ),
+                }
+                if bool(args.near_tie_detector_use_near_tie_flag):
+                    strict_signals["supervised_near_tie_flag"] = bool(row.get("near_tie_flag", False))
+                strict_trig = sum(int(v) for v in strict_signals.values())
+                strict_ok = strict_trig >= int(args.strict_coupled_min_signals)
+                return bool(strict_ok), {
+                    **base_meta,
+                    "rank_gap_abs": rank_gap_abs,
+                    "frontier_score_std_mean": frontier_std_mean,
+                    "frontier_entropy_mean": frontier_entropy_mean,
+                    "strict_gate_signals": strict_signals,
+                    "strict_gate_triggered_signals": strict_trig,
+                    "strict_gate_reason": "ok" if strict_ok else "insufficient_signals",
+                }
+
+            def _posthoc_deferral_gate(row: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+                strict_on, strict_meta = _strict_coupled_gate(row)
+                margin_abs = float(row.get("margin_abs", abs(float(row.get("margin", 0.0)))))
+                rel_margin = float(row.get("relative_margin", 1e9))
+                pair_std = float(row.get("pair_uncertainty_std_mean", row.get("pair_allocation_value_std", 0.0)))
+                confidence = abs(_calib_prob(row, str(args.primary_calibration)) - 0.5) * 2.0
+                near_tie_flag = bool(row.get("near_tie_flag", False))
+                signals = {
+                    "abs_margin": margin_abs <= float(args.posthoc_deferral_abs_margin_max),
+                    "relative_margin": rel_margin <= float(args.posthoc_deferral_relative_margin_max),
+                    "uncertainty_std": pair_std >= float(args.posthoc_deferral_std_min),
+                    "calibrated_confidence": confidence <= float(args.posthoc_deferral_confidence_max),
+                    "near_tie_flag": near_tie_flag,
+                    "rank_gap_small": float(strict_meta.get("rank_gap_abs", 1e9)) <= float(args.posthoc_deferral_rank_gap_max),
+                    "frontier_dispersion": (
+                        float(strict_meta.get("frontier_score_std_mean", 0.0)) >= float(args.posthoc_deferral_frontier_std_min)
+                        or float(strict_meta.get("frontier_entropy_mean", 0.0)) >= float(args.posthoc_deferral_frontier_entropy_min)
+                    ),
+                }
+                trig = sum(int(v) for v in signals.values())
+                defer = trig >= int(args.posthoc_deferral_min_signals)
+                if bool(args.posthoc_deferral_require_strict_gate):
+                    defer = bool(defer and strict_on)
+                return bool(defer), {
+                    "strict_gate_on": bool(strict_on),
+                    "margin_abs": margin_abs,
+                    "relative_margin": rel_margin,
+                    "pair_std": pair_std,
+                    "confidence": confidence,
+                    "signals": signals,
+                    "triggered_signals": trig,
+                }
+
             state_near_tie_train: set[str] = set()
             state_adjacent_train: set[str] = set()
             for pr in tables["pairwise"]:
@@ -422,6 +561,86 @@ def main() -> None:
                     "training_rows": 0,
                     "required_min_states": int(args.near_tie_specialized_min_states),
                 }
+            state_strict_hard_train: set[str] = set()
+            for pr in tables["pairwise"]:
+                if str(pr.get("split")) != "train":
+                    continue
+                strict_on, _ = _strict_coupled_gate(pr)
+                if strict_on:
+                    state_strict_hard_train.add(str(pr["state_id"]))
+            state_posthoc_deferred_train: set[str] = set()
+            for pr in tables["pairwise"]:
+                if str(pr.get("split")) != "train":
+                    continue
+                is_def, _ = _posthoc_deferral_gate(pr)
+                if is_def:
+                    state_posthoc_deferred_train.add(str(pr["state_id"]))
+
+            state_pair_rows_train: dict[str, list[dict[str, Any]]] = {}
+            for pr in tables["pairwise"]:
+                if str(pr.get("split")) == "train":
+                    state_pair_rows_train.setdefault(str(pr["state_id"]), []).append(pr)
+
+            state_reliability_weight: dict[str, float] = {}
+            for sid, prs in state_pair_rows_train.items():
+                n = max(1, len(prs))
+                near_tie_ratio = sum(int(bool(r.get("near_tie_flag", False))) for r in prs) / n
+                adjacent_ratio = sum(int(str(r.get("pair_type", "")) == "adjacent_rank") for r in prs) / n
+                deferred_ratio = sum(int(_posthoc_deferral_gate(r)[0]) for r in prs) / n
+                exact_like_ratio = sum(
+                    int(str(r.get("label_source", "")) in {"exact_original", "exact_promoted"} or str(r.get("pair_mode_provenance", "")) in {"exact", "mixed"})
+                    for r in prs
+                ) / n
+                margin_abs_mean = sum(float(r.get("margin_abs", abs(float(r.get("margin", 0.0))))) for r in prs) / n
+                pair_std_mean = sum(float(r.get("pair_uncertainty_std_mean", r.get("pair_allocation_value_std", 0.0))) for r in prs) / n
+                margin_reliability = min(1.5, max(0.5, margin_abs_mean / max(1e-6, float(args.posthoc_deferral_abs_margin_max))))
+                std_reliability = 1.0 / (1.0 + float(args.reliability_weight_std_scale) * max(0.0, pair_std_mean))
+                weight = (
+                    (1.0 + 0.8 * near_tie_ratio + 0.5 * adjacent_ratio + 0.7 * deferred_ratio)
+                    * (1.0 + 0.4 * exact_like_ratio)
+                    * margin_reliability
+                    * std_reliability
+                )
+                state_reliability_weight[sid] = min(float(args.reliability_weight_max), max(float(args.reliability_weight_min), float(weight)))
+
+            improved_state_pool = set(state_near_tie_train)
+            if len(improved_state_pool) >= int(args.improved_specialized_min_states):
+                improved_specialized_model = _fit_pointwise_ridge(
+                    tables["candidates"],
+                    alpha=float(args.pointwise_alpha),
+                    seed=seed,
+                    train_filter_fn=lambda r: str(r.get("state_id")) in improved_state_pool,
+                    sample_weight_fn=lambda r: min(
+                        float(args.improved_uncertainty_weight_cap),
+                        max(
+                            0.25,
+                            (
+                                float(args.improved_near_tie_reweight_factor)
+                                if str(r.get("state_id")) in state_strict_hard_train
+                                else 1.0
+                            )
+                            * (
+                                float(args.improved_adjacent_reweight_factor)
+                                if str(r.get("state_id")) in state_adjacent_train
+                                else 1.0
+                            )
+                            * (
+                                1.0
+                                / (
+                                    1.0
+                                    + float(args.improved_uncertainty_weight_scale)
+                                    * max(0.0, float(r.get("allocation_value_std", 0.0)))
+                                )
+                            ),
+                        ),
+                    ),
+                )
+            else:
+                improved_specialized_model = {
+                    "status": "insufficient_strict_hard_states",
+                    "training_rows": 0,
+                    "required_min_states": int(args.improved_specialized_min_states),
+                }
             reweighted_model = _fit_pointwise_ridge(
                 tables["candidates"],
                 alpha=float(args.pointwise_alpha),
@@ -433,17 +652,44 @@ def main() -> None:
                     float(args.adjacent_reweight_factor) if str(r.get("state_id")) in state_adjacent_train else 1.0
                 ),
             )
+            if len(state_posthoc_deferred_train) >= int(args.deferred_specialized_min_states):
+                deferred_specialized_model = _fit_pointwise_ridge(
+                    tables["candidates"],
+                    alpha=float(args.pointwise_alpha),
+                    seed=seed,
+                    train_filter_fn=lambda r: str(r.get("state_id")) in state_posthoc_deferred_train,
+                )
+            else:
+                deferred_specialized_model = {
+                    "status": "insufficient_posthoc_deferred_states",
+                    "training_rows": 0,
+                    "required_min_states": int(args.deferred_specialized_min_states),
+                }
+            reliability_weighted_model = _fit_pointwise_ridge(
+                tables["candidates"],
+                alpha=float(args.pointwise_alpha),
+                seed=seed,
+                train_filter_fn=lambda _r: True,
+                sample_weight_fn=lambda r: float(state_reliability_weight.get(str(r.get("state_id")), 1.0)),
+            )
 
             point_specialized_score = _pointwise_scorer(specialized_model, point_generic_score)
+            point_improved_specialized_score = _pointwise_scorer(improved_specialized_model, point_specialized_score)
+            point_deferred_specialized_score = _pointwise_scorer(deferred_specialized_model, point_specialized_score)
+            point_reliability_weighted_score = _pointwise_scorer(reliability_weighted_model, point_specialized_score)
             point_reweighted_score = _pointwise_scorer(reweighted_model, point_generic_score)
 
             def _point_decision(row: dict[str, Any], scorer: Callable[[dict[str, Any]], float]) -> tuple[int, float]:
                 g = float(scorer({"x": row["x_i"]}) - scorer({"x": row["x_j"]}))
                 return (1 if g >= 0.0 else 0), abs(g)
 
-            def _near_tie_pointwise_route(row: dict[str, Any], scorer: Callable[[dict[str, Any]], float]) -> int:
-                nt, _ = _is_near_tie(row)
-                if not nt:
+            def _near_tie_pointwise_route(
+                row: dict[str, Any],
+                scorer: Callable[[dict[str, Any]], float],
+                gate_fn: Callable[[dict[str, Any]], tuple[bool, dict[str, Any]]],
+            ) -> int:
+                gate_on, _ = gate_fn(row)
+                if not gate_on:
                     return _pairwise_binary(row)
                 p_pred, pgap = _point_decision(row, scorer)
                 if pgap >= float(args.pointwise_margin_min):
@@ -459,33 +705,133 @@ def main() -> None:
                     return None
                 return 1 if p >= 0.5 else 0
 
-            variants: list[tuple[str, Callable[[dict[str, Any]], int | None], Callable[[dict[str, Any]], int], str]] = [
-                ("binary_forced_baseline", lambda r: _pairwise_binary(r), lambda r: _pairwise_binary(r), "pairwise_binary"),
+            def _never_defer(_row: dict[str, Any]) -> bool:
+                return False
+
+            def _tie_aware_decision(row: dict[str, Any]) -> int | None:
+                is_deferred, _ = _posthoc_deferral_gate(row)
+                if is_deferred:
+                    return None
+                return _pairwise_binary(row)
+
+            def _tie_aware_forced(row: dict[str, Any]) -> int:
+                is_deferred, _ = _posthoc_deferral_gate(row)
+                if not is_deferred:
+                    return _pairwise_binary(row)
+                p_pred, pgap = _point_decision(row, point_specialized_score)
+                if pgap >= float(args.pointwise_margin_min):
+                    return p_pred
+                return _pairwise_binary(row)
+
+            def _tie_aware_forced_improved(row: dict[str, Any]) -> int:
+                is_deferred, _ = _posthoc_deferral_gate(row)
+                if not is_deferred:
+                    return _pairwise_binary(row)
+                p_pred, pgap = _point_decision(row, point_deferred_specialized_score)
+                if pgap >= float(args.pointwise_margin_min):
+                    return p_pred
+                return _pairwise_binary(row)
+
+            def _tie_aware_forced_reliability_weighted(row: dict[str, Any]) -> int:
+                is_deferred, _ = _posthoc_deferral_gate(row)
+                if not is_deferred:
+                    return _pairwise_binary(row)
+                p_pred, pgap = _point_decision(row, point_reliability_weighted_score)
+                if pgap >= float(args.pointwise_margin_min):
+                    return p_pred
+                return _pairwise_binary(row)
+
+            variant_specs: list[
+                tuple[
+                    str,
+                    Callable[[dict[str, Any]], int | None],
+                    Callable[[dict[str, Any]], int],
+                    str,
+                    Callable[[dict[str, Any]], bool],
+                ]
+            ] = [
+                ("binary_forced_baseline", lambda r: _pairwise_binary(r), lambda r: _pairwise_binary(r), "pairwise_binary", _never_defer),
                 (
                     "abstain_calibrated_pairwise_backup",
                     lambda r: _abstain_pairwise(r),
                     lambda r: _pairwise_binary(r) if _abstain_pairwise(r) is None else int(_abstain_pairwise(r) or 0),
                     "pairwise_binary",
+                    _never_defer,
                 ),
                 (
                     "near_tie_generic_pointwise",
-                    lambda r: _near_tie_pointwise_route(r, point_generic_score),
-                    lambda r: _near_tie_pointwise_route(r, point_generic_score),
+                    lambda r: _near_tie_pointwise_route(r, point_generic_score, _is_near_tie),
+                    lambda r: _near_tie_pointwise_route(r, point_generic_score, _is_near_tie),
                     "generic_pointwise",
+                    _never_defer,
                 ),
                 (
                     "near_tie_specialized_pointwise",
-                    lambda r: _near_tie_pointwise_route(r, point_specialized_score),
-                    lambda r: _near_tie_pointwise_route(r, point_specialized_score),
+                    lambda r: _near_tie_pointwise_route(r, point_specialized_score, _is_near_tie),
+                    lambda r: _near_tie_pointwise_route(r, point_specialized_score, _is_near_tie),
                     "specialized_pointwise",
+                    _never_defer,
                 ),
                 (
                     "near_tie_reweighted_pointwise",
-                    lambda r: _near_tie_pointwise_route(r, point_reweighted_score),
-                    lambda r: _near_tie_pointwise_route(r, point_reweighted_score),
+                    lambda r: _near_tie_pointwise_route(r, point_reweighted_score, _is_near_tie),
+                    lambda r: _near_tie_pointwise_route(r, point_reweighted_score, _is_near_tie),
                     "reweighted_pointwise",
+                    _never_defer,
                 ),
             ]
+            strict_variants: list[
+                tuple[
+                    str,
+                    Callable[[dict[str, Any]], int | None],
+                    Callable[[dict[str, Any]], int],
+                    str,
+                    Callable[[dict[str, Any]], bool],
+                ]
+            ] = [
+                (
+                    "strict_coupled_near_tie_specialized_pointwise_v1",
+                    lambda r: _near_tie_pointwise_route(r, point_specialized_score, _strict_coupled_gate),
+                    lambda r: _near_tie_pointwise_route(r, point_specialized_score, _strict_coupled_gate),
+                    "strict_coupled_specialized_pointwise",
+                    _never_defer,
+                )
+                ,
+                (
+                    "strict_coupled_near_tie_specialized_pointwise_improved_v1",
+                    lambda r: _near_tie_pointwise_route(r, point_improved_specialized_score, _strict_coupled_gate),
+                    lambda r: _near_tie_pointwise_route(r, point_improved_specialized_score, _strict_coupled_gate),
+                    "strict_coupled_specialized_pointwise_improved",
+                    _never_defer,
+                ),
+                (
+                    "strict_coupled_tie_aware_posthoc_deferral_v1",
+                    lambda r: _tie_aware_decision(r),
+                    lambda r: _tie_aware_forced(r),
+                    "strict_coupled_tie_aware_posthoc_deferral",
+                    lambda r: _posthoc_deferral_gate(r)[0],
+                ),
+                (
+                    "strict_coupled_tie_aware_posthoc_deferral_improved_expert_v1",
+                    lambda r: _tie_aware_decision(r),
+                    lambda r: _tie_aware_forced_improved(r),
+                    "strict_coupled_tie_aware_posthoc_deferral_improved_expert",
+                    lambda r: _posthoc_deferral_gate(r)[0],
+                ),
+                (
+                    "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert_v1",
+                    lambda r: _tie_aware_decision(r),
+                    lambda r: _tie_aware_forced_reliability_weighted(r),
+                    "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert",
+                    lambda r: _posthoc_deferral_gate(r)[0],
+                )
+            ]
+            if str(args.controller_policy) == "legacy_variants":
+                variants = variant_specs
+            elif str(args.controller_policy) == "strict_coupled_v1":
+                variants = strict_variants
+            else:
+                variants = variant_specs + strict_variants
 
             test_rows = [r for r in tables["pairwise"] if str(r.get("split")) == "test"]
 
@@ -540,6 +886,17 @@ def main() -> None:
                     "test_pairs": len(test_rows),
                     "detected_near_ties": int(sum(int(_is_near_tie(r)[0]) for r in test_rows)),
                     "detected_rate": float(sum(int(_is_near_tie(r)[0]) for r in test_rows) / max(1, len(test_rows))),
+                    "detected_near_tie_flag_pairs": int(sum(int(_is_near_tie(r)[0] and bool(r.get("near_tie_flag", False))) for r in test_rows)),
+                    "detected_non_near_tie_flag_pairs": int(sum(int(_is_near_tie(r)[0] and not bool(r.get("near_tie_flag", False))) for r in test_rows)),
+                    "detected_adjacent_pairs": int(sum(int(_is_near_tie(r)[0] and str(r.get("pair_type", "")) == "adjacent_rank") for r in test_rows)),
+                },
+                "strict_coupled_gate_stats": {
+                    "test_pairs": len(test_rows),
+                    "routed_pairs": int(sum(int(_strict_coupled_gate(r)[0]) for r in test_rows)),
+                    "routed_rate": float(sum(int(_strict_coupled_gate(r)[0]) for r in test_rows) / max(1, len(test_rows))),
+                    "routed_near_tie_flag_pairs": int(sum(int(_strict_coupled_gate(r)[0] and bool(r.get("near_tie_flag", False))) for r in test_rows)),
+                    "routed_non_near_tie_flag_pairs": int(sum(int(_strict_coupled_gate(r)[0] and not bool(r.get("near_tie_flag", False))) for r in test_rows)),
+                    "routed_adjacent_pairs": int(sum(int(_strict_coupled_gate(r)[0] and str(r.get("pair_type", "")) == "adjacent_rank") for r in test_rows)),
                 },
                 "pointwise_models": {
                     "generic": {
@@ -555,6 +912,20 @@ def main() -> None:
                         "near_tie_train_states": len(state_near_tie_train),
                         "adjacent_train_states": len(state_adjacent_train),
                     },
+                    "strict_hard_improved_specialized": {
+                        **improved_specialized_model,
+                        "strict_hard_train_states": len(state_strict_hard_train),
+                        "adjacent_train_states": len(state_adjacent_train),
+                        "improved_state_pool": len(improved_state_pool),
+                    },
+                    "posthoc_deferred_specialized": {
+                        **deferred_specialized_model,
+                        "posthoc_deferred_train_states": len(state_posthoc_deferred_train),
+                    },
+                    "reliability_weighted_specialized": {
+                        **reliability_weighted_model,
+                        "states_with_reliability_weight": len(state_reliability_weight),
+                    },
                 },
                 "near_tie_pairwise_vs_pointwise_diagnostic": {
                     "rows": len(diag_rows),
@@ -563,16 +934,37 @@ def main() -> None:
                 "variants": {},
             }
 
-            for vname, pred_fn, forced_fn, fallback_name in variants:
+            for vname, pred_fn, forced_fn, fallback_name, defer_fn in variants:
                 met = _evaluate_formulation(tables["pairwise"], decision_fn=pred_fn, forced_fn=forced_fn)
                 top1 = _top1_from_decisions(tables["pairwise"], tables["state_to_candidates"], pred_fn, forced_fn)
                 by_budget = _slice_acc(tables["pairwise"], forced_fn, lambda r: str(int(r.get("remaining_budget", 0))))
                 by_dataset = _slice_acc(tables["pairwise"], forced_fn, lambda r: str(r.get("dataset_name", "unknown")))
+                strict_routed = [r for r in test_rows if _strict_coupled_gate(r)[0]]
+                strict_routed_near = [r for r in strict_routed if bool(r.get("near_tie_flag", False))]
+                deferred_rows = [r for r in test_rows if defer_fn(r)]
+                deferred_non_near = [r for r in deferred_rows if not bool(r.get("near_tie_flag", False))]
+                strict_routed_acc = 0.0
+                strict_routed_near_acc = 0.0
+                deferred_subset_acc = 0.0
+                if strict_routed:
+                    strict_routed_acc = sum(int(forced_fn(r) == int(r.get("label", 0))) for r in strict_routed) / len(strict_routed)
+                if strict_routed_near:
+                    strict_routed_near_acc = sum(int(forced_fn(r) == int(r.get("label", 0))) for r in strict_routed_near) / len(strict_routed_near)
+                if deferred_rows:
+                    deferred_subset_acc = sum(int(forced_fn(r) == int(r.get("label", 0))) for r in deferred_rows) / len(deferred_rows)
                 seed_payload["variants"][vname] = {
                     **met,
                     "top1_test": float(top1),
                     "forced_accuracy_by_budget": by_budget,
                     "forced_accuracy_by_dataset": by_dataset,
+                    "strict_routed_forced_accuracy": float(strict_routed_acc),
+                    "strict_routed_near_tie_forced_accuracy": float(strict_routed_near_acc),
+                    "strict_routed_test_pairs": len(strict_routed),
+                    "strict_routed_near_tie_test_pairs": len(strict_routed_near),
+                    "deferred_rate": float(len(deferred_rows) / max(1, len(test_rows))),
+                    "deferred_test_pairs": len(deferred_rows),
+                    "deferred_non_near_tie_count": len(deferred_non_near),
+                    "deferred_subset_forced_accuracy": float(deferred_subset_acc),
                     "fallback_policy": fallback_name,
                 }
                 summary_rows.append({
@@ -581,6 +973,14 @@ def main() -> None:
                     "variant": vname,
                     **met,
                     "top1_test": float(top1),
+                    "strict_routed_forced_accuracy": float(strict_routed_acc),
+                    "strict_routed_near_tie_forced_accuracy": float(strict_routed_near_acc),
+                    "strict_routed_test_pairs": len(strict_routed),
+                    "strict_routed_near_tie_test_pairs": len(strict_routed_near),
+                    "deferred_rate": float(len(deferred_rows) / max(1, len(test_rows))),
+                    "deferred_test_pairs": len(deferred_rows),
+                    "deferred_non_near_tie_count": len(deferred_non_near),
+                    "deferred_subset_forced_accuracy": float(deferred_subset_acc),
                     "fallback_policy": fallback_name,
                 })
             detailed["results"][regime][str(seed)] = seed_payload
@@ -596,7 +996,9 @@ def main() -> None:
         f"- seeds: `{seeds}`",
         f"- feature_set: `{args.feature_set}`",
         f"- detector_mode: `{args.detector_threshold_mode}`",
+        f"- controller_policy: `{args.controller_policy}`",
         f"- active_detector: `{json.dumps(active_detector, sort_keys=True)}`",
+        f"- strict_coupled_gate: `{json.dumps(detailed['strict_coupled_gate_config'], sort_keys=True)}`",
         f"- pointwise_margin_min: `{args.pointwise_margin_min}`",
         "",
     ]
@@ -609,7 +1011,12 @@ def main() -> None:
                 f"- {vname}: accepted={_mean([x['accepted_pair_accuracy'] for x in rows]):.4f}, "
                 f"coverage={_mean([x['coverage'] for x in rows]):.4f}, forced={_mean([x['forced_pairwise_accuracy'] for x in rows]):.4f}, "
                 f"near={_mean([x['near_tie_forced_accuracy'] for x in rows]):.4f}, adj={_mean([x['adjacent_forced_accuracy'] for x in rows]):.4f}, "
-                f"top1={_mean([x['top1_test'] for x in rows]):.4f}"
+                f"top1={_mean([x['top1_test'] for x in rows]):.4f}, "
+                f"strict_routed={_mean([x['strict_routed_forced_accuracy'] for x in rows]):.4f}, "
+                f"strict_routed_near={_mean([x['strict_routed_near_tie_forced_accuracy'] for x in rows]):.4f}, "
+                f"deferred_rate={_mean([x['deferred_rate'] for x in rows]):.4f}, "
+                f"deferred_non_near={_mean([x['deferred_non_near_tie_count'] for x in rows]):.2f}, "
+                f"deferred_subset_acc={_mean([x['deferred_subset_forced_accuracy'] for x in rows]):.4f}"
             )
         md.append("")
     (out_dir / "near_tie_pointwise_expert_report.md").write_text("\n".join(md) + "\n", encoding="utf-8")
