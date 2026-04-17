@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--run-id", required=True)
     p.add_argument(
         "--pair-strategies",
-        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable",
+        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer",
         help="comma-separated strategies",
     )
     p.add_argument("--near-tie-margin", type=float, default=0.03)
@@ -68,6 +68,24 @@ def parse_args() -> argparse.Namespace:
         default="legacy_or",
         help="Tie-assignment policy. davidson_close_call requires closeness + ambiguity risk.",
     )
+    p.add_argument("--penalized-lambda", type=float, default=0.10)
+    p.add_argument(
+        "--penalized-delta-c-mode",
+        choices=["constant_one", "inverse_remaining_budget", "branch_feature_proxy_v1"],
+        default="constant_one",
+    )
+    p.add_argument("--penalized-tau-base", type=float, default=0.02)
+    p.add_argument("--penalized-tau-relative-scale", type=float, default=0.10)
+    p.add_argument("--penalized-tau-uncertainty-scale", type=float, default=0.50)
+    p.add_argument("--penalized-tau-budget-scale", type=float, default=0.05)
+    p.add_argument(
+        "--penalized-tau-mode",
+        choices=["legacy_additive_v1", "selective_ambiguity_gate_v1"],
+        default="legacy_additive_v1",
+    )
+    p.add_argument("--penalized-tau-easy-uncertainty-multiplier", type=float, default=0.20)
+    p.add_argument("--penalized-tau-easy-budget-multiplier", type=float, default=0.00)
+    p.add_argument("--penalized-tau-gap-cap-multiplier", type=float, default=0.0)
     return p.parse_args()
 
 
@@ -319,6 +337,148 @@ def _annotate_incomparable_pair(
     return out
 
 
+def _delta_c_for_candidate(*, candidate_row: dict[str, Any], remaining_budget: float, mode: str) -> tuple[float, dict[str, float]]:
+    mode_name = str(mode).strip().lower()
+    if mode_name == "inverse_remaining_budget":
+        c = 1.0 / max(1.0, float(remaining_budget))
+        return c, {"base": c}
+    if mode_name == "branch_feature_proxy_v1":
+        f1 = candidate_row.get("features_branch_v1", {}) if isinstance(candidate_row.get("features_branch_v1"), dict) else {}
+        depth = float(f1.get("depth", 0.0))
+        verify_count = float(f1.get("verify_count", 0.0))
+        stalled_steps = float(f1.get("stalled_steps", 0.0))
+        branch_age = float(f1.get("branch_age", 0.0))
+        alloc_std = float(candidate_row.get("allocation_value_std", 0.0))
+        budget_scale = max(1.0, float(remaining_budget) + 1.0)
+        depth_term = depth / budget_scale
+        age_term = branch_age / budget_scale
+        verify_term = verify_count / max(1.0, depth)
+        cost = (
+            1.0
+            + 0.35 * depth_term
+            + 0.45 * verify_term
+            + 0.25 * stalled_steps
+            + 0.30 * alloc_std
+            + 0.20 * age_term
+        )
+        return cost, {
+            "depth_term": depth_term,
+            "verify_term": verify_term,
+            "stalled_steps_term": stalled_steps,
+            "allocation_std_term": alloc_std,
+            "branch_age_term": age_term,
+            "base": 1.0,
+        }
+    return 1.0, {"base": 1.0}
+
+
+def _annotate_penalized_marginal_defer_pair(
+    row: dict[str, Any],
+    *,
+    cand_i: dict[str, Any],
+    cand_j: dict[str, Any],
+    penalized_lambda: float,
+    delta_c_mode: str,
+    tau_base: float,
+    tau_relative_scale: float,
+    tau_uncertainty_scale: float,
+    tau_budget_scale: float,
+    tau_mode: str,
+    tau_easy_uncertainty_multiplier: float,
+    tau_easy_budget_multiplier: float,
+    tau_gap_cap_multiplier: float,
+    near_tie_margin: float,
+) -> dict[str, Any]:
+    out = dict(row)
+    remaining_budget = float(out.get("remaining_budget", cand_i.get("remaining_budget", cand_j.get("remaining_budget", 0.0))))
+    delta_u_i = float(cand_i.get("estimated_value_if_allocate_next", out.get("pair_value_i", 0.0)))
+    delta_u_j = float(cand_j.get("estimated_value_if_allocate_next", out.get("pair_value_j", 0.0)))
+    delta_c_i, delta_c_i_components = _delta_c_for_candidate(candidate_row=cand_i, remaining_budget=remaining_budget, mode=delta_c_mode)
+    delta_c_j, delta_c_j_components = _delta_c_for_candidate(candidate_row=cand_j, remaining_budget=remaining_budget, mode=delta_c_mode)
+    penalized_i = delta_u_i - float(penalized_lambda) * delta_c_i
+    penalized_j = delta_u_j - float(penalized_lambda) * delta_c_j
+    penalized_gap = penalized_i - penalized_j
+    pair_std = float(out.get("pair_uncertainty_std_mean", 0.0))
+    tau_mode_name = str(tau_mode).strip().lower()
+    is_hard_ambiguity = bool(
+        bool(out.get("near_tie_flag", False))
+        or str(out.get("pair_type", "")) == "adjacent_rank"
+        or bool(out.get("exact_vs_approx_disagreement_risk", False))
+        or bool(out.get("davidson_close_call_flag", False))
+    )
+    base_term = float(tau_base) + float(tau_relative_scale) * max(abs(delta_u_i), abs(delta_u_j))
+    uncertainty_term = float(tau_uncertainty_scale) * pair_std
+    budget_term = float(tau_budget_scale) / max(1.0, remaining_budget + 1.0)
+    if tau_mode_name == "selective_ambiguity_gate_v1":
+        if not is_hard_ambiguity:
+            uncertainty_term *= float(tau_easy_uncertainty_multiplier)
+            budget_term *= float(tau_easy_budget_multiplier)
+    tau_raw = base_term + uncertainty_term + budget_term
+    tau_state = tau_raw
+    if tau_mode_name == "selective_ambiguity_gate_v1" and float(tau_gap_cap_multiplier) > 0.0:
+        cap = float(tau_gap_cap_multiplier) * max(abs(penalized_gap), float(tau_base), 1e-6)
+        tau_state = min(tau_raw, cap)
+
+    left_better = penalized_gap > (tau_state)
+    right_better = (-penalized_gap) > (tau_state)
+    defer = bool((not left_better) and (not right_better))
+
+    out["label"] = 1 if penalized_gap >= 0.0 else 0
+    out["preference"] = int(out["label"])
+    out["margin"] = float(penalized_gap)
+    out["margin_abs"] = abs(float(penalized_gap))
+    out["relative_margin"] = abs(float(penalized_gap)) / max(abs(penalized_i), abs(penalized_j), 1e-6)
+    out["near_tie_flag"] = bool(out["margin_abs"] <= float(near_tie_margin))
+
+    out["delta_u_i"] = float(delta_u_i)
+    out["delta_u_j"] = float(delta_u_j)
+    out["delta_c_i"] = float(delta_c_i)
+    out["delta_c_j"] = float(delta_c_j)
+    out["penalized_marginal_value_i"] = float(penalized_i)
+    out["penalized_marginal_value_j"] = float(penalized_j)
+    out["penalized_marginal_gap"] = float(penalized_gap)
+    out["penalized_lambda"] = float(penalized_lambda)
+    out["penalized_tau_state"] = float(tau_state)
+    out["penalized_tau_components"] = {
+        "mode": str(tau_mode_name),
+        "hard_ambiguity_flag": bool(is_hard_ambiguity),
+        "base": float(tau_base),
+        "relative_scale": float(tau_relative_scale),
+        "uncertainty_scale": float(tau_uncertainty_scale),
+        "budget_scale": float(tau_budget_scale),
+        "easy_uncertainty_multiplier": float(tau_easy_uncertainty_multiplier),
+        "easy_budget_multiplier": float(tau_easy_budget_multiplier),
+        "gap_cap_multiplier": float(tau_gap_cap_multiplier),
+        "base_term": float(base_term),
+        "uncertainty_term_effective": float(uncertainty_term),
+        "budget_term_effective": float(budget_term),
+        "tau_raw_pre_cap": float(tau_raw),
+    }
+    out["penalized_delta_c_mode"] = str(delta_c_mode)
+    out["penalized_delta_c_i_components"] = delta_c_i_components
+    out["penalized_delta_c_j_components"] = delta_c_j_components
+    out["penalized_ternary_label"] = 2 if left_better else (0 if right_better else 1)
+    out["penalized_ternary_label_name"] = "left_better" if left_better else ("right_better" if right_better else "defer")
+    out["penalized_marginal_defer_target"] = bool(defer)
+
+    out["ternary_defer_label"] = int(out["penalized_ternary_label"])
+    out["ternary_defer_label_name"] = (
+        "allocate_to_branch_i"
+        if int(out["ternary_defer_label"]) == 2
+        else ("allocate_to_branch_j" if int(out["ternary_defer_label"]) == 0 else "defer_or_outside_option")
+    )
+    out["ternary_defer_label_source"] = "penalized_marginal_value_with_budget_price"
+    out["defer_target_mode"] = "precomputed_penalized_marginal"
+    out["label_source"] = "penalized_marginal_value_with_budget_price"
+    if defer:
+        reasons = list(out.get("ambiguous_tie_reasons", []))
+        if "penalized_tau_defer" not in reasons:
+            reasons.append("penalized_tau_defer")
+        out["ambiguous_tie_target"] = True
+        out["ambiguous_tie_reasons"] = reasons
+    return out
+
+
 def main() -> None:
     args = parse_args()
     labels_dir = Path(args.labels_dir)
@@ -372,6 +532,16 @@ def main() -> None:
             "exact_trust_weight": args.exact_trust_weight,
             "low_trust_std_threshold": args.low_trust_std_threshold,
             "tie_policy": args.tie_policy,
+            "penalized_lambda": args.penalized_lambda,
+            "penalized_delta_c_mode": args.penalized_delta_c_mode,
+            "penalized_tau_base": args.penalized_tau_base,
+            "penalized_tau_relative_scale": args.penalized_tau_relative_scale,
+            "penalized_tau_uncertainty_scale": args.penalized_tau_uncertainty_scale,
+            "penalized_tau_budget_scale": args.penalized_tau_budget_scale,
+            "penalized_tau_mode": args.penalized_tau_mode,
+            "penalized_tau_easy_uncertainty_multiplier": args.penalized_tau_easy_uncertainty_multiplier,
+            "penalized_tau_easy_budget_multiplier": args.penalized_tau_easy_budget_multiplier,
+            "penalized_tau_gap_cap_multiplier": args.penalized_tau_gap_cap_multiplier,
         },
         "regimes": {},
     }
@@ -466,6 +636,8 @@ def main() -> None:
                         keep = True
                     elif strat == "partial_order_incomparable":
                         keep = True
+                    elif strat == "penalized_marginal_defer":
+                        keep = True
                     else:
                         raise ValueError(f"Unknown strategy: {strat}")
 
@@ -512,6 +684,23 @@ def main() -> None:
                                 tie_include_approx=bool(args.tie_include_approx),
                                 tie_require_exact_or_mixed=bool(args.tie_require_exact_or_mixed),
                             )
+                        if strat == "penalized_marginal_defer":
+                            annotated = _annotate_penalized_marginal_defer_pair(
+                                annotated,
+                                cand_i=cand_map[(sid, str(annotated["branch_i"]))],
+                                cand_j=cand_map[(sid, str(annotated["branch_j"]))],
+                                penalized_lambda=float(args.penalized_lambda),
+                                delta_c_mode=str(args.penalized_delta_c_mode),
+                                tau_base=float(args.penalized_tau_base),
+                                tau_relative_scale=float(args.penalized_tau_relative_scale),
+                                tau_uncertainty_scale=float(args.penalized_tau_uncertainty_scale),
+                                tau_budget_scale=float(args.penalized_tau_budget_scale),
+                                tau_mode=str(args.penalized_tau_mode),
+                                tau_easy_uncertainty_multiplier=float(args.penalized_tau_easy_uncertainty_multiplier),
+                                tau_easy_budget_multiplier=float(args.penalized_tau_easy_budget_multiplier),
+                                tau_gap_cap_multiplier=float(args.penalized_tau_gap_cap_multiplier),
+                                near_tie_margin=float(args.near_tie_margin),
+                            )
                         kept.append(annotated)
 
         out_dir = out_root / f"regime_{strat}"
@@ -538,6 +727,15 @@ def main() -> None:
             ),
             "partial_order_incomparable_rate": (
                 sum(1 for r in kept if bool(r.get("partial_order_incomparable_target", False))) / max(1, len(kept))
+            ),
+            "penalized_left_better_rate": (
+                sum(1 for r in kept if str(r.get("penalized_ternary_label_name", "")) == "left_better") / max(1, len(kept))
+            ),
+            "penalized_right_better_rate": (
+                sum(1 for r in kept if str(r.get("penalized_ternary_label_name", "")) == "right_better") / max(1, len(kept))
+            ),
+            "penalized_defer_rate": (
+                sum(1 for r in kept if str(r.get("penalized_ternary_label_name", "")) == "defer") / max(1, len(kept))
             ),
         }
         (out_dir / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

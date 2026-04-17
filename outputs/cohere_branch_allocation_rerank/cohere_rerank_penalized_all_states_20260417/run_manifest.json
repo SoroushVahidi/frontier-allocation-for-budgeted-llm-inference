@@ -1,0 +1,25 @@
+{
+  "script": "scripts/run_cohere_rerank_branch_allocation_experiment.py",
+  "run_id": "cohere_rerank_penalized_all_states_20260417",
+  "timestamp_unix": 1776452725.980375,
+  "args": {
+    "labels_dir": "outputs/branch_label_bruteforce_targets/validation_penalized_regimes_nt_l0.20_t0.02_eu0.10_cap1.50_20260417/regime_penalized_marginal_defer",
+    "output_root": "outputs/cohere_branch_allocation_rerank",
+    "run_id": "cohere_rerank_penalized_all_states_20260417",
+    "model": "rerank-v3.5",
+    "top_n": 8,
+    "max_states": 80,
+    "split_seed": 17,
+    "train_ratio": 0.8,
+    "val_ratio": 0.1,
+    "eval_split": "all",
+    "near_tie_margin": 0.03,
+    "hard_only_fallback": false,
+    "fallback_policy": "heuristic_score",
+    "max_retries": 5,
+    "retry_sleep_sec": 2.5,
+    "sleep_sec": 0.0
+  },
+  "output_dir": "outputs/cohere_branch_allocation_rerank/cohere_rerank_penalized_all_states_20260417",
+  "command_template": "python scripts/run_cohere_rerank_branch_allocation_experiment.py --labels-dir <labels_dir> --run-id <run_id>"
+}

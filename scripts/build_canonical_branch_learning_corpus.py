@@ -17,6 +17,42 @@ from typing import Any
 
 SCHEMA_VERSION = "branch_learning_corpus_v1"
 GENERATOR = "build_canonical_branch_learning_corpus.py"
+PAIRWISE_PASSTHROUGH_FIELDS = [
+    "exact_vs_approx_disagreement_risk",
+    "supervision_reliability_weight",
+    "supervision_trust_tier",
+    "keep_in_quality_mixed_trust",
+    "soft_target_prob_i_wins",
+    "soft_target_prob_tie",
+    "soft_target_prob_j_wins",
+    "soft_target_entropy",
+    "soft_target_source",
+    "partial_order_incomparable_target",
+    "partial_order_incomparable_reasons",
+    "partial_order_label",
+    "partial_order_label_name",
+    "partial_order_policy",
+    "penalized_lambda",
+    "penalized_delta_c_mode",
+    "penalized_marginal_value_i",
+    "penalized_marginal_value_j",
+    "penalized_marginal_gap",
+    "penalized_tau_state",
+    "penalized_tau_components",
+    "penalized_ternary_label",
+    "penalized_ternary_label_name",
+    "penalized_marginal_defer_target",
+    "penalized_delta_c_i_components",
+    "penalized_delta_c_j_components",
+    "delta_u_i",
+    "delta_u_j",
+    "delta_c_i",
+    "delta_c_j",
+    "ternary_defer_label",
+    "ternary_defer_label_name",
+    "ternary_defer_label_source",
+    "defer_target_mode",
+]
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -302,6 +338,15 @@ def main() -> None:
                 "source_regime": regime_name,
                 "source_path": src_path,
             }
+            for field in PAIRWISE_PASSTHROUGH_FIELDS:
+                if field in row:
+                    out[field] = row.get(field)
+            disagreement_signal = bool(
+                out.get("exact_vs_approx_disagreement_risk", False)
+                or any("disagreement" in str(x).lower() for x in out.get("ambiguous_tie_reasons", []))
+                or any("disagreement" in str(x).lower() for x in out.get("mined_reasons", []))
+            )
+            out["exact_vs_approx_disagreement_signal"] = disagreement_signal
 
             if key not in canonical_pair_map:
                 canonical_pair_map[key] = out
@@ -347,6 +392,12 @@ def main() -> None:
         "adjacent_rank_pairs": sum(1 for r in canonical_pairwise if bool(r.get("adjacent_rank_flag", False))),
         "ambiguous_tie_pairs": sum(1 for r in canonical_pairwise if bool(r.get("ambiguous_tie_target", False))),
         "exact_promoted_pairs": sum(1 for r in canonical_pairwise if bool(r.get("replaced_approx_label", False))),
+        "exact_vs_approx_disagreement_signal_pairs": sum(
+            1 for r in canonical_pairwise if bool(r.get("exact_vs_approx_disagreement_signal", False))
+        ),
+        "partial_order_rows": sum(1 for r in canonical_pairwise if "partial_order_label" in r),
+        "soft_prob_rows": sum(1 for r in canonical_pairwise if "soft_target_prob_tie" in r),
+        "penalized_marginal_rows": sum(1 for r in canonical_pairwise if "penalized_marginal_gap" in r),
     }
 
     exact_vs_approx = {
@@ -366,6 +417,9 @@ def main() -> None:
             "near_tie_rate": sum(1 for r in rows if r.get("near_tie_flag")) / max(1, len(rows)),
             "adjacent_rank_rate": sum(1 for r in rows if r.get("adjacent_rank_flag")) / max(1, len(rows)),
             "exact_rate": sum(1 for r in rows if r.get("is_exact_label")) / max(1, len(rows)),
+            "disagreement_signal_rate": sum(
+                1 for r in rows if bool(r.get("exact_vs_approx_disagreement_signal", False))
+            ) / max(1, len(rows)),
         }
 
     summary = {
@@ -440,6 +494,8 @@ def main() -> None:
                     "relative_margin", "pair_uncertainty_std_mean", "pair_uncertainty_std_max",
                     "small_margin_flag", "ambiguous_tie_target", "ambiguous_tie_reasons", "ternary_label_name",
                     "pair_mode_provenance", "replaced_approx_label", "mined_reasons",
+                    "exact_vs_approx_disagreement_signal",
+                    *PAIRWISE_PASSTHROUGH_FIELDS,
                 ],
             },
             "outside_option": {

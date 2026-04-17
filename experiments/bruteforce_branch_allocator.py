@@ -170,7 +170,7 @@ class LearningConfig:
     svm_max_train_rows_for_nystroem: int = 8000
     svm_margin_calibration: str = "none"  # one of: none, platt
     train_pairwise_defer_classifier: bool = False
-    defer_target_mode: str = "heuristic"  # one of: heuristic, oracle_proxy, hybrid
+    defer_target_mode: str = "heuristic"  # one of: heuristic, oracle_proxy, hybrid, precomputed
     defer_abs_margin_threshold: float = 0.03
     defer_relative_margin_threshold: float = 0.15
     defer_std_threshold: float = 0.08
@@ -448,6 +448,8 @@ def _is_ambiguous_pair(row: dict[str, Any], cfg: LearningConfig) -> bool:
         or rel_margin <= float(cfg.tie_relative_margin_threshold)
         or pair_std >= float(cfg.tie_std_threshold)
         or (bool(cfg.tie_use_near_tie_flag) and near_tie_flag)
+        or bool(row.get("exact_vs_approx_disagreement_risk", False))
+        or bool(row.get("exact_vs_approx_disagreement_signal", False))
     )
 
 
@@ -486,6 +488,10 @@ def _oracle_proxy_defer_flag(row: dict[str, Any], cfg: LearningConfig) -> bool:
 
 def _defer_flag_for_mode(row: dict[str, Any], cfg: LearningConfig) -> bool:
     mode = str(cfg.defer_target_mode).strip().lower()
+    if mode == "precomputed":
+        if "ternary_defer_label" not in row:
+            raise ValueError("defer_target_mode=precomputed requires ternary_defer_label on pair rows")
+        return int(row.get("ternary_defer_label", 1)) == 1
     heuristic = _is_defer_pair(row, cfg)
     oracle_proxy = _oracle_proxy_defer_flag(row, cfg)
     if mode == "heuristic":
@@ -652,15 +658,28 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         row["pair_commitment_strength_proxy"] = pair_commitment_strength_proxy
         row["pair_oracle_defer_score"] = pair_oracle_defer_score
         row["disagreement_risk_score"] = disagreement_risk
-        defer_flag = _defer_flag_for_mode(row, cfg)
-        binary_label = int(row.get("label", 0))
-        row["ternary_defer_label"] = 1 if defer_flag else (2 if binary_label == 1 else 0)
-        if row["ternary_defer_label"] == 1:
-            row["ternary_defer_label_name"] = "defer_or_outside_option"
-        elif row["ternary_defer_label"] == 2:
-            row["ternary_defer_label_name"] = "allocate_to_branch_i"
+        preserve_precomputed_defer = (
+            "ternary_defer_label" in row
+            and str(row.get("ternary_defer_label_source", "")).strip().lower() == "penalized_marginal_value_with_budget_price"
+        )
+        if preserve_precomputed_defer:
+            row["ternary_defer_label"] = int(row.get("ternary_defer_label", 1))
+            if "ternary_defer_label_name" not in row:
+                row["ternary_defer_label_name"] = (
+                    "allocate_to_branch_i"
+                    if int(row["ternary_defer_label"]) == 2
+                    else ("allocate_to_branch_j" if int(row["ternary_defer_label"]) == 0 else "defer_or_outside_option")
+                )
         else:
-            row["ternary_defer_label_name"] = "allocate_to_branch_j"
+            defer_flag = _defer_flag_for_mode(row, cfg)
+            binary_label = int(row.get("label", 0))
+            row["ternary_defer_label"] = 1 if defer_flag else (2 if binary_label == 1 else 0)
+            if row["ternary_defer_label"] == 1:
+                row["ternary_defer_label_name"] = "defer_or_outside_option"
+            elif row["ternary_defer_label"] == 2:
+                row["ternary_defer_label_name"] = "allocate_to_branch_i"
+            else:
+                row["ternary_defer_label_name"] = "allocate_to_branch_j"
 
     state_to_candidates: dict[str, list[dict[str, Any]]] = {}
     for row in candidates:

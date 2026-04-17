@@ -345,6 +345,24 @@ def test_ternary_defer_label_materialization(tmp_path: Path) -> None:
     assert "ternary_defer_label_name" in row
 
 
+def test_precomputed_penalized_defer_label_is_preserved(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    data = load_label_artifacts(labels_dir)
+    for idx, row in enumerate(data["pairwise_labels"]):
+        row["ternary_defer_label"] = 1 if idx == 0 else 2
+        row["ternary_defer_label_name"] = (
+            "defer_or_outside_option"
+            if int(row["ternary_defer_label"]) == 1
+            else "allocate_to_branch_i"
+        )
+        row["ternary_defer_label_source"] = "penalized_marginal_value_with_budget_price"
+    cfg = LearningConfig(seed=17, train_ratio=0.67, val_ratio=0.0, defer_target_mode="precomputed")
+    tables = prepare_learning_tables(data, cfg)
+    row = tables["pairwise"][0]
+    assert int(row["ternary_defer_label"]) == 1
+    assert str(row["ternary_defer_label_name"]) == "defer_or_outside_option"
+
+
 def test_pairwise_defer_classifier_training_and_metrics(tmp_path: Path) -> None:
     labels_dir = _tiny_artifacts(tmp_path)
     cfg = LearningConfig(
@@ -486,6 +504,27 @@ def test_train_cli_parser_supports_oracle_proxy_and_calibration_flags() -> None:
     assert args.defer_target_mode == "oracle_proxy"
     assert args.defer_calibration == "platt"
     assert args.defer_decision_threshold == 0.6
+
+
+def test_train_cli_parser_supports_precomputed_defer_target_mode() -> None:
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "train_bruteforce_branch_allocator.py"
+    spec = importlib.util.spec_from_file_location("train_bruteforce_branch_allocator_script_precomputed", script_path)
+    assert spec and spec.loader
+    parser_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser_module)
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(
+            "sys.argv",
+            [
+                "train_bruteforce_branch_allocator.py",
+                "--labels-dir",
+                "dummy",
+                "--defer-target-mode",
+                "precomputed",
+            ],
+        )
+        args = parser_module.parse_args()
+    assert args.defer_target_mode == "precomputed"
 
 
 def test_defer_fallback_policy_metrics_and_unresolved_accounting(tmp_path: Path) -> None:

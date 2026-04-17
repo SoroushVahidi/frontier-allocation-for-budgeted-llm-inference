@@ -122,7 +122,7 @@ Historical script entry points have been moved to:
 | `evaluate_bruteforce_branch_allocator.py` | Re-evaluates trained brute-force-label branch allocators with near-tie, ranking, mode-slice, budget-slice, and dataset-slice metrics. |
 | `merge_bruteforce_branch_label_runs.py` | Consolidates multiple brute-force run directories into a single provenance-preserving merged corpus with dataset/budget/mode/near-tie summaries and output checksums. |
 | `run_bruteforce_allocator_scaling_experiment.py` | Multi-seed allocator scaling runner over a merged corpus with full-corpus evaluation plus leave-one-dataset-out generalization slices, including linear baselines and GBDT ranking baselines (LightGBM LambdaRank + CatBoost YetiRankPairwise when available). |
-| `build_bruteforce_target_regimes.py` | Builds manifest-backed pair-construction target regimes (all-pairs, top-vs-rest, adjacent-rank, high-margin-only, uncertainty-filtered) with pair-quality metadata and optional exact-label promotion. |
+| `build_bruteforce_target_regimes.py` | Builds manifest-backed pair-construction target regimes (including budget-priced penalized-marginal left/right/defer supervision) with pair-quality metadata and optional exact-label promotion. |
 | `audit_bruteforce_exact_vs_approx_pairs.py` | Runs targeted exact-vs-approx disagreement audits with slices by dataset, budget, margin bucket, branch count, and pair type. |
 | `run_target_fidelity_regime_experiment.py` | Runs matched multi-seed learner comparisons across target regimes to isolate supervision-quality effects from model-class effects. |
 | `mine_bruteforce_hard_regions.py` | Mines hard branch-comparison regions (near-tie/small-margin/high-uncertainty/adjacent-rank/disagreement-risk) and emits priority-scored relabel candidates with provenance. |
@@ -131,13 +131,14 @@ Historical script entry points have been moved to:
 | `run_hard_region_exact_supervision_experiment.py` | Executes matched multi-seed learning across exact-augmented regimes and reports hard-slice metrics (near-tie, adjacent-rank, exact-promoted). |
 | `audit_bruteforce_feature_representation.py` | Audits hard-case feature coverage (v1 vs v2 vs richer paths) and emits canonical feature-audit artifacts for near-tie/adjacent slices. |
 | `run_hard_case_feature_representation_experiment.py` | Runs matched old-vs-richer feature-set experiments on fixed supervision regimes and reports hard-slice metrics. |
-| `run_ternary_or_abstain_branch_comparison_experiment.py` | Runs matched binary-forced vs ternary tie-aware vs selective-abstention branch-comparison experiments with configurable tie-band rules and explicit fallback semantics. |
+| `run_ternary_or_abstain_branch_comparison_experiment.py` | Runs matched binary-forced vs ternary tie-aware vs selective-abstention branch-comparison experiments, including penalized-marginal defer metrics (coverage/fallback/near-tie slices). |
 | `run_ambiguity_calibration_and_fallback_experiment.py` | Runs matched ambiguity-handling experiments for abstention/tie decisions with confidence calibration (none/temperature/Platt/isotonic) and configurable fallback policies. |
 | `run_near_tie_policy_experiment.py` | Runs matched dedicated near-tie detection/routing experiments, including non-forced balanced/shared fallback policy comparisons against binary and calibrated-abstention baselines. |
 | `run_near_tie_pointwise_expert_experiment.py` | Runs matched dedicated near-tie pointwise-expert experiments with specialized/reweighted pointwise fallbacks, routing gates, and near-tie pairwise-vs-pointwise diagnostic artifacts. |
 | `run_pairwise_svm_margin_experiment.py` | Runs matched logistic-vs-SVM bounded margin comparisons on hard branch-comparison regimes. |
 | `run_structured_ambiguity_experiment.py` | Runs matched v2/v3 representation, defer-target, and oracle-proxy defer comparisons focused on ambiguous hard cases. |
 | `run_defer_fallback_experiment.py` | Runs matched defer-only vs defer-plus-fallback policy comparisons, including binary, pointwise, outside-option-aware, and optional deferred-specialist backups. |
+| `run_cohere_rerank_branch_allocation_experiment.py` | Bounded Cohere Rerank listwise branch-scoring comparison over canonical candidate sets with matched top-1 proxy metrics vs heuristic/pairwise baselines. |
 
 ## Notes on learning workflows
 
