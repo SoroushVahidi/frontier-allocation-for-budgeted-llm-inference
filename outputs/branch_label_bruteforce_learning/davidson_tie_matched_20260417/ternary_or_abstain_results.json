@@ -1,0 +1,404 @@
+{
+  "run_id": "davidson_tie_matched_20260417",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "regimes": {
+    "all_pairs": {
+      "11": {
+        "config": {
+          "feature_set": "v2",
+          "near_tie_margin": 0.03,
+          "tie_abs_margin_threshold": 0.03,
+          "tie_relative_margin_threshold": 0.12,
+          "tie_std_threshold": 0.07,
+          "tie_use_near_tie_flag": true,
+          "tie_include_approx": true,
+          "tie_require_exact_or_mixed": false,
+          "abstain_confidence_threshold": 0.2,
+          "fallback_policy": "pointwise_value",
+          "ternary_train_status": "ok"
+        },
+        "rows": [
+          {
+            "formulation": "binary_forced",
+            "top1_test": 0.9,
+            "accepted_pair_accuracy": 0.8125,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.8125,
+            "tie_detection_precision": 0.0,
+            "tie_detection_recall": 0.0,
+            "tie_detection_f1": 0.0,
+            "near_tie_accepted_accuracy": 1.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.8461538461538461,
+            "adjacent_forced_accuracy": 0.8461538461538461,
+            "test_pairs": 16.0
+          },
+          {
+            "formulation": "ternary_tie",
+            "top1_test": 0.7,
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "abstention_rate": 1.0,
+            "forced_pairwise_accuracy": 0.75,
+            "tie_detection_precision": 1.0,
+            "tie_detection_recall": 1.0,
+            "tie_detection_f1": 1.0,
+            "near_tie_accepted_accuracy": 0.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.6923076923076923,
+            "test_pairs": 16.0
+          },
+          {
+            "formulation": "selective_abstain",
+            "top1_test": 0.7,
+            "accepted_pair_accuracy": 0.7142857142857143,
+            "coverage": 0.4375,
+            "abstention_rate": 0.5625,
+            "forced_pairwise_accuracy": 0.75,
+            "tie_detection_precision": 1.0,
+            "tie_detection_recall": 0.5625,
+            "tie_detection_f1": 0.72,
+            "near_tie_accepted_accuracy": 1.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.6666666666666666,
+            "adjacent_forced_accuracy": 0.6923076923076923,
+            "test_pairs": 16.0
+          }
+        ]
+      },
+      "29": {
+        "config": {
+          "feature_set": "v2",
+          "near_tie_margin": 0.03,
+          "tie_abs_margin_threshold": 0.03,
+          "tie_relative_margin_threshold": 0.12,
+          "tie_std_threshold": 0.07,
+          "tie_use_near_tie_flag": true,
+          "tie_include_approx": true,
+          "tie_require_exact_or_mixed": false,
+          "abstain_confidence_threshold": 0.2,
+          "fallback_policy": "pointwise_value",
+          "ternary_train_status": "ok"
+        },
+        "rows": [
+          {
+            "formulation": "binary_forced",
+            "top1_test": 0.7777777777777778,
+            "accepted_pair_accuracy": 0.8181818181818182,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.8181818181818182,
+            "tie_detection_precision": 0.0,
+            "tie_detection_recall": 0.0,
+            "tie_detection_f1": 0.0,
+            "near_tie_accepted_accuracy": 0.75,
+            "near_tie_forced_accuracy": 0.75,
+            "adjacent_accepted_accuracy": 0.8,
+            "adjacent_forced_accuracy": 0.8,
+            "test_pairs": 11.0
+          },
+          {
+            "formulation": "ternary_tie",
+            "top1_test": 0.7777777777777778,
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "abstention_rate": 1.0,
+            "forced_pairwise_accuracy": 0.7272727272727273,
+            "tie_detection_precision": 1.0,
+            "tie_detection_recall": 1.0,
+            "tie_detection_f1": 1.0,
+            "near_tie_accepted_accuracy": 0.0,
+            "near_tie_forced_accuracy": 0.5,
+            "adjacent_accepted_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.8,
+            "test_pairs": 11.0
+          },
+          {
+            "formulation": "selective_abstain",
+            "top1_test": 0.7777777777777778,
+            "accepted_pair_accuracy": 0.8,
+            "coverage": 0.9090909090909091,
+            "abstention_rate": 0.09090909090909094,
+            "forced_pairwise_accuracy": 0.8181818181818182,
+            "tie_detection_precision": 1.0,
+            "tie_detection_recall": 0.09090909090909091,
+            "tie_detection_f1": 0.16666666666666669,
+            "near_tie_accepted_accuracy": 0.75,
+            "near_tie_forced_accuracy": 0.75,
+            "adjacent_accepted_accuracy": 0.7777777777777778,
+            "adjacent_forced_accuracy": 0.8,
+            "test_pairs": 11.0
+          }
+        ]
+      },
+      "47": {
+        "config": {
+          "feature_set": "v2",
+          "near_tie_margin": 0.03,
+          "tie_abs_margin_threshold": 0.03,
+          "tie_relative_margin_threshold": 0.12,
+          "tie_std_threshold": 0.07,
+          "tie_use_near_tie_flag": true,
+          "tie_include_approx": true,
+          "tie_require_exact_or_mixed": false,
+          "abstain_confidence_threshold": 0.2,
+          "fallback_policy": "pointwise_value",
+          "ternary_train_status": "ok"
+        },
+        "rows": [
+          {
+            "formulation": "binary_forced",
+            "top1_test": 0.8,
+            "accepted_pair_accuracy": 0.7142857142857143,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.7142857142857143,
+            "tie_detection_precision": 0.0,
+            "tie_detection_recall": 0.0,
+            "tie_detection_f1": 0.0,
+            "near_tie_accepted_accuracy": 1.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.8333333333333334,
+            "adjacent_forced_accuracy": 0.8333333333333334,
+            "test_pairs": 7.0
+          },
+          {
+            "formulation": "ternary_tie",
+            "top1_test": 0.6,
+            "accepted_pair_accuracy": 0.0,
+            "coverage": 0.0,
+            "abstention_rate": 1.0,
+            "forced_pairwise_accuracy": 0.7142857142857143,
+            "tie_detection_precision": 1.0,
+            "tie_detection_recall": 1.0,
+            "tie_detection_f1": 1.0,
+            "near_tie_accepted_accuracy": 0.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.6666666666666666,
+            "test_pairs": 7.0
+          },
+          {
+            "formulation": "selective_abstain",
+            "top1_test": 0.8,
+            "accepted_pair_accuracy": 1.0,
+            "coverage": 0.14285714285714285,
+            "abstention_rate": 0.8571428571428572,
+            "forced_pairwise_accuracy": 0.8571428571428571,
+            "tie_detection_precision": 1.0,
+            "tie_detection_recall": 0.8571428571428571,
+            "tie_detection_f1": 0.923076923076923,
+            "near_tie_accepted_accuracy": 0.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 1.0,
+            "adjacent_forced_accuracy": 0.8333333333333334,
+            "test_pairs": 7.0
+          }
+        ]
+      }
+    },
+    "davidson_tie_aware": {
+      "11": {
+        "config": {
+          "feature_set": "v2",
+          "near_tie_margin": 0.03,
+          "tie_abs_margin_threshold": 0.03,
+          "tie_relative_margin_threshold": 0.12,
+          "tie_std_threshold": 0.07,
+          "tie_use_near_tie_flag": true,
+          "tie_include_approx": true,
+          "tie_require_exact_or_mixed": false,
+          "abstain_confidence_threshold": 0.2,
+          "fallback_policy": "pointwise_value",
+          "ternary_train_status": "ok"
+        },
+        "rows": [
+          {
+            "formulation": "binary_forced",
+            "top1_test": 0.9,
+            "accepted_pair_accuracy": 0.8125,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.8125,
+            "tie_detection_precision": 0.0,
+            "tie_detection_recall": 0.0,
+            "tie_detection_f1": 0.0,
+            "near_tie_accepted_accuracy": 1.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.8461538461538461,
+            "adjacent_forced_accuracy": 0.8461538461538461,
+            "test_pairs": 16.0
+          },
+          {
+            "formulation": "ternary_tie",
+            "top1_test": 0.6,
+            "accepted_pair_accuracy": 0.5,
+            "coverage": 0.25,
+            "abstention_rate": 0.75,
+            "forced_pairwise_accuracy": 0.6875,
+            "tie_detection_precision": 0.5,
+            "tie_detection_recall": 0.6666666666666666,
+            "tie_detection_f1": 0.5714285714285715,
+            "near_tie_accepted_accuracy": 1.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.3333333333333333,
+            "adjacent_forced_accuracy": 0.6153846153846154,
+            "test_pairs": 16.0
+          },
+          {
+            "formulation": "selective_abstain",
+            "top1_test": 0.7,
+            "accepted_pair_accuracy": 0.7142857142857143,
+            "coverage": 0.4375,
+            "abstention_rate": 0.5625,
+            "forced_pairwise_accuracy": 0.75,
+            "tie_detection_precision": 0.5555555555555556,
+            "tie_detection_recall": 0.5555555555555556,
+            "tie_detection_f1": 0.5555555555555556,
+            "near_tie_accepted_accuracy": 1.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.6666666666666666,
+            "adjacent_forced_accuracy": 0.6923076923076923,
+            "test_pairs": 16.0
+          }
+        ]
+      },
+      "29": {
+        "config": {
+          "feature_set": "v2",
+          "near_tie_margin": 0.03,
+          "tie_abs_margin_threshold": 0.03,
+          "tie_relative_margin_threshold": 0.12,
+          "tie_std_threshold": 0.07,
+          "tie_use_near_tie_flag": true,
+          "tie_include_approx": true,
+          "tie_require_exact_or_mixed": false,
+          "abstain_confidence_threshold": 0.2,
+          "fallback_policy": "pointwise_value",
+          "ternary_train_status": "ok"
+        },
+        "rows": [
+          {
+            "formulation": "binary_forced",
+            "top1_test": 0.7777777777777778,
+            "accepted_pair_accuracy": 0.8181818181818182,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.8181818181818182,
+            "tie_detection_precision": 0.0,
+            "tie_detection_recall": 0.0,
+            "tie_detection_f1": 0.0,
+            "near_tie_accepted_accuracy": 0.75,
+            "near_tie_forced_accuracy": 0.75,
+            "adjacent_accepted_accuracy": 0.8,
+            "adjacent_forced_accuracy": 0.8,
+            "test_pairs": 11.0
+          },
+          {
+            "formulation": "ternary_tie",
+            "top1_test": 0.8888888888888888,
+            "accepted_pair_accuracy": 1.0,
+            "coverage": 0.45454545454545453,
+            "abstention_rate": 0.5454545454545454,
+            "forced_pairwise_accuracy": 0.9090909090909091,
+            "tie_detection_precision": 0.5,
+            "tie_detection_recall": 0.5,
+            "tie_detection_f1": 0.5,
+            "near_tie_accepted_accuracy": 1.0,
+            "near_tie_forced_accuracy": 0.75,
+            "adjacent_accepted_accuracy": 1.0,
+            "adjacent_forced_accuracy": 0.9,
+            "test_pairs": 11.0
+          },
+          {
+            "formulation": "selective_abstain",
+            "top1_test": 0.7777777777777778,
+            "accepted_pair_accuracy": 0.8,
+            "coverage": 0.9090909090909091,
+            "abstention_rate": 0.09090909090909094,
+            "forced_pairwise_accuracy": 0.8181818181818182,
+            "tie_detection_precision": 1.0,
+            "tie_detection_recall": 0.16666666666666666,
+            "tie_detection_f1": 0.2857142857142857,
+            "near_tie_accepted_accuracy": 0.75,
+            "near_tie_forced_accuracy": 0.75,
+            "adjacent_accepted_accuracy": 0.7777777777777778,
+            "adjacent_forced_accuracy": 0.8,
+            "test_pairs": 11.0
+          }
+        ]
+      },
+      "47": {
+        "config": {
+          "feature_set": "v2",
+          "near_tie_margin": 0.03,
+          "tie_abs_margin_threshold": 0.03,
+          "tie_relative_margin_threshold": 0.12,
+          "tie_std_threshold": 0.07,
+          "tie_use_near_tie_flag": true,
+          "tie_include_approx": true,
+          "tie_require_exact_or_mixed": false,
+          "abstain_confidence_threshold": 0.2,
+          "fallback_policy": "pointwise_value",
+          "ternary_train_status": "ok"
+        },
+        "rows": [
+          {
+            "formulation": "binary_forced",
+            "top1_test": 0.8,
+            "accepted_pair_accuracy": 0.7142857142857143,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.7142857142857143,
+            "tie_detection_precision": 0.0,
+            "tie_detection_recall": 0.0,
+            "tie_detection_f1": 0.0,
+            "near_tie_accepted_accuracy": 1.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 0.8333333333333334,
+            "adjacent_forced_accuracy": 0.8333333333333334,
+            "test_pairs": 7.0
+          },
+          {
+            "formulation": "ternary_tie",
+            "top1_test": 0.6,
+            "accepted_pair_accuracy": 1.0,
+            "coverage": 0.14285714285714285,
+            "abstention_rate": 0.8571428571428572,
+            "forced_pairwise_accuracy": 0.7142857142857143,
+            "tie_detection_precision": 0.16666666666666666,
+            "tie_detection_recall": 0.5,
+            "tie_detection_f1": 0.25,
+            "near_tie_accepted_accuracy": 0.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 1.0,
+            "adjacent_forced_accuracy": 0.6666666666666666,
+            "test_pairs": 7.0
+          },
+          {
+            "formulation": "selective_abstain",
+            "top1_test": 0.8,
+            "accepted_pair_accuracy": 1.0,
+            "coverage": 0.14285714285714285,
+            "abstention_rate": 0.8571428571428572,
+            "forced_pairwise_accuracy": 0.8571428571428571,
+            "tie_detection_precision": 0.3333333333333333,
+            "tie_detection_recall": 1.0,
+            "tie_detection_f1": 0.5,
+            "near_tie_accepted_accuracy": 0.0,
+            "near_tie_forced_accuracy": 1.0,
+            "adjacent_accepted_accuracy": 1.0,
+            "adjacent_forced_accuracy": 0.8333333333333334,
+            "test_pairs": 7.0
+          }
+        ]
+      }
+    }
+  }
+}
