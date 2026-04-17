@@ -16,15 +16,25 @@ These are the main method notes for the current strongest scaffold:
 - `HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`
 - `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`
 
+## New target-design and value-supervision direction
+
+These notes capture the current strongest next target-design direction beyond brittle pairwise winner labels:
+- `RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md`
+- `RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md`
+- `BRANCH_VALUE_UNCERTAINTY_DERIVED_DEFER_BOUNDED_PASS_2026_04_18.md`
+
 ## Evaluation-bridge note
 
 This note links old-manuscript evaluation discipline to the current project:
 - `imported_methodology_frontier_integration_report.md`
 
-## Audit / continuation note
+## Audit / continuation notes
 
-For the most recent repository-facing audit and recommended continuation path:
+For repository-facing audit and continuation path:
 - `REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`
+- `REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
+- `EXPERIMENT_LEDGER_2026_04_18.md`
+- `CONTINUATION_PLAN_2026_04_18.md`
 
 ## How to use this page
 
@@ -35,7 +45,10 @@ Recommended order:
 2. `WHAT_IS_NOT_WORKING_NOW.md`
 3. `HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`
 4. `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`
-5. one or more notes from this page depending on the method question.
+5. `RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md`
+6. `RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md`
+7. `BRANCH_VALUE_UNCERTAINTY_DERIVED_DEFER_BOUNDED_PASS_2026_04_18.md`
+8. one or more notes from this page depending on the method question.
 
 ## What this page is not
 
