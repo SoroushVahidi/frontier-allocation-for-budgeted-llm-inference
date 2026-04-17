@@ -1,0 +1,78 @@
+{
+  "aggregate_summary_by_regime": {
+    "all_pairs_approx": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+      "accepted_mean_true_value_gap": 0.17430505735423685,
+      "deferred_mean_true_value_gap": 0.08167632307853664,
+      "pairwise_binary_accuracy": 0.8214285714285715,
+      "pairwise_binary_near_tie_accuracy": 0.7666666666666666,
+      "pairwise_binary_adjacent_accuracy": 0.7714285714285714
+    },
+    "opportunity_intensity_weighted": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+      "accepted_mean_true_value_gap": 0.17430505735423685,
+      "deferred_mean_true_value_gap": 0.08167632307853664,
+      "pairwise_binary_accuracy": 0.8214285714285715,
+      "pairwise_binary_near_tie_accuracy": 0.7666666666666666,
+      "pairwise_binary_adjacent_accuracy": 0.7714285714285714
+    },
+    "opportunity_intensity_weighted_no_outside_norm": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+      "accepted_mean_true_value_gap": 0.17430505735423685,
+      "deferred_mean_true_value_gap": 0.08167632307853664,
+      "pairwise_binary_accuracy": 0.8214285714285715,
+      "pairwise_binary_near_tie_accuracy": 0.7666666666666666,
+      "pairwise_binary_adjacent_accuracy": 0.7714285714285714
+    }
+  },
+  "deltas_vs_baseline": {
+    "all_pairs_approx": {
+      "delta_accepted_pair_accuracy": 0.0,
+      "delta_coverage": 0.0,
+      "delta_defer_rate": 0.0,
+      "delta_near_tie_accepted_pair_accuracy": 0.0,
+      "delta_adjacent_rank_accepted_pair_accuracy": 0.0,
+      "delta_accepted_mean_true_value_gap": 0.0,
+      "delta_deferred_mean_true_value_gap": 0.0,
+      "delta_pairwise_binary_accuracy": 0.0,
+      "delta_pairwise_binary_near_tie_accuracy": 0.0,
+      "delta_pairwise_binary_adjacent_accuracy": 0.0
+    },
+    "opportunity_intensity_weighted": {
+      "delta_accepted_pair_accuracy": 0.0,
+      "delta_coverage": 0.0,
+      "delta_defer_rate": 0.0,
+      "delta_near_tie_accepted_pair_accuracy": 0.0,
+      "delta_adjacent_rank_accepted_pair_accuracy": 0.0,
+      "delta_accepted_mean_true_value_gap": 0.0,
+      "delta_deferred_mean_true_value_gap": 0.0,
+      "delta_pairwise_binary_accuracy": 0.0,
+      "delta_pairwise_binary_near_tie_accuracy": 0.0,
+      "delta_pairwise_binary_adjacent_accuracy": 0.0
+    },
+    "opportunity_intensity_weighted_no_outside_norm": {
+      "delta_accepted_pair_accuracy": 0.0,
+      "delta_coverage": 0.0,
+      "delta_defer_rate": 0.0,
+      "delta_near_tie_accepted_pair_accuracy": 0.0,
+      "delta_adjacent_rank_accepted_pair_accuracy": 0.0,
+      "delta_accepted_mean_true_value_gap": 0.0,
+      "delta_deferred_mean_true_value_gap": 0.0,
+      "delta_pairwise_binary_accuracy": 0.0,
+      "delta_pairwise_binary_near_tie_accuracy": 0.0,
+      "delta_pairwise_binary_adjacent_accuracy": 0.0
+    }
+  }
+}

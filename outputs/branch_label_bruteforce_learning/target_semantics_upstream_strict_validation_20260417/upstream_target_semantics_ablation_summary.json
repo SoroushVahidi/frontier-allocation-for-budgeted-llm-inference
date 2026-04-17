@@ -1,0 +1,29 @@
+{
+  "baseline": "all_pairs_approx",
+  "new_regime": "opportunity_intensity_weighted",
+  "ablation_regime": "opportunity_intensity_weighted_no_outside_norm",
+  "new_vs_ablation_metric_deltas": {
+    "accepted_pair_accuracy": 0.0,
+    "coverage": 0.0,
+    "defer_rate": 0.0,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.0,
+    "accepted_mean_true_value_gap": 0.0,
+    "deferred_mean_true_value_gap": 0.0,
+    "pairwise_binary_accuracy": 0.0,
+    "pairwise_binary_near_tie_accuracy": 0.0,
+    "pairwise_binary_adjacent_accuracy": 0.0
+  },
+  "new_vs_baseline_metric_deltas": {
+    "accepted_pair_accuracy": 0.0,
+    "coverage": 0.0,
+    "defer_rate": 0.0,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.0,
+    "accepted_mean_true_value_gap": 0.0,
+    "deferred_mean_true_value_gap": 0.0,
+    "pairwise_binary_accuracy": 0.0,
+    "pairwise_binary_near_tie_accuracy": 0.0,
+    "pairwise_binary_adjacent_accuracy": 0.0
+  }
+}

@@ -1,0 +1,260 @@
+{
+  "run_id": "target_semantics_upstream_strict_validation_20260417",
+  "strict_results": "outputs/branch_label_bruteforce_learning/target_semantics_upstream_strict_validation_20260417/strict_validation_results.json",
+  "targets_root": "outputs/branch_label_bruteforce_targets/target_semantics_upstream_20260417",
+  "baseline_regime": "all_pairs_approx",
+  "aggregate_summary_by_regime": {
+    "all_pairs_approx": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+      "accepted_mean_true_value_gap": 0.17430505735423685,
+      "deferred_mean_true_value_gap": 0.08167632307853664,
+      "pairwise_binary_accuracy": 0.8214285714285715,
+      "pairwise_binary_near_tie_accuracy": 0.7666666666666666,
+      "pairwise_binary_adjacent_accuracy": 0.7714285714285714
+    },
+    "opportunity_intensity_weighted": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+      "accepted_mean_true_value_gap": 0.17430505735423685,
+      "deferred_mean_true_value_gap": 0.08167632307853664,
+      "pairwise_binary_accuracy": 0.8214285714285715,
+      "pairwise_binary_near_tie_accuracy": 0.7666666666666666,
+      "pairwise_binary_adjacent_accuracy": 0.7714285714285714
+    },
+    "opportunity_intensity_weighted_no_outside_norm": {
+      "accepted_pair_accuracy": 0.9333333333333332,
+      "coverage": 0.2698412698412698,
+      "defer_rate": 0.7301587301587302,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+      "accepted_mean_true_value_gap": 0.17430505735423685,
+      "deferred_mean_true_value_gap": 0.08167632307853664,
+      "pairwise_binary_accuracy": 0.8214285714285715,
+      "pairwise_binary_near_tie_accuracy": 0.7666666666666666,
+      "pairwise_binary_adjacent_accuracy": 0.7714285714285714
+    }
+  },
+  "deltas_vs_baseline": {
+    "all_pairs_approx": {
+      "delta_accepted_pair_accuracy": 0.0,
+      "delta_coverage": 0.0,
+      "delta_defer_rate": 0.0,
+      "delta_near_tie_accepted_pair_accuracy": 0.0,
+      "delta_adjacent_rank_accepted_pair_accuracy": 0.0,
+      "delta_accepted_mean_true_value_gap": 0.0,
+      "delta_deferred_mean_true_value_gap": 0.0,
+      "delta_pairwise_binary_accuracy": 0.0,
+      "delta_pairwise_binary_near_tie_accuracy": 0.0,
+      "delta_pairwise_binary_adjacent_accuracy": 0.0
+    },
+    "opportunity_intensity_weighted": {
+      "delta_accepted_pair_accuracy": 0.0,
+      "delta_coverage": 0.0,
+      "delta_defer_rate": 0.0,
+      "delta_near_tie_accepted_pair_accuracy": 0.0,
+      "delta_adjacent_rank_accepted_pair_accuracy": 0.0,
+      "delta_accepted_mean_true_value_gap": 0.0,
+      "delta_deferred_mean_true_value_gap": 0.0,
+      "delta_pairwise_binary_accuracy": 0.0,
+      "delta_pairwise_binary_near_tie_accuracy": 0.0,
+      "delta_pairwise_binary_adjacent_accuracy": 0.0
+    },
+    "opportunity_intensity_weighted_no_outside_norm": {
+      "delta_accepted_pair_accuracy": 0.0,
+      "delta_coverage": 0.0,
+      "delta_defer_rate": 0.0,
+      "delta_near_tie_accepted_pair_accuracy": 0.0,
+      "delta_adjacent_rank_accepted_pair_accuracy": 0.0,
+      "delta_accepted_mean_true_value_gap": 0.0,
+      "delta_deferred_mean_true_value_gap": 0.0,
+      "delta_pairwise_binary_accuracy": 0.0,
+      "delta_pairwise_binary_near_tie_accuracy": 0.0,
+      "delta_pairwise_binary_adjacent_accuracy": 0.0
+    }
+  },
+  "per_seed_summary": [
+    {
+      "regime": "all_pairs_approx",
+      "seed": 11,
+      "accepted_pair_accuracy": 1.0,
+      "coverage": 0.14285714285714285,
+      "defer_rate": 0.8571428571428571,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 1.0,
+      "accepted_mean_true_value_gap": 0.18557045124282956,
+      "deferred_mean_true_value_gap": 0.10715332371872484,
+      "pairwise_binary_accuracy": 0.7142857142857143,
+      "pairwise_binary_near_tie_accuracy": 0.5,
+      "pairwise_binary_adjacent_accuracy": 0.6
+    },
+    {
+      "regime": "all_pairs_approx",
+      "seed": 29,
+      "accepted_pair_accuracy": 0.8,
+      "coverage": 0.4166666666666667,
+      "defer_rate": 0.5833333333333334,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+      "accepted_mean_true_value_gap": 0.15151117680132015,
+      "deferred_mean_true_value_gap": 0.05729397804844411,
+      "pairwise_binary_accuracy": 0.75,
+      "pairwise_binary_near_tie_accuracy": 0.8,
+      "pairwise_binary_adjacent_accuracy": 0.7142857142857143
+    },
+    {
+      "regime": "all_pairs_approx",
+      "seed": 47,
+      "accepted_pair_accuracy": 1.0,
+      "coverage": 0.25,
+      "defer_rate": 0.75,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 1.0,
+      "accepted_mean_true_value_gap": 0.1858335440185609,
+      "deferred_mean_true_value_gap": 0.08058166746844098,
+      "pairwise_binary_accuracy": 1.0,
+      "pairwise_binary_near_tie_accuracy": 1.0,
+      "pairwise_binary_adjacent_accuracy": 1.0
+    },
+    {
+      "regime": "opportunity_intensity_weighted",
+      "seed": 11,
+      "accepted_pair_accuracy": 1.0,
+      "coverage": 0.14285714285714285,
+      "defer_rate": 0.8571428571428571,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 1.0,
+      "accepted_mean_true_value_gap": 0.18557045124282956,
+      "deferred_mean_true_value_gap": 0.10715332371872484,
+      "pairwise_binary_accuracy": 0.7142857142857143,
+      "pairwise_binary_near_tie_accuracy": 0.5,
+      "pairwise_binary_adjacent_accuracy": 0.6
+    },
+    {
+      "regime": "opportunity_intensity_weighted",
+      "seed": 29,
+      "accepted_pair_accuracy": 0.8,
+      "coverage": 0.4166666666666667,
+      "defer_rate": 0.5833333333333334,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+      "accepted_mean_true_value_gap": 0.15151117680132015,
+      "deferred_mean_true_value_gap": 0.05729397804844411,
+      "pairwise_binary_accuracy": 0.75,
+      "pairwise_binary_near_tie_accuracy": 0.8,
+      "pairwise_binary_adjacent_accuracy": 0.7142857142857143
+    },
+    {
+      "regime": "opportunity_intensity_weighted",
+      "seed": 47,
+      "accepted_pair_accuracy": 1.0,
+      "coverage": 0.25,
+      "defer_rate": 0.75,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 1.0,
+      "accepted_mean_true_value_gap": 0.1858335440185609,
+      "deferred_mean_true_value_gap": 0.08058166746844098,
+      "pairwise_binary_accuracy": 1.0,
+      "pairwise_binary_near_tie_accuracy": 1.0,
+      "pairwise_binary_adjacent_accuracy": 1.0
+    },
+    {
+      "regime": "opportunity_intensity_weighted_no_outside_norm",
+      "seed": 11,
+      "accepted_pair_accuracy": 1.0,
+      "coverage": 0.14285714285714285,
+      "defer_rate": 0.8571428571428571,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 1.0,
+      "accepted_mean_true_value_gap": 0.18557045124282956,
+      "deferred_mean_true_value_gap": 0.10715332371872484,
+      "pairwise_binary_accuracy": 0.7142857142857143,
+      "pairwise_binary_near_tie_accuracy": 0.5,
+      "pairwise_binary_adjacent_accuracy": 0.6
+    },
+    {
+      "regime": "opportunity_intensity_weighted_no_outside_norm",
+      "seed": 29,
+      "accepted_pair_accuracy": 0.8,
+      "coverage": 0.4166666666666667,
+      "defer_rate": 0.5833333333333334,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 0.6666666666666666,
+      "accepted_mean_true_value_gap": 0.15151117680132015,
+      "deferred_mean_true_value_gap": 0.05729397804844411,
+      "pairwise_binary_accuracy": 0.75,
+      "pairwise_binary_near_tie_accuracy": 0.8,
+      "pairwise_binary_adjacent_accuracy": 0.7142857142857143
+    },
+    {
+      "regime": "opportunity_intensity_weighted_no_outside_norm",
+      "seed": 47,
+      "accepted_pair_accuracy": 1.0,
+      "coverage": 0.25,
+      "defer_rate": 0.75,
+      "near_tie_accepted_pair_accuracy": 0.0,
+      "adjacent_rank_accepted_pair_accuracy": 1.0,
+      "accepted_mean_true_value_gap": 0.1858335440185609,
+      "deferred_mean_true_value_gap": 0.08058166746844098,
+      "pairwise_binary_accuracy": 1.0,
+      "pairwise_binary_near_tie_accuracy": 1.0,
+      "pairwise_binary_adjacent_accuracy": 1.0
+    }
+  ],
+  "weight_diagnostics_by_regime": {
+    "all_pairs_approx": {
+      "status": "ok",
+      "rows": 91,
+      "mean_weight": 1.0,
+      "mean_weight_near_tie": 1.0,
+      "mean_weight_non_near_tie": 1.0,
+      "mean_weight_adjacent": 1.0,
+      "mean_weight_non_adjacent": 1.0,
+      "weight_percentiles": {
+        "p05": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "p95": 1.0
+      }
+    },
+    "opportunity_intensity_weighted": {
+      "status": "ok",
+      "rows": 91,
+      "mean_weight": 1.2787615191367379,
+      "mean_weight_near_tie": 1.6,
+      "mean_weight_non_near_tie": 1.1570802763855024,
+      "mean_weight_adjacent": 1.3617172270454243,
+      "mean_weight_non_adjacent": 1.1014079367112708,
+      "weight_percentiles": {
+        "p05": 0.7723164617528452,
+        "p25": 1.0117191850188307,
+        "p50": 1.3502955896619133,
+        "p75": 1.6,
+        "p95": 1.6
+      }
+    },
+    "opportunity_intensity_weighted_no_outside_norm": {
+      "status": "ok",
+      "rows": 91,
+      "mean_weight": 1.2787615191367379,
+      "mean_weight_near_tie": 1.6,
+      "mean_weight_non_near_tie": 1.1570802763855024,
+      "mean_weight_adjacent": 1.3617172270454243,
+      "mean_weight_non_adjacent": 1.1014079367112708,
+      "weight_percentiles": {
+        "p05": 0.7723164617528452,
+        "p25": 1.0117191850188307,
+        "p50": 1.3502955896619133,
+        "p75": 1.6,
+        "p95": 1.6
+      }
+    }
+  }
+}
