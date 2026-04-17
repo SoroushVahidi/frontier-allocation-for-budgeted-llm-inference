@@ -37,6 +37,7 @@ It is in the “decide among strong current ideas” phase.
 - Identified canonical replay blocker due to missing regime artifacts.
 - Rebuilt upstream artifacts and canonical targets root.
 - Re-ran strict validation on rebuilt canonical root.
+- Ran a no-redesign support-size robustness pass on support sizes 36, 72, and 108.
 
 ## Main research conclusions already recorded
 
@@ -93,6 +94,13 @@ The repo should not treat abstention as “never decide.” It should treat defe
 - but defer rate is very high
 - near-tie accepted accuracy remains poor
 
+### Support-size robustness result
+- support growth from 36 to 72 materially reduced defer and increased coverage
+- support 72 still kept a strong accepted-accuracy advantage over brittle pairwise
+- support 108 still beat brittle pairwise, but the accepted-accuracy margin narrowed
+- near-tie accepted accuracy remained weak and unstable across support sizes
+- conclusion: the line is not just a tiny-support artifact, but it still appears too conservative and fragile on the hardest near-tie region
+
 ## Main current status after those steps
 
 The branch-value + uncertainty line is now:
@@ -106,11 +114,12 @@ That is stronger than “interesting bounded idea,” but weaker than “new can
 - We should not keep searching for many new ideas before deciding the strong current ones.
 - We should first properly evaluate the serious target-design lines already on the table.
 - Canonical replay and robustness matter more now than more brainstorming.
+- The value+uncertainty line is real and worth continuing, but the next work should focus on understanding and reducing over-deferral rather than on inventing a different family immediately.
 
 ## Main things not yet decided
 
-- whether the branch-value + uncertainty line remains strong as rebuilt support size grows,
-- whether high defer is mainly a small-support effect or a structural rule weakness,
+- whether the branch-value + uncertainty line can reduce defer without losing too much accepted accuracy,
+- how to best decompose and calibrate defer inflation on the stronger rebuilt support roots,
 - whether direct signed pairwise gap supervision adds value beyond branch-level value targets,
 - how best to redesign mixed-fidelity supervision,
 - whether partial-order / unresolved supervision should become a primary training object.
@@ -120,7 +129,8 @@ That is stronger than “interesting bounded idea,” but weaker than “new can
 1. continue deciding the current branch-value + uncertainty line,
 2. continue deciding penalized marginal target refinement,
 3. improve mixed-fidelity supervision design,
-4. only after that, promote or reject secondary ideas such as direct signed pairwise gap or partial-order primary supervision.
+4. run strict no-redesign calibration diagnosis on the stronger rebuilt support roots,
+5. only after that, promote or reject secondary ideas such as direct signed pairwise gap or partial-order primary supervision.
 
 ## Safe summary
 
