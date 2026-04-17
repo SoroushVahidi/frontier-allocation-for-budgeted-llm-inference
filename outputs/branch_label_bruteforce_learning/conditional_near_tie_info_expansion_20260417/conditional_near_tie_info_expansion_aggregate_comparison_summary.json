@@ -1,0 +1,57 @@
+{
+  "baseline": {
+    "n_runs": 9,
+    "accepted_pair_accuracy": 0.9333333333333333,
+    "coverage": 0.2698412698412699,
+    "defer_rate": 0.7301587301587301,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "trigger_rate": 0.0,
+    "accepted_accuracy_on_triggered_cases": 0.0,
+    "triggered_mean_oracle_defer_score": 0.0,
+    "non_triggered_mean_oracle_defer_score": 1.9603174603174602,
+    "extra_compute_units_total": 0.0,
+    "extra_compute_units_per_pair": 0.0
+  },
+  "conditional_expand_then_decide": {
+    "metrics": {
+      "n_runs": 9,
+      "accepted_pair_accuracy": 0.8611111111111112,
+      "coverage": 0.7857142857142857,
+      "defer_rate": 0.2142857142857143,
+      "near_tie_accepted_pair_accuracy": 0.7666666666666667,
+      "trigger_rate": 0.7301587301587301,
+      "accepted_accuracy_on_triggered_cases": 0.8380952380952381,
+      "triggered_mean_oracle_defer_score": 2.365079365079365,
+      "non_triggered_mean_oracle_defer_score": 1.2000000000000002,
+      "extra_compute_units_total": 5.333333333333333,
+      "extra_compute_units_per_pair": 0.7301587301587301
+    },
+    "delta_vs_baseline": {
+      "accepted_pair_accuracy": -0.07222222222222219,
+      "coverage": 0.5158730158730158,
+      "defer_rate": -0.5158730158730158,
+      "near_tie_accepted_pair_accuracy": 0.7666666666666667
+    }
+  },
+  "conditional_expand_then_decide_oracleish": {
+    "metrics": {
+      "n_runs": 9,
+      "accepted_pair_accuracy": 0.8690476190476191,
+      "coverage": 0.9166666666666666,
+      "defer_rate": 0.08333333333333333,
+      "near_tie_accepted_pair_accuracy": 0.7666666666666667,
+      "trigger_rate": 0.7301587301587301,
+      "accepted_accuracy_on_triggered_cases": 0.8492063492063493,
+      "triggered_mean_oracle_defer_score": 2.365079365079365,
+      "non_triggered_mean_oracle_defer_score": 1.2000000000000002,
+      "extra_compute_units_total": 8.0,
+      "extra_compute_units_per_pair": 1.0952380952380953
+    },
+    "delta_vs_baseline": {
+      "accepted_pair_accuracy": -0.06428571428571428,
+      "coverage": 0.6468253968253967,
+      "defer_rate": -0.6468253968253967,
+      "near_tie_accepted_pair_accuracy": 0.7666666666666667
+    }
+  }
+}

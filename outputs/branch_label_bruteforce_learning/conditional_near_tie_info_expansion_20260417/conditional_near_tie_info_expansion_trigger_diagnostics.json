@@ -1,0 +1,7 @@
+{
+  "problematic_case_check": {
+    "conditional_triggered_oracle_defer_minus_non_triggered": 1.165079365079365,
+    "oracleish_triggered_oracle_defer_minus_non_triggered": 1.165079365079365,
+    "interpretation": "Positive values imply trigger selection skews toward higher apparent ambiguity/hardness."
+  }
+}
