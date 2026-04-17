@@ -40,6 +40,7 @@ Use:
 - `run_near_tie_pointwise_expert_experiment.py`
 - `run_pairwise_svm_margin_experiment.py`
 - `run_structured_ambiguity_experiment.py`
+- `run_defer_fallback_experiment.py`
 
 ### 3. Check datasets and external baselines
 Use:
@@ -117,7 +118,7 @@ Historical script entry points have been moved to:
 |---|---|
 | `run_bruteforce_branch_label_generator.py` | Heavy-compute branch-comparison label generator: builds frontier states, runs exact/approx continuation evaluations, emits candidate/pairwise/outside-option labels with resume-safe auditable artifacts. |
 | `analyze_bruteforce_label_quality.py` | Produces label-quality diagnostics for brute-force runs (counts, margin/near-tie/gap distributions, per-budget breakdown, and exact-vs-approx agreement) and optional pilot-learner summary. |
-| `train_bruteforce_branch_allocator.py` | Trains pairwise / pointwise / outside-option / defer-aware branch-allocation models from brute-force label artifacts and writes evaluation + manifests. |
+| `train_bruteforce_branch_allocator.py` | Trains pairwise / pointwise / outside-option / defer-aware / fallback-aware branch-allocation models from brute-force label artifacts and writes evaluation + manifests. |
 | `evaluate_bruteforce_branch_allocator.py` | Re-evaluates trained brute-force-label branch allocators with near-tie, ranking, mode-slice, budget-slice, and dataset-slice metrics. |
 | `merge_bruteforce_branch_label_runs.py` | Consolidates multiple brute-force run directories into a single provenance-preserving merged corpus with dataset/budget/mode/near-tie summaries and output checksums. |
 | `run_bruteforce_allocator_scaling_experiment.py` | Multi-seed allocator scaling runner over a merged corpus with full-corpus evaluation plus leave-one-dataset-out generalization slices, including linear baselines and GBDT ranking baselines (LightGBM LambdaRank + CatBoost YetiRankPairwise when available). |
@@ -136,10 +137,11 @@ Historical script entry points have been moved to:
 | `run_near_tie_pointwise_expert_experiment.py` | Runs matched dedicated near-tie pointwise-expert experiments with specialized/reweighted pointwise fallbacks, routing gates, and near-tie pairwise-vs-pointwise diagnostic artifacts. |
 | `run_pairwise_svm_margin_experiment.py` | Runs matched logistic-vs-SVM bounded margin comparisons on hard branch-comparison regimes. |
 | `run_structured_ambiguity_experiment.py` | Runs matched v2/v3 representation, defer-target, and oracle-proxy defer comparisons focused on ambiguous hard cases. |
+| `run_defer_fallback_experiment.py` | Runs matched defer-only vs defer-plus-fallback policy comparisons, including binary, pointwise, outside-option-aware, and optional deferred-specialist backups. |
 
 ## Notes on learning workflows
 
 - `train_bruteforce_branch_allocator.py` is the main unified training entrypoint for branch-allocation learning from brute-force supervision artifacts.
-- The current hard-case line should usually be interpreted through the paired docs notes in `../docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md` and `../docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md`.
+- The current hard-case line should usually be interpreted through the paired docs notes in `../docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`, `../docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md`, and `../docs/DEFER_CONDITIONED_FALLBACK_STATUS.md`.
 - Hard-case experiments should usually be interpreted together with the relevant docs notes in `../docs/` rather than as standalone headline results.
 - Use `../docs/OUTPUTS_INTERPRETATION_GUIDE.md` when reviewing generated artifacts under `outputs/`.
