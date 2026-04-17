@@ -1,0 +1,21 @@
+{
+  "run_id": "idea_and_execution_memory_2026_04_18",
+  "date": "2026-04-18",
+  "new_docs": [
+    "docs/IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md",
+    "docs/RESEARCH_AND_EXECUTION_LOG_2026_04_18.md"
+  ],
+  "purpose": "record which main ideas are implemented, partly implemented, not yet implemented, and what major research and execution steps have already happened so future work does not repeat them",
+  "main_bottleneck": "supervision target quality and selective ambiguity handling for next-step branch allocation",
+  "highest_priority_implemented_line": "branch-level value plus uncertainty plus derived compare/defer",
+  "highest_priority_partly_implemented_lines": [
+    "penalized marginal target refinement",
+    "mixed exact/approx supervision redesign"
+  ],
+  "not_yet_fully_implemented_but_promising": [
+    "direct signed pairwise gap supervision",
+    "partial-order or unresolved primary supervision",
+    "hybrid listwise or frontier-level primary supervision"
+  ],
+  "main_process_conclusion": "the repository is now in the decide-current-ideas phase rather than the find-more-ideas phase"
+}
