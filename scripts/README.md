@@ -7,13 +7,14 @@ All scripts write run artifacts under `outputs/` unless overridden.
 - Current project entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
 - Full code/document map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
+- Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
 ## Interpretation labels
 
 - **Canonical**: current frontier-allocation path for the NeurIPS-oriented project.
 - **Exploratory**: useful active branches and diagnostics, not settled default winners.
 - **Integration/prep**: dataset/baseline readiness tooling.
-- **Historical**: older-track support scripts retained for provenance.
+- **Historical**: older-track support scripts retained only for provenance.
 
 ## Canonical scripts (current project path)
 
@@ -69,10 +70,9 @@ All scripts write run artifacts under `outputs/` unless overridden.
 
 ## Historical/provenance scripts
 
-| Script | Role |
-|---|---|
-| `run_heavy_real_routing_eval.sh` | Older binary revise-routing track support |
-| `run_final_manuscript_eval.sh` | Older manuscript evaluation wrapper |
+Historical script entry points have been moved to:
+- [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
+- `../archive/historical_scripts/`
 
 ## Notes
 
@@ -347,140 +347,3 @@ python scripts/run_near_tie_pointwise_expert_experiment.py \
   --near-tie-reweight-factor 2.5 \
   --adjacent-reweight-factor 1.5
 ```
-| `run_oracle_label_pilot_hpc.sh` | HPC-oriented wrapper: preflight, optional manifest build, generator hook, validator gate, run summary |
-| `run_oracle_label_generator_interface_stub.py` | Interface-stabilization stub CLI for heavy generator contract; supports testing-only `--mock-mode` outputs |
-| `run_oracle_label_generator_prototype.py` | First real paired-rollout oracle-label prototype generator (limited subset, CPU-oriented) |
-| `run_oracle_label_generator_heavy.py` | Production-leaning heavy-path generator with resume/progress/state-error handling for shard-scale runs |
-| `oracle_label_pilot_sharding.py` | Deterministic shard split/merge utility for pilot-state manifests and per-shard oracle-label outputs |
-| `run_allocation_target_generator_heavy.py` | Resumable heavy-path allocation-target generator; emits outside-option + pairwise labels with progress/state-error checkpoints |
-| `allocation_target_pilot_sharding.py` | Deterministic shard split/merge utility for allocation-target state manifests and per-shard outside/pairwise outputs |
-| `build_stop_vs_act_oracle_distillation_dataset.py` | Selective-distillation preprocessing: bucket oracle rows into accepted/borderline/rejected, apply manifest-aware mock checks, and emit weighted distillation-ready JSONL |
-| `build_random_matched_coverage_oracle_distillation_dataset.py` | Build deterministic random matched-coverage distillation baselines per regime (accepted-only or accepted+borderline), including repeated-draw mode and overlap summaries |
-| `train_oracle_distilled_stop_vs_act_student.py` | Oracle-distilled student train/eval path with retained-coverage accounting, ACT-rate reporting, and required slice summaries (uncertainty/margin/disagreement/budget) |
-| `compare_oracle_distilled_stop_vs_act_runs.py` | Matched-control comparison scaffold with required roles (anchor, accepted-only, accepted+borderline, matched random), repeated-random variance summaries, and readiness gates |
-| `run_oracle_distilled_regime_bundle.py` | Regime-level orchestration runner that bundles repeated random draws, selective/anchor/random student runs, and one comparison-ready package |
-
-
-### Frontier target-construction command examples
-
-#### Tiny pilot (local exact-mode smoke)
-
-Use a tiny deterministic state-manifest build and a tiny generation pass for local validation.
-
-```bash
-RUN_ID="tiny_$(date -u +%Y%m%dT%H%M%SZ)"
-OUT_ROOT="outputs/frontier_target_construction/${RUN_ID}"
-
-python3 scripts/build_oracle_label_pilot_state_manifest.py \
-  --selection-config configs/stop_vs_act_oracle_pilot_state_selection_v1.json \
-  --output-dir "${OUT_ROOT}/state_manifest" \
-  --max-candidate-rows 64
-
-python3 scripts/run_oracle_label_generator_heavy.py \
-  --pilot-config configs/stop_vs_act_oracle_label_pilot_v1.json \
-  --selection-config configs/stop_vs_act_oracle_pilot_state_selection_v1.json \
-  --state-manifest "${OUT_ROOT}/state_manifest/pilot_state_manifest.jsonl" \
-  --output-dir "${OUT_ROOT}/labels" \
-  --max-states 32 \
-  --paired-rollouts 2
-```
-
-> Note: branch-value exactness is still row-level (`value_is_exact`) and only exact for trivial terminal/zero-budget cases.
-
-#### Heavy long-run (approximate mode, resume, shard-aware)
-
-For longer runs, use deterministic sharding and heavy generator resume support.
-
-```bash
-RUN_ID="heavy_$(date -u +%Y%m%dT%H%M%SZ)"
-OUT_ROOT="outputs/frontier_target_construction/${RUN_ID}"
-
-python3 scripts/oracle_label_pilot_sharding.py split \
-  --state-manifest outputs/stop_vs_act_oracle_pilot_state_manifest/pilot_state_manifest.jsonl \
-  --num-shards 16 \
-  --output-dir "${OUT_ROOT}/split"
-
-python3 scripts/run_oracle_label_generator_heavy.py \
-  --pilot-config configs/stop_vs_act_oracle_label_pilot_v1.json \
-  --selection-config configs/stop_vs_act_oracle_pilot_state_selection_v1.json \
-  --state-manifest "${OUT_ROOT}/split/shard_manifests/shard_000.jsonl" \
-  --output-dir "${OUT_ROOT}/shards/shard_000" \
-  --split-manifest "${OUT_ROOT}/split/shard_split_manifest.json" \
-  --shard-name shard_000 \
-  --shard-id 0 \
-  --expected-state-count 75 \
-  --paired-rollouts 8 \
-  --resume \
-  --continue-on-state-error \
-  --max-state-errors 10
-```
-
-#### Output tree + manifest quick reference
-
-```text
-outputs/frontier_target_construction/<run_id>/
-  state_manifest/
-    pilot_state_manifest.jsonl
-    pilot_state_manifest_meta.json
-    pilot_state_manifest_schema.json
-  split/                               # optional sharded runs
-    shard_split_manifest.json
-    shard_manifests/shard_XXX.jsonl
-  labels/ or shards/shard_XXX/
-    oracle_stop_vs_act_labels.jsonl
-    oracle_label_manifest.json
-    oracle_label_progress.json
-    oracle_label_state_errors.jsonl
-```
-
-Manifest notes:
-- `oracle_label_manifest.json`: run provenance, config pointers, output completeness, and error stats.
-- `oracle_label_progress.json`: rolling progress, including resume skips and last processed `state_id`.
-- `shard_split_manifest.json`: deterministic shard membership and source-manifest hash for merge-time verification.
-
-## s1 baseline integration scripts (fair split)
-
-| Script | Role |
-|---|---|
-| `run_s1_budget_forcing_baseline.py` | Canonical s1 fair-baseline runner with MODE A (inference-only) and MODE B (strict official/full import + verification). MODE B emits `official_mode_import.csv`, `official_mode_import_report.md`, `fairness_report.md`, and `manifest.json` under `outputs/s1_baseline/<run_id>/`. |
-| `run_s1_baseline_comparison_bundle.py` | Merge one or more s1 run directories into manuscript-ready aggregate comparison artifacts. |
-| `verify_s1_mode_b_import.py` | Strict validator for s1 MODE B official/full import packages (required files, metadata schema, fairness checks, and table-readiness checks). |
-| `generate_s1_mode_b_import_report.py` | Generates reviewer-facing markdown report from MODE B verification JSON. |
-
-## TALE baseline integration scripts (fair split)
-
-| Script | Role |
-|---|---|
-| `run_tale_baseline.py` | Canonical TALE fair-baseline runner with MODE A (prompt budgeting inference-only) and MODE B (strict official/full import + verification with TALE-vs-TALE-PT variant separation). MODE B emits `official_mode_import.csv`, `official_mode_import_report.md`, `fairness_report.md`, and `manifest.json` under `outputs/tale_baseline/<run_id>/`. |
-| `run_tale_comparison_bundle.py` | Merge one or more TALE run directories into manuscript-ready aggregate comparison artifacts. |
-| `verify_tale_mode_b_import.py` | Strict validator for TALE MODE B official/full import packages (schema, provenance, fairness checks, and TALE-vs-TALE-PT variant separation checks). |
-| `generate_tale_mode_b_import_report.py` | Generates reviewer-facing markdown report from TALE MODE B verification JSON. |
-
-## L1 baseline integration scripts (fair split)
-
-| Script | Role |
-|---|---|
-| `run_l1_baseline.py` | Canonical L1 fair-baseline runner with MODE A (inference-only L1-style Exact/Max length control adapter) and MODE B (official/full adapter reporting). Writes manifest, summary CSV, per-example JSONL, fairness report, and comparison tables under `outputs/l1_baseline/`. |
-| `run_l1_comparison_bundle.py` | Merge one or more L1 run directories into manuscript-ready aggregate comparison artifacts. |
-
-
-## External baseline completeness / runnability scripts
-
-| Script | Role |
-|---|---|
-| `verify_external_baseline_runnability.py` | Smoke-verifies that s1/TALE/L1 MODE A runners execute and that MODE B adapters correctly report blocked/import status boundaries, and runs BEST-Route / when_solve_when_verify / cascade_routing / MoB / ReST-MCTS / OpenR adjacent import fixture checks. Writes artifacts under `outputs/external_baseline_runnability/<run_id>/`. |
-| `generate_external_baseline_completeness_report.py` | Generates repository-facing external-baseline completeness report and machine-readable summary artifacts (`docs/external_baseline_completeness_report.md`, `outputs/external_baseline_completeness_summary.{json,csv}`). |
-| `verify_best_route_import.py` | Strict validator for BEST-Route adjacent import packages (`metadata.json` + `results.csv`) with workflow-stage, bo-arm schema, and adjacent-only comparability checks. |
-| `generate_best_route_status_report.py` | Generates conservative BEST-Route status artifacts under `outputs/external_baseline_completeness/` and documents safe vs unsafe claims. |
-| `verify_when_solve_when_verify_import.py` | Strict validator for When-To-Solve-When-To-Verify adjacent import packages (SC-vs-GenRM strategy coverage, fixed-budget fields, and adjacent-only comparability checks). |
-| `generate_when_solve_when_verify_status_report.py` | Generates conservative when_solve_when_verify status artifacts under `outputs/external_baseline_completeness/`. |
-| `verify_cascade_routing_import.py` | Strict validator for Cascade Routing adjacent import packages (upstream workflow-stage declarations, routing/cascading/cascade-routing strategy coverage, and adjacent-only comparability checks). |
-| `generate_cascade_routing_status_report.py` | Generates conservative cascade_routing status artifacts under `outputs/external_baseline_completeness/`. |
-| `verify_mob_import.py` | Strict validator for MoB adjacent import packages (workflow-stage declarations, benchmark/model/num-samples identity checks, BoN+MoB algorithm coverage, and adjacent-only comparability checks). |
-| `generate_mob_status_report.py` | Generates conservative mob_majority_of_bests status artifacts under `outputs/external_baseline_completeness/`. |
-| `verify_rest_mcts_import.py` | Strict validator for ReST-MCTS adjacent import packages (workflow-stage declarations, dataset/model/search-setting checks, MCTS-search coverage, and adjacent-only comparability checks). |
-| `generate_rest_mcts_status_report.py` | Generates conservative rest_mcts status artifacts under `outputs/external_baseline_completeness/`. |
-| `verify_openr_import.py` | Strict validator for OpenR adjacent import packages (workflow-stage declarations, method-coverage checks, metric sanity checks, and adjacent-only comparability checks). |
-| `generate_openr_status_report.py` | Generates conservative openr status artifacts under `outputs/external_baseline_completeness/`. |
-| `verify_compute_optimal_tts_provenance.py` | Audits paper↔repo provenance signals for compute_optimal_tts (target OpenReview paper vs linked repo identity) and emits machine-readable provenance checks. |
-| `generate_compute_optimal_tts_blocker_report.py` | Generates conservative blocker/status artifacts for compute_optimal_tts under `outputs/external_baseline_completeness/`. |
