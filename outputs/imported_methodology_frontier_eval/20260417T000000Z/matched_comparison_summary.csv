@@ -1,0 +1,11 @@
+budget,adaptive_method,baseline_method,wins,losses,ties,n,win_rate,net_win_rate
+8,adaptive_budget_guarded,reasoning_greedy,0,5,4,9,0.0,-0.5555555555555556
+8,adaptive_budget_guarded,self_consistency_3,0,6,3,9,0.0,-0.6666666666666666
+8,adaptive_budget_guarded,reasoning_beam2,0,7,2,9,0.0,-0.7777777777777778
+8,adaptive_budget_guarded,verifier_guided_search,0,0,9,9,0.0,0.0
+8,adaptive_budget_guarded,program_of_thought,0,0,9,9,0.0,0.0
+10,adaptive_budget_guarded,reasoning_greedy,4,3,2,9,0.4444444444444444,0.1111111111111111
+10,adaptive_budget_guarded,self_consistency_3,1,4,4,9,0.1111111111111111,-0.3333333333333333
+10,adaptive_budget_guarded,reasoning_beam2,2,4,3,9,0.2222222222222222,-0.2222222222222222
+10,adaptive_budget_guarded,verifier_guided_search,3,4,2,9,0.3333333333333333,-0.1111111111111111
+10,adaptive_budget_guarded,program_of_thought,4,0,5,9,0.4444444444444444,0.4444444444444444

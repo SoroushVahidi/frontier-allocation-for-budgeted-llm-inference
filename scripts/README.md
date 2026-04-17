@@ -25,6 +25,7 @@ All scripts write run artifacts under `outputs/` unless overridden.
 | `evaluate_branch_scorer_robustness.py` | Multi-seed/budget/init robustness sweep |
 | `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
 | `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
+| `run_imported_methodology_frontier_eval.py` | Bounded old-manuscript-style evaluation layer (matched/fixed-vs-adaptive-vs-oracle/frontier/signal-slice) for current branch allocation |
 | `wulver_comparative_frontier_audit.sh` | Wulver/cluster wrapper (API keys, env); called from `jobs/comparative_frontier_audit_wulver.sbatch` |
 | `run_light_external_style_baseline_comparison.py` | Lightweight internal-vs-external-style local comparison |
 | `run_light_anchor_vs_s1_comparison.py` | Lightweight matched anchor vs external s1 baseline adapter |
