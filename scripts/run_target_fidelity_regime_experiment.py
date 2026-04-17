@@ -32,6 +32,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--pairwise-near-tie-action", choices=["none", "filter", "downweight"], default="none")
     p.add_argument("--pairwise-near-tie-downweight", type=float, default=0.25)
     p.add_argument("--uncertainty-weighting", action="store_true")
+    p.add_argument("--feature-set", choices=["v1", "v2"], default="v2")
     return p.parse_args()
 
 
@@ -67,6 +68,7 @@ def main() -> None:
                 pairwise_near_tie_action=str(args.pairwise_near_tie_action),
                 pairwise_near_tie_downweight=float(args.pairwise_near_tie_downweight),
                 uncertainty_weighting=bool(args.uncertainty_weighting),
+                feature_set=str(args.feature_set),
             )
             artifacts = load_label_artifacts(regime_dir)
             tables = prepare_learning_tables(artifacts, cfg)
@@ -78,6 +80,7 @@ def main() -> None:
                     "pairwise_near_tie_action": cfg.pairwise_near_tie_action,
                     "pairwise_near_tie_downweight": cfg.pairwise_near_tie_downweight,
                     "uncertainty_weighting": cfg.uncertainty_weighting,
+                    "feature_set": cfg.feature_set,
                 },
                 "evaluation": evals,
             }

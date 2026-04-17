@@ -42,7 +42,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--run-id", required=True)
     p.add_argument(
         "--pair-strategies",
-        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered",
+        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust",
         help="comma-separated strategies",
     )
     p.add_argument("--near-tie-margin", type=float, default=0.03)
@@ -57,6 +57,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--tie-use-near-tie-flag", action="store_true")
     p.add_argument("--tie-include-approx", action="store_true")
     p.add_argument("--tie-require-exact-or-mixed", action="store_true")
+    p.add_argument("--low-trust-near-tie-approx-weight", type=float, default=0.35)
+    p.add_argument("--medium-trust-approx-weight", type=float, default=0.7)
+    p.add_argument("--exact-trust-weight", type=float, default=1.15)
+    p.add_argument("--low-trust-std-threshold", type=float, default=0.08)
     return p.parse_args()
 
 
@@ -125,6 +129,46 @@ def _annotate_ambiguous_pair(
     return out
 
 
+def _assign_supervision_reliability(
+    row: dict[str, Any],
+    *,
+    low_trust_near_tie_approx_weight: float,
+    medium_trust_approx_weight: float,
+    exact_trust_weight: float,
+    low_trust_std_threshold: float,
+) -> dict[str, Any]:
+    out = dict(row)
+    pair_mode = str(out.get("pair_mode_provenance", "unknown"))
+    pair_type = str(out.get("pair_type", "generic"))
+    near_tie = bool(out.get("near_tie_flag", False))
+    pair_std = float(out.get("pair_uncertainty_std_mean", 0.0))
+    label_source = str(out.get("label_source", ""))
+    is_exact = pair_mode in {"exact", "mixed"} or label_source.startswith("exact")
+
+    trust_tier = "medium"
+    weight = float(medium_trust_approx_weight)
+    keep_in_quality_mixed_trust = True
+
+    if is_exact:
+        trust_tier = "high_exact"
+        weight = float(exact_trust_weight)
+    elif (pair_type == "adjacent_rank") and near_tie and pair_std >= float(low_trust_std_threshold):
+        trust_tier = "low_approx_near_tie_adjacent_high_std"
+        weight = float(low_trust_near_tie_approx_weight)
+        keep_in_quality_mixed_trust = False
+    elif near_tie:
+        trust_tier = "medium_approx_near_tie"
+        weight = float(low_trust_near_tie_approx_weight)
+    elif pair_std <= float(low_trust_std_threshold):
+        trust_tier = "high_approx_easy"
+        weight = 1.0
+
+    out["supervision_trust_tier"] = trust_tier
+    out["supervision_reliability_weight"] = max(weight, 1e-8)
+    out["keep_in_quality_mixed_trust"] = bool(keep_in_quality_mixed_trust)
+    return out
+
+
 def main() -> None:
     args = parse_args()
     labels_dir = Path(args.labels_dir)
@@ -173,6 +217,10 @@ def main() -> None:
             "tie_use_near_tie_flag": bool(args.tie_use_near_tie_flag),
             "tie_include_approx": bool(args.tie_include_approx),
             "tie_require_exact_or_mixed": bool(args.tie_require_exact_or_mixed),
+            "low_trust_near_tie_approx_weight": args.low_trust_near_tie_approx_weight,
+            "medium_trust_approx_weight": args.medium_trust_approx_weight,
+            "exact_trust_weight": args.exact_trust_weight,
+            "low_trust_std_threshold": args.low_trust_std_threshold,
         },
         "regimes": {},
     }
@@ -259,21 +307,31 @@ def main() -> None:
                             float(prow["pair_uncertainty_std_mean"]) <= float(args.max_pair_std)
                             and not bool(prow["near_tie_flag"])
                         )
+                    elif strat == "quality_mixed_trust":
+                        keep = True
                     else:
                         raise ValueError(f"Unknown strategy: {strat}")
 
                     if keep:
-                        kept.append(
-                            _annotate_ambiguous_pair(
-                                prow,
-                                tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
-                                tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
-                                tie_std_threshold=float(args.tie_std_threshold),
-                                tie_use_near_tie_flag=bool(args.tie_use_near_tie_flag),
-                                tie_include_approx=bool(args.tie_include_approx),
-                                tie_require_exact_or_mixed=bool(args.tie_require_exact_or_mixed),
-                            )
+                        annotated = _annotate_ambiguous_pair(
+                            prow,
+                            tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
+                            tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
+                            tie_std_threshold=float(args.tie_std_threshold),
+                            tie_use_near_tie_flag=bool(args.tie_use_near_tie_flag),
+                            tie_include_approx=bool(args.tie_include_approx),
+                            tie_require_exact_or_mixed=bool(args.tie_require_exact_or_mixed),
                         )
+                        annotated = _assign_supervision_reliability(
+                            annotated,
+                            low_trust_near_tie_approx_weight=float(args.low_trust_near_tie_approx_weight),
+                            medium_trust_approx_weight=float(args.medium_trust_approx_weight),
+                            exact_trust_weight=float(args.exact_trust_weight),
+                            low_trust_std_threshold=float(args.low_trust_std_threshold),
+                        )
+                        if strat == "quality_mixed_trust" and (not bool(annotated.get("keep_in_quality_mixed_trust", True))):
+                            continue
+                        kept.append(annotated)
 
         out_dir = out_root / f"regime_{strat}"
         out_dir.mkdir(parents=True, exist_ok=True)
