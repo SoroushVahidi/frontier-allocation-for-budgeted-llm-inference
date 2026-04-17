@@ -1,0 +1,29 @@
+{
+  "baseline_canonical": {
+    "accepted_pair_accuracy": 0.9333333333333333,
+    "coverage": 0.2698412698412699,
+    "defer_rate": 0.7301587301587301,
+    "near_tie_accepted_pair_accuracy": 0.0,
+    "adjacent_rank_accepted_pair_accuracy": 0.8888888888888888,
+    "mean_selection_entropy_nats": 0.0,
+    "test_pairs": 7.666666666666667
+  },
+  "deterministic_value_top1": {
+    "accepted_pair_accuracy": 0.5952380952380952,
+    "coverage": 1.0,
+    "defer_rate": 0.0,
+    "near_tie_accepted_pair_accuracy": 0.19999999999999998,
+    "adjacent_rank_accepted_pair_accuracy": 0.4793650793650793,
+    "mean_selection_entropy_nats": 0.0,
+    "test_pairs": 7.666666666666667
+  },
+  "probabilistic_value_choice": {
+    "accepted_pair_accuracy": 0.4563492063492063,
+    "coverage": 1.0,
+    "defer_rate": 0.0,
+    "near_tie_accepted_pair_accuracy": 0.25555555555555554,
+    "adjacent_rank_accepted_pair_accuracy": 0.43174603174603177,
+    "mean_selection_entropy_nats": 0.691674111845404,
+    "test_pairs": 7.666666666666667
+  }
+}
