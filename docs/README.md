@@ -47,6 +47,7 @@ Read these first for the current project identity:
 - [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
 - [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
 - [`BRANCH_VALUE_UNCERTAINTY_CANONICAL_REBUILD_EXECUTION_2026_04_17.md`](BRANCH_VALUE_UNCERTAINTY_CANONICAL_REBUILD_EXECUTION_2026_04_17.md)
+- [`BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md`](BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md)
 - [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
 - [`STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
 - [`ORACLE_PROXY_DEFER_TARGET_STATUS.md`](ORACLE_PROXY_DEFER_TARGET_STATUS.md)
@@ -99,6 +100,7 @@ Read these first for the current project identity:
 - `CONTINUATION_PLAN_2026_04_18.md` gives the recommended next-step order.
 - `IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md` records which major ideas are implemented, partly implemented, or still not yet implemented, with priority guidance.
 - `RESEARCH_AND_EXECUTION_LOG_2026_04_18.md` records the main research, implementation, validation, and recovery steps already completed so they are not rediscovered repeatedly.
+- `BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md` records the current support-size robustness diagnosis for the branch-value + uncertainty line.
 - `REFERENCES_ORGANIZATION_2026_04_18.md` explains how to interpret and organize the repository’s reference base.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
 
