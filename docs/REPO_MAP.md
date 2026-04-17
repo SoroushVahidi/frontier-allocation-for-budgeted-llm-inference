@@ -11,6 +11,7 @@ Canonical scope is the current NeurIPS-oriented project on:
 ## Fast start
 
 - Start here: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+- Then use [`REPOSITORY_START_PATHS.md`](REPOSITORY_START_PATHS.md) for goal-based navigation.
 - Then use [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md) for runnable entry points.
 - For grouped method notes, see [`METHOD_STATUS_INDEX.md`](METHOD_STATUS_INDEX.md).
 - For grouped evaluation/baseline notes, see [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md).
@@ -36,16 +37,21 @@ Canonical scope is the current NeurIPS-oriented project on:
 4. `docs/CURRENT_SAFE_CLAIMS.md`
 5. `docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`
 6. `docs/WHAT_IS_NOT_WORKING_NOW.md`
-7. `docs/RESEARCH_UPGRADE_NOTE_2026_04_17.md`
-8. `docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`
-9. `docs/OUTPUTS_INTERPRETATION_GUIDE.md`
-10. `docs/PAPER_POSITIONING_NOTE.md`
-11. `docs/REPO_MAP.md`
+7. `docs/PAPER_POSITIONING_NOTE.md`
+8. `docs/REPO_MAP.md`
+
+## Current hard-case / ambiguity docs
+
+- `docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`
+- `docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`
+- `docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md`
+- `docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`
 
 ## Grouped navigation pages
 
 - `docs/METHOD_STATUS_INDEX.md`
 - `docs/EVALUATION_AND_BASELINES_INDEX.md`
+- `docs/REPOSITORY_START_PATHS.md`
 - `scripts/HISTORICAL_INDEX.md`
 
 ## Canonical scripts now
@@ -60,12 +66,15 @@ Canonical scope is the current NeurIPS-oriented project on:
 - `scripts/run_imported_methodology_frontier_eval.py`
 
 ### Current hard-case / data-quality line
+- `scripts/build_bruteforce_target_regimes.py`
+- `scripts/train_bruteforce_branch_allocator.py`
+- `scripts/run_target_fidelity_regime_experiment.py`
+- `scripts/run_hard_case_feature_representation_experiment.py`
+- `scripts/run_ambiguity_calibration_and_fallback_experiment.py`
 - `scripts/run_near_tie_policy_experiment.py`
 - `scripts/run_near_tie_pointwise_expert_experiment.py`
-- `scripts/run_ambiguity_calibration_and_fallback_experiment.py`
-- `scripts/build_bruteforce_target_regimes.py`
-- `scripts/run_target_fidelity_regime_experiment.py`
-- `scripts/train_bruteforce_branch_allocator.py`
+- `scripts/run_pairwise_svm_margin_experiment.py`
+- `scripts/run_structured_ambiguity_experiment.py`
 
 ### Supporting active lines
 - pairwise BT branch-scorer pipelines,
@@ -79,7 +88,8 @@ Canonical scope is the current NeurIPS-oriented project on:
 - frontier/controller allocation scaffold,
 - branch-priority / next-step allocation framing,
 - canonical status / planning docs,
-- matched evaluation and audit pathways.
+- matched evaluation and audit pathways,
+- structured ambiguity and oracle-proxy defer work as the current hard-case line.
 
 ### Exploratory
 - reliability-aware BT variants,
@@ -96,7 +106,8 @@ Canonical scope is the current NeurIPS-oriented project on:
 ## Practical collaborator start path
 
 1. Read the canonical docs in order from `docs/CANONICAL_START_HERE.md`.
-2. Use `docs/METHOD_STATUS_INDEX.md` or `docs/EVALUATION_AND_BASELINES_INDEX.md` depending on your question.
-3. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
-4. Treat exploratory notes as evidence traces, not as the default project interpretation.
-5. When writing the paper, use `CURRENT_SAFE_CLAIMS.md` and `PAPER_POSITIONING_NOTE.md` as first constraints.
+2. Use `docs/REPOSITORY_START_PATHS.md` for the shortest path matching your goal.
+3. Use `docs/METHOD_STATUS_INDEX.md` or `docs/EVALUATION_AND_BASELINES_INDEX.md` depending on your question.
+4. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
+5. Treat exploratory notes as evidence traces, not as the default project interpretation.
+6. When writing the paper, use `CURRENT_SAFE_CLAIMS.md` and `PAPER_POSITIONING_NOTE.md` as first constraints.
