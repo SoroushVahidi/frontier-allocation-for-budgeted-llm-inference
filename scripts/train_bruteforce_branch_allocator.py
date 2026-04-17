@@ -65,6 +65,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--svm-class-weight-balanced", action="store_true")
     p.add_argument("--svm-margin-calibration", choices=["none", "platt"], default="none")
     p.add_argument("--train-pairwise-defer-classifier", action="store_true")
+    p.add_argument("--defer-target-mode", choices=["heuristic", "oracle_proxy", "hybrid"], default="heuristic")
     p.add_argument("--defer-abs-margin-threshold", type=float, default=0.03)
     p.add_argument("--defer-relative-margin-threshold", type=float, default=0.15)
     p.add_argument("--defer-std-threshold", type=float, default=0.08)
@@ -72,11 +73,34 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--disable-defer-use-outside-option", dest="defer_use_outside_option", action="store_false")
     p.set_defaults(defer_use_outside_option=True)
     p.add_argument("--defer-outside-gap-threshold", type=float, default=0.02)
+    p.add_argument("--defer-oracle-gap-threshold", type=float, default=0.03)
+    p.add_argument("--defer-oracle-gap-over-std-threshold", type=float, default=0.8)
+    p.add_argument("--defer-oracle-best-vs-outside-threshold", type=float, default=0.03)
     p.add_argument("--defer-require-exact-or-mixed", action="store_true")
     p.add_argument("--defer-include-approx", dest="defer_include_approx", action="store_true")
     p.add_argument("--disable-defer-include-approx", dest="defer_include_approx", action="store_false")
     p.set_defaults(defer_include_approx=True)
     p.add_argument("--defer-model-type", choices=["multinomial_logreg"], default="multinomial_logreg")
+    p.add_argument("--defer-calibration", choices=["none", "temperature", "platt"], default="none")
+    p.add_argument("--defer-decision-threshold", type=float, default=0.5)
+    p.add_argument("--min-commit-confidence", type=float, default=0.45)
+    p.add_argument("--commit-margin-threshold", type=float, default=0.05)
+    p.add_argument("--threshold-grid-size", type=int, default=11)
+    p.add_argument("--accepted-accuracy-min-coverage", type=float, default=0.6)
+    p.add_argument("--coverage-min-accepted-accuracy", type=float, default=0.75)
+    p.add_argument("--enable-defer-fallback", action="store_true")
+    p.add_argument(
+        "--defer-fallback-policy",
+        choices=["none", "pairwise_binary_backup", "pointwise_value_backup", "outside_option_aware_backup", "specialized_hard_case_backup"],
+        default="none",
+    )
+    p.add_argument("--fallback-min-confidence", type=float, default=0.5)
+    p.add_argument("--fallback-allow-unresolved", dest="fallback_allow_unresolved", action="store_true")
+    p.add_argument("--disable-fallback-allow-unresolved", dest="fallback_allow_unresolved", action="store_false")
+    p.set_defaults(fallback_allow_unresolved=True)
+    p.add_argument("--outside-option-keep-unresolved-threshold", type=float, default=0.02)
+    p.add_argument("--train-pairwise-deferred-specialist", action="store_true")
+    p.add_argument("--deferred-specialist-target-mode", choices=["heuristic", "oracle_proxy", "hybrid"], default="oracle_proxy")
     p.add_argument("--tie-abs-margin-threshold", type=float, default=0.03)
     p.add_argument("--tie-relative-margin-threshold", type=float, default=0.15)
     p.add_argument("--tie-std-threshold", type=float, default=0.08)
@@ -166,14 +190,32 @@ def main() -> None:
         svm_class_weight_balanced=bool(args.svm_class_weight_balanced),
         svm_margin_calibration=str(args.svm_margin_calibration),
         train_pairwise_defer_classifier=bool(args.train_pairwise_defer_classifier),
+        defer_target_mode=str(args.defer_target_mode),
         defer_abs_margin_threshold=float(args.defer_abs_margin_threshold),
         defer_relative_margin_threshold=float(args.defer_relative_margin_threshold),
         defer_std_threshold=float(args.defer_std_threshold),
         defer_use_outside_option=bool(args.defer_use_outside_option),
         defer_outside_gap_threshold=float(args.defer_outside_gap_threshold),
+        defer_oracle_gap_threshold=float(args.defer_oracle_gap_threshold),
+        defer_oracle_gap_over_std_threshold=float(args.defer_oracle_gap_over_std_threshold),
+        defer_oracle_best_vs_outside_threshold=float(args.defer_oracle_best_vs_outside_threshold),
         defer_require_exact_or_mixed=bool(args.defer_require_exact_or_mixed),
         defer_include_approx=bool(args.defer_include_approx),
         defer_model_type=str(args.defer_model_type),
+        defer_calibration=str(args.defer_calibration),
+        defer_decision_threshold=float(args.defer_decision_threshold),
+        min_commit_confidence=float(args.min_commit_confidence),
+        commit_margin_threshold=float(args.commit_margin_threshold),
+        threshold_grid_size=int(args.threshold_grid_size),
+        accepted_accuracy_min_coverage=float(args.accepted_accuracy_min_coverage),
+        coverage_min_accepted_accuracy=float(args.coverage_min_accepted_accuracy),
+        enable_defer_fallback=bool(args.enable_defer_fallback),
+        defer_fallback_policy=str(args.defer_fallback_policy),
+        fallback_min_confidence=float(args.fallback_min_confidence),
+        fallback_allow_unresolved=bool(args.fallback_allow_unresolved),
+        outside_option_keep_unresolved_threshold=float(args.outside_option_keep_unresolved_threshold),
+        train_pairwise_deferred_specialist=bool(args.train_pairwise_deferred_specialist),
+        deferred_specialist_target_mode=str(args.deferred_specialist_target_mode),
         tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
         tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
         tie_std_threshold=float(args.tie_std_threshold),

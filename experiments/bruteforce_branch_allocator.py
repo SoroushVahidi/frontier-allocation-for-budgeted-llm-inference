@@ -104,6 +104,12 @@ PAIR_RELATIONAL_FEATURE_NAMES_V3 = [
     "pair_shadow_price_adjusted_margin_proxy",
     "pair_margin_x_budget",
     "uncertainty_x_budget",
+    "pair_best_estimated_value",
+    "pair_second_estimated_value",
+    "pair_value_gap",
+    "pair_gap_over_uncertainty",
+    "pair_commitment_strength_proxy",
+    "pair_oracle_defer_score",
     "expected_gain_per_cost_proxy_diff",
     "branch_vs_outside_gap_x_budget_diff",
     "pair_best_vs_outside_gap",
@@ -164,14 +170,32 @@ class LearningConfig:
     svm_max_train_rows_for_nystroem: int = 8000
     svm_margin_calibration: str = "none"  # one of: none, platt
     train_pairwise_defer_classifier: bool = False
+    defer_target_mode: str = "heuristic"  # one of: heuristic, oracle_proxy, hybrid
     defer_abs_margin_threshold: float = 0.03
     defer_relative_margin_threshold: float = 0.15
     defer_std_threshold: float = 0.08
     defer_use_outside_option: bool = True
     defer_outside_gap_threshold: float = 0.02
+    defer_oracle_gap_threshold: float = 0.03
+    defer_oracle_gap_over_std_threshold: float = 0.8
+    defer_oracle_best_vs_outside_threshold: float = 0.03
     defer_require_exact_or_mixed: bool = False
     defer_include_approx: bool = True
     defer_model_type: str = "multinomial_logreg"
+    defer_calibration: str = "none"  # one of: none, temperature, platt
+    defer_decision_threshold: float = 0.5
+    min_commit_confidence: float = 0.45
+    commit_margin_threshold: float = 0.05
+    threshold_grid_size: int = 11
+    accepted_accuracy_min_coverage: float = 0.6
+    coverage_min_accepted_accuracy: float = 0.75
+    enable_defer_fallback: bool = False
+    defer_fallback_policy: str = "none"  # one of: none, pairwise_binary_backup, pointwise_value_backup, outside_option_aware_backup, specialized_hard_case_backup
+    fallback_min_confidence: float = 0.5
+    fallback_allow_unresolved: bool = True
+    outside_option_keep_unresolved_threshold: float = 0.02
+    train_pairwise_deferred_specialist: bool = False
+    deferred_specialist_target_mode: str = "oracle_proxy"  # one of: heuristic, oracle_proxy, hybrid
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -450,6 +474,29 @@ def _is_defer_pair(row: dict[str, Any], cfg: LearningConfig) -> bool:
     return outside_gap <= float(cfg.defer_outside_gap_threshold)
 
 
+def _oracle_proxy_defer_flag(row: dict[str, Any], cfg: LearningConfig) -> bool:
+    pair_mode = str(row.get("pair_mode_provenance", row.get("pair_mode", "unknown")))
+    if (not bool(cfg.defer_include_approx)) and pair_mode == "approx":
+        return False
+    if bool(cfg.defer_require_exact_or_mixed) and pair_mode not in {"exact", "mixed"}:
+        return False
+    score = float(row.get("pair_oracle_defer_score", 0.0))
+    return score >= 2.0
+
+
+def _defer_flag_for_mode(row: dict[str, Any], cfg: LearningConfig) -> bool:
+    mode = str(cfg.defer_target_mode).strip().lower()
+    heuristic = _is_defer_pair(row, cfg)
+    oracle_proxy = _oracle_proxy_defer_flag(row, cfg)
+    if mode == "heuristic":
+        return heuristic
+    if mode == "oracle_proxy":
+        return oracle_proxy
+    if mode == "hybrid":
+        return heuristic or oracle_proxy
+    raise ValueError(f"Unknown defer_target_mode: {cfg.defer_target_mode}")
+
+
 def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: LearningConfig) -> dict[str, Any]:
     candidates = [dict(row) for row in data["candidate_labels"]]
     pairwise = [dict(row) for row in data["pairwise_labels"]]
@@ -503,10 +550,32 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         outside_i = float(ci.get("branch_vs_outside_gap", 0.0))
         outside_j = float(cj.get("branch_vs_outside_gap", 0.0))
         best_outside_gap = max(outside_i, outside_j)
-        outside_margin_to_best = best_outside_gap
         both_below_outside = 1.0 if (outside_i <= 0.0 and outside_j <= 0.0) else 0.0
-        shadow_price_adjusted_margin_proxy = margin_abs - (remaining_budget / max(1.0, remaining_budget + 2.0))
+        value_i = float(ci.get("estimated_value_if_allocate_next", row.get("pair_value_i", 0.0)))
+        value_j = float(cj.get("estimated_value_if_allocate_next", row.get("pair_value_j", 0.0)))
+        pair_best_value = max(value_i, value_j)
+        pair_second_value = min(value_i, value_j)
+        pair_value_gap = max(0.0, pair_best_value - pair_second_value)
+        pair_gap_over_uncertainty = pair_value_gap / max(1e-6, pair_std_mean)
+        pair_best_vs_outside_gap = pair_best_value - float(row.get("outside_option_value_estimate", 0.0))
+        if (outside_i != 0.0) or (outside_j != 0.0):
+            pair_best_vs_outside_gap = max(outside_i, outside_j)
         disagreement_risk = (1.0 / (1.0 + margin_abs * 10.0)) * (1.0 + pair_std_mean) * (1.0 + 0.5 * adjacent_rank_flag)
+        pair_commitment_strength_proxy = (
+            0.55 * pair_gap_over_uncertainty
+            + 0.35 * (pair_best_vs_outside_gap / max(1e-6, float(cfg.defer_oracle_best_vs_outside_threshold)))
+            + 0.10 * (1.0 - min(1.0, disagreement_risk))
+        )
+        oracle_defer_components = [
+            1.0 if pair_value_gap <= float(cfg.defer_oracle_gap_threshold) else 0.0,
+            1.0 if pair_gap_over_uncertainty <= float(cfg.defer_oracle_gap_over_std_threshold) else 0.0,
+            1.0 if pair_best_vs_outside_gap <= float(cfg.defer_oracle_best_vs_outside_threshold) else 0.0,
+            1.0 if disagreement_risk >= 0.9 else 0.0,
+            1.0 if both_below_outside >= 0.5 else 0.0,
+        ]
+        pair_oracle_defer_score = float(sum(oracle_defer_components))
+        outside_margin_to_best = best_outside_gap
+        shadow_price_adjusted_margin_proxy = margin_abs - (remaining_budget / max(1.0, remaining_budget + 2.0))
         row["pair_relational_v2"] = {
             "rank_gap_abs": rank_gap_abs,
             "score_gap_abs": abs(float(ci.get("features_branch_v1", {}).get("score", 0.0)) - float(cj.get("features_branch_v1", {}).get("score", 0.0))),
@@ -531,7 +600,13 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
             "uncertainty_x_budget": pair_std_mean * budget_norm,
             "expected_gain_per_cost_proxy_diff": expected_gain_cost_proxy_i - expected_gain_cost_proxy_j,
             "branch_vs_outside_gap_x_budget_diff": float(fi3.get("branch_vs_outside_gap_x_budget", 0.0)) - float(fj3.get("branch_vs_outside_gap_x_budget", 0.0)),
-            "pair_best_vs_outside_gap": best_outside_gap,
+            "pair_best_vs_outside_gap": pair_best_vs_outside_gap,
+            "pair_best_estimated_value": pair_best_value,
+            "pair_second_estimated_value": pair_second_value,
+            "pair_value_gap": pair_value_gap,
+            "pair_gap_over_uncertainty": pair_gap_over_uncertainty,
+            "pair_commitment_strength_proxy": pair_commitment_strength_proxy,
+            "pair_oracle_defer_score": pair_oracle_defer_score,
             "pair_both_below_outside_flag": both_below_outside,
             "defer_candidate_flag": 1.0 if (margin_abs <= float(cfg.defer_abs_margin_threshold) or pair_std_mean >= float(cfg.defer_std_threshold)) else 0.0,
             "outside_option_advantage_abs": abs(min(outside_i, outside_j)),
@@ -569,8 +644,15 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         row["pair_margin_abs"] = margin_abs
         row["pair_relative_margin"] = relative_margin
         row["pair_uncertainty_std_mean"] = pair_std_mean
-        row["pair_best_vs_outside_gap"] = best_outside_gap
-        defer_flag = _is_defer_pair(row, cfg)
+        row["pair_best_vs_outside_gap"] = pair_best_vs_outside_gap
+        row["pair_best_estimated_value"] = pair_best_value
+        row["pair_second_estimated_value"] = pair_second_value
+        row["pair_value_gap"] = pair_value_gap
+        row["pair_gap_over_uncertainty"] = pair_gap_over_uncertainty
+        row["pair_commitment_strength_proxy"] = pair_commitment_strength_proxy
+        row["pair_oracle_defer_score"] = pair_oracle_defer_score
+        row["disagreement_risk_score"] = disagreement_risk
+        defer_flag = _defer_flag_for_mode(row, cfg)
         binary_label = int(row.get("label", 0))
         row["ternary_defer_label"] = 1 if defer_flag else (2 if binary_label == 1 else 0)
         if row["ternary_defer_label"] == 1:
@@ -686,6 +768,14 @@ def _fit_pairwise_defer_classifier(rows: list[dict[str, Any]], cfg: LearningConf
         multi_class="multinomial",
     )
     model.fit(x, y, sample_weight=weights)
+    classes = [int(c) for c in model.classes_]
+    val = [r for r in rows if r["split"] == "val"]
+    calibrator: dict[str, Any] = {"mode": "none"}
+    if val and str(cfg.defer_calibration) != "none":
+        x_val = np.array([r.get("x_pair_v3", r["x_diff"]) for r in val], dtype=float)
+        y_val = np.array([int(r.get("ternary_defer_label", 1)) for r in val], dtype=int)
+        logits_val = x_val @ model.coef_.T + model.intercept_
+        calibrator = _fit_defer_calibrator(logits_val, y_val, classes, str(cfg.defer_calibration))
     return {
         "model_type": "pairwise_defer_multinomial_logreg",
         "status": "ok",
@@ -693,18 +783,78 @@ def _fit_pairwise_defer_classifier(rows: list[dict[str, Any]], cfg: LearningConf
         "feature_set": str(cfg.feature_set),
         "weights": [[float(v) for v in row] for row in model.coef_],
         "intercepts": [float(v) for v in model.intercept_],
-        "classes": [int(c) for c in model.classes_],
+        "classes": classes,
         "training_rows": len(train),
+        "defer_calibration": calibrator,
         "defer_config": {
+            "defer_target_mode": str(cfg.defer_target_mode),
             "defer_abs_margin_threshold": float(cfg.defer_abs_margin_threshold),
             "defer_relative_margin_threshold": float(cfg.defer_relative_margin_threshold),
             "defer_std_threshold": float(cfg.defer_std_threshold),
             "defer_use_outside_option": bool(cfg.defer_use_outside_option),
             "defer_outside_gap_threshold": float(cfg.defer_outside_gap_threshold),
+            "defer_oracle_gap_threshold": float(cfg.defer_oracle_gap_threshold),
+            "defer_oracle_gap_over_std_threshold": float(cfg.defer_oracle_gap_over_std_threshold),
+            "defer_oracle_best_vs_outside_threshold": float(cfg.defer_oracle_best_vs_outside_threshold),
             "defer_include_approx": bool(cfg.defer_include_approx),
             "defer_require_exact_or_mixed": bool(cfg.defer_require_exact_or_mixed),
             "defer_model_type": str(cfg.defer_model_type),
+            "defer_calibration": str(cfg.defer_calibration),
+            "defer_decision_threshold": float(cfg.defer_decision_threshold),
+            "min_commit_confidence": float(cfg.min_commit_confidence),
+            "commit_margin_threshold": float(cfg.commit_margin_threshold),
+            "threshold_grid_size": int(cfg.threshold_grid_size),
+            "accepted_accuracy_min_coverage": float(cfg.accepted_accuracy_min_coverage),
+            "coverage_min_accepted_accuracy": float(cfg.coverage_min_accepted_accuracy),
+            "enable_defer_fallback": bool(cfg.enable_defer_fallback),
+            "defer_fallback_policy": str(cfg.defer_fallback_policy),
+            "fallback_min_confidence": float(cfg.fallback_min_confidence),
+            "fallback_allow_unresolved": bool(cfg.fallback_allow_unresolved),
+            "outside_option_keep_unresolved_threshold": float(cfg.outside_option_keep_unresolved_threshold),
         },
+    }
+
+
+def _is_deferred_specialist_train_row(row: dict[str, Any], cfg: LearningConfig) -> bool:
+    mode = str(cfg.deferred_specialist_target_mode).strip().lower()
+    heur = _is_defer_pair(row, cfg)
+    oracle = _oracle_proxy_defer_flag(row, cfg)
+    if mode == "heuristic":
+        return heur
+    if mode == "oracle_proxy":
+        return oracle
+    if mode == "hybrid":
+        return heur or oracle
+    return bool(row.get("ambiguous_target_flag", False))
+
+
+def _fit_pairwise_deferred_specialist(rows: list[dict[str, Any]], cfg: LearningConfig) -> dict[str, Any]:
+    if not bool(cfg.train_pairwise_deferred_specialist):
+        return {"model_type": "pairwise_deferred_specialist_logreg", "status": "disabled"}
+    train = [
+        r
+        for r in rows
+        if r["split"] == "train"
+        and bool(r.get("include_for_pairwise_training", True))
+        and _is_deferred_specialist_train_row(r, cfg)
+    ]
+    if len(train) < 4:
+        return {"model_type": "pairwise_deferred_specialist_logreg", "status": "insufficient_train_rows"}
+    x = [r.get("x_pair_v3", r["x_diff"]) for r in train]
+    y = [int(r.get("label", 0)) for r in train]
+    if len(set(y)) < 2:
+        return {"model_type": "pairwise_deferred_specialist_logreg", "status": "single_class_train", "constant_label": int(y[0])}
+    model = LogisticRegression(max_iter=max(500, cfg.pairwise_max_iter), random_state=cfg.seed)
+    model.fit(x, y, sample_weight=[float(r.get("pair_train_weight", 1.0)) for r in train])
+    return {
+        "model_type": "pairwise_deferred_specialist_logreg",
+        "status": "ok",
+        "feature_names": _feature_names_for_set(str(cfg.feature_set)) + PAIR_RELATIONAL_FEATURE_NAMES_V3,
+        "feature_set": str(cfg.feature_set),
+        "weights": [float(v) for v in model.coef_[0]],
+        "intercept": float(model.intercept_[0]),
+        "training_rows": len(train),
+        "deferred_specialist_target_mode": str(cfg.deferred_specialist_target_mode),
     }
 
 
@@ -996,6 +1146,8 @@ def train_models(tables: dict[str, Any], cfg: LearningConfig, model_artifact_dir
         models["pairwise_ternary"] = _fit_pairwise_ternary_model(tables["pairwise"], cfg)
     if cfg.train_pairwise_defer_classifier:
         models["pairwise_defer_classifier"] = _fit_pairwise_defer_classifier(tables["pairwise"], cfg)
+    if cfg.train_pairwise_deferred_specialist:
+        models["pairwise_deferred_specialist"] = _fit_pairwise_deferred_specialist(tables["pairwise"], cfg)
     if cfg.train_pointwise:
         models["pointwise"] = _fit_pointwise_model(tables["candidates"], cfg)
     if cfg.train_outside_option:
@@ -1049,6 +1201,10 @@ def pairwise_decision_function_from_model(model: dict[str, Any]) -> Callable[[di
         w = [float(v) for v in model.get("weights", [])]
         b = float(model.get("intercept", 0.0))
         return lambda row: _dot(w, row["x_diff"]) + b
+    if model_type == "pairwise_deferred_specialist_logreg":
+        w = [float(v) for v in model.get("weights", [])]
+        b = float(model.get("intercept", 0.0))
+        return lambda row: _dot(w, row.get("x_pair_v3", row["x_diff"])) + b
     if model_type == "pairwise_linear_svm":
         svm = joblib.load(str(model.get("model_path", "")))
         return lambda row: float(svm.decision_function(np.array([row["x_diff"]], dtype=float))[0])
@@ -1070,6 +1226,85 @@ def _sigmoid(z: float) -> float:
 
 def _safe_mean(vals: list[float]) -> float:
     return float(sum(vals) / len(vals)) if vals else 0.0
+
+
+def _softmax_logits(logits: np.ndarray) -> np.ndarray:
+    if logits.ndim != 2 or logits.size == 0:
+        return np.zeros_like(logits, dtype=float)
+    shift = logits - np.max(logits, axis=1, keepdims=True)
+    expv = np.exp(shift)
+    return expv / np.clip(np.sum(expv, axis=1, keepdims=True), 1e-12, None)
+
+
+def _fit_defer_calibrator(
+    logits: np.ndarray,
+    y_true: np.ndarray,
+    classes: list[int],
+    mode: str,
+) -> dict[str, Any]:
+    if mode == "none" or logits.size == 0 or y_true.size == 0:
+        return {"mode": "none"}
+    if mode == "temperature":
+        temps = [0.7, 0.85, 1.0, 1.25, 1.5, 2.0]
+        best_t = 1.0
+        best_nll = float("inf")
+        class_index = {c: i for i, c in enumerate(classes)}
+        y_idx = np.array([class_index.get(int(v), 0) for v in y_true.tolist()], dtype=int)
+        for t in temps:
+            probs = _softmax_logits(logits / max(1e-6, t))
+            p = np.clip(probs[np.arange(len(y_idx)), y_idx], 1e-12, 1.0)
+            nll = float(-np.mean(np.log(p)))
+            if nll < best_nll:
+                best_nll = nll
+                best_t = float(t)
+        return {"mode": "temperature", "temperature": best_t, "val_nll": best_nll}
+    if mode == "platt":
+        cls_to_idx = {c: i for i, c in enumerate(classes)}
+        defer_idx = cls_to_idx.get(1, 0)
+        raw = logits[:, defer_idx]
+        y = (y_true == 1).astype(float)
+        alpha, beta = 1.0, 0.0
+        lr = 0.05
+        for _ in range(200):
+            z = alpha * raw + beta
+            p = 1.0 / (1.0 + np.exp(-np.clip(z, -30.0, 30.0)))
+            grad_a = float(np.mean((p - y) * raw))
+            grad_b = float(np.mean(p - y))
+            alpha -= lr * grad_a
+            beta -= lr * grad_b
+        return {"mode": "platt", "alpha": float(alpha), "beta": float(beta)}
+    return {"mode": "none"}
+
+
+def _apply_defer_calibration(
+    logits: np.ndarray,
+    calibrator: dict[str, Any],
+    classes: list[int],
+) -> tuple[np.ndarray, np.ndarray]:
+    mode = str(calibrator.get("mode", "none"))
+    probs = _softmax_logits(logits)
+    if mode == "temperature":
+        t = float(calibrator.get("temperature", 1.0))
+        probs = _softmax_logits(logits / max(1e-6, t))
+        return probs, probs
+    if mode == "platt":
+        cls_to_idx = {c: i for i, c in enumerate(classes)}
+        defer_idx = cls_to_idx.get(1, 0)
+        raw = logits[:, defer_idx]
+        alpha = float(calibrator.get("alpha", 1.0))
+        beta = float(calibrator.get("beta", 0.0))
+        p_defer = 1.0 / (1.0 + np.exp(-np.clip(alpha * raw + beta, -30.0, 30.0)))
+        probs_platt = probs.copy()
+        non_defer_mass = np.clip(1.0 - probs[:, defer_idx], 1e-12, 1.0)
+        scale = np.clip((1.0 - p_defer) / non_defer_mass, 0.0, 10.0)
+        for i in range(probs.shape[1]):
+            if i == defer_idx:
+                probs_platt[:, i] = p_defer
+            else:
+                probs_platt[:, i] = probs[:, i] * scale
+        probs_platt = probs_platt / np.clip(np.sum(probs_platt, axis=1, keepdims=True), 1e-12, None)
+        return probs_platt, probs
+    return probs, probs
 
 
 def _ranking_top1_accuracy(state_to_candidates: dict[str, list[dict[str, Any]]], score_fn: Callable[[dict[str, Any]], float], split: str) -> float:
@@ -1193,7 +1428,12 @@ def _slice_pairwise_accuracy(
     }
 
 
-def _eval_pairwise_defer_classifier(model: dict[str, Any], rows: list[dict[str, Any]]) -> dict[str, Any]:
+def _eval_pairwise_defer_classifier(
+    model: dict[str, Any],
+    rows: list[dict[str, Any]],
+    all_models: dict[str, Any],
+    cfg: LearningConfig,
+) -> dict[str, Any]:
     status = str(model.get("status", ""))
     if status != "ok":
         return {"model_status": status}
@@ -1206,7 +1446,29 @@ def _eval_pairwise_defer_classifier(model: dict[str, Any], rows: list[dict[str, 
     y_true = np.array([int(r.get("ternary_defer_label", 1)) for r in test], dtype=int)
     x = np.array([r.get("x_pair_v3", r["x_diff"]) for r in test], dtype=float)
     logits = x @ w.T + b
-    y_pred = np.array([classes[int(i)] for i in np.argmax(logits, axis=1)], dtype=int)
+    calibrated_probs, _raw_probs = _apply_defer_calibration(logits, model.get("defer_calibration", {"mode": "none"}), classes)
+    cls_to_idx = {c: i for i, c in enumerate(classes)}
+    defer_idx = cls_to_idx.get(1, 0)
+    left_idx = cls_to_idx.get(0, 0)
+    right_idx = cls_to_idx.get(2, min(2, len(classes) - 1))
+
+    defer_threshold = float(model.get("defer_config", {}).get("defer_decision_threshold", 0.5))
+    min_commit_conf = float(model.get("defer_config", {}).get("min_commit_confidence", 0.45))
+    commit_margin = float(model.get("defer_config", {}).get("commit_margin_threshold", 0.05))
+    y_pred: list[int] = []
+    for p in calibrated_probs:
+        p_defer = float(p[defer_idx])
+        p_left = float(p[left_idx])
+        p_right = float(p[right_idx])
+        best_commit = max(p_left, p_right)
+        if p_defer >= defer_threshold:
+            y_pred.append(1)
+            continue
+        if best_commit < min_commit_conf or abs(p_right - p_left) < commit_margin:
+            y_pred.append(1)
+            continue
+        y_pred.append(2 if p_right >= p_left else 0)
+    y_pred = np.array(y_pred, dtype=int)
     three_way_acc = float(np.mean(y_pred == y_true))
     pred_defer = y_pred == 1
     true_defer = y_true == 1
@@ -1220,6 +1482,40 @@ def _eval_pairwise_defer_classifier(model: dict[str, Any], rows: list[dict[str, 
     accepted_only_acc = float(np.mean(y_pred[accept_mask] == y_true[accept_mask])) if np.any(accept_mask) else 0.0
     coverage = float(np.mean(accept_mask))
 
+    threshold_grid = np.linspace(0.05, 0.95, max(3, int(model.get("defer_config", {}).get("threshold_grid_size", 11))))
+    threshold_trace: list[dict[str, float]] = []
+    for thr in threshold_grid.tolist():
+        pred_t = []
+        for p in calibrated_probs:
+            p_defer = float(p[defer_idx])
+            p_left = float(p[left_idx])
+            p_right = float(p[right_idx])
+            if p_defer >= float(thr):
+                pred_t.append(1)
+            elif max(p_left, p_right) < min_commit_conf or abs(p_right - p_left) < commit_margin:
+                pred_t.append(1)
+            else:
+                pred_t.append(2 if p_right >= p_left else 0)
+        pred_arr = np.array(pred_t, dtype=int)
+        acc_mask_t = pred_arr != 1
+        acc_t = float(np.mean(pred_arr[acc_mask_t] == y_true[acc_mask_t])) if np.any(acc_mask_t) else 0.0
+        cov_t = float(np.mean(acc_mask_t))
+        pred_def_t = pred_arr == 1
+        tp_t = int(np.sum(pred_def_t & true_defer))
+        fp_t = int(np.sum(pred_def_t & (~true_defer)))
+        fn_t = int(np.sum((~pred_def_t) & true_defer))
+        prec_t = tp_t / max(1, tp_t + fp_t)
+        rec_t = tp_t / max(1, tp_t + fn_t)
+        threshold_trace.append(
+            {
+                "threshold": float(thr),
+                "accepted_only_accuracy": acc_t,
+                "coverage": cov_t,
+                "defer_precision": prec_t,
+                "defer_recall": rec_t,
+            }
+        )
+
     def _accepted_slice_acc(predicate: Callable[[dict[str, Any]], bool]) -> float:
         idxs = [i for i, r in enumerate(test) if predicate(r) and bool(accept_mask[i])]
         if not idxs:
@@ -1229,7 +1525,159 @@ def _eval_pairwise_defer_classifier(model: dict[str, Any], rows: list[dict[str, 
     confusion = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     for yt, yp in zip(y_true.tolist(), y_pred.tolist()):
         confusion[int(yt)][int(yp)] += 1
-    return {
+    min_cov = float(model.get("defer_config", {}).get("accepted_accuracy_min_coverage", 0.6))
+    min_acc = float(model.get("defer_config", {}).get("coverage_min_accepted_accuracy", 0.75))
+    best_acc_under_cov = max(
+        (t for t in threshold_trace if float(t["coverage"]) >= min_cov),
+        key=lambda t: float(t["accepted_only_accuracy"]),
+        default={"threshold": defer_threshold, "accepted_only_accuracy": 0.0, "coverage": 0.0},
+    )
+    best_cov_under_acc = max(
+        (t for t in threshold_trace if float(t["accepted_only_accuracy"]) >= min_acc),
+        key=lambda t: float(t["coverage"]),
+        default={"threshold": defer_threshold, "accepted_only_accuracy": 0.0, "coverage": 0.0},
+    )
+
+    buckets = {
+        "confident_correct_commit": 0,
+        "confident_wrong_commit": 0,
+        "correct_defer": 0,
+        "missed_defer": 0,
+        "unnecessary_defer": 0,
+        "ambiguous_hard_commit_proxy": 0,
+        "outside_option_should_have_won_proxy": 0,
+    }
+    for i, r in enumerate(test):
+        yt = int(y_true[i])
+        yp = int(y_pred[i])
+        p = calibrated_probs[i]
+        conf = max(float(p[left_idx]), float(p[right_idx]))
+        near_tie = abs(float(r.get("pair_value_gap", r.get("margin", 0.0)))) <= 0.03
+        if yp != 1 and yt != 1 and conf >= 0.65:
+            buckets["confident_correct_commit"] += int(yp == yt)
+            buckets["confident_wrong_commit"] += int(yp != yt)
+        if yp == 1 and yt == 1:
+            buckets["correct_defer"] += 1
+        if yp != 1 and yt == 1:
+            buckets["missed_defer"] += 1
+        if yp == 1 and yt != 1:
+            buckets["unnecessary_defer"] += 1
+        if yp != 1 and near_tie and float(r.get("pair_oracle_defer_score", 0.0)) >= 2.0:
+            buckets["ambiguous_hard_commit_proxy"] += 1
+        if yp != 1 and float(r.get("pair_best_vs_outside_gap", 1.0)) <= 0.0:
+            buckets["outside_option_should_have_won_proxy"] += 1
+
+    fallback_policy = str(cfg.defer_fallback_policy)
+    fallback_enabled = bool(cfg.enable_defer_fallback) and fallback_policy != "none"
+    pairwise_backup_fn = None
+    pointwise_fn = None
+    specialist_fn = None
+    if "pairwise" in all_models:
+        pairwise_backup_fn = pairwise_decision_function_from_model(all_models["pairwise"])
+    if "pointwise" in all_models:
+        pointwise_fn = scorer_from_model(all_models["pointwise"])
+    if "pairwise_deferred_specialist" in all_models:
+        specialist_fn = pairwise_decision_function_from_model(all_models["pairwise_deferred_specialist"])
+
+    resolved_pred = y_pred.copy()
+    fallback_mask = y_pred == 1
+    fallback_resolved = np.zeros_like(fallback_mask, dtype=bool)
+    fallback_choice_binary = np.full(shape=(len(test),), fill_value=-1, dtype=int)
+    fallback_choice_pointwise = np.full(shape=(len(test),), fill_value=-1, dtype=int)
+    outside_avoids_bad_commit = 0
+    for i, r in enumerate(test):
+        if not fallback_mask[i] or not fallback_enabled:
+            continue
+        binary_choice = None
+        pointwise_choice = None
+        if pairwise_backup_fn is not None:
+            binary_choice = 2 if float(pairwise_backup_fn(r)) >= 0.0 else 0
+            fallback_choice_binary[i] = binary_choice
+        if pointwise_fn is not None:
+            pointwise_choice = 2 if float(pointwise_fn({"x": r["x_i"]})) >= float(pointwise_fn({"x": r["x_j"]})) else 0
+            fallback_choice_pointwise[i] = pointwise_choice
+
+        choice = None
+        if fallback_policy == "pairwise_binary_backup":
+            choice = binary_choice
+        elif fallback_policy == "pointwise_value_backup":
+            choice = pointwise_choice
+        elif fallback_policy == "outside_option_aware_backup":
+            keep_unresolved = float(r.get("pair_best_vs_outside_gap", 0.0)) <= float(cfg.outside_option_keep_unresolved_threshold)
+            if keep_unresolved:
+                outside_avoids_bad_commit += int(int(y_true[i]) == 1)
+                choice = None
+            else:
+                choice = pointwise_choice if pointwise_choice is not None else binary_choice
+        elif fallback_policy == "specialized_hard_case_backup":
+            if specialist_fn is not None:
+                margin = float(specialist_fn(r))
+                conf = _sigmoid(abs(margin))
+                if conf >= float(cfg.fallback_min_confidence):
+                    choice = 2 if margin >= 0.0 else 0
+            if choice is None and (not bool(cfg.fallback_allow_unresolved)):
+                choice = binary_choice if binary_choice is not None else pointwise_choice
+
+        if choice is None and (not bool(cfg.fallback_allow_unresolved)):
+            choice = binary_choice if binary_choice is not None else pointwise_choice
+        if choice is not None:
+            resolved_pred[i] = int(choice)
+            fallback_resolved[i] = True
+
+    resolved_mask = resolved_pred != 1
+    resolved_accuracy = float(np.mean(resolved_pred[resolved_mask] == y_true[resolved_mask])) if np.any(resolved_mask) else 0.0
+    resolved_coverage = float(np.mean(resolved_mask))
+    unresolved_after = float(np.mean(~resolved_mask))
+    fallback_subset_idxs = [i for i in range(len(test)) if fallback_mask[i]]
+    fallback_resolved_idxs = [i for i in fallback_subset_idxs if fallback_resolved[i]]
+    fallback_subset_accuracy = (
+        float(np.mean(resolved_pred[fallback_resolved_idxs] == y_true[fallback_resolved_idxs])) if fallback_resolved_idxs else 0.0
+    )
+    fallback_resolution_rate = float(len(fallback_resolved_idxs) / max(1, len(fallback_subset_idxs)))
+
+    binary_acc_on_subset = 0.0
+    pointwise_acc_on_subset = 0.0
+    if fallback_resolved_idxs:
+        b_ok = [fallback_choice_binary[i] == int(y_true[i]) for i in fallback_resolved_idxs if fallback_choice_binary[i] in {0, 2}]
+        p_ok = [fallback_choice_pointwise[i] == int(y_true[i]) for i in fallback_resolved_idxs if fallback_choice_pointwise[i] in {0, 2}]
+        binary_acc_on_subset = float(sum(b_ok) / max(1, len(b_ok)))
+        pointwise_acc_on_subset = float(sum(p_ok) / max(1, len(p_ok)))
+
+    comp_binary_wrong_pointwise_right = int(
+        sum(
+            1
+            for i in fallback_resolved_idxs
+            if fallback_choice_binary[i] in {0, 2}
+            and fallback_choice_pointwise[i] in {0, 2}
+            and fallback_choice_binary[i] != int(y_true[i])
+            and fallback_choice_pointwise[i] == int(y_true[i])
+        )
+    )
+    comp_pointwise_wrong_binary_right = int(
+        sum(
+            1
+            for i in fallback_resolved_idxs
+            if fallback_choice_binary[i] in {0, 2}
+            and fallback_choice_pointwise[i] in {0, 2}
+            and fallback_choice_pointwise[i] != int(y_true[i])
+            and fallback_choice_binary[i] == int(y_true[i])
+        )
+    )
+    policy_confusion = {
+        "committed_correct": int(np.sum((y_pred != 1) & (y_pred == y_true))),
+        "committed_wrong": int(np.sum((y_pred != 1) & (y_pred != y_true))),
+        "deferred_then_resolved_correct": int(np.sum(fallback_resolved & (resolved_pred == y_true))),
+        "deferred_then_resolved_wrong": int(np.sum(fallback_resolved & (resolved_pred != y_true))),
+        "deferred_still_unresolved": int(np.sum(resolved_pred == 1)),
+    }
+
+    def _resolved_slice_acc(predicate: Callable[[dict[str, Any]], bool]) -> float:
+        idxs = [i for i, r in enumerate(test) if predicate(r) and bool(resolved_mask[i])]
+        if not idxs:
+            return 0.0
+        return float(np.mean(resolved_pred[idxs] == y_true[idxs]))
+
+    out = {
         "model_status": "ok",
         "three_way_accuracy_test": three_way_acc,
         "defer_precision_test": defer_precision,
@@ -1242,9 +1690,72 @@ def _eval_pairwise_defer_classifier(model: dict[str, Any], rows: list[dict[str, 
         "exact_promoted_hard_region_accepted_accuracy_test": _accepted_slice_acc(
             lambda r: str(r.get("label_source", "")) == "exact_promoted_hard_region"
         ),
+        "low_best_vs_outside_gap_accepted_accuracy_test": _accepted_slice_acc(lambda r: float(r.get("pair_best_vs_outside_gap", 0.0)) <= 0.03),
+        "high_disagreement_risk_accepted_accuracy_test": _accepted_slice_acc(lambda r: float(r.get("disagreement_risk_score", 0.0)) >= 0.9),
+        "approx_or_mixed_accepted_accuracy_test": _accepted_slice_acc(
+            lambda r: str(r.get("pair_mode", "unknown")) in {"approx", "mixed"}
+        ),
+        "threshold_trace_test": threshold_trace,
+        "best_accepted_accuracy_under_min_coverage_test": best_acc_under_cov,
+        "best_coverage_under_min_accepted_accuracy_test": best_cov_under_acc,
+        "decision_buckets_test": buckets,
+        "calibration_used": model.get("defer_calibration", {"mode": "none"}),
+        "raw_probability_note": "raw multinomial probabilities are post-processed by bounded calibration and defer policy thresholds",
         "confusion_matrix_left_defer_right_test": confusion,
         "ranking_top1_accuracy_test": None,
         "note": "pairwise defer classifier evaluated in pairwise space; candidate top-1 ranking not defined",
+        "fallback_policy": fallback_policy,
+        "fallback_enabled": fallback_enabled,
+        "resolved_accuracy_test": resolved_accuracy,
+        "resolved_coverage_test": resolved_coverage,
+        "unresolved_rate_after_fallback_test": unresolved_after,
+        "near_tie_resolved_accuracy_test": _resolved_slice_acc(lambda r: abs(float(r.get("margin", 0.0))) <= 0.05),
+        "adjacent_rank_resolved_accuracy_test": _resolved_slice_acc(lambda r: str(r.get("pair_type", "")) == "adjacent_rank"),
+        "exact_promoted_hard_region_resolved_accuracy_test": _resolved_slice_acc(
+            lambda r: str(r.get("label_source", "")) == "exact_promoted_hard_region"
+        ),
+        "fallback_subset_size": len(fallback_subset_idxs),
+        "fallback_subset_accuracy": fallback_subset_accuracy,
+        "fallback_resolution_rate": fallback_resolution_rate,
+        "unresolved_after_fallback_rate": unresolved_after,
+        "fallback_gain_over_binary_backup": float(fallback_subset_accuracy - binary_acc_on_subset),
+        "fallback_gain_over_pointwise_backup": float(fallback_subset_accuracy - pointwise_acc_on_subset),
+        "complementarity_binary_wrong_pointwise_right": comp_binary_wrong_pointwise_right,
+        "complementarity_pointwise_wrong_binary_right": comp_pointwise_wrong_binary_right,
+        "outside_option_avoid_bad_forced_commit_proxy": int(outside_avoids_bad_commit),
+        "policy_confusion_summary_test": policy_confusion,
+    }
+    return out
+
+
+def _eval_pairwise_deferred_specialist(model: dict[str, Any], rows: list[dict[str, Any]], cfg: LearningConfig) -> dict[str, Any]:
+    status = str(model.get("status", ""))
+    if status != "ok":
+        return {"model_status": status}
+    decision_fn = pairwise_decision_function_from_model(model)
+    test_rows = [r for r in rows if r.get("split") == "test"]
+    deferred_test = [r for r in test_rows if _is_deferred_specialist_train_row(r, cfg)]
+    if not deferred_test:
+        return {"model_status": "ok", "deferred_subset_accuracy": 0.0, "deferred_subset_size": 0}
+    preds = np.array([2 if float(decision_fn(r)) >= 0.0 else 0 for r in deferred_test], dtype=int)
+    y_true = np.array([2 if int(r.get("label", 0)) == 1 else 0 for r in deferred_test], dtype=int)
+
+    def _acc(predicate: Callable[[dict[str, Any]], bool]) -> float:
+        idxs = [i for i, r in enumerate(deferred_test) if predicate(r)]
+        if not idxs:
+            return 0.0
+        return float(np.mean(preds[idxs] == y_true[idxs]))
+
+    return {
+        "model_status": "ok",
+        "deferred_subset_size": len(deferred_test),
+        "deferred_subset_accuracy": float(np.mean(preds == y_true)),
+        "deferred_subset_near_tie_accuracy": _acc(lambda r: abs(float(r.get("margin", 0.0))) <= 0.05),
+        "deferred_subset_adjacent_rank_accuracy": _acc(lambda r: str(r.get("pair_type", "")) == "adjacent_rank"),
+        "deferred_subset_exact_promoted_hard_region_accuracy": _acc(
+            lambda r: str(r.get("label_source", "")) == "exact_promoted_hard_region"
+        ),
+        "note": "specialist is evaluated only on deferred/hard subset by configured deferred_specialist_target_mode",
     }
 
 
@@ -1252,7 +1763,10 @@ def evaluate_models(models: dict[str, Any], tables: dict[str, Any], cfg: Learnin
     out: dict[str, Any] = {}
     for name, model in models.items():
         if str(model.get("model_type", "")) == "pairwise_defer_multinomial_logreg":
-            out[name] = _eval_pairwise_defer_classifier(model, tables["pairwise"])
+            out[name] = _eval_pairwise_defer_classifier(model, tables["pairwise"], models, cfg)
+            continue
+        if str(model.get("model_type", "")) == "pairwise_deferred_specialist_logreg":
+            out[name] = _eval_pairwise_deferred_specialist(model, tables["pairwise"], cfg)
             continue
         if str(model.get("model_type", "")) == "pairwise_ternary_logreg":
             out[name] = {
