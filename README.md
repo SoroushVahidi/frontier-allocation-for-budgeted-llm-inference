@@ -38,12 +38,12 @@ Start with:
 - [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
 - [`scripts/README.md`](scripts/README.md)
 
-### Method and bottleneck interpretation
+### Current hard ambiguous-case line
 Read next:
 - [`docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`](docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md)
-- [`docs/WHAT_IS_NOT_WORKING_NOW.md`](docs/WHAT_IS_NOT_WORKING_NOW.md)
 - [`docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
 - [`docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
+- [`docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md`](docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md)
 - [`docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
 
 ### Evaluation and outputs
@@ -88,9 +88,9 @@ The current repository view is that the project is **not** primarily blocked by:
 The recommended current direction is:
 - a branch-priority / next-step allocation policy over active branches,
 - pairwise branch comparison as the main learned decision object,
-- `v2` hard-case representation as the stronger default substrate,
+- `v3` structured ambiguity features and defer-aware representations as the current stronger hard-case line,
 - a cleaner selective accept/defer rule for hard ambiguous cases,
-- and a more principled hard-pair supervision cleanup / structured ambiguity path.
+- and a more principled oracle-proxy defer target rather than only heuristic ambiguity bands.
 
 The conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
@@ -121,6 +121,6 @@ For interpretation rules and grouped navigation, see:
 
 The strongest current paper story is:
 
-**fixed-budget cross-controller frontier allocation for LLM reasoning, where the main challenge is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget.**
+**fixed-budget cross-controller frontier allocation for LLM reasoning, where the main challenge is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget, especially when some states should be treated as unresolved rather than forced into immediate binary commitment.**
 
 A local stop-vs-act gate may still be useful as an implementation simplification, but it should not be treated as the full conceptual center of the project.
