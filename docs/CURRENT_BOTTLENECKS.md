@@ -37,7 +37,7 @@ These may matter later, but they are not the highest-leverage next fix.
 
 1. Improve branch-comparison and next-step allocation target design.
 2. Make local comparator semantics more opportunity-cost-aware.
-3. Continue uncertainty-aware filtering / reweighting.
+3. Improve selective pairwise accept/defer control rather than only adding more ad hoc routing variants.
 4. Re-run matched controller comparisons against strong heuristics and BT baseline.
 5. Use broader scaling only after target-quality improvements are visible.
 
@@ -109,3 +109,21 @@ The next efficient progress is expected to come from **better branch-allocation 
 - A dedicated near-tie pointwise-expert path is now integrated with explicit specialized/reweighted pointwise provenance plus near-tie bucket diagnostics (`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`).
 - Bounded evidence indicates pointwise path quality is not automatic: near-tie-specialized pointwise retained the strongest near-tie slice signal in this run, while generic/reweighted pointwise variants under the tested routing gate degraded overall and did not improve near-tie forced behavior.
 - Updated bottleneck interpretation: near-tie handling now appears most constrained by expert-model quality and routing-gate quality (with residual irreducible ambiguity), rather than by generic calibration/fallback logic alone.
+
+## Evidence update from strict-coupled and tie-aware controller passes (2026-04-17 bounded)
+
+- A strict-coupled near-tie controller refinement reduced spillover while preserving the strongest prior near-tie-specialist behavior (`docs/STRICT_COUPLED_NEAR_TIE_CONTROLLER_STATUS.md`).
+- A tie-aware post-hoc deferral controller preserved forced/top-1/hard-slice behavior while adding cleaner unresolved/deferred accounting (`docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md`).
+- These passes indicate that controller cleanliness and ambiguity accounting improved, but headline performance closure did not come from more routing logic alone.
+
+## Evidence update from deferred-expert improvement pass (2026-04-17 bounded)
+
+- A deferred-state-only specialist training variant was tested inside the tie-aware post-hoc scaffold (`docs/STRICT_COUPLED_TIE_AWARE_DEFERRED_EXPERT_IMPROVEMENT_STATUS.md`).
+- It did not improve deferred-subset quality and hurt forced/top-1 while routing stayed fixed.
+- Updated interpretation: the remaining weakness is not simply choosing a narrower specialist subset; it is more consistent with unresolved supervision design and confidence design for ambiguous deferred cases.
+
+## Current best bottleneck phrasing
+
+The best current phrasing is:
+
+> **the bottleneck is now concentrated in principled selective pairwise control and supervision design for ambiguous hard cases, not in generic infrastructure or raw model class.**
