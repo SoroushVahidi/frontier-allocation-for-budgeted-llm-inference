@@ -53,8 +53,30 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--catboost-iterations", type=int, default=250)
     p.add_argument("--catboost-learning-rate", type=float, default=0.05)
     p.add_argument("--catboost-depth", type=int, default=6)
-    p.add_argument("--feature-set", choices=["v1", "v2"], default="v1")
+    p.add_argument("--feature-set", choices=["v1", "v2", "v3"], default="v1")
     p.add_argument("--train-pairwise-ternary", action="store_true")
+    p.add_argument("--disable-pairwise-svm", action="store_true")
+    p.add_argument("--train-pairwise-svm-nystroem", action="store_true")
+    p.add_argument("--svm-c", type=float, default=1.0)
+    p.add_argument("--svm-use-sample-weight", action="store_true")
+    p.add_argument("--svm-nystroem-gamma", type=float, default=0.5)
+    p.add_argument("--svm-max-train-rows-for-nystroem", type=int, default=8000)
+    p.add_argument("--svm-nystroem-components", type=int, default=256)
+    p.add_argument("--svm-class-weight-balanced", action="store_true")
+    p.add_argument("--svm-margin-calibration", choices=["none", "platt"], default="none")
+    p.add_argument("--train-pairwise-defer-classifier", action="store_true")
+    p.add_argument("--defer-abs-margin-threshold", type=float, default=0.03)
+    p.add_argument("--defer-relative-margin-threshold", type=float, default=0.15)
+    p.add_argument("--defer-std-threshold", type=float, default=0.08)
+    p.add_argument("--defer-use-outside-option", dest="defer_use_outside_option", action="store_true")
+    p.add_argument("--disable-defer-use-outside-option", dest="defer_use_outside_option", action="store_false")
+    p.set_defaults(defer_use_outside_option=True)
+    p.add_argument("--defer-outside-gap-threshold", type=float, default=0.02)
+    p.add_argument("--defer-require-exact-or-mixed", action="store_true")
+    p.add_argument("--defer-include-approx", dest="defer_include_approx", action="store_true")
+    p.add_argument("--disable-defer-include-approx", dest="defer_include_approx", action="store_false")
+    p.set_defaults(defer_include_approx=True)
+    p.add_argument("--defer-model-type", choices=["multinomial_logreg"], default="multinomial_logreg")
     p.add_argument("--tie-abs-margin-threshold", type=float, default=0.03)
     p.add_argument("--tie-relative-margin-threshold", type=float, default=0.15)
     p.add_argument("--tie-std-threshold", type=float, default=0.08)
@@ -134,6 +156,24 @@ def main() -> None:
         catboost_depth=int(args.catboost_depth),
         feature_set=str(args.feature_set),
         train_pairwise_ternary=bool(args.train_pairwise_ternary),
+        train_pairwise_svm=not bool(args.disable_pairwise_svm),
+        train_pairwise_svm_nystroem=bool(args.train_pairwise_svm_nystroem),
+        svm_c=float(args.svm_c),
+        svm_use_sample_weight=bool(args.svm_use_sample_weight),
+        svm_nystroem_gamma=float(args.svm_nystroem_gamma),
+        svm_max_train_rows_for_nystroem=int(args.svm_max_train_rows_for_nystroem),
+        svm_nystroem_components=int(args.svm_nystroem_components),
+        svm_class_weight_balanced=bool(args.svm_class_weight_balanced),
+        svm_margin_calibration=str(args.svm_margin_calibration),
+        train_pairwise_defer_classifier=bool(args.train_pairwise_defer_classifier),
+        defer_abs_margin_threshold=float(args.defer_abs_margin_threshold),
+        defer_relative_margin_threshold=float(args.defer_relative_margin_threshold),
+        defer_std_threshold=float(args.defer_std_threshold),
+        defer_use_outside_option=bool(args.defer_use_outside_option),
+        defer_outside_gap_threshold=float(args.defer_outside_gap_threshold),
+        defer_require_exact_or_mixed=bool(args.defer_require_exact_or_mixed),
+        defer_include_approx=bool(args.defer_include_approx),
+        defer_model_type=str(args.defer_model_type),
         tie_abs_margin_threshold=float(args.tie_abs_margin_threshold),
         tie_relative_margin_threshold=float(args.tie_relative_margin_threshold),
         tie_std_threshold=float(args.tie_std_threshold),
