@@ -1,0 +1,833 @@
+{
+  "run_id": "near_tie_two_stage_defer_calib_policy_20260417",
+  "seeds": [
+    11
+  ],
+  "regimes": [
+    "all_pairs"
+  ],
+  "feature_set": "v2",
+  "calibration_methods": [
+    "none",
+    "temperature",
+    "platt",
+    "isotonic"
+  ],
+  "detector_threshold_mode": "strict",
+  "detector_configs": {
+    "base": {
+      "abs_margin_max": 0.03,
+      "relative_margin_max": 0.15,
+      "uncertainty_std_min": 0.08,
+      "calibrated_confidence_max": 0.3,
+      "min_triggered_signals": 2
+    },
+    "strict": {
+      "abs_margin_max": 0.024,
+      "relative_margin_max": 0.12,
+      "uncertainty_std_min": 0.096,
+      "calibrated_confidence_max": 0.24,
+      "min_triggered_signals": 2
+    },
+    "loose": {
+      "abs_margin_max": 0.0375,
+      "relative_margin_max": 0.1875,
+      "uncertainty_std_min": 0.064,
+      "calibrated_confidence_max": 0.375,
+      "min_triggered_signals": 1
+    }
+  },
+  "active_detector_config": {
+    "abs_margin_max": 0.024,
+    "relative_margin_max": 0.12,
+    "uncertainty_std_min": 0.096,
+    "calibrated_confidence_max": 0.24,
+    "min_triggered_signals": 2
+  },
+  "pointwise_expert_config": {
+    "pointwise_margin_min": 0.03,
+    "pointwise_fallback_if_uncertain": "pairwise_binary",
+    "near_tie_specialized_margin_max": 0.08,
+    "near_tie_specialized_min_states": 6,
+    "near_tie_reweight_factor": 2.5,
+    "adjacent_reweight_factor": 1.5
+  },
+  "strict_coupled_gate_config": {
+    "rank_gap_abs_max": 1.25,
+    "frontier_score_std_min": 0.09,
+    "frontier_entropy_min": 0.7,
+    "min_triggered_signals": 4
+  },
+  "improved_specialized_expert_config": {
+    "min_states": 6,
+    "near_tie_reweight_factor": 2.0,
+    "adjacent_reweight_factor": 1.75,
+    "uncertainty_weight_scale": 1.5,
+    "uncertainty_weight_cap": 3.0
+  },
+  "two_stage_threshold_policy_config": {
+    "threshold_grid": [
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7
+    ],
+    "min_coverage_floor": 0.65
+  },
+  "posthoc_deferral_config": {
+    "abs_margin_max": 0.03,
+    "relative_margin_max": 0.15,
+    "uncertainty_std_min": 0.08,
+    "calibrated_confidence_max": 0.3,
+    "rank_gap_abs_max": 1.25,
+    "frontier_score_std_min": 0.09,
+    "frontier_entropy_min": 0.7,
+    "min_triggered_signals": 4,
+    "require_strict_coupled_gate": true,
+    "deferred_specialized_min_states": 6
+  },
+  "reliability_weight_config": {
+    "std_scale": 6.0,
+    "weight_min": 0.25,
+    "weight_max": 3.0
+  },
+  "results": {
+    "all_pairs": {
+      "11": {
+        "calibration_fit": {
+          "split": "val",
+          "n_val": 3,
+          "methods": {
+            "none": {
+              "status": "ok",
+              "val_brier": 0.3286574404030139,
+              "val_ece": 0.2726211988852754,
+              "val_nll": 0.8611916345329025
+            },
+            "temperature": {
+              "status": "ok",
+              "temperature": 4.0,
+              "val_nll": 0.7287353524794127,
+              "val_brier": 0.2677203449907577,
+              "val_ece": 0.19416288425733935
+            },
+            "platt": {
+              "status": "insufficient"
+            },
+            "isotonic": {
+              "status": "insufficient"
+            }
+          }
+        },
+        "calibration_test": {
+          "none": {
+            "test_brier": 0.321046762900142,
+            "test_ece": 0.34633934856637005,
+            "test_nll": 0.8398054512216814
+          },
+          "temperature": {
+            "test_brier": 0.25806208158093674,
+            "test_ece": 0.21923585514484806,
+            "test_nll": 0.7088427984604075
+          },
+          "platt": {
+            "test_brier": 0.321046762900142,
+            "test_ece": 0.34633934856637005,
+            "test_nll": 0.8398054512216814
+          },
+          "isotonic": {
+            "test_brier": 0.321046762900142,
+            "test_ece": 0.34633934856637005,
+            "test_nll": 0.8398054512216814
+          }
+        },
+        "detector_stats": {
+          "test_pairs": 13,
+          "detected_near_ties": 9,
+          "detected_rate": 0.6923076923076923,
+          "detected_near_tie_flag_pairs": 1,
+          "detected_non_near_tie_flag_pairs": 8,
+          "detected_adjacent_pairs": 6
+        },
+        "strict_coupled_gate_stats": {
+          "test_pairs": 13,
+          "routed_pairs": 6,
+          "routed_rate": 0.46153846153846156,
+          "routed_near_tie_flag_pairs": 1,
+          "routed_non_near_tie_flag_pairs": 5,
+          "routed_adjacent_pairs": 5
+        },
+        "pointwise_models": {
+          "generic": {
+            "status": "ok",
+            "training_rows": null
+          },
+          "specialized": {
+            "status": "ok",
+            "weights": [
+              0.1093936242127249,
+              0.18448441404562665,
+              -0.029657661020637494,
+              0.007230323004752778,
+              0.023849693991161918,
+              0.017001910622617238,
+              0.0,
+              0.01106682053380013,
+              0.008606640307943142,
+              0.11784867700855829,
+              0.0,
+              0.0,
+              0.0,
+              0.02347690149339008,
+              0.048405360033480706,
+              0.1734175935118265,
+              0.016522749966473037,
+              0.02244793924334411,
+              -0.010528998479477377,
+              0.008770212209873365,
+              -0.010043439634063525,
+              -0.061058831549307344,
+              0.0013983064558173199,
+              -0.011274007276539181,
+              -0.026701946434963566,
+              -0.06829602217251846,
+              0.017001910622617238,
+              -0.028177773326896263,
+              0.01121104827138359,
+              -0.015560790582805701,
+              0.0,
+              0.18448441404562665,
+              0.062237216796970155,
+              0.004454472690567628,
+              0.18002994135505895,
+              0.0,
+              0.01505057737616128
+            ],
+            "intercept": -0.23752632099636994,
+            "training_rows": 33,
+            "sample_weight_used": false,
+            "near_tie_train_states": 13
+          },
+          "reweighted": {
+            "status": "ok",
+            "weights": [
+              0.039126667784443965,
+              0.3025293141884244,
+              -0.027075740752591355,
+              0.03741829390060522,
+              0.052683200577964634,
+              0.019766446086054434,
+              0.0,
+              -0.04732585599007598,
+              0.028491234014523817,
+              0.4198831217341626,
+              0.0,
+              0.0,
+              0.0,
+              0.05534204597580963,
+              -0.05302146296010139,
+              0.34985517017849976,
+              -0.0271328686095388,
+              0.002800951308439846,
+              -0.009667373859884329,
+              0.021981609457846853,
+              0.08542030164856604,
+              -0.282269808378104,
+              0.036805615321391025,
+              -0.029143972644869093,
+              -0.17244408247792495,
+              -0.09787919269738166,
+              0.019766446086055278,
+              -0.11764045967126138,
+              0.03031919761192086,
+              -0.07324065445389703,
+              0.0,
+              0.30252931418842466,
+              0.11512494211638077,
+              0.0856910243214337,
+              0.21683828986698928,
+              0.0,
+              0.0021491977221738397
+            ],
+            "intercept": -0.06770709532038754,
+            "training_rows": 55,
+            "sample_weight_used": true,
+            "near_tie_train_states": 13,
+            "adjacent_train_states": 24
+          },
+          "strict_hard_improved_specialized": {
+            "status": "ok",
+            "weights": [
+              0.06783753776210767,
+              0.2819456839555958,
+              -0.04150863891254539,
+              0.027006877988100628,
+              0.029025414029463646,
+              0.02148731962731809,
+              0.0,
+              0.022141779988411946,
+              0.006954977478003749,
+              0.2249390666226114,
+              0.0,
+              6.656013887802287e-30,
+              0.0,
+              0.0375672413510328,
+              0.034031233049005946,
+              0.2598039039671839,
+              0.01472086140915476,
+              0.02136289320134402,
+              -0.011722238942353372,
+              0.024231727945520757,
+              -0.012765038128376233,
+              -0.14150031307219613,
+              -0.002857441471202057,
+              -0.056956125061729486,
+              -0.07558462518519356,
+              -0.1333226832583659,
+              0.02148731962731809,
+              -0.057562705059240576,
+              0.01381377183695819,
+              -0.02979612270754072,
+              6.656013887802287e-30,
+              0.2819456839555958,
+              0.10053832567807555,
+              0.039338586157261504,
+              0.24260709779833428,
+              0.0,
+              0.008037823069169728
+            ],
+            "intercept": -0.20734070858354414,
+            "training_rows": 33,
+            "sample_weight_used": true,
+            "strict_hard_train_states": 9,
+            "adjacent_train_states": 24,
+            "improved_state_pool": 13
+          },
+          "posthoc_deferred_specialized": {
+            "status": "ok",
+            "weights": [
+              0.06795959491611184,
+              0.19811455980668866,
+              -0.016353256616580825,
+              0.00934667838060995,
+              0.0010493123760773695,
+              0.032309109527903314,
+              0.0,
+              0.024838718054621848,
+              0.02631004753859978,
+              0.0906366380602675,
+              0.0,
+              0.0,
+              0.0,
+              0.09430668923368152,
+              -0.006185507110911356,
+              0.17327584175206678,
+              0.00723988580598158,
+              0.0037988566923498335,
+              -0.0027656338016283574,
+              0.01537995423366673,
+              0.006829105264908264,
+              -0.04388175065968708,
+              -0.021447279094551505,
+              -0.027005776331678295,
+              -0.011277010431125535,
+              -0.07622140221232337,
+              0.032309109527903314,
+              -0.014432042811047315,
+              -0.0008515104191856356,
+              0.0038445966188639952,
+              0.0,
+              0.19811455980668866,
+              0.07189672133313327,
+              0.03515120838542238,
+              0.16296335142126628,
+              0.0,
+              0.011216192298054546
+            ],
+            "intercept": -0.09239480519542898,
+            "training_rows": 24,
+            "sample_weight_used": false,
+            "posthoc_deferred_train_states": 9
+          },
+          "reliability_weighted_specialized": {
+            "status": "ok",
+            "weights": [
+              0.0730075858222404,
+              0.26107900968908565,
+              -0.011270237056466362,
+              0.02223051540849718,
+              0.018359359011436045,
+              0.01713989693147017,
+              0.0,
+              -0.05587323827975033,
+              0.03018755598404995,
+              0.2646717165104839,
+              0.0,
+              1.1024942682365553e-30,
+              0.0,
+              0.07632444057824982,
+              -0.05190404701759218,
+              0.31695224796883553,
+              -0.015451859222877814,
+              -0.004368949281987687,
+              -0.004104067112968443,
+              0.010447817769180925,
+              0.09395248054868705,
+              -0.21677755056304773,
+              0.045722565120038736,
+              0.013131571534573054,
+              -0.10225321606223439,
+              -0.04232873573998717,
+              0.017139896931470475,
+              -0.06962219177955162,
+              0.012614494319432427,
+              -0.05090831254317173,
+              1.107544411685361e-30,
+              0.2610790096890859,
+              0.10427904928009364,
+              0.10351627630239185,
+              0.15756273338669527,
+              0.0,
+              0.004101416146006882
+            ],
+            "intercept": -0.13975332742052893,
+            "training_rows": 55,
+            "sample_weight_used": true,
+            "states_with_reliability_weight": 24
+          }
+        },
+        "learned_two_stage_defer_head": {
+          "feature_names_stage1": [
+            "margin_abs",
+            "relative_margin",
+            "pair_uncertainty_std",
+            "pair_confidence",
+            "pair_probability",
+            "pair_margin_abs",
+            "rank_gap_abs",
+            "frontier_score_std_mean",
+            "frontier_entropy_mean",
+            "near_tie_flag",
+            "adjacent_rank_flag",
+            "strict_gate_on",
+            "posthoc_gate_on",
+            "strict_gate_triggered_signals",
+            "pointwise_value_i",
+            "pointwise_value_j",
+            "pointwise_gap_abs",
+            "pairwise_pointwise_disagree",
+            "pair_margin_minus_point_gap"
+          ],
+          "feature_names_stage2": [
+            "margin_abs",
+            "relative_margin",
+            "pair_uncertainty_std",
+            "pair_confidence",
+            "pair_probability",
+            "pair_margin_abs",
+            "rank_gap_abs",
+            "frontier_score_std_mean",
+            "frontier_entropy_mean",
+            "near_tie_flag",
+            "adjacent_rank_flag",
+            "strict_gate_on",
+            "posthoc_gate_on",
+            "strict_gate_triggered_signals",
+            "pointwise_value_i",
+            "pointwise_value_j",
+            "pointwise_gap_abs",
+            "pairwise_pointwise_disagree",
+            "pair_margin_minus_point_gap",
+            "stage1_pairwise_error_probability"
+          ],
+          "stage1_pairwise_error_head": {
+            "status": "ok",
+            "n_rows": 38,
+            "positive_rate": 0.18421052631578946
+          },
+          "stage2_defer_utility_head": {
+            "status": "ok",
+            "n_rows": 38,
+            "positive_rate": 0.05263157894736842
+          },
+          "target_definition": "defer=1 iff specialized fallback is correct and pairwise winner is incorrect on the same pair row",
+          "legacy_threshold_selection": {
+            "status": "ok",
+            "policy": "defer_rate_constrained_utility",
+            "selected_threshold": 0.5,
+            "selected_forced_accuracy": 0.0,
+            "selected_defer_rate": 0.0,
+            "allowed_max_defer_rate": 0.41333333333333333,
+            "objective": -1000000000.0
+          },
+          "improved_threshold_selection": {
+            "status": "ok",
+            "policy": "accepted_accuracy_with_coverage_floor",
+            "selected_threshold": 0.55,
+            "selected_accepted_accuracy": 0.0,
+            "selected_coverage": 0.3333333333333333,
+            "selected_forced_accuracy": 0.3333333333333333,
+            "min_coverage_floor": 0.65,
+            "coverage_floor_satisfied": false
+          },
+          "baseline_posthoc_val_defer_rate": 0.3333333333333333,
+          "threshold_grid": [
+            0.3,
+            0.35,
+            0.4,
+            0.45,
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7
+          ]
+        },
+        "near_tie_pairwise_vs_pointwise_diagnostic": {
+          "rows": 9,
+          "summary": {
+            "pairwise_fail__pointwise_fail": {
+              "count": 6,
+              "margin_abs_mean": 0.10049012178406125,
+              "relative_margin_mean": 0.1279321214146265,
+              "pair_std_mean": 0.11509049835255486,
+              "rank_gap_abs_mean": 1.3333333333333333,
+              "pointwise_value_gap_abs_mean": 0.06270673638937524,
+              "frontier_score_std_mean": 0.14405120788099554,
+              "frontier_entropy_mean": 1.05964017489948
+            },
+            "pairwise_ok__pointwise_ok": {
+              "count": 3,
+              "margin_abs_mean": 0.12649892381947944,
+              "relative_margin_mean": 0.17094048666543218,
+              "pair_std_mean": 0.12159265164349126,
+              "rank_gap_abs_mean": 1.3333333333333333,
+              "pointwise_value_gap_abs_mean": 0.0430812230373934,
+              "frontier_score_std_mean": 0.11881606233239479,
+              "frontier_entropy_mean": 1.067629211914755
+            }
+          }
+        },
+        "variants": {
+          "binary_forced_baseline": {
+            "accepted_pair_accuracy": 0.38461538461538464,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.0,
+            "deferred_test_pairs": 0,
+            "deferred_non_near_tie_count": 0,
+            "deferred_subset_forced_accuracy": 0.0,
+            "fallback_policy": "pairwise_binary"
+          },
+          "abstain_calibrated_pairwise_backup": {
+            "accepted_pair_accuracy": 1.0,
+            "coverage": 0.07692307692307693,
+            "abstention_rate": 0.9230769230769231,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.0,
+            "deferred_test_pairs": 0,
+            "deferred_non_near_tie_count": 0,
+            "deferred_subset_forced_accuracy": 0.0,
+            "fallback_policy": "pairwise_binary"
+          },
+          "near_tie_generic_pointwise": {
+            "accepted_pair_accuracy": 0.38461538461538464,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.0,
+            "deferred_test_pairs": 0,
+            "deferred_non_near_tie_count": 0,
+            "deferred_subset_forced_accuracy": 0.0,
+            "fallback_policy": "generic_pointwise"
+          },
+          "near_tie_specialized_pointwise": {
+            "accepted_pair_accuracy": 0.38461538461538464,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.0,
+            "deferred_test_pairs": 0,
+            "deferred_non_near_tie_count": 0,
+            "deferred_subset_forced_accuracy": 0.0,
+            "fallback_policy": "specialized_pointwise"
+          },
+          "near_tie_reweighted_pointwise": {
+            "accepted_pair_accuracy": 0.38461538461538464,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.0,
+            "deferred_test_pairs": 0,
+            "deferred_non_near_tie_count": 0,
+            "deferred_subset_forced_accuracy": 0.0,
+            "fallback_policy": "reweighted_pointwise"
+          },
+          "strict_coupled_near_tie_specialized_pointwise_v1": {
+            "accepted_pair_accuracy": 0.38461538461538464,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.0,
+            "deferred_test_pairs": 0,
+            "deferred_non_near_tie_count": 0,
+            "deferred_subset_forced_accuracy": 0.0,
+            "fallback_policy": "strict_coupled_specialized_pointwise"
+          },
+          "strict_coupled_near_tie_specialized_pointwise_improved_v1": {
+            "accepted_pair_accuracy": 0.38461538461538464,
+            "coverage": 1.0,
+            "abstention_rate": 0.0,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.0,
+            "deferred_test_pairs": 0,
+            "deferred_non_near_tie_count": 0,
+            "deferred_subset_forced_accuracy": 0.0,
+            "fallback_policy": "strict_coupled_specialized_pointwise_improved"
+          },
+          "strict_coupled_tie_aware_posthoc_deferral_v1": {
+            "accepted_pair_accuracy": 0.42857142857142855,
+            "coverage": 0.5384615384615384,
+            "abstention_rate": 0.46153846153846156,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.46153846153846156,
+            "deferred_test_pairs": 6,
+            "deferred_non_near_tie_count": 5,
+            "deferred_subset_forced_accuracy": 0.3333333333333333,
+            "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral"
+          },
+          "strict_coupled_tie_aware_posthoc_deferral_improved_expert_v1": {
+            "accepted_pair_accuracy": 0.42857142857142855,
+            "coverage": 0.5384615384615384,
+            "abstention_rate": 0.46153846153846156,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.5,
+            "test_pairs": 13.0,
+            "top1_test": 0.2857142857142857,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.46153846153846156,
+            "deferred_test_pairs": 6,
+            "deferred_non_near_tie_count": 5,
+            "deferred_subset_forced_accuracy": 0.3333333333333333,
+            "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral_improved_expert"
+          },
+          "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert_v1": {
+            "accepted_pair_accuracy": 0.42857142857142855,
+            "coverage": 0.5384615384615384,
+            "abstention_rate": 0.46153846153846156,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.46153846153846156,
+            "deferred_test_pairs": 6,
+            "deferred_non_near_tie_count": 5,
+            "deferred_subset_forced_accuracy": 0.3333333333333333,
+            "fallback_policy": "strict_coupled_tie_aware_posthoc_deferral_reliability_weighted_expert"
+          },
+          "strict_coupled_tie_aware_learned_two_stage_deferral_v1": {
+            "accepted_pair_accuracy": 0.2727272727272727,
+            "coverage": 0.8461538461538461,
+            "abstention_rate": 0.15384615384615385,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.15384615384615385,
+            "deferred_test_pairs": 2,
+            "deferred_non_near_tie_count": 2,
+            "deferred_subset_forced_accuracy": 1.0,
+            "fallback_policy": "strict_coupled_tie_aware_learned_two_stage_deferral"
+          },
+          "strict_coupled_tie_aware_learned_two_stage_deferral_calibrated_threshold_v1": {
+            "accepted_pair_accuracy": 0.3333333333333333,
+            "coverage": 0.9230769230769231,
+            "abstention_rate": 0.07692307692307687,
+            "forced_pairwise_accuracy": 0.38461538461538464,
+            "near_tie_forced_accuracy": 0.0,
+            "adjacent_forced_accuracy": 0.4,
+            "test_pairs": 13.0,
+            "top1_test": 0.42857142857142855,
+            "forced_accuracy_by_budget": {
+              "2": 1.0,
+              "3": 0.3333333333333333
+            },
+            "forced_accuracy_by_dataset": {
+              "openai/gsm8k": 0.38461538461538464
+            },
+            "strict_routed_forced_accuracy": 0.3333333333333333,
+            "strict_routed_near_tie_forced_accuracy": 0.0,
+            "strict_routed_test_pairs": 6,
+            "strict_routed_near_tie_test_pairs": 1,
+            "deferred_rate": 0.07692307692307693,
+            "deferred_test_pairs": 1,
+            "deferred_non_near_tie_count": 1,
+            "deferred_subset_forced_accuracy": 1.0,
+            "fallback_policy": "strict_coupled_tie_aware_learned_two_stage_deferral"
+          }
+        }
+      }
+    }
+  }
+}

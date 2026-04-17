@@ -1,0 +1,50 @@
+[
+  {
+    "variant": "binary_forced_baseline",
+    "accepted_pair_accuracy": 0.38461538461538464,
+    "coverage": 1.0,
+    "forced_pairwise_accuracy": 0.38461538461538464,
+    "top1_test": 0.42857142857142855,
+    "near_tie_forced_accuracy": 0.0,
+    "adjacent_forced_accuracy": 0.4,
+    "deferred_rate": 0.0,
+    "deferred_non_near_tie_count": 0,
+    "deferred_subset_forced_accuracy": 0.0
+  },
+  {
+    "variant": "strict_coupled_tie_aware_posthoc_deferral_v1",
+    "accepted_pair_accuracy": 0.42857142857142855,
+    "coverage": 0.5384615384615384,
+    "forced_pairwise_accuracy": 0.38461538461538464,
+    "top1_test": 0.42857142857142855,
+    "near_tie_forced_accuracy": 0.0,
+    "adjacent_forced_accuracy": 0.4,
+    "deferred_rate": 0.46153846153846156,
+    "deferred_non_near_tie_count": 5,
+    "deferred_subset_forced_accuracy": 0.3333333333333333
+  },
+  {
+    "variant": "strict_coupled_tie_aware_learned_two_stage_deferral_v1",
+    "accepted_pair_accuracy": 0.2727272727272727,
+    "coverage": 0.8461538461538461,
+    "forced_pairwise_accuracy": 0.38461538461538464,
+    "top1_test": 0.42857142857142855,
+    "near_tie_forced_accuracy": 0.0,
+    "adjacent_forced_accuracy": 0.4,
+    "deferred_rate": 0.15384615384615385,
+    "deferred_non_near_tie_count": 2,
+    "deferred_subset_forced_accuracy": 1.0
+  },
+  {
+    "variant": "strict_coupled_tie_aware_learned_two_stage_deferral_calibrated_threshold_v1",
+    "accepted_pair_accuracy": 0.3333333333333333,
+    "coverage": 0.9230769230769231,
+    "forced_pairwise_accuracy": 0.38461538461538464,
+    "top1_test": 0.42857142857142855,
+    "near_tie_forced_accuracy": 0.0,
+    "adjacent_forced_accuracy": 0.4,
+    "deferred_rate": 0.07692307692307693,
+    "deferred_non_near_tie_count": 1,
+    "deferred_subset_forced_accuracy": 1.0
+  }
+]
