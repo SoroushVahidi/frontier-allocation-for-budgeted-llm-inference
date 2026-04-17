@@ -40,6 +40,8 @@ The repo already contains:
 6. Larger scale alone is unlikely to fix the current weaknesses without better targets.
 7. Hard-case ambiguity is real and should be treated as a first-class methodological issue rather than as a nuisance thresholding problem.
 8. Tie-aware post-hoc deferral is a cleaner scaffold than earlier hard-case routing heuristics, even when it does not improve headline forced metrics.
+9. Learned two-stage deferral is promising as a more principled controller family, but current bounded runs remain mixed and do not yet beat the best tie-aware post-hoc baseline on accepted quality.
+10. Dataset expansion should prioritize new ambiguity regimes, not just more arithmetic volume.
 
 ## Main unresolved issue
 
@@ -170,3 +172,16 @@ The repo is already ready for serious paper planning, collaborator onboarding, a
 - A deferred-state-only specialist training variant was tested within the tie-aware post-hoc scaffold (`docs/STRICT_COUPLED_TIE_AWARE_DEFERRED_EXPERT_IMPROVEMENT_STATUS.md`).
 - This did **not** improve deferred-subset quality and hurt forced/top-1 versus the stronger tie-aware baseline while routing stayed fixed.
 - Conservative interpretation: the next bottleneck is not merely finding a narrower specialist subset; expert supervision design remains unresolved.
+
+## Learned two-stage deferral status (2026-04-17 bounded pass)
+
+- A learned two-stage defer-head variant was added inside the current strict-coupled / tie-aware scaffold (`docs/STRICT_COUPLED_TIE_AWARE_LEARNED_TWO_STAGE_DEFERRAL_STATUS.md`).
+- The learned controller improved deferred-subset quality and reduced unnecessary deferral in the bounded run, but did not improve accepted quality or forced/top-1 enough to displace the strongest tie-aware post-hoc baseline.
+- A follow-up calibration-policy pass improved accepted accuracy versus the earlier learned-two-stage thresholding policy, but still did not beat tie-aware post-hoc accepted quality and did not move forced/top-1 in the bounded run (`docs/LEARNED_TWO_STAGE_DEFERRAL_CALIBRATION_POLICY_STATUS.md`).
+- Conservative interpretation: a more principled defer-family is plausible, but the remaining weakness still looks tied to complementarity/supervision quality on hard cases rather than architecture changes alone.
+
+## Dataset-expansion priority status (2026-04-17 planning note)
+
+- The current recommendation is to improve current data quality first, then add a small number of datasets that introduce new ambiguity regimes rather than only more arithmetic volume (`docs/DATASET_EXPANSION_PRIORITIES_2026_04_17.md`).
+- Current highest-priority additions are DROP and MuSR, with BIG-Bench Hard and AQuA as the next tier.
+- Conservative interpretation: the repo likely needs more empirical breadth eventually, but not before current hard-case supervision is better controlled.
