@@ -1,0 +1,2428 @@
+{
+  "rows": [
+    {
+      "state_id": "s_ep0_d0_r5_c5e9132080b9209b8dc1",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d0_r5_c5e9132080b9209b8dc1",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d0_r5_c5e9132080b9209b8dc1",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d1_r4_a85fdcf0bed6a6cdf3d3",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d1_r4_a85fdcf0bed6a6cdf3d3",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d1_r4_a85fdcf0bed6a6cdf3d3",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d2_r3_53568994f0de5dcead3c",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d2_r3_53568994f0de5dcead3c",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d3_r2_8ac90a15cd637654efd7",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep0_d3_r2_8ac90a15cd637654efd7",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep1_d0_r5_90052dfd4049bb2575a8",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep1_d0_r5_90052dfd4049bb2575a8",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d0_r5_fe63a77683a39d50ccbe",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d0_r5_fe63a77683a39d50ccbe",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d0_r5_fe63a77683a39d50ccbe",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d1_r4_d60e98cf5d6aa8a42217",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d1_r4_d60e98cf5d6aa8a42217",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d1_r4_d60e98cf5d6aa8a42217",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d2_r3_eb467fd987bb6ef1daeb",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d2_r3_eb467fd987bb6ef1daeb",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d3_r2_229775698cc45b671f2e",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep2_d3_r2_229775698cc45b671f2e",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d0_r5_1fb41a0d3f84bc66b059",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d0_r5_1fb41a0d3f84bc66b059",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d0_r5_1fb41a0d3f84bc66b059",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d1_r4_d69ede3958bfe0e8c072",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d1_r4_d69ede3958bfe0e8c072",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d1_r4_d69ede3958bfe0e8c072",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d2_r3_6479407c3ddc8c6a1deb",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d2_r3_6479407c3ddc8c6a1deb",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d2_r3_6479407c3ddc8c6a1deb",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d3_r2_66c2a34ff0fad2fa0e7f",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d3_r2_66c2a34ff0fad2fa0e7f",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d4_r1_fb7a2fb76145507aa0d8",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d4_r1_fb7a2fb76145507aa0d8",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep3_d4_r1_fb7a2fb76145507aa0d8",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d0_r5_9b50c32dac71f74d21d9",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d0_r5_9b50c32dac71f74d21d9",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d0_r5_9b50c32dac71f74d21d9",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d1_r4_122cc6bd6a412709e7da",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d1_r4_122cc6bd6a412709e7da",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d1_r4_122cc6bd6a412709e7da",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d1_r4_122cc6bd6a412709e7da",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d2_r3_ae0bc47c78a7632b83b0",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d2_r3_ae0bc47c78a7632b83b0",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d2_r3_ae0bc47c78a7632b83b0",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d2_r3_ae0bc47c78a7632b83b0",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d3_r2_182abbffbd1ebf74eae6",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d3_r2_182abbffbd1ebf74eae6",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d3_r2_182abbffbd1ebf74eae6",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d4_r1_5a1371fd7b0f58c2ab87",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.30000000000000004,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": true,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d4_r1_5a1371fd7b0f58c2ab87",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep4_d4_r1_5a1371fd7b0f58c2ab87",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d0_r5_fd5b5206e3840c5b951f",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d0_r5_fd5b5206e3840c5b951f",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d0_r5_fd5b5206e3840c5b951f",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d1_r4_d2dfbcca95133de94d57",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d1_r4_d2dfbcca95133de94d57",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d1_r4_d2dfbcca95133de94d57",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d1_r4_d2dfbcca95133de94d57",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d2_r3_5bab767f7cc6656c1185",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d2_r3_5bab767f7cc6656c1185",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d2_r3_5bab767f7cc6656c1185",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d3_r2_828bae384414fa065b63",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d3_r2_828bae384414fa065b63",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d3_r2_828bae384414fa065b63",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d4_r1_d5925bc1ebe4ebe4795c",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep5_d4_r1_d5925bc1ebe4ebe4795c",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d0_r5_7946ed6ce75fe01fc389",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d0_r5_7946ed6ce75fe01fc389",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d0_r5_7946ed6ce75fe01fc389",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d1_r4_837e8a12eaf5e1c68df7",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d1_r4_837e8a12eaf5e1c68df7",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d1_r4_837e8a12eaf5e1c68df7",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d1_r4_837e8a12eaf5e1c68df7",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d2_r3_584fbb50e27c4c3c6faa",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d2_r3_584fbb50e27c4c3c6faa",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d2_r3_584fbb50e27c4c3c6faa",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d2_r3_584fbb50e27c4c3c6faa",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d3_r2_f8dfba09c0a23e474974",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d3_r2_f8dfba09c0a23e474974",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d3_r2_f8dfba09c0a23e474974",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d3_r2_f8dfba09c0a23e474974",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d4_r1_2591401b0f6c3fd595b2",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d4_r1_2591401b0f6c3fd595b2",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep6_d4_r1_2591401b0f6c3fd595b2",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d0_r5_b0a55cc6d9f2b61c6557",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d0_r5_b0a55cc6d9f2b61c6557",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d0_r5_b0a55cc6d9f2b61c6557",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.30000000000000004,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": true,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d1_r4_2910c13789136d96d0fc",
+      "branch_id": "b0",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d1_r4_2910c13789136d96d0fc",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d1_r4_2910c13789136d96d0fc",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.30000000000000004,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": true,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d1_r4_2910c13789136d96d0fc",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d2_r3_200de168131ee9e4f5c5",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d2_r3_200de168131ee9e4f5c5",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.30000000000000004,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": true,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d2_r3_200de168131ee9e4f5c5",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d3_r2_292a41d0150f0dc63e5c",
+      "branch_id": "b1",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.2,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d3_r2_292a41d0150f0dc63e5c",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.30000000000000004,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": true,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d3_r2_292a41d0150f0dc63e5c",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d4_r1_194e25c25d200c57a95c",
+      "branch_id": "b2",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.30000000000000004,
+      "branch_answer_evidence_score": 0.1,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": true,
+        "has_final_step_cue": true,
+        "has_final_arithmetic_or_comparison_step": true,
+        "has_terminal_numeric_token": true
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    },
+    {
+      "state_id": "s_ep7_d4_r1_194e25c25d200c57a95c",
+      "branch_id": "b3",
+      "branch_has_final_answer_text": false,
+      "branch_has_normalized_answer": false,
+      "branch_completion_score": 0.0,
+      "branch_answer_evidence_score": 0.0,
+      "branch_reasoning_completion_flags": {
+        "has_reasoning_text": false,
+        "has_final_step_cue": false,
+        "has_final_arithmetic_or_comparison_step": false,
+        "has_terminal_numeric_token": false
+      },
+      "completion_signal_provenance": {
+        "source_fields": [
+          "branch_reasoning_text_raw",
+          "branch_final_answer_text_raw",
+          "branch_final_answer_normalized",
+          "branch_text_raw"
+        ],
+        "rule_set": "explicit_boolean_heuristics_v1"
+      },
+      "branch_normalized_answer": null
+    }
+  ]
+}

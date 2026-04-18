@@ -1,0 +1,20 @@
+{
+  "run_id": "completion_aware_decision_eval_20260418",
+  "source_frontier_run_id": "worst_real_failure_observability_20260418T015924Z",
+  "source_frontier_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/frontier_target_construction/worst_real_failure_observability_20260418T015924Z",
+  "source_observability_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_observability/worst_real_failure_observability_20260418T015924Z",
+  "policy_family": [
+    "completion_bonus",
+    "completion_outside_gate",
+    "completion_tie_resolution"
+  ],
+  "completion_signal_definition": "explicit_boolean_heuristics_v1",
+  "parameters": {
+    "completion_bonus": 0.03,
+    "completion_gate_min_score": 0.2,
+    "completion_gate_min_outside_gap": -0.02,
+    "completion_gate_max_oracle_drop": 0.02,
+    "tie_gap": 0.03
+  },
+  "command": "scripts/run_completion_aware_decision_experiment.py --run-id worst_real_failure_observability_20260418T015924Z --output-run-id completion_aware_decision_eval_20260418"
+}
