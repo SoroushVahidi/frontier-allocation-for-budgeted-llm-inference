@@ -1,0 +1,9 @@
+{
+  "case_ids": [
+    "seed11::exopenai_gsm8k_0_ep1_d3",
+    "seed11::exopenai_gsm8k_3_ep7_d3",
+    "seed47::exopenai_gsm8k_3_ep7_d4",
+    "seed29::exopenai_gsm8k_9_ep18_d3",
+    "seed11::exopenai_gsm8k_7_ep14_d5"
+  ]
+}
