@@ -18,6 +18,13 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from experiments.data import extract_final_answer  # noqa: E402
+from experiments.objective_function_stack import (  # noqa: E402
+    BranchSurrogates,
+    compute_commit_quality,
+    compute_process_quality,
+    compute_target_completion,
+    metalevel_expand_commit_decision,
+)
 
 
 NUM_RE = re.compile(r"[-+]?\d*\.?\d+")
@@ -225,29 +232,27 @@ def _policy_intermediate_trap_aware(rows: list[dict[str, Any]], *, tie_gap: floa
     ranked = sorted(rows, key=lambda r: float(r["expected_value_if_branch"]), reverse=True)
     if not ranked:
         return ""
+    surrogate_rows = [
+        BranchSurrogates(
+            branch_id=str(r["branch_id"]),
+            continuation_value=float(r["expected_value_if_branch"]),
+            process_quality=float(r["process_quality"]),
+            target_completion=float(r["target_completion"]),
+            semantic_incompleteness=float(r["semantic_incompleteness_score"]),
+        )
+        for r in rows
+    ]
     top = ranked[0]
-    if len(ranked) == 1:
-        return str(top["branch_id"])
-    top2_gap = float(top["expected_value_if_branch"] - ranked[1]["expected_value_if_branch"])
-    near_tie = top2_gap <= tie_gap
-    if (not near_tie) or float(top["semantic_incompleteness_score"]) < incompleteness_trigger:
-        return str(top["branch_id"])
-
-    top_v = float(top["expected_value_if_branch"])
-    v_vals = [float(r["expected_value_if_branch"]) for r in rows]
-    lo, hi = min(v_vals), max(v_vals)
-
-    eligible = [r for r in rows if (top_v - float(r["expected_value_if_branch"])) <= max_value_drop]
-    if not eligible:
-        return str(top["branch_id"])
-
-    def _score(r: dict[str, Any]) -> float:
-        v = _safe_norm(float(r["expected_value_if_branch"]), lo, hi)
-        commit = float(r["commit_quality_score"])
-        incompleteness = float(r["semantic_incompleteness_score"])
-        return 0.55 * v + 0.35 * commit - 0.10 * incompleteness
-
-    return str(max(eligible, key=_score)["branch_id"])
+    decision = metalevel_expand_commit_decision(
+        surrogate_rows,
+        near_tie_gap=float(tie_gap),
+        max_value_drop_for_local_override=float(max_value_drop),
+        low_completion_trigger=max(0.0, 1.0 - float(incompleteness_trigger)),
+    )
+    if decision.action == "commit_now":
+        # For branch-allocation evaluation we map commit to incumbent branch selection.
+        return str(decision.branch_id or top["branch_id"])
+    return str(decision.branch_id or top["branch_id"])
 
 
 def parse_args() -> argparse.Namespace:
@@ -306,7 +311,20 @@ def main() -> None:
             bid = str(r.get("branch_id", ""))
             cs = _completion_signal(obs_map.get((sid, bid)))
             sem = _semantic_incompleteness_signal(q, cs)
-            commit_quality = _clip01(0.55 * float(cs.get("branch_completion_score", 0.0)) + 0.25 * float(cs.get("branch_answer_evidence_score", 0.0)) + 0.20 * (1.0 - float(sem.get("semantic_incompleteness_score", 0.0))))
+            process_quality = compute_process_quality(
+                completion_score=float(cs.get("branch_completion_score", 0.0)),
+                answer_evidence_score=float(cs.get("branch_answer_evidence_score", 0.0)),
+                semantic_incompleteness=float(sem.get("semantic_incompleteness_score", 0.0)),
+            )
+            target_completion = compute_target_completion(
+                completion_score=float(cs.get("branch_completion_score", 0.0)),
+                answer_evidence_score=float(cs.get("branch_answer_evidence_score", 0.0)),
+                semantic_incompleteness=float(sem.get("semantic_incompleteness_score", 0.0)),
+            )
+            commit_quality = compute_commit_quality(
+                process_quality=float(process_quality),
+                target_completion=float(target_completion),
+            )
             merged = {
                 "state_id": sid,
                 "branch_id": bid,
@@ -314,6 +332,9 @@ def main() -> None:
                 "delta_u_vs_outside": float(r.get("delta_u_vs_outside", 0.0)),
                 **cs,
                 **sem,
+                "process_quality": float(process_quality),
+                "target_completion": float(target_completion),
+                "continuation_value": float(r.get("expected_value_if_branch", 0.0)),
                 "commit_quality_score": float(commit_quality),
             }
             subtype_counter.update([str(sem.get("failure_subtype", "none"))])
