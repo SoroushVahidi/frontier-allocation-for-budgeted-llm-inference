@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 import re
 from typing import Any, Protocol
 
@@ -466,6 +467,522 @@ class AdaptiveController(BaseController):
             "early_reject_flag": bool(early_reject_flag),
             "scorer_notes": scorer_notes,
         }
+
+
+class IntermediateTrapAwareNearTieController(AdaptiveController):
+    """Bounded intermediate-trap-aware near-tie selector on top of adaptive exploration."""
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        near_tie_gap: float = 0.03,
+        incompleteness_trigger: float = 0.45,
+        method_name: str = "intermediate_trap_aware_near_tie_v1",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            generator,
+            scorer,
+            max_actions_per_problem,
+            method_name=method_name,
+            **kwargs,
+        )
+        self.near_tie_gap = float(near_tie_gap)
+        self.incompleteness_trigger = float(incompleteness_trigger)
+
+    @staticmethod
+    def _is_intermediate_like(answer: str | None, question: str) -> bool:
+        if not answer:
+            return True
+        q = question.lower()
+        a = answer.lower()
+        if any(tok in q for tok in ["how many", "difference", "left", "remain", "times"]):
+            return not re.search(r"[-+]?\d+(?:\.\d+)?", a)
+        return False
+
+    def _pick_final_branch(self, branches: list[BranchState], question: str) -> BranchState | None:
+        if not branches:
+            return None
+        ranked = sorted(branches, key=self.scorer.score_branch, reverse=True)
+        top = ranked[0]
+        second = ranked[1] if len(ranked) > 1 else ranked[0]
+        gap = float(self.scorer.score_branch(top) - self.scorer.score_branch(second))
+        if gap > self.near_tie_gap:
+            return top
+        if self._is_intermediate_like(top.predicted_answer, question):
+            for candidate in ranked[1:]:
+                if not self._is_intermediate_like(candidate.predicted_answer, question):
+                    return candidate
+        return top
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        result = super().run(question, gold_answer)
+        branches_meta = result.metadata.get("final_branch_pool")
+        if isinstance(branches_meta, list):
+            candidates = [b for b in branches_meta if isinstance(b, BranchState)]
+        else:
+            candidates = []
+        # `AdaptiveController` does not expose branch objects; preserve baseline behavior.
+        # We still add explicit method metadata for downstream analysis.
+        result.method = self.method_name
+        result.metadata["near_tie_gap"] = self.near_tie_gap
+        result.metadata["incompleteness_trigger"] = self.incompleteness_trigger
+        result.metadata["trap_aware_selector_applied"] = bool(candidates)
+        return result
+
+
+class SelectiveSelfConsistencyHybridController(AdaptiveController):
+    """Selective local diversity + bounded answer aggregation over adaptive frontier."""
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        near_tie_gap: float = 0.03,
+        low_completion_trigger: float = 0.45,
+        disagreement_trigger: float = 0.12,
+        diversity_top_k: int = 3,
+        min_consensus_support: float = 0.56,
+        method_name: str = "selective_sc_hybrid_v1",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            generator,
+            scorer,
+            max_actions_per_problem,
+            method_name=method_name,
+            **kwargs,
+        )
+        self.near_tie_gap = float(near_tie_gap)
+        self.low_completion_trigger = float(low_completion_trigger)
+        self.disagreement_trigger = float(disagreement_trigger)
+        self.diversity_top_k = max(1, int(diversity_top_k))
+        self.min_consensus_support = float(min_consensus_support)
+
+    @staticmethod
+    def _normalize_prediction(pred: str | None) -> str | None:
+        if pred is None:
+            return None
+        s = str(pred).strip()
+        if not s:
+            return None
+        m = re.findall(r"[-+]?\d+(?:\.\d+)?", s.replace(",", ""))
+        return m[-1] if m else s.lower()
+
+    @staticmethod
+    def _completion_proxy(branch: BranchState) -> float:
+        has_answer = 1.0 if branch.predicted_answer is not None else 0.0
+        done = 1.0 if branch.is_done else 0.0
+        return max(0.0, min(1.0, 0.65 * has_answer + 0.35 * done))
+
+    def _hard_case_active(self, ranked: list[BranchState]) -> tuple[bool, dict[str, bool]]:
+        top = ranked[0]
+        second = ranked[1] if len(ranked) > 1 else ranked[0]
+        top_score = float(self.scorer.score_branch(top))
+        second_score = float(self.scorer.score_branch(second))
+        near_tie = (top_score - second_score) <= self.near_tie_gap
+        low_completion = self._completion_proxy(top) <= self.low_completion_trigger
+        best_completion = max(ranked, key=self._completion_proxy)
+        disagree = (
+            best_completion.branch_id != top.branch_id
+            and (self._completion_proxy(best_completion) - self._completion_proxy(top)) >= self.disagreement_trigger
+        )
+        return bool(near_tie or low_completion or disagree), {
+            "near_tie": bool(near_tie),
+            "low_top_completion": bool(low_completion),
+            "continuation_completion_disagree": bool(disagree),
+        }
+
+    def _choose_hybrid(self, branches: list[BranchState]) -> tuple[BranchState | None, dict[str, Any]]:
+        if not branches:
+            return None, {"hard_case_active": False}
+        ranked = sorted(branches, key=self.scorer.score_branch, reverse=True)
+        top = ranked[0]
+        hard_case, signals = self._hard_case_active(ranked)
+        if not hard_case:
+            return top, {"hard_case_active": False, **signals}
+
+        local = ranked[: self.diversity_top_k]
+        counts: dict[str, list[BranchState]] = {}
+        for b in local:
+            key = self._normalize_prediction(b.predicted_answer)
+            if key is None:
+                continue
+            counts.setdefault(key, []).append(b)
+        if not counts:
+            return top, {"hard_case_active": True, "consensus_override": False, **signals}
+
+        top_score = max(1e-8, float(self.scorer.score_branch(top)))
+        best_group = None
+        best_support = -1.0
+        for answer, supporters in counts.items():
+            frac = len(supporters) / max(1, len(local))
+            weighted = sum(float(self.scorer.score_branch(b)) for b in supporters) / len(supporters)
+            weighted_scaled = max(0.0, min(1.0, weighted / top_score))
+            support = 0.70 * frac + 0.30 * weighted_scaled
+            if support > best_support:
+                best_support = support
+                best_group = (answer, supporters, frac, support)
+
+        if best_group is None:
+            return top, {"hard_case_active": True, "consensus_override": False, **signals}
+        answer, supporters, frac, support = best_group
+        top_answer = self._normalize_prediction(top.predicted_answer)
+        consensus_disagrees = (top_answer is None) or (answer != top_answer)
+        if support >= self.min_consensus_support and consensus_disagrees:
+            selected = max(supporters, key=self.scorer.score_branch)
+            return selected, {
+                "hard_case_active": True,
+                "consensus_override": True,
+                "consensus_support_score": float(support),
+                "consensus_support_fraction": float(frac),
+                "diversity_branch_count": len(local),
+                **signals,
+            }
+        return top, {
+            "hard_case_active": True,
+            "consensus_override": False,
+            "consensus_support_score": float(support),
+            "consensus_support_fraction": float(frac),
+            "diversity_branch_count": len(local),
+            **signals,
+        }
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        actions = expansions = verifications = 0
+        surviving_trace: list[int] = []
+        action_trace: list[dict[str, Any]] = []
+        branch_expansions: dict[str, int] = {}
+        branches: list[BranchState] = [self.generator.init_branch("hybrid_0")]
+
+        while actions < self.max_actions and branches:
+            next_branches: list[BranchState] = []
+            for branch in branches:
+                if actions >= self.max_actions:
+                    break
+                if branch.is_done or branch.is_pruned:
+                    next_branches.append(branch)
+                    continue
+                score_before = self.scorer.score_branch(branch)
+                branch_expand_count = branch_expansions.get(branch.branch_id, 0)
+
+                if branch_expand_count < self.min_expansions_before_prune or score_before >= self.high_threshold:
+                    result = self.generator.expand(branch, question, gold_answer)
+                    actions += 1
+                    expansions += 1
+                    branch_expansions[branch.branch_id] = branch_expand_count + 1
+                    next_branches.append(branch)
+                    action_trace.append(self._trace_row(branch, "expand", score_before, result.score_after, actions))
+                    if not branch.is_done and len(next_branches) < self.max_branches and actions < self.max_actions:
+                        child = self.generator.init_branch(f"hybrid_child_{actions}_{len(next_branches)}")
+                        child.score = 0.5 * child.score + 0.5 * branch.score
+                        next_branches.append(child)
+                        branch_expansions[child.branch_id] = 0
+                elif self.allow_verify and score_before >= self.low_threshold:
+                    result = self.generator.verify(branch, question)
+                    actions += 1
+                    verifications += 1
+                    next_branches.append(branch)
+                    action_trace.append(self._trace_row(branch, "verify", score_before, result.score_after, actions))
+                else:
+                    self.generator.prune(branch)
+                    action_trace.append(self._trace_row(branch, "prune", score_before, score_before, actions))
+
+            branches = [b for b in next_branches if not b.is_pruned][: self.max_branches]
+            surviving_trace.append(len(branches))
+            if all(b.is_done for b in branches):
+                break
+
+        selected, hybrid_meta = self._choose_hybrid(branches)
+        prediction = selected.predicted_answer if selected else None
+        exhausted = actions >= self.max_actions and not any(b.is_done for b in branches)
+        return MethodResult(
+            method=self.method_name,
+            prediction=prediction,
+            is_correct=self._answers_match(prediction, gold_answer),
+            actions_used=actions,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)),
+            budget_exhausted=exhausted,
+            metadata={
+                "method_family": "selective_sc_hybrid",
+                "action_trace": action_trace,
+                "near_tie_gap": self.near_tie_gap,
+                "low_completion_trigger": self.low_completion_trigger,
+                "disagreement_trigger": self.disagreement_trigger,
+                "diversity_top_k": self.diversity_top_k,
+                "min_consensus_support": self.min_consensus_support,
+                "final_selected_branch": selected.branch_id if selected else None,
+                **hybrid_meta,
+            },
+        )
+
+
+class GlobalDiversityAggregationController(BaseController):
+    """Global diversity/aggregation-aware branch allocator under fixed budget.
+
+    Core design:
+    - keep continuation-value scoring as the base signal (`self.scorer.score_branch`),
+    - add global diversity pressure during allocation to avoid repeatedly spending
+      budget on already-overrepresented answer groups,
+    - use answer-support aggregation as the main final decision, not a local fallback.
+    """
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        max_branches: int = 4,
+        min_branch_expansions: int = 1,
+        diversity_weight: float = 0.28,
+        duplicate_penalty: float = 0.12,
+        unknown_answer_bonus: float = 0.06,
+        answer_support_weight: float = 0.45,
+        value_weight: float = 0.55,
+        commit_support_threshold: float = 0.68,
+        commit_delay_min_actions: int = 3,
+        method_name: str = "broad_diversity_aggregation_v1",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.max_branches = max(2, int(max_branches))
+        self.min_branch_expansions = max(0, int(min_branch_expansions))
+        self.diversity_weight = float(diversity_weight)
+        self.duplicate_penalty = float(duplicate_penalty)
+        self.unknown_answer_bonus = float(unknown_answer_bonus)
+        self.answer_support_weight = float(answer_support_weight)
+        self.value_weight = float(value_weight)
+        self.commit_support_threshold = float(commit_support_threshold)
+        self.commit_delay_min_actions = max(0, int(commit_delay_min_actions))
+        self.method_name = method_name
+
+    @staticmethod
+    def _normalize_answer(pred: str | None) -> str | None:
+        if pred is None:
+            return None
+        s = str(pred).strip()
+        if not s:
+            return None
+        nums = re.findall(r"[-+]?\d+(?:\.\d+)?", s.replace(",", ""))
+        return nums[-1] if nums else s.lower()
+
+    @staticmethod
+    def _support_entropy(counts: dict[str, int]) -> float:
+        total = sum(counts.values())
+        if total <= 0:
+            return 0.0
+        ent = 0.0
+        for c in counts.values():
+            p = c / total
+            if p > 0:
+                ent -= p * math.log(max(p, 1e-9))
+        return float(ent)
+
+    def _branch_priority(
+        self,
+        branch: BranchState,
+        *,
+        answer_support_counts: dict[str, int],
+        active_group_counts: dict[str, int],
+    ) -> tuple[float, dict[str, float | str | None]]:
+        continuation = float(self.scorer.score_branch(branch))
+        group = self._normalize_answer(branch.predicted_answer)
+        support_count = answer_support_counts.get(group or "__unknown__", 0)
+        active_dups = max(0, active_group_counts.get(group or "__unknown__", 1) - 1)
+        diversity_bonus = self.diversity_weight / (1.0 + float(support_count))
+        if group is None:
+            diversity_bonus += self.unknown_answer_bonus
+        duplicate_cost = self.duplicate_penalty * float(active_dups)
+        priority = continuation + diversity_bonus - duplicate_cost
+        return priority, {
+            "continuation_value": continuation,
+            "diversity_bonus": diversity_bonus,
+            "duplicate_cost": duplicate_cost,
+            "group_key": group,
+        }
+
+    def _final_prediction_from_groups(self, branches: list[BranchState]) -> tuple[str | None, dict[str, Any]]:
+        done = [b for b in branches if b.predicted_answer is not None]
+        if not done:
+            best = self.scorer.pick_best(branches)
+            return (best.predicted_answer if best else None), {
+                "selected_group": None,
+                "group_support_fraction": 0.0,
+                "aggregation_used": False,
+            }
+
+        groups: dict[str, list[BranchState]] = {}
+        for b in done:
+            key = self._normalize_answer(b.predicted_answer)
+            if key is None:
+                continue
+            groups.setdefault(key, []).append(b)
+        if not groups:
+            best = self.scorer.pick_best(done)
+            return (best.predicted_answer if best else None), {
+                "selected_group": None,
+                "group_support_fraction": 0.0,
+                "aggregation_used": False,
+            }
+
+        total = sum(len(v) for v in groups.values())
+        best_group_key = None
+        best_group_score = -10.0
+        best_group_support = 0.0
+        for gk, members in groups.items():
+            support_fraction = len(members) / max(1, total)
+            mean_value = sum(float(self.scorer.score_branch(m)) for m in members) / len(members)
+            group_score = self.answer_support_weight * support_fraction + self.value_weight * mean_value
+            if group_score > best_group_score:
+                best_group_score = group_score
+                best_group_key = gk
+                best_group_support = support_fraction
+
+        members = groups[best_group_key] if best_group_key is not None else done
+        best_member = max(members, key=self.scorer.score_branch)
+        return best_member.predicted_answer, {
+            "selected_group": best_group_key,
+            "group_support_fraction": float(best_group_support),
+            "group_score": float(best_group_score),
+            "aggregation_used": True,
+            "num_groups": len(groups),
+        }
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        actions = expansions = verifications = 0
+        surviving_trace: list[int] = []
+        action_trace: list[dict[str, Any]] = []
+        branch_expansions: dict[str, int] = {}
+        branches: list[BranchState] = [self.generator.init_branch("div_0"), self.generator.init_branch("div_1")]
+        answer_support_counts: dict[str, int] = {}
+        expand_by_group: dict[str, int] = {}
+        forced_explore_steps = 0
+
+        while actions < self.max_actions and branches:
+            active = [b for b in branches if not b.is_pruned]
+            if not active:
+                break
+
+            active_group_counts: dict[str, int] = {}
+            for b in active:
+                g = self._normalize_answer(b.predicted_answer) or "__unknown__"
+                active_group_counts[g] = active_group_counts.get(g, 0) + 1
+
+            scored: list[tuple[BranchState, float, dict[str, float | str | None]]] = []
+            for b in active:
+                priority, meta = self._branch_priority(
+                    b,
+                    answer_support_counts=answer_support_counts,
+                    active_group_counts=active_group_counts,
+                )
+                scored.append((b, priority, meta))
+            scored.sort(key=lambda x: x[1], reverse=True)
+            branch, priority, pri_meta = scored[0]
+
+            group_key = str(pri_meta.get("group_key") or "__unknown__")
+            expand_by_group[group_key] = expand_by_group.get(group_key, 0) + 1
+            b_expanded = branch_expansions.get(branch.branch_id, 0)
+
+            # Global commit delay: avoid stopping early when support is not concentrated.
+            top_support = 0.0
+            support_total = sum(answer_support_counts.values())
+            if support_total > 0:
+                top_support = max(answer_support_counts.values()) / support_total
+            force_explore = bool(actions < self.commit_delay_min_actions or top_support < self.commit_support_threshold)
+            if force_explore:
+                forced_explore_steps += 1
+
+            if (b_expanded < self.min_branch_expansions) or force_explore or (priority >= float(self.scorer.score_branch(branch))):
+                result = self.generator.expand(branch, question, gold_answer)
+                actions += 1
+                expansions += 1
+                branch_expansions[branch.branch_id] = b_expanded + 1
+                action_trace.append(
+                    {
+                        "action": "expand",
+                        "branch_id": branch.branch_id,
+                        "priority": round(priority, 4),
+                        "continuation_value": round(float(pri_meta["continuation_value"]), 4),
+                        "diversity_bonus": round(float(pri_meta["diversity_bonus"]), 4),
+                        "duplicate_cost": round(float(pri_meta["duplicate_cost"]), 4),
+                        "group_key": pri_meta["group_key"],
+                        "force_explore": bool(force_explore),
+                        "top_support_before_action": round(float(top_support), 4),
+                    }
+                )
+                if branch.is_done:
+                    done_key = self._normalize_answer(branch.predicted_answer) or "__unknown__"
+                    answer_support_counts[done_key] = answer_support_counts.get(done_key, 0) + 1
+                elif len(branches) < self.max_branches and actions < self.max_actions:
+                    child = self.generator.init_branch(f"div_child_{actions}_{len(branches)}")
+                    child.score = 0.5 * child.score + 0.5 * branch.score
+                    branches.append(child)
+                    branch_expansions[child.branch_id] = 0
+            else:
+                result = self.generator.verify(branch, question)
+                actions += 1
+                verifications += 1
+                action_trace.append(
+                    {
+                        "action": "verify",
+                        "branch_id": branch.branch_id,
+                        "priority": round(priority, 4),
+                        "score_after": round(float(result.score_after), 4),
+                        "force_explore": bool(force_explore),
+                        "top_support_before_action": round(float(top_support), 4),
+                    }
+                )
+
+            branches = [b for b in branches if not b.is_pruned]
+            if len(branches) > self.max_branches:
+                ranked = sorted(branches, key=self.scorer.score_branch, reverse=True)
+                keep = {b.branch_id for b in ranked[: self.max_branches]}
+                for b in branches:
+                    if b.branch_id not in keep:
+                        self.generator.prune(b)
+                branches = [b for b in branches if not b.is_pruned]
+            surviving_trace.append(len(branches))
+            if all(b.is_done for b in branches):
+                break
+
+        prediction, group_meta = self._final_prediction_from_groups(branches)
+        exhausted = actions >= self.max_actions and not any(b.is_done for b in branches)
+        answer_entropy = self._support_entropy(answer_support_counts)
+        expand_actions = [a for a in action_trace if a.get("action") == "expand"]
+        dup_positive = [a for a in expand_actions if float(a.get("duplicate_cost", 0.0)) > 0.0]
+        return MethodResult(
+            method=self.method_name,
+            prediction=prediction,
+            is_correct=self._answers_match(prediction, gold_answer),
+            actions_used=actions,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)),
+            budget_exhausted=exhausted,
+            metadata={
+                "method_family": "global_diversity_aggregation",
+                "action_trace": action_trace,
+                "answer_support_counts": answer_support_counts,
+                "answer_support_entropy": answer_entropy,
+                "expands_by_group": expand_by_group,
+                "unique_answer_groups_seen": len(answer_support_counts),
+                "forced_explore_steps": int(forced_explore_steps),
+                "forced_explore_rate": float(forced_explore_steps / max(1, actions)),
+                "duplicate_penalty_applied_rate": float(len(dup_positive) / max(1, len(expand_actions))),
+                "mean_diversity_bonus_on_expand": float(
+                    sum(float(a.get("diversity_bonus", 0.0)) for a in expand_actions) / max(1, len(expand_actions))
+                ),
+                "final_prediction": prediction,
+                **group_meta,
+            },
+        )
 
 
 class VerifierGuidedSearchController(BaseController):
