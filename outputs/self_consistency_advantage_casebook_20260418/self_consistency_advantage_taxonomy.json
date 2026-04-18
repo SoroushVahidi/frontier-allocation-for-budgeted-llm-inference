@@ -1,0 +1,28 @@
+{
+  "self_consistency_advantages": [
+    {
+      "tag": "multi_path_answer_aggregation",
+      "description": "Best-of-N voting/selection recovers correct answers when single adaptive path commits to a wrong branch.",
+      "count_hint": 12
+    },
+    {
+      "tag": "reduced_premature_commitment",
+      "description": "Self-consistency often avoids one-branch lock-in errors under fixed budget.",
+      "count_hint": 12
+    }
+  ],
+  "our_method_failure_subtypes": [
+    {
+      "tag": "premature_commit_or_wrong_path",
+      "count": 11
+    },
+    {
+      "tag": "count_conversion_needed",
+      "count": 1
+    }
+  ],
+  "overlap_with_known_repo_patterns": {
+    "intermediate_result_trap_overlap": 1,
+    "notes": "Overlap is inferred from question semantics and wrong final answers; branch-level semantic traces for self-consistency are unavailable in this pass."
+  }
+}

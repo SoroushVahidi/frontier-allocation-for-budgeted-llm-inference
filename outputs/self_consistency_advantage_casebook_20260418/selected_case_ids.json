@@ -1,0 +1,52 @@
+{
+  "rows": [
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_1"
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_1"
+    },
+    {
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_1"
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_1"
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_2"
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_2"
+    },
+    {
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_2"
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_2"
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_11"
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_11"
+    },
+    {
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_11"
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_11"
+    }
+  ]
+}

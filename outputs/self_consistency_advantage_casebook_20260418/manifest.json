@@ -1,0 +1,19 @@
+{
+  "generated_utc": "2026-04-18T04:04:58.704560+00:00",
+  "output_dir": "outputs/self_consistency_advantage_casebook_20260418",
+  "doc_output": "docs/SELF_CONSISTENCY_ADVANTAGE_CASEBOOK_2026_04_18.md",
+  "source_inputs": [
+    "docs/FULL_METHOD_COMPARISON_STATUS_2026_04_18.md",
+    "outputs/full_method_comparison_20260418/*",
+    "scripts/run_light_all_methods_comparison.py",
+    "experiments/frontier_matrix_core.py",
+    "experiments/controllers.py"
+  ],
+  "compared_methods": {
+    "baseline": "self_consistency_3",
+    "our_method_primary": "adaptive_min_expand_1",
+    "our_method_secondary": "adaptive_min_expand_2",
+    "additional_context_method_from_repo": "multistep_k3_current (aggregate-only in strict-validation artifacts; not in per-example light controller outputs)",
+    "additional_context_method_from_repo_2": "best_bounded_learned_branch_score_current (aggregate-only strict-validation variant)"
+  }
+}
