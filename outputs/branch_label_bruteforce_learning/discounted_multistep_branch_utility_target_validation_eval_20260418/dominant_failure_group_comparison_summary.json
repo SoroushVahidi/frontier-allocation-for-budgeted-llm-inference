@@ -1,0 +1,124 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "mode": "discounted_gamma_1_00",
+      "dominant_failures_current": 1,
+      "dominant_failures_discounted": 1,
+      "delta_dominant_failures": 0,
+      "failure_states_current": 1,
+      "failure_states_discounted": 1,
+      "delta_failure_states": 0
+    },
+    {
+      "seed": 11,
+      "mode": "discounted_gamma_0_80",
+      "dominant_failures_current": 1,
+      "dominant_failures_discounted": 1,
+      "delta_dominant_failures": 0,
+      "failure_states_current": 1,
+      "failure_states_discounted": 1,
+      "delta_failure_states": 0
+    },
+    {
+      "seed": 11,
+      "mode": "discounted_gamma_0_60",
+      "dominant_failures_current": 1,
+      "dominant_failures_discounted": 0,
+      "delta_dominant_failures": -1,
+      "failure_states_current": 1,
+      "failure_states_discounted": 0,
+      "delta_failure_states": -1
+    },
+    {
+      "seed": 29,
+      "mode": "discounted_gamma_1_00",
+      "dominant_failures_current": 1,
+      "dominant_failures_discounted": 1,
+      "delta_dominant_failures": 0,
+      "failure_states_current": 1,
+      "failure_states_discounted": 1,
+      "delta_failure_states": 0
+    },
+    {
+      "seed": 29,
+      "mode": "discounted_gamma_0_80",
+      "dominant_failures_current": 1,
+      "dominant_failures_discounted": 1,
+      "delta_dominant_failures": 0,
+      "failure_states_current": 1,
+      "failure_states_discounted": 1,
+      "delta_failure_states": 0
+    },
+    {
+      "seed": 29,
+      "mode": "discounted_gamma_0_60",
+      "dominant_failures_current": 1,
+      "dominant_failures_discounted": 1,
+      "delta_dominant_failures": 0,
+      "failure_states_current": 1,
+      "failure_states_discounted": 1,
+      "delta_failure_states": 0
+    },
+    {
+      "seed": 47,
+      "mode": "discounted_gamma_1_00",
+      "dominant_failures_current": 0,
+      "dominant_failures_discounted": 0,
+      "delta_dominant_failures": 0,
+      "failure_states_current": 0,
+      "failure_states_discounted": 0,
+      "delta_failure_states": 0
+    },
+    {
+      "seed": 47,
+      "mode": "discounted_gamma_0_80",
+      "dominant_failures_current": 0,
+      "dominant_failures_discounted": 0,
+      "delta_dominant_failures": 0,
+      "failure_states_current": 0,
+      "failure_states_discounted": 0,
+      "delta_failure_states": 0
+    },
+    {
+      "seed": 47,
+      "mode": "discounted_gamma_0_60",
+      "dominant_failures_current": 0,
+      "dominant_failures_discounted": 0,
+      "delta_dominant_failures": 0,
+      "failure_states_current": 0,
+      "failure_states_discounted": 0,
+      "delta_failure_states": 0
+    }
+  ],
+  "aggregate": {
+    "multistep_k3_current": {
+      "seeds": 3,
+      "states_mean": 2.6666666666666665,
+      "failure_states_mean": 0.6666666666666666,
+      "dominant_group_failures_mean": 0.6666666666666666,
+      "dominant_group_failure_rate_mean": 0.2222222222222222
+    },
+    "discounted_gamma_1_00": {
+      "seeds": 3,
+      "states_mean": 2.6666666666666665,
+      "failure_states_mean": 0.6666666666666666,
+      "dominant_group_failures_mean": 0.6666666666666666,
+      "dominant_group_failure_rate_mean": 0.2222222222222222
+    },
+    "discounted_gamma_0_80": {
+      "seeds": 3,
+      "states_mean": 2.6666666666666665,
+      "failure_states_mean": 0.6666666666666666,
+      "dominant_group_failures_mean": 0.6666666666666666,
+      "dominant_group_failure_rate_mean": 0.2222222222222222
+    },
+    "discounted_gamma_0_60": {
+      "seeds": 3,
+      "states_mean": 2.6666666666666665,
+      "failure_states_mean": 0.3333333333333333,
+      "dominant_group_failures_mean": 0.3333333333333333,
+      "dominant_group_failure_rate_mean": 0.1111111111111111
+    }
+  }
+}

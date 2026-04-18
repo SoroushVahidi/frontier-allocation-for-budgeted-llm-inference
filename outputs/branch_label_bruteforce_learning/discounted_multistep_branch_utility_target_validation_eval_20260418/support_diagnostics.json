@@ -1,0 +1,16 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "test_pairs": 7
+    },
+    {
+      "seed": 29,
+      "test_pairs": 12
+    },
+    {
+      "seed": 47,
+      "test_pairs": 4
+    }
+  ]
+}

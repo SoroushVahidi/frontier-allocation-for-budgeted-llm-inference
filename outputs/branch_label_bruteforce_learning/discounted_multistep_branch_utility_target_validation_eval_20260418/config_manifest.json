@@ -1,0 +1,21 @@
+{
+  "run_id": "discounted_multistep_branch_utility_target_validation_eval_20260418",
+  "targets_root": "outputs/branch_label_bruteforce_targets/discounted_multistep_branch_utility_target_validation_20260418",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "feature_set": "v3",
+  "near_tie_margin": 0.03,
+  "regime_to_mode": {
+    "all_pairs": "baseline_current_matched",
+    "multistep_branch_utility_target_k3": "multistep_k3_current",
+    "discounted_multistep_branch_utility_target_gamma100": "discounted_gamma_1_00",
+    "discounted_multistep_branch_utility_target_gamma080": "discounted_gamma_0_80",
+    "discounted_multistep_branch_utility_target_gamma060": "discounted_gamma_0_60"
+  },
+  "multistep_target_field": "multistep_branch_utility_target",
+  "strict_slice_name": "near_tie_and_adjacent_rank",
+  "command": "scripts/run_multistep_branch_utility_target_experiment.py --targets-root outputs/branch_label_bruteforce_targets/discounted_multistep_branch_utility_target_validation_20260418 --run-id discounted_multistep_branch_utility_target_validation_eval_20260418 --output-root outputs/branch_label_bruteforce_learning --seeds 11,29,47 --feature-set v3 --near-tie-margin 0.03"
+}

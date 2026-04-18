@@ -145,6 +145,74 @@ def _multistep_utility_target_for_candidate(
     }
 
 
+def _discounted_multistep_utility_target_for_candidate(
+    candidate_row: dict[str, Any],
+    *,
+    state_id: str,
+    branch_id: str,
+    branch_index_map: dict[tuple[str, str], int],
+    utility_lambda: float,
+    discount_gamma: float,
+    max_horizon: int = 3,
+) -> dict[str, float]:
+    gamma = float(discount_gamma)
+    horizon = int(max(1, max_horizon))
+    weighted_sum = 0.0
+    weight_sum = 0.0
+    horizon_values: dict[int, float] = {}
+    horizon_weights: dict[int, float] = {}
+    base_diag: dict[str, float] = {}
+    for h in range(1, horizon + 1):
+        diag = _multistep_utility_target_for_candidate(
+            candidate_row,
+            state_id=state_id,
+            branch_id=branch_id,
+            branch_index_map=branch_index_map,
+            horizon_k=h,
+            utility_lambda=utility_lambda,
+        )
+        val_h = float(diag["multistep_branch_utility_target"])
+        wt_h = float(gamma ** float(h - 1))
+        weighted_sum += wt_h * val_h
+        weight_sum += wt_h
+        horizon_values[h] = val_h
+        horizon_weights[h] = wt_h
+        if h == horizon:
+            base_diag = dict(diag)
+    denom = max(weight_sum, 1e-12)
+    target_val = float(weighted_sum / denom)
+    one_step = float(candidate_row.get("estimated_value_if_allocate_next", 0.0))
+    out = {
+        **base_diag,
+        "multistep_target_source": "discounted_multistep_branch_utility_target_v1",
+        "multistep_target_horizon_k": float(horizon),
+        "multistep_target_discount_gamma": float(gamma),
+        "multistep_target_discount_weights_sum": float(weight_sum),
+        "multistep_target_discount_weight_h1": float(horizon_weights.get(1, 0.0)),
+        "multistep_target_discount_weight_h2": float(horizon_weights.get(2, 0.0)),
+        "multistep_target_discount_weight_h3": float(horizon_weights.get(3, 0.0)),
+        "multistep_target_component_h1": float(horizon_values.get(1, 0.0)),
+        "multistep_target_component_h2": float(horizon_values.get(2, 0.0)),
+        "multistep_target_component_h3": float(horizon_values.get(3, 0.0)),
+        "multistep_branch_utility_target": float(target_val),
+        "multistep_branch_utility_delta_vs_onestep": float(target_val - one_step),
+    }
+    return out
+
+
+def _parse_discounted_gamma_from_strategy(strategy: str) -> float | None:
+    prefix = "discounted_multistep_branch_utility_target_gamma"
+    if not str(strategy).startswith(prefix):
+        return None
+    encoded = str(strategy)[len(prefix) :]
+    if not encoded:
+        raise ValueError(f"Missing gamma suffix in discounted strategy: {strategy}")
+    gamma = float(int(encoded)) / 100.0
+    if gamma <= 0.0:
+        raise ValueError(f"Gamma must be > 0 for discounted strategy: {strategy}")
+    return gamma
+
+
 def _augment_pair_row(
     row: dict[str, Any],
     *,
@@ -841,6 +909,8 @@ def main() -> None:
                         keep = True
                     elif strat in {"multistep_branch_utility_target_k1", "multistep_branch_utility_target_k2", "multistep_branch_utility_target_k3"}:
                         keep = True
+                    elif _parse_discounted_gamma_from_strategy(strat) is not None:
+                        keep = True
                     else:
                         raise ValueError(f"Unknown strategy: {strat}")
 
@@ -963,6 +1033,48 @@ def main() -> None:
                             annotated["pair_multistep_utility_j"] = float(uj["multistep_branch_utility_target"])
                             annotated["pair_multistep_utility_gap"] = float(abs(multistep_margin))
                             annotated["pair_multistep_target_source"] = "best_followup_allocation_self_mass_proxy_v1"
+                        gamma = _parse_discounted_gamma_from_strategy(strat)
+                        if gamma is not None:
+                            ci = cand_map[(sid, str(annotated["branch_i"]))]
+                            cj = cand_map[(sid, str(annotated["branch_j"]))]
+                            ui = _discounted_multistep_utility_target_for_candidate(
+                                ci,
+                                state_id=sid,
+                                branch_id=str(annotated["branch_i"]),
+                                branch_index_map=state_branch_index_map,
+                                utility_lambda=float(args.multistep_utility_lambda),
+                                discount_gamma=float(gamma),
+                                max_horizon=3,
+                            )
+                            uj = _discounted_multistep_utility_target_for_candidate(
+                                cj,
+                                state_id=sid,
+                                branch_id=str(annotated["branch_j"]),
+                                branch_index_map=state_branch_index_map,
+                                utility_lambda=float(args.multistep_utility_lambda),
+                                discount_gamma=float(gamma),
+                                max_horizon=3,
+                            )
+                            discounted_margin = float(ui["multistep_branch_utility_target"] - uj["multistep_branch_utility_target"])
+                            annotated["label"] = 1 if discounted_margin >= 0.0 else 0
+                            annotated["preference"] = int(annotated["label"])
+                            annotated["margin"] = float(discounted_margin)
+                            annotated["margin_abs"] = abs(float(discounted_margin))
+                            denom = max(
+                                abs(float(ui["multistep_branch_utility_target"])),
+                                abs(float(uj["multistep_branch_utility_target"])),
+                                1e-6,
+                            )
+                            annotated["relative_margin"] = abs(float(discounted_margin)) / float(denom)
+                            annotated["near_tie_flag"] = bool(abs(float(discounted_margin)) <= float(args.near_tie_margin))
+                            annotated["label_source"] = "discounted_multistep_branch_utility_target"
+                            annotated["multistep_target_horizon_k"] = float(ui.get("multistep_target_horizon_k", 3.0))
+                            annotated["multistep_target_discount_gamma"] = float(gamma)
+                            annotated["multistep_target_utility_lambda"] = float(args.multistep_utility_lambda)
+                            annotated["pair_multistep_utility_i"] = float(ui["multistep_branch_utility_target"])
+                            annotated["pair_multistep_utility_j"] = float(uj["multistep_branch_utility_target"])
+                            annotated["pair_multistep_utility_gap"] = float(abs(discounted_margin))
+                            annotated["pair_multistep_target_source"] = "discounted_multistep_branch_utility_target_v1"
                         kept.append(annotated)
 
         if strat in {"opportunity_intensity_weighted", "opportunity_intensity_weighted_no_outside_norm"}:
@@ -986,6 +1098,22 @@ def main() -> None:
                         branch_index_map=state_branch_index_map,
                         horizon_k=horizon_k,
                         utility_lambda=float(args.multistep_utility_lambda),
+                    )
+                )
+        gamma = _parse_discounted_gamma_from_strategy(strat)
+        if gamma is not None:
+            for rc in regime_candidates:
+                sid = str(rc.get("state_id", ""))
+                bid = str(rc.get("branch_id", ""))
+                rc.update(
+                    _discounted_multistep_utility_target_for_candidate(
+                        rc,
+                        state_id=sid,
+                        branch_id=bid,
+                        branch_index_map=state_branch_index_map,
+                        utility_lambda=float(args.multistep_utility_lambda),
+                        discount_gamma=float(gamma),
+                        max_horizon=3,
                     )
                 )
         out_dir = out_root / f"regime_{strat}"
