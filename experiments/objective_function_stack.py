@@ -34,6 +34,7 @@ class BranchSurrogates:
     process_quality: float
     target_completion: float
     semantic_incompleteness: float = 0.0
+    answer_support: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -61,6 +62,14 @@ def compute_target_completion(*, completion_score: float, answer_evidence_score:
 def compute_commit_quality(*, process_quality: float, target_completion: float) -> float:
     """Incumbent quality proxy for commit-now comparison."""
     return clip01(0.40 * float(process_quality) + 0.60 * float(target_completion))
+
+
+def compute_answer_support(*, support_fraction: float, support_weighted_value: float) -> float:
+    """Bounded answer-support signal from local multi-path aggregation.
+
+    Intended for hard-case local modifiers only (not a global replacement signal).
+    """
+    return clip01(0.70 * float(support_fraction) + 0.30 * float(support_weighted_value))
 
 
 def metalevel_expand_commit_decision(
