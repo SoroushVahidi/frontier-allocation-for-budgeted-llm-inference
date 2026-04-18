@@ -40,6 +40,9 @@ If you want the shortest current synthesis, read:
 - [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
 - [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+- [`docs/NEURIPS_CONTRIBUTION_POSITIONING_2026_04_18.md`](docs/NEURIPS_CONTRIBUTION_POSITIONING_2026_04_18.md)
+- [`docs/CLAIM_MAP_2026_04_18.md`](docs/CLAIM_MAP_2026_04_18.md)
+- [`docs/ONE_PAGE_PAPER_STORY_2026_04_18.md`](docs/ONE_PAGE_PAPER_STORY_2026_04_18.md)
 - [`docs/REPOSITORY_CLEANUP_STATUS_2026_04_18.md`](docs/REPOSITORY_CLEANUP_STATUS_2026_04_18.md)
 
 Read this note early:
@@ -211,5 +214,9 @@ For interpretation rules and grouped navigation, see:
 The strongest current paper story is:
 
 **fixed-budget cross-controller frontier allocation for LLM reasoning, where the main challenge is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget, and where fresh bounded evidence now suggests the key unresolved issue is the target/oracle definition for hard disagreement states rather than another nearby local tweak.**
+
+Current manuscript positioning is intentionally narrow:
+
+**strong in hard ambiguity-sensitive near-tie branch-allocation regimes with continuation-centered allocation plus bounded completion-aware correction in disagreement slices; not yet a broad universal best-overall claim.**
 
 A local stop-vs-act gate may still be useful as an implementation simplification, but it should not be treated as the full conceptual center of the project.
