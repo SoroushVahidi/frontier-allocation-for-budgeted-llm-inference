@@ -1,0 +1,301 @@
+{
+  "cases": [
+    {
+      "case_id": "seed11::exopenai_gsm8k_0_ep1_d3",
+      "seed": 11,
+      "state_id": "exopenai_gsm8k_0_ep1_d3",
+      "dataset_name": "openai/gsm8k",
+      "example_id": "openai_gsm8k_0",
+      "remaining_budget": 5,
+      "branch_count": 2,
+      "method_choice_k3": "b0",
+      "method_choice_k1": "b0",
+      "oracle_best_branch": "b2",
+      "method_matches_oracle": false,
+      "k1_vs_k3_disagree": false,
+      "oracle_gap_if_choose_k3": 0.18086456677077517,
+      "k3_pred_margin_top2": 0.05811995918308943,
+      "oracle_margin_top2": 0.18086456677077517,
+      "is_near_tie_state": false,
+      "is_adjacent_rank_state": true,
+      "is_strict_slice_state": false,
+      "method_score_for_chosen_k3": 0.751480979883338,
+      "oracle_value_for_chosen_k3": 0.40692095144368073,
+      "oracle_value_for_optimal": 0.5877855182144559,
+      "multistep_target_for_chosen_k3": 0.4781321179463249,
+      "multistep_target_for_oracle_best": 0.7935104495895156,
+      "per_branch": [
+        {
+          "branch_id": "b0",
+          "method_score_k3": 0.751480979883338,
+          "method_score_k1": 0.6160948523319941,
+          "oracle_one_step_value": 0.40692095144368073,
+          "multistep_target_value": 0.4781321179463249,
+          "multistep_delta_vs_onestep": 0.07121116650264414,
+          "allocation_value_std": 0.03431660567889359,
+          "branch_vs_outside_gap": -0.18086456677077517,
+          "outside_option_value": 0.5877855182144559,
+          "best_followup_allocation": [
+            1,
+            3
+          ],
+          "multistep_target_self_followup_ratio": 0.5
+        },
+        {
+          "branch_id": "b2",
+          "method_score_k3": 0.6933610207002485,
+          "method_score_k1": 0.5524212142942715,
+          "oracle_one_step_value": 0.5877855182144559,
+          "multistep_target_value": 0.7935104495895156,
+          "multistep_delta_vs_onestep": 0.20572493137505965,
+          "allocation_value_std": 0.13448694868208783,
+          "branch_vs_outside_gap": 0.18086456677077517,
+          "outside_option_value": 0.40692095144368073,
+          "best_followup_allocation": [
+            2,
+            2
+          ],
+          "multistep_target_self_followup_ratio": 1.0
+        }
+      ],
+      "selection_bucket": "failure"
+    },
+    {
+      "case_id": "seed11::exopenai_gsm8k_3_ep7_d3",
+      "seed": 11,
+      "state_id": "exopenai_gsm8k_3_ep7_d3",
+      "dataset_name": "openai/gsm8k",
+      "example_id": "openai_gsm8k_3",
+      "remaining_budget": 5,
+      "branch_count": 3,
+      "method_choice_k3": "b3",
+      "method_choice_k1": "b3",
+      "oracle_best_branch": "b2",
+      "method_matches_oracle": false,
+      "k1_vs_k3_disagree": false,
+      "oracle_gap_if_choose_k3": 0.11354667095340543,
+      "k3_pred_margin_top2": 0.02224220360343332,
+      "oracle_margin_top2": 0.10556849851210437,
+      "is_near_tie_state": true,
+      "is_adjacent_rank_state": true,
+      "is_strict_slice_state": true,
+      "method_score_for_chosen_k3": 0.9385679978476783,
+      "oracle_value_for_chosen_k3": 0.5990286511283686,
+      "oracle_value_for_optimal": 0.712575322081774,
+      "multistep_target_for_chosen_k3": 0.8086886790232977,
+      "multistep_target_for_oracle_best": 0.712575322081774,
+      "per_branch": [
+        {
+          "branch_id": "b0",
+          "method_score_k3": 0.916325794244245,
+          "method_score_k1": 0.8224636904377421,
+          "oracle_one_step_value": 0.6070068235696696,
+          "multistep_target_value": 0.819459211819054,
+          "multistep_delta_vs_onestep": 0.2124523882493844,
+          "allocation_value_std": 0.09312584255404131,
+          "branch_vs_outside_gap": -0.10556849851210437,
+          "outside_option_value": 0.712575322081774,
+          "best_followup_allocation": [
+            2,
+            0,
+            2
+          ],
+          "multistep_target_self_followup_ratio": 1.0
+        },
+        {
+          "branch_id": "b2",
+          "method_score_k3": 0.8946374996542779,
+          "method_score_k1": 0.7835429993936653,
+          "oracle_one_step_value": 0.712575322081774,
+          "multistep_target_value": 0.712575322081774,
+          "multistep_delta_vs_onestep": 0.0,
+          "allocation_value_std": 0.10714553720090157,
+          "branch_vs_outside_gap": 0.10556849851210437,
+          "outside_option_value": 0.6070068235696696,
+          "best_followup_allocation": [
+            2,
+            0,
+            2
+          ],
+          "multistep_target_self_followup_ratio": 0.0
+        },
+        {
+          "branch_id": "b3",
+          "method_score_k3": 0.9385679978476783,
+          "method_score_k1": 0.8437209276011142,
+          "oracle_one_step_value": 0.5990286511283686,
+          "multistep_target_value": 0.8086886790232977,
+          "multistep_delta_vs_onestep": 0.2096600278949291,
+          "allocation_value_std": 0.09012276148213824,
+          "branch_vs_outside_gap": -0.11354667095340543,
+          "outside_option_value": 0.712575322081774,
+          "best_followup_allocation": [
+            0,
+            2,
+            2
+          ],
+          "multistep_target_self_followup_ratio": 1.0
+        }
+      ],
+      "selection_bucket": "failure"
+    },
+    {
+      "case_id": "seed11::exopenai_gsm8k_7_ep14_d5",
+      "seed": 11,
+      "state_id": "exopenai_gsm8k_7_ep14_d5",
+      "dataset_name": "openai/gsm8k",
+      "example_id": "openai_gsm8k_7",
+      "remaining_budget": 3,
+      "branch_count": 3,
+      "method_choice_k3": "b0",
+      "method_choice_k1": "b0",
+      "oracle_best_branch": "b2",
+      "method_matches_oracle": false,
+      "k1_vs_k3_disagree": false,
+      "oracle_gap_if_choose_k3": 0.024695791195966765,
+      "k3_pred_margin_top2": 0.1552464740489894,
+      "oracle_margin_top2": 0.024695791195966765,
+      "is_near_tie_state": true,
+      "is_adjacent_rank_state": true,
+      "is_strict_slice_state": true,
+      "method_score_for_chosen_k3": 0.9037968273226924,
+      "oracle_value_for_chosen_k3": 0.7232123670453534,
+      "oracle_value_for_optimal": 0.7479081582413202,
+      "multistep_target_for_chosen_k3": 0.7232123670453534,
+      "multistep_target_for_oracle_best": 0.7479081582413202,
+      "per_branch": [
+        {
+          "branch_id": "b0",
+          "method_score_k3": 0.9037968273226924,
+          "method_score_k1": 0.7831106407638755,
+          "oracle_one_step_value": 0.7232123670453534,
+          "multistep_target_value": 0.7232123670453534,
+          "multistep_delta_vs_onestep": 0.0,
+          "allocation_value_std": 0.11444164144613152,
+          "branch_vs_outside_gap": -0.024695791195966765,
+          "outside_option_value": 0.7479081582413202,
+          "best_followup_allocation": [
+            0,
+            1,
+            1
+          ],
+          "multistep_target_self_followup_ratio": 0.0
+        },
+        {
+          "branch_id": "b1",
+          "method_score_k3": 0.6418172757918745,
+          "method_score_k1": 0.6781054236284789,
+          "oracle_one_step_value": 0.5376419158025239,
+          "multistep_target_value": 0.5376419158025239,
+          "multistep_delta_vs_onestep": 0.0,
+          "allocation_value_std": 0.08026249788138538,
+          "branch_vs_outside_gap": -0.21026624243879632,
+          "outside_option_value": 0.7479081582413202,
+          "best_followup_allocation": [
+            0,
+            0,
+            2
+          ],
+          "multistep_target_self_followup_ratio": 0.0
+        },
+        {
+          "branch_id": "b2",
+          "method_score_k3": 0.748550353273703,
+          "method_score_k1": 0.7249265446407965,
+          "oracle_one_step_value": 0.7479081582413202,
+          "multistep_target_value": 0.7479081582413202,
+          "multistep_delta_vs_onestep": 0.0,
+          "allocation_value_std": 0.09176045653557065,
+          "branch_vs_outside_gap": 0.024695791195966765,
+          "outside_option_value": 0.7232123670453534,
+          "best_followup_allocation": [
+            1,
+            1,
+            0
+          ],
+          "multistep_target_self_followup_ratio": 0.0
+        }
+      ],
+      "selection_bucket": "failure"
+    },
+    {
+      "case_id": "seed47::exopenai_gsm8k_1_ep2_d4",
+      "seed": 47,
+      "state_id": "exopenai_gsm8k_1_ep2_d4",
+      "dataset_name": "openai/gsm8k",
+      "example_id": "openai_gsm8k_1",
+      "remaining_budget": 4,
+      "branch_count": 3,
+      "method_choice_k3": "b1",
+      "method_choice_k1": "b1",
+      "oracle_best_branch": "b1",
+      "method_matches_oracle": true,
+      "k1_vs_k3_disagree": false,
+      "oracle_gap_if_choose_k3": 0.0,
+      "k3_pred_margin_top2": 0.011168210173010173,
+      "oracle_margin_top2": 0.09635245100864331,
+      "is_near_tie_state": true,
+      "is_adjacent_rank_state": true,
+      "is_strict_slice_state": true,
+      "method_score_for_chosen_k3": 1.1534657205631271,
+      "oracle_value_for_chosen_k3": 1.1998040519682498,
+      "oracle_value_for_optimal": 1.1998040519682498,
+      "multistep_target_for_chosen_k3": 1.1998040519682498,
+      "multistep_target_for_oracle_best": 1.1998040519682498,
+      "per_branch": [
+        {
+          "branch_id": "b1",
+          "method_score_k3": 1.1534657205631271,
+          "method_score_k1": 1.0256567264660879,
+          "oracle_one_step_value": 1.1998040519682498,
+          "multistep_target_value": 1.1998040519682498,
+          "multistep_delta_vs_onestep": 0.0,
+          "allocation_value_std": 0.103763508625233,
+          "branch_vs_outside_gap": 0.09635245100864331,
+          "outside_option_value": 1.1034516009596065,
+          "best_followup_allocation": [
+            0,
+            2,
+            1
+          ],
+          "multistep_target_self_followup_ratio": 0.0
+        },
+        {
+          "branch_id": "b2",
+          "method_score_k3": 1.142297510390117,
+          "method_score_k1": 1.0015080765947997,
+          "oracle_one_step_value": 1.1034516009596065,
+          "multistep_target_value": 1.1034516009596065,
+          "multistep_delta_vs_onestep": 0.0,
+          "allocation_value_std": 0.14307095023268698,
+          "branch_vs_outside_gap": -0.09635245100864331,
+          "outside_option_value": 1.1998040519682498,
+          "best_followup_allocation": [
+            2,
+            0,
+            1
+          ],
+          "multistep_target_self_followup_ratio": 0.0
+        },
+        {
+          "branch_id": "b3",
+          "method_score_k3": 1.1112825811516807,
+          "method_score_k1": 1.023808460742547,
+          "oracle_one_step_value": 1.0789315507655883,
+          "multistep_target_value": 1.0789315507655883,
+          "multistep_delta_vs_onestep": 0.0,
+          "allocation_value_std": 0.1932054169578773,
+          "branch_vs_outside_gap": -0.12087250120266146,
+          "outside_option_value": 1.1998040519682498,
+          "best_followup_allocation": [
+            1,
+            2,
+            0
+          ],
+          "multistep_target_self_followup_ratio": 0.0
+        }
+      ],
+      "selection_bucket": "boundary_control"
+    }
+  ]
+}
