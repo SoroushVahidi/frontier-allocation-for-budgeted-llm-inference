@@ -20,6 +20,7 @@ import random
 import statistics
 from typing import Any
 
+from experiments.branch_observability import build_branch_trace_record, write_branch_observability_bundle
 from experiments.branch_scorer_v3 import SimBranch, continuation_value, expand_branch, maybe_verify
 
 
@@ -54,6 +55,9 @@ class FrontierState:
     active_branches: list[dict[str, Any]]
     branch_metadata: dict[str, Any]
     trace_provenance: dict[str, Any]
+    dataset_name: str | None = None
+    example_id: str | None = None
+    ground_truth_answer: str | None = None
 
 
 def _clip01(x: float) -> float:
@@ -122,6 +126,13 @@ def _branch_to_snapshot(branch: SimBranch, parent_mean_score: float) -> dict[str
         "score_history": [float(x) for x in branch.score_history],
         "depth_history": [int(x) for x in branch.depth_history],
         "parent_relative_score": float(branch.score) - float(parent_mean_score),
+        "branch_text_raw": None,
+        "branch_reasoning_text_raw": None,
+        "branch_final_answer_text_raw": None,
+        "generation_metadata": {
+            "source": "synthetic_simulator",
+            "notes": "Synthetic branch snapshots do not contain free-text reasoning traces.",
+        },
     }
 
 
@@ -281,6 +292,9 @@ def _collect_frontier_states_from_trace_rows(rows: list[dict[str, Any]], cfg: Fr
     for (episode_id, decision_id), group in sorted(grouped.items()):
         first = group[0]
         remaining_budget = int(first.get("remaining_budget", max(0, cfg.decision_budget - decision_id)))
+        dataset_name = str(first.get("dataset_name", "")).strip() or None
+        example_id = str(first.get("example_id", "")).strip() or None
+        ground_truth_answer = str(first.get("answer", "")).strip() or None
 
         active_branches: list[dict[str, Any]] = []
         if isinstance(first.get("active_branches"), list):
@@ -300,6 +314,10 @@ def _collect_frontier_states_from_trace_rows(rows: list[dict[str, Any]], cfg: Fr
                         "score_history": list(b.get("score_history", [])),
                         "depth_history": list(b.get("depth_history", [])),
                         "parent_relative_score": float(b.get("parent_relative_score", 0.0)),
+                        "branch_text_raw": b.get("branch_text_raw"),
+                        "branch_reasoning_text_raw": b.get("branch_reasoning_text_raw"),
+                        "branch_final_answer_text_raw": b.get("branch_final_answer_text_raw"),
+                        "generation_metadata": dict(b.get("generation_metadata", {})) if isinstance(b.get("generation_metadata"), dict) else {},
                     }
                 )
         else:
@@ -319,6 +337,10 @@ def _collect_frontier_states_from_trace_rows(rows: list[dict[str, Any]], cfg: Fr
                         "score_history": list(row.get("score_history", [])),
                         "depth_history": list(row.get("depth_history", [])),
                         "parent_relative_score": float(row.get("parent_relative_score", 0.0)),
+                        "branch_text_raw": row.get("branch_text_raw"),
+                        "branch_reasoning_text_raw": row.get("branch_reasoning_text_raw"),
+                        "branch_final_answer_text_raw": row.get("branch_final_answer_text_raw"),
+                        "generation_metadata": dict(row.get("generation_metadata", {})) if isinstance(row.get("generation_metadata"), dict) else {},
                     }
                 )
 
@@ -347,7 +369,13 @@ def _collect_frontier_states_from_trace_rows(rows: list[dict[str, Any]], cfg: Fr
                 trace_provenance={
                     "source": "trace_jsonl",
                     "input_rows_in_group": len(group),
+                    "method_name": first.get("method_name"),
+                    "method_chosen_branch_id": first.get("method_chosen_branch_id"),
+                    "method_score_margin_top2": first.get("method_score_margin_top2"),
                 },
+                dataset_name=dataset_name,
+                example_id=example_id,
+                ground_truth_answer=ground_truth_answer,
             )
         )
 
@@ -591,6 +619,7 @@ def run_frontier_target_construction(
     trace_jsonl: Path | None = None,
 ) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
+    run_id = output_dir.name
 
     if trace_jsonl is None:
         states = _collect_frontier_states_from_simulator(cfg)
@@ -638,7 +667,7 @@ def run_frontier_target_construction(
     (output_dir / "config_echo.json").write_text(json.dumps(config_echo, indent=2), encoding="utf-8")
 
     manifest = {
-        "run_id": output_dir.name,
+        "run_id": run_id,
         "created_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "pipeline": "frontier_target_construction",
         "semantics": {
@@ -665,6 +694,47 @@ def run_frontier_target_construction(
         },
         "summary": summary,
     }
+
+    observability_records: list[dict[str, Any]] = []
+    for state in states:
+        for branch in state.active_branches:
+            observability_records.append(
+                build_branch_trace_record(
+                    dataset_name=state.dataset_name,
+                    example_id=state.example_id,
+                    state_id=state.state_id,
+                    branch=branch,
+                    state_provenance=state.trace_provenance,
+                    generation_metadata={
+                        **dict(branch.get("generation_metadata", {})),
+                        "frontier_target_split": state.split,
+                        "remaining_budget": state.remaining_budget,
+                    },
+                    ground_truth_answer=state.ground_truth_answer,
+                )
+            )
+    observability_out = write_branch_observability_bundle(
+        output_root=Path("outputs/branch_observability"),
+        run_id=run_id,
+        records=observability_records,
+        commands_assumptions_caveats=[
+            "# Commands / assumptions / caveats",
+            "",
+            "- Bundle generated from `experiments.frontier_target_construction.run_frontier_target_construction`.",
+            "- Branch free-text fields are copied from input trace rows when present.",
+            "- For synthetic simulator states, branch text/reasoning/final-answer fields remain null by design.",
+        ],
+        context_manifest={
+            "pipeline": "frontier_target_construction",
+            "source_trace": str(trace_jsonl) if trace_jsonl else None,
+            "trace_source_mode": trace_source,
+            "output_dir": str(output_dir),
+        },
+    )
+    manifest["outputs"]["branch_observability_bundle"] = observability_out["bundle_dir"]
+    manifest["outputs"]["branch_observability_manifest"] = observability_out["manifest_path"]
+    manifest["summary"]["branch_observability_recoverability"] = observability_out["recoverability_summary"]
+
     (output_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     return {
