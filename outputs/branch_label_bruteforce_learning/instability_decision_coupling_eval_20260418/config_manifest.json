@@ -1,0 +1,37 @@
+{
+  "run_id": "instability_decision_coupling_eval_20260418",
+  "targets_root": "outputs/branch_label_bruteforce_targets/rank_instability_target_20260418",
+  "output_dir": "outputs/branch_label_bruteforce_learning/instability_decision_coupling_eval_20260418",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "feature_set": "v3",
+  "near_tie_margin": 0.03,
+  "regimes": {
+    "baseline": "all_pairs",
+    "multistep": "multistep_branch_utility_target_k3",
+    "discounted": "discounted_multistep_branch_utility_target_gamma080",
+    "curve": "compute_response_curve_target_h123",
+    "rank_instability": "rank_instability_target_v1"
+  },
+  "policy_parameters": {
+    "current_instability_threshold": 0.01,
+    "current_margin_threshold": 0.12,
+    "defer_instability_threshold": 0.01,
+    "defer_margin_threshold": 0.2,
+    "penalty_weight": 1.0,
+    "penalty_state_score_weight": 1.0,
+    "penalty_outside_weak_floor": 0.12,
+    "penalty_defer_instability_threshold": 0.01,
+    "penalty_defer_adjusted_margin_threshold": 0.12,
+    "gate_instability_threshold": 0.01,
+    "gate_outside_gap_threshold": 0.08,
+    "gate_margin_threshold": 0.2,
+    "hard_instability_threshold": 0.01,
+    "hard_margin_threshold": 0.12,
+    "hard_outside_threshold": 0.08
+  },
+  "command": "scripts/run_instability_decision_coupling_experiment.py --targets-root outputs/branch_label_bruteforce_targets/rank_instability_target_20260418 --run-id instability_decision_coupling_eval_20260418 --output-root outputs/branch_label_bruteforce_learning --seeds 11,29,47 --feature-set v3 --near-tie-margin 0.03 --defer-instability-threshold 0.01 --defer-margin-threshold 0.2 --penalty-weight 1.0 --penalty-state-score-weight 1.0 --penalty-outside-weak-floor 0.12 --penalty-defer-instability-threshold 0.01 --penalty-defer-adjusted-margin-threshold 0.12 --gate-instability-threshold 0.01 --gate-outside-gap-threshold 0.08 --gate-margin-threshold 0.2 --hard-instability-threshold 0.01 --hard-margin-threshold 0.12 --hard-outside-threshold 0.08 --current-instability-threshold 0.01 --current-margin-threshold 0.12"
+}

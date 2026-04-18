@@ -1,0 +1,4102 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "policy": "baseline_all_pairs",
+      "metrics": {
+        "forced_accuracy": 0.3333333333333333,
+        "accepted_accuracy": 0.3333333333333333,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 3,
+        "accepted_states": 3,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 2,
+        "adjacent_rank_accepted_accuracy": 0.3333333333333333,
+        "adjacent_rank_accepted_n": 3,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 2,
+        "failure_states": 2,
+        "fragile_overconfident_wrong_accepts": 2,
+        "fragile_overconfident_wrong_rate_on_failures": 1.0,
+        "delayed_payoff_overvaluation_failures": 1,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "unknown_policy_default_accept": 3
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 11,
+            "policy": "baseline_all_pairs",
+            "state_id": "exopenai_gsm8k_3_ep7_d3",
+            "choice": "b3",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "unknown_policy_default_accept"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.20856642044593587,
+            "instability_prob_top2": 0.0,
+            "chosen_outside_gap": -0.11354667095340543,
+            "chosen_multistep_delta": 0.12373378695438442,
+            "oracle_outside_gap": 0.10556849851210437,
+            "oracle_multistep_delta": 0.0,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 0.9022814398135764,
+                "outside_gap": -0.11354667095340543,
+                "multistep_delta": 0.12373378695438442,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b0",
+                "raw_score": 0.6937150193676406,
+                "outside_gap": -0.10556849851210437,
+                "multistep_delta": 0.12538173732750546,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 11,
+            "policy": "baseline_all_pairs",
+            "state_id": "exopenai_gsm8k_7_ep14_d5",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "unknown_policy_default_accept"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.5350783947532773,
+            "instability_prob_top2": 0.0,
+            "chosen_outside_gap": -0.024695791195966765,
+            "chosen_multistep_delta": -1.1102230246251565e-16,
+            "oracle_outside_gap": 0.024695791195966765,
+            "oracle_multistep_delta": -1.1102230246251565e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.1341340546390788,
+                "outside_gap": -0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.5990556598858015,
+                "outside_gap": 0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "policy": "baseline_all_pairs",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b2",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "unknown_policy_default_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 1.4010957355897788,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.18086456677077517,
+          "chosen_multistep_delta": 0.12141143490987127,
+          "oracle_outside_gap": 0.18086456677077517,
+          "oracle_multistep_delta": 0.12141143490987127,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b2",
+              "raw_score": 1.3779400980761904,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": -0.023155637513588415,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "baseline_all_pairs",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "unknown_policy_default_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.20856642044593587,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": -0.11354667095340543,
+          "chosen_multistep_delta": 0.12373378695438442,
+          "oracle_outside_gap": 0.10556849851210437,
+          "oracle_multistep_delta": 0.0,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.9022814398135764,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": 0.6937150193676406,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "baseline_all_pairs",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "unknown_policy_default_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.5350783947532773,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": -0.024695791195966765,
+          "chosen_multistep_delta": -1.1102230246251565e-16,
+          "oracle_outside_gap": 0.024695791195966765,
+          "oracle_multistep_delta": -1.1102230246251565e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.1341340546390788,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.5990556598858015,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "policy": "multistep_k3_current",
+      "metrics": {
+        "forced_accuracy": 0.0,
+        "accepted_accuracy": 0.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 3,
+        "accepted_states": 3,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 2,
+        "adjacent_rank_accepted_accuracy": 0.0,
+        "adjacent_rank_accepted_n": 3,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 2,
+        "failure_states": 3,
+        "fragile_overconfident_wrong_accepts": 1,
+        "fragile_overconfident_wrong_rate_on_failures": 0.3333333333333333,
+        "delayed_payoff_overvaluation_failures": 1,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "always_accept_top_multistep": 3
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 11,
+            "policy": "multistep_k3_current",
+            "state_id": "exopenai_gsm8k_0_ep1_d3",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "always_accept_top_multistep"
+            ],
+            "is_near_tie": false,
+            "is_adjacent": true,
+            "score_gap_top2": 0.05811995918308943,
+            "instability_prob_top2": 0.0,
+            "chosen_outside_gap": -0.18086456677077517,
+            "chosen_multistep_delta": 0.06537418564177166,
+            "oracle_outside_gap": 0.18086456677077517,
+            "oracle_multistep_delta": 0.12141143490987127,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.751480979883338,
+                "outside_gap": -0.18086456677077517,
+                "multistep_delta": 0.06537418564177166,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.6933610207002485,
+                "outside_gap": 0.18086456677077517,
+                "multistep_delta": 0.12141143490987127,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              }
+            ]
+          },
+          {
+            "seed": 11,
+            "policy": "multistep_k3_current",
+            "state_id": "exopenai_gsm8k_3_ep7_d3",
+            "choice": "b3",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "always_accept_top_multistep"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.02224220360343332,
+            "instability_prob_top2": 0.0,
+            "chosen_outside_gap": -0.11354667095340543,
+            "chosen_multistep_delta": 0.12373378695438442,
+            "oracle_outside_gap": 0.10556849851210437,
+            "oracle_multistep_delta": 0.0,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 0.9385679978476783,
+                "outside_gap": -0.11354667095340543,
+                "multistep_delta": 0.12373378695438442,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b0",
+                "raw_score": 0.916325794244245,
+                "outside_gap": -0.10556849851210437,
+                "multistep_delta": 0.12538173732750546,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 11,
+            "policy": "multistep_k3_current",
+            "state_id": "exopenai_gsm8k_7_ep14_d5",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "always_accept_top_multistep"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.1552464740489894,
+            "instability_prob_top2": 0.0,
+            "chosen_outside_gap": -0.024695791195966765,
+            "chosen_multistep_delta": -1.1102230246251565e-16,
+            "oracle_outside_gap": 0.024695791195966765,
+            "oracle_multistep_delta": -1.1102230246251565e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.9037968273226924,
+                "outside_gap": -0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.748550353273703,
+                "outside_gap": 0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "policy": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "always_accept_top_multistep"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.05811995918308943,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": -0.18086456677077517,
+          "chosen_multistep_delta": 0.06537418564177166,
+          "oracle_outside_gap": 0.18086456677077517,
+          "oracle_multistep_delta": 0.12141143490987127,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.751480979883338,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6933610207002485,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "always_accept_top_multistep"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.02224220360343332,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": -0.11354667095340543,
+          "chosen_multistep_delta": 0.12373378695438442,
+          "oracle_outside_gap": 0.10556849851210437,
+          "oracle_multistep_delta": 0.0,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.9385679978476783,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": 0.916325794244245,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "always_accept_top_multistep"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1552464740489894,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": -0.024695791195966765,
+          "chosen_multistep_delta": -1.1102230246251565e-16,
+          "oracle_outside_gap": 0.024695791195966765,
+          "oracle_multistep_delta": -1.1102230246251565e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.9037968273226924,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.748550353273703,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "policy": "rank_instability_aware_current",
+      "metrics": {
+        "forced_accuracy": 0.3333333333333333,
+        "accepted_accuracy": 0.3333333333333333,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 3,
+        "accepted_states": 3,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 2,
+        "adjacent_rank_accepted_accuracy": 0.3333333333333333,
+        "adjacent_rank_accepted_n": 3,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 2,
+        "failure_states": 2,
+        "fragile_overconfident_wrong_accepts": 1,
+        "fragile_overconfident_wrong_rate_on_failures": 0.5,
+        "delayed_payoff_overvaluation_failures": 1,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "current_policy_accept": 3
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 11,
+            "policy": "rank_instability_aware_current",
+            "state_id": "exopenai_gsm8k_3_ep7_d3",
+            "choice": "b3",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "current_policy_accept"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.9262742090329025,
+            "instability_prob_top2": 0.8474603860250259,
+            "chosen_outside_gap": -0.11354667095340543,
+            "chosen_multistep_delta": 0.12373378695438442,
+            "oracle_outside_gap": 0.10556849851210437,
+            "oracle_multistep_delta": 0.0,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 1.3371488748645515,
+                "outside_gap": -0.11354667095340543,
+                "multistep_delta": 0.12373378695438442,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.410874665831649,
+                "outside_gap": 0.10556849851210437,
+                "multistep_delta": 0.0,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 11,
+            "policy": "rank_instability_aware_current",
+            "state_id": "exopenai_gsm8k_7_ep14_d5",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "current_policy_accept"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 1.0121238412144942,
+            "instability_prob_top2": 0.03671176899148143,
+            "chosen_outside_gap": -0.024695791195966765,
+            "chosen_multistep_delta": -1.1102230246251565e-16,
+            "oracle_outside_gap": 0.024695791195966765,
+            "oracle_multistep_delta": -1.1102230246251565e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.2822296841314924,
+                "outside_gap": -0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.2701058429169983,
+                "outside_gap": 0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "policy": "rank_instability_aware_current",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b2",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "current_policy_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 1.3195870598373367,
+          "instability_prob_top2": 0.009490654195259907,
+          "chosen_outside_gap": 0.18086456677077517,
+          "chosen_multistep_delta": 0.12141143490987127,
+          "oracle_outside_gap": 0.18086456677077517,
+          "oracle_multistep_delta": 0.12141143490987127,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b2",
+              "raw_score": 1.4934343025015062,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": 0.17384724266416962,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "rank_instability_aware_current",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "current_policy_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.9262742090329025,
+          "instability_prob_top2": 0.8474603860250259,
+          "chosen_outside_gap": -0.11354667095340543,
+          "chosen_multistep_delta": 0.12373378695438442,
+          "oracle_outside_gap": 0.10556849851210437,
+          "oracle_multistep_delta": 0.0,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 1.3371488748645515,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.410874665831649,
+              "outside_gap": 0.10556849851210437,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "rank_instability_aware_current",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "current_policy_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 1.0121238412144942,
+          "instability_prob_top2": 0.03671176899148143,
+          "chosen_outside_gap": -0.024695791195966765,
+          "chosen_multistep_delta": -1.1102230246251565e-16,
+          "oracle_outside_gap": 0.024695791195966765,
+          "oracle_multistep_delta": -1.1102230246251565e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.2822296841314924,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.2701058429169983,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "policy": "defer_on_instability",
+      "metrics": {
+        "forced_accuracy": 0.0,
+        "accepted_accuracy": 0.0,
+        "coverage": 0.3333333333333333,
+        "defer_rate": 0.6666666666666667,
+        "states": 3,
+        "accepted_states": 1,
+        "deferred_states": 2,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 0,
+        "adjacent_rank_accepted_accuracy": 0.0,
+        "adjacent_rank_accepted_n": 1,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 0,
+        "failure_states": 1,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "accept_top": 1,
+          "high_instability_small_margin": 2
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 11,
+            "policy": "defer_on_instability",
+            "state_id": "exopenai_gsm8k_0_ep1_d3",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "accept_top"
+            ],
+            "is_near_tie": false,
+            "is_adjacent": true,
+            "score_gap_top2": 0.05811995918308943,
+            "instability_prob_top2": 0.009490654195259907,
+            "chosen_outside_gap": -0.18086456677077517,
+            "chosen_multistep_delta": 0.06537418564177166,
+            "oracle_outside_gap": 0.18086456677077517,
+            "oracle_multistep_delta": 0.12141143490987127,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.751480979883338,
+                "outside_gap": -0.18086456677077517,
+                "multistep_delta": 0.06537418564177166,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.6933610207002485,
+                "outside_gap": 0.18086456677077517,
+                "multistep_delta": 0.12141143490987127,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ],
+        "deferred_examples": [
+          {
+            "seed": 11,
+            "policy": "defer_on_instability",
+            "state_id": "exopenai_gsm8k_3_ep7_d3",
+            "choice": "b3",
+            "oracle_best": "b2",
+            "defer": true,
+            "defer_reasons": [
+              "high_instability_small_margin"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.02224220360343332,
+            "instability_prob_top2": 0.055691148488704476,
+            "chosen_outside_gap": -0.11354667095340543,
+            "chosen_multistep_delta": 0.12373378695438442,
+            "oracle_outside_gap": 0.10556849851210437,
+            "oracle_multistep_delta": 0.0,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 0.9385679978476783,
+                "outside_gap": -0.11354667095340543,
+                "multistep_delta": 0.12373378695438442,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b0",
+                "raw_score": 0.916325794244245,
+                "outside_gap": -0.10556849851210437,
+                "multistep_delta": 0.12538173732750546,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 11,
+            "policy": "defer_on_instability",
+            "state_id": "exopenai_gsm8k_7_ep14_d5",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": true,
+            "defer_reasons": [
+              "high_instability_small_margin"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.1552464740489894,
+            "instability_prob_top2": 0.03671176899148143,
+            "chosen_outside_gap": -0.024695791195966765,
+            "chosen_multistep_delta": -1.1102230246251565e-16,
+            "oracle_outside_gap": 0.024695791195966765,
+            "oracle_multistep_delta": -1.1102230246251565e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.9037968273226924,
+                "outside_gap": -0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.748550353273703,
+                "outside_gap": 0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "policy": "defer_on_instability",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "accept_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.05811995918308943,
+          "instability_prob_top2": 0.009490654195259907,
+          "chosen_outside_gap": -0.18086456677077517,
+          "chosen_multistep_delta": 0.06537418564177166,
+          "oracle_outside_gap": 0.18086456677077517,
+          "oracle_multistep_delta": 0.12141143490987127,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.751480979883338,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6933610207002485,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "defer_on_instability",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "oracle_best": "b2",
+          "defer": true,
+          "defer_reasons": [
+            "high_instability_small_margin"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.02224220360343332,
+          "instability_prob_top2": 0.055691148488704476,
+          "chosen_outside_gap": -0.11354667095340543,
+          "chosen_multistep_delta": 0.12373378695438442,
+          "oracle_outside_gap": 0.10556849851210437,
+          "oracle_multistep_delta": 0.0,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.9385679978476783,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": 0.916325794244245,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "defer_on_instability",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": true,
+          "defer_reasons": [
+            "high_instability_small_margin"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1552464740489894,
+          "instability_prob_top2": 0.03671176899148143,
+          "chosen_outside_gap": -0.024695791195966765,
+          "chosen_multistep_delta": -1.1102230246251565e-16,
+          "oracle_outside_gap": 0.024695791195966765,
+          "oracle_multistep_delta": -1.1102230246251565e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.9037968273226924,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.748550353273703,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "policy": "instability_penalized_top_score",
+      "metrics": {
+        "forced_accuracy": 0.0,
+        "accepted_accuracy": 0.0,
+        "coverage": 0.6666666666666666,
+        "defer_rate": 0.33333333333333337,
+        "states": 3,
+        "accepted_states": 2,
+        "deferred_states": 1,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 0.0,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 2,
+        "fragile_overconfident_wrong_accepts": 1,
+        "fragile_overconfident_wrong_rate_on_failures": 0.5,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "accept_penalized_top": 2,
+          "penalized_top_small_adjusted_gap": 1
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 11,
+            "policy": "instability_penalized_top_score",
+            "state_id": "exopenai_gsm8k_0_ep1_d3",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "accept_penalized_top"
+            ],
+            "is_near_tie": false,
+            "is_adjacent": true,
+            "score_gap_top2": 0.05811995918308943,
+            "instability_prob_top2": 0.009490654195259907,
+            "chosen_outside_gap": -0.18086456677077517,
+            "chosen_multistep_delta": 0.06537418564177166,
+            "oracle_outside_gap": 0.18086456677077517,
+            "oracle_multistep_delta": 0.12141143490987127,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.751480979883338,
+                "outside_gap": -0.18086456677077517,
+                "multistep_delta": 0.06537418564177166,
+                "state_instability_score": 0.0,
+                "state_instability_label": false,
+                "adjusted_score": 0.7486255783205098
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.6933610207002485,
+                "outside_gap": 0.18086456677077517,
+                "multistep_delta": 0.12141143490987127,
+                "state_instability_score": 0.0,
+                "state_instability_label": false,
+                "adjusted_score": 0.6933610207002485
+              }
+            ]
+          },
+          {
+            "seed": 11,
+            "policy": "instability_penalized_top_score",
+            "state_id": "exopenai_gsm8k_7_ep14_d5",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "accept_penalized_top"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.1552464740489894,
+            "instability_prob_top2": 0.03671176899148143,
+            "chosen_outside_gap": -0.024695791195966765,
+            "chosen_multistep_delta": -1.1102230246251565e-16,
+            "oracle_outside_gap": 0.024695791195966765,
+            "oracle_multistep_delta": -1.1102230246251565e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.9037968273226924,
+                "outside_gap": -0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false,
+                "adjusted_score": 0.8952393407239956
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.748550353273703,
+                "outside_gap": 0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false,
+                "adjusted_score": 0.7418061190379026
+              }
+            ]
+          }
+        ],
+        "deferred_examples": [
+          {
+            "seed": 11,
+            "policy": "instability_penalized_top_score",
+            "state_id": "exopenai_gsm8k_3_ep7_d3",
+            "choice": "b3",
+            "oracle_best": "b2",
+            "defer": true,
+            "defer_reasons": [
+              "penalized_top_small_adjusted_gap"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.02224220360343332,
+            "instability_prob_top2": 0.055691148488704476,
+            "chosen_outside_gap": -0.11354667095340543,
+            "chosen_multistep_delta": 0.12373378695438442,
+            "oracle_outside_gap": 0.10556849851210437,
+            "oracle_multistep_delta": 0.0,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 0.9385679978476783,
+                "outside_gap": -0.11354667095340543,
+                "multistep_delta": 0.12373378695438442,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true,
+                "adjusted_score": 0.8788051976116732
+              },
+              {
+                "branch_id": "b0",
+                "raw_score": 0.916325794244245,
+                "outside_gap": -0.10556849851210437,
+                "multistep_delta": 0.12538173732750546,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true,
+                "adjusted_score": 0.857007307594337
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "policy": "instability_penalized_top_score",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "accept_penalized_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.05811995918308943,
+          "instability_prob_top2": 0.009490654195259907,
+          "chosen_outside_gap": -0.18086456677077517,
+          "chosen_multistep_delta": 0.06537418564177166,
+          "oracle_outside_gap": 0.18086456677077517,
+          "oracle_multistep_delta": 0.12141143490987127,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.751480979883338,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_instability_score": 0.0,
+              "state_instability_label": false,
+              "adjusted_score": 0.7486255783205098
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6933610207002485,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_instability_score": 0.0,
+              "state_instability_label": false,
+              "adjusted_score": 0.6933610207002485
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "instability_penalized_top_score",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "oracle_best": "b2",
+          "defer": true,
+          "defer_reasons": [
+            "penalized_top_small_adjusted_gap"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.02224220360343332,
+          "instability_prob_top2": 0.055691148488704476,
+          "chosen_outside_gap": -0.11354667095340543,
+          "chosen_multistep_delta": 0.12373378695438442,
+          "oracle_outside_gap": 0.10556849851210437,
+          "oracle_multistep_delta": 0.0,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.9385679978476783,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true,
+              "adjusted_score": 0.8788051976116732
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": 0.916325794244245,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true,
+              "adjusted_score": 0.857007307594337
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "instability_penalized_top_score",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "accept_penalized_top"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1552464740489894,
+          "instability_prob_top2": 0.03671176899148143,
+          "chosen_outside_gap": -0.024695791195966765,
+          "chosen_multistep_delta": -1.1102230246251565e-16,
+          "oracle_outside_gap": 0.024695791195966765,
+          "oracle_multistep_delta": -1.1102230246251565e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.9037968273226924,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false,
+              "adjusted_score": 0.8952393407239956
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.748550353273703,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false,
+              "adjusted_score": 0.7418061190379026
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "policy": "instability_outside_option_gate",
+      "metrics": {
+        "forced_accuracy": 0.0,
+        "accepted_accuracy": 0.0,
+        "coverage": 0.3333333333333333,
+        "defer_rate": 0.6666666666666667,
+        "states": 3,
+        "accepted_states": 1,
+        "deferred_states": 2,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 0,
+        "adjacent_rank_accepted_accuracy": 0.0,
+        "adjacent_rank_accepted_n": 1,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 0,
+        "failure_states": 1,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "gate_accept_top": 1,
+          "gate_blocked_high_instability_weak_outside": 2
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 11,
+            "policy": "instability_outside_option_gate",
+            "state_id": "exopenai_gsm8k_0_ep1_d3",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "gate_accept_top"
+            ],
+            "is_near_tie": false,
+            "is_adjacent": true,
+            "score_gap_top2": 0.05811995918308943,
+            "instability_prob_top2": 0.009490654195259907,
+            "chosen_outside_gap": -0.18086456677077517,
+            "chosen_multistep_delta": 0.06537418564177166,
+            "oracle_outside_gap": 0.18086456677077517,
+            "oracle_multistep_delta": 0.12141143490987127,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.751480979883338,
+                "outside_gap": -0.18086456677077517,
+                "multistep_delta": 0.06537418564177166,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.6933610207002485,
+                "outside_gap": 0.18086456677077517,
+                "multistep_delta": 0.12141143490987127,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ],
+        "deferred_examples": [
+          {
+            "seed": 11,
+            "policy": "instability_outside_option_gate",
+            "state_id": "exopenai_gsm8k_3_ep7_d3",
+            "choice": "b3",
+            "oracle_best": "b2",
+            "defer": true,
+            "defer_reasons": [
+              "gate_blocked_high_instability_weak_outside"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.02224220360343332,
+            "instability_prob_top2": 0.055691148488704476,
+            "chosen_outside_gap": -0.11354667095340543,
+            "chosen_multistep_delta": 0.12373378695438442,
+            "oracle_outside_gap": 0.10556849851210437,
+            "oracle_multistep_delta": 0.0,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 0.9385679978476783,
+                "outside_gap": -0.11354667095340543,
+                "multistep_delta": 0.12373378695438442,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b0",
+                "raw_score": 0.916325794244245,
+                "outside_gap": -0.10556849851210437,
+                "multistep_delta": 0.12538173732750546,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 11,
+            "policy": "instability_outside_option_gate",
+            "state_id": "exopenai_gsm8k_7_ep14_d5",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": true,
+            "defer_reasons": [
+              "gate_blocked_high_instability_weak_outside"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.1552464740489894,
+            "instability_prob_top2": 0.03671176899148143,
+            "chosen_outside_gap": -0.024695791195966765,
+            "chosen_multistep_delta": -1.1102230246251565e-16,
+            "oracle_outside_gap": 0.024695791195966765,
+            "oracle_multistep_delta": -1.1102230246251565e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.9037968273226924,
+                "outside_gap": -0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.748550353273703,
+                "outside_gap": 0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "policy": "instability_outside_option_gate",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "gate_accept_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.05811995918308943,
+          "instability_prob_top2": 0.009490654195259907,
+          "chosen_outside_gap": -0.18086456677077517,
+          "chosen_multistep_delta": 0.06537418564177166,
+          "oracle_outside_gap": 0.18086456677077517,
+          "oracle_multistep_delta": 0.12141143490987127,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.751480979883338,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6933610207002485,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "instability_outside_option_gate",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "oracle_best": "b2",
+          "defer": true,
+          "defer_reasons": [
+            "gate_blocked_high_instability_weak_outside"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.02224220360343332,
+          "instability_prob_top2": 0.055691148488704476,
+          "chosen_outside_gap": -0.11354667095340543,
+          "chosen_multistep_delta": 0.12373378695438442,
+          "oracle_outside_gap": 0.10556849851210437,
+          "oracle_multistep_delta": 0.0,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.9385679978476783,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": 0.916325794244245,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "instability_outside_option_gate",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": true,
+          "defer_reasons": [
+            "gate_blocked_high_instability_weak_outside"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1552464740489894,
+          "instability_prob_top2": 0.03671176899148143,
+          "chosen_outside_gap": -0.024695791195966765,
+          "chosen_multistep_delta": -1.1102230246251565e-16,
+          "oracle_outside_gap": 0.024695791195966765,
+          "oracle_multistep_delta": -1.1102230246251565e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.9037968273226924,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.748550353273703,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "policy": "selective_hard_case_abstention",
+      "metrics": {
+        "forced_accuracy": 0.0,
+        "accepted_accuracy": 0.0,
+        "coverage": 0.3333333333333333,
+        "defer_rate": 0.6666666666666667,
+        "states": 3,
+        "accepted_states": 1,
+        "deferred_states": 2,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 0,
+        "adjacent_rank_accepted_accuracy": 0.0,
+        "adjacent_rank_accepted_n": 1,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 0,
+        "failure_states": 1,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "non_hard_or_low_instability_accept": 1,
+          "hard_case_requires_rank_and_outside": 2
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 11,
+            "policy": "selective_hard_case_abstention",
+            "state_id": "exopenai_gsm8k_0_ep1_d3",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": false,
+            "defer_reasons": [
+              "non_hard_or_low_instability_accept"
+            ],
+            "is_near_tie": false,
+            "is_adjacent": true,
+            "score_gap_top2": 0.05811995918308943,
+            "instability_prob_top2": 0.009490654195259907,
+            "chosen_outside_gap": -0.18086456677077517,
+            "chosen_multistep_delta": 0.06537418564177166,
+            "oracle_outside_gap": 0.18086456677077517,
+            "oracle_multistep_delta": 0.12141143490987127,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.751480979883338,
+                "outside_gap": -0.18086456677077517,
+                "multistep_delta": 0.06537418564177166,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.6933610207002485,
+                "outside_gap": 0.18086456677077517,
+                "multistep_delta": 0.12141143490987127,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ],
+        "deferred_examples": [
+          {
+            "seed": 11,
+            "policy": "selective_hard_case_abstention",
+            "state_id": "exopenai_gsm8k_3_ep7_d3",
+            "choice": "b3",
+            "oracle_best": "b2",
+            "defer": true,
+            "defer_reasons": [
+              "hard_case_requires_rank_and_outside"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.02224220360343332,
+            "instability_prob_top2": 0.055691148488704476,
+            "chosen_outside_gap": -0.11354667095340543,
+            "chosen_multistep_delta": 0.12373378695438442,
+            "oracle_outside_gap": 0.10556849851210437,
+            "oracle_multistep_delta": 0.0,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 0.9385679978476783,
+                "outside_gap": -0.11354667095340543,
+                "multistep_delta": 0.12373378695438442,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b0",
+                "raw_score": 0.916325794244245,
+                "outside_gap": -0.10556849851210437,
+                "multistep_delta": 0.12538173732750546,
+                "state_instability_score": 0.8395646197596316,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 11,
+            "policy": "selective_hard_case_abstention",
+            "state_id": "exopenai_gsm8k_7_ep14_d5",
+            "choice": "b0",
+            "oracle_best": "b2",
+            "defer": true,
+            "defer_reasons": [
+              "hard_case_requires_rank_and_outside"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.1552464740489894,
+            "instability_prob_top2": 0.03671176899148143,
+            "chosen_outside_gap": -0.024695791195966765,
+            "chosen_multistep_delta": -1.1102230246251565e-16,
+            "oracle_outside_gap": 0.024695791195966765,
+            "oracle_multistep_delta": -1.1102230246251565e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 0.9037968273226924,
+                "outside_gap": -0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b2",
+                "raw_score": 0.748550353273703,
+                "outside_gap": 0.024695791195966765,
+                "multistep_delta": -1.1102230246251565e-16,
+                "state_instability_score": 0.08840348006722054,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "policy": "selective_hard_case_abstention",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": false,
+          "defer_reasons": [
+            "non_hard_or_low_instability_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.05811995918308943,
+          "instability_prob_top2": 0.009490654195259907,
+          "chosen_outside_gap": -0.18086456677077517,
+          "chosen_multistep_delta": 0.06537418564177166,
+          "oracle_outside_gap": 0.18086456677077517,
+          "oracle_multistep_delta": 0.12141143490987127,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.751480979883338,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6933610207002485,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "selective_hard_case_abstention",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "oracle_best": "b2",
+          "defer": true,
+          "defer_reasons": [
+            "hard_case_requires_rank_and_outside"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.02224220360343332,
+          "instability_prob_top2": 0.055691148488704476,
+          "chosen_outside_gap": -0.11354667095340543,
+          "chosen_multistep_delta": 0.12373378695438442,
+          "oracle_outside_gap": 0.10556849851210437,
+          "oracle_multistep_delta": 0.0,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.9385679978476783,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": 0.916325794244245,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_instability_score": 0.8395646197596316,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 11,
+          "policy": "selective_hard_case_abstention",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "oracle_best": "b2",
+          "defer": true,
+          "defer_reasons": [
+            "hard_case_requires_rank_and_outside"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1552464740489894,
+          "instability_prob_top2": 0.03671176899148143,
+          "chosen_outside_gap": -0.024695791195966765,
+          "chosen_multistep_delta": -1.1102230246251565e-16,
+          "oracle_outside_gap": 0.024695791195966765,
+          "oracle_multistep_delta": -1.1102230246251565e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.9037968273226924,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.748550353273703,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_instability_score": 0.08840348006722054,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "policy": "baseline_all_pairs",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 3,
+        "accepted_states": 3,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 1.0,
+        "near_tie_accepted_n": 2,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 3,
+        "strict_hard_slice_accepted_accuracy": 1.0,
+        "strict_hard_slice_accepted_n": 2,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "unknown_policy_default_accept": 3
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "policy": "baseline_all_pairs",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "unknown_policy_default_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.662175294120441,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.19128266535895522,
+          "chosen_multistep_delta": 0.15541955397859697,
+          "oracle_outside_gap": 0.19128266535895522,
+          "oracle_multistep_delta": 0.15541955397859697,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.5397999524088448,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": -0.12237534171159618,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "baseline_all_pairs",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "unknown_policy_default_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.043846285407860175,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.004509329124314121,
+          "chosen_multistep_delta": 0.16502060826914056,
+          "oracle_outside_gap": 0.004509329124314121,
+          "oracle_multistep_delta": 0.16502060826914056,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0143126865507799,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.9704664011429197,
+              "outside_gap": -0.004964927120159945,
+              "multistep_delta": 0.211143811165714,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "baseline_all_pairs",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "unknown_policy_default_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.0420597467487096,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.015977574697167096,
+          "chosen_multistep_delta": 0.1761856898045513,
+          "oracle_outside_gap": 0.015977574697167096,
+          "oracle_multistep_delta": 0.1761856898045513,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.9584495152462866,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b3",
+              "raw_score": 0.916389768497577,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "policy": "multistep_k3_current",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 3,
+        "accepted_states": 3,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 1.0,
+        "near_tie_accepted_n": 2,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 3,
+        "strict_hard_slice_accepted_accuracy": 1.0,
+        "strict_hard_slice_accepted_n": 2,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "always_accept_top_multistep": 3
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "policy": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "always_accept_top_multistep"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1845950607970005,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.19128266535895522,
+          "chosen_multistep_delta": 0.15541955397859697,
+          "oracle_outside_gap": 0.19128266535895522,
+          "oracle_multistep_delta": 0.15541955397859697,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0398691100275976,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.8552740492305971,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "always_accept_top_multistep"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.07698981678956329,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.004509329124314121,
+          "chosen_multistep_delta": 0.16502060826914056,
+          "oracle_outside_gap": 0.004509329124314121,
+          "oracle_multistep_delta": 0.16502060826914056,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.1454574030701923,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b1",
+              "raw_score": 1.068467586280629,
+              "outside_gap": -0.004509329124314121,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "always_accept_top_multistep"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.049496223405817386,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.015977574697167096,
+          "chosen_multistep_delta": 0.1761856898045513,
+          "oracle_outside_gap": 0.015977574697167096,
+          "oracle_multistep_delta": 0.1761856898045513,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0999022844384085,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b3",
+              "raw_score": 1.0504060610325912,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "policy": "rank_instability_aware_current",
+      "metrics": {
+        "forced_accuracy": 0.6666666666666666,
+        "accepted_accuracy": 1.0,
+        "coverage": 0.6666666666666666,
+        "defer_rate": 0.33333333333333337,
+        "states": 3,
+        "accepted_states": 2,
+        "deferred_states": 1,
+        "near_tie_accepted_accuracy": 1.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 1.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "current_policy_accept": 2,
+          "current_policy_defer_instability_and_small_gap": 1
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": [
+          {
+            "seed": 29,
+            "policy": "rank_instability_aware_current",
+            "state_id": "exopenai_gsm8k_9_ep18_d3",
+            "choice": "b3",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "current_policy_defer_instability_and_small_gap"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.09558383092651246,
+            "instability_prob_top2": 0.04559767312723847,
+            "chosen_outside_gap": -0.015977574697167096,
+            "chosen_multistep_delta": 0.17361880075484293,
+            "oracle_outside_gap": 0.015977574697167096,
+            "oracle_multistep_delta": 0.1761856898045513,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 2.17533690979944,
+                "outside_gap": -0.015977574697167096,
+                "multistep_delta": 0.17361880075484293,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b0",
+                "raw_score": 2.0797530788729275,
+                "outside_gap": 0.015977574697167096,
+                "multistep_delta": 0.1761856898045513,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "policy": "rank_instability_aware_current",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "current_policy_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.37607188909409817,
+          "instability_prob_top2": 0.005416139038919989,
+          "chosen_outside_gap": 0.19128266535895522,
+          "chosen_multistep_delta": 0.15541955397859697,
+          "oracle_outside_gap": 0.19128266535895522,
+          "oracle_multistep_delta": 0.15541955397859697,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 0.9909069605422637,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6148350714481655,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "rank_instability_aware_current",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "current_policy_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.6434749770423878,
+          "instability_prob_top2": 0.9346670123196477,
+          "chosen_outside_gap": 0.004509329124314121,
+          "chosen_multistep_delta": 0.16502060826914056,
+          "oracle_outside_gap": 0.004509329124314121,
+          "oracle_multistep_delta": 0.16502060826914056,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 3.4031753625969063,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 2.7597003855545186,
+              "outside_gap": -0.004964927120159945,
+              "multistep_delta": 0.211143811165714,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "rank_instability_aware_current",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b3",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "current_policy_defer_instability_and_small_gap"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.09558383092651246,
+          "instability_prob_top2": 0.04559767312723847,
+          "chosen_outside_gap": -0.015977574697167096,
+          "chosen_multistep_delta": 0.17361880075484293,
+          "oracle_outside_gap": 0.015977574697167096,
+          "oracle_multistep_delta": 0.1761856898045513,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 2.17533690979944,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b0",
+              "raw_score": 2.0797530788729275,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "policy": "defer_on_instability",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 0.3333333333333333,
+        "defer_rate": 0.6666666666666667,
+        "states": 3,
+        "accepted_states": 1,
+        "deferred_states": 2,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 0,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 1,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 0,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "accept_top": 1,
+          "high_instability_small_margin": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": [
+          {
+            "seed": 29,
+            "policy": "defer_on_instability",
+            "state_id": "exopenai_gsm8k_7_ep14_d3",
+            "choice": "b0",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "high_instability_small_margin"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.07698981678956329,
+            "instability_prob_top2": 0.06761923010450557,
+            "chosen_outside_gap": 0.004509329124314121,
+            "chosen_multistep_delta": 0.16502060826914056,
+            "oracle_outside_gap": 0.004509329124314121,
+            "oracle_multistep_delta": 0.16502060826914056,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.1454574030701923,
+                "outside_gap": 0.004509329124314121,
+                "multistep_delta": 0.16502060826914056,
+                "state_instability_score": 0.9248445145947646,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b1",
+                "raw_score": 1.068467586280629,
+                "outside_gap": -0.004509329124314121,
+                "multistep_delta": 0.0,
+                "state_instability_score": 0.9248445145947646,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 29,
+            "policy": "defer_on_instability",
+            "state_id": "exopenai_gsm8k_9_ep18_d3",
+            "choice": "b0",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "high_instability_small_margin"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.049496223405817386,
+            "instability_prob_top2": 0.04559767312723847,
+            "chosen_outside_gap": 0.015977574697167096,
+            "chosen_multistep_delta": 0.1761856898045513,
+            "oracle_outside_gap": 0.015977574697167096,
+            "oracle_multistep_delta": 0.1761856898045513,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.0999022844384085,
+                "outside_gap": 0.015977574697167096,
+                "multistep_delta": 0.1761856898045513,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b3",
+                "raw_score": 1.0504060610325912,
+                "outside_gap": -0.015977574697167096,
+                "multistep_delta": 0.17361880075484293,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "policy": "defer_on_instability",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "accept_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1845950607970005,
+          "instability_prob_top2": 0.005416139038919989,
+          "chosen_outside_gap": 0.19128266535895522,
+          "chosen_multistep_delta": 0.15541955397859697,
+          "oracle_outside_gap": 0.19128266535895522,
+          "oracle_multistep_delta": 0.15541955397859697,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0398691100275976,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.8552740492305971,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "defer_on_instability",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "high_instability_small_margin"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.07698981678956329,
+          "instability_prob_top2": 0.06761923010450557,
+          "chosen_outside_gap": 0.004509329124314121,
+          "chosen_multistep_delta": 0.16502060826914056,
+          "oracle_outside_gap": 0.004509329124314121,
+          "oracle_multistep_delta": 0.16502060826914056,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.1454574030701923,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b1",
+              "raw_score": 1.068467586280629,
+              "outside_gap": -0.004509329124314121,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "defer_on_instability",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "high_instability_small_margin"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.049496223405817386,
+          "instability_prob_top2": 0.04559767312723847,
+          "chosen_outside_gap": 0.015977574697167096,
+          "chosen_multistep_delta": 0.1761856898045513,
+          "oracle_outside_gap": 0.015977574697167096,
+          "oracle_multistep_delta": 0.1761856898045513,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0999022844384085,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b3",
+              "raw_score": 1.0504060610325912,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "policy": "instability_penalized_top_score",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 0.3333333333333333,
+        "defer_rate": 0.6666666666666667,
+        "states": 3,
+        "accepted_states": 1,
+        "deferred_states": 2,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 0,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 1,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 0,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "accept_penalized_top": 1,
+          "penalized_top_small_adjusted_gap": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": [
+          {
+            "seed": 29,
+            "policy": "instability_penalized_top_score",
+            "state_id": "exopenai_gsm8k_7_ep14_d3",
+            "choice": "b0",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "penalized_top_small_adjusted_gap"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.07698981678956329,
+            "instability_prob_top2": 0.06761923010450557,
+            "chosen_outside_gap": 0.004509329124314121,
+            "chosen_multistep_delta": 0.16502060826914056,
+            "oracle_outside_gap": 0.004509329124314121,
+            "oracle_multistep_delta": 0.16502060826914056,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.1454574030701923,
+                "outside_gap": 0.004509329124314121,
+                "multistep_delta": 0.16502060826914056,
+                "state_instability_score": 0.9248445145947646,
+                "state_instability_label": true,
+                "adjusted_score": 1.0751107387780525
+              },
+              {
+                "branch_id": "b1",
+                "raw_score": 1.068467586280629,
+                "outside_gap": -0.004509329124314121,
+                "multistep_delta": 0.0,
+                "state_instability_score": 0.9248445145947646,
+                "state_instability_label": true,
+                "adjusted_score": 0.9975110872611412
+              }
+            ]
+          },
+          {
+            "seed": 29,
+            "policy": "instability_penalized_top_score",
+            "state_id": "exopenai_gsm8k_9_ep18_d3",
+            "choice": "b0",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "penalized_top_small_adjusted_gap"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.049496223405817386,
+            "instability_prob_top2": 0.04559767312723847,
+            "chosen_outside_gap": 0.015977574697167096,
+            "chosen_multistep_delta": 0.1761856898045513,
+            "oracle_outside_gap": 0.015977574697167096,
+            "oracle_multistep_delta": 0.1761856898045513,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.0999022844384085,
+                "outside_gap": 0.015977574697167096,
+                "multistep_delta": 0.1761856898045513,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false,
+                "adjusted_score": 1.0845026044680526
+              },
+              {
+                "branch_id": "b3",
+                "raw_score": 1.0504060610325912,
+                "outside_gap": -0.015977574697167096,
+                "multistep_delta": 0.17361880075484293,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false,
+                "adjusted_score": 1.0335493006054202
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "policy": "instability_penalized_top_score",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "accept_penalized_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1845950607970005,
+          "instability_prob_top2": 0.005416139038919989,
+          "chosen_outside_gap": 0.19128266535895522,
+          "chosen_multistep_delta": 0.15541955397859697,
+          "oracle_outside_gap": 0.19128266535895522,
+          "oracle_multistep_delta": 0.15541955397859697,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0398691100275976,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_instability_score": 0.0,
+              "state_instability_label": false,
+              "adjusted_score": 1.0398691100275976
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.8552740492305971,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_instability_score": 0.0,
+              "state_instability_label": false,
+              "adjusted_score": 0.8532641314638805
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "instability_penalized_top_score",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "penalized_top_small_adjusted_gap"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.07698981678956329,
+          "instability_prob_top2": 0.06761923010450557,
+          "chosen_outside_gap": 0.004509329124314121,
+          "chosen_multistep_delta": 0.16502060826914056,
+          "oracle_outside_gap": 0.004509329124314121,
+          "oracle_multistep_delta": 0.16502060826914056,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.1454574030701923,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true,
+              "adjusted_score": 1.0751107387780525
+            },
+            {
+              "branch_id": "b1",
+              "raw_score": 1.068467586280629,
+              "outside_gap": -0.004509329124314121,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true,
+              "adjusted_score": 0.9975110872611412
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "instability_penalized_top_score",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "penalized_top_small_adjusted_gap"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.049496223405817386,
+          "instability_prob_top2": 0.04559767312723847,
+          "chosen_outside_gap": 0.015977574697167096,
+          "chosen_multistep_delta": 0.1761856898045513,
+          "oracle_outside_gap": 0.015977574697167096,
+          "oracle_multistep_delta": 0.1761856898045513,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0999022844384085,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false,
+              "adjusted_score": 1.0845026044680526
+            },
+            {
+              "branch_id": "b3",
+              "raw_score": 1.0504060610325912,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false,
+              "adjusted_score": 1.0335493006054202
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "policy": "instability_outside_option_gate",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 0.3333333333333333,
+        "defer_rate": 0.6666666666666667,
+        "states": 3,
+        "accepted_states": 1,
+        "deferred_states": 2,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 0,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 1,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 0,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "gate_accept_top": 1,
+          "gate_blocked_high_instability_weak_outside": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": [
+          {
+            "seed": 29,
+            "policy": "instability_outside_option_gate",
+            "state_id": "exopenai_gsm8k_7_ep14_d3",
+            "choice": "b0",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "gate_blocked_high_instability_weak_outside"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.07698981678956329,
+            "instability_prob_top2": 0.06761923010450557,
+            "chosen_outside_gap": 0.004509329124314121,
+            "chosen_multistep_delta": 0.16502060826914056,
+            "oracle_outside_gap": 0.004509329124314121,
+            "oracle_multistep_delta": 0.16502060826914056,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.1454574030701923,
+                "outside_gap": 0.004509329124314121,
+                "multistep_delta": 0.16502060826914056,
+                "state_instability_score": 0.9248445145947646,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b1",
+                "raw_score": 1.068467586280629,
+                "outside_gap": -0.004509329124314121,
+                "multistep_delta": 0.0,
+                "state_instability_score": 0.9248445145947646,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 29,
+            "policy": "instability_outside_option_gate",
+            "state_id": "exopenai_gsm8k_9_ep18_d3",
+            "choice": "b0",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "gate_blocked_high_instability_weak_outside"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.049496223405817386,
+            "instability_prob_top2": 0.04559767312723847,
+            "chosen_outside_gap": 0.015977574697167096,
+            "chosen_multistep_delta": 0.1761856898045513,
+            "oracle_outside_gap": 0.015977574697167096,
+            "oracle_multistep_delta": 0.1761856898045513,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.0999022844384085,
+                "outside_gap": 0.015977574697167096,
+                "multistep_delta": 0.1761856898045513,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b3",
+                "raw_score": 1.0504060610325912,
+                "outside_gap": -0.015977574697167096,
+                "multistep_delta": 0.17361880075484293,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "policy": "instability_outside_option_gate",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "gate_accept_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1845950607970005,
+          "instability_prob_top2": 0.005416139038919989,
+          "chosen_outside_gap": 0.19128266535895522,
+          "chosen_multistep_delta": 0.15541955397859697,
+          "oracle_outside_gap": 0.19128266535895522,
+          "oracle_multistep_delta": 0.15541955397859697,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0398691100275976,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.8552740492305971,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "instability_outside_option_gate",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "gate_blocked_high_instability_weak_outside"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.07698981678956329,
+          "instability_prob_top2": 0.06761923010450557,
+          "chosen_outside_gap": 0.004509329124314121,
+          "chosen_multistep_delta": 0.16502060826914056,
+          "oracle_outside_gap": 0.004509329124314121,
+          "oracle_multistep_delta": 0.16502060826914056,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.1454574030701923,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b1",
+              "raw_score": 1.068467586280629,
+              "outside_gap": -0.004509329124314121,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "instability_outside_option_gate",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "gate_blocked_high_instability_weak_outside"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.049496223405817386,
+          "instability_prob_top2": 0.04559767312723847,
+          "chosen_outside_gap": 0.015977574697167096,
+          "chosen_multistep_delta": 0.1761856898045513,
+          "oracle_outside_gap": 0.015977574697167096,
+          "oracle_multistep_delta": 0.1761856898045513,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0999022844384085,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b3",
+              "raw_score": 1.0504060610325912,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "policy": "selective_hard_case_abstention",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 0.3333333333333333,
+        "defer_rate": 0.6666666666666667,
+        "states": 3,
+        "accepted_states": 1,
+        "deferred_states": 2,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 0,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 1,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 0,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "non_hard_or_low_instability_accept": 1,
+          "hard_case_requires_rank_and_outside": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": [
+          {
+            "seed": 29,
+            "policy": "selective_hard_case_abstention",
+            "state_id": "exopenai_gsm8k_7_ep14_d3",
+            "choice": "b0",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "hard_case_requires_rank_and_outside"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.07698981678956329,
+            "instability_prob_top2": 0.06761923010450557,
+            "chosen_outside_gap": 0.004509329124314121,
+            "chosen_multistep_delta": 0.16502060826914056,
+            "oracle_outside_gap": 0.004509329124314121,
+            "oracle_multistep_delta": 0.16502060826914056,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.1454574030701923,
+                "outside_gap": 0.004509329124314121,
+                "multistep_delta": 0.16502060826914056,
+                "state_instability_score": 0.9248445145947646,
+                "state_instability_label": true
+              },
+              {
+                "branch_id": "b1",
+                "raw_score": 1.068467586280629,
+                "outside_gap": -0.004509329124314121,
+                "multistep_delta": 0.0,
+                "state_instability_score": 0.9248445145947646,
+                "state_instability_label": true
+              }
+            ]
+          },
+          {
+            "seed": 29,
+            "policy": "selective_hard_case_abstention",
+            "state_id": "exopenai_gsm8k_9_ep18_d3",
+            "choice": "b0",
+            "oracle_best": "b0",
+            "defer": true,
+            "defer_reasons": [
+              "hard_case_requires_rank_and_outside"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.049496223405817386,
+            "instability_prob_top2": 0.04559767312723847,
+            "chosen_outside_gap": 0.015977574697167096,
+            "chosen_multistep_delta": 0.1761856898045513,
+            "oracle_outside_gap": 0.015977574697167096,
+            "oracle_multistep_delta": 0.1761856898045513,
+            "delayed_payoff_overvaluation_with_outside_option_miss": false,
+            "top_candidates": [
+              {
+                "branch_id": "b0",
+                "raw_score": 1.0999022844384085,
+                "outside_gap": 0.015977574697167096,
+                "multistep_delta": 0.1761856898045513,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b3",
+                "raw_score": 1.0504060610325912,
+                "outside_gap": -0.015977574697167096,
+                "multistep_delta": 0.17361880075484293,
+                "state_instability_score": 0.23370708838054838,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ]
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "policy": "selective_hard_case_abstention",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": false,
+          "defer_reasons": [
+            "non_hard_or_low_instability_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1845950607970005,
+          "instability_prob_top2": 0.005416139038919989,
+          "chosen_outside_gap": 0.19128266535895522,
+          "chosen_multistep_delta": 0.15541955397859697,
+          "oracle_outside_gap": 0.19128266535895522,
+          "oracle_multistep_delta": 0.15541955397859697,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0398691100275976,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.8552740492305971,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "selective_hard_case_abstention",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "hard_case_requires_rank_and_outside"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.07698981678956329,
+          "instability_prob_top2": 0.06761923010450557,
+          "chosen_outside_gap": 0.004509329124314121,
+          "chosen_multistep_delta": 0.16502060826914056,
+          "oracle_outside_gap": 0.004509329124314121,
+          "oracle_multistep_delta": 0.16502060826914056,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.1454574030701923,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            },
+            {
+              "branch_id": "b1",
+              "raw_score": 1.068467586280629,
+              "outside_gap": -0.004509329124314121,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.9248445145947646,
+              "state_instability_label": true
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "policy": "selective_hard_case_abstention",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "oracle_best": "b0",
+          "defer": true,
+          "defer_reasons": [
+            "hard_case_requires_rank_and_outside"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.049496223405817386,
+          "instability_prob_top2": 0.04559767312723847,
+          "chosen_outside_gap": 0.015977574697167096,
+          "chosen_multistep_delta": 0.1761856898045513,
+          "oracle_outside_gap": 0.015977574697167096,
+          "oracle_multistep_delta": 0.1761856898045513,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b0",
+              "raw_score": 1.0999022844384085,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b3",
+              "raw_score": 1.0504060610325912,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_instability_score": 0.23370708838054838,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "policy": "baseline_all_pairs",
+      "metrics": {
+        "forced_accuracy": 0.5,
+        "accepted_accuracy": 0.5,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 2,
+        "accepted_states": 2,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 0.5,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 1,
+        "fragile_overconfident_wrong_accepts": 1,
+        "fragile_overconfident_wrong_rate_on_failures": 1.0,
+        "delayed_payoff_overvaluation_failures": 1,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "unknown_policy_default_accept": 2
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 47,
+            "policy": "baseline_all_pairs",
+            "state_id": "exopenai_gsm8k_1_ep2_d4",
+            "choice": "b3",
+            "oracle_best": "b1",
+            "defer": false,
+            "defer_reasons": [
+              "unknown_policy_default_accept"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.1628950372878974,
+            "instability_prob_top2": 0.0,
+            "chosen_outside_gap": -0.12087250120266146,
+            "chosen_multistep_delta": 0.0,
+            "oracle_outside_gap": 0.09635245100864331,
+            "oracle_multistep_delta": -2.220446049250313e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 0.6202846290884019,
+                "outside_gap": -0.12087250120266146,
+                "multistep_delta": 0.0,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b1",
+                "raw_score": 0.4573895918005045,
+                "outside_gap": 0.09635245100864331,
+                "multistep_delta": -2.220446049250313e-16,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 47,
+          "policy": "baseline_all_pairs",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b3",
+          "oracle_best": "b1",
+          "defer": false,
+          "defer_reasons": [
+            "unknown_policy_default_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.1628950372878974,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": -0.12087250120266146,
+          "chosen_multistep_delta": 0.0,
+          "oracle_outside_gap": 0.09635245100864331,
+          "oracle_multistep_delta": -2.220446049250313e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.6202846290884019,
+              "outside_gap": -0.12087250120266146,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b1",
+              "raw_score": 0.4573895918005045,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 47,
+          "policy": "baseline_all_pairs",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "oracle_best": "b3",
+          "defer": false,
+          "defer_reasons": [
+            "unknown_policy_default_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.9698386249776589,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.1858335440185609,
+          "chosen_multistep_delta": 0.15234555104142078,
+          "oracle_outside_gap": 0.1858335440185609,
+          "oracle_multistep_delta": 0.15234555104142078,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.25537502337519247,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": -0.7144636016024665,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "policy": "multistep_k3_current",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 2,
+        "accepted_states": 2,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 1.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 1.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "always_accept_top_multistep": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 47,
+          "policy": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b1",
+          "oracle_best": "b1",
+          "defer": false,
+          "defer_reasons": [
+            "always_accept_top_multistep"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.011168210173010173,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.09635245100864331,
+          "chosen_multistep_delta": -2.220446049250313e-16,
+          "oracle_outside_gap": 0.09635245100864331,
+          "oracle_multistep_delta": -2.220446049250313e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b1",
+              "raw_score": 1.1534657205631271,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 1.142297510390117,
+              "outside_gap": -0.09635245100864331,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 47,
+          "policy": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "oracle_best": "b3",
+          "defer": false,
+          "defer_reasons": [
+            "always_accept_top_multistep"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.15162818360968078,
+          "instability_prob_top2": 0.0,
+          "chosen_outside_gap": 0.1858335440185609,
+          "chosen_multistep_delta": 0.15234555104142078,
+          "oracle_outside_gap": 0.1858335440185609,
+          "oracle_multistep_delta": 0.15234555104142078,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.8330110241419071,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6813828405322263,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "policy": "rank_instability_aware_current",
+      "metrics": {
+        "forced_accuracy": 0.5,
+        "accepted_accuracy": 0.5,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 2,
+        "accepted_states": 2,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 0.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 0.5,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 0.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 1,
+        "fragile_overconfident_wrong_accepts": 1,
+        "fragile_overconfident_wrong_rate_on_failures": 1.0,
+        "delayed_payoff_overvaluation_failures": 1,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "current_policy_accept": 2
+        },
+        "wrong_accepted_examples": [
+          {
+            "seed": 47,
+            "policy": "rank_instability_aware_current",
+            "state_id": "exopenai_gsm8k_1_ep2_d4",
+            "choice": "b3",
+            "oracle_best": "b1",
+            "defer": false,
+            "defer_reasons": [
+              "current_policy_accept"
+            ],
+            "is_near_tie": true,
+            "is_adjacent": true,
+            "score_gap_top2": 0.20760864085827269,
+            "instability_prob_top2": 0.005681825992690485,
+            "chosen_outside_gap": -0.12087250120266146,
+            "chosen_multistep_delta": 0.0,
+            "oracle_outside_gap": 0.09635245100864331,
+            "oracle_multistep_delta": -2.220446049250313e-16,
+            "delayed_payoff_overvaluation_with_outside_option_miss": true,
+            "top_candidates": [
+              {
+                "branch_id": "b3",
+                "raw_score": 2.4357176966920067,
+                "outside_gap": -0.12087250120266146,
+                "multistep_delta": 0.0,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              },
+              {
+                "branch_id": "b1",
+                "raw_score": 2.228109055833734,
+                "outside_gap": 0.09635245100864331,
+                "multistep_delta": -2.220446049250313e-16,
+                "state_instability_score": 0.0,
+                "state_instability_label": false
+              }
+            ]
+          }
+        ],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 47,
+          "policy": "rank_instability_aware_current",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b3",
+          "oracle_best": "b1",
+          "defer": false,
+          "defer_reasons": [
+            "current_policy_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.20760864085827269,
+          "instability_prob_top2": 0.005681825992690485,
+          "chosen_outside_gap": -0.12087250120266146,
+          "chosen_multistep_delta": 0.0,
+          "oracle_outside_gap": 0.09635245100864331,
+          "oracle_multistep_delta": -2.220446049250313e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": true,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 2.4357176966920067,
+              "outside_gap": -0.12087250120266146,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b1",
+              "raw_score": 2.228109055833734,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 47,
+          "policy": "rank_instability_aware_current",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "oracle_best": "b3",
+          "defer": false,
+          "defer_reasons": [
+            "current_policy_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 2.271509063256879,
+          "instability_prob_top2": 0.00665223814931876,
+          "chosen_outside_gap": 0.1858335440185609,
+          "chosen_multistep_delta": 0.15234555104142078,
+          "oracle_outside_gap": 0.1858335440185609,
+          "oracle_multistep_delta": 0.15234555104142078,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 1.9403233970011122,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": -0.33118566625576645,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "policy": "defer_on_instability",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 2,
+        "accepted_states": 2,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 1.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 1.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "accept_top": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 47,
+          "policy": "defer_on_instability",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b1",
+          "oracle_best": "b1",
+          "defer": false,
+          "defer_reasons": [
+            "accept_top"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.011168210173010173,
+          "instability_prob_top2": 0.006951151219656531,
+          "chosen_outside_gap": 0.09635245100864331,
+          "chosen_multistep_delta": -2.220446049250313e-16,
+          "oracle_outside_gap": 0.09635245100864331,
+          "oracle_multistep_delta": -2.220446049250313e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b1",
+              "raw_score": 1.1534657205631271,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 1.142297510390117,
+              "outside_gap": -0.09635245100864331,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 47,
+          "policy": "defer_on_instability",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "oracle_best": "b3",
+          "defer": false,
+          "defer_reasons": [
+            "accept_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.15162818360968078,
+          "instability_prob_top2": 0.00665223814931876,
+          "chosen_outside_gap": 0.1858335440185609,
+          "chosen_multistep_delta": 0.15234555104142078,
+          "oracle_outside_gap": 0.1858335440185609,
+          "oracle_multistep_delta": 0.15234555104142078,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.8330110241419071,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6813828405322263,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "policy": "instability_penalized_top_score",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 2,
+        "accepted_states": 2,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 1.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 1.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "accept_penalized_top": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 47,
+          "policy": "instability_penalized_top_score",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b1",
+          "oracle_best": "b1",
+          "defer": false,
+          "defer_reasons": [
+            "accept_penalized_top"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.011168210173010173,
+          "instability_prob_top2": 0.006951151219656531,
+          "chosen_outside_gap": 0.09635245100864331,
+          "chosen_multistep_delta": -2.220446049250313e-16,
+          "oracle_outside_gap": 0.09635245100864331,
+          "oracle_multistep_delta": -2.220446049250313e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b1",
+              "raw_score": 1.1534657205631271,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_instability_score": 0.0,
+              "state_instability_label": false,
+              "adjusted_score": 1.153301342874114
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 1.142297510390117,
+              "outside_gap": -0.09635245100864331,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false,
+              "adjusted_score": 1.1407936117864126
+            }
+          ]
+        },
+        {
+          "seed": 47,
+          "policy": "instability_penalized_top_score",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "oracle_best": "b3",
+          "defer": false,
+          "defer_reasons": [
+            "accept_penalized_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.15162818360968078,
+          "instability_prob_top2": 0.00665223814931876,
+          "chosen_outside_gap": 0.1858335440185609,
+          "chosen_multistep_delta": 0.15234555104142078,
+          "oracle_outside_gap": 0.1858335440185609,
+          "oracle_multistep_delta": 0.15234555104142078,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.8330110241419071,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_instability_score": 0.0,
+              "state_instability_label": false,
+              "adjusted_score": 0.8330110241419071
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6813828405322263,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false,
+              "adjusted_score": 0.6793483629633646
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "policy": "instability_outside_option_gate",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 2,
+        "accepted_states": 2,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 1.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 1.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "gate_accept_top": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 47,
+          "policy": "instability_outside_option_gate",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b1",
+          "oracle_best": "b1",
+          "defer": false,
+          "defer_reasons": [
+            "gate_accept_top"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.011168210173010173,
+          "instability_prob_top2": 0.006951151219656531,
+          "chosen_outside_gap": 0.09635245100864331,
+          "chosen_multistep_delta": -2.220446049250313e-16,
+          "oracle_outside_gap": 0.09635245100864331,
+          "oracle_multistep_delta": -2.220446049250313e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b1",
+              "raw_score": 1.1534657205631271,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 1.142297510390117,
+              "outside_gap": -0.09635245100864331,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 47,
+          "policy": "instability_outside_option_gate",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "oracle_best": "b3",
+          "defer": false,
+          "defer_reasons": [
+            "gate_accept_top"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.15162818360968078,
+          "instability_prob_top2": 0.00665223814931876,
+          "chosen_outside_gap": 0.1858335440185609,
+          "chosen_multistep_delta": 0.15234555104142078,
+          "oracle_outside_gap": 0.1858335440185609,
+          "oracle_multistep_delta": 0.15234555104142078,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.8330110241419071,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6813828405322263,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "policy": "selective_hard_case_abstention",
+      "metrics": {
+        "forced_accuracy": 1.0,
+        "accepted_accuracy": 1.0,
+        "coverage": 1.0,
+        "defer_rate": 0.0,
+        "states": 2,
+        "accepted_states": 2,
+        "deferred_states": 0,
+        "near_tie_accepted_accuracy": 1.0,
+        "near_tie_accepted_n": 1,
+        "adjacent_rank_accepted_accuracy": 1.0,
+        "adjacent_rank_accepted_n": 2,
+        "strict_hard_slice_accepted_accuracy": 1.0,
+        "strict_hard_slice_accepted_n": 1,
+        "failure_states": 0,
+        "fragile_overconfident_wrong_accepts": 0,
+        "fragile_overconfident_wrong_rate_on_failures": 0.0,
+        "delayed_payoff_overvaluation_failures": 0,
+        "easy_state_count": 0,
+        "easy_state_defer_count": 0,
+        "easy_state_defer_rate": 0.0,
+        "spillover_non_hard_defer_count": 0,
+        "spillover_non_hard_defer_rate": 0.0
+      },
+      "diagnostics": {
+        "reason_counts": {
+          "non_hard_or_low_instability_accept": 2
+        },
+        "wrong_accepted_examples": [],
+        "deferred_examples": []
+      },
+      "rows": [
+        {
+          "seed": 47,
+          "policy": "selective_hard_case_abstention",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b1",
+          "oracle_best": "b1",
+          "defer": false,
+          "defer_reasons": [
+            "non_hard_or_low_instability_accept"
+          ],
+          "is_near_tie": true,
+          "is_adjacent": true,
+          "score_gap_top2": 0.011168210173010173,
+          "instability_prob_top2": 0.006951151219656531,
+          "chosen_outside_gap": 0.09635245100864331,
+          "chosen_multistep_delta": -2.220446049250313e-16,
+          "oracle_outside_gap": 0.09635245100864331,
+          "oracle_multistep_delta": -2.220446049250313e-16,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b1",
+              "raw_score": 1.1534657205631271,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 1.142297510390117,
+              "outside_gap": -0.09635245100864331,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        },
+        {
+          "seed": 47,
+          "policy": "selective_hard_case_abstention",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "oracle_best": "b3",
+          "defer": false,
+          "defer_reasons": [
+            "non_hard_or_low_instability_accept"
+          ],
+          "is_near_tie": false,
+          "is_adjacent": true,
+          "score_gap_top2": 0.15162818360968078,
+          "instability_prob_top2": 0.00665223814931876,
+          "chosen_outside_gap": 0.1858335440185609,
+          "chosen_multistep_delta": 0.15234555104142078,
+          "oracle_outside_gap": 0.1858335440185609,
+          "oracle_multistep_delta": 0.15234555104142078,
+          "delayed_payoff_overvaluation_with_outside_option_miss": false,
+          "top_candidates": [
+            {
+              "branch_id": "b3",
+              "raw_score": 0.8330110241419071,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            },
+            {
+              "branch_id": "b2",
+              "raw_score": 0.6813828405322263,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_instability_score": 0.0,
+              "state_instability_label": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
