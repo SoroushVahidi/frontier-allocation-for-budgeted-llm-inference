@@ -7,25 +7,27 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 ### If you only want the current truth
 Read:
 1. [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
-2. [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
-3. [`DIAGNOSTIC_READING_PATH_2026_04_18.md`](DIAGNOSTIC_READING_PATH_2026_04_18.md)
-4. [`PROJECT_SITUATION_REPORT_2026_04_18.md`](PROJECT_SITUATION_REPORT_2026_04_18.md)
-5. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
-6. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
-7. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-8. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+2. [`LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+3. [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+4. [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+5. [`PROJECT_SITUATION_REPORT_2026_04_18.md`](PROJECT_SITUATION_REPORT_2026_04_18.md)
+6. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+7. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+8. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+9. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
 
 ### If you only want the shortest dashboard
 Read:
+- [`LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+- [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
 - [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
-- [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
-- [`DIAGNOSTIC_READING_PATH_2026_04_18.md`](DIAGNOSTIC_READING_PATH_2026_04_18.md)
-- [`PROJECT_SITUATION_REPORT_2026_04_18.md`](PROJECT_SITUATION_REPORT_2026_04_18.md)
+- [`ORACLE_MISMATCH_STUDY_2026_04_18.md`](ORACLE_MISMATCH_STUDY_2026_04_18.md)
+- [`FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`](FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md)
+- [`FULL_METHOD_COMPARISON_STATUS_2026_04_18.md`](FULL_METHOD_COMPARISON_STATUS_2026_04_18.md)
 - [`RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
 - [`WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
-- [`REPOSITORY_POLISH_PASS_2026_04_17.md`](REPOSITORY_POLISH_PASS_2026_04_17.md)
 
 ### If you only want runnable code entry points
 Read:
@@ -47,6 +49,7 @@ Those materials are still useful, but they are easy to overread without the cano
 - Goal-based navigation guide: [`REPOSITORY_START_PATHS.md`](REPOSITORY_START_PATHS.md)
 - Compact repository audit: [`FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md`](FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md)
 - Master dashboard: [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+- Experiment rule: [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - Experiment ledger: [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
 - Continuation plan: [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
 - Current leading direction note: [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
@@ -67,8 +70,8 @@ Those materials are still useful, but they are easy to overread without the cano
 Read these first for the current project identity:
 
 1. [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)
-2. [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
-3. [`DIAGNOSTIC_READING_PATH_2026_04_18.md`](DIAGNOSTIC_READING_PATH_2026_04_18.md)
+2. [`LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+3. [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 4. [`PROJECT_SITUATION_REPORT_2026_04_18.md`](PROJECT_SITUATION_REPORT_2026_04_18.md)
 5. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
 6. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
@@ -81,8 +84,8 @@ Read these first for the current project identity:
 ## Canonical docs by purpose
 
 ### Project state and writing discipline
-- [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
-- [`DIAGNOSTIC_READING_PATH_2026_04_18.md`](DIAGNOSTIC_READING_PATH_2026_04_18.md)
+- [`LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+- [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`PROJECT_SITUATION_REPORT_2026_04_18.md`](PROJECT_SITUATION_REPORT_2026_04_18.md)
 - [`RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
 - [`WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
@@ -98,17 +101,14 @@ Read these first for the current project identity:
 ### Method status and next steps
 - [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
 - [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
-- [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
-- [`DIAGNOSTIC_READING_PATH_2026_04_18.md`](DIAGNOSTIC_READING_PATH_2026_04_18.md)
+- [`LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+- [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`PROJECT_SITUATION_REPORT_2026_04_18.md`](PROJECT_SITUATION_REPORT_2026_04_18.md)
 - [`RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
 - [`WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
-- [`BRANCH_VALUE_UNCERTAINTY_CANONICAL_REBUILD_EXECUTION_2026_04_17.md`](BRANCH_VALUE_UNCERTAINTY_CANONICAL_REBUILD_EXECUTION_2026_04_17.md)
-- [`BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md`](BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md)
-- [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
-- [`STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
-- [`ORACLE_PROXY_DEFER_TARGET_STATUS.md`](ORACLE_PROXY_DEFER_TARGET_STATUS.md)
-- [`REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
+- [`ORACLE_MISMATCH_STUDY_2026_04_18.md`](ORACLE_MISMATCH_STUDY_2026_04_18.md)
+- [`FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`](FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md)
+- [`FULL_METHOD_COMPARISON_STATUS_2026_04_18.md`](FULL_METHOD_COMPARISON_STATUS_2026_04_18.md)
 - [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
 - [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
 - [`IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md`](IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md)
@@ -129,8 +129,7 @@ Read these first for the current project identity:
 - [`main_baselines.md`](main_baselines.md)
 - [`datasets_access.md`](datasets_access.md)
 - [`CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`](CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md)
-- [`BRUTEFORCE_LABEL_DATA_STATUS.md`](BRUTEFORCE_LABEL_DATA_STATUS.md)
-- [`BRUTEFORCE_LABEL_SCALING_STATUS.md`](BRUTEFORCE_LABEL_SCALING_STATUS.md)
+- [`REFERENCES_AUDIT_AND_CURATION_2026_04_18.md`](REFERENCES_AUDIT_AND_CURATION_2026_04_18.md)
 - [`REFERENCES_ORGANIZATION_2026_04_18.md`](REFERENCES_ORGANIZATION_2026_04_18.md)
 - [`RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md`](RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md)
 - [`RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md`](RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md)
@@ -143,9 +142,9 @@ Read these first for the current project identity:
 
 ## How to interpret the canonical docs
 
-- `CURRENT_LEADING_DIRECTION_2026_04_17.md` is the shortest explanation of what now looks strongest, what recently failed, and what should be treated as current working interpretation.
-- `DIAGNOSTIC_READING_PATH_2026_04_18.md` is the shortest bridge from current project truth to current leading method diagnosis and near-term diagnostic priorities.
-- `PROJECT_SITUATION_REPORT_2026_04_18.md` is the shortest new synthesis of what is already done, what changed recently, what currently looks promising, and what the likely next steps are.
+- `LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md` is the shortest explanation of what changed recently and what the repository now thinks the central decision question is.
+- `CURRENT_EXPERIMENT_RULE_2026_04_18.md` freezes what kinds of next experiments are and are not currently admissible.
+- `PROJECT_SITUATION_REPORT_2026_04_18.md` is the shortest synthesis of what is already done, what changed recently, what currently looks promising, and what the likely next steps are.
 - `RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md` records the strongest current research ideas and recommended next-step ordering.
 - `WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md` records what workstreams are active and how the repo should be operated in the current phase.
 - `PROJECT_MASTER_PLAN.md` gives the full project identity, final goal, and roadmap.
@@ -154,8 +153,6 @@ Read these first for the current project identity:
 - `CURRENT_SAFE_CLAIMS.md` tells you what is manuscript-safe to say now.
 - `CURRENT_METHOD_SUMMARY_AND_GAPS.md` is the shortest current method-state summary.
 - `WHAT_IS_NOT_WORKING_NOW.md` records directions that are currently weak or explicitly not validated enough.
-- `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md` records the earlier strongest interpretation of hard close-call comparisons as structured ambiguity states.
-- `ORACLE_PROXY_DEFER_TARGET_STATUS.md` records the bounded oracle-proxy defer-target path, calibration layer, and selective-decision interpretation.
 - `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
 - `FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md` gives a compact current-state repository audit and continuation-oriented polish summary.
 - `REPOSITORY_MASTER_DASHBOARD_2026_04_18.md` is the shortest current dashboard for what the project is, what worked, what failed, and what next.
@@ -163,10 +160,11 @@ Read these first for the current project identity:
 - `CONTINUATION_PLAN_2026_04_18.md` gives the recommended next-step order.
 - `IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md` records which major ideas are implemented, partly implemented, or still not yet implemented, with priority guidance.
 - `RESEARCH_AND_EXECUTION_LOG_2026_04_18.md` records the main research, implementation, validation, and recovery steps already completed so they are not rediscovered repeatedly.
-- `BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md` records the earlier support-size robustness diagnosis for the branch-value + uncertainty line.
-- `REFERENCES_ORGANIZATION_2026_04_18.md` explains how to interpret and organize the repository’s reference base.
+- `ORACLE_MISMATCH_STUDY_2026_04_18.md` records the bounded continuation-vs-completion-vs-hybrid oracle comparison and current augmentation conclusion.
+- `FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md` records the current answer-recovery state for contested semantic cases.
+- `FULL_METHOD_COMPARISON_STATUS_2026_04_18.md` records the current broad standing of the method against internal/external/reference baselines.
+- `REFERENCES_AUDIT_AND_CURATION_2026_04_18.md` is the shortest current relevance map of the reference base.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
-- `REPOSITORY_POLISH_PASS_2026_04_17.md` records the earlier bounded repository polish pass and its maintenance rules.
 
 ## Exploratory / active-branch notes
 
