@@ -1,0 +1,15 @@
+{
+  "run_id": "rich_failure_casebook_with_reasoning_traces_20260418",
+  "timestamp_utc": "2026-04-18",
+  "goal": "Recover richer per-case diagnostics with explicit provenance and honest recoverability boundaries.",
+  "inputs": {
+    "failure_ranking": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_learning/current_leading_failure_case_extraction_20260418/failure_case_ranking_table.json",
+    "dominant_selected_case_ids": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_learning/natural_language_failure_casebook_dominant_group_20260418/selected_case_ids.json",
+    "target_state_summaries": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_targets/multistep_branch_utility_target_20260417/regime_multistep_branch_utility_target_k3/state_summaries.jsonl",
+    "target_candidate_labels": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_targets/multistep_branch_utility_target_20260417/regime_multistep_branch_utility_target_k3/candidate_labels.jsonl",
+    "target_pairwise_labels": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_targets/multistep_branch_utility_target_20260417/regime_multistep_branch_utility_target_k3/pairwise_labels.jsonl",
+    "cohere_state_rankings": "/workspace/adaptive-reasoning-budget-allocation/outputs/cohere_branch_allocation_rerank/cohere_rerank_penalized_all_states_20260417/state_rankings.jsonl",
+    "cohere_requests": "/workspace/adaptive-reasoning-budget-allocation/outputs/cohere_branch_allocation_rerank/cohere_rerank_penalized_all_states_20260417/cohere_requests.jsonl"
+  },
+  "selection_policy": "Use dominant-group selected cases, then add remaining strict failure from current leading failure extraction to reach bounded 5-case slice."
+}

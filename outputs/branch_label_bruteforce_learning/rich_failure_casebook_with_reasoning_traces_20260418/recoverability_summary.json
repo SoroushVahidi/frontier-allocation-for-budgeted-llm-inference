@@ -1,0 +1,14 @@
+{
+  "n_cases": 5,
+  "counts": {
+    "fully_recoverable_reasoning_traces": 0,
+    "final_answers_only": 0,
+    "proxy_only": 5
+  },
+  "common_pattern": "Across selected failures, method-chosen branches receive higher learned multistep score/uplift proxies while oracle-preferred branches show better immediate one-step value and outside-option gap.",
+  "notes": [
+    "No branch-level free-text reasoning traces were found for selected states in inspected outputs/archive artifacts.",
+    "No direct method/oracle branch final answer text was found for selected states in inspected outputs/archive artifacts.",
+    "Ground-truth full question/answer recovered from openai/gsm8k where available (train split indices matching example_id suffix)."
+  ]
+}
