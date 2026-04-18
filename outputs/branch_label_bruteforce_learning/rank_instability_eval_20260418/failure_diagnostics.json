@@ -1,0 +1,1054 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "mode": "baseline_all_pairs",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b2",
+          "score_gap_top2": 1.4010957355897788,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b2",
+              "score": 1.3779400980761904,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_label": false
+            },
+            {
+              "branch_id": "b0",
+              "score": -0.023155637513588415,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "score_gap_top2": 0.20856642044593587,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.9022814398135764,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_label": true
+            },
+            {
+              "branch_id": "b0",
+              "score": 0.6937150193676406,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "score_gap_top2": 0.5350783947532773,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.1341340546390788,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.5990556598858015,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "multistep_k3_current",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.05811995918308943,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.751480979883338,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.6933610207002485,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "score_gap_top2": 0.02224220360343332,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.9385679978476783,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_label": true
+            },
+            {
+              "branch_id": "b0",
+              "score": 0.916325794244245,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "score_gap_top2": 0.1552464740489894,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.9037968273226924,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.748550353273703,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "discounted_gamma080_anchor",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.07546987691622054,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.7176127414916782,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.6421428645754577,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "score_gap_top2": 0.02125126929466381,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.9216839868072816,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_label": true
+            },
+            {
+              "branch_id": "b0",
+              "score": 0.9004327175126178,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "score_gap_top2": 0.14434060472714816,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.8834471420017226,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.7391065372745744,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "compute_response_curve_anchor",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.07413397588026993,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.7171068885661853,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.6429729126859154,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "score_gap_top2": 0.021310874549907766,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.9207479509895512,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_label": true
+            },
+            {
+              "branch_id": "b0",
+              "score": 0.8994370764396434,
+              "outside_gap": -0.10556849851210437,
+              "multistep_delta": 0.12538173732750546,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "score_gap_top2": 0.1428410441713568,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.8821597105900347,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.7393186664186779,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "rank_instability_aware",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "choice": "b2",
+          "score_gap_top2": 1.3195870598373367,
+          "instability_prob_top2": 0.009490654195259907,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b2",
+              "score": 1.4934343025015062,
+              "outside_gap": 0.18086456677077517,
+              "multistep_delta": 0.12141143490987127,
+              "state_label": false
+            },
+            {
+              "branch_id": "b0",
+              "score": 0.17384724266416962,
+              "outside_gap": -0.18086456677077517,
+              "multistep_delta": 0.06537418564177166,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "choice": "b3",
+          "score_gap_top2": 0.9262742090329025,
+          "instability_prob_top2": 0.8474603860250259,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 1.3371488748645515,
+              "outside_gap": -0.11354667095340543,
+              "multistep_delta": 0.12373378695438442,
+              "state_label": true
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.410874665831649,
+              "outside_gap": 0.10556849851210437,
+              "multistep_delta": 0.0,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "choice": "b0",
+          "score_gap_top2": 1.0121238412144942,
+          "instability_prob_top2": 0.03671176899148143,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.2822296841314924,
+              "outside_gap": -0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.2701058429169983,
+              "outside_gap": 0.024695791195966765,
+              "multistep_delta": -1.1102230246251565e-16,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "baseline_all_pairs",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "score_gap_top2": 0.662175294120441,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.5397999524088448,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": -0.12237534171159618,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.043846285407860175,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.0143126865507799,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_label": true
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.9704664011429197,
+              "outside_gap": -0.004964927120159945,
+              "multistep_delta": 0.211143811165714,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.0420597467487096,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.9584495152462866,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_label": false
+            },
+            {
+              "branch_id": "b3",
+              "score": 0.916389768497577,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "multistep_k3_current",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "score_gap_top2": 0.1845950607970005,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.0398691100275976,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.8552740492305971,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.07698981678956329,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.1454574030701923,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_label": true
+            },
+            {
+              "branch_id": "b1",
+              "score": 1.068467586280629,
+              "outside_gap": -0.004509329124314121,
+              "multistep_delta": 0.0,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.049496223405817386,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.0999022844384085,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_label": false
+            },
+            {
+              "branch_id": "b3",
+              "score": 1.0504060610325912,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "discounted_gamma080_anchor",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "score_gap_top2": 0.1686077513480181,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.0216905733123913,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.8530828219643732,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.05910511839718802,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.096023115235405,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_label": true
+            },
+            {
+              "branch_id": "b1",
+              "score": 1.036917996838217,
+              "outside_gap": -0.004509329124314121,
+              "multistep_delta": 0.0,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.028099827136605082,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.077474383276432,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_label": false
+            },
+            {
+              "branch_id": "b3",
+              "score": 1.0493745561398269,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "compute_response_curve_anchor",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "score_gap_top2": 0.16809870394618875,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.0206113987970333,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.8525126948508446,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.058124665886381655,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.0953735794165198,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_label": true
+            },
+            {
+              "branch_id": "b1",
+              "score": 1.0372489135301382,
+              "outside_gap": -0.004509329124314121,
+              "multistep_delta": 0.0,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.028868228174059984,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 1.0756669071461982,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_label": false
+            },
+            {
+              "branch_id": "b3",
+              "score": 1.0467986789721382,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "rank_instability_aware",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "choice": "b0",
+          "score_gap_top2": 0.37607188909409817,
+          "instability_prob_top2": 0.005416139038919989,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 0.9909069605422637,
+              "outside_gap": 0.19128266535895522,
+              "multistep_delta": 0.15541955397859697,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.6148350714481655,
+              "outside_gap": -0.25109788952490586,
+              "multistep_delta": 0.11507923730082525,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "choice": "b0",
+          "score_gap_top2": 0.6434749770423878,
+          "instability_prob_top2": 0.9346670123196477,
+          "instability_state_label": true,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b0",
+              "score": 3.4031753625969063,
+              "outside_gap": 0.004509329124314121,
+              "multistep_delta": 0.16502060826914056,
+              "state_label": true
+            },
+            {
+              "branch_id": "b2",
+              "score": 2.7597003855545186,
+              "outside_gap": -0.004964927120159945,
+              "multistep_delta": 0.211143811165714,
+              "state_label": true
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "choice": "b3",
+          "score_gap_top2": 0.09558383092651246,
+          "instability_prob_top2": 0.04559767312723847,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 2.17533690979944,
+              "outside_gap": -0.015977574697167096,
+              "multistep_delta": 0.17361880075484293,
+              "state_label": false
+            },
+            {
+              "branch_id": "b0",
+              "score": 2.0797530788729275,
+              "outside_gap": 0.015977574697167096,
+              "multistep_delta": 0.1761856898045513,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "baseline_all_pairs",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b3",
+          "score_gap_top2": 0.1628950372878974,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.6202846290884019,
+              "outside_gap": -0.12087250120266146,
+              "multistep_delta": 0.0,
+              "state_label": false
+            },
+            {
+              "branch_id": "b1",
+              "score": 0.4573895918005045,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "score_gap_top2": 0.9698386249776589,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.25537502337519247,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": -0.7144636016024665,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "multistep_k3_current",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b1",
+          "score_gap_top2": 0.011168210173010173,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b1",
+              "score": 1.1534657205631271,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 1.142297510390117,
+              "outside_gap": -0.09635245100864331,
+              "multistep_delta": 0.0,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "score_gap_top2": 0.15162818360968078,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.8330110241419071,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.6813828405322263,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "discounted_gamma080_anchor",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b1",
+          "score_gap_top2": 0.01014359085252492,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b1",
+              "score": 1.1305739185920056,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 1.1204303277394807,
+              "outside_gap": -0.09635245100864331,
+              "multistep_delta": 0.0,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "score_gap_top2": 0.12933805300162182,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.810794741776714,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.6814566887750921,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "compute_response_curve_anchor",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b1",
+          "score_gap_top2": 0.010555194487222863,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b1",
+              "score": 1.1293244969071252,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 1.1187693024199024,
+              "outside_gap": -0.09635245100864331,
+              "multistep_delta": 0.0,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "score_gap_top2": 0.12945773626888424,
+          "instability_prob_top2": 0.0,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 0.8099095388698158,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": 0.6804518026009315,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "rank_instability_aware",
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "choice": "b3",
+          "score_gap_top2": 0.20760864085827269,
+          "instability_prob_top2": 0.005681825992690485,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 2.4357176966920067,
+              "outside_gap": -0.12087250120266146,
+              "multistep_delta": 0.0,
+              "state_label": false
+            },
+            {
+              "branch_id": "b1",
+              "score": 2.228109055833734,
+              "outside_gap": 0.09635245100864331,
+              "multistep_delta": -2.220446049250313e-16,
+              "state_label": false
+            }
+          ]
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "choice": "b3",
+          "score_gap_top2": 2.271509063256879,
+          "instability_prob_top2": 0.00665223814931876,
+          "instability_state_label": false,
+          "defer": false,
+          "top2": [
+            {
+              "branch_id": "b3",
+              "score": 1.9403233970011122,
+              "outside_gap": 0.1858335440185609,
+              "multistep_delta": 0.15234555104142078,
+              "state_label": false
+            },
+            {
+              "branch_id": "b2",
+              "score": -0.33118566625576645,
+              "outside_gap": -0.1858335440185609,
+              "multistep_delta": 0.0,
+              "state_label": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

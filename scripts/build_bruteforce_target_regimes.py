@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--run-id", required=True)
     p.add_argument(
         "--pair-strategies",
-        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm,allocation_regret_target,allocation_regret_target_no_outside,multistep_branch_utility_target_k1,multistep_branch_utility_target_k2,multistep_branch_utility_target_k3,compute_response_curve_target_h123",
+        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm,allocation_regret_target,allocation_regret_target_no_outside,multistep_branch_utility_target_k1,multistep_branch_utility_target_k2,multistep_branch_utility_target_k3,compute_response_curve_target_h123,rank_instability_target_v1",
         help="comma-separated strategies",
     )
     p.add_argument("--near-tie-margin", type=float, default=0.03)
@@ -97,6 +97,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--response-curve-score-w1", type=float, default=1.0)
     p.add_argument("--response-curve-score-w2", type=float, default=0.60)
     p.add_argument("--response-curve-score-w3", type=float, default=0.30)
+    p.add_argument("--rank-instability-discount-gamma", type=float, default=0.8)
+    p.add_argument("--rank-instability-margin-threshold", type=float, default=0.03)
+    p.add_argument("--rank-instability-min-disagreement-count", type=int, default=1)
     return p.parse_args()
 
 
@@ -264,6 +267,100 @@ def _compute_response_curve_target_for_candidate(
         "compute_response_curve_decision_scalar_w2": float(w2),
         "compute_response_curve_decision_scalar_w3": float(w3),
         "compute_response_curve_decision_scalar": scalar,
+    }
+
+
+def _statewise_rank_instability_signals(
+    state_rows: list[dict[str, Any]],
+    *,
+    state_id: str,
+    branch_index_map: dict[tuple[str, str], int],
+    utility_lambda: float,
+    discount_gamma: float,
+    response_curve_max_horizon: int,
+    response_curve_score_weights: tuple[float, float, float],
+    margin_threshold: float,
+    min_disagreement_count: int,
+) -> dict[str, Any]:
+    by_branch = {str(r.get("branch_id", "")): r for r in state_rows}
+    signals: dict[str, dict[str, float]] = {
+        "one_step": {},
+        "multistep_k3": {},
+        "discounted_gamma": {},
+        "curve_scalar": {},
+    }
+    for bid, row in by_branch.items():
+        one_step = float(row.get("estimated_value_if_allocate_next", 0.0))
+        ms = _multistep_utility_target_for_candidate(
+            row,
+            state_id=state_id,
+            branch_id=bid,
+            branch_index_map=branch_index_map,
+            horizon_k=3,
+            utility_lambda=utility_lambda,
+        )
+        dms = _discounted_multistep_utility_target_for_candidate(
+            row,
+            state_id=state_id,
+            branch_id=bid,
+            branch_index_map=branch_index_map,
+            utility_lambda=utility_lambda,
+            discount_gamma=discount_gamma,
+            max_horizon=3,
+        )
+        curve = _compute_response_curve_target_for_candidate(
+            row,
+            state_id=state_id,
+            branch_id=bid,
+            branch_index_map=branch_index_map,
+            utility_lambda=utility_lambda,
+            max_horizon=response_curve_max_horizon,
+            score_weights=response_curve_score_weights,
+        )
+        signals["one_step"][bid] = one_step
+        signals["multistep_k3"][bid] = float(ms["multistep_branch_utility_target"])
+        signals["discounted_gamma"][bid] = float(dms["multistep_branch_utility_target"])
+        signals["curve_scalar"][bid] = float(curve["compute_response_curve_decision_scalar"])
+
+    top1_by_signal: dict[str, str] = {}
+    top1_margin_by_signal: dict[str, float] = {}
+    for name, vals in signals.items():
+        ranked = sorted(vals.items(), key=lambda x: x[1], reverse=True)
+        top1 = str(ranked[0][0]) if ranked else ""
+        top2v = float(ranked[1][1]) if len(ranked) > 1 else float(ranked[0][1]) if ranked else 0.0
+        top1_by_signal[name] = top1
+        top1_margin_by_signal[name] = float(float(ranked[0][1]) - top2v) if ranked else 0.0
+
+    unique_top1 = sorted(set(top1_by_signal.values()))
+    disagreement_count = max(0, len(unique_top1) - 1)
+    min_margin = min(top1_margin_by_signal.values()) if top1_margin_by_signal else 0.0
+    unstable = bool(
+        disagreement_count >= int(max(1, min_disagreement_count))
+        and float(min_margin) <= float(margin_threshold)
+    )
+    score = float(min(1.0, 0.5 * disagreement_count + max(0.0, 1.0 - (min_margin / max(1e-6, margin_threshold))) * 0.5))
+
+    pair_orientation: dict[tuple[str, str], dict[str, int]] = {}
+    branch_ids = sorted(by_branch.keys())
+    for i in range(len(branch_ids)):
+        for j in range(i + 1, len(branch_ids)):
+            bi, bj = branch_ids[i], branch_ids[j]
+            per_signal = {}
+            for sname, vals in signals.items():
+                per_signal[sname] = 1 if float(vals.get(bi, 0.0)) >= float(vals.get(bj, 0.0)) else 0
+            pair_orientation[(bi, bj)] = per_signal
+
+    return {
+        "state_id": state_id,
+        "top1_by_signal": top1_by_signal,
+        "top1_margin_by_signal": top1_margin_by_signal,
+        "rank_instability_unique_top1_count": int(len(unique_top1)),
+        "rank_instability_top1_disagreement_count": int(disagreement_count),
+        "rank_instability_min_top1_margin_abs": float(min_margin),
+        "rank_instability_state_score": float(score),
+        "rank_instability_state_label": bool(unstable),
+        "rank_instability_pair_orientations": pair_orientation,
+        "rank_instability_signals": signals,
     }
 
 
@@ -861,9 +958,30 @@ def main() -> None:
             "response_curve_score_w1": float(args.response_curve_score_w1),
             "response_curve_score_w2": float(args.response_curve_score_w2),
             "response_curve_score_w3": float(args.response_curve_score_w3),
+            "rank_instability_discount_gamma": float(args.rank_instability_discount_gamma),
+            "rank_instability_margin_threshold": float(args.rank_instability_margin_threshold),
+            "rank_instability_min_disagreement_count": int(args.rank_instability_min_disagreement_count),
         },
         "regimes": {},
     }
+
+    state_rank_instability: dict[str, dict[str, Any]] = {}
+    for sid, rows in state_to_cands.items():
+        state_rank_instability[sid] = _statewise_rank_instability_signals(
+            rows,
+            state_id=sid,
+            branch_index_map=state_branch_index_map,
+            utility_lambda=float(args.multistep_utility_lambda),
+            discount_gamma=float(args.rank_instability_discount_gamma),
+            response_curve_max_horizon=int(args.response_curve_max_horizon),
+            response_curve_score_weights=(
+                float(args.response_curve_score_w1),
+                float(args.response_curve_score_w2),
+                float(args.response_curve_score_w3),
+            ),
+            margin_threshold=float(args.rank_instability_margin_threshold),
+            min_disagreement_count=int(args.rank_instability_min_disagreement_count),
+        )
 
     for strat in strategies:
         kept: list[dict[str, Any]] = []
@@ -968,6 +1086,8 @@ def main() -> None:
                     elif strat in {"multistep_branch_utility_target_k1", "multistep_branch_utility_target_k2", "multistep_branch_utility_target_k3"}:
                         keep = True
                     elif strat == "compute_response_curve_target_h123":
+                        keep = True
+                    elif strat == "rank_instability_target_v1":
                         keep = True
                     elif _parse_discounted_gamma_from_strategy(strat) is not None:
                         keep = True
@@ -1148,6 +1268,49 @@ def main() -> None:
                             annotated["pair_curve_marginal_gap_m1"] = float(ui["compute_response_curve_marginal_m1"] - uj["compute_response_curve_marginal_m1"])
                             annotated["pair_curve_marginal_gap_m2"] = float(ui["compute_response_curve_marginal_m2"] - uj["compute_response_curve_marginal_m2"])
                             annotated["pair_curve_marginal_gap_m3"] = float(ui["compute_response_curve_marginal_m3"] - uj["compute_response_curve_marginal_m3"])
+                        if strat == "rank_instability_target_v1":
+                            rank_meta = state_rank_instability.get(sid, {})
+                            pair_signals = rank_meta.get("rank_instability_pair_orientations", {})
+                            ori_key = tuple(sorted([str(annotated["branch_i"]), str(annotated["branch_j"])]))
+                            ori = pair_signals.get(ori_key, {})
+                            if str(annotated["branch_i"]) <= str(annotated["branch_j"]):
+                                one_step_pref = int(ori.get("one_step", int(annotated.get("label", 0))))
+                                multistep_pref = int(ori.get("multistep_k3", one_step_pref))
+                                discounted_pref = int(ori.get("discounted_gamma", one_step_pref))
+                                curve_pref = int(ori.get("curve_scalar", one_step_pref))
+                            else:
+                                one_step_pref = 1 - int(ori.get("one_step", 1 - int(annotated.get("label", 0))))
+                                multistep_pref = 1 - int(ori.get("multistep_k3", 1 - one_step_pref))
+                                discounted_pref = 1 - int(ori.get("discounted_gamma", 1 - one_step_pref))
+                                curve_pref = 1 - int(ori.get("curve_scalar", 1 - one_step_pref))
+                            disagreement_count = int(
+                                int(one_step_pref != multistep_pref)
+                                + int(one_step_pref != discounted_pref)
+                                + int(one_step_pref != curve_pref)
+                            )
+                            annotated["label"] = int(multistep_pref)
+                            annotated["preference"] = int(multistep_pref)
+                            annotated["label_source"] = "rank_instability_target_multistep_k3_anchor"
+                            annotated["rank_instability_target_version"] = "rank_instability_target_v1"
+                            annotated["rank_instability_top1_by_signal"] = rank_meta.get("top1_by_signal", {})
+                            annotated["rank_instability_top1_margin_by_signal"] = rank_meta.get("top1_margin_by_signal", {})
+                            annotated["rank_instability_state_label"] = bool(rank_meta.get("rank_instability_state_label", False))
+                            annotated["rank_instability_state_score"] = float(rank_meta.get("rank_instability_state_score", 0.0))
+                            annotated["rank_instability_top1_disagreement_count"] = int(rank_meta.get("rank_instability_top1_disagreement_count", 0))
+                            annotated["rank_instability_min_top1_margin_abs"] = float(rank_meta.get("rank_instability_min_top1_margin_abs", 0.0))
+                            annotated["rank_instability_pair_disagreement_count"] = int(disagreement_count)
+                            annotated["rank_instability_pair_label"] = bool(
+                                disagreement_count >= 2
+                                and float(annotated.get("margin_abs", 0.0)) <= float(args.rank_instability_margin_threshold)
+                            )
+                            annotated["rank_instability_pair_score"] = float(min(1.0, disagreement_count / 3.0))
+                            annotated["rank_instability_pair_pref_one_step"] = int(one_step_pref)
+                            annotated["rank_instability_pair_pref_multistep_k3"] = int(multistep_pref)
+                            annotated["rank_instability_pair_pref_discounted"] = int(discounted_pref)
+                            annotated["rank_instability_pair_pref_curve"] = int(curve_pref)
+                            annotated["rank_instability_discount_gamma"] = float(args.rank_instability_discount_gamma)
+                            annotated["rank_instability_margin_threshold"] = float(args.rank_instability_margin_threshold)
+                            annotated["rank_instability_min_disagreement_count"] = int(args.rank_instability_min_disagreement_count)
                         gamma = _parse_discounted_gamma_from_strategy(strat)
                         if gamma is not None:
                             ci = cand_map[(sid, str(annotated["branch_i"]))]
@@ -1250,6 +1413,61 @@ def main() -> None:
                         ),
                     )
                 )
+        if strat == "rank_instability_target_v1":
+            for rc in regime_candidates:
+                sid = str(rc.get("state_id", ""))
+                bid = str(rc.get("branch_id", ""))
+                rc.update(
+                    _multistep_utility_target_for_candidate(
+                        rc,
+                        state_id=sid,
+                        branch_id=bid,
+                        branch_index_map=state_branch_index_map,
+                        horizon_k=3,
+                        utility_lambda=float(args.multistep_utility_lambda),
+                    )
+                )
+                rc.update(
+                    _discounted_multistep_utility_target_for_candidate(
+                        rc,
+                        state_id=sid,
+                        branch_id=bid,
+                        branch_index_map=state_branch_index_map,
+                        utility_lambda=float(args.multistep_utility_lambda),
+                        discount_gamma=float(args.rank_instability_discount_gamma),
+                        max_horizon=3,
+                    )
+                )
+                rc.update(
+                    _compute_response_curve_target_for_candidate(
+                        rc,
+                        state_id=sid,
+                        branch_id=bid,
+                        branch_index_map=state_branch_index_map,
+                        utility_lambda=float(args.multistep_utility_lambda),
+                        max_horizon=int(args.response_curve_max_horizon),
+                        score_weights=(
+                            float(args.response_curve_score_w1),
+                            float(args.response_curve_score_w2),
+                            float(args.response_curve_score_w3),
+                        ),
+                    )
+                )
+                rank_meta = state_rank_instability.get(sid, {})
+                rc["rank_instability_target_version"] = "rank_instability_target_v1"
+                rc["rank_instability_state_label"] = bool(rank_meta.get("rank_instability_state_label", False))
+                rc["rank_instability_state_score"] = float(rank_meta.get("rank_instability_state_score", 0.0))
+                rc["rank_instability_top1_disagreement_count"] = int(rank_meta.get("rank_instability_top1_disagreement_count", 0))
+                rc["rank_instability_unique_top1_count"] = int(rank_meta.get("rank_instability_unique_top1_count", 1))
+                rc["rank_instability_min_top1_margin_abs"] = float(rank_meta.get("rank_instability_min_top1_margin_abs", 0.0))
+                rc["rank_instability_top1_by_signal"] = rank_meta.get("top1_by_signal", {})
+                rc["rank_instability_top1_margin_by_signal"] = rank_meta.get("top1_margin_by_signal", {})
+                rc["rank_instability_top1_contains_branch"] = bool(
+                    bid in set(str(v) for v in rank_meta.get("top1_by_signal", {}).values())
+                )
+                rc["rank_instability_discount_gamma"] = float(args.rank_instability_discount_gamma)
+                rc["rank_instability_margin_threshold"] = float(args.rank_instability_margin_threshold)
+                rc["rank_instability_min_disagreement_count"] = int(args.rank_instability_min_disagreement_count)
         out_dir = out_root / f"regime_{strat}"
         out_dir.mkdir(parents=True, exist_ok=True)
         _write_jsonl(out_dir / "candidate_labels.jsonl", regime_candidates)
@@ -1354,6 +1572,15 @@ def main() -> None:
             "pair_curve_scalar_gap_near_tie_mean": (
                 sum(float(r.get("pair_curve_scalar_gap", 0.0)) for r in kept if bool(r.get("near_tie_flag", False)))
                 / max(1, sum(1 for r in kept if bool(r.get("near_tie_flag", False))))
+            ),
+            "rank_instability_state_label_rate": (
+                sum(1 for r in kept if bool(r.get("rank_instability_state_label", False))) / max(1, len(kept))
+            ),
+            "rank_instability_pair_label_rate": (
+                sum(1 for r in kept if bool(r.get("rank_instability_pair_label", False))) / max(1, len(kept))
+            ),
+            "rank_instability_pair_disagreement_count_mean": (
+                sum(float(r.get("rank_instability_pair_disagreement_count", 0.0)) for r in kept) / max(1, len(kept))
             ),
         }
         (out_dir / "target_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

@@ -1,0 +1,25 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "test_states": 3,
+      "test_pairs": 7,
+      "near_tie_state_rate": 0.6666666666666666,
+      "rank_instability_state_label_rate": 0.3333333333333333
+    },
+    {
+      "seed": 29,
+      "test_states": 3,
+      "test_pairs": 12,
+      "near_tie_state_rate": 0.6666666666666666,
+      "rank_instability_state_label_rate": 0.3333333333333333
+    },
+    {
+      "seed": 47,
+      "test_states": 2,
+      "test_pairs": 4,
+      "near_tie_state_rate": 0.5,
+      "rank_instability_state_label_rate": 0.0
+    }
+  ]
+}
