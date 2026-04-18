@@ -1,0 +1,9 @@
+{
+  "states_total": 34,
+  "state_with_method_choice": 34,
+  "branch_rows": 101,
+  "observability_rows": 101,
+  "completion_signal_rows": 101,
+  "normalized_answers_recoverable": 0,
+  "final_answer_text_recoverable": 0
+}
