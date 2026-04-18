@@ -129,3 +129,20 @@ Use these artifacts to audit runnability and status:
 - `link_only`
 - `discuss_only`
 - `blocked`
+
+
+---
+
+## Required baseline families for current paper phase (2026-04-18 lock)
+
+This repo keeps the baseline universe aligned to **fixed-budget next-step branch allocation**:
+
+| Family | Canonical title | Class | Current external status | Essential? |
+|---|---|---|---|---|
+| qstar_deliberative_planning | Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning | direct | discuss-only (not-yet-integrated) | yes |
+| lets_verify_step_by_step | Let's Verify Step by Step | adjacent completion-aware PRM/verifier | discuss-only | yes (adjacent) |
+| rational_metareasoning_llm | Rational Metareasoning for Large Language Models | adjacent stop-vs-continue | discuss-only | yes (adjacent) |
+| efficient_contextual_llm_cascades | Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning | adjacent routing/cascade | runnable-adjacent (via cascade import validation) | optional unless scope broadens |
+| best_arm_identification_fixed_budget | Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence | ingredient-adjacent boundary | discuss-only framing | yes (near-tie framing) |
+
+Honesty rule: these entries are included for baseline completeness and reviewer expectation management; discuss-only entries are **not** presented as runnable in-repo baselines.

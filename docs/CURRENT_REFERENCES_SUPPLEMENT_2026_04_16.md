@@ -183,3 +183,16 @@ Prefer to say:
 
 For the current curated relevance map of the reference base, see:
 - `docs/REFERENCES_AUDIT_AND_CURATION_2026_04_18.md`
+
+
+## Required baseline-family lock for current phase (added 2026-04-18)
+
+The following families are mandatory in repository-facing baseline framing for this paper phase:
+
+- **Direct essential family:** *Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning (currently discuss-only / not-yet-integrated).
+- **Adjacent essential family:** *Let's Verify Step by Step* (completion-aware PRM/verifier; adjacent, non-equivalent control space).
+- **Adjacent essential family:** *Rational Metareasoning for Large Language Models* (stop-vs-continue adaptive compute framing; adjacent).
+- **Adjacent optional-unless-scope-broadens:** *Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning* (routing/cascade family).
+- **Ingredient-adjacent boundary essential framing:** *Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence* (small-gap near-tie allocation lens).
+
+This lock should be used alongside the canonical project center: fixed-budget next-step branch allocation with continuation-value core plus bounded completion-aware correction in disagreement slices.

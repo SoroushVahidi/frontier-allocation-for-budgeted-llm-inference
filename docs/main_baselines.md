@@ -1,6 +1,22 @@
 # Main baselines
 
-These baselines cover key neighboring approaches to adaptive test-time compute allocation in multi-step LLM reasoning: process-reward-guided tree search, step-level process verification, policy-guided tree search, and fixed-budget guided search with automated process verifiers. Together, they provide a focused comparison set spanning search guidance, intermediate-state scoring, and learned decision control under compute constraints.
+## Canonical baseline taxonomy lock (2026-04-18 final pass)
+
+For this repository phase, baselines are grouped as:
+
+1. **Direct baselines** — genuinely close to fixed-budget next-step branch allocation / deliberate branch expansion control.
+2. **Adjacent but important baselines** — reviewer-expected neighbors that are not control-space-equivalent (completion-aware PRM/verifier selection, stop-vs-continue adaptive compute, routing/cascades, and small-gap fixed-budget allocation comparators).
+3. **Ingredient / framing references** — formulation and signal references that should inform framing but not be oversold as direct empirical baselines.
+
+### Required family status table (project-locked)
+
+| Family | Canonical paper title | Repo short name | Class | Runnable status | Essential this paper phase? | Why it matters here | Why not fully equivalent when non-direct |
+|---|---|---|---|---|---|---|---|
+| Deliberative planning search | Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning | qstar_deliberative_planning | **direct** | discuss-only / not-yet-integrated | **essential** | Closest published family to deliberate multi-step branch planning under budget pressure. | N/A (direct family target). |
+| Completion-aware PRM/verifier | Let's Verify Step by Step | lets_verify_step_by_step | **adjacent** | discuss-only (reference/ingredient + external note) | **essential adjacent** | Core completion/process-evidence family relevant to bounded correction in disagreement slices. | Optimizes verifier/process scoring, not explicit next-step branch allocation over active frontier. |
+| Adaptive stop-vs-continue compute | Rational Metareasoning for Large Language Models | rational_metareasoning_llm | **adjacent** | discuss-only (framing/theory) | **essential adjacent** | Provides value-of-computation framing for continuation decisions under cost. | Primarily stop/continue metareasoning framing, not direct multi-branch frontier allocation control. |
+| Routing / cascades | Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning | efficient_contextual_llm_cascades | **adjacent** | runnable-adjacent via cascade routing import validator | optional (essential only if scope broadens to routing-first framing) | Reviewer-expected adaptive-compute routing comparator. | Route/cascade action space differs from branch-level next-step allocation among active reasoning branches. |
+| Small-gap fixed-budget allocation | Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence | best_arm_identification_fixed_budget | **ingredient-adjacent boundary** | discuss-only framing reference | **essential framing** | Strongest theoretical lens for hard near-tie disagreement states and gap-sensitive budget allocation. | Classical bandit abstraction is not a direct empirical LLM reasoning baseline stack. |
 
 ## ReST-MCTS*
 
@@ -162,3 +178,10 @@ Companion artifacts:
 
 Safe wording rule:
 - Do **not** claim full official reproduction for any baseline unless the official training/inference stack is actually run in this repo and auditable from artifacts.
+
+
+## Final baseline-scope guardrail (2026-04-18)
+
+- Do not reframe this baseline section as a generic routing paper, generic adaptive-TTC survey, or best-of-N paper.
+- Keep the center on **fixed-budget next-step branch allocation**, **continuation-value core**, and **bounded completion-aware correction in near-tie disagreement slices**.
+- Preserve status honesty with explicit labels: `runnable_direct`, `runnable_adjacent`, `adapter_based`, `import_validated`, `discuss_only`, `blocked`.

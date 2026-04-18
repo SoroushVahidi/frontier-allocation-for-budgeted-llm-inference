@@ -329,3 +329,16 @@ When a new reference appears, record **all four** of the following explicitly:
 2. what idea it gave the project,
 3. whether it is manuscript-facing, experiment-facing, or provenance-only,
 4. and whether it is safe to foreground in the current paper story.
+
+
+## Cross-doc baseline taxonomy consistency lock (2026-04-18)
+
+| Family short name | Canonical title | Class | Current repo status | Paper-phase priority |
+|---|---|---|---|---|
+| `qstar_deliberative_planning` | Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning | direct baseline family | discuss-only / implementation-gap | essential |
+| `lets_verify_step_by_step` | Let's Verify Step by Step | adjacent baseline family | discuss-only | essential adjacent |
+| `rational_metareasoning_llm` | Rational Metareasoning for Large Language Models | adjacent baseline family | discuss-only | essential adjacent |
+| `efficient_contextual_llm_cascades` | Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning | adjacent baseline family | runnable-adjacent via import validation | optional unless framing broadens |
+| `best_arm_identification_fixed_budget` | Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence | ingredient/adjacent-boundary family | discuss-only framing reference | essential framing for near-ties |
+
+Use this table as the canonical normalization layer across `docs/main_baselines.md`, `docs/external_baseline_completeness_report.md`, `docs/EVALUATION_AND_BASELINES_INDEX.md`, `external/README.md`, and `configs/external_baselines_registry.json`.
