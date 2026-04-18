@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded validation pass for multistep branch-utility target horizons."""
+"""Bounded validation pass for multistep and discounted multistep branch-utility targets."""
 
 from __future__ import annotations
 
@@ -130,9 +130,8 @@ def _target_distribution_diagnostics(candidates: list[dict[str, Any]], eval_pair
         if str(p.get("split")) != "test":
             continue
         sid = str(p.get("state_id", ""))
-        sid_flags.setdefault(sid, {"near": False, "adj": False})
+        sid_flags.setdefault(sid, {"near": False})
         sid_flags[sid]["near"] = bool(sid_flags[sid]["near"] or bool(p.get("near_tie_flag", False)))
-        sid_flags[sid]["adj"] = bool(sid_flags[sid]["adj"] or str(p.get("pair_type", "")) == "adjacent_rank")
 
     near_vals: list[float] = []
     non_near_vals: list[float] = []
@@ -189,86 +188,145 @@ def _state_best_branch_map(candidates: list[dict[str, Any]], target_field: str) 
     return out
 
 
-def _build_state_hardness_flags(eval_pairs: list[dict[str, Any]]) -> dict[str, dict[str, bool]]:
-    flags: dict[str, dict[str, bool]] = {}
-    for r in eval_pairs:
+def _parse_gamma_from_regime(regime: str) -> float | None:
+    prefix = "discounted_multistep_branch_utility_target_gamma"
+    if str(regime).startswith(prefix):
+        return float(int(str(regime)[len(prefix) :])) / 100.0
+    return None
+
+
+def _build_state_branch_table(candidates: list[dict[str, Any]], target_field: str) -> dict[str, dict[str, dict[str, float | str]]]:
+    out: dict[str, dict[str, dict[str, float | str]]] = {}
+    for r in candidates:
         if str(r.get("split")) != "test":
             continue
         sid = str(r.get("state_id", ""))
-        f = flags.setdefault(sid, {"near_tie": False, "adjacent": False})
-        f["near_tie"] = bool(f["near_tie"] or bool(r.get("near_tie_flag", False)))
-        f["adjacent"] = bool(f["adjacent"] or str(r.get("pair_type", "")) == "adjacent_rank")
-    return flags
+        bid = str(r.get("branch_id", ""))
+        out.setdefault(sid, {})[bid] = {
+            "target": float(r.get(target_field, r.get("estimated_value_if_allocate_next", 0.0))),
+            "one_step": float(r.get("estimated_value_if_allocate_next", 0.0)),
+            "outside_gap": float(r.get("branch_vs_outside_gap", 0.0)),
+            "multistep_delta": float(r.get("multistep_branch_utility_delta_vs_onestep", 0.0)),
+        }
+    return out
 
 
-def _disagreement_diagnostics(k1_best: dict[str, str], k3_best: dict[str, str], state_flags: dict[str, dict[str, bool]]) -> dict[str, Any]:
-    sids = sorted(set(k1_best) & set(k3_best))
-
-    def _rate(mask: Callable[[str], bool]) -> dict[str, Any]:
-        use = [sid for sid in sids if mask(sid)]
-        if not use:
-            return {"states": 0, "disagreement_n": 0, "disagreement_rate": 0.0}
-        dis = sum(int(k1_best[sid] != k3_best[sid]) for sid in use)
-        return {"states": len(use), "disagreement_n": int(dis), "disagreement_rate": float(dis / len(use))}
-
-    changed = [sid for sid in sids if k1_best[sid] != k3_best[sid]]
+def _disagreement_vs_reference(reference_best: dict[str, str], candidate_best: dict[str, str], taxonomy_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    tax_by_state = {str(r["state_id"]): r for r in taxonomy_rows}
+    shared_states = sorted(set(reference_best) & set(candidate_best))
+    changed = [sid for sid in shared_states if reference_best[sid] != candidate_best[sid]]
+    dominant = [sid for sid in changed if str(tax_by_state.get(sid, {}).get("mistake_type", "")) == "delayed_payoff_overvaluation_with_outside_option_miss"]
     return {
-        "overall": _rate(lambda _sid: True),
-        "near_tie_state": _rate(lambda sid: bool(state_flags.get(sid, {}).get("near_tie", False))),
-        "non_near_tie_state": _rate(lambda sid: not bool(state_flags.get(sid, {}).get("near_tie", False))),
-        "adjacent_rank_heavy_state": _rate(lambda sid: bool(state_flags.get(sid, {}).get("adjacent", False))),
+        "states_shared": len(shared_states),
+        "changed_states": len(changed),
+        "changed_rate": float(len(changed) / len(shared_states)) if shared_states else 0.0,
+        "changed_dominant_group_states": len(dominant),
+        "changed_dominant_group_share": float(len(dominant) / len(changed)) if changed else 0.0,
         "changed_state_examples": changed[:100],
     }
 
 
-def _support_diagnostics(eval_pairs: list[dict[str, Any]], eval_candidates: list[dict[str, Any]]) -> dict[str, Any]:
-    test_pairs = [r for r in eval_pairs if str(r.get("split")) == "test"]
-    test_candidates = [r for r in eval_candidates if str(r.get("split")) == "test"]
-    train_pairs = [r for r in eval_pairs if str(r.get("split")) == "train"]
-    train_candidates = [r for r in eval_candidates if str(r.get("split")) == "train"]
+def _taxonomy_assign(chosen: dict[str, float | str], oracle: dict[str, float | str], *, is_near_tie_state: bool, oracle_gap: float, pred_top2_margin: float) -> tuple[str, str]:
+    delayed_payoff_signature = (
+        float(chosen.get("multistep_delta", 0.0)) > 0.05
+        and float(chosen.get("outside_gap", 0.0)) < 0.0
+        and float(oracle.get("outside_gap", 0.0)) > 0.0
+    )
+    if delayed_payoff_signature:
+        return (
+            "delayed_payoff_overvaluation_with_outside_option_miss",
+            "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap",
+        )
 
-    test_state_ids = sorted({str(r.get("state_id", "")) for r in test_pairs})
-    near_tie_pairs = [r for r in test_pairs if bool(r.get("near_tie_flag", False))]
-    adjacent_pairs = [r for r in test_pairs if str(r.get("pair_type", "")) == "adjacent_rank"]
-    strict_pairs = [r for r in test_pairs if bool(r.get("near_tie_flag", False)) and str(r.get("pair_type", "")) == "adjacent_rank"]
+    fragile_boundary_signature = bool(is_near_tie_state and oracle_gap <= 0.03 and pred_top2_margin >= 0.08)
+    if fragile_boundary_signature:
+        return (
+            "fragile_boundary_overconfidence",
+            "near-tie with tiny oracle gap but large predicted margin",
+        )
+    return ("other_score_ordering_error", "residual mismatch outside stronger signatures")
 
-    near_state_ids = sorted({str(r.get("state_id", "")) for r in near_tie_pairs})
-    adjacent_state_ids = sorted({str(r.get("state_id", "")) for r in adjacent_pairs})
-    pair_rows = len(test_pairs) + len(train_pairs)
 
-    warnings = []
-    if len(test_pairs) < 30:
-        warnings.append("Very small test pair denominator (<30); accuracy deltas are fragile.")
-    if len(near_tie_pairs) < 10:
-        warnings.append("Near-tie test support is very small (<10 pairs).")
-    if len(strict_pairs) < 8:
-        warnings.append("Strict matched canonical slice support is very small (<8 pairs).")
+def _failure_diagnostics_for_mode(
+    *,
+    mode: str,
+    seed: int,
+    mode_best: dict[str, str],
+    oracle_best: dict[str, str],
+    branch_table: dict[str, dict[str, dict[str, float | str]]],
+    state_near_tie: dict[str, bool],
+) -> dict[str, Any]:
+    rows = []
+    for sid in sorted(set(mode_best) & set(oracle_best)):
+        chosen_id = mode_best[sid]
+        oracle_id = oracle_best[sid]
+        branches = branch_table.get(sid, {})
+        chosen = branches.get(chosen_id)
+        oracle = branches.get(oracle_id)
+        if not chosen or not oracle:
+            continue
+        pred_vals = sorted([float(v.get("target", 0.0)) for v in branches.values()], reverse=True)
+        pred_margin = float(pred_vals[0] - pred_vals[1]) if len(pred_vals) >= 2 else 0.0
+        oracle_gap = float(oracle.get("one_step", 0.0) - chosen.get("one_step", 0.0))
+        is_failure = bool(chosen_id != oracle_id)
+        if is_failure:
+            mistake_type, rationale = _taxonomy_assign(
+                chosen,
+                oracle,
+                is_near_tie_state=bool(state_near_tie.get(sid, False)),
+                oracle_gap=oracle_gap,
+                pred_top2_margin=pred_margin,
+            )
+        else:
+            mistake_type, rationale = ("correct_or_control", "method branch matches oracle best")
+        rows.append(
+            {
+                "seed": int(seed),
+                "mode": mode,
+                "state_id": sid,
+                "method_choice": chosen_id,
+                "oracle_best": oracle_id,
+                "method_matches_oracle": bool(not is_failure),
+                "is_near_tie_state": bool(state_near_tie.get(sid, False)),
+                "oracle_gap_if_method": float(max(0.0, oracle_gap)),
+                "chosen_multistep_delta": float(chosen.get("multistep_delta", 0.0)),
+                "chosen_outside_gap": float(chosen.get("outside_gap", 0.0)),
+                "oracle_outside_gap": float(oracle.get("outside_gap", 0.0)),
+                "pred_margin_top2": float(pred_margin),
+                "mistake_type": mistake_type,
+                "mistake_rationale": rationale,
+            }
+        )
 
+    failures = [r for r in rows if not bool(r["method_matches_oracle"])]
+    counts: dict[str, int] = {}
+    for r in failures:
+        counts[str(r["mistake_type"])] = counts.get(str(r["mistake_type"]), 0) + 1
+    dominant_n = int(counts.get("delayed_payoff_overvaluation_with_outside_option_miss", 0))
     return {
-        "state_counts": {
-            "test_states": len(test_state_ids),
-            "near_tie_test_states": len(near_state_ids),
-            "adjacent_rank_test_states": len(adjacent_state_ids),
-        },
-        "candidate_row_counts": {
-            "train": len(train_candidates),
-            "test": len(test_candidates),
-            "total": len(train_candidates) + len(test_candidates),
-        },
-        "pair_row_counts": {
-            "train": len(train_pairs),
-            "test": len(test_pairs),
-            "total": pair_rows,
-            "near_tie_test_pairs": len(near_tie_pairs),
-            "adjacent_rank_test_pairs": len(adjacent_pairs),
-            "strict_slice_test_pairs": len(strict_pairs),
-        },
-        "warnings": warnings,
+        "seed": int(seed),
+        "mode": mode,
+        "states": len(rows),
+        "failure_states": len(failures),
+        "dominant_group_failures": dominant_n,
+        "dominant_group_failure_rate": float(dominant_n / len(rows)) if rows else 0.0,
+        "taxonomy_counts_on_failures": counts,
+        "rows": rows,
     }
 
 
+def _build_state_near_tie_flags(eval_pairs: list[dict[str, Any]]) -> dict[str, bool]:
+    flags: dict[str, bool] = {}
+    for r in eval_pairs:
+        if str(r.get("split")) != "test":
+            continue
+        sid = str(r.get("state_id", ""))
+        flags[sid] = bool(flags.get(sid, False) or bool(r.get("near_tie_flag", False)) )
+    return flags
+
+
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Run bounded multi-step branch utility target validation")
+    p = argparse.ArgumentParser(description="Run bounded discounted multi-step branch utility target validation")
     p.add_argument("--targets-root", required=True)
     p.add_argument("--run-id", required=True)
     p.add_argument("--output-root", default="outputs/branch_label_bruteforce_learning")
@@ -276,9 +334,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--feature-set", default="v3", choices=["v1", "v2", "v3"])
     p.add_argument("--near-tie-margin", type=float, default=0.03)
     p.add_argument("--baseline-regime", default="all_pairs")
-    p.add_argument("--k1-regime", default="multistep_branch_utility_target_k1")
-    p.add_argument("--k2-regime", default="multistep_branch_utility_target_k2")
-    p.add_argument("--k3-regime", default="multistep_branch_utility_target_k3")
+    p.add_argument("--current-multistep-regime", default="multistep_branch_utility_target_k3")
+    p.add_argument("--discounted-regimes", default="discounted_multistep_branch_utility_target_gamma100,discounted_multistep_branch_utility_target_gamma080,discounted_multistep_branch_utility_target_gamma060")
     p.add_argument("--multistep-target-field", default="multistep_branch_utility_target")
     p.add_argument("--strict-slice-name", default="near_tie_and_adjacent_rank")
     return p.parse_args()
@@ -292,17 +349,23 @@ def main() -> None:
     seeds = _parse_int_csv(args.seeds)
     targets_root = Path(args.targets_root)
 
+    discounted_regimes = [s.strip() for s in str(args.discounted_regimes).split(",") if s.strip()]
     regime_to_mode = {
         str(args.baseline_regime): "baseline_current_matched",
-        str(args.k1_regime): "multistep_k1",
-        str(args.k2_regime): "multistep_k2",
-        str(args.k3_regime): "multistep_k3",
+        str(args.current_multistep_regime): "multistep_k3_current",
     }
+    for regime in discounted_regimes:
+        gamma = _parse_gamma_from_regime(regime)
+        if gamma is None:
+            raise ValueError(f"Expected discounted regime naming to include gamma suffix: {regime}")
+        mode_name = f"discounted_gamma_{gamma:.2f}".replace(".", "_")
+        regime_to_mode[regime] = mode_name
 
     per_seed_rows: list[dict[str, Any]] = []
     target_diag_rows: list[dict[str, Any]] = []
-    per_seed_disagreement_rows: list[dict[str, Any]] = []
     support_rows: list[dict[str, Any]] = []
+    per_seed_failure_rows: list[dict[str, Any]] = []
+    per_seed_disagreement_rows: list[dict[str, Any]] = []
 
     for seed in seeds:
         baseline_regime_dir = targets_root / f"regime_{args.baseline_regime}"
@@ -320,11 +383,12 @@ def main() -> None:
         )
         baseline_tables = prepare_learning_tables(baseline_raw, baseline_cfg)
         eval_pair_rows = baseline_tables["pairwise"]
-        eval_candidates = baseline_tables["candidates"]
-        support_rows.append({"seed": int(seed), **_support_diagnostics(eval_pair_rows, eval_candidates)})
+        support_rows.append({"seed": int(seed), "test_pairs": len([r for r in eval_pair_rows if str(r.get("split")) == "test"])})
+        state_near_tie = _build_state_near_tie_flags(eval_pair_rows)
 
-        kbest: dict[str, dict[str, str]] = {}
-        state_flags = _build_state_hardness_flags(eval_pair_rows)
+        mode_to_best: dict[str, dict[str, str]] = {}
+        mode_to_branch_table: dict[str, dict[str, dict[str, dict[str, float | str]]]] = {}
+        oracle_by_state: dict[str, str] = {}
 
         for regime, mode in regime_to_mode.items():
             regime_dir = targets_root / f"regime_{regime}"
@@ -363,15 +427,27 @@ def main() -> None:
                 else:
                     pred = lambda r: 1 if float(r.get("pair_value_i", 0.0)) >= float(r.get("pair_value_j", 0.0)) else 0
                 model_status = str(fitted.get("status", "unknown"))
+
+                gamma = _parse_gamma_from_regime(regime)
                 target_diag_rows.append(
                     {
                         "seed": int(seed),
                         "mode": mode,
                         "regime": regime,
+                        "discount_gamma": gamma,
+                        "discount_weights": {
+                            "h1": 1.0,
+                            "h2": float(gamma if gamma is not None else 1.0),
+                            "h3": float((gamma**2) if gamma is not None else 1.0),
+                        },
                         **_target_distribution_diagnostics(candidates, eval_pair_rows, target_field=target_field),
                     }
                 )
-                kbest[mode] = _state_best_branch_map(candidates, target_field=target_field)
+
+                mode_to_best[mode] = _state_best_branch_map(candidates, target_field=target_field)
+                mode_to_branch_table[mode] = _build_state_branch_table(candidates, target_field=target_field)
+                if not oracle_by_state:
+                    oracle_by_state = _state_best_branch_map(candidates, target_field="estimated_value_if_allocate_next")
 
             metrics = _pair_metrics(eval_pair_rows, pred)
             per_seed_rows.append(
@@ -385,16 +461,39 @@ def main() -> None:
                 }
             )
 
-        if "multistep_k1" in kbest and "multistep_k3" in kbest:
-            per_seed_disagreement_rows.append(
-                {
-                    "seed": int(seed),
-                    "comparison": "k1_vs_k3",
-                    **_disagreement_diagnostics(kbest["multistep_k1"], kbest["multistep_k3"], state_flags),
-                }
+        for mode, best_map in mode_to_best.items():
+            tax = _failure_diagnostics_for_mode(
+                mode=mode,
+                seed=int(seed),
+                mode_best=best_map,
+                oracle_best=oracle_by_state,
+                branch_table=mode_to_branch_table.get(mode, {}),
+                state_near_tie=state_near_tie,
             )
+            per_seed_failure_rows.append(tax)
 
-    modes = ["baseline_current_matched", "multistep_k1", "multistep_k2", "multistep_k3"]
+        current_mode = "multistep_k3_current"
+        current_tax_rows = []
+        for rr in per_seed_failure_rows:
+            if int(rr["seed"]) == int(seed) and str(rr["mode"]) == current_mode:
+                current_tax_rows = rr["rows"]
+                break
+        if current_mode in mode_to_best:
+            for regime, mode in regime_to_mode.items():
+                if mode == current_mode or (not mode.startswith("discounted_gamma_")):
+                    continue
+                per_seed_disagreement_rows.append(
+                    {
+                        "seed": int(seed),
+                        "comparison": f"{current_mode}_vs_{mode}",
+                        "reference_mode": current_mode,
+                        "candidate_mode": mode,
+                        "discount_gamma": _parse_gamma_from_regime(regime),
+                        **_disagreement_vs_reference(mode_to_best[current_mode], mode_to_best.get(mode, {}), current_tax_rows),
+                    }
+                )
+
+    modes = list(dict.fromkeys(regime_to_mode.values()))
     aggregate: dict[str, Any] = {}
     for mode in modes:
         rows = [r for r in per_seed_rows if r["mode"] == mode]
@@ -410,43 +509,53 @@ def main() -> None:
         }
 
     baseline = aggregate.get("baseline_current_matched", {})
+    current = aggregate.get("multistep_k3_current", {})
     comparison: dict[str, Any] = {}
-    for mode in ["multistep_k1", "multistep_k2", "multistep_k3"]:
+    for mode in modes:
+        if mode == "baseline_current_matched":
+            continue
         vals = aggregate.get(mode, {})
         comparison[mode] = {
             "delta_accepted_accuracy_vs_baseline": float(vals.get("accepted_accuracy_mean", 0.0) - baseline.get("accepted_accuracy_mean", 0.0)),
+            "delta_accepted_accuracy_vs_current_multistep": float(vals.get("accepted_accuracy_mean", 0.0) - current.get("accepted_accuracy_mean", 0.0)),
             "delta_near_tie_accepted_accuracy_vs_baseline": float(vals.get("near_tie_accepted_accuracy_mean", 0.0) - baseline.get("near_tie_accepted_accuracy_mean", 0.0)),
             "delta_adjacent_rank_accepted_accuracy_vs_baseline": float(vals.get("adjacent_rank_accepted_accuracy_mean", 0.0) - baseline.get("adjacent_rank_accepted_accuracy_mean", 0.0)),
             "delta_strict_slice_accepted_accuracy_vs_baseline": float(vals.get("strict_slice_accepted_accuracy_mean", 0.0) - baseline.get("strict_slice_accepted_accuracy_mean", 0.0)),
-            "delta_coverage_vs_baseline": float(vals.get("coverage_mean", 0.0) - baseline.get("coverage_mean", 0.0)),
         }
 
-    trend = {
-        "accepted_accuracy": {
-            "k1": float(aggregate.get("multistep_k1", {}).get("accepted_accuracy_mean", 0.0)),
-            "k2": float(aggregate.get("multistep_k2", {}).get("accepted_accuracy_mean", 0.0)),
-            "k3": float(aggregate.get("multistep_k3", {}).get("accepted_accuracy_mean", 0.0)),
-            "k1_to_k2_delta": float(aggregate.get("multistep_k2", {}).get("accepted_accuracy_mean", 0.0) - aggregate.get("multistep_k1", {}).get("accepted_accuracy_mean", 0.0)),
-            "k2_to_k3_delta": float(aggregate.get("multistep_k3", {}).get("accepted_accuracy_mean", 0.0) - aggregate.get("multistep_k2", {}).get("accepted_accuracy_mean", 0.0)),
-        },
-        "near_tie_accepted_accuracy": {
-            "k1": float(aggregate.get("multistep_k1", {}).get("near_tie_accepted_accuracy_mean", 0.0)),
-            "k2": float(aggregate.get("multistep_k2", {}).get("near_tie_accepted_accuracy_mean", 0.0)),
-            "k3": float(aggregate.get("multistep_k3", {}).get("near_tie_accepted_accuracy_mean", 0.0)),
-        },
-        "adjacent_rank_accepted_accuracy": {
-            "k1": float(aggregate.get("multistep_k1", {}).get("adjacent_rank_accepted_accuracy_mean", 0.0)),
-            "k2": float(aggregate.get("multistep_k2", {}).get("adjacent_rank_accepted_accuracy_mean", 0.0)),
-            "k3": float(aggregate.get("multistep_k3", {}).get("adjacent_rank_accepted_accuracy_mean", 0.0)),
-        },
-    }
+    failure_aggregate: dict[str, Any] = {}
+    for mode in [m for m in modes if m != "baseline_current_matched"]:
+        rows = [r for r in per_seed_failure_rows if str(r["mode"]) == mode]
+        failure_aggregate[mode] = {
+            "seeds": len(rows),
+            "states_mean": _mean([float(r.get("states", 0)) for r in rows]),
+            "failure_states_mean": _mean([float(r.get("failure_states", 0)) for r in rows]),
+            "dominant_group_failures_mean": _mean([float(r.get("dominant_group_failures", 0)) for r in rows]),
+            "dominant_group_failure_rate_mean": _mean([float(r.get("dominant_group_failure_rate", 0.0)) for r in rows]),
+        }
 
-    strict_summary = {
-        "strict_slice_name": str(args.strict_slice_name),
-        "description": "Matched canonical strict slice requiring both near_tie_flag and adjacent_rank pair type.",
-        "aggregate_by_mode": {m: {"strict_slice_accepted_accuracy_mean": aggregate.get(m, {}).get("strict_slice_accepted_accuracy_mean", 0.0)} for m in modes},
-        "delta_vs_baseline": {m: comparison.get(m, {}).get("delta_strict_slice_accepted_accuracy_vs_baseline", 0.0) for m in ["multistep_k1", "multistep_k2", "multistep_k3"]},
-    }
+    dominant_comparison_rows = []
+    for seed in seeds:
+        seed_rows = [r for r in per_seed_failure_rows if int(r["seed"]) == int(seed)]
+        by_mode = {str(r["mode"]): r for r in seed_rows}
+        current_row = by_mode.get("multistep_k3_current")
+        if not current_row:
+            continue
+        for mode, row in by_mode.items():
+            if not str(mode).startswith("discounted_gamma_"):
+                continue
+            dominant_comparison_rows.append(
+                {
+                    "seed": int(seed),
+                    "mode": mode,
+                    "dominant_failures_current": int(current_row.get("dominant_group_failures", 0)),
+                    "dominant_failures_discounted": int(row.get("dominant_group_failures", 0)),
+                    "delta_dominant_failures": int(row.get("dominant_group_failures", 0) - current_row.get("dominant_group_failures", 0)),
+                    "failure_states_current": int(current_row.get("failure_states", 0)),
+                    "failure_states_discounted": int(row.get("failure_states", 0)),
+                    "delta_failure_states": int(row.get("failure_states", 0) - current_row.get("failure_states", 0)),
+                }
+            )
 
     _write_json(out_dir / "config_manifest.json", {
         "run_id": str(args.run_id),
@@ -460,12 +569,13 @@ def main() -> None:
         "command": " ".join(sys.argv),
     })
     _write_json(out_dir / "per_seed_summary.json", {"rows": per_seed_rows})
-    _write_json(out_dir / "target_diagnostics_summary.json", {"rows": target_diag_rows})
+    _write_json(out_dir / "matched_summary_by_mode_gamma.json", {"aggregate": aggregate, "comparison": comparison})
+    _write_json(out_dir / "aggregate_comparison_summary.json", {"aggregate": aggregate, "comparison": comparison, "failure_aggregate": failure_aggregate})
+    _write_json(out_dir / "per_seed_failure_taxonomy.json", {"rows": per_seed_failure_rows})
+    _write_json(out_dir / "dominant_failure_group_comparison_summary.json", {"rows": dominant_comparison_rows, "aggregate": failure_aggregate})
+    _write_json(out_dir / "target_diagnostics_by_gamma.json", {"rows": target_diag_rows})
     _write_json(out_dir / "disagreement_diagnostics.json", {"rows": per_seed_disagreement_rows})
     _write_json(out_dir / "support_diagnostics.json", {"rows": support_rows})
-    _write_json(out_dir / "matched_summary_by_horizon.json", {"aggregate": aggregate, "comparison_vs_baseline": comparison, "horizon_trend": trend})
-    _write_json(out_dir / "aggregate_comparison_summary.json", {"aggregate": aggregate, "comparison_vs_baseline": comparison, "horizon_trend": trend})
-    _write_json(out_dir / "stricter_validation_summary.json", strict_summary)
 
     print(json.dumps({"output_dir": str(out_dir), "modes": modes}, indent=2))
 

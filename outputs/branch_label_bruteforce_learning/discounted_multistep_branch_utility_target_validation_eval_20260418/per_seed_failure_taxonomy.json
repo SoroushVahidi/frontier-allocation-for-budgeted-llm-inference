@@ -1,0 +1,662 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "mode": "multistep_k3_current",
+      "states": 3,
+      "failure_states": 1,
+      "dominant_group_failures": 1,
+      "dominant_group_failure_rate": 0.3333333333333333,
+      "taxonomy_counts_on_failures": {
+        "delayed_payoff_overvaluation_with_outside_option_miss": 1
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "mode": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.20572493137505965,
+          "chosen_outside_gap": 0.18086456677077517,
+          "oracle_outside_gap": 0.18086456677077517,
+          "pred_margin_top2": 0.3153783316431907,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 11,
+          "mode": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "method_choice": "b0",
+          "oracle_best": "b2",
+          "method_matches_oracle": false,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.10556849851210437,
+          "chosen_multistep_delta": 0.2124523882493844,
+          "chosen_outside_gap": -0.10556849851210437,
+          "oracle_outside_gap": 0.10556849851210437,
+          "pred_margin_top2": 0.010770532795756349,
+          "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+          "mistake_rationale": "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap"
+        },
+        {
+          "seed": 11,
+          "mode": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.0,
+          "chosen_outside_gap": 0.024695791195966765,
+          "oracle_outside_gap": 0.024695791195966765,
+          "pred_margin_top2": 0.024695791195966765,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "discounted_gamma_1_00",
+      "states": 3,
+      "failure_states": 1,
+      "dominant_group_failures": 1,
+      "dominant_group_failure_rate": 0.3333333333333333,
+      "taxonomy_counts_on_failures": {
+        "delayed_payoff_overvaluation_with_outside_option_miss": 1
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_1_00",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.13714995425003984,
+          "chosen_outside_gap": 0.18086456677077517,
+          "oracle_outside_gap": 0.18086456677077517,
+          "pred_margin_top2": 0.24680335451817081,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_1_00",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "method_choice": "b0",
+          "oracle_best": "b2",
+          "method_matches_oracle": false,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.10556849851210437,
+          "chosen_multistep_delta": 0.14163492549958956,
+          "chosen_outside_gap": -0.10556849851210437,
+          "oracle_outside_gap": 0.10556849851210437,
+          "pred_margin_top2": 0.009839746010937844,
+          "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+          "mistake_rationale": "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap"
+        },
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_1_00",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.0,
+          "chosen_outside_gap": 0.024695791195966765,
+          "oracle_outside_gap": 0.024695791195966765,
+          "pred_margin_top2": 0.024695791195966765,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "discounted_gamma_0_80",
+      "states": 3,
+      "failure_states": 1,
+      "dominant_group_failures": 1,
+      "dominant_group_failure_rate": 0.3333333333333333,
+      "taxonomy_counts_on_failures": {
+        "delayed_payoff_overvaluation_with_outside_option_miss": 1
+      },
+      "rows": [
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_0_80",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.12141143490987127,
+          "chosen_outside_gap": 0.18086456677077517,
+          "oracle_outside_gap": 0.18086456677077517,
+          "pred_margin_top2": 0.23690181603887478,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_0_80",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "method_choice": "b0",
+          "oracle_best": "b2",
+          "method_matches_oracle": false,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.10556849851210437,
+          "chosen_multistep_delta": 0.12538173732750546,
+          "chosen_outside_gap": -0.10556849851210437,
+          "oracle_outside_gap": 0.10556849851210437,
+          "pred_margin_top2": 0.0096261228144221,
+          "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+          "mistake_rationale": "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap"
+        },
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_0_80",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": -1.1102230246251565e-16,
+          "chosen_outside_gap": 0.024695791195966765,
+          "oracle_outside_gap": 0.024695791195966765,
+          "pred_margin_top2": 0.024695791195966765,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "discounted_gamma_0_60",
+      "states": 3,
+      "failure_states": 0,
+      "dominant_group_failures": 0,
+      "dominant_group_failure_rate": 0.0,
+      "taxonomy_counts_on_failures": {},
+      "rows": [
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_0_60",
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.10076323169390677,
+          "chosen_outside_gap": 0.18086456677077517,
+          "oracle_outside_gap": 0.18086456677077517,
+          "pred_margin_top2": 0.22494952308502641,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_0_60",
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 1.1102230246251565e-16,
+          "chosen_outside_gap": 0.10556849851210437,
+          "oracle_outside_gap": 0.10556849851210437,
+          "pred_margin_top2": 0.001510185900161054,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 11,
+          "mode": "discounted_gamma_0_60",
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "method_choice": "b2",
+          "oracle_best": "b2",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 1.1102230246251565e-16,
+          "chosen_outside_gap": 0.024695791195966765,
+          "oracle_outside_gap": 0.024695791195966765,
+          "pred_margin_top2": 0.024695791195966765,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "multistep_k3_current",
+      "states": 3,
+      "failure_states": 1,
+      "dominant_group_failures": 1,
+      "dominant_group_failure_rate": 0.3333333333333333,
+      "taxonomy_counts_on_failures": {
+        "delayed_payoff_overvaluation_with_outside_option_miss": 1
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "mode": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "method_choice": "b0",
+          "oracle_best": "b0",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.1692962998695433,
+          "chosen_outside_gap": 0.19128266535895522,
+          "oracle_outside_gap": 0.19128266535895522,
+          "pred_margin_top2": 0.22475713179677237,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 29,
+          "mode": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "method_choice": "b2",
+          "oracle_best": "b0",
+          "method_matches_oracle": false,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.004964927120159945,
+          "chosen_multistep_delta": 0.35777145780857156,
+          "chosen_outside_gap": -0.004964927120159945,
+          "oracle_outside_gap": 0.004509329124314121,
+          "pred_margin_top2": 0.17305193953809783,
+          "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+          "mistake_rationale": "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap"
+        },
+        {
+          "seed": 29,
+          "mode": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "method_choice": "b0",
+          "oracle_best": "b0",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.19191655496567228,
+          "chosen_outside_gap": 0.015977574697167096,
+          "oracle_outside_gap": 0.015977574697167096,
+          "pred_margin_top2": 0.018773650269171327,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "discounted_gamma_1_00",
+      "states": 3,
+      "failure_states": 1,
+      "dominant_group_failures": 1,
+      "dominant_group_failure_rate": 0.3333333333333333,
+      "taxonomy_counts_on_failures": {
+        "delayed_payoff_overvaluation_with_outside_option_miss": 1
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_1_00",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "method_choice": "b0",
+          "oracle_best": "b0",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.1692962998695433,
+          "chosen_outside_gap": 0.19128266535895522,
+          "oracle_outside_gap": 0.19128266535895522,
+          "pred_margin_top2": 0.22475713179677237,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_1_00",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "method_choice": "b2",
+          "oracle_best": "b0",
+          "method_matches_oracle": false,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.004964927120159945,
+          "chosen_multistep_delta": 0.23851430520571437,
+          "chosen_outside_gap": -0.004964927120159945,
+          "oracle_outside_gap": 0.004509329124314121,
+          "pred_margin_top2": 0.053794786935240646,
+          "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+          "mistake_rationale": "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap"
+        },
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_1_00",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "method_choice": "b0",
+          "oracle_best": "b0",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.19191655496567228,
+          "chosen_outside_gap": 0.015977574697167096,
+          "oracle_outside_gap": 0.015977574697167096,
+          "pred_margin_top2": 0.018773650269171327,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "discounted_gamma_0_80",
+      "states": 3,
+      "failure_states": 1,
+      "dominant_group_failures": 1,
+      "dominant_group_failure_rate": 0.3333333333333333,
+      "taxonomy_counts_on_failures": {
+        "delayed_payoff_overvaluation_with_outside_option_miss": 1
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_0_80",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "method_choice": "b0",
+          "oracle_best": "b0",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.15541955397859697,
+          "chosen_outside_gap": 0.19128266535895522,
+          "oracle_outside_gap": 0.19128266535895522,
+          "pred_margin_top2": 0.2220133230723611,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_0_80",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "method_choice": "b2",
+          "oracle_best": "b0",
+          "method_matches_oracle": false,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.004964927120159945,
+          "chosen_multistep_delta": 0.211143811165714,
+          "chosen_outside_gap": -0.004964927120159945,
+          "oracle_outside_gap": 0.004509329124314121,
+          "pred_margin_top2": 0.04115827577641351,
+          "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+          "mistake_rationale": "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap"
+        },
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_0_80",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "method_choice": "b0",
+          "oracle_best": "b0",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.1761856898045513,
+          "chosen_outside_gap": 0.015977574697167096,
+          "oracle_outside_gap": 0.015977574697167096,
+          "pred_margin_top2": 0.01854446374687546,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "discounted_gamma_0_60",
+      "states": 3,
+      "failure_states": 1,
+      "dominant_group_failures": 1,
+      "dominant_group_failure_rate": 0.3333333333333333,
+      "taxonomy_counts_on_failures": {
+        "delayed_payoff_overvaluation_with_outside_option_miss": 1
+      },
+      "rows": [
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_0_60",
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "method_choice": "b0",
+          "oracle_best": "b0",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.13474603459004464,
+          "chosen_outside_gap": 0.19128266535895522,
+          "oracle_outside_gap": 0.19128266535895522,
+          "pred_margin_top2": 0.21792560803395256,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_0_60",
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "method_choice": "b2",
+          "oracle_best": "b0",
+          "method_matches_oracle": false,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.004964927120159945,
+          "chosen_multistep_delta": 0.17523499974297385,
+          "chosen_outside_gap": -0.004964927120159945,
+          "oracle_outside_gap": 0.004509329124314121,
+          "pred_margin_top2": 0.027200091911339763,
+          "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+          "mistake_rationale": "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap"
+        },
+        {
+          "seed": 29,
+          "mode": "discounted_gamma_0_60",
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "method_choice": "b0",
+          "oracle_best": "b0",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.15274991109512692,
+          "chosen_outside_gap": 0.015977574697167096,
+          "oracle_outside_gap": 0.015977574697167096,
+          "pred_margin_top2": 0.018203022601415375,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "multistep_k3_current",
+      "states": 2,
+      "failure_states": 0,
+      "dominant_group_failures": 0,
+      "dominant_group_failure_rate": 0.0,
+      "taxonomy_counts_on_failures": {},
+      "rows": [
+        {
+          "seed": 47,
+          "mode": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "method_choice": "b1",
+          "oracle_best": "b1",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.0,
+          "chosen_outside_gap": 0.09635245100864331,
+          "oracle_outside_gap": 0.09635245100864331,
+          "pred_margin_top2": 0.09635245100864331,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 47,
+          "mode": "multistep_k3_current",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "method_choice": "b3",
+          "oracle_best": "b3",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.25814107259796315,
+          "chosen_outside_gap": 0.1858335440185609,
+          "oracle_outside_gap": 0.1858335440185609,
+          "pred_margin_top2": 0.44397461661652404,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "discounted_gamma_1_00",
+      "states": 2,
+      "failure_states": 0,
+      "dominant_group_failures": 0,
+      "dominant_group_failure_rate": 0.0,
+      "taxonomy_counts_on_failures": {},
+      "rows": [
+        {
+          "seed": 47,
+          "mode": "discounted_gamma_1_00",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "method_choice": "b1",
+          "oracle_best": "b1",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.0,
+          "chosen_outside_gap": 0.09635245100864331,
+          "oracle_outside_gap": 0.09635245100864331,
+          "pred_margin_top2": 0.09635245100864331,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 47,
+          "mode": "discounted_gamma_1_00",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "method_choice": "b3",
+          "oracle_best": "b3",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.17209404839864206,
+          "chosen_outside_gap": 0.1858335440185609,
+          "oracle_outside_gap": 0.1858335440185609,
+          "pred_margin_top2": 0.35792759241720296,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "discounted_gamma_0_80",
+      "states": 2,
+      "failure_states": 0,
+      "dominant_group_failures": 0,
+      "dominant_group_failure_rate": 0.0,
+      "taxonomy_counts_on_failures": {},
+      "rows": [
+        {
+          "seed": 47,
+          "mode": "discounted_gamma_0_80",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "method_choice": "b1",
+          "oracle_best": "b1",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": -2.220446049250313e-16,
+          "chosen_outside_gap": 0.09635245100864331,
+          "oracle_outside_gap": 0.09635245100864331,
+          "pred_margin_top2": 0.09635245100864309,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 47,
+          "mode": "discounted_gamma_0_80",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "method_choice": "b3",
+          "oracle_best": "b3",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.15234555104142078,
+          "chosen_outside_gap": 0.1858335440185609,
+          "oracle_outside_gap": 0.1858335440185609,
+          "pred_margin_top2": 0.33817909505998167,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "discounted_gamma_0_60",
+      "states": 2,
+      "failure_states": 0,
+      "dominant_group_failures": 0,
+      "dominant_group_failure_rate": 0.0,
+      "taxonomy_counts_on_failures": {},
+      "rows": [
+        {
+          "seed": 47,
+          "mode": "discounted_gamma_0_60",
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "method_choice": "b1",
+          "oracle_best": "b1",
+          "method_matches_oracle": true,
+          "is_near_tie_state": true,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 2.220446049250313e-16,
+          "chosen_outside_gap": 0.09635245100864331,
+          "oracle_outside_gap": 0.09635245100864331,
+          "pred_margin_top2": 0.09635245100864354,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        },
+        {
+          "seed": 47,
+          "mode": "discounted_gamma_0_60",
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "method_choice": "b3",
+          "oracle_best": "b3",
+          "method_matches_oracle": true,
+          "is_near_tie_state": false,
+          "oracle_gap_if_method": 0.0,
+          "chosen_multistep_delta": 0.12643644372145135,
+          "chosen_outside_gap": 0.1858335440185609,
+          "oracle_outside_gap": 0.1858335440185609,
+          "pred_margin_top2": 0.31226998774001224,
+          "mistake_type": "correct_or_control",
+          "mistake_rationale": "method branch matches oracle best"
+        }
+      ]
+    }
+  ]
+}

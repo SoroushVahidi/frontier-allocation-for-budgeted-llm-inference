@@ -1,0 +1,16 @@
+{
+  "commands": [
+    "python scripts/build_bruteforce_target_regimes.py --labels-dir outputs/branch_label_bruteforce_targets/target_semantics_upstream_20260417/regime_all_pairs_approx --output-dir outputs/branch_label_bruteforce_targets --run-id discounted_multistep_branch_utility_target_validation_20260418 --pair-strategies all_pairs,multistep_branch_utility_target_k3,discounted_multistep_branch_utility_target_gamma100,discounted_multistep_branch_utility_target_gamma080,discounted_multistep_branch_utility_target_gamma060 --near-tie-margin 0.03",
+    "python scripts/run_multistep_branch_utility_target_experiment.py --targets-root outputs/branch_label_bruteforce_targets/discounted_multistep_branch_utility_target_validation_20260418 --run-id discounted_multistep_branch_utility_target_validation_eval_20260418 --output-root outputs/branch_label_bruteforce_learning --seeds 11,29,47 --feature-set v3 --near-tie-margin 0.03"
+  ],
+  "assumptions": [
+    "discounted target uses normalized weighted sum of horizon-specific proxy values U_gamma = sum_h gamma^(h-1)V_h / sum_h gamma^(h-1), with h in {1,2,3}",
+    "horizon-specific V_h reuse existing best_followup_allocation self-mass multistep utility proxy with the same multistep_utility_lambda",
+    "evaluation remains matched to canonical baseline_current_matched from regime_all_pairs"
+  ],
+  "caveats": [
+    "test support is small (seed-level state counts are low), so dominant-group counts are directional",
+    "gamma=0.80 produced identical rankings to current k3 on this artifact slice",
+    "this pass changes target construction only; no threshold/defer policy changes were introduced"
+  ]
+}

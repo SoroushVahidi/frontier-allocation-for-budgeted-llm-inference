@@ -1,0 +1,123 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_1_00",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_1_00",
+      "discount_gamma": 1.0,
+      "states_shared": 3,
+      "changed_states": 0,
+      "changed_rate": 0.0,
+      "changed_dominant_group_states": 0,
+      "changed_dominant_group_share": 0.0,
+      "changed_state_examples": []
+    },
+    {
+      "seed": 11,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_0_80",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_0_80",
+      "discount_gamma": 0.8,
+      "states_shared": 3,
+      "changed_states": 0,
+      "changed_rate": 0.0,
+      "changed_dominant_group_states": 0,
+      "changed_dominant_group_share": 0.0,
+      "changed_state_examples": []
+    },
+    {
+      "seed": 11,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_0_60",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_0_60",
+      "discount_gamma": 0.6,
+      "states_shared": 3,
+      "changed_states": 1,
+      "changed_rate": 0.3333333333333333,
+      "changed_dominant_group_states": 1,
+      "changed_dominant_group_share": 1.0,
+      "changed_state_examples": [
+        "exopenai_gsm8k_3_ep7_d3"
+      ]
+    },
+    {
+      "seed": 29,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_1_00",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_1_00",
+      "discount_gamma": 1.0,
+      "states_shared": 3,
+      "changed_states": 0,
+      "changed_rate": 0.0,
+      "changed_dominant_group_states": 0,
+      "changed_dominant_group_share": 0.0,
+      "changed_state_examples": []
+    },
+    {
+      "seed": 29,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_0_80",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_0_80",
+      "discount_gamma": 0.8,
+      "states_shared": 3,
+      "changed_states": 0,
+      "changed_rate": 0.0,
+      "changed_dominant_group_states": 0,
+      "changed_dominant_group_share": 0.0,
+      "changed_state_examples": []
+    },
+    {
+      "seed": 29,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_0_60",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_0_60",
+      "discount_gamma": 0.6,
+      "states_shared": 3,
+      "changed_states": 0,
+      "changed_rate": 0.0,
+      "changed_dominant_group_states": 0,
+      "changed_dominant_group_share": 0.0,
+      "changed_state_examples": []
+    },
+    {
+      "seed": 47,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_1_00",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_1_00",
+      "discount_gamma": 1.0,
+      "states_shared": 2,
+      "changed_states": 0,
+      "changed_rate": 0.0,
+      "changed_dominant_group_states": 0,
+      "changed_dominant_group_share": 0.0,
+      "changed_state_examples": []
+    },
+    {
+      "seed": 47,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_0_80",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_0_80",
+      "discount_gamma": 0.8,
+      "states_shared": 2,
+      "changed_states": 0,
+      "changed_rate": 0.0,
+      "changed_dominant_group_states": 0,
+      "changed_dominant_group_share": 0.0,
+      "changed_state_examples": []
+    },
+    {
+      "seed": 47,
+      "comparison": "multistep_k3_current_vs_discounted_gamma_0_60",
+      "reference_mode": "multistep_k3_current",
+      "candidate_mode": "discounted_gamma_0_60",
+      "discount_gamma": 0.6,
+      "states_shared": 2,
+      "changed_states": 0,
+      "changed_rate": 0.0,
+      "changed_dominant_group_states": 0,
+      "changed_dominant_group_share": 0.0,
+      "changed_state_examples": []
+    }
+  ]
+}
