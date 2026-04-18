@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This note records the shortest current repository-facing update after the most recent bounded method and observability passes.
+This note records the shortest current repository-facing update after the most recent bounded method, observability, and target-definition passes.
 
 It is intended to answer:
 - what the newest experiments changed,
@@ -15,12 +15,13 @@ It is intended to answer:
 The shortest honest update is:
 
 - the repository has now pressure-tested several stronger nearby target/control ideas,
-- none of the recent bounded refinements clearly beat the current multistep-k3 line,
-- and the most important positive infrastructure result is now **forward-looking branch observability** for future runs.
+- none of those nearby refinements clearly displaced the current multistep-k3 line as a broad successor,
+- fresh observability-enabled runs now support real semantic failure diagnosis,
+- and the newest bounded target-definition studies support **augmenting** the continuation-value oracle rather than replacing it globally.
 
 In practical terms:
 
-> the repo is now better at knowing what has **not** worked, and is now finally equipped to inspect future real failures semantically rather than only through proxy signals.
+> the repo is now in a decision phase rather than a broad-experiment phase: the key question is no longer “what extra tweak should we try next,” but “what target/oracle definition should govern hard close-branch decisions?”
 
 ## What was just added and what it means
 
@@ -83,29 +84,76 @@ Interpretation:
 
 ### 6. Branch observability instrumentation
 Status:
-- implemented at the frontier/state materialization path and validated with a bounded smoke run.
+- implemented at the frontier/state materialization path and validated with a bounded smoke run, then extended on fresh real runs.
 
 What happened:
-- future instrumentation-enabled runs can now preserve:
+- fresh instrumentation-enabled runs can preserve:
   - branch text,
   - branch reasoning text,
-  - branch final-answer text,
+  - branch final-answer text when directly present,
   - normalized final answers,
   - extracted numbers,
   - branch role summaries,
   - explicit provenance and recoverability metadata.
 
 Interpretation:
-- future real runs can support true semantic failure diagnosis,
+- fresh real runs can support true semantic failure diagnosis,
 - even though old runs remain mostly unrecoverable post hoc.
+
+### 7. Worst real failure casebook with reasoning
+Status:
+- bounded real trace-backed worst-failure casebook implemented and run.
+
+What happened:
+- direct reasoning recovery for both method and oracle branches became available on selected worst cases,
+- contested cases showed that method and oracle branches can share early reasoning while differing in visible completion or answer-completeness.
+
+Interpretation:
+- semantic/objective mismatch is now a directly inspectable repository object rather than only a proxy-level suspicion.
+
+### 8. Completion-aware decision study
+Status:
+- bounded completion-aware decision experiment implemented and run.
+
+What happened:
+- completion-aware variants improved oracle-alignment metrics on the bounded slice,
+- but did not robustly resolve the semantic/objective-mismatch pattern by themselves.
+
+Interpretation:
+- completion/answer-evidence is a real signal,
+- but it is not a global replacement for continuation value.
+
+### 9. Final-answer recovery on contested states
+Status:
+- bounded branch-emission and contested-state final-answer recovery added and run.
+
+What happened:
+- direct final-answer recovery remained limited,
+- but recovered direct-or-completion final-answer recovery became sufficient on the bounded contested slice to support semantic adjudication.
+
+Interpretation:
+- the repository can now decide contested semantic cases much more concretely than before.
+
+### 10. Oracle mismatch study
+Status:
+- bounded continuation-vs-completion-vs-hybrid oracle comparison implemented and run.
+
+What happened:
+- disagreement across oracle definitions was small and concentrated in near-tie states,
+- and the hard conclusion was to **augment the current oracle**, not replace it.
+
+Interpretation:
+- the continuation-value oracle remains a good core object,
+- but bounded completion-aware correction is justified in disagreement slices.
 
 ## What these results collectively now mean
 
 The current repository-backed interpretation is:
 
 - the multistep family remains the best current bounded method lead,
-- but recent nearby refinements did **not** produce a clear successor,
-- and the repo may be near the limit of what the current artifact set and current feature/signal substrate can support through bounded target/control tweaks alone.
+- recent nearby refinements did **not** produce a broad successor,
+- fresh semantic failure analysis is now available on new runs,
+- and the main unresolved question has narrowed to the exact target/oracle definition for hard close-branch states.
 
 The remaining issue is therefore less well-described as:
 - “we just need another richer target,”
@@ -113,38 +161,43 @@ The remaining issue is therefore less well-described as:
 
 and better described as:
 
-> **we now need fresh, observability-enabled real failure examples to understand what the branches are actually doing semantically, and then design the next method change from those examples.**
+> **we now need to freeze the target/oracle definition for hard disagreement states: continuation value as the core signal, with bounded completion-aware correction only where semantic branch quality and immediate continuation value diverge.**
 
 ## Updated bottleneck statement
 
 A stronger current bottleneck statement is:
 
-> **The repository now appears bottlenecked not only by supervision/control design, but by the need for real semantic failure analysis on new observability-enabled runs.**
+> **The repository is currently bottlenecked by target-definition clarity, not by lack of more nearby experiments.**
 
-Equivalently:
+More concretely:
 
-> the repo has now pressure-tested enough nearby target/control ideas that the highest-value next step is to inspect real worst failures with preserved branch reasoning and final answers.
+> the main remaining work is to formalize and validate the right hybrid oracle/controller definition for near-tie disagreement states now that fresh semantic case adjudication is possible.
 
 ## What should happen next
 
 ### Best immediate next step
-Run a bounded **real trace-backed observability-enabled experiment** and then extract the worst real failures into a semantic casebook that includes:
-- full problem text,
-- method-chosen branch reasoning,
-- oracle-best branch reasoning,
-- final answers for both when recoverable,
-- where the reasoning diverges,
-- and what design lesson each case suggests.
+Pause broad method coding and consolidate the current target-definition decision.
+
+That means:
+- use the fresh semantic casebook plus recovered final answers to adjudicate contested disagreement cases,
+- freeze the current repository stance on the oracle/target,
+- and only then decide what the next admissible experiment should be.
+
+### Current recommended stance
+The current bounded evidence supports this stance:
+
+> **keep continuation value as the core oracle/target, and augment it with bounded completion-aware evidence only in disagreement slices, especially near-ties.**
 
 ### What should not be the default next move
 Do **not** make the next main step:
 - another nearby target-weighting tweak,
 - another auxiliary target family in the same bounded neighborhood,
 - another generic defer-policy sweep,
+- another broad controller variant pass,
 - or another attempt to semantically recover old non-instrumented artifacts.
 
 These may still matter later, but they are no longer the highest-leverage default move.
 
 ## Best single-sentence summary
 
-> The repository is now in a stronger diagnostic state: recent bounded target/control refinements did not clearly surpass multistep-k3, but future runs can now preserve true branch-semantic evidence, so the most valuable next step is a real observability-enabled worst-failure casebook.
+> The repository is now in a stronger decision state: recent bounded target/control refinements did not clearly surpass multistep-k3, fresh observability-enabled runs now permit semantic adjudication of contested failures, and the current evidence supports a continuation-value core with bounded completion-aware correction in near-tie disagreement states.
