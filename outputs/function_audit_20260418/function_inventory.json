@@ -1,0 +1,158 @@
+{
+  "audit_date": "2026-04-18",
+  "scope": "repository function-layer canonicalization for fixed-budget next-step branch allocation",
+  "functions": [
+    {
+      "name": "fixed_budget_final_utility_objective",
+      "category": "objective",
+      "location": "docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md",
+      "role": "Top-level optimization target: final utility/decision quality under fixed budget.",
+      "status": "canonical",
+      "description": "Repository-wide objective framing that governs admissible experiments and evaluation interpretation."
+    },
+    {
+      "name": "estimated_value_if_allocate_next",
+      "category": "expansion_score",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "One-step continuation-value primitive for branch expansion.",
+      "status": "canonical",
+      "description": "Core primitive used directly and as anchor for multistep and hybrid targets."
+    },
+    {
+      "name": "multistep_branch_utility_target_k3",
+      "category": "expansion_score",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "Default continuation-centered expansion utility.",
+      "status": "canonical",
+      "description": "Current strongest bounded expansion target family in repo summaries."
+    },
+    {
+      "name": "branch_completion_score",
+      "category": "incumbent_commit_score",
+      "location": "scripts/run_completion_aware_decision_experiment.py",
+      "role": "Visible completion-quality proxy for incumbent/commit quality.",
+      "status": "canonical",
+      "description": "Bounded local signal; not a global replacement for continuation-value objective."
+    },
+    {
+      "name": "branch_answer_evidence_score",
+      "category": "incumbent_commit_score",
+      "location": "scripts/run_completion_aware_decision_experiment.py",
+      "role": "Answer-evidence proxy for commit readiness and semantic adjudication.",
+      "status": "canonical",
+      "description": "Used in completion-aware and hybrid local corrections."
+    },
+    {
+      "name": "hybrid_oracle_score",
+      "category": "decision_score",
+      "location": "scripts/run_oracle_mismatch_study.py",
+      "role": "Local disagreement-slice composition of continuation, completion, answer evidence, and outside-gap normalization.",
+      "status": "exploratory",
+      "description": "Useful bounded policy component; not yet repository-wide frozen global objective."
+    },
+    {
+      "name": "completion_bonus_policy",
+      "category": "local_modifier",
+      "location": "scripts/run_completion_aware_decision_experiment.py",
+      "role": "Adds bounded completion bonus to continuation score.",
+      "status": "exploratory",
+      "description": "Policy variant for local disagreement handling."
+    },
+    {
+      "name": "completion_outside_gate_policy",
+      "category": "local_modifier",
+      "location": "scripts/run_completion_aware_decision_experiment.py",
+      "role": "Completion-aware override with outside-gap/value-drop safety checks.",
+      "status": "exploratory",
+      "description": "Bounded gate policy for disagreement states."
+    },
+    {
+      "name": "completion_tie_resolution_policy",
+      "category": "local_modifier",
+      "location": "scripts/run_completion_aware_decision_experiment.py",
+      "role": "Near-tie resolution using completion score among near-top contenders.",
+      "status": "exploratory",
+      "description": "Tie-local policy, not global objective."
+    },
+    {
+      "name": "discounted_multistep_branch_utility_target_gammaXX",
+      "category": "objective_like_target",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "Discounted multihorizon continuation-target variant.",
+      "status": "exploratory",
+      "description": "Evaluated and retained as diagnostic branch; not current default."
+    },
+    {
+      "name": "compute_response_curve_target_h123",
+      "category": "objective_like_target",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "Short-horizon response-curve target and scalarized decision score.",
+      "status": "exploratory",
+      "description": "Richer target object that did not displace multistep-k3 in bounded passes."
+    },
+    {
+      "name": "rank_instability_target_v1",
+      "category": "uncertainty_target",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "Instability-supervision target for disagreement-risk states.",
+      "status": "exploratory",
+      "description": "Useful uncertainty signal but not canonical expansion objective."
+    },
+    {
+      "name": "penalized_marginal_defer_target",
+      "category": "decision_target",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "Ternary left/right/defer supervision with budget-price penalty.",
+      "status": "exploratory",
+      "description": "Important defer diagnostic family; not default global target."
+    },
+    {
+      "name": "opportunity_intensity_weighted",
+      "category": "weighting_modifier",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "Pair reweighting by opportunity intensity (with/without outside normalization).",
+      "status": "exploratory",
+      "description": "Sample-weighting modifier, not core objective."
+    },
+    {
+      "name": "allocation_regret_target",
+      "category": "objective_like_target",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "Target based on regret relative to best available branch (optionally including outside option).",
+      "status": "exploratory",
+      "description": "Alternative shaping target retained for provenance and diagnostics."
+    },
+    {
+      "name": "ambiguous_tie_target / soft_prob_tie",
+      "category": "uncertainty_modifier",
+      "location": "scripts/build_bruteforce_target_regimes.py",
+      "role": "Near-tie ambiguity labeling and soft ternary target probability.",
+      "status": "exploratory",
+      "description": "Tie-aware supervision utilities for hard-slice handling."
+    },
+    {
+      "name": "rank_instability_aware_decision_rules",
+      "category": "decision_rule",
+      "location": "scripts/run_rank_instability_experiment.py",
+      "role": "Instability-conditioned defer/accept decision policies.",
+      "status": "exploratory",
+      "description": "Local gating family; improves diagnosis and selective abstention analysis."
+    },
+    {
+      "name": "instability_decision_coupling_policy_family",
+      "category": "decision_rule",
+      "location": "scripts/run_instability_decision_coupling_experiment.py",
+      "role": "Policy-level coupling between rank instability and expand/defer decision thresholds.",
+      "status": "exploratory",
+      "description": "Explicit bounded policy family; not canonical default controller."
+    },
+    {
+      "name": "pairwise_default_plus_fallback_summary",
+      "category": "summary_layer",
+      "location": "docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md",
+      "role": "Older summary emphasizing pairwise default + fallback scaffold.",
+      "status": "deprecated",
+      "description": "Demoted from repository-wide canonical framing in favor of objective/expansion/incumbent/decision decomposition."
+    }
+  ]
+}
