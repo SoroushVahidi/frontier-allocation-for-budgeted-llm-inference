@@ -1,0 +1,13 @@
+{
+  "total_states": 8,
+  "total_failures": 3,
+  "taxonomy_counts_on_failures": {
+    "delayed_payoff_overvaluation_with_outside_option_miss": 2,
+    "fragile_boundary_overconfidence": 1
+  },
+  "taxonomy_definition": {
+    "delayed_payoff_overvaluation_with_outside_option_miss": "chosen branch has multistep uplift but negative outside-gap while oracle branch has positive outside-gap",
+    "fragile_boundary_overconfidence": "near-tie with tiny oracle gap but large learned top-2 margin",
+    "other_score_ordering_error": "residual mismatch not satisfying the stronger signatures"
+  }
+}
