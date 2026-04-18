@@ -1,0 +1,55 @@
+{
+  "date": "2026-04-18",
+  "canonical_identity": {
+    "project": "fixed-budget adaptive test-time compute allocation for LLM reasoning",
+    "core_question": "Which active branch should receive the next unit of compute?",
+    "not_centered_on": "old binary revise-routing framing"
+  },
+  "current_leading_direction": {
+    "name": "multi-step branch-utility target",
+    "status": "promising_but_not_yet_trustworthy",
+    "why": [
+      "first recent line with meaningful positive signal",
+      "survived bounded follow-up better than nearby ideas",
+      "fits diagnosis that one-step/local targets are too weak"
+    ]
+  },
+  "dominant_failure_group": {
+    "name": "delayed_payoff_overvaluation_with_outside_option_miss",
+    "plain_language": "future-looking multistep uplift can outrank branches that are stronger for the next immediate compute unit and better on outside-option gap"
+  },
+  "recent_negative_or_mixed_lines": [
+    "conditional near-tie information expansion",
+    "probabilistic branch-value allocation",
+    "opportunity-intensity-weighted upstream supervision",
+    "statewise supervision-object reformulation",
+    "allocation-regret target reformulation"
+  ],
+  "current_active_workstreams": [
+    "canonical project framing and paper story",
+    "multi-step target validation",
+    "failure-case diagnosis and casebook generation",
+    "bounded next-step idea pressure-testing",
+    "repository organization and collaborator navigation"
+  ],
+  "recommended_next_bounded_experiments": [
+    "discounted multistep target",
+    "dominant-failure-group-sensitive multistep comparison diagnostics"
+  ],
+  "recommended_next_stronger_research_ideas": [
+    "compute-response curve prediction",
+    "rank-instability supervision",
+    "explicit information-gathering actions under budget",
+    "distributional branch utility",
+    "latent-regime or mixture-of-experts scoring"
+  ],
+  "new_repo_facing_summary_docs": [
+    "docs/PROJECT_SITUATION_REPORT_2026_04_18.md",
+    "docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md",
+    "docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md"
+  ],
+  "interpretation": {
+    "best_summary": "many nearby ideas around the same local target family were already pressure-tested and ruled weak, the diagnosis is now narrower, and the current best lead is multistep target fidelity plus failure-pattern-aware next-step experiments",
+    "operating_mode": "targeted diagnosis-driven progress"
+  }
+}
