@@ -46,6 +46,8 @@ outputs/*
 !outputs/branch_label_bruteforce_learning/
 !outputs/branch_label_bruteforce_learning/near_tie_two_stage_defer_head_20260417/
 !outputs/branch_label_bruteforce_learning/near_tie_two_stage_defer_head_20260417/**/*
+!outputs/data_consolidation_20260418/
+!outputs/data_consolidation_20260418/**/*
 
 # Legacy singular output directory (prefer outputs/ for all new runs)
 output/

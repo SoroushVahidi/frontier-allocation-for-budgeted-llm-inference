@@ -1,0 +1,24 @@
+{
+  "schema_name": "semantic_diagnosis_v1",
+  "object_types": {
+    "worst_failure_casebook_row": [
+      "state_id",
+      "dataset_name",
+      "failure_rank",
+      "method_branch_reasoning",
+      "oracle_branch_reasoning",
+      "method_branch_final_answer",
+      "oracle_branch_final_answer",
+      "semantic_disagreement_type",
+      "recoverability_metadata"
+    ],
+    "completion_aware_mismatch_row": [
+      "state_id",
+      "continuation_choice",
+      "completion_aware_choice",
+      "oracle_choice",
+      "objective_mismatch_flag",
+      "resolved_by_completion_flag"
+    ]
+  }
+}

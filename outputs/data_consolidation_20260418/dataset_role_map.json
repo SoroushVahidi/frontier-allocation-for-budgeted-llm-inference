@@ -1,0 +1,284 @@
+{
+  "EleutherAI/hendrycks_math": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "formal_hard_math",
+      "proof_like_reasoning"
+    ],
+    "repo_id_used_for_loading": "EleutherAI/hendrycks_math",
+    "default_split": "test",
+    "default_config": "algebra",
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "problem",
+      "question"
+    ],
+    "answer_fields": [
+      "solution",
+      "answer"
+    ],
+    "provenance_note": "Community mirror of MATH-style competition math; same broad schema as hendrycks/competition_math."
+  },
+  "Hothan/OlympiadBench": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "olympiad_math_physics",
+      "long_horizon_reasoning"
+    ],
+    "repo_id_used_for_loading": "Hothan/OlympiadBench",
+    "default_split": "train",
+    "default_config": "OE_TO_maths_en_COMP",
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "question",
+      "problem"
+    ],
+    "answer_fields": [
+      "final_answer",
+      "answer",
+      "solution"
+    ],
+    "provenance_note": "HF mirror with OlympiadBench-style schema; cite THUDM/OpenBMB paper for benchmark definition."
+  },
+  "HuggingFaceH4/MATH-500": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "hard_math_subset",
+      "exact_answer_normalization"
+    ],
+    "repo_id_used_for_loading": "HuggingFaceH4/MATH-500",
+    "default_split": "test",
+    "default_config": null,
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "problem"
+    ],
+    "answer_fields": [
+      "answer",
+      "solution"
+    ],
+    "provenance_note": "Chosen canonical MATH-500 id in this repo due stronger maintenance signal and broad community usage; schema matches other mirrors."
+  },
+  "HuggingFaceH4/aime_2024": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "olympiad_integer_math",
+      "concise_final_answer"
+    ],
+    "repo_id_used_for_loading": "HuggingFaceH4/aime_2024",
+    "default_split": "train",
+    "default_config": null,
+    "gated": false,
+    "optional": true,
+    "question_fields": [
+      "problem"
+    ],
+    "answer_fields": [
+      "answer"
+    ],
+    "provenance_note": "Single-year AIME 2024 slice; for broader AIME coverage see AI-MO/aimo-validation-aime (not wired here)."
+  },
+  "Idavidrein/gpqa": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "expert_science_mcq",
+      "distractor_disambiguation"
+    ],
+    "repo_id_used_for_loading": "Idavidrein/gpqa",
+    "default_split": "train",
+    "default_config": "gpqa_diamond",
+    "gated": true,
+    "optional": false,
+    "question_fields": [
+      "Question",
+      "question"
+    ],
+    "answer_fields": [
+      "Correct Answer",
+      "answer"
+    ],
+    "provenance_note": "GPQA Diamond config; requires HF auth / dataset terms acceptance when gated."
+  },
+  "TAUR-Lab/MuSR": {
+    "role": "expansion_evaluation_dataset",
+    "ambiguity_regimes": [
+      "long_context_ambiguity",
+      "multi_hypothesis_reasoning"
+    ],
+    "repo_id_used_for_loading": "TAUR-Lab/MuSR",
+    "default_split": "murder_mysteries",
+    "default_config": "default",
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "question",
+      "narrative"
+    ],
+    "answer_fields": [
+      "answer_choice",
+      "answer_index"
+    ],
+    "provenance_note": "MuSR reasoning benchmark; default split key reflects task family layout in this HF card."
+  },
+  "allenai/drop": {
+    "role": "expansion_evaluation_dataset",
+    "ambiguity_regimes": [
+      "paragraph_grounded_numerical_reasoning",
+      "evidence_selection_ambiguity"
+    ],
+    "repo_id_used_for_loading": "ucinlp/drop",
+    "default_split": "validation",
+    "default_config": null,
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "question"
+    ],
+    "answer_fields": [
+      "answers_spans"
+    ],
+    "provenance_note": "Requested HF id allenai/drop was not resolvable in this environment; using public HF mirror ucinlp/drop. Official AWS registry path is also available: https://registry.opendata.aws/allenai-drop/."
+  },
+  "deepmind/aqua_rat": {
+    "role": "expansion_evaluation_dataset",
+    "ambiguity_regimes": [
+      "mcq_math_reasoning",
+      "rationale_plus_answer"
+    ],
+    "repo_id_used_for_loading": "deepmind/aqua_rat",
+    "default_split": "validation",
+    "default_config": "raw",
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "question"
+    ],
+    "answer_fields": [
+      "correct",
+      "rationale"
+    ],
+    "provenance_note": "AQuA-RAT multiple-choice benchmark (raw config)."
+  },
+  "google-deepmind/natural-plan": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "planning_constraints",
+      "structured_plan_generation"
+    ],
+    "repo_id_used_for_loading": "google-deepmind/natural-plan",
+    "default_split": "",
+    "default_config": null,
+    "gated": false,
+    "optional": false,
+    "question_fields": [],
+    "answer_fields": [],
+    "provenance_note": null
+  },
+  "hendrycks/competition_math": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "formal_hard_math",
+      "proof_like_reasoning"
+    ],
+    "repo_id_used_for_loading": "hendrycks/competition_math",
+    "default_split": "test",
+    "default_config": "algebra",
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "problem"
+    ],
+    "answer_fields": [
+      "solution"
+    ],
+    "provenance_note": "Canonical Hendrycks org Hub id for MATH; configs are subject subsets (e.g. algebra)."
+  },
+  "livecodebench/code_generation_lite": {
+    "role": "optional_extended_only",
+    "ambiguity_regimes": [
+      "code_generation",
+      "execution_sensitive_evaluation"
+    ],
+    "repo_id_used_for_loading": "livecodebench/code_generation_lite",
+    "default_split": "test",
+    "default_config": null,
+    "gated": false,
+    "optional": true,
+    "question_fields": [
+      "question_content",
+      "prompt",
+      "question"
+    ],
+    "answer_fields": [
+      "starter_code",
+      "solution",
+      "answer"
+    ],
+    "provenance_note": null
+  },
+  "meituan-longcat/AMO-Bench": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "very_hard_math",
+      "parser_graded_target"
+    ],
+    "repo_id_used_for_loading": "meituan-longcat/AMO-Bench",
+    "default_split": "test",
+    "default_config": null,
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "prompt",
+      "question"
+    ],
+    "answer_fields": [
+      "answer"
+    ],
+    "provenance_note": "AMO-Bench HF release with MIT license tag and 50-item hard-math test split."
+  },
+  "openai/gsm8k": {
+    "role": "main_evaluation_dataset",
+    "ambiguity_regimes": [
+      "short_math_word_problem",
+      "arithmetic_multistep"
+    ],
+    "repo_id_used_for_loading": "openai/gsm8k",
+    "default_split": "test",
+    "default_config": "main",
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "question"
+    ],
+    "answer_fields": [
+      "answer"
+    ],
+    "provenance_note": null
+  },
+  "openeval/BIG-Bench-Hard": {
+    "role": "expansion_evaluation_dataset",
+    "ambiguity_regimes": [
+      "cross_domain_reasoning",
+      "task_diversity"
+    ],
+    "repo_id_used_for_loading": "openeval/BIG-Bench-Hard",
+    "default_split": "train",
+    "default_config": "default",
+    "gated": false,
+    "optional": false,
+    "question_fields": [
+      "input",
+      "question",
+      "examples"
+    ],
+    "answer_fields": [
+      "target",
+      "answer",
+      "examples"
+    ],
+    "provenance_note": "BIG-Bench Hard card with task-packed rows (examples nested per task row)."
+  }
+}

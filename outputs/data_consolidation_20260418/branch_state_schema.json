@@ -1,0 +1,24 @@
+{
+  "schema_name": "branch_state_observability_v1",
+  "required_fields": [
+    "state_id",
+    "branch_id",
+    "example_id",
+    "dataset_name",
+    "remaining_budget",
+    "branch_reasoning_text_raw",
+    "branch_final_answer_text_raw",
+    "branch_final_answer_normalized",
+    "branch_role_summary",
+    "final_answer_capture_metadata",
+    "answer_normalization_metadata",
+    "recoverability_flags"
+  ],
+  "continuation_and_quality_fields_expected_from_targets": [
+    "estimated_value_if_allocate_next",
+    "branch_vs_outside_gap",
+    "allocation_value_std",
+    "near_tie_flag",
+    "adjacent_rank_flag"
+  ]
+}

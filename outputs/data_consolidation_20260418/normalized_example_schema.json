@@ -1,0 +1,22 @@
+{
+  "schema_name": "normalized_example_v1",
+  "required_fields": [
+    "dataset_name",
+    "example_id",
+    "split",
+    "raw_question",
+    "raw_answer",
+    "normalized_answer",
+    "answer_type",
+    "numeric_answer_flag",
+    "multiple_choice_flag",
+    "long_form_flag",
+    "recoverable_answer_flag",
+    "recoverability_reason"
+  ],
+  "notes": [
+    "raw_question/raw_answer preserve source text.",
+    "normalized_answer is deterministic best-effort canonical extraction.",
+    "answer_type expected values: numeric, multiple_choice, short_text, missing."
+  ]
+}

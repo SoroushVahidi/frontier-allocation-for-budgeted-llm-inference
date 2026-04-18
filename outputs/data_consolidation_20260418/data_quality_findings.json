@@ -1,0 +1,16 @@
+{
+  "cleaned_and_normalized_now": [
+    "Unified normalized-answer metadata in experiments.data.normalize_answer_text and branch observability output.",
+    "Expanded normalized example object with explicit answer-type and recoverability fields.",
+    "Canonical dataset role + alias maps exported in this bundle."
+  ],
+  "inconsistencies_or_risks": [
+    "DROP canonical key is allenai/drop but loader currently uses repo_id ucinlp/drop fallback.",
+    "Branch/state observability and branch-learning targets are still stored in separate folders and require join-on state_id for consolidated analytics.",
+    "Legacy exploratory outputs coexist with canonical outputs and require role-map filtering before claims."
+  ],
+  "missing_for_next_stage": [
+    "A single canonical joined branch-state + utility + adjudication table is not yet materialized by default.",
+    "Dataset-level normalized example snapshots are schema-defined but not yet persistently generated for every dataset split."
+  ]
+}

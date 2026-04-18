@@ -1,0 +1,47 @@
+{
+  "schema_name": "decision_objects_v1",
+  "object_types": {
+    "pairwise": {
+      "required_fields": [
+        "state_id",
+        "branch_i",
+        "branch_j",
+        "label",
+        "margin",
+        "near_tie_flag",
+        "adjacent_rank_flag",
+        "source_regime",
+        "label_source"
+      ]
+    },
+    "top_vs_rest": {
+      "derived_from": "candidate rows sorted by estimated_value_if_allocate_next",
+      "required_fields": [
+        "state_id",
+        "top_branch_id",
+        "challenger_branch_id",
+        "value_gap",
+        "near_tie_flag"
+      ]
+    },
+    "oracle_comparison": {
+      "required_fields": [
+        "state_id",
+        "method_choice",
+        "oracle_choice",
+        "oracle_match_flag",
+        "oracle_regret",
+        "disagreement_flag"
+      ]
+    },
+    "answer_adjudication": {
+      "required_fields": [
+        "state_id",
+        "method_branch_normalized_answer",
+        "oracle_branch_normalized_answer",
+        "ground_truth_answer_normalized",
+        "recoverable_answer_flag"
+      ]
+    }
+  }
+}
