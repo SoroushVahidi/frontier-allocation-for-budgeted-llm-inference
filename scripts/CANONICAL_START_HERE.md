@@ -24,6 +24,7 @@ Start with:
 
 For the shortest current repository-facing orientation, read:
 - `../docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`
+- `../docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`
 - `../docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
 - `../docs/MAIN_BOTTLENECK_FOCUS_2026_04_18.md`
 - `../docs/DAILY_OPERATOR_PATH_2026_04_18.md`
