@@ -1,5 +1,7 @@
 # Paper positioning note (canonical interpretation)
 
+> Update (2026-04-18): manuscript-facing contribution freeze, claim levels, and abstract/introduction guardrails are now captured in `NEURIPS_CONTRIBUTION_POSITIONING_2026_04_18.md` and `CLAIM_MAP_2026_04_18.md`. Use those as canonical writing controls.
+
 ## Strongest current paper story
 
 The strongest current paper direction is:
