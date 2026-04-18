@@ -1,0 +1,35 @@
+{
+  "task": "Targeted comparative failure-analysis where self-consistency substantially outperforms our method.",
+  "compared_methods": {
+    "baseline": "self_consistency_3",
+    "our_method_primary": "adaptive_min_expand_1",
+    "our_method_secondary": "adaptive_min_expand_2",
+    "additional_context_method_from_repo": "multistep_k3_current (aggregate-only in strict-validation artifacts; not in per-example light controller outputs)",
+    "additional_context_method_from_repo_2": "best_bounded_learned_branch_score_current (aggregate-only strict-validation variant)"
+  },
+  "selection_rule": {
+    "meaningful_win_rule": "self_consistency_3 correct AND adaptive_min_expand_1 incorrect at the same dataset/seed/budget/example.",
+    "noise_rejection": "Cases where both methods are correct or both are wrong are excluded.",
+    "ranking": "rank_score = 100 * n_budget_seed_wins + mean_action_advantage_self_vs_ours"
+  },
+  "evaluation_space": {
+    "datasets": [
+      "openai/gsm8k",
+      "HuggingFaceH4/MATH-500",
+      "HuggingFaceH4/aime_2024",
+      "olympiadbench"
+    ],
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "budgets": [
+      4,
+      6,
+      8
+    ],
+    "subset_size": 24,
+    "mode": "simulated generator mode (matching light all-method comparison setup)"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "total_trials_evaluated": 864,
+  "meaningful_self_consistency_wins_trials": 296,
+  "unique_cases_with_meaningful_wins": 96,
+  "selected_ranked_cases": 12,
+  "self_consistency_reasoning_trace_recoverable": 0,
+  "self_consistency_reasoning_trace_total_selected": 12,
+  "our_method_action_trace_recoverable_selected": 12,
+  "caveat": "Light controller outputs do not include explicit self-consistency chain-of-thought traces."
+}

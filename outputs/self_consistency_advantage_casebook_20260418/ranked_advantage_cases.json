@@ -1,0 +1,209 @@
+{
+  "rows": [
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_1",
+      "n_budget_seed_wins": 6,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": 0.3333333333333333,
+      "rank_score": 600.3333333333334
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_1",
+      "n_budget_seed_wins": 6,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": 0.3333333333333333,
+      "rank_score": 600.3333333333334
+    },
+    {
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_1",
+      "n_budget_seed_wins": 6,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": 0.3333333333333333,
+      "rank_score": 600.3333333333334
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_1",
+      "n_budget_seed_wins": 6,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": 0.3333333333333333,
+      "rank_score": 600.3333333333334
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_2",
+      "n_budget_seed_wins": 5,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": -1.2,
+      "rank_score": 498.8
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_2",
+      "n_budget_seed_wins": 5,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": -1.2,
+      "rank_score": 498.8
+    },
+    {
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_2",
+      "n_budget_seed_wins": 5,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": -1.2,
+      "rank_score": 498.8
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_2",
+      "n_budget_seed_wins": 5,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": -1.2,
+      "rank_score": 498.8
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_11",
+      "n_budget_seed_wins": 5,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": -1.4,
+      "rank_score": 498.6
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_11",
+      "n_budget_seed_wins": 5,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": -1.4,
+      "rank_score": 498.6
+    },
+    {
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_11",
+      "n_budget_seed_wins": 5,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": -1.4,
+      "rank_score": 498.6
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_11",
+      "n_budget_seed_wins": 5,
+      "budgets_where_win": [
+        4,
+        6,
+        8
+      ],
+      "seeds_where_win": [
+        11,
+        23,
+        37
+      ],
+      "mean_action_advantage_self_vs_ours": -1.4,
+      "rank_score": 498.6
+    }
+  ],
+  "total_ranked": 96
+}
