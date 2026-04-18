@@ -29,6 +29,21 @@ We treat **nine datasets as core** to match the current project scope and to cov
 
 We keep LiveCodeBench in extended coverage (rather than core) to avoid mixing code-execution infrastructure into the first wave of math/science/planning experiments.
 
+## Focused expansion evaluation set (2026-04-18 pass)
+
+To address ambiguity-regime coverage without broad random expansion, the repository now treats the following as the **focused expansion evaluation set**:
+
+| Dataset | Canonical id in repo | Role | Why now |
+|---|---|---|---|
+| DROP | `allenai/drop` (loader fallback currently `ucinlp/drop`) | Expansion evaluation dataset | Adds paragraph-grounded evidence selection + numerical reasoning ambiguity beyond pure short-form math. |
+| MuSR | `TAUR-Lab/MuSR` | Expansion evaluation dataset | Adds long-context disambiguation and persistent multi-hypothesis ambiguity. |
+| BIG-Bench Hard | `openeval/BIG-Bench-Hard` | Expansion evaluation dataset | Adds cross-domain logical/symbolic task diversity beyond math-heavy core. |
+| AQuA | `deepmind/aqua_rat` | Expansion evaluation dataset (plus optional supervised prep) | Adds MCQ-format reasoning and answer-option normalization discipline. |
+
+Policy note:
+- These four are integrated as **evaluation-first** additions.
+- They should not be conflated with external supervision/pretraining sources unless a run explicitly documents that usage.
+
 ## Recommended first experimental subset
 
 A practical first subset is **GSM8K + MATH + GPQA Diamond** (see registry keys above). Lock HF revisions in run manifests before headline numbers. Generate a local status report (not committed by default): `python scripts/generate_dataset_integration_report.py` → `outputs/dataset_integration_report.{json,md}`.

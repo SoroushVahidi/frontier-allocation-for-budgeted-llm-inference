@@ -51,6 +51,25 @@ Verification output now includes:
 - GPQA pandas `hf://` fallback status (`pd.read_csv("hf://datasets/Idavidrein/gpqa/gpqa_extended.csv")`),
 - final GPQA accessibility verdict.
 
+### Full expansion-pass outputs (2026-04-18)
+
+The consolidated dataset-expansion/readiness bundle is now generated with:
+
+```bash
+python scripts/run_dataset_expansion_full_pass.py \
+  --output-dir outputs/dataset_expansion_full_20260418
+```
+
+This writes:
+- `manifest.json`
+- `integrated_datasets.json`
+- `dataset_role_map.json`
+- `dataset_alias_map.json`
+- `dataset_processing_summary.json`
+- `dataset_readiness_table.json`
+- `ambiguity_regime_coverage_summary.json`
+- `commands_assumptions_caveats.md`
+
 ### Verified status snapshot (2026-04-13, fresh-session check)
 
 From `python scripts/verify_hf_dataset_access.py --output-dir outputs/hf_dataset_access_fresh_session`:

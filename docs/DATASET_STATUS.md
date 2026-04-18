@@ -29,6 +29,18 @@ Readiness report and artifacts:
 - `docs/TOP_PRIORITY_DATASET_EXPANSION_READINESS_2026_04_17.md`
 - `outputs/dataset_expansion_20260417/`
 
+### Full next-step expansion pass (2026-04-18)
+
+The current repository-guided expansion pass is now consolidated under:
+- `outputs/dataset_expansion_full_20260418/`
+- `docs/FULL_DATA_STATUS_AND_EXPANSION_2026_04_18.md`
+
+Role policy for the four additions is now explicit:
+- `allenai/drop`: **expansion evaluation dataset** (evaluation-first; supervision later only with explicit policy)
+- `TAUR-Lab/MuSR`: **expansion evaluation dataset** (evaluation-first)
+- `openeval/BIG-Bench-Hard`: **expansion evaluation dataset** (evaluation-first; task-unpacking caveat)
+- `deepmind/aqua_rat`: **expansion evaluation dataset** (evaluation-first with optional supervised use when MCQ normalization policy is fixed)
+
 ## B) External reasoning-supervision datasets (new-paper prep layer)
 
 These are integrated mainly for branch/process supervision experiments and warm-start:
