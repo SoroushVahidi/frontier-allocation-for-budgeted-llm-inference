@@ -149,11 +149,63 @@
       "integration": "mode_a_complete_mode_b_partial",
       "completeness_class": "mode_b_partial",
       "blocker": "runnable_mode_a_blocked_mode_b_without_official_results"
+    },
+    "qstar_deliberative_planning": {
+      "clone_url": null,
+      "doc": "external/qstar_deliberative_planning/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "no_verified_official_repo_adapter_integration_yet",
+      "canonical_title": "Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning",
+      "baseline_class": "direct",
+      "paper_phase_priority": "essential"
+    },
+    "lets_verify_step_by_step": {
+      "clone_url": null,
+      "doc": "external/lets_verify_step_by_step/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "reference_family_not_integrated_as_runnable_stack",
+      "canonical_title": "Let's Verify Step by Step",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent"
+    },
+    "rational_metareasoning_llm": {
+      "clone_url": null,
+      "doc": "external/rational_metareasoning_llm/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "theory_framing_reference_not_integrated_as_runnable_stack",
+      "canonical_title": "Rational Metareasoning for Large Language Models",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent"
+    },
+    "efficient_contextual_llm_cascades": {
+      "clone_url": "https://github.com/eth-sri/cascade-routing.git",
+      "doc": "external/cascade_routing/README.md",
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "canonical_title": "Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "optional_unless_scope_broadens"
+    },
+    "best_arm_identification_fixed_budget": {
+      "clone_url": null,
+      "doc": "external/best_arm_identification_fixed_budget/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "theoretical_framing_reference_not_direct_empirical_llm_baseline",
+      "canonical_title": "Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence",
+      "baseline_class": "ingredient_adjacent_boundary",
+      "paper_phase_priority": "essential_framing"
     }
   },
   "completeness_taxonomy": [
     "runnable_direct",
     "runnable_adjacent",
+    "adapter_based",
+    "import_validated",
     "mode_a_only",
     "mode_b_partial",
     "link_only",

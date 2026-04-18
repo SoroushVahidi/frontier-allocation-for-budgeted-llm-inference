@@ -10,6 +10,7 @@ This page groups the most useful evaluation- and comparison-facing notes.
 
 ## Baseline/comparison notes
 
+- `BASELINE_FINAL_STATUS_2026_04_18.md`
 - `external_baseline_completeness_report.md`
 - `main_baselines.md`
 - `cascade_routing_integration.md`
@@ -31,3 +32,8 @@ Use this page when your main question is:
 - `CANONICAL_START_HERE.md`
 - `METHOD_STATUS_INDEX.md`
 - `ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`
+
+
+## Taxonomy rule (2026-04-18)
+
+Use one taxonomy across all baseline docs: **direct**, **adjacent**, **ingredient/framing** with explicit runnability (`runnable_direct`, `runnable_adjacent`, `adapter_based`, `import_validated`, `discuss_only`, `blocked`).
