@@ -231,6 +231,41 @@ DATASET_KEY_ALIASES: dict[str, str] = {
     "AQuA-RAT": "deepmind/aqua_rat",
 }
 
+# Explicit dataset-role map for evaluation/supervision discipline in docs/reports.
+DATASET_ROLE_MAP: dict[str, str] = {
+    "openai/gsm8k": "main_evaluation_dataset",
+    "hendrycks/competition_math": "main_evaluation_dataset",
+    "EleutherAI/hendrycks_math": "main_evaluation_dataset",
+    "Idavidrein/gpqa": "main_evaluation_dataset",
+    "HuggingFaceH4/MATH-500": "main_evaluation_dataset",
+    "HuggingFaceH4/aime_2024": "main_evaluation_dataset",
+    "Hothan/OlympiadBench": "main_evaluation_dataset",
+    "meituan-longcat/AMO-Bench": "main_evaluation_dataset",
+    "google-deepmind/natural-plan": "main_evaluation_dataset",
+    "allenai/drop": "expansion_evaluation_dataset",
+    "TAUR-Lab/MuSR": "expansion_evaluation_dataset",
+    "openeval/BIG-Bench-Hard": "expansion_evaluation_dataset",
+    "deepmind/aqua_rat": "expansion_evaluation_dataset",
+    "livecodebench/code_generation_lite": "optional_extended_only",
+}
+
+DATASET_AMBIGUITY_REGIMES: dict[str, list[str]] = {
+    "openai/gsm8k": ["short_math_word_problem", "arithmetic_multistep"],
+    "hendrycks/competition_math": ["formal_hard_math", "proof_like_reasoning"],
+    "EleutherAI/hendrycks_math": ["formal_hard_math", "proof_like_reasoning"],
+    "Idavidrein/gpqa": ["expert_science_mcq", "distractor_disambiguation"],
+    "HuggingFaceH4/MATH-500": ["hard_math_subset", "exact_answer_normalization"],
+    "HuggingFaceH4/aime_2024": ["olympiad_integer_math", "concise_final_answer"],
+    "Hothan/OlympiadBench": ["olympiad_math_physics", "long_horizon_reasoning"],
+    "meituan-longcat/AMO-Bench": ["very_hard_math", "parser_graded_target"],
+    "google-deepmind/natural-plan": ["planning_constraints", "structured_plan_generation"],
+    "allenai/drop": ["paragraph_grounded_numerical_reasoning", "evidence_selection_ambiguity"],
+    "TAUR-Lab/MuSR": ["long_context_ambiguity", "multi_hypothesis_reasoning"],
+    "openeval/BIG-Bench-Hard": ["cross_domain_reasoning", "task_diversity"],
+    "deepmind/aqua_rat": ["mcq_math_reasoning", "rationale_plus_answer"],
+    "livecodebench/code_generation_lite": ["code_generation", "execution_sensitive_evaluation"],
+}
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -269,6 +304,21 @@ def _resolve_alias(name: str) -> str:
         if k.lower() == name.strip().lower():
             return v
     return name.strip()
+
+
+def get_dataset_alias_map() -> dict[str, str]:
+    """Return copy of alias map (alias -> canonical dataset key)."""
+    return dict(DATASET_KEY_ALIASES)
+
+
+def get_dataset_role_map() -> dict[str, str]:
+    """Return copy of canonical dataset role map."""
+    return dict(DATASET_ROLE_MAP)
+
+
+def get_dataset_ambiguity_regimes() -> dict[str, list[str]]:
+    """Return copy of canonical ambiguity-regime tags per dataset key."""
+    return {k: list(v) for k, v in DATASET_AMBIGUITY_REGIMES.items()}
 
 
 def resolve_dataset_spec(dataset_name: str) -> HFDatasetSpec:
@@ -432,6 +482,123 @@ def _safe_preview(value: Any, max_chars: int = 600) -> str:
     return f"{text[:max_chars]} …<truncated {len(text) - max_chars} chars>"
 
 
+def _extract_answer_candidates(row: dict[str, Any], fields: tuple[str, ...]) -> list[str]:
+    out: list[str] = []
+    for field in fields:
+        if field not in row:
+            continue
+        value = row.get(field)
+        if value is None:
+            continue
+        if isinstance(value, list):
+            for item in value:
+                text = _safe_preview(item).strip()
+                if text:
+                    out.append(text)
+            continue
+        text = _safe_preview(value).strip()
+        if text:
+            out.append(text)
+    # deterministic de-duplication preserving order
+    dedup: list[str] = []
+    seen: set[str] = set()
+    for item in out:
+        if item in seen:
+            continue
+        seen.add(item)
+        dedup.append(item)
+    return dedup
+
+
+def _format_standard_example(
+    *,
+    spec: HFDatasetSpec,
+    row: dict[str, Any],
+    idx: int,
+    split: str,
+    config: str | None,
+) -> dict[str, str]:
+    question = _pick_first_present(row, spec.question_fields)
+    answer = _pick_first_present(row, spec.answer_fields)
+    answer_candidates = _extract_answer_candidates(row, spec.answer_fields)
+
+    rec: dict[str, str] = {
+        "example_id": f"{spec.key.replace('/', '_')}_{idx}",
+        "dataset": spec.key,
+        "question": question,
+        "answer": answer,
+        "split": split,
+        "config": config or "",
+    }
+
+    # Dataset-specific canonical formatting to keep pipeline discipline.
+    if spec.key == "allenai/drop":
+        passage = _safe_preview(row.get("passage"), max_chars=1200).strip()
+        if passage and question:
+            rec["question"] = f"Passage: {passage}\n\nQuestion: {question}"
+        elif passage:
+            rec["question"] = passage
+        spans = row.get("answers_spans")
+        if isinstance(spans, dict):
+            spans_list = spans.get("spans", [])
+            if isinstance(spans_list, list):
+                spans_clean = [str(s).strip() for s in spans_list if str(s).strip()]
+                if spans_clean:
+                    answer_candidates = spans_clean
+                    rec["answer"] = spans_clean[0]
+        if answer_candidates:
+            rec["answer_candidates"] = json.dumps(answer_candidates, ensure_ascii=False)
+
+    elif spec.key == "TAUR-Lab/MuSR":
+        narrative = _safe_preview(row.get("narrative"), max_chars=1200).strip()
+        choices = row.get("choices")
+        choice_text = _safe_preview(choices, max_chars=1200).strip() if choices is not None else ""
+        answer_choice = _safe_preview(row.get("answer_choice")).strip()
+        if narrative and question:
+            rec["question"] = f"Narrative: {narrative}\n\nQuestion: {question}"
+        rec["choices"] = choice_text
+        if answer_choice:
+            rec["answer"] = answer_choice
+            rec["answer_choice"] = answer_choice
+        answer_index = row.get("answer_index")
+        if answer_index is not None:
+            rec["answer_index"] = _safe_preview(answer_index)
+
+    elif spec.key == "openeval/BIG-Bench-Hard":
+        # HF rows are task-packed (`examples` list). Convert one nested entry to standard schema.
+        nested_examples = row.get("examples")
+        if isinstance(nested_examples, list) and nested_examples:
+            first_nested = nested_examples[0]
+            if isinstance(first_nested, dict):
+                rec["question"] = _safe_preview(
+                    first_nested.get("input", first_nested.get("question", question)),
+                    max_chars=1200,
+                )
+                rec["answer"] = _safe_preview(first_nested.get("target", first_nested.get("answer", answer)))
+        rec["task_canary"] = _safe_preview(row.get("canary")).strip()
+
+    elif spec.key == "deepmind/aqua_rat":
+        options = row.get("options")
+        option_text = _safe_preview(options, max_chars=1200).strip() if options is not None else ""
+        if option_text:
+            rec["question"] = f"{question}\n\nOptions: {option_text}" if question else option_text
+            rec["choices"] = option_text
+        if answer_candidates:
+            rec["answer_candidates"] = json.dumps(answer_candidates, ensure_ascii=False)
+
+    elif spec.key == "Idavidrein/gpqa":
+        for k in ("choices", "Choices"):
+            if k in row and row[k] is not None:
+                rec["choices"] = _safe_preview(row[k], max_chars=1200)
+                break
+
+    else:
+        if answer_candidates:
+            rec["answer_candidates"] = json.dumps(answer_candidates, ensure_ascii=False)
+
+    return rec
+
+
 def sample_hf_examples(
     dataset_name: str,
     pilot_size: int,
@@ -457,18 +624,15 @@ def sample_hf_examples(
 
     records: list[dict[str, str]] = []
     for idx, row in enumerate(selected):
-        question = _pick_first_present(row, spec.question_fields)
-        answer = _pick_first_present(row, spec.answer_fields)
-        rec: dict[str, str] = {
-            "example_id": f"{spec.key.replace('/', '_')}_{idx}",
-            "question": question,
-            "answer": answer,
-        }
-        if spec.key == "Idavidrein/gpqa":
-            for k in ("choices", "Choices"):
-                if k in row and row[k] is not None:
-                    rec["choices"] = _safe_preview(row[k], max_chars=600)
-                    break
+        if not isinstance(row, dict):
+            continue
+        rec = _format_standard_example(
+            spec=spec,
+            row=row,
+            idx=idx,
+            split=split_to_use,
+            config=config_to_use,
+        )
         records.append(rec)
     return records
 

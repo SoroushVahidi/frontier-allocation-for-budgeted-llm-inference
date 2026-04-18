@@ -32,6 +32,18 @@ Guardrails followed:
 - Keep **evaluation** and **supervision** layers explicitly separated.
 - Do not overclaim “integrated” as equivalent to “final paper evidence.”
 
+## 2026-04-18 full next-step expansion update
+
+A full repository-guided consolidation pass is now available and supersedes the earlier bounded note for day-to-day status checks.
+
+Primary outputs:
+- `docs/FULL_DATA_STATUS_AND_EXPANSION_2026_04_18.md`
+- `outputs/dataset_expansion_full_20260418/manifest.json`
+- `outputs/dataset_expansion_full_20260418/dataset_readiness_table.json`
+- `outputs/dataset_expansion_full_20260418/dataset_role_map.json`
+
+This update keeps the same top-priority four datasets (DROP, MuSR, BIG-Bench Hard, AQuA), while adding stricter role mapping and consolidated machine-readable readiness/coverage summaries.
+
 ## 1) Full dataset inventory
 
 ### 1.1 Evaluation layer inventory (benchmark-facing)
