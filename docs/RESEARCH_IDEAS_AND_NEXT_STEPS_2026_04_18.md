@@ -5,127 +5,127 @@
 This note records:
 - the strongest current research ideas,
 - which ideas are already partly or fully pressure-tested,
-- what kind of next experiments are still worth running,
-- and the recommended ordering of those next experiments.
+- what kind of next work is still worth doing,
+- and the recommended ordering of that work.
 
 This note is intended to reduce repeated rediscovery of nearby weak ideas.
 
 ## Current diagnosis to start from
 
-The current best repository-backed diagnosis is:
-- one-step/local targets appear too weak for the hardest close-branch states,
-- the current multistep line is the first recent promising break from that pattern,
-- but the dominant remaining failure group suggests the method can still overvalue delayed payoff relative to immediate next-step value and outside-option strength.
+The current best repository-backed diagnosis is now:
+- many nearby target/control refinements have already been pressure-tested,
+- fresh observability-enabled runs now support semantic failure diagnosis,
+- bounded answer recovery now permits contested-case adjudication,
+- and the current main unresolved question is the **target/oracle definition** for hard close-branch states.
 
 Any new idea should be judged against that diagnosis first.
 
 ## Ideas that are already pressure-tested enough to not be default next steps
 
 These ideas are informative evidence, but they should not be the default next move without a new reason:
-- conditional near-tie extra-information expansion,
-- probabilistic branch-value allocation,
-- opportunity-intensity-weighted upstream supervision,
-- statewise supervision-object reformulation,
-- allocation-regret target reformulation,
-- broad scalar-target tweaks that do not materially change the prediction object or control loop.
+- discounted multistep targets as a broad replacement family,
+- compute-response curve prediction as a broad successor claim,
+- rank-instability supervision as a broad successor claim,
+- instability-to-decision coupling as a broad successor claim,
+- broad scalar-target tweaks that do not materially change the target-definition question,
+- generic defer-policy sweeps,
+- and broad nearby controller sweeps without new semantic disagreement evidence.
 
-## Highest-priority bounded ideas now
+## Highest-priority work now
 
-### 1. Discounted multistep targets
+### 1. Target/oracle definition consolidation
 Core idea:
-- nearer expected gains should count more than farther expected gains.
+- settle the repository’s current hybrid stance rather than broadening method search.
 
-Why it is plausible:
-- the dominant current failure pattern is delayed-payoff overvaluation.
-
-Why it is still bounded:
-- it modifies target construction while reusing the current multistep path.
+Why it is now highest priority:
+- fresh bounded studies support continuation value as a strong core object,
+- but also support bounded completion-aware correction in disagreement slices.
 
 Main risk:
-- too much discounting may collapse the method back toward one-step behavior and destroy the useful part of multistep signal.
+- continuing to experiment broadly before freezing the target may create more artifacts without increasing clarity.
 
-### 2. Compute-response curve prediction
+### 2. Semantic disagreement adjudication
 Core idea:
-- predict the short compute-response curve of each branch (gain after 1, 2, 3... additional units) rather than a single scalar score.
+- use fresh observability-enabled casebooks plus answer recovery to determine when semantic branch quality and continuation value genuinely diverge.
 
-Why it is stronger than another scalar-target tweak:
-- it changes the prediction object itself.
-
-Why it is attractive now:
-- it directly separates immediate marginal gain from delayed payoff.
+Why it is important:
+- this is now the most direct evidence source for whether the hybrid stance is really justified.
 
 Main risk:
-- labels may become noisier and harder to learn than the current scalar targets.
+- if done loosely, semantic examples can be overread from a tiny bounded slice.
 
-### 3. Rank-instability supervision
+### 3. Data expansion for ambiguity diversity
 Core idea:
-- supervise not only which branch wins, but whether that ranking is fragile under small bounded continuation changes.
+- add only a small number of datasets with genuinely different ambiguity regimes.
 
-Why it fits the current repo state:
-- current failures are not only wrong rankings, but often rankings that look too confident.
+Why it is important:
+- the current math-heavy core is strong, but does not yet give enough ambiguity diversity for the final paper story.
+
+Current recommended additions:
+- DROP,
+- MuSR,
+- then BIG-Bench Hard and AQuA if needed.
 
 Main risk:
-- instability labels can be noisy or conflate stochasticity with genuine fragility.
+- broadening too fast may weaken data discipline rather than strengthen the bottleneck-focused story.
 
-## Strong combined idea
+## Strongest bounded idea still worth keeping alive
 
-The strongest combined next idea is:
+### 4. Bounded hybrid-oracle / completion-aware target validation
+Core idea:
+- keep continuation value as the default target/oracle,
+- and validate bounded completion-aware correction only in disagreement slices, especially near-ties.
 
-> **compute-response curve prediction + rank-instability supervision**
+Why it is still alive:
+- this is now the closest method-design idea to the repository’s actual evidence.
 
-Why this combination is attractive:
-- response curves target the immediate-vs-delayed payoff confusion,
-- instability supervision targets the false-confidence side of the remaining failures.
-
-This is currently the strongest conceptually different research direction if bounded scalar-target refinements stall.
+Main risk:
+- if overgeneralized, it may become another broad replacement-family claim that the current evidence does not support.
 
 ## Medium-priority ideas
 
-### 4. Explicit information-gathering actions under budget
+### 5. Better incumbent / commit-quality signals
 Core idea:
-- allow a small diagnostic/probe action inside the fixed budget for hard near-tie states.
+- improve the current notion of commit quality / current branch quality without collapsing back into ad hoc scalar tweaking.
 
-Why it is meaningful:
-- it changes the control loop rather than just asking the scorer to do everything.
+Why it is plausible:
+- the current bottleneck is partly about what it means for a branch to be good enough to stop on now.
 
 Main risk:
-- the probe may consume budget without changing enough decisions.
+- it can easily become another nearby score tweak if not tied to the target-definition question.
 
-### 5. Distributional branch utility
+### 6. Broader answer-level adjudication infrastructure
 Core idea:
-- predict a distribution or quantiles for branch utility rather than a single point estimate.
+- improve final-answer recovery and normalization beyond the current bounded contested slice.
 
-Why it is attractive:
-- it may represent overlap and uncertainty more honestly on hard close cases.
+Why it is useful:
+- this makes future semantic/oracle comparisons more trustworthy.
 
 Main risk:
-- better uncertainty language may not translate into better decisions unless paired with a stronger control action.
+- infrastructure work can expand without changing the substantive target-definition question unless kept bounded.
 
-## Lower-priority but still plausible idea
+## Lower-priority ideas for now
 
-### 6. Latent-regime / mixture-of-experts branch scorers
-Core idea:
-- different hidden branch regimes may need different ranking rules.
-
-Why it is weaker as a first next step:
-- it adds complexity early,
-- and it is easier to overfit or tell a less clean paper story unless the regime separation is very crisp.
+Potentially useful later, but not current defaults:
+- another nearby scalar target family,
+- another generic fallback policy,
+- another uncertainty-only calibration sweep,
+- mixture-of-experts branch scorers before a clearer regime story exists,
+- broad new controller families not directly tied to the current disagreement question.
 
 ## Practical next-step order
 
-### Recommended order if we want bounded near-term progress
-1. discounted multistep target experiment,
-2. richer failure-case diagnosis under the current multistep line,
-3. compute-response curve prediction,
-4. rank-instability auxiliary supervision,
-5. combined response-curve + instability experiment.
+### Recommended order if we want repository clarity first
+1. freeze the target/oracle definition memo,
+2. adjudicate the fresh semantic disagreement cases,
+3. complete the bounded data expansion pass,
+4. rerun the most relevant bounded comparison under the stabilized target/data story,
+5. only then consider another method-family change.
 
-### Recommended order if we want stronger concept shift immediately
-1. compute-response curve prediction,
-2. rank-instability supervision,
-3. explicit information-gathering action for hard near-ties,
-4. distributional branch utility,
-5. mixture-of-experts only after a clearer heterogeneity story emerges.
+### Recommended order if we want one bounded implementation follow-up later
+1. targeted hybrid-oracle validation under better data coverage,
+2. broader answer-level adjudication,
+3. only then any new scorer/control experiment.
 
 ## What to avoid repeating now
 
@@ -133,33 +133,25 @@ Avoid defaulting to:
 - another threshold-only tweak,
 - another confidence calibration pass with unchanged target semantics,
 - another small reweighting of the same supervision family,
-- or another generic fallback variant with no new diagnosis.
+- another broad nearby controller sweep,
+- or another generic fallback variant with no new target-definition or semantic-adjudication content.
 
 These may still be useful later, but they are not currently the highest-leverage moves.
 
-## How to choose between the next two ideas
-
-### Choose discounted multistep next if:
-- you want the cheapest bounded follow-up,
-- you want to test the dominant current failure pattern directly,
-- and you want to stay close to the current promising line.
-
-### Choose compute-response curve next if:
-- you want the strongest conceptually different research step,
-- you want to stop asking one scalar target to do everything,
-- and you want a more paper-worthy change to the prediction object.
-
 ## Recommended current answer
 
-If only one next experiment is chosen right now, the best practical split is:
-- **bounded next experiment:** discounted multistep target,
-- **stronger next research direction:** compute-response curve prediction with possible rank-instability supervision.
+If only one next repository question is chosen right now, it should be:
+
+> **exactly how should the repo define the hybrid target/oracle for hard close-branch disagreement states?**
+
+If only one next data move is chosen right now, it should be:
+- **integrate DROP and MuSR cleanly**, then reassess whether broader expansion is still needed.
 
 ## Conservative conclusion
 
-The repository now has enough evidence that the next strong ideas should change:
-- the prediction object,
-- the target horizon semantics,
-- or the control loop,
+The repository now has enough evidence that the next strong ideas should focus on:
+- target/oracle consolidation,
+- semantic disagreement adjudication,
+- and ambiguity-diverse data,
 
-rather than merely reweighting examples or shifting a threshold around the same scalar local target.
+rather than merely reweighting examples or shifting thresholds around another nearby method family.
