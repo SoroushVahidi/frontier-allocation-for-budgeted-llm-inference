@@ -20,9 +20,14 @@ Start with:
 Start with:
 - `run_branch_value_uncertainty_strict_validation_pass.py`
 
+### If you want one script for forward-looking semantic failure observability
+Start with:
+- `run_branch_observability_smoke.py`
+
 ## Before you run scripts
 
 For the shortest current repository-facing orientation, read:
+- `../docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
 - `../docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`
 - `../docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`
 - `../docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
@@ -45,6 +50,8 @@ Start with these scripts:
 Start with these scripts:
 - `run_multistep_branch_utility_target_experiment.py`
 - `run_compute_response_curve_experiment.py`
+- `run_rank_instability_experiment.py`
+- `run_instability_decision_coupling_experiment.py`
 - `build_bruteforce_target_regimes.py`
 - `run_canonical_branch_learning_pass.py`
 - `train_bruteforce_branch_allocator.py`
@@ -84,10 +91,17 @@ Start with these scripts:
 - `run_l1_baseline.py`
 - external baseline validation/generation scripts described in [`README.md`](README.md)
 
+## If you want future semantic failure diagnosis
+
+Start with these scripts:
+- `run_branch_observability_smoke.py`
+- then a bounded real trace-backed run that emits the new branch observability bundle
+- then the rich failure-case casebook extraction path
+
 ## Rule of thumb
 
 - Use this page first.
 - Use [`README.md`](README.md) for the full script index.
 - Use `run_imported_methodology_frontier_eval.py` when you need cleaner manuscript-style fixed/adaptive/oracle summaries.
 - Treat historical script paths as provenance support, not the default path.
-- The current highest-leverage code path is the one that most directly tests target fidelity on hard close-branch cases rather than broad controller proliferation.
+- The current highest-leverage code path is no longer just another nearby target tweak; it is to pair the strongest current method line with new observability-enabled real failure analysis.
