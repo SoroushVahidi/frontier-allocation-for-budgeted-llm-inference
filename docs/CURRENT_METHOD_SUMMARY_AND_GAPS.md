@@ -69,5 +69,7 @@ Concretely this includes:
 
 For the canonical function inventory and classification table, use:
 - `docs/FUNCTIONS_AND_OBJECTIVES_STATUS_2026_04_18.md`
+- `docs/CANONICAL_OBJECTIVE_AND_FUNCTION_STACK_2026_04_18.md`
 - `outputs/function_audit_20260418/function_inventory.json`
 - `outputs/function_audit_20260418/canonical_function_stack.json`
+- `outputs/objective_stack_20260418/manifest.json`
