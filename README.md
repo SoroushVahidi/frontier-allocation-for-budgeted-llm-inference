@@ -22,52 +22,63 @@ This repository is currently centered on:
 
 This repository is **not** currently centered on the old binary revise-routing paper.
 
-## Current leading experimental direction
+## Current repository decision point
 
-The shortest current reading of the repo is:
-- many recent bounded fixes around the same one-step/local target family were negative,
-- the first current direction with a meaningful positive signal is the **multi-step branch-utility target** line,
-- but that direction is still **promising, not yet trustworthy**.
+The current strongest repository-backed conclusion is:
+
+- many nearby bounded target/control refinements did **not** clearly displace the multistep-k3 line,
+- fresh observability-enabled runs now allow real semantic diagnosis of contested failures,
+- and the current highest-value question is now the **target/oracle definition** for hard close-branch states.
+
+The current bounded repository stance is:
+
+> **keep continuation value as the core oracle/target, and augment it with bounded completion-aware evidence only in disagreement slices, especially near-ties.**
+
+## Read this first
+
+If you want the shortest current synthesis, read:
+- [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+- [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+- [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 
 Read this note early:
 - [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
 
 If you want the shortest path from current truth to current failure diagnosis, read:
 - [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
-
-If you want the shortest new synthesis of what is done, what is active, and what next, read:
-- [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
-- [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
-- [`docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
-- [`docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
-- [`outputs/repository_polish/current_repo_state_summary_2026_04_18.json`](outputs/repository_polish/current_repo_state_summary_2026_04_18.json)
+- [`docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`](docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md)
+- [`docs/ORACLE_MISMATCH_STUDY_2026_04_18.md`](docs/ORACLE_MISMATCH_STUDY_2026_04_18.md)
+- [`docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`](docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md)
 
 ## Fastest reliable start
 
 If you only read a few files, use this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
 2. [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
-3. [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
-4. [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
-5. [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
-6. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
-7. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-8. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
-9. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
+3. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+4. [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
+5. [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
+6. [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
+7. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+8. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+9. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+10. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
 
 If you want the shortest repository-facing summary instead, use:
 - [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+- [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - [`docs/EXPERIMENT_LEDGER_2026_04_18.md`](docs/EXPERIMENT_LEDGER_2026_04_18.md)
 - [`docs/CONTINUATION_PLAN_2026_04_18.md`](docs/CONTINUATION_PLAN_2026_04_18.md)
 - [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
 - [`docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
 - [`docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
-- [`docs/REPOSITORY_POLISH_PASS_2026_04_17.md`](docs/REPOSITORY_POLISH_PASS_2026_04_17.md)
 
 ## What to avoid at first
 
 Do **not** start by reading arbitrary experiment notes, historical memos, or one-off outputs in isolation.
+
+Do **not** assume the next best move is another nearby bounded target/controller tweak.
 
 Use these interpretation rules instead:
 - **Canonical** docs/scripts define the current project identity.
@@ -85,29 +96,27 @@ For the formal interpretation rules, see:
 Read in this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
 2. [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
-3. [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
-4. [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
-5. [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
-6. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
-7. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-8. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
-9. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
-10. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+3. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+4. [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
+5. [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
+6. [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
+7. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+8. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+9. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+10. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+11. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 ### Shortest repository-facing orientation path
 Use:
 - [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+- [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - [`docs/EXPERIMENT_LEDGER_2026_04_18.md`](docs/EXPERIMENT_LEDGER_2026_04_18.md)
 - [`docs/CONTINUATION_PLAN_2026_04_18.md`](docs/CONTINUATION_PLAN_2026_04_18.md)
-- [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
-- [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
-- [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
-- [`docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
+- [`docs/ORACLE_MISMATCH_STUDY_2026_04_18.md`](docs/ORACLE_MISMATCH_STUDY_2026_04_18.md)
+- [`docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`](docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md)
+- [`docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`](docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md)
 - [`docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
-- [`docs/REFERENCES_ORGANIZATION_2026_04_18.md`](docs/REFERENCES_ORGANIZATION_2026_04_18.md)
-- [`outputs/repository_polish/repository_polish_summary_2026_04_18.json`](outputs/repository_polish/repository_polish_summary_2026_04_18.json)
-- [`outputs/repository_polish/current_repo_state_summary_2026_04_18.json`](outputs/repository_polish/current_repo_state_summary_2026_04_18.json)
 
 ### Compact repository-facing audit
 Use:
@@ -123,24 +132,13 @@ Start with:
 ### Current method and bottleneck path
 Read next:
 - [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+- [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`](docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md)
 - [`docs/WHAT_IS_NOT_WORKING_NOW.md`](docs/WHAT_IS_NOT_WORKING_NOW.md)
 - [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-- [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
-- [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
-- [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
-- [`docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
-
-### Evaluation and outputs
-Use:
-- [`docs/EVALUATION_AND_BASELINES_INDEX.md`](docs/EVALUATION_AND_BASELINES_INDEX.md)
-- [`docs/OUTPUTS_INTERPRETATION_GUIDE.md`](docs/OUTPUTS_INTERPRETATION_GUIDE.md)
-- [`docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](docs/ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
-
-### Cleaner collaborator navigation
-Use:
-- [`docs/REPOSITORY_START_PATHS.md`](docs/REPOSITORY_START_PATHS.md)
-- [`docs/README.md`](docs/README.md)
+- [`docs/ORACLE_MISMATCH_STUDY_2026_04_18.md`](docs/ORACLE_MISMATCH_STUDY_2026_04_18.md)
+- [`docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`](docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md)
+- [`docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`](docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md)
 
 ## Current state at a glance
 
@@ -151,29 +149,31 @@ Use:
 - dataset and baseline integration readiness,
 - oracle-label pilot infrastructure,
 - imported manuscript-style evaluation support,
-- careful provenance notes and safe-claim discipline.
+- careful provenance notes and safe-claim discipline,
+- fresh observability-enabled semantic failure analysis.
 
 ### What is not solved yet
-- robust supervision targets for branch-priority allocation,
-- reliable selective pairwise trust/defer control on hard ambiguous cases,
-- broad decisive real-model evidence,
-- a robust universally winning learned allocator.
+- final frozen target/oracle definition for hard close-branch states,
+- broader answer-level validation beyond the bounded contested slice,
+- broad decisive real-model evidence under the final target definition,
+- a robust universally winning learned allocator under that frozen definition.
 
 ### Main bottleneck
 The current bottleneck is best described as:
 
-**principled selective pairwise control and supervision design for ambiguous hard cases.**
+**target-definition clarity for hard close-branch decisions, especially near-tie disagreement states.**
 
 The current repository view is that the project is **not** primarily blocked by:
 - missing infrastructure,
 - lack of heavier models,
 - or lack of larger sweeps.
 
-### Best near-term method direction
+### Best near-term direction
 The current best near-term direction is:
 - keep the branch-allocation framing,
-- treat many recent negative passes as evidence against reusing the same one-step/local target family,
-- and validate the **multi-step branch-utility target** line more deeply before broadening again.
+- keep continuation value as the core oracle/target,
+- study bounded completion-aware correction only in disagreement slices,
+- and avoid broad new nearby families until the target-definition question is formally frozen.
 
 The conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
@@ -204,6 +204,6 @@ For interpretation rules and grouped navigation, see:
 
 The strongest current paper story is:
 
-**fixed-budget cross-controller frontier allocation for LLM reasoning, where the main challenge is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget, and where recent evidence suggests that target locality may be a central part of the remaining hard-case bottleneck.**
+**fixed-budget cross-controller frontier allocation for LLM reasoning, where the main challenge is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget, and where fresh bounded evidence now suggests the key unresolved issue is the target/oracle definition for hard disagreement states rather than another nearby local tweak.**
 
 A local stop-vs-act gate may still be useful as an implementation simplification, but it should not be treated as the full conceptual center of the project.
