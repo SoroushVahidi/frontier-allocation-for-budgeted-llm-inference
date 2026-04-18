@@ -46,7 +46,11 @@ The repo already contains a strong research platform with:
 - tie-aware / abstention / defer experiments,
 - fallback-policy experiments,
 - dataset and baseline integration readiness,
-- provenance-aware outputs and method notes.
+- provenance-aware outputs and method notes,
+- fresh observability-enabled branch-semantic capture,
+- bounded worst-failure semantic casebooks,
+- bounded final-answer recovery on contested states,
+- bounded oracle mismatch comparison studies.
 
 ## What has worked so far
 
@@ -57,14 +61,15 @@ The repo already contains a strong research platform with:
 ### Mechanism and evaluation
 - Anti-collapse design matters.
 - Branch ranking / next-step allocation is the right conceptual center.
-- Pairwise branch comparison remains one of the strongest active learned directions.
-- Hard-case feature representation improvements helped materially on difficult slices.
-- Tie-aware post-hoc deferral improved controller cleanliness and gave a more honest ambiguity-handling scaffold.
+- The multistep family remains the strongest bounded method lead.
+- Fresh observability-enabled runs now allow real semantic diagnosis of worst failure cases.
+- Completion-aware evidence appears to matter in a small disagreement region even though it is not a global replacement signal.
 
 ### Research process
 - The repository is good at provenance.
 - The repo is strong at bounded experiment notes and safe-claims discipline.
 - The repo is already ready for serious paper planning and collaborator onboarding.
+- The repo is now closer to a target-definition decision point than a broad exploration point.
 
 ## What has not worked well enough
 
@@ -77,85 +82,91 @@ The repo already contains a strong research platform with:
 - Deferred-only specialist training.
 - Broad hard-pair replacement.
 - Broadening scope too early.
+- Recent nearby target/control refinements as broad successors to multistep-k3.
 
 ### What this means
-The problem is not primarily lack of infrastructure, another controller family, or just more scale. The harder issue is still supervision semantics and selective control on ambiguous hard cases.
+The problem is not primarily lack of infrastructure, another controller family, or just more scale.
+
+The harder issue is now narrower:
+- how the target/oracle should be defined in hard close-branch states,
+- especially when continuation value and visible semantic completion diverge.
 
 ## Main unresolved bottleneck
 
 The current primary bottleneck is:
 
-> **supervision target quality / proxy-label mismatch for the next-step branch-allocation decision**
+> **target-definition clarity for hard next-step branch-allocation disagreements**
 
 More concretely, the bottleneck is now concentrated in:
 
-> **principled selective pairwise control and supervision design for ambiguous hard cases.**
+> **whether continuation value should remain the sole oracle/target, or whether bounded completion-aware correction should apply in near-tie disagreement states.**
 
 This includes:
-- noisy branch-comparison targets,
-- low-margin ambiguity,
-- shallow comparator semantics,
-- imperfect opportunity-cost modeling,
-- and unresolved confidence/defer design.
+- semantic/objective mismatch on a small disagreement slice,
+- near-tie branch comparisons,
+- answer-completion evidence versus immediate continuation value,
+- and the exact definition of a bounded hybrid oracle/controller.
 
-## Best current method scaffold
+## Best current target/oracle stance
 
-The current strongest supported scaffold is:
+The current strongest repository-supported stance is:
 
-> **pairwise default + tie-aware post-hoc deferral + specialist pointwise fallback**
+> **keep continuation value as the core oracle/target, and augment it with bounded completion-aware evidence only in disagreement slices, especially near-ties.**
 
-This should currently be treated as the strongest default hard-case scaffold unless new evidence clearly displaces it.
+This should currently be treated as the strongest default stance unless new evidence clearly displaces it.
 
 ## Most important current research direction
 
-The most promising next target-design direction is:
+The most important current direction is:
 
-> **budget-conditioned selective marginal allocation using branch-level continuation-value signals, softer or structured supervision on ambiguous pairs, and explicit defer/unresolved handling rather than forcing all hard comparisons into binary winner labels.**
+> **freeze and validate the hybrid target/oracle definition for hard disagreement states, rather than continuing broad nearby target/controller sweeps.**
 
 ## What should happen next
 
 ### Immediate next step
-- improve supervision target design,
-- improve opportunity-cost-aware comparator semantics,
-- strengthen selective pairwise accept/defer control,
-- and test branch-level value + uncertainty style supervision in bounded auditable form.
+- consolidate the current target-definition decision,
+- use the fresh semantic failure cases plus recovered final answers to manually and programmatically adjudicate the contested disagreement slice,
+- and write the repository-facing decision memo/rule that governs what should count as the next admissible experiment.
 
 ### Near-term next layer
-- reuse current data more intelligently,
-- keep provenance explicit,
-- use disagreement- and near-tie-focused exact relabeling,
-- and compare new target designs against the current strongest scaffold.
+- keep continuation value as the base object,
+- formalize bounded completion-aware correction only where disagreement is real,
+- and avoid broad new families until the target-definition memo changes.
 
-### Later, after target-quality improvement
+### Later, only after target-definition consolidation
 - broaden datasets in new ambiguity regimes,
 - expand stronger external baselines fairly,
-- and scale to heavier evidence only after target semantics are sharper.
+- and scale to heavier evidence only after the hybrid target/oracle stance is stable.
 
 ## Best reading path
 
 If you are new to the repo, read:
 1. `README.md`
-2. `docs/PROJECT_MASTER_PLAN.md`
-3. `docs/CURRENT_PROJECT_STATUS.md`
-4. `docs/CURRENT_BOTTLENECKS.md`
-5. `docs/CURRENT_SAFE_CLAIMS.md`
-6. `docs/EXPERIMENT_LEDGER_2026_04_18.md`
-7. `docs/CONTINUATION_PLAN_2026_04_18.md`
-8. `docs/REFERENCES_ORGANIZATION_2026_04_18.md`
+2. `docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
+3. `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
+4. `docs/PROJECT_MASTER_PLAN.md`
+5. `docs/CURRENT_PROJECT_STATUS.md`
+6. `docs/CURRENT_BOTTLENECKS.md`
+7. `docs/CURRENT_SAFE_CLAIMS.md`
+8. `docs/EXPERIMENT_LEDGER_2026_04_18.md`
+9. `docs/CONTINUATION_PLAN_2026_04_18.md`
+10. `docs/REFERENCES_ORGANIZATION_2026_04_18.md`
 
 ## Best code path
 
-If you want the strongest current code path for hard-case branch-allocation work, start with:
-- `scripts/run_bruteforce_branch_label_generator.py`
+If you want the strongest current code path for semantic target-definition work, start with:
+- `scripts/run_worst_real_failure_casebook_with_reasoning.py`
+- `scripts/run_completion_aware_decision_experiment.py`
+- `scripts/run_oracle_mismatch_study.py`
+- `scripts/run_branch_observability_smoke.py`
+
+If you specifically want the strongest current bounded method line, start with:
+- `scripts/run_multistep_branch_utility_target_experiment.py`
 - `scripts/build_bruteforce_target_regimes.py`
 - `scripts/train_bruteforce_branch_allocator.py`
-- `scripts/run_target_fidelity_regime_experiment.py`
-- `scripts/run_ternary_or_abstain_branch_comparison_experiment.py`
-- `scripts/run_structured_ambiguity_experiment.py`
-- `scripts/run_defer_fallback_experiment.py`
 
 ## Safe high-level summary
 
 A safe repository-facing summary is:
 
-> The repository is already a strong platform for fixed-budget branch allocation in LLM reasoning. The main remaining challenge is not understanding the problem or building more infrastructure, but designing better supervision targets and selective ambiguity handling for hard next-step branch-allocation decisions.
+> The repository is already a strong platform for fixed-budget branch allocation in LLM reasoning. The main remaining challenge is no longer broad method exploration, but freezing the right target/oracle definition for hard close-branch decisions now that fresh semantic failure analysis is available.
