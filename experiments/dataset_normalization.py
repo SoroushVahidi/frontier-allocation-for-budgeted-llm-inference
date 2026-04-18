@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from experiments.data import normalize_answer_text
 from experiments.hf_datasets import HFDatasetSpec, _pick_first_present
 
 
@@ -16,15 +17,29 @@ from experiments.hf_datasets import HFDatasetSpec, _pick_first_present
 class NormalizedExample:
     """Repo-friendly example for reasoning experiments."""
 
-    dataset_key: str
+    dataset_name: str
     example_id: str
+    split: str
     question: str
-    answer: str
+    raw_answer: str
+    normalized_answer: str | None
+    answer_type: str
+    numeric_answer_flag: bool
+    multiple_choice_flag: bool
+    long_form_flag: bool
     task_format: str  # e.g. free_form_math, multiple_choice, planning
+    recoverable_answer_flag: bool
+    recoverability_reason: str | None
     extra: dict[str, Any] = field(default_factory=dict)
 
 
-def normalize_row(spec: HFDatasetSpec, row: dict[str, Any], index: int) -> NormalizedExample:
+def normalize_row(
+    spec: HFDatasetSpec,
+    row: dict[str, Any],
+    index: int,
+    *,
+    split: str = "",
+) -> NormalizedExample:
     question = _pick_first_present(row, spec.question_fields)
     answer = _pick_first_present(row, spec.answer_fields)
 
@@ -43,16 +58,26 @@ def normalize_row(spec: HFDatasetSpec, row: dict[str, Any], index: int) -> Norma
     if spec.key == "HuggingFaceH4/aime_2024":
         task_format = "aime_integer"
 
+    answer_norm = normalize_answer_text(answer)
     ex_id = f"{spec.key.replace('/', '_')}_{index}"
     return NormalizedExample(
-        dataset_key=spec.key,
+        dataset_name=spec.key,
         example_id=ex_id,
+        split=split,
         question=question,
-        answer=answer,
+        raw_answer=answer,
+        normalized_answer=answer_norm["normalized_answer"],
+        answer_type=str(answer_norm["answer_type"]),
+        numeric_answer_flag=bool(answer_norm["numeric_answer_flag"]),
+        multiple_choice_flag=bool(answer_norm["multiple_choice_flag"]),
+        long_form_flag=bool(answer_norm["long_form_flag"]),
         task_format=task_format,
+        recoverable_answer_flag=bool(answer_norm["recoverable"]),
+        recoverability_reason=answer_norm["recoverability_reason"],
         extra=extra,
     )
 
 
 def normalized_to_pilot_dict(ex: NormalizedExample) -> dict[str, str]:
-    return {"example_id": ex.example_id, "question": ex.question, "answer": ex.answer}
+    answer = ex.normalized_answer if ex.normalized_answer is not None else ex.raw_answer
+    return {"example_id": ex.example_id, "question": ex.question, "answer": answer}

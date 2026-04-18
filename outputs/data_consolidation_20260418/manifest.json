@@ -1,0 +1,17 @@
+{
+  "bundle_name": "data_consolidation_20260418",
+  "created_by": "scripts/build_data_consolidation_bundle.py",
+  "created_for_phase": "target_oracle_definition_hard_disagreement",
+  "files": [
+    "manifest.json",
+    "dataset_role_map.json",
+    "dataset_alias_map.json",
+    "normalized_example_schema.json",
+    "branch_state_schema.json",
+    "decision_object_schema.json",
+    "semantic_diagnosis_schema.json",
+    "data_processing_inventory.json",
+    "data_quality_findings.json",
+    "commands_assumptions_caveats.md"
+  ]
+}

@@ -24,6 +24,93 @@ class PilotExample:
 ANSWER_PATTERN = re.compile(r"####\s*([-+]?\d[\d,]*(?:\.\d+)?)")
 BOXED_PATTERN = re.compile(r"\\boxed\{([^}]*)\}")
 NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?")
+MCQ_LABEL_PATTERN = re.compile(r"\b([A-E])\b")
+FRACTION_PATTERN = re.compile(r"^\s*([-+]?\d+)\s*/\s*(\d+)\s*$")
+
+
+def _normalize_numeric_token(token: str) -> str | None:
+    cleaned = token.replace(",", "").strip()
+    if not cleaned:
+        return None
+    frac = FRACTION_PATTERN.match(cleaned)
+    if frac:
+        num = int(frac.group(1))
+        den = int(frac.group(2))
+        if den == 0:
+            return None
+        cleaned = str(num / den)
+    try:
+        value = float(cleaned)
+    except ValueError:
+        return None
+    if value.is_integer():
+        return str(int(value))
+    return f"{value:.10g}"
+
+
+def _normalize_text_answer(text: str) -> str:
+    return " ".join(text.strip().lower().split())
+
+
+def normalize_answer_text(answer_text: str | None) -> dict[str, Any]:
+    """Canonical answer normalization with recoverability metadata.
+
+    Returns a compact dict suitable for branch-observability and dataset-normalization
+    layers. This function is intentionally conservative and deterministic.
+    """
+    if answer_text is None or not str(answer_text).strip():
+        return {
+            "normalized_answer": None,
+            "recoverable": False,
+            "recoverability_reason": "missing_or_empty_answer_text",
+            "answer_type": "missing",
+            "numeric_answer_flag": False,
+            "multiple_choice_flag": False,
+            "long_form_flag": False,
+            "normalization_method": "none",
+        }
+
+    text = str(answer_text).strip()
+    long_form_flag = len(text) > 160 or "\n" in text
+
+    mcq_match = MCQ_LABEL_PATTERN.search(text.upper())
+    if mcq_match:
+        return {
+            "normalized_answer": mcq_match.group(1),
+            "recoverable": True,
+            "recoverability_reason": None,
+            "answer_type": "multiple_choice",
+            "numeric_answer_flag": False,
+            "multiple_choice_flag": True,
+            "long_form_flag": long_form_flag,
+            "normalization_method": "mcq_label_extract",
+        }
+
+    extracted = extract_final_answer(text)
+    numeric = _normalize_numeric_token(extracted)
+    if numeric is not None:
+        return {
+            "normalized_answer": numeric,
+            "recoverable": True,
+            "recoverability_reason": None,
+            "answer_type": "numeric",
+            "numeric_answer_flag": True,
+            "multiple_choice_flag": False,
+            "long_form_flag": long_form_flag,
+            "normalization_method": "numeric_extract",
+        }
+
+    normalized_text = _normalize_text_answer(extracted)
+    return {
+        "normalized_answer": normalized_text if normalized_text else None,
+        "recoverable": bool(normalized_text),
+        "recoverability_reason": None if normalized_text else "text_normalization_empty",
+        "answer_type": "short_text" if normalized_text else "missing",
+        "numeric_answer_flag": False,
+        "multiple_choice_flag": False,
+        "long_form_flag": long_form_flag,
+        "normalization_method": "text_canonicalization",
+    }
 
 
 def extract_final_answer(answer_text: str) -> str:

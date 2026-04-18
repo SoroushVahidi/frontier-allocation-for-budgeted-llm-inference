@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 from typing import Any
 
-from experiments.data import extract_final_answer
+from experiments.data import extract_final_answer, normalize_answer_text
 
 
 NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?")
@@ -71,22 +71,18 @@ def branch_role_summary(branch: dict[str, Any]) -> str:
 
 
 def normalize_branch_answer(final_answer_text: str | None) -> dict[str, Any]:
-    if final_answer_text is None:
-        return {
-            "normalized_answer": None,
-            "normalization_success": False,
-            "normalization_method": "unavailable",
-            "normalization_confidence": 0.0,
-            "normalization_failure_reason": "branch_final_answer_text_raw_unavailable",
-        }
-    normalized = extract_final_answer(final_answer_text)
-    success = bool(str(normalized).strip())
+    norm = normalize_answer_text(final_answer_text)
+    success = bool(norm["recoverable"])
     return {
-        "normalized_answer": normalized if success else None,
+        "normalized_answer": norm["normalized_answer"] if success else None,
         "normalization_success": bool(success),
-        "normalization_method": "extract_final_answer",
+        "normalization_method": norm["normalization_method"],
         "normalization_confidence": 1.0 if success else 0.0,
-        "normalization_failure_reason": None if success else "extract_final_answer_returned_empty",
+        "normalization_failure_reason": None if success else norm["recoverability_reason"],
+        "answer_type": norm["answer_type"],
+        "numeric_answer_flag": bool(norm["numeric_answer_flag"]),
+        "multiple_choice_flag": bool(norm["multiple_choice_flag"]),
+        "long_form_flag": bool(norm["long_form_flag"]),
     }
 
 

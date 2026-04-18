@@ -1,0 +1,61 @@
+{
+  "raw_data_sources": {
+    "hf_registry_entries": 13,
+    "dataset_registry_keys": [
+      "EleutherAI/hendrycks_math",
+      "Hothan/OlympiadBench",
+      "HuggingFaceH4/MATH-500",
+      "HuggingFaceH4/aime_2024",
+      "Idavidrein/gpqa",
+      "TAUR-Lab/MuSR",
+      "allenai/drop",
+      "deepmind/aqua_rat",
+      "hendrycks/competition_math",
+      "livecodebench/code_generation_lite",
+      "meituan-longcat/AMO-Bench",
+      "openai/gsm8k",
+      "openeval/BIG-Bench-Hard"
+    ],
+    "external_supervision_registry_path": "configs/external_reasoning_datasets_registry.json"
+  },
+  "processed_data_products": {
+    "branch_label_targets_root": "outputs/branch_label_bruteforce_targets",
+    "branch_label_learning_root": "outputs/branch_label_bruteforce_learning",
+    "branch_label_merged_root": "outputs/branch_label_bruteforce_merged",
+    "branch_observability_root": "outputs/branch_observability",
+    "final_answer_recovery_root": "outputs/final_answer_recovery",
+    "latest_target_runs": [
+      "compute_response_curve_target_20260418",
+      "multistep_branch_utility_target_20260417",
+      "rank_instability_target_20260418",
+      "target_semantics_upstream_20260417"
+    ],
+    "latest_learning_runs": [
+      "natural_language_failure_casebook_dominant_group_20260418",
+      "near_tie_two_stage_complementarity_audit_upgrade_20260417",
+      "near_tie_two_stage_defer_calib_policy_20260417",
+      "near_tie_two_stage_defer_head_20260417",
+      "probabilistic_branch_value_allocation_20260417",
+      "rank_instability_eval_20260418",
+      "rich_failure_casebook_with_reasoning_traces_20260418",
+      "soft_prob_tie_matched_20260417",
+      "statewise_supervision_object_20260417",
+      "target_semantics_upstream_strict_validation_20260417",
+      "tau_calibration_pass_20260417",
+      "worst_real_failure_casebook_with_reasoning_20260418"
+    ]
+  },
+  "schema_inventory": {
+    "branch_learning_corpus_schema_path": "configs/branch_learning_corpus_schema_v1.json",
+    "branch_learning_row_types": [
+      "candidate",
+      "outside_option",
+      "pairwise"
+    ]
+  },
+  "row_count_probes": {
+    "canonical_targets_candidate_rows": 98,
+    "canonical_targets_pairwise_rows": 91,
+    "observability_rows_latest_casebook": 0
+  }
+}
