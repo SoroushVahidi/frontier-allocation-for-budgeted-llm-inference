@@ -23,60 +23,77 @@ Current interpretation:
 What next:
 - keep this framing fixed unless very strong new evidence requires broad repositioning.
 
-### Workstream B: current leading method line
+### Workstream B: current target/oracle definition
 Status:
 - active and highest priority.
 
 Current line:
-- multi-step branch-utility targets.
+- continuation value as the core oracle/target,
+- bounded completion-aware correction only in disagreement slices, especially near-ties.
 
 Current state:
-- promising,
-- survived bounded follow-up better than nearby ideas,
-- but not yet trustworthy enough for a strong final claim.
+- bounded studies now support augmentation rather than global replacement,
+- but the target-definition memo still needs to be treated as the repository’s central decision object.
 
 What next:
-- continue targeted validation and dominant-failure-group analysis.
+- consolidate this stance across comparisons, data, and semantic case analysis.
 
-### Workstream C: current failure diagnosis
+### Workstream C: current failure diagnosis and semantic adjudication
 Status:
 - active and highly useful.
 
 Current state:
-- current leading method now has both numeric failure extraction and natural-language dominant-group diagnosis,
-- dominant current group points to delayed-payoff overvaluation relative to immediate next-step value/outside-option strength.
+- fresh observability-enabled runs now support direct reasoning recovery,
+- bounded answer recovery now supports contested-case adjudication,
+- and the repo can now inspect semantic disagreement cases directly rather than only through proxies.
 
 What next:
-- use failure-case understanding to choose the next experiments rather than broad search.
+- use these cases to validate or refine the bounded hybrid stance,
+- not to restart broad method search.
 
-### Workstream D: bounded idea pressure-testing
+### Workstream D: data quality and ambiguity coverage
 Status:
-- many recent passes completed.
+- active and now high priority.
 
 Current state:
-- several nearby ideas already recorded as negative or mixed.
+- the core evaluation set is already substantial,
+- but the current math-heavy set does not yet give enough ambiguity diversity for the final bottleneck-focused story.
 
 What next:
-- do not casually repeat them without a strong new reason.
+- improve current data discipline,
+- add a small number of high-value expansion datasets,
+- and keep evaluation-vs-supervision dataset roles explicit.
 
-### Workstream E: repo organization and collaborator navigation
+### Workstream E: bounded method comparison and baseline discipline
+Status:
+- active and useful.
+
+Current state:
+- the repo now has a broad comparison picture: our method is competitive on targeted hard/ambiguity slices but not yet broadly best across wider multi-dataset comparisons.
+
+What next:
+- keep direct vs adjacent baseline boundaries explicit,
+- and use comparison work to sharpen claims rather than to overclaim broad dominance.
+
+### Workstream F: repo organization and collaborator navigation
 Status:
 - active and improving.
 
 Current state:
 - top-level navigation is much better than before,
-- but should keep being updated whenever a new leading method or new diagnostic family becomes canonical.
+- but summary/ideas/workstream notes must keep being updated whenever the canonical repo phase changes.
 
 What next:
-- integrate new major casebooks / validation passes into the main reading path once they become current.
+- continue small truthfulness-focused polish passes,
+- especially when a note still reflects an older “next experiment = another tweak” mindset.
 
 ## Operating rules for the next phase
 
 ### Rule 1
-Prefer experiments that explain the current dominant failure group.
+Prefer work that settles the current target/oracle definition question.
 
 ### Rule 2
-Prefer experiments that materially change the target object or control loop over another small scalar-score tweak.
+Prefer work that improves ambiguity coverage and semantic adjudication over another nearby broad tweak.
 
 ### Rule 3
 Keep the branch-allocation framing fixed.
@@ -85,7 +102,7 @@ Keep the branch-allocation framing fixed.
 Every meaningful pass should leave behind:
 - a repo-facing note,
 - machine-readable outputs,
-- and a clear go / no-go or continue / drop conclusion.
+- and a clear go / no-go or keep / drop conclusion.
 
 ### Rule 5
 Do not let exploratory branches silently replace canonical interpretation.
@@ -93,51 +110,52 @@ Do not let exploratory branches silently replace canonical interpretation.
 ## Recommended near-term operating sequence
 
 ### Immediate
-1. Keep the multistep line as the active leading method line.
+1. Keep the hybrid target/oracle question as the central repository question.
 2. Continue repository polish only in ways that improve navigation and truthfulness.
-3. Use the natural-language failure casebook when choosing the next experiment.
+3. Use semantic casebooks and answer-recovery-backed disagreement analysis when deciding what is really unresolved.
 
-### Next bounded experiment
-- discounted multistep target,
-- or another bounded horizon-aware target variant directly aimed at the dominant delayed-payoff failure group.
+### Next non-method priority
+- complete the current data audit / expansion pass,
+- especially ambiguity-diverse evaluation additions.
 
-### Next stronger concept experiment
-- compute-response curve prediction,
-- optionally paired with rank-instability supervision.
+### Next bounded implementation priority
+- targeted validation of the current continuation-value-core plus bounded-correction stance under the improved data story.
 
 ## Suggested doc path for collaborators right now
 
 For a collaborator who wants the shortest correct path, recommend:
 1. `CANONICAL_START_HERE.md`
-2. `CURRENT_LEADING_DIRECTION_2026_04_17.md`
-3. `DIAGNOSTIC_READING_PATH_2026_04_18.md`
-4. `PROJECT_SITUATION_REPORT_2026_04_18.md`
-5. `RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`
-6. `NATURAL_LANGUAGE_FAILURE_CASEBOOK_DOMINANT_GROUP_2026_04_18.md`
-7. `CONTINUATION_PLAN_2026_04_18.md`
+2. `LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
+3. `CURRENT_EXPERIMENT_RULE_2026_04_18.md`
+4. `REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
+5. `PROJECT_SITUATION_REPORT_2026_04_18.md`
+6. `ORACLE_MISMATCH_STUDY_2026_04_18.md`
+7. `FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`
+8. `FULL_METHOD_COMPARISON_STATUS_2026_04_18.md`
 
 ## Suggested execution path for operators
 
 For someone who wants to run or modify current experiments:
 1. `../scripts/CANONICAL_START_HERE.md`
-2. `CURRENT_LEADING_DIRECTION_2026_04_17.md`
-3. `DIAGNOSTIC_READING_PATH_2026_04_18.md`
-4. `PROJECT_SITUATION_REPORT_2026_04_18.md`
-5. `../scripts/run_multistep_branch_utility_target_experiment.py`
-6. the latest failure-case or validation artifacts relevant to the current pass
+2. `LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
+3. `CURRENT_EXPERIMENT_RULE_2026_04_18.md`
+4. `ORACLE_MISMATCH_STUDY_2026_04_18.md`
+5. the latest semantic failure / comparison / data audit artifacts relevant to the current pass
 
 ## What success would look like in the next phase
 
-A good next phase would produce at least one of the following:
-- a stronger, more trustworthy validation of the multistep line,
-- a bounded target refinement that clearly reduces the dominant failure pattern,
-- or a more conceptually different prediction object that cleanly beats scalar-target refinements.
+A good next phase would produce all of the following:
+- a stable repository-wide target/oracle stance,
+- cleaner ambiguity-diverse data coverage,
+- broad-enough answer-level semantic adjudication for contested cases,
+- and a paper claim that is strong, narrow where necessary, and consistent with the comparison results.
 
 ## Conservative conclusion
 
 The repository is now in a better phase than before:
 - the framing is cleaner,
-- the diagnosis is narrower,
-- and there is a real current lead.
+- the comparison picture is clearer,
+- the semantic diagnosis is stronger,
+- and the next work is better defined.
 
-The next phase should be run as **targeted diagnosis-driven progress**, not broad method proliferation.
+The next phase should be run as **target-definition consolidation plus data-quality/coverage improvement**, not broad method proliferation.
