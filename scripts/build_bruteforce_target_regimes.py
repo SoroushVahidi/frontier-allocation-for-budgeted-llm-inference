@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--run-id", required=True)
     p.add_argument(
         "--pair-strategies",
-        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm,allocation_regret_target,allocation_regret_target_no_outside,multistep_branch_utility_target_k1,multistep_branch_utility_target_k2,multistep_branch_utility_target_k3",
+        default="all_pairs,top_vs_rest,adjacent_rank,high_margin_only,uncertainty_filtered,quality_mixed_trust,partial_order_incomparable,penalized_marginal_defer,opportunity_intensity_weighted,opportunity_intensity_weighted_no_outside_norm,allocation_regret_target,allocation_regret_target_no_outside,multistep_branch_utility_target_k1,multistep_branch_utility_target_k2,multistep_branch_utility_target_k3,compute_response_curve_target_h123",
         help="comma-separated strategies",
     )
     p.add_argument("--near-tie-margin", type=float, default=0.03)
@@ -93,6 +93,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--opportunity-intensity-final-min", type=float, default=0.70)
     p.add_argument("--opportunity-intensity-final-max", type=float, default=1.60)
     p.add_argument("--multistep-utility-lambda", type=float, default=0.35)
+    p.add_argument("--response-curve-max-horizon", type=int, default=3)
+    p.add_argument("--response-curve-score-w1", type=float, default=1.0)
+    p.add_argument("--response-curve-score-w2", type=float, default=0.60)
+    p.add_argument("--response-curve-score-w3", type=float, default=0.30)
     return p.parse_args()
 
 
@@ -211,6 +215,56 @@ def _parse_discounted_gamma_from_strategy(strategy: str) -> float | None:
     if gamma <= 0.0:
         raise ValueError(f"Gamma must be > 0 for discounted strategy: {strategy}")
     return gamma
+
+
+def _compute_response_curve_target_for_candidate(
+    candidate_row: dict[str, Any],
+    *,
+    state_id: str,
+    branch_id: str,
+    branch_index_map: dict[tuple[str, str], int],
+    utility_lambda: float,
+    max_horizon: int,
+    score_weights: tuple[float, float, float],
+) -> dict[str, Any]:
+    horizon = int(max(1, max_horizon))
+    per_horizon: dict[str, float] = {}
+    for h in range(1, horizon + 1):
+        diag = _multistep_utility_target_for_candidate(
+            candidate_row,
+            state_id=state_id,
+            branch_id=branch_id,
+            branch_index_map=branch_index_map,
+            horizon_k=h,
+            utility_lambda=utility_lambda,
+        )
+        per_horizon[f"h{h}"] = float(diag["multistep_branch_utility_target"])
+
+    h1 = float(per_horizon.get("h1", 0.0))
+    h2 = float(per_horizon.get("h2", h1))
+    h3 = float(per_horizon.get("h3", h2))
+    m1 = float(h1)
+    m2 = float(h2 - h1)
+    m3 = float(h3 - h2)
+    w1, w2, w3 = score_weights
+    scalar = float(w1 * m1 + w2 * m2 + w3 * m3)
+    return {
+        "compute_response_curve_target_version": "compute_response_curve_target_v1",
+        "compute_response_curve_target_source": "multistep_self_followup_proxy_horizon_h1_h3",
+        "compute_response_curve_horizons": [1, 2, 3],
+        "compute_response_curve_values": [h1, h2, h3],
+        "compute_response_curve_h1": h1,
+        "compute_response_curve_h2": h2,
+        "compute_response_curve_h3": h3,
+        "compute_response_curve_marginal_m1": m1,
+        "compute_response_curve_marginal_m2": m2,
+        "compute_response_curve_marginal_m3": m3,
+        "compute_response_curve_decision_scalar_version": "marginal_weighted_v1",
+        "compute_response_curve_decision_scalar_w1": float(w1),
+        "compute_response_curve_decision_scalar_w2": float(w2),
+        "compute_response_curve_decision_scalar_w3": float(w3),
+        "compute_response_curve_decision_scalar": scalar,
+    }
 
 
 def _augment_pair_row(
@@ -803,6 +857,10 @@ def main() -> None:
             "opportunity_intensity_final_min": args.opportunity_intensity_final_min,
             "opportunity_intensity_final_max": args.opportunity_intensity_final_max,
             "multistep_utility_lambda": args.multistep_utility_lambda,
+            "response_curve_max_horizon": int(args.response_curve_max_horizon),
+            "response_curve_score_w1": float(args.response_curve_score_w1),
+            "response_curve_score_w2": float(args.response_curve_score_w2),
+            "response_curve_score_w3": float(args.response_curve_score_w3),
         },
         "regimes": {},
     }
@@ -908,6 +966,8 @@ def main() -> None:
                     elif strat == "allocation_regret_target_no_outside":
                         keep = True
                     elif strat in {"multistep_branch_utility_target_k1", "multistep_branch_utility_target_k2", "multistep_branch_utility_target_k3"}:
+                        keep = True
+                    elif strat == "compute_response_curve_target_h123":
                         keep = True
                     elif _parse_discounted_gamma_from_strategy(strat) is not None:
                         keep = True
@@ -1033,6 +1093,61 @@ def main() -> None:
                             annotated["pair_multistep_utility_j"] = float(uj["multistep_branch_utility_target"])
                             annotated["pair_multistep_utility_gap"] = float(abs(multistep_margin))
                             annotated["pair_multistep_target_source"] = "best_followup_allocation_self_mass_proxy_v1"
+                        if strat == "compute_response_curve_target_h123":
+                            ci = cand_map[(sid, str(annotated["branch_i"]))]
+                            cj = cand_map[(sid, str(annotated["branch_j"]))]
+                            ui = _compute_response_curve_target_for_candidate(
+                                ci,
+                                state_id=sid,
+                                branch_id=str(annotated["branch_i"]),
+                                branch_index_map=state_branch_index_map,
+                                utility_lambda=float(args.multistep_utility_lambda),
+                                max_horizon=int(args.response_curve_max_horizon),
+                                score_weights=(
+                                    float(args.response_curve_score_w1),
+                                    float(args.response_curve_score_w2),
+                                    float(args.response_curve_score_w3),
+                                ),
+                            )
+                            uj = _compute_response_curve_target_for_candidate(
+                                cj,
+                                state_id=sid,
+                                branch_id=str(annotated["branch_j"]),
+                                branch_index_map=state_branch_index_map,
+                                utility_lambda=float(args.multistep_utility_lambda),
+                                max_horizon=int(args.response_curve_max_horizon),
+                                score_weights=(
+                                    float(args.response_curve_score_w1),
+                                    float(args.response_curve_score_w2),
+                                    float(args.response_curve_score_w3),
+                                ),
+                            )
+                            curve_score_margin = float(ui["compute_response_curve_decision_scalar"] - uj["compute_response_curve_decision_scalar"])
+                            annotated["label"] = 1 if curve_score_margin >= 0.0 else 0
+                            annotated["preference"] = int(annotated["label"])
+                            annotated["margin"] = float(curve_score_margin)
+                            annotated["margin_abs"] = abs(float(curve_score_margin))
+                            denom = max(
+                                abs(float(ui["compute_response_curve_decision_scalar"])),
+                                abs(float(uj["compute_response_curve_decision_scalar"])),
+                                1e-6,
+                            )
+                            annotated["relative_margin"] = abs(float(curve_score_margin)) / float(denom)
+                            annotated["near_tie_flag"] = bool(abs(float(curve_score_margin)) <= float(args.near_tie_margin))
+                            annotated["label_source"] = "compute_response_curve_target"
+                            annotated["compute_response_curve_target_version"] = str(ui.get("compute_response_curve_target_version", "compute_response_curve_target_v1"))
+                            annotated["pair_curve_i_h1"] = float(ui["compute_response_curve_h1"])
+                            annotated["pair_curve_i_h2"] = float(ui["compute_response_curve_h2"])
+                            annotated["pair_curve_i_h3"] = float(ui["compute_response_curve_h3"])
+                            annotated["pair_curve_j_h1"] = float(uj["compute_response_curve_h1"])
+                            annotated["pair_curve_j_h2"] = float(uj["compute_response_curve_h2"])
+                            annotated["pair_curve_j_h3"] = float(uj["compute_response_curve_h3"])
+                            annotated["pair_curve_scalar_i"] = float(ui["compute_response_curve_decision_scalar"])
+                            annotated["pair_curve_scalar_j"] = float(uj["compute_response_curve_decision_scalar"])
+                            annotated["pair_curve_scalar_gap"] = abs(float(curve_score_margin))
+                            annotated["pair_curve_marginal_gap_m1"] = float(ui["compute_response_curve_marginal_m1"] - uj["compute_response_curve_marginal_m1"])
+                            annotated["pair_curve_marginal_gap_m2"] = float(ui["compute_response_curve_marginal_m2"] - uj["compute_response_curve_marginal_m2"])
+                            annotated["pair_curve_marginal_gap_m3"] = float(ui["compute_response_curve_marginal_m3"] - uj["compute_response_curve_marginal_m3"])
                         gamma = _parse_discounted_gamma_from_strategy(strat)
                         if gamma is not None:
                             ci = cand_map[(sid, str(annotated["branch_i"]))]
@@ -1114,6 +1229,25 @@ def main() -> None:
                         utility_lambda=float(args.multistep_utility_lambda),
                         discount_gamma=float(gamma),
                         max_horizon=3,
+                    )
+                )
+        if strat == "compute_response_curve_target_h123":
+            for rc in regime_candidates:
+                sid = str(rc.get("state_id", ""))
+                bid = str(rc.get("branch_id", ""))
+                rc.update(
+                    _compute_response_curve_target_for_candidate(
+                        rc,
+                        state_id=sid,
+                        branch_id=bid,
+                        branch_index_map=state_branch_index_map,
+                        utility_lambda=float(args.multistep_utility_lambda),
+                        max_horizon=int(args.response_curve_max_horizon),
+                        score_weights=(
+                            float(args.response_curve_score_w1),
+                            float(args.response_curve_score_w2),
+                            float(args.response_curve_score_w3),
+                        ),
                     )
                 )
         out_dir = out_root / f"regime_{strat}"
@@ -1212,6 +1346,13 @@ def main() -> None:
             ),
             "pair_multistep_utility_gap_near_tie_mean": (
                 sum(float(r.get("pair_multistep_utility_gap", 0.0)) for r in kept if bool(r.get("near_tie_flag", False)))
+                / max(1, sum(1 for r in kept if bool(r.get("near_tie_flag", False))))
+            ),
+            "pair_curve_scalar_gap_mean": (
+                sum(float(r.get("pair_curve_scalar_gap", 0.0)) for r in kept) / max(1, len(kept))
+            ),
+            "pair_curve_scalar_gap_near_tie_mean": (
+                sum(float(r.get("pair_curve_scalar_gap", 0.0)) for r in kept if bool(r.get("near_tie_flag", False)))
                 / max(1, sum(1 for r in kept if bool(r.get("near_tie_flag", False))))
             ),
         }

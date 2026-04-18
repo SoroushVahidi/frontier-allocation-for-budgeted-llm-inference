@@ -1,0 +1,50 @@
+{
+  "aggregate": {
+    "baseline_current_matched": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.5595238095238095,
+      "accepted_accuracy_std": 0.1378075821760741,
+      "near_tie_accepted_accuracy_mean": 0.19999999999999998,
+      "adjacent_rank_accepted_accuracy_mean": 0.546031746031746,
+      "strict_slice_accepted_accuracy_mean": 0.16666666666666666
+    },
+    "multistep_k3_current": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.7063492063492064,
+      "accepted_accuracy_std": 0.30511718709112834,
+      "near_tie_accepted_accuracy_mean": 0.6,
+      "adjacent_rank_accepted_accuracy_mean": 0.6380952380952382,
+      "strict_slice_accepted_accuracy_mean": 0.5833333333333334
+    },
+    "compute_response_curve_h123": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.7063492063492064,
+      "accepted_accuracy_std": 0.30511718709112834,
+      "near_tie_accepted_accuracy_mean": 0.6,
+      "adjacent_rank_accepted_accuracy_mean": 0.6380952380952382,
+      "strict_slice_accepted_accuracy_mean": 0.5833333333333334
+    }
+  },
+  "comparison": {
+    "compute_response_curve_h123": {
+      "delta_accepted_accuracy_vs_baseline": 0.14682539682539686,
+      "delta_accepted_accuracy_vs_current_multistep": 0.0,
+      "delta_near_tie_accepted_accuracy_vs_baseline": 0.4,
+      "delta_strict_slice_accepted_accuracy_vs_current_multistep": 0.0
+    }
+  },
+  "failure_aggregate": {
+    "multistep_k3_current": {
+      "seeds": 3,
+      "failure_states_mean": 0.6666666666666666,
+      "delayed_payoff_confusion_failures_mean": 0.0,
+      "delayed_payoff_confusion_rate_on_failures_mean": 0.0
+    },
+    "compute_response_curve_h123": {
+      "seeds": 3,
+      "failure_states_mean": 1.0,
+      "delayed_payoff_confusion_failures_mean": 0.3333333333333333,
+      "delayed_payoff_confusion_rate_on_failures_mean": 0.1111111111111111
+    }
+  }
+}

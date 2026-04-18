@@ -1,0 +1,192 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "mode": "multistep_k3_current",
+      "states": 3,
+      "failure_states": 1,
+      "delayed_payoff_confusion_failures": 0,
+      "delayed_payoff_confusion_rate_on_failures": 0.0,
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "method_choice": "b2",
+          "oracle_choice": "b2",
+          "is_near_tie_state": false,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "method_choice": "b0",
+          "oracle_choice": "b2",
+          "is_near_tie_state": true,
+          "failure": true,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "method_choice": "b2",
+          "oracle_choice": "b2",
+          "is_near_tie_state": true,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "compute_response_curve_h123",
+      "states": 3,
+      "failure_states": 3,
+      "delayed_payoff_confusion_failures": 1,
+      "delayed_payoff_confusion_rate_on_failures": 0.3333333333333333,
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d3",
+          "method_choice": "b0",
+          "oracle_choice": "b2",
+          "is_near_tie_state": false,
+          "failure": true,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d3",
+          "method_choice": "b3",
+          "oracle_choice": "b2",
+          "is_near_tie_state": true,
+          "failure": true,
+          "delayed_payoff_confusion": true
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d5",
+          "method_choice": "b0",
+          "oracle_choice": "b2",
+          "is_near_tie_state": true,
+          "failure": true,
+          "delayed_payoff_confusion": false
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "multistep_k3_current",
+      "states": 3,
+      "failure_states": 1,
+      "delayed_payoff_confusion_failures": 0,
+      "delayed_payoff_confusion_rate_on_failures": 0.0,
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "method_choice": "b0",
+          "oracle_choice": "b0",
+          "is_near_tie_state": false,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "method_choice": "b2",
+          "oracle_choice": "b0",
+          "is_near_tie_state": true,
+          "failure": true,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "method_choice": "b0",
+          "oracle_choice": "b0",
+          "is_near_tie_state": true,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "mode": "compute_response_curve_h123",
+      "states": 3,
+      "failure_states": 0,
+      "delayed_payoff_confusion_failures": 0,
+      "delayed_payoff_confusion_rate_on_failures": 0.0,
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d4",
+          "method_choice": "b0",
+          "oracle_choice": "b0",
+          "is_near_tie_state": false,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_7_ep14_d3",
+          "method_choice": "b0",
+          "oracle_choice": "b0",
+          "is_near_tie_state": true,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_9_ep18_d3",
+          "method_choice": "b0",
+          "oracle_choice": "b0",
+          "is_near_tie_state": true,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "multistep_k3_current",
+      "states": 2,
+      "failure_states": 0,
+      "delayed_payoff_confusion_failures": 0,
+      "delayed_payoff_confusion_rate_on_failures": 0.0,
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "method_choice": "b1",
+          "oracle_choice": "b1",
+          "is_near_tie_state": true,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "method_choice": "b3",
+          "oracle_choice": "b3",
+          "is_near_tie_state": false,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        }
+      ]
+    },
+    {
+      "seed": 47,
+      "mode": "compute_response_curve_h123",
+      "states": 2,
+      "failure_states": 0,
+      "delayed_payoff_confusion_failures": 0,
+      "delayed_payoff_confusion_rate_on_failures": 0.0,
+      "rows": [
+        {
+          "state_id": "exopenai_gsm8k_1_ep2_d4",
+          "method_choice": "b1",
+          "oracle_choice": "b1",
+          "is_near_tie_state": true,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        },
+        {
+          "state_id": "exopenai_gsm8k_3_ep7_d4",
+          "method_choice": "b3",
+          "oracle_choice": "b3",
+          "is_near_tie_state": false,
+          "failure": false,
+          "delayed_payoff_confusion": false
+        }
+      ]
+    }
+  ]
+}

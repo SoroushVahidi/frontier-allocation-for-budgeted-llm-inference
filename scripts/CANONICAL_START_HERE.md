@@ -44,6 +44,7 @@ Start with these scripts:
 
 Start with these scripts:
 - `run_multistep_branch_utility_target_experiment.py`
+- `run_compute_response_curve_experiment.py`
 - `build_bruteforce_target_regimes.py`
 - `run_canonical_branch_learning_pass.py`
 - `train_bruteforce_branch_allocator.py`
