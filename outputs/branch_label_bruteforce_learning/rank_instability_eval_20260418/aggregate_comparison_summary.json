@@ -1,0 +1,104 @@
+{
+  "aggregate": {
+    "baseline_all_pairs": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.611111111111111,
+      "accepted_accuracy_std": 0.28327886186626583,
+      "forced_accuracy_mean": 0.611111111111111,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.3333333333333333,
+      "adjacent_rank_accepted_accuracy_mean": 0.611111111111111,
+      "strict_slice_accepted_accuracy_mean": 0.3333333333333333,
+      "delayed_payoff_overvaluation_failures_mean": 0.3333333333333333,
+      "overconfident_wrong_states_mean": 1.0,
+      "overconfident_wrong_rate_on_failures_mean": 0.6666666666666666
+    },
+    "compute_response_curve_anchor": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.6666666666666666,
+      "accepted_accuracy_std": 0.4714045207910317,
+      "forced_accuracy_mean": 0.6666666666666666,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.6666666666666666,
+      "adjacent_rank_accepted_accuracy_mean": 0.6666666666666666,
+      "strict_slice_accepted_accuracy_mean": 0.6666666666666666,
+      "delayed_payoff_overvaluation_failures_mean": 0.0,
+      "overconfident_wrong_states_mean": 0.3333333333333333,
+      "overconfident_wrong_rate_on_failures_mean": 0.1111111111111111
+    },
+    "discounted_gamma080_anchor": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.6666666666666666,
+      "accepted_accuracy_std": 0.4714045207910317,
+      "forced_accuracy_mean": 0.6666666666666666,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.6666666666666666,
+      "adjacent_rank_accepted_accuracy_mean": 0.6666666666666666,
+      "strict_slice_accepted_accuracy_mean": 0.6666666666666666,
+      "delayed_payoff_overvaluation_failures_mean": 0.0,
+      "overconfident_wrong_states_mean": 0.3333333333333333,
+      "overconfident_wrong_rate_on_failures_mean": 0.1111111111111111
+    },
+    "multistep_k3_current": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.6666666666666666,
+      "accepted_accuracy_std": 0.4714045207910317,
+      "forced_accuracy_mean": 0.6666666666666666,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.6666666666666666,
+      "adjacent_rank_accepted_accuracy_mean": 0.6666666666666666,
+      "strict_slice_accepted_accuracy_mean": 0.6666666666666666,
+      "delayed_payoff_overvaluation_failures_mean": 0.0,
+      "overconfident_wrong_states_mean": 0.3333333333333333,
+      "overconfident_wrong_rate_on_failures_mean": 0.1111111111111111
+    },
+    "rank_instability_aware": {
+      "seeds": 3,
+      "accepted_accuracy_mean": 0.5,
+      "accepted_accuracy_std": 0.13608276348795434,
+      "forced_accuracy_mean": 0.5,
+      "coverage_mean": 1.0,
+      "defer_rate_mean": 0.0,
+      "near_tie_accepted_accuracy_mean": 0.16666666666666666,
+      "adjacent_rank_accepted_accuracy_mean": 0.5,
+      "strict_slice_accepted_accuracy_mean": 0.16666666666666666,
+      "delayed_payoff_overvaluation_failures_mean": 0.6666666666666666,
+      "overconfident_wrong_states_mean": 1.0,
+      "overconfident_wrong_rate_on_failures_mean": 0.8333333333333334
+    }
+  },
+  "comparison": {
+    "compute_response_curve_anchor": {
+      "delta_accepted_accuracy_vs_all_pairs": 0.05555555555555558,
+      "delta_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_near_tie_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_strict_slice_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_overconfident_wrong_rate_vs_multistep_k3": 0.0
+    },
+    "discounted_gamma080_anchor": {
+      "delta_accepted_accuracy_vs_all_pairs": 0.05555555555555558,
+      "delta_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_near_tie_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_strict_slice_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_overconfident_wrong_rate_vs_multistep_k3": 0.0
+    },
+    "multistep_k3_current": {
+      "delta_accepted_accuracy_vs_all_pairs": 0.05555555555555558,
+      "delta_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_near_tie_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_strict_slice_accepted_accuracy_vs_multistep_k3": 0.0,
+      "delta_overconfident_wrong_rate_vs_multistep_k3": 0.0
+    },
+    "rank_instability_aware": {
+      "delta_accepted_accuracy_vs_all_pairs": -0.11111111111111105,
+      "delta_accepted_accuracy_vs_multistep_k3": -0.16666666666666663,
+      "delta_near_tie_accepted_accuracy_vs_multistep_k3": -0.5,
+      "delta_strict_slice_accepted_accuracy_vs_multistep_k3": -0.5,
+      "delta_overconfident_wrong_rate_vs_multistep_k3": 0.7222222222222223
+    }
+  }
+}

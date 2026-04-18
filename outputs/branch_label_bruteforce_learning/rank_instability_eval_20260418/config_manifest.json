@@ -1,0 +1,23 @@
+{
+  "run_id": "rank_instability_eval_20260418",
+  "targets_root": "outputs/branch_label_bruteforce_targets/rank_instability_target_20260418",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "feature_set": "v3",
+  "near_tie_margin": 0.03,
+  "regimes": {
+    "baseline": "all_pairs",
+    "multistep": "multistep_branch_utility_target_k3",
+    "discounted": "discounted_multistep_branch_utility_target_gamma080",
+    "curve": "compute_response_curve_target_h123",
+    "rank_instability": "rank_instability_target_v1"
+  },
+  "instability_policy": {
+    "defer_if_instability_prob_ge": 0.35,
+    "and_score_gap_le": 0.1
+  },
+  "command": "scripts/run_rank_instability_experiment.py --targets-root outputs/branch_label_bruteforce_targets/rank_instability_target_20260418 --run-id rank_instability_eval_20260418 --output-root outputs/branch_label_bruteforce_learning --seeds 11,29,47 --feature-set v3 --near-tie-margin 0.03 --baseline-regime all_pairs --multistep-regime multistep_branch_utility_target_k3 --discounted-regime discounted_multistep_branch_utility_target_gamma080 --curve-regime compute_response_curve_target_h123 --rank-instability-regime rank_instability_target_v1 --instability-threshold 0.35 --decision-margin-threshold 0.10"
+}
