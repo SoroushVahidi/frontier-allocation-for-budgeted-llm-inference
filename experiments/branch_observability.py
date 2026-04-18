@@ -90,6 +90,57 @@ def normalize_branch_answer(final_answer_text: str | None) -> dict[str, Any]:
     }
 
 
+def recover_final_answer_from_branch_text(
+    *,
+    final_answer_text: str | None,
+    reasoning_text: str | None,
+    branch_text: str | None,
+) -> dict[str, Any]:
+    """Bounded completion-aware answer recovery from already-emitted branch text.
+
+    Priority:
+    1) direct final-answer field (if present),
+    2) extract from reasoning text,
+    3) extract from generic branch text.
+    """
+    direct = _as_non_empty_text(final_answer_text)
+    if direct is not None:
+        return {
+            "final_answer_text": direct,
+            "source": "direct_branch_final_answer_field",
+            "completion_attempted": False,
+            "completion_success": False,
+            "completion_method": None,
+            "completion_failure_reason": None,
+        }
+
+    for text, source_key in [
+        (_as_non_empty_text(reasoning_text), "reasoning_text"),
+        (_as_non_empty_text(branch_text), "branch_text"),
+    ]:
+        if text is None:
+            continue
+        candidate = _as_non_empty_text(extract_final_answer(text))
+        if candidate is not None:
+            return {
+                "final_answer_text": candidate,
+                "source": f"completion_from_{source_key}",
+                "completion_attempted": True,
+                "completion_success": True,
+                "completion_method": "extract_final_answer_from_branch_text_v1",
+                "completion_failure_reason": None,
+            }
+
+    return {
+        "final_answer_text": None,
+        "source": None,
+        "completion_attempted": bool(_as_non_empty_text(reasoning_text) or _as_non_empty_text(branch_text)),
+        "completion_success": False,
+        "completion_method": "extract_final_answer_from_branch_text_v1",
+        "completion_failure_reason": "no_extractable_answer_from_available_branch_text",
+    }
+
+
 def build_branch_trace_record(
     *,
     dataset_name: str | None,
@@ -109,13 +160,22 @@ def build_branch_trace_record(
         branch,
         keys=["branch_reasoning_text_raw", "reasoning_text", "reasoning", "analysis_text"],
     )
-    final_answer_text_raw, final_source = _first_text(
+    direct_final_answer_text_raw, final_source = _first_text(
         branch,
         keys=["branch_final_answer_text_raw", "final_answer_text", "final_answer", "answer_text"],
     )
-    if branch_text_raw is None and reasoning_text_raw is not None and final_answer_text_raw is not None:
-        branch_text_raw = f"{reasoning_text_raw}\nFinal answer: {final_answer_text_raw}"
+    if branch_text_raw is None and reasoning_text_raw is not None and direct_final_answer_text_raw is not None:
+        branch_text_raw = f"{reasoning_text_raw}\nFinal answer: {direct_final_answer_text_raw}"
         branch_text_source = "composed_from_reasoning_and_final_answer"
+
+    completion = recover_final_answer_from_branch_text(
+        final_answer_text=direct_final_answer_text_raw,
+        reasoning_text=reasoning_text_raw,
+        branch_text=branch_text_raw,
+    )
+    final_answer_text_raw = completion["final_answer_text"]
+    if completion["source"] is not None and completion["source"] != "direct_branch_final_answer_field":
+        final_source = str(completion["source"])
 
     normalized = normalize_branch_answer(final_answer_text_raw)
     numbers_text = reasoning_text_raw or branch_text_raw
@@ -137,6 +197,14 @@ def build_branch_trace_record(
         "branch_reasoning_text_raw": reasoning_text_raw,
         "branch_final_answer_text_raw": final_answer_text_raw,
         "branch_final_answer_normalized": normalized["normalized_answer"],
+        "final_answer_capture_metadata": {
+            "direct_final_answer_present": bool(direct_final_answer_text_raw is not None),
+            "recovered_final_answer_source": completion["source"],
+            "completion_attempted": bool(completion["completion_attempted"]),
+            "completion_success": bool(completion["completion_success"]),
+            "completion_method": completion["completion_method"],
+            "completion_failure_reason": completion["completion_failure_reason"],
+        },
         "answer_normalization_metadata": {
             "normalization_success": normalized["normalization_success"],
             "normalization_method": normalized["normalization_method"],
@@ -198,6 +266,8 @@ def write_branch_observability_bundle(
         "branch_text_recoverable": 0,
         "branch_reasoning_recoverable": 0,
         "branch_final_answer_recoverable": 0,
+        "branch_final_answer_direct_recoverable": 0,
+        "branch_final_answer_completion_recoverable": 0,
         "normalized_answer_recoverable": 0,
     }
     for row in records:
@@ -211,6 +281,11 @@ def write_branch_observability_bundle(
             recoverability["branch_reasoning_recoverable"] += 1
         if bool(flags.get("branch_final_answer_text_raw", {}).get("recoverable")):
             recoverability["branch_final_answer_recoverable"] += 1
+            cap = row.get("final_answer_capture_metadata", {})
+            if bool(cap.get("direct_final_answer_present")):
+                recoverability["branch_final_answer_direct_recoverable"] += 1
+            elif bool(cap.get("completion_success")):
+                recoverability["branch_final_answer_completion_recoverable"] += 1
         if bool(flags.get("branch_final_answer_normalized", {}).get("recoverable")):
             recoverability["normalized_answer_recoverable"] += 1
 

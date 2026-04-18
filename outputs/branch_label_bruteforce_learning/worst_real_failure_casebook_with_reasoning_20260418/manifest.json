@@ -1,7 +1,7 @@
 {
-  "run_id": "worst_real_failure_observability_20260418T014427Z",
-  "frontier_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/frontier_target_construction/worst_real_failure_observability_20260418T014427Z",
-  "observability_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_observability/worst_real_failure_observability_20260418T014427Z",
+  "run_id": "worst_real_failure_observability_20260418T022231Z",
+  "frontier_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/frontier_target_construction/worst_real_failure_observability_20260418T022231Z",
+  "observability_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_observability/worst_real_failure_observability_20260418T022231Z",
   "selection_rule": "ranking_score = oracle_regret + 0.35*method_score_margin_top2 + 0.25*wrong_and_oracle_right + near_tie_bonus",
   "top_k": 5
 }
