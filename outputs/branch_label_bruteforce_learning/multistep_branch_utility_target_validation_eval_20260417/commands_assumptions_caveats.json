@@ -1,0 +1,16 @@
+{
+  "commands": [
+    "python scripts/build_bruteforce_target_regimes.py --labels-dir outputs/branch_label_bruteforce_targets/target_semantics_upstream_20260417/regime_all_pairs_approx --output-dir outputs/branch_label_bruteforce_targets --run-id multistep_branch_utility_target_validation_20260417 --pair-strategies all_pairs,multistep_branch_utility_target_k1,multistep_branch_utility_target_k2,multistep_branch_utility_target_k3 --near-tie-margin 0.03",
+    "python scripts/run_multistep_branch_utility_target_experiment.py --targets-root outputs/branch_label_bruteforce_targets/multistep_branch_utility_target_validation_20260417 --run-id multistep_branch_utility_target_validation_eval_20260417 --output-root outputs/branch_label_bruteforce_learning --seeds 11,29,47 --feature-set v3 --near-tie-margin 0.03"
+  ],
+  "assumptions": [
+    "best_followup_allocation branch index order matches candidate row branch order within each state",
+    "multistep_branch_utility_target is a bounded proxy and not an exact forced-k rollout",
+    "evaluation remains matched to canonical baseline_current_matched pair labels from regime_all_pairs"
+  ],
+  "caveats": [
+    "test support remains small across seeds (test pair counts: 7, 12, 4)",
+    "near-tie and strict matched canonical slices have very small denominators",
+    "state-level disagreement rates are directionally useful but unstable due to low state counts"
+  ]
+}

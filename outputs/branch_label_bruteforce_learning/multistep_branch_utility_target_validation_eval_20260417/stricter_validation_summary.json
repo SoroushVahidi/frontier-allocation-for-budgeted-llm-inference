@@ -1,0 +1,23 @@
+{
+  "strict_slice_name": "near_tie_and_adjacent_rank",
+  "description": "Matched canonical strict slice requiring both near_tie_flag and adjacent_rank pair type.",
+  "aggregate_by_mode": {
+    "baseline_current_matched": {
+      "strict_slice_accepted_accuracy_mean": 0.16666666666666666
+    },
+    "multistep_k1": {
+      "strict_slice_accepted_accuracy_mean": 0.16666666666666666
+    },
+    "multistep_k2": {
+      "strict_slice_accepted_accuracy_mean": 0.5833333333333334
+    },
+    "multistep_k3": {
+      "strict_slice_accepted_accuracy_mean": 0.5833333333333334
+    }
+  },
+  "delta_vs_baseline": {
+    "multistep_k1": 0.0,
+    "multistep_k2": 0.41666666666666674,
+    "multistep_k3": 0.41666666666666674
+  }
+}
