@@ -7,16 +7,18 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 ### If you only want the current truth
 Read:
 1. [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
-2. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
-3. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
-4. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-5. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+2. [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
+3. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+4. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+5. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+6. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
 
 ### If you only want the shortest dashboard
 Read:
 - [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
 - [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
+- [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
 - [`REPOSITORY_POLISH_PASS_2026_04_17.md`](REPOSITORY_POLISH_PASS_2026_04_17.md)
 
 ### If you only want runnable code entry points
@@ -41,6 +43,7 @@ Those materials are still useful, but they are easy to overread without the cano
 - Master dashboard: [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - Experiment ledger: [`EXPERIMENT_LEDGER_2026_04_18.md`](EXPERIMENT_LEDGER_2026_04_18.md)
 - Continuation plan: [`CONTINUATION_PLAN_2026_04_18.md`](CONTINUATION_PLAN_2026_04_18.md)
+- Current leading direction note: [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
 - Idea implementation matrix: [`IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md`](IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md)
 - Research and execution log: [`RESEARCH_AND_EXECUTION_LOG_2026_04_18.md`](RESEARCH_AND_EXECUTION_LOG_2026_04_18.md)
 - References organization: [`REFERENCES_ORGANIZATION_2026_04_18.md`](REFERENCES_ORGANIZATION_2026_04_18.md)
@@ -54,17 +57,19 @@ Those materials are still useful, but they are easy to overread without the cano
 Read these first for the current project identity:
 
 1. [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)
-2. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
-3. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
-4. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-5. [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
-6. [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
-7. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
-8. [`REPO_MAP.md`](REPO_MAP.md)
+2. [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
+3. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+4. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+5. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+6. [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
+7. [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
+8. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+9. [`REPO_MAP.md`](REPO_MAP.md)
 
 ## Canonical docs by purpose
 
 ### Project state and writing discipline
+- [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
 - [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
 - [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
 - [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
@@ -77,6 +82,7 @@ Read these first for the current project identity:
 ### Method status and next steps
 - [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
 - [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
+- [`CURRENT_LEADING_DIRECTION_2026_04_17.md`](CURRENT_LEADING_DIRECTION_2026_04_17.md)
 - [`BRANCH_VALUE_UNCERTAINTY_CANONICAL_REBUILD_EXECUTION_2026_04_17.md`](BRANCH_VALUE_UNCERTAINTY_CANONICAL_REBUILD_EXECUTION_2026_04_17.md)
 - [`BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md`](BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md)
 - [`HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
@@ -116,13 +122,14 @@ Read these first for the current project identity:
 
 ## How to interpret the canonical docs
 
+- `CURRENT_LEADING_DIRECTION_2026_04_17.md` is the shortest explanation of what now looks strongest, what recently failed, and what should be treated as current working interpretation.
 - `PROJECT_MASTER_PLAN.md` gives the full project identity, final goal, and roadmap.
 - `CURRENT_PROJECT_STATUS.md` says what is genuinely built and what is still unresolved.
 - `CURRENT_BOTTLENECKS.md` explains the main obstacle.
 - `CURRENT_SAFE_CLAIMS.md` tells you what is manuscript-safe to say now.
 - `CURRENT_METHOD_SUMMARY_AND_GAPS.md` is the shortest current method-state summary.
 - `WHAT_IS_NOT_WORKING_NOW.md` records directions that are currently weak or explicitly not validated enough.
-- `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md` records the current strongest interpretation of hard close-call comparisons as structured ambiguity states.
+- `STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md` records the earlier strongest interpretation of hard close-call comparisons as structured ambiguity states.
 - `ORACLE_PROXY_DEFER_TARGET_STATUS.md` records the bounded oracle-proxy defer-target path, calibration layer, and selective-decision interpretation.
 - `PAPER_POSITIONING_NOTE.md` translates the project state into a paper story.
 - `FULL_REPOSITORY_AUDIT_AND_POLISH_2026_04_18.md` gives a compact current-state repository audit and continuation-oriented polish summary.
@@ -131,10 +138,10 @@ Read these first for the current project identity:
 - `CONTINUATION_PLAN_2026_04_18.md` gives the recommended next-step order.
 - `IDEA_IMPLEMENTATION_MATRIX_2026_04_18.md` records which major ideas are implemented, partly implemented, or still not yet implemented, with priority guidance.
 - `RESEARCH_AND_EXECUTION_LOG_2026_04_18.md` records the main research, implementation, validation, and recovery steps already completed so they are not rediscovered repeatedly.
-- `BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md` records the current support-size robustness diagnosis for the branch-value + uncertainty line.
+- `BRANCH_VALUE_UNCERTAINTY_SUPPORT_SIZE_ROBUSTNESS_STATUS_2026_04_17.md` records the earlier support-size robustness diagnosis for the branch-value + uncertainty line.
 - `REFERENCES_ORGANIZATION_2026_04_18.md` explains how to interpret and organize the repository’s reference base.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
-- `REPOSITORY_POLISH_PASS_2026_04_17.md` records the latest bounded repository polish pass and the intended reading and maintenance rules.
+- `REPOSITORY_POLISH_PASS_2026_04_17.md` records the earlier bounded repository polish pass and its maintenance rules.
 
 ## Exploratory / active-branch notes
 
