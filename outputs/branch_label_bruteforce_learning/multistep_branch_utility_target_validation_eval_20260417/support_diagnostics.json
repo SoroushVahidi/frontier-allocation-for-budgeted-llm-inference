@@ -1,0 +1,82 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "state_counts": {
+        "test_states": 3,
+        "near_tie_test_states": 2,
+        "adjacent_rank_test_states": 3
+      },
+      "candidate_row_counts": {
+        "train": 76,
+        "test": 8,
+        "total": 84
+      },
+      "pair_row_counts": {
+        "train": 71,
+        "test": 7,
+        "total": 78,
+        "near_tie_test_pairs": 2,
+        "adjacent_rank_test_pairs": 5,
+        "strict_slice_test_pairs": 2
+      },
+      "warnings": [
+        "Very small test pair denominator (<30); accuracy deltas are fragile.",
+        "Near-tie test support is very small (<10 pairs).",
+        "Strict matched canonical slice support is very small (<8 pairs)."
+      ]
+    },
+    {
+      "seed": 29,
+      "state_counts": {
+        "test_states": 3,
+        "near_tie_test_states": 2,
+        "adjacent_rank_test_states": 3
+      },
+      "candidate_row_counts": {
+        "train": 82,
+        "test": 10,
+        "total": 92
+      },
+      "pair_row_counts": {
+        "train": 73,
+        "test": 12,
+        "total": 85,
+        "near_tie_test_pairs": 5,
+        "adjacent_rank_test_pairs": 7,
+        "strict_slice_test_pairs": 4
+      },
+      "warnings": [
+        "Very small test pair denominator (<30); accuracy deltas are fragile.",
+        "Near-tie test support is very small (<10 pairs).",
+        "Strict matched canonical slice support is very small (<8 pairs)."
+      ]
+    },
+    {
+      "seed": 47,
+      "state_counts": {
+        "test_states": 2,
+        "near_tie_test_states": 1,
+        "adjacent_rank_test_states": 2
+      },
+      "candidate_row_counts": {
+        "train": 85,
+        "test": 5,
+        "total": 90
+      },
+      "pair_row_counts": {
+        "train": 80,
+        "test": 4,
+        "total": 84,
+        "near_tie_test_pairs": 1,
+        "adjacent_rank_test_pairs": 3,
+        "strict_slice_test_pairs": 1
+      },
+      "warnings": [
+        "Very small test pair denominator (<30); accuracy deltas are fragile.",
+        "Near-tie test support is very small (<10 pairs).",
+        "Strict matched canonical slice support is very small (<8 pairs)."
+      ]
+    }
+  ]
+}

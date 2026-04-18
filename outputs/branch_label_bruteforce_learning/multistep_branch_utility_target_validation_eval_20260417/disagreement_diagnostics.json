@@ -1,0 +1,83 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "comparison": "k1_vs_k3",
+      "overall": {
+        "states": 3,
+        "disagreement_n": 1,
+        "disagreement_rate": 0.3333333333333333
+      },
+      "near_tie_state": {
+        "states": 2,
+        "disagreement_n": 1,
+        "disagreement_rate": 0.5
+      },
+      "non_near_tie_state": {
+        "states": 1,
+        "disagreement_n": 0,
+        "disagreement_rate": 0.0
+      },
+      "adjacent_rank_heavy_state": {
+        "states": 3,
+        "disagreement_n": 1,
+        "disagreement_rate": 0.3333333333333333
+      },
+      "changed_state_examples": [
+        "exopenai_gsm8k_3_ep7_d3"
+      ]
+    },
+    {
+      "seed": 29,
+      "comparison": "k1_vs_k3",
+      "overall": {
+        "states": 3,
+        "disagreement_n": 1,
+        "disagreement_rate": 0.3333333333333333
+      },
+      "near_tie_state": {
+        "states": 2,
+        "disagreement_n": 1,
+        "disagreement_rate": 0.5
+      },
+      "non_near_tie_state": {
+        "states": 1,
+        "disagreement_n": 0,
+        "disagreement_rate": 0.0
+      },
+      "adjacent_rank_heavy_state": {
+        "states": 3,
+        "disagreement_n": 1,
+        "disagreement_rate": 0.3333333333333333
+      },
+      "changed_state_examples": [
+        "exopenai_gsm8k_7_ep14_d3"
+      ]
+    },
+    {
+      "seed": 47,
+      "comparison": "k1_vs_k3",
+      "overall": {
+        "states": 2,
+        "disagreement_n": 0,
+        "disagreement_rate": 0.0
+      },
+      "near_tie_state": {
+        "states": 1,
+        "disagreement_n": 0,
+        "disagreement_rate": 0.0
+      },
+      "non_near_tie_state": {
+        "states": 1,
+        "disagreement_n": 0,
+        "disagreement_rate": 0.0
+      },
+      "adjacent_rank_heavy_state": {
+        "states": 2,
+        "disagreement_n": 0,
+        "disagreement_rate": 0.0
+      },
+      "changed_state_examples": []
+    }
+  ]
+}
