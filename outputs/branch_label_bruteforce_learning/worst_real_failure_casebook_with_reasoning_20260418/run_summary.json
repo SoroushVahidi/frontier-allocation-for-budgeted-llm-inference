@@ -1,35 +1,52 @@
 {
-  "run_id": "worst_real_failure_observability_20260418T014427Z",
-  "frontier_output_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/frontier_target_construction/worst_real_failure_observability_20260418T014427Z",
-  "observability_output_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_observability/worst_real_failure_observability_20260418T014427Z",
+  "run_id": "worst_real_failure_observability_20260418T022231Z",
+  "frontier_output_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/frontier_target_construction/worst_real_failure_observability_20260418T022231Z",
+  "observability_output_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_observability/worst_real_failure_observability_20260418T022231Z",
   "casebook_output_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_learning/worst_real_failure_casebook_with_reasoning_20260418",
+  "final_answer_recovery_output_dir": "/workspace/adaptive-reasoning-budget-allocation/outputs/final_answer_recovery/worst_real_failure_observability_20260418T022231Z",
   "trace_meta": {
     "provider_used": "openai",
-    "trace_rows": 24
+    "trace_rows": 20
   },
   "frontier_summary": {
-    "n_states": 24,
-    "n_branch_utility_rows": 66,
-    "n_pairwise_labels": 62,
-    "n_outside_option_labels": 66,
-    "avg_remaining_budget": 3.25,
-    "avg_active_branches_per_state": 2.75,
-    "pairwise_tie_rate": 0.27419354838709675,
-    "outside_option_positive_rate": 0.25757575757575757,
-    "trace_source": "/workspace/adaptive-reasoning-budget-allocation/outputs/frontier_target_construction/worst_real_failure_observability_20260418T014427Z/real_trace_input.jsonl",
+    "n_states": 20,
+    "n_branch_utility_rows": 54,
+    "n_pairwise_labels": 49,
+    "n_outside_option_labels": 54,
+    "avg_remaining_budget": 3.35,
+    "avg_active_branches_per_state": 2.7,
+    "pairwise_tie_rate": 0.14285714285714285,
+    "outside_option_positive_rate": 0.24074074074074073,
+    "trace_source": "/workspace/adaptive-reasoning-budget-allocation/outputs/frontier_target_construction/worst_real_failure_observability_20260418T022231Z/real_trace_input.jsonl",
     "branch_observability_recoverability": {
-      "total_records": 66,
-      "branch_text_recoverable": 57,
-      "branch_reasoning_recoverable": 57,
-      "branch_final_answer_recoverable": 0,
-      "normalized_answer_recoverable": 0,
-      "distinct_states": 24,
-      "created_at_utc": "2026-04-18T01:45:47Z"
+      "total_records": 54,
+      "branch_text_recoverable": 49,
+      "branch_reasoning_recoverable": 49,
+      "branch_final_answer_recoverable": 49,
+      "branch_final_answer_direct_recoverable": 0,
+      "branch_final_answer_completion_recoverable": 49,
+      "normalized_answer_recoverable": 49,
+      "distinct_states": 20,
+      "created_at_utc": "2026-04-18T02:23:29Z"
     }
   },
   "recoverability_summary": {
     "selected_cases": 5,
     "direct_reasoning_recovery_both_method_and_oracle": 5,
-    "direct_final_answer_recovery_both_method_and_oracle": 0
+    "direct_final_answer_recovery_both_method_and_oracle": 5,
+    "method_direct_final_answer_recovery_cases": 0,
+    "oracle_direct_final_answer_recovery_cases": 0,
+    "method_recovered_with_optional_completion_cases": 5,
+    "oracle_recovered_with_optional_completion_cases": 5
+  },
+  "completion_summary": {
+    "run_id": "worst_real_failure_observability_20260418T022231Z",
+    "selected_contested_cases": 5,
+    "enable_contested_completion_recovery": true,
+    "method_recovered_final_answer_cases": 5,
+    "oracle_recovered_final_answer_cases": 5,
+    "method_completion_inferred_cases": 0,
+    "oracle_completion_inferred_cases": 0,
+    "supports_semantic_mismatch_adjudication": true
   }
 }

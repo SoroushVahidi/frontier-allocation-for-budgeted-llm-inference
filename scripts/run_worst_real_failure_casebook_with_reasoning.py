@@ -18,6 +18,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from experiments.branching import APIBranchGenerator, BranchState, SimulatedBranchGenerator
+from experiments.branch_observability import recover_final_answer_from_branch_text
 from experiments.data import extract_final_answer
 from experiments.frontier_target_construction import FrontierTargetConstructionConfig, run_frontier_target_construction
 from experiments.hf_datasets import sample_hf_examples
@@ -230,6 +231,8 @@ def _build_casebook(
     observability_dir: Path,
     out_dir: Path,
     top_k: int,
+    enable_contested_completion_recovery: bool,
+    final_answer_recovery_out_dir: Path,
 ) -> dict[str, Any]:
     frontier_states = _read_jsonl(frontier_dir / "frontier_states.jsonl")
     util_rows = _read_jsonl(frontier_dir / "branch_marginal_utility.jsonl")
@@ -244,6 +247,7 @@ def _build_casebook(
 
     ranking_rows: list[dict[str, Any]] = []
     structured_cases: list[dict[str, Any]] = []
+    recovery_rows: list[dict[str, Any]] = []
     for srow in frontier_states:
         state_id = str(srow["state_id"])
         ep = int(srow["episode_id"])
@@ -308,6 +312,45 @@ def _build_casebook(
         source = trace_idx.get((int(row["episode_id"]), int(row["decision_id"])), {})
         method_obs = obs_idx.get((sid, method_id), {})
         oracle_obs = obs_idx.get((sid, oracle_id), {})
+        method_recovery = recover_final_answer_from_branch_text(
+            final_answer_text=method_obs.get("branch_final_answer_text_raw"),
+            reasoning_text=method_obs.get("branch_reasoning_text_raw"),
+            branch_text=method_obs.get("branch_text_raw"),
+        ) if enable_contested_completion_recovery else {
+            "final_answer_text": method_obs.get("branch_final_answer_text_raw"),
+            "source": "disabled",
+            "completion_attempted": False,
+            "completion_success": False,
+            "completion_method": None,
+            "completion_failure_reason": "contested_completion_recovery_disabled",
+        }
+        oracle_recovery = recover_final_answer_from_branch_text(
+            final_answer_text=oracle_obs.get("branch_final_answer_text_raw"),
+            reasoning_text=oracle_obs.get("branch_reasoning_text_raw"),
+            branch_text=oracle_obs.get("branch_text_raw"),
+        ) if enable_contested_completion_recovery else {
+            "final_answer_text": oracle_obs.get("branch_final_answer_text_raw"),
+            "source": "disabled",
+            "completion_attempted": False,
+            "completion_success": False,
+            "completion_method": None,
+            "completion_failure_reason": "contested_completion_recovery_disabled",
+        }
+        method_answer_text = method_recovery.get("final_answer_text")
+        oracle_answer_text = oracle_recovery.get("final_answer_text")
+        method_norm = extract_final_answer(str(method_answer_text)) if method_answer_text is not None else None
+        oracle_norm = extract_final_answer(str(oracle_answer_text)) if oracle_answer_text is not None else None
+        recovery_rows.append(
+            {
+                "state_id": sid,
+                "method_branch_id": method_id,
+                "oracle_branch_id": oracle_id,
+                "method": method_recovery,
+                "oracle": oracle_recovery,
+                "method_normalized_answer": method_norm,
+                "oracle_normalized_answer": oracle_norm,
+            }
+        )
         structured_cases.append(
             {
                 **row,
@@ -315,10 +358,10 @@ def _build_casebook(
                 "ground_truth_answer": source.get("answer"),
                 "method_branch_reasoning_text": method_obs.get("branch_reasoning_text_raw"),
                 "oracle_branch_reasoning_text": oracle_obs.get("branch_reasoning_text_raw"),
-                "method_branch_final_answer_text": method_obs.get("branch_final_answer_text_raw"),
-                "oracle_branch_final_answer_text": oracle_obs.get("branch_final_answer_text_raw"),
-                "method_branch_normalized_answer": method_obs.get("branch_final_answer_normalized"),
-                "oracle_branch_normalized_answer": oracle_obs.get("branch_final_answer_normalized"),
+                "method_branch_final_answer_text": method_answer_text,
+                "oracle_branch_final_answer_text": oracle_answer_text,
+                "method_branch_normalized_answer": method_norm,
+                "oracle_branch_normalized_answer": oracle_norm,
                 "method_extracted_numbers": method_obs.get("extracted_numbers"),
                 "oracle_extracted_numbers": oracle_obs.get("extracted_numbers"),
                 "method_branch_role_summary": method_obs.get("branch_role_summary"),
@@ -327,6 +370,14 @@ def _build_casebook(
                 "oracle_provenance": oracle_obs.get("provenance_source"),
                 "method_recoverability": method_obs.get("recoverability_flags"),
                 "oracle_recoverability": oracle_obs.get("recoverability_flags"),
+                "method_direct_final_answer_from_source": bool(
+                    (method_obs.get("final_answer_capture_metadata") or {}).get("direct_final_answer_present")
+                ),
+                "oracle_direct_final_answer_from_source": bool(
+                    (oracle_obs.get("final_answer_capture_metadata") or {}).get("direct_final_answer_present")
+                ),
+                "method_final_answer_recovery": method_recovery,
+                "oracle_final_answer_recovery": oracle_recovery,
                 "inference_notes": {
                     "branch_role_summary": "inferred_from_branch_metadata",
                     "ranking_score": "computed_from_oracle_regret_margin_and_correctness",
@@ -350,6 +401,20 @@ def _build_casebook(
         "selected_cases": len(structured_cases),
         "direct_reasoning_recovery_both_method_and_oracle": rec_reason,
         "direct_final_answer_recovery_both_method_and_oracle": rec_final_pair,
+        "method_direct_final_answer_recovery_cases": sum(
+            int(bool(c.get("method_direct_final_answer_from_source")))
+            for c in structured_cases
+        ),
+        "oracle_direct_final_answer_recovery_cases": sum(
+            int(bool(c.get("oracle_direct_final_answer_from_source")))
+            for c in structured_cases
+        ),
+        "method_recovered_with_optional_completion_cases": sum(
+            int(bool(c.get("method_branch_final_answer_text"))) for c in structured_cases
+        ),
+        "oracle_recovered_with_optional_completion_cases": sum(
+            int(bool(c.get("oracle_branch_final_answer_text"))) for c in structured_cases
+        ),
     }
 
     _write_json(out_dir / "manifest.json", {
@@ -363,6 +428,39 @@ def _build_casebook(
     _write_json(out_dir / "worst_failure_ranking_table.json", {"rows": ranking_rows})
     _write_json(out_dir / "rich_failure_cases_structured.json", {"cases": structured_cases})
     _write_json(out_dir / "recoverability_summary.json", recoverability_summary)
+    completion_summary = {
+        "run_id": run_id,
+        "selected_contested_cases": len(structured_cases),
+        "enable_contested_completion_recovery": bool(enable_contested_completion_recovery),
+        "method_recovered_final_answer_cases": recoverability_summary["method_recovered_with_optional_completion_cases"],
+        "oracle_recovered_final_answer_cases": recoverability_summary["oracle_recovered_with_optional_completion_cases"],
+        "method_completion_inferred_cases": sum(
+            int(str((c.get("method_final_answer_recovery") or {}).get("source", "")).startswith("completion_from_"))
+            for c in structured_cases
+        ),
+        "oracle_completion_inferred_cases": sum(
+            int(str((c.get("oracle_final_answer_recovery") or {}).get("source", "")).startswith("completion_from_"))
+            for c in structured_cases
+        ),
+        "supports_semantic_mismatch_adjudication": bool(
+            recoverability_summary["method_recovered_with_optional_completion_cases"] > 0
+            and recoverability_summary["oracle_recovered_with_optional_completion_cases"] > 0
+        ),
+    }
+    _write_json(final_answer_recovery_out_dir / "recoverability_diagnostics.json", completion_summary)
+    _write_jsonl(final_answer_recovery_out_dir / "contested_case_recovery.jsonl", recovery_rows)
+    _write_json(
+        final_answer_recovery_out_dir / "manifest.json",
+        {
+            "run_id": run_id,
+            "input_observability_dir": str(observability_dir),
+            "input_frontier_dir": str(frontier_dir),
+            "output_files": {
+                "recoverability_diagnostics": "recoverability_diagnostics.json",
+                "contested_case_recovery": "contested_case_recovery.jsonl",
+            },
+        },
+    )
     (out_dir / "commands_assumptions_caveats.md").write_text(
         "\n".join(
             [
@@ -380,6 +478,7 @@ def _build_casebook(
     return {
         "structured_cases": structured_cases,
         "recoverability_summary": recoverability_summary,
+        "completion_summary": completion_summary,
         "ranking_rows": ranking_rows,
     }
 
@@ -407,8 +506,8 @@ def _write_markdown_casebook(doc_path: Path, payload: dict[str, Any], *, run_id:
                 f"- oracle_regret={case.get('oracle_regret'):.6f}, method_margin_top2={case.get('method_score_margin_top2'):.6f}, hard_slice={case.get('hard_slice')}",
                 f"- Full problem: {case.get('question')}",
                 f"- Ground truth answer: `{case.get('ground_truth_answer')}`",
-                f"- Method branch final answer text (direct): `{case.get('method_branch_final_answer_text')}`",
-                f"- Oracle branch final answer text (direct): `{case.get('oracle_branch_final_answer_text')}`",
+                f"- Method branch final answer text (direct-or-recovered): `{case.get('method_branch_final_answer_text')}`",
+                f"- Oracle branch final answer text (direct-or-recovered): `{case.get('oracle_branch_final_answer_text')}`",
                 f"- Method normalized answer: `{case.get('method_branch_normalized_answer')}`",
                 f"- Oracle normalized answer: `{case.get('oracle_branch_normalized_answer')}`",
                 f"- Method reasoning text (direct): {case.get('method_branch_reasoning_text')}",
@@ -438,6 +537,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-output-tokens", type=int, default=220)
     p.add_argument("--top-k", type=int, default=5)
     p.add_argument("--allow-sim-fallback", action="store_true")
+    p.add_argument("--disable-contested-completion-recovery", action="store_true")
     return p.parse_args()
 
 
@@ -486,6 +586,7 @@ def main() -> None:
     result = run_frontier_target_construction(cfg, output_dir=frontier_out, trace_jsonl=trace_path)
 
     observability_dir = REPO_ROOT / "outputs/branch_observability" / run_id
+    final_answer_recovery_out = REPO_ROOT / "outputs/final_answer_recovery" / run_id
     casebook_out = REPO_ROOT / f"outputs/branch_label_bruteforce_learning/worst_real_failure_casebook_with_reasoning_{date_tag}"
     payload = _build_casebook(
         run_id=run_id,
@@ -494,6 +595,8 @@ def main() -> None:
         observability_dir=observability_dir,
         out_dir=casebook_out,
         top_k=args.top_k,
+        enable_contested_completion_recovery=not bool(args.disable_contested_completion_recovery),
+        final_answer_recovery_out_dir=final_answer_recovery_out,
     )
 
     doc_path = REPO_ROOT / f"docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_{date_tag}.md"
@@ -503,17 +606,21 @@ def main() -> None:
         "frontier_output_dir": str(frontier_out),
         "observability_output_dir": str(observability_dir),
         "casebook_output_dir": str(casebook_out),
+        "final_answer_recovery_output_dir": str(final_answer_recovery_out),
         "trace_meta": trace_meta,
         "frontier_summary": result["summary"],
         "recoverability_summary": payload["recoverability_summary"],
+        "completion_summary": payload["completion_summary"],
     })
     print(json.dumps({
         "run_id": run_id,
         "frontier_output_dir": str(frontier_out),
         "observability_output_dir": str(observability_dir),
         "casebook_output_dir": str(casebook_out),
+        "final_answer_recovery_output_dir": str(final_answer_recovery_out),
         "doc_path": str(doc_path),
         "recoverability_summary": payload["recoverability_summary"],
+        "completion_summary": payload["completion_summary"],
     }, indent=2))
 
 
