@@ -37,6 +37,8 @@ def resolve_api_key_for_provider(provider: str) -> str | None:
     p = provider.strip().lower()
     if p == "openai":
         return os.getenv("OPENAI_API_KEY")
+    if p == "cohere":
+        return os.getenv("COHERE_API_KEY")
     if p == "groq":
         return os.getenv("GROQ_API_KEY")
     if p == "gemini":
