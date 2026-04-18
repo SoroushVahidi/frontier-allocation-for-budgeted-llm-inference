@@ -35,21 +35,31 @@ Read this note early:
 If you want the shortest path from current truth to current failure diagnosis, read:
 - [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
 
+If you want the shortest new synthesis of what is done, what is active, and what next, read:
+- [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
+- [`docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
+- [`docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
+- [`outputs/repository_polish/current_repo_state_summary_2026_04_18.json`](outputs/repository_polish/current_repo_state_summary_2026_04_18.json)
+
 ## Fastest reliable start
 
 If you only read a few files, use this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
 2. [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
 3. [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
-4. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
-5. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-6. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
-7. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
+4. [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
+5. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+6. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+7. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+8. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
 
 If you want the shortest repository-facing summary instead, use:
 - [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - [`docs/EXPERIMENT_LEDGER_2026_04_18.md`](docs/EXPERIMENT_LEDGER_2026_04_18.md)
 - [`docs/CONTINUATION_PLAN_2026_04_18.md`](docs/CONTINUATION_PLAN_2026_04_18.md)
+- [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
+- [`docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
+- [`docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
 - [`docs/REPOSITORY_POLISH_PASS_2026_04_17.md`](docs/REPOSITORY_POLISH_PASS_2026_04_17.md)
 
 ## What to avoid at first
@@ -73,11 +83,12 @@ Read in this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
 2. [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
 3. [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
-4. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
-5. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-6. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
-7. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
-8. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+4. [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
+5. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+6. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+7. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+8. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+9. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 ### Shortest repository-facing orientation path
 Use:
@@ -86,8 +97,12 @@ Use:
 - [`docs/CONTINUATION_PLAN_2026_04_18.md`](docs/CONTINUATION_PLAN_2026_04_18.md)
 - [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
 - [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
+- [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
+- [`docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
+- [`docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`](docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md)
 - [`docs/REFERENCES_ORGANIZATION_2026_04_18.md`](docs/REFERENCES_ORGANIZATION_2026_04_18.md)
 - [`outputs/repository_polish/repository_polish_summary_2026_04_18.json`](outputs/repository_polish/repository_polish_summary_2026_04_18.json)
+- [`outputs/repository_polish/current_repo_state_summary_2026_04_18.json`](outputs/repository_polish/current_repo_state_summary_2026_04_18.json)
 
 ### Compact repository-facing audit
 Use:
@@ -107,6 +122,8 @@ Read next:
 - [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
 - [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
 - [`docs/DIAGNOSTIC_READING_PATH_2026_04_18.md`](docs/DIAGNOSTIC_READING_PATH_2026_04_18.md)
+- [`docs/PROJECT_SITUATION_REPORT_2026_04_18.md`](docs/PROJECT_SITUATION_REPORT_2026_04_18.md)
+- [`docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`](docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md)
 
 ### Evaluation and outputs
 Use:
