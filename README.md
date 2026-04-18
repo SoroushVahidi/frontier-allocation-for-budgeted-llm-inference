@@ -22,14 +22,25 @@ This repository is currently centered on:
 
 This repository is **not** currently centered on the old binary revise-routing paper.
 
+## Current leading experimental direction
+
+The shortest current reading of the repo is:
+- many recent bounded fixes around the same one-step/local target family were negative,
+- the first current direction with a meaningful positive signal is the **multi-step branch-utility target** line,
+- but that direction is still **promising, not yet trustworthy**.
+
+Read this note early:
+- [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
+
 ## Fastest reliable start
 
 If you only read a few files, use this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-2. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
-3. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-4. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
-5. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
+2. [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
+3. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+4. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+5. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+6. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
 
 If you want the shortest repository-facing summary instead, use:
 - [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
@@ -56,17 +67,19 @@ For the formal interpretation rules, see:
 ### Fastest correct overview
 Read in this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-2. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
-3. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
-4. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
-5. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
-6. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+2. [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
+3. [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md)
+4. [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+5. [`docs/CURRENT_SAFE_CLAIMS.md`](docs/CURRENT_SAFE_CLAIMS.md)
+6. [`docs/PAPER_POSITIONING_NOTE.md`](docs/PAPER_POSITIONING_NOTE.md)
+7. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 ### Shortest repository-facing orientation path
 Use:
 - [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - [`docs/EXPERIMENT_LEDGER_2026_04_18.md`](docs/EXPERIMENT_LEDGER_2026_04_18.md)
 - [`docs/CONTINUATION_PLAN_2026_04_18.md`](docs/CONTINUATION_PLAN_2026_04_18.md)
+- [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
 - [`docs/REFERENCES_ORGANIZATION_2026_04_18.md`](docs/REFERENCES_ORGANIZATION_2026_04_18.md)
 - [`outputs/repository_polish/repository_polish_summary_2026_04_18.json`](outputs/repository_polish/repository_polish_summary_2026_04_18.json)
 
@@ -81,21 +94,12 @@ Start with:
 - [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
 - [`scripts/README.md`](scripts/README.md)
 
-### Current hard ambiguous-case line
+### Current method and bottleneck path
 Read next:
 - [`docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`](docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md)
-- [`docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md`](docs/HARD_PAIR_SUPERVISION_CLEANUP_NEXT_STEP.md)
-- [`docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md`](docs/STRUCTURED_AMBIGUITY_STATUS_2026_04_18.md)
-- [`docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md`](docs/ORACLE_PROXY_DEFER_TARGET_STATUS.md)
-- [`docs/DEFER_CONDITIONED_FALLBACK_STATUS.md`](docs/DEFER_CONDITIONED_FALLBACK_STATUS.md)
-- [`docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md`](docs/REPOSITORY_AUDIT_AND_NEXT_STEP_2026_04_18.md)
-
-### Current target-design and value-supervision direction
-Use:
-- [`docs/RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md`](docs/RESEARCH_TAKEAWAYS_ON_TARGET_DESIGN_AND_SELECTIVE_ALLOCATION_2026_04_18.md)
-- [`docs/RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md`](docs/RESEARCH_TAKEAWAYS_ON_VALUE_TARGETS_AND_ABSTENTION_2026_04_18.md)
-- `outputs/research_takeaways/research_takeaways_target_design_and_selective_allocation_2026_04_18.json`
-- `outputs/research_takeaways/research_takeaways_value_targets_and_abstention_2026_04_18.json`
+- [`docs/WHAT_IS_NOT_WORKING_NOW.md`](docs/WHAT_IS_NOT_WORKING_NOW.md)
+- [`docs/CURRENT_BOTTLENECKS.md`](docs/CURRENT_BOTTLENECKS.md)
+- [`docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`](docs/CURRENT_LEADING_DIRECTION_2026_04_17.md)
 
 ### Evaluation and outputs
 Use:
@@ -136,13 +140,10 @@ The current repository view is that the project is **not** primarily blocked by:
 - or lack of larger sweeps.
 
 ### Best near-term method direction
-The recommended current direction is:
-- a branch-priority / next-step allocation policy over active branches,
-- pairwise branch comparison as the main learned decision object,
-- `v3` structured ambiguity features and defer-aware representations as the current stronger hard-case line,
-- a cleaner selective accept/defer rule for hard ambiguous cases,
-- a more principled oracle-proxy defer target rather than only heuristic ambiguity bands,
-- and defer-conditioned fallback policies that test what should happen after unresolved states are detected.
+The current best near-term direction is:
+- keep the branch-allocation framing,
+- treat many recent negative passes as evidence against reusing the same one-step/local target family,
+- and validate the **multi-step branch-utility target** line more deeply before broadening again.
 
 The conceptual center is the **ranking/allocation problem**, not a standalone stop-vs-act binary formulation.
 
@@ -173,6 +174,6 @@ For interpretation rules and grouped navigation, see:
 
 The strongest current paper story is:
 
-**fixed-budget cross-controller frontier allocation for LLM reasoning, where the main challenge is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget, especially when some states should be treated as unresolved rather than forced into immediate binary commitment.**
+**fixed-budget cross-controller frontier allocation for LLM reasoning, where the main challenge is learning how to rank active branches and allocate the next unit of compute under uncertainty and limited budget, and where recent evidence suggests that target locality may be a central part of the remaining hard-case bottleneck.**
 
 A local stop-vs-act gate may still be useful as an implementation simplification, but it should not be treated as the full conceptual center of the project.
