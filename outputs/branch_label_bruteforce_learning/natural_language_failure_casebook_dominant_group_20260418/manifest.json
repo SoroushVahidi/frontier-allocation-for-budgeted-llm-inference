@@ -1,0 +1,56 @@
+{
+  "run_id": "natural_language_failure_casebook_dominant_group_20260418",
+  "timestamp_utc": "2026-04-18",
+  "input_artifacts": {
+    "validation_summary": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_learning/multistep_branch_utility_target_validation_eval_20260417/aggregate_comparison_summary.json",
+    "failure_ranking": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_learning/current_leading_failure_case_extraction_20260418/failure_case_ranking_table.json",
+    "candidate_labels_k3": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_targets/multistep_branch_utility_target_20260417/regime_multistep_branch_utility_target_k3/candidate_labels.jsonl",
+    "state_summaries_k3": "/workspace/adaptive-reasoning-budget-allocation/outputs/branch_label_bruteforce_targets/multistep_branch_utility_target_20260417/regime_multistep_branch_utility_target_k3/state_summaries.jsonl"
+  },
+  "leading_method": {
+    "selection_rule": "argmax accepted_accuracy_mean among multistep_k* modes in latest validation aggregate summary",
+    "candidates": [
+      {
+        "mode": "multistep_k3",
+        "seeds": 3,
+        "accepted_accuracy_mean": 0.7063492063492064,
+        "accepted_accuracy_std": 0.30511718709112834,
+        "coverage_mean": 1.0,
+        "defer_rate_mean": 0.0,
+        "near_tie_accepted_accuracy_mean": 0.6,
+        "adjacent_rank_accepted_accuracy_mean": 0.6380952380952382,
+        "strict_slice_accepted_accuracy_mean": 0.5833333333333334
+      },
+      {
+        "mode": "multistep_k2",
+        "seeds": 3,
+        "accepted_accuracy_mean": 0.623015873015873,
+        "accepted_accuracy_std": 0.2409223688358816,
+        "coverage_mean": 1.0,
+        "defer_rate_mean": 0.0,
+        "near_tie_accepted_accuracy_mean": 0.6,
+        "adjacent_rank_accepted_accuracy_mean": 0.526984126984127,
+        "strict_slice_accepted_accuracy_mean": 0.5833333333333334
+      },
+      {
+        "mode": "multistep_k1",
+        "seeds": 3,
+        "accepted_accuracy_mean": 0.5952380952380952,
+        "accepted_accuracy_std": 0.218866384652979,
+        "coverage_mean": 1.0,
+        "defer_rate_mean": 0.0,
+        "near_tie_accepted_accuracy_mean": 0.19999999999999998,
+        "adjacent_rank_accepted_accuracy_mean": 0.4793650793650794,
+        "strict_slice_accepted_accuracy_mean": 0.16666666666666666
+      }
+    ],
+    "selected_mode_validation_name": "multistep_k3",
+    "selected_mode_canonical_name": "multistep_branch_utility_target_k3",
+    "selected_metric": "accepted_accuracy_mean",
+    "selected_metric_value": 0.7063492063492064
+  },
+  "notes": [
+    "Branch free-text reasoning traces are not present in inspected artifacts; natural-language branch descriptions are reconstructed from stored numeric/action-history proxy fields.",
+    "This is a bounded diagnostic pass only (no redesign)."
+  ]
+}

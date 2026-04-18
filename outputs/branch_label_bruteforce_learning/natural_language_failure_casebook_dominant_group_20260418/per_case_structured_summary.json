@@ -1,0 +1,496 @@
+{
+  "cases": [
+    {
+      "case_id": "seed11::exopenai_gsm8k_0_ep1_d3",
+      "state_id": "exopenai_gsm8k_0_ep1_d3",
+      "dataset_name": "openai/gsm8k",
+      "example_id": "openai_gsm8k_0",
+      "question_preview": "John plans to sell all his toys and use the money to buy video games. He has 13 lego sets and he sells them for $15 each. He ends up buying 8 video games for $20 each and has $5 le",
+      "method_choice_k3": "b0",
+      "oracle_best_branch": "b2",
+      "oracle_gap_if_choose_k3": 0.18086456677077517,
+      "k3_pred_margin_top2": 0.05811995918308943,
+      "oracle_margin_top2": 0.18086456677077517,
+      "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+      "mistake_rationale": "Chosen branch receives positive multistep uplift but is still below outside option/oracle, while oracle branch has positive outside-option gap.",
+      "selection_bucket": "failure",
+      "backfill_reason": null,
+      "branches": [
+        {
+          "branch_id": "b0",
+          "role": {
+            "method_chosen": true,
+            "oracle_best": false
+          },
+          "story": "method-chosen; moderate multistep uplift; trails outside option; depth=0.0, verify_count=0.0, recent_delta=0.0000.",
+          "signals": {
+            "branch_id": "b0",
+            "method_score_k3": 0.751480979883338,
+            "method_score_k1": 0.6160948523319941,
+            "oracle_one_step_value": 0.40692095144368073,
+            "multistep_target_value": 0.4781321179463249,
+            "multistep_delta_vs_onestep": 0.07121116650264414,
+            "allocation_value_std": 0.03431660567889359,
+            "branch_vs_outside_gap": -0.18086456677077517,
+            "outside_option_value": 0.5877855182144559,
+            "best_followup_allocation": [
+              1,
+              3
+            ],
+            "multistep_target_self_followup_ratio": 0.5,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.2751478327792332,
+              "depth": 0.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.0,
+              "verify_count": 0.0,
+              "branch_age": 0.0,
+              "parent_relative_score": -0.06487960090643147
+            },
+            "estimated_value_if_allocate_next": 0.40692095144368073
+          }
+        },
+        {
+          "branch_id": "b2",
+          "role": {
+            "method_chosen": false,
+            "oracle_best": true
+          },
+          "story": "oracle-best; strong multistep uplift; beats outside option; depth=1.0, verify_count=0.0, recent_delta=-0.0478.",
+          "signals": {
+            "branch_id": "b2",
+            "method_score_k3": 0.6933610207002485,
+            "method_score_k1": 0.5524212142942715,
+            "oracle_one_step_value": 0.5877855182144559,
+            "multistep_target_value": 0.7935104495895156,
+            "multistep_delta_vs_onestep": 0.20572493137505965,
+            "allocation_value_std": 0.13448694868208783,
+            "branch_vs_outside_gap": 0.18086456677077517,
+            "outside_option_value": 0.40692095144368073,
+            "best_followup_allocation": [
+              2,
+              2
+            ],
+            "multistep_target_self_followup_ratio": 1.0,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.4049070345920961,
+              "depth": 1.0,
+              "stalled_steps": 1.0,
+              "recent_delta": -0.04782193068641971,
+              "verify_count": 0.0,
+              "branch_age": 0.0,
+              "parent_relative_score": 0.06487960090643141
+            },
+            "estimated_value_if_allocate_next": 0.5877855182144559
+          }
+        }
+      ],
+      "diagnosis": {
+        "why_model_likely_chose_it": "Chosen branch had higher learned k3 score and appeared attractive under multistep utility uplift/self-followup proxy.",
+        "why_oracle_different": "Oracle branch has higher one-step value and stronger outside-option gap, indicating better immediate compute return.",
+        "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+        "representative_of_dominant_group": true
+      }
+    },
+    {
+      "case_id": "seed11::exopenai_gsm8k_3_ep7_d3",
+      "state_id": "exopenai_gsm8k_3_ep7_d3",
+      "dataset_name": "openai/gsm8k",
+      "example_id": "openai_gsm8k_3",
+      "question_preview": "Gretchen has some coins. There are 30 more gold coins than silver coins. If she had 70 gold coins, how many coins did Gretchen have in total?",
+      "method_choice_k3": "b3",
+      "oracle_best_branch": "b2",
+      "oracle_gap_if_choose_k3": 0.11354667095340543,
+      "k3_pred_margin_top2": 0.02224220360343332,
+      "oracle_margin_top2": 0.10556849851210437,
+      "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+      "mistake_rationale": "Chosen branch receives positive multistep uplift but is still below outside option/oracle, while oracle branch has positive outside-option gap.",
+      "selection_bucket": "failure",
+      "backfill_reason": null,
+      "branches": [
+        {
+          "branch_id": "b3",
+          "role": {
+            "method_chosen": true,
+            "oracle_best": false
+          },
+          "story": "method-chosen; strong multistep uplift; trails outside option; depth=1.0, verify_count=1.0, recent_delta=0.0106.",
+          "signals": {
+            "branch_id": "b3",
+            "method_score_k3": 0.9385679978476783,
+            "method_score_k1": 0.8437209276011142,
+            "oracle_one_step_value": 0.5990286511283686,
+            "multistep_target_value": 0.8086886790232977,
+            "multistep_delta_vs_onestep": 0.2096600278949291,
+            "allocation_value_std": 0.09012276148213824,
+            "branch_vs_outside_gap": -0.11354667095340543,
+            "outside_option_value": 0.712575322081774,
+            "best_followup_allocation": [
+              0,
+              2,
+              2
+            ],
+            "multistep_target_self_followup_ratio": 1.0,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.6156792874823204,
+              "depth": 1.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.010633043750891358,
+              "verify_count": 1.0,
+              "branch_age": 0.0,
+              "parent_relative_score": 0.1488600030990811
+            },
+            "estimated_value_if_allocate_next": 0.5990286511283686
+          }
+        },
+        {
+          "branch_id": "b0",
+          "role": {
+            "method_chosen": false,
+            "oracle_best": false
+          },
+          "story": "competing; strong multistep uplift; trails outside option; depth=1.0, verify_count=0.0, recent_delta=0.0182.",
+          "signals": {
+            "branch_id": "b0",
+            "method_score_k3": 0.916325794244245,
+            "method_score_k1": 0.8224636904377421,
+            "oracle_one_step_value": 0.6070068235696696,
+            "multistep_target_value": 0.819459211819054,
+            "multistep_delta_vs_onestep": 0.2124523882493844,
+            "allocation_value_std": 0.09312584255404131,
+            "branch_vs_outside_gap": -0.10556849851210437,
+            "outside_option_value": 0.712575322081774,
+            "best_followup_allocation": [
+              2,
+              0,
+              2
+            ],
+            "multistep_target_self_followup_ratio": 1.0,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.3338572634589369,
+              "depth": 1.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.018210763185607215,
+              "verify_count": 0.0,
+              "branch_age": 0.0,
+              "parent_relative_score": -0.13296202092430237
+            },
+            "estimated_value_if_allocate_next": 0.6070068235696696
+          }
+        },
+        {
+          "branch_id": "b2",
+          "role": {
+            "method_chosen": false,
+            "oracle_best": true
+          },
+          "story": "oracle-best; no multistep uplift; beats outside option; depth=0.0, verify_count=0.0, recent_delta=0.0000.",
+          "signals": {
+            "branch_id": "b2",
+            "method_score_k3": 0.8946374996542779,
+            "method_score_k1": 0.7835429993936653,
+            "oracle_one_step_value": 0.712575322081774,
+            "multistep_target_value": 0.712575322081774,
+            "multistep_delta_vs_onestep": 0.0,
+            "allocation_value_std": 0.10714553720090157,
+            "branch_vs_outside_gap": 0.10556849851210437,
+            "outside_option_value": 0.6070068235696696,
+            "best_followup_allocation": [
+              2,
+              0,
+              2
+            ],
+            "multistep_target_self_followup_ratio": 0.0,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.45092130220846066,
+              "depth": 0.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.0,
+              "verify_count": 0.0,
+              "branch_age": 0.0,
+              "parent_relative_score": -0.015897982174778613
+            },
+            "estimated_value_if_allocate_next": 0.712575322081774
+          }
+        }
+      ],
+      "diagnosis": {
+        "why_model_likely_chose_it": "Chosen branch had higher learned k3 score and appeared attractive under multistep utility uplift/self-followup proxy.",
+        "why_oracle_different": "Oracle branch has higher one-step value and stronger outside-option gap, indicating better immediate compute return.",
+        "mistake_type": "delayed_payoff_overvaluation_with_outside_option_miss",
+        "representative_of_dominant_group": true
+      }
+    },
+    {
+      "case_id": "seed47::exopenai_gsm8k_3_ep7_d4",
+      "state_id": "exopenai_gsm8k_3_ep7_d4",
+      "dataset_name": "openai/gsm8k",
+      "example_id": "openai_gsm8k_3",
+      "question_preview": "Gretchen has some coins. There are 30 more gold coins than silver coins. If she had 70 gold coins, how many coins did Gretchen have in total?",
+      "method_choice_k3": "b3",
+      "oracle_best_branch": "b3",
+      "oracle_gap_if_choose_k3": 0.0,
+      "k3_pred_margin_top2": 0.15162818360968078,
+      "oracle_margin_top2": 0.1858335440185609,
+      "mistake_type": "correct_or_control",
+      "mistake_rationale": "Method branch matches oracle-best branch; kept only for controlled backfill when dominant-group strict failures are too few.",
+      "selection_bucket": "boundary_control",
+      "backfill_reason": "Backfill control: strict dominant-group failures < 4; selected highest-uplift states to illustrate same delayed-payoff scoring tendency.",
+      "branches": [
+        {
+          "branch_id": "b3",
+          "role": {
+            "method_chosen": true,
+            "oracle_best": true
+          },
+          "story": "method-chosen, oracle-best; strong multistep uplift; beats outside option; depth=1.0, verify_count=1.0, recent_delta=0.0106.",
+          "signals": {
+            "branch_id": "b3",
+            "method_score_k3": 0.8330110241419071,
+            "method_score_k1": 0.7220675478243181,
+            "oracle_one_step_value": 0.7375459217084659,
+            "multistep_target_value": 0.995686994306429,
+            "multistep_delta_vs_onestep": 0.25814107259796315,
+            "allocation_value_std": 0.09093913368289268,
+            "branch_vs_outside_gap": 0.1858335440185609,
+            "outside_option_value": 0.551712377689905,
+            "best_followup_allocation": [
+              1,
+              2
+            ],
+            "multistep_target_self_followup_ratio": 1.0,
+            "features_branch_v1": {
+              "remaining_budget": 4.0,
+              "score": 0.6156792874823204,
+              "depth": 1.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.010633043750891358,
+              "verify_count": 1.0,
+              "branch_age": 0.0,
+              "parent_relative_score": 0.08237899263692983
+            },
+            "estimated_value_if_allocate_next": 0.7375459217084659
+          }
+        },
+        {
+          "branch_id": "b2",
+          "role": {
+            "method_chosen": false,
+            "oracle_best": false
+          },
+          "story": "competing; no multistep uplift; trails outside option; depth=0.0, verify_count=0.0, recent_delta=0.0000.",
+          "signals": {
+            "branch_id": "b2",
+            "method_score_k3": 0.6813828405322263,
+            "method_score_k1": 0.6414384775915571,
+            "oracle_one_step_value": 0.551712377689905,
+            "multistep_target_value": 0.551712377689905,
+            "multistep_delta_vs_onestep": 0.0,
+            "allocation_value_std": 0.05171424753585811,
+            "branch_vs_outside_gap": -0.1858335440185609,
+            "outside_option_value": 0.7375459217084659,
+            "best_followup_allocation": [
+              0,
+              3
+            ],
+            "multistep_target_self_followup_ratio": 0.0,
+            "features_branch_v1": {
+              "remaining_budget": 4.0,
+              "score": 0.45092130220846066,
+              "depth": 0.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.0,
+              "verify_count": 0.0,
+              "branch_age": 0.0,
+              "parent_relative_score": -0.08237899263692988
+            },
+            "estimated_value_if_allocate_next": 0.551712377689905
+          }
+        }
+      ],
+      "diagnosis": {
+        "why_model_likely_chose_it": "Chosen branch had higher learned k3 score and appeared attractive under multistep utility uplift/self-followup proxy.",
+        "why_oracle_different": "No oracle disagreement in this backfill control; included only to show the same multistep-uplift tendency under a correct decision.",
+        "mistake_type": "correct_or_control",
+        "representative_of_dominant_group": false
+      }
+    },
+    {
+      "case_id": "seed29::exopenai_gsm8k_9_ep18_d3",
+      "state_id": "exopenai_gsm8k_9_ep18_d3",
+      "dataset_name": "openai/gsm8k",
+      "example_id": "openai_gsm8k_9",
+      "question_preview": "Brittany and her mom go to the museum. The cost of admission is $12 for adults and $10 for children. Brittany's mom gives the cashier money for 1 child ticket and 1 adult ticket. I",
+      "method_choice_k3": "b0",
+      "oracle_best_branch": "b0",
+      "oracle_gap_if_choose_k3": 0.0,
+      "k3_pred_margin_top2": 0.049496223405817386,
+      "oracle_margin_top2": 0.015977574697167096,
+      "mistake_type": "correct_or_control",
+      "mistake_rationale": "Method branch matches oracle-best branch; kept only for controlled backfill when dominant-group strict failures are too few.",
+      "selection_bucket": "boundary_control",
+      "backfill_reason": "Backfill control: strict dominant-group failures < 4; selected highest-uplift states to illustrate same delayed-payoff scoring tendency.",
+      "branches": [
+        {
+          "branch_id": "b0",
+          "role": {
+            "method_chosen": true,
+            "oracle_best": true
+          },
+          "story": "method-chosen, oracle-best; strong multistep uplift; beats outside option; depth=0.0, verify_count=0.0, recent_delta=0.0000.",
+          "signals": {
+            "branch_id": "b0",
+            "method_score_k3": 1.0999022844384085,
+            "method_score_k1": 0.9513483752783308,
+            "oracle_one_step_value": 1.0966660283752698,
+            "multistep_target_value": 1.2885825833409421,
+            "multistep_delta_vs_onestep": 0.19191655496567228,
+            "allocation_value_std": 0.16243149268938417,
+            "branch_vs_outside_gap": 0.015977574697167096,
+            "outside_option_value": 1.0806884536781027,
+            "best_followup_allocation": [
+              1,
+              2,
+              0,
+              1
+            ],
+            "multistep_target_self_followup_ratio": 0.5,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.5432302959339246,
+              "depth": 0.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.0,
+              "verify_count": 0.0,
+              "branch_age": 0.0,
+              "parent_relative_score": -0.014583302086475625
+            },
+            "estimated_value_if_allocate_next": 1.0966660283752698
+          }
+        },
+        {
+          "branch_id": "b3",
+          "role": {
+            "method_chosen": false,
+            "oracle_best": false
+          },
+          "story": "competing; strong multistep uplift; trails outside option; depth=0.0, verify_count=0.0, recent_delta=0.0000.",
+          "signals": {
+            "branch_id": "b3",
+            "method_score_k3": 1.0504060610325912,
+            "method_score_k1": 0.9438638576896365,
+            "oracle_one_step_value": 1.0806884536781027,
+            "multistep_target_value": 1.2698089330717708,
+            "multistep_delta_vs_onestep": 0.18912047939366805,
+            "allocation_value_std": 0.1316720589664205,
+            "branch_vs_outside_gap": -0.015977574697167096,
+            "outside_option_value": 1.0966660283752698,
+            "best_followup_allocation": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "multistep_target_self_followup_ratio": 0.5,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.7407514599649223,
+              "depth": 0.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.0,
+              "verify_count": 0.0,
+              "branch_age": 0.0,
+              "parent_relative_score": 0.1829378619445221
+            },
+            "estimated_value_if_allocate_next": 1.0806884536781027
+          }
+        },
+        {
+          "branch_id": "b1",
+          "role": {
+            "method_chosen": false,
+            "oracle_best": false
+          },
+          "story": "competing; strong multistep uplift; trails outside option; depth=0.0, verify_count=0.0, recent_delta=0.0000.",
+          "signals": {
+            "branch_id": "b1",
+            "method_score_k3": 0.9914125205500088,
+            "method_score_k1": 0.9139689595605149,
+            "oracle_one_step_value": 0.9310096444088507,
+            "multistep_target_value": 1.0939363321803997,
+            "multistep_delta_vs_onestep": 0.16292668777154895,
+            "allocation_value_std": 0.15631425363658824,
+            "branch_vs_outside_gap": -0.16565638396641913,
+            "outside_option_value": 1.0966660283752698,
+            "best_followup_allocation": [
+              2,
+              1,
+              0,
+              1
+            ],
+            "multistep_target_self_followup_ratio": 0.5,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.6015438211824731,
+              "depth": 0.0,
+              "stalled_steps": 0.0,
+              "recent_delta": 0.0,
+              "verify_count": 0.0,
+              "branch_age": 0.0,
+              "parent_relative_score": 0.04373022316207287
+            },
+            "estimated_value_if_allocate_next": 0.9310096444088507
+          }
+        },
+        {
+          "branch_id": "b2",
+          "role": {
+            "method_chosen": false,
+            "oracle_best": false
+          },
+          "story": "competing; no multistep uplift; trails outside option; depth=3.0, verify_count=2.0, recent_delta=-0.0009.",
+          "signals": {
+            "branch_id": "b2",
+            "method_score_k3": 0.7718470622552202,
+            "method_score_k1": 0.7224783675285649,
+            "oracle_one_step_value": 0.9311695085217822,
+            "multistep_target_value": 0.9311695085217822,
+            "multistep_delta_vs_onestep": 0.0,
+            "allocation_value_std": 0.15801726084805628,
+            "branch_vs_outside_gap": -0.16549651985348768,
+            "outside_option_value": 1.0966660283752698,
+            "best_followup_allocation": [
+              1,
+              2,
+              0,
+              1
+            ],
+            "multistep_target_self_followup_ratio": 0.0,
+            "features_branch_v1": {
+              "remaining_budget": 5.0,
+              "score": 0.3457288150002807,
+              "depth": 3.0,
+              "stalled_steps": 3.0,
+              "recent_delta": -0.0008830190989117526,
+              "verify_count": 2.0,
+              "branch_age": 0.0,
+              "parent_relative_score": -0.21208478302011952
+            },
+            "estimated_value_if_allocate_next": 0.9311695085217822
+          }
+        }
+      ],
+      "diagnosis": {
+        "why_model_likely_chose_it": "Chosen branch had higher learned k3 score and appeared attractive under multistep utility uplift/self-followup proxy.",
+        "why_oracle_different": "No oracle disagreement in this backfill control; included only to show the same multistep-uplift tendency under a correct decision.",
+        "mistake_type": "correct_or_control",
+        "representative_of_dominant_group": false
+      }
+    }
+  ]
+}
