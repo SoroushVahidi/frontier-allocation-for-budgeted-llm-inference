@@ -1,0 +1,57 @@
+{
+  "audit_date": "2026-04-18",
+  "canonical_stack": {
+    "core_objective": {
+      "name": "fixed_budget_final_utility",
+      "definition": "Optimize final task utility / final decision quality under a fixed compute budget.",
+      "status": "canonical"
+    },
+    "core_expansion_score": {
+      "name": "continuation_value_multistep_k3",
+      "definition": "Default next-compute allocation score is continuation-centered branch utility (multistep-k3 family anchored to continuation value).",
+      "status": "canonical"
+    },
+    "core_incumbent_commit_score": {
+      "name": "completion_answer_quality_signal",
+      "definition": "Bounded local commit-quality proxy from branch completion and answer evidence.",
+      "status": "canonical_local"
+    },
+    "core_metalevel_decision_rule": {
+      "name": "expand_vs_commit_with_local_correction",
+      "definition": "Use continuation-ranked expansion by default; in near-tie/disagreement slices apply bounded completion-aware correction and allow commit/defer when expansion advantage is insufficient under uncertainty gates.",
+      "status": "canonical"
+    },
+    "local_modifiers": [
+      "near_tie_flags",
+      "rank_instability_signals",
+      "outside_option_gates",
+      "completion_bonus_tie_resolution",
+      "penalized_defer_overlays"
+    ]
+  },
+  "classification": {
+    "canonical": [
+      "fixed_budget_final_utility",
+      "estimated_value_if_allocate_next",
+      "multistep_branch_utility_target_k3",
+      "branch_completion_score",
+      "branch_answer_evidence_score",
+      "expand_vs_commit_with_local_correction"
+    ],
+    "exploratory": [
+      "discounted_multistep_branch_utility_target_gammaXX",
+      "compute_response_curve_target_h123",
+      "rank_instability_target_v1",
+      "penalized_marginal_defer_target",
+      "opportunity_intensity_weighted",
+      "allocation_regret_target",
+      "completion_bonus_policy",
+      "completion_outside_gate_policy",
+      "completion_tie_resolution_policy",
+      "instability_decision_coupling_policy_family"
+    ],
+    "deprecated": [
+      "pairwise_default_plus_fallback_summary_as_repo_wide_canonical"
+    ]
+  }
+}
