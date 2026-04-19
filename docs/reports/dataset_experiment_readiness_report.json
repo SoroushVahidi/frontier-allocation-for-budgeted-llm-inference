@@ -1,0 +1,199 @@
+{
+  "generated_utc": "2026-04-19T17:05:07.293877+00:00",
+  "script": "scripts/generate_dataset_experiment_readiness_report.py",
+  "scoped_datasets": [
+    "aime_2025",
+    "hmmt",
+    "brumo",
+    "mmlu-pro",
+    "livecodebench",
+    "livecodebench_execution",
+    "hle"
+  ],
+  "rows": [
+    {
+      "dataset_name": "MathArena/aime_2025",
+      "dataset_status": "experiment_ready",
+      "task_type": "exact_answer_math",
+      "loader_working": true,
+      "schema_normalized": true,
+      "current_runner_compatible": true,
+      "automatic_grading_supported": true,
+      "exact_answer_math_ready": true,
+      "mcq_ready": false,
+      "code_execution_ready": false,
+      "config_added": true,
+      "smoke_test_passed": true,
+      "reason_if_not_fully_ready": "",
+      "next_step_needed": "None required for pilot math path; include in exact_answer_math_expansion bundle.",
+      "sample_error": "",
+      "normalization_preview": {
+        "task_format": "aime_integer",
+        "normalized_answer": "49",
+        "multiple_choice_flag": false,
+        "extra_keys": []
+      }
+    },
+    {
+      "dataset_name": "MathArena/hmmt_feb_2025",
+      "dataset_status": "experiment_ready",
+      "task_type": "exact_answer_math",
+      "loader_working": true,
+      "schema_normalized": true,
+      "current_runner_compatible": true,
+      "automatic_grading_supported": true,
+      "exact_answer_math_ready": true,
+      "mcq_ready": false,
+      "code_execution_ready": false,
+      "config_added": true,
+      "smoke_test_passed": true,
+      "reason_if_not_fully_ready": "",
+      "next_step_needed": "None required for pilot math path; include in exact_answer_math_expansion bundle.",
+      "sample_error": "",
+      "normalization_preview": {
+        "task_format": "aime_integer",
+        "normalized_answer": "26",
+        "multiple_choice_flag": false,
+        "extra_keys": []
+      }
+    },
+    {
+      "dataset_name": "MathArena/brumo_2025",
+      "dataset_status": "experiment_ready",
+      "task_type": "exact_answer_math",
+      "loader_working": true,
+      "schema_normalized": true,
+      "current_runner_compatible": true,
+      "automatic_grading_supported": true,
+      "exact_answer_math_ready": true,
+      "mcq_ready": false,
+      "code_execution_ready": false,
+      "config_added": true,
+      "smoke_test_passed": true,
+      "reason_if_not_fully_ready": "",
+      "next_step_needed": "None required for pilot math path; include in exact_answer_math_expansion bundle.",
+      "sample_error": "",
+      "normalization_preview": {
+        "task_format": "aime_integer",
+        "normalized_answer": "3",
+        "multiple_choice_flag": false,
+        "extra_keys": []
+      }
+    },
+    {
+      "dataset_name": "TIGER-Lab/MMLU-Pro",
+      "dataset_status": "partially_ready",
+      "task_type": "multiple_choice",
+      "loader_working": true,
+      "schema_normalized": true,
+      "current_runner_compatible": false,
+      "automatic_grading_supported": true,
+      "exact_answer_math_ready": false,
+      "mcq_ready": false,
+      "code_execution_ready": false,
+      "config_added": true,
+      "smoke_test_passed": true,
+      "reason_if_not_fully_ready": "Dataset loads and normalizes, but current runners are optimized for direct-answer matching rather than option-constrained MCQ inference with calibrated distractor handling.",
+      "next_step_needed": "Add MCQ-native runner path that consumes options and answer_index during generation and scoring.",
+      "sample_error": "",
+      "normalization_preview": {
+        "task_format": "multiple_choice",
+        "normalized_answer": "j",
+        "multiple_choice_flag": false,
+        "extra_keys": [
+          "answer_index",
+          "category",
+          "options"
+        ]
+      }
+    },
+    {
+      "dataset_name": "livecodebench/code_generation",
+      "dataset_status": "partially_ready",
+      "task_type": "code_generation",
+      "loader_working": true,
+      "schema_normalized": true,
+      "current_runner_compatible": false,
+      "automatic_grading_supported": false,
+      "exact_answer_math_ready": false,
+      "mcq_ready": false,
+      "code_execution_ready": false,
+      "config_added": true,
+      "smoke_test_passed": true,
+      "reason_if_not_fully_ready": "Dataset loads and metadata is preserved, but repository lacks a production-safe code execution grading harness for generated solutions.",
+      "next_step_needed": "Wire a sandboxed code-evaluation runner and deterministic testcase grading interface.",
+      "sample_error": "",
+      "normalization_preview": {
+        "task_format": "code_generation",
+        "normalized_answer": "class solution: def hastrailingzeros(self, nums: list[int]) -> bool:",
+        "multiple_choice_flag": false,
+        "extra_keys": [
+          "code",
+          "difficulty",
+          "input",
+          "output",
+          "private_test_cases",
+          "public_test_cases"
+        ]
+      }
+    },
+    {
+      "dataset_name": "livecodebench/execution-v2",
+      "dataset_status": "partially_ready",
+      "task_type": "code_generation",
+      "loader_working": true,
+      "schema_normalized": true,
+      "current_runner_compatible": false,
+      "automatic_grading_supported": false,
+      "exact_answer_math_ready": false,
+      "mcq_ready": false,
+      "code_execution_ready": false,
+      "config_added": true,
+      "smoke_test_passed": true,
+      "reason_if_not_fully_ready": "Dataset loads and metadata is preserved, but repository lacks a production-safe code execution grading harness for generated solutions.",
+      "next_step_needed": "Wire a sandboxed code-evaluation runner and deterministic testcase grading interface.",
+      "sample_error": "",
+      "normalization_preview": {
+        "task_format": "code_generation",
+        "normalized_answer": "2",
+        "multiple_choice_flag": false,
+        "extra_keys": [
+          "code",
+          "difficulty",
+          "input",
+          "output",
+          "private_test_cases",
+          "public_test_cases"
+        ]
+      }
+    },
+    {
+      "dataset_name": "lmms-lab/HLE-Verified",
+      "dataset_status": "partially_ready",
+      "task_type": "mixed_text_reasoning",
+      "loader_working": true,
+      "schema_normalized": true,
+      "current_runner_compatible": false,
+      "automatic_grading_supported": false,
+      "exact_answer_math_ready": false,
+      "mcq_ready": false,
+      "code_execution_ready": false,
+      "config_added": false,
+      "smoke_test_passed": true,
+      "reason_if_not_fully_ready": "Text rows are usable, but image-aware evaluation path is not wired in current pilot runners.",
+      "next_step_needed": "Add multimodal-aware loader/runner or restrict to validated text-only subset with explicit policy.",
+      "sample_error": "",
+      "normalization_preview": {
+        "task_format": "mixed_reasoning",
+        "normalized_answer": "100",
+        "multiple_choice_flag": false,
+        "extra_keys": [
+          "answer_type",
+          "category",
+          "has_image",
+          "subset"
+        ]
+      }
+    }
+  ]
+}
