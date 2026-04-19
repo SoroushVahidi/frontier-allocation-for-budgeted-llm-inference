@@ -226,8 +226,11 @@ class AdaptiveController(BaseController):
         action_trace: list[dict[str, Any]] = []
         branch_expansions: dict[str, int] = {}
         branches: list[BranchState] = [self.generator.init_branch("adaptive_0")]
+        branch_state_by_id: dict[str, dict[str, Any]] = {}
 
         while actions < self.max_actions and branches:
+            for b in branches:
+                branch_state_by_id[b.branch_id] = self._branch_state_snapshot(b)
             next_branches: list[BranchState] = []
             for branch in branches:
                 if actions >= self.max_actions:
@@ -307,6 +310,7 @@ class AdaptiveController(BaseController):
                         child.score = 0.5 * child.score + 0.5 * branch.score
                         next_branches.append(child)
                         branch_expansions[child.branch_id] = 0
+                        branch_state_by_id[child.branch_id] = self._branch_state_snapshot(child)
                 elif score_before >= self.high_threshold:
                     result = self.generator.expand(branch, question, gold_answer)
                     actions += 1
@@ -333,6 +337,7 @@ class AdaptiveController(BaseController):
                         child.score = 0.5 * child.score + 0.5 * branch.score
                         next_branches.append(child)
                         branch_expansions[child.branch_id] = 0
+                        branch_state_by_id[child.branch_id] = self._branch_state_snapshot(child)
                 elif (
                     self.allow_verify
                     and score_before >= self.low_threshold
@@ -412,6 +417,10 @@ class AdaptiveController(BaseController):
         best_branch = self.scorer.pick_best(branches)
         prediction = best_branch.predicted_answer if best_branch else None
         exhausted = actions >= self.max_actions and not any(b.is_done for b in branches)
+        final_branch_states = [self._branch_state_snapshot(b) for b in branches]
+        for b in branches:
+            branch_state_by_id[b.branch_id] = self._branch_state_snapshot(b)
+        all_branch_states = [branch_state_by_id[k] for k in sorted(branch_state_by_id.keys())]
 
         return MethodResult(
             method=self.method_name,
@@ -436,9 +445,36 @@ class AdaptiveController(BaseController):
                 "prm_early_reject_threshold": self.prm_early_reject_threshold,
                 "prm_early_reject_min_expansions": self.prm_early_reject_min_expansions,
                 "action_trace": action_trace,
+                "final_branch_states": final_branch_states,
+                "all_branch_states": all_branch_states,
                 "final_selected_branch": best_branch.branch_id if best_branch else None,
             },
         )
+
+    def _branch_state_snapshot(self, branch: BranchState) -> dict[str, Any]:
+        reasoning = "\n".join(branch.steps).strip() if branch.steps else None
+        final_answer = str(branch.predicted_answer).strip() if branch.predicted_answer is not None else None
+        if reasoning and final_answer:
+            branch_text = f"{reasoning}\nFinal answer: {final_answer}"
+        elif reasoning:
+            branch_text = reasoning
+        elif final_answer:
+            branch_text = f"Final answer: {final_answer}"
+        else:
+            branch_text = None
+        return {
+            "branch_id": str(branch.branch_id),
+            "branch_text_raw": branch_text,
+            "branch_reasoning_text_raw": reasoning,
+            "branch_final_answer_text_raw": final_answer,
+            "is_done": bool(branch.is_done),
+            "is_pruned": bool(branch.is_pruned),
+            "score": float(branch.score),
+            "depth": int(branch.depth),
+            "verify_count": int(branch.verify_count),
+            "action_history": list(branch.action_history),
+            "score_history": [float(x) for x in branch.score_history],
+        }
 
     def _trace_row(
         self,

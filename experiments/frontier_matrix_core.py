@@ -574,6 +574,27 @@ def build_frontier_strategies(
             early_preservation_challenger_hold_steps=2,
             method_name="broad_diversity_aggregation_strong_v1_early_answer_group_preservation_v1",
         )
+        specs["broad_diversity_aggregation_strong_v1_early_answer_group_preservation_refined_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.40,
+            duplicate_penalty=0.15,
+            unknown_answer_bonus=0.08,
+            answer_support_weight=0.55,
+            value_weight=0.45,
+            commit_support_threshold=0.72,
+            commit_delay_min_actions=4,
+            enable_early_answer_group_preservation=True,
+            early_preservation_action_window=4,
+            early_preservation_min_plausible_continuation=0.48,
+            early_preservation_target_alignment_min=0.40,
+            early_preservation_required_group_gap=0.24,
+            early_preservation_challenger_hold_steps=1,
+            method_name="broad_diversity_aggregation_strong_v1_early_answer_group_preservation_refined_v1",
+        )
     if include_marginal_coverage_diversity_methods:
         specs["marginal_coverage_diversity_v1"] = GlobalDiversityAggregationController(
             generator_factory(),

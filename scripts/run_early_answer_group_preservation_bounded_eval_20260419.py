@@ -53,6 +53,45 @@ def _failure_group(row: dict[str, Any]) -> str:
     return "other"
 
 
+def _normalize_answer_text(x: Any) -> str:
+    if x is None:
+        return "__unknown__"
+    return " ".join(str(x).strip().lower().split()) or "__unknown__"
+
+
+def _first_preservation_action(row: dict[str, Any]) -> dict[str, Any] | None:
+    m = row.get("metadata") or {}
+    for action in m.get("action_trace") or []:
+        if bool(action.get("early_preservation_activated", False)):
+            return action
+    return None
+
+
+def _harmed_subtype(base_row: dict[str, Any], cand_row: dict[str, Any]) -> str:
+    cm = cand_row.get("metadata") or {}
+    bm = base_row.get("metadata") or {}
+    forced_steps = int(cm.get("early_answer_group_preservation_forced_steps", 0))
+    first_activation = _first_preservation_action(cand_row)
+    if forced_steps <= 0 or first_activation is None:
+        return "non_preservation_or_unattributed_harm"
+    target_category = str(first_activation.get("target_alignment_category", "unknown"))
+    if target_category == "plausible_but_incomplete":
+        return "target_alignment_signal_too_permissive"
+    if (
+        bool(bm.get("gold_group_present_after_first_split", False))
+        and bool(bm.get("gold_group_present_after_second_split", False))
+        and bool(bm.get("gold_group_present_final", False))
+    ):
+        return "preservation_triggered_when_gold_already_healthy"
+    if float(first_activation.get("top_support_before_action", 0.0)) >= 0.72:
+        return "preservation_displaced_stronger_incumbent_expansion"
+    selected_group = _normalize_answer_text(first_activation.get("group_key"))
+    gold_group = _normalize_answer_text(cand_row.get("gold_answer"))
+    if selected_group != gold_group:
+        return "preserved_wrong_challenger"
+    return "other_preservation_harm"
+
+
 def _load_config(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -176,10 +215,10 @@ def main() -> None:
     compact_casebook: list[dict[str, Any]] = []
 
     for pair in aligned.values():
-        if "baseline_broad" not in pair or "early_preservation" not in pair:
+        if "baseline_broad" not in pair or "early_preservation_v1" not in pair:
             continue
         b = pair["baseline_broad"]
-        e = pair["early_preservation"]
+        e = pair["early_preservation_v1"]
         if (not b["is_correct"]) and e["is_correct"]:
             improved_vs_base.append({"dataset": e["dataset"], "seed": e["seed"], "budget": e["budget"], "example_id": e["example_id"]})
         elif b["is_correct"] and (not e["is_correct"]):
@@ -214,6 +253,53 @@ def main() -> None:
         rows = [r for r in all_rows if r["method_alias"] == alias]
         return sum(_safe_float((r.get("metadata") or {}).get(key, 0.0)) for r in rows) / max(1, len(rows))
 
+    activation_summary: dict[str, dict[str, float]] = {}
+    for alias in methods:
+        rows = [r for r in all_rows if r["method_alias"] == alias]
+        n = max(1, len(rows))
+        forced_positive = sum(1 for r in rows if int((r.get("metadata") or {}).get("early_answer_group_preservation_forced_steps", 0)) > 0)
+        trace_positive = sum(1 for r in rows if _first_preservation_action(r) is not None)
+        mean_forced = sum(int((r.get("metadata") or {}).get("early_answer_group_preservation_forced_steps", 0)) for r in rows) / n
+        activation_summary[alias] = {
+            "activation_rate": trace_positive / n,
+            "forced_step_rate": forced_positive / n,
+            "mean_forced_steps": mean_forced,
+        }
+
+    comparison_aliases = [a for a in ["early_preservation_v1", "early_preservation_refined_v1"] if a in methods]
+    improved_harmed_vs_base: dict[str, dict[str, Any]] = {}
+    harmed_subtype_counts: dict[str, dict[str, int]] = {}
+    for alias in comparison_aliases:
+        improved = harmed = unchanged = 0
+        harmed_subtypes = Counter(
+            {
+                "preserved_wrong_challenger": 0,
+                "preservation_triggered_when_gold_already_healthy": 0,
+                "target_alignment_signal_too_permissive": 0,
+                "preservation_displaced_stronger_incumbent_expansion": 0,
+                "non_preservation_or_unattributed_harm": 0,
+                "other_preservation_harm": 0,
+            }
+        )
+        for pair in aligned.values():
+            if "baseline_broad" not in pair or alias not in pair:
+                continue
+            b = pair["baseline_broad"]
+            c = pair[alias]
+            if (not b["is_correct"]) and c["is_correct"]:
+                improved += 1
+            elif b["is_correct"] and (not c["is_correct"]):
+                harmed += 1
+                harmed_subtypes[_harmed_subtype(b, c)] += 1
+            else:
+                unchanged += 1
+        improved_harmed_vs_base[alias] = {
+            "improved_count": int(improved),
+            "harmed_count": int(harmed),
+            "unchanged_count": int(unchanged),
+        }
+        harmed_subtype_counts[alias] = {k: int(v) for k, v in harmed_subtypes.items()}
+
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "config_path": args.config,
@@ -241,26 +327,26 @@ def main() -> None:
             }
             for alias in methods
         },
-        "improved_harmed_vs_baseline_broad": {
-            "improved_count": len(improved_vs_base),
-            "harmed_count": len(harmed_vs_base),
-            "unchanged_count": len(unchanged_vs_base),
-        },
+        "improved_harmed_vs_baseline_broad": improved_harmed_vs_base,
         "primary_question_answer": {
-            "survival_after_first_split_delta_vs_base": _agg("early_preservation", "gold_group_present_after_first_split")
-            - _agg("baseline_broad", "gold_group_present_after_first_split"),
-            "survival_after_second_split_delta_vs_base": _agg("early_preservation", "gold_group_present_after_second_split")
-            - _agg("baseline_broad", "gold_group_present_after_second_split"),
-            "accuracy_delta_vs_base": overall.get("early_preservation", {}).get("mean_accuracy", 0.0)
-            - overall.get("baseline_broad", {}).get("mean_accuracy", 0.0),
+            alias: {
+                "survival_after_first_split_delta_vs_base": _agg(alias, "gold_group_present_after_first_split")
+                - _agg("baseline_broad", "gold_group_present_after_first_split"),
+                "survival_after_second_split_delta_vs_base": _agg(alias, "gold_group_present_after_second_split")
+                - _agg("baseline_broad", "gold_group_present_after_second_split"),
+                "accuracy_delta_vs_base": overall.get(alias, {}).get("mean_accuracy", 0.0) - overall.get("baseline_broad", {}).get("mean_accuracy", 0.0),
+            }
+            for alias in comparison_aliases
         },
+        "preservation_activation_summary": activation_summary,
+        "harmed_case_subtype_breakdown_vs_baseline_broad": harmed_subtype_counts,
     }
 
     (out_dir / "per_example_rows.jsonl").write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in all_rows) + "\n", encoding="utf-8")
     (out_dir / "method_metrics.jsonl").write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in metric_rows) + "\n", encoding="utf-8")
     (out_dir / "comparison_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
-    (out_dir / "improved_cases_vs_baseline.json").write_text(json.dumps(improved_vs_base, indent=2, ensure_ascii=False), encoding="utf-8")
-    (out_dir / "harmed_cases_vs_baseline.json").write_text(json.dumps(harmed_vs_base, indent=2, ensure_ascii=False), encoding="utf-8")
+    (out_dir / "improved_cases_vs_baseline_v1.json").write_text(json.dumps(improved_vs_base, indent=2, ensure_ascii=False), encoding="utf-8")
+    (out_dir / "harmed_cases_vs_baseline_v1.json").write_text(json.dumps(harmed_vs_base, indent=2, ensure_ascii=False), encoding="utf-8")
     (out_dir / "compact_casebook_early_divergence.json").write_text(json.dumps(compact_casebook, indent=2, ensure_ascii=False), encoding="utf-8")
 
     status_lines = [
@@ -273,11 +359,12 @@ def main() -> None:
         "",
         "## Bounded comparison headline",
         f"- Base broad mean accuracy: {summary['overall'].get('baseline_broad', {}).get('mean_accuracy', 0.0):.4f}",
-        f"- Early-preservation mean accuracy: {summary['overall'].get('early_preservation', {}).get('mean_accuracy', 0.0):.4f}",
-        f"- Delta (early-preservation - base): {summary['primary_question_answer']['accuracy_delta_vs_base']:+.4f}",
-        f"- Survival after first split delta vs base: {summary['primary_question_answer']['survival_after_first_split_delta_vs_base']:+.4f}",
-        f"- Survival after second split delta vs base: {summary['primary_question_answer']['survival_after_second_split_delta_vs_base']:+.4f}",
-        f"- Improved / harmed / unchanged vs base: {len(improved_vs_base)} / {len(harmed_vs_base)} / {len(unchanged_vs_base)}",
+        f"- Early-preservation v1 mean accuracy: {summary['overall'].get('early_preservation_v1', {}).get('mean_accuracy', 0.0):.4f}",
+        f"- Early-preservation refined v1 mean accuracy: {summary['overall'].get('early_preservation_refined_v1', {}).get('mean_accuracy', 0.0):.4f}",
+        f"- Delta (v1 - base): {summary['primary_question_answer'].get('early_preservation_v1', {}).get('accuracy_delta_vs_base', 0.0):+.4f}",
+        f"- Delta (refined v1 - base): {summary['primary_question_answer'].get('early_preservation_refined_v1', {}).get('accuracy_delta_vs_base', 0.0):+.4f}",
+        f"- Survival after first split delta vs base (refined): {summary['primary_question_answer'].get('early_preservation_refined_v1', {}).get('survival_after_first_split_delta_vs_base', 0.0):+.4f}",
+        f"- Improved / harmed / unchanged vs base (v1): {len(improved_vs_base)} / {len(harmed_vs_base)} / {len(unchanged_vs_base)}",
         "",
         "## Conservative conclusion",
         "- Treat as active promoted line only if both survival and accuracy improve with harmed cases controlled.",

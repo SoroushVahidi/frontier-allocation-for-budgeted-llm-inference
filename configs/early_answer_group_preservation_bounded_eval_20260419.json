@@ -6,8 +6,8 @@
   "adaptive_grid": [1],
   "methods": {
     "baseline_broad": "broad_diversity_aggregation_strong_v1",
-    "reference_best": "self_consistency_3",
-    "early_preservation": "broad_diversity_aggregation_strong_v1_early_answer_group_preservation_v1"
+    "early_preservation_v1": "broad_diversity_aggregation_strong_v1_early_answer_group_preservation_v1",
+    "early_preservation_refined_v1": "broad_diversity_aggregation_strong_v1_early_answer_group_preservation_refined_v1"
   },
-  "output_dir": "outputs/early_answer_group_preservation_bounded_eval_20260419"
+  "output_dir": "outputs/early_answer_group_preservation_selectivity_refinement_bounded_eval_20260419"
 }
