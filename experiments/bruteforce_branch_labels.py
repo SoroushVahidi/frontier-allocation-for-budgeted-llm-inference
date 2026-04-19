@@ -51,6 +51,7 @@ class BruteForceLabelConfig:
     ambiguity_near_tie_threshold: float = 0.02
     ambiguity_medium_threshold: float = 0.08
     ambiguity_high_threshold: float = 0.16
+    target_mode: str = "legacy_plus_value_awareness_v1"
 
 
 @dataclass
@@ -430,6 +431,9 @@ def evaluate_state_candidates(
     state_value_target = {
         "state_id": state.state_id,
         "example_id": state.example_id,
+        "dataset_name": str(cfg.dataset_name),
+        "seed": int(cfg.seed),
+        "target_mode": str(cfg.target_mode),
         "remaining_budget": int(state.remaining_budget),
         "active_branches": [str(b.branch_id) for b in branches],
         "Q_commit": float(q_commit),
@@ -443,6 +447,8 @@ def evaluate_state_candidates(
         "ambiguity_bucket": ambiguity_bucket,
         "defer_candidate": bool(ambiguity_bucket in {"near_tie", "medium_margin"}),
         "target_provenance": "exact" if mode == "exact" else ("degenerate" if mode == "degenerate" else "approx"),
+        "target_is_exact": bool(mode == "exact"),
+        "target_is_approximate": bool(mode == "approx"),
         "fallback_assumptions": ["followup_allocation_search", "first_expand_then_rollout"],
     }
 

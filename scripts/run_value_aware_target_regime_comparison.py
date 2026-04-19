@@ -144,6 +144,8 @@ def _method_cfg(base: LearningConfig, method: str, args: argparse.Namespace) -> 
             defer_calibration="none",
             defer_threshold_selection=str(args.defer_threshold_selection),
             defer_eval_threshold_override=float(args.defer_eval_threshold_override),
+            train_state_commit_value_model=True,
+            state_commit_alpha=0.75,
         )
     raise ValueError(method)
 
@@ -216,6 +218,8 @@ def main() -> None:
                 "defer_three_way_accuracy_test": _m(m, "pairwise_defer_classifier", "three_way_accuracy_test"),
                 "defer_coverage_test": _m(m, "pairwise_defer_classifier", "coverage_test"),
                 "defer_accepted_only_accuracy_test": _m(m, "pairwise_defer_classifier", "accepted_only_accuracy_test"),
+                "expand_vs_commit_accuracy_test": _m(m, "pointwise", "expand_vs_commit_accuracy_test"),
+                "expand_vs_commit_mean_regret_test": _m(m, "pointwise", "expand_vs_commit_mean_regret_test"),
             }
             for m in methods
         },

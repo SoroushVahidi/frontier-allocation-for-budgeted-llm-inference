@@ -1,0 +1,55 @@
+{
+  "methods": [
+    "baseline_default",
+    "value_aware",
+    "value_aware_ambiguity",
+    "value_aware_ambiguity_decomposed"
+  ],
+  "matched_setup": {
+    "seed": 17,
+    "max_frontier_states": 48,
+    "same_labels_across_methods": true
+  },
+  "summary": {
+    "baseline_default": {
+      "pairwise_accuracy_test": 0.6111111111111112,
+      "near_tie_pairwise_accuracy_test": 0.6,
+      "ranking_top1_accuracy_test": 0.2,
+      "defer_three_way_accuracy_test": null,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null,
+      "expand_vs_commit_accuracy_test": 0.0,
+      "expand_vs_commit_mean_regret_test": 0.14102826935725368
+    },
+    "value_aware": {
+      "pairwise_accuracy_test": 0.6111111111111112,
+      "near_tie_pairwise_accuracy_test": 0.6,
+      "ranking_top1_accuracy_test": 0.2,
+      "defer_three_way_accuracy_test": null,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null,
+      "expand_vs_commit_accuracy_test": 0.0,
+      "expand_vs_commit_mean_regret_test": 0.14102826935725368
+    },
+    "value_aware_ambiguity": {
+      "pairwise_accuracy_test": 0.6111111111111112,
+      "near_tie_pairwise_accuracy_test": 0.2,
+      "ranking_top1_accuracy_test": 0.4,
+      "defer_three_way_accuracy_test": null,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null,
+      "expand_vs_commit_accuracy_test": 0.6,
+      "expand_vs_commit_mean_regret_test": 0.0041324882687764795
+    },
+    "value_aware_ambiguity_decomposed": {
+      "pairwise_accuracy_test": 0.6111111111111112,
+      "near_tie_pairwise_accuracy_test": 0.2,
+      "ranking_top1_accuracy_test": 0.4,
+      "defer_three_way_accuracy_test": 0.0,
+      "defer_coverage_test": 0.0,
+      "defer_accepted_only_accuracy_test": 0.0,
+      "expand_vs_commit_accuracy_test": 0.6,
+      "expand_vs_commit_mean_regret_test": 0.0041324882687764795
+    }
+  }
+}
