@@ -382,6 +382,27 @@ def build_frontier_strategies(
             commit_delay_min_actions=4,
             method_name="broad_diversity_aggregation_strong_v1",
         )
+        specs["answer_group_coverage_floor_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            max_branches=4,
+            min_branch_expansions=1,
+            diversity_weight=0.31,
+            duplicate_penalty=0.12,
+            unknown_answer_bonus=0.06,
+            answer_support_weight=0.48,
+            value_weight=0.52,
+            commit_support_threshold=0.70,
+            commit_delay_min_actions=4,
+            enable_answer_group_coverage_floor=True,
+            min_answer_groups_before_concentration=2,
+            coverage_floor_min_actions=2,
+            coverage_floor_max_actions=7,
+            coverage_floor_plausibility_threshold=0.46,
+            coverage_floor_max_forced_steps=2,
+            method_name="answer_group_coverage_floor_v1",
+        )
     if include_marginal_coverage_diversity_methods:
         specs["marginal_coverage_diversity_v1"] = GlobalDiversityAggregationController(
             generator_factory(),
