@@ -1,0 +1,111 @@
+{
+  "methods": [
+    "baseline_default",
+    "value_aware",
+    "value_aware_ambiguity",
+    "value_aware_ambiguity_decomposed",
+    "value_aware_ambiguity_decomposed_stabilized"
+  ],
+  "matched_setup": {
+    "seed": 23,
+    "max_frontier_states": 180,
+    "slice_kind": "exact_heavy",
+    "same_labels_across_methods": true
+  },
+  "slice_audit": {
+    "selected_state_count": 27,
+    "selected_pair_rows": 162,
+    "selected_candidate_rows": 108,
+    "selection_policy": {
+      "min_exact_like_ratio": 0.0,
+      "min_pairs_per_state": 4,
+      "target_state_cap": 110
+    },
+    "selected_state_ids": [
+      "exopenai_gsm8k_10_ep20_d3",
+      "exopenai_gsm8k_10_ep20_d4",
+      "exopenai_gsm8k_11_ep22_d3",
+      "exopenai_gsm8k_11_ep23_d3",
+      "exopenai_gsm8k_13_ep26_d3",
+      "exopenai_gsm8k_13_ep26_d4",
+      "exopenai_gsm8k_13_ep26_d5",
+      "exopenai_gsm8k_13_ep26_d6",
+      "exopenai_gsm8k_16_ep32_d3",
+      "exopenai_gsm8k_16_ep32_d5",
+      "exopenai_gsm8k_16_ep32_d6",
+      "exopenai_gsm8k_17_ep35_d3",
+      "exopenai_gsm8k_1_ep2_d3",
+      "exopenai_gsm8k_23_ep47_d3",
+      "exopenai_gsm8k_27_ep55_d3",
+      "exopenai_gsm8k_27_ep55_d4",
+      "exopenai_gsm8k_27_ep55_d5",
+      "exopenai_gsm8k_2_ep5_d3",
+      "exopenai_gsm8k_30_ep61_d3",
+      "exopenai_gsm8k_30_ep61_d4",
+      "exopenai_gsm8k_34_ep68_d3",
+      "exopenai_gsm8k_39_ep79_d3",
+      "exopenai_gsm8k_39_ep79_d4",
+      "exopenai_gsm8k_39_ep79_d5",
+      "exopenai_gsm8k_3_ep7_d3",
+      "exopenai_gsm8k_3_ep7_d4",
+      "exopenai_gsm8k_4_ep9_d3"
+    ]
+  },
+  "summary": {
+    "baseline_default": {
+      "pairwise_accuracy_test": 0.8333333333333334,
+      "near_tie_pairwise_accuracy_test": 0.8,
+      "far_margin_pairwise_accuracy_test": 1.0,
+      "ranking_top1_accuracy_test": 0.0,
+      "expand_vs_commit_accuracy_test": 0.0,
+      "expand_vs_commit_mean_regret_test": 0.02759377162492882,
+      "exact_only_pairwise_accuracy_test": 0.8333333333333334,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null
+    },
+    "value_aware": {
+      "pairwise_accuracy_test": 0.8333333333333334,
+      "near_tie_pairwise_accuracy_test": 0.8,
+      "far_margin_pairwise_accuracy_test": 1.0,
+      "ranking_top1_accuracy_test": 0.0,
+      "expand_vs_commit_accuracy_test": 0.0,
+      "expand_vs_commit_mean_regret_test": 0.02759377162492882,
+      "exact_only_pairwise_accuracy_test": 0.8333333333333334,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null
+    },
+    "value_aware_ambiguity": {
+      "pairwise_accuracy_test": 0.6666666666666666,
+      "near_tie_pairwise_accuracy_test": 0.6,
+      "far_margin_pairwise_accuracy_test": 1.0,
+      "ranking_top1_accuracy_test": 0.0,
+      "expand_vs_commit_accuracy_test": 0.0,
+      "expand_vs_commit_mean_regret_test": 0.02759377162492882,
+      "exact_only_pairwise_accuracy_test": 0.6666666666666666,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null
+    },
+    "value_aware_ambiguity_decomposed": {
+      "pairwise_accuracy_test": 0.6666666666666666,
+      "near_tie_pairwise_accuracy_test": 0.6,
+      "far_margin_pairwise_accuracy_test": 1.0,
+      "ranking_top1_accuracy_test": 0.0,
+      "expand_vs_commit_accuracy_test": 0.0,
+      "expand_vs_commit_mean_regret_test": 0.02759377162492882,
+      "exact_only_pairwise_accuracy_test": 0.6666666666666666,
+      "defer_coverage_test": 0.0,
+      "defer_accepted_only_accuracy_test": 0.0
+    },
+    "value_aware_ambiguity_decomposed_stabilized": {
+      "pairwise_accuracy_test": 0.6666666666666666,
+      "near_tie_pairwise_accuracy_test": 0.6,
+      "far_margin_pairwise_accuracy_test": 1.0,
+      "ranking_top1_accuracy_test": 0.0,
+      "expand_vs_commit_accuracy_test": 0.0,
+      "expand_vs_commit_mean_regret_test": 0.02759377162492882,
+      "exact_only_pairwise_accuracy_test": 0.6666666666666666,
+      "defer_coverage_test": 0.0,
+      "defer_accepted_only_accuracy_test": 0.0
+    }
+  }
+}
