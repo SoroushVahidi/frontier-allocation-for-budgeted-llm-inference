@@ -15,6 +15,7 @@ This repository is **not** currently centered on the older binary revise-routing
 ## Fast start
 
 - Start here: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+- Then read: [`PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
 - Then read: [`LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
 - Then read: [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - Then use: [`REPOSITORY_START_PATHS.md`](REPOSITORY_START_PATHS.md) for goal-based navigation.
@@ -39,18 +40,20 @@ This repository is **not** currently centered on the older binary revise-routing
 
 Read these first for current project interpretation:
 1. `docs/CANONICAL_START_HERE.md`
-2. `docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
-3. `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
-4. `docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
-5. `docs/REPOSITORY_CLEANUP_STATUS_2026_04_18.md`
-6. `docs/PROJECT_SITUATION_REPORT_2026_04_18.md`
-7. `docs/CURRENT_PROJECT_STATUS.md`
-8. `docs/CURRENT_BOTTLENECKS.md`
-9. `docs/CURRENT_SAFE_CLAIMS.md`
-10. `docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`
-11. `docs/WHAT_IS_NOT_WORKING_NOW.md`
-12. `docs/PAPER_POSITIONING_NOTE.md`
-13. `docs/REPO_MAP.md`
+2. `docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`
+3. `docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
+4. `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
+5. `docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
+6. `docs/REPOSITORY_CLEANUP_STATUS_2026_04_18.md`
+7. `docs/PROJECT_SITUATION_REPORT_2026_04_18.md`
+8. `docs/CURRENT_PROJECT_STATUS.md`
+9. `docs/CURRENT_BOTTLENECKS.md`
+10. `docs/CURRENT_SAFE_CLAIMS.md`
+11. `docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`
+12. `docs/WHAT_IS_NOT_WORKING_NOW.md`
+13. `docs/PAPER_POSITIONING_NOTE.md`
+14. `docs/REPO_MAP.md`
+15. `experiments/value_aware_target_regime_status_note_2026_04_19.md`
 
 ## Current highest-value diagnostic / evaluation docs
 
@@ -61,6 +64,7 @@ Use these when you want to understand current evidence:
 - `docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`
 - `docs/RESEARCH_IDEAS_AND_NEXT_STEPS_2026_04_18.md`
 - `docs/WORKSTREAM_STATUS_AND_OPERATING_PLAN_2026_04_18.md`
+- `experiments/value_aware_target_regime_status_note_2026_04_19.md`
 
 ## Grouped navigation pages
 
@@ -86,6 +90,7 @@ Use these when you want to understand current evidence:
 - `scripts/run_oracle_mismatch_study.py`
 - `scripts/run_worst_real_failure_casebook_with_reasoning.py`
 - `scripts/run_branch_observability_smoke.py`
+- `scripts/run_value_aware_target_regime_comparison.py`
 
 ### Current data / evaluation quality path
 - dataset registry / loader scripts under the current dataset layer,
@@ -100,7 +105,8 @@ Use these when you want to understand current evidence:
 - branch-priority / next-step allocation framing,
 - canonical status / planning docs,
 - current comparison, oracle-mismatch, and answer-recovery notes,
-- current experiment rule and cleanup-status notes.
+- current experiment rule and cleanup-status notes,
+- current broad-family dashboard and current learner-side project-state note.
 
 ### Exploratory
 - one-off target-family notes,
@@ -118,11 +124,12 @@ Use these when you want to understand current evidence:
 ## Practical collaborator start path
 
 1. Read the canonical docs in order from `docs/CANONICAL_START_HERE.md`.
-2. Use `docs/REPOSITORY_START_PATHS.md` for the shortest path matching your goal.
-3. Use `docs/METHOD_STATUS_INDEX.md` or `docs/EVALUATION_AND_BASELINES_INDEX.md` depending on your question.
-4. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
-5. Treat exploratory notes as evidence traces, not as the default project interpretation.
-6. When writing the paper, use `CURRENT_SAFE_CLAIMS.md` and `PAPER_POSITIONING_NOTE.md` as first constraints.
+2. Use `docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md` to understand what changed in the learner-side hardening passes and what still remains.
+3. Use `docs/REPOSITORY_START_PATHS.md` for the shortest path matching your goal.
+4. Use `docs/METHOD_STATUS_INDEX.md` or `docs/EVALUATION_AND_BASELINES_INDEX.md` depending on your question.
+5. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
+6. Treat exploratory notes as evidence traces, not as the default project interpretation.
+7. When writing the paper, use `CURRENT_SAFE_CLAIMS.md` and `PAPER_POSITIONING_NOTE.md` as first constraints.
 
 ## Practical maintenance rule
 
@@ -131,6 +138,7 @@ When the project phase changes materially, update these together:
 - `docs/README.md`
 - `docs/CANONICAL_START_HERE.md`
 - `docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
+- `docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`
 - `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
 - `docs/REPO_MAP.md`
 - the most relevant current dashboard/comparison/evaluation summary note
