@@ -55,8 +55,29 @@ def normalize_row(
         if question and "choices" in extra:
             question = f"{question}\n\nChoices: {extra.get('choices')}"
 
-    if spec.key == "HuggingFaceH4/aime_2024":
+    if spec.key in {"HuggingFaceH4/aime_2024", "MathArena/aime_2025", "MathArena/hmmt_feb_2025", "MathArena/brumo_2025"}:
         task_format = "aime_integer"
+
+    if spec.key == "TIGER-Lab/MMLU-Pro":
+        task_format = "multiple_choice"
+        if row.get("options") is not None:
+            extra["options"] = row.get("options")
+        if row.get("answer_index") is not None:
+            extra["answer_index"] = row.get("answer_index")
+        if row.get("category") is not None:
+            extra["category"] = row.get("category")
+
+    if spec.key in {"livecodebench/code_generation", "livecodebench/execution-v2"}:
+        task_format = "code_generation"
+        for key in ("public_test_cases", "private_test_cases", "difficulty", "code", "input", "output"):
+            if row.get(key) is not None:
+                extra[key] = row.get(key)
+
+    if spec.key == "lmms-lab/HLE-Verified":
+        task_format = "mixed_reasoning"
+        for key in ("answer_type", "subset", "category", "has_image"):
+            if row.get(key) is not None:
+                extra[key] = row.get(key)
 
     answer_norm = normalize_answer_text(answer)
     ex_id = f"{spec.key.replace('/', '_')}_{index}"
