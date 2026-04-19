@@ -68,3 +68,6 @@ Thumbs.db
 secrets.*
 *.key
 *.pem
+
+!outputs/full_method_comparison_bundle/
+!outputs/full_method_comparison_bundle/**/*

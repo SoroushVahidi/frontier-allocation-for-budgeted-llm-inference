@@ -1,0 +1,12 @@
+our_method,other_method,ours_wins,other_wins,ties,total_compared,net_margin_other_minus_ours
+adaptive_min_expand_1,adaptive_min_expand_0,96,49,215,360,-47
+adaptive_min_expand_1,adaptive_min_expand_2,74,115,171,360,41
+adaptive_min_expand_1,external_l1_exact,66,90,204,360,24
+adaptive_min_expand_1,external_l1_max,58,92,210,360,34
+adaptive_min_expand_1,external_s1_budget_forcing,59,95,206,360,36
+adaptive_min_expand_1,external_tale_prompt_budgeting,68,131,161,360,63
+adaptive_min_expand_1,program_of_thought,126,4,230,360,-122
+adaptive_min_expand_1,reasoning_beam2,63,116,181,360,53
+adaptive_min_expand_1,reasoning_greedy,63,112,185,360,49
+adaptive_min_expand_1,self_consistency_3,71,116,173,360,45
+adaptive_min_expand_1,verifier_guided_search,89,58,213,360,-31

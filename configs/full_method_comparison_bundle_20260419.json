@@ -1,0 +1,12 @@
+{
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "subset_size": 20,
+  "seeds": [11, 23],
+  "budgets": [4, 6, 8],
+  "adaptive_grid": [0, 1, 2],
+  "max_defeat_cases": 60
+}
