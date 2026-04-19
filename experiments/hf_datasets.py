@@ -241,18 +241,58 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         optional=False,
         provenance_note="MMLU-Pro multiple-choice benchmark with options and answer index fields.",
     ),
-    "lmms-lab/HLE-Verified": HFDatasetSpec(
-        key="lmms-lab/HLE-Verified",
-        repo_id="lmms-lab/HLE-Verified",
+    "cais/hle": HFDatasetSpec(
+        key="cais/hle",
+        repo_id="cais/hle",
         default_config=None,
         default_split="test",
         question_fields=("question",),
         answer_fields=("answer",),
-        optional=True,
+        optional=False,
         provenance_note=(
-            "Public verified HLE derivative; useful as a text-first fallback when canonical "
-            "cais/hle access is gated."
+            "Canonical Humanity's Last Exam source. Dataset is heterogeneous (text + image-using rows), "
+            "so this repo also exposes conservative subset keys for text-only and auto-gradable slices."
         ),
+    ),
+    "cais/hle_text_only": HFDatasetSpec(
+        key="cais/hle_text_only",
+        repo_id="cais/hle",
+        default_config=None,
+        default_split="test",
+        question_fields=("question",),
+        answer_fields=("answer",),
+        optional=False,
+        provenance_note="HLE subset: rows with no prompt image payload; keeps text-only compatibility for this repo.",
+    ),
+    "cais/hle_exact_answer": HFDatasetSpec(
+        key="cais/hle_exact_answer",
+        repo_id="cais/hle",
+        default_config=None,
+        default_split="test",
+        question_fields=("question",),
+        answer_fields=("answer",),
+        optional=False,
+        provenance_note="HLE subset: exactMatch-labeled rows only.",
+    ),
+    "cais/hle_mcq": HFDatasetSpec(
+        key="cais/hle_mcq",
+        repo_id="cais/hle",
+        default_config=None,
+        default_split="test",
+        question_fields=("question",),
+        answer_fields=("answer",),
+        optional=False,
+        provenance_note="HLE subset: multipleChoice-labeled rows only.",
+    ),
+    "cais/hle_auto_gradable": HFDatasetSpec(
+        key="cais/hle_auto_gradable",
+        repo_id="cais/hle",
+        default_config=None,
+        default_split="test",
+        question_fields=("question",),
+        answer_fields=("answer",),
+        optional=False,
+        provenance_note="HLE subset: text-only rows with exactMatch or multipleChoice answer_type labels.",
     ),
 }
 
@@ -319,10 +359,14 @@ DATASET_KEY_ALIASES: dict[str, str] = {
     "mmlu_pro": "TIGER-Lab/MMLU-Pro",
     "livecodebench_execution": "livecodebench/execution-v2",
     "lcb_execution": "livecodebench/execution-v2",
-    "hle_verified": "lmms-lab/HLE-Verified",
-    "hle_text": "lmms-lab/HLE-Verified",
-    "HLE": "lmms-lab/HLE-Verified",
-    "hle": "lmms-lab/HLE-Verified",
+    "hle_verified": "cais/hle",
+    "hle_text": "cais/hle_text_only",
+    "hle_text_only": "cais/hle_text_only",
+    "hle_exact_answer": "cais/hle_exact_answer",
+    "hle_mcq": "cais/hle_mcq",
+    "hle_auto_gradable": "cais/hle_auto_gradable",
+    "HLE": "cais/hle",
+    "hle": "cais/hle",
 }
 
 # Explicit dataset-role map for evaluation/supervision discipline in docs/reports.
@@ -344,7 +388,11 @@ DATASET_ROLE_MAP: dict[str, str] = {
     "MathArena/hmmt_feb_2025": "expansion_evaluation_dataset",
     "MathArena/brumo_2025": "expansion_evaluation_dataset",
     "TIGER-Lab/MMLU-Pro": "expansion_evaluation_dataset",
-    "lmms-lab/HLE-Verified": "expansion_evaluation_dataset",
+    "cais/hle": "expansion_evaluation_dataset",
+    "cais/hle_text_only": "expansion_evaluation_dataset",
+    "cais/hle_exact_answer": "expansion_evaluation_dataset",
+    "cais/hle_mcq": "expansion_evaluation_dataset",
+    "cais/hle_auto_gradable": "expansion_evaluation_dataset",
     "livecodebench/code_generation_lite": "optional_extended_only",
     "livecodebench/code_generation": "optional_extended_only",
     "livecodebench/execution-v2": "optional_extended_only",
@@ -371,7 +419,11 @@ DATASET_AMBIGUITY_REGIMES: dict[str, list[str]] = {
     "MathArena/hmmt_feb_2025": ["competition_math_transfer", "exact_answer_normalization"],
     "MathArena/brumo_2025": ["competition_math_transfer", "exact_answer_normalization"],
     "TIGER-Lab/MMLU-Pro": ["expert_mcq_breadth", "distractor_disambiguation"],
-    "lmms-lab/HLE-Verified": ["frontier_mixed_reasoning", "text_first_slice_with_image_flags"],
+    "cais/hle": ["frontier_mixed_reasoning", "multimodal_with_auto_gradable_labels"],
+    "cais/hle_text_only": ["frontier_mixed_reasoning", "text_only_slice"],
+    "cais/hle_exact_answer": ["frontier_mixed_reasoning", "exact_answer_slice"],
+    "cais/hle_mcq": ["frontier_mixed_reasoning", "multiple_choice_slice"],
+    "cais/hle_auto_gradable": ["frontier_mixed_reasoning", "text_only_auto_gradable_slice"],
 }
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -484,6 +536,15 @@ def check_hf_dataset_access(
 
     try:
         ds = load_dataset(**kwargs)
+        if spec.key.startswith("cais/hle"):
+            try:
+                from datasets import Image  # type: ignore
+
+                for col in ("image_preview", "rationale_image"):
+                    if getattr(ds, "features", None) and col in ds.features:
+                        ds = ds.cast_column(col, Image(decode=False))
+            except Exception:
+                pass
         first = next(iter(ds))
         success = {
             "dataset": spec.key,
@@ -729,21 +790,43 @@ def _format_standard_example(
             rec["answer"] = _safe_preview(row.get("output"), max_chars=600)
         if row.get("difficulty") is not None:
             rec["difficulty"] = _safe_preview(row.get("difficulty"))
-    elif spec.key == "lmms-lab/HLE-Verified":
+    elif spec.key.startswith("cais/hle"):
         if row.get("answer_type") is not None:
             rec["answer_type"] = _safe_preview(row.get("answer_type"))
-        if row.get("subset") is not None:
-            rec["subset"] = _safe_preview(row.get("subset"))
         if row.get("category") is not None:
             rec["category"] = _safe_preview(row.get("category"))
-        if row.get("has_image") is not None:
-            rec["has_image"] = _safe_preview(row.get("has_image"))
+        if row.get("raw_subject") is not None:
+            rec["raw_subject"] = _safe_preview(row.get("raw_subject"))
+        if row.get("image") is not None:
+            has_image = bool(str(row.get("image")).strip())
+            rec["has_image"] = "true" if has_image else "false"
+        if row.get("author_name") is not None:
+            rec["author_name"] = _safe_preview(row.get("author_name"))
+        if row.get("canary") is not None:
+            rec["canary"] = _safe_preview(row.get("canary"))
 
     else:
         if answer_candidates:
             rec["answer_candidates"] = json.dumps(answer_candidates, ensure_ascii=False)
 
     return rec
+
+
+def _hle_subset_allows_row(spec: HFDatasetSpec, row: dict[str, Any]) -> bool:
+    if not spec.key.startswith("cais/hle"):
+        return True
+    answer_type = str(row.get("answer_type") or "").strip()
+    has_image = bool(str(row.get("image") or "").strip())
+    auto_gradable = answer_type in {"exactMatch", "multipleChoice"}
+    if spec.key == "cais/hle_text_only":
+        return not has_image
+    if spec.key == "cais/hle_exact_answer":
+        return answer_type == "exactMatch"
+    if spec.key == "cais/hle_mcq":
+        return answer_type == "multipleChoice"
+    if spec.key == "cais/hle_auto_gradable":
+        return (not has_image) and auto_gradable
+    return True
 
 
 def sample_hf_examples(
@@ -765,6 +848,12 @@ def sample_hf_examples(
         ds = load_dataset(spec.repo_id, split=split_to_use, token=token)
     else:
         ds = load_dataset(spec.repo_id, config_to_use, split=split_to_use, token=token)
+
+    if spec.key.startswith("cais/hle"):
+        removable = [col for col in ("image_preview", "rationale_image") if col in ds.column_names]
+        if removable:
+            ds = ds.remove_columns(removable)
+        ds = ds.filter(lambda row: _hle_subset_allows_row(spec, row))
 
     shuffled = ds.shuffle(seed=seed)
     selected = shuffled.select(range(min(pilot_size, len(shuffled))))

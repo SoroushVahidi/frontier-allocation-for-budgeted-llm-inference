@@ -71,9 +71,15 @@ def test_alias_resolution_for_new_requested_datasets() -> None:
     assert lcb_exec.key == "livecodebench/execution-v2"
     assert "output" in lcb_exec.answer_fields
 
-    hle_verified = resolve_dataset_spec("hle")
-    assert hle_verified.key == "lmms-lab/HLE-Verified"
-    assert "question" in hle_verified.question_fields
+    hle = resolve_dataset_spec("hle")
+    assert hle.key == "cais/hle"
+    assert "question" in hle.question_fields
+
+    hle_text = resolve_dataset_spec("hle_text_only")
+    assert hle_text.key == "cais/hle_text_only"
+
+    hle_auto = resolve_dataset_spec("hle_auto_gradable")
+    assert hle_auto.key == "cais/hle_auto_gradable"
 
 
 def test_naturalplan_git_spec_resolution() -> None:
