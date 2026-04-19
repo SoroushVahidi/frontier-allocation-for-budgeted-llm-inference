@@ -332,6 +332,7 @@ def test_defer_threshold_sweep_artifact_from_runner(tmp_path: Path) -> None:
     payload = json.loads(artifact.read_text(encoding="utf-8"))
     decomp = payload["value_aware_ambiguity_decomposed"]
     assert "threshold_trace_test" in decomp
+    assert "value_aware_ambiguity_decomposed_stabilized" in payload
 
 
 def test_feature_extraction_vector_size_and_mode_flags(tmp_path: Path) -> None:

@@ -1,0 +1,2249 @@
+{
+  "baseline_default": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "estimated_value_if_allocate_next",
+      "pointwise_weight_mode": "none",
+      "pointwise_regret_weight_floor": 0.25,
+      "pairwise_target_mode": "legacy",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "none",
+      "pairwise_near_tie_downweight": 0.25,
+      "uncertainty_weighting": false,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v1",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": false,
+      "defer_target_mode": "heuristic",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "defer_eval_threshold_override": -1.0,
+      "defer_threshold_selection": "fixed",
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy",
+      "train_state_commit_value_model": false,
+      "state_commit_alpha": 1.0
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.5714285714285714,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.5714285714285714,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.24666262917476897,
+        "exact_only_pairwise_accuracy_test": 0.5714285714285714,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.5714285714285714
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.5714285714285714,
+        "ranking_top1_accuracy_test": 0.5,
+        "agreement_with_bruteforce_labels": 0.5714285714285714,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 0.75,
+        "pairwise_margin_brier_test": 0.2570399160810786,
+        "exact_only_pairwise_accuracy_test": 0.5714285714285714,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.5714285714285714
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 0.5,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.12464813544915565,
+        "evaluated_states_test": 2
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.2857142857142857,
+        "ranking_top1_accuracy_test": 0.0,
+        "agreement_with_bruteforce_labels": 0.2857142857142857,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 0.5,
+        "pairwise_margin_brier_test": 0.31198214408333796,
+        "exact_only_pairwise_accuracy_test": 0.2857142857142857,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.2857142857142857
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.2857142857142857
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.2857142857142857
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.2857142857142857
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.2857142857142857
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 0.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.30970507448087065,
+        "evaluated_states_test": 2
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "_defer_label_audit": {
+        "all": {
+          "total_examples": 80,
+          "positive_defer_labels": 51,
+          "negative_defer_labels": 29,
+          "positive_rate": 0.6375,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 80
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 22,
+            "expand:b1": 37,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 80
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 80
+          },
+          "near_tie_defer_positive_count": 14,
+          "near_tie_total_count": 15
+        },
+        "train": {
+          "total_examples": 67,
+          "positive_defer_labels": 45,
+          "negative_defer_labels": 22,
+          "positive_rate": 0.6716417910447762,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 67
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 16,
+            "expand:b1": 30,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 67
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 67
+          },
+          "near_tie_defer_positive_count": 11,
+          "near_tie_total_count": 12
+        },
+        "val": {
+          "total_examples": 6,
+          "positive_defer_labels": 3,
+          "negative_defer_labels": 3,
+          "positive_rate": 0.5,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 6
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b1": 6
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 6
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 6
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 0
+        },
+        "test": {
+          "total_examples": 7,
+          "positive_defer_labels": 3,
+          "negative_defer_labels": 4,
+          "positive_rate": 0.42857142857142855,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 7
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 6,
+            "expand:b1": 1
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 7
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 7
+          },
+          "near_tie_defer_positive_count": 3,
+          "near_tie_total_count": 3
+        }
+      }
+    }
+  },
+  "value_aware": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "Q_expand",
+      "pointwise_weight_mode": "none",
+      "pointwise_regret_weight_floor": 0.25,
+      "pairwise_target_mode": "value_gap",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "none",
+      "pairwise_near_tie_downweight": 0.25,
+      "uncertainty_weighting": false,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v1",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": false,
+      "defer_target_mode": "heuristic",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "defer_eval_threshold_override": -1.0,
+      "defer_threshold_selection": "fixed",
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy",
+      "train_state_commit_value_model": false,
+      "state_commit_alpha": 1.0
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.5714285714285714,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.5714285714285714,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.24666262917476897,
+        "exact_only_pairwise_accuracy_test": 0.5714285714285714,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.5714285714285714
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.5714285714285714,
+        "ranking_top1_accuracy_test": 0.5,
+        "agreement_with_bruteforce_labels": 0.5714285714285714,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 0.75,
+        "pairwise_margin_brier_test": 0.2570399160810786,
+        "exact_only_pairwise_accuracy_test": 0.5714285714285714,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.5714285714285714
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 0.5,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.12464813544915565,
+        "evaluated_states_test": 2
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.2857142857142857,
+        "ranking_top1_accuracy_test": 0.0,
+        "agreement_with_bruteforce_labels": 0.2857142857142857,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 0.5,
+        "pairwise_margin_brier_test": 0.31198214408333796,
+        "exact_only_pairwise_accuracy_test": 0.2857142857142857,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.2857142857142857
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.2857142857142857
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.2857142857142857
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.2857142857142857
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.2857142857142857
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 0.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.30970507448087065,
+        "evaluated_states_test": 2
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "_defer_label_audit": {
+        "all": {
+          "total_examples": 80,
+          "positive_defer_labels": 51,
+          "negative_defer_labels": 29,
+          "positive_rate": 0.6375,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 80
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 22,
+            "expand:b1": 37,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 80
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 80
+          },
+          "near_tie_defer_positive_count": 14,
+          "near_tie_total_count": 15
+        },
+        "train": {
+          "total_examples": 67,
+          "positive_defer_labels": 45,
+          "negative_defer_labels": 22,
+          "positive_rate": 0.6716417910447762,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 67
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 16,
+            "expand:b1": 30,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 67
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 67
+          },
+          "near_tie_defer_positive_count": 11,
+          "near_tie_total_count": 12
+        },
+        "val": {
+          "total_examples": 6,
+          "positive_defer_labels": 3,
+          "negative_defer_labels": 3,
+          "positive_rate": 0.5,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 6
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b1": 6
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 6
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 6
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 0
+        },
+        "test": {
+          "total_examples": 7,
+          "positive_defer_labels": 3,
+          "negative_defer_labels": 4,
+          "positive_rate": 0.42857142857142855,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 7
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 6,
+            "expand:b1": 1
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 7
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 7
+          },
+          "near_tie_defer_positive_count": 3,
+          "near_tie_total_count": 3
+        }
+      }
+    }
+  },
+  "value_aware_ambiguity": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "Q_expand",
+      "pointwise_weight_mode": "none",
+      "pointwise_regret_weight_floor": 0.25,
+      "pairwise_target_mode": "value_gap",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "downweight",
+      "pairwise_near_tie_downweight": 0.2,
+      "uncertainty_weighting": true,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v3",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": false,
+      "defer_target_mode": "heuristic",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "defer_eval_threshold_override": -1.0,
+      "defer_threshold_selection": "fixed",
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy",
+      "train_state_commit_value_model": false,
+      "state_commit_alpha": 1.0
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.1759839296956829,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.5714285714285714,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.5714285714285714,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.24275562390886177,
+        "exact_only_pairwise_accuracy_test": 0.5714285714285714,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.5714285714285714
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.7142857142857143,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.7142857142857143,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.1983935173461911,
+        "exact_only_pairwise_accuracy_test": 0.7142857142857143,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.7142857142857143
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "_defer_label_audit": {
+        "all": {
+          "total_examples": 80,
+          "positive_defer_labels": 51,
+          "negative_defer_labels": 29,
+          "positive_rate": 0.6375,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 80
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 22,
+            "expand:b1": 37,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 80
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 80
+          },
+          "near_tie_defer_positive_count": 14,
+          "near_tie_total_count": 15
+        },
+        "train": {
+          "total_examples": 67,
+          "positive_defer_labels": 45,
+          "negative_defer_labels": 22,
+          "positive_rate": 0.6716417910447762,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 67
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 16,
+            "expand:b1": 30,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 67
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 67
+          },
+          "near_tie_defer_positive_count": 11,
+          "near_tie_total_count": 12
+        },
+        "val": {
+          "total_examples": 6,
+          "positive_defer_labels": 3,
+          "negative_defer_labels": 3,
+          "positive_rate": 0.5,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 6
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b1": 6
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 6
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 6
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 0
+        },
+        "test": {
+          "total_examples": 7,
+          "positive_defer_labels": 3,
+          "negative_defer_labels": 4,
+          "positive_rate": 0.42857142857142855,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 7
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 6,
+            "expand:b1": 1
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 7
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 7
+          },
+          "near_tie_defer_positive_count": 3,
+          "near_tie_total_count": 3
+        }
+      }
+    }
+  },
+  "value_aware_ambiguity_decomposed": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "Q_expand",
+      "pointwise_weight_mode": "none",
+      "pointwise_regret_weight_floor": 0.25,
+      "pairwise_target_mode": "value_gap",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "downweight",
+      "pairwise_near_tie_downweight": 0.2,
+      "uncertainty_weighting": true,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v3",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": true,
+      "defer_target_mode": "value_aware",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "defer_eval_threshold_override": -1.0,
+      "defer_threshold_selection": "fixed",
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy",
+      "train_state_commit_value_model": true,
+      "state_commit_alpha": 0.75
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.1759839296956829,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "pairwise_defer_classifier": {
+        "model_status": "ok",
+        "three_way_accuracy_test": 0.0,
+        "defer_precision_test": 0.0,
+        "defer_recall_test": 0.0,
+        "defer_f1_test": 0.0,
+        "accepted_only_accuracy_test": 0.0,
+        "coverage_test": 0.0,
+        "near_tie_accepted_accuracy_test": 0.0,
+        "adjacent_rank_accepted_accuracy_test": 0.0,
+        "exact_promoted_hard_region_accepted_accuracy_test": 0.0,
+        "low_best_vs_outside_gap_accepted_accuracy_test": 0.0,
+        "high_disagreement_risk_accepted_accuracy_test": 0.0,
+        "approx_or_mixed_accepted_accuracy_test": 0.0,
+        "threshold_trace_test": [
+          {
+            "threshold": 0.05,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.14,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.22999999999999998,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.32,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.41,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.49999999999999994,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.5900000000000001,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.68,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.77,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.86,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.95,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          }
+        ],
+        "threshold_selection": {
+          "mode": "fixed",
+          "selected_threshold": 0.5,
+          "source": "configured_or_override"
+        },
+        "configured_threshold": 0.5,
+        "effective_threshold": 0.5,
+        "best_accepted_accuracy_under_min_coverage_test": {
+          "threshold": 0.5,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0
+        },
+        "best_coverage_under_min_accepted_accuracy_test": {
+          "threshold": 0.5,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0
+        },
+        "decision_buckets_test": {
+          "confident_correct_commit": 0,
+          "confident_wrong_commit": 0,
+          "correct_defer": 0,
+          "missed_defer": 0,
+          "unnecessary_defer": 7,
+          "ambiguous_hard_commit_proxy": 0,
+          "outside_option_should_have_won_proxy": 0
+        },
+        "calibration_used": {
+          "mode": "none"
+        },
+        "raw_probability_note": "raw multinomial probabilities are post-processed by bounded calibration and defer policy thresholds",
+        "confusion_matrix_left_defer_right_test": [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "ranking_top1_accuracy_test": null,
+        "note": "pairwise defer classifier evaluated in pairwise space; candidate top-1 ranking not defined",
+        "fallback_policy": "none",
+        "fallback_enabled": false,
+        "resolved_accuracy_test": 0.0,
+        "resolved_coverage_test": 0.0,
+        "unresolved_rate_after_fallback_test": 1.0,
+        "near_tie_resolved_accuracy_test": 0.0,
+        "adjacent_rank_resolved_accuracy_test": 0.0,
+        "exact_promoted_hard_region_resolved_accuracy_test": 0.0,
+        "fallback_subset_size": 7,
+        "fallback_subset_accuracy": 0.0,
+        "fallback_resolution_rate": 0.0,
+        "unresolved_after_fallback_rate": 1.0,
+        "fallback_gain_over_binary_backup": 0.0,
+        "fallback_gain_over_pointwise_backup": 0.0,
+        "complementarity_binary_wrong_pointwise_right": 0,
+        "complementarity_pointwise_wrong_binary_right": 0,
+        "outside_option_avoid_bad_forced_commit_proxy": 0,
+        "policy_confusion_summary_test": {
+          "committed_correct": 0,
+          "committed_wrong": 0,
+          "deferred_then_resolved_correct": 0,
+          "deferred_then_resolved_wrong": 0,
+          "deferred_still_unresolved": 7
+        },
+        "per_example_defer_scores_test": [
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 0,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep1_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 0.5205313337182113,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b1"
+          }
+        ],
+        "defer_score_distribution_test": {
+          "positive_count": 0,
+          "negative_count": 7,
+          "positive_mean": 0.0,
+          "negative_mean": 1.0,
+          "positive_p90": 0.0,
+          "negative_p90": 1.0
+        }
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.5714285714285714,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.5714285714285714,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.24275562390886177,
+        "exact_only_pairwise_accuracy_test": 0.5714285714285714,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.5714285714285714
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.7142857142857143,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.7142857142857143,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.1983935173461911,
+        "exact_only_pairwise_accuracy_test": 0.7142857142857143,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.7142857142857143
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "state_commit_value": {
+        "model_status": "ok",
+        "state_commit_mse_test": 0.0014269982302438052,
+        "note": "state-level commit value regressor"
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "_defer_label_audit": {
+        "all": {
+          "total_examples": 80,
+          "positive_defer_labels": 0,
+          "negative_defer_labels": 80,
+          "positive_rate": 0.0,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 80
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 22,
+            "expand:b1": 37,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 80
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 80
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 15
+        },
+        "train": {
+          "total_examples": 67,
+          "positive_defer_labels": 0,
+          "negative_defer_labels": 67,
+          "positive_rate": 0.0,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 67
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 16,
+            "expand:b1": 30,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 67
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 67
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 12
+        },
+        "val": {
+          "total_examples": 6,
+          "positive_defer_labels": 0,
+          "negative_defer_labels": 6,
+          "positive_rate": 0.0,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 6
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b1": 6
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 6
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 6
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 0
+        },
+        "test": {
+          "total_examples": 7,
+          "positive_defer_labels": 0,
+          "negative_defer_labels": 7,
+          "positive_rate": 0.0,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 7
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 6,
+            "expand:b1": 1
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 7
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 7
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 3
+        }
+      }
+    }
+  },
+  "value_aware_ambiguity_decomposed_stabilized": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "A_expand_minus_commit",
+      "pointwise_weight_mode": "regret_gap_x_reliability",
+      "pointwise_regret_weight_floor": 0.25,
+      "pairwise_target_mode": "value_gap",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "downweight",
+      "pairwise_near_tie_downweight": 0.15,
+      "uncertainty_weighting": true,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v3",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": true,
+      "defer_target_mode": "value_aware",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "defer_eval_threshold_override": -1.0,
+      "defer_threshold_selection": "fixed",
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy",
+      "train_state_commit_value_model": true,
+      "state_commit_alpha": 0.75
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.1761034477448871,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "pairwise_defer_classifier": {
+        "model_status": "ok",
+        "three_way_accuracy_test": 0.0,
+        "defer_precision_test": 0.0,
+        "defer_recall_test": 0.0,
+        "defer_f1_test": 0.0,
+        "accepted_only_accuracy_test": 0.0,
+        "coverage_test": 0.0,
+        "near_tie_accepted_accuracy_test": 0.0,
+        "adjacent_rank_accepted_accuracy_test": 0.0,
+        "exact_promoted_hard_region_accepted_accuracy_test": 0.0,
+        "low_best_vs_outside_gap_accepted_accuracy_test": 0.0,
+        "high_disagreement_risk_accepted_accuracy_test": 0.0,
+        "approx_or_mixed_accepted_accuracy_test": 0.0,
+        "threshold_trace_test": [
+          {
+            "threshold": 0.05,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.14,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.22999999999999998,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.32,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.41,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.49999999999999994,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.5900000000000001,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.68,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.77,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.86,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          },
+          {
+            "threshold": 0.95,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "accepted_count": 0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0,
+            "defer_f1": 0.0
+          }
+        ],
+        "threshold_selection": {
+          "mode": "fixed",
+          "selected_threshold": 0.5,
+          "source": "configured_or_override"
+        },
+        "configured_threshold": 0.5,
+        "effective_threshold": 0.5,
+        "best_accepted_accuracy_under_min_coverage_test": {
+          "threshold": 0.5,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0
+        },
+        "best_coverage_under_min_accepted_accuracy_test": {
+          "threshold": 0.5,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0
+        },
+        "decision_buckets_test": {
+          "confident_correct_commit": 0,
+          "confident_wrong_commit": 0,
+          "correct_defer": 0,
+          "missed_defer": 0,
+          "unnecessary_defer": 7,
+          "ambiguous_hard_commit_proxy": 0,
+          "outside_option_should_have_won_proxy": 0
+        },
+        "calibration_used": {
+          "mode": "none"
+        },
+        "raw_probability_note": "raw multinomial probabilities are post-processed by bounded calibration and defer policy thresholds",
+        "confusion_matrix_left_defer_right_test": [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "ranking_top1_accuracy_test": null,
+        "note": "pairwise defer classifier evaluated in pairwise space; candidate top-1 ranking not defined",
+        "fallback_policy": "none",
+        "fallback_enabled": false,
+        "resolved_accuracy_test": 0.0,
+        "resolved_coverage_test": 0.0,
+        "unresolved_rate_after_fallback_test": 1.0,
+        "near_tie_resolved_accuracy_test": 0.0,
+        "adjacent_rank_resolved_accuracy_test": 0.0,
+        "exact_promoted_hard_region_resolved_accuracy_test": 0.0,
+        "fallback_subset_size": 7,
+        "fallback_subset_accuracy": 0.0,
+        "fallback_resolution_rate": 0.0,
+        "unresolved_after_fallback_rate": 1.0,
+        "fallback_gain_over_binary_backup": 0.0,
+        "fallback_gain_over_pointwise_backup": 0.0,
+        "complementarity_binary_wrong_pointwise_right": 0,
+        "complementarity_pointwise_wrong_binary_right": 0,
+        "outside_option_avoid_bad_forced_commit_proxy": 0,
+        "policy_confusion_summary_test": {
+          "committed_correct": 0,
+          "committed_wrong": 0,
+          "deferred_then_resolved_correct": 0,
+          "deferred_then_resolved_wrong": 0,
+          "deferred_still_unresolved": 7
+        },
+        "per_example_defer_scores_test": [
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep0_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 0,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 1.0022966552612846,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b0"
+          },
+          {
+            "state_id": "exopenai_gsm8k_0_ep1_d2",
+            "example_id": "openai_gsm8k_0",
+            "gold_defer_label": 2,
+            "predicted_defer_probability": 1.0,
+            "predicted_class_default_threshold": 1,
+            "ambiguity_bucket": "high_margin",
+            "delta_expand_commit": 0.5205313337182113,
+            "regret_min_pair": 0.0,
+            "best_action_metadata": "expand:b1"
+          }
+        ],
+        "defer_score_distribution_test": {
+          "positive_count": 0,
+          "negative_count": 7,
+          "positive_mean": 0.0,
+          "negative_mean": 1.0,
+          "positive_p90": 0.0,
+          "negative_p90": 1.0
+        }
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.5714285714285714,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.5714285714285714,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.24258051509071124,
+        "exact_only_pairwise_accuracy_test": 0.5714285714285714,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.5714285714285714
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.5714285714285714
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.7142857142857143,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.7142857142857143,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.1983935173461911,
+        "exact_only_pairwise_accuracy_test": 0.7142857142857143,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.7142857142857143
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.7142857142857143
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "state_commit_value": {
+        "model_status": "ok",
+        "state_commit_mse_test": 0.0014269982302438052,
+        "note": "state-level commit value regressor"
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.8571428571428571,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.8571428571428571,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 1.0,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.8571428571428571,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "4": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.8571428571428571
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.8571428571428571
+        },
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": 1.0,
+        "near_tie_expand_vs_commit_accuracy_test": 0.0,
+        "expand_vs_commit_mean_regret_test": 0.0,
+        "evaluated_states_test": 2
+      },
+      "_defer_label_audit": {
+        "all": {
+          "total_examples": 80,
+          "positive_defer_labels": 0,
+          "negative_defer_labels": 80,
+          "positive_rate": 0.0,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 80
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 22,
+            "expand:b1": 37,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 80
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 80
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 15
+        },
+        "train": {
+          "total_examples": 67,
+          "positive_defer_labels": 0,
+          "negative_defer_labels": 67,
+          "positive_rate": 0.0,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 67
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 16,
+            "expand:b1": 30,
+            "expand:b2": 8,
+            "expand:b3": 13
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 67
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 67
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 12
+        },
+        "val": {
+          "total_examples": 6,
+          "positive_defer_labels": 0,
+          "negative_defer_labels": 6,
+          "positive_rate": 0.0,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 6
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b1": 6
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 6
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 6
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 0
+        },
+        "test": {
+          "total_examples": 7,
+          "positive_defer_labels": 0,
+          "negative_defer_labels": 7,
+          "positive_rate": 0.0,
+          "counts_by_ambiguity_bucket": {
+            "high_margin": 7
+          },
+          "counts_by_best_action_metadata": {
+            "expand:b0": 6,
+            "expand:b1": 1
+          },
+          "counts_by_delta_expand_commit_bucket": {
+            "large_expand_advantage": 7
+          },
+          "counts_by_regret_bucket": {
+            "zero_regret": 7
+          },
+          "near_tie_defer_positive_count": 0,
+          "near_tie_total_count": 3
+        }
+      }
+    }
+  }
+}

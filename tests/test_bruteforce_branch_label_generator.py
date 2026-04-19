@@ -49,14 +49,18 @@ def test_label_schema_contains_required_fields() -> None:
         "branch_id",
         "Q_expand",
         "Q_commit",
+        "A_expand_minus_commit",
         "delta_expand_commit",
         "regret_vs_best_action",
         "estimated_value_if_allocate_next",
         "best_followup_allocation",
         "outside_option_value",
         "branch_vs_outside_gap",
+        "target_reliability",
+        "target_stderr",
     }
     assert required.issubset(set(c0.keys()))
+    assert result["state_value_target"]["A_expand_minus_commit"]
 
 
 def test_pairwise_label_prefers_higher_estimated_value() -> None:

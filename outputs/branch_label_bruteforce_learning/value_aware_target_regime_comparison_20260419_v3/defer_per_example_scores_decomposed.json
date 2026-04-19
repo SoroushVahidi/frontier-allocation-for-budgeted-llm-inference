@@ -1,0 +1,81 @@
+{
+  "rows": [
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0022966552612846,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0022966552612846,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0022966552612846,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0022966552612846,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0022966552612846,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0022966552612846,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep1_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.5205313337182113,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b1"
+    }
+  ]
+}

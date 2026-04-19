@@ -135,6 +135,8 @@ class LearningConfig:
     outside_max_iter: int = 500
     pointwise_alpha: float = 1.0
     pointwise_target_field: str = "estimated_value_if_allocate_next"
+    pointwise_weight_mode: str = "none"  # one of: none, regret_gap, reliability, regret_gap_x_reliability
+    pointwise_regret_weight_floor: float = 0.25
     pairwise_target_mode: str = "legacy"  # one of: legacy, value_gap
     train_pairwise: bool = True
     train_pointwise: bool = True
@@ -1113,14 +1115,31 @@ def _fit_pointwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dic
     x = [r["x"] for r in train]
     target_field = str(getattr(cfg, "pointwise_target_field", "estimated_value_if_allocate_next"))
     y = [float(r.get(target_field, r.get("estimated_value_if_allocate_next", 0.0))) for r in train]
+    weights: list[float] = []
+    mode = str(getattr(cfg, "pointwise_weight_mode", "none"))
+    for r in train:
+        gap = abs(float(r.get("delta_expand_commit", r.get("A_expand_minus_commit", 0.0))))
+        regret = float(r.get("regret_vs_best_action", 0.0))
+        reliability = float(r.get("target_reliability", 1.0))
+        gap_regret_weight = max(float(cfg.pointwise_regret_weight_floor), gap + regret)
+        if mode == "regret_gap":
+            w = gap_regret_weight
+        elif mode == "reliability":
+            w = max(0.05, reliability)
+        elif mode == "regret_gap_x_reliability":
+            w = gap_regret_weight * max(0.05, reliability)
+        else:
+            w = 1.0
+        weights.append(float(w))
     model = Ridge(alpha=cfg.pointwise_alpha, random_state=cfg.seed)
-    model.fit(x, y)
+    model.fit(x, y, sample_weight=weights)
     return {
         "model_type": "pointwise_ridge",
         "status": "ok",
         "feature_names": _feature_names_for_set(str(cfg.feature_set)),
         "feature_set": str(cfg.feature_set),
         "target_field": target_field,
+        "pointwise_weight_mode": mode,
         "weights": [float(v) for v in model.coef_],
         "intercept": float(model.intercept_),
     }

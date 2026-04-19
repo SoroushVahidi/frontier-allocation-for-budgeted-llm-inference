@@ -1,0 +1,71 @@
+{
+  "methods": [
+    "baseline_default",
+    "value_aware",
+    "value_aware_ambiguity",
+    "value_aware_ambiguity_decomposed",
+    "value_aware_ambiguity_decomposed_stabilized"
+  ],
+  "matched_setup": {
+    "seed": 17,
+    "max_frontier_states": 20,
+    "same_labels_across_methods": true
+  },
+  "summary": {
+    "baseline_default": {
+      "pairwise_accuracy_test": 0.5714285714285714,
+      "near_tie_pairwise_accuracy_test": 0.0,
+      "ranking_top1_accuracy_test": 1.0,
+      "defer_three_way_accuracy_test": null,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null,
+      "expand_vs_commit_accuracy_test": 0.5,
+      "expand_vs_commit_mean_regret_test": 0.12464813544915565,
+      "far_margin_pairwise_accuracy_test": 1.0
+    },
+    "value_aware": {
+      "pairwise_accuracy_test": 0.5714285714285714,
+      "near_tie_pairwise_accuracy_test": 0.0,
+      "ranking_top1_accuracy_test": 1.0,
+      "defer_three_way_accuracy_test": null,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null,
+      "expand_vs_commit_accuracy_test": 0.5,
+      "expand_vs_commit_mean_regret_test": 0.12464813544915565,
+      "far_margin_pairwise_accuracy_test": 1.0
+    },
+    "value_aware_ambiguity": {
+      "pairwise_accuracy_test": 0.8571428571428571,
+      "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+      "ranking_top1_accuracy_test": 1.0,
+      "defer_three_way_accuracy_test": null,
+      "defer_coverage_test": null,
+      "defer_accepted_only_accuracy_test": null,
+      "expand_vs_commit_accuracy_test": 1.0,
+      "expand_vs_commit_mean_regret_test": 0.0,
+      "far_margin_pairwise_accuracy_test": 1.0
+    },
+    "value_aware_ambiguity_decomposed": {
+      "pairwise_accuracy_test": 0.8571428571428571,
+      "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+      "ranking_top1_accuracy_test": 1.0,
+      "defer_three_way_accuracy_test": 0.0,
+      "defer_coverage_test": 0.0,
+      "defer_accepted_only_accuracy_test": 0.0,
+      "expand_vs_commit_accuracy_test": 1.0,
+      "expand_vs_commit_mean_regret_test": 0.0,
+      "far_margin_pairwise_accuracy_test": 1.0
+    },
+    "value_aware_ambiguity_decomposed_stabilized": {
+      "pairwise_accuracy_test": 0.8571428571428571,
+      "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+      "ranking_top1_accuracy_test": 1.0,
+      "defer_three_way_accuracy_test": 0.0,
+      "defer_coverage_test": 0.0,
+      "defer_accepted_only_accuracy_test": 0.0,
+      "expand_vs_commit_accuracy_test": 1.0,
+      "expand_vs_commit_mean_regret_test": 0.0,
+      "far_margin_pairwise_accuracy_test": 1.0
+    }
+  }
+}
