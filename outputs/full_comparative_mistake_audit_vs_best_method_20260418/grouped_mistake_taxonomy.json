@@ -1,0 +1,23 @@
+{
+  "primary_groups": [
+    "premature_commitment",
+    "intermediate_result_or_non_terminal_answer",
+    "insufficient_diversity_realized",
+    "ranking_error_despite_diversity",
+    "aggregation_concentration_failure",
+    "over_conservative_gating_or_under_activation",
+    "bad_diversity_realized",
+    "real_model_instability"
+  ],
+  "primary_group_counts": {
+    "insufficient_diversity_realized": 51,
+    "intermediate_result_or_non_terminal_answer": 2,
+    "bad_diversity_realized": 14
+  },
+  "secondary_factor_counts": {
+    "single_answer_group_realized": 51,
+    "target_variable_not_completed": 2,
+    "high_entropy_low_quality_paths": 14
+  },
+  "definition_note": "Taxonomy emphasizes control failures in expansion/ranking/aggregation/commit/terminality/instability pipeline stages."
+}

@@ -1,0 +1,28 @@
+{
+  "created_utc": "2026-04-19T00:03:30.403377+00:00",
+  "script": "scripts/run_full_comparative_mistake_audit_vs_best_method_20260418.py",
+  "output_dir": "outputs/full_comparative_mistake_audit_vs_best_method_20260418",
+  "doc_output": "docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md",
+  "comparison_pair": {
+    "best": "self_consistency_3",
+    "ours": "broad_diversity_aggregation_v1",
+    "sibling": "broad_diversity_aggregation_strong_v1"
+  },
+  "required_files": [
+    "manifest.json",
+    "comparison_pair_definition.json",
+    "providers_and_models.json",
+    "datasets_compared.json",
+    "evaluation_scope_summary.json",
+    "all_mistake_records.jsonl",
+    "grouped_mistake_taxonomy.json",
+    "aggregate_group_statistics.json",
+    "per_dataset_group_statistics.json",
+    "per_provider_group_statistics.json",
+    "pipeline_failure_location_stats.json",
+    "best_method_advantage_stats.json",
+    "ranked_casebook_records.json",
+    "recoverability_summary.json",
+    "commands_assumptions_caveats.md"
+  ]
+}

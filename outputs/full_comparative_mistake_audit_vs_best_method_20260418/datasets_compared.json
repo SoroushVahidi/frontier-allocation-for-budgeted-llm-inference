@@ -1,0 +1,30 @@
+{
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "olympiadbench"
+  ],
+  "sim_scope": {
+    "subset_size": 16,
+    "seeds": [
+      11,
+      23
+    ],
+    "budgets": [
+      4,
+      6,
+      8
+    ]
+  },
+  "real_scope": {
+    "subset_size": 1,
+    "seeds": [
+      11
+    ],
+    "budgets": [
+      4
+    ],
+    "providers": []
+  }
+}

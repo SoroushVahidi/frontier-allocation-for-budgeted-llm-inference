@@ -1,0 +1,19 @@
+{
+  "simulated": [
+    "simulated_branch_generator"
+  ],
+  "real": {
+    "fresh_runs_executed": false,
+    "allowed_providers": [
+      "cohere",
+      "gemini"
+    ],
+    "configured_models": {
+      "cohere": "command-r-plus-08-2024",
+      "gemini": "gemini-2.0-flash"
+    },
+    "providers_used_in_this_run": [],
+    "note": "No fresh real-provider run was completed in this pass; real-model conclusions are carried from existing repository artifacts."
+  },
+  "constraint": "No OpenAI API was used in this audit pass."
+}

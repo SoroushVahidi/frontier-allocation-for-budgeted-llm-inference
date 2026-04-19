@@ -1,0 +1,8 @@
+{
+  "mistake_records_with_our_action_trace": 67,
+  "mistake_records_with_best_trace": 0,
+  "limitations": [
+    "Self-consistency branch-level reasoning traces are typically unavailable in these artifacts.",
+    "Real-model sample size is bounded and should be treated as directional."
+  ]
+}
