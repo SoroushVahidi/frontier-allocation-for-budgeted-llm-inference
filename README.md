@@ -28,10 +28,10 @@ The current strongest repository-backed picture is:
 - earlier local target/oracle refinements were useful diagnostics but not the final broad answer,
 - the leading serious method family is now **broad diversity-aware branch allocation with answer-support aggregation**,
 - the strongest simulator-side refinement so far is **marginal coverage + semantic overlap** inside that family,
-- and the current biggest challenges are:
-  - reliable diversity realization,
-  - ranking/aggregation quality after diversity exists,
-  - and stronger real-model confirmation.
+- recent April 19 learner-side hardening passes materially improved the supervision stack for expand-vs-commit and near-tie handling in bounded evidence,
+- and the current biggest challenges are now best separated into:
+  - **repo-wide**: reliable diversity realization, ranking/aggregation quality after diversity exists, and stronger real-model confirmation,
+  - **learner-side**: validating and stabilizing the continuation-minus-commit target regime on larger exact-heavy state sets.
 
 The current best broad baseline to beat is:
 - `self_consistency_3`
@@ -40,12 +40,13 @@ The current best broad baseline to beat is:
 
 The current bounded repository stance is:
 
-> **Keep the broad diversity/aggregation family as the main line, improve the quality of realized diversity and downstream branch scoring/aggregation, and prioritize larger but still controlled real-model confirmation over opening a new method family.**
+> **Keep the broad diversity/aggregation family as the main line, keep the value-aware continuation-minus-commit learner-side regime as the current serious target direction, improve the quality of realized diversity and downstream branch scoring/aggregation, and prioritize larger but still controlled real-model confirmation over opening a new method family.**
 
 ## Read this first
 
 If you want the shortest current synthesis, read:
 - [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
+- [`docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
 - [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
 - [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
@@ -53,20 +54,23 @@ If you want the shortest current synthesis, read:
 - [`docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md`](docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md)
 - [`docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md)
 - [`docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md)
+- [`experiments/value_aware_target_regime_status_note_2026_04_19.md`](experiments/value_aware_target_regime_status_note_2026_04_19.md)
 
 ## Fastest reliable start
 
 If you only read a few files, use this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-2. [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
-3. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
-4. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
-5. [`docs/MARGINAL_COVERAGE_DIVERSITY_STATUS_2026_04_18.md`](docs/MARGINAL_COVERAGE_DIVERSITY_STATUS_2026_04_18.md)
-6. [`docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md`](docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md)
-7. [`docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md)
-8. [`docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md)
-9. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
-10. [`scripts/README.md`](scripts/README.md)
+2. [`docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
+3. [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+4. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+5. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+6. [`docs/MARGINAL_COVERAGE_DIVERSITY_STATUS_2026_04_18.md`](docs/MARGINAL_COVERAGE_DIVERSITY_STATUS_2026_04_18.md)
+7. [`docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md`](docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md)
+8. [`docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md)
+9. [`docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md)
+10. [`experiments/value_aware_target_regime_status_note_2026_04_19.md`](experiments/value_aware_target_regime_status_note_2026_04_19.md)
+11. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
+12. [`scripts/README.md`](scripts/README.md)
 
 ## What to avoid at first
 
@@ -89,17 +93,19 @@ For the formal interpretation rules, see:
 ### Fastest correct overview
 Read in this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-2. [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
-3. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
-4. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
-5. [`docs/MARGINAL_COVERAGE_DIVERSITY_STATUS_2026_04_18.md`](docs/MARGINAL_COVERAGE_DIVERSITY_STATUS_2026_04_18.md)
-6. [`docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md`](docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md)
-7. [`docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md)
-8. [`docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md)
-9. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
+2. [`docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
+3. [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
+4. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+5. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+6. [`docs/MARGINAL_COVERAGE_DIVERSITY_STATUS_2026_04_18.md`](docs/MARGINAL_COVERAGE_DIVERSITY_STATUS_2026_04_18.md)
+7. [`docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md`](docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md)
+8. [`docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md)
+9. [`docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md)
+10. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 ### Current method and bottleneck path
 Read next:
+- [`docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
 - [`docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
 - [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
@@ -107,6 +113,7 @@ Read next:
 - [`docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md`](docs/FULL_COMPARATIVE_MISTAKE_AUDIT_VS_BEST_METHOD_2026_04_18.md)
 - [`docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_REAL_MODEL_CONFIRMATION_2026_04_18.md)
 - [`docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md`](docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md)
+- [`experiments/value_aware_target_regime_status_note_2026_04_19.md`](experiments/value_aware_target_regime_status_note_2026_04_19.md)
 
 ### Runnable code entry path
 Start with:
@@ -122,13 +129,15 @@ Start with:
 - observability-enabled semantic failure analysis,
 - comparative mistake auditing against the best baseline,
 - provenance-aware experiment bundles and status notes,
-- bounded real-model confirmation paths.
+- bounded real-model confirmation paths,
+- and a materially stronger learner-side supervision stack than before.
 
 ### What is not solved yet
 - reliable useful diversity under real provider noise,
 - ranking and aggregation quality after diversity exists,
 - stable real-model leadership among close family variants,
-- broader paper-grade real-model evidence.
+- broader paper-grade real-model evidence,
+- and larger exact-heavy confirmation for the new value-aware learner-side regime.
 
 ### Main bottleneck
 The current bottleneck is best described as:
@@ -143,6 +152,7 @@ The repository is **not** primarily blocked by:
 ### Best near-term direction
 The current best near-term direction is:
 - keep the broad diversity/aggregation family,
+- keep the value-aware continuation-minus-commit learner-side regime as the serious target-design direction,
 - strengthen useful diversity rather than raw novelty,
 - improve answer-group scoring and commit logic only when they solve a diagnosed residual,
 - and prioritize stronger real-model confirmation with available providers.
@@ -178,4 +188,4 @@ The strongest current paper story is:
 
 Current manuscript positioning is intentionally honest:
 
-**the repository has a strong leading family and strong diagnostics, but it is not yet in final broad-best-claim shape because real-model confirmation is still limited and useful diversity still does not materialize reliably enough under noisy generation.**
+**the repository has a strong leading family and a stronger learner-side target stack than before, but it is not yet in final broad-best-claim shape because real-model confirmation is still limited and useful diversity still does not materialize reliably enough under noisy generation.**
