@@ -809,6 +809,12 @@ class GlobalDiversityAggregationController(BaseController):
         diversity_needed_gate_negative_threshold: float = -0.12,
         diversity_needed_gate_min_confidence_gap: float = 0.04,
         diversity_needed_gate_dataset_path: str = "outputs/branch_label_bruteforce_learning/diversity_needed_feasibility_20260419/labels/diversity_needed_state_dataset.jsonl",
+        enable_early_answer_group_preservation: bool = False,
+        early_preservation_action_window: int = 5,
+        early_preservation_min_plausible_continuation: float = 0.46,
+        early_preservation_target_alignment_min: float = 0.34,
+        early_preservation_required_group_gap: float = 0.18,
+        early_preservation_challenger_hold_steps: int = 1,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -874,6 +880,12 @@ class GlobalDiversityAggregationController(BaseController):
         self.diversity_needed_gate_negative_threshold = float(diversity_needed_gate_negative_threshold)
         self.diversity_needed_gate_min_confidence_gap = float(diversity_needed_gate_min_confidence_gap)
         self.diversity_needed_gate_dataset_path = str(diversity_needed_gate_dataset_path)
+        self.enable_early_answer_group_preservation = bool(enable_early_answer_group_preservation)
+        self.early_preservation_action_window = max(1, int(early_preservation_action_window))
+        self.early_preservation_min_plausible_continuation = float(early_preservation_min_plausible_continuation)
+        self.early_preservation_target_alignment_min = float(early_preservation_target_alignment_min)
+        self.early_preservation_required_group_gap = float(early_preservation_required_group_gap)
+        self.early_preservation_challenger_hold_steps = max(0, int(early_preservation_challenger_hold_steps))
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -1104,6 +1116,7 @@ class GlobalDiversityAggregationController(BaseController):
         active_group_counts: dict[str, int],
         group_profiles: dict[str, list[set[str]]],
         global_profiles: list[set[str]],
+        question: str = "",
     ) -> tuple[float, dict[str, float | str | None]]:
         continuation = float(self.scorer.score_branch(branch))
         group = self._normalize_answer(branch.predicted_answer)
@@ -1124,6 +1137,7 @@ class GlobalDiversityAggregationController(BaseController):
                 group_profiles=group_profiles,
                 global_profiles=global_profiles,
             )
+        target_alignment_score, target_alignment_meta = self._target_alignment_score(question=question, branch=branch)
         priority = continuation + diversity_bonus + self.coverage_weight * coverage_gain - self.overlap_weight * semantic_overlap - duplicate_cost
         return priority, {
             "continuation_value": continuation,
@@ -1132,7 +1146,93 @@ class GlobalDiversityAggregationController(BaseController):
             "coverage_gain": float(coverage_gain),
             "semantic_overlap": float(semantic_overlap),
             "group_key": group,
+            "target_alignment_score": float(target_alignment_score),
+            "target_alignment_category": str(target_alignment_meta.get("target_alignment_category", "unknown")),
+            "target_alignment_reason": str(target_alignment_meta.get("target_alignment_reason", "none")),
             **coverage_meta,
+        }
+
+    def _target_alignment_score(self, *, question: str, branch: BranchState) -> tuple[float, dict[str, Any]]:
+        flags = self._intermediate_result_flags(question=question, branch=branch)
+        score = 0.52
+        if branch.predicted_answer is None:
+            score -= 0.25
+        if branch.is_done:
+            score += 0.16
+        if bool(flags.get("intermediate_result_mismatch", False)):
+            score -= 0.34
+        if bool(flags.get("has_final_marker", False)):
+            score += 0.10
+        if str(flags.get("target_type")) == "times":
+            score += 0.03 if bool(re.search(r"\bdivide\b|/|\bper\b", " ".join(branch.steps[-2:]).lower() if branch.steps else "")) else 0.0
+        score = float(max(0.0, min(1.0, score)))
+        if score < 0.33:
+            category = "likely_intermediate_or_mistargeted"
+        elif score < 0.60:
+            category = "plausible_but_incomplete"
+        else:
+            category = "likely_target_aligned"
+        reason = str(flags.get("intermediate_result_reason", "none"))
+        return score, {
+            "target_alignment_category": category,
+            "target_alignment_reason": reason,
+            "target_type": str(flags.get("target_type", "generic")),
+        }
+
+    def _pick_early_answer_group_preservation_branch(
+        self,
+        *,
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        answer_support_counts: dict[str, int],
+        actions: int,
+        hold_steps_used: int,
+    ) -> tuple[BranchState | None, dict[str, Any]]:
+        if not self.enable_early_answer_group_preservation:
+            return None, {"activated": False, "reason": "disabled"}
+        if actions >= self.early_preservation_action_window:
+            return None, {"activated": False, "reason": "outside_early_window"}
+        if hold_steps_used >= self.early_preservation_challenger_hold_steps:
+            return None, {"activated": False, "reason": "hold_cap_reached"}
+        if len(scored) <= 1:
+            return None, {"activated": False, "reason": "no_alternative_branch"}
+        if not answer_support_counts:
+            return None, {"activated": False, "reason": "insufficient_group_evidence"}
+        sorted_counts = sorted(answer_support_counts.values(), reverse=True)
+        if len(sorted_counts) < 2:
+            return None, {"activated": False, "reason": "only_one_group_observed"}
+        support_total = max(1, sum(sorted_counts))
+        support_gap = (sorted_counts[0] - sorted_counts[1]) / support_total
+        if support_gap < self.early_preservation_required_group_gap:
+            return None, {"activated": False, "reason": "no_early_collapse_signal"}
+
+        top_group = max(answer_support_counts.items(), key=lambda kv: kv[1])[0]
+        alternatives: list[tuple[BranchState, float, dict[str, float | str | None]]] = []
+        for item in scored:
+            meta = item[2]
+            gk = str(meta.get("group_key") or "__unknown__")
+            if gk == top_group:
+                continue
+            if float(meta.get("continuation_value", 0.0)) < self.early_preservation_min_plausible_continuation:
+                continue
+            if float(meta.get("target_alignment_score", 0.0)) < self.early_preservation_target_alignment_min:
+                continue
+            alternatives.append(item)
+        if not alternatives:
+            return None, {"activated": False, "reason": "no_plausible_target_aligned_alternative", "support_gap": float(support_gap)}
+        selected = sorted(
+            alternatives,
+            key=lambda x: (float(x[2].get("target_alignment_score", 0.0)), float(x[2].get("continuation_value", 0.0)), x[1]),
+            reverse=True,
+        )[0]
+        return selected[0], {
+            "activated": True,
+            "reason": "protect_undercovered_plausible_answer_group",
+            "support_gap": float(support_gap),
+            "dominant_group": str(top_group),
+            "selected_group": str(selected[2].get("group_key") or "__unknown__"),
+            "selected_branch_id": str(selected[0].branch_id),
+            "selected_continuation": float(selected[2].get("continuation_value", 0.0)),
+            "selected_target_alignment_score": float(selected[2].get("target_alignment_score", 0.0)),
         }
 
     def _group_support_summary(
@@ -1800,6 +1900,9 @@ class GlobalDiversityAggregationController(BaseController):
         commit_triggered = False
         incumbent_commit_triggered = False
         near_tie_forced_steps_used = 0
+        early_preservation_forced_steps = 0
+        gold_group_key = self._normalize_answer(gold_answer) or "__unknown__"
+        early_divergence_timeline: list[dict[str, Any]] = []
 
         while actions < self.max_actions and branches:
             active = [b for b in branches if not b.is_pruned]
@@ -1819,6 +1922,7 @@ class GlobalDiversityAggregationController(BaseController):
                     active_group_counts=active_group_counts,
                     group_profiles=group_profiles,
                     global_profiles=global_profiles,
+                    question=question,
                 )
                 scored.append((b, priority, meta))
             scored.sort(key=lambda x: x[1], reverse=True)
@@ -1865,6 +1969,22 @@ class GlobalDiversityAggregationController(BaseController):
                     coverage_floor_forced_steps += 1
             elif floor_meta.get("coverage_floor_activated", False):
                 coverage_floor_meta = floor_meta
+
+            early_preservation_meta: dict[str, Any] = {"activated": False}
+            preservation_branch, preservation_meta = self._pick_early_answer_group_preservation_branch(
+                scored=scored,
+                answer_support_counts=answer_support_counts,
+                actions=actions,
+                hold_steps_used=early_preservation_forced_steps,
+            )
+            if preservation_branch is not None and preservation_branch.branch_id != branch.branch_id:
+                selected = next((item for item in scored if item[0].branch_id == preservation_branch.branch_id), None)
+                if selected is not None:
+                    branch, priority, pri_meta = selected
+                    early_preservation_forced_steps += 1
+                    early_preservation_meta = preservation_meta
+            elif preservation_meta.get("activated", False):
+                early_preservation_meta = preservation_meta
 
             metalevel_preview: dict[str, Any] | None = None
             metalevel_override = False
@@ -1946,6 +2066,10 @@ class GlobalDiversityAggregationController(BaseController):
                         "metalevel_preview_decision": (metalevel_preview or {}).get("decision"),
                         "metalevel_preview_best_expand_branch_id": (metalevel_preview or {}).get("best_expand_branch_id"),
                         "metalevel_branch_override_applied": bool(metalevel_override),
+                        "target_alignment_score": round(float(pri_meta.get("target_alignment_score", 0.0)), 4),
+                        "target_alignment_category": str(pri_meta.get("target_alignment_category", "unknown")),
+                        "early_preservation_activated": bool(early_preservation_meta.get("activated", False)),
+                        "early_preservation_reason": early_preservation_meta.get("reason"),
                     }
                 )
                 if branch.is_done:
@@ -1981,6 +2105,10 @@ class GlobalDiversityAggregationController(BaseController):
                         "metalevel_preview_decision": (metalevel_preview or {}).get("decision"),
                         "metalevel_preview_best_expand_branch_id": (metalevel_preview or {}).get("best_expand_branch_id"),
                         "metalevel_branch_override_applied": bool(metalevel_override),
+                        "target_alignment_score": round(float(pri_meta.get("target_alignment_score", 0.0)), 4),
+                        "target_alignment_category": str(pri_meta.get("target_alignment_category", "unknown")),
+                        "early_preservation_activated": bool(early_preservation_meta.get("activated", False)),
+                        "early_preservation_reason": early_preservation_meta.get("reason"),
                     }
                 )
 
@@ -1993,6 +2121,17 @@ class GlobalDiversityAggregationController(BaseController):
                         self.generator.prune(b)
                 branches = [b for b in branches if not b.is_pruned]
             surviving_trace.append(len(branches))
+            active_groups_now = {self._normalize_answer(b.predicted_answer) or "__unknown__" for b in branches if not b.is_pruned}
+            early_divergence_timeline.append(
+                {
+                    "step": int(actions),
+                    "unique_active_groups": int(len(active_groups_now)),
+                    "gold_group_present": bool(gold_group_key in active_groups_now),
+                    "active_groups": sorted(list(active_groups_now))[:8],
+                    "top_support_group": max(answer_support_counts.items(), key=lambda kv: kv[1])[0] if answer_support_counts else None,
+                    "top_support_count": max(answer_support_counts.values()) if answer_support_counts else 0,
+                }
+            )
             if self.use_answer_group_commit_margin:
                 should_commit, commit_meta = self._commit_by_answer_group_margin(branches=branches, actions=actions, question=question)
                 commit_checks.append(commit_meta)
@@ -2045,6 +2184,40 @@ class GlobalDiversityAggregationController(BaseController):
                 break
 
         prediction, group_meta = self._final_prediction_from_groups(branches, question=question)
+        first_split_step = next((int(x["step"]) for x in early_divergence_timeline if int(x.get("unique_active_groups", 0)) >= 2), None)
+        second_split_step = None
+        if first_split_step is not None:
+            second_split_step = next(
+                (
+                    int(x["step"])
+                    for x in early_divergence_timeline
+                    if int(x["step"]) > first_split_step and int(x.get("unique_active_groups", 0)) >= 2
+                ),
+                None,
+            )
+        gold_presence_by_step = {int(x["step"]): bool(x.get("gold_group_present", False)) for x in early_divergence_timeline}
+        gold_ever_present = any(gold_presence_by_step.values())
+        first_present_step = next((s for s, present in gold_presence_by_step.items() if present), None)
+        last_present_step = max((s for s, present in gold_presence_by_step.items() if present), default=None)
+        disappeared_step = None
+        if first_present_step is not None:
+            for s in sorted(gold_presence_by_step.keys()):
+                if s > first_present_step and not gold_presence_by_step[s]:
+                    disappeared_step = s
+                    break
+        gold_present_after_first_split = bool(first_split_step is not None and gold_presence_by_step.get(first_split_step, False))
+        gold_present_after_second_split = bool(second_split_step is not None and gold_presence_by_step.get(second_split_step, False))
+        gold_present_final = bool(early_divergence_timeline[-1]["gold_group_present"]) if early_divergence_timeline else False
+        if not gold_ever_present:
+            dominant_failure = "not_generated"
+        elif gold_present_after_first_split and (not gold_present_final):
+            dominant_failure = "collapsed_early"
+        elif gold_present_final and (not self._answers_match(prediction, gold_answer)):
+            dominant_failure = "generated_but_committed_away_from_later"
+        elif gold_ever_present and (not gold_present_after_first_split):
+            dominant_failure = "generated_but_underweighted"
+        else:
+            dominant_failure = "not_applicable_or_correct"
         final_selected_group = str(group_meta.get("selected_group") or "")
         for event in challenger_selection_events:
             if event.get("outcome") == "pending":
@@ -2081,6 +2254,8 @@ class GlobalDiversityAggregationController(BaseController):
                 "unique_answer_groups_seen": len(answer_support_counts),
                 "forced_explore_steps": int(forced_explore_steps),
                 "forced_explore_rate": float(forced_explore_steps / max(1, actions)),
+                "early_answer_group_preservation_enabled": bool(self.enable_early_answer_group_preservation),
+                "early_answer_group_preservation_forced_steps": int(early_preservation_forced_steps),
                 "coverage_floor_enabled": bool(self.enable_answer_group_coverage_floor),
                 "coverage_floor_forced_steps": int(coverage_floor_forced_steps),
                 "coverage_floor_forced_rate": float(coverage_floor_forced_steps / max(1, actions)),
@@ -2177,6 +2352,18 @@ class GlobalDiversityAggregationController(BaseController):
                 "gate_suppress_diversity_count": int(
                     sum(1 for a in action_trace if str(a.get("gate_decision")) == "suppress_diversity_push")
                 ),
+                "early_divergence_timeline": early_divergence_timeline[: min(12, len(early_divergence_timeline))],
+                "gold_answer_group_key": str(gold_group_key),
+                "first_meaningful_split_step": first_split_step,
+                "second_meaningful_split_step": second_split_step,
+                "gold_group_present_after_first_split": bool(gold_present_after_first_split),
+                "gold_group_present_after_second_split": bool(gold_present_after_second_split),
+                "gold_group_first_present_step": first_present_step,
+                "gold_group_last_present_step": last_present_step,
+                "gold_group_disappeared_step": disappeared_step,
+                "gold_group_ever_present": bool(gold_ever_present),
+                "gold_group_present_final": bool(gold_present_final),
+                "early_divergence_failure_category": dominant_failure,
                 "unstable_commit_flag": bool(
                     any(
                         bool(c.get("commit_rule_satisfied", False))
