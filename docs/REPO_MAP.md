@@ -6,8 +6,8 @@ Canonical scope is the current NeurIPS-oriented project on:
 - fixed-budget adaptive test-time compute allocation,
 - cross-controller frontier allocation,
 - next-step branch allocation over active branches,
-- oracle frontier headroom,
-- anti-collapse design,
+- answer-group-level commit control,
+- useful diversity realization under budget,
 - and target/oracle quality for hard close-branch decisions.
 
 This repository is **not** currently centered on the older binary revise-routing framing.
@@ -17,14 +17,11 @@ This repository is **not** currently centered on the older binary revise-routing
 - Start here: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Then read: [`CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
 - Then read: [`PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
-- Then read: [`LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
 - Then read: [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+- Then use: [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md) for the shortest dashboard.
 - Then use: [`REPOSITORY_START_PATHS.md`](REPOSITORY_START_PATHS.md) for goal-based navigation.
+- Then use: [`REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md) for the front-door organization and maintenance rule.
 - Then use: [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md) for runnable entry points.
-- For grouped method notes, see [`METHOD_STATUS_INDEX.md`](METHOD_STATUS_INDEX.md).
-- For grouped evaluation/baseline notes, see [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md).
-- For non-default active lines, see [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md).
-- For provenance-only interpretation, see [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md).
 
 ## Directory map
 
@@ -43,20 +40,16 @@ Read these first for current project interpretation:
 1. `docs/CANONICAL_START_HERE.md`
 2. `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
 3. `docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`
-4. `docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
-5. `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
-6. `docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
-7. `docs/DATASET_ADDITION_PRIORITIES_2026_04_19.md`
-8. `docs/REPOSITORY_CLEANUP_STATUS_2026_04_18.md`
-9. `docs/PROJECT_SITUATION_REPORT_2026_04_18.md`
-10. `docs/CURRENT_PROJECT_STATUS.md`
-11. `docs/CURRENT_BOTTLENECKS.md`
-12. `docs/CURRENT_SAFE_CLAIMS.md`
-13. `docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`
-14. `docs/WHAT_IS_NOT_WORKING_NOW.md`
-15. `docs/PAPER_POSITIONING_NOTE.md`
-16. `docs/REPO_MAP.md`
-17. `experiments/value_aware_target_regime_status_note_2026_04_19.md`
+4. `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
+5. `docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
+6. `docs/CURRENT_PROJECT_STATUS.md`
+7. `docs/CURRENT_BOTTLENECKS.md`
+8. `docs/CURRENT_SAFE_CLAIMS.md`
+9. `docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`
+10. `docs/WHAT_IS_NOT_WORKING_NOW.md`
+11. `docs/PAPER_POSITIONING_NOTE.md`
+12. `docs/REPO_MAP.md`
+13. `docs/REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`
 
 ## Current highest-value diagnostic / evaluation docs
 
@@ -75,6 +68,7 @@ Use these when you want to understand current evidence:
 - `docs/METHOD_STATUS_INDEX.md`
 - `docs/EVALUATION_AND_BASELINES_INDEX.md`
 - `docs/REPOSITORY_START_PATHS.md`
+- `docs/EXPLORATORY_INDEX.md`
 - `scripts/HISTORICAL_INDEX.md`
 
 ## Canonical scripts now
@@ -109,8 +103,7 @@ Use these when you want to understand current evidence:
 - branch-priority / next-step allocation framing,
 - canonical status / planning docs,
 - current comparison, oracle-mismatch, and answer-recovery notes,
-- current experiment rule and cleanup-status notes,
-- current broad-family dashboard,
+- current experiment rule and dashboard notes,
 - the current learner-side project-state note,
 - and the current consolidated current-state / next-work note.
 
@@ -145,10 +138,10 @@ When the project phase changes materially, update these together:
 - `docs/README.md`
 - `docs/CANONICAL_START_HERE.md`
 - `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
-- `docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
 - `docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`
 - `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
 - `docs/REPO_MAP.md`
+- `docs/REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`
 - the most relevant current dashboard/comparison/evaluation summary note
 
 This keeps the front door of the repo aligned with the actual state of the project.
