@@ -1,0 +1,21 @@
+{
+  "run_id": "diversity_needed_gate_bounded_comparison_20260419",
+  "script": "scripts/run_diversity_needed_gate_bounded_comparison.py",
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "subset_size": 20,
+  "seeds": [11, 23],
+  "budgets": [6, 8],
+  "adaptive_grid": [1],
+  "base_method": "broad_diversity_aggregation_strong_v1",
+  "gated_method": "broad_diversity_aggregation_strong_v1_diversity_needed_gate",
+  "heuristic_gate_method": "broad_diversity_aggregation_strong_v1_heuristic_gate",
+  "gate_thresholds": {
+    "positive": 0.12,
+    "negative": -0.12
+  },
+  "notes": "Bounded gate-only intervention inside broad diversity aggregation family; no new controller family."
+}
