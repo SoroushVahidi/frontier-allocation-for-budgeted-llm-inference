@@ -100,6 +100,16 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         optional=True,
         provenance_note="Single-year AIME 2024 slice; for broader AIME coverage see AI-MO/aimo-validation-aime (not wired here).",
     ),
+    "MathArena/aime_2025": HFDatasetSpec(
+        key="MathArena/aime_2025",
+        repo_id="MathArena/aime_2025",
+        default_config=None,
+        default_split="train",
+        question_fields=("problem",),
+        answer_fields=("answer",),
+        optional=True,
+        provenance_note="AIME 2025 public HF slice with exact-answer olympiad-style math fields.",
+    ),
     "livecodebench/code_generation_lite": HFDatasetSpec(
         key="livecodebench/code_generation_lite",
         repo_id="livecodebench/code_generation_lite",
@@ -109,6 +119,32 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         answer_fields=("starter_code", "solution", "answer"),
         optional=True,
         provenance_note=None,
+    ),
+    "livecodebench/code_generation": HFDatasetSpec(
+        key="livecodebench/code_generation",
+        repo_id="livecodebench/code_generation",
+        default_config=None,
+        default_split="test",
+        question_fields=("question_content", "question_title"),
+        answer_fields=("starter_code",),
+        optional=True,
+        provenance_note=(
+            "LiveCodeBench code-generation split with public/private test cases; "
+            "full grading still requires execution harness."
+        ),
+    ),
+    "livecodebench/execution-v2": HFDatasetSpec(
+        key="livecodebench/execution-v2",
+        repo_id="livecodebench/execution-v2",
+        default_config=None,
+        default_split="test",
+        question_fields=("code", "input"),
+        answer_fields=("output",),
+        optional=True,
+        provenance_note=(
+            "Execution-style LiveCodeBench slice (code + input -> output) that supports "
+            "exact-match grading without running untrusted model-generated code."
+        ),
     ),
     "HuggingFaceH4/MATH-500": HFDatasetSpec(
         key="HuggingFaceH4/MATH-500",
@@ -175,6 +211,49 @@ HF_DATASET_SPECS: dict[str, HFDatasetSpec] = {
         optional=False,
         provenance_note="AQuA-RAT multiple-choice benchmark (raw config).",
     ),
+    "MathArena/hmmt_feb_2025": HFDatasetSpec(
+        key="MathArena/hmmt_feb_2025",
+        repo_id="MathArena/hmmt_feb_2025",
+        default_config=None,
+        default_split="train",
+        question_fields=("problem",),
+        answer_fields=("answer",),
+        optional=True,
+        provenance_note="HMMT February 2025 competition-math slice with exact-answer fields.",
+    ),
+    "MathArena/brumo_2025": HFDatasetSpec(
+        key="MathArena/brumo_2025",
+        repo_id="MathArena/brumo_2025",
+        default_config=None,
+        default_split="train",
+        question_fields=("problem",),
+        answer_fields=("answer",),
+        optional=True,
+        provenance_note="BRUMO 2025 competition-math slice with exact-answer fields.",
+    ),
+    "TIGER-Lab/MMLU-Pro": HFDatasetSpec(
+        key="TIGER-Lab/MMLU-Pro",
+        repo_id="TIGER-Lab/MMLU-Pro",
+        default_config=None,
+        default_split="test",
+        question_fields=("question",),
+        answer_fields=("answer", "answer_index"),
+        optional=False,
+        provenance_note="MMLU-Pro multiple-choice benchmark with options and answer index fields.",
+    ),
+    "lmms-lab/HLE-Verified": HFDatasetSpec(
+        key="lmms-lab/HLE-Verified",
+        repo_id="lmms-lab/HLE-Verified",
+        default_config=None,
+        default_split="test",
+        question_fields=("question",),
+        answer_fields=("answer",),
+        optional=True,
+        provenance_note=(
+            "Public verified HLE derivative; useful as a text-first fallback when canonical "
+            "cais/hle access is gated."
+        ),
+    ),
 }
 
 GIT_DATASET_SPECS: dict[str, GitDatasetSpec] = {
@@ -210,6 +289,7 @@ DATASET_KEY_ALIASES: dict[str, str] = {
     "olympiadbench_thudm": "Hothan/OlympiadBench",
     "aime": "HuggingFaceH4/aime_2024",
     "aime_2024": "HuggingFaceH4/aime_2024",
+    "aime_2025": "MathArena/aime_2025",
     "math500": "HuggingFaceH4/MATH-500",
     "math-500": "HuggingFaceH4/MATH-500",
     "MATH-500": "HuggingFaceH4/MATH-500",
@@ -229,6 +309,20 @@ DATASET_KEY_ALIASES: dict[str, str] = {
     "aqua_rat": "deepmind/aqua_rat",
     "AQuA": "deepmind/aqua_rat",
     "AQuA-RAT": "deepmind/aqua_rat",
+    "livecodebench": "livecodebench/code_generation",
+    "hmmt": "MathArena/hmmt_feb_2025",
+    "HMMT": "MathArena/hmmt_feb_2025",
+    "brumo": "MathArena/brumo_2025",
+    "BRUMO": "MathArena/brumo_2025",
+    "mmlu-pro": "TIGER-Lab/MMLU-Pro",
+    "MMLU-Pro": "TIGER-Lab/MMLU-Pro",
+    "mmlu_pro": "TIGER-Lab/MMLU-Pro",
+    "livecodebench_execution": "livecodebench/execution-v2",
+    "lcb_execution": "livecodebench/execution-v2",
+    "hle_verified": "lmms-lab/HLE-Verified",
+    "hle_text": "lmms-lab/HLE-Verified",
+    "HLE": "lmms-lab/HLE-Verified",
+    "hle": "lmms-lab/HLE-Verified",
 }
 
 # Explicit dataset-role map for evaluation/supervision discipline in docs/reports.
@@ -239,6 +333,7 @@ DATASET_ROLE_MAP: dict[str, str] = {
     "Idavidrein/gpqa": "main_evaluation_dataset",
     "HuggingFaceH4/MATH-500": "main_evaluation_dataset",
     "HuggingFaceH4/aime_2024": "main_evaluation_dataset",
+    "MathArena/aime_2025": "main_evaluation_dataset",
     "Hothan/OlympiadBench": "main_evaluation_dataset",
     "meituan-longcat/AMO-Bench": "main_evaluation_dataset",
     "google-deepmind/natural-plan": "main_evaluation_dataset",
@@ -246,7 +341,13 @@ DATASET_ROLE_MAP: dict[str, str] = {
     "TAUR-Lab/MuSR": "expansion_evaluation_dataset",
     "openeval/BIG-Bench-Hard": "expansion_evaluation_dataset",
     "deepmind/aqua_rat": "expansion_evaluation_dataset",
+    "MathArena/hmmt_feb_2025": "expansion_evaluation_dataset",
+    "MathArena/brumo_2025": "expansion_evaluation_dataset",
+    "TIGER-Lab/MMLU-Pro": "expansion_evaluation_dataset",
+    "lmms-lab/HLE-Verified": "expansion_evaluation_dataset",
     "livecodebench/code_generation_lite": "optional_extended_only",
+    "livecodebench/code_generation": "optional_extended_only",
+    "livecodebench/execution-v2": "optional_extended_only",
 }
 
 DATASET_AMBIGUITY_REGIMES: dict[str, list[str]] = {
@@ -256,6 +357,7 @@ DATASET_AMBIGUITY_REGIMES: dict[str, list[str]] = {
     "Idavidrein/gpqa": ["expert_science_mcq", "distractor_disambiguation"],
     "HuggingFaceH4/MATH-500": ["hard_math_subset", "exact_answer_normalization"],
     "HuggingFaceH4/aime_2024": ["olympiad_integer_math", "concise_final_answer"],
+    "MathArena/aime_2025": ["olympiad_integer_math", "concise_final_answer"],
     "Hothan/OlympiadBench": ["olympiad_math_physics", "long_horizon_reasoning"],
     "meituan-longcat/AMO-Bench": ["very_hard_math", "parser_graded_target"],
     "google-deepmind/natural-plan": ["planning_constraints", "structured_plan_generation"],
@@ -264,6 +366,12 @@ DATASET_AMBIGUITY_REGIMES: dict[str, list[str]] = {
     "openeval/BIG-Bench-Hard": ["cross_domain_reasoning", "task_diversity"],
     "deepmind/aqua_rat": ["mcq_math_reasoning", "rationale_plus_answer"],
     "livecodebench/code_generation_lite": ["code_generation", "execution_sensitive_evaluation"],
+    "livecodebench/code_generation": ["code_generation", "execution_sensitive_evaluation"],
+    "livecodebench/execution-v2": ["execution_trace_reasoning", "exact_output_grading"],
+    "MathArena/hmmt_feb_2025": ["competition_math_transfer", "exact_answer_normalization"],
+    "MathArena/brumo_2025": ["competition_math_transfer", "exact_answer_normalization"],
+    "TIGER-Lab/MMLU-Pro": ["expert_mcq_breadth", "distractor_disambiguation"],
+    "lmms-lab/HLE-Verified": ["frontier_mixed_reasoning", "text_first_slice_with_image_flags"],
 }
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -591,6 +699,45 @@ def _format_standard_example(
             if k in row and row[k] is not None:
                 rec["choices"] = _safe_preview(row[k], max_chars=1200)
                 break
+    elif spec.key == "TIGER-Lab/MMLU-Pro":
+        options = row.get("options")
+        option_text = _safe_preview(options, max_chars=1200).strip() if options is not None else ""
+        if option_text:
+            rec["choices"] = option_text
+            rec["question"] = f"{question}\n\nOptions: {option_text}" if question else option_text
+        if row.get("answer_index") is not None:
+            rec["answer_index"] = _safe_preview(row.get("answer_index"))
+        if row.get("category") is not None:
+            rec["category"] = _safe_preview(row.get("category"))
+    elif spec.key == "livecodebench/code_generation":
+        public_tests = row.get("public_test_cases")
+        private_tests = row.get("private_test_cases")
+        if public_tests is not None:
+            rec["public_test_cases"] = _safe_preview(public_tests, max_chars=1200)
+        if private_tests is not None:
+            rec["private_test_cases"] = _safe_preview(private_tests, max_chars=1200)
+        if row.get("difficulty") is not None:
+            rec["difficulty"] = _safe_preview(row.get("difficulty"))
+    elif spec.key == "livecodebench/execution-v2":
+        code = _safe_preview(row.get("code"), max_chars=1200).strip()
+        input_text = _safe_preview(row.get("input"), max_chars=600).strip()
+        if code and input_text:
+            rec["question"] = f"Code:\n{code}\n\nInput:\n{input_text}"
+        elif code:
+            rec["question"] = f"Code:\n{code}"
+        if row.get("output") is not None:
+            rec["answer"] = _safe_preview(row.get("output"), max_chars=600)
+        if row.get("difficulty") is not None:
+            rec["difficulty"] = _safe_preview(row.get("difficulty"))
+    elif spec.key == "lmms-lab/HLE-Verified":
+        if row.get("answer_type") is not None:
+            rec["answer_type"] = _safe_preview(row.get("answer_type"))
+        if row.get("subset") is not None:
+            rec["subset"] = _safe_preview(row.get("subset"))
+        if row.get("category") is not None:
+            rec["category"] = _safe_preview(row.get("category"))
+        if row.get("has_image") is not None:
+            rec["has_image"] = _safe_preview(row.get("has_image"))
 
     else:
         if answer_candidates:
