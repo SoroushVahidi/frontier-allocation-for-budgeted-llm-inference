@@ -1,0 +1,20 @@
+{
+  "run_id": "incumbent_challenger_commit_validation_20260419",
+  "script": "scripts/run_incumbent_challenger_commit_validation_pass_20260419.py",
+  "bundle": "exact_answer_math_expansion",
+  "datasets": [
+    "HuggingFaceH4/aime_2024",
+    "MathArena/aime_2025",
+    "MathArena/hmmt_feb_2025",
+    "MathArena/brumo_2025"
+  ],
+  "subset_size": 30,
+  "seeds": [11, 23, 37, 41, 53],
+  "budgets": [4, 6, 8, 10],
+  "methods": {
+    "base": "broad_diversity_aggregation_strong_v1",
+    "incumbent_challenger_dependence_aware": "broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_v1",
+    "incumbent_challenger_raw_support": "broad_diversity_aggregation_strong_v1_incumbent_challenger_raw_support_v1"
+  },
+  "notes": "Stronger matched validation pass with wrong-commit subtype analysis and improved/harmed registries."
+}
