@@ -1,0 +1,224 @@
+{
+  "rows": [
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_3",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 2,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_5",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 2,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_8",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 4,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_15",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 3,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": false
+    },
+    {
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_0",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 2,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_9",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 3,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_13",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 2,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_4",
+      "total_budget": 6,
+      "decisions_used": 6,
+      "branch_creation_count": 2,
+      "expansion_count": 6,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_9",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 2,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": false
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_1",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 4,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": false
+    },
+    {
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_4",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 2,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_1",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 4,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": false
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_12",
+      "total_budget": 4,
+      "decisions_used": 4,
+      "branch_creation_count": 2,
+      "expansion_count": 4,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_3",
+      "total_budget": 6,
+      "decisions_used": 6,
+      "branch_creation_count": 2,
+      "expansion_count": 6,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_8",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 2,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_0",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 2,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_1",
+      "total_budget": 6,
+      "decisions_used": 6,
+      "branch_creation_count": 3,
+      "expansion_count": 6,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_10",
+      "total_budget": 8,
+      "decisions_used": 8,
+      "branch_creation_count": 3,
+      "expansion_count": 8,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_11",
+      "total_budget": 6,
+      "decisions_used": 6,
+      "branch_creation_count": 2,
+      "expansion_count": 6,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_12",
+      "total_budget": 6,
+      "decisions_used": 6,
+      "branch_creation_count": 2,
+      "expansion_count": 6,
+      "verify_count": 0,
+      "remaining_budget_at_final_wrong_turn": 0,
+      "correct_answer_group_alive_low_budget": true
+    }
+  ]
+}

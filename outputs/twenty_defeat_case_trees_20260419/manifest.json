@@ -1,0 +1,164 @@
+{
+  "cases": [
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_3",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_3",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_5",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_5",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_8",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_8",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__aime_2024__HuggingFaceH4_aime_2024_15",
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_15",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_0",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_0",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_9",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_9",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_13",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_13",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_4",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_4",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 6,
+      "decisions_used": 6
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_9",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_9",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__aime_2024__HuggingFaceH4_aime_2024_1",
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_1",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__aime_2024__HuggingFaceH4_aime_2024_4",
+      "dataset": "HuggingFaceH4/aime_2024",
+      "example_id": "HuggingFaceH4_aime_2024_4",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_1",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_1",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_12",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_12",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 4,
+      "decisions_used": 4
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_3",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_3",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 6,
+      "decisions_used": 6
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_8",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_8",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_0",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_0",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_1",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_1",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 6,
+      "decisions_used": 6
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_10",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_10",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 8,
+      "decisions_used": 8
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_11",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_11",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 6,
+      "decisions_used": 6
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_12",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_12",
+      "provenance_label": "partially_reconstructed_from_metadata",
+      "total_budget": 6,
+      "decisions_used": 6
+    }
+  ]
+}

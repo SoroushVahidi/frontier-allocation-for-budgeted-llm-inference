@@ -1,0 +1,362 @@
+{
+  "dataset": "openai/gsm8k",
+  "example_id": "openai_gsm8k_3",
+  "problem_statement": "Sandra, the florist around the corner, is very unhappy with Fred's incomplete order delivery. Sandra had ordered four times as many red roses as white carnations. She also ordered 200 pink calla lilies, which were five times the number of white carnations. Sandra has threatened to switch suppliers if the missing red roses are not delivered by 5 pm. To keep Sandra's business, how many red roses must Fred deliver by 5 pm?",
+  "ground_truth_answer": "160",
+  "original_failure_record": {
+    "seed": 23,
+    "budget": 6,
+    "our_method_final_answer": "159",
+    "best_method_final_answer": "160"
+  },
+  "recovered_run": {
+    "run_mode": "deterministic_simulated_replay",
+    "replay_seed": 335629190,
+    "initial_branching": {
+      "init_branches": 2,
+      "max_branches": 4
+    },
+    "total_budget": 6,
+    "decisions_used": 6,
+    "our_method_prediction": "160",
+    "best_method_prediction": "159",
+    "our_method_correct": true,
+    "best_method_correct": false,
+    "our_method_metadata": {
+      "unique_answer_groups_seen": 1,
+      "answer_support_entropy": 0.0,
+      "final_selected_group": "160",
+      "gold_group_present_final": true,
+      "gold_group_disappeared_step": null
+    }
+  },
+  "tree_summary": {
+    "branches_created": 2,
+    "max_depth": 1,
+    "expand_actions": 6,
+    "verify_actions": 0,
+    "surviving_frontier_end": 1
+  },
+  "decisions": [
+    {
+      "decision_index": 0,
+      "action": "expand",
+      "chosen_branch_id": "div_0",
+      "remaining_budget_before": 6,
+      "budget_consumed_this_step": 1,
+      "active_frontier_before": [
+        "div_0",
+        "div_1"
+      ],
+      "active_branch_states_before": [
+        {
+          "branch_id": "div_0",
+          "score": 0.8721847670709446,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "action_history": []
+        },
+        {
+          "branch_id": "div_1",
+          "score": 0.2329392413729254,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "action_history": []
+        }
+      ],
+      "trace_metadata": {
+        "priority": 1.0922,
+        "continuation_value": 0.8722,
+        "target_alignment_score": 0.27,
+        "target_alignment_category": "likely_intermediate_or_mistargeted",
+        "gate_decision": "fallback"
+      }
+    },
+    {
+      "decision_index": 1,
+      "action": "expand",
+      "chosen_branch_id": "div_0",
+      "remaining_budget_before": 5,
+      "budget_consumed_this_step": 1,
+      "active_frontier_before": [
+        "div_0",
+        "div_1"
+      ],
+      "active_branch_states_before": [
+        {
+          "branch_id": "div_0",
+          "score": 0.904053661471763,
+          "depth": 1,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.031868894400818415,
+          "branch_age": 0,
+          "is_done": true,
+          "is_pruned": false,
+          "predicted_answer": "160",
+          "action_history": [
+            "expand"
+          ]
+        },
+        {
+          "branch_id": "div_1",
+          "score": 0.2329392413729254,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "action_history": []
+        }
+      ],
+      "trace_metadata": {
+        "priority": 1.14,
+        "continuation_value": 1.0,
+        "target_alignment_score": 0.68,
+        "target_alignment_category": "likely_target_aligned",
+        "gate_decision": "fallback"
+      }
+    },
+    {
+      "decision_index": 2,
+      "action": "expand",
+      "chosen_branch_id": "div_0",
+      "remaining_budget_before": 4,
+      "budget_consumed_this_step": 1,
+      "active_frontier_before": [
+        "div_0",
+        "div_1"
+      ],
+      "active_branch_states_before": [
+        {
+          "branch_id": "div_0",
+          "score": 0.904053661471763,
+          "depth": 1,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.031868894400818415,
+          "branch_age": 0,
+          "is_done": true,
+          "is_pruned": false,
+          "predicted_answer": "160",
+          "action_history": [
+            "expand"
+          ]
+        },
+        {
+          "branch_id": "div_1",
+          "score": 0.2329392413729254,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "action_history": []
+        }
+      ],
+      "trace_metadata": {
+        "priority": 1.0933,
+        "continuation_value": 1.0,
+        "target_alignment_score": 0.68,
+        "target_alignment_category": "likely_target_aligned",
+        "gate_decision": "fallback"
+      }
+    },
+    {
+      "decision_index": 3,
+      "action": "expand",
+      "chosen_branch_id": "div_0",
+      "remaining_budget_before": 3,
+      "budget_consumed_this_step": 1,
+      "active_frontier_before": [
+        "div_0",
+        "div_1"
+      ],
+      "active_branch_states_before": [
+        {
+          "branch_id": "div_0",
+          "score": 0.904053661471763,
+          "depth": 1,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.031868894400818415,
+          "branch_age": 0,
+          "is_done": true,
+          "is_pruned": false,
+          "predicted_answer": "160",
+          "action_history": [
+            "expand"
+          ]
+        },
+        {
+          "branch_id": "div_1",
+          "score": 0.2329392413729254,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "action_history": []
+        }
+      ],
+      "trace_metadata": {
+        "priority": 1.07,
+        "continuation_value": 1.0,
+        "target_alignment_score": 0.68,
+        "target_alignment_category": "likely_target_aligned",
+        "gate_decision": "fallback"
+      }
+    },
+    {
+      "decision_index": 4,
+      "action": "expand",
+      "chosen_branch_id": "div_0",
+      "remaining_budget_before": 2,
+      "budget_consumed_this_step": 1,
+      "active_frontier_before": [
+        "div_0",
+        "div_1"
+      ],
+      "active_branch_states_before": [
+        {
+          "branch_id": "div_0",
+          "score": 0.904053661471763,
+          "depth": 1,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.031868894400818415,
+          "branch_age": 0,
+          "is_done": true,
+          "is_pruned": false,
+          "predicted_answer": "160",
+          "action_history": [
+            "expand"
+          ]
+        },
+        {
+          "branch_id": "div_1",
+          "score": 0.2329392413729254,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "action_history": []
+        }
+      ],
+      "trace_metadata": {
+        "priority": 1.056,
+        "continuation_value": 1.0,
+        "target_alignment_score": 0.68,
+        "target_alignment_category": "likely_target_aligned",
+        "gate_decision": "fallback"
+      }
+    },
+    {
+      "decision_index": 5,
+      "action": "expand",
+      "chosen_branch_id": "div_0",
+      "remaining_budget_before": 1,
+      "budget_consumed_this_step": 1,
+      "active_frontier_before": [
+        "div_0",
+        "div_1"
+      ],
+      "active_branch_states_before": [
+        {
+          "branch_id": "div_0",
+          "score": 0.904053661471763,
+          "depth": 1,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.031868894400818415,
+          "branch_age": 0,
+          "is_done": true,
+          "is_pruned": false,
+          "predicted_answer": "160",
+          "action_history": [
+            "expand"
+          ]
+        },
+        {
+          "branch_id": "div_1",
+          "score": 0.2329392413729254,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "action_history": []
+        }
+      ],
+      "trace_metadata": {
+        "priority": 1.0467,
+        "continuation_value": 1.0,
+        "target_alignment_score": 0.68,
+        "target_alignment_category": "likely_target_aligned",
+        "gate_decision": "fallback"
+      }
+    }
+  ],
+  "final_tree": {
+    "parent_links_inference": "inferred_from_child_creation_events_after_expand",
+    "branches": [
+      {
+        "branch_id": "div_0",
+        "parent_branch_id": null,
+        "depth": 1,
+        "verify_count": 0,
+        "is_done": true,
+        "is_pruned": false,
+        "predicted_answer": "160",
+        "action_history": [
+          "expand"
+        ]
+      },
+      {
+        "branch_id": "div_1",
+        "parent_branch_id": null,
+        "depth": 0,
+        "verify_count": 0,
+        "is_done": false,
+        "is_pruned": false,
+        "predicted_answer": null,
+        "action_history": []
+      }
+    ]
+  },
+  "provenance_label": "partially_reconstructed_from_metadata",
+  "oracle_proxy": {
+    "state_id": "exopenai_gsm8k_3_ep7_d3",
+    "oracle_best_branch": "b2",
+    "method_choice_k3": "b3",
+    "remaining_budget": 5
+  }
+}
