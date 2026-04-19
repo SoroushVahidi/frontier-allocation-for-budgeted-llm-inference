@@ -1,6 +1,6 @@
 # adaptive-reasoning-budget-allocation
 
-Repository for the **current NeurIPS-oriented project** on **fixed-budget adaptive test-time compute allocation for LLM reasoning**.
+Repository for the current **NeurIPS-oriented project** on **fixed-budget adaptive test-time compute allocation for LLM reasoning**.
 
 ## Canonical project question
 
@@ -25,15 +25,14 @@ This repository is **not** currently centered on the old binary revise-routing p
 ## Current repository state
 
 The current strongest repository-backed picture is:
-- earlier local target/oracle refinements were useful diagnostics but not the final broad answer,
 - the leading serious broad family remains **broad diversity-aware branch allocation with answer-support aggregation**,
-- recent learner-side passes strengthened the supervision / target stack,
-- current broad-method residuals are best understood through answer-group-level commit timing, challenger control, and stronger real-model confirmation,
-- recent dataset work broadened and clarified the evaluation surface, with exact-answer math expansions now cleaner and more experiment-ready,
-- and the current biggest challenges are now best separated into:
-  - **repo-wide**: commit timing, challenger control, and stronger real-model evidence,
-  - **method-line**: determining which refinement lines are still worth promoting versus keeping as diagnostic branches,
-  - **evaluation-surface**: keeping partial integrations honest and experiment-readiness explicit.
+- bounded diagnostic work now points more specifically to **early-to-mid tree-growth control** as a major weakness,
+- the strongest current promoted refinement line is **anti-collapse answer-group-aware allocation** inside the same broad family,
+- and the current best diagnostic stack now includes:
+  - full method comparison bundles,
+  - 20-case defeat casebooks,
+  - branch-reasoning recovery on selected defeat cases,
+  - and discovered-tree reconstructions for the same cases.
 
 The current best broad baseline to beat is:
 - `self_consistency_3`
@@ -42,17 +41,18 @@ The current best broad baseline to beat is:
 
 The current bounded repository stance is:
 
-> **Keep the broad diversity/aggregation family as the main line, use bounded local controller refinements diagnostically rather than promoting them prematurely, and prioritize stronger but still controlled validation plus real-model confirmation over broad new method search.**
+> **Keep the broad diversity/aggregation family as the main line, treat anti-collapse answer-group-aware allocation as the current promoted next bounded refinement, and use stronger but still controlled validation plus real-model confirmation before making broad superiority claims.**
 
 ## Fastest reliable start
 
 If you want the shortest trustworthy entry path, read in this order:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
 2. [`docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-3. [`docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
-4. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
-5. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
-6. [`docs/REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](docs/REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md)
+3. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+4. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+5. [`docs/TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`](docs/TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md)
+6. [`docs/TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`](docs/TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md)
+7. [`docs/REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](docs/REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md)
 
 Then use:
 - [`docs/REPO_MAP.md`](docs/REPO_MAP.md) for the canonical map,
@@ -63,7 +63,7 @@ Then use:
 
 Do **not** start by reading arbitrary experiment notes, historical memos, or one-off outputs in isolation.
 
-Do **not** assume the next best move is another nearby local tweak or another new method family.
+Do **not** assume the next best move is another nearby threshold tweak or another unrelated new family.
 
 Use these interpretation rules instead:
 - **Canonical** docs/scripts define the current project identity.
@@ -83,36 +83,30 @@ For the formal interpretation rules, see:
 - answer-support aggregation infrastructure,
 - observability-enabled semantic failure analysis,
 - comparative mistake auditing against the best baseline,
-- provenance-aware experiment bundles and status notes,
 - bounded real-model confirmation paths,
-- a materially stronger learner-side supervision stack than before,
-- a broader and cleaner dataset surface than before.
+- 20-case defeat analysis with branch-level recovery,
+- 20-case discovered-tree / frontier-evolution reconstruction,
+- and a materially stronger learner-side supervision stack than before.
 
 ### What is not solved yet
-- wrong commit timing at the answer-group level,
-- challenger control under realistic noise,
+- robust early-to-mid anti-collapse tree control under budget,
+- challenger maturation without harming too many cases,
 - dependence-aware support calibration,
 - stable real-model leadership among close variants,
 - broader paper-grade real-model evidence,
-- honest experiment-readiness closure for partially integrated datasets such as LiveCodeBench.
+- and honest experiment-readiness closure for partially integrated datasets such as LiveCodeBench.
 
 ### Main bottleneck
 The current bottleneck is best described as:
 
-**wrong commit timing at the answer-group level: deciding whether the incumbent is already safe to commit to, whether a challenger still deserves compute, and how to avoid harmful late-stage instability.**
-
-The repository is **not** primarily blocked by:
-- missing infrastructure,
-- lack of datasets,
-- lack of new family ideas,
-- or the old dominant insufficient-diversity story.
+**under fixed budget, the controller still tends to over-expand one early-favored branch and does not yet reliably preserve and mature answer-distinct alternatives strongly enough.**
 
 ### Best near-term direction
 The current best near-term direction is:
 - keep the broad diversity/aggregation family,
-- continue to use narrower controller refinements as diagnostic tools unless they clearly beat the current broad line,
-- understand and reduce harmed cases,
-- and prioritize stronger controlled validation followed by stronger real-model confirmation.
+- continue the anti-collapse answer-group-aware line as the promoted next bounded refinement,
+- reduce harmed cases without losing the current gains,
+- and strengthen controlled validation before broad paper claims.
 
 ## Repository layout
 
@@ -129,8 +123,8 @@ The current best near-term direction is:
 
 The strongest current paper story is:
 
-**fixed-budget branch allocation for LLM reasoning, where the key remaining challenge is not mainly creating more branches, but deciding when the current best answer group is already strong and stable enough to commit to, how to compare it against challengers under correlated support, and how to allocate remaining compute only when a challenger still has plausible upside.**
+**fixed-budget branch allocation for LLM reasoning, where a key remaining challenge is not just whether to commit late, but how to keep answer-distinct alternatives alive and competitive early enough for the budget to be spent on the right tree shape.**
 
 Current manuscript positioning is intentionally honest:
 
-**the repository now has a strong leading broad family, a stronger learner-side target stack, a broader evaluation surface, and multiple useful diagnostic refinement lines, but it is not yet in final broad-best-claim shape because commit-control and real-model confirmation still need stronger evidence.**
+**the repository now has a strong leading broad family, a promoted anti-collapse refinement line, and a much better defeat-analysis stack, but it is not yet in final broad-best-claim shape because harmed-case reduction and stronger real-model confirmation still need more evidence.**
