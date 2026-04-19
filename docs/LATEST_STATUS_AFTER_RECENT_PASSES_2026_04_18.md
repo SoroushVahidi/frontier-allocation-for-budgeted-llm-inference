@@ -1,8 +1,8 @@
-# Latest status after recent bounded passes (2026-04-18)
+# Latest status after recent passes (2026-04-18)
 
 ## Purpose
 
-This note records the shortest current repository-facing update after the most recent bounded method, observability, and target-definition passes.
+This note records the shortest current repository-facing update after the most recent bounded method, observability, objective, comparison, and broad-method confirmation passes.
 
 It is intended to answer:
 - what the newest experiments changed,
@@ -14,190 +14,175 @@ It is intended to answer:
 
 The shortest honest update is:
 
-- the repository has now pressure-tested several stronger nearby target/control ideas,
-- none of those nearby refinements clearly displaced the current multistep-k3 line as a broad successor,
-- fresh observability-enabled runs now support real semantic failure diagnosis,
-- and the newest bounded target-definition studies support **augmenting** the continuation-value oracle rather than replacing it globally.
+- the repository moved beyond the earlier local target/oracle-refinement phase,
+- a **broad diversity/aggregation family** is now the leading serious method family,
+- that family held up in stricter simulator confirmation and survived bounded real-model confirmation as a plausible contender,
+- but the current evidence is still not paper-grade because real-model scale remains too small and the exact best broad variant is not yet fully settled.
 
 In practical terms:
 
-> the repo is now in a decision phase rather than a broad-experiment phase: the key question is no longer “what extra tweak should we try next,” but “what target/oracle definition should govern hard close-branch decisions?”
+> the repo is now in a **method hardening and realism-confirmation phase**, not a broad method-search phase.
 
-## What was just added and what it means
+## What the recent passes changed
 
-### 1. Discounted multistep target
+### 1. Earlier local target/control refinements
 Status:
 - integrated and evaluated.
 
 What happened:
-- helped some delayed-payoff failure diagnostics,
-- but did not produce a clear aggregate accepted-metric win over the current multistep family.
+- discounted multistep, compute-response curves, rank-instability supervision, and instability-to-decision coupling did **not** produce a broad successor to the multistep line.
 
 Interpretation:
-- useful diagnostic evidence,
-- not a clear replacement-family win.
+- local nearby refinements were useful diagnostics,
+- but not the final broad method answer.
 
-### 2. Compute-response curve prediction
+### 2. Branch observability and semantic diagnosis
 Status:
-- integrated as a first-class target family and evaluated.
+- implemented and then used in fresh real runs.
 
 What happened:
-- changed the prediction object from a single scalar to a short horizon response object,
-- but still did not beat the current multistep-k3 family on accepted/hard-slice metrics in the bounded pass.
+- the repository can now preserve branch text, reasoning text, recoverable answers, provenance, and semantic-diagnosis metadata on fresh runs,
+- enabling real casebooks of method failures rather than only proxy-level diagnosis.
 
 Interpretation:
-- richer short-horizon target structure alone was not enough.
+- semantic failure analysis is now a first-class repository capability.
 
-### 3. Rank-instability supervision
+### 3. Oracle mismatch and completion-aware studies
 Status:
-- integrated as a first-class supervision object and evaluated.
+- implemented and evaluated.
 
 What happened:
-- produced mostly diagnostic value,
-- but did not beat current multistep-k3 in the bounded pass.
+- continuation value remained a strong core signal,
+- completion-aware signals were real and useful,
+- but bounded completion-aware correction alone was not enough to become the broad best method.
 
 Interpretation:
-- instability looks meaningful as a signal,
-- but its current use is not yet enough to improve decisions.
+- completion-aware logic matters,
+- but only as part of a stronger broader controller story.
 
-### 4. Instability-to-decision coupling / defer activation
+### 4. Intermediate-result failure fix
 Status:
-- explicit bounded policy family implemented and evaluated.
+- implemented and evaluated.
 
 What happened:
-- no policy variant beat the current multistep-k3 baseline,
-- defer-heavy variants hurt strict hard-slice accepted accuracy.
+- targeted robustness improved on the intended failure slice,
+- but this remained a local fix rather than a global replacement.
 
 Interpretation:
-- better ambiguity-aware gating alone, in this bounded form, was still not enough.
+- semantic incompleteness is real,
+- but local correction alone is not enough for broad dominance.
 
-### 5. Rich failure-case recovery from historical artifacts
+### 5. Self-consistency advantage casebook
 Status:
-- bounded recovery pass implemented and run.
+- implemented and analyzed.
 
 What happened:
-- historical selected cases remained proxy-only,
-- no direct branch reasoning traces or direct method/oracle final branch answers were recoverable from the inspected old artifacts.
+- self-consistency’s broad advantage was explained mainly by:
+  - broader search/diversity,
+  - answer aggregation,
+  - reduced premature commitment.
 
 Interpretation:
-- old artifact sets are not sufficient for true semantic branch diagnosis.
+- the broad competitor problem was not mainly a local oracle tweak problem;
+- it was a diversity/aggregation problem.
 
-### 6. Branch observability instrumentation
+### 6. Bounded selective self-consistency hybrid
 Status:
-- implemented at the frontier/state materialization path and validated with a bounded smoke run, then extended on fresh real runs.
+- implemented and evaluated.
 
 What happened:
-- fresh instrumentation-enabled runs can preserve:
-  - branch text,
-  - branch reasoning text,
-  - branch final-answer text when directly present,
-  - normalized final answers,
-  - extracted numbers,
-  - branch role summaries,
-  - explicit provenance and recoverability metadata.
+- local SC-inspired rescue improved hard-state proxy behavior,
+- but did not materially close the broad gap to self-consistency.
 
 Interpretation:
-- fresh real runs can support true semantic failure diagnosis,
-- even though old runs remain mostly unrecoverable post hoc.
+- local hard-case rescue was directionally useful,
+- but still too weak.
 
-### 7. Worst real failure casebook with reasoning
+### 7. Global broad diversity/aggregation family
 Status:
-- bounded real trace-backed worst-failure casebook implemented and run.
+- implemented and evaluated.
 
 What happened:
-- direct reasoning recovery for both method and oracle branches became available on selected worst cases,
-- contested cases showed that method and oracle branches can share early reasoning while differing in visible completion or answer-completeness.
+- a broader diversity-aware allocation family with answer-support aggregation was introduced as a main-policy family,
+- and this was the first repo pass where a branch-allocation method behaved like a serious broad competitor.
 
 Interpretation:
-- semantic/objective mismatch is now a directly inspectable repository object rather than only a proxy-level suspicion.
+- the repo’s central method direction changed here.
 
-### 8. Completion-aware decision study
+### 8. Stricter simulator confirmation of the broad family
 Status:
-- bounded completion-aware decision experiment implemented and run.
+- implemented and evaluated.
 
 What happened:
-- completion-aware variants improved oracle-alignment metrics on the bounded slice,
-- but did not robustly resolve the semantic/objective-mismatch pattern by themselves.
+- `broad_diversity_aggregation_strong_v1` became the main tracked candidate,
+- and the family held up under stricter simulator confirmation,
+- with broad improvement distributed across datasets rather than concentrated in one place.
 
 Interpretation:
-- completion/answer-evidence is a real signal,
-- but it is not a global replacement for continuation value.
+- this family is not a light-run fluke in simulator mode.
 
-### 9. Final-answer recovery on contested states
+### 9. Bounded real-model confirmation
 Status:
-- bounded branch-emission and contested-state final-answer recovery added and run.
+- implemented with real provider-backed runs.
 
 What happened:
-- direct final-answer recovery remained limited,
-- but recovered direct-or-completion final-answer recovery became sufficient on the bounded contested slice to support semantic adjudication.
+- the broad diversity/aggregation family survived contact with real models as a serious contender,
+- but the real-model slice remained very small,
+- and exact variant leadership became unstable (`v1` topped the tiny bounded real slice while `strong_v1` remained the main simulator-backed candidate).
 
 Interpretation:
-- the repository can now decide contested semantic cases much more concretely than before.
-
-### 10. Oracle mismatch study
-Status:
-- bounded continuation-vs-completion-vs-hybrid oracle comparison implemented and run.
-
-What happened:
-- disagreement across oracle definitions was small and concentrated in near-tie states,
-- and the hard conclusion was to **augment the current oracle**, not replace it.
-
-Interpretation:
-- the continuation-value oracle remains a good core object,
-- but bounded completion-aware correction is justified in disagreement slices.
+- the family still looks promising under realism,
+- but real-model evidence is still too small for paper-grade confidence.
 
 ## What these results collectively now mean
 
 The current repository-backed interpretation is:
 
-- the multistep family remains the best current bounded method lead,
-- recent nearby refinements did **not** produce a broad successor,
-- fresh semantic failure analysis is now available on new runs,
-- and the main unresolved question has narrowed to the exact target/oracle definition for hard close-branch states.
-
-The remaining issue is therefore less well-described as:
-- “we just need another richer target,”
-- or “we just need another defer rule,”
-
-and better described as:
-
-> **we now need to freeze the target/oracle definition for hard disagreement states: continuation value as the core signal, with bounded completion-aware correction only where semantic branch quality and immediate continuation value diverge.**
+- the project’s broad method answer is no longer likely to come from another local target/oracle tweak,
+- the leading direction is now the **broad diversity/aggregation family**,
+- the main tracked candidate is currently `broad_diversity_aggregation_strong_v1`, with `broad_diversity_aggregation_v1` as the main ablation/context sibling,
+- and the next high-value work is realism confirmation and family hardening, not new-family search.
 
 ## Updated bottleneck statement
 
 A stronger current bottleneck statement is:
 
-> **The repository is currently bottlenecked by target-definition clarity, not by lack of more nearby experiments.**
+> **The repository is currently bottlenecked by reliable diversity realization, ranking/aggregation quality after diversity exists, and real-model confirmation scale.**
 
 More concretely:
-
-> the main remaining work is to formalize and validate the right hybrid oracle/controller definition for near-tie disagreement states now that fresh semantic case adjudication is possible.
+- diversity still often fails to materialize enough,
+- ranking can still be wrong even when diversity exists,
+- aggregation can still concentrate on the wrong answer cluster,
+- and real-model confirmation remains too small to support final paper-grade claims.
 
 ## What should happen next
 
 ### Best immediate next step
-Pause broad method coding and consolidate the current target-definition decision.
+Do **not** open a new method family.
 
-That means:
-- use the fresh semantic casebook plus recovered final answers to adjudicate contested disagreement cases,
-- freeze the current repository stance on the oracle/target,
-- and only then decide what the next admissible experiment should be.
+Instead:
+- keep the broad diversity/aggregation family as the main line,
+- freeze the current candidate pair (`strong_v1` main tracked candidate, `v1` ablation/context sibling) unless larger real runs reverse the choice,
+- and run larger but still cost-controlled **real-model confirmation** to determine:
+  - whether the family truly holds up,
+  - which exact broad variant is best,
+  - and what still breaks under real generation noise.
 
 ### Current recommended stance
 The current bounded evidence supports this stance:
 
-> **keep continuation value as the core oracle/target, and augment it with bounded completion-aware evidence only in disagreement slices, especially near-ties.**
+> **treat broad diversity-aware allocation with answer-support aggregation as the current main method family, and prioritize stronger Cohere/Gemini realism confirmation plus diversity-realization hardening over new-family search.**
 
 ### What should not be the default next move
 Do **not** make the next main step:
-- another nearby target-weighting tweak,
-- another auxiliary target family in the same bounded neighborhood,
+- another local target-weighting tweak,
 - another generic defer-policy sweep,
-- another broad controller variant pass,
-- or another attempt to semantically recover old non-instrumented artifacts.
+- another bounded hard-case rescue without broader family implications,
+- another unrelated controller family,
+- or another simulator-only campaign that postpones realism confirmation.
 
 These may still matter later, but they are no longer the highest-leverage default move.
 
 ## Best single-sentence summary
 
-> The repository is now in a stronger decision state: recent bounded target/control refinements did not clearly surpass multistep-k3, fresh observability-enabled runs now permit semantic adjudication of contested failures, and the current evidence supports a continuation-value core with bounded completion-aware correction in near-tie disagreement states.
+> The repository has now moved into a stronger method-confirmation phase: a broad diversity/aggregation family is the leading serious method direction, it held up in stricter simulator confirmation and survived bounded real-model contact, and the current bottleneck is no longer “find another family,” but “make diversity reliably materialize and confirm the family at larger real-model scale.”
