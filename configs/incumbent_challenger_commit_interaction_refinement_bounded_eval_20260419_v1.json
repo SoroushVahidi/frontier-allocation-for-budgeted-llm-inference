@@ -1,0 +1,18 @@
+{
+  "run_id": "incumbent_challenger_commit_interaction_refinement_bounded_eval_20260419",
+  "script": "scripts/run_incumbent_challenger_commit_interaction_refinement_bounded_eval_20260419.py",
+  "datasets": ["openai/gsm8k"],
+  "subset_size": 8,
+  "seeds": [11],
+  "budgets": [6],
+  "adaptive_grid": [1],
+  "methods": {
+    "baseline": "broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_v1",
+    "selector_refined_v2": "broad_diversity_aggregation_strong_v1_incumbent_challenger_metalevel_v2",
+    "commit_refinements": [
+      "metalevel_v2_selector_refined_v2_commit_tuned_v1",
+      "metalevel_v2_selector_refined_v2_commit_tuned_v2"
+    ]
+  },
+  "notes": "Bounded local commit-interaction pass after selector refinement, keeping same ICC family and three-action framing."
+}

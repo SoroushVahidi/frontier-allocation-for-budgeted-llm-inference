@@ -1,0 +1,15 @@
+{
+  "run_id": "incumbent_challenger_near_tie_single_point_refinement_20260419",
+  "script": "scripts/run_incumbent_challenger_near_tie_single_point_refinement_20260419.py",
+  "datasets": ["openai/gsm8k"],
+  "subset_size": 8,
+  "seeds": [11],
+  "budgets": [6],
+  "adaptive_grid": [1],
+  "methods": {
+    "baseline": "broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_v1",
+    "current_best_local_family": "metalevel_v2_selector_refined_v2_commit_tuned_v2",
+    "single_point_adjustment": "near_tie_single_point_adjusted"
+  },
+  "notes": "Final single-point near-tie stop/continue refinement pass inside same metalevel ICC family."
+}

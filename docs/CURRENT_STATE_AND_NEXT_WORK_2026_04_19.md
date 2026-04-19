@@ -10,6 +10,13 @@ This note gives one compact repository-facing answer to:
 - what the main bottleneck is now,
 - and what the next highest-value work should be if the goal is to beat prior methods with a strong NeurIPS-level pair of method and evidence.
 
+## Important update (demotion)
+
+The incumbent-challenger metalevel ICC refinement line has been **demoted to diagnostic-branch status** after bounded selector, commit-side, and final near-tie single-point passes. It is **not** the promoted main method at this time. See:
+
+- `docs/ICC_METALEVEL_DIAGNOSTIC_BRANCH_DEMOTION_2026_04_19.md`
+- `outputs/data_consolidation_20260418/icc_diagnostic_branch_demotion_summary_20260419.json`
+
 ## Project identity now
 
 The repository is currently about:
@@ -24,15 +31,15 @@ The current main serious family remains:
 
 > **broad diversity-aware branch allocation with answer-support aggregation**
 
-But the strongest current refinement inside that broad line is no longer mainly diversity-pushing. The repository now points toward:
+But the strongest tested refinement inside that broad line was no longer mainly diversity-pushing. Historically, the repository pointed toward:
 
 > **answer-group-level incumbent-vs-challenger commit control, especially with dependence-aware support, inside the broad diversity-aware family.**
 
-This is now the leading serious next method line because repository evidence shows:
+This is no longer the active promoted optimization line; it remains diagnostically useful because repository evidence showed:
 - earlier local target/oracle refinements were useful diagnostics but not the final broad answer,
 - a broad diversity/aggregation family became the first serious broad competitor,
 - refreshed failure analysis showed the dominant bottleneck shifted away from insufficient diversity,
-- and bounded incumbent-vs-challenger commit control is the first recent method line to improve the new dominant bottleneck directly.
+- and bounded incumbent-vs-challenger commit control was the first recent method line to improve the new dominant bottleneck directly.
 
 ## What has already been done
 
@@ -44,7 +51,7 @@ The repository already has:
 - observability and failure-case capture,
 - comparative mistake audits against the strongest broad baseline,
 - bounded real-model confirmation paths,
-- and now bounded incumbent-vs-challenger commit-controller variants.
+- and bounded incumbent-vs-challenger commit-controller variants (now retained as diagnostic artifacts).
 
 ### Learner-side / target-design side
 Recent passes materially strengthened the learner-side branch-allocation supervision stack.
@@ -102,7 +109,7 @@ A stronger matched validation pass showed:
 - reduced wrong-commit timing substantially,
 - and outperformed the raw-support version on both accuracy and wrong-commit reduction.
 
-This makes dependence-aware incumbent-vs-challenger commit control the leading serious next integration candidate.
+This did not survive later bounded refinement checks as a promoted line; it is now a demoted diagnostic branch pending a materially different hypothesis.
 
 ## What is still unresolved
 
