@@ -1,0 +1,289 @@
+[
+  {
+    "dataset_name": "Humanity's Last Exam (HLE)",
+    "source_name": "cais/hle",
+    "access_successful": true,
+    "integrated_scope": "Canonical cais/hle plus subset registry keys for text-only, exact-answer, MCQ, and text-only auto-gradable slices.",
+    "status": "partially_added",
+    "experiment_status": "partially_ready",
+    "text_only_supported": true,
+    "exact_answer_supported": true,
+    "mcq_supported": true,
+    "multimodal_present": true,
+    "auto_gradable_supported": true,
+    "loader_added": true,
+    "config_added": true,
+    "smoke_test_passed": true,
+    "reason_if_partial": "Canonical HLE includes image-bearing and richer rationale-image fields; current pipeline is experiment-ready for text-only auto-gradable subsets, not full multimodal evaluation.",
+    "next_step_needed": "Add multimodal rendering/evaluation policy and scorer hooks before claiming full HLE support.",
+    "variant_access": {
+      "cais/hle": {
+        "dataset": "cais/hle",
+        "repo_id": "cais/hle",
+        "ok": true,
+        "gated": false,
+        "split": "test",
+        "config": null,
+        "token_present": true,
+        "token_env_presence": {
+          "HF_TOKEN": true,
+          "HUGGINGFACE_HUB_TOKEN": false
+        },
+        "first_row_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "id",
+          "image",
+          "image_preview",
+          "question",
+          "rationale",
+          "rationale_image",
+          "raw_subject"
+        ]
+      },
+      "cais/hle_text_only": {
+        "dataset": "cais/hle_text_only",
+        "repo_id": "cais/hle",
+        "ok": true,
+        "gated": false,
+        "split": "test",
+        "config": null,
+        "token_present": true,
+        "token_env_presence": {
+          "HF_TOKEN": true,
+          "HUGGINGFACE_HUB_TOKEN": false
+        },
+        "first_row_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "id",
+          "image",
+          "image_preview",
+          "question",
+          "rationale",
+          "rationale_image",
+          "raw_subject"
+        ]
+      },
+      "cais/hle_exact_answer": {
+        "dataset": "cais/hle_exact_answer",
+        "repo_id": "cais/hle",
+        "ok": true,
+        "gated": false,
+        "split": "test",
+        "config": null,
+        "token_present": true,
+        "token_env_presence": {
+          "HF_TOKEN": true,
+          "HUGGINGFACE_HUB_TOKEN": false
+        },
+        "first_row_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "id",
+          "image",
+          "image_preview",
+          "question",
+          "rationale",
+          "rationale_image",
+          "raw_subject"
+        ]
+      },
+      "cais/hle_mcq": {
+        "dataset": "cais/hle_mcq",
+        "repo_id": "cais/hle",
+        "ok": true,
+        "gated": false,
+        "split": "test",
+        "config": null,
+        "token_present": true,
+        "token_env_presence": {
+          "HF_TOKEN": true,
+          "HUGGINGFACE_HUB_TOKEN": false
+        },
+        "first_row_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "id",
+          "image",
+          "image_preview",
+          "question",
+          "rationale",
+          "rationale_image",
+          "raw_subject"
+        ]
+      },
+      "cais/hle_auto_gradable": {
+        "dataset": "cais/hle_auto_gradable",
+        "repo_id": "cais/hle",
+        "ok": true,
+        "gated": false,
+        "split": "test",
+        "config": null,
+        "token_present": true,
+        "token_env_presence": {
+          "HF_TOKEN": true,
+          "HUGGINGFACE_HUB_TOKEN": false
+        },
+        "first_row_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "id",
+          "image",
+          "image_preview",
+          "question",
+          "rationale",
+          "rationale_image",
+          "raw_subject"
+        ]
+      }
+    },
+    "variant_smoke": {
+      "cais/hle": {
+        "ok": true,
+        "error": "",
+        "sample_size": 8,
+        "sample_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "config",
+          "dataset",
+          "example_id",
+          "has_image",
+          "question",
+          "raw_subject",
+          "split"
+        ],
+        "sample_answer_types": [
+          "exactMatch",
+          "multipleChoice"
+        ],
+        "sample_has_image_flags": [
+          "false"
+        ]
+      },
+      "cais/hle_text_only": {
+        "ok": true,
+        "error": "",
+        "sample_size": 8,
+        "sample_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "config",
+          "dataset",
+          "example_id",
+          "has_image",
+          "question",
+          "raw_subject",
+          "split"
+        ],
+        "sample_answer_types": [
+          "exactMatch",
+          "multipleChoice"
+        ],
+        "sample_has_image_flags": [
+          "false"
+        ]
+      },
+      "cais/hle_exact_answer": {
+        "ok": true,
+        "error": "",
+        "sample_size": 8,
+        "sample_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "config",
+          "dataset",
+          "example_id",
+          "has_image",
+          "question",
+          "raw_subject",
+          "split"
+        ],
+        "sample_answer_types": [
+          "exactMatch"
+        ],
+        "sample_has_image_flags": [
+          "false",
+          "true"
+        ]
+      },
+      "cais/hle_mcq": {
+        "ok": true,
+        "error": "",
+        "sample_size": 8,
+        "sample_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "config",
+          "dataset",
+          "example_id",
+          "has_image",
+          "question",
+          "raw_subject",
+          "split"
+        ],
+        "sample_answer_types": [
+          "multipleChoice"
+        ],
+        "sample_has_image_flags": [
+          "false",
+          "true"
+        ]
+      },
+      "cais/hle_auto_gradable": {
+        "ok": true,
+        "error": "",
+        "sample_size": 8,
+        "sample_keys": [
+          "answer",
+          "answer_type",
+          "author_name",
+          "canary",
+          "category",
+          "config",
+          "dataset",
+          "example_id",
+          "has_image",
+          "question",
+          "raw_subject",
+          "split"
+        ],
+        "sample_answer_types": [
+          "exactMatch",
+          "multipleChoice"
+        ],
+        "sample_has_image_flags": [
+          "false"
+        ]
+      }
+    }
+  }
+]
