@@ -1,0 +1,1042 @@
+{
+  "baseline_default": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.5714285714285714
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.5714285714285714
+    },
+    "defer_metrics": {},
+    "defer_label_audit": {
+      "all": {
+        "total_examples": 80,
+        "positive_defer_labels": 51,
+        "negative_defer_labels": 29,
+        "positive_rate": 0.6375,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 80
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 22,
+          "expand:b1": 37,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 80
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 80
+        },
+        "near_tie_defer_positive_count": 14,
+        "near_tie_total_count": 15
+      },
+      "train": {
+        "total_examples": 67,
+        "positive_defer_labels": 45,
+        "negative_defer_labels": 22,
+        "positive_rate": 0.6716417910447762,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 67
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 16,
+          "expand:b1": 30,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 67
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 67
+        },
+        "near_tie_defer_positive_count": 11,
+        "near_tie_total_count": 12
+      },
+      "val": {
+        "total_examples": 6,
+        "positive_defer_labels": 3,
+        "negative_defer_labels": 3,
+        "positive_rate": 0.5,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 6
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b1": 6
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 6
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 6
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 0
+      },
+      "test": {
+        "total_examples": 7,
+        "positive_defer_labels": 3,
+        "negative_defer_labels": 4,
+        "positive_rate": 0.42857142857142855,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 7
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 6,
+          "expand:b1": 1
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 7
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 7
+        },
+        "near_tie_defer_positive_count": 3,
+        "near_tie_total_count": 3
+      }
+    }
+  },
+  "value_aware": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.5714285714285714
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.5714285714285714
+    },
+    "defer_metrics": {},
+    "defer_label_audit": {
+      "all": {
+        "total_examples": 80,
+        "positive_defer_labels": 51,
+        "negative_defer_labels": 29,
+        "positive_rate": 0.6375,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 80
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 22,
+          "expand:b1": 37,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 80
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 80
+        },
+        "near_tie_defer_positive_count": 14,
+        "near_tie_total_count": 15
+      },
+      "train": {
+        "total_examples": 67,
+        "positive_defer_labels": 45,
+        "negative_defer_labels": 22,
+        "positive_rate": 0.6716417910447762,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 67
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 16,
+          "expand:b1": 30,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 67
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 67
+        },
+        "near_tie_defer_positive_count": 11,
+        "near_tie_total_count": 12
+      },
+      "val": {
+        "total_examples": 6,
+        "positive_defer_labels": 3,
+        "negative_defer_labels": 3,
+        "positive_rate": 0.5,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 6
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b1": 6
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 6
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 6
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 0
+      },
+      "test": {
+        "total_examples": 7,
+        "positive_defer_labels": 3,
+        "negative_defer_labels": 4,
+        "positive_rate": 0.42857142857142855,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 7
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 6,
+          "expand:b1": 1
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 7
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 7
+        },
+        "near_tie_defer_positive_count": 3,
+        "near_tie_total_count": 3
+      }
+    }
+  },
+  "value_aware_ambiguity": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.8571428571428571
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.8571428571428571
+    },
+    "defer_metrics": {},
+    "defer_label_audit": {
+      "all": {
+        "total_examples": 80,
+        "positive_defer_labels": 51,
+        "negative_defer_labels": 29,
+        "positive_rate": 0.6375,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 80
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 22,
+          "expand:b1": 37,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 80
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 80
+        },
+        "near_tie_defer_positive_count": 14,
+        "near_tie_total_count": 15
+      },
+      "train": {
+        "total_examples": 67,
+        "positive_defer_labels": 45,
+        "negative_defer_labels": 22,
+        "positive_rate": 0.6716417910447762,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 67
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 16,
+          "expand:b1": 30,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 67
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 67
+        },
+        "near_tie_defer_positive_count": 11,
+        "near_tie_total_count": 12
+      },
+      "val": {
+        "total_examples": 6,
+        "positive_defer_labels": 3,
+        "negative_defer_labels": 3,
+        "positive_rate": 0.5,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 6
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b1": 6
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 6
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 6
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 0
+      },
+      "test": {
+        "total_examples": 7,
+        "positive_defer_labels": 3,
+        "negative_defer_labels": 4,
+        "positive_rate": 0.42857142857142855,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 7
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 6,
+          "expand:b1": 1
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 7
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 7
+        },
+        "near_tie_defer_positive_count": 3,
+        "near_tie_total_count": 3
+      }
+    }
+  },
+  "value_aware_ambiguity_decomposed": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.8571428571428571
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.8571428571428571
+    },
+    "defer_metrics": {
+      "model_status": "ok",
+      "three_way_accuracy_test": 0.0,
+      "defer_precision_test": 0.0,
+      "defer_recall_test": 0.0,
+      "defer_f1_test": 0.0,
+      "accepted_only_accuracy_test": 0.0,
+      "coverage_test": 0.0,
+      "near_tie_accepted_accuracy_test": 0.0,
+      "adjacent_rank_accepted_accuracy_test": 0.0,
+      "exact_promoted_hard_region_accepted_accuracy_test": 0.0,
+      "low_best_vs_outside_gap_accepted_accuracy_test": 0.0,
+      "high_disagreement_risk_accepted_accuracy_test": 0.0,
+      "approx_or_mixed_accepted_accuracy_test": 0.0,
+      "threshold_trace_test": [
+        {
+          "threshold": 0.05,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.14,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.22999999999999998,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.32,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.41,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.49999999999999994,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.5900000000000001,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.68,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.77,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.86,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.95,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        }
+      ],
+      "threshold_selection": {
+        "mode": "fixed",
+        "selected_threshold": 0.5,
+        "source": "configured_or_override"
+      },
+      "configured_threshold": 0.5,
+      "effective_threshold": 0.5,
+      "best_accepted_accuracy_under_min_coverage_test": {
+        "threshold": 0.5,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0
+      },
+      "best_coverage_under_min_accepted_accuracy_test": {
+        "threshold": 0.5,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0
+      },
+      "decision_buckets_test": {
+        "confident_correct_commit": 0,
+        "confident_wrong_commit": 0,
+        "correct_defer": 0,
+        "missed_defer": 0,
+        "unnecessary_defer": 7,
+        "ambiguous_hard_commit_proxy": 0,
+        "outside_option_should_have_won_proxy": 0
+      },
+      "calibration_used": {
+        "mode": "none"
+      },
+      "raw_probability_note": "raw multinomial probabilities are post-processed by bounded calibration and defer policy thresholds",
+      "confusion_matrix_left_defer_right_test": [
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ],
+      "ranking_top1_accuracy_test": null,
+      "note": "pairwise defer classifier evaluated in pairwise space; candidate top-1 ranking not defined",
+      "fallback_policy": "none",
+      "fallback_enabled": false,
+      "resolved_accuracy_test": 0.0,
+      "resolved_coverage_test": 0.0,
+      "unresolved_rate_after_fallback_test": 1.0,
+      "near_tie_resolved_accuracy_test": 0.0,
+      "adjacent_rank_resolved_accuracy_test": 0.0,
+      "exact_promoted_hard_region_resolved_accuracy_test": 0.0,
+      "fallback_subset_size": 7,
+      "fallback_subset_accuracy": 0.0,
+      "fallback_resolution_rate": 0.0,
+      "unresolved_after_fallback_rate": 1.0,
+      "fallback_gain_over_binary_backup": 0.0,
+      "fallback_gain_over_pointwise_backup": 0.0,
+      "complementarity_binary_wrong_pointwise_right": 0,
+      "complementarity_pointwise_wrong_binary_right": 0,
+      "outside_option_avoid_bad_forced_commit_proxy": 0,
+      "policy_confusion_summary_test": {
+        "committed_correct": 0,
+        "committed_wrong": 0,
+        "deferred_then_resolved_correct": 0,
+        "deferred_then_resolved_wrong": 0,
+        "deferred_still_unresolved": 7
+      },
+      "per_example_defer_scores_test": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 0,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 0.5205313337182113,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b1"
+        }
+      ],
+      "defer_score_distribution_test": {
+        "positive_count": 0,
+        "negative_count": 7,
+        "positive_mean": 0.0,
+        "negative_mean": 1.0,
+        "positive_p90": 0.0,
+        "negative_p90": 1.0
+      }
+    },
+    "defer_label_audit": {
+      "all": {
+        "total_examples": 80,
+        "positive_defer_labels": 0,
+        "negative_defer_labels": 80,
+        "positive_rate": 0.0,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 80
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 22,
+          "expand:b1": 37,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 80
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 80
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 15
+      },
+      "train": {
+        "total_examples": 67,
+        "positive_defer_labels": 0,
+        "negative_defer_labels": 67,
+        "positive_rate": 0.0,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 67
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 16,
+          "expand:b1": 30,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 67
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 67
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 12
+      },
+      "val": {
+        "total_examples": 6,
+        "positive_defer_labels": 0,
+        "negative_defer_labels": 6,
+        "positive_rate": 0.0,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 6
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b1": 6
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 6
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 6
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 0
+      },
+      "test": {
+        "total_examples": 7,
+        "positive_defer_labels": 0,
+        "negative_defer_labels": 7,
+        "positive_rate": 0.0,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 7
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 6,
+          "expand:b1": 1
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 7
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 7
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 3
+      }
+    }
+  },
+  "value_aware_ambiguity_decomposed_stabilized": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.8571428571428571
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.8571428571428571
+    },
+    "defer_metrics": {
+      "model_status": "ok",
+      "three_way_accuracy_test": 0.0,
+      "defer_precision_test": 0.0,
+      "defer_recall_test": 0.0,
+      "defer_f1_test": 0.0,
+      "accepted_only_accuracy_test": 0.0,
+      "coverage_test": 0.0,
+      "near_tie_accepted_accuracy_test": 0.0,
+      "adjacent_rank_accepted_accuracy_test": 0.0,
+      "exact_promoted_hard_region_accepted_accuracy_test": 0.0,
+      "low_best_vs_outside_gap_accepted_accuracy_test": 0.0,
+      "high_disagreement_risk_accepted_accuracy_test": 0.0,
+      "approx_or_mixed_accepted_accuracy_test": 0.0,
+      "threshold_trace_test": [
+        {
+          "threshold": 0.05,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.14,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.22999999999999998,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.32,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.41,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.49999999999999994,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.5900000000000001,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.68,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.77,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.86,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        },
+        {
+          "threshold": 0.95,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "accepted_count": 0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0,
+          "defer_f1": 0.0
+        }
+      ],
+      "threshold_selection": {
+        "mode": "fixed",
+        "selected_threshold": 0.5,
+        "source": "configured_or_override"
+      },
+      "configured_threshold": 0.5,
+      "effective_threshold": 0.5,
+      "best_accepted_accuracy_under_min_coverage_test": {
+        "threshold": 0.5,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0
+      },
+      "best_coverage_under_min_accepted_accuracy_test": {
+        "threshold": 0.5,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0
+      },
+      "decision_buckets_test": {
+        "confident_correct_commit": 0,
+        "confident_wrong_commit": 0,
+        "correct_defer": 0,
+        "missed_defer": 0,
+        "unnecessary_defer": 7,
+        "ambiguous_hard_commit_proxy": 0,
+        "outside_option_should_have_won_proxy": 0
+      },
+      "calibration_used": {
+        "mode": "none"
+      },
+      "raw_probability_note": "raw multinomial probabilities are post-processed by bounded calibration and defer policy thresholds",
+      "confusion_matrix_left_defer_right_test": [
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ],
+      "ranking_top1_accuracy_test": null,
+      "note": "pairwise defer classifier evaluated in pairwise space; candidate top-1 ranking not defined",
+      "fallback_policy": "none",
+      "fallback_enabled": false,
+      "resolved_accuracy_test": 0.0,
+      "resolved_coverage_test": 0.0,
+      "unresolved_rate_after_fallback_test": 1.0,
+      "near_tie_resolved_accuracy_test": 0.0,
+      "adjacent_rank_resolved_accuracy_test": 0.0,
+      "exact_promoted_hard_region_resolved_accuracy_test": 0.0,
+      "fallback_subset_size": 7,
+      "fallback_subset_accuracy": 0.0,
+      "fallback_resolution_rate": 0.0,
+      "unresolved_after_fallback_rate": 1.0,
+      "fallback_gain_over_binary_backup": 0.0,
+      "fallback_gain_over_pointwise_backup": 0.0,
+      "complementarity_binary_wrong_pointwise_right": 0,
+      "complementarity_pointwise_wrong_binary_right": 0,
+      "outside_option_avoid_bad_forced_commit_proxy": 0,
+      "policy_confusion_summary_test": {
+        "committed_correct": 0,
+        "committed_wrong": 0,
+        "deferred_then_resolved_correct": 0,
+        "deferred_then_resolved_wrong": 0,
+        "deferred_still_unresolved": 7
+      },
+      "per_example_defer_scores_test": [
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep0_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 0,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 1.0022966552612846,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b0"
+        },
+        {
+          "state_id": "exopenai_gsm8k_0_ep1_d2",
+          "example_id": "openai_gsm8k_0",
+          "gold_defer_label": 2,
+          "predicted_defer_probability": 1.0,
+          "predicted_class_default_threshold": 1,
+          "ambiguity_bucket": "high_margin",
+          "delta_expand_commit": 0.5205313337182113,
+          "regret_min_pair": 0.0,
+          "best_action_metadata": "expand:b1"
+        }
+      ],
+      "defer_score_distribution_test": {
+        "positive_count": 0,
+        "negative_count": 7,
+        "positive_mean": 0.0,
+        "negative_mean": 1.0,
+        "positive_p90": 0.0,
+        "negative_p90": 1.0
+      }
+    },
+    "defer_label_audit": {
+      "all": {
+        "total_examples": 80,
+        "positive_defer_labels": 0,
+        "negative_defer_labels": 80,
+        "positive_rate": 0.0,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 80
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 22,
+          "expand:b1": 37,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 80
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 80
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 15
+      },
+      "train": {
+        "total_examples": 67,
+        "positive_defer_labels": 0,
+        "negative_defer_labels": 67,
+        "positive_rate": 0.0,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 67
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 16,
+          "expand:b1": 30,
+          "expand:b2": 8,
+          "expand:b3": 13
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 67
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 67
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 12
+      },
+      "val": {
+        "total_examples": 6,
+        "positive_defer_labels": 0,
+        "negative_defer_labels": 6,
+        "positive_rate": 0.0,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 6
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b1": 6
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 6
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 6
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 0
+      },
+      "test": {
+        "total_examples": 7,
+        "positive_defer_labels": 0,
+        "negative_defer_labels": 7,
+        "positive_rate": 0.0,
+        "counts_by_ambiguity_bucket": {
+          "high_margin": 7
+        },
+        "counts_by_best_action_metadata": {
+          "expand:b0": 6,
+          "expand:b1": 1
+        },
+        "counts_by_delta_expand_commit_bucket": {
+          "large_expand_advantage": 7
+        },
+        "counts_by_regret_bucket": {
+          "zero_regret": 7
+        },
+        "near_tie_defer_positive_count": 0,
+        "near_tie_total_count": 3
+      }
+    }
+  }
+}

@@ -51,6 +51,12 @@ class BruteForceLabelConfig:
     ambiguity_near_tie_threshold: float = 0.02
     ambiguity_medium_threshold: float = 0.08
     ambiguity_high_threshold: float = 0.16
+    # bounded variance-reduction controls for Q_expand - Q_commit targets
+    target_estimation_repeats: int = 1
+    paired_rollout_comparison: bool = True
+    reliability_min_samples: int = 4
+    reliability_floor: float = 0.05
+    reliability_scale: float = 2.0
     target_mode: str = "legacy_plus_value_awareness_v1"
 
 
@@ -326,43 +332,78 @@ def evaluate_state_candidates(
     q_commit = float(_state_utility(_clone_branches(branches)))
     parent_mean_score = sum(float(b.score) for b in branches) / max(1, len(branches))
     for cand_idx, cand in enumerate(branches):
-        alloc_means: list[tuple[tuple[int, ...], float]] = []
+        alloc_means: list[tuple[tuple[int, ...], float, float, float, float]] = []
         for alloc_idx, alloc in enumerate(allocations):
-            values: list[float] = []
-            for sample_idx in range(int(cfg.rollout_samples_per_candidate)):
-                cloned = _clone_branches(branches)
-                if not cloned[cand_idx].is_done and not cloned[cand_idx].is_pruned:
-                    first_seed = _stable_seed(state.state_id, cand.branch_id, sample_idx, "first")
-                    _expand_branch_once(cloned[cand_idx], random.Random(first_seed), cfg)
-                run_seed = _stable_seed(state.state_id, cand.branch_id, alloc_idx, sample_idx, "alloc")
-                value = _apply_allocation(cloned, alloc, rng_seed=run_seed, cfg=cfg)
-                values.append(float(value))
-                raw_rollouts.append(
-                    {
-                        "state_id": state.state_id,
-                        "candidate_branch_id": cand.branch_id,
-                        "allocation_index": alloc_idx,
-                        "allocation_vector": list(alloc),
-                        "sample_index": sample_idx,
-                        "post_budget_value": float(value),
-                        "mode": mode,
-                    }
-                )
-            alloc_means.append((alloc, sum(values) / max(1, len(values))))
+            rep_means: list[float] = []
+            paired_deltas_all: list[float] = []
+            for rep_idx in range(max(1, int(cfg.target_estimation_repeats))):
+                values: list[float] = []
+                paired_deltas: list[float] = []
+                for sample_idx in range(int(cfg.rollout_samples_per_candidate)):
+                    sample_key = _stable_seed(state.state_id, cand.branch_id, alloc_idx, rep_idx, sample_idx, "alloc")
+                    if bool(cfg.paired_rollout_comparison):
+                        base_cloned = _clone_branches(branches)
+                        expand_cloned = _clone_branches(branches)
+                        if not expand_cloned[cand_idx].is_done and not expand_cloned[cand_idx].is_pruned:
+                            first_seed = _stable_seed(state.state_id, cand.branch_id, rep_idx, sample_idx, "first")
+                            _expand_branch_once(expand_cloned[cand_idx], random.Random(first_seed), cfg)
+                        base_value = _apply_allocation(base_cloned, alloc, rng_seed=sample_key, cfg=cfg)
+                        expand_value = _apply_allocation(expand_cloned, alloc, rng_seed=sample_key, cfg=cfg)
+                        value = float(expand_value)
+                        paired_delta = float(expand_value - base_value)
+                        paired_deltas.append(paired_delta)
+                    else:
+                        expand_cloned = _clone_branches(branches)
+                        if not expand_cloned[cand_idx].is_done and not expand_cloned[cand_idx].is_pruned:
+                            first_seed = _stable_seed(state.state_id, cand.branch_id, rep_idx, sample_idx, "first")
+                            _expand_branch_once(expand_cloned[cand_idx], random.Random(first_seed), cfg)
+                        value = float(_apply_allocation(expand_cloned, alloc, rng_seed=sample_key, cfg=cfg))
+                    values.append(value)
+                    raw_rollouts.append(
+                        {
+                            "state_id": state.state_id,
+                            "candidate_branch_id": cand.branch_id,
+                            "allocation_index": alloc_idx,
+                            "allocation_vector": list(alloc),
+                            "repeat_index": rep_idx,
+                            "sample_index": sample_idx,
+                            "post_budget_value": float(value),
+                            "paired_delta_expand_minus_no_first_expand": float(paired_deltas[-1]) if paired_deltas else None,
+                            "mode": mode,
+                        }
+                    )
+                rep_means.append(sum(values) / max(1, len(values)))
+                paired_deltas_all.extend(paired_deltas)
+            alloc_mean = sum(rep_means) / max(1, len(rep_means))
+            alloc_mean_var = sum((x - alloc_mean) ** 2 for x in rep_means) / max(1, len(rep_means))
+            paired_delta_mean = sum(paired_deltas_all) / max(1, len(paired_deltas_all))
+            paired_delta_var = sum((x - paired_delta_mean) ** 2 for x in paired_deltas_all) / max(1, len(paired_deltas_all))
+            alloc_means.append((alloc, alloc_mean, math.sqrt(max(0.0, alloc_mean_var)), paired_delta_mean, math.sqrt(max(0.0, paired_delta_var))))
 
-        best_alloc, best_mean = max(alloc_means, key=lambda x: x[1])
+        best_alloc, best_mean, best_mean_std, best_paired_delta_mean, best_paired_delta_std = max(alloc_means, key=lambda x: x[1])
         all_means = [x[1] for x in alloc_means]
         mean_all = sum(all_means) / max(1, len(all_means))
         variance = sum((x - mean_all) ** 2 for x in all_means) / max(1, len(all_means))
+        target_samples = max(1, int(cfg.rollout_samples_per_candidate) * max(1, int(cfg.target_estimation_repeats)))
+        stderr = float(best_mean_std / math.sqrt(max(1, target_samples)))
+        reliability = 1.0 / (1.0 + float(cfg.reliability_scale) * max(float(cfg.reliability_floor), stderr))
         candidates.append(
             {
                 "branch_id": cand.branch_id,
                 "Q_expand": float(best_mean),
                 "Q_commit": float(q_commit),
+                "A_expand_minus_commit": float(best_mean - q_commit),
                 "estimated_value_if_allocate_next": float(best_mean),
                 "best_followup_allocation": list(best_alloc),
                 "allocation_candidates_evaluated": len(allocations),
                 "allocation_value_std": math.sqrt(max(0.0, variance)),
+                "target_estimation_repeats": int(max(1, int(cfg.target_estimation_repeats))),
+                "target_samples": int(target_samples),
+                "target_stderr": float(stderr),
+                "target_reliability": float(reliability),
+                "best_allocation_mean_std_across_repeats": float(best_mean_std),
+                "paired_delta_expand_minus_no_first_expand_mean": float(best_paired_delta_mean),
+                "paired_delta_expand_minus_no_first_expand_std": float(best_paired_delta_std),
                 "mode": mode,
                 "target_provenance": "exact" if mode == "exact" else ("degenerate" if mode == "degenerate" else "approx"),
                 "target_fallback_assumptions": "remaining_budget_followup_allocation_search",
@@ -396,6 +437,7 @@ def evaluate_state_candidates(
         c["branch_vs_outside_gap"] = float(c["estimated_value_if_allocate_next"] - outside)
         c["delta_expand_commit"] = delta_expand_commit
         c["regret_vs_best_action"] = regret_vs_best_action
+        c["gap_vs_best_expand"] = float(best_expand_value - float(c["estimated_value_if_allocate_next"]))
         c["best_action_overall"] = best_action
         c["best_expand_branch"] = str(winner["branch_id"])
         c["best_expand_value"] = best_expand_value
@@ -438,17 +480,28 @@ def evaluate_state_candidates(
         "active_branches": [str(b.branch_id) for b in branches],
         "Q_commit": float(q_commit),
         "Q_expand": {str(c["branch_id"]): float(c["estimated_value_if_allocate_next"]) for c in candidates},
+        "A_expand_minus_commit": {str(c["branch_id"]): float(c["delta_expand_commit"]) for c in candidates},
         "best_expand_branch": str(winner["branch_id"]),
         "best_expand_value": best_expand_value,
         "best_action_overall": best_action,
         "best_action_value": float(max(best_expand_value, q_commit)),
+        "best_advantage": float(max(0.0, expand_commit_gap)),
         "delta_best_expand_commit": expand_commit_gap,
         "delta_best_two_expands": float(best_expand_value - second_best_value),
+        "regret_if_commit": float(max(0.0, best_expand_value - q_commit)),
+        "regret_if_expand_best": float(max(0.0, q_commit - best_expand_value)),
         "ambiguity_bucket": ambiguity_bucket,
         "defer_candidate": bool(ambiguity_bucket in {"near_tie", "medium_margin"}),
         "target_provenance": "exact" if mode == "exact" else ("degenerate" if mode == "degenerate" else "approx"),
         "target_is_exact": bool(mode == "exact"),
         "target_is_approximate": bool(mode == "approx"),
+        "target_is_mixed": bool(mode == "mixed"),
+        "target_reliability_mean": float(sum(float(c.get("target_reliability", 0.0)) for c in candidates) / max(1, len(candidates))),
+        "target_stderr_mean": float(sum(float(c.get("target_stderr", 0.0)) for c in candidates) / max(1, len(candidates))),
+        "variance_reduction": {
+            "paired_rollout_comparison": bool(cfg.paired_rollout_comparison),
+            "target_estimation_repeats": int(max(1, int(cfg.target_estimation_repeats))),
+        },
         "fallback_assumptions": ["followup_allocation_search", "first_expand_then_rollout"],
     }
 

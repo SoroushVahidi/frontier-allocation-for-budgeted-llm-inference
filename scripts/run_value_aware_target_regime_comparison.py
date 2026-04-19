@@ -33,6 +33,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--rollout-samples-per-candidate", type=int, default=10)
     p.add_argument("--max-allocation-samples", type=int, default=24)
     p.add_argument("--frontier-budget", type=int, default=7)
+    p.add_argument("--target-estimation-repeats", type=int, default=2)
+    p.add_argument("--paired-rollout-comparison", action="store_true", default=True)
+    p.add_argument("--disable-paired-rollout-comparison", action="store_true")
     p.add_argument("--defer-threshold-selection", choices=["fixed", "val_defer_f1"], default="fixed")
     p.add_argument("--defer-eval-threshold-override", type=float, default=-1.0)
     return p.parse_args()
@@ -50,6 +53,8 @@ def _build_labels(args: argparse.Namespace, out_dir: Path) -> dict[str, list[dic
         rollout_samples_per_candidate=int(args.rollout_samples_per_candidate),
         max_allocation_samples=int(args.max_allocation_samples),
         frontier_budget=int(args.frontier_budget),
+        target_estimation_repeats=int(args.target_estimation_repeats),
+        paired_rollout_comparison=bool(args.paired_rollout_comparison and not args.disable_paired_rollout_comparison),
         min_remaining_budget=2,
         max_remaining_budget=5,
         episodes_per_example=2,
@@ -147,6 +152,24 @@ def _method_cfg(base: LearningConfig, method: str, args: argparse.Namespace) -> 
             train_state_commit_value_model=True,
             state_commit_alpha=0.75,
         )
+    if method == "value_aware_ambiguity_decomposed_stabilized":
+        return replace(
+            base,
+            pointwise_target_field="A_expand_minus_commit",
+            pointwise_weight_mode="regret_gap_x_reliability",
+            pairwise_target_mode="value_gap",
+            pairwise_near_tie_action="downweight",
+            pairwise_near_tie_downweight=0.15,
+            uncertainty_weighting=True,
+            feature_set="v3",
+            train_pairwise_defer_classifier=True,
+            defer_target_mode="value_aware",
+            defer_calibration="none",
+            defer_threshold_selection=str(args.defer_threshold_selection),
+            defer_eval_threshold_override=float(args.defer_eval_threshold_override),
+            train_state_commit_value_model=True,
+            state_commit_alpha=0.75,
+        )
     raise ValueError(method)
 
 
@@ -162,6 +185,7 @@ def main() -> None:
         "value_aware",
         "value_aware_ambiguity",
         "value_aware_ambiguity_decomposed",
+        "value_aware_ambiguity_decomposed_stabilized",
     ]
 
     base_cfg = LearningConfig(
@@ -220,6 +244,7 @@ def main() -> None:
                 "defer_accepted_only_accuracy_test": _m(m, "pairwise_defer_classifier", "accepted_only_accuracy_test"),
                 "expand_vs_commit_accuracy_test": _m(m, "pointwise", "expand_vs_commit_accuracy_test"),
                 "expand_vs_commit_mean_regret_test": _m(m, "pointwise", "expand_vs_commit_mean_regret_test"),
+                "far_margin_pairwise_accuracy_test": _m(m, "pairwise", "far_margin_pairwise_accuracy_test"),
             }
             for m in methods
         },
@@ -289,6 +314,14 @@ def main() -> None:
                 "Interpretation discipline:",
                 "- This is a bounded mock-permitted run for pipeline hardening and supervision semantics checks.",
                 "- Treat gains/losses as directional until replayed on larger exact-heavy state sets.",
+                "",
+                "Status answers (bounded evidence, no broad claims):",
+                "- Did continuation-minus-commit reduce supervision bottleneck? Partially: richer value targets, gap/regret/reliability fields, and ambiguity buckets are now directly supervised.",
+                "- Improve expand-vs-commit? Check aggregate_comparison expand_vs_commit_accuracy_test and regret fields vs baseline.",
+                "- Improve branch ranking? Check ranking_top1_accuracy_test and pairwise_accuracy_test by method/slice.",
+                "- Improve hard ambiguous states? Check near_tie_* and ambiguity_bucket_diagnostics.json; report mixed if unstable.",
+                "- Is target variance unresolved? Reduced via paired rollouts + repeated estimation + reliability weighting, but still a tracked risk.",
+                "- Best next step: run the same matched protocol on larger exact-heavy state sets and tune ambiguity-band weighting per regime.",
             ]
         )
         + "\n",
