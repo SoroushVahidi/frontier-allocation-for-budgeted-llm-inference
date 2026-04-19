@@ -1,0 +1,20 @@
+{
+  "openai/gsm8k": {
+    "insufficient_diversity_realized": 9,
+    "intermediate_result_or_non_terminal_answer": 1,
+    "bad_diversity_realized": 3
+  },
+  "HuggingFaceH4/MATH-500": {
+    "insufficient_diversity_realized": 18,
+    "bad_diversity_realized": 6
+  },
+  "HuggingFaceH4/aime_2024": {
+    "bad_diversity_realized": 3,
+    "insufficient_diversity_realized": 14
+  },
+  "olympiadbench": {
+    "insufficient_diversity_realized": 10,
+    "bad_diversity_realized": 2,
+    "intermediate_result_or_non_terminal_answer": 1
+  }
+}

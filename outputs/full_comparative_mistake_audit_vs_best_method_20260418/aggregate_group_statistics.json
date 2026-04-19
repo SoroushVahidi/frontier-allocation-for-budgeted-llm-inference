@@ -1,0 +1,52 @@
+{
+  "total_mistakes": 67,
+  "counts_by_primary_group": {
+    "insufficient_diversity_realized": 51,
+    "intermediate_result_or_non_terminal_answer": 2,
+    "bad_diversity_realized": 14
+  },
+  "counts_by_secondary_factor": {
+    "single_answer_group_realized": 51,
+    "target_variable_not_completed": 2,
+    "high_entropy_low_quality_paths": 14
+  },
+  "counts_by_best_method_advantage_type": {
+    "broader_search_coverage": 51,
+    "reduced_premature_commitment": 2,
+    "stronger_answer_support": 14
+  },
+  "counts_by_dataset": {
+    "openai/gsm8k": 13,
+    "HuggingFaceH4/MATH-500": 24,
+    "HuggingFaceH4/aime_2024": 17,
+    "olympiadbench": 13
+  },
+  "counts_by_budget": {
+    "4": 12,
+    "6": 24,
+    "8": 31
+  },
+  "counts_by_provider_model": {
+    "simulated::simulated_branch_generator": 67
+  },
+  "counts_by_pipeline_failure_location": {
+    "expansion failure": 51,
+    "terminality/target-completion failure": 2,
+    "aggregation failure": 14
+  },
+  "top_3_most_common_reasons_we_lose": [
+    "insufficient_diversity_realized",
+    "bad_diversity_realized",
+    "intermediate_result_or_non_terminal_answer"
+  ],
+  "top_3_best_method_advantages": [
+    "broader_search_coverage",
+    "stronger_answer_support",
+    "reduced_premature_commitment"
+  ],
+  "top_3_actionable_weaknesses": [
+    "Raise realized diversity rate in early expansion under fixed budget.",
+    "Improve aggregation/ranking when multiple answer groups appear.",
+    "Reduce target-incomplete commit decisions on operator-sensitive word problems."
+  ]
+}

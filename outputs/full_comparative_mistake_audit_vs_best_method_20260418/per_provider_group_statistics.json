@@ -1,0 +1,7 @@
+{
+  "simulated::simulated_branch_generator": {
+    "insufficient_diversity_realized": 51,
+    "intermediate_result_or_non_terminal_answer": 2,
+    "bad_diversity_realized": 14
+  }
+}

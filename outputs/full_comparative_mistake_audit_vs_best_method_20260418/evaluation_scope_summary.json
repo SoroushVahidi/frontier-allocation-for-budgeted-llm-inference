@@ -1,0 +1,6 @@
+{
+  "total_evaluated_rows": 384,
+  "total_mistake_records": 67,
+  "failed_runs": [],
+  "comparison_rule": "Record a mistake when self_consistency_3 is correct and broad_diversity_aggregation_v1 is incorrect at equal dataset/seed/budget/provider/example."
+}

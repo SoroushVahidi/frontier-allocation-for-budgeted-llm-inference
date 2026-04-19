@@ -1,0 +1,9 @@
+{
+  "best_method": "self_consistency_3",
+  "our_method": "broad_diversity_aggregation_v1",
+  "sibling_context_method": "broad_diversity_aggregation_strong_v1",
+  "selection_rationale": {
+    "best_method_reason": "Repository documents identify self_consistency_3 as the broad overall best baseline.",
+    "our_method_reason": "Real-model bounded confirmation showed leadership instability and placed broad_diversity_aggregation_v1 above strong_v1 on the tiny real slice; this audit uses v1 as the primary representative while retaining strong_v1 as sibling context."
+  }
+}
