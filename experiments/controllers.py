@@ -763,6 +763,12 @@ class GlobalDiversityAggregationController(BaseController):
         value_weight: float = 0.55,
         commit_support_threshold: float = 0.68,
         commit_delay_min_actions: int = 3,
+        enable_answer_group_coverage_floor: bool = False,
+        min_answer_groups_before_concentration: int = 2,
+        coverage_floor_min_actions: int = 2,
+        coverage_floor_max_actions: int = 7,
+        coverage_floor_plausibility_threshold: float = 0.44,
+        coverage_floor_max_forced_steps: int = 2,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -788,6 +794,12 @@ class GlobalDiversityAggregationController(BaseController):
         self.value_weight = float(value_weight)
         self.commit_support_threshold = float(commit_support_threshold)
         self.commit_delay_min_actions = max(0, int(commit_delay_min_actions))
+        self.enable_answer_group_coverage_floor = bool(enable_answer_group_coverage_floor)
+        self.min_answer_groups_before_concentration = max(1, int(min_answer_groups_before_concentration))
+        self.coverage_floor_min_actions = max(0, int(coverage_floor_min_actions))
+        self.coverage_floor_max_actions = max(self.coverage_floor_min_actions, int(coverage_floor_max_actions))
+        self.coverage_floor_plausibility_threshold = float(coverage_floor_plausibility_threshold)
+        self.coverage_floor_max_forced_steps = max(0, int(coverage_floor_max_forced_steps))
         self.method_name = method_name
 
     @staticmethod
@@ -1133,6 +1145,48 @@ class GlobalDiversityAggregationController(BaseController):
             "duplicate_discount_applied_rate": float(summary["duplicate_discount_applied_rate"]),
         }
 
+    def _pick_coverage_floor_branch(
+        self,
+        *,
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        answer_support_counts: dict[str, int],
+        forced_steps_so_far: int,
+        actions: int,
+        unique_answer_groups_seen: int,
+    ) -> tuple[BranchState | None, dict[str, Any]]:
+        if not self.enable_answer_group_coverage_floor:
+            return None, {"coverage_floor_activated": False, "reason": "disabled"}
+        if forced_steps_so_far >= self.coverage_floor_max_forced_steps:
+            return None, {"coverage_floor_activated": False, "reason": "forced_step_cap"}
+        if actions < self.coverage_floor_min_actions or actions >= self.coverage_floor_max_actions:
+            return None, {"coverage_floor_activated": False, "reason": "outside_action_window"}
+        if unique_answer_groups_seen >= self.min_answer_groups_before_concentration:
+            return None, {"coverage_floor_activated": False, "reason": "coverage_already_satisfied"}
+
+        eligible: list[tuple[BranchState, float, str, float, int, int]] = []
+        for branch, priority, meta in scored:
+            continuation = float(meta.get("continuation_value", 0.0))
+            if continuation < self.coverage_floor_plausibility_threshold:
+                continue
+            g = str(meta.get("group_key") or "__unknown__")
+            support_count = int(answer_support_counts.get(g, 0))
+            unseen = 1 if support_count == 0 else 0
+            eligible.append((branch, priority, g, continuation, support_count, unseen))
+        if not eligible:
+            return None, {"coverage_floor_activated": False, "reason": "no_plausible_undercovered_branch"}
+
+        eligible.sort(key=lambda x: (x[5], -x[4], x[1]), reverse=True)
+        selected_branch, selected_priority, selected_group, selected_continuation, selected_support_count, selected_unseen = eligible[0]
+        return selected_branch, {
+            "coverage_floor_activated": True,
+            "reason": "plausibility_gated_undercovered_group_forcing",
+            "selected_group": selected_group,
+            "selected_priority": float(selected_priority),
+            "selected_continuation": float(selected_continuation),
+            "selected_group_support_count": int(selected_support_count),
+            "selected_group_unseen": bool(selected_unseen),
+        }
+
     def run(self, question: str, gold_answer: str) -> MethodResult:
         actions = expansions = verifications = 0
         surviving_trace: list[int] = []
@@ -1144,6 +1198,7 @@ class GlobalDiversityAggregationController(BaseController):
         global_profiles: list[set[str]] = []
         expand_by_group: dict[str, int] = {}
         forced_explore_steps = 0
+        coverage_floor_forced_steps = 0
         commit_checks: list[dict[str, Any]] = []
         commit_triggered = False
 
@@ -1169,6 +1224,22 @@ class GlobalDiversityAggregationController(BaseController):
                 scored.append((b, priority, meta))
             scored.sort(key=lambda x: x[1], reverse=True)
             branch, priority, pri_meta = scored[0]
+            coverage_floor_meta: dict[str, Any] = {"coverage_floor_activated": False}
+            floor_branch, floor_meta = self._pick_coverage_floor_branch(
+                scored=scored,
+                answer_support_counts=answer_support_counts,
+                forced_steps_so_far=coverage_floor_forced_steps,
+                actions=actions,
+                unique_answer_groups_seen=len(answer_support_counts),
+            )
+            if floor_branch is not None and floor_branch.branch_id != branch.branch_id:
+                selected = next((item for item in scored if item[0].branch_id == floor_branch.branch_id), None)
+                if selected is not None:
+                    branch, priority, pri_meta = selected
+                    coverage_floor_meta = floor_meta
+                    coverage_floor_forced_steps += 1
+            elif floor_meta.get("coverage_floor_activated", False):
+                coverage_floor_meta = floor_meta
 
             group_key = str(pri_meta.get("group_key") or "__unknown__")
             expand_by_group[group_key] = expand_by_group.get(group_key, 0) + 1
@@ -1200,6 +1271,8 @@ class GlobalDiversityAggregationController(BaseController):
                         "semantic_overlap": round(float(pri_meta.get("semantic_overlap", 0.0)), 4),
                         "group_key": pri_meta["group_key"],
                         "force_explore": bool(force_explore),
+                        "coverage_floor_activated": bool(coverage_floor_meta.get("coverage_floor_activated", False)),
+                        "coverage_floor_reason": coverage_floor_meta.get("reason"),
                         "top_support_before_action": round(float(top_support), 4),
                     }
                 )
@@ -1225,6 +1298,8 @@ class GlobalDiversityAggregationController(BaseController):
                         "priority": round(priority, 4),
                         "score_after": round(float(result.score_after), 4),
                         "force_explore": bool(force_explore),
+                        "coverage_floor_activated": bool(coverage_floor_meta.get("coverage_floor_activated", False)),
+                        "coverage_floor_reason": coverage_floor_meta.get("reason"),
                         "top_support_before_action": round(float(top_support), 4),
                     }
                 )
@@ -1270,6 +1345,10 @@ class GlobalDiversityAggregationController(BaseController):
                 "unique_answer_groups_seen": len(answer_support_counts),
                 "forced_explore_steps": int(forced_explore_steps),
                 "forced_explore_rate": float(forced_explore_steps / max(1, actions)),
+                "coverage_floor_enabled": bool(self.enable_answer_group_coverage_floor),
+                "coverage_floor_forced_steps": int(coverage_floor_forced_steps),
+                "coverage_floor_forced_rate": float(coverage_floor_forced_steps / max(1, actions)),
+                "coverage_floor_target_groups": int(self.min_answer_groups_before_concentration),
                 "duplicate_penalty_applied_rate": float(len(dup_positive) / max(1, len(expand_actions))),
                 "mean_diversity_bonus_on_expand": float(
                     sum(float(a.get("diversity_bonus", 0.0)) for a in expand_actions) / max(1, len(expand_actions))
