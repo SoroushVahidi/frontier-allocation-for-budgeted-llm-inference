@@ -1,0 +1,301 @@
+{
+  "rows": [
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.8428978575381505,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.8428978575381505,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.8428978575381505,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.8428978575381505,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.8428978575381505,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep0_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.8428978575381505,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_0_ep1_d2",
+      "example_id": "openai_gsm8k_0",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.5381823442367911,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b1"
+    },
+    {
+      "state_id": "exopenai_gsm8k_4_ep8_d4",
+      "example_id": "openai_gsm8k_4",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.43813578717777485,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_4_ep8_d4",
+      "example_id": "openai_gsm8k_4",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.43813578717777485,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_4_ep8_d4",
+      "example_id": "openai_gsm8k_4",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.43813578717777485,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_6_ep12_d1",
+      "example_id": "openai_gsm8k_6",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0120360436203875,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_6_ep12_d1",
+      "example_id": "openai_gsm8k_6",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0120360436203875,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_6_ep12_d1",
+      "example_id": "openai_gsm8k_6",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0120360436203875,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_6_ep12_d1",
+      "example_id": "openai_gsm8k_6",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0120360436203875,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_6_ep12_d1",
+      "example_id": "openai_gsm8k_6",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0120360436203875,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_6_ep12_d1",
+      "example_id": "openai_gsm8k_6",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 1.0120360436203875,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b0"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep16_d2",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.9227455491721965,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep16_d2",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.9227455491721965,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep16_d2",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.9227455491721965,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep16_d2",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.9227455491721965,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep16_d2",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.9227455491721965,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep16_d2",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.9227455491721965,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep17_d1",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.5970714800622154,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b3"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep17_d1",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.5970714800622154,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b3"
+    },
+    {
+      "state_id": "exopenai_gsm8k_8_ep17_d1",
+      "example_id": "openai_gsm8k_8",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.5970714800622154,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b3"
+    },
+    {
+      "state_id": "exopenai_gsm8k_9_ep18_d4",
+      "example_id": "openai_gsm8k_9",
+      "gold_defer_label": 2,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.43677161166808054,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    },
+    {
+      "state_id": "exopenai_gsm8k_12_ep24_d4",
+      "example_id": "openai_gsm8k_12",
+      "gold_defer_label": 0,
+      "predicted_defer_probability": 1.0,
+      "predicted_class_default_threshold": 1,
+      "ambiguity_bucket": "high_margin",
+      "delta_expand_commit": 0.5843255208678317,
+      "regret_min_pair": 0.0,
+      "best_action_metadata": "expand:b2"
+    }
+  ]
+}

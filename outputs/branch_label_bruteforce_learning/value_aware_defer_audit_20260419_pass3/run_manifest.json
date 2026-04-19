@@ -1,0 +1,15 @@
+{
+  "run_id": "value_aware_defer_audit_20260419_pass3",
+  "script": "scripts/run_value_aware_target_regime_comparison.py",
+  "elapsed_sec": 2.8848705291748047,
+  "outputs": [
+    "target_manifest.json",
+    "per_method_metrics.json",
+    "hard_slice_diagnostics.json",
+    "ambiguity_bucket_diagnostics.json",
+    "defer_label_audit.json",
+    "defer_score_audit.json",
+    "defer_per_example_scores_decomposed.json",
+    "aggregate_comparison.json"
+  ]
+}

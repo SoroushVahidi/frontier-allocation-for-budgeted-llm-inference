@@ -1,0 +1,22 @@
+{
+  "baseline_default": {
+    "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+    "adjacent_rank_pairwise_accuracy_test": 0.0,
+    "exact_promoted_hard_region_pairwise_accuracy_test": 0.0
+  },
+  "value_aware": {
+    "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+    "adjacent_rank_pairwise_accuracy_test": 0.0,
+    "exact_promoted_hard_region_pairwise_accuracy_test": 0.0
+  },
+  "value_aware_ambiguity": {
+    "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+    "adjacent_rank_pairwise_accuracy_test": 0.0,
+    "exact_promoted_hard_region_pairwise_accuracy_test": 0.0
+  },
+  "value_aware_ambiguity_decomposed": {
+    "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+    "adjacent_rank_pairwise_accuracy_test": 0.0,
+    "exact_promoted_hard_region_pairwise_accuracy_test": 0.0
+  }
+}

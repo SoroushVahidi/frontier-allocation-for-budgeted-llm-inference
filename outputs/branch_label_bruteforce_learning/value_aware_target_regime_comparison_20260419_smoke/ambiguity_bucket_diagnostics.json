@@ -1,0 +1,197 @@
+{
+  "baseline_default": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.48
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.48
+    },
+    "defer_metrics": {}
+  },
+  "value_aware": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.48
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.48
+    },
+    "defer_metrics": {}
+  },
+  "value_aware_ambiguity": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.64
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.64
+    },
+    "defer_metrics": {}
+  },
+  "value_aware_ambiguity_decomposed": {
+    "pairwise_accuracy_by_mode": {
+      "exact": 0.64
+    },
+    "pairwise_accuracy_by_pair_type": {
+      "unknown": 0.64
+    },
+    "defer_metrics": {
+      "model_status": "ok",
+      "three_way_accuracy_test": 0.0,
+      "defer_precision_test": 0.0,
+      "defer_recall_test": 0.0,
+      "defer_f1_test": 0.0,
+      "accepted_only_accuracy_test": 0.0,
+      "coverage_test": 0.0,
+      "near_tie_accepted_accuracy_test": 0.0,
+      "adjacent_rank_accepted_accuracy_test": 0.0,
+      "exact_promoted_hard_region_accepted_accuracy_test": 0.0,
+      "low_best_vs_outside_gap_accepted_accuracy_test": 0.0,
+      "high_disagreement_risk_accepted_accuracy_test": 0.0,
+      "approx_or_mixed_accepted_accuracy_test": 0.0,
+      "threshold_trace_test": [
+        {
+          "threshold": 0.05,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.14,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.22999999999999998,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.32,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.41,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.49999999999999994,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.5900000000000001,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.68,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.77,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.86,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        },
+        {
+          "threshold": 0.95,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0,
+          "defer_precision": 0.0,
+          "defer_recall": 0.0
+        }
+      ],
+      "best_accepted_accuracy_under_min_coverage_test": {
+        "threshold": 0.5,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0
+      },
+      "best_coverage_under_min_accepted_accuracy_test": {
+        "threshold": 0.5,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0
+      },
+      "decision_buckets_test": {
+        "confident_correct_commit": 0,
+        "confident_wrong_commit": 0,
+        "correct_defer": 0,
+        "missed_defer": 0,
+        "unnecessary_defer": 25,
+        "ambiguous_hard_commit_proxy": 0,
+        "outside_option_should_have_won_proxy": 0
+      },
+      "calibration_used": {
+        "mode": "none"
+      },
+      "raw_probability_note": "raw multinomial probabilities are post-processed by bounded calibration and defer policy thresholds",
+      "confusion_matrix_left_defer_right_test": [
+        [
+          0,
+          13,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          12,
+          0
+        ]
+      ],
+      "ranking_top1_accuracy_test": null,
+      "note": "pairwise defer classifier evaluated in pairwise space; candidate top-1 ranking not defined",
+      "fallback_policy": "none",
+      "fallback_enabled": false,
+      "resolved_accuracy_test": 0.0,
+      "resolved_coverage_test": 0.0,
+      "unresolved_rate_after_fallback_test": 1.0,
+      "near_tie_resolved_accuracy_test": 0.0,
+      "adjacent_rank_resolved_accuracy_test": 0.0,
+      "exact_promoted_hard_region_resolved_accuracy_test": 0.0,
+      "fallback_subset_size": 25,
+      "fallback_subset_accuracy": 0.0,
+      "fallback_resolution_rate": 0.0,
+      "unresolved_after_fallback_rate": 1.0,
+      "fallback_gain_over_binary_backup": 0.0,
+      "fallback_gain_over_pointwise_backup": 0.0,
+      "complementarity_binary_wrong_pointwise_right": 0,
+      "complementarity_pointwise_wrong_binary_right": 0,
+      "outside_option_avoid_bad_forced_commit_proxy": 0,
+      "policy_confusion_summary_test": {
+        "committed_correct": 0,
+        "committed_wrong": 0,
+        "deferred_then_resolved_correct": 0,
+        "deferred_then_resolved_wrong": 0,
+        "deferred_still_unresolved": 25
+      }
+    }
+  }
+}

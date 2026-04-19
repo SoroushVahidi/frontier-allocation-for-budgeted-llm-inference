@@ -38,6 +38,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--pairwise-max-iter", type=int, default=500)
     p.add_argument("--outside-max-iter", type=int, default=500)
     p.add_argument("--pointwise-alpha", type=float, default=1.0)
+    p.add_argument("--pointwise-target-field", default="estimated_value_if_allocate_next")
+    p.add_argument("--pairwise-target-mode", choices=["legacy", "value_gap"], default="legacy")
     p.add_argument("--disable-lightgbm-ranker", action="store_true")
     p.add_argument("--disable-catboost-ranker", action="store_true")
     p.add_argument("--pairwise-near-tie-action", choices=["none", "filter", "downweight"], default="none")
@@ -65,7 +67,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--svm-class-weight-balanced", action="store_true")
     p.add_argument("--svm-margin-calibration", choices=["none", "platt"], default="none")
     p.add_argument("--train-pairwise-defer-classifier", action="store_true")
-    p.add_argument("--defer-target-mode", choices=["heuristic", "oracle_proxy", "hybrid", "precomputed"], default="heuristic")
+    p.add_argument("--defer-target-mode", choices=["heuristic", "oracle_proxy", "hybrid", "precomputed", "value_aware"], default="heuristic")
     p.add_argument("--defer-abs-margin-threshold", type=float, default=0.03)
     p.add_argument("--defer-relative-margin-threshold", type=float, default=0.15)
     p.add_argument("--defer-std-threshold", type=float, default=0.08)
@@ -83,6 +85,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--defer-model-type", choices=["multinomial_logreg"], default="multinomial_logreg")
     p.add_argument("--defer-calibration", choices=["none", "temperature", "platt"], default="none")
     p.add_argument("--defer-decision-threshold", type=float, default=0.5)
+    p.add_argument("--defer-eval-threshold-override", type=float, default=-1.0)
+    p.add_argument("--defer-threshold-selection", choices=["fixed", "val_defer_f1"], default="fixed")
     p.add_argument("--min-commit-confidence", type=float, default=0.45)
     p.add_argument("--commit-margin-threshold", type=float, default=0.05)
     p.add_argument("--threshold-grid-size", type=int, default=11)
@@ -140,6 +144,7 @@ def main() -> None:
     manifest_path = out_dir / "manifest.json"
     report_path = out_dir / "report.md"
     progress_path = out_dir / "progress.json"
+    table_audit_path = out_dir / "table_audit.json"
 
     if args.resume and models_path.exists() and eval_path.exists() and manifest_path.exists():
         payload = {
@@ -160,6 +165,8 @@ def main() -> None:
         pairwise_max_iter=int(args.pairwise_max_iter),
         outside_max_iter=int(args.outside_max_iter),
         pointwise_alpha=float(args.pointwise_alpha),
+        pointwise_target_field=str(args.pointwise_target_field),
+        pairwise_target_mode=str(args.pairwise_target_mode),
         train_pairwise=not bool(args.disable_pairwise),
         train_pointwise=not bool(args.disable_pointwise),
         train_outside_option=not bool(args.disable_outside_option),
@@ -204,6 +211,8 @@ def main() -> None:
         defer_model_type=str(args.defer_model_type),
         defer_calibration=str(args.defer_calibration),
         defer_decision_threshold=float(args.defer_decision_threshold),
+        defer_eval_threshold_override=float(args.defer_eval_threshold_override),
+        defer_threshold_selection=str(args.defer_threshold_selection),
         min_commit_confidence=float(args.min_commit_confidence),
         commit_margin_threshold=float(args.commit_margin_threshold),
         threshold_grid_size=int(args.threshold_grid_size),
@@ -239,6 +248,13 @@ def main() -> None:
             "n_pairwise": len(tables["pairwise"]),
         },
     )
+    write_json(
+        table_audit_path,
+        {
+            "run_id": run_id,
+            "defer_label_audit": tables.get("defer_label_audit", {}),
+        },
+    )
 
     models = train_models(tables, cfg, model_artifact_dir=out_dir / "model_artifacts")
     write_json(models_path, {"run_id": run_id, "config": config_to_dict(cfg), "models": models})
@@ -272,6 +288,7 @@ def main() -> None:
             "evaluation": str(eval_path),
             "report": str(report_path),
             "progress": str(progress_path),
+            "table_audit": str(table_audit_path),
         },
         "output_sha256": {
             "models": _sha256(models_path),
