@@ -1,0 +1,28 @@
+[
+  {
+    "dataset_name": "Humanity's Last Exam (HLE)",
+    "prior_status": "not_added",
+    "current_status": "partially_added",
+    "hf_token_available": true,
+    "hf_token_used": true,
+    "canonical_source": "cais/hle",
+    "source_accessible_with_token": false,
+    "integrated_scope": "Fallback text-first slice integrated via lmms-lab/HLE-Verified (test split), preserving answer_type/subset/category/has_image metadata.",
+    "evaluation_ready": true,
+    "reason_if_still_partial_or_missing": "Canonical HLE remains gated for this token, so only a public verified derivative slice could be integrated in this pass.",
+    "notes": "Token-aware probe on cais/hle still returns gated-access error; lmms-lab/HLE-Verified is public and loadable."
+  },
+  {
+    "dataset_name": "LiveCodeBench",
+    "prior_status": "partially_added",
+    "current_status": "partially_added",
+    "hf_token_available": true,
+    "hf_token_used": true,
+    "canonical_source": "livecodebench/code_generation",
+    "source_accessible_with_token": true,
+    "integrated_scope": "Existing code_generation integration retained; added execution-v2 slice (code+input->output) with exact-output grading compatibility and alias wiring.",
+    "evaluation_ready": "partial",
+    "reason_if_still_partial_or_missing": "Full code-generation evaluation remains partial because repository still lacks an official testcase execution harness for model-generated code.",
+    "notes": "HF token does not change the core blocker; data access is already public, blocker is execution/evaluator engineering."
+  }
+]

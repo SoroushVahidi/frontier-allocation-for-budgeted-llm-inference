@@ -47,6 +47,35 @@ def test_alias_resolution_for_math500_and_amo_bench() -> None:
     assert "answer" in amo.answer_fields
 
 
+def test_alias_resolution_for_new_requested_datasets() -> None:
+    aime_2025 = resolve_dataset_spec("aime_2025")
+    assert aime_2025.key == "MathArena/aime_2025"
+    assert "problem" in aime_2025.question_fields
+    assert "answer" in aime_2025.answer_fields
+
+    hmmt = resolve_dataset_spec("hmmt")
+    assert hmmt.key == "MathArena/hmmt_feb_2025"
+
+    brumo = resolve_dataset_spec("BRUMO")
+    assert brumo.key == "MathArena/brumo_2025"
+
+    mmlu_pro = resolve_dataset_spec("mmlu-pro")
+    assert mmlu_pro.key == "TIGER-Lab/MMLU-Pro"
+    assert "question" in mmlu_pro.question_fields
+    assert "answer_index" in mmlu_pro.answer_fields
+
+    lcb = resolve_dataset_spec("livecodebench")
+    assert lcb.key == "livecodebench/code_generation"
+
+    lcb_exec = resolve_dataset_spec("livecodebench_execution")
+    assert lcb_exec.key == "livecodebench/execution-v2"
+    assert "output" in lcb_exec.answer_fields
+
+    hle_verified = resolve_dataset_spec("hle")
+    assert hle_verified.key == "lmms-lab/HLE-Verified"
+    assert "question" in hle_verified.question_fields
+
+
 def test_naturalplan_git_spec_resolution() -> None:
     spec = resolve_git_dataset_spec("NaturalPlan")
     assert spec.key == "google-deepmind/natural-plan"
