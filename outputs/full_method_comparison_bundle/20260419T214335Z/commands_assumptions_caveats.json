@@ -1,0 +1,13 @@
+{
+  "command": "python scripts/run_full_method_comparison_bundle.py --config configs/full_method_comparison_bundle_20260419.json",
+  "assumptions": [
+    "Simulator-mode bounded run for matched comparison coverage.",
+    "Coverage/defer/abstention are explicitly emitted; this run has no abstention path so defer/abstention are zero.",
+    "External adjacent baselines without import packages are status-tracked, not numerically ranked."
+  ],
+  "caveats": [
+    "Not an official full reproduction of external papers.",
+    "Bounded subset sizes and seeds are for robustness screening, not final paper scale.",
+    "Prediction strings are unavailable in this simulator path; casebook uses auditable action summaries."
+  ]
+}

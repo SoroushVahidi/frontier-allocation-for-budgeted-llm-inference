@@ -1,0 +1,13 @@
+method,family,comparability,status,mean_accuracy,mean_avg_actions,mean_coverage,mean_defer_rate,mean_abstention_rate,mean_budget_exhaustion_rate,mean_underspend_rate,n_rows
+adaptive_min_expand_0,earlier_repo_line,direct,runnable_direct,0.22499999999999998,3.183333333333333,1.0,0.0,0.0,0.39444444444444443,0.45625000000000004,18
+adaptive_min_expand_1,our_current_main,direct,runnable_direct,0.35555555555555557,3.386111111111111,1.0,0.0,0.0,0.25277777777777777,0.43171296296296297,18
+adaptive_min_expand_2,earlier_repo_line,direct,runnable_direct,0.4694444444444444,3.630555555555555,1.0,0.0,0.0,0.15833333333333333,0.38576388888888885,18
+external_l1_exact,external_baseline,adapter_mode_a,runnable_direct,0.4222222222222222,2.25,1.0,0.0,0.0,0.01666666666666667,0.5960648148148148,18
+external_l1_max,external_baseline,adapter_mode_a,runnable_direct,0.44999999999999996,1.927777777777778,1.0,0.0,0.0,0.008333333333333335,0.6564814814814814,18
+external_s1_budget_forcing,external_baseline,adapter_mode_a,runnable_direct,0.4555555555555555,3.2972222222222225,1.0,0.0,0.0,0.041666666666666664,0.42615740740740743,18
+external_tale_prompt_budgeting,external_baseline,adapter_mode_a,runnable_direct,0.5305555555555556,1.9166666666666667,1.0,0.0,0.0,0.019444444444444445,0.6570601851851852,18
+program_of_thought,internal_baseline,direct,runnable_direct,0.01666666666666667,2.0,1.0,0.0,0.0,0.0,0.6388888888888888,18
+reasoning_beam2,internal_baseline,direct,runnable_direct,0.5027777777777778,4.055555555555555,1.0,0.0,0.0,0.2888888888888889,0.29398148148148145,18
+reasoning_greedy,internal_baseline,direct,runnable_direct,0.49166666666666664,2.1305555555555555,1.0,0.0,0.0,0.024999999999999998,0.6208333333333333,18
+self_consistency_3,internal_baseline,direct,runnable_direct,0.48055555555555557,5.927777777777778,1.0,0.0,0.0,0.9444444444444444,0.009027777777777782,18
+verifier_guided_search,internal_baseline,direct,runnable_direct,0.26944444444444443,5.333333333333333,1.0,0.0,0.0,0.6666666666666666,0.08333333333333333,18
