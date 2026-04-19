@@ -3,9 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 import math
 import re
 from typing import Any, Protocol
+import json
+
+import numpy as np
+from sklearn.linear_model import LogisticRegression
 
 from experiments.branching import BranchState
 from experiments.objective_function_stack import compute_process_quality, compute_target_completion
@@ -769,6 +774,20 @@ class GlobalDiversityAggregationController(BaseController):
         coverage_floor_max_actions: int = 7,
         coverage_floor_plausibility_threshold: float = 0.44,
         coverage_floor_max_forced_steps: int = 2,
+        enable_incumbent_challenger_commit: bool = False,
+        incumbent_challenger_raw_support_only: bool = False,
+        incumbent_challenger_margin_threshold: float = 0.10,
+        incumbent_challenger_stability_min_steps: int = 2,
+        incumbent_challenger_near_tie_gap: float = 0.04,
+        incumbent_challenger_plausible_gap: float = 0.05,
+        incumbent_score_support_weight: float = 0.50,
+        incumbent_score_quality_weight: float = 0.35,
+        incumbent_score_readiness_weight: float = 0.15,
+        diversity_needed_gate_mode: str = "off",
+        diversity_needed_gate_positive_threshold: float = 0.12,
+        diversity_needed_gate_negative_threshold: float = -0.12,
+        diversity_needed_gate_min_confidence_gap: float = 0.04,
+        diversity_needed_gate_dataset_path: str = "outputs/branch_label_bruteforce_learning/diversity_needed_feasibility_20260419/labels/diversity_needed_state_dataset.jsonl",
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -800,7 +819,66 @@ class GlobalDiversityAggregationController(BaseController):
         self.coverage_floor_max_actions = max(self.coverage_floor_min_actions, int(coverage_floor_max_actions))
         self.coverage_floor_plausibility_threshold = float(coverage_floor_plausibility_threshold)
         self.coverage_floor_max_forced_steps = max(0, int(coverage_floor_max_forced_steps))
+        self.enable_incumbent_challenger_commit = bool(enable_incumbent_challenger_commit)
+        self.incumbent_challenger_raw_support_only = bool(incumbent_challenger_raw_support_only)
+        self.incumbent_challenger_margin_threshold = float(incumbent_challenger_margin_threshold)
+        self.incumbent_challenger_stability_min_steps = max(1, int(incumbent_challenger_stability_min_steps))
+        self.incumbent_challenger_near_tie_gap = float(incumbent_challenger_near_tie_gap)
+        self.incumbent_challenger_plausible_gap = float(incumbent_challenger_plausible_gap)
+        self.incumbent_score_support_weight = float(incumbent_score_support_weight)
+        self.incumbent_score_quality_weight = float(incumbent_score_quality_weight)
+        self.incumbent_score_readiness_weight = float(incumbent_score_readiness_weight)
+        self.diversity_needed_gate_mode = str(diversity_needed_gate_mode)
+        self.diversity_needed_gate_positive_threshold = float(diversity_needed_gate_positive_threshold)
+        self.diversity_needed_gate_negative_threshold = float(diversity_needed_gate_negative_threshold)
+        self.diversity_needed_gate_min_confidence_gap = float(diversity_needed_gate_min_confidence_gap)
+        self.diversity_needed_gate_dataset_path = str(diversity_needed_gate_dataset_path)
+        self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
+
+    @staticmethod
+    def _safe_float(v: Any, default: float = 0.0) -> float:
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return default
+
+    def _maybe_build_diversity_needed_predictor(self) -> dict[str, Any] | None:
+        if self.diversity_needed_gate_mode != "learned":
+            return None
+        path = Path(self.diversity_needed_gate_dataset_path)
+        if not path.exists():
+            return None
+        rows: list[dict[str, Any]] = []
+        with path.open("r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    rows.append(json.loads(line))
+        if len(rows) < 20:
+            return None
+        feature_names = [
+            "top_minus_second_support_margin",
+            "answer_group_entropy",
+            "semantic_overlap_mean",
+            "duplicate_rate",
+            "top_branch_score",
+            "second_branch_score",
+            "top_second_score_margin",
+            "one_step_continuation_best",
+            "commit_readiness_q_commit",
+            "n_answer_groups",
+        ]
+        x = np.asarray([[self._safe_float(r.get(c, 0.0)) for c in feature_names] for r in rows], dtype=np.float64)
+        y = np.asarray([int(r.get("needs_more_diversity", 0)) for r in rows], dtype=np.int64)
+        if len(set(y.tolist())) < 2:
+            return None
+        mu = x.mean(axis=0)
+        sigma = x.std(axis=0) + 1e-8
+        xz = (x - mu) / sigma
+        clf = LogisticRegression(max_iter=400, random_state=0, class_weight="balanced")
+        clf.fit(xz, y)
+        return {"feature_names": feature_names, "mu": mu, "sigma": sigma, "clf": clf}
 
     @staticmethod
     def _normalize_answer(pred: str | None) -> str | None:
@@ -1145,6 +1223,116 @@ class GlobalDiversityAggregationController(BaseController):
             "duplicate_discount_applied_rate": float(summary["duplicate_discount_applied_rate"]),
         }
 
+    def _incumbent_challenger_commit_state(
+        self,
+        *,
+        branches: list[BranchState],
+        incumbent_history: list[str],
+    ) -> dict[str, Any]:
+        summary = self._group_support_summary(branches)
+        groups = summary.get("groups", {})
+        if not groups:
+            return {
+                "state_available": False,
+                "commit_ready": False,
+                "decision": "fallback_no_groups",
+                "formula": "score = w_support*support + w_quality*quality + w_readiness*readiness - redundancy_penalty",
+            }
+        ranked = sorted(groups.items(), key=lambda kv: float(kv[1].get("discounted_support", 0.0)), reverse=True)
+        incumbent_key, incumbent_meta = ranked[0]
+        challenger_key, challenger_meta = ranked[1] if len(ranked) > 1 else ranked[0]
+
+        total_eff = sum(float(v.get("discounted_support", 0.0)) for v in groups.values())
+        total_raw = sum(float(v.get("member_count", 0)) for v in groups.values())
+
+        def _group_state(k: str, meta: dict[str, Any]) -> dict[str, float | str]:
+            raw = float(meta.get("member_count", 0))
+            eff = float(meta.get("discounted_support", 0.0))
+            quality = float(meta.get("support_quality_mean", 0.0))
+            readiness = float(meta.get("readiness_mean", 0.0))
+            support_frac_eff = eff / max(1e-8, total_eff)
+            support_frac_raw = raw / max(1e-8, total_raw)
+            support_component = support_frac_raw if self.incumbent_challenger_raw_support_only else support_frac_eff
+            redundancy_proxy = 0.0
+            if raw > 0:
+                redundancy_proxy = max(0.0, 1.0 - min(1.0, eff / raw))
+            score = (
+                self.incumbent_score_support_weight * support_component
+                + self.incumbent_score_quality_weight * quality
+                + self.incumbent_score_readiness_weight * readiness
+            )
+            if not self.incumbent_challenger_raw_support_only:
+                score -= 0.08 * redundancy_proxy
+            return {
+                "group_key": k,
+                "raw_support": raw,
+                "effective_support": eff,
+                "support_fraction_raw": float(support_frac_raw),
+                "support_fraction_effective": float(support_frac_eff),
+                "support_component_used": float(support_component),
+                "best_branch_score": float(
+                    max((self.scorer.score_branch(b) for b in branches if self._normalize_answer(b.predicted_answer) == k), default=0.0)
+                ),
+                "mean_branch_score": float(quality),
+                "readiness_mean": float(readiness),
+                "redundancy_proxy": float(redundancy_proxy),
+                "score": float(score),
+            }
+
+        incumbent = _group_state(incumbent_key, incumbent_meta)
+        challenger = _group_state(challenger_key, challenger_meta)
+        score_margin = float(incumbent["score"] - challenger["score"])
+        support_gap = float(incumbent["support_fraction_effective"] - challenger["support_fraction_effective"])
+        near_tie = bool(abs(score_margin) <= self.incumbent_challenger_near_tie_gap)
+        challenger_plausible = bool(score_margin <= self.incumbent_challenger_plausible_gap)
+        incumbent_changed_recently = bool(len(incumbent_history) >= 2 and incumbent_history[-1] != incumbent_history[-2])
+        stable_steps = 1
+        for prev in reversed(incumbent_history):
+            if prev == incumbent_key:
+                stable_steps += 1
+            else:
+                break
+        stability_ok = bool((stable_steps - 1) >= self.incumbent_challenger_stability_min_steps and not incumbent_changed_recently)
+
+        commit_ready = bool(
+            score_margin >= self.incumbent_challenger_margin_threshold
+            and stability_ok
+            and not near_tie
+            and not challenger_plausible
+        )
+        decision = "commit" if commit_ready else ("continue" if not near_tie else "fallback_near_tie")
+        return {
+            "state_available": True,
+            "decision": decision,
+            "commit_ready": bool(commit_ready),
+            "incumbent": incumbent,
+            "challenger": challenger,
+            "score_margin": float(score_margin),
+            "effective_support_gap": float(support_gap),
+            "near_tie": bool(near_tie),
+            "challenger_plausible": bool(challenger_plausible),
+            "incumbent_stable_steps": int(max(0, stable_steps - 1)),
+            "incumbent_changed_recently": bool(incumbent_changed_recently),
+            "stability_ok": bool(stability_ok),
+            "challenger_fragmented_flag": bool(len(ranked) >= 3 and float(ranked[1][1].get("discounted_support", 0.0)) < 0.35 * float(ranked[0][1].get("discounted_support", 0.0))),
+            "ambiguity_flag": bool(near_tie or summary.get("support_margin", 0.0) <= self.incumbent_challenger_near_tie_gap),
+            "uses_quality_proxy": True,
+            "uses_readiness_proxy": True,
+            "formula": (
+                "group_score = "
+                f"{self.incumbent_score_support_weight:.2f}*support_component + "
+                f"{self.incumbent_score_quality_weight:.2f}*support_quality_mean + "
+                f"{self.incumbent_score_readiness_weight:.2f}*readiness_mean"
+                + (" - 0.08*redundancy_proxy" if not self.incumbent_challenger_raw_support_only else "")
+            ),
+            "thresholds": {
+                "margin_threshold": float(self.incumbent_challenger_margin_threshold),
+                "stability_min_steps": int(self.incumbent_challenger_stability_min_steps),
+                "near_tie_gap": float(self.incumbent_challenger_near_tie_gap),
+                "challenger_plausible_gap": float(self.incumbent_challenger_plausible_gap),
+            },
+        }
+
     def _pick_coverage_floor_branch(
         self,
         *,
@@ -1187,6 +1375,104 @@ class GlobalDiversityAggregationController(BaseController):
             "selected_group_unseen": bool(selected_unseen),
         }
 
+    def _runtime_diversity_needed_features(
+        self,
+        *,
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        answer_support_counts: dict[str, int],
+        group_profiles: dict[str, list[set[str]]],
+    ) -> dict[str, float]:
+        if not scored:
+            return {}
+        continuations = sorted([float(meta.get("continuation_value", 0.0)) for _, _, meta in scored], reverse=True)
+        top = continuations[0]
+        second = continuations[1] if len(continuations) > 1 else continuations[0]
+        support_total = max(1, sum(int(v) for v in answer_support_counts.values()))
+        top_support = max(answer_support_counts.values()) / support_total if answer_support_counts else 0.0
+        support_margin = 0.0
+        if answer_support_counts:
+            counts = sorted(answer_support_counts.values(), reverse=True)
+            second_support = counts[1] if len(counts) > 1 else 0
+            support_margin = (counts[0] - second_support) / max(1, support_total)
+        profile_similarities: list[float] = []
+        for profiles in group_profiles.values():
+            for i in range(len(profiles)):
+                for j in range(i + 1, len(profiles)):
+                    profile_similarities.append(self._jaccard(profiles[i], profiles[j]))
+        duplicate_rate = (
+            float(sum(1 for s in profile_similarities if s > 0.98) / max(1, len(profile_similarities)))
+            if profile_similarities
+            else 0.0
+        )
+        semantic_overlap_mean = float(sum(profile_similarities) / max(1, len(profile_similarities))) if profile_similarities else 0.0
+        entropy = self._support_entropy(answer_support_counts)
+        return {
+            "top_minus_second_support_margin": float(support_margin),
+            "answer_group_entropy": float(entropy),
+            "semantic_overlap_mean": float(semantic_overlap_mean),
+            "duplicate_rate": float(duplicate_rate),
+            "top_branch_score": float(top),
+            "second_branch_score": float(second),
+            "top_second_score_margin": float(top - second),
+            "one_step_continuation_best": float(top),
+            "commit_readiness_q_commit": float(top_support),
+            "n_answer_groups": float(len(answer_support_counts)),
+        }
+
+    def _diversity_gate_decision(
+        self,
+        *,
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        answer_support_counts: dict[str, int],
+        active_group_counts: dict[str, int],
+        group_profiles: dict[str, list[set[str]]],
+    ) -> dict[str, Any]:
+        out: dict[str, Any] = {
+            "gate_mode": self.diversity_needed_gate_mode,
+            "gate_signal": 0.0,
+            "gate_decision": "fallback",
+            "gate_intervened": False,
+        }
+        if not scored or self.diversity_needed_gate_mode == "off":
+            return out
+        features = self._runtime_diversity_needed_features(
+            scored=scored,
+            answer_support_counts=answer_support_counts,
+            group_profiles=group_profiles,
+        )
+        signal = 0.0
+        confidence = 0.0
+        if self.diversity_needed_gate_mode == "learned" and self._gate_predictor is not None:
+            model = self._gate_predictor
+            feature_names = list(model["feature_names"])
+            vec = np.asarray([[float(features.get(k, 0.0)) for k in feature_names]], dtype=np.float64)
+            xz = (vec - model["mu"]) / model["sigma"]
+            prob = float(model["clf"].predict_proba(xz)[0][1])
+            signal = prob - 0.5
+            confidence = abs(signal)
+        elif self.diversity_needed_gate_mode == "heuristic":
+            signal = (
+                0.70 * float(features.get("answer_group_entropy", 0.0))
+                - 0.55 * float(features.get("top_minus_second_support_margin", 0.0))
+                + 0.35 * float(features.get("semantic_overlap_mean", 0.0))
+            )
+            confidence = abs(signal)
+        else:
+            return out
+
+        out["gate_signal"] = float(signal)
+        out["gate_confidence"] = float(confidence)
+        out["gate_features"] = features
+        if confidence < self.diversity_needed_gate_min_confidence_gap:
+            return out
+        if signal >= self.diversity_needed_gate_positive_threshold:
+            out["gate_decision"] = "favor_diversity"
+            return out
+        if signal <= self.diversity_needed_gate_negative_threshold:
+            out["gate_decision"] = "suppress_diversity_push"
+            return out
+        return out
+
     def run(self, question: str, gold_answer: str) -> MethodResult:
         actions = expansions = verifications = 0
         surviving_trace: list[int] = []
@@ -1200,7 +1486,10 @@ class GlobalDiversityAggregationController(BaseController):
         forced_explore_steps = 0
         coverage_floor_forced_steps = 0
         commit_checks: list[dict[str, Any]] = []
+        incumbent_challenger_checks: list[dict[str, Any]] = []
+        incumbent_history: list[str] = []
         commit_triggered = False
+        incumbent_commit_triggered = False
 
         while actions < self.max_actions and branches:
             active = [b for b in branches if not b.is_pruned]
@@ -1224,6 +1513,32 @@ class GlobalDiversityAggregationController(BaseController):
                 scored.append((b, priority, meta))
             scored.sort(key=lambda x: x[1], reverse=True)
             branch, priority, pri_meta = scored[0]
+            gate_meta = self._diversity_gate_decision(
+                scored=scored,
+                answer_support_counts=answer_support_counts,
+                active_group_counts=active_group_counts,
+                group_profiles=group_profiles,
+            )
+            if gate_meta.get("gate_decision") == "favor_diversity":
+                top_group = None
+                if answer_support_counts:
+                    top_group = max(answer_support_counts.items(), key=lambda kv: kv[1])[0]
+                diverse_candidates: list[tuple[BranchState, float, dict[str, float | str | None]]] = []
+                for item in scored:
+                    gk = str(item[2].get("group_key") or "__unknown__")
+                    if top_group is not None and gk == top_group:
+                        continue
+                    diverse_candidates.append(item)
+                if diverse_candidates:
+                    branch, priority, pri_meta = diverse_candidates[0]
+                    gate_meta["gate_intervened"] = bool(branch.branch_id != scored[0][0].branch_id)
+                    gate_meta["gate_selected_branch_id"] = branch.branch_id
+            elif gate_meta.get("gate_decision") == "suppress_diversity_push":
+                scored_by_cont = sorted(scored, key=lambda x: float(x[2].get("continuation_value", 0.0)), reverse=True)
+                if scored_by_cont:
+                    branch, priority, pri_meta = scored_by_cont[0]
+                    gate_meta["gate_intervened"] = bool(branch.branch_id != scored[0][0].branch_id)
+                    gate_meta["gate_selected_branch_id"] = branch.branch_id
             coverage_floor_meta: dict[str, Any] = {"coverage_floor_activated": False}
             floor_branch, floor_meta = self._pick_coverage_floor_branch(
                 scored=scored,
@@ -1251,6 +1566,8 @@ class GlobalDiversityAggregationController(BaseController):
             if support_total > 0:
                 top_support = max(answer_support_counts.values()) / support_total
             force_explore = bool(actions < self.commit_delay_min_actions or top_support < self.commit_support_threshold)
+            if gate_meta.get("gate_decision") == "suppress_diversity_push":
+                force_explore = False
             if force_explore:
                 forced_explore_steps += 1
 
@@ -1271,6 +1588,11 @@ class GlobalDiversityAggregationController(BaseController):
                         "semantic_overlap": round(float(pri_meta.get("semantic_overlap", 0.0)), 4),
                         "group_key": pri_meta["group_key"],
                         "force_explore": bool(force_explore),
+                        "gate_mode": gate_meta.get("gate_mode"),
+                        "gate_decision": gate_meta.get("gate_decision"),
+                        "gate_signal": round(float(gate_meta.get("gate_signal", 0.0)), 4),
+                        "gate_intervened": bool(gate_meta.get("gate_intervened", False)),
+                        "gate_selected_branch_id": gate_meta.get("gate_selected_branch_id"),
                         "coverage_floor_activated": bool(coverage_floor_meta.get("coverage_floor_activated", False)),
                         "coverage_floor_reason": coverage_floor_meta.get("reason"),
                         "top_support_before_action": round(float(top_support), 4),
@@ -1298,6 +1620,11 @@ class GlobalDiversityAggregationController(BaseController):
                         "priority": round(priority, 4),
                         "score_after": round(float(result.score_after), 4),
                         "force_explore": bool(force_explore),
+                        "gate_mode": gate_meta.get("gate_mode"),
+                        "gate_decision": gate_meta.get("gate_decision"),
+                        "gate_signal": round(float(gate_meta.get("gate_signal", 0.0)), 4),
+                        "gate_intervened": bool(gate_meta.get("gate_intervened", False)),
+                        "gate_selected_branch_id": gate_meta.get("gate_selected_branch_id"),
                         "coverage_floor_activated": bool(coverage_floor_meta.get("coverage_floor_activated", False)),
                         "coverage_floor_reason": coverage_floor_meta.get("reason"),
                         "top_support_before_action": round(float(top_support), 4),
@@ -1317,6 +1644,18 @@ class GlobalDiversityAggregationController(BaseController):
                 should_commit, commit_meta = self._commit_by_answer_group_margin(branches=branches, actions=actions)
                 commit_checks.append(commit_meta)
                 if should_commit:
+                    commit_triggered = True
+                    break
+            if self.enable_incumbent_challenger_commit:
+                ic_state = self._incumbent_challenger_commit_state(branches=branches, incumbent_history=incumbent_history)
+                incumbent_key = str((ic_state.get("incumbent") or {}).get("group_key", ""))
+                if incumbent_key:
+                    incumbent_history.append(incumbent_key)
+                ic_state["actions_used"] = int(actions)
+                ic_state["fallback_to_base_logic"] = bool(ic_state.get("decision", "").startswith("fallback"))
+                incumbent_challenger_checks.append(ic_state)
+                if bool(ic_state.get("commit_ready", False)):
+                    incumbent_commit_triggered = True
                     commit_triggered = True
                     break
             if all(b.is_done for b in branches):
@@ -1364,7 +1703,25 @@ class GlobalDiversityAggregationController(BaseController):
                 "answer_group_commit_mode": bool(self.use_answer_group_commit_margin),
                 "commit_checks": commit_checks,
                 "commit_checks_count": int(len(commit_checks)),
+                "incumbent_challenger_commit_mode": bool(self.enable_incumbent_challenger_commit),
+                "incumbent_challenger_raw_support_only": bool(self.incumbent_challenger_raw_support_only),
+                "incumbent_challenger_checks": incumbent_challenger_checks,
+                "incumbent_challenger_checks_count": int(len(incumbent_challenger_checks)),
+                "incumbent_challenger_commit_triggered": bool(incumbent_commit_triggered),
+                "incumbent_challenger_intervention_count": int(
+                    sum(1 for c in incumbent_challenger_checks if str(c.get("decision")) in {"commit", "continue"})
+                ),
                 "commit_triggered": bool(commit_triggered),
+                "diversity_needed_gate_mode": self.diversity_needed_gate_mode,
+                "diversity_needed_gate_positive_threshold": float(self.diversity_needed_gate_positive_threshold),
+                "diversity_needed_gate_negative_threshold": float(self.diversity_needed_gate_negative_threshold),
+                "gate_intervention_count": int(sum(1 for a in action_trace if bool(a.get("gate_intervened", False)))),
+                "gate_favor_diversity_count": int(
+                    sum(1 for a in action_trace if str(a.get("gate_decision")) == "favor_diversity")
+                ),
+                "gate_suppress_diversity_count": int(
+                    sum(1 for a in action_trace if str(a.get("gate_decision")) == "suppress_diversity_push")
+                ),
                 "unstable_commit_flag": bool(
                     any(
                         bool(c.get("commit_rule_satisfied", False))
