@@ -4,75 +4,79 @@
 
 This note freezes the current repository rule for what should and should not count as a valid next experiment.
 
-It exists to prevent the project from drifting into repeated bounded tweaks without answering the current scientific question.
+It exists to prevent the project from drifting into repeated local tweaks or unrelated new families without strengthening the current leading method line.
 
 ## Current scientific question
 
 The current question is:
 
-> **For fixed-budget next-step branch allocation, should the target/controller optimize continuation value alone, or continuation value with a bounded completion-aware correction in near-tie disagreement states?**
+> **Can the broad diversity/aggregation family become a stable, real-model-confirmed broad winner under fixed-budget next-step branch allocation?**
 
 Equivalently:
 
-> when visible branch-semantic quality and immediate continuation value diverge on a hard close state, what should the system optimize?
+> given that global diversity-aware allocation and answer-support aggregation are now the leading serious method direction, how do we make diversity reliably materialize, rank diverse evidence correctly, and confirm the win under real generation noise?
 
 ## What the repository has already established
 
-The repository has already pressure-tested many nearby target/control ideas around the same local family.
-
-The current bounded evidence supports all of the following:
-- recent nearby refinements did not clearly displace the multistep-k3 line as a broad successor,
-- fresh observability-enabled runs now permit real semantic branch diagnosis,
-- bounded worst-failure casebooks show that method and oracle branches can diverge in visible completion/answer-completeness,
-- bounded completion-aware decision logic revealed a real signal,
-- and the bounded oracle-mismatch study supports **augmenting** the continuation-value oracle rather than replacing it globally.
+The repository has already established all of the following:
+- many earlier nearby target/control refinements did not clearly produce a broad successor,
+- observability-enabled runs now support real semantic failure diagnosis,
+- self-consistency’s broad advantage was diagnosed mainly as broader search/diversity plus answer aggregation and reduced premature commitment,
+- bounded local self-consistency-style rescue was useful but not enough,
+- a **broad diversity/aggregation family** became the first branch-allocation family to look like a serious broad competitor,
+- stricter simulator confirmation held up for that family,
+- and bounded real-model confirmation kept the family alive as promising, while showing that real-model evidence is still too small and exact broad-variant leadership is not yet fully settled.
 
 ## Admissible next experiments
 
-A next experiment is admissible only if it directly helps answer the current question above.
+A next experiment is admissible only if it directly strengthens or tests the current leading broad diversity/aggregation family.
 
 That means it should do at least one of these:
-1. improve answer/final-state observability on contested branch-allocation states,
-2. compare continuation-only, completion-aware, and hybrid target/oracle definitions on fresh observability-enabled runs,
-3. manually or automatically adjudicate disagreement states where visible semantic branch quality and continuation value diverge,
-4. test a bounded hybrid target/controller that keeps continuation value as the default and applies a completion-aware correction only in hard disagreement slices,
-5. validate whether the disagreement region is genuinely localized (for example near-ties only) or broader than currently estimated.
+1. confirm the broad family under larger but still cost-controlled real-model runs,
+2. improve **realized diversity** so explored branches become more genuinely answer-distinct under budget,
+3. improve ranking/selection when diversity already exists,
+4. improve answer-support aggregation so wrong concentration happens less often,
+5. study commit/selection instability under real generation noise,
+6. compare the currently frozen broad variants (`strong_v1` main tracked candidate, `v1` ablation/context sibling) under stronger realism or robustness settings,
+7. build residual-loss casebooks showing why self-consistency or other strong baselines still beat the broad family.
 
 ## What is not admissible right now
 
 The following should not be the default next move unless new evidence specifically justifies them:
-- another nearby target-weighting tweak,
+- another unrelated target-weighting tweak,
 - another generic defer-policy sweep,
-- another auxiliary target family in the same bounded neighborhood,
-- another broad controller-variant pass without new target-definition content,
-- another attempt to mine old non-instrumented artifacts for semantics,
-- or broad dataset expansion before the target-definition question is clarified.
+- another local hard-case rescue that does not affect the broad family,
+- another new controller family,
+- another simulator-only campaign that postpones realism confirmation,
+- or broad dataset expansion unrelated to validating the current main family.
 
 These are not banned forever. They are just not currently the highest-leverage default work.
 
-## Required evidence before introducing a new target/controller family
+## Required evidence before opening a new method family
 
-Before adding a new target/controller family, require at least one of these:
-- a clear pattern in fresh semantic failure cases that the current hybrid-oracle question cannot express,
-- a documented reason why the current continuation-plus-bounded-completion framing is inadequate,
-- or strong external theoretical support that changes the target object more fundamentally than current nearby variants.
+Before adding a new method family, require at least one of these:
+- clear evidence that the broad diversity/aggregation family fails fundamentally under larger real-model confirmation,
+- a documented reason why diversity-aware allocation plus answer-support aggregation cannot be repaired into a strong broad competitor,
+- or strong external theoretical/empirical support that the current family is pointed at the wrong object entirely.
 
 If that evidence is absent, do not introduce a new family.
 
-## Why observability-enabled semantic diagnosis is currently mandatory
+## Why real-model confirmation is currently mandatory
 
-The repository now has enough evidence that proxy-only diagnosis is not sufficient.
+The repository is past the point where another simulator-only success is enough.
 
-Fresh observability-enabled runs and bounded answer recovery now allow contested cases to be inspected semantically. That means the right next step is to understand those cases and use them to settle the target-definition question, rather than continuing broad bounded tweaks.
+The leading family already looks strong in simulator confirmation. What is missing is reliable confirmation under actual provider-backed generation, where diversity realization and commit stability become noisier and more important.
+
+That means the right next step is to increase real-model trustworthiness and residual-loss understanding, not to continue broad simulator-only method exploration.
 
 ## Practical rule
 
 Use this rule of thumb:
 
-> **No new method family unless it directly answers the oracle-mismatch / semantic-completion question. No new broad sweep unless the target-definition memo changes first.**
+> **No new method family unless larger real-model confirmation undermines the current one. No new broad sweep unless it strengthens the broad diversity/aggregation family or explains why it still loses.**
 
-## Current recommended target stance
+## Current recommended method stance
 
 Until stronger evidence arrives, the repository should operate under this stance:
 
-> **keep continuation value as the core target, and study bounded completion-aware correction only in disagreement slices, especially near-ties.**
+> **treat broad diversity-aware allocation with answer-support aggregation as the current main method family, with `broad_diversity_aggregation_strong_v1` as the main tracked candidate and `broad_diversity_aggregation_v1` as the main ablation/context sibling, while prioritizing Cohere/Gemini realism confirmation and diversity-realization hardening.**
