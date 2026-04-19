@@ -1,0 +1,44 @@
+{
+  "generator": "value_aware_target_regime_comparison_v1",
+  "label_config": {
+    "dataset_name": "openai/gsm8k",
+    "dataset_split": null,
+    "dataset_config": null,
+    "seed": 17,
+    "max_frontier_states": 48,
+    "episodes_per_example": 2,
+    "init_branches": 4,
+    "max_branches_per_state": 5,
+    "frontier_budget": 7,
+    "min_remaining_budget": 2,
+    "max_remaining_budget": 5,
+    "state_capture_prob": 0.7,
+    "finish_prob_base": 0.16,
+    "answer_noise": 0.12,
+    "max_depth": 7,
+    "exact_mode": true,
+    "max_exact_branches": 4,
+    "max_exact_remaining_budget": 5,
+    "rollout_samples_per_candidate": 8,
+    "max_allocation_samples": 20,
+    "include_verify_actions": true,
+    "verify_prob": 0.35,
+    "allow_mock_data": true,
+    "ambiguity_near_tie_threshold": 0.02,
+    "ambiguity_medium_threshold": 0.08,
+    "ambiguity_high_threshold": 0.16,
+    "target_mode": "legacy_plus_value_awareness_v1"
+  },
+  "counts": {
+    "states": 48,
+    "candidate_rows": 137,
+    "pairwise_rows": 140,
+    "state_value_rows": 48
+  },
+  "artifacts": {
+    "candidate_labels": "outputs/branch_label_bruteforce_learning/value_aware_target_regime_comparison_20260419_v2/labels/candidate_labels.jsonl",
+    "pairwise_labels": "outputs/branch_label_bruteforce_learning/value_aware_target_regime_comparison_20260419_v2/labels/pairwise_labels.jsonl",
+    "state_summaries": "outputs/branch_label_bruteforce_learning/value_aware_target_regime_comparison_20260419_v2/labels/state_summaries.jsonl",
+    "state_value_targets": "outputs/branch_label_bruteforce_learning/value_aware_target_regime_comparison_20260419_v2/labels/state_value_targets.jsonl"
+  }
+}

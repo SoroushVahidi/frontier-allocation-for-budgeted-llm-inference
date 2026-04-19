@@ -242,6 +242,23 @@ def test_schema_loading(tmp_path: Path) -> None:
     assert len(data["state_value_targets"]) == 3
 
 
+def test_expand_vs_commit_metrics_emitted(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    data = load_label_artifacts(labels_dir)
+    cfg = LearningConfig(
+        seed=9,
+        train_lightgbm_ranker=False,
+        train_catboost_ranker=False,
+        train_pairwise_svm=False,
+        train_state_commit_value_model=True,
+    )
+    tables = prepare_learning_tables(data, cfg)
+    models = train_models(tables, cfg)
+    evals = evaluate_models(models, tables, cfg)
+    assert "expand_vs_commit_accuracy_test" in evals["pointwise"]
+    assert "expand_vs_commit_mean_regret_test" in evals["pointwise"]
+
+
 def test_value_aware_defer_mode_uses_commit_gap(tmp_path: Path) -> None:
     labels_dir = _tiny_artifacts(tmp_path)
     data = load_label_artifacts(labels_dir)

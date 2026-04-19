@@ -200,6 +200,8 @@ class LearningConfig:
     outside_option_keep_unresolved_threshold: float = 0.02
     train_pairwise_deferred_specialist: bool = False
     deferred_specialist_target_mode: str = "oracle_proxy"  # one of: heuristic, oracle_proxy, hybrid
+    train_state_commit_value_model: bool = False
+    state_commit_alpha: float = 1.0
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -1124,6 +1126,66 @@ def _fit_pointwise_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dic
     }
 
 
+def _state_commit_features(rows: list[dict[str, Any]]) -> list[float]:
+    if not rows:
+        return [0.0] * 9
+    vals = [float(r.get("Q_expand", r.get("estimated_value_if_allocate_next", 0.0))) for r in rows]
+    budgets = [float(r.get("remaining_budget", 0.0)) for r in rows]
+    stds = [float(r.get("allocation_value_std", 0.0)) for r in rows]
+    gaps = sorted(vals, reverse=True)
+    top = gaps[0] if gaps else 0.0
+    second = gaps[1] if len(gaps) > 1 else top
+    return [
+        float(len(rows)),
+        float(np.mean(vals)),
+        float(np.std(vals)) if len(vals) > 1 else 0.0,
+        float(top),
+        float(top - second),
+        float(np.mean(budgets)) if budgets else 0.0,
+        float(np.max(budgets)) if budgets else 0.0,
+        float(np.mean(stds)) if stds else 0.0,
+        float(np.max(stds)) if stds else 0.0,
+    ]
+
+
+def _fit_state_commit_value_model(tables: dict[str, Any], cfg: LearningConfig) -> dict[str, Any]:
+    if not bool(cfg.train_state_commit_value_model):
+        return {"model_type": "state_commit_ridge", "status": "disabled"}
+    targets = {str(r.get("state_id", "")): float(r.get("Q_commit", 0.0)) for r in tables.get("state_value_targets", [])}
+    train_states = []
+    x = []
+    y = []
+    for state_id, rows in tables.get("state_to_candidates", {}).items():
+        subset = [r for r in rows if str(r.get("split")) == "train"]
+        if len(subset) < 2 or state_id not in targets:
+            continue
+        train_states.append(state_id)
+        x.append(_state_commit_features(subset))
+        y.append(float(targets[state_id]))
+    if len(x) < 2:
+        return {"model_type": "state_commit_ridge", "status": "insufficient_train_rows"}
+    model = Ridge(alpha=float(cfg.state_commit_alpha), random_state=cfg.seed)
+    model.fit(x, y)
+    return {
+        "model_type": "state_commit_ridge",
+        "status": "ok",
+        "feature_names": [
+            "n_active_branches",
+            "q_expand_mean",
+            "q_expand_std",
+            "q_expand_top1",
+            "q_expand_top1_top2_gap",
+            "remaining_budget_mean",
+            "remaining_budget_max",
+            "allocation_std_mean",
+            "allocation_std_max",
+        ],
+        "weights": [float(v) for v in model.coef_],
+        "intercept": float(model.intercept_),
+        "training_states": len(train_states),
+    }
+
+
 def _fit_outside_option_model(rows: list[dict[str, Any]], cfg: LearningConfig) -> dict[str, Any]:
     train = [r for r in rows if r["split"] == "train"]
     if len(train) < 2:
@@ -1279,6 +1341,8 @@ def train_models(tables: dict[str, Any], cfg: LearningConfig, model_artifact_dir
         models["pointwise"] = _fit_pointwise_model(tables["candidates"], cfg)
     if cfg.train_outside_option:
         models["outside_option"] = _fit_outside_option_model(tables["candidates"], cfg)
+    if cfg.train_state_commit_value_model:
+        models["state_commit_value"] = _fit_state_commit_value_model(tables, cfg)
     models["lightgbm_ranker"] = _fit_lightgbm_ranker(tables["candidates"], cfg, model_artifact_dir)
     models["catboost_ranker"] = _fit_catboost_ranker(tables["candidates"], cfg, model_artifact_dir)
     return models
@@ -1954,6 +2018,60 @@ def _eval_pairwise_deferred_specialist(model: dict[str, Any], rows: list[dict[st
     }
 
 
+def _eval_expand_vs_commit_decomposition(
+    *,
+    candidate_scorer: Callable[[dict[str, Any]], float] | None,
+    commit_model: dict[str, Any] | None,
+    tables: dict[str, Any],
+) -> dict[str, Any]:
+    if candidate_scorer is None:
+        return {"status": "not_applicable"}
+    by_state = tables.get("state_to_candidates", {})
+    state_targets = {str(r.get("state_id", "")): r for r in tables.get("state_value_targets", [])}
+    if not state_targets:
+        return {"status": "missing_state_value_targets"}
+    n = 0
+    correct = 0
+    regrets: list[float] = []
+    near_n = 0
+    near_correct = 0
+    for state_id, rows in by_state.items():
+        test_rows = [r for r in rows if str(r.get("split")) == "test"]
+        if len(test_rows) < 2:
+            continue
+        target = state_targets.get(str(state_id))
+        if not target:
+            continue
+        pred_top = max(test_rows, key=lambda r: float(candidate_scorer({"x": r["x"]})))
+        pred_best_expand_value = float(pred_top.get("Q_expand", pred_top.get("estimated_value_if_allocate_next", 0.0)))
+        if commit_model and str(commit_model.get("status")) == "ok":
+            w = [float(v) for v in commit_model.get("weights", [])]
+            b = float(commit_model.get("intercept", 0.0))
+            x_state = _state_commit_features(test_rows)
+            pred_q_commit = _dot(w, x_state) + b
+        else:
+            pred_q_commit = float(target.get("Q_commit", 0.0))
+        pred_action = "commit_now" if pred_q_commit >= pred_best_expand_value else f"expand:{pred_top.get('branch_id')}"
+        true_best_action = str(target.get("best_action_overall", ""))
+        true_best_val = float(target.get("best_action_value", max(float(target.get("best_expand_value", 0.0)), float(target.get("Q_commit", 0.0)))))
+        taken_val = float(target.get("Q_commit", 0.0)) if pred_action == "commit_now" else float(target.get("Q_expand", {}).get(str(pred_top.get("branch_id")), pred_best_expand_value))
+        regret = max(0.0, true_best_val - taken_val)
+        regrets.append(regret)
+        n += 1
+        hit = int(pred_action == true_best_action)
+        correct += hit
+        if str(target.get("ambiguity_bucket", "")) == "near_tie":
+            near_n += 1
+            near_correct += hit
+    return {
+        "status": "ok",
+        "expand_vs_commit_accuracy_test": correct / max(1, n),
+        "near_tie_expand_vs_commit_accuracy_test": near_correct / max(1, near_n),
+        "expand_vs_commit_mean_regret_test": _safe_mean(regrets),
+        "evaluated_states_test": n,
+    }
+
+
 def evaluate_models(models: dict[str, Any], tables: dict[str, Any], cfg: LearningConfig) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for name, model in models.items():
@@ -1967,6 +2085,22 @@ def evaluate_models(models: dict[str, Any], tables: dict[str, Any], cfg: Learnin
             out[name] = {
                 "model_status": model.get("status", "unknown"),
                 "note": "pairwise_ternary_logreg requires pair-level evaluation; candidate ranking metrics are not computed here",
+            }
+            continue
+        if str(model.get("model_type", "")) == "state_commit_ridge":
+            test_targets = {str(r.get("state_id", "")): r for r in tables.get("state_value_targets", [])}
+            errs = []
+            for state_id, rows in tables.get("state_to_candidates", {}).items():
+                subset = [r for r in rows if str(r.get("split")) == "test"]
+                if len(subset) < 2 or state_id not in test_targets:
+                    continue
+                pred = _dot([float(v) for v in model.get("weights", [])], _state_commit_features(subset)) + float(model.get("intercept", 0.0))
+                truth = float(test_targets[state_id].get("Q_commit", 0.0))
+                errs.append((pred - truth) ** 2)
+            out[name] = {
+                "model_status": model.get("status", "unknown"),
+                "state_commit_mse_test": _safe_mean(errs),
+                "note": "state-level commit value regressor",
             }
             continue
         model_type = str(model.get("model_type", ""))
@@ -2012,6 +2146,13 @@ def evaluate_models(models: dict[str, Any], tables: dict[str, Any], cfg: Learnin
             out[name]["note"] = (
                 f"{out[name].get('note', '')}; brier omitted because svm_margin_calibration={cfg.svm_margin_calibration}"
             ).strip("; ")
+        out[name].update(
+            _eval_expand_vs_commit_decomposition(
+                candidate_scorer=scorer,
+                commit_model=models.get("state_commit_value"),
+                tables=tables,
+            )
+        )
     out["_defer_label_audit"] = tables.get("defer_label_audit", {})
     return out
 

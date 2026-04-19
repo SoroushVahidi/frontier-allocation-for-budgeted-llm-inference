@@ -1,0 +1,133 @@
+{
+  "baseline_default": {
+    "defer_score_distribution_test": {},
+    "threshold_trace_test": [],
+    "threshold_selection": {}
+  },
+  "value_aware": {
+    "defer_score_distribution_test": {},
+    "threshold_trace_test": [],
+    "threshold_selection": {}
+  },
+  "value_aware_ambiguity": {
+    "defer_score_distribution_test": {},
+    "threshold_trace_test": [],
+    "threshold_selection": {}
+  },
+  "value_aware_ambiguity_decomposed": {
+    "defer_score_distribution_test": {
+      "positive_count": 0,
+      "negative_count": 18,
+      "positive_mean": 0.0,
+      "negative_mean": 1.0,
+      "positive_p90": 0.0,
+      "negative_p90": 1.0
+    },
+    "threshold_trace_test": [
+      {
+        "threshold": 0.05,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.14,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.22999999999999998,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.32,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.41,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.49999999999999994,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.5900000000000001,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.68,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.77,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.86,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      },
+      {
+        "threshold": 0.95,
+        "accepted_only_accuracy": 0.0,
+        "coverage": 0.0,
+        "accepted_count": 0,
+        "defer_precision": 0.0,
+        "defer_recall": 0.0,
+        "defer_f1": 0.0
+      }
+    ],
+    "threshold_selection": {
+      "mode": "fixed",
+      "selected_threshold": 0.5,
+      "source": "configured_or_override"
+    }
+  }
+}

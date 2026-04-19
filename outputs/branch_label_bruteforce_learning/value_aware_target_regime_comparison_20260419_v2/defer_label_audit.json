@@ -1,0 +1,370 @@
+{
+  "baseline_default": {
+    "all": {
+      "total_examples": 140,
+      "positive_defer_labels": 67,
+      "negative_defer_labels": 73,
+      "positive_rate": 0.4785714285714286,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 140
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 31,
+        "expand:b1": 37,
+        "expand:b2": 35,
+        "expand:b3": 37
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 140
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 140
+      },
+      "near_tie_defer_positive_count": 27,
+      "near_tie_total_count": 28
+    },
+    "train": {
+      "total_examples": 117,
+      "positive_defer_labels": 52,
+      "negative_defer_labels": 65,
+      "positive_rate": 0.4444444444444444,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 117
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 24,
+        "expand:b1": 34,
+        "expand:b2": 31,
+        "expand:b3": 28
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 117
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 117
+      },
+      "near_tie_defer_positive_count": 23,
+      "near_tie_total_count": 24
+    },
+    "val": {
+      "total_examples": 5,
+      "positive_defer_labels": 1,
+      "negative_defer_labels": 4,
+      "positive_rate": 0.2,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 5
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 4,
+        "expand:b2": 1
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 5
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 5
+      },
+      "near_tie_defer_positive_count": 0,
+      "near_tie_total_count": 0
+    },
+    "test": {
+      "total_examples": 18,
+      "positive_defer_labels": 14,
+      "negative_defer_labels": 4,
+      "positive_rate": 0.7777777777777778,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 18
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 3,
+        "expand:b1": 3,
+        "expand:b2": 3,
+        "expand:b3": 9
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 18
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 18
+      },
+      "near_tie_defer_positive_count": 4,
+      "near_tie_total_count": 4
+    }
+  },
+  "value_aware": {
+    "all": {
+      "total_examples": 140,
+      "positive_defer_labels": 67,
+      "negative_defer_labels": 73,
+      "positive_rate": 0.4785714285714286,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 140
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 31,
+        "expand:b1": 37,
+        "expand:b2": 35,
+        "expand:b3": 37
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 140
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 140
+      },
+      "near_tie_defer_positive_count": 27,
+      "near_tie_total_count": 28
+    },
+    "train": {
+      "total_examples": 117,
+      "positive_defer_labels": 52,
+      "negative_defer_labels": 65,
+      "positive_rate": 0.4444444444444444,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 117
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 24,
+        "expand:b1": 34,
+        "expand:b2": 31,
+        "expand:b3": 28
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 117
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 117
+      },
+      "near_tie_defer_positive_count": 23,
+      "near_tie_total_count": 24
+    },
+    "val": {
+      "total_examples": 5,
+      "positive_defer_labels": 1,
+      "negative_defer_labels": 4,
+      "positive_rate": 0.2,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 5
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 4,
+        "expand:b2": 1
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 5
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 5
+      },
+      "near_tie_defer_positive_count": 0,
+      "near_tie_total_count": 0
+    },
+    "test": {
+      "total_examples": 18,
+      "positive_defer_labels": 14,
+      "negative_defer_labels": 4,
+      "positive_rate": 0.7777777777777778,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 18
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 3,
+        "expand:b1": 3,
+        "expand:b2": 3,
+        "expand:b3": 9
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 18
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 18
+      },
+      "near_tie_defer_positive_count": 4,
+      "near_tie_total_count": 4
+    }
+  },
+  "value_aware_ambiguity": {
+    "all": {
+      "total_examples": 140,
+      "positive_defer_labels": 67,
+      "negative_defer_labels": 73,
+      "positive_rate": 0.4785714285714286,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 140
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 31,
+        "expand:b1": 37,
+        "expand:b2": 35,
+        "expand:b3": 37
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 140
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 140
+      },
+      "near_tie_defer_positive_count": 27,
+      "near_tie_total_count": 28
+    },
+    "train": {
+      "total_examples": 117,
+      "positive_defer_labels": 52,
+      "negative_defer_labels": 65,
+      "positive_rate": 0.4444444444444444,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 117
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 24,
+        "expand:b1": 34,
+        "expand:b2": 31,
+        "expand:b3": 28
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 117
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 117
+      },
+      "near_tie_defer_positive_count": 23,
+      "near_tie_total_count": 24
+    },
+    "val": {
+      "total_examples": 5,
+      "positive_defer_labels": 1,
+      "negative_defer_labels": 4,
+      "positive_rate": 0.2,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 5
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 4,
+        "expand:b2": 1
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 5
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 5
+      },
+      "near_tie_defer_positive_count": 0,
+      "near_tie_total_count": 0
+    },
+    "test": {
+      "total_examples": 18,
+      "positive_defer_labels": 14,
+      "negative_defer_labels": 4,
+      "positive_rate": 0.7777777777777778,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 18
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 3,
+        "expand:b1": 3,
+        "expand:b2": 3,
+        "expand:b3": 9
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 18
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 18
+      },
+      "near_tie_defer_positive_count": 4,
+      "near_tie_total_count": 4
+    }
+  },
+  "value_aware_ambiguity_decomposed": {
+    "all": {
+      "total_examples": 140,
+      "positive_defer_labels": 0,
+      "negative_defer_labels": 140,
+      "positive_rate": 0.0,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 140
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 31,
+        "expand:b1": 37,
+        "expand:b2": 35,
+        "expand:b3": 37
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 140
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 140
+      },
+      "near_tie_defer_positive_count": 0,
+      "near_tie_total_count": 28
+    },
+    "train": {
+      "total_examples": 117,
+      "positive_defer_labels": 0,
+      "negative_defer_labels": 117,
+      "positive_rate": 0.0,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 117
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 24,
+        "expand:b1": 34,
+        "expand:b2": 31,
+        "expand:b3": 28
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 117
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 117
+      },
+      "near_tie_defer_positive_count": 0,
+      "near_tie_total_count": 24
+    },
+    "val": {
+      "total_examples": 5,
+      "positive_defer_labels": 0,
+      "negative_defer_labels": 5,
+      "positive_rate": 0.0,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 5
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 4,
+        "expand:b2": 1
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 5
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 5
+      },
+      "near_tie_defer_positive_count": 0,
+      "near_tie_total_count": 0
+    },
+    "test": {
+      "total_examples": 18,
+      "positive_defer_labels": 0,
+      "negative_defer_labels": 18,
+      "positive_rate": 0.0,
+      "counts_by_ambiguity_bucket": {
+        "high_margin": 18
+      },
+      "counts_by_best_action_metadata": {
+        "expand:b0": 3,
+        "expand:b1": 3,
+        "expand:b2": 3,
+        "expand:b3": 9
+      },
+      "counts_by_delta_expand_commit_bucket": {
+        "large_expand_advantage": 18
+      },
+      "counts_by_regret_bucket": {
+        "zero_regret": 18
+      },
+      "near_tie_defer_positive_count": 0,
+      "near_tie_total_count": 4
+    }
+  }
+}
