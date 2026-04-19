@@ -1,5 +1,8 @@
 # Broad diversity/aggregation real-model confirmation (2026-04-18)
 
+Follow-up Cohere+Gemini-only confirmation pass:
+- `docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md`
+
 ## Purpose
 
 This pass is a **real-model confirmation pass** for the already-selected broad diversity/aggregation family, not a new-family search.

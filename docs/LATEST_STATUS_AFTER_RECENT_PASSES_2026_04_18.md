@@ -201,3 +201,6 @@ These may still matter later, but they are no longer the highest-leverage defaul
 ## Best single-sentence summary
 
 > The repository is now in a stronger decision state: recent bounded target/control refinements did not clearly surpass multistep-k3, fresh observability-enabled runs now permit semantic adjudication of contested failures, and the current evidence supports a continuation-value core with bounded completion-aware correction in near-tie disagreement states.
+
+Additional real-model note:
+- `docs/BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md` documents the Cohere+Gemini-only bounded confirmation sweep and its provider-limited outcome.
