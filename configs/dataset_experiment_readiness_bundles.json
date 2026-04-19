@@ -1,0 +1,32 @@
+{
+  "version": "v1",
+  "generated_for": "dataset_experiment_readiness",
+  "bundles": {
+    "exact_answer_math_expansion": {
+      "description": "Exact-answer math expansion bundle for immediate pilot use.",
+      "task_type": "exact_answer_math",
+      "datasets": [
+        "HuggingFaceH4/aime_2024",
+        "MathArena/aime_2025",
+        "MathArena/hmmt_feb_2025",
+        "MathArena/brumo_2025"
+      ]
+    },
+    "breadth_control_mcq": {
+      "description": "Breadth/control bundle for multiple-choice stress testing.",
+      "task_type": "multiple_choice",
+      "datasets": [
+        "TIGER-Lab/MMLU-Pro"
+      ]
+    },
+    "code_generation_partial": {
+      "description": "Code-generation datasets tracked as partial readiness until execution-safe grading path is wired.",
+      "task_type": "code_generation",
+      "status": "partial",
+      "datasets": [
+        "livecodebench/code_generation",
+        "livecodebench/execution-v2"
+      ]
+    }
+  }
+}
