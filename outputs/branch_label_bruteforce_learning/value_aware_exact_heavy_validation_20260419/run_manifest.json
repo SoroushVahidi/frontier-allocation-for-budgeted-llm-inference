@@ -1,0 +1,15 @@
+{
+  "run_id": "value_aware_exact_heavy_validation_20260419",
+  "script": "scripts/run_value_aware_exact_heavy_validation_pass.py",
+  "elapsed_sec": 35.959317445755005,
+  "outputs": [
+    "target_manifest.json",
+    "per_method_metrics.json",
+    "aggregate_comparison.json",
+    "exact_heavy_reliability_ambiguity_diagnostics.json",
+    "stabilization_ablation_summary.json",
+    "ambiguity_policy_sweep_summary.json",
+    "transfer_check.json"
+  ],
+  "status_note": "/workspace/adaptive-reasoning-budget-allocation/experiments/value_aware_exact_heavy_validation_status_2026_04_19.md"
+}

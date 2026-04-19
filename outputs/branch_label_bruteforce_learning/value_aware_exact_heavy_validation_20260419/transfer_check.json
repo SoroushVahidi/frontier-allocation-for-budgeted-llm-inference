@@ -1,0 +1,5 @@
+{
+  "status": "not_feasible_in_lightweight_pipeline",
+  "reason": "Current broad diversity/aggregation confirmation entry point is external-API based and does not expose a direct plug-in path to swap learner-side branch scoring weights in this bounded local run.",
+  "checked_script": "scripts/run_broad_diversity_aggregation_real_model_confirmation_20260418.py"
+}

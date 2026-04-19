@@ -1,0 +1,332 @@
+{
+  "baseline_default": {
+    "method": "baseline_default",
+    "near_tie_vs_far": {
+      "near_tie": {
+        "n": 5.0,
+        "acc": 0.6
+      },
+      "far_margin": {
+        "n": 1.0,
+        "acc": 0.0
+      }
+    },
+    "target_stderr_summary": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "bucket_counts": {
+        "low_<=0.03": 6,
+        "mid_0.03_0.08": 0,
+        "high_>0.08": 0
+      }
+    },
+    "target_reliability_summary": {
+      "mean": 1.0,
+      "median": 1.0,
+      "bucket_counts": {
+        "low_<=0.40": 0,
+        "mid_0.40_0.70": 0,
+        "high_>0.70": 6
+      }
+    },
+    "accuracy_by_reliability_bucket": {
+      "low_<=0.40": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "mid_0.40_0.70": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "high_>0.70": {
+        "n": 6.0,
+        "acc": 0.5
+      }
+    },
+    "accuracy_by_provenance_bucket": {
+      "exact": {
+        "n": 6.0,
+        "acc": 0.5
+      },
+      "mixed": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "approx": {
+        "n": 0.0,
+        "acc": 0.0
+      }
+    },
+    "accuracy_by_ambiguity_bucket": {
+      "high_margin": {
+        "n": 6.0,
+        "acc": 0.5
+      }
+    }
+  },
+  "value_aware": {
+    "method": "value_aware",
+    "near_tie_vs_far": {
+      "near_tie": {
+        "n": 5.0,
+        "acc": 0.6
+      },
+      "far_margin": {
+        "n": 1.0,
+        "acc": 0.0
+      }
+    },
+    "target_stderr_summary": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "bucket_counts": {
+        "low_<=0.03": 6,
+        "mid_0.03_0.08": 0,
+        "high_>0.08": 0
+      }
+    },
+    "target_reliability_summary": {
+      "mean": 1.0,
+      "median": 1.0,
+      "bucket_counts": {
+        "low_<=0.40": 0,
+        "mid_0.40_0.70": 0,
+        "high_>0.70": 6
+      }
+    },
+    "accuracy_by_reliability_bucket": {
+      "low_<=0.40": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "mid_0.40_0.70": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "high_>0.70": {
+        "n": 6.0,
+        "acc": 0.5
+      }
+    },
+    "accuracy_by_provenance_bucket": {
+      "exact": {
+        "n": 6.0,
+        "acc": 0.5
+      },
+      "mixed": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "approx": {
+        "n": 0.0,
+        "acc": 0.0
+      }
+    },
+    "accuracy_by_ambiguity_bucket": {
+      "high_margin": {
+        "n": 6.0,
+        "acc": 0.5
+      }
+    }
+  },
+  "value_aware_ambiguity": {
+    "method": "value_aware_ambiguity",
+    "near_tie_vs_far": {
+      "near_tie": {
+        "n": 5.0,
+        "acc": 0.6
+      },
+      "far_margin": {
+        "n": 1.0,
+        "acc": 1.0
+      }
+    },
+    "target_stderr_summary": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "bucket_counts": {
+        "low_<=0.03": 6,
+        "mid_0.03_0.08": 0,
+        "high_>0.08": 0
+      }
+    },
+    "target_reliability_summary": {
+      "mean": 1.0,
+      "median": 1.0,
+      "bucket_counts": {
+        "low_<=0.40": 0,
+        "mid_0.40_0.70": 0,
+        "high_>0.70": 6
+      }
+    },
+    "accuracy_by_reliability_bucket": {
+      "low_<=0.40": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "mid_0.40_0.70": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "high_>0.70": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      }
+    },
+    "accuracy_by_provenance_bucket": {
+      "exact": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      },
+      "mixed": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "approx": {
+        "n": 0.0,
+        "acc": 0.0
+      }
+    },
+    "accuracy_by_ambiguity_bucket": {
+      "high_margin": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      }
+    }
+  },
+  "value_aware_ambiguity_decomposed": {
+    "method": "value_aware_ambiguity_decomposed",
+    "near_tie_vs_far": {
+      "near_tie": {
+        "n": 5.0,
+        "acc": 0.6
+      },
+      "far_margin": {
+        "n": 1.0,
+        "acc": 1.0
+      }
+    },
+    "target_stderr_summary": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "bucket_counts": {
+        "low_<=0.03": 6,
+        "mid_0.03_0.08": 0,
+        "high_>0.08": 0
+      }
+    },
+    "target_reliability_summary": {
+      "mean": 1.0,
+      "median": 1.0,
+      "bucket_counts": {
+        "low_<=0.40": 0,
+        "mid_0.40_0.70": 0,
+        "high_>0.70": 6
+      }
+    },
+    "accuracy_by_reliability_bucket": {
+      "low_<=0.40": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "mid_0.40_0.70": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "high_>0.70": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      }
+    },
+    "accuracy_by_provenance_bucket": {
+      "exact": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      },
+      "mixed": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "approx": {
+        "n": 0.0,
+        "acc": 0.0
+      }
+    },
+    "accuracy_by_ambiguity_bucket": {
+      "high_margin": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      }
+    }
+  },
+  "value_aware_ambiguity_decomposed_stabilized": {
+    "method": "value_aware_ambiguity_decomposed_stabilized",
+    "near_tie_vs_far": {
+      "near_tie": {
+        "n": 5.0,
+        "acc": 0.6
+      },
+      "far_margin": {
+        "n": 1.0,
+        "acc": 1.0
+      }
+    },
+    "target_stderr_summary": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "bucket_counts": {
+        "low_<=0.03": 6,
+        "mid_0.03_0.08": 0,
+        "high_>0.08": 0
+      }
+    },
+    "target_reliability_summary": {
+      "mean": 1.0,
+      "median": 1.0,
+      "bucket_counts": {
+        "low_<=0.40": 0,
+        "mid_0.40_0.70": 0,
+        "high_>0.70": 6
+      }
+    },
+    "accuracy_by_reliability_bucket": {
+      "low_<=0.40": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "mid_0.40_0.70": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "high_>0.70": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      }
+    },
+    "accuracy_by_provenance_bucket": {
+      "exact": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      },
+      "mixed": {
+        "n": 0.0,
+        "acc": 0.0
+      },
+      "approx": {
+        "n": 0.0,
+        "acc": 0.0
+      }
+    },
+    "accuracy_by_ambiguity_bucket": {
+      "high_margin": {
+        "n": 6.0,
+        "acc": 0.6666666666666666
+      }
+    }
+  }
+}

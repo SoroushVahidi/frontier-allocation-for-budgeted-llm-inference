@@ -1,0 +1,23 @@
+{
+  "script": "scripts/run_value_aware_exact_heavy_validation_pass.py",
+  "description": "Stronger exact-heavy matched validation + stabilization/ambiguity diagnostics for learner-side value-aware regimes.",
+  "seed": 23,
+  "max_frontier_states": 180,
+  "rollout_samples_per_candidate": 12,
+  "target_estimation_repeats": 3,
+  "paired_rollout_comparison": true,
+  "max_allocation_samples": 40,
+  "frontier_budget": 8,
+  "min_exact_like_ratio": 0.0,
+  "min_pairs_per_state": 4,
+  "target_state_cap": 110,
+  "defer_threshold_selection": "fixed",
+  "defer_eval_threshold_override": -1.0,
+  "methods": [
+    "baseline_default",
+    "value_aware",
+    "value_aware_ambiguity",
+    "value_aware_ambiguity_decomposed",
+    "value_aware_ambiguity_decomposed_stabilized"
+  ]
+}
