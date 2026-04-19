@@ -1,0 +1,22 @@
+{
+  "run_id": "incumbent_challenger_metalevel_bounded_eval_20260419",
+  "script": "scripts/run_incumbent_challenger_metalevel_bounded_eval_20260419.py",
+  "bundle": "exact_answer_math_expansion",
+  "methods": {
+    "baseline": "broad_diversity_aggregation_strong_v1_incumbent_challenger_commit_v1",
+    "candidate": "broad_diversity_aggregation_strong_v1_incumbent_challenger_metalevel_v2"
+  },
+  "defaults": {
+    "subset_size": 8,
+    "seeds": [11],
+    "confirm_seeds": [23],
+    "budgets": [6],
+    "adaptive_grid": [1],
+    "grid_challenger_upside_commit_max": [0.15, 0.17, 0.19],
+    "grid_metalevel_delta_margin": [0.0, 0.01, 0.02],
+    "grid_near_tie_commit_margin_extra": [0.0, 0.01, 0.02],
+    "grid_force_extra_explore_on_near_tie": [true, false],
+    "grid_near_tie_force_upside_frac_threshold": [0.60, 0.75]
+  },
+  "notes": "Bounded matched threshold calibration study for metalevel ICC (diagnostic-first, no broad sweep)."
+}
