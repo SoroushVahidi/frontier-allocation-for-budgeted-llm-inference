@@ -48,6 +48,9 @@ class BruteForceLabelConfig:
     include_verify_actions: bool = True
     verify_prob: float = 0.35
     allow_mock_data: bool = True
+    ambiguity_near_tie_threshold: float = 0.02
+    ambiguity_medium_threshold: float = 0.08
+    ambiguity_high_threshold: float = 0.16
 
 
 @dataclass
@@ -319,6 +322,7 @@ def evaluate_state_candidates(
 
     raw_rollouts: list[dict[str, Any]] = []
     candidates: list[dict[str, Any]] = []
+    q_commit = float(_state_utility(_clone_branches(branches)))
     parent_mean_score = sum(float(b.score) for b in branches) / max(1, len(branches))
     for cand_idx, cand in enumerate(branches):
         alloc_means: list[tuple[tuple[int, ...], float]] = []
@@ -352,11 +356,15 @@ def evaluate_state_candidates(
         candidates.append(
             {
                 "branch_id": cand.branch_id,
+                "Q_expand": float(best_mean),
+                "Q_commit": float(q_commit),
                 "estimated_value_if_allocate_next": float(best_mean),
                 "best_followup_allocation": list(best_alloc),
                 "allocation_candidates_evaluated": len(allocations),
                 "allocation_value_std": math.sqrt(max(0.0, variance)),
                 "mode": mode,
+                "target_provenance": "exact" if mode == "exact" else ("degenerate" if mode == "degenerate" else "approx"),
+                "target_fallback_assumptions": "remaining_budget_followup_allocation_search",
                 "features_branch_v1": _branch_feature_dict(
                     cand,
                     parent_mean_score=parent_mean_score,
@@ -366,11 +374,32 @@ def evaluate_state_candidates(
         )
 
     winner = max(candidates, key=lambda x: x["estimated_value_if_allocate_next"])
+    second_best_value = max(
+        [float(c["estimated_value_if_allocate_next"]) for c in candidates if c["branch_id"] != winner["branch_id"]] or [float(winner["estimated_value_if_allocate_next"])]
+    )
+    best_expand_value = float(winner["estimated_value_if_allocate_next"])
+    expand_commit_gap = float(best_expand_value - q_commit)
+    if expand_commit_gap <= float(cfg.ambiguity_near_tie_threshold):
+        ambiguity_bucket = "near_tie"
+    elif expand_commit_gap <= float(cfg.ambiguity_medium_threshold):
+        ambiguity_bucket = "medium_margin"
+    else:
+        ambiguity_bucket = "high_margin"
+    best_action = "commit_now" if q_commit >= best_expand_value else f"expand:{winner['branch_id']}"
     for c in candidates:
         alternatives = [x["estimated_value_if_allocate_next"] for x in candidates if x["branch_id"] != c["branch_id"]]
         outside = max(alternatives) if alternatives else c["estimated_value_if_allocate_next"]
+        delta_expand_commit = float(c["estimated_value_if_allocate_next"] - q_commit)
+        regret_vs_best_action = float(max(best_expand_value, q_commit) - max(float(c["estimated_value_if_allocate_next"]), q_commit))
         c["outside_option_value"] = float(outside)
         c["branch_vs_outside_gap"] = float(c["estimated_value_if_allocate_next"] - outside)
+        c["delta_expand_commit"] = delta_expand_commit
+        c["regret_vs_best_action"] = regret_vs_best_action
+        c["best_action_overall"] = best_action
+        c["best_expand_branch"] = str(winner["branch_id"])
+        c["best_expand_value"] = best_expand_value
+        c["ambiguity_bucket"] = ambiguity_bucket
+        c["defer_candidate"] = bool(ambiguity_bucket in {"near_tie", "medium_margin"})
 
     pairwise: list[dict[str, Any]] = []
     for i in range(len(candidates)):
@@ -378,15 +407,44 @@ def evaluate_state_candidates(
             a = candidates[i]
             b = candidates[j]
             margin = float(a["estimated_value_if_allocate_next"] - b["estimated_value_if_allocate_next"])
+            regret_i_over_j = float(max(0.0, float(b["estimated_value_if_allocate_next"]) - float(a["estimated_value_if_allocate_next"])))
+            regret_j_over_i = float(max(0.0, float(a["estimated_value_if_allocate_next"]) - float(b["estimated_value_if_allocate_next"])))
             pairwise.append(
                 {
                     "branch_i": a["branch_id"],
                     "branch_j": b["branch_id"],
                     "preference": 1 if margin > 0 else 0,
                     "margin": margin,
+                    "delta_pair": margin,
+                    "regret_if_choose_i": regret_i_over_j,
+                    "regret_if_choose_j": regret_j_over_i,
+                    "Q_commit": q_commit,
+                    "delta_expand_commit_i": float(a["estimated_value_if_allocate_next"] - q_commit),
+                    "delta_expand_commit_j": float(b["estimated_value_if_allocate_next"] - q_commit),
+                    "pair_ambiguity_bucket": ambiguity_bucket,
+                    "defer_candidate": bool(ambiguity_bucket in {"near_tie", "medium_margin"}),
                     "relation": f"{a['branch_id']}>{b['branch_id']}" if margin > 0 else f"{b['branch_id']}>{a['branch_id']}",
                 }
             )
+
+    state_value_target = {
+        "state_id": state.state_id,
+        "example_id": state.example_id,
+        "remaining_budget": int(state.remaining_budget),
+        "active_branches": [str(b.branch_id) for b in branches],
+        "Q_commit": float(q_commit),
+        "Q_expand": {str(c["branch_id"]): float(c["estimated_value_if_allocate_next"]) for c in candidates},
+        "best_expand_branch": str(winner["branch_id"]),
+        "best_expand_value": best_expand_value,
+        "best_action_overall": best_action,
+        "best_action_value": float(max(best_expand_value, q_commit)),
+        "delta_best_expand_commit": expand_commit_gap,
+        "delta_best_two_expands": float(best_expand_value - second_best_value),
+        "ambiguity_bucket": ambiguity_bucket,
+        "defer_candidate": bool(ambiguity_bucket in {"near_tie", "medium_margin"}),
+        "target_provenance": "exact" if mode == "exact" else ("degenerate" if mode == "degenerate" else "approx"),
+        "fallback_assumptions": ["followup_allocation_search", "first_expand_then_rollout"],
+    }
 
     return {
         "state_summary": {
@@ -399,10 +457,17 @@ def evaluate_state_candidates(
             "candidate_mode": mode,
             "winner_branch_id": winner["branch_id"],
             "winner_value": winner["estimated_value_if_allocate_next"],
+            "Q_commit": float(q_commit),
+            "best_expand_branch": str(winner["branch_id"]),
+            "best_expand_value": best_expand_value,
+            "best_action_overall": best_action,
+            "delta_best_expand_commit": expand_commit_gap,
+            "ambiguity_bucket": ambiguity_bucket,
             "question_preview": state.question[:180],
         },
         "candidate_labels": candidates,
         "pairwise_labels": pairwise,
+        "state_value_target": state_value_target,
         "raw_rollouts": raw_rollouts,
     }
 

@@ -42,10 +42,15 @@ def test_label_schema_contains_required_fields() -> None:
     assert "state_summary" in result
     assert "candidate_labels" in result
     assert "pairwise_labels" in result
+    assert "state_value_target" in result
     assert "raw_rollouts" in result
     c0 = result["candidate_labels"][0]
     required = {
         "branch_id",
+        "Q_expand",
+        "Q_commit",
+        "delta_expand_commit",
+        "regret_vs_best_action",
         "estimated_value_if_allocate_next",
         "best_followup_allocation",
         "outside_option_value",

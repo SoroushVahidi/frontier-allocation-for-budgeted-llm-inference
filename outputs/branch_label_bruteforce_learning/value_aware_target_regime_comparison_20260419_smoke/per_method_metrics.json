@@ -1,0 +1,1070 @@
+{
+  "baseline_default": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "estimated_value_if_allocate_next",
+      "pairwise_target_mode": "legacy",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "none",
+      "pairwise_near_tie_downweight": 0.25,
+      "uncertainty_weighting": false,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v1",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": false,
+      "defer_target_mode": "heuristic",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy"
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.5,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 0.5,
+        "pairwise_margin_brier_test": 0.2549931862991214,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.6666666666666666,
+          "4": 0.46153846153846156,
+          "5": 0.4444444444444444
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.56,
+        "ranking_top1_accuracy_test": 0.5,
+        "agreement_with_bruteforce_labels": 0.56,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 0.5454545454545454,
+        "pairwise_margin_brier_test": 0.25031524975990094,
+        "exact_only_pairwise_accuracy_test": 0.56,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.6666666666666666,
+          "4": 0.5384615384615384,
+          "5": 0.5555555555555556
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.56
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.56
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.56
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.56
+        }
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.52,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.52,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 0.5,
+        "pairwise_margin_brier_test": 0.2509728144311414,
+        "exact_only_pairwise_accuracy_test": 0.52,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 1.0,
+          "4": 0.46153846153846156,
+          "5": 0.4444444444444444
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.52
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.52
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.52
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.52
+        }
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 1.0,
+        "far_margin_pairwise_accuracy_test": 0.4090909090909091,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.3333333333333333,
+          "4": 0.3076923076923077,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 1.0,
+        "far_margin_pairwise_accuracy_test": 0.4090909090909091,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.3333333333333333,
+          "4": 0.3076923076923077,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      }
+    }
+  },
+  "value_aware": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "Q_expand",
+      "pairwise_target_mode": "value_gap",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "none",
+      "pairwise_near_tie_downweight": 0.25,
+      "uncertainty_weighting": false,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v1",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": false,
+      "defer_target_mode": "heuristic",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy"
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.5,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 0.5,
+        "pairwise_margin_brier_test": 0.2549931862991214,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.6666666666666666,
+          "4": 0.46153846153846156,
+          "5": 0.4444444444444444
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.56,
+        "ranking_top1_accuracy_test": 0.5,
+        "agreement_with_bruteforce_labels": 0.56,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 0.5454545454545454,
+        "pairwise_margin_brier_test": 0.25031524975990094,
+        "exact_only_pairwise_accuracy_test": 0.56,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.6666666666666666,
+          "4": 0.5384615384615384,
+          "5": 0.5555555555555556
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.56
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.56
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.56
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.56
+        }
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.52,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.52,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 0.5,
+        "pairwise_margin_brier_test": 0.2509728144311414,
+        "exact_only_pairwise_accuracy_test": 0.52,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 1.0,
+          "4": 0.46153846153846156,
+          "5": 0.4444444444444444
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.52
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.52
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.52
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.52
+        }
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 1.0,
+        "far_margin_pairwise_accuracy_test": 0.4090909090909091,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.3333333333333333,
+          "4": 0.3076923076923077,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 1.0,
+        "far_margin_pairwise_accuracy_test": 0.4090909090909091,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.3333333333333333,
+          "4": 0.3076923076923077,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      }
+    }
+  },
+  "value_aware_ambiguity": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "Q_expand",
+      "pairwise_target_mode": "value_gap",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "downweight",
+      "pairwise_near_tie_downweight": 0.2,
+      "uncertainty_weighting": true,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v3",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": false,
+      "defer_target_mode": "heuristic",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy"
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.64,
+        "ranking_top1_accuracy_test": 0.6666666666666666,
+        "agreement_with_bruteforce_labels": 0.64,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 0.6818181818181818,
+        "pairwise_margin_brier_test": 0.19328877777650436,
+        "exact_only_pairwise_accuracy_test": 0.64,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.6666666666666666,
+          "4": 0.5384615384615384,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.64
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.64
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.64
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.64
+        }
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.88,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.88,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 0.9090909090909091,
+        "pairwise_margin_brier_test": 0.23273294509545395,
+        "exact_only_pairwise_accuracy_test": 0.88,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 1.0,
+          "4": 0.8461538461538461,
+          "5": 0.8888888888888888
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.88
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.88
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.88
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.88
+        }
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.56,
+        "ranking_top1_accuracy_test": 0.6666666666666666,
+        "agreement_with_bruteforce_labels": 0.56,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 0.6363636363636364,
+        "pairwise_margin_brier_test": 0.19051680776530358,
+        "exact_only_pairwise_accuracy_test": 0.56,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.6666666666666666,
+          "4": 0.3076923076923077,
+          "5": 0.8888888888888888
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.56
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.56
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.56
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.56
+        }
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 1.0,
+        "far_margin_pairwise_accuracy_test": 0.4090909090909091,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.3333333333333333,
+          "4": 0.3076923076923077,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 1.0,
+        "far_margin_pairwise_accuracy_test": 0.4090909090909091,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.3333333333333333,
+          "4": 0.3076923076923077,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      }
+    }
+  },
+  "value_aware_ambiguity_decomposed": {
+    "config": {
+      "seed": 17,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "near_tie_margin": 0.05,
+      "pairwise_max_iter": 500,
+      "outside_max_iter": 500,
+      "pointwise_alpha": 1.0,
+      "pointwise_target_field": "Q_expand",
+      "pairwise_target_mode": "value_gap",
+      "train_pairwise": true,
+      "train_pointwise": true,
+      "train_outside_option": true,
+      "train_lightgbm_ranker": false,
+      "train_catboost_ranker": false,
+      "pairwise_near_tie_action": "downweight",
+      "pairwise_near_tie_downweight": 0.2,
+      "uncertainty_weighting": true,
+      "margin_weight_power": 1.0,
+      "std_weight_scale": 3.0,
+      "approx_mode_weight": 0.9,
+      "exact_mode_weight": 1.05,
+      "lightgbm_num_leaves": 31,
+      "lightgbm_learning_rate": 0.05,
+      "lightgbm_n_estimators": 200,
+      "catboost_iterations": 250,
+      "catboost_learning_rate": 0.05,
+      "catboost_depth": 6,
+      "feature_set": "v3",
+      "train_pairwise_ternary": false,
+      "tie_abs_margin_threshold": 0.03,
+      "tie_relative_margin_threshold": 0.15,
+      "tie_std_threshold": 0.08,
+      "tie_use_near_tie_flag": true,
+      "tie_include_approx": true,
+      "tie_require_exact_or_mixed": false,
+      "train_pairwise_svm": false,
+      "train_pairwise_svm_nystroem": false,
+      "svm_c": 1.0,
+      "svm_class_weight_balanced": false,
+      "svm_use_sample_weight": true,
+      "svm_nystroem_components": 256,
+      "svm_nystroem_gamma": 0.5,
+      "svm_max_train_rows_for_nystroem": 8000,
+      "svm_margin_calibration": "none",
+      "train_pairwise_defer_classifier": true,
+      "defer_target_mode": "value_aware",
+      "defer_abs_margin_threshold": 0.03,
+      "defer_relative_margin_threshold": 0.15,
+      "defer_std_threshold": 0.08,
+      "defer_use_outside_option": true,
+      "defer_outside_gap_threshold": 0.02,
+      "defer_oracle_gap_threshold": 0.03,
+      "defer_oracle_gap_over_std_threshold": 0.8,
+      "defer_oracle_best_vs_outside_threshold": 0.03,
+      "defer_require_exact_or_mixed": false,
+      "defer_include_approx": true,
+      "defer_model_type": "multinomial_logreg",
+      "defer_calibration": "none",
+      "defer_decision_threshold": 0.5,
+      "min_commit_confidence": 0.45,
+      "commit_margin_threshold": 0.05,
+      "threshold_grid_size": 11,
+      "accepted_accuracy_min_coverage": 0.6,
+      "coverage_min_accepted_accuracy": 0.75,
+      "enable_defer_fallback": false,
+      "defer_fallback_policy": "none",
+      "fallback_min_confidence": 0.5,
+      "fallback_allow_unresolved": true,
+      "outside_option_keep_unresolved_threshold": 0.02,
+      "train_pairwise_deferred_specialist": false,
+      "deferred_specialist_target_mode": "oracle_proxy"
+    },
+    "evaluation": {
+      "pairwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.64,
+        "ranking_top1_accuracy_test": 0.6666666666666666,
+        "agreement_with_bruteforce_labels": 0.64,
+        "near_tie_pairwise_accuracy_test": 0.3333333333333333,
+        "far_margin_pairwise_accuracy_test": 0.6818181818181818,
+        "pairwise_margin_brier_test": 0.19328877777650436,
+        "exact_only_pairwise_accuracy_test": 0.64,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.6666666666666666,
+          "4": 0.5384615384615384,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.64
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.64
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.64
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.64
+        }
+      },
+      "pairwise_defer_classifier": {
+        "model_status": "ok",
+        "three_way_accuracy_test": 0.0,
+        "defer_precision_test": 0.0,
+        "defer_recall_test": 0.0,
+        "defer_f1_test": 0.0,
+        "accepted_only_accuracy_test": 0.0,
+        "coverage_test": 0.0,
+        "near_tie_accepted_accuracy_test": 0.0,
+        "adjacent_rank_accepted_accuracy_test": 0.0,
+        "exact_promoted_hard_region_accepted_accuracy_test": 0.0,
+        "low_best_vs_outside_gap_accepted_accuracy_test": 0.0,
+        "high_disagreement_risk_accepted_accuracy_test": 0.0,
+        "approx_or_mixed_accepted_accuracy_test": 0.0,
+        "threshold_trace_test": [
+          {
+            "threshold": 0.05,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.14,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.22999999999999998,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.32,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.41,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.49999999999999994,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.5900000000000001,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.68,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.77,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.86,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          },
+          {
+            "threshold": 0.95,
+            "accepted_only_accuracy": 0.0,
+            "coverage": 0.0,
+            "defer_precision": 0.0,
+            "defer_recall": 0.0
+          }
+        ],
+        "best_accepted_accuracy_under_min_coverage_test": {
+          "threshold": 0.5,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0
+        },
+        "best_coverage_under_min_accepted_accuracy_test": {
+          "threshold": 0.5,
+          "accepted_only_accuracy": 0.0,
+          "coverage": 0.0
+        },
+        "decision_buckets_test": {
+          "confident_correct_commit": 0,
+          "confident_wrong_commit": 0,
+          "correct_defer": 0,
+          "missed_defer": 0,
+          "unnecessary_defer": 25,
+          "ambiguous_hard_commit_proxy": 0,
+          "outside_option_should_have_won_proxy": 0
+        },
+        "calibration_used": {
+          "mode": "none"
+        },
+        "raw_probability_note": "raw multinomial probabilities are post-processed by bounded calibration and defer policy thresholds",
+        "confusion_matrix_left_defer_right_test": [
+          [
+            0,
+            13,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            12,
+            0
+          ]
+        ],
+        "ranking_top1_accuracy_test": null,
+        "note": "pairwise defer classifier evaluated in pairwise space; candidate top-1 ranking not defined",
+        "fallback_policy": "none",
+        "fallback_enabled": false,
+        "resolved_accuracy_test": 0.0,
+        "resolved_coverage_test": 0.0,
+        "unresolved_rate_after_fallback_test": 1.0,
+        "near_tie_resolved_accuracy_test": 0.0,
+        "adjacent_rank_resolved_accuracy_test": 0.0,
+        "exact_promoted_hard_region_resolved_accuracy_test": 0.0,
+        "fallback_subset_size": 25,
+        "fallback_subset_accuracy": 0.0,
+        "fallback_resolution_rate": 0.0,
+        "unresolved_after_fallback_rate": 1.0,
+        "fallback_gain_over_binary_backup": 0.0,
+        "fallback_gain_over_pointwise_backup": 0.0,
+        "complementarity_binary_wrong_pointwise_right": 0,
+        "complementarity_pointwise_wrong_binary_right": 0,
+        "outside_option_avoid_bad_forced_commit_proxy": 0,
+        "policy_confusion_summary_test": {
+          "committed_correct": 0,
+          "committed_wrong": 0,
+          "deferred_then_resolved_correct": 0,
+          "deferred_then_resolved_wrong": 0,
+          "deferred_still_unresolved": 25
+        }
+      },
+      "pointwise": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.88,
+        "ranking_top1_accuracy_test": 1.0,
+        "agreement_with_bruteforce_labels": 0.88,
+        "near_tie_pairwise_accuracy_test": 0.6666666666666666,
+        "far_margin_pairwise_accuracy_test": 0.9090909090909091,
+        "pairwise_margin_brier_test": 0.23273294509545395,
+        "exact_only_pairwise_accuracy_test": 0.88,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 1.0,
+          "4": 0.8461538461538461,
+          "5": 0.8888888888888888
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.88
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.88
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.88
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.88
+        }
+      },
+      "outside_option": {
+        "model_status": "ok",
+        "pairwise_accuracy_test": 0.56,
+        "ranking_top1_accuracy_test": 0.6666666666666666,
+        "agreement_with_bruteforce_labels": 0.56,
+        "near_tie_pairwise_accuracy_test": 0.0,
+        "far_margin_pairwise_accuracy_test": 0.6363636363636364,
+        "pairwise_margin_brier_test": 0.19051680776530358,
+        "exact_only_pairwise_accuracy_test": 0.56,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.6666666666666666,
+          "4": 0.3076923076923077,
+          "5": 0.8888888888888888
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.56
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.56
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.56
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.56
+        }
+      },
+      "lightgbm_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 1.0,
+        "far_margin_pairwise_accuracy_test": 0.4090909090909091,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.3333333333333333,
+          "4": 0.3076923076923077,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      },
+      "catboost_ranker": {
+        "model_status": "disabled",
+        "pairwise_accuracy_test": 0.48,
+        "ranking_top1_accuracy_test": 0.3333333333333333,
+        "agreement_with_bruteforce_labels": 0.48,
+        "near_tie_pairwise_accuracy_test": 1.0,
+        "far_margin_pairwise_accuracy_test": 0.4090909090909091,
+        "pairwise_margin_brier_test": 0.25,
+        "exact_only_pairwise_accuracy_test": 0.48,
+        "adjacent_rank_pairwise_accuracy_test": 0.0,
+        "exact_promoted_pairwise_accuracy_test": 0.0,
+        "exact_promoted_hard_region_pairwise_accuracy_test": 0.0,
+        "pairwise_accuracy_by_budget": {
+          "2": 0.3333333333333333,
+          "4": 0.3076923076923077,
+          "5": 0.7777777777777778
+        },
+        "pairwise_accuracy_by_mode": {
+          "exact": 0.48
+        },
+        "pairwise_accuracy_by_dataset": {
+          "openai/gsm8k": 0.48
+        },
+        "pairwise_accuracy_by_pair_type": {
+          "unknown": 0.48
+        },
+        "pairwise_accuracy_by_label_source": {
+          "unknown": 0.48
+        }
+      }
+    }
+  }
+}

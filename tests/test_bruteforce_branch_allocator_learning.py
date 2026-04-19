@@ -3,12 +3,15 @@ from __future__ import annotations
 import json
 import importlib.util
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
 from experiments.bruteforce_branch_allocator import (
     ALLOC_FEATURE_NAMES,
     ALLOC_FEATURE_NAMES_V3,
+    _build_defer_label_audit,
     _deterministic_cap_rows,
     _fit_pairwise_svm_model,
     LearningConfig,
@@ -196,10 +199,37 @@ def _tiny_artifacts(tmp_path: Path) -> Path:
         {"state_id": "s1", "candidate_mode": "approx", "dataset_name": "mock"},
         {"state_id": "s2", "candidate_mode": "approx", "dataset_name": "mock"},
     ]
+    state_value_rows = [
+        {
+            "state_id": "s0",
+            "Q_commit": 0.5,
+            "best_expand_branch": "b0",
+            "best_expand_value": 0.9,
+            "best_action_overall": "expand:b0",
+            "ambiguity_bucket": "high_margin",
+        },
+        {
+            "state_id": "s1",
+            "Q_commit": 0.72,
+            "best_expand_branch": "b0",
+            "best_expand_value": 0.88,
+            "best_action_overall": "expand:b0",
+            "ambiguity_bucket": "medium_margin",
+        },
+        {
+            "state_id": "s2",
+            "Q_commit": 0.79,
+            "best_expand_branch": "b0",
+            "best_expand_value": 0.8,
+            "best_action_overall": "expand:b0",
+            "ambiguity_bucket": "near_tie",
+        },
+    ]
 
     _write_jsonl(labels_dir / "candidate_labels.jsonl", candidate_rows)
     _write_jsonl(labels_dir / "pairwise_labels.jsonl", pairwise_rows)
     _write_jsonl(labels_dir / "state_summaries.jsonl", state_rows)
+    _write_jsonl(labels_dir / "state_value_targets.jsonl", state_value_rows)
     return labels_dir
 
 
@@ -209,6 +239,82 @@ def test_schema_loading(tmp_path: Path) -> None:
     assert len(data["candidate_labels"]) == 6
     assert len(data["pairwise_labels"]) == 3
     assert len(data["state_summaries"]) == 3
+    assert len(data["state_value_targets"]) == 3
+
+
+def test_value_aware_defer_mode_uses_commit_gap(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    data = load_label_artifacts(labels_dir)
+    cfg = LearningConfig(
+        seed=3,
+        train_lightgbm_ranker=False,
+        train_catboost_ranker=False,
+        train_pairwise_svm=False,
+        defer_target_mode="value_aware",
+        defer_oracle_gap_threshold=0.03,
+    )
+    tables = prepare_learning_tables(data, cfg)
+    s2_row = next(r for r in tables["pairwise"] if r["state_id"] == "s2")
+    assert float(s2_row["state_Q_commit"]) > 0.0
+    assert int(s2_row["ternary_defer_label"]) == 1
+
+
+def test_defer_label_audit_generation(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    data = load_label_artifacts(labels_dir)
+    cfg = LearningConfig(seed=3, train_lightgbm_ranker=False, train_catboost_ranker=False, train_pairwise_svm=False)
+    tables = prepare_learning_tables(data, cfg)
+    audit = tables["defer_label_audit"]["all"]
+    assert audit["total_examples"] == len(tables["pairwise"])
+    assert "counts_by_ambiguity_bucket" in audit
+    assert "counts_by_best_action_metadata" in audit
+
+
+def test_backward_compat_without_state_value_targets(tmp_path: Path) -> None:
+    labels_dir = _tiny_artifacts(tmp_path)
+    (labels_dir / "state_value_targets.jsonl").unlink()
+    data = load_label_artifacts(labels_dir)
+    assert data["state_value_targets"] == []
+    cfg = LearningConfig(seed=4, train_lightgbm_ranker=False, train_catboost_ranker=False, train_pairwise_svm=False)
+    tables = prepare_learning_tables(data, cfg)
+    assert "defer_label_audit" in tables
+
+
+def test_defer_threshold_sweep_outputs_created() -> None:
+    rows = [
+        {"ternary_defer_label": 1, "pair_ambiguity_bucket": "near_tie", "state_best_action_overall": "commit_now", "state_best_expand_value": 0.51, "state_Q_commit": 0.5, "pair_regret_if_choose_i": 0.01, "pair_regret_if_choose_j": 0.0, "pair_value_gap": 0.01},
+        {"ternary_defer_label": 0, "pair_ambiguity_bucket": "high_margin", "state_best_action_overall": "expand:b0", "state_best_expand_value": 0.9, "state_Q_commit": 0.5, "pair_regret_if_choose_i": 0.2, "pair_regret_if_choose_j": 0.0, "pair_value_gap": 0.2},
+    ]
+    audit = _build_defer_label_audit(rows)
+    assert audit["positive_defer_labels"] == 1
+    assert "counts_by_delta_expand_commit_bucket" in audit
+
+
+def test_defer_threshold_sweep_artifact_from_runner(tmp_path: Path) -> None:
+    run_id = "pytest_defer_threshold_sweep"
+    cmd = [
+        sys.executable,
+        "scripts/run_value_aware_target_regime_comparison.py",
+        "--run-id",
+        run_id,
+        "--output-dir",
+        str(tmp_path),
+        "--max-frontier-states",
+        "8",
+        "--rollout-samples-per-candidate",
+        "3",
+        "--max-allocation-samples",
+        "6",
+        "--frontier-budget",
+        "5",
+        "--defer-threshold-selection",
+        "fixed",
+    ]
+    subprocess.run(cmd, cwd=Path(__file__).resolve().parents[1], check=True)
+    artifact = tmp_path / run_id / "defer_score_audit.json"
+    payload = json.loads(artifact.read_text(encoding="utf-8"))
+    decomp = payload["value_aware_ambiguity_decomposed"]
+    assert "threshold_trace_test" in decomp
 
 
 def test_feature_extraction_vector_size_and_mode_flags(tmp_path: Path) -> None:

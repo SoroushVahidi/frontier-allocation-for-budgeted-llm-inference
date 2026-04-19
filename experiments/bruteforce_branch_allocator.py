@@ -135,6 +135,7 @@ class LearningConfig:
     outside_max_iter: int = 500
     pointwise_alpha: float = 1.0
     pointwise_target_field: str = "estimated_value_if_allocate_next"
+    pairwise_target_mode: str = "legacy"  # one of: legacy, value_gap
     train_pairwise: bool = True
     train_pointwise: bool = True
     train_outside_option: bool = True
@@ -171,7 +172,7 @@ class LearningConfig:
     svm_max_train_rows_for_nystroem: int = 8000
     svm_margin_calibration: str = "none"  # one of: none, platt
     train_pairwise_defer_classifier: bool = False
-    defer_target_mode: str = "heuristic"  # one of: heuristic, oracle_proxy, hybrid, precomputed
+    defer_target_mode: str = "heuristic"  # one of: heuristic, oracle_proxy, hybrid, precomputed, value_aware
     defer_abs_margin_threshold: float = 0.03
     defer_relative_margin_threshold: float = 0.15
     defer_std_threshold: float = 0.08
@@ -185,6 +186,8 @@ class LearningConfig:
     defer_model_type: str = "multinomial_logreg"
     defer_calibration: str = "none"  # one of: none, temperature, platt
     defer_decision_threshold: float = 0.5
+    defer_eval_threshold_override: float = -1.0
+    defer_threshold_selection: str = "fixed"  # one of: fixed, val_defer_f1
     min_commit_confidence: float = 0.45
     commit_margin_threshold: float = 0.05
     threshold_grid_size: int = 11
@@ -229,6 +232,8 @@ def load_label_artifacts(labels_dir: Path) -> dict[str, list[dict[str, Any]]]:
         raise FileNotFoundError(f"Missing required label artifacts in {labels_dir}: {missing}")
 
     data = {name: _read_jsonl(path) for name, path in required.items()}
+    value_targets_path = labels_dir / "state_value_targets.jsonl"
+    data["state_value_targets"] = _read_jsonl(value_targets_path) if value_targets_path.exists() else []
     if not data["candidate_labels"]:
         raise ValueError("candidate_labels.jsonl is empty")
     if not data["pairwise_labels"]:
@@ -504,13 +509,77 @@ def _defer_flag_for_mode(row: dict[str, Any], cfg: LearningConfig) -> bool:
         return oracle_proxy
     if mode == "hybrid":
         return heuristic or oracle_proxy
+    if mode == "value_aware":
+        q_commit = float(row.get("Q_commit", row.get("state_Q_commit", 0.0)))
+        best_expand = float(row.get("state_best_expand_value", max(float(row.get("pair_value_i", 0.0)), float(row.get("pair_value_j", 0.0)))))
+        return bool((best_expand - q_commit) <= float(cfg.defer_oracle_gap_threshold))
     raise ValueError(f"Unknown defer_target_mode: {cfg.defer_target_mode}")
+
+
+def _bucket_delta_expand_commit(v: float) -> str:
+    if v <= 0.0:
+        return "commit_better_or_equal"
+    if v <= 0.03:
+        return "small_expand_advantage"
+    if v <= 0.10:
+        return "medium_expand_advantage"
+    return "large_expand_advantage"
+
+
+def _bucket_regret(v: float) -> str:
+    if v <= 0.0:
+        return "zero_regret"
+    if v <= 0.03:
+        return "low_regret"
+    if v <= 0.10:
+        return "medium_regret"
+    return "high_regret"
+
+
+def _build_defer_label_audit(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    total = len(rows)
+    pos = sum(1 for r in rows if int(r.get("ternary_defer_label", 1)) == 1)
+    neg = total - pos
+
+    def _count_by(key_fn: Callable[[dict[str, Any]], str]) -> dict[str, int]:
+        out: dict[str, int] = {}
+        for r in rows:
+            k = key_fn(r)
+            out[k] = out.get(k, 0) + 1
+        return dict(sorted(out.items(), key=lambda kv: kv[0]))
+
+    return {
+        "total_examples": total,
+        "positive_defer_labels": pos,
+        "negative_defer_labels": neg,
+        "positive_rate": (pos / max(1, total)),
+        "counts_by_ambiguity_bucket": _count_by(lambda r: str(r.get("pair_ambiguity_bucket", r.get("ambiguity_bucket", "unknown")))),
+        "counts_by_best_action_metadata": _count_by(lambda r: str(r.get("state_best_action_overall", r.get("best_action_overall", "unknown")))),
+        "counts_by_delta_expand_commit_bucket": _count_by(
+            lambda r: _bucket_delta_expand_commit(
+                float(r.get("state_best_expand_value", max(float(r.get("pair_best_estimated_value", 0.0)), float(r.get("pair_second_estimated_value", 0.0))))
+                      - float(r.get("state_Q_commit", r.get("Q_commit", 0.0))))
+            )
+        ),
+        "counts_by_regret_bucket": _count_by(
+            lambda r: _bucket_regret(min(float(r.get("pair_regret_if_choose_i", 0.0)), float(r.get("pair_regret_if_choose_j", 0.0))))
+        ),
+        "near_tie_defer_positive_count": sum(
+            1 for r in rows
+            if abs(float(r.get("pair_value_gap", r.get("margin", 0.0)))) <= 0.03 and int(r.get("ternary_defer_label", 1)) == 1
+        ),
+        "near_tie_total_count": sum(
+            1 for r in rows if abs(float(r.get("pair_value_gap", r.get("margin", 0.0)))) <= 0.03
+        ),
+    }
 
 
 def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: LearningConfig) -> dict[str, Any]:
     candidates = [dict(row) for row in data["candidate_labels"]]
     pairwise = [dict(row) for row in data["pairwise_labels"]]
     states = [dict(row) for row in data["state_summaries"]]
+    state_value_targets = [dict(row) for row in data.get("state_value_targets", [])]
+    value_target_by_state = {str(r.get("state_id", "")): r for r in state_value_targets}
 
     by_state_rows: dict[str, list[dict[str, Any]]] = {}
     for row in candidates:
@@ -523,6 +592,15 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         state_id = str(row["state_id"])
         branch_id = str(row["branch_id"])
         row["split"] = assign_split(state_id, cfg)
+        state_target = value_target_by_state.get(state_id, {})
+        q_commit = float(row.get("Q_commit", state_target.get("Q_commit", 0.0)))
+        q_expand = float(row.get("Q_expand", row.get("estimated_value_if_allocate_next", 0.0)))
+        row["Q_commit"] = q_commit
+        row["Q_expand"] = q_expand
+        row["delta_expand_commit"] = float(row.get("delta_expand_commit", q_expand - q_commit))
+        row["state_best_expand_value"] = float(row.get("best_expand_value", state_target.get("best_expand_value", q_expand)))
+        row["state_best_action_overall"] = str(row.get("best_action_overall", state_target.get("best_action_overall", "")))
+        row["ambiguity_bucket"] = str(row.get("ambiguity_bucket", state_target.get("ambiguity_bucket", "unknown")))
         row["x"] = build_candidate_feature_vector(row, feature_set=str(cfg.feature_set))
         cand_by_key[(state_id, branch_id)] = row
 
@@ -545,6 +623,8 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         fi3 = ci.get("features_branch_v3", {}) if isinstance(ci.get("features_branch_v3"), dict) else {}
         fj3 = cj.get("features_branch_v3", {}) if isinstance(cj.get("features_branch_v3"), dict) else {}
         margin_abs = float(row.get("margin_abs", abs(float(row.get("margin", 0.0)))))
+        if str(cfg.pairwise_target_mode) == "value_gap":
+            margin_abs = abs(float(row.get("delta_pair", row.get("margin", 0.0))))
         relative_margin = float(row.get("relative_margin", margin_abs / max(1e-6, abs(float(row.get("pair_value_i", 0.0))) + abs(float(row.get("pair_value_j", 0.0))))))
         remaining_budget = float(row.get("remaining_budget", ci.get("remaining_budget", 0.0)))
         pair_std_mean = 0.5 * (float(ci.get("allocation_value_std", 0.0)) + float(cj.get("allocation_value_std", 0.0)))
@@ -655,6 +735,11 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         row["pair_relative_margin"] = relative_margin
         row["pair_uncertainty_std_mean"] = pair_std_mean
         row["pair_best_vs_outside_gap"] = pair_best_vs_outside_gap
+        row["state_Q_commit"] = float(row.get("Q_commit", ci.get("Q_commit", cj.get("Q_commit", 0.0))))
+        row["state_best_expand_value"] = max(float(ci.get("state_best_expand_value", value_i)), float(cj.get("state_best_expand_value", value_j)))
+        row["state_best_action_overall"] = str(ci.get("state_best_action_overall", cj.get("state_best_action_overall", "unknown")))
+        row["pair_regret_if_choose_i"] = float(row.get("regret_if_choose_i", max(0.0, value_j - value_i)))
+        row["pair_regret_if_choose_j"] = float(row.get("regret_if_choose_j", max(0.0, value_i - value_j)))
         row["pair_best_estimated_value"] = pair_best_value
         row["pair_second_estimated_value"] = pair_second_value
         row["pair_value_gap"] = pair_value_gap
@@ -694,13 +779,21 @@ def prepare_learning_tables(data: dict[str, list[dict[str, Any]]], cfg: Learning
         str(r["state_id"]): str(r.get("dataset_name", "unknown"))
         for r in states
     }
+    defer_label_audit = {
+        "all": _build_defer_label_audit(pairwise),
+        "train": _build_defer_label_audit([r for r in pairwise if str(r.get("split")) == "train"]),
+        "val": _build_defer_label_audit([r for r in pairwise if str(r.get("split")) == "val"]),
+        "test": _build_defer_label_audit([r for r in pairwise if str(r.get("split")) == "test"]),
+    }
     return {
         "candidates": candidates,
         "pairwise": pairwise,
         "states": states,
+        "state_value_targets": state_value_targets,
         "state_to_candidates": state_to_candidates,
         "state_to_mode": state_to_mode,
         "state_to_dataset": state_to_dataset,
+        "defer_label_audit": defer_label_audit,
         "feature_set": str(cfg.feature_set),
         "feature_names": _feature_names_for_set(str(cfg.feature_set)),
         "pair_feature_names_v3": PAIR_RELATIONAL_FEATURE_NAMES_V3,
@@ -785,11 +878,17 @@ def _fit_pairwise_defer_classifier(rows: list[dict[str, Any]], cfg: LearningConf
             "status": "single_class_train",
             "constant_label": int(y[0]) if y else 1,
         }
-    model = LogisticRegression(
-        max_iter=max(500, cfg.pairwise_max_iter),
-        random_state=cfg.seed,
-        multi_class="multinomial",
-    )
+    try:
+        model = LogisticRegression(
+            max_iter=max(500, cfg.pairwise_max_iter),
+            random_state=cfg.seed,
+            multi_class="multinomial",
+        )
+    except TypeError:
+        model = LogisticRegression(
+            max_iter=max(500, cfg.pairwise_max_iter),
+            random_state=cfg.seed,
+        )
     model.fit(x, y, sample_weight=weights)
     classes = [int(c) for c in model.classes_]
     val = [r for r in rows if r["split"] == "val"]
@@ -811,6 +910,7 @@ def _fit_pairwise_defer_classifier(rows: list[dict[str, Any]], cfg: LearningConf
         "defer_calibration": calibrator,
         "defer_config": {
             "defer_target_mode": str(cfg.defer_target_mode),
+            "pairwise_target_mode": str(cfg.pairwise_target_mode),
             "defer_abs_margin_threshold": float(cfg.defer_abs_margin_threshold),
             "defer_relative_margin_threshold": float(cfg.defer_relative_margin_threshold),
             "defer_std_threshold": float(cfg.defer_std_threshold),
@@ -824,6 +924,8 @@ def _fit_pairwise_defer_classifier(rows: list[dict[str, Any]], cfg: LearningConf
             "defer_model_type": str(cfg.defer_model_type),
             "defer_calibration": str(cfg.defer_calibration),
             "defer_decision_threshold": float(cfg.defer_decision_threshold),
+            "defer_eval_threshold_override": float(cfg.defer_eval_threshold_override),
+            "defer_threshold_selection": str(cfg.defer_threshold_selection),
             "min_commit_confidence": float(cfg.min_commit_confidence),
             "commit_margin_threshold": float(cfg.commit_margin_threshold),
             "threshold_grid_size": int(cfg.threshold_grid_size),
@@ -1476,24 +1578,73 @@ def _eval_pairwise_defer_classifier(
     defer_idx = cls_to_idx.get(1, 0)
     left_idx = cls_to_idx.get(0, 0)
     right_idx = cls_to_idx.get(2, min(2, len(classes) - 1))
+    n_prob_cols = int(calibrated_probs.shape[1]) if calibrated_probs.ndim == 2 else 1
+    defer_idx = min(defer_idx, n_prob_cols - 1)
+    left_idx = min(left_idx, n_prob_cols - 1)
+    right_idx = min(right_idx, n_prob_cols - 1)
 
-    defer_threshold = float(model.get("defer_config", {}).get("defer_decision_threshold", 0.5))
+    configured_threshold = float(model.get("defer_config", {}).get("defer_decision_threshold", 0.5))
+    override_threshold = float(getattr(cfg, "defer_eval_threshold_override", -1.0))
+    defer_threshold = configured_threshold if override_threshold < 0.0 else override_threshold
+    threshold_selection_mode = str(getattr(cfg, "defer_threshold_selection", "fixed"))
     min_commit_conf = float(model.get("defer_config", {}).get("min_commit_confidence", 0.45))
     commit_margin = float(model.get("defer_config", {}).get("commit_margin_threshold", 0.05))
-    y_pred: list[int] = []
-    for p in calibrated_probs:
-        p_defer = float(p[defer_idx])
-        p_left = float(p[left_idx])
-        p_right = float(p[right_idx])
-        best_commit = max(p_left, p_right)
-        if p_defer >= defer_threshold:
-            y_pred.append(1)
-            continue
-        if best_commit < min_commit_conf or abs(p_right - p_left) < commit_margin:
-            y_pred.append(1)
-            continue
-        y_pred.append(2 if p_right >= p_left else 0)
-    y_pred = np.array(y_pred, dtype=int)
+    def _predict_from_probs(probs: np.ndarray, threshold: float) -> np.ndarray:
+        y_pred_local: list[int] = []
+        for p in probs:
+            p_defer = float(p[defer_idx])
+            p_left = float(p[left_idx])
+            p_right = float(p[right_idx])
+            best_commit = max(p_left, p_right)
+            if p_defer >= threshold:
+                y_pred_local.append(1)
+                continue
+            if best_commit < min_commit_conf or abs(p_right - p_left) < commit_margin:
+                y_pred_local.append(1)
+                continue
+            y_pred_local.append(2 if p_right >= p_left else 0)
+        return np.array(y_pred_local, dtype=int)
+
+    threshold_grid = np.linspace(0.05, 0.95, max(3, int(model.get("defer_config", {}).get("threshold_grid_size", 11))))
+    threshold_selection = {"mode": threshold_selection_mode, "selected_threshold": float(defer_threshold), "source": "configured_or_override"}
+    if threshold_selection_mode == "val_defer_f1":
+        val_rows = [r for r in rows if r.get("split") == "val"]
+        if val_rows:
+            x_val = np.array([r.get("x_pair_v3", r["x_diff"]) for r in val_rows], dtype=float)
+            y_val = np.array([int(r.get("ternary_defer_label", 1)) for r in val_rows], dtype=int)
+            logits_val = x_val @ w.T + b
+            val_probs, _ = _apply_defer_calibration(logits_val, model.get("defer_calibration", {"mode": "none"}), classes)
+            best_thr = defer_threshold
+            best_f1 = -1.0
+            for thr in threshold_grid.tolist():
+                pred_val = _predict_from_probs(val_probs, float(thr))
+                pred_defer_val = pred_val == 1
+                true_defer_val = y_val == 1
+                tp_v = int(np.sum(pred_defer_val & true_defer_val))
+                fp_v = int(np.sum(pred_defer_val & (~true_defer_val)))
+                fn_v = int(np.sum((~pred_defer_val) & true_defer_val))
+                prec_v = tp_v / max(1, tp_v + fp_v)
+                rec_v = tp_v / max(1, tp_v + fn_v)
+                f1_v = 0.0 if (prec_v + rec_v) <= 0 else (2.0 * prec_v * rec_v) / (prec_v + rec_v)
+                if f1_v > best_f1:
+                    best_f1 = f1_v
+                    best_thr = float(thr)
+            defer_threshold = best_thr
+            threshold_selection = {
+                "mode": threshold_selection_mode,
+                "selected_threshold": float(best_thr),
+                "source": "validation_split",
+                "best_val_defer_f1": float(best_f1),
+                "val_rows": len(val_rows),
+            }
+        else:
+            threshold_selection = {
+                "mode": threshold_selection_mode,
+                "selected_threshold": float(defer_threshold),
+                "source": "fallback_no_val_rows",
+            }
+
+    y_pred = _predict_from_probs(calibrated_probs, defer_threshold)
     three_way_acc = float(np.mean(y_pred == y_true))
     pred_defer = y_pred == 1
     true_defer = y_true == 1
@@ -1507,21 +1658,9 @@ def _eval_pairwise_defer_classifier(
     accepted_only_acc = float(np.mean(y_pred[accept_mask] == y_true[accept_mask])) if np.any(accept_mask) else 0.0
     coverage = float(np.mean(accept_mask))
 
-    threshold_grid = np.linspace(0.05, 0.95, max(3, int(model.get("defer_config", {}).get("threshold_grid_size", 11))))
     threshold_trace: list[dict[str, float]] = []
     for thr in threshold_grid.tolist():
-        pred_t = []
-        for p in calibrated_probs:
-            p_defer = float(p[defer_idx])
-            p_left = float(p[left_idx])
-            p_right = float(p[right_idx])
-            if p_defer >= float(thr):
-                pred_t.append(1)
-            elif max(p_left, p_right) < min_commit_conf or abs(p_right - p_left) < commit_margin:
-                pred_t.append(1)
-            else:
-                pred_t.append(2 if p_right >= p_left else 0)
-        pred_arr = np.array(pred_t, dtype=int)
+        pred_arr = _predict_from_probs(calibrated_probs, float(thr))
         acc_mask_t = pred_arr != 1
         acc_t = float(np.mean(pred_arr[acc_mask_t] == y_true[acc_mask_t])) if np.any(acc_mask_t) else 0.0
         cov_t = float(np.mean(acc_mask_t))
@@ -1536,8 +1675,10 @@ def _eval_pairwise_defer_classifier(
                 "threshold": float(thr),
                 "accepted_only_accuracy": acc_t,
                 "coverage": cov_t,
+                "accepted_count": int(np.sum(acc_mask_t)),
                 "defer_precision": prec_t,
                 "defer_recall": rec_t,
+                "defer_f1": 0.0 if (prec_t + rec_t) <= 0 else (2.0 * prec_t * rec_t) / (prec_t + rec_t),
             }
         )
 
@@ -1695,6 +1836,30 @@ def _eval_pairwise_defer_classifier(
         "deferred_then_resolved_wrong": int(np.sum(fallback_resolved & (resolved_pred != y_true))),
         "deferred_still_unresolved": int(np.sum(resolved_pred == 1)),
     }
+    per_example_scores = [
+        {
+            "state_id": str(r.get("state_id", "")),
+            "example_id": str(r.get("example_id", "")),
+            "gold_defer_label": int(y_true[i]),
+            "predicted_defer_probability": float(calibrated_probs[i][defer_idx]),
+            "predicted_class_default_threshold": int(y_pred[i]),
+            "ambiguity_bucket": str(r.get("pair_ambiguity_bucket", r.get("ambiguity_bucket", "unknown"))),
+            "delta_expand_commit": float(r.get("state_best_expand_value", 0.0) - r.get("state_Q_commit", 0.0)),
+            "regret_min_pair": float(min(float(r.get("pair_regret_if_choose_i", 0.0)), float(r.get("pair_regret_if_choose_j", 0.0)))),
+            "best_action_metadata": str(r.get("state_best_action_overall", r.get("best_action_overall", "unknown"))),
+        }
+        for i, r in enumerate(test)
+    ]
+    pos_scores = [float(x["predicted_defer_probability"]) for x in per_example_scores if int(x["gold_defer_label"]) == 1]
+    neg_scores = [float(x["predicted_defer_probability"]) for x in per_example_scores if int(x["gold_defer_label"]) != 1]
+    defer_score_distribution = {
+        "positive_count": len(pos_scores),
+        "negative_count": len(neg_scores),
+        "positive_mean": _safe_mean(pos_scores),
+        "negative_mean": _safe_mean(neg_scores),
+        "positive_p90": float(np.percentile(np.array(pos_scores, dtype=float), 90)) if pos_scores else 0.0,
+        "negative_p90": float(np.percentile(np.array(neg_scores, dtype=float), 90)) if neg_scores else 0.0,
+    }
 
     def _resolved_slice_acc(predicate: Callable[[dict[str, Any]], bool]) -> float:
         idxs = [i for i, r in enumerate(test) if predicate(r) and bool(resolved_mask[i])]
@@ -1721,6 +1886,9 @@ def _eval_pairwise_defer_classifier(
             lambda r: str(r.get("pair_mode", "unknown")) in {"approx", "mixed"}
         ),
         "threshold_trace_test": threshold_trace,
+        "threshold_selection": threshold_selection,
+        "configured_threshold": float(configured_threshold),
+        "effective_threshold": float(defer_threshold),
         "best_accepted_accuracy_under_min_coverage_test": best_acc_under_cov,
         "best_coverage_under_min_accepted_accuracy_test": best_cov_under_acc,
         "decision_buckets_test": buckets,
@@ -1749,6 +1917,8 @@ def _eval_pairwise_defer_classifier(
         "complementarity_pointwise_wrong_binary_right": comp_pointwise_wrong_binary_right,
         "outside_option_avoid_bad_forced_commit_proxy": int(outside_avoids_bad_commit),
         "policy_confusion_summary_test": policy_confusion,
+        "per_example_defer_scores_test": per_example_scores,
+        "defer_score_distribution_test": defer_score_distribution,
     }
     return out
 
@@ -1842,6 +2012,7 @@ def evaluate_models(models: dict[str, Any], tables: dict[str, Any], cfg: Learnin
             out[name]["note"] = (
                 f"{out[name].get('note', '')}; brier omitted because svm_margin_calibration={cfg.svm_margin_calibration}"
             ).strip("; ")
+    out["_defer_label_audit"] = tables.get("defer_label_audit", {})
     return out
 
 

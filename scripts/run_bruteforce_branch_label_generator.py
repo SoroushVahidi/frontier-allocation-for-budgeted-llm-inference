@@ -102,6 +102,7 @@ def main() -> None:
     labels_candidates_path = out_dir / "candidate_labels.jsonl"
     labels_pairwise_path = out_dir / "pairwise_labels.jsonl"
     labels_state_summary_path = out_dir / "state_summaries.jsonl"
+    labels_state_value_targets_path = out_dir / "state_value_targets.jsonl"
     raw_rollouts_path = out_dir / "raw_rollouts.jsonl"
     progress_path = out_dir / "progress.json"
     manifest_path = out_dir / "manifest.json"
@@ -139,6 +140,7 @@ def main() -> None:
     mode_counts: dict[str, int] = {"exact": 0, "approx": 0, "degenerate": 0}
     candidate_rows = 0
     pairwise_rows = 0
+    state_value_rows = 0
     raw_rollout_rows = 0
 
     for idx, state in enumerate(states):
@@ -173,6 +175,11 @@ def main() -> None:
             )
             append_jsonl(labels_pairwise_path, out_row)
             pairwise_rows += 1
+        state_value_row = dict(result.get("state_value_target", {}))
+        if state_value_row:
+            state_value_row["dataset_name"] = cfg.dataset_name
+            append_jsonl(labels_state_value_targets_path, state_value_row)
+            state_value_rows += 1
         for row in result["raw_rollouts"]:
             append_jsonl(raw_rollouts_path, row)
             raw_rollout_rows += 1
@@ -189,6 +196,7 @@ def main() -> None:
                 "states_completed": len(completed_state_ids),
                 "candidate_rows": candidate_rows,
                 "pairwise_rows": pairwise_rows,
+                "state_value_rows": state_value_rows,
                 "raw_rollout_rows": raw_rollout_rows,
                 "elapsed_sec": time.time() - start_time,
             }
@@ -201,6 +209,7 @@ def main() -> None:
         "states_completed": len(completed_state_ids),
         "candidate_rows": candidate_rows,
         "pairwise_rows": pairwise_rows,
+        "state_value_rows": state_value_rows,
         "raw_rollout_rows": raw_rollout_rows,
         "elapsed_sec": time.time() - start_time,
         "complete": len(completed_state_ids) == len(states),
@@ -225,6 +234,7 @@ def main() -> None:
             "state_summaries": str(labels_state_summary_path),
             "candidate_labels": str(labels_candidates_path),
             "pairwise_labels": str(labels_pairwise_path),
+            "state_value_targets": str(labels_state_value_targets_path),
             "raw_rollouts": str(raw_rollouts_path),
             "progress": str(progress_path),
             "report": str(report_path),
@@ -234,6 +244,7 @@ def main() -> None:
             "states_completed": len(completed_state_ids),
             "candidate_rows": candidate_rows,
             "pairwise_rows": pairwise_rows,
+            "state_value_rows": state_value_rows,
             "raw_rollout_rows": raw_rollout_rows,
             "mode_counts": mode_counts,
         },
@@ -241,6 +252,7 @@ def main() -> None:
             "state_summaries_sha256": _sha256(labels_state_summary_path) if labels_state_summary_path.exists() else None,
             "candidate_labels_sha256": _sha256(labels_candidates_path) if labels_candidates_path.exists() else None,
             "pairwise_labels_sha256": _sha256(labels_pairwise_path) if labels_pairwise_path.exists() else None,
+            "state_value_targets_sha256": _sha256(labels_state_value_targets_path) if labels_state_value_targets_path.exists() else None,
             "raw_rollouts_sha256": _sha256(raw_rollouts_path) if raw_rollouts_path.exists() else None,
         },
     }
