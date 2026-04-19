@@ -8,6 +8,7 @@ import re
 from typing import Any, Protocol
 
 from experiments.branching import BranchState
+from experiments.objective_function_stack import compute_process_quality, compute_target_completion
 from experiments.prm_partial_scorer import PartialBranchScorer
 from experiments.scoring import SimpleBranchScorer
 from experiments.verifiers import CandidateVerifier
@@ -745,6 +746,19 @@ class GlobalDiversityAggregationController(BaseController):
         diversity_weight: float = 0.28,
         duplicate_penalty: float = 0.12,
         unknown_answer_bonus: float = 0.06,
+        use_marginal_coverage_overlap: bool = False,
+        coverage_weight: float = 0.22,
+        overlap_weight: float = 0.14,
+        use_duplicate_aware_aggregation: bool = False,
+        duplicate_discount_strength: float = 0.70,
+        duplicate_discount_floor: float = 0.20,
+        support_quality_weight: float = 0.38,
+        use_answer_group_commit_margin: bool = False,
+        commit_margin_threshold: float = 0.16,
+        commit_top_support_threshold: float = 0.62,
+        commit_readiness_threshold: float = 0.58,
+        continue_one_step_value_threshold: float = 0.66,
+        min_actions_before_commit_check: int = 3,
         answer_support_weight: float = 0.45,
         value_weight: float = 0.55,
         commit_support_threshold: float = 0.68,
@@ -757,6 +771,19 @@ class GlobalDiversityAggregationController(BaseController):
         self.diversity_weight = float(diversity_weight)
         self.duplicate_penalty = float(duplicate_penalty)
         self.unknown_answer_bonus = float(unknown_answer_bonus)
+        self.use_marginal_coverage_overlap = bool(use_marginal_coverage_overlap)
+        self.coverage_weight = float(coverage_weight)
+        self.overlap_weight = float(overlap_weight)
+        self.use_duplicate_aware_aggregation = bool(use_duplicate_aware_aggregation)
+        self.duplicate_discount_strength = float(duplicate_discount_strength)
+        self.duplicate_discount_floor = float(duplicate_discount_floor)
+        self.support_quality_weight = float(support_quality_weight)
+        self.use_answer_group_commit_margin = bool(use_answer_group_commit_margin)
+        self.commit_margin_threshold = float(commit_margin_threshold)
+        self.commit_top_support_threshold = float(commit_top_support_threshold)
+        self.commit_readiness_threshold = float(commit_readiness_threshold)
+        self.continue_one_step_value_threshold = float(continue_one_step_value_threshold)
+        self.min_actions_before_commit_check = int(min_actions_before_commit_check)
         self.answer_support_weight = float(answer_support_weight)
         self.value_weight = float(value_weight)
         self.commit_support_threshold = float(commit_support_threshold)
@@ -785,12 +812,112 @@ class GlobalDiversityAggregationController(BaseController):
                 ent -= p * math.log(max(p, 1e-9))
         return float(ent)
 
+    @staticmethod
+    def _bucketize(value: float, *, edges: tuple[float, float], labels: tuple[str, str, str]) -> str:
+        lo, hi = edges
+        if value < lo:
+            return labels[0]
+        if value < hi:
+            return labels[1]
+        return labels[2]
+
+    def _support_profile_features(self, branch: BranchState) -> set[str]:
+        """Compact support-profile features (semantic structure, not lexical novelty)."""
+        features: set[str] = set()
+        answer_group = self._normalize_answer(branch.predicted_answer) or "__unknown__"
+        features.add(f"answer:{answer_group}")
+        features.add(f"depth:{self._bucketize(float(branch.depth), edges=(2.0, 5.0), labels=('shallow', 'mid', 'deep'))}")
+        features.add(f"score:{self._bucketize(float(branch.score), edges=(0.45, 0.72), labels=('low', 'mid', 'high'))}")
+        features.add(
+            f"verify:{self._bucketize(float(branch.verify_count), edges=(1.0, 3.0), labels=('none', 'some', 'many'))}"
+        )
+        if branch.steps:
+            text = " ".join(branch.steps[-2:]).lower()
+            if re.search(r"\btherefore\b|\bthus\b|\bhence\b|\bso\b", text):
+                features.add("reasoning:conclusion_marker")
+            if re.search(r"\bif\b|\bassume\b|\bcase\b", text):
+                features.add("reasoning:case_analysis")
+            if re.search(r"=", text):
+                features.add("support:equational")
+            if re.search(r"\+", text):
+                features.add("support:additive")
+            if re.search(r"-", text):
+                features.add("support:subtractive")
+            if re.search(r"\*", text):
+                features.add("support:multiplicative")
+            if re.search(r"/", text):
+                features.add("support:divisive")
+            nums = re.findall(r"[-+]?\d+(?:\.\d+)?", text.replace(",", ""))
+            if nums:
+                features.add(f"last_num:{nums[-1]}")
+        return features
+
+    @staticmethod
+    def _jaccard(a: set[str], b: set[str]) -> float:
+        if not a and not b:
+            return 1.0
+        if not a or not b:
+            return 0.0
+        return float(len(a.intersection(b)) / max(1, len(a.union(b))))
+
+    def _branch_quality_surrogates(self, branch: BranchState) -> tuple[float, float]:
+        completion_score = 1.0 if branch.is_done else min(0.95, 0.20 + 0.12 * float(branch.depth))
+        answer_evidence = 1.0 if branch.predicted_answer is not None else min(0.7, max(0.0, float(branch.score)))
+        semantic_incompleteness = 0.08 if branch.is_done else 0.55
+        process_quality = compute_process_quality(
+            completion_score=completion_score,
+            answer_evidence_score=answer_evidence,
+            semantic_incompleteness=semantic_incompleteness,
+        )
+        target_completion = compute_target_completion(
+            completion_score=completion_score,
+            answer_evidence_score=answer_evidence,
+            semantic_incompleteness=semantic_incompleteness,
+        )
+        return float(process_quality), float(target_completion)
+
+    def _compute_coverage_and_overlap(
+        self,
+        *,
+        branch: BranchState,
+        answer_support_counts: dict[str, int],
+        active_group_counts: dict[str, int],
+        group_profiles: dict[str, list[set[str]]],
+        global_profiles: list[set[str]],
+    ) -> tuple[float, float, dict[str, float]]:
+        group = self._normalize_answer(branch.predicted_answer) or "__unknown__"
+        support_count = float(answer_support_counts.get(group, 0))
+        active_count = float(active_group_counts.get(group, 0))
+        total_support = float(sum(answer_support_counts.values()))
+        total_active = float(sum(active_group_counts.values()))
+        group_mass = support_count + active_count
+        group_undercoverage = 1.0 - (group_mass / max(1.0, total_support + total_active))
+        new_group_bonus = 1.0 if (support_count <= 0.0 and active_count <= 1.0) else 0.0
+
+        profile = self._support_profile_features(branch)
+        same_group_profiles = group_profiles.get(group, [])
+        global_max_sim = max((self._jaccard(profile, p) for p in global_profiles), default=0.0)
+        group_max_sim = max((self._jaccard(profile, p) for p in same_group_profiles), default=0.0)
+        profile_novelty = 1.0 - group_max_sim
+
+        coverage_gain = 0.50 * group_undercoverage + 0.30 * new_group_bonus + 0.20 * profile_novelty
+        semantic_overlap = 0.65 * group_max_sim + 0.35 * global_max_sim
+        return float(coverage_gain), float(semantic_overlap), {
+            "group_undercoverage": float(group_undercoverage),
+            "new_group_bonus": float(new_group_bonus),
+            "profile_novelty": float(profile_novelty),
+            "group_max_similarity": float(group_max_sim),
+            "global_max_similarity": float(global_max_sim),
+        }
+
     def _branch_priority(
         self,
         branch: BranchState,
         *,
         answer_support_counts: dict[str, int],
         active_group_counts: dict[str, int],
+        group_profiles: dict[str, list[set[str]]],
+        global_profiles: list[set[str]],
     ) -> tuple[float, dict[str, float | str | None]]:
         continuation = float(self.scorer.score_branch(branch))
         group = self._normalize_answer(branch.predicted_answer)
@@ -800,12 +927,155 @@ class GlobalDiversityAggregationController(BaseController):
         if group is None:
             diversity_bonus += self.unknown_answer_bonus
         duplicate_cost = self.duplicate_penalty * float(active_dups)
-        priority = continuation + diversity_bonus - duplicate_cost
+        coverage_gain = 0.0
+        semantic_overlap = 0.0
+        coverage_meta: dict[str, float] = {}
+        if self.use_marginal_coverage_overlap:
+            coverage_gain, semantic_overlap, coverage_meta = self._compute_coverage_and_overlap(
+                branch=branch,
+                answer_support_counts=answer_support_counts,
+                active_group_counts=active_group_counts,
+                group_profiles=group_profiles,
+                global_profiles=global_profiles,
+            )
+        priority = continuation + diversity_bonus + self.coverage_weight * coverage_gain - self.overlap_weight * semantic_overlap - duplicate_cost
         return priority, {
             "continuation_value": continuation,
             "diversity_bonus": diversity_bonus,
             "duplicate_cost": duplicate_cost,
+            "coverage_gain": float(coverage_gain),
+            "semantic_overlap": float(semantic_overlap),
             "group_key": group,
+            **coverage_meta,
+        }
+
+    def _group_support_summary(
+        self,
+        branches: list[BranchState],
+    ) -> dict[str, Any]:
+        done = [b for b in branches if b.predicted_answer is not None]
+        if not done:
+            return {
+                "groups": {},
+                "branch_support_rows": [],
+                "top_group": None,
+                "top_support": 0.0,
+                "second_support": 0.0,
+                "support_margin": 0.0,
+                "top_group_readiness": 0.0,
+                "mean_independence_discount": 1.0,
+                "duplicate_discount_applied_rate": 0.0,
+            }
+
+        grouped: dict[str, list[BranchState]] = {}
+        for b in done:
+            key = self._normalize_answer(b.predicted_answer)
+            if key is not None:
+                grouped.setdefault(key, []).append(b)
+        if not grouped:
+            return {
+                "groups": {},
+                "branch_support_rows": [],
+                "top_group": None,
+                "top_support": 0.0,
+                "second_support": 0.0,
+                "support_margin": 0.0,
+                "top_group_readiness": 0.0,
+                "mean_independence_discount": 1.0,
+                "duplicate_discount_applied_rate": 0.0,
+            }
+
+        all_support_rows: list[dict[str, Any]] = []
+        group_summary: dict[str, dict[str, float | int]] = {}
+        all_discounts: list[float] = []
+        discount_applied = 0
+        for gk, members in grouped.items():
+            seen_profiles: list[set[str]] = []
+            group_support = 0.0
+            group_quality = 0.0
+            group_readiness = 0.0
+            for b in sorted(members, key=self.scorer.score_branch, reverse=True):
+                process_quality, target_completion = self._branch_quality_surrogates(b)
+                profile = self._support_profile_features(b)
+                max_sim = max((self._jaccard(profile, p) for p in seen_profiles), default=0.0)
+                independence_discount = 1.0
+                if self.use_duplicate_aware_aggregation:
+                    independence_discount = max(
+                        self.duplicate_discount_floor,
+                        1.0 - self.duplicate_discount_strength * max_sim,
+                    )
+                if independence_discount < 0.999:
+                    discount_applied += 1
+                seen_profiles.append(profile)
+                support_weight = process_quality * target_completion * independence_discount
+                group_support += support_weight
+                group_quality += support_weight * float(self.scorer.score_branch(b))
+                group_readiness += support_weight * target_completion
+                all_discounts.append(float(independence_discount))
+                all_support_rows.append(
+                    {
+                        "branch_id": b.branch_id,
+                        "group_key": gk,
+                        "process_quality": float(process_quality),
+                        "target_completion": float(target_completion),
+                        "independence_discount": float(independence_discount),
+                        "support_weight": float(support_weight),
+                        "continuation_value": float(self.scorer.score_branch(b)),
+                    }
+                )
+            quality_mean = group_quality / max(1e-8, group_support)
+            readiness_mean = group_readiness / max(1e-8, group_support)
+            group_summary[gk] = {
+                "discounted_support": float(group_support),
+                "support_quality_mean": float(quality_mean),
+                "readiness_mean": float(readiness_mean),
+                "member_count": int(len(members)),
+            }
+
+        ranked = sorted(group_summary.items(), key=lambda kv: float(kv[1]["discounted_support"]), reverse=True)
+        top_group = ranked[0][0] if ranked else None
+        top_support = float(ranked[0][1]["discounted_support"]) if ranked else 0.0
+        second_support = float(ranked[1][1]["discounted_support"]) if len(ranked) > 1 else 0.0
+        return {
+            "groups": group_summary,
+            "branch_support_rows": all_support_rows,
+            "top_group": top_group,
+            "top_support": float(top_support),
+            "second_support": float(second_support),
+            "support_margin": float(top_support - second_support),
+            "top_group_readiness": float(group_summary.get(top_group, {}).get("readiness_mean", 0.0)),
+            "mean_independence_discount": float(sum(all_discounts) / max(1, len(all_discounts))),
+            "duplicate_discount_applied_rate": float(discount_applied / max(1, len(all_discounts))),
+        }
+
+    def _estimate_one_step_value(self, branches: list[BranchState]) -> float:
+        active = [b for b in branches if not b.is_done and not b.is_pruned]
+        if not active:
+            return 0.0
+        return float(max(float(self.scorer.score_branch(b)) for b in active))
+
+    def _commit_by_answer_group_margin(self, *, branches: list[BranchState], actions: int) -> tuple[bool, dict[str, Any]]:
+        summary = self._group_support_summary(branches)
+        one_step_value = self._estimate_one_step_value(branches)
+        ready_to_check = actions >= self.min_actions_before_commit_check
+        commit = bool(
+            ready_to_check
+            and summary["top_support"] >= self.commit_top_support_threshold
+            and summary["support_margin"] >= self.commit_margin_threshold
+            and summary["top_group_readiness"] >= self.commit_readiness_threshold
+            and one_step_value <= self.continue_one_step_value_threshold
+        )
+        return commit, {
+            "top_group": summary["top_group"],
+            "top_group_support": float(summary["top_support"]),
+            "second_group_support": float(summary["second_support"]),
+            "answer_group_margin": float(summary["support_margin"]),
+            "top_group_readiness": float(summary["top_group_readiness"]),
+            "one_step_value_estimate": float(one_step_value),
+            "mean_independence_discount": float(summary["mean_independence_discount"]),
+            "duplicate_discount_applied_rate": float(summary["duplicate_discount_applied_rate"]),
+            "ready_to_check": bool(ready_to_check),
+            "commit_rule_satisfied": bool(commit),
         }
 
     def _final_prediction_from_groups(self, branches: list[BranchState]) -> tuple[str | None, dict[str, Any]]:
@@ -816,36 +1086,39 @@ class GlobalDiversityAggregationController(BaseController):
                 "selected_group": None,
                 "group_support_fraction": 0.0,
                 "aggregation_used": False,
+                "discounted_group_supports": {},
             }
 
-        groups: dict[str, list[BranchState]] = {}
-        for b in done:
-            key = self._normalize_answer(b.predicted_answer)
-            if key is None:
-                continue
-            groups.setdefault(key, []).append(b)
+        summary = self._group_support_summary(done)
+        groups = summary["groups"]
         if not groups:
             best = self.scorer.pick_best(done)
             return (best.predicted_answer if best else None), {
                 "selected_group": None,
                 "group_support_fraction": 0.0,
                 "aggregation_used": False,
+                "discounted_group_supports": {},
             }
 
-        total = sum(len(v) for v in groups.values())
+        total_support = sum(float(v["discounted_support"]) for v in groups.values())
         best_group_key = None
         best_group_score = -10.0
         best_group_support = 0.0
-        for gk, members in groups.items():
-            support_fraction = len(members) / max(1, total)
-            mean_value = sum(float(self.scorer.score_branch(m)) for m in members) / len(members)
-            group_score = self.answer_support_weight * support_fraction + self.value_weight * mean_value
+        for gk, gmeta in groups.items():
+            support_fraction = float(gmeta["discounted_support"]) / max(1e-8, total_support)
+            quality_mean = float(gmeta["support_quality_mean"])
+            readiness_mean = float(gmeta["readiness_mean"])
+            group_score = (
+                self.answer_support_weight * support_fraction
+                + self.value_weight * quality_mean
+                + self.support_quality_weight * readiness_mean
+            )
             if group_score > best_group_score:
                 best_group_score = group_score
                 best_group_key = gk
                 best_group_support = support_fraction
 
-        members = groups[best_group_key] if best_group_key is not None else done
+        members = [b for b in done if self._normalize_answer(b.predicted_answer) == best_group_key] if best_group_key is not None else done
         best_member = max(members, key=self.scorer.score_branch)
         return best_member.predicted_answer, {
             "selected_group": best_group_key,
@@ -853,6 +1126,11 @@ class GlobalDiversityAggregationController(BaseController):
             "group_score": float(best_group_score),
             "aggregation_used": True,
             "num_groups": len(groups),
+            "discounted_group_supports": {k: float(v["discounted_support"]) for k, v in groups.items()},
+            "answer_group_margin": float(summary["support_margin"]),
+            "top_group_readiness": float(summary["top_group_readiness"]),
+            "mean_independence_discount": float(summary["mean_independence_discount"]),
+            "duplicate_discount_applied_rate": float(summary["duplicate_discount_applied_rate"]),
         }
 
     def run(self, question: str, gold_answer: str) -> MethodResult:
@@ -862,8 +1140,12 @@ class GlobalDiversityAggregationController(BaseController):
         branch_expansions: dict[str, int] = {}
         branches: list[BranchState] = [self.generator.init_branch("div_0"), self.generator.init_branch("div_1")]
         answer_support_counts: dict[str, int] = {}
+        group_profiles: dict[str, list[set[str]]] = {}
+        global_profiles: list[set[str]] = []
         expand_by_group: dict[str, int] = {}
         forced_explore_steps = 0
+        commit_checks: list[dict[str, Any]] = []
+        commit_triggered = False
 
         while actions < self.max_actions and branches:
             active = [b for b in branches if not b.is_pruned]
@@ -881,6 +1163,8 @@ class GlobalDiversityAggregationController(BaseController):
                     b,
                     answer_support_counts=answer_support_counts,
                     active_group_counts=active_group_counts,
+                    group_profiles=group_profiles,
+                    global_profiles=global_profiles,
                 )
                 scored.append((b, priority, meta))
             scored.sort(key=lambda x: x[1], reverse=True)
@@ -912,6 +1196,8 @@ class GlobalDiversityAggregationController(BaseController):
                         "continuation_value": round(float(pri_meta["continuation_value"]), 4),
                         "diversity_bonus": round(float(pri_meta["diversity_bonus"]), 4),
                         "duplicate_cost": round(float(pri_meta["duplicate_cost"]), 4),
+                        "coverage_gain": round(float(pri_meta.get("coverage_gain", 0.0)), 4),
+                        "semantic_overlap": round(float(pri_meta.get("semantic_overlap", 0.0)), 4),
                         "group_key": pri_meta["group_key"],
                         "force_explore": bool(force_explore),
                         "top_support_before_action": round(float(top_support), 4),
@@ -920,6 +1206,9 @@ class GlobalDiversityAggregationController(BaseController):
                 if branch.is_done:
                     done_key = self._normalize_answer(branch.predicted_answer) or "__unknown__"
                     answer_support_counts[done_key] = answer_support_counts.get(done_key, 0) + 1
+                    profile = self._support_profile_features(branch)
+                    group_profiles.setdefault(done_key, []).append(profile)
+                    global_profiles.append(profile)
                 elif len(branches) < self.max_branches and actions < self.max_actions:
                     child = self.generator.init_branch(f"div_child_{actions}_{len(branches)}")
                     child.score = 0.5 * child.score + 0.5 * branch.score
@@ -949,6 +1238,12 @@ class GlobalDiversityAggregationController(BaseController):
                         self.generator.prune(b)
                 branches = [b for b in branches if not b.is_pruned]
             surviving_trace.append(len(branches))
+            if self.use_answer_group_commit_margin:
+                should_commit, commit_meta = self._commit_by_answer_group_margin(branches=branches, actions=actions)
+                commit_checks.append(commit_meta)
+                if should_commit:
+                    commit_triggered = True
+                    break
             if all(b.is_done for b in branches):
                 break
 
@@ -978,6 +1273,28 @@ class GlobalDiversityAggregationController(BaseController):
                 "duplicate_penalty_applied_rate": float(len(dup_positive) / max(1, len(expand_actions))),
                 "mean_diversity_bonus_on_expand": float(
                     sum(float(a.get("diversity_bonus", 0.0)) for a in expand_actions) / max(1, len(expand_actions))
+                ),
+                "mean_coverage_gain_on_expand": float(
+                    sum(float(a.get("coverage_gain", 0.0)) for a in expand_actions) / max(1, len(expand_actions))
+                ),
+                "mean_semantic_overlap_on_expand": float(
+                    sum(float(a.get("semantic_overlap", 0.0)) for a in expand_actions) / max(1, len(expand_actions))
+                ),
+                "marginal_diversity_mode": bool(self.use_marginal_coverage_overlap),
+                "duplicate_aware_aggregation_mode": bool(self.use_duplicate_aware_aggregation),
+                "answer_group_commit_mode": bool(self.use_answer_group_commit_margin),
+                "commit_checks": commit_checks,
+                "commit_checks_count": int(len(commit_checks)),
+                "commit_triggered": bool(commit_triggered),
+                "unstable_commit_flag": bool(
+                    any(
+                        bool(c.get("commit_rule_satisfied", False))
+                        and (
+                            float(c.get("answer_group_margin", 0.0)) < (self.commit_margin_threshold + 0.04)
+                            or float(c.get("one_step_value_estimate", 0.0)) > self.continue_one_step_value_threshold
+                        )
+                        for c in commit_checks
+                    )
                 ),
                 "final_prediction": prediction,
                 **group_meta,
