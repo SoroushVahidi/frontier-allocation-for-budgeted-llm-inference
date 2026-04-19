@@ -815,6 +815,16 @@ class GlobalDiversityAggregationController(BaseController):
         early_preservation_target_alignment_min: float = 0.34,
         early_preservation_required_group_gap: float = 0.18,
         early_preservation_challenger_hold_steps: int = 1,
+        enable_anti_collapse_answer_group_refinement: bool = False,
+        anti_collapse_early_window: int = 6,
+        repeated_same_branch_penalty: float = 0.08,
+        repeated_same_branch_cap: int = 3,
+        monopolization_margin_requirement: float = 0.10,
+        answer_group_distinctness_bonus: float = 0.10,
+        duplicate_answer_group_penalty: float = 0.08,
+        min_followup_steps_for_preserved_alternative: int = 2,
+        alternative_maturity_window: int = 5,
+        protected_alternative_target_alignment_min: float = 0.48,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -886,6 +896,16 @@ class GlobalDiversityAggregationController(BaseController):
         self.early_preservation_target_alignment_min = float(early_preservation_target_alignment_min)
         self.early_preservation_required_group_gap = float(early_preservation_required_group_gap)
         self.early_preservation_challenger_hold_steps = max(0, int(early_preservation_challenger_hold_steps))
+        self.enable_anti_collapse_answer_group_refinement = bool(enable_anti_collapse_answer_group_refinement)
+        self.anti_collapse_early_window = max(1, int(anti_collapse_early_window))
+        self.repeated_same_branch_penalty = max(0.0, float(repeated_same_branch_penalty))
+        self.repeated_same_branch_cap = max(1, int(repeated_same_branch_cap))
+        self.monopolization_margin_requirement = max(0.0, float(monopolization_margin_requirement))
+        self.answer_group_distinctness_bonus = max(0.0, float(answer_group_distinctness_bonus))
+        self.duplicate_answer_group_penalty = max(0.0, float(duplicate_answer_group_penalty))
+        self.min_followup_steps_for_preserved_alternative = max(0, int(min_followup_steps_for_preserved_alternative))
+        self.alternative_maturity_window = max(1, int(alternative_maturity_window))
+        self.protected_alternative_target_alignment_min = float(protected_alternative_target_alignment_min)
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -1178,6 +1198,55 @@ class GlobalDiversityAggregationController(BaseController):
             "target_alignment_reason": reason,
             "target_type": str(flags.get("target_type", "generic")),
         }
+
+    def _anti_collapse_priority_adjustments(
+        self,
+        *,
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        branch_expansions: dict[str, int],
+        active_group_counts: dict[str, int],
+        expand_by_group: dict[str, int],
+        actions: int,
+        last_expanded_branch_id: str | None,
+        consecutive_same_branch_expands: int,
+    ) -> dict[str, dict[str, float]]:
+        if (not self.enable_anti_collapse_answer_group_refinement) or actions >= self.anti_collapse_early_window:
+            return {}
+        continuation_sorted = sorted([float(item[2].get("continuation_value", 0.0)) for item in scored], reverse=True)
+        top_cont = continuation_sorted[0] if continuation_sorted else 0.0
+        second_cont = continuation_sorted[1] if len(continuation_sorted) > 1 else top_cont
+        total_group_expands = max(1, sum(int(v) for v in expand_by_group.values()))
+
+        out: dict[str, dict[str, float]] = {}
+        for branch, _, meta in scored:
+            gk = str(meta.get("group_key") or "__unknown__")
+            continuation = float(meta.get("continuation_value", 0.0))
+            repeats = max(0, int(branch_expansions.get(branch.branch_id, 0)) - 1)
+            repeat_penalty = self.repeated_same_branch_penalty * float(repeats)
+
+            cap_guard_penalty = 0.0
+            if (
+                branch.branch_id == last_expanded_branch_id
+                and consecutive_same_branch_expands >= self.repeated_same_branch_cap
+                and (continuation - second_cont) < self.monopolization_margin_requirement
+            ):
+                cap_guard_penalty = self.repeated_same_branch_penalty + self.monopolization_margin_requirement
+
+            target_alignment = float(meta.get("target_alignment_score", 0.0))
+            distinctness_bonus = self.answer_group_distinctness_bonus * target_alignment * (
+                1.0 / (1.0 + float(expand_by_group.get(gk, 0)))
+            )
+            duplicate_group_penalty = self.duplicate_answer_group_penalty * max(0.0, float(active_group_counts.get(gk, 1) - 1))
+            out[branch.branch_id] = {
+                "repeat_penalty": float(repeat_penalty),
+                "cap_guard_penalty": float(cap_guard_penalty),
+                "distinctness_bonus": float(distinctness_bonus),
+                "duplicate_answer_group_penalty": float(duplicate_group_penalty),
+                "adjusted_priority_delta": float(distinctness_bonus - repeat_penalty - cap_guard_penalty - duplicate_group_penalty),
+                "top_continuation": float(top_cont),
+                "second_continuation": float(second_cont),
+            }
+        return out
 
     def _pick_early_answer_group_preservation_branch(
         self,
@@ -1901,6 +1970,13 @@ class GlobalDiversityAggregationController(BaseController):
         incumbent_commit_triggered = False
         near_tie_forced_steps_used = 0
         early_preservation_forced_steps = 0
+        last_expanded_branch_id: str | None = None
+        consecutive_same_branch_expands = 0
+        max_consecutive_same_branch_expands = 0
+        repeated_same_branch_expansion_count = 0
+        protected_alternatives: dict[str, dict[str, int | str | float]] = {}
+        protected_alternative_ids: set[str] = set()
+        matured_alternative_ids: set[str] = set()
         gold_group_key = self._normalize_answer(gold_answer) or "__unknown__"
         early_divergence_timeline: list[dict[str, Any]] = []
 
@@ -1925,6 +2001,26 @@ class GlobalDiversityAggregationController(BaseController):
                     question=question,
                 )
                 scored.append((b, priority, meta))
+            anti_collapse_adjustments = self._anti_collapse_priority_adjustments(
+                scored=scored,
+                branch_expansions=branch_expansions,
+                active_group_counts=active_group_counts,
+                expand_by_group=expand_by_group,
+                actions=actions,
+                last_expanded_branch_id=last_expanded_branch_id,
+                consecutive_same_branch_expands=consecutive_same_branch_expands,
+            )
+            scored = [
+                (
+                    b,
+                    float(
+                        p
+                        + float(anti_collapse_adjustments.get(b.branch_id, {}).get("adjusted_priority_delta", 0.0))
+                    ),
+                    m,
+                )
+                for (b, p, m) in scored
+            ]
             scored.sort(key=lambda x: x[1], reverse=True)
             branch, priority, pri_meta = scored[0]
             gate_meta = self._diversity_gate_decision(
@@ -1985,6 +2081,44 @@ class GlobalDiversityAggregationController(BaseController):
                     early_preservation_meta = preservation_meta
             elif preservation_meta.get("activated", False):
                 early_preservation_meta = preservation_meta
+            if (
+                self.enable_anti_collapse_answer_group_refinement
+                and bool(early_preservation_meta.get("activated", False))
+                and float(early_preservation_meta.get("selected_target_alignment_score", 0.0))
+                >= self.protected_alternative_target_alignment_min
+            ):
+                pbid = str(early_preservation_meta.get("selected_branch_id") or "")
+                if pbid:
+                    protected_alternative_ids.add(pbid)
+                    protected_alternatives.setdefault(
+                        pbid,
+                        {
+                            "remaining": int(self.min_followup_steps_for_preserved_alternative),
+                            "expires_at": int(actions + self.alternative_maturity_window),
+                            "selected_group": str(early_preservation_meta.get("selected_group") or "__unknown__"),
+                        },
+                    )
+
+            if self.enable_anti_collapse_answer_group_refinement:
+                eligible_protected = [
+                    item
+                    for item in scored
+                    if item[0].branch_id in protected_alternatives
+                    and int(protected_alternatives[item[0].branch_id].get("remaining", 0)) > 0
+                    and actions <= int(protected_alternatives[item[0].branch_id].get("expires_at", -1))
+                ]
+                if eligible_protected:
+                    eligible_protected.sort(
+                        key=lambda x: (
+                            int(protected_alternatives[x[0].branch_id].get("remaining", 0)),
+                            float(x[2].get("target_alignment_score", 0.0)),
+                            x[1],
+                        ),
+                        reverse=True,
+                    )
+                    chosen = eligible_protected[0]
+                    if chosen[0].branch_id != branch.branch_id:
+                        branch, priority, pri_meta = chosen
 
             metalevel_preview: dict[str, Any] | None = None
             metalevel_override = False
@@ -2070,8 +2204,35 @@ class GlobalDiversityAggregationController(BaseController):
                         "target_alignment_category": str(pri_meta.get("target_alignment_category", "unknown")),
                         "early_preservation_activated": bool(early_preservation_meta.get("activated", False)),
                         "early_preservation_reason": early_preservation_meta.get("reason"),
+                        "anti_collapse_repeat_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_penalty", 0.0)), 4
+                        ),
+                        "anti_collapse_cap_guard_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("cap_guard_penalty", 0.0)), 4
+                        ),
+                        "answer_group_distinctness_bonus": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("distinctness_bonus", 0.0)), 4
+                        ),
+                        "duplicate_answer_group_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("duplicate_answer_group_penalty", 0.0)), 4
+                        ),
+                        "alternative_maturity_protected": bool(branch.branch_id in protected_alternatives),
                     }
                 )
+                if branch.branch_id == last_expanded_branch_id:
+                    repeated_same_branch_expansion_count += 1
+                    consecutive_same_branch_expands += 1
+                else:
+                    consecutive_same_branch_expands = 1
+                max_consecutive_same_branch_expands = max(max_consecutive_same_branch_expands, consecutive_same_branch_expands)
+                last_expanded_branch_id = branch.branch_id
+                if branch.branch_id in protected_alternatives:
+                    rem = int(protected_alternatives[branch.branch_id].get("remaining", 0))
+                    if rem > 0:
+                        rem -= 1
+                        protected_alternatives[branch.branch_id]["remaining"] = rem
+                        if rem <= 0:
+                            matured_alternative_ids.add(branch.branch_id)
                 if branch.is_done:
                     done_key = self._normalize_answer(branch.predicted_answer) or "__unknown__"
                     answer_support_counts[done_key] = answer_support_counts.get(done_key, 0) + 1
@@ -2109,6 +2270,19 @@ class GlobalDiversityAggregationController(BaseController):
                         "target_alignment_category": str(pri_meta.get("target_alignment_category", "unknown")),
                         "early_preservation_activated": bool(early_preservation_meta.get("activated", False)),
                         "early_preservation_reason": early_preservation_meta.get("reason"),
+                        "anti_collapse_repeat_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_penalty", 0.0)), 4
+                        ),
+                        "anti_collapse_cap_guard_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("cap_guard_penalty", 0.0)), 4
+                        ),
+                        "answer_group_distinctness_bonus": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("distinctness_bonus", 0.0)), 4
+                        ),
+                        "duplicate_answer_group_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("duplicate_answer_group_penalty", 0.0)), 4
+                        ),
+                        "alternative_maturity_protected": bool(branch.branch_id in protected_alternatives),
                     }
                 )
 
@@ -2218,6 +2392,38 @@ class GlobalDiversityAggregationController(BaseController):
             dominant_failure = "generated_but_underweighted"
         else:
             dominant_failure = "not_applicable_or_correct"
+        top_branch_expand_share = (
+            max(branch_expansions.values()) / max(1, expansions) if branch_expansions else 0.0
+        )
+        repeated_same_branch_domination = bool(
+            expansions > 0
+            and (
+                repeated_same_branch_expansion_count / max(1, expansions) >= 0.50
+                or top_branch_expand_share >= 0.70
+            )
+        )
+        matured_alternative_count = int(len(matured_alternative_ids))
+        shallow_preserved_alternative_count = int(
+            sum(
+                1
+                for bid in protected_alternative_ids
+                if int(branch_expansions.get(bid, 0)) <= 1 and bid not in matured_alternative_ids
+            )
+        )
+        if bool(self._answers_match(prediction, gold_answer)):
+            regime_failure_category = "not_applicable_or_correct"
+        elif not gold_ever_present:
+            regime_failure_category = "correct_answer_group_absent"
+        elif repeated_same_branch_domination and (not gold_present_final):
+            regime_failure_category = "repeated_same_branch_expansion_dominated_budget"
+        elif gold_present_after_first_split and (not gold_present_final) and matured_alternative_count <= 0:
+            regime_failure_category = "correct_group_preserved_but_insufficiently_matured"
+        elif gold_ever_present and (not gold_present_after_first_split):
+            regime_failure_category = "correct_answer_group_present_but_underweighted"
+        elif gold_present_final and (not self._answers_match(prediction, gold_answer)):
+            regime_failure_category = "final_commit_lost_despite_viable_alternative"
+        else:
+            regime_failure_category = "other_or_unclassified"
         final_selected_group = str(group_meta.get("selected_group") or "")
         for event in challenger_selection_events:
             if event.get("outcome") == "pending":
@@ -2342,6 +2548,18 @@ class GlobalDiversityAggregationController(BaseController):
                 "commit_action_count": int(sum(1 for c in incumbent_challenger_checks if bool(c.get("commit_ready", False)))),
                 "expand_action_count": int(sum(1 for a in action_trace if str(a.get("action")) == "expand")),
                 "commit_triggered": bool(commit_triggered),
+                "anti_collapse_answer_group_refinement_enabled": bool(self.enable_anti_collapse_answer_group_refinement),
+                "repeated_same_branch_expansion_count": int(repeated_same_branch_expansion_count),
+                "repeated_same_branch_expansion_rate": float(repeated_same_branch_expansion_count / max(1, expansions)),
+                "max_consecutive_same_branch_expands": int(max_consecutive_same_branch_expands),
+                "repeated_same_branch_expansion_dominated_budget": bool(repeated_same_branch_domination),
+                "top_branch_expand_share": float(top_branch_expand_share),
+                "branch_creation_count": int(len(branch_expansions)),
+                "answer_group_diversity_realized": int(len(answer_support_counts)),
+                "protected_alternative_count": int(len(protected_alternative_ids)),
+                "shallow_preserved_alternative_count": int(shallow_preserved_alternative_count),
+                "matured_alternative_count": int(matured_alternative_count),
+                "alternative_maturity_completion_rate": float(matured_alternative_count / max(1, len(protected_alternative_ids))),
                 "diversity_needed_gate_mode": self.diversity_needed_gate_mode,
                 "diversity_needed_gate_positive_threshold": float(self.diversity_needed_gate_positive_threshold),
                 "diversity_needed_gate_negative_threshold": float(self.diversity_needed_gate_negative_threshold),
@@ -2364,6 +2582,7 @@ class GlobalDiversityAggregationController(BaseController):
                 "gold_group_ever_present": bool(gold_ever_present),
                 "gold_group_present_final": bool(gold_present_final),
                 "early_divergence_failure_category": dominant_failure,
+                "regime_failure_category": regime_failure_category,
                 "unstable_commit_flag": bool(
                     any(
                         bool(c.get("commit_rule_satisfied", False))
