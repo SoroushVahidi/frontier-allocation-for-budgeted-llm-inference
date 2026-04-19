@@ -1,0 +1,10 @@
+{
+  "generator": "diversity_needed_feasibility_v1",
+  "artifacts": {
+    "state_dataset": "outputs/branch_label_bruteforce_learning/diversity_needed_feasibility_20260419/labels/diversity_needed_state_dataset.jsonl",
+    "state_summaries": "outputs/branch_label_bruteforce_learning/diversity_needed_feasibility_20260419/labels/state_summaries.jsonl",
+    "candidate_labels": "outputs/branch_label_bruteforce_learning/diversity_needed_feasibility_20260419/labels/candidate_labels.jsonl",
+    "metrics": "outputs/branch_label_bruteforce_learning/diversity_needed_feasibility_20260419/metrics.json",
+    "feature_importance": "outputs/branch_label_bruteforce_learning/diversity_needed_feasibility_20260419/feature_importance.json"
+  }
+}

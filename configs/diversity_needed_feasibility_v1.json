@@ -1,0 +1,16 @@
+{
+  "seed": 23,
+  "run_id": "diversity_needed_feasibility_20260419",
+  "output_dir": "outputs/branch_label_bruteforce_learning",
+  "max_frontier_states": 84,
+  "frontier_budget": 7,
+  "rollout_samples_per_candidate": 8,
+  "max_allocation_samples": 18,
+  "target_estimation_repeats": 2,
+  "min_remaining_budget": 2,
+  "max_remaining_budget": 5,
+  "episodes_per_example": 2,
+  "diversity_plausibility_margin": 0.12,
+  "diversity_threshold": 0.0,
+  "gate_threshold": 0.0
+}
