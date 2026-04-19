@@ -1,0 +1,19 @@
+[
+  {
+    "dataset": "olympiadbench",
+    "example_id": "Hothan_OlympiadBench_1",
+    "provider": "cohere",
+    "provider_model": "command-r-plus-08-2024",
+    "seed": 11,
+    "budget": 4,
+    "ground_truth": "67",
+    "self_consistency_3_answer": null,
+    "broad_candidate": "broad_diversity_aggregation_v1",
+    "broad_candidate_answer": "8",
+    "diversity_materialized": false,
+    "commit_unstable": false,
+    "aggregation_concentrated_on_wrong_answer": false,
+    "ranking_failed_despite_diversity": false,
+    "residual_category": "insufficient_diversity_realized"
+  }
+]

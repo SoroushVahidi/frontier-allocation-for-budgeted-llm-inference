@@ -1,0 +1,13 @@
+{
+  "comparison_rule": "Case included when self_consistency_3 is correct and broad_diversity_aggregation_v1 is incorrect on aligned example.",
+  "categories": {
+    "insufficient_diversity_realized": 1
+  },
+  "definitions": {
+    "insufficient_diversity_realized": "<=1 answer group realized for broad candidate.",
+    "value_ranking_error_despite_diversity": "Diversity materialized but support fraction < 0.5.",
+    "aggregation_concentration_failure": "Diversity materialized and support fraction >= 0.75 but still wrong.",
+    "commit_selection_instability": "Support concentration in unstable mid-band (0.45..0.65).",
+    "other_or_mixed": "Residual cases not mapped cleanly to dominant buckets."
+  }
+}

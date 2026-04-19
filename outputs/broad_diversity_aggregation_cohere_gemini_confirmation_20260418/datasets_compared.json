@@ -1,0 +1,21 @@
+{
+  "datasets_requested": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "olympiadbench"
+  ],
+  "datasets_with_successful_rows": [
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "olympiadbench",
+    "openai/gsm8k"
+  ],
+  "subset_size_per_dataset": 2,
+  "seeds": [
+    11
+  ],
+  "budgets": [
+    4
+  ]
+}

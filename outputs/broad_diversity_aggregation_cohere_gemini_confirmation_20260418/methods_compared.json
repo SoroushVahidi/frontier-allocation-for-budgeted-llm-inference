@@ -1,0 +1,11 @@
+{
+  "frozen_method_set": [
+    "self_consistency_3",
+    "adaptive_min_expand_1",
+    "selective_sc_hybrid_v1",
+    "broad_diversity_aggregation_v1",
+    "broad_diversity_aggregation_strong_v1"
+  ],
+  "new_method_families_added": false,
+  "family_focus": "broad_diversity_aggregation"
+}

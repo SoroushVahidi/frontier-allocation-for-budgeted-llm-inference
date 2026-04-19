@@ -1,0 +1,109 @@
+{
+  "overall_method_summary": {
+    "self_consistency_3": {
+      "mean_accuracy_over_budgets": 0.25,
+      "seed_stability_std": 0.25
+    },
+    "adaptive_min_expand_1": {
+      "mean_accuracy_over_budgets": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "selective_sc_hybrid_v1": {
+      "mean_accuracy_over_budgets": 0.25,
+      "seed_stability_std": 0.25
+    },
+    "broad_diversity_aggregation_v1": {
+      "mean_accuracy_over_budgets": 0.25,
+      "seed_stability_std": 0.25
+    },
+    "broad_diversity_aggregation_strong_v1": {
+      "mean_accuracy_over_budgets": 0.125,
+      "seed_stability_std": 0.21650635094610965
+    }
+  },
+  "method_ranking": [
+    {
+      "method": "self_consistency_3",
+      "mean_accuracy_over_budgets": 0.25,
+      "seed_stability_std": 0.25
+    },
+    {
+      "method": "selective_sc_hybrid_v1",
+      "mean_accuracy_over_budgets": 0.25,
+      "seed_stability_std": 0.25
+    },
+    {
+      "method": "broad_diversity_aggregation_v1",
+      "mean_accuracy_over_budgets": 0.25,
+      "seed_stability_std": 0.25
+    },
+    {
+      "method": "broad_diversity_aggregation_strong_v1",
+      "mean_accuracy_over_budgets": 0.125,
+      "seed_stability_std": 0.21650635094610965
+    },
+    {
+      "method": "adaptive_min_expand_1",
+      "mean_accuracy_over_budgets": 0.0,
+      "seed_stability_std": 0.0
+    }
+  ],
+  "gap_to_self_consistency_3": {
+    "self_consistency_3": 0.0,
+    "adaptive_min_expand_1": -0.25,
+    "selective_sc_hybrid_v1": 0.0,
+    "broad_diversity_aggregation_v1": 0.0,
+    "broad_diversity_aggregation_strong_v1": -0.125
+  },
+  "gap_between_broad_variants": {
+    "strong_minus_v1": -0.125,
+    "v1_minus_strong": 0.125
+  },
+  "main_broad_candidate_vs_sc": {
+    "main_candidate": "broad_diversity_aggregation_v1",
+    "main_minus_sc": 0.0,
+    "materially_challenges_sc_flag": true
+  },
+  "family_leadership_stability": {
+    "stable_across_providers": true,
+    "provider_variant_winners": {
+      "cohere": "broad_diversity_aggregation_v1"
+    },
+    "note": "Leadership is marked unstable when provider-level winner disagrees with global winner."
+  },
+  "hard_slice_summary": {
+    "near_tie": {
+      "self_consistency_3": 0.0,
+      "adaptive_min_expand_1": 0.0,
+      "selective_sc_hybrid_v1": 0.0,
+      "broad_diversity_aggregation_v1": 0.0,
+      "broad_diversity_aggregation_strong_v1": 0.0
+    },
+    "disagreement": {
+      "self_consistency_3": 0.0,
+      "adaptive_min_expand_1": 0.0,
+      "selective_sc_hybrid_v1": 0.0,
+      "broad_diversity_aggregation_v1": 0.0,
+      "broad_diversity_aggregation_strong_v1": 0.0
+    },
+    "hard_case_active": {
+      "self_consistency_3": 0.0,
+      "adaptive_min_expand_1": 0.0,
+      "selective_sc_hybrid_v1": 0.0,
+      "broad_diversity_aggregation_v1": 0.0,
+      "broad_diversity_aggregation_strong_v1": 0.0
+    }
+  },
+  "n_aligned_examples": 8,
+  "failed_runs": [
+    {
+      "provider": "gemini",
+      "provider_model": "gemini-2.0-flash",
+      "dataset": null,
+      "seed": null,
+      "budget": null,
+      "reason": "preflight_failed",
+      "error": "http_429:{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota ex"
+    }
+  ]
+}

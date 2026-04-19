@@ -1,0 +1,38 @@
+{
+  "allowed_providers": [
+    "cohere",
+    "gemini"
+  ],
+  "providers_requested": [
+    "cohere",
+    "gemini"
+  ],
+  "providers_executed": [
+    "cohere"
+  ],
+  "model_by_provider": {
+    "cohere": "command-r-plus-08-2024",
+    "gemini": "gemini-2.0-flash"
+  },
+  "explicit_exclusion": [
+    "openai"
+  ],
+  "decoding": {
+    "temperature": 0.1,
+    "max_output_tokens": 140,
+    "timeout_seconds": 25
+  },
+  "retry_behavior": {
+    "cohere_retry_attempts": 4,
+    "gemini_retry_attempts": 4,
+    "retryable_http_codes": [
+      408,
+      429,
+      500,
+      502,
+      503,
+      504
+    ],
+    "backoff_seconds": "1.25 * (attempt + 1)"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "openai/gsm8k": {
+    "self_consistency_3": {
+      "mean_accuracy": 0.5,
+      "seed_stability_std": 0.0
+    },
+    "adaptive_min_expand_1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "selective_sc_hybrid_v1": {
+      "mean_accuracy": 0.5,
+      "seed_stability_std": 0.0
+    },
+    "broad_diversity_aggregation_v1": {
+      "mean_accuracy": 0.5,
+      "seed_stability_std": 0.0
+    },
+    "broad_diversity_aggregation_strong_v1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    }
+  },
+  "HuggingFaceH4/MATH-500": {
+    "self_consistency_3": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "adaptive_min_expand_1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "selective_sc_hybrid_v1": {
+      "mean_accuracy": 0.5,
+      "seed_stability_std": 0.0
+    },
+    "broad_diversity_aggregation_v1": {
+      "mean_accuracy": 0.5,
+      "seed_stability_std": 0.0
+    },
+    "broad_diversity_aggregation_strong_v1": {
+      "mean_accuracy": 0.5,
+      "seed_stability_std": 0.0
+    }
+  },
+  "HuggingFaceH4/aime_2024": {
+    "self_consistency_3": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "adaptive_min_expand_1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "selective_sc_hybrid_v1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "broad_diversity_aggregation_v1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "broad_diversity_aggregation_strong_v1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    }
+  },
+  "olympiadbench": {
+    "self_consistency_3": {
+      "mean_accuracy": 0.5,
+      "seed_stability_std": 0.0
+    },
+    "adaptive_min_expand_1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "selective_sc_hybrid_v1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "broad_diversity_aggregation_v1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "broad_diversity_aggregation_strong_v1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    }
+  }
+}

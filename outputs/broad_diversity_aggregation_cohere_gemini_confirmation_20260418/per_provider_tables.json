@@ -1,0 +1,24 @@
+{
+  "cohere": {
+    "self_consistency_3": {
+      "mean_accuracy": 0.25,
+      "seed_stability_std": 0.25
+    },
+    "adaptive_min_expand_1": {
+      "mean_accuracy": 0.0,
+      "seed_stability_std": 0.0
+    },
+    "selective_sc_hybrid_v1": {
+      "mean_accuracy": 0.25,
+      "seed_stability_std": 0.25
+    },
+    "broad_diversity_aggregation_v1": {
+      "mean_accuracy": 0.25,
+      "seed_stability_std": 0.25
+    },
+    "broad_diversity_aggregation_strong_v1": {
+      "mean_accuracy": 0.125,
+      "seed_stability_std": 0.21650635094610965
+    }
+  }
+}

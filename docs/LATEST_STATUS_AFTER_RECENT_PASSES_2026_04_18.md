@@ -10,6 +10,9 @@ It is intended to answer:
 - what the current bottleneck now looks like,
 - and what should happen next.
 
+Cross-reference for the newest Cohere/Gemini-only realism confirmation bundle:
+- [`BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md`](BROAD_DIVERSITY_AGGREGATION_COHERE_GEMINI_CONFIRMATION_2026_04_18.md)
+
 ## Short current answer
 
 The shortest honest update is:

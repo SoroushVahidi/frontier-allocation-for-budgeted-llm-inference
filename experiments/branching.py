@@ -393,20 +393,32 @@ class APIBranchGenerator:
         endpoint = f"{self.base_url}/models/{self.model}:generateContent"
         if self.api_key:
             endpoint = f"{endpoint}?key={self.api_key}"
-        req = request.Request(
-            endpoint,
-            data=json.dumps(payload).encode("utf-8"),
-            headers=headers,
-            method="POST",
-        )
-        try:
-            with request.urlopen(req, timeout=self.timeout_seconds) as resp:
-                body = json.loads(resp.read().decode("utf-8"))
-        except error.HTTPError as exc:  # pragma: no cover - network path
-            err_body = exc.read().decode("utf-8", errors="ignore")
-            raise RuntimeError(f"Gemini API HTTPError {exc.code}: {err_body[:500]}") from exc
-        except Exception as exc:  # pragma: no cover - network path
-            raise RuntimeError(f"Gemini API request failed: {exc}") from exc
+        retry_attempts = 4
+        body: dict | None = None
+        for attempt in range(retry_attempts):
+            req = request.Request(
+                endpoint,
+                data=json.dumps(payload).encode("utf-8"),
+                headers=headers,
+                method="POST",
+            )
+            try:
+                with request.urlopen(req, timeout=self.timeout_seconds) as resp:
+                    body = json.loads(resp.read().decode("utf-8"))
+                break
+            except error.HTTPError as exc:  # pragma: no cover - network path
+                err_body = exc.read().decode("utf-8", errors="ignore")
+                if exc.code in {408, 429, 500, 502, 503, 504} and attempt < retry_attempts - 1:
+                    time.sleep(1.25 * (attempt + 1))
+                    continue
+                raise RuntimeError(f"Gemini API HTTPError {exc.code}: {err_body[:500]}") from exc
+            except Exception as exc:  # pragma: no cover - network path
+                if attempt < retry_attempts - 1:
+                    time.sleep(1.25 * (attempt + 1))
+                    continue
+                raise RuntimeError(f"Gemini API request failed: {exc}") from exc
+        if body is None:  # pragma: no cover - defensive
+            raise RuntimeError("Gemini API request failed after retries.")
 
         texts: list[str] = []
         for candidate in body.get("candidates", []):
