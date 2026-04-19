@@ -44,6 +44,54 @@ def _load_config(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _harmed_subtype(
+    *,
+    baseline_row: dict[str, Any],
+    candidate_row: dict[str, Any],
+) -> str:
+    md = candidate_row.get("metadata") or {}
+    bmd = baseline_row.get("metadata") or {}
+    action_trace = md.get("action_trace") or []
+    avg_repeat_pressure = _mean(
+        [
+            _safe_float(t.get("anti_collapse_repeat_penalty", 0.0))
+            + _safe_float(t.get("anti_collapse_cap_guard_penalty", 0.0))
+            for t in action_trace
+        ]
+    )
+    repeat_rate = _safe_float(md.get("repeated_same_branch_expansion_rate", 0.0))
+    early_div = str(md.get("early_divergence_failure_category", ""))
+    regime = str(md.get("regime_failure_category", ""))
+
+    if (
+        early_div == "generated_but_committed_away_from_later"
+        or regime == "final_commit_lost_despite_viable_alternative"
+        or bool(md.get("unstable_commit_flag", False))
+        or _safe_int(md.get("late_commit_after_selector_count", 0)) > 0
+    ):
+        return "residual_late_commit_problem_after_improved_tree_growth"
+    if early_div == "generated_but_underweighted" or regime == "correct_answer_group_present_but_underweighted":
+        return "aggregation_still_underweighted_right_answer_group"
+    if _safe_int(md.get("early_answer_group_preservation_forced_steps", 0)) > 0 and not bool(md.get("gold_group_present_final", False)):
+        return "alternative_preserved_but_wrong"
+    if _safe_int(md.get("matured_alternative_count", 0)) > 0 and not bool(md.get("gold_group_present_final", False)):
+        return "alternative_matured_but_still_low_value"
+    if repeat_rate >= 0.65 or bool(md.get("repeated_same_branch_expansion_dominated_budget", False)):
+        return "repeat_or_cap_threshold_too_weak"
+    if avg_repeat_pressure >= 0.08 and _safe_float(md.get("top_branch_expand_share", 0.0)) < _safe_float(
+        bmd.get("top_branch_expand_share", 0.0)
+    ):
+        return "repeat_penalty_too_strong"
+    if (
+        avg_repeat_pressure >= 0.06
+        and _safe_float(md.get("answer_group_diversity_realized", 0.0)) > _safe_float(bmd.get("answer_group_diversity_realized", 0.0))
+        and not bool(md.get("gold_group_ever_present", False))
+        and bool(bmd.get("gold_group_ever_present", False))
+    ):
+        return "anti_collapse_blocked_good_incumbent_continuation"
+    return "anti_collapse_blocked_good_incumbent_continuation" if repeat_rate <= 0.50 else "repeat_or_cap_threshold_too_weak"
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description="Bounded evaluation for anti-collapse + answer-group-aware allocation refinement")
     p.add_argument("--config", default="configs/anti_collapse_answer_group_refinement_bounded_eval_20260419.json")
@@ -198,18 +246,49 @@ def main() -> None:
         key = (str(r["dataset"]), int(r["seed"]), int(r["budget"]), str(r["example_id"]))
         aligned[key][str(r["method_alias"])] = r
 
-    improved_harmed_unchanged = {"improved": 0, "harmed": 0, "unchanged": 0}
-    for pair in aligned.values():
-        b = pair.get("baseline_broad")
-        c = pair.get("anti_collapse_refinement")
-        if not b or not c:
+    pairwise_vs_baseline: dict[str, dict[str, Any]] = {}
+    for alias in methods:
+        if alias == "baseline_broad":
             continue
-        if (not b["is_correct"]) and c["is_correct"]:
-            improved_harmed_unchanged["improved"] += 1
-        elif b["is_correct"] and (not c["is_correct"]):
-            improved_harmed_unchanged["harmed"] += 1
-        else:
-            improved_harmed_unchanged["unchanged"] += 1
+        outcomes = {"improved": 0, "harmed": 0, "unchanged": 0}
+        harmed_rows: list[dict[str, Any]] = []
+        subtypes: Counter[str] = Counter()
+        for key, pair in aligned.items():
+            b = pair.get("baseline_broad")
+            c = pair.get(alias)
+            if not b or not c:
+                continue
+            if (not b["is_correct"]) and c["is_correct"]:
+                outcomes["improved"] += 1
+            elif b["is_correct"] and (not c["is_correct"]):
+                outcomes["harmed"] += 1
+                subtype = _harmed_subtype(baseline_row=b, candidate_row=c)
+                subtypes[subtype] += 1
+                harmed_rows.append(
+                    {
+                        "dataset": key[0],
+                        "seed": key[1],
+                        "budget": key[2],
+                        "example_id": key[3],
+                        "gold_answer": b.get("gold_answer"),
+                        "baseline_prediction": b.get("prediction"),
+                        "candidate_prediction": c.get("prediction"),
+                        "candidate_method_alias": alias,
+                        "harmed_subtype": subtype,
+                        "candidate_regime_failure_category": str((c.get("metadata") or {}).get("regime_failure_category", "")),
+                        "candidate_early_divergence_failure_category": str(
+                            (c.get("metadata") or {}).get("early_divergence_failure_category", "")
+                        ),
+                    }
+                )
+            else:
+                outcomes["unchanged"] += 1
+        pairwise_vs_baseline[alias] = {
+            "improved_harmed_unchanged": outcomes,
+            "harmed_case_subtype_breakdown": dict(sorted(subtypes.items(), key=lambda kv: (-kv[1], kv[0]))),
+            "harmed_cases_count": len(harmed_rows),
+            "harmed_cases": harmed_rows,
+        }
 
     overall: dict[str, dict[str, float | int | str]] = {}
     by_alias = defaultdict(list)
@@ -270,10 +349,24 @@ def main() -> None:
         "subset_size": subset_size,
         "methods": methods,
         "overall": overall,
-        "improved_harmed_unchanged_vs_baseline": improved_harmed_unchanged,
+        "pairwise_vs_baseline": {
+            alias: {
+                "improved_harmed_unchanged": data["improved_harmed_unchanged"],
+                "harmed_case_subtype_breakdown": data["harmed_case_subtype_breakdown"],
+            }
+            for alias, data in pairwise_vs_baseline.items()
+        },
         "primary_question_answer": {
             "accuracy_delta_refinement_vs_baseline": _safe_float(overall.get("anti_collapse_refinement", {}).get("mean_accuracy", 0.0))
             - _safe_float(overall.get("baseline_broad", {}).get("mean_accuracy", 0.0)),
+            "accuracy_delta_harmed_tuned_vs_baseline": _safe_float(
+                overall.get("anti_collapse_harmed_tuned", {}).get("mean_accuracy", 0.0)
+            )
+            - _safe_float(overall.get("baseline_broad", {}).get("mean_accuracy", 0.0)),
+            "accuracy_delta_harmed_tuned_vs_refinement": _safe_float(
+                overall.get("anti_collapse_harmed_tuned", {}).get("mean_accuracy", 0.0)
+            )
+            - _safe_float(overall.get("anti_collapse_refinement", {}).get("mean_accuracy", 0.0)),
             "accuracy_delta_refinement_vs_early_preservation": _safe_float(
                 overall.get("anti_collapse_refinement", {}).get("mean_accuracy", 0.0)
             )
@@ -292,6 +385,9 @@ def main() -> None:
     (out_dir / "per_example_rows.jsonl").write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in all_rows) + "\n", encoding="utf-8")
     (out_dir / "method_metrics.jsonl").write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in metric_rows) + "\n", encoding="utf-8")
     (out_dir / "comparison_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+    (out_dir / "pairwise_vs_baseline_harmed_cases.json").write_text(
+        json.dumps(pairwise_vs_baseline, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
 
     print(json.dumps(summary, indent=2, ensure_ascii=False))
 

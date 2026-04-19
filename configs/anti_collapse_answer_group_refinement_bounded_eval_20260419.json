@@ -11,7 +11,8 @@
   "methods": {
     "baseline_broad": "broad_diversity_aggregation_strong_v1",
     "early_preservation": "broad_diversity_aggregation_strong_v1_early_answer_group_preservation_v1",
-    "anti_collapse_refinement": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_v1"
+    "anti_collapse_refinement": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_v1",
+    "anti_collapse_harmed_tuned": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_harmed_tuned_v1"
   },
   "output_dir": "outputs/anti_collapse_answer_group_refinement_bounded_eval_20260419"
 }
