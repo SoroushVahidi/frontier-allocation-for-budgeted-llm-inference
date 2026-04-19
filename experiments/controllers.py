@@ -774,6 +774,15 @@ class GlobalDiversityAggregationController(BaseController):
         coverage_floor_max_actions: int = 7,
         coverage_floor_plausibility_threshold: float = 0.44,
         coverage_floor_max_forced_steps: int = 2,
+        enable_incumbent_challenger_commit: bool = False,
+        incumbent_challenger_raw_support_only: bool = False,
+        incumbent_challenger_margin_threshold: float = 0.10,
+        incumbent_challenger_stability_min_steps: int = 2,
+        incumbent_challenger_near_tie_gap: float = 0.04,
+        incumbent_challenger_plausible_gap: float = 0.05,
+        incumbent_score_support_weight: float = 0.50,
+        incumbent_score_quality_weight: float = 0.35,
+        incumbent_score_readiness_weight: float = 0.15,
         diversity_needed_gate_mode: str = "off",
         diversity_needed_gate_positive_threshold: float = 0.12,
         diversity_needed_gate_negative_threshold: float = -0.12,
@@ -810,6 +819,15 @@ class GlobalDiversityAggregationController(BaseController):
         self.coverage_floor_max_actions = max(self.coverage_floor_min_actions, int(coverage_floor_max_actions))
         self.coverage_floor_plausibility_threshold = float(coverage_floor_plausibility_threshold)
         self.coverage_floor_max_forced_steps = max(0, int(coverage_floor_max_forced_steps))
+        self.enable_incumbent_challenger_commit = bool(enable_incumbent_challenger_commit)
+        self.incumbent_challenger_raw_support_only = bool(incumbent_challenger_raw_support_only)
+        self.incumbent_challenger_margin_threshold = float(incumbent_challenger_margin_threshold)
+        self.incumbent_challenger_stability_min_steps = max(1, int(incumbent_challenger_stability_min_steps))
+        self.incumbent_challenger_near_tie_gap = float(incumbent_challenger_near_tie_gap)
+        self.incumbent_challenger_plausible_gap = float(incumbent_challenger_plausible_gap)
+        self.incumbent_score_support_weight = float(incumbent_score_support_weight)
+        self.incumbent_score_quality_weight = float(incumbent_score_quality_weight)
+        self.incumbent_score_readiness_weight = float(incumbent_score_readiness_weight)
         self.diversity_needed_gate_mode = str(diversity_needed_gate_mode)
         self.diversity_needed_gate_positive_threshold = float(diversity_needed_gate_positive_threshold)
         self.diversity_needed_gate_negative_threshold = float(diversity_needed_gate_negative_threshold)
@@ -1205,6 +1223,116 @@ class GlobalDiversityAggregationController(BaseController):
             "duplicate_discount_applied_rate": float(summary["duplicate_discount_applied_rate"]),
         }
 
+    def _incumbent_challenger_commit_state(
+        self,
+        *,
+        branches: list[BranchState],
+        incumbent_history: list[str],
+    ) -> dict[str, Any]:
+        summary = self._group_support_summary(branches)
+        groups = summary.get("groups", {})
+        if not groups:
+            return {
+                "state_available": False,
+                "commit_ready": False,
+                "decision": "fallback_no_groups",
+                "formula": "score = w_support*support + w_quality*quality + w_readiness*readiness - redundancy_penalty",
+            }
+        ranked = sorted(groups.items(), key=lambda kv: float(kv[1].get("discounted_support", 0.0)), reverse=True)
+        incumbent_key, incumbent_meta = ranked[0]
+        challenger_key, challenger_meta = ranked[1] if len(ranked) > 1 else ranked[0]
+
+        total_eff = sum(float(v.get("discounted_support", 0.0)) for v in groups.values())
+        total_raw = sum(float(v.get("member_count", 0)) for v in groups.values())
+
+        def _group_state(k: str, meta: dict[str, Any]) -> dict[str, float | str]:
+            raw = float(meta.get("member_count", 0))
+            eff = float(meta.get("discounted_support", 0.0))
+            quality = float(meta.get("support_quality_mean", 0.0))
+            readiness = float(meta.get("readiness_mean", 0.0))
+            support_frac_eff = eff / max(1e-8, total_eff)
+            support_frac_raw = raw / max(1e-8, total_raw)
+            support_component = support_frac_raw if self.incumbent_challenger_raw_support_only else support_frac_eff
+            redundancy_proxy = 0.0
+            if raw > 0:
+                redundancy_proxy = max(0.0, 1.0 - min(1.0, eff / raw))
+            score = (
+                self.incumbent_score_support_weight * support_component
+                + self.incumbent_score_quality_weight * quality
+                + self.incumbent_score_readiness_weight * readiness
+            )
+            if not self.incumbent_challenger_raw_support_only:
+                score -= 0.08 * redundancy_proxy
+            return {
+                "group_key": k,
+                "raw_support": raw,
+                "effective_support": eff,
+                "support_fraction_raw": float(support_frac_raw),
+                "support_fraction_effective": float(support_frac_eff),
+                "support_component_used": float(support_component),
+                "best_branch_score": float(
+                    max((self.scorer.score_branch(b) for b in branches if self._normalize_answer(b.predicted_answer) == k), default=0.0)
+                ),
+                "mean_branch_score": float(quality),
+                "readiness_mean": float(readiness),
+                "redundancy_proxy": float(redundancy_proxy),
+                "score": float(score),
+            }
+
+        incumbent = _group_state(incumbent_key, incumbent_meta)
+        challenger = _group_state(challenger_key, challenger_meta)
+        score_margin = float(incumbent["score"] - challenger["score"])
+        support_gap = float(incumbent["support_fraction_effective"] - challenger["support_fraction_effective"])
+        near_tie = bool(abs(score_margin) <= self.incumbent_challenger_near_tie_gap)
+        challenger_plausible = bool(score_margin <= self.incumbent_challenger_plausible_gap)
+        incumbent_changed_recently = bool(len(incumbent_history) >= 2 and incumbent_history[-1] != incumbent_history[-2])
+        stable_steps = 1
+        for prev in reversed(incumbent_history):
+            if prev == incumbent_key:
+                stable_steps += 1
+            else:
+                break
+        stability_ok = bool((stable_steps - 1) >= self.incumbent_challenger_stability_min_steps and not incumbent_changed_recently)
+
+        commit_ready = bool(
+            score_margin >= self.incumbent_challenger_margin_threshold
+            and stability_ok
+            and not near_tie
+            and not challenger_plausible
+        )
+        decision = "commit" if commit_ready else ("continue" if not near_tie else "fallback_near_tie")
+        return {
+            "state_available": True,
+            "decision": decision,
+            "commit_ready": bool(commit_ready),
+            "incumbent": incumbent,
+            "challenger": challenger,
+            "score_margin": float(score_margin),
+            "effective_support_gap": float(support_gap),
+            "near_tie": bool(near_tie),
+            "challenger_plausible": bool(challenger_plausible),
+            "incumbent_stable_steps": int(max(0, stable_steps - 1)),
+            "incumbent_changed_recently": bool(incumbent_changed_recently),
+            "stability_ok": bool(stability_ok),
+            "challenger_fragmented_flag": bool(len(ranked) >= 3 and float(ranked[1][1].get("discounted_support", 0.0)) < 0.35 * float(ranked[0][1].get("discounted_support", 0.0))),
+            "ambiguity_flag": bool(near_tie or summary.get("support_margin", 0.0) <= self.incumbent_challenger_near_tie_gap),
+            "uses_quality_proxy": True,
+            "uses_readiness_proxy": True,
+            "formula": (
+                "group_score = "
+                f"{self.incumbent_score_support_weight:.2f}*support_component + "
+                f"{self.incumbent_score_quality_weight:.2f}*support_quality_mean + "
+                f"{self.incumbent_score_readiness_weight:.2f}*readiness_mean"
+                + (" - 0.08*redundancy_proxy" if not self.incumbent_challenger_raw_support_only else "")
+            ),
+            "thresholds": {
+                "margin_threshold": float(self.incumbent_challenger_margin_threshold),
+                "stability_min_steps": int(self.incumbent_challenger_stability_min_steps),
+                "near_tie_gap": float(self.incumbent_challenger_near_tie_gap),
+                "challenger_plausible_gap": float(self.incumbent_challenger_plausible_gap),
+            },
+        }
+
     def _pick_coverage_floor_branch(
         self,
         *,
@@ -1358,7 +1486,10 @@ class GlobalDiversityAggregationController(BaseController):
         forced_explore_steps = 0
         coverage_floor_forced_steps = 0
         commit_checks: list[dict[str, Any]] = []
+        incumbent_challenger_checks: list[dict[str, Any]] = []
+        incumbent_history: list[str] = []
         commit_triggered = False
+        incumbent_commit_triggered = False
 
         while actions < self.max_actions and branches:
             active = [b for b in branches if not b.is_pruned]
@@ -1515,6 +1646,18 @@ class GlobalDiversityAggregationController(BaseController):
                 if should_commit:
                     commit_triggered = True
                     break
+            if self.enable_incumbent_challenger_commit:
+                ic_state = self._incumbent_challenger_commit_state(branches=branches, incumbent_history=incumbent_history)
+                incumbent_key = str((ic_state.get("incumbent") or {}).get("group_key", ""))
+                if incumbent_key:
+                    incumbent_history.append(incumbent_key)
+                ic_state["actions_used"] = int(actions)
+                ic_state["fallback_to_base_logic"] = bool(ic_state.get("decision", "").startswith("fallback"))
+                incumbent_challenger_checks.append(ic_state)
+                if bool(ic_state.get("commit_ready", False)):
+                    incumbent_commit_triggered = True
+                    commit_triggered = True
+                    break
             if all(b.is_done for b in branches):
                 break
 
@@ -1560,6 +1703,14 @@ class GlobalDiversityAggregationController(BaseController):
                 "answer_group_commit_mode": bool(self.use_answer_group_commit_margin),
                 "commit_checks": commit_checks,
                 "commit_checks_count": int(len(commit_checks)),
+                "incumbent_challenger_commit_mode": bool(self.enable_incumbent_challenger_commit),
+                "incumbent_challenger_raw_support_only": bool(self.incumbent_challenger_raw_support_only),
+                "incumbent_challenger_checks": incumbent_challenger_checks,
+                "incumbent_challenger_checks_count": int(len(incumbent_challenger_checks)),
+                "incumbent_challenger_commit_triggered": bool(incumbent_commit_triggered),
+                "incumbent_challenger_intervention_count": int(
+                    sum(1 for c in incumbent_challenger_checks if str(c.get("decision")) in {"commit", "continue"})
+                ),
                 "commit_triggered": bool(commit_triggered),
                 "diversity_needed_gate_mode": self.diversity_needed_gate_mode,
                 "diversity_needed_gate_positive_threshold": float(self.diversity_needed_gate_positive_threshold),
