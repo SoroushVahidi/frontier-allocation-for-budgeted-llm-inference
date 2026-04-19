@@ -1,0 +1,258 @@
+{
+  "config": {
+    "seed": 23,
+    "run_id": "diversity_needed_feasibility_20260419",
+    "output_dir": "outputs/branch_label_bruteforce_learning",
+    "max_frontier_states": 84,
+    "frontier_budget": 7,
+    "rollout_samples_per_candidate": 8,
+    "max_allocation_samples": 18,
+    "target_estimation_repeats": 2,
+    "min_remaining_budget": 2,
+    "max_remaining_budget": 5,
+    "episodes_per_example": 2,
+    "diversity_plausibility_margin": 0.12,
+    "diversity_threshold": 0.0,
+    "gate_threshold": 0.0
+  },
+  "label_config": {
+    "dataset_name": "openai/gsm8k",
+    "dataset_split": null,
+    "dataset_config": null,
+    "seed": 23,
+    "max_frontier_states": 84,
+    "episodes_per_example": 2,
+    "init_branches": 4,
+    "max_branches_per_state": 5,
+    "frontier_budget": 7,
+    "min_remaining_budget": 2,
+    "max_remaining_budget": 5,
+    "state_capture_prob": 0.7,
+    "finish_prob_base": 0.16,
+    "answer_noise": 0.12,
+    "max_depth": 7,
+    "exact_mode": true,
+    "max_exact_branches": 4,
+    "max_exact_remaining_budget": 5,
+    "rollout_samples_per_candidate": 8,
+    "max_allocation_samples": 18,
+    "include_verify_actions": true,
+    "verify_prob": 0.35,
+    "allow_mock_data": true,
+    "ambiguity_near_tie_threshold": 0.02,
+    "ambiguity_medium_threshold": 0.08,
+    "ambiguity_high_threshold": 0.16,
+    "target_estimation_repeats": 2,
+    "paired_rollout_comparison": true,
+    "reliability_min_samples": 4,
+    "reliability_floor": 0.05,
+    "reliability_scale": 2.0,
+    "target_mode": "legacy_plus_value_awareness_v1"
+  },
+  "counts": {
+    "states": 84,
+    "train": 62,
+    "val": 10,
+    "test": 12
+  },
+  "evaluation": {
+    "regression": {
+      "ridge": {
+        "mae": 0.0922971440775956,
+        "rmse": 0.11550794930267913,
+        "r2": 0.012603289053391808
+      },
+      "gradient_boosted_tree": {
+        "mae": 0.11820095702152518,
+        "rmse": 0.1341776985977898,
+        "r2": -0.3323815381177715
+      }
+    },
+    "classification": {
+      "logistic": {
+        "accuracy": 0.5833333333333334,
+        "f1": 0.5454545454545454,
+        "auc": 0.8333333333333334,
+        "brier": 0.15757791784314
+      },
+      "gradient_boosted_tree": {
+        "accuracy": 0.4166666666666667,
+        "f1": 0.46153846153846156,
+        "auc": 0.4444444444444445,
+        "brier": 0.37978167740700125
+      },
+      "calibration_test_gbt": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.2,
+          "count": 2,
+          "mean_pred": 0.15109899723862003,
+          "empirical_positive_rate": 0.0
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.4,
+          "count": 2,
+          "mean_pred": 0.3053049260853852,
+          "empirical_positive_rate": 1.0
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.6000000000000001,
+          "count": 1,
+          "mean_pred": 0.4431863245490288,
+          "empirical_positive_rate": 1.0
+        },
+        {
+          "bin_lo": 0.6000000000000001,
+          "bin_hi": 0.8,
+          "count": 2,
+          "mean_pred": 0.6944185095573208,
+          "empirical_positive_rate": 0.5
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 1.0,
+          "count": 5,
+          "mean_pred": 0.9059093100286228,
+          "empirical_positive_rate": 0.4
+        }
+      ]
+    }
+  },
+  "breakdown": {
+    "by_ambiguity": {
+      "near_tie": {},
+      "not_near_tie": {
+        "accuracy": 0.4166666666666667,
+        "f1": 0.46153846153846156,
+        "auc": 0.4444444444444445,
+        "brier": 0.37978167740700125
+      }
+    },
+    "by_provenance": {
+      "exact": {
+        "accuracy": 0.4166666666666667,
+        "f1": 0.46153846153846156,
+        "auc": 0.4444444444444445,
+        "brier": 0.37978167740700125
+      },
+      "approx": {}
+    },
+    "by_failure_group": {
+      "diversity_saturated": {
+        "accuracy": 0.3333333333333333,
+        "f1": 0.0,
+        "brier": 0.5191922613386972
+      },
+      "insufficient_diversity_realized": {
+        "accuracy": 0.5,
+        "f1": 0.6666666666666666,
+        "brier": 0.24037109347530547
+      }
+    }
+  },
+  "feature_importance_gbt": [
+    {
+      "feature": "top_minus_second_support_margin",
+      "importance": 0.21692043689784632
+    },
+    {
+      "feature": "commit_readiness_q_commit",
+      "importance": 0.1813422962556186
+    },
+    {
+      "feature": "semantic_overlap_mean",
+      "importance": 0.14377400041713057
+    },
+    {
+      "feature": "one_step_continuation_best",
+      "importance": 0.11389236387761194
+    },
+    {
+      "feature": "branch_score_std",
+      "importance": 0.06311033966840719
+    },
+    {
+      "feature": "target_stderr_mean",
+      "importance": 0.05132461956491181
+    },
+    {
+      "feature": "second_branch_score",
+      "importance": 0.05070939175007569
+    },
+    {
+      "feature": "one_step_continuation_minus_commit",
+      "importance": 0.040139476869737754
+    },
+    {
+      "feature": "novelty_gain_recent",
+      "importance": 0.024863891578730955
+    },
+    {
+      "feature": "top_branch_score",
+      "importance": 0.02397396277137347
+    },
+    {
+      "feature": "remaining_budget",
+      "importance": 0.016459079638039612
+    },
+    {
+      "feature": "semantic_overlap_max",
+      "importance": 0.016213898167975423
+    },
+    {
+      "feature": "top_second_score_margin",
+      "importance": 0.016138643073453883
+    },
+    {
+      "feature": "n_answer_groups",
+      "importance": 0.008102844633959244
+    },
+    {
+      "feature": "dominant_group_branch_fraction",
+      "importance": 0.007666523573880255
+    },
+    {
+      "feature": "answer_group_entropy",
+      "importance": 0.006410767846948462
+    },
+    {
+      "feature": "duplicate_rate",
+      "importance": 0.0062208621905949085
+    },
+    {
+      "feature": "new_answer_group_recent_flag",
+      "importance": 0.005431127460931096
+    },
+    {
+      "feature": "target_reliability_mean",
+      "importance": 0.0029911352788488275
+    },
+    {
+      "feature": "top_group_support_fraction",
+      "importance": 0.00213988095990132
+    }
+  ],
+  "ablation": {
+    "ambiguity_only_logistic": {
+      "accuracy": 0.6666666666666666,
+      "f1": 0.6,
+      "auc": 0.7083333333333334,
+      "brier": 0.24520134293240306
+    },
+    "full_feature_gbt": {
+      "accuracy": 0.4166666666666667,
+      "f1": 0.46153846153846156,
+      "auc": 0.4444444444444445,
+      "brier": 0.37978167740700125
+    }
+  },
+  "policy_gate_check": {
+    "avg_value_predictor_gate": 0.8120177162431162,
+    "avg_value_always_diverse": 0.8120177162431162,
+    "avg_value_always_nondiverse": 0.7247941015058051,
+    "avg_value_oracle": 0.8216167304503609,
+    "n_test_states": 12
+  }
+}

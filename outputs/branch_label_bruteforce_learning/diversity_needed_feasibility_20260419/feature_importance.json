@@ -1,0 +1,106 @@
+[
+  {
+    "feature": "top_minus_second_support_margin",
+    "importance": 0.21692043689784632
+  },
+  {
+    "feature": "commit_readiness_q_commit",
+    "importance": 0.1813422962556186
+  },
+  {
+    "feature": "semantic_overlap_mean",
+    "importance": 0.14377400041713057
+  },
+  {
+    "feature": "one_step_continuation_best",
+    "importance": 0.11389236387761194
+  },
+  {
+    "feature": "branch_score_std",
+    "importance": 0.06311033966840719
+  },
+  {
+    "feature": "target_stderr_mean",
+    "importance": 0.05132461956491181
+  },
+  {
+    "feature": "second_branch_score",
+    "importance": 0.05070939175007569
+  },
+  {
+    "feature": "one_step_continuation_minus_commit",
+    "importance": 0.040139476869737754
+  },
+  {
+    "feature": "novelty_gain_recent",
+    "importance": 0.024863891578730955
+  },
+  {
+    "feature": "top_branch_score",
+    "importance": 0.02397396277137347
+  },
+  {
+    "feature": "remaining_budget",
+    "importance": 0.016459079638039612
+  },
+  {
+    "feature": "semantic_overlap_max",
+    "importance": 0.016213898167975423
+  },
+  {
+    "feature": "top_second_score_margin",
+    "importance": 0.016138643073453883
+  },
+  {
+    "feature": "n_answer_groups",
+    "importance": 0.008102844633959244
+  },
+  {
+    "feature": "dominant_group_branch_fraction",
+    "importance": 0.007666523573880255
+  },
+  {
+    "feature": "answer_group_entropy",
+    "importance": 0.006410767846948462
+  },
+  {
+    "feature": "duplicate_rate",
+    "importance": 0.0062208621905949085
+  },
+  {
+    "feature": "new_answer_group_recent_flag",
+    "importance": 0.005431127460931096
+  },
+  {
+    "feature": "target_reliability_mean",
+    "importance": 0.0029911352788488275
+  },
+  {
+    "feature": "top_group_support_fraction",
+    "importance": 0.00213988095990132
+  },
+  {
+    "feature": "undercovered_group_count",
+    "importance": 0.001850387390007457
+  },
+  {
+    "feature": "n_active_branches",
+    "importance": 0.00032407013401526317
+  },
+  {
+    "feature": "ambiguity_near_tie_flag",
+    "importance": 0.0
+  },
+  {
+    "feature": "ambiguity_medium_flag",
+    "importance": 0.0
+  },
+  {
+    "feature": "target_provenance_exact_flag",
+    "importance": 0.0
+  },
+  {
+    "feature": "target_provenance_approx_flag",
+    "importance": 0.0
+  }
+]
