@@ -8,10 +8,11 @@ This index defines the **canonical**, **exploratory**, and **historical** docume
 Read:
 1. [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 2. [`CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-3. [`PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
-4. [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
-5. [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
-6. [`REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md)
+3. [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+4. [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+5. [`TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md)
+6. [`TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md)
+7. [`REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md)
 
 ### If you only want the shortest dashboard
 Read:
@@ -21,6 +22,13 @@ Read:
 - [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
 - [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
 - [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+
+### If you want the current failure-analysis stack
+Read:
+- [`TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md)
+- [`TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md)
+- [`WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`](WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md)
+- [`FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`](FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md)
 
 ### If you only want runnable code entry points
 Read:
@@ -53,15 +61,15 @@ Those materials are still useful, but they are easy to overread without the cano
 Read these first for the current project identity:
 1. [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 2. [`CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-3. [`PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
-4. [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
-5. [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
-6. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
-7. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
-8. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-9. [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
-10. [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
-11. [`PAPER_POSITIONING_NOTE.md`](PAPER_POSITIONING_NOTE.md)
+3. [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
+4. [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+5. [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
+6. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+7. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+8. [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
+9. [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
+10. [`TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md)
+11. [`TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md)
 12. [`REPO_MAP.md`](REPO_MAP.md)
 13. [`REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md)
 
@@ -69,7 +77,6 @@ Read these first for the current project identity:
 
 ### Project state and writing discipline
 - [`CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-- [`PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`](PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md)
 - [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 - [`CURRENT_PROJECT_STATUS.md`](CURRENT_PROJECT_STATUS.md)
@@ -81,22 +88,18 @@ Read these first for the current project identity:
 ### Method status and next steps
 - [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
 - [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
-- [`LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`](LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md)
 - [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
 - [`FULL_METHOD_COMPARISON_STATUS_2026_04_18.md`](FULL_METHOD_COMPARISON_STATUS_2026_04_18.md)
 - [`ORACLE_MISMATCH_STUDY_2026_04_18.md`](ORACLE_MISMATCH_STUDY_2026_04_18.md)
 - [`FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`](FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md)
-- [`WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`](WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md)
+- [`TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md)
+- [`TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md)
 
 ### Evaluation, outputs, and assets
 - [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md)
 - [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
 - [`ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md`](ASSET_AUDIT_AND_WORKING_SET_2026_04_17.md)
 - [`DATASET_ADDITION_PRIORITIES_2026_04_19.md`](DATASET_ADDITION_PRIORITIES_2026_04_19.md)
-- `../outputs/repository_audit/repository_audit_summary_2026_04_18.json`
-- `../outputs/repository_polish/repository_polish_summary_2026_04_18.json`
-- `../outputs/repository_polish/idea_and_execution_memory_2026_04_18.json`
-- `../outputs/repository_polish/current_repo_state_summary_2026_04_18.json`
 
 ### Broader canonical references and support notes
 - [`cross_controller_frontier.md`](cross_controller_frontier.md)
@@ -104,8 +107,6 @@ Read these first for the current project identity:
 - [`main_baselines.md`](main_baselines.md)
 - [`datasets_access.md`](datasets_access.md)
 - [`CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`](CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md)
-- [`REFERENCES_AUDIT_AND_CURATION_2026_04_18.md`](REFERENCES_AUDIT_AND_CURATION_2026_04_18.md)
-- [`REFERENCES_ORGANIZATION_2026_04_18.md`](REFERENCES_ORGANIZATION_2026_04_18.md)
 
 ## Supporting grouped navigation pages
 
@@ -117,23 +118,23 @@ Read these first for the current project identity:
 ## How to interpret the docs
 
 - `CANONICAL_START_HERE.md` is the shortest front door.
-- `CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md` is the most compact whole-repo synthesis.
+- `CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md` is the compact whole-repo synthesis.
 - `CURRENT_EXPERIMENT_RULE_2026_04_18.md` freezes what kinds of next experiments are currently admissible.
 - `REPOSITORY_MASTER_DASHBOARD_2026_04_18.md` is the shortest dashboard of what worked, what failed, and what next.
-- `CURRENT_PROJECT_STATUS.md`, `CURRENT_BOTTLENECKS.md`, and `CURRENT_SAFE_CLAIMS.md` are the minimum paper-writing constraint set.
+- `TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md` and `TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md` are the best current entry points for concrete failure understanding.
 - `REPO_MAP.md` tells collaborators where to start in code and docs.
-- `REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md` explains the current front-door organization and maintenance rule.
+- `REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md` explains the front-door organization and maintenance rule.
 
 ## Exploratory / active-branch notes
 
 These notes are useful, but they are **not** the default interpretation of the project.
 
 Examples include:
-- oracle generator interface / productionization / pilot protocols,
-- oracle selective distillation and oracle-distilled student notes,
-- branch-scorer line status and method-specific result notes,
-- tie-aware, reliability-aware, warm-start, and ambiguity-targeted experimental notes,
-- stricter hard-case / near-tie controller refinements.
+- one-off target-family notes,
+- narrower controller tweaks,
+- bounded ablation reports,
+- idea-specific status notes,
+- and reliability/ambiguity variants not currently treated as default project interpretation.
 
 Use these when you need traceability for a specific experiment line, not as the first summary of the repo.
 
