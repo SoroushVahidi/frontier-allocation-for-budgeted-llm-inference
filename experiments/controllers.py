@@ -789,6 +789,12 @@ class GlobalDiversityAggregationController(BaseController):
         challenger_upside_expand_weight: float = 0.35,
         metalevel_delta_margin: float = 0.02,
         near_tie_commit_margin_extra: float = 0.02,
+        stop_continue_value_margin: float = 0.00,
+        remaining_budget_commit_bias: float = 0.00,
+        late_stage_commit_bonus: float = 0.00,
+        near_tie_commit_band: float = 0.00,
+        continue_requires_min_best_value: float = 0.00,
+        near_tie_weak_continue_value_cap: float = 0.00,
         force_extra_explore_on_near_tie: bool = True,
         near_tie_force_max_steps: int = 1,
         near_tie_force_upside_frac_threshold: float = 0.60,
@@ -848,6 +854,12 @@ class GlobalDiversityAggregationController(BaseController):
         self.challenger_upside_expand_weight = float(challenger_upside_expand_weight)
         self.metalevel_delta_margin = float(metalevel_delta_margin)
         self.near_tie_commit_margin_extra = float(near_tie_commit_margin_extra)
+        self.stop_continue_value_margin = float(stop_continue_value_margin)
+        self.remaining_budget_commit_bias = float(remaining_budget_commit_bias)
+        self.late_stage_commit_bonus = float(late_stage_commit_bonus)
+        self.near_tie_commit_band = float(near_tie_commit_band)
+        self.continue_requires_min_best_value = float(continue_requires_min_best_value)
+        self.near_tie_weak_continue_value_cap = float(near_tie_weak_continue_value_cap)
         self.force_extra_explore_on_near_tie = bool(force_extra_explore_on_near_tie)
         self.near_tie_force_max_steps = max(0, int(near_tie_force_max_steps))
         self.near_tie_force_upside_frac_threshold = max(0.0, min(1.0, float(near_tie_force_upside_frac_threshold)))
@@ -1324,6 +1336,7 @@ class GlobalDiversityAggregationController(BaseController):
         branches: list[BranchState],
         incumbent_history: list[str],
         question: str = "",
+        actions_used: int = 0,
         near_tie_forced_steps_used: int = 0,
         challenger_repeat_failures: dict[str, int] | None = None,
     ) -> dict[str, Any]:
@@ -1451,21 +1464,89 @@ class GlobalDiversityAggregationController(BaseController):
             default=0.0,
         )
 
+        remaining_budget = max(0, int(self.max_actions - actions_used))
+        remaining_ratio = float(remaining_budget / max(1, self.max_actions))
+        low_budget = bool(remaining_ratio <= 0.35)
+        budget_commit_bonus = self.remaining_budget_commit_bias * (1.0 - remaining_ratio)
+        budget_commit_bonus += self.late_stage_commit_bonus if low_budget else 0.0
         extra_near_tie_margin = self.near_tie_commit_margin_extra if near_tie else 0.0
         commit_advantage = float(incumbent["incumbent_safety"]) - best_challenger_upside
+        base_stop_threshold = float(self.incumbent_challenger_margin_threshold + extra_near_tie_margin)
+        adjusted_stop_threshold = float(max(0.0, base_stop_threshold - budget_commit_bonus))
+        continue_gate_value = float(best_expand_delta + self.metalevel_delta_margin + self.stop_continue_value_margin)
+        continue_has_min_value = bool(
+            self.continue_requires_min_best_value > 0.0 and best_expand_delta >= self.continue_requires_min_best_value
+        )
+        stop_vs_continue_gate = bool(
+            commit_advantage >= adjusted_stop_threshold
+            and commit_advantage >= continue_gate_value
+            and (not continue_has_min_value or commit_advantage >= (continue_gate_value + 0.01))
+        )
+        near_tie_hesitation_override = bool(
+            self.near_tie_weak_continue_value_cap > 0.0
+            and near_tie
+            and low_budget
+            and (not challenger_plausible)
+            and best_expand_delta <= self.near_tie_weak_continue_value_cap
+            and commit_advantage >= (adjusted_stop_threshold - self.near_tie_commit_band)
+        )
+        stop_vs_continue_gate_final = bool(stop_vs_continue_gate or near_tie_hesitation_override)
         commit_ready = bool(
-            commit_advantage >= (self.incumbent_challenger_margin_threshold + extra_near_tie_margin)
+            stop_vs_continue_gate_final
             and stability_ok
             and float(incumbent["incumbent_safety"]) >= self.incumbent_safety_commit_min
             and best_challenger_upside <= self.challenger_upside_commit_max
             and not challenger_plausible
-            and commit_advantage >= (best_expand_delta + self.metalevel_delta_margin)
         )
         force_near_tie_explore = bool(
             self.force_extra_explore_on_near_tie
             and near_tie
             and best_challenger_upside > (self.near_tie_force_upside_frac_threshold * self.challenger_upside_commit_max)
             and near_tie_forced_steps_used < self.near_tie_force_max_steps
+        )
+        continue_selected_challenger = bool(branch_delta_rows and str(branch_delta_rows[0].get("group_key") or "") != str(incumbent_key))
+        false_non_stop = bool(
+            (not commit_ready)
+            and (not force_near_tie_explore)
+            and commit_advantage >= adjusted_stop_threshold
+            and (best_expand_delta < max(self.continue_requires_min_best_value, 0.02))
+            and (not challenger_plausible)
+        )
+        near_tie_commit_blocked = bool(
+            (not commit_ready)
+            and near_tie
+            and commit_advantage >= (adjusted_stop_threshold - self.near_tie_commit_band)
+            and continue_has_min_value
+        )
+        commit_should_have_happened_before_selected_challenger = bool(
+            (not commit_ready)
+            and continue_selected_challenger
+            and commit_advantage >= adjusted_stop_threshold
+            and (best_expand_delta < max(self.continue_requires_min_best_value, 0.05))
+        )
+        commit_deferred_despite_low_best_continue_value = bool(
+            (not commit_ready)
+            and (best_expand_delta < self.continue_requires_min_best_value)
+        )
+        gate_blockers: list[str] = []
+        if not stop_vs_continue_gate_final:
+            gate_blockers.append("stop_vs_continue_gate_failed")
+        if not stability_ok:
+            gate_blockers.append("stability_not_ok")
+        if float(incumbent["incumbent_safety"]) < self.incumbent_safety_commit_min:
+            gate_blockers.append("incumbent_safety_below_min")
+        if best_challenger_upside > self.challenger_upside_commit_max:
+            gate_blockers.append("challenger_upside_above_max")
+        if challenger_plausible:
+            gate_blockers.append("challenger_plausible")
+        if force_near_tie_explore:
+            gate_blockers.append("near_tie_forced_explore")
+        near_tie_false_continue = bool(
+            (not commit_ready)
+            and near_tie
+            and low_budget
+            and (not challenger_plausible)
+            and best_expand_delta <= max(self.near_tie_weak_continue_value_cap, self.continue_requires_min_best_value, 0.03)
         )
         decision = "commit" if commit_ready else ("continue_force_near_tie_step" if force_near_tie_explore else "continue")
         risk_subtypes: list[str] = []
@@ -1498,6 +1579,24 @@ class GlobalDiversityAggregationController(BaseController):
             "near_tie_force_explore": bool(force_near_tie_explore),
             "near_tie_force_steps_used": int(near_tie_forced_steps_used),
             "near_tie_force_max_steps": int(self.near_tie_force_max_steps),
+            "remaining_budget": int(remaining_budget),
+            "remaining_budget_ratio": float(remaining_ratio),
+            "low_budget_stage": bool(low_budget),
+            "budget_commit_bonus": float(budget_commit_bonus),
+            "stop_threshold_base": float(base_stop_threshold),
+            "stop_threshold_adjusted": float(adjusted_stop_threshold),
+            "stop_continue_gate_value": float(continue_gate_value),
+            "stop_vs_continue_gate": bool(stop_vs_continue_gate),
+            "stop_vs_continue_gate_final": bool(stop_vs_continue_gate_final),
+            "near_tie_hesitation_override_applied": bool(near_tie_hesitation_override),
+            "continue_has_min_best_value": bool(continue_has_min_value),
+            "continue_selected_challenger": bool(continue_selected_challenger),
+            "false_non_stop": bool(false_non_stop),
+            "near_tie_commit_blocked": bool(near_tie_commit_blocked),
+            "commit_should_have_happened_before_selected_challenger": bool(commit_should_have_happened_before_selected_challenger),
+            "commit_deferred_despite_low_best_continue_value": bool(commit_deferred_despite_low_best_continue_value),
+            "near_tie_false_continue": bool(near_tie_false_continue),
+            "stop_gate_blockers": gate_blockers,
             "delta_commit_now": float(commit_advantage),
             "best_expand_delta": float(best_expand_delta),
             "best_challenger_overthrow_score": float(best_overthrow_score),
@@ -1532,6 +1631,12 @@ class GlobalDiversityAggregationController(BaseController):
                 "challenger_repeat_failure_penalty": float(self.challenger_repeat_failure_penalty),
                 "challenger_min_relative_upside": float(self.challenger_min_relative_upside),
                 "challenger_low_margin_penalty": float(self.challenger_low_margin_penalty),
+                "stop_continue_value_margin": float(self.stop_continue_value_margin),
+                "remaining_budget_commit_bias": float(self.remaining_budget_commit_bias),
+                "late_stage_commit_bonus": float(self.late_stage_commit_bonus),
+                "near_tie_commit_band": float(self.near_tie_commit_band),
+                "continue_requires_min_best_value": float(self.continue_requires_min_best_value),
+                "near_tie_weak_continue_value_cap": float(self.near_tie_weak_continue_value_cap),
             },
         }
 
@@ -1768,6 +1873,7 @@ class GlobalDiversityAggregationController(BaseController):
                     branches=branches,
                     incumbent_history=incumbent_history,
                     question=question,
+                    actions_used=actions,
                     near_tie_forced_steps_used=near_tie_forced_steps_used,
                     challenger_repeat_failures=challenger_repeat_failures,
                 )
@@ -1898,6 +2004,7 @@ class GlobalDiversityAggregationController(BaseController):
                     branches=branches,
                     incumbent_history=incumbent_history,
                     question=question,
+                    actions_used=actions,
                     near_tie_forced_steps_used=near_tie_forced_steps_used,
                     challenger_repeat_failures=challenger_repeat_failures,
                 )
@@ -2006,6 +2113,27 @@ class GlobalDiversityAggregationController(BaseController):
                         if str(c.get("decision")) in {"commit", "continue", "continue_force_near_tie_step"}
                     )
                 ),
+                "false_non_stop_count": int(sum(1 for c in incumbent_challenger_checks if bool(c.get("false_non_stop", False)))),
+                "late_commit_after_selector_count": int(
+                    sum(1 for c in incumbent_challenger_checks if bool(c.get("commit_should_have_happened_before_selected_challenger", False)))
+                ),
+                "commit_deferred_low_continue_value_count": int(
+                    sum(1 for c in incumbent_challenger_checks if bool(c.get("commit_deferred_despite_low_best_continue_value", False)))
+                ),
+                "near_tie_commit_blocked_count": int(sum(1 for c in incumbent_challenger_checks if bool(c.get("near_tie_commit_blocked", False)))),
+                "near_tie_false_continue_count": int(sum(1 for c in incumbent_challenger_checks if bool(c.get("near_tie_false_continue", False)))),
+                "near_tie_continuation_rate": float(
+                    sum(1 for c in incumbent_challenger_checks if bool(c.get("near_tie", False)) and str(c.get("decision")) != "commit")
+                    / max(1, sum(1 for c in incumbent_challenger_checks if bool(c.get("near_tie", False))))
+                ),
+                "late_stage_commit_rate": float(
+                    sum(1 for c in incumbent_challenger_checks if bool(c.get("low_budget_stage", False)) and bool(c.get("commit_ready", False)))
+                    / max(1, sum(1 for c in incumbent_challenger_checks if bool(c.get("low_budget_stage", False))))
+                ),
+                "mean_best_continue_value_when_continue": float(
+                    sum(float(c.get("best_expand_delta", 0.0)) for c in incumbent_challenger_checks if str(c.get("decision")) != "commit")
+                    / max(1, sum(1 for c in incumbent_challenger_checks if str(c.get("decision")) != "commit"))
+                ),
                 "wrong_commit_risk_subtypes_counts": dict(
                     {
                         k: int(
@@ -2036,6 +2164,8 @@ class GlobalDiversityAggregationController(BaseController):
                     challenger_outcome_counts.get("dominated_ex_post_by_other_challenger", 0)
                     + challenger_outcome_counts.get("failed_to_change_winner", 0)
                 ),
+                "commit_action_count": int(sum(1 for c in incumbent_challenger_checks if bool(c.get("commit_ready", False)))),
+                "expand_action_count": int(sum(1 for a in action_trace if str(a.get("action")) == "expand")),
                 "commit_triggered": bool(commit_triggered),
                 "diversity_needed_gate_mode": self.diversity_needed_gate_mode,
                 "diversity_needed_gate_positive_threshold": float(self.diversity_needed_gate_positive_threshold),

@@ -1,0 +1,77 @@
+{
+  "generated_on": "2026-04-19",
+  "line_name": "incumbent_challenger_metalevel_icc_refinement",
+  "classification": {
+    "status": "demoted_diagnostic_branch",
+    "promoted_main_method": false,
+    "closed_forever": false,
+    "demotion_wording": "Demoted to diagnostic-branch status; not the promoted main method; reopen only with a materially different hypothesis."
+  },
+  "bounded_sequence": [
+    {
+      "pass_id": "selector_refinement",
+      "source_note": "docs/INCUMBENT_CHALLENGER_SELECTOR_REFINEMENT_STATUS_2026_04_19.md",
+      "baseline": {
+        "accuracy": 0.75,
+        "wrong_commit_timing": 0
+      },
+      "best_variant": {
+        "name": "metalevel_v2_refined_overthrow_v2",
+        "accuracy": 0.625,
+        "wrong_commit_timing": 2,
+        "wrong_challenger_chosen_count": 2
+      },
+      "wrong_commit_timing_improved_vs_baseline": false,
+      "wrong_challenger_improved_vs_current_best_v2": true,
+      "notes": "Material selector improvement (7->2 wrong challenger) without baseline competitiveness."
+    },
+    {
+      "pass_id": "commit_interaction_refinement",
+      "source_note": "docs/INCUMBENT_CHALLENGER_COMMIT_INTERACTION_REFINEMENT_STATUS_2026_04_19.md",
+      "best_variant": {
+        "name": "metalevel_v2_selector_refined_v2_commit_tuned_v2",
+        "accuracy": 0.625,
+        "wrong_commit_timing": 2,
+        "wrong_challenger_chosen_count": 2,
+        "near_tie_continuation_rate": 1.0
+      },
+      "wrong_commit_timing_improved_vs_prior_best": false,
+      "wrong_challenger_improved_vs_prior_best": false,
+      "notes": "Commit-side diagnostics improved observability; bottleneck persisted."
+    },
+    {
+      "pass_id": "near_tie_single_point_final",
+      "source_note": "docs/INCUMBENT_CHALLENGER_NEAR_TIE_SINGLE_POINT_FINAL_STATUS_2026_04_19.md",
+      "single_point_adjustment": "near_tie_weak_continue_value_cap",
+      "baseline": {
+        "accuracy": 0.75,
+        "wrong_commit_timing": 0
+      },
+      "current_best_local_family": {
+        "accuracy": 0.625,
+        "wrong_commit_timing": 2,
+        "wrong_challenger_chosen_count": 2
+      },
+      "adjusted_variant": {
+        "accuracy": 0.75,
+        "wrong_commit_timing": 2,
+        "wrong_challenger_chosen_count": 1,
+        "near_tie_continuation_rate": 1.0,
+        "near_tie_false_continue_count": 0
+      },
+      "wrong_commit_timing_improved_to_target_leq_1": false,
+      "wrong_challenger_improved": true,
+      "notes": "Primary success criterion failed; commit timing remained unresolved."
+    }
+  ],
+  "final_outcome": {
+    "keep_or_demote": "demote",
+    "rationale": "Selector-side gains did not translate into required wrong_commit_timing reduction after bounded commit-side and near-tie passes.",
+    "reopen_conditions": [
+      "Materially different mechanism (not threshold-only retuning)",
+      "Falsifiable prediction targeting wrong_commit_timing",
+      "Bounded matched evidence reducing wrong_commit_timing to <=1 on the same pilot slice",
+      "No accuracy regression below current best local ICC value"
+    ]
+  }
+}
