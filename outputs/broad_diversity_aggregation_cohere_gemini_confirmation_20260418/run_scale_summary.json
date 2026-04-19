@@ -1,0 +1,31 @@
+{
+  "providers_requested": [
+    "cohere",
+    "gemini"
+  ],
+  "providers_executed": [
+    "cohere"
+  ],
+  "models": {
+    "cohere": "command-r-plus-08-2024",
+    "gemini": "gemini-2.0-flash"
+  },
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "olympiadbench"
+  ],
+  "subset_size_per_dataset": 2,
+  "seeds": [
+    11
+  ],
+  "budgets": [
+    4
+  ],
+  "targeted_run_cells": 8,
+  "successful_run_cells": 4,
+  "total_per_seed_method_rows": 20,
+  "total_per_example_rows": 40,
+  "aligned_example_rows": 8
+}

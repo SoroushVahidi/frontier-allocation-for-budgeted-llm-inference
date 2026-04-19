@@ -1,0 +1,73 @@
+{
+  "method_level": {
+    "broad_diversity_aggregation_v1": {
+      "n_examples": 8,
+      "diversity_materialized_rate": 0.0,
+      "mean_unique_answer_groups_seen": 1.0,
+      "mean_answer_support_entropy": 0.0,
+      "aggregation_used_rate": 1.0,
+      "mean_group_support_fraction": 1.0,
+      "high_support_concentration_rate": 1.0,
+      "mean_forced_explore_rate": 0.78125,
+      "forced_explore_active_rate": 1.0,
+      "mean_duplicate_penalty_applied_rate": 0.46875,
+      "duplicate_suppression_active_rate": 1.0,
+      "mean_diversity_bonus_on_expand": 0.21624375,
+      "low_diversity_realization_rate": 1.0
+    },
+    "broad_diversity_aggregation_strong_v1": {
+      "n_examples": 8,
+      "diversity_materialized_rate": 0.25,
+      "mean_unique_answer_groups_seen": 1.25,
+      "mean_answer_support_entropy": 0.1591285420737032,
+      "aggregation_used_rate": 1.0,
+      "mean_group_support_fraction": 0.875,
+      "high_support_concentration_rate": 0.75,
+      "mean_forced_explore_rate": 1.0,
+      "forced_explore_active_rate": 1.0,
+      "mean_duplicate_penalty_applied_rate": 0.53125,
+      "duplicate_suppression_active_rate": 1.0,
+      "mean_diversity_bonus_on_expand": 0.37749687499999995,
+      "low_diversity_realization_rate": 0.75
+    }
+  },
+  "provider_level_for_selected_main_variant": {
+    "main_variant": "broad_diversity_aggregation_v1",
+    "providers": {
+      "cohere": {
+        "n_examples": 8,
+        "diversity_materialized_rate": 0.0,
+        "mean_unique_answer_groups_seen": 1.0,
+        "mean_answer_support_entropy": 0.0,
+        "aggregation_used_rate": 1.0,
+        "mean_group_support_fraction": 1.0,
+        "high_support_concentration_rate": 1.0,
+        "mean_forced_explore_rate": 0.78125,
+        "forced_explore_active_rate": 1.0,
+        "mean_duplicate_penalty_applied_rate": 0.46875,
+        "duplicate_suppression_active_rate": 1.0,
+        "mean_diversity_bonus_on_expand": 0.21624375,
+        "low_diversity_realization_rate": 1.0
+      },
+      "gemini": {
+        "n_examples": 0,
+        "diversity_materialized_rate": 0.0,
+        "mean_unique_answer_groups_seen": 0.0,
+        "mean_answer_support_entropy": 0.0,
+        "aggregation_used_rate": 0.0,
+        "mean_group_support_fraction": 0.0,
+        "high_support_concentration_rate": 0.0,
+        "mean_forced_explore_rate": 0.0,
+        "forced_explore_active_rate": 0.0,
+        "mean_duplicate_penalty_applied_rate": 0.0,
+        "duplicate_suppression_active_rate": 0.0,
+        "mean_diversity_bonus_on_expand": 0.0,
+        "low_diversity_realization_rate": 0.0
+      }
+    }
+  },
+  "simulator_comparison_note": {
+    "status": "qualitative_only",
+    "statement": "Real-model diversity behavior should be interpreted against prior simulator confirmation as directional due bounded real scale."
+  }
+}

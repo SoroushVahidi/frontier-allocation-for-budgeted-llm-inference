@@ -1,0 +1,22 @@
+{
+  "run_name": "broad_diversity_aggregation_cohere_gemini_confirmation_20260418",
+  "timestamp_utc": "2026-04-19T01:04:08.863326+00:00",
+  "output_dir": "outputs/broad_diversity_aggregation_cohere_gemini_confirmation_20260418",
+  "files": [
+    "manifest.json",
+    "methods_compared.json",
+    "providers_and_models.json",
+    "datasets_compared.json",
+    "run_scale_summary.json",
+    "aggregate_comparison_summary.json",
+    "per_dataset_tables.json",
+    "per_provider_tables.json",
+    "variant_selection_summary.json",
+    "diversity_mechanism_audit.json",
+    "residual_loss_taxonomy.json",
+    "residual_loss_cases.json",
+    "commands_assumptions_caveats.md",
+    "raw_per_seed_method_rows.json",
+    "raw_per_example_rows.json"
+  ]
+}

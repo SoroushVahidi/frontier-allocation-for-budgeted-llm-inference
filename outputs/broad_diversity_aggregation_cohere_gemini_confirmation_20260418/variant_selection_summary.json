@@ -1,0 +1,23 @@
+{
+  "selected_main_candidate": "broad_diversity_aggregation_v1",
+  "ablation_variant": "broad_diversity_aggregation_strong_v1",
+  "selection_rule": "higher overall mean accuracy over budgets; tie-break lower seed_stability_std",
+  "selection_reason": "higher overall mean accuracy",
+  "overall_stats": {
+    "broad_diversity_aggregation_v1": {
+      "mean_accuracy_over_budgets": 0.25,
+      "seed_stability_std": 0.25
+    },
+    "broad_diversity_aggregation_strong_v1": {
+      "mean_accuracy_over_budgets": 0.125,
+      "seed_stability_std": 0.21650635094610965
+    }
+  },
+  "leadership_stability": {
+    "stable_across_providers": true,
+    "provider_variant_winners": {
+      "cohere": "broad_diversity_aggregation_v1"
+    },
+    "note": "Leadership is marked unstable when provider-level winner disagrees with global winner."
+  }
+}
