@@ -22,12 +22,13 @@ Do **not** treat all references in the repo as belonging to the same class.
 
 The repository currently needs a disciplined split between:
 1. **core conceptual foundations**,
-2. **direct/near-direct empirical baselines**,
-3. **adjacent method-neighbor references**,
-4. **idea/ingredient references**,
-5. **frontier-track references**,
-6. **dataset references**,
-7. and **historical/provenance references**.
+2. **closest branch-allocation / tree-search neighbors**,
+3. **direct/near-direct empirical baselines**,
+4. **adjacent method-neighbor references**,
+5. **idea/ingredient references**,
+6. **frontier-track references**,
+7. **dataset references**,
+8. and **historical/provenance references**.
 
 The current reference problem is not lack of references.
 It is **reference overloading**: some sources are being asked to do too many jobs at once.
@@ -40,7 +41,7 @@ The current project is no longer mainly asking:
 
 It is now asking:
 
-> **what target/oracle definition should govern hard close-branch decisions under a fixed compute budget?**
+> **what target/oracle definition and branch-family control rule should govern hard close-branch decisions under a fixed compute budget?**
 
 So the most valuable references now are the ones that help answer that specific question.
 
@@ -93,11 +94,70 @@ These are the references that most directly shape the current scientific identit
 - use as a framing neighbor for the hard disagreement slice,
 - not as a claim that the repo is simply a standard stochastic bandit problem.
 
-## Category B. Direct / near-direct empirical baselines (highest comparison value)
+## Category B. Closest branch-allocation / tree-search neighbors (highest method-neighbor value)
+
+These are the references now most useful for the repo's current anti-collapse / branch-family paper direction.
+
+### B1. BG-MCTS
+**Current relevance:** highest.
+
+**Why:**
+- It is the clearest recent fixed-budget tree-search neighbor for the repo’s current problem.
+- It directly supports the question of when to deepen a current family versus widen into alternatives under a hard budget.
+
+**What idea it gave us:**
+- budget-conditioned search shape control,
+- widen-vs-deepen behavior under remaining budget,
+- and uncertainty/disagreement-aware expansion logic.
+
+**How to use in writing:**
+- foreground as one of the closest modern method neighbors,
+- especially when clarifying that the repo operates at step-level branch allocation rather than only query-level routing.
+
+### B2. Budget-Aware Value Tree Search (BAVT)
+**Current relevance:** highest.
+
+**Why:**
+- It is one of the closest references for the repo’s current low-marginal-gain / residual-progress direction.
+- It helps justify recent-gain-aware family control more directly than broad adaptive-compute references alone.
+
+**What idea it gave us:**
+- residual progress matters,
+- and branch allocation should depend on expected remaining value rather than only static score.
+
+### B3. Adaptive Branching MCTS (AB-MCTS)
+**Current relevance:** very high.
+
+**Why:**
+- It is a close neighbor for the decision of whether to deepen a current path or branch into alternatives.
+- It helps position the repo as a search-shape controller, not only a branch scorer.
+
+**What idea it gave us:**
+- branch vs deepen is itself a first-class allocation decision.
+
+### B4. ToolTree
+**Current relevance:** high.
+
+**Why:**
+- It is useful because the repo now increasingly relies on staged or override-aware anti-collapse control rather than one-shot pruning.
+
+**What idea it gave us:**
+- soft first-stage control plus stronger later evidence before harder decisions.
+
+### B5. Semantic-similarity dynamic pruning references
+**Current relevance:** high.
+
+**Why:**
+- They support the repo’s current answer-group-aware anti-collapse interpretation better than generic diversity bonuses do.
+
+**What idea they gave us:**
+- semantically redundant branches should not consume budget as if they were distinct alternatives.
+
+## Category C. Direct / near-direct empirical baselines (highest comparison value)
 
 These are the references that matter most for reviewer-facing comparison fairness.
 
-### B1. s1
+### C1. s1
 **Current relevance:** highest among direct/near-direct baselines.
 
 **Why:**
@@ -111,7 +171,7 @@ These are the references that matter most for reviewer-facing comparison fairnes
 - important and active.
 - keep central in comparison notes.
 
-### B2. TALE
+### C2. TALE
 **Current relevance:** highest among adjacent adaptive-budget baselines.
 
 **Why:**
@@ -125,7 +185,7 @@ These are the references that matter most for reviewer-facing comparison fairnes
 - important and active.
 - keep central in comparison notes, but always mark control-space differences.
 
-### B3. L1
+### C3. L1
 **Current relevance:** high.
 
 **Why:**
@@ -138,11 +198,11 @@ These are the references that matter most for reviewer-facing comparison fairnes
 **Current status:**
 - important and active.
 
-## Category C. Adjacent method-neighbor baselines (important, but not control-space-equivalent)
+## Category D. Adjacent method-neighbor baselines (important, but not control-space-equivalent)
 
 These references are useful and often worth reporting, but they should not be oversold as direct control-space equivalents.
 
-### C1. BEST-Route
+### D1. BEST-Route
 **Current relevance:** high, but adjacent-only.
 
 **What idea it gave us:**
@@ -152,41 +212,41 @@ These references are useful and often worth reporting, but they should not be ov
 - label as adjacent,
 - never present as direct equivalent to fixed-budget next-step branch allocation.
 
-### C2. When To Solve, When To Verify
+### D2. When To Solve, When To Verify
 **Current relevance:** high, but adjacent-only.
 
 **What idea it gave us:**
 - generator-vs-verifier budget tradeoffs matter and should appear in the comparison universe.
 
-### C3. Cascade Routing
+### D3. Cascade Routing
 **Current relevance:** medium-high, adjacent-only.
 
 **What idea it gave us:**
 - unified routing/cascade policies are an important neighboring budget-allocation family.
 
-### C4. MoB (Majority-of-the-Bests)
+### D4. MoB (Majority-of-the-Bests)
 **Current relevance:** medium-high, adjacent-only.
 
 **What idea it gave us:**
 - best-of-N / selection-style test-time scaling needs to be separated from branch-allocation methods, but still compared where appropriate.
 
-### C5. ReST-MCTS*
+### D5. ReST-MCTS*
 **Current relevance:** medium-high, adjacent-only.
 
 **What idea it gave us:**
 - process-reward-guided search is one of the closest search-neighbor baselines.
 
-### C6. OpenR
+### D6. OpenR
 **Current relevance:** medium, adjacent-only.
 
 **What idea it gave us:**
 - broader search/reasoning ecosystems matter as optional adjacent comparisons.
 
-## Category D. Ingredient / idea references (important, but not full-solution references)
+## Category E. Ingredient / idea references (important, but not full-solution references)
 
 These are references that gave the project useful ideas, but should not be treated as if they already solve the repository’s central problem.
 
-### D1. Process rewards / verifiers / PRM-style work
+### E1. Process rewards / verifiers / PRM-style work
 **Current relevance:** high as an ingredient.
 
 **What idea it gave us:**
@@ -195,9 +255,9 @@ These are references that gave the project useful ideas, but should not be treat
 
 **Why not a full solution:**
 - these references support branch-quality signals,
-- but they do not by themselves settle the repo’s target/oracle question.
+- but they do not by themselves settle the repo’s target/oracle or branch-family control question.
 
-### D2. Tree-PLV
+### E2. Tree-PLV
 **Current relevance:** medium as an ingredient / related-work item.
 
 **What idea it gave us:**
@@ -207,7 +267,7 @@ These are references that gave the project useful ideas, but should not be treat
 - useful for verifier/state-scoring discussion,
 - but not a direct, runnable, central baseline in this repo.
 
-### D3. PGTS
+### E3. PGTS
 **Current relevance:** medium as an ingredient / related-work item.
 
 **What idea it gave us:**
@@ -217,7 +277,7 @@ These are references that gave the project useful ideas, but should not be treat
 - conceptually relevant,
 - but not currently a central runnable comparison path.
 
-### D4. Scaling Automated Process Verifiers
+### E4. Scaling Automated Process Verifiers
 **Current relevance:** medium as an ingredient / related-work item.
 
 **What idea it gave us:**
@@ -227,29 +287,45 @@ These are references that gave the project useful ideas, but should not be treat
 - strong verifier-side signal family,
 - but still not the repo’s full allocation target.
 
-## Category E. Frontier-track references (important for the newer paper track)
+### E5. When More Thinking Hurts
+**Current relevance:** high as an empirical motivation / control-shaping ingredient.
+
+**What idea it gave us:**
+- test-time compute can show diminishing or even negative marginal returns.
+
+**Why not a full solution by itself:**
+- it strongly motivates stagnation-aware control,
+- but it is not itself a branch-family controller.
+
+### E6. Confidence-dynamics stopping references
+**Current relevance:** medium-high as a control-shaping ingredient.
+
+**What idea they gave us:**
+- stopping or cooldown should depend on trends, not only one-shot scores.
+
+## Category F. Frontier-track references (important for the newer paper track)
 
 These matter for the heterogeneous controller-family frontier story.
 
-### E1. Snell-style test-time compute references
+### F1. Snell-style test-time compute references
 **Current relevance:** medium-high for the frontier track.
 
 **What idea they gave us:**
 - sample-vs-verify and broader inference-time compute allocation are important neighboring stories.
 
-### E2. PAL / Program-of-Thought
+### F2. PAL / Program-of-Thought
 **Current relevance:** medium for the frontier track.
 
 **What idea it gave us:**
 - code-generation-plus-execution is a distinct controller family worth placing on a frontier.
 
-### E3. PRM800K / Let’s Verify Step by Step
+### F3. PRM800K / Let’s Verify Step by Step
 **Current relevance:** medium-high for the frontier track and ingredient layer.
 
 **What idea it gave us:**
 - pluggable process-verifier interfaces and intermediate-state scoring.
 
-## Category F. Dataset references
+## Category G. Dataset references
 
 **Current relevance:** high for reproducibility, but not the main conceptual bottleneck.
 
@@ -261,11 +337,11 @@ Use these for:
 
 Do **not** mix dataset references into method-neighbor or idea-reference buckets.
 
-## Category G. Historical / provenance references
+## Category H. Historical / provenance references
 
 These remain useful for understanding how the repo evolved, but they are not current canonical references.
 
-### G1. Older binary revise-routing references
+### H1. Older binary revise-routing references
 **Current relevance:** low for the current canonical paper.
 
 **What idea they gave us:**
@@ -274,7 +350,7 @@ These remain useful for understanding how the repo evolved, but they are not cur
 **Why low now:**
 - the current canonical repository question is frontier / next-step branch allocation, not cheap-vs-revise routing.
 
-### G2. Historical controller tweak references
+### H2. Historical controller tweak references
 **Current relevance:** low for current manuscript-facing use.
 
 **Why low now:**
@@ -309,10 +385,14 @@ If a reference is a **reviewer-facing comparison baseline**, it must also appear
 - and `configs/external_baselines_registry.json`.
 
 ### Rule 3
+If a reference is one of the **closest branch-allocation / tree-search neighbors**, record it explicitly as such.
+Do not let it silently behave like just another ingredient note.
+
+### Rule 4
 If a reference mainly gave the repo an **idea or ingredient**, record it as such.
 Do not let it silently behave like a central baseline.
 
-### Rule 4
+### Rule 5
 If a reference is historical, provenance-only, blocked, or low-confidence, say so explicitly.
 Do not let it remain ambiguous.
 
@@ -320,16 +400,15 @@ Do not let it remain ambiguous.
 
 A clean current summary is:
 
-> The reference base is already strong enough, but it must be treated as a curated system rather than a flat bibliography. The current project is mainly grounded by metareasoning, adaptive test-time compute allocation, and fixed-budget small-gap allocation; compared empirically against direct/near-direct budget baselines such as s1, TALE, and L1; informed by verifier/process-reward and search-policy references as ingredients; and kept honest by an explicit boundary between canonical, adjacent, idea-only, and historical sources.
+> The reference base is already strong enough, but it must be treated as a curated system rather than a flat bibliography. The current project is mainly grounded by metareasoning, adaptive test-time compute allocation, and fixed-budget small-gap allocation; positioned method-neighbor-wise against recent budget-aware tree-search papers such as BG-MCTS, BAVT, and AB-MCTS; compared empirically against direct/near-direct budget baselines such as s1, TALE, and L1; informed by verifier/process-reward and search-policy references as ingredients; and kept honest by an explicit boundary between canonical, closest-neighbor, adjacent, idea-only, and historical sources.
 
 ## Recommended immediate repository habit
 
 When a new reference appears, record **all four** of the following explicitly:
-1. relevance class (`core`, `direct baseline`, `adjacent baseline`, `ingredient`, `frontier`, `dataset`, `historical`, `blocked/uncertain`),
+1. relevance class (`core`, `closest branch-allocation neighbor`, `direct baseline`, `adjacent baseline`, `ingredient`, `frontier`, `dataset`, `historical`, `blocked/uncertain`),
 2. what idea it gave the project,
 3. whether it is manuscript-facing, experiment-facing, or provenance-only,
 4. and whether it is safe to foreground in the current paper story.
-
 
 ## Cross-doc baseline taxonomy consistency lock (2026-04-18)
 
@@ -340,5 +419,13 @@ When a new reference appears, record **all four** of the following explicitly:
 | `rational_metareasoning_llm` | Rational Metareasoning for Large Language Models | adjacent baseline family | discuss-only | essential adjacent |
 | `efficient_contextual_llm_cascades` | Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning | adjacent baseline family | runnable-adjacent via import validation | optional unless framing broadens |
 | `best_arm_identification_fixed_budget` | Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence | ingredient/adjacent-boundary family | discuss-only framing reference | essential framing for near-ties |
+| `bg_mcts` | BG-MCTS | closest branch-allocation neighbor | discuss-only / not-yet-integrated | essential branch-allocation neighbor |
+| `budget_aware_value_tree_search` | Budget-Aware Value Tree Search (BAVT) | closest branch-allocation neighbor | discuss-only / not-yet-integrated | essential branch-allocation neighbor |
+| `adaptive_branching_mcts` | Adaptive Branching MCTS (AB-MCTS) | closest branch-allocation neighbor | discuss-only / not-yet-integrated | essential branch-allocation neighbor |
 
 Use this table as the canonical normalization layer across `docs/main_baselines.md`, `docs/external_baseline_completeness_report.md`, `docs/EVALUATION_AND_BASELINES_INDEX.md`, `external/README.md`, and `configs/external_baselines_registry.json`.
+
+## Cross-link to the focused memo
+
+For the focused current anti-collapse / branch-family literature memo, see:
+- `docs/CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`
