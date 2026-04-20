@@ -1,5 +1,5 @@
-panel,group,count,total,rate,measure
-targeted_subset,Before repair,0,16,0.0,correct_surface_predictions
-targeted_subset,After repair,16,16,1.0,correct_surface_predictions
-full_failure_slice_after_repair,Recovered by deterministic repair,16,20,0.8,case_count
-full_failure_slice_after_repair,Still unresolved (upstream/tree-generation bottleneck),4,20,0.2,case_count
+metric,count,total,rate
+Targeted subset size,16,16,1.0
+Incorrect before repair,16,16,1.0
+Correct after repair,16,16,1.0
+Unresolved after repair,0,16,0.0

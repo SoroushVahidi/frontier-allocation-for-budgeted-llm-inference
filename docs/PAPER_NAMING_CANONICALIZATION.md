@@ -53,3 +53,14 @@ Main canonical bundles:
 - `outputs/full_method_comparison_bundle/20260419T214335Z`
 
 All paper scripts must pull from these bundles unless explicitly documented otherwise.
+
+## Appendix output-layer repair labels
+
+For paper-facing appendix plots, use short labels:
+
+- `Targeted subset size`
+- `Incorrect before repair`
+- `Correct after repair`
+- `Unresolved after repair`
+
+Avoid internal raw field names in figure titles/axes/legend text.
