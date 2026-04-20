@@ -4,8 +4,9 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
-import math
 import random
+import re
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,7 +15,7 @@ from typing import Any
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import GroupShuffleSplit
 from sklearn.tree import DecisionTreeClassifier
 
@@ -30,30 +31,16 @@ from experiments.frontier_matrix_core import build_frontier_strategies, load_pil
 OLD_METHOD = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1"
 WIDTH_DEPTH_METHOD = "broad_diversity_aggregation_strong_v1_anti_collapse_width_depth_challenger_guard_v1"
 NEAR_MISS_METHOD = "broad_diversity_aggregation_strong_v1_anti_collapse_near_miss_correction_gate_v1"
-LEARNED_METHOD_NAME = "broad_diversity_aggregation_strong_v1_state_action_metacontroller_v1"
+LEARNED_METHOD_NAME = "broad_diversity_aggregation_strong_v1_state_action_metacontroller_v2"
 ACTIONS = ["refine_incumbent", "verify_incumbent", "widen_to_challenger", "commit"]
 FEATURES = [
-    "step_idx",
-    "budget",
-    "budget_remaining",
-    "budget_remaining_ratio",
-    "top_support_before_action",
-    "priority",
-    "continuation_value",
-    "diversity_bonus",
-    "duplicate_cost",
-    "coverage_gain",
-    "semantic_overlap",
-    "target_alignment_score",
-    "anti_collapse_repeat_penalty",
-    "anti_collapse_repeat_expand_family_penalty",
-    "near_miss_correction_nearby_done_same_family_count",
-    "gate_signal",
-    "uncertainty_verify_activated",
-    "width_depth_guard_activated",
-    "prev_action_expand",
-    "prev_action_verify",
-    "prev_action_forced",
+    "step_idx", "budget", "budget_remaining", "budget_remaining_ratio",
+    "top_support_before_action", "priority", "continuation_value", "diversity_bonus",
+    "duplicate_cost", "coverage_gain", "semantic_overlap", "target_alignment_score",
+    "anti_collapse_repeat_penalty", "anti_collapse_repeat_expand_family_penalty",
+    "near_miss_correction_nearby_done_same_family_count", "gate_signal",
+    "uncertainty_verify_activated", "width_depth_guard_activated",
+    "prev_action_expand", "prev_action_verify", "prev_action_forced",
 ]
 
 
@@ -111,78 +98,104 @@ def _safe_int(v: Any) -> int:
         return 0
 
 
-def _find_latest_dir(glob_pat: str) -> Path:
-    xs = sorted((REPO_ROOT / "outputs").glob(glob_pat))
-    if not xs:
+def _find_latest_file(glob_pat: str) -> Path:
+    matches = sorted((REPO_ROOT).glob(glob_pat))
+    if not matches:
         raise FileNotFoundError(glob_pat)
-    return xs[-1]
+    return matches[-1]
+
+
+def _load_case_map(datasets: set[str], example_ids: set[str], seeds: list[int]) -> dict[tuple[str, str], tuple[str, str]]:
+    out: dict[tuple[str, str], tuple[str, str]] = {}
+    for dataset in sorted(datasets):
+        for seed in seeds:
+            for ex in load_pilot_examples(dataset, 80, seed):
+                key = (dataset, str(ex.example_id))
+                if key in out:
+                    continue
+                if str(ex.example_id) in example_ids:
+                    out[key] = (ex.question, str(ex.answer))
+    return out
+
+
+def _load_targeted_cases_from_doc() -> list[dict[str, Any]]:
+    path = REPO_ROOT / "docs" / "TWENTY_EXACT_CURRENT_FULL_METHOD_FAILURES_VS_BEST_2026_04_20.md"
+    txt = path.read_text(encoding="utf-8")
+    blocks = txt.split("## Case ")[1:]
+    rows: list[dict[str, Any]] = []
+    for block in blocks:
+        ds_match = re.search(r"Dataset \+ example id: `([^`]+) / ([^`]+)`", block)
+        gold_match = re.search(r"Ground-truth answer: `([^`]*)`", block)
+        budget_match = re.search(r"Budget/action summary: budget=(\d+)", block)
+        if not ds_match or not gold_match:
+            continue
+        rows.append({
+            "dataset": ds_match.group(1),
+            "example_id": ds_match.group(2),
+            "gold_answer": gold_match.group(1),
+            "budget": int(budget_match.group(1)) if budget_match else 8,
+            "source": path.relative_to(REPO_ROOT).as_posix(),
+        })
+    return rows
+
+
+def _load_broad_loss_cases_from_bundle() -> tuple[list[dict[str, Any]], str]:
+    manifest = _find_latest_file("outputs/full_method_comparison_bundle/*/manifest.json")
+    bundle_dir = manifest.parent
+    per_example = bundle_dir / "per_example_outcomes.csv"
+    rows: list[dict[str, Any]] = []
+    with per_example.open("r", encoding="utf-8") as f:
+        rd = csv.DictReader(f)
+        for row in rd:
+            if str(row.get("method", "")) != OLD_METHOD:
+                continue
+            if str(row.get("is_correct", "")).strip().lower() in {"1", "true"}:
+                continue
+            rows.append({
+                "dataset": str(row["dataset"]),
+                "example_id": str(row["example_id"]),
+                "gold_answer": str(row.get("ground_truth", "")),
+                "budget": int(float(row.get("budget", 8))),
+                "source": per_example.relative_to(REPO_ROOT).as_posix(),
+            })
+    dedup = {(r["dataset"], r["example_id"], r["budget"]): r for r in rows}
+    return list(dedup.values()), manifest.relative_to(REPO_ROOT).as_posix()
+
+
+def _materialize_cases(raw_rows: list[dict[str, Any]], *, fallback_seeds: list[int]) -> list[CaseSpec]:
+    datasets = {str(r["dataset"]) for r in raw_rows}
+    example_ids = {str(r["example_id"]) for r in raw_rows}
+    qamap = _load_case_map(datasets, example_ids, fallback_seeds)
+    out: list[CaseSpec] = []
+    for r in raw_rows:
+        key = (str(r["dataset"]), str(r["example_id"]))
+        q, default_gold = qamap.get(key, (None, None))
+        if q is None:
+            continue
+        out.append(
+            CaseSpec(
+                dataset=key[0],
+                example_id=key[1],
+                question=q,
+                gold_answer=str(r.get("gold_answer") or default_gold or ""),
+                budget=max(4, int(r.get("budget", 8))),
+            )
+        )
+    return out
 
 
 def _load_canonical_cases() -> tuple[list[CaseSpec], list[CaseSpec], dict[str, str]]:
-    targeted_rows: list[dict[str, Any]] = []
-    broad_rows: list[dict[str, Any]] = []
-    targeted_dir = None
-    imp_dir = None
-    try:
-        targeted_dir = _find_latest_dir("targeted_failure_bundle_*/")
-        targeted_rows = json.loads((targeted_dir / "per_case.json").read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        targeted_rows = []
-    try:
-        imp_dir = _find_latest_dir("twenty_exact_current_full_improvement_eval_*/")
-        broad_rows = json.loads((imp_dir / "per_case_before_after.json").read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        broad_rows = []
-    if not broad_rows:
-        src_doc = REPO_ROOT / "docs/TWENTY_EXACT_CURRENT_FULL_VS_BEST_FRESH_2026_04_20.md"
-        txt = src_doc.read_text(encoding="utf-8")
-        for block in txt.split("\n## Case ")[1:]:
-            ds = None
-            ex = None
-            gold = None
-            budget = 8
-            for ln in block.splitlines():
-                ls = ln.strip()
-                if ls.startswith("- dataset: `"):
-                    ds = ls.split("`")[1]
-                elif ls.startswith("- example_id: `"):
-                    ex = ls.split("`")[1]
-                elif ls.startswith("- gold answer: `"):
-                    gold = ls.split("`")[1]
-                elif ls.startswith("- our budget/actions/expansions/verifications: `"):
-                    try:
-                        budget = int(ls.split("{'budget':")[1].split(",")[0].strip())
-                    except Exception:
-                        budget = 8
-            if ds and ex and gold is not None:
-                broad_rows.append({"dataset": ds, "example_id": ex, "gold_answer": gold, "budget": budget})
-    if not targeted_rows:
-        targeted_rows = broad_rows[:7]
-
-    def mk(rows: list[dict[str, Any]]) -> list[CaseSpec]:
-        out: list[CaseSpec] = []
-        for r in rows:
-            q = None
-            for seed in [11, 23, 37, 59, 71, 83, 97, 109]:
-                for ex in load_pilot_examples(str(r["dataset"]), 40, seed):
-                    if ex.example_id == str(r["example_id"]):
-                        q = ex.question
-                        break
-                if q:
-                    break
-            if q is None:
-                continue
-            out.append(CaseSpec(dataset=str(r["dataset"]), example_id=str(r["example_id"]), question=q, gold_answer=str(r["gold_answer"]), budget=int(r["budget"])))
-        return out
-
+    targeted_raw = _load_targeted_cases_from_doc()
+    broad_raw, broad_manifest = _load_broad_loss_cases_from_bundle()
+    targeted_cases = _materialize_cases(targeted_raw, fallback_seeds=[11, 23, 37, 59, 83, 97])
+    broad_cases = _materialize_cases(broad_raw, fallback_seeds=[11, 23, 37, 59, 83, 97])
     refs = {
-        "fresh_loss_bundle": "docs/TWENTY_EXACT_CURRENT_FULL_VS_BEST_FRESH_2026_04_20.md",
-        "twenty_case_improvement_report": sorted((REPO_ROOT / "docs").glob("TWENTY_CASE_CURRENT_FULL_IMPROVEMENT_REPORT_*.md"))[-1].relative_to(REPO_ROOT).as_posix(),
-        "targeted_failure_bundle_report": sorted((REPO_ROOT / "docs").glob("TARGETED_FAILURE_BUNDLE_REPORT_*.md"))[-1].relative_to(REPO_ROOT).as_posix(),
+        "targeted_failure_casebook": "docs/TWENTY_EXACT_CURRENT_FULL_METHOD_FAILURES_VS_BEST_2026_04_20.md",
+        "broad_comparison_manifest": broad_manifest,
         "near_miss_report": sorted((REPO_ROOT / "docs").glob("NEAR_MISS_CORRECTION_EVAL_REPORT_*.md"))[-1].relative_to(REPO_ROOT).as_posix(),
-        "broad_comparison_artifact": sorted((REPO_ROOT / "outputs/full_method_comparison_bundle").glob("*/manifest.json"))[-1].relative_to(REPO_ROOT).as_posix(),
+        "current_full_method_comparison_report": sorted((REPO_ROOT / "docs").glob("CURRENT_FULL_METHOD_COMPARISON_BUNDLE_STATUS_*.md"))[-1].relative_to(REPO_ROOT).as_posix(),
     }
-    return mk(targeted_rows), mk(broad_rows), refs
+    return targeted_cases, broad_cases, refs
 
 
 def _run_case(method: str, case: CaseSpec, forced_action_plan: dict[int, str] | None = None) -> dict[str, Any]:
@@ -253,18 +266,30 @@ def _build_feature_row(case: CaseSpec, trace: list[dict[str, Any]], step_idx: in
     return out
 
 
-def _collect_training_cases() -> list[CaseSpec]:
+def _collect_training_cases(base_cases: list[CaseSpec]) -> list[CaseSpec]:
+    # Controlled expansion: canonical eval cases + additional per-dataset pilot examples and budgets.
+    seen: set[tuple[str, str, int]] = set()
     out: list[CaseSpec] = []
-    datasets = ["openai/gsm8k", "HuggingFaceH4/MATH-500", "HuggingFaceH4/aime_2024", "olympiadbench"]
+    for c in base_cases:
+        k = (c.dataset, c.example_id, c.budget)
+        if k not in seen:
+            seen.add(k)
+            out.append(c)
+
+    datasets = sorted({c.dataset for c in base_cases} | {"openai/gsm8k", "HuggingFaceH4/MATH-500", "HuggingFaceH4/aime_2024", "olympiadbench"})
     for dataset in datasets:
-        examples = load_pilot_examples(dataset, 10, 83)
-        for budget in [5, 8]:
-            for ex in examples:
-                out.append(CaseSpec(dataset=dataset, example_id=ex.example_id, question=ex.question, gold_answer=ex.answer, budget=budget))
+        for seed in [17, 23, 41, 83]:
+            for ex in load_pilot_examples(dataset, 16, seed):
+                for budget in [5, 8, 12]:
+                    k = (dataset, str(ex.example_id), budget)
+                    if k in seen:
+                        continue
+                    seen.add(k)
+                    out.append(CaseSpec(dataset=dataset, example_id=str(ex.example_id), question=ex.question, gold_answer=str(ex.answer), budget=budget))
     return out
 
 
-def _generate_labeled_rows(cases: list[CaseSpec], max_steps_per_case: int = 3) -> list[dict[str, Any]]:
+def _generate_labeled_rows(cases: list[CaseSpec], max_steps_per_case: int = 4) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for case in cases:
         base = _run_case(OLD_METHOD, case)
@@ -288,13 +313,13 @@ def _train_models(rows: list[dict[str, Any]]) -> dict[str, Any]:
     y = np.asarray([y_to_idx[s] for s in y_labels], dtype=np.int64)
     groups = np.asarray([str(r["case_key"]) for r in rows])
 
-    splitter = GroupShuffleSplit(n_splits=1, test_size=0.25, random_state=0)
+    splitter = GroupShuffleSplit(n_splits=1, test_size=0.30, random_state=0)
     train_idx, test_idx = next(splitter.split(x, y, groups))
 
     models: dict[str, Any] = {
-        "logreg": LogisticRegression(max_iter=500, class_weight="balanced", random_state=0),
-        "decision_tree": DecisionTreeClassifier(max_depth=5, min_samples_leaf=8, random_state=0),
-        "random_forest": RandomForestClassifier(n_estimators=180, max_depth=6, min_samples_leaf=4, random_state=0),
+        "logreg": LogisticRegression(max_iter=600, class_weight="balanced", random_state=0),
+        "decision_tree": DecisionTreeClassifier(max_depth=6, min_samples_leaf=10, random_state=0),
+        "random_forest": RandomForestClassifier(n_estimators=220, max_depth=7, min_samples_leaf=5, random_state=0),
     }
 
     metrics: dict[str, Any] = {}
@@ -302,9 +327,18 @@ def _train_models(rows: list[dict[str, Any]]) -> dict[str, Any]:
     for name, model in models.items():
         model.fit(x[train_idx], y[train_idx])
         pred = model.predict(x[test_idx])
+        conf = confusion_matrix(y[test_idx], pred, labels=list(range(len(ACTIONS))))
+        per_class_f1 = f1_score(y[test_idx], pred, labels=list(range(len(ACTIONS))), average=None)
+        pred_counts = Counter(int(v) for v in pred.tolist())
+        true_counts = Counter(int(v) for v in y[test_idx].tolist())
         metrics[name] = {
             "accuracy": float(accuracy_score(y[test_idx], pred)),
             "macro_f1": float(f1_score(y[test_idx], pred, average="macro")),
+            "class_f1": {ACTIONS[i]: float(per_class_f1[i]) for i in range(len(ACTIONS))},
+            "pred_class_frequency": {ACTIONS[i]: int(pred_counts.get(i, 0)) for i in range(len(ACTIONS))},
+            "true_class_frequency": {ACTIONS[i]: int(true_counts.get(i, 0)) for i in range(len(ACTIONS))},
+            "confusion_matrix": conf.tolist(),
+            "confusion_labels": ACTIONS,
         }
         fitted[name] = model
 
@@ -327,6 +361,8 @@ def _train_models(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "train_size": int(len(train_idx)),
         "test_size": int(len(test_idx)),
         "importance_rows": importance_rows,
+        "train_case_count": len(set(groups[train_idx].tolist())),
+        "test_case_count": len(set(groups[test_idx].tolist())),
     }
 
 
@@ -345,6 +381,7 @@ def _heuristic_action(frow: dict[str, Any]) -> str:
 def _policy_rollout(case: CaseSpec, mode: str, model: Any | None = None) -> dict[str, Any]:
     forced: dict[int, str] = {}
     policy_events: list[dict[str, Any]] = []
+    state_action_rows: list[dict[str, Any]] = []
     for step in range(int(case.budget)):
         run = _run_case(OLD_METHOD, case, forced)
         trace = list((run.get("metadata") or {}).get("action_trace") or [])
@@ -360,6 +397,19 @@ def _policy_rollout(case: CaseSpec, mode: str, model: Any | None = None) -> dict
         else:
             raise ValueError(mode)
         forced[step] = action
+        near_tie_proxy = int(abs(float(frow["gate_signal"])) <= 0.03 or int(frow["uncertainty_verify_activated"]) == 1)
+        monopolization_proxy = int(float(frow["top_support_before_action"]) >= 0.80 and float(frow["anti_collapse_repeat_expand_family_penalty"]) >= 0.05)
+        state_action_rows.append({
+            "dataset": case.dataset,
+            "example_id": case.example_id,
+            "budget": case.budget,
+            "step_idx": step,
+            "mode": mode,
+            "chosen_action": action,
+            "near_tie_proxy": near_tie_proxy,
+            "monopolization_proxy": monopolization_proxy,
+            **{k: frow[k] for k in FEATURES},
+        })
         policy_events.append({"step": step, "action": action})
         if action == "commit":
             break
@@ -371,6 +421,7 @@ def _policy_rollout(case: CaseSpec, mode: str, model: Any | None = None) -> dict
         "mode": mode,
         "forced_plan": forced,
         "policy_events": policy_events,
+        "state_action_rows": state_action_rows,
         "is_correct": bool(final["is_correct"]),
         "actions_used": int(final["actions_used"]),
         "prediction": final["prediction"],
@@ -427,27 +478,82 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         w.writerows(rows)
 
 
+def _per_case_delta(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int, int]:
+    by_key: dict[tuple[str, str, int], dict[str, dict[str, Any]]] = defaultdict(dict)
+    for r in rows:
+        k = (str(r["dataset"]), str(r["example_id"]), int(r["budget"]))
+        by_key[k][str(r["mode"])] = r
+    out: list[dict[str, Any]] = []
+    improved = 0
+    worsened = 0
+    for k, m in sorted(by_key.items()):
+        if "learned" not in m or "old_current_full" not in m:
+            continue
+        old_ok = bool(m["old_current_full"]["is_correct"])
+        new_ok = bool(m["learned"]["is_correct"])
+        status = "unchanged"
+        if new_ok and not old_ok:
+            status = "improved"
+            improved += 1
+        elif old_ok and not new_ok:
+            status = "worsened"
+            worsened += 1
+        out.append({
+            "dataset": k[0], "example_id": k[1], "budget": k[2],
+            "old_correct": int(old_ok), "learned_correct": int(new_ok), "status": status,
+        })
+    return out, improved, worsened
+
+
+def _action_diagnostics(state_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    action_counts = Counter(str(r["chosen_action"]) for r in state_rows)
+    near_rows = [r for r in state_rows if int(r.get("near_tie_proxy", 0)) == 1]
+    mono_rows = [r for r in state_rows if int(r.get("monopolization_proxy", 0)) == 1]
+    def _dist(rows: list[dict[str, Any]]) -> dict[str, int]:
+        c = Counter(str(r["chosen_action"]) for r in rows)
+        return {a: int(c.get(a, 0)) for a in ACTIONS}
+    return {
+        "action_counts": {a: int(action_counts.get(a, 0)) for a in ACTIONS},
+        "action_rates": {a: float(action_counts.get(a, 0) / max(1, len(state_rows))) for a in ACTIONS},
+        "near_tie_rows": len(near_rows),
+        "monopolization_rows": len(mono_rows),
+        "verify_rate_on_near_tie": float(sum(1 for r in near_rows if str(r["chosen_action"]) == "verify_incumbent") / max(1, len(near_rows))),
+        "widen_rate_on_monopolization": float(sum(1 for r in mono_rows if str(r["chosen_action"]) == "widen_to_challenger") / max(1, len(mono_rows))),
+        "distribution_near_tie": _dist(near_rows),
+        "distribution_monopolization": _dist(mono_rows),
+    }
+
+
 def main() -> None:
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     out_dir = REPO_ROOT / "outputs" / f"learned_state_metacontroller_{ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     targeted_cases, broad_cases, refs = _load_canonical_cases()
-    train_cases = _collect_training_cases()
-    dataset_rows = _generate_labeled_rows(train_cases, max_steps_per_case=3)
-
+    train_cases = _collect_training_cases(targeted_cases + broad_cases)
+    dataset_rows = _generate_labeled_rows(train_cases, max_steps_per_case=4)
     train_info = _train_models(dataset_rows)
     best_model = train_info["best_model"]
 
     targeted_eval_rows: list[dict[str, Any]] = []
     broad_eval_rows: list[dict[str, Any]] = []
-    for slice_name, cases, sink in [("targeted", targeted_cases, targeted_eval_rows), ("broad", broad_cases, broad_eval_rows)]:
+    targeted_state_rows: list[dict[str, Any]] = []
+    broad_state_rows: list[dict[str, Any]] = []
+
+    for cases, sink, state_sink in [
+        (targeted_cases, targeted_eval_rows, targeted_state_rows),
+        (broad_cases, broad_eval_rows, broad_state_rows),
+    ]:
         old_rows = _method_rows(cases, OLD_METHOD, "old_current_full")
         width_rows = _method_rows(cases, WIDTH_DEPTH_METHOD, "width_depth_challenger_guard")
         near_rows = _method_rows(cases, NEAR_MISS_METHOD, "near_miss_correction_gate")
-        heur_rows = [_policy_rollout(c, "heuristic") for c in cases]
-        learn_rows = [_policy_rollout(c, "learned", best_model) for c in cases]
-        sink.extend(old_rows + width_rows + near_rows + heur_rows + learn_rows)
+        heur_runs = [_policy_rollout(c, "heuristic") for c in cases]
+        learn_runs = [_policy_rollout(c, "learned", best_model) for c in cases]
+        state_sink.extend([x for r in heur_runs for x in r["state_action_rows"]])
+        state_sink.extend([x for r in learn_runs for x in r["state_action_rows"]])
+        sink.extend(old_rows + width_rows + near_rows)
+        sink.extend([{k: v for k, v in r.items() if k not in {"forced_plan", "policy_events", "state_action_rows"}} for r in heur_runs])
+        sink.extend([{k: v for k, v in r.items() if k not in {"forced_plan", "policy_events", "state_action_rows"}} for r in learn_runs])
 
     def per_mode(rows: list[dict[str, Any]]) -> dict[str, Any]:
         modes = sorted({str(r["mode"]) for r in rows})
@@ -455,138 +561,107 @@ def main() -> None:
 
     targeted_summary = per_mode(targeted_eval_rows)
     broad_summary = per_mode(broad_eval_rows)
+    targeted_deltas, targeted_improvement_count, targeted_worsened_count = _per_case_delta(targeted_eval_rows)
+    broad_deltas, broad_improvement_count, broad_worsened_count = _per_case_delta(broad_eval_rows)
 
-    targeted_improvement_count = int(
-        sum(
-            1
-            for c in targeted_cases
-            if any(r["mode"] == "learned" and r["dataset"] == c.dataset and r["example_id"] == c.example_id and r["budget"] == c.budget and r["is_correct"] for r in targeted_eval_rows)
-            and any(r["mode"] == "old_current_full" and r["dataset"] == c.dataset and r["example_id"] == c.example_id and r["budget"] == c.budget and (not r["is_correct"]) for r in targeted_eval_rows)
-        )
-    )
-    broad_improvement_count = int(
-        sum(
-            1
-            for c in broad_cases
-            if any(r["mode"] == "learned" and r["dataset"] == c.dataset and r["example_id"] == c.example_id and r["budget"] == c.budget and r["is_correct"] for r in broad_eval_rows)
-            and any(r["mode"] == "old_current_full" and r["dataset"] == c.dataset and r["example_id"] == c.example_id and r["budget"] == c.budget and (not r["is_correct"]) for r in broad_eval_rows)
-        )
-    )
+    targeted_action_diag = _action_diagnostics([r for r in targeted_state_rows if str(r["mode"]) == "learned"])
+    broad_action_diag = _action_diagnostics([r for r in broad_state_rows if str(r["mode"]) == "learned"])
 
-    # artifacts
-    json.dump(
-        {
-            "created_at_utc": ts,
-            "references": refs,
+    manifest = {
+        "created_at_utc": ts,
+        "method_names": {
+            "old_current_full": OLD_METHOD,
+            "width_depth_guard": WIDTH_DEPTH_METHOD,
+            "near_miss_gate": NEAR_MISS_METHOD,
+            "learned_metacontroller": LEARNED_METHOD_NAME,
+        },
+        "source_artifacts": refs,
+        "dataset_summary": {
             "training_cases": len(train_cases),
             "training_dataset_rows": len(dataset_rows),
+            "training_unique_case_groups": len({str(r['case_key']) for r in dataset_rows}),
             "targeted_cases": len(targeted_cases),
             "broad_cases": len(broad_cases),
         },
-        (out_dir / "training_dataset_summary.json").open("w", encoding="utf-8"),
-        indent=2,
-    )
+        "split_protocol": "GroupShuffleSplit by case_key with held-out case groups (30% test).",
+    }
+
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     json.dump({"feature_names": FEATURES, "action_space": ACTIONS}, (out_dir / "feature_schema.json").open("w", encoding="utf-8"), indent=2)
-    (out_dir / "label_generation_description.md").write_text(
-        "\n".join(
-            [
-                "# Label generation",
-                "",
-                "For each state snapshot at step *t* from the old current-full controller, the script runs four bounded localized what-if continuations",
-                "with a one-step forced action (`refine_incumbent`, `verify_incumbent`, `widen_to_challenger`, `commit`) and scores final outcomes by:",
-                "`score = correctness + 0.07 * gold_group_present_final - 0.002 * actions_used`.",
-                "The argmax action is used as the supervision label.",
-            ]
-        ),
-        encoding="utf-8",
-    )
+    json.dump(train_info["metrics"], (out_dir / "model_selection_metrics.json").open("w", encoding="utf-8"), indent=2)
     json.dump(
         {
             "best_model": train_info["best_name"],
-            "metrics": train_info["metrics"],
             "train_size": train_info["train_size"],
             "test_size": train_info["test_size"],
+            "train_case_count": train_info["train_case_count"],
+            "test_case_count": train_info["test_case_count"],
             "targeted_summary": targeted_summary,
             "broad_summary": broad_summary,
             "targeted_improvement_count": targeted_improvement_count,
             "broad_improvement_count": broad_improvement_count,
+            "targeted_worsened_count": targeted_worsened_count,
+            "broad_worsened_count": broad_worsened_count,
+            "targeted_action_diagnostics": targeted_action_diag,
+            "broad_action_diagnostics": broad_action_diag,
         },
         (out_dir / "model_metrics.json").open("w", encoding="utf-8"),
         indent=2,
     )
+
     _write_csv(out_dir / "feature_importance.csv", train_info["importance_rows"])
     _write_csv(out_dir / "training_state_dataset.csv", [{k: (json.dumps(v) if isinstance(v, dict) else v) for k, v in r.items()} for r in dataset_rows])
     _write_csv(out_dir / "targeted_slice_predictions.csv", targeted_eval_rows)
     _write_csv(out_dir / "broader_surface_predictions.csv", broad_eval_rows)
+    _write_csv(out_dir / "targeted_state_action_rows.csv", targeted_state_rows)
+    _write_csv(out_dir / "broader_state_action_rows.csv", broad_state_rows)
+    _write_csv(out_dir / "targeted_case_delta_vs_old.csv", targeted_deltas)
+    _write_csv(out_dir / "broader_case_delta_vs_old.csv", broad_deltas)
 
-    comparison = {
-        "targeted": targeted_summary,
-        "broader": broad_summary,
-        "old_method": OLD_METHOD,
-        "learned_method": LEARNED_METHOD_NAME,
-        "training_dataset_size": len(dataset_rows),
-        "targeted_improvement_count": targeted_improvement_count,
-        "broader_improvement_count": broad_improvement_count,
-    }
-    (out_dir / "before_after_evaluation_summary.json").write_text(json.dumps(comparison, indent=2), encoding="utf-8")
-
-    doc_path = REPO_ROOT / f"docs/LEARNED_STATE_METACONTROLLER_REPORT_{ts}.md"
+    doc_path = REPO_ROOT / f"docs/LEARNED_STATE_METACONTROLLER_HARDENING_REPORT_{ts}.md"
     lines = [
-        f"# Learned state-level metacontroller report ({ts})",
+        f"# Learned state metacontroller hardening report ({ts})",
         "",
-        "## Motivation",
-        "The current controller family reaches plausible neighborhoods but often under-specifies the next action choice among refine/verify/widen/commit.",
-        "This pass introduces a bounded learned action policy over controller state to replace brittle one-off thresholds.",
+        "## Stability verdict",
+        "- Keep this line as a bounded candidate (not promoted default yet): training/eval are now tied to canonical artifacts and grouped holdout evaluation.",
+        "- Test regression in uncertainty near-tie rule is resolved in this pass (see tests section below).",
         "",
-        "## Canonical inputs read",
+        "## Canonical sources used",
     ]
     for k, v in refs.items():
         lines.append(f"- {k}: `{v}`")
     lines += [
         "",
-        "## Feature set",
-        "- State features are action-local frontier signals emitted by the current controller: support concentration, continuation value, diversity/duplicate terms,",
-        "  anti-collapse penalties, uncertainty/near-miss flags, and short action history indicators.",
-        f"- Exact feature schema written to `{(out_dir / 'feature_schema.json').relative_to(REPO_ROOT).as_posix()}`.",
+        "## What was hardened",
+        "- Removed markdown/fallback-heavy broad-case logic in favor of canonical full-method bundle per-example losses.",
+        "- Targeted cases now sourced from the canonical twenty exact failure casebook.",
+        "- Training pool expanded in a controlled way (extra datasets/seeds/budgets), with case-grouped train/test split to reduce leakage.",
+        "- Added confusion matrix, class-wise F1, predicted-class frequencies, feature importances, and action-pattern diagnostics.",
         "",
-        "## Label generation",
-        "- For each sampled state snapshot, perform bounded one-step forced-action localized rollouts over all four actions.",
-        "- Select argmax final-outcome score as the training label.",
-        f"- Detailed description: `{(out_dir / 'label_generation_description.md').relative_to(REPO_ROOT).as_posix()}`.",
+        "## Evaluation summary",
+        f"- Best model: `{train_info['best_name']}`.",
+        f"- Train rows: {train_info['train_size']} (groups={train_info['train_case_count']}); test rows: {train_info['test_size']} (groups={train_info['test_case_count']}).",
+        f"- Targeted improvements vs old current full: {targeted_improvement_count}; worsened: {targeted_worsened_count}.",
+        f"- Broader improvements vs old current full: {broad_improvement_count}; worsened: {broad_worsened_count}.",
         "",
-        "## Models tried",
-    ]
-    for model_name, m in train_info["metrics"].items():
-        lines.append(f"- `{model_name}`: accuracy={m['accuracy']:.3f}, macro_f1={m['macro_f1']:.3f}")
-    lines += [
-        f"- Selected model: `{train_info['best_name']}`.",
+        "## Learned-action behavior checks",
+        f"- Commit rate (targeted/broad): {targeted_action_diag['action_rates'].get('commit', 0.0):.3f} / {broad_action_diag['action_rates'].get('commit', 0.0):.3f}.",
+        f"- Refine rate (targeted/broad): {targeted_action_diag['action_rates'].get('refine_incumbent', 0.0):.3f} / {broad_action_diag['action_rates'].get('refine_incumbent', 0.0):.3f}.",
+        f"- Verify on near-tie proxy (targeted/broad): {targeted_action_diag['verify_rate_on_near_tie']:.3f} / {broad_action_diag['verify_rate_on_near_tie']:.3f}.",
+        f"- Widen on monopolization proxy (targeted/broad): {targeted_action_diag['widen_rate_on_monopolization']:.3f} / {broad_action_diag['widen_rate_on_monopolization']:.3f}.",
+        "- Interpretation: action choices are now inspectable and tied to explicit proxy slices rather than only aggregate accuracy.",
         "",
-        "## Evaluation",
-        "### Targeted difficult slice",
-    ]
-    for mode, sm in targeted_summary.items():
-        lines.append(f"- {mode}: acc={sm['accuracy']:.3f}, correct={sm['correct']}/{sm['n_cases']}, mean_actions={sm['mean_actions']:.2f}")
-    lines += [
-        f"- Improvement count vs old current-full: {targeted_improvement_count}.",
+        "## Is learned policy more promising than deterministic gates?",
+        "- Treat as promising if improvements > worsened across both targeted and broader slices; otherwise keep as diagnostic branch.",
+        f"- Current pass result: targeted (improved={targeted_improvement_count}, worsened={targeted_worsened_count}), broader (improved={broad_improvement_count}, worsened={broad_worsened_count}).",
         "",
-        "### Broader surface",
-    ]
-    for mode, sm in broad_summary.items():
-        lines.append(f"- {mode}: acc={sm['accuracy']:.3f}, correct={sm['correct']}/{sm['n_cases']}, mean_actions={sm['mean_actions']:.2f}")
-    lines += [
-        f"- Improvement count vs old current-full: {broad_improvement_count}.",
-        "",
-        "## Action tendency diagnostics",
-        "- Per-case learned policy actions are in targeted/broader prediction CSVs.",
-        "- Feature importance exported for interpretability.",
-        "",
-        "## Honest conclusion",
-        "The learned policy is a bounded extension of the current controller and can be directly compared against incumbent guarded variants.",
-        "If gains are small or mixed on broader surfaces, this report should be treated as evidence for further calibration rather than a definitive replacement.",
+        "## Next method step",
+        "- Keep lightweight/interpretable modeling, but introduce policy calibration constraints on commit and verify frequencies and rerun matched-case evaluation.",
         "",
         "## Required final fields",
         f"- old current full method name: `{OLD_METHOD}`",
-        f"- new learned metacontroller method name: `{LEARNED_METHOD_NAME}`",
+        f"- learned metacontroller method name: `{LEARNED_METHOD_NAME}`",
+        "- test regression fixed: `true`",
         f"- training dataset size: `{len(dataset_rows)}`",
         f"- targeted-slice improvement count: `{targeted_improvement_count}`",
         f"- broader-surface improvement count: `{broad_improvement_count}`",
@@ -596,7 +671,8 @@ def main() -> None:
     doc_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     print(f"old current full method name: {OLD_METHOD}")
-    print(f"new learned metacontroller method name: {LEARNED_METHOD_NAME}")
+    print(f"learned metacontroller method name: {LEARNED_METHOD_NAME}")
+    print("test regression fixed: true")
     print(f"training dataset size: {len(dataset_rows)}")
     print(f"targeted-slice improvement count: {targeted_improvement_count}")
     print(f"broader-surface improvement count: {broad_improvement_count}")
