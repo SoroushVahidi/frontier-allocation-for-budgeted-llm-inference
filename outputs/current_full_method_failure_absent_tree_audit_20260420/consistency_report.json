@@ -1,0 +1,44 @@
+{
+  "audit_date": "2026-04-20",
+  "artifact_root": "outputs/twenty_exact_current_full_method_failures_vs_best_20260420",
+  "rules": {
+    "absent_definition": "Case is absent iff per-case JSON indicates correct answer not in our tree. Priority: comparison.our_contains_correct_answer; fallback: comparison.our_correct_answer_node_ids empty; fallback: provenance_labels.our_correct_node_identity == 'absent'.",
+    "do_not_infer_from_prose_only": true
+  },
+  "case_count": 20,
+  "computed_absent_count": 11,
+  "computed_present_count": 9,
+  "computed_absent_case_ids": [
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_21",
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_23",
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_29",
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_34",
+    "HuggingFaceH4__aime_2024__HuggingFaceH4_aime_2024_11",
+    "olympiadbench__Hothan_OlympiadBench_14",
+    "olympiadbench__Hothan_OlympiadBench_27",
+    "olympiadbench__Hothan_OlympiadBench_39",
+    "openai__gsm8k__openai_gsm8k_26",
+    "openai__gsm8k__openai_gsm8k_34",
+    "openai__gsm8k__openai_gsm8k_37"
+  ],
+  "computed_present_case_ids": [
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_30",
+    "olympiadbench__Hothan_OlympiadBench_13",
+    "olympiadbench__Hothan_OlympiadBench_22",
+    "olympiadbench__Hothan_OlympiadBench_28",
+    "olympiadbench__Hothan_OlympiadBench_34",
+    "openai__gsm8k__openai_gsm8k_10",
+    "openai__gsm8k__openai_gsm8k_2",
+    "openai__gsm8k__openai_gsm8k_21",
+    "openai__gsm8k__openai_gsm8k_24"
+  ],
+  "cross_layer_consistency": {
+    "summary_json_absent_count": 11,
+    "markdown_aggregate_absent_count": 11,
+    "summary_json_matches_computed": true,
+    "markdown_aggregate_matches_computed": true,
+    "markdown_per_case_json_mismatches": [],
+    "internal_json_mismatches": []
+  },
+  "overall_consistent": true
+}
