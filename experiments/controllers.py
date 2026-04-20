@@ -837,6 +837,12 @@ class GlobalDiversityAggregationController(BaseController):
         enable_uncertainty_triggered_verify: bool = False,
         uncertainty_verify_priority_margin: float = 0.05,
         uncertainty_verify_max_steps: int = 2,
+        enable_near_miss_correction_gate: bool = False,
+        near_miss_correction_numeric_gap: float = 3.0,
+        near_miss_correction_min_actions: int = 4,
+        near_miss_correction_max_steps: int = 2,
+        near_miss_correction_repeat_family_trigger: int = 5,
+        near_miss_correction_min_top_support: float = 0.55,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -930,6 +936,12 @@ class GlobalDiversityAggregationController(BaseController):
         self.enable_uncertainty_triggered_verify = bool(enable_uncertainty_triggered_verify)
         self.uncertainty_verify_priority_margin = max(0.0, float(uncertainty_verify_priority_margin))
         self.uncertainty_verify_max_steps = max(0, int(uncertainty_verify_max_steps))
+        self.enable_near_miss_correction_gate = bool(enable_near_miss_correction_gate)
+        self.near_miss_correction_numeric_gap = max(0.0, float(near_miss_correction_numeric_gap))
+        self.near_miss_correction_min_actions = max(0, int(near_miss_correction_min_actions))
+        self.near_miss_correction_max_steps = max(0, int(near_miss_correction_max_steps))
+        self.near_miss_correction_repeat_family_trigger = max(1, int(near_miss_correction_repeat_family_trigger))
+        self.near_miss_correction_min_top_support = max(0.0, min(1.0, float(near_miss_correction_min_top_support)))
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -939,6 +951,18 @@ class GlobalDiversityAggregationController(BaseController):
             return float(v)
         except (TypeError, ValueError):
             return default
+
+    @staticmethod
+    def _maybe_numeric_answer(answer: str | None) -> float | None:
+        if answer is None:
+            return None
+        txt = str(answer).strip()
+        if re.fullmatch(r"-?\d+(?:\.\d+)?", txt):
+            try:
+                return float(txt)
+            except ValueError:
+                return None
+        return None
 
     def _maybe_build_diversity_needed_predictor(self) -> dict[str, Any] | None:
         if self.diversity_needed_gate_mode != "learned":
@@ -2057,6 +2081,8 @@ class GlobalDiversityAggregationController(BaseController):
         width_depth_forced_width_steps = 0
         width_depth_forced_challenger_maturation_steps = 0
         uncertainty_verify_steps = 0
+        near_miss_correction_activation_count = 0
+        near_miss_correction_forced_expand_count = 0
         last_expanded_branch_id: str | None = None
         consecutive_same_branch_expands = 0
         max_consecutive_same_branch_expands = 0
@@ -2326,6 +2352,62 @@ class GlobalDiversityAggregationController(BaseController):
             near_tie_uncertainty = False
             if len(scored) >= 2:
                 near_tie_uncertainty = bool(abs(float(scored[0][1]) - float(scored[1][1])) <= self.uncertainty_verify_priority_margin)
+            near_miss_correction_meta: dict[str, Any] = {
+                "activated": False,
+                "reason": "disabled",
+                "nearby_done_same_family_count": 0,
+                "top_support_before_action": float(top_support),
+            }
+            correction_branch_spawned = False
+            correction_parent_branch_id: str | None = None
+            if (
+                self.enable_near_miss_correction_gate
+                and near_miss_correction_activation_count < self.near_miss_correction_max_steps
+                and actions >= self.near_miss_correction_min_actions
+                and branch.is_done
+                and top_support <= self.near_miss_correction_min_top_support
+                and consecutive_same_family_expands >= self.near_miss_correction_repeat_family_trigger
+            ):
+                parent_family_id = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+                branch_numeric = self._maybe_numeric_answer(self._normalize_answer(branch.predicted_answer))
+                nearby = 0
+                if branch_numeric is not None:
+                    for cand in active:
+                        if cand.branch_id == branch.branch_id or not cand.is_done:
+                            continue
+                        cand_family = str(branch_family_ids.get(cand.branch_id) or cand.branch_id)
+                        if cand_family != parent_family_id:
+                            continue
+                        cand_num = self._maybe_numeric_answer(self._normalize_answer(cand.predicted_answer))
+                        if cand_num is None:
+                            continue
+                        if abs(cand_num - branch_numeric) <= self.near_miss_correction_numeric_gap:
+                            nearby += 1
+                near_miss_correction_meta["nearby_done_same_family_count"] = int(nearby)
+                if nearby > 0:
+                    parent_branch_id = branch.branch_id
+                    correction_branch = self.generator.init_branch(f"div_near_miss_correct_{actions}_{len(branches)}")
+                    correction_branch.score = 0.65 * correction_branch.score + 0.35 * branch.score
+                    branches.append(correction_branch)
+                    branch_expansions[correction_branch.branch_id] = 0
+                    branch_family_ids[correction_branch.branch_id] = parent_family_id
+                    branch = correction_branch
+                    priority = float(priority) + 0.01
+                    b_expanded = 0
+                    should_expand = True
+                    correction_branch_spawned = True
+                    correction_parent_branch_id = str(parent_branch_id)
+                    near_miss_correction_activation_count += 1
+                    near_miss_correction_meta.update(
+                        {
+                            "activated": True,
+                            "reason": "same_family_numeric_near_miss_correction_spawn",
+                            "parent_family_id": parent_family_id,
+                            "parent_branch_id": str(correction_parent_branch_id or ""),
+                        }
+                    )
+                else:
+                    near_miss_correction_meta["reason"] = "no_numeric_near_miss_peer_in_same_family"
             uncertainty_verify_activated = bool(
                 self.enable_uncertainty_triggered_verify
                 and near_tie_uncertainty
@@ -2394,8 +2476,17 @@ class GlobalDiversityAggregationController(BaseController):
                         "width_depth_guard_reason": width_depth_meta.get("reason"),
                         "width_depth_guard_chosen_family_id": width_depth_meta.get("chosen_family_id"),
                         "uncertainty_verify_activated": bool(uncertainty_verify_activated),
+                        "near_miss_correction_activated": bool(near_miss_correction_meta.get("activated", False)),
+                        "near_miss_correction_reason": near_miss_correction_meta.get("reason"),
+                        "near_miss_correction_nearby_done_same_family_count": int(
+                            near_miss_correction_meta.get("nearby_done_same_family_count", 0)
+                        ),
+                        "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
+                        "near_miss_correction_parent_branch_id": correction_parent_branch_id,
                     }
                 )
+                if correction_branch_spawned:
+                    near_miss_correction_forced_expand_count += 1
                 if branch.branch_id == last_expanded_branch_id:
                     repeated_same_branch_expansion_count += 1
                     consecutive_same_branch_expands += 1
@@ -2482,6 +2573,13 @@ class GlobalDiversityAggregationController(BaseController):
                         "width_depth_guard_reason": width_depth_meta.get("reason"),
                         "width_depth_guard_chosen_family_id": width_depth_meta.get("chosen_family_id"),
                         "uncertainty_verify_activated": bool(uncertainty_verify_activated),
+                        "near_miss_correction_activated": bool(near_miss_correction_meta.get("activated", False)),
+                        "near_miss_correction_reason": near_miss_correction_meta.get("reason"),
+                        "near_miss_correction_nearby_done_same_family_count": int(
+                            near_miss_correction_meta.get("nearby_done_same_family_count", 0)
+                        ),
+                        "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
+                        "near_miss_correction_parent_branch_id": correction_parent_branch_id,
                     }
                 )
 
@@ -2772,6 +2870,11 @@ class GlobalDiversityAggregationController(BaseController):
                 "width_depth_challenger_maturation_min_expands": int(self.width_depth_challenger_maturation_min_expands),
                 "uncertainty_triggered_verify_enabled": bool(self.enable_uncertainty_triggered_verify),
                 "uncertainty_verify_steps": int(uncertainty_verify_steps),
+                "near_miss_correction_gate_enabled": bool(self.enable_near_miss_correction_gate),
+                "near_miss_correction_activation_count": int(near_miss_correction_activation_count),
+                "near_miss_correction_forced_expand_count": int(near_miss_correction_forced_expand_count),
+                "near_miss_correction_numeric_gap": float(self.near_miss_correction_numeric_gap),
+                "near_miss_correction_repeat_family_trigger": int(self.near_miss_correction_repeat_family_trigger),
                 "diversity_needed_gate_mode": self.diversity_needed_gate_mode,
                 "diversity_needed_gate_positive_threshold": float(self.diversity_needed_gate_positive_threshold),
                 "diversity_needed_gate_negative_threshold": float(self.diversity_needed_gate_negative_threshold),
