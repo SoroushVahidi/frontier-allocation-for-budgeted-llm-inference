@@ -31,6 +31,8 @@ Main-paper plot data:
 Appendix figures and data:
 - `outputs/paper_figures/appendix_*.{pdf,png}`
 - `outputs/paper_plot_data/appendix_*.csv`
+- `outputs/paper_figures/appendix_output_layer_repair.{pdf,png}`
+- `outputs/paper_plot_data/appendix_output_layer_repair.csv`
 
 ## Generated table outputs
 

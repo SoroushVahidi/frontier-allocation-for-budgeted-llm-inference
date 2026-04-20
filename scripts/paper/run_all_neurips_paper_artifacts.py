@@ -19,6 +19,7 @@ SCRIPTS = [
     "plot_figure5_anti_collapse.py",
     "plot_figure6_failure_decomposition.py",
     "plot_figure7_per_dataset_summary.py",
+    "plot_appendix_output_layer_repair.py",
     "plot_appendix_figures.py",
 ]
 

@@ -18,3 +18,7 @@
 - **Table 4.** Anti-collapse summary combining performance and concentration/diversity diagnostics.
 - **Table 5.** Failure decomposition summary (proxy basis) across datasets.
 - **Table 6.** Robustness and limitations summary, including dataset/budget support and current caveats.
+
+## Appendix Figures
+
+- **Appendix Figure (Output-layer repair).** On the subset where correct internal reasoning is already present in the tree, deterministic output-layer repair materially improves surfaced-answer correctness; on the full current 20-case failure slice, the remaining unresolved portion indicates a broader upstream tree-generation bottleneck.
