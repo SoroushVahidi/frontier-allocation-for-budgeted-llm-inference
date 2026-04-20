@@ -1,0 +1,4 @@
+root(sample_forest)
+- bon_0 [fam=bon_0, depth=2, score=0.3626, done=True, ans=2002]
+- bon_1 [fam=bon_1, depth=1, score=0.2950, done=True, ans=1999]
+- bon_2 [fam=bon_2, depth=3, score=0.8888, done=True, ans=2000]
