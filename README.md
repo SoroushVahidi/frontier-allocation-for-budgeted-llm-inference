@@ -25,7 +25,7 @@ This repository is **not** currently centered on the older binary revise-routing
 
 ## Current state in one paragraph
 
-The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The codebase now has materially better failure analysis, old-vs-current tree comparison, targeted current-failure bundles, and output-layer repair diagnostics, but it still needs a fresh broad comparison bundle and stronger independent validation before making strong broad-best claims.
+The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The repository now also has a cleaner current broad comparison bundle, a fresh exact current-failure bundle against the strongest direct adversary, and a more explicit artifact-interpretation policy so older bounded plot bundles are not mistaken for the current broad ranking surface.
 
 ## Fastest reliable reading path
 
@@ -36,6 +36,7 @@ Read these first:
 4. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
 5. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
 6. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+7. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
@@ -51,11 +52,13 @@ Use this interpretation rule instead:
 - **Canonical** docs define the current project identity.
 - **Exploratory** docs preserve active side branches and narrower ideas.
 - **Historical** materials are provenance-only and should not define the current paper story.
+- **Derived bounded plot folders** such as `outputs/paper_plot_data/` should not be treated as the default current broad ranking source unless the scope is stated explicitly.
 
 For the full interpretation policy, see:
 - [`docs/README.md`](docs/README.md)
 - [`docs/EXPLORATORY_INDEX.md`](docs/EXPLORATORY_INDEX.md)
 - [`docs/HISTORICAL_AND_ARCHIVE_POLICY.md`](docs/HISTORICAL_AND_ARCHIVE_POLICY.md)
+- [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 
 ## What is already strong
 
@@ -81,9 +84,12 @@ For the full interpretation policy, see:
 
 ## Main bottleneck
 
-The current bottleneck is now split:
-1. in some cases, the correct answer is still absent from the tree;
-2. in many targeted current-failure cases, the tree already contains the correct answer but the surfaced/evaluated output layer still needed repair.
+The current broad bottleneck is now concentrated upstream in tree generation and branch-family control:
+1. the correct answer is still absent from our tree too often on hard cases;
+2. repeated same-family expansion still monopolizes compute too often;
+3. a smaller but still important slice consists of present-but-not-selected cases once the right answer is already in the tree.
+
+Output-layer repair remains useful, but it is no longer the dominant broad bottleneck on the current exact-failure surface.
 
 ## Repository layout
 
@@ -100,6 +106,6 @@ The current bottleneck is now split:
 
 The strongest current paper story is:
 
-**fixed-budget branch allocation for LLM reasoning, where early tree shape matters, but the latest repository evidence also shows that some remaining errors are no longer pure search failures and instead live in the final output layer after correct internal reasoning has already been found.**
+**fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
 
-The repository now has a strong integrated promoted line and a much better exact-failure stack, but it is **not yet in final broad-best-claim shape** because fresh independent validation and a new current full comparison bundle are still needed.
+The repository now has a stronger integrated promoted line, a better exact-failure stack, and a clearer artifact-status policy, but it is **not yet in final broad-best-claim shape** because stronger broad validation and broader current-state comparison closure are still needed.
