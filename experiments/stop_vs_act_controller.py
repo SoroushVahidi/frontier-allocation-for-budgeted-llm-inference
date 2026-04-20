@@ -51,8 +51,8 @@ class StopVsActLabelConfig:
     instability_std_threshold: float = 0.045
     instability_guard_band: float | None = None
     uncertainty_use_margin_band: bool = True
-    uncertainty_use_ci_overlap_zero: bool = True
-    uncertainty_use_disagreement_rate: bool = True
+    uncertainty_use_ci_overlap_zero: bool = False
+    uncertainty_use_disagreement_rate: bool = False
     uncertainty_disagreement_rate_threshold: float = 0.35
     rollout_samples: int = 6
     target_mode: Literal[
@@ -658,7 +658,8 @@ def build_stop_vs_act_dataset(
                     label_cfg.uncertainty_use_disagreement_rate
                     and disagreement_rate >= float(label_cfg.uncertainty_disagreement_rate_threshold)
                 )
-                uncertain = bool(margin_uncertain or ci_uncertain or disagreement_uncertain)
+                unstable_uncertain = bool(unstable and instability_relevant)
+                uncertain = bool(margin_uncertain or unstable_uncertain or ci_uncertain or disagreement_uncertain)
 
                 weight = 1.0
                 if uncertain:
