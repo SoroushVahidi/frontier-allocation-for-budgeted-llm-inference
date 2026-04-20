@@ -2,128 +2,94 @@
 
 ## Primary bottleneck
 
-The primary bottleneck is **supervision target quality / proxy-label mismatch** for the **next-step branch-allocation decision**.
+The primary bottleneck is now:
+
+> **getting the correct answer into our tree reliably enough under fixed budget while avoiding repeated same-family monopolization.**
+
+This is now a more accurate current bottleneck description than the older learner-side framing alone.
 
 ## Why this dominates now
 
-The project is no longer blocked mainly by lack of infrastructure. The repo already contains controllers, audits, dataset tooling, oracle-label pilot paths, and real-model pilot pathways.
+The project is no longer blocked mainly by infrastructure.
+The repo already contains:
+- frontier/controller mechanisms,
+- anti-collapse and repeat-expansion control,
+- exact current-failure bundles,
+- broad comparison bundles,
+- and a deterministic output-layer repair stage.
 
-The weaker point is that current labels or target approximations still do not capture the decision we care about with enough fidelity:
-
-> **Which active branch should receive the next unit of compute?**
-
-A local “continue this branch or not” question can still be useful, but only as a simplified proxy for the richer allocation problem.
+The current broad comparison evidence instead says that the latest integrated method still loses too often because:
+- the correct answer is absent from our tree on too many hard cases,
+- repeated same-family expansion is still common,
+- and only a smaller remaining slice is about final selection once the right answer is already present.
 
 ## How the bottleneck appears in practice
 
-- noisy branch-comparison targets,
-- unstable near-threshold local decisions,
-- shallow local comparator definitions,
-- limited calibration transfer across budgets / seeds / datasets,
-- controller wins that are promising but not yet consistently robust,
-- under-spend or misallocated spend even when budget headroom exists.
+- repeated same-family expansion on hard cases,
+- weak entry of answer-distinct alternatives into the tree,
+- insufficient early alternative maturation,
+- absent-from-tree failures against the strongest current competitor,
+- a smaller but still real present-but-not-selected slice,
+- and broad matched-bundle underperformance relative to the strongest current broad-family variant.
 
 ## Explicit non-bottlenecks for the current phase
 
 The main problem is **not** primarily:
-- infrastructure completeness,
-- lack of additional controller variants,
-- lack of heavier models,
+- missing infrastructure,
+- lack of output-layer instrumentation,
+- inability to compare methods,
 - or inability to run broader sweeps.
 
-These may matter later, but they are not the highest-leverage next fix.
+Those are now strong enough for serious current-state diagnosis.
 
 ## Canonical near-term response
 
-1. Improve branch-comparison and next-step allocation target design.
-2. Make local comparator semantics more opportunity-cost-aware.
-3. Improve selective pairwise accept/defer control rather than only adding more ad hoc routing variants.
-4. Re-run matched controller comparisons against strong heuristics and BT baseline.
-5. Use broader scaling only after target-quality improvements are visible.
+1. Reduce absent-from-tree failures on the strongest current failure slices.
+2. Reduce repeated same-family expansion without pushing generic diversity blindly.
+3. Preserve answer-group-aware anti-collapse logic rather than replacing it with a generic diversity bonus.
+4. Treat output-layer repair as a preserved stage, but not as the dominant broad bottleneck anymore.
+5. Re-run matched comparisons after targeted hard-slice repairs rather than broad new family search.
 
 ## Practical consequence
 
-The next efficient progress is expected to come from **better branch-allocation supervision and cleaner comparator design**, not from immediately scaling compute or model size.
+The next efficient progress is expected to come from **better early tree-shape control and better entry/maturation of plausible alternatives**, not from immediately adding more scale or more unrelated controller families.
 
-## Evidence update from medium brute-force label run (2026-04-16)
+## Current evidence hierarchy
 
-- The supervision-data bottleneck has been **materially reduced but not removed** by a real medium-scale GSM8K run (`outputs/branch_label_bruteforce/gsm8k_medium_20260416/`), with hundreds of candidate/pairwise labels.
-- Approximate labels show strong bounded alignment to exact tiny-state labels (winner agreement 0.956 on overlapping feasible states), supporting approximate mode as a practical supervision source.
-- Remaining bottleneck shape: many non-negligible near-tie/low-margin comparisons and only moderate downstream pilot learner accuracy, indicating target noise/calibration issues still matter.
-- Therefore the bottleneck status is best described as **partially resolved**.
+### 1. Targeted output-layer repair result
+A targeted 16-case subset where the correct answer was already in our tree was fully repaired by a deterministic output-layer fix.
 
-## Evidence update from multi-dataset brute-force scaling run (2026-04-16)
+Interpretation:
+- output-layer mismatch is real and important,
+- but it is no longer the main broad bottleneck once that stage is repaired.
 
-- A larger merged corpus now exists across GSM8K, MATH-500, and AMO-Bench with multi-budget/multi-seed coverage (`docs/BRUTEFORCE_LABEL_SCALING_STATUS.md`).
-- This materially reduced data scarcity for branch-allocation supervision (roughly 3.1x row-count expansion over the prior medium GSM8K corpus).
-- Learned allocator metrics improved to moderate levels and remain dataset-sensitive, with non-trivial but not robustly high cross-dataset transfer.
-- Exact-mode coverage is now present but still sparse, so exact-slice conclusions are still low-confidence.
-- Updated bottleneck interpretation: supervision-data quantity is less limiting than before, but supervision-target fidelity/calibration remains a central unresolved issue; bottleneck remains **partially resolved**.
+### 2. Fresh exact current full-method failure set vs best direct adversary
+The fresh exact 20-case set for the latest integrated full method shows:
+- correct answer absent from our tree: **11**,
+- correct answer present in our tree but not selected: **9**,
+- repeated same-family expansion still present: **18**,
+- output-layer mismatch: **0** in that fresh exact set.
 
-## Evidence update from GBDT branch-allocator integration pass (2026-04-16 bounded)
+Interpretation:
+- the broad remaining bottleneck has shifted back upstream into tree-generation and branch-family control.
 
-- Stronger tabular ranking model families (LightGBM LambdaRank, CatBoost YetiRankPairwise) are now integrated as matched baselines in the branch-allocator learning stack.
-- Bounded matched runs (documented in `docs/GBDT_BRANCH_ALLOCATOR_STATUS.md`) showed mixed gains and no robust universal improvement over linear anchors.
-- This is consistent with the current interpretation that model class alone is not the dominant unresolved issue; supervision-target fidelity/noise remains central.
+### 3. Current full comparison bundle
+The latest matched broad comparison bundle places the latest integrated full method at **#3**, not #1.
 
-## Evidence update from target-fidelity branch-comparison pass (2026-04-16 bounded)
+Interpretation:
+- the current integrated line is promising,
+- but not yet the strongest overall method.
 
-- A new pair-construction/target-fidelity layer plus exact-vs-approx disagreement audit is now integrated and auditable (`docs/TARGET_FIDELITY_BRANCH_COMPARISON_STATUS.md`).
-- Bounded matched regime runs show large performance shifts from pair-construction regime changes (especially margin/uncertainty filtering and pair-type choice), often larger than model-class-only differences in the same all-pairs setting.
-- Updated interpretation remains conservative: bottleneck is still partially resolved and is now more sharply localized to near-tie ambiguity and supervision-target fidelity rather than missing model complexity alone.
-
-## Evidence update from hard-region exact-supervision expansion pass (2026-04-16 bounded)
-
-- A new auditable pipeline now mines difficult pair regions and selectively promotes exact labels only for mined hard comparisons (`docs/HARD_REGION_EXACT_SUPERVISION_STATUS.md`).
-- This reduces process ambiguity around where exact supervision is spent and provides explicit per-row replacement provenance.
-- In the bounded matched run, direct hard-region exact promotion did not clearly improve near-tie or adjacent-rank slices versus the all-pairs approximate baseline.
-- Updated bottleneck interpretation: supervision-fidelity weakness in hard ambiguous regions remains central; the pass improved localization/instrumentation more than end-metric closure.
-
-## Evidence update from hard-case feature-representation pass (2026-04-16 bounded)
-
-- A richer hard-case feature set is now integrated and auditable, including frontier context, rank/gap structure, verification dynamics normalization, and trend/stagnation/budget interactions (`docs/HARD_CASE_FEATURE_REPRESENTATION_STATUS.md`).
-- Under fixed supervision regimes, the pairwise logistic baseline improved strongly on near-tie and adjacent-rank slices when using richer features versus the prior v1 representation.
-- In the same bounded pass, CatBoost did not show a clear corresponding lift, so gains are model-path dependent.
-- Updated bottleneck interpretation: remaining weakness now looks more like a mix of representation quality and irreducible hard-case ambiguity/modeling limits, rather than label provenance alone.
-
-## Evidence update from ternary / selective-abstention formulation pass (2026-04-16 bounded)
-
-- Tie-aware and abstaining branch-comparison formulations were added and compared in matched runs with fixed richer features (`v2`) and explicit fallback policy.
-- Bounded evidence showed strong tie-detection capacity for ternary labels, but with severe coverage collapse under the tested tie-band; selective abstention showed a non-trivial coverage/accuracy tradeoff but did not clearly improve forced near-tie outcomes after fallback.
-- Updated interpretation: forced binary pressure is part of hard-slice failure, but fallback calibration and ambiguity handling thresholds remain active bottlenecks; this does not yet support a claim of closure.
-
-## Evidence update from ambiguity calibration + fallback pass (2026-04-16 bounded)
-
-- Confidence-calibration variants (temperature/Platt/isotonic) and fallback-policy variants were compared in matched runs with fixed representation (`v2`) and explicit abstention threshold controls.
-- In this bounded setting, probability-calibration metrics (Brier/ECE) did not uniformly improve, but calibrated abstention variants improved accepted-accuracy/coverage operating tradeoff versus the prior uncalibrated abstention baseline.
-- Near-tie forced-decision behavior remained weak across variants, indicating that fallback design and irreducible ambiguity handling remain key unresolved bottlenecks.
-
-## Evidence update from dedicated near-tie policy pass (2026-04-16 bounded)
-
-- A dedicated near-tie detector + routing layer is now integrated with explicit configuration and provenance under matched feature/supervision settings (`docs/NEAR_TIE_POLICY_STATUS.md`).
-- Bounded matched evidence indicates near-tie routing policy choice matters: pointwise fallback in routed near-tie cases improved hardest-slice forced accuracy in this run, while balanced/shared fallback improved near-tie slice but degraded overall forced/top-1.
-- Updated interpretation remains conservative: bottleneck is still centered on hard near-tie ambiguity and policy quality in routed hard cases; this pass improves leverage/diagnostics rather than closing the bottleneck.
-
-## Evidence update from near-tie pointwise-expert pass (2026-04-16 bounded)
-
-- A dedicated near-tie pointwise-expert path is now integrated with explicit specialized/reweighted pointwise provenance plus near-tie bucket diagnostics (`docs/NEAR_TIE_POINTWISE_EXPERT_STATUS.md`).
-- Bounded evidence indicates pointwise path quality is not automatic: near-tie-specialized pointwise retained the strongest near-tie slice signal in this run, while generic/reweighted pointwise variants under the tested routing gate degraded overall and did not improve near-tie forced behavior.
-- Updated bottleneck interpretation: near-tie handling now appears most constrained by expert-model quality and routing-gate quality (with residual irreducible ambiguity), rather than by generic calibration/fallback logic alone.
-
-## Evidence update from strict-coupled and tie-aware controller passes (2026-04-17 bounded)
-
-- A strict-coupled near-tie controller refinement reduced spillover while preserving the strongest prior near-tie-specialist behavior (`docs/STRICT_COUPLED_NEAR_TIE_CONTROLLER_STATUS.md`).
-- A tie-aware post-hoc deferral controller preserved forced/top-1/hard-slice behavior while adding cleaner unresolved/deferred accounting (`docs/STRICT_COUPLED_TIE_AWARE_POSTHOC_DEFERRAL_STATUS.md`).
-- These passes indicate that controller cleanliness and ambiguity accounting improved, but headline performance closure did not come from more routing logic alone.
-
-## Evidence update from deferred-expert improvement pass (2026-04-17 bounded)
-
-- A deferred-state-only specialist training variant was tested inside the tie-aware post-hoc scaffold (`docs/STRICT_COUPLED_TIE_AWARE_DEFERRED_EXPERT_IMPROVEMENT_STATUS.md`).
-- It did not improve deferred-subset quality and hurt forced/top-1 while routing stayed fixed.
-- Updated interpretation: the remaining weakness is not simply choosing a narrower specialist subset; it is more consistent with unresolved supervision design and confidence design for ambiguous deferred cases.
-
-## Current best bottleneck phrasing
+## Best current bottleneck phrasing
 
 The best current phrasing is:
 
-> **the bottleneck is now concentrated in principled selective pairwise control and supervision design for ambiguous hard cases, not in generic infrastructure or raw model class.**
+> **the bottleneck is now concentrated in early tree-shape control under budget: preventing one branch family from monopolizing compute, getting the right answer into the tree more often, and only then improving present-but-not-selected cases.**
+
+## Best current secondary bottleneck
+
+A secondary bottleneck remains:
+
+> **once the right answer is already in the tree, some cases still require better final branch selection or local answer consolidation.**
+
+But this is no longer the first thing to fix on the broad current competitive surface.
