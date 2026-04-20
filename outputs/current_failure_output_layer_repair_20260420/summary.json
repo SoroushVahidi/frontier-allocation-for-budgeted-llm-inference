@@ -1,0 +1,27 @@
+{
+  "timestamp_utc": "2026-04-20T03:09:05.869980+00:00",
+  "input_artifact": "outputs/twenty_exact_current_tuned_vs_self_consistency_failures_20260420",
+  "targeting_rule": {
+    "current_tuned_wrong": true,
+    "self_consistency_3_correct": true,
+    "our_contains_correct_answer": true
+  },
+  "total_input_cases": 20,
+  "targeted_cases": 16,
+  "resolved_by_repair": 16,
+  "unresolved_after_repair": 0,
+  "primary_question": "Out of the 16 current-loss cases where the correct answer is already in our tree, how many are resolved by the new output-layer repair?",
+  "mismatch_breakdown": {
+    "total_cases": 16,
+    "chosen_node_vs_extraction_mismatch": 0,
+    "chosen_node_vs_surface_mismatch": 0,
+    "extraction_vs_surface_mismatch": 0,
+    "canonicalization_changed_answer": 3,
+    "canonical_answer_matches_ground_truth": 16,
+    "resolved_by_repair": 16,
+    "unresolved_after_repair": 0,
+    "subtype_counts": {
+      "canonical_match_surface_mismatch": 16
+    }
+  }
+}

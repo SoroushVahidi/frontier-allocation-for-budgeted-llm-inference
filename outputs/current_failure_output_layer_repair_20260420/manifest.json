@@ -1,0 +1,16 @@
+{
+  "name": "current_failure_output_layer_repair_20260420",
+  "created_at_utc": "2026-04-20T03:09:05.869980+00:00",
+  "inputs": [
+    "outputs/twenty_exact_current_tuned_vs_self_consistency_failures_20260420/cases/*.json",
+    "outputs/twenty_exact_current_tuned_vs_self_consistency_failures_20260420/summary.json"
+  ],
+  "outputs": [
+    "outputs/current_failure_output_layer_repair_20260420/manifest.json",
+    "outputs/current_failure_output_layer_repair_20260420/summary.json",
+    "outputs/current_failure_output_layer_repair_20260420/per_case_results.jsonl",
+    "outputs/current_failure_output_layer_repair_20260420/mismatch_breakdown.json",
+    "outputs/current_failure_output_layer_repair_20260420/targeted_16_table.csv",
+    "docs/CURRENT_FAILURE_OUTPUT_LAYER_REPAIR_STATUS_2026_04_20.md"
+  ]
+}
