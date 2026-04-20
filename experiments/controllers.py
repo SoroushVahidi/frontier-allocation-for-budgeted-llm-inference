@@ -2057,6 +2057,13 @@ class GlobalDiversityAggregationController(BaseController):
         return out
 
     def run(self, question: str, gold_answer: str) -> MethodResult:
+        forced_action_plan_raw = getattr(self, "_forced_action_plan", {}) or {}
+        forced_action_plan: dict[int, str] = {}
+        for k, v in dict(forced_action_plan_raw).items():
+            try:
+                forced_action_plan[int(k)] = str(v)
+            except (TypeError, ValueError):
+                continue
         actions = expansions = verifications = 0
         surviving_trace: list[int] = []
         action_trace: list[dict[str, Any]] = []
@@ -2349,6 +2356,34 @@ class GlobalDiversityAggregationController(BaseController):
                 forced_explore_steps += 1
 
             should_expand = bool((b_expanded < self.min_branch_expansions) or force_explore or (priority >= float(self.scorer.score_branch(branch))))
+            forced_action = str(forced_action_plan.get(actions, "")).strip().lower()
+            forced_action_applied = False
+            if forced_action in {"refine_incumbent", "verify_incumbent", "widen_to_challenger", "commit"}:
+                if forced_action == "commit":
+                    commit_triggered = True
+                    forced_action_applied = True
+                elif forced_action == "verify_incumbent":
+                    top_item = max(scored, key=lambda x: x[1]) if scored else None
+                    if top_item is not None:
+                        branch, priority, pri_meta = top_item
+                    should_expand = False
+                    forced_action_applied = True
+                elif forced_action == "widen_to_challenger":
+                    top_item = max(scored, key=lambda x: x[1]) if scored else None
+                    top_group = str((top_item[2].get("group_key") if top_item else "__none__") or "__none__")
+                    challenger = next((item for item in scored if str(item[2].get("group_key") or "__none__") != top_group), None)
+                    if challenger is not None:
+                        branch, priority, pri_meta = challenger
+                    should_expand = True
+                    forced_action_applied = True
+                elif forced_action == "refine_incumbent":
+                    top_item = max(scored, key=lambda x: x[1]) if scored else None
+                    if top_item is not None:
+                        branch, priority, pri_meta = top_item
+                    should_expand = True
+                    forced_action_applied = True
+            if commit_triggered:
+                break
             near_tie_uncertainty = False
             if len(scored) >= 2:
                 near_tie_uncertainty = bool(abs(float(scored[0][1]) - float(scored[1][1])) <= self.uncertainty_verify_priority_margin)
@@ -2483,6 +2518,7 @@ class GlobalDiversityAggregationController(BaseController):
                         ),
                         "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
                         "near_miss_correction_parent_branch_id": correction_parent_branch_id,
+                        "forced_action": forced_action if forced_action_applied else "",
                     }
                 )
                 if correction_branch_spawned:
@@ -2580,6 +2616,7 @@ class GlobalDiversityAggregationController(BaseController):
                         ),
                         "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
                         "near_miss_correction_parent_branch_id": correction_parent_branch_id,
+                        "forced_action": forced_action if forced_action_applied else "",
                     }
                 )
 
