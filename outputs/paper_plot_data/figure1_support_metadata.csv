@@ -1,0 +1,4 @@
+component,description,source_run
+story_anchor,Fixed-budget cross-controller frontier allocation under heterogeneous families,/workspace/adaptive-reasoning-budget-allocation/outputs/imported_methodology_frontier_eval/20260417T000000Z
+dataset,openai/gsm8k,/workspace/adaptive-reasoning-budget-allocation/outputs/imported_methodology_frontier_eval/20260417T000000Z
+budget_grid,"8,10",/workspace/adaptive-reasoning-budget-allocation/outputs/imported_methodology_frontier_eval/20260417T000000Z

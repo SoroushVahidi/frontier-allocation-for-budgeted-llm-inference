@@ -71,3 +71,9 @@ secrets.*
 
 !outputs/full_method_comparison_bundle/
 !outputs/full_method_comparison_bundle/**/*
+
+# Paper artifact text outputs
+!outputs/paper_tables/
+!outputs/paper_tables/**/*
+!outputs/paper_plot_data/
+!outputs/paper_plot_data/**/*
