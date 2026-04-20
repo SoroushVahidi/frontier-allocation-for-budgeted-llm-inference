@@ -1,0 +1,13 @@
+{
+  "total_cases": 16,
+  "chosen_node_vs_extraction_mismatch": 0,
+  "chosen_node_vs_surface_mismatch": 0,
+  "extraction_vs_surface_mismatch": 0,
+  "canonicalization_changed_answer": 3,
+  "canonical_answer_matches_ground_truth": 16,
+  "resolved_by_repair": 16,
+  "unresolved_after_repair": 0,
+  "subtype_counts": {
+    "canonical_match_surface_mismatch": 16
+  }
+}
