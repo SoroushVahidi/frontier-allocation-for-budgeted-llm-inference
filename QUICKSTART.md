@@ -1,0 +1,62 @@
+# Quickstart
+
+This is the shortest operational entry point for the current repository.
+
+## What this repository is about now
+
+The current project studies **fixed-budget adaptive test-time compute allocation for LLM reasoning**.
+The current canonical question is:
+
+> Which active branch should receive the next unit of compute, and when should the controller continue versus commit?
+
+This repository is **not** currently centered on the older binary revise-routing story.
+
+## Read in this order
+
+1. `README.md`
+2. `docs/CANONICAL_START_HERE.md`
+3. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+4. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+5. `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
+6. `scripts/CANONICAL_START_HERE.md`
+
+## Use these artifact families first
+
+### Current canonical broad comparison
+- `docs/CURRENT_FULL_METHOD_COMPARISON_BUNDLE_STATUS_2026_04_20.md`
+- `docs/CURRENT_RANKING_AND_COMPETITIVE_STATUS_2026_04_20.md`
+- `outputs/current_full_method_comparison_bundle_20260420/`
+
+### Current exact failure surface
+- `docs/TWENTY_EXACT_CURRENT_FULL_VS_BEST_FRESH_2026_04_20.md`
+- `outputs/twenty_exact_current_full_vs_best_fresh_20260420/`
+
+### Current targeted method-development surfaces
+- `docs/TWENTY_CASE_CURRENT_FULL_IMPROVEMENT_REPORT_20260420T181131Z.md`
+- `docs/TARGETED_FAILURE_BUNDLE_REPORT_20260420T183801Z.md`
+- `docs/NEAR_MISS_CORRECTION_EVAL_REPORT_20260420T184849Z.md`
+
+## Do not treat these as the default current ranking source
+
+These are valid but historically bounded:
+- `outputs/imported_methodology_frontier_eval/20260417T000000Z/`
+- `outputs/paper_plot_data/`
+
+Use them only with explicit scope labeling.
+
+## Most relevant current scripts
+
+### Broad comparison / current evidence
+- `scripts/run_full_method_comparison_bundle.py`
+- `scripts/build_twenty_exact_current_full_vs_best_fresh.py`
+
+### Focused failure analysis / method-development
+- `scripts/run_fresh_twenty_current_full_improvement_eval_20260420.py`
+- `scripts/build_targeted_failure_bundle_from_fresh_loss_surface_20260420.py`
+- `scripts/run_near_miss_correction_bundle_eval_20260420.py`
+
+## Rule of thumb
+
+- Start from canonical docs, not arbitrary outputs.
+- Use current April 20 bundles for current claims.
+- Treat older derived plot folders as bounded historical surfaces unless explicitly stated otherwise.
