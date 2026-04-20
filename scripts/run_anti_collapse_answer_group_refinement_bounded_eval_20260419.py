@@ -192,6 +192,27 @@ def main() -> None:
                             "repeated_same_branch_expansion_count": sum(
                                 _safe_int((r.get("metadata") or {}).get("repeated_same_branch_expansion_count", 0)) for r in rows
                             ),
+                            "repeated_same_family_expansion_rate": _mean(
+                                [_safe_float((r.get("metadata") or {}).get("repeated_same_family_expansion_rate", 0.0)) for r in rows]
+                            ),
+                            "repeated_same_family_expansion_count": sum(
+                                _safe_int((r.get("metadata") or {}).get("repeated_same_family_expansion_count", 0)) for r in rows
+                            ),
+                            "max_consecutive_same_branch": _mean(
+                                [_safe_float((r.get("metadata") or {}).get("max_consecutive_same_branch", 0.0)) for r in rows]
+                            ),
+                            "max_consecutive_same_family": _mean(
+                                [_safe_float((r.get("metadata") or {}).get("max_consecutive_same_family", 0.0)) for r in rows]
+                            ),
+                            "repeat_penalty_trigger_count": sum(
+                                _safe_int((r.get("metadata") or {}).get("repeat_penalty_trigger_count", 0)) for r in rows
+                            ),
+                            "repeat_penalty_override_count": sum(
+                                _safe_int((r.get("metadata") or {}).get("repeat_penalty_override_count", 0)) for r in rows
+                            ),
+                            "repeat_penalty_alternative_selected_count": sum(
+                                _safe_int((r.get("metadata") or {}).get("repeat_penalty_alternative_selected_count", 0)) for r in rows
+                            ),
                             "shallow_preserved_alternative_count": sum(
                                 _safe_int((r.get("metadata") or {}).get("shallow_preserved_alternative_count", 0)) for r in rows
                             ),
@@ -251,6 +272,7 @@ def main() -> None:
         if alias == "baseline_broad":
             continue
         outcomes = {"improved": 0, "harmed": 0, "unchanged": 0}
+        repeat_attr = {"improved": 0, "harmed": 0}
         harmed_rows: list[dict[str, Any]] = []
         subtypes: Counter[str] = Counter()
         for key, pair in aligned.items():
@@ -260,8 +282,12 @@ def main() -> None:
                 continue
             if (not b["is_correct"]) and c["is_correct"]:
                 outcomes["improved"] += 1
+                if _safe_int((c.get("metadata") or {}).get("repeat_penalty_alternative_selected_count", 0)) > 0:
+                    repeat_attr["improved"] += 1
             elif b["is_correct"] and (not c["is_correct"]):
                 outcomes["harmed"] += 1
+                if _safe_int((c.get("metadata") or {}).get("repeat_penalty_alternative_selected_count", 0)) > 0:
+                    repeat_attr["harmed"] += 1
                 subtype = _harmed_subtype(baseline_row=b, candidate_row=c)
                 subtypes[subtype] += 1
                 harmed_rows.append(
@@ -285,6 +311,7 @@ def main() -> None:
                 outcomes["unchanged"] += 1
         pairwise_vs_baseline[alias] = {
             "improved_harmed_unchanged": outcomes,
+            "repeat_penalty_attributable_improved_harmed": repeat_attr,
             "harmed_case_subtype_breakdown": dict(sorted(subtypes.items(), key=lambda kv: (-kv[1], kv[0]))),
             "harmed_cases_count": len(harmed_rows),
             "harmed_cases": harmed_rows,
@@ -306,6 +333,19 @@ def main() -> None:
             ),
             "total_repeated_same_branch_expansion_count": int(
                 sum(_safe_int(r["repeated_same_branch_expansion_count"]) for r in rows)
+            ),
+            "mean_repeated_same_family_expansion_rate": _mean(
+                [_safe_float(r["repeated_same_family_expansion_rate"]) for r in rows]
+            ),
+            "total_repeated_same_family_expansion_count": int(
+                sum(_safe_int(r["repeated_same_family_expansion_count"]) for r in rows)
+            ),
+            "mean_max_consecutive_same_branch": _mean([_safe_float(r["max_consecutive_same_branch"]) for r in rows]),
+            "mean_max_consecutive_same_family": _mean([_safe_float(r["max_consecutive_same_family"]) for r in rows]),
+            "total_repeat_penalty_trigger_count": int(sum(_safe_int(r["repeat_penalty_trigger_count"]) for r in rows)),
+            "total_repeat_penalty_override_count": int(sum(_safe_int(r["repeat_penalty_override_count"]) for r in rows)),
+            "total_repeat_penalty_alternative_selected_count": int(
+                sum(_safe_int(r["repeat_penalty_alternative_selected_count"]) for r in rows)
             ),
             "total_shallow_preserved_alternative_count": int(
                 sum(_safe_int(r["shallow_preserved_alternative_count"]) for r in rows)
@@ -352,6 +392,7 @@ def main() -> None:
         "pairwise_vs_baseline": {
             alias: {
                 "improved_harmed_unchanged": data["improved_harmed_unchanged"],
+                "repeat_penalty_attributable_improved_harmed": data["repeat_penalty_attributable_improved_harmed"],
                 "harmed_case_subtype_breakdown": data["harmed_case_subtype_breakdown"],
             }
             for alias, data in pairwise_vs_baseline.items()
@@ -359,18 +400,18 @@ def main() -> None:
         "primary_question_answer": {
             "accuracy_delta_refinement_vs_baseline": _safe_float(overall.get("anti_collapse_refinement", {}).get("mean_accuracy", 0.0))
             - _safe_float(overall.get("baseline_broad", {}).get("mean_accuracy", 0.0)),
-            "accuracy_delta_harmed_tuned_vs_baseline": _safe_float(
-                overall.get("anti_collapse_harmed_tuned", {}).get("mean_accuracy", 0.0)
+            "accuracy_delta_repeat_fine_vs_baseline": _safe_float(
+                overall.get("anti_collapse_repeat_fine", {}).get("mean_accuracy", 0.0)
             )
             - _safe_float(overall.get("baseline_broad", {}).get("mean_accuracy", 0.0)),
-            "accuracy_delta_harmed_tuned_vs_refinement": _safe_float(
-                overall.get("anti_collapse_harmed_tuned", {}).get("mean_accuracy", 0.0)
+            "accuracy_delta_repeat_fine_vs_refinement": _safe_float(
+                overall.get("anti_collapse_repeat_fine", {}).get("mean_accuracy", 0.0)
             )
             - _safe_float(overall.get("anti_collapse_refinement", {}).get("mean_accuracy", 0.0)),
-            "accuracy_delta_refinement_vs_early_preservation": _safe_float(
-                overall.get("anti_collapse_refinement", {}).get("mean_accuracy", 0.0)
+            "repeated_same_branch_expansion_rate_delta_repeat_fine_vs_refinement": _safe_float(
+                overall.get("anti_collapse_repeat_fine", {}).get("mean_repeated_same_branch_expansion_rate", 0.0)
             )
-            - _safe_float(overall.get("early_preservation", {}).get("mean_accuracy", 0.0)),
+            - _safe_float(overall.get("anti_collapse_refinement", {}).get("mean_repeated_same_branch_expansion_rate", 0.0)),
             "repeated_same_branch_expansion_rate_delta_vs_baseline": _safe_float(
                 overall.get("anti_collapse_refinement", {}).get("mean_repeated_same_branch_expansion_rate", 0.0)
             )
@@ -379,6 +420,10 @@ def main() -> None:
                 overall.get("anti_collapse_refinement", {}).get("total_matured_alternative_count", 0)
             )
             - _safe_int(overall.get("baseline_broad", {}).get("total_matured_alternative_count", 0)),
+            "repeated_same_family_expansion_rate_delta_repeat_fine_vs_refinement": _safe_float(
+                overall.get("anti_collapse_repeat_fine", {}).get("mean_repeated_same_family_expansion_rate", 0.0)
+            )
+            - _safe_float(overall.get("anti_collapse_refinement", {}).get("mean_repeated_same_family_expansion_rate", 0.0)),
         },
     }
 
