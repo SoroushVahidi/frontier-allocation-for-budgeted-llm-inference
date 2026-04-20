@@ -819,6 +819,10 @@ class GlobalDiversityAggregationController(BaseController):
         anti_collapse_early_window: int = 6,
         repeated_same_branch_penalty: float = 0.08,
         repeated_same_branch_cap: int = 3,
+        repeat_expand_free_steps: int = 3,
+        repeat_expand_penalty_weight: float = 0.08,
+        repeat_expand_family_penalty_weight: float = 0.12,
+        repeat_expand_override_margin: float = 0.10,
         monopolization_margin_requirement: float = 0.10,
         answer_group_distinctness_bonus: float = 0.10,
         duplicate_answer_group_penalty: float = 0.08,
@@ -900,6 +904,10 @@ class GlobalDiversityAggregationController(BaseController):
         self.anti_collapse_early_window = max(1, int(anti_collapse_early_window))
         self.repeated_same_branch_penalty = max(0.0, float(repeated_same_branch_penalty))
         self.repeated_same_branch_cap = max(1, int(repeated_same_branch_cap))
+        self.repeat_expand_free_steps = max(0, int(repeat_expand_free_steps))
+        self.repeat_expand_penalty_weight = max(0.0, float(repeat_expand_penalty_weight))
+        self.repeat_expand_family_penalty_weight = max(0.0, float(repeat_expand_family_penalty_weight))
+        self.repeat_expand_override_margin = max(0.0, float(repeat_expand_override_margin))
         self.monopolization_margin_requirement = max(0.0, float(monopolization_margin_requirement))
         self.answer_group_distinctness_bonus = max(0.0, float(answer_group_distinctness_bonus))
         self.duplicate_answer_group_penalty = max(0.0, float(duplicate_answer_group_penalty))
@@ -1209,6 +1217,9 @@ class GlobalDiversityAggregationController(BaseController):
         actions: int,
         last_expanded_branch_id: str | None,
         consecutive_same_branch_expands: int,
+        branch_family_ids: dict[str, str],
+        last_expanded_family_id: str | None,
+        consecutive_same_family_expands: int,
     ) -> dict[str, dict[str, float]]:
         if (not self.enable_anti_collapse_answer_group_refinement) or actions >= self.anti_collapse_early_window:
             return {}
@@ -1218,11 +1229,30 @@ class GlobalDiversityAggregationController(BaseController):
         total_group_expands = max(1, sum(int(v) for v in expand_by_group.values()))
 
         out: dict[str, dict[str, float]] = {}
+        adjusted_priority_by_branch: dict[str, float] = {}
+        penalty_triggered_by_branch: dict[str, bool] = {}
+        family_by_branch: dict[str, str] = {}
         for branch, _, meta in scored:
             gk = str(meta.get("group_key") or "__unknown__")
+            family_id = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+            family_by_branch[branch.branch_id] = family_id
             continuation = float(meta.get("continuation_value", 0.0))
             repeats = max(0, int(branch_expansions.get(branch.branch_id, 0)) - 1)
             repeat_penalty = self.repeated_same_branch_penalty * float(repeats)
+
+            exact_repeat_steps = 0
+            if branch.branch_id == last_expanded_branch_id:
+                exact_repeat_steps = max(0, int(consecutive_same_branch_expands) - int(self.repeat_expand_free_steps))
+            family_repeat_steps = 0
+            if family_id == (last_expanded_family_id or ""):
+                family_repeat_steps = max(0, int(consecutive_same_family_expands) - int(self.repeat_expand_free_steps))
+            exact_repeat_penalty = self.repeat_expand_penalty_weight * float(exact_repeat_steps)
+            family_repeat_penalty = self.repeat_expand_family_penalty_weight * float(family_repeat_steps)
+            dominant_repeat_penalty = max(exact_repeat_penalty, family_repeat_penalty)
+            repeat_signal_source = "none"
+            if dominant_repeat_penalty > 0.0:
+                repeat_signal_source = "family" if family_repeat_penalty >= exact_repeat_penalty else "exact"
+            repeat_penalty += dominant_repeat_penalty
 
             cap_guard_penalty = 0.0
             if (
@@ -1239,6 +1269,10 @@ class GlobalDiversityAggregationController(BaseController):
             duplicate_group_penalty = self.duplicate_answer_group_penalty * max(0.0, float(active_group_counts.get(gk, 1) - 1))
             out[branch.branch_id] = {
                 "repeat_penalty": float(repeat_penalty),
+                "repeat_expand_exact_penalty": float(exact_repeat_penalty),
+                "repeat_expand_family_penalty": float(family_repeat_penalty),
+                "repeat_expand_dominant_penalty": float(dominant_repeat_penalty),
+                "repeat_expand_signal_source": 1.0 if repeat_signal_source == "family" else (0.5 if repeat_signal_source == "exact" else 0.0),
                 "cap_guard_penalty": float(cap_guard_penalty),
                 "distinctness_bonus": float(distinctness_bonus),
                 "duplicate_answer_group_penalty": float(duplicate_group_penalty),
@@ -1246,6 +1280,39 @@ class GlobalDiversityAggregationController(BaseController):
                 "top_continuation": float(top_cont),
                 "second_continuation": float(second_cont),
             }
+            adjusted_priority_by_branch[branch.branch_id] = float(
+                float(meta.get("continuation_value", 0.0))
+                + float(meta.get("diversity_bonus", 0.0))
+                + self.coverage_weight * float(meta.get("coverage_gain", 0.0))
+                - self.overlap_weight * float(meta.get("semantic_overlap", 0.0))
+                - float(meta.get("duplicate_cost", 0.0))
+                + float(out[branch.branch_id]["adjusted_priority_delta"])
+            )
+            penalty_triggered_by_branch[branch.branch_id] = bool(dominant_repeat_penalty > 0.0)
+
+        for branch_id, payload in out.items():
+            family_id = family_by_branch.get(branch_id, branch_id)
+            branch_score = float(adjusted_priority_by_branch.get(branch_id, 0.0))
+            best_alt = None
+            for alt_branch_id, alt_score in adjusted_priority_by_branch.items():
+                if family_by_branch.get(alt_branch_id, alt_branch_id) == family_id:
+                    continue
+                if best_alt is None or alt_score > best_alt:
+                    best_alt = alt_score
+            override_applied = False
+            if penalty_triggered_by_branch.get(branch_id, False) and best_alt is not None:
+                if branch_score >= float(best_alt) + float(self.repeat_expand_override_margin):
+                    override_applied = True
+                    payload["adjusted_priority_delta"] = float(
+                        payload["adjusted_priority_delta"] + payload.get("repeat_expand_dominant_penalty", 0.0)
+                    )
+                    payload["repeat_penalty"] = float(
+                        max(
+                            0.0,
+                            float(payload.get("repeat_penalty", 0.0)) - float(payload.get("repeat_expand_dominant_penalty", 0.0)),
+                        )
+                    )
+            payload["repeat_expand_override_applied"] = 1.0 if override_applied else 0.0
         return out
 
     def _pick_early_answer_group_preservation_branch(
@@ -1955,6 +2022,7 @@ class GlobalDiversityAggregationController(BaseController):
         action_trace: list[dict[str, Any]] = []
         branch_expansions: dict[str, int] = {}
         branches: list[BranchState] = [self.generator.init_branch("div_0"), self.generator.init_branch("div_1")]
+        branch_family_ids: dict[str, str] = {branches[0].branch_id: branches[0].branch_id, branches[1].branch_id: branches[1].branch_id}
         answer_support_counts: dict[str, int] = {}
         group_profiles: dict[str, list[set[str]]] = {}
         global_profiles: list[set[str]] = []
@@ -1973,7 +2041,14 @@ class GlobalDiversityAggregationController(BaseController):
         last_expanded_branch_id: str | None = None
         consecutive_same_branch_expands = 0
         max_consecutive_same_branch_expands = 0
+        last_expanded_family_id: str | None = None
+        consecutive_same_family_expands = 0
+        max_consecutive_same_family_expands = 0
         repeated_same_branch_expansion_count = 0
+        repeated_same_family_expansion_count = 0
+        repeat_penalty_trigger_count = 0
+        repeat_penalty_override_count = 0
+        repeat_penalty_alternative_selected_count = 0
         protected_alternatives: dict[str, dict[str, int | str | float]] = {}
         protected_alternative_ids: set[str] = set()
         matured_alternative_ids: set[str] = set()
@@ -2009,7 +2084,11 @@ class GlobalDiversityAggregationController(BaseController):
                 actions=actions,
                 last_expanded_branch_id=last_expanded_branch_id,
                 consecutive_same_branch_expands=consecutive_same_branch_expands,
+                branch_family_ids=branch_family_ids,
+                last_expanded_family_id=last_expanded_family_id,
+                consecutive_same_family_expands=consecutive_same_family_expands,
             )
+            raw_priority_sorted = sorted(scored, key=lambda x: x[1], reverse=True)
             scored = [
                 (
                     b,
@@ -2022,6 +2101,15 @@ class GlobalDiversityAggregationController(BaseController):
                 for (b, p, m) in scored
             ]
             scored.sort(key=lambda x: x[1], reverse=True)
+            raw_top_branch = raw_priority_sorted[0][0] if raw_priority_sorted else None
+            if raw_top_branch is not None:
+                raw_top_adj = anti_collapse_adjustments.get(raw_top_branch.branch_id, {})
+                if bool(float(raw_top_adj.get("repeat_expand_dominant_penalty", 0.0)) > 0.0):
+                    repeat_penalty_trigger_count += 1
+                    if scored and scored[0][0].branch_id != raw_top_branch.branch_id:
+                        repeat_penalty_alternative_selected_count += 1
+                if bool(float(raw_top_adj.get("repeat_expand_override_applied", 0.0)) > 0.0):
+                    repeat_penalty_override_count += 1
             branch, priority, pri_meta = scored[0]
             gate_meta = self._diversity_gate_decision(
                 scored=scored,
@@ -2207,6 +2295,15 @@ class GlobalDiversityAggregationController(BaseController):
                         "anti_collapse_repeat_penalty": round(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_penalty", 0.0)), 4
                         ),
+                        "anti_collapse_repeat_expand_exact_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_expand_exact_penalty", 0.0)), 4
+                        ),
+                        "anti_collapse_repeat_expand_family_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_expand_family_penalty", 0.0)), 4
+                        ),
+                        "anti_collapse_repeat_expand_override_applied": bool(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_expand_override_applied", 0.0)) > 0.0
+                        ),
                         "anti_collapse_cap_guard_penalty": round(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("cap_guard_penalty", 0.0)), 4
                         ),
@@ -2226,6 +2323,14 @@ class GlobalDiversityAggregationController(BaseController):
                     consecutive_same_branch_expands = 1
                 max_consecutive_same_branch_expands = max(max_consecutive_same_branch_expands, consecutive_same_branch_expands)
                 last_expanded_branch_id = branch.branch_id
+                family_id = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+                if family_id == (last_expanded_family_id or ""):
+                    repeated_same_family_expansion_count += 1
+                    consecutive_same_family_expands += 1
+                else:
+                    consecutive_same_family_expands = 1
+                max_consecutive_same_family_expands = max(max_consecutive_same_family_expands, consecutive_same_family_expands)
+                last_expanded_family_id = family_id
                 if branch.branch_id in protected_alternatives:
                     rem = int(protected_alternatives[branch.branch_id].get("remaining", 0))
                     if rem > 0:
@@ -2244,6 +2349,7 @@ class GlobalDiversityAggregationController(BaseController):
                     child.score = 0.5 * child.score + 0.5 * branch.score
                     branches.append(child)
                     branch_expansions[child.branch_id] = 0
+                    branch_family_ids[child.branch_id] = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
             else:
                 result = self.generator.verify(branch, question)
                 actions += 1
@@ -2272,6 +2378,15 @@ class GlobalDiversityAggregationController(BaseController):
                         "early_preservation_reason": early_preservation_meta.get("reason"),
                         "anti_collapse_repeat_penalty": round(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_penalty", 0.0)), 4
+                        ),
+                        "anti_collapse_repeat_expand_exact_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_expand_exact_penalty", 0.0)), 4
+                        ),
+                        "anti_collapse_repeat_expand_family_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_expand_family_penalty", 0.0)), 4
+                        ),
+                        "anti_collapse_repeat_expand_override_applied": bool(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_expand_override_applied", 0.0)) > 0.0
                         ),
                         "anti_collapse_cap_guard_penalty": round(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("cap_guard_penalty", 0.0)), 4
@@ -2551,7 +2666,14 @@ class GlobalDiversityAggregationController(BaseController):
                 "anti_collapse_answer_group_refinement_enabled": bool(self.enable_anti_collapse_answer_group_refinement),
                 "repeated_same_branch_expansion_count": int(repeated_same_branch_expansion_count),
                 "repeated_same_branch_expansion_rate": float(repeated_same_branch_expansion_count / max(1, expansions)),
+                "repeated_same_family_expansion_count": int(repeated_same_family_expansion_count),
+                "repeated_same_family_expansion_rate": float(repeated_same_family_expansion_count / max(1, expansions)),
                 "max_consecutive_same_branch_expands": int(max_consecutive_same_branch_expands),
+                "max_consecutive_same_branch": int(max_consecutive_same_branch_expands),
+                "max_consecutive_same_family": int(max_consecutive_same_family_expands),
+                "repeat_penalty_trigger_count": int(repeat_penalty_trigger_count),
+                "repeat_penalty_override_count": int(repeat_penalty_override_count),
+                "repeat_penalty_alternative_selected_count": int(repeat_penalty_alternative_selected_count),
                 "repeated_same_branch_expansion_dominated_budget": bool(repeated_same_branch_domination),
                 "top_branch_expand_share": float(top_branch_expand_share),
                 "branch_creation_count": int(len(branch_expansions)),
