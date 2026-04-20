@@ -1,0 +1,61 @@
+{
+  "run_id": "20260420T_multidataset_frontier_v1",
+  "created_utc": "2026-04-20T15:03:46.060854+00:00",
+  "track": "new-paper-fixed-budget-frontier-multidataset",
+  "datasets": [
+    {
+      "dataset": "openai/gsm8k",
+      "subset_size": 24,
+      "n_calibration": 12,
+      "n_eval": 12,
+      "seed": 123
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "subset_size": 24,
+      "n_calibration": 12,
+      "n_eval": 12,
+      "seed": 1132
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "subset_size": 24,
+      "n_calibration": 12,
+      "n_eval": 12,
+      "seed": 2141
+    }
+  ],
+  "budgets": [
+    8,
+    10
+  ],
+  "adaptive_min_expand_grid": [
+    0,
+    1,
+    2
+  ],
+  "api_backend": "simulator",
+  "model": "gpt-4.1-mini",
+  "promoted_controller_name": "strict_coupled_tie_aware_promoted",
+  "promoted_controller_bridge": {
+    "mode": "alias_bridge",
+    "note": "Strict-coupled/tie-aware controller is not yet a native frontier_matrix_core strategy; alias currently points to selected adaptive method row per dataset-budget."
+  },
+  "candidate_method_pool": [
+    "adaptive_budget_guarded",
+    "oracle_frontier_upper_bound",
+    "program_of_thought",
+    "reasoning_beam2",
+    "reasoning_greedy",
+    "self_consistency_3",
+    "strict_coupled_tie_aware_promoted",
+    "verifier_guided_search"
+  ],
+  "files": {
+    "method_metrics_csv": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/method_metrics.csv",
+    "oracle_gap_csv": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/oracle_gap_summary.csv",
+    "matched_comparison_csv": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/matched_comparison_summary.csv",
+    "budget_frontier_csv": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/budget_frontier_summary.csv",
+    "signal_slice_csv": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/signal_slice_summary.csv"
+  }
+}

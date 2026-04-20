@@ -1,112 +1,74 @@
-# NeurIPS Paper Artifacts Guide
+# NeurIPS Paper Artifacts
 
 ## Purpose
 
-This guide describes the text-only paper-artifact pipeline for the current manuscript direction:
+This guide documents the text-only manuscript artifact pipeline for the current NeurIPS direction:
+fixed-budget adaptive test-time compute allocation with frontier/oracle-gap analysis and anti-collapse diagnostics.
 
-**fixed-budget cross-controller frontier allocation for reasoning, with oracle frontier headroom and anti-collapse analysis**.
+## Canonical inputs used by this pipeline
 
-## Canonical input files
-
-The pipeline reads only canonical repository outputs and fails loudly if they are missing.
-
-### Imported frontier eval canonical run
-- `outputs/imported_methodology_frontier_eval/<run_id>/summary.json`
-- `outputs/imported_methodology_frontier_eval/<run_id>/method_metrics.csv`
-- `outputs/imported_methodology_frontier_eval/<run_id>/oracle_gap_summary.csv`
-- `outputs/imported_methodology_frontier_eval/<run_id>/matched_comparison_summary.csv`
-- `outputs/imported_methodology_frontier_eval/<run_id>/budget_frontier_summary.csv`
-- `outputs/imported_methodology_frontier_eval/<run_id>/signal_slice_summary.csv`
-
-### Full method comparison canonical run
-- `outputs/full_method_comparison_bundle/<run_id>/manifest.json`
-- `outputs/full_method_comparison_bundle/<run_id>/per_seed_method_metrics.csv`
-- `outputs/full_method_comparison_bundle/<run_id>/per_method_metrics.csv`
-- `outputs/full_method_comparison_bundle/<run_id>/per_example_outcomes.csv`
-- `outputs/full_method_comparison_bundle/<run_id>/per_budget_ranking.csv`
-- `outputs/full_method_comparison_bundle/<run_id>/per_dataset_ranking.csv`
-
-> Run selection rule: the latest directory under each canonical root that contains all required files.
+- `outputs/imported_methodology_frontier_eval/20260417T000000Z/`
+- `outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/`
+- `outputs/branch_label_bruteforce_learning/near_tie_two_stage_complementarity_audit_upgrade_20260417/`
+- `outputs/branch_label_bruteforce_learning/soft_prob_tie_matched_20260417/`
+- `outputs/branch_scorer_v3_final_eval/final_summary.json` (auxiliary robustness context)
 
 ## Generated outputs
 
-### Tables (`outputs/paper_tables/`)
-- `task_controller_summary.csv` (+ `.tex`)
-- `main_frontier_comparison.csv` (+ `.tex`)
-- `oracle_headroom_summary.csv`
-- `anti_collapse_diagnostics.csv`
-- `allocation_ablations.csv` (+ `.tex`)
-- `robustness_sensitivity.csv`
+Plot data:
+- `outputs/paper_plot_data/figure1_problem_schematic.json`
+- `outputs/paper_plot_data/main_frontier_curves.csv`
+- `outputs/paper_plot_data/oracle_gap_curves.csv`
+- `outputs/paper_plot_data/allocation_composition.csv`
+- `outputs/paper_plot_data/anti_collapse_diagnostics.csv`
+- `outputs/paper_plot_data/failure_decomposition.csv`
+- `outputs/paper_plot_data/per_dataset_frontiers.csv`
+- appendix plot-data CSVs under `outputs/paper_plot_data/appendix_*.csv`
 
-### Plot data (`outputs/paper_plot_data/`)
-- `figure1_support_metadata.csv`
-- `main_frontier_curves.csv`
-- `oracle_gap_curves.csv`
-- `allocation_composition_by_budget.csv`
-- `allocation_diversity_vs_budget.csv`
-- `difficulty_slice_performance.csv`
-- `appendix_per_dataset_frontier_curves.csv`
+Tables:
+- `outputs/paper_tables/benchmark_method_summary.{csv,tex}`
+- `outputs/paper_tables/main_frontier_comparison.{csv,tex}`
+- `outputs/paper_tables/oracle_headroom_summary.{csv,tex}`
+- `outputs/paper_tables/anti_collapse_summary.{csv,tex}`
+- `outputs/paper_tables/failure_decomposition.{csv,tex}`
+- `outputs/paper_tables/robustness_sensitivity.{csv,tex}`
 
 ## Script entry points
 
-Main runner:
-- `scripts/paper/run_all_neurips_artifacts.py`
+- Canonical runner: `scripts/paper/run_all_neurips_paper_artifacts.py`
+- Multi-dataset frontier evaluator: `scripts/run_imported_methodology_frontier_eval_multidataset.py`
 
-Table builder:
-- `scripts/paper/build_neurips_tables.py`
+## Figure/table claim structure support
 
-Plot-data builders:
-- `scripts/paper/build_frontier_plot_data.py`
-- `scripts/paper/build_oracle_gap_plot_data.py`
-- `scripts/paper/build_allocation_composition_plot_data.py`
-- `scripts/paper/build_anti_collapse_plot_data.py`
-- `scripts/paper/build_appendix_frontier_plot_data.py`
+- Figure 2 + Table 2: fixed-budget frontier behavior and strongest baseline comparisons.
+- Figure 3 + Table 3: oracle headroom / regret accounting.
+- Figure 4 + Figure 5 + Table 4: allocation composition and anti-collapse diagnostics.
+- Figure 6 + Table 5: honest failure decomposition proxies (tree-generation-like vs output-layer-like failures).
+- Figure 7 + Table 6: per-dataset and robustness scope boundaries.
 
-Shared utilities and validation:
-- `scripts/paper/artifact_utils.py`
+## Main-paper safe artifacts
 
-## How to rerun
+Main-paper safe now:
+- Frontier curves, oracle-gap curves, anti-collapse/control diagnostics, and failure proxy decomposition from canonical import runs.
+
+Appendix-only now:
+- Tie-aware formulation/fallback slices from near-tie branch-comparison artifacts.
+- Branch-scorer robustness context from `branch_scorer_v3_final_eval`.
+
+## Build commands
 
 From repository root:
 
-```bash
-python scripts/paper/run_all_neurips_artifacts.py
-```
+- `python scripts/paper/run_all_neurips_paper_artifacts.py`
+- `python scripts/run_imported_methodology_frontier_eval_multidataset.py --datasets "openai/gsm8k,HuggingFaceH4/MATH-500,Idavidrein/gpqa" --subset-size 24 --budgets "8,10" --api-backend simulator --run-id "20260420T_multidataset_frontier_v1"`
 
-Optional check:
+Optional local rendering of binaries (not committed):
 
-```bash
-python -m py_compile scripts/paper/*.py
-```
+- `python scripts/paper/run_all_neurips_paper_artifacts.py --render-plots`
 
-## Mapping to the NeurIPS paper story
+## Missing pieces for stronger NeurIPS submission
 
-- **Task/controller summary**: what datasets, method families, budgets, and metrics define the fixed-budget setup.
-- **Main frontier comparison**: fixed-family vs heuristic adaptive vs oracle frontier at representative budgets.
-- **Oracle headroom summary**: explicit remaining headroom from non-oracle methods to oracle.
-- **Anti-collapse diagnostics**: diversity of family usage needed by oracle winner-share composition.
-- **Ablations**: currently available anti-collapse-related variations (min-expand guards) plus explicit missing-ablation gaps.
-- **Robustness/sensitivity**: seed-level and dataset-level sensitivity summaries for key methods.
-- **Plot CSVs**: direct source data for main and appendix figures without generating binary images.
-
-## Validation and reproducibility safeguards
-
-- Required input files are validated; missing files raise hard errors.
-- Latest valid run directories are selected by required-file completeness (prevents partial stale run selection).
-- No binary artifacts are produced.
-- Missing baselines/policies (uniform allocation, fully learned controller policy) are surfaced explicitly as missing instead of being fabricated.
-
-## Scientific claims supported vs not supported
-
-### Supported by current canonical outputs
-- Fixed-budget cross-controller frontier comparisons.
-- Oracle-gap/headroom accounting.
-- Strongly conservative anti-collapse diversity proxies from per-example outcome composition.
-- Seed/dataset sensitivity summaries for methods present in canonical bundle.
-
-### Not currently supported as direct claims
-- A canonical explicit uniform-allocation baseline curve/row.
-- A canonical explicit learned cross-controller policy in the selected canonical bundle.
-- Full feature-toggle ablations for family-aware/difficulty-aware/oracle-target supervision in paper-grade canonical outputs.
-
-These missing components are reported as gaps in generated artifacts rather than inferred as available.
+- Native strict-coupled/tie-aware controller integration in `frontier_matrix_core` (instead of alias-bridge reporting).
+- A direct committed old-vs-current tree-generation summary table for appendix.
+- A committed targeted output-layer repair study aligned with frontier runs.
+- Wider real-model scale with stronger statistical confidence intervals.
