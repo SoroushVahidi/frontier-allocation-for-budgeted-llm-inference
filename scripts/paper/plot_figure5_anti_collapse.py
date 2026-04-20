@@ -30,6 +30,7 @@ def main() -> None:
 
     axes[1].legend(fontsize=STYLE.legend_size, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
     fig.suptitle("Figure 5: Anti-Collapse Diagnostics", fontsize=STYLE.title_size)
+    fig.subplots_adjust(right=0.81, top=0.83)
     save_fig(fig, FIGURE_DIR / "figure5_anti_collapse.pdf", FIGURE_DIR / "figure5_anti_collapse.png")
 
 

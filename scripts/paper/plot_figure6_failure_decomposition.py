@@ -17,16 +17,19 @@ def main() -> None:
     tree = [float(r["absent_from_tree_failure_rate"]) for r in rows]
     output = [float(r["present_in_tree_output_layer_failure_rate"]) for r in rows]
 
-    fig, ax = plt.subplots(figsize=(8.8, 4.8))
+    fig, ax = plt.subplots(figsize=(9.6, 4.9))
     ax.bar(labels, tree, label="Absent-from-tree failures", color="#e41a1c")
     ax.bar(labels, output, bottom=tree, label="Present-in-tree / output-layer failures", color="#377eb8")
 
-    ax.set_title("Figure 6: Failure Decomposition (Defeat-Case Proxy)", fontsize=STYLE.title_size)
+    ax.set_title("Figure 6: Failure Decomposition", fontsize=STYLE.title_size)
     ax.set_xlabel("Adversary Method", fontsize=STYLE.label_size)
     ax.set_ylabel("Failure Rate Share", fontsize=STYLE.label_size)
-    ax.tick_params(axis="x", rotation=30, labelsize=STYLE.tick_size)
+    ax.tick_params(axis="x", rotation=32, labelsize=STYLE.tick_size)
+    for label in ax.get_xticklabels():
+        label.set_ha("right")
     ax.grid(True, axis="y", alpha=STYLE.grid_alpha)
-    ax.legend(frameon=False, fontsize=STYLE.legend_size)
+    ax.legend(frameon=False, fontsize=STYLE.legend_size, loc="center left", bbox_to_anchor=(1.02, 0.5))
+    fig.subplots_adjust(right=0.74, bottom=0.28)
 
     save_fig(fig, FIGURE_DIR / "figure6_failure_decomposition.pdf", FIGURE_DIR / "figure6_failure_decomposition.png")
 

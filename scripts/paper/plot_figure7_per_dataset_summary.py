@@ -43,6 +43,7 @@ def main() -> None:
     axes[0].set_ylabel("Accuracy", fontsize=STYLE.label_size)
     axes[-1].legend(fontsize=STYLE.legend_size - 1, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
     fig.suptitle("Figure 7: Per-Dataset Frontier Summary", fontsize=STYLE.title_size)
+    fig.subplots_adjust(right=0.82, top=0.82)
     save_fig(fig, FIGURE_DIR / "figure7_per_dataset_summary.pdf", FIGURE_DIR / "figure7_per_dataset_summary.png")
 
 

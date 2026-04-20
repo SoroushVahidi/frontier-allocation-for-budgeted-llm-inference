@@ -28,6 +28,7 @@ def main() -> None:
 
     apply_axis_style(ax, "Figure 2: Main Budget-Performance Frontier", "Compute Budget", "Accuracy")
     ax.legend(fontsize=STYLE.legend_size, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
+    fig.subplots_adjust(right=0.74)
     save_fig(fig, FIGURE_DIR / "figure2_main_frontier.pdf", FIGURE_DIR / "figure2_main_frontier.png")
 
 

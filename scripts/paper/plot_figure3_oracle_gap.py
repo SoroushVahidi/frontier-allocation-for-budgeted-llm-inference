@@ -26,6 +26,7 @@ def main() -> None:
 
     apply_axis_style(ax, "Figure 3: Oracle Gap by Budget", "Compute Budget", "Gap to Oracle")
     ax.legend(fontsize=STYLE.legend_size, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
+    fig.subplots_adjust(right=0.74)
     save_fig(fig, FIGURE_DIR / "figure3_oracle_gap.pdf", FIGURE_DIR / "figure3_oracle_gap.png")
 
 

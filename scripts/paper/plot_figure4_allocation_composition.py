@@ -24,10 +24,11 @@ def main() -> None:
     exp = [by_budget[b].get("Expansion", 0.0) for b in budgets]
     ver = [by_budget[b].get("Verification", 0.0) for b in budgets]
 
-    fig, ax = plt.subplots(figsize=(6.8, 4.4))
+    fig, ax = plt.subplots(figsize=(7.4, 4.4))
     ax.stackplot(budgets, exp, ver, labels=["Expansion share", "Verification share"], alpha=0.9, colors=["#4daf4a", "#377eb8"])
-    apply_axis_style(ax, f"Figure 4: Allocation Composition ({target_method})", "Compute Budget", "Action Share")
-    ax.legend(frameon=False, loc="upper right")
+    apply_axis_style(ax, "Figure 4: Allocation Composition", "Compute Budget", "Action Share")
+    ax.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
+    fig.subplots_adjust(right=0.78)
     save_fig(fig, FIGURE_DIR / "figure4_allocation_composition.pdf", FIGURE_DIR / "figure4_allocation_composition.png")
 
 
