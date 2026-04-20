@@ -10,13 +10,6 @@ This note gives one compact repository-facing answer to:
 - what the main bottleneck is now,
 - and what the next highest-value work should be if the goal is to beat prior methods with a strong NeurIPS-level pair of method and evidence.
 
-## Important update (demotion)
-
-The incumbent-challenger metalevel ICC refinement line has been **demoted to diagnostic-branch status** after bounded selector, commit-side, and final near-tie single-point passes. It is **not** the promoted main method at this time. See:
-
-- `docs/ICC_METALEVEL_DIAGNOSTIC_BRANCH_DEMOTION_2026_04_19.md`
-- `outputs/data_consolidation_20260418/icc_diagnostic_branch_demotion_summary_20260419.json`
-
 ## Project identity now
 
 The repository is currently about:
@@ -25,21 +18,15 @@ The repository is currently about:
 
 This repository is **not** the older binary revise-routing story.
 
-## Current strongest broad method line
+## Current strongest serious method line
 
-The current main serious family remains:
+The current promoted integrated line is now:
 
-> **broad diversity-aware branch allocation with answer-support aggregation**
+> **broad diversity-aware branch allocation with answer-support aggregation, strengthened by anti-collapse answer-group-aware allocation, soft repeat-expansion control, and a deterministic output-layer repair stage.**
 
-But the strongest tested refinement inside that broad line was no longer mainly diversity-pushing. Historically, the repository pointed toward:
+This is the main serious line at present.
 
-> **answer-group-level incumbent-vs-challenger commit control, especially with dependence-aware support, inside the broad diversity-aware family.**
-
-This is no longer the active promoted optimization line; it remains diagnostically useful because repository evidence showed:
-- earlier local target/oracle refinements were useful diagnostics but not the final broad answer,
-- a broad diversity/aggregation family became the first serious broad competitor,
-- refreshed failure analysis showed the dominant bottleneck shifted away from insufficient diversity,
-- and bounded incumbent-vs-challenger commit control was the first recent method line to improve the new dominant bottleneck directly.
+Older lines such as ICC remain useful diagnostic provenance, but they are not the promoted main path.
 
 ## What has already been done
 
@@ -47,94 +34,85 @@ This is no longer the active promoted optimization line; it remains diagnostical
 The repository already has:
 - diversity-aware controllers,
 - answer-support aggregation,
-- duplicate-aware and semantic-overlap-aware refinements,
+- anti-collapse and repeat-expansion refinements,
 - observability and failure-case capture,
-- comparative mistake audits against the strongest broad baseline,
+- comparative mistake audits against strong baselines,
 - bounded real-model confirmation paths,
-- and bounded incumbent-vs-challenger commit-controller variants (now retained as diagnostic artifacts).
+- exact old-vs-current comparison artifacts,
+- fresh current-loss-set builders,
+- and a deterministic post-tree output repair layer.
 
-### Learner-side / target-design side
-Recent passes materially strengthened the learner-side branch-allocation supervision stack.
-The repository now includes:
-- `Q_commit`,
-- per-branch `Q_expand`,
-- continuation-minus-commit advantages,
-- regret / gap metadata,
-- ambiguity buckets,
-- exact / approximate provenance fields,
-- and lightweight target-stabilization signals such as repeated estimation and reliability summaries.
+### Comparison / artifact side
+Recent work materially strengthened the repository’s evidence stack.
+The repo now includes:
+- broad comparison bundles with reuse-aware evaluation,
+- exact 20-case adversarial bundles,
+- old-vs-current discovered-tree comparison bundles,
+- fresh current-failure sets for the tuned and full integrated methods,
+- and targeted repair bundles for output-layer mismatch.
 
-This means the learner-side path is no longer only a brittle hard-label setup.
+This means the current repo can now separate:
+- broad ranking questions,
+- fresh exact-loss questions,
+- and targeted failure-repair questions.
 
 ### Dataset layer and readiness surface
-Recent dataset work broadened the repository’s evaluation surface and improved readiness discipline.
-Current practical status is:
-- AIME 2025: experiment-ready,
-- HMMT: experiment-ready,
-- BRUMO: experiment-ready,
-- MMLU-Pro: partially ready,
-- LiveCodeBench: partially ready,
-- HLE: partially added / partially experiment-ready through safe text-first and auto-gradable slices,
-- and dataset bundles / readiness reports now distinguish registry integration from actual experiment usability.
+Current practical broad comparison surface is matched on:
+- `openai/gsm8k`
+- `HuggingFaceH4/MATH-500`
+- `HuggingFaceH4/aime_2024`
+with fixed budgets and seeds in the latest comparison bundle.
 
-This improves the repository’s ability to test transfer and broader coverage while staying honest about what can really be run today.
+This is a cleaner and more honest stable exact-answer surface than several older partial-integration discussions.
 
 ## What the recent work changed
 
-### 1. The learner-side supervision bottleneck is no longer the main story
-The repo is now much better positioned on the learner-side problem than before.
-Bounded evidence already showed:
-- stronger expand-vs-commit behavior,
-- lower regret,
-- and better near-tie handling under the newer value-aware target regime.
+### 1. The method story is now integrated
+The repo is no longer best summarized as only:
+- diversity control,
+- or only output-layer repair,
+- or only learner-side target design.
 
-That does **not** mean the learner-side problem is fully solved.
-But it is no longer the main repository bottleneck.
+It is now better summarized as an integrated method stack with:
+- tree-growth control,
+- answer-group-aware allocation,
+- repeat-expansion control,
+- and deterministic final-answer repair when needed.
 
-### 2. The dominant failure taxonomy has changed
-A refreshed comparative failure re-audit showed that:
-- `wrong_commit_timing` became the dominant failure group,
-- `insufficient_diversity_realized` is no longer dominant,
-- and aggregation instability, while still relevant, is not the top residual in the refreshed grouped ranking.
+### 2. The competitive picture is sharper now
+The latest broad current comparison bundle says:
+- the latest integrated full method is **not** #1 overall,
+- the strongest matched-bundle leader is still a strong repeat-fine broad-family variant,
+- and the strongest direct adversary on the fresh current-loss surface is `reasoning_beam2`.
 
-So the project is no longer mainly bottlenecked by “not enough diversity.”
-It is now mainly bottlenecked by:
+So the repo is now much clearer about what “best method” means on different evaluation surfaces.
 
-> **bad continue-versus-commit decisions and unstable final answer selection among answer groups already present in the frontier.**
+### 3. The dominant residual has shifted again
+A targeted 16-case subset showed that output-layer mismatch could fully explain a specific remaining slice once the correct answer was already in the tree.
 
-### 3. The leading method line changed accordingly
-The repository then tested answer-group-level incumbent-vs-challenger commit control.
-A stronger matched validation pass showed:
-- dependence-aware incumbent-vs-challenger commit control improved over the base controller on accuracy,
-- reduced wrong-commit timing substantially,
-- and outperformed the raw-support version on both accuracy and wrong-commit reduction.
+But the fresh exact current full-method failure set against the best direct adversary shows the broader remaining problem is now more upstream:
 
-This did not survive later bounded refinement checks as a promoted line; it is now a demoted diagnostic branch pending a materially different hypothesis.
+> **too many failures still come from the correct answer being absent from our tree, with repeated same-family expansion still appearing in most current-loss cases.**
+
+So the repo is no longer mainly bottlenecked by output-layer mismatch.
+That is now a preserved repair stage, not the main broad problem.
 
 ## What is still unresolved
 
 ### Main repository bottleneck
-The current main unresolved bottleneck is now best described as:
+The main unresolved bottleneck is now best described as:
 
-> **wrong commit timing at the answer-group level: deciding whether the incumbent is already safe to commit to, whether a challenger still deserves compute, and how to avoid harmful late-stage instability.**
+> **under fixed budget, the controller still over-concentrates on one branch family too often and does not yet get the correct answer into the tree reliably enough against the strongest current competitor.**
 
 In simple words:
-- the project is better than before at surfacing alternatives,
-- but still not good enough at knowing when the current best answer is already strong enough and stable enough to stop with.
+- the repo is much better at diagnosis than before,
+- but it still needs better early tree-shape control.
 
-### Main method residual inside ICC
-The new leading line is promising but not final.
-The main remaining ICC-side questions are now:
-- which wrong-commit subtypes remain most stubborn,
-- when dependence discounting helps vs over-discounts useful corroboration,
-- what harms remain in improved-vs-harmed case analysis,
-- and whether minimal refinements can reduce those harms without losing the current gains.
+### Main secondary residual
+A secondary residual still exists:
+- when the right answer is already in the tree, some cases still need better final selection or local answer consolidation.
 
-### Evaluation-surface residual
-The main dataset/evaluation residual is now:
-- keeping experiment-readiness honest for partial integrations,
-- especially for LiveCodeBench and the broader multimodal portions of HLE,
-- while using the exact-answer-ready bundle as the primary stable comparison surface.
+But this is not the first thing to fix on the broad current competitive surface.
 
 ## What has worked but not fully closed the problem
 
@@ -144,63 +122,59 @@ The following ideas were directionally useful but not sufficient alone:
 - semantic-overlap-aware scoring,
 - duplicate-aware aggregation,
 - local completion-aware correction,
-- bounded ambiguity / defer logic,
+- repeat-expansion penalties,
+- output-layer repair in targeted subsets,
 - and a diversity-needed predictor / gate.
 
-These ideas helped the project diagnose and reduce earlier residuals, but they did not close the new dominant bottleneck by themselves.
+These ideas helped the project diagnose and reduce earlier residuals, but they did not close the broad current competitive gap by themselves.
 
 ## What the next needed works should be
 
-If the goal is to beat previous methods and strengthen the project for NeurIPS, the next work should now be prioritized in this order.
+If the goal is to beat current methods and strengthen the project for NeurIPS, the next work should now be prioritized in this order.
 
-### 1. Refine the incumbent-vs-challenger commit controller by subtype
-Use the existing wrong-commit subtype structure to determine:
-- which subtype ICC already fixes best,
-- which subtype remains dominant,
-- and which minimal refinement is best justified by the harmed-case analysis.
-
-Core question:
-> which remaining wrong-commit subtype is now the main residual inside the best current method line?
-
-### 2. Tighten dependence-aware support rather than replacing ICC
-The current evidence suggests dependence-aware support is better than raw support, but the remaining question is when it over-discounts useful corroboration.
+### 1. Target the absent-from-tree failure slice
+Use the fresh exact current full-method failure set to determine:
+- which absent-from-tree cases are most representative,
+- how repeated same-family expansion appears in those cases,
+- and what minimal method change is best justified by the exact tree evidence.
 
 Core question:
-> can a bounded refinement preserve the current wrong-commit gains while reducing harmed cases?
+> how do we get the correct answer into the tree more often without damaging the cases where we already have it?
 
-### 3. Run broader but still controlled confirmation for ICC
-After subtype-driven refinement, the next important step is to run broader stable confirmation:
-- larger exact-answer matched validation,
-- then wider stable bundles where appropriate,
-- then stronger real-model confirmation.
+### 2. Tighten same-family control without pushing blind diversity
+The current evidence suggests that generic diversity pressure is not the right fix by itself.
 
 Core question:
-> does dependence-aware ICC remain the strongest line when tested more broadly and more carefully?
+> can a bounded, answer-group-aware anti-monopolization refinement reduce absent-from-tree failures without harming the present-but-not-selected slice?
 
-### 4. Keep dataset-readiness discipline
-Continue to distinguish:
-- experiment-ready exact-answer expansions,
-- partially ready breadth/control datasets,
-- and code / multimodal datasets that still require more evaluation machinery.
+### 3. Re-run broad matched comparison after the targeted repair
+After the next targeted repair, the important step is to re-run the current full comparison bundle.
 
-### 5. Strengthen real-model confirmation once ICC is stabilized further
-The repository still needs larger but controlled real-model confirmation before broad-best claims become paper-strong.
+Core question:
+> does the latest integrated line move closer to or past the current matched-bundle leader?
+
+### 4. Keep the output-layer repair stage, but do not over-prioritize it
+The targeted repair result is important and should remain part of the integrated method.
+
+But the broad next-method work should not be centered on output-layer repair first.
+
+### 5. Strengthen independent validation once the next upstream repair is in place
+The repository still needs fresh independent confirmation before broad-best claims become paper-strong.
 
 This should happen after:
-- the main wrong-commit subtype is better understood,
-- and the leading ICC line is refined and stabilized.
+- the absent-from-tree slice is better addressed,
+- and the broad matched comparison is rerun.
 
 ## What should not be the default next move
 
 Do **not** default to:
 - another unrelated controller family,
-- another broad diversity-first campaign,
-- broad simulator-only experimentation without realism follow-up,
-- pretending the method is final already,
-- or broad paper-level claims that exceed the current real-model evidence.
+- another broad generic diversity-first campaign,
+- pretending the latest integrated line is already best overall,
+- or broad paper-level claims that exceed the latest current comparison bundle.
 
 ## Best concise summary
 
 A safe current summary is:
 
-> The repository now has a clear leading broad family, a stronger learner-side target stack, a broader and cleaner dataset surface, and a sharper current bottleneck than before. The dominant problem is no longer mainly insufficient diversity; it is wrong commit timing at the answer-group level. Dependence-aware incumbent-vs-challenger commit control is now the strongest serious next method line, and the highest-value next work is to refine it by wrong-commit subtype, reduce its harmed cases, and then confirm it more broadly.
+> The repository now has a clear integrated promoted line, a much stronger exact-failure and comparison stack, and a cleaner distinction between tree-generation and output-layer failures. The latest integrated full method is promising but not yet best overall. The dominant current bottleneck is still upstream: repeated same-family expansion and absent-from-tree failures on the strongest current loss slices.
