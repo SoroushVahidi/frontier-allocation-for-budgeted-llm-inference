@@ -1,0 +1,289 @@
+{
+  "created_at_utc": "2026-04-20T22:04:16.355021+00:00",
+  "current_full_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1__deterministic_output_layer_repair_v1",
+  "best_method_name": "reasoning_beam2",
+  "target_n": 100,
+  "selection_policy": {
+    "eligibility": "our current full method wrong + best method correct",
+    "ranking": [
+      "higher loss_support_count first",
+      "higher max_budget_with_loss first",
+      "higher observability_priority first",
+      "dataset/example_id lexical tie-break"
+    ],
+    "excluded_case_sources": [
+      "outputs/twenty_defeat_case_trees_20260419/manifest.json",
+      "outputs/current_failure_output_layer_repair_20260420/per_case_results.jsonl"
+    ],
+    "target_count": 100,
+    "best_method_fixed": "reasoning_beam2",
+    "surface_expansion": {
+      "subset_size": 96,
+      "extra_seeds": [
+        101,
+        113,
+        137
+      ],
+      "extra_budgets": [
+        14,
+        16
+      ]
+    },
+    "dataset_fair_merge": "within-dataset global rank preserved; round-robin across datasets in lexicographic order",
+    "verification_search": "within each (dataset, example_id), try group_rows sorted by (-budget,-seed) until repair-consistent exact loss holds"
+  },
+  "exclusion_case_count": 36,
+  "failure_type_counts": {
+    "absent_from_tree": {
+      "n": 78,
+      "pct": 78.0
+    },
+    "present_not_selected": {
+      "n": 22,
+      "pct": 22.0
+    }
+  },
+  "dataset_counts": {
+    "HuggingFaceH4/MATH-500": {
+      "n": 27,
+      "pct": 27.0
+    },
+    "HuggingFaceH4/aime_2024": {
+      "n": 19,
+      "pct": 19.0
+    },
+    "olympiadbench": {
+      "n": 27,
+      "pct": 27.0
+    },
+    "openai/gsm8k": {
+      "n": 27,
+      "pct": 27.0
+    }
+  },
+  "problem_regime_counts": {
+    "algebraic_manipulation": {
+      "n": 5,
+      "pct": 5.0
+    },
+    "counting_combinatorics": {
+      "n": 6,
+      "pct": 6.0
+    },
+    "geometry": {
+      "n": 14,
+      "pct": 14.0
+    },
+    "gsm8k_style_word_arithmetic": {
+      "n": 27,
+      "pct": 27.0
+    },
+    "number_theory": {
+      "n": 10,
+      "pct": 10.0
+    },
+    "other": {
+      "n": 38,
+      "pct": 38.0
+    }
+  },
+  "error_geometry_counts": {
+    "arithmetic_slip": {
+      "n": 50,
+      "pct": 50.0
+    },
+    "counting_error": {
+      "n": 19,
+      "pct": 19.0
+    },
+    "near_miss": {
+      "n": 51,
+      "pct": 51.0
+    },
+    "other": {
+      "n": 14,
+      "pct": 14.0
+    },
+    "sign_or_parity_error": {
+      "n": 1,
+      "pct": 1.0
+    },
+    "wrong_local_neighborhood": {
+      "n": 22,
+      "pct": 22.0
+    }
+  },
+  "best_method_advantage_counts": {
+    "better_budget_efficiency": {
+      "n": 85,
+      "pct": 85.0
+    },
+    "better_selection": {
+      "n": 22,
+      "pct": 22.0
+    },
+    "earlier_correct_entry": {
+      "n": 84,
+      "pct": 84.0
+    },
+    "less_collapse": {
+      "n": 69,
+      "pct": 69.0
+    },
+    "multiple_correct_beams": {
+      "n": 29,
+      "pct": 29.0
+    }
+  },
+  "correct_coverage_counts": {
+    "multiple": {
+      "n": 1,
+      "pct": 1.0
+    },
+    "none": {
+      "n": 78,
+      "pct": 78.0
+    },
+    "single": {
+      "n": 21,
+      "pct": 21.0
+    }
+  },
+  "repeated_same_family_present_n": 97,
+  "distributions": {
+    "actions_ours": {
+      "n": 100,
+      "missing": 0,
+      "min": 2.0,
+      "mean": 11.48,
+      "p50": 12.0,
+      "p90": 16.0,
+      "max": 16.0
+    },
+    "expansions_ours": {
+      "n": 100,
+      "missing": 0,
+      "min": 2.0,
+      "mean": 10.84,
+      "p50": 12.0,
+      "p90": 16.0,
+      "max": 16.0
+    },
+    "verifications_ours": {
+      "n": 100,
+      "missing": 0,
+      "min": 0.0,
+      "mean": 0.64,
+      "p50": 0.0,
+      "p90": 2.0,
+      "max": 2.0
+    },
+    "action_gap_ours_minus_best": {
+      "n": 100,
+      "missing": 0,
+      "min": -3.0,
+      "mean": 7.58,
+      "p50": 8.5,
+      "p90": 13.0,
+      "max": 14.0
+    },
+    "score_gap": {
+      "n": 22,
+      "missing": 78,
+      "min": -0.0394132596376201,
+      "mean": 0.129217,
+      "p50": 0.11217276060381748,
+      "p90": 0.20718454455012092,
+      "max": 0.6021909466741049
+    },
+    "longest_consecutive_family_run": {
+      "n": 100,
+      "missing": 0,
+      "min": 1.0,
+      "mean": 8.13,
+      "p50": 8.0,
+      "p90": 14.0,
+      "max": 16.0
+    },
+    "max_family_share": {
+      "n": 100,
+      "missing": 0,
+      "min": 0.5,
+      "mean": 0.85009,
+      "p50": 0.875,
+      "p90": 1.0,
+      "max": 1.0
+    },
+    "num_answer_groups": {
+      "n": 100,
+      "missing": 0,
+      "min": 1.0,
+      "mean": 1.66,
+      "p50": 2.0,
+      "p90": 3.0,
+      "max": 4.0
+    }
+  },
+  "cross_tabs": {
+    "failure_type_x_dataset": {
+      "absent_from_tree": {
+        "HuggingFaceH4/MATH-500": 20,
+        "HuggingFaceH4/aime_2024": 16,
+        "olympiadbench": 21,
+        "openai/gsm8k": 21
+      },
+      "present_not_selected": {
+        "olympiadbench": 6,
+        "openai/gsm8k": 6,
+        "HuggingFaceH4/MATH-500": 7,
+        "HuggingFaceH4/aime_2024": 3
+      }
+    },
+    "failure_type_x_error_geometry_primary": {
+      "absent_from_tree": {
+        "wrong_local_neighborhood": 15,
+        "near_miss": 40,
+        "other": 11,
+        "arithmetic_slip": 8,
+        "counting_error": 3,
+        "sign_or_parity_error": 1
+      },
+      "present_not_selected": {
+        "wrong_local_neighborhood": 7,
+        "near_miss": 11,
+        "other": 3,
+        "counting_error": 1
+      }
+    },
+    "failure_type_x_same_family": {
+      "absent_from_tree": {
+        "True": 75,
+        "False": 3
+      },
+      "present_not_selected": {
+        "True": 22
+      }
+    },
+    "failure_type_x_problem_regime": {
+      "absent_from_tree": {
+        "other": 30,
+        "number_theory": 9,
+        "gsm8k_style_word_arithmetic": 21,
+        "geometry": 10,
+        "counting_combinatorics": 3,
+        "algebraic_manipulation": 5
+      },
+      "present_not_selected": {
+        "other": 8,
+        "gsm8k_style_word_arithmetic": 6,
+        "geometry": 4,
+        "counting_combinatorics": 3,
+        "number_theory": 1
+      }
+    }
+  },
+  "missingness_notes": {
+    "max_family_share_null_when_no_expands": "max_family_share may be null if no expand events were observed",
+    "score_gap_null_when_no_correct_node": "score_gap null when correct nodes absent or scores unavailable"
+  }
+}

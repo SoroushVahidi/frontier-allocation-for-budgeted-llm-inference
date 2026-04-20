@@ -77,3 +77,6 @@ secrets.*
 !outputs/paper_tables/**/*
 !outputs/paper_plot_data/
 !outputs/paper_plot_data/**/*
+
+!outputs/hundred_current_full_vs_best_failure_statistics_20260420T220416Z/
+!outputs/hundred_current_full_vs_best_failure_statistics_20260420T220416Z/**/*
