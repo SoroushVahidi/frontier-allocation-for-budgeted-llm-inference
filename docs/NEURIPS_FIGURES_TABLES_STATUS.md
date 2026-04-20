@@ -1,35 +1,37 @@
-# NeurIPS Figures/Tables Status
+# NeurIPS Figures and Tables Status
 
 ## Successfully built
 
-- Full text-only pipeline in `scripts/paper/` for plot-data and table generation.
-- Canonical runner: `scripts/paper/run_all_neurips_paper_artifacts.py`.
-- Main figure data CSV/JSON outputs in `outputs/paper_plot_data/`.
-- Manuscript-ready table CSV/TeX outputs in `outputs/paper_tables/`.
-- Canonical naming normalization documented in `docs/PAPER_NAMING_CANONICALIZATION.md`.
+- Full manuscript pipeline under `scripts/paper/` with shared canonical style/config.
+- All main-paper figures (1-7) exported as PDF/PNG.
+- All requested main tables (1-6) exported as CSV/TeX.
+- Canonical naming map and artifact audit docs refreshed.
 
-## Strongest figures/tables right now
+## Strongest artifacts right now
 
-- Main frontier and oracle-gap figures/tables (strongest canonical evidence).
-- Anti-collapse diagnostics using action-family composition and concentration.
-- Failure decomposition proxy view tied to signal-slice artifacts.
+- Figure 2 / Figure 3 + Table 2 / Table 3:
+  clear frontier and oracle-gap story over multi-dataset canonical run.
+- Figure 4 / Figure 5 + Table 4:
+  anti-collapse and allocation-composition diagnostics tied to action-level metrics.
+- Figure 7 + Table 6:
+  per-dataset behavior and explicit robustness/limitations framing.
 
-## Omitted or TODO-only items
+## Omitted or caveated artifacts
 
-- Appendix old-vs-current tree comparison: omitted (no committed canonical aligned artifact).
-- Appendix output-layer repair effect: omitted (no committed canonical targeted repair bundle).
+- Old-vs-current tree comparison appendix figure:
+  omitted from automatic build due missing canonical plot-ready bundle under current naming schema.
+- Output-layer repair effect appendix figure:
+  omitted from automatic build due missing canonical multi-dataset frontier-aligned repair bundle.
+- Figure 6 failure decomposition is explicitly marked as subtype-proxy decomposition from defeat-case registry, not direct tree-membership telemetry.
 
-TODO note location:
-- `outputs/paper_plot_data/appendix_missing_figures_todo.md`
+## Naming conflicts cleaned up
 
-## Cleaned inconsistencies
-
-- Unified method naming map from script/raw ids to paper-facing names.
-- Unified budget and metric key naming across scripts/CSV/TeX/docs.
-- Explicitly marked proxy decomposition fields to avoid overclaiming.
+- Unified method labels across scripts/CSVs/tables/figures via `docs/PAPER_NAMING_CANONICALIZATION.md`.
+- Explicitly marked promoted method as `Promoted (Strict-Coupled Tie-Aware, bridged)` to avoid overclaiming native controller integration in frontier schema.
+- Harmonized metric capitalization and axis labels (`Accuracy`, `Gap to Oracle`, `Average Actions`).
 
 ## Remaining blockers
 
-- Canonical multi-dataset matched frontier evidence is still sparse.
-- External baselines remain mostly adjacent/import-validated rather than fully matched in this exact surface.
-- Current canonical frontier run remains pilot-scale.
+- Promoted strict-coupled/tie-aware controller needs native integration into frontier evaluator.
+- External baseline completeness remains uneven for direct apples-to-apples claims.
+- Current multi-dataset frontier run remains bounded scale (single seed per dataset in this canonical run).

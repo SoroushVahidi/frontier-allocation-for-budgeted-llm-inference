@@ -1,74 +1,80 @@
 # NeurIPS Paper Artifacts
 
-## Purpose
+## Canonical input sources
 
-This guide documents the text-only manuscript artifact pipeline for the current NeurIPS direction:
-fixed-budget adaptive test-time compute allocation with frontier/oracle-gap analysis and anti-collapse diagnostics.
-
-## Canonical inputs used by this pipeline
-
-- `outputs/imported_methodology_frontier_eval/20260417T000000Z/`
+The paper pipeline reads from:
 - `outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/`
-- `outputs/branch_label_bruteforce_learning/near_tie_two_stage_complementarity_audit_upgrade_20260417/`
-- `outputs/branch_label_bruteforce_learning/soft_prob_tie_matched_20260417/`
-- `outputs/branch_scorer_v3_final_eval/final_summary.json` (auxiliary robustness context)
+- `outputs/imported_methodology_frontier_eval/20260417T000000Z/`
+- `outputs/full_method_comparison_bundle/20260419T214335Z/`
+- `outputs/branch_label_bruteforce_learning/near_tie_two_stage_complementarity_audit_upgrade_20260417/` (appendix support)
 
-## Generated outputs
+## Generated figure outputs
 
-Plot data:
-- `outputs/paper_plot_data/figure1_problem_schematic.json`
-- `outputs/paper_plot_data/main_frontier_curves.csv`
-- `outputs/paper_plot_data/oracle_gap_curves.csv`
-- `outputs/paper_plot_data/allocation_composition.csv`
-- `outputs/paper_plot_data/anti_collapse_diagnostics.csv`
-- `outputs/paper_plot_data/failure_decomposition.csv`
-- `outputs/paper_plot_data/per_dataset_frontiers.csv`
-- appendix plot-data CSVs under `outputs/paper_plot_data/appendix_*.csv`
+Main-paper figures (PDF + PNG):
+- `outputs/paper_figures/figure1_problem_setup.{pdf,png}`
+- `outputs/paper_figures/figure2_main_frontier.{pdf,png}`
+- `outputs/paper_figures/figure3_oracle_gap.{pdf,png}`
+- `outputs/paper_figures/figure4_allocation_composition.{pdf,png}`
+- `outputs/paper_figures/figure5_anti_collapse.{pdf,png}`
+- `outputs/paper_figures/figure6_failure_decomposition.{pdf,png}`
+- `outputs/paper_figures/figure7_per_dataset_summary.{pdf,png}`
 
-Tables:
-- `outputs/paper_tables/benchmark_method_summary.{csv,tex}`
-- `outputs/paper_tables/main_frontier_comparison.{csv,tex}`
-- `outputs/paper_tables/oracle_headroom_summary.{csv,tex}`
-- `outputs/paper_tables/anti_collapse_summary.{csv,tex}`
-- `outputs/paper_tables/failure_decomposition.{csv,tex}`
-- `outputs/paper_tables/robustness_sensitivity.{csv,tex}`
+Main-paper plot data:
+- `outputs/paper_plot_data/figure1_problem_setup.json`
+- `outputs/paper_plot_data/figure2_main_frontier.csv`
+- `outputs/paper_plot_data/figure3_oracle_gap.csv`
+- `outputs/paper_plot_data/figure4_allocation_composition.csv`
+- `outputs/paper_plot_data/figure5_anti_collapse.csv`
+- `outputs/paper_plot_data/figure6_failure_decomposition.csv`
+- `outputs/paper_plot_data/figure7_per_dataset_summary.csv`
 
-## Script entry points
+Appendix figures and data:
+- `outputs/paper_figures/appendix_*.{pdf,png}`
+- `outputs/paper_plot_data/appendix_*.csv`
 
-- Canonical runner: `scripts/paper/run_all_neurips_paper_artifacts.py`
-- Multi-dataset frontier evaluator: `scripts/run_imported_methodology_frontier_eval_multidataset.py`
+## Generated table outputs
 
-## Figure/table claim structure support
+- `outputs/paper_tables/table1_benchmark_method_summary.{csv,tex}`
+- `outputs/paper_tables/table2_main_frontier.{csv,tex}`
+- `outputs/paper_tables/table3_oracle_headroom.{csv,tex}`
+- `outputs/paper_tables/table4_anti_collapse.{csv,tex}`
+- `outputs/paper_tables/table5_failure_decomposition.{csv,tex}`
+- `outputs/paper_tables/table6_robustness.{csv,tex}`
 
-- Figure 2 + Table 2: fixed-budget frontier behavior and strongest baseline comparisons.
-- Figure 3 + Table 3: oracle headroom / regret accounting.
-- Figure 4 + Figure 5 + Table 4: allocation composition and anti-collapse diagnostics.
-- Figure 6 + Table 5: honest failure decomposition proxies (tree-generation-like vs output-layer-like failures).
-- Figure 7 + Table 6: per-dataset and robustness scope boundaries.
+## Claim support mapping
 
-## Main-paper safe artifacts
+- Figure 1: Problem framing and pipeline identity (fixed-budget next-step allocation + commit control).
+- Figure 2: Main frontier (macro across datasets).
+- Figure 3: Oracle gap / regret consistency with Figure 2.
+- Figure 4: Expansion-vs-verification allocation composition.
+- Figure 5: Anti-collapse diagnostics (entropy and concentration).
+- Figure 6: Failure decomposition (defeat-case subtype proxy mapping).
+- Figure 7: Per-dataset behavior on canonical multi-dataset surface.
+- Tables 1-6: benchmark/method surface, frontier comparison, oracle headroom, anti-collapse summary, failure decomposition, robustness/limitations.
 
-Main-paper safe now:
-- Frontier curves, oracle-gap curves, anti-collapse/control diagnostics, and failure proxy decomposition from canonical import runs.
+## Main paper vs appendix placement
 
-Appendix-only now:
-- Tie-aware formulation/fallback slices from near-tie branch-comparison artifacts.
-- Branch-scorer robustness context from `branch_scorer_v3_final_eval`.
+Main-paper recommended:
+- Figures 1-7 and Tables 1-6 listed above.
 
-## Build commands
+Appendix recommended:
+- per-dataset full curve panels for all methods,
+- promoted-vs-adversary failure-slice comparison,
+- additional dense method comparisons.
 
-From repository root:
+## How to regenerate
+
+Run:
 
 - `python scripts/paper/run_all_neurips_paper_artifacts.py`
-- `python scripts/run_imported_methodology_frontier_eval_multidataset.py --datasets "openai/gsm8k,HuggingFaceH4/MATH-500,Idavidrein/gpqa" --subset-size 24 --budgets "8,10" --api-backend simulator --run-id "20260420T_multidataset_frontier_v1"`
 
-Optional local rendering of binaries (not committed):
+This regenerates:
+- all plot-data CSV/JSON,
+- all tables (CSV + TeX),
+- all main and supported appendix figure binaries (PDF + PNG).
 
-- `python scripts/paper/run_all_neurips_paper_artifacts.py --render-plots`
+## Missing pieces for stronger final submission
 
-## Missing pieces for stronger NeurIPS submission
-
-- Native strict-coupled/tie-aware controller integration in `frontier_matrix_core` (instead of alias-bridge reporting).
-- A direct committed old-vs-current tree-generation summary table for appendix.
-- A committed targeted output-layer repair study aligned with frontier runs.
-- Wider real-model scale with stronger statistical confidence intervals.
+- Native strict-coupled/tie-aware controller integration in frontier evaluator (remove alias bridge).
+- Direct committed old-vs-current tree-comparison quantitative plot-data in canonical format.
+- Direct committed output-layer repair effect bundle on the canonical multi-dataset frontier surface.

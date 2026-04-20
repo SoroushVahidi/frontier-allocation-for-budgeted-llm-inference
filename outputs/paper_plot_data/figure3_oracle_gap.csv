@@ -1,0 +1,17 @@
+method,budget,oracle_gap,normalized_regret,n_datasets,aggregation
+"Promoted (Strict-Coupled Tie-Aware, bridged)",8,0.5277777777777778,0.5277777777777778,3,macro_over_datasets
+"Promoted (Strict-Coupled Tie-Aware, bridged)",10,0.5277777777777778,0.5277777777777778,3,macro_over_datasets
+Adaptive Budget Guarded,8,0.5277777777777778,0.5277777777777778,3,macro_over_datasets
+Adaptive Budget Guarded,10,0.5277777777777778,0.5277777777777778,3,macro_over_datasets
+Reasoning Beam-2,8,0.25,0.25,3,macro_over_datasets
+Reasoning Beam-2,10,0.4166666666666667,0.4166666666666667,3,macro_over_datasets
+Self-Consistency-3,8,0.38888888888888884,0.38888888888888884,3,macro_over_datasets
+Self-Consistency-3,10,0.3055555555555555,0.3055555555555555,3,macro_over_datasets
+Reasoning Greedy,8,0.5,0.5,3,macro_over_datasets
+Reasoning Greedy,10,0.5,0.5,3,macro_over_datasets
+Verifier-Guided Search,8,0.6944444444444445,0.6944444444444445,3,macro_over_datasets
+Verifier-Guided Search,10,0.49999999999999994,0.49999999999999994,3,macro_over_datasets
+Program-of-Thought,8,1.0,1.0,3,macro_over_datasets
+Program-of-Thought,10,0.9722222222222222,0.9722222222222222,3,macro_over_datasets
+Oracle Frontier Upper Bound,8,0.0,0.0,3,macro_over_datasets
+Oracle Frontier Upper Bound,10,0.0,0.0,3,macro_over_datasets

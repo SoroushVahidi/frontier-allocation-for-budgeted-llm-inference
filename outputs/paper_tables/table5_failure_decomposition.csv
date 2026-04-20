@@ -1,0 +1,2 @@
+dataset,absent_from_tree_rate,present_in_tree_output_layer_rate,other_rate,n_defeat_cases,basis
+HuggingFaceH4/MATH-500,0.7,0.3,0.0,60,defeat_case_failure_subtype_proxy

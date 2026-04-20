@@ -1,0 +1,17 @@
+method,budget,accuracy,avg_actions,n_datasets,metric,aggregation
+"Promoted (Strict-Coupled Tie-Aware, bridged)",8,0.47222222222222227,4.333333333333333,3,Accuracy,macro_over_datasets
+"Promoted (Strict-Coupled Tie-Aware, bridged)",10,0.4444444444444445,5.361111111111111,3,Accuracy,macro_over_datasets
+Adaptive Budget Guarded,8,0.47222222222222227,4.333333333333333,3,Accuracy,macro_over_datasets
+Adaptive Budget Guarded,10,0.4444444444444445,5.361111111111111,3,Accuracy,macro_over_datasets
+Reasoning Beam-2,8,0.75,3.7777777777777772,3,Accuracy,macro_over_datasets
+Reasoning Beam-2,10,0.5555555555555557,3.75,3,Accuracy,macro_over_datasets
+Self-Consistency-3,8,0.6111111111111112,7.888888888888889,3,Accuracy,macro_over_datasets
+Self-Consistency-3,10,0.6666666666666666,8.63888888888889,3,Accuracy,macro_over_datasets
+Reasoning Greedy,8,0.49999999999999994,1.7777777777777777,3,Accuracy,macro_over_datasets
+Reasoning Greedy,10,0.47222222222222227,2.2222222222222223,3,Accuracy,macro_over_datasets
+Verifier-Guided Search,8,0.3055555555555555,6.0,3,Accuracy,macro_over_datasets
+Verifier-Guided Search,10,0.47222222222222227,7.638888888888889,3,Accuracy,macro_over_datasets
+Program-of-Thought,8,0.0,2.0,3,Accuracy,macro_over_datasets
+Program-of-Thought,10,0.0,2.0,3,Accuracy,macro_over_datasets
+Oracle Frontier Upper Bound,8,1.0,2.527777777777778,3,Accuracy,macro_over_datasets
+Oracle Frontier Upper Bound,10,0.9722222222222222,2.861111111111111,3,Accuracy,macro_over_datasets

@@ -1,0 +1,3 @@
+budget,best_fixed_baseline,best_fixed_gap,promoted_method,promoted_gap,oracle_gap,promoted_to_oracle_ratio
+8,Reasoning Beam-2,0.25,"Promoted (Strict-Coupled Tie-Aware, bridged)",0.5277777777777778,0.0,0.4722222222222222
+10,Self-Consistency-3,0.3055555555555555,"Promoted (Strict-Coupled Tie-Aware, bridged)",0.5277777777777778,0.0,0.4722222222222222

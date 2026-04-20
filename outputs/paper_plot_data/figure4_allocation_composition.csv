@@ -1,0 +1,97 @@
+dataset,budget,method,component,component_share,avg_component_actions,avg_actions
+openai/gsm8k,8,"Promoted (Strict-Coupled Tie-Aware, bridged)",Expansion,0.7115384615384617,3.0833333333333335,4.333333333333333
+openai/gsm8k,8,"Promoted (Strict-Coupled Tie-Aware, bridged)",Verification,0.2884615384615385,1.25,4.333333333333333
+openai/gsm8k,10,"Promoted (Strict-Coupled Tie-Aware, bridged)",Expansion,0.3815789473684211,2.4166666666666665,6.333333333333333
+openai/gsm8k,10,"Promoted (Strict-Coupled Tie-Aware, bridged)",Verification,0.618421052631579,3.9166666666666665,6.333333333333333
+openai/gsm8k,8,Adaptive Budget Guarded,Expansion,0.7115384615384617,3.0833333333333335,4.333333333333333
+openai/gsm8k,8,Adaptive Budget Guarded,Verification,0.2884615384615385,1.25,4.333333333333333
+openai/gsm8k,10,Adaptive Budget Guarded,Expansion,0.3815789473684211,2.4166666666666665,6.333333333333333
+openai/gsm8k,10,Adaptive Budget Guarded,Verification,0.618421052631579,3.9166666666666665,6.333333333333333
+openai/gsm8k,8,Reasoning Beam-2,Expansion,1.0,3.75,3.75
+openai/gsm8k,8,Reasoning Beam-2,Verification,0.0,0.0,3.75
+openai/gsm8k,10,Reasoning Beam-2,Expansion,1.0,4.416666666666667,4.416666666666667
+openai/gsm8k,10,Reasoning Beam-2,Verification,0.0,0.0,4.416666666666667
+openai/gsm8k,8,Self-Consistency-3,Expansion,0.7096774193548387,5.5,7.75
+openai/gsm8k,8,Self-Consistency-3,Verification,0.2903225806451613,2.25,7.75
+openai/gsm8k,10,Self-Consistency-3,Expansion,0.6504854368932038,5.583333333333333,8.583333333333334
+openai/gsm8k,10,Self-Consistency-3,Verification,0.3495145631067961,3.0,8.583333333333334
+openai/gsm8k,8,Reasoning Greedy,Expansion,1.0,1.75,1.75
+openai/gsm8k,8,Reasoning Greedy,Verification,0.0,0.0,1.75
+openai/gsm8k,10,Reasoning Greedy,Expansion,1.0,2.5833333333333335,2.5833333333333335
+openai/gsm8k,10,Reasoning Greedy,Verification,0.0,0.0,2.5833333333333335
+openai/gsm8k,8,Verifier-Guided Search,Expansion,0.5,3.0,6.0
+openai/gsm8k,8,Verifier-Guided Search,Verification,0.5,3.0,6.0
+openai/gsm8k,10,Verifier-Guided Search,Expansion,0.6129032258064516,4.75,7.75
+openai/gsm8k,10,Verifier-Guided Search,Verification,0.3870967741935484,3.0,7.75
+openai/gsm8k,8,Program-of-Thought,Expansion,0.5,1.0,2.0
+openai/gsm8k,8,Program-of-Thought,Verification,0.0,0.0,2.0
+openai/gsm8k,10,Program-of-Thought,Expansion,0.5,1.0,2.0
+openai/gsm8k,10,Program-of-Thought,Verification,0.0,0.0,2.0
+openai/gsm8k,8,Oracle Frontier Upper Bound,Expansion,0.8888888888888888,2.0,2.25
+openai/gsm8k,8,Oracle Frontier Upper Bound,Verification,0.1111111111111111,0.25,2.25
+openai/gsm8k,10,Oracle Frontier Upper Bound,Expansion,0.926829268292683,3.1666666666666665,3.4166666666666665
+openai/gsm8k,10,Oracle Frontier Upper Bound,Verification,0.07317073170731708,0.25,3.4166666666666665
+HuggingFaceH4/MATH-500,8,"Promoted (Strict-Coupled Tie-Aware, bridged)",Expansion,0.7209302325581396,2.5833333333333335,3.5833333333333335
+HuggingFaceH4/MATH-500,8,"Promoted (Strict-Coupled Tie-Aware, bridged)",Verification,0.27906976744186046,1.0,3.5833333333333335
+HuggingFaceH4/MATH-500,10,"Promoted (Strict-Coupled Tie-Aware, bridged)",Expansion,0.65625,3.5,5.333333333333333
+HuggingFaceH4/MATH-500,10,"Promoted (Strict-Coupled Tie-Aware, bridged)",Verification,0.34375,1.8333333333333333,5.333333333333333
+HuggingFaceH4/MATH-500,8,Adaptive Budget Guarded,Expansion,0.7209302325581396,2.5833333333333335,3.5833333333333335
+HuggingFaceH4/MATH-500,8,Adaptive Budget Guarded,Verification,0.27906976744186046,1.0,3.5833333333333335
+HuggingFaceH4/MATH-500,10,Adaptive Budget Guarded,Expansion,0.65625,3.5,5.333333333333333
+HuggingFaceH4/MATH-500,10,Adaptive Budget Guarded,Verification,0.34375,1.8333333333333333,5.333333333333333
+HuggingFaceH4/MATH-500,8,Reasoning Beam-2,Expansion,1.0,3.6666666666666665,3.6666666666666665
+HuggingFaceH4/MATH-500,8,Reasoning Beam-2,Verification,0.0,0.0,3.6666666666666665
+HuggingFaceH4/MATH-500,10,Reasoning Beam-2,Expansion,1.0,3.5833333333333335,3.5833333333333335
+HuggingFaceH4/MATH-500,10,Reasoning Beam-2,Verification,0.0,0.0,3.5833333333333335
+HuggingFaceH4/MATH-500,8,Self-Consistency-3,Expansion,0.71875,5.75,8.0
+HuggingFaceH4/MATH-500,8,Self-Consistency-3,Verification,0.28125,2.25,8.0
+HuggingFaceH4/MATH-500,10,Self-Consistency-3,Expansion,0.6886792452830188,6.083333333333333,8.833333333333334
+HuggingFaceH4/MATH-500,10,Self-Consistency-3,Verification,0.3113207547169811,2.75,8.833333333333334
+HuggingFaceH4/MATH-500,8,Reasoning Greedy,Expansion,1.0,2.0,2.0
+HuggingFaceH4/MATH-500,8,Reasoning Greedy,Verification,0.0,0.0,2.0
+HuggingFaceH4/MATH-500,10,Reasoning Greedy,Expansion,1.0,1.8333333333333333,1.8333333333333333
+HuggingFaceH4/MATH-500,10,Reasoning Greedy,Verification,0.0,0.0,1.8333333333333333
+HuggingFaceH4/MATH-500,8,Verifier-Guided Search,Expansion,0.5,3.0,6.0
+HuggingFaceH4/MATH-500,8,Verifier-Guided Search,Verification,0.5,3.0,6.0
+HuggingFaceH4/MATH-500,10,Verifier-Guided Search,Expansion,0.5955056179775281,4.416666666666667,7.416666666666667
+HuggingFaceH4/MATH-500,10,Verifier-Guided Search,Verification,0.4044943820224719,3.0,7.416666666666667
+HuggingFaceH4/MATH-500,8,Program-of-Thought,Expansion,0.5,1.0,2.0
+HuggingFaceH4/MATH-500,8,Program-of-Thought,Verification,0.0,0.0,2.0
+HuggingFaceH4/MATH-500,10,Program-of-Thought,Expansion,0.5,1.0,2.0
+HuggingFaceH4/MATH-500,10,Program-of-Thought,Verification,0.0,0.0,2.0
+HuggingFaceH4/MATH-500,8,Oracle Frontier Upper Bound,Expansion,0.9090909090909091,2.5,2.75
+HuggingFaceH4/MATH-500,8,Oracle Frontier Upper Bound,Verification,0.09090909090909091,0.25,2.75
+HuggingFaceH4/MATH-500,10,Oracle Frontier Upper Bound,Expansion,0.8235294117647058,2.3333333333333335,2.8333333333333335
+HuggingFaceH4/MATH-500,10,Oracle Frontier Upper Bound,Verification,0.1764705882352941,0.5,2.8333333333333335
+Idavidrein/gpqa,8,"Promoted (Strict-Coupled Tie-Aware, bridged)",Expansion,0.7540983606557378,3.8333333333333335,5.083333333333333
+Idavidrein/gpqa,8,"Promoted (Strict-Coupled Tie-Aware, bridged)",Verification,0.24590163934426232,1.25,5.083333333333333
+Idavidrein/gpqa,10,"Promoted (Strict-Coupled Tie-Aware, bridged)",Expansion,0.45283018867924524,2.0,4.416666666666667
+Idavidrein/gpqa,10,"Promoted (Strict-Coupled Tie-Aware, bridged)",Verification,0.5471698113207546,2.4166666666666665,4.416666666666667
+Idavidrein/gpqa,8,Adaptive Budget Guarded,Expansion,0.7540983606557378,3.8333333333333335,5.083333333333333
+Idavidrein/gpqa,8,Adaptive Budget Guarded,Verification,0.24590163934426232,1.25,5.083333333333333
+Idavidrein/gpqa,10,Adaptive Budget Guarded,Expansion,0.45283018867924524,2.0,4.416666666666667
+Idavidrein/gpqa,10,Adaptive Budget Guarded,Verification,0.5471698113207546,2.4166666666666665,4.416666666666667
+Idavidrein/gpqa,8,Reasoning Beam-2,Expansion,1.0,3.9166666666666665,3.9166666666666665
+Idavidrein/gpqa,8,Reasoning Beam-2,Verification,0.0,0.0,3.9166666666666665
+Idavidrein/gpqa,10,Reasoning Beam-2,Expansion,1.0,3.25,3.25
+Idavidrein/gpqa,10,Reasoning Beam-2,Verification,0.0,0.0,3.25
+Idavidrein/gpqa,8,Self-Consistency-3,Expansion,0.7052631578947368,5.583333333333333,7.916666666666667
+Idavidrein/gpqa,8,Self-Consistency-3,Verification,0.2947368421052632,2.3333333333333335,7.916666666666667
+Idavidrein/gpqa,10,Self-Consistency-3,Expansion,0.6666666666666667,5.666666666666667,8.5
+Idavidrein/gpqa,10,Self-Consistency-3,Verification,0.33333333333333337,2.8333333333333335,8.5
+Idavidrein/gpqa,8,Reasoning Greedy,Expansion,1.0,1.5833333333333333,1.5833333333333333
+Idavidrein/gpqa,8,Reasoning Greedy,Verification,0.0,0.0,1.5833333333333333
+Idavidrein/gpqa,10,Reasoning Greedy,Expansion,1.0,2.25,2.25
+Idavidrein/gpqa,10,Reasoning Greedy,Verification,0.0,0.0,2.25
+Idavidrein/gpqa,8,Verifier-Guided Search,Expansion,0.5,3.0,6.0
+Idavidrein/gpqa,8,Verifier-Guided Search,Verification,0.5,3.0,6.0
+Idavidrein/gpqa,10,Verifier-Guided Search,Expansion,0.6129032258064516,4.75,7.75
+Idavidrein/gpqa,10,Verifier-Guided Search,Verification,0.3870967741935484,3.0,7.75
+Idavidrein/gpqa,8,Program-of-Thought,Expansion,0.5,1.0,2.0
+Idavidrein/gpqa,8,Program-of-Thought,Verification,0.0,0.0,2.0
+Idavidrein/gpqa,10,Program-of-Thought,Expansion,0.5,1.0,2.0
+Idavidrein/gpqa,10,Program-of-Thought,Verification,0.0,0.0,2.0
+Idavidrein/gpqa,8,Oracle Frontier Upper Bound,Expansion,1.0,2.5833333333333335,2.5833333333333335
+Idavidrein/gpqa,8,Oracle Frontier Upper Bound,Verification,0.0,0.0,2.5833333333333335
+Idavidrein/gpqa,10,Oracle Frontier Upper Bound,Expansion,0.8928571428571429,2.0833333333333335,2.3333333333333335
+Idavidrein/gpqa,10,Oracle Frontier Upper Bound,Verification,0.10714285714285714,0.25,2.3333333333333335
