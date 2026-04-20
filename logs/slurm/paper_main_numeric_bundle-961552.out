@@ -1,0 +1,6 @@
+Running command:
+ python scripts/run_paper_main_numeric_results_bundle.py --output-dir outputs/paper_main_numeric_results_bundle_20260420 --datasets openai/gsm8k\,EleutherAI/hendrycks_math\,HuggingFaceH4/MATH-500\,Idavidrein/gpqa\,Hothan/OlympiadBench\,meituan-longcat/AMO-Bench --budgets 6\,8\,10 --seeds 42\,43\,44 --subset-size 24 --api-backend simulator --model gpt-4.1-mini --resume
+{
+  "status": "ok",
+  "output_dir": "outputs/paper_main_numeric_results_bundle_20260420"
+}
