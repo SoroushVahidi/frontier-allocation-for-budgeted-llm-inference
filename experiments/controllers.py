@@ -829,6 +829,14 @@ class GlobalDiversityAggregationController(BaseController):
         min_followup_steps_for_preserved_alternative: int = 2,
         alternative_maturity_window: int = 5,
         protected_alternative_target_alignment_min: float = 0.48,
+        enable_width_depth_allocation_guard: bool = False,
+        width_depth_repeat_family_trigger: int = 2,
+        width_depth_min_actions: int = 3,
+        width_depth_challenger_maturation_min_expands: int = 2,
+        width_depth_min_relative_continuation: float = 0.75,
+        enable_uncertainty_triggered_verify: bool = False,
+        uncertainty_verify_priority_margin: float = 0.05,
+        uncertainty_verify_max_steps: int = 2,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -914,6 +922,14 @@ class GlobalDiversityAggregationController(BaseController):
         self.min_followup_steps_for_preserved_alternative = max(0, int(min_followup_steps_for_preserved_alternative))
         self.alternative_maturity_window = max(1, int(alternative_maturity_window))
         self.protected_alternative_target_alignment_min = float(protected_alternative_target_alignment_min)
+        self.enable_width_depth_allocation_guard = bool(enable_width_depth_allocation_guard)
+        self.width_depth_repeat_family_trigger = max(1, int(width_depth_repeat_family_trigger))
+        self.width_depth_min_actions = max(0, int(width_depth_min_actions))
+        self.width_depth_challenger_maturation_min_expands = max(1, int(width_depth_challenger_maturation_min_expands))
+        self.width_depth_min_relative_continuation = max(0.0, min(1.0, float(width_depth_min_relative_continuation)))
+        self.enable_uncertainty_triggered_verify = bool(enable_uncertainty_triggered_verify)
+        self.uncertainty_verify_priority_margin = max(0.0, float(uncertainty_verify_priority_margin))
+        self.uncertainty_verify_max_steps = max(0, int(uncertainty_verify_max_steps))
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -2038,6 +2054,9 @@ class GlobalDiversityAggregationController(BaseController):
         incumbent_commit_triggered = False
         near_tie_forced_steps_used = 0
         early_preservation_forced_steps = 0
+        width_depth_forced_width_steps = 0
+        width_depth_forced_challenger_maturation_steps = 0
+        uncertainty_verify_steps = 0
         last_expanded_branch_id: str | None = None
         consecutive_same_branch_expands = 0
         max_consecutive_same_branch_expands = 0
@@ -2208,6 +2227,49 @@ class GlobalDiversityAggregationController(BaseController):
                     if chosen[0].branch_id != branch.branch_id:
                         branch, priority, pri_meta = chosen
 
+            width_depth_meta: dict[str, Any] = {"activated": False, "reason": "disabled"}
+            if self.enable_width_depth_allocation_guard and actions >= self.width_depth_min_actions and scored:
+                top_cont = max(float(item[2].get("continuation_value", 0.0)) for item in scored)
+                family_expansions: dict[str, int] = {}
+                for bid, cnt in branch_expansions.items():
+                    fam = str(branch_family_ids.get(bid) or bid)
+                    family_expansions[fam] = family_expansions.get(fam, 0) + int(cnt)
+                selected_family = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+                should_force_width = bool(
+                    consecutive_same_family_expands >= self.width_depth_repeat_family_trigger
+                    and selected_family == (last_expanded_family_id or selected_family)
+                )
+                if should_force_width:
+                    challenger_candidates = []
+                    for item in scored:
+                        cand = item[0]
+                        cand_family = str(branch_family_ids.get(cand.branch_id) or cand.branch_id)
+                        if cand_family == selected_family:
+                            continue
+                        cont = float(item[2].get("continuation_value", 0.0))
+                        if cont < self.width_depth_min_relative_continuation * max(1e-6, top_cont):
+                            continue
+                        cand_expands = int(branch_expansions.get(cand.branch_id, 0))
+                        fam_expands = int(family_expansions.get(cand_family, 0))
+                        need = max(0, self.width_depth_challenger_maturation_min_expands - cand_expands)
+                        challenger_candidates.append((need, -cont, fam_expands, item))
+                    if challenger_candidates:
+                        challenger_candidates.sort(key=lambda x: (x[0], x[1], x[2]))
+                        chosen = challenger_candidates[0][3]
+                        if chosen[0].branch_id != branch.branch_id:
+                            width_depth_meta = {
+                                "activated": True,
+                                "reason": "force_width_from_monopolization",
+                                "chosen_branch_id": chosen[0].branch_id,
+                                "chosen_family_id": str(branch_family_ids.get(chosen[0].branch_id) or chosen[0].branch_id),
+                                "selected_family_id": selected_family,
+                                "consecutive_same_family_expands": int(consecutive_same_family_expands),
+                            }
+                            width_depth_forced_width_steps += 1
+                            if int(branch_expansions.get(chosen[0].branch_id, 0)) < self.width_depth_challenger_maturation_min_expands:
+                                width_depth_forced_challenger_maturation_steps += 1
+                            branch, priority, pri_meta = chosen
+
             metalevel_preview: dict[str, Any] | None = None
             metalevel_override = False
             if self.enable_incumbent_challenger_commit:
@@ -2260,7 +2322,21 @@ class GlobalDiversityAggregationController(BaseController):
             if force_explore:
                 forced_explore_steps += 1
 
-            if (b_expanded < self.min_branch_expansions) or force_explore or (priority >= float(self.scorer.score_branch(branch))):
+            should_expand = bool((b_expanded < self.min_branch_expansions) or force_explore or (priority >= float(self.scorer.score_branch(branch))))
+            near_tie_uncertainty = False
+            if len(scored) >= 2:
+                near_tie_uncertainty = bool(abs(float(scored[0][1]) - float(scored[1][1])) <= self.uncertainty_verify_priority_margin)
+            uncertainty_verify_activated = bool(
+                self.enable_uncertainty_triggered_verify
+                and near_tie_uncertainty
+                and branch.is_done
+                and uncertainty_verify_steps < self.uncertainty_verify_max_steps
+                and actions >= self.width_depth_min_actions
+            )
+            if uncertainty_verify_activated:
+                should_expand = False
+                uncertainty_verify_steps += 1
+            if should_expand:
                 result = self.generator.expand(branch, question, gold_answer)
                 actions += 1
                 expansions += 1
@@ -2314,6 +2390,10 @@ class GlobalDiversityAggregationController(BaseController):
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("duplicate_answer_group_penalty", 0.0)), 4
                         ),
                         "alternative_maturity_protected": bool(branch.branch_id in protected_alternatives),
+                        "width_depth_guard_activated": bool(width_depth_meta.get("activated", False)),
+                        "width_depth_guard_reason": width_depth_meta.get("reason"),
+                        "width_depth_guard_chosen_family_id": width_depth_meta.get("chosen_family_id"),
+                        "uncertainty_verify_activated": bool(uncertainty_verify_activated),
                     }
                 )
                 if branch.branch_id == last_expanded_branch_id:
@@ -2398,6 +2478,10 @@ class GlobalDiversityAggregationController(BaseController):
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("duplicate_answer_group_penalty", 0.0)), 4
                         ),
                         "alternative_maturity_protected": bool(branch.branch_id in protected_alternatives),
+                        "width_depth_guard_activated": bool(width_depth_meta.get("activated", False)),
+                        "width_depth_guard_reason": width_depth_meta.get("reason"),
+                        "width_depth_guard_chosen_family_id": width_depth_meta.get("chosen_family_id"),
+                        "uncertainty_verify_activated": bool(uncertainty_verify_activated),
                     }
                 )
 
@@ -2682,6 +2766,12 @@ class GlobalDiversityAggregationController(BaseController):
                 "shallow_preserved_alternative_count": int(shallow_preserved_alternative_count),
                 "matured_alternative_count": int(matured_alternative_count),
                 "alternative_maturity_completion_rate": float(matured_alternative_count / max(1, len(protected_alternative_ids))),
+                "width_depth_allocation_guard_enabled": bool(self.enable_width_depth_allocation_guard),
+                "width_depth_forced_width_steps": int(width_depth_forced_width_steps),
+                "width_depth_forced_challenger_maturation_steps": int(width_depth_forced_challenger_maturation_steps),
+                "width_depth_challenger_maturation_min_expands": int(self.width_depth_challenger_maturation_min_expands),
+                "uncertainty_triggered_verify_enabled": bool(self.enable_uncertainty_triggered_verify),
+                "uncertainty_verify_steps": int(uncertainty_verify_steps),
                 "diversity_needed_gate_mode": self.diversity_needed_gate_mode,
                 "diversity_needed_gate_positive_threshold": float(self.diversity_needed_gate_positive_threshold),
                 "diversity_needed_gate_negative_threshold": float(self.diversity_needed_gate_negative_threshold),
