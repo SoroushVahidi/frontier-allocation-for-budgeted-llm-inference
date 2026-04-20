@@ -11,6 +11,7 @@ It is **not** a new method note. It is a repository-structure note.
 The repository is already strong in the following ways:
 - the scientific scope is now much clearer than in earlier phases,
 - the broad-family paper direction is explicit,
+- the current promoted method line is now explicitly named,
 - the baseline/evaluation surface is well documented,
 - many experiment lines already write auditable status notes and machine-readable artifacts,
 - and there is a real canonical / exploratory / historical separation rather than one undifferentiated pile of notes.
@@ -18,13 +19,13 @@ The repository is already strong in the following ways:
 The main organization problem is no longer missing documentation.
 It is the opposite:
 
-> **the front door is too dense, too repetitive, and too easy to overread for a new collaborator.**
+> **the front door is still too dense, too repetitive, and too easy to overread for a new collaborator.**
 
 In practice this means:
 - too many long reading lists appear in multiple places,
 - several top-level docs say similar things with slightly different emphasis,
 - the shortest collaborator path is harder to see than it should be,
-- and narrower method-line notes can look more central than they really are if the reader starts in the wrong place.
+- and narrower method-line notes can still look more central than they really are if the reader starts in the wrong place.
 
 ## Current organization rule
 
@@ -35,6 +36,7 @@ These files should stay short, stable, and mutually consistent:
 - `README.md`
 - `docs/README.md`
 - `docs/CANONICAL_START_HERE.md`
+- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 - `docs/REPO_MAP.md`
 - `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
 - `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
@@ -42,7 +44,6 @@ These files should stay short, stable, and mutually consistent:
 
 ### 2. Canonical project-state docs
 These define what the project currently is and what is safe to claim:
-- `docs/PROJECT_STATE_AFTER_VALUE_TARGET_HARDENING_2026_04_19.md`
 - `docs/CURRENT_PROJECT_STATUS.md`
 - `docs/CURRENT_BOTTLENECKS.md`
 - `docs/CURRENT_SAFE_CLAIMS.md`
@@ -56,6 +57,8 @@ These explain why the current interpretation is what it is:
 - `docs/ORACLE_MISMATCH_STUDY_2026_04_18.md`
 - `docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`
 - `docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`
+- `docs/TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`
+- `docs/TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`
 - `docs/main_baselines.md`
 - `docs/main_datasets.md`
 
@@ -72,11 +75,12 @@ If a new collaborator asks where to start, the default answer should now be:
 
 1. `README.md`
 2. `docs/CANONICAL_START_HERE.md`
-3. `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
-4. `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
-5. `docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
-6. `docs/REPO_MAP.md`
-7. `scripts/CANONICAL_START_HERE.md`
+3. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+4. `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
+5. `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
+6. `docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
+7. `docs/REPO_MAP.md`
+8. `scripts/CANONICAL_START_HERE.md`
 
 That is enough to understand the project without reading dozens of notes first.
 
@@ -86,6 +90,7 @@ When the project phase changes materially, update the following together:
 - `README.md`
 - `docs/README.md`
 - `docs/CANONICAL_START_HERE.md`
+- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 - `docs/REPO_MAP.md`
 - `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
 - `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
