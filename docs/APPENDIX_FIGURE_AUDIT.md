@@ -1,89 +1,39 @@
 # Appendix Figure Audit
 
-## Scope and audit rules
+This note records appendix figure reality in the current checkout and prevents references to non-existent artifacts.
 
-This audit checks what appendix figures are already present, what is reproducibly supportable from canonical artifacts, and what is not currently supportable without fabricating sources.
+## Appendix figures that already exist and are usable
 
-Primary canonical sources used in this audit:
-
-- `outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/`
-- `outputs/full_method_comparison_bundle/20260419T214335Z/`
-- `outputs/current_failure_output_layer_repair_20260420/`
-- `outputs/paper_plot_data/`
-- `outputs/paper_figures/`
-- `scripts/paper/`
-
-## Main-paper figures already present
-
-All main figures already exist in `outputs/paper_figures/` and are supported by committed plot-data/scripts:
-
-- `figure1_problem_setup.{pdf,png}`
-- `figure2_main_frontier.{pdf,png}`
-- `figure3_oracle_gap.{pdf,png}`
-- `figure4_allocation_composition.{pdf,png}`
-- `figure5_anti_collapse.{pdf,png}`
-- `figure6_failure_decomposition.{pdf,png}`
-- `figure7_per_dataset_summary.{pdf,png}`
-
-No unnecessary re-creation was required for this task.
-
-## Appendix figures already present and supported
-
-### 1) Output-layer repair appendix figure
-
-- Figure files:
-  - `outputs/paper_figures/appendix_output_layer_repair.pdf`
-  - `outputs/paper_figures/appendix_output_layer_repair.png`
-- Plot-data:
+- Per-dataset frontier appendix support (preserved as-is):
+  - `outputs/paper_figures/appendix_per_dataset_frontier_HuggingFaceH4_MATH*`
+  - `outputs/paper_figures/appendix_per_dataset_frontier_Idavidrein_gpqa.{pdf,png}`
+  - `outputs/paper_figures/appendix_per_dataset_frontier_openai_gsm8k.{pdf,png}`
+- Promoted-vs-adversary failure-slice appendix support (preserved as-is):
+  - `outputs/paper_figures/appendix_promoted_vs_adversary_failure_slices.{pdf,png}`
+- Targeted output-layer repair appendix support:
+  - `outputs/paper_figures/appendix_output_layer_repair.{pdf,png}`
   - `outputs/paper_plot_data/appendix_output_layer_repair.csv`
-- Script:
-  - `scripts/paper/plot_appendix_output_layer_repair.py`
-- Source artifacts:
-  - `outputs/current_failure_output_layer_repair_20260420/{manifest.json,summary.json,per_case_results.jsonl,mismatch_breakdown.json,targeted_16_table.csv}`
+
+## Appendix figures still missing
+
+- Old-vs-current tree-comparison appendix figure (`appendix_old_vs_current_tree_comparison.*`) is still missing in this checkout.
+
+## Missing figures that can be generated from current artifacts
+
+- `appendix_output_layer_repair.{pdf,png}` and `appendix_output_layer_repair.csv` are now generated from:
+  - `outputs/current_failure_output_layer_repair_20260420/manifest.json`
+  - `outputs/current_failure_output_layer_repair_20260420/summary.json`
+  - `outputs/current_failure_output_layer_repair_20260420/per_case_results.jsonl`
+  - `outputs/current_failure_output_layer_repair_20260420/mismatch_breakdown.json`
+  - `outputs/current_failure_output_layer_repair_20260420/targeted_16_table.csv`
   - `docs/CURRENT_FAILURE_OUTPUT_LAYER_REPAIR_STATUS_2026_04_20.md`
 
-Status: **supported and now aligned to targeted-subset-only presentation**.
+## Figures that should not be referenced in paper text
 
-### 2) Per-dataset frontier appendix curves
+- Do not reference `appendix_broad_comparison_frontier.pdf` (no such figure file in this checkout).
+- Do not reference `appendix_old_vs_current_tree_comparison.pdf` (no such figure file in this checkout).
 
-- Figure files:
-  - `outputs/paper_figures/appendix_per_dataset_frontier_*.{pdf,png}`
-- Plot-data:
-  - `outputs/paper_plot_data/appendix_per_dataset_frontier_curves.csv`
-- Script:
-  - `scripts/paper/plot_appendix_figures.py` (`plot_appendix_per_dataset_curves`)
-- Source artifacts:
-  - `outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/budget_frontier_summary.csv`
-
-Status: **already supported and preserved**.
-
-### 3) Broader comparison frontier (more baselines than main-paper display)
-
-Existing support is via the appendix per-dataset full-curve panels:
-
-- `appendix_per_dataset_frontier_*.{pdf,png}` includes all canonical methods from the canonical frontier CSV.
-- This is broader than the constrained method display used in `figure7_per_dataset_summary`.
-
-Status: **already supported by existing appendix per-dataset frontier figures**.
-
-## Requested appendix figures currently not supportable
-
-### Old-vs-current tree comparison summary figure
-
-Current docs reference an old-vs-current tuned tree bundle path, but that bundle is not present in this checkout under `outputs/`.
-
-- Referenced in docs: `outputs/twenty_case_old_vs_current_tuned_tree_comparison_20260420/`
-- Present in this checkout: **not found**
-
-Status: **not supportable from current repository outputs in this checkout**.
-No figure was fabricated.
-
-## Changes made in this pass
-
-- Kept existing clean/supported main and appendix figures.
-- Updated output-layer repair appendix figure pipeline to enforce targeted-subset-only content.
-- Regenerated:
-  - `outputs/paper_plot_data/appendix_output_layer_repair.csv`
-  - `outputs/paper_figures/appendix_output_layer_repair.pdf`
-  - `outputs/paper_figures/appendix_output_layer_repair.png`
+Instead, use existing appendix support:
+- per-dataset frontier subsection -> `appendix_per_dataset_frontier_*`
+- promoted-vs-adversary failure-slice subsection -> `appendix_promoted_vs_adversary_failure_slices.*`
 

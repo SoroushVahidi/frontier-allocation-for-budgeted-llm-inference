@@ -33,6 +33,8 @@ The figure reports targeted-subset counts only:
 This supports the appendix statement:
 "On the subset where correct internal reasoning is already present, deterministic output-layer repair yields a real but bounded improvement."
 
+In this artifact snapshot, the targeted subset improvement is complete (16/16), but the gain remains bounded to this narrow targeted subset rather than the full benchmark.
+
 ## What this figure does not claim
 
 - It does **not** claim universal performance gains over all failures or all datasets.

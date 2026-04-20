@@ -17,10 +17,17 @@ MISMATCH_JSON = REPO_ROOT / "outputs" / "current_failure_output_layer_repair_202
 def _load_repair_summary() -> dict[str, int]:
     payload = json.loads(SUMMARY_JSON.read_text(encoding="utf-8"))
     mismatch = json.loads(MISMATCH_JSON.read_text(encoding="utf-8"))
+    targeted = int(payload["targeted_cases"])
+    resolved = int(payload["resolved_by_repair"])
+    unresolved = int(mismatch["unresolved_after_repair"])
+    if targeted != resolved + unresolved:
+        raise ValueError(
+            "Inconsistent repair summary: targeted_cases must equal resolved_by_repair + unresolved_after_repair"
+        )
     return {
-        "targeted_cases": int(payload["targeted_cases"]),
-        "resolved_by_repair": int(payload["resolved_by_repair"]),
-        "unresolved_after_repair": int(mismatch["unresolved_after_repair"]),
+        "targeted_cases": targeted,
+        "resolved_by_repair": resolved,
+        "unresolved_after_repair": unresolved,
     }
 
 
@@ -68,7 +75,7 @@ def main() -> None:
     totals = [int(r["total"]) for r in rows]
     colors = ["#7570b3", "#e41a1c", "#1b9e77", "#d95f02"]
 
-    fig, ax = plt.subplots(figsize=(8.6, 4.6))
+    fig, ax = plt.subplots(figsize=(8.8, 5.0))
     bars = ax.bar(labels, values, color=colors, width=0.64)
     ax.set_title("Appendix: Output-Layer Repair on Targeted In-Tree Subset", fontsize=STYLE.title_size)
     ax.set_ylabel("Case count", fontsize=STYLE.label_size)
@@ -89,18 +96,17 @@ def main() -> None:
             fontsize=STYLE.tick_size,
         )
 
-    ax.text(
+    fig.text(
         0.01,
-        0.98,
-        "Subset definition: current method wrong, self-consistency correct,\nand correct answer already present in the tree.",
-        transform=ax.transAxes,
+        0.02,
+        "Subset: current method wrong, self-consistency correct, and correct answer already present in tree.",
         ha="left",
-        va="top",
+        va="bottom",
         fontsize=STYLE.tick_size - 1,
         color="#333333",
     )
 
-    fig.subplots_adjust(bottom=0.28, top=0.86)
+    fig.subplots_adjust(bottom=0.30, top=0.88)
     save_fig(
         fig,
         FIGURE_DIR / "appendix_output_layer_repair.pdf",
