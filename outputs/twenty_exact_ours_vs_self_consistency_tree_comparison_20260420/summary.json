@@ -1,0 +1,20 @@
+{
+  "our_method": "broad_diversity_aggregation_v1",
+  "other_method": "self_consistency_3",
+  "selected_cases": 20,
+  "exactness": {
+    "our_exact_structure_recovery_cases": 20,
+    "self_consistency_exact_structure_recovery_cases": 20,
+    "cases_with_exact_correct_node_or_sample_identified_for_both": 12
+  },
+  "counts": {
+    "correct_answer_absent_in_our_tree": 4,
+    "correct_answer_present_in_our_tree_but_lost": 0,
+    "correct_answer_present_in_self_consistency_samples": 16,
+    "both_methods_contain_correct_answer_but_choose_differently": 2
+  },
+  "divergence_category_histogram": {
+    "absent from frontier": 4,
+    "other": 16
+  }
+}

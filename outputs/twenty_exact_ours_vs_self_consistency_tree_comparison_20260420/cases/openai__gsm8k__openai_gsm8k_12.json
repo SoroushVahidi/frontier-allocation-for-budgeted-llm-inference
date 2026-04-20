@@ -1,0 +1,1591 @@
+{
+  "case_id": "openai__gsm8k__openai_gsm8k_12",
+  "case_index": 13,
+  "dataset": "openai/gsm8k",
+  "example_id": "openai_gsm8k_12",
+  "problem_statement": "In a candy machine, there are 22 more than four times the number of pink gumballs as there are blue gumballs. If there are 12 blue gumballs how many pink ones are there?",
+  "ground_truth_answer": "70",
+  "ground_truth_normalized": "70",
+  "our_method_name": "broad_diversity_aggregation_v1",
+  "self_consistency_method_name": "self_consistency_3",
+  "recorded_original_outcome": {
+    "seed": 11,
+    "budget": 6,
+    "our_answer": "67",
+    "self_consistency_answer": "70",
+    "our_correct": false,
+    "self_consistency_correct": true,
+    "provenance": "exact-directly-recorded"
+  },
+  "rerun_observability": {
+    "our": {
+      "method": "broad_diversity_aggregation_v1",
+      "run_seed": 111011110,
+      "budget": 6,
+      "prediction_text": "70",
+      "prediction_normalized": "70",
+      "gold_normalized": "70",
+      "is_correct": true,
+      "actions_used": 6,
+      "expansions": 6,
+      "verifications": 0,
+      "budget_exhausted": false,
+      "avg_surviving_branches": 3.8333333333333335,
+      "metadata": {
+        "method_family": "global_diversity_aggregation",
+        "action_trace": [
+          {
+            "action": "expand",
+            "branch_id": "div_1",
+            "priority": 0.6926,
+            "continuation_value": 0.4726,
+            "diversity_bonus": 0.34,
+            "duplicate_cost": 0.12,
+            "coverage_gain": 0.0,
+            "semantic_overlap": 0.0,
+            "group_key": null,
+            "force_explore": true,
+            "gate_mode": "off",
+            "gate_decision": "fallback",
+            "gate_signal": 0.0,
+            "gate_intervened": false,
+            "gate_selected_branch_id": null,
+            "coverage_floor_activated": false,
+            "coverage_floor_reason": null,
+            "top_support_before_action": 0.0,
+            "metalevel_preview_decision": null,
+            "metalevel_preview_best_expand_branch_id": null,
+            "metalevel_branch_override_applied": false,
+            "target_alignment_score": 0.27,
+            "target_alignment_category": "likely_intermediate_or_mistargeted",
+            "early_preservation_activated": false,
+            "early_preservation_reason": null,
+            "anti_collapse_repeat_penalty": 0.0,
+            "anti_collapse_repeat_expand_exact_penalty": 0.0,
+            "anti_collapse_repeat_expand_family_penalty": 0.0,
+            "anti_collapse_repeat_expand_override_applied": false,
+            "anti_collapse_cap_guard_penalty": 0.0,
+            "answer_group_distinctness_bonus": 0.0,
+            "duplicate_answer_group_penalty": 0.0,
+            "alternative_maturity_protected": false
+          },
+          {
+            "action": "expand",
+            "branch_id": "div_child_1_2",
+            "priority": 0.7863,
+            "continuation_value": 0.6863,
+            "diversity_bonus": 0.34,
+            "duplicate_cost": 0.24,
+            "coverage_gain": 0.0,
+            "semantic_overlap": 0.0,
+            "group_key": null,
+            "force_explore": true,
+            "gate_mode": "off",
+            "gate_decision": "fallback",
+            "gate_signal": 0.0,
+            "gate_intervened": false,
+            "gate_selected_branch_id": null,
+            "coverage_floor_activated": false,
+            "coverage_floor_reason": null,
+            "top_support_before_action": 0.0,
+            "metalevel_preview_decision": null,
+            "metalevel_preview_best_expand_branch_id": null,
+            "metalevel_branch_override_applied": false,
+            "target_alignment_score": 0.27,
+            "target_alignment_category": "likely_intermediate_or_mistargeted",
+            "early_preservation_activated": false,
+            "early_preservation_reason": null,
+            "anti_collapse_repeat_penalty": 0.0,
+            "anti_collapse_repeat_expand_exact_penalty": 0.0,
+            "anti_collapse_repeat_expand_family_penalty": 0.0,
+            "anti_collapse_repeat_expand_override_applied": false,
+            "anti_collapse_cap_guard_penalty": 0.0,
+            "answer_group_distinctness_bonus": 0.0,
+            "duplicate_answer_group_penalty": 0.0,
+            "alternative_maturity_protected": false
+          },
+          {
+            "action": "expand",
+            "branch_id": "div_child_1_2",
+            "priority": 0.6861,
+            "continuation_value": 0.7061,
+            "diversity_bonus": 0.34,
+            "duplicate_cost": 0.36,
+            "coverage_gain": 0.0,
+            "semantic_overlap": 0.0,
+            "group_key": null,
+            "force_explore": true,
+            "gate_mode": "off",
+            "gate_decision": "fallback",
+            "gate_signal": 0.0,
+            "gate_intervened": false,
+            "gate_selected_branch_id": null,
+            "coverage_floor_activated": false,
+            "coverage_floor_reason": null,
+            "top_support_before_action": 0.0,
+            "metalevel_preview_decision": null,
+            "metalevel_preview_best_expand_branch_id": null,
+            "metalevel_branch_override_applied": false,
+            "target_alignment_score": 0.27,
+            "target_alignment_category": "likely_intermediate_or_mistargeted",
+            "early_preservation_activated": false,
+            "early_preservation_reason": null,
+            "anti_collapse_repeat_penalty": 0.0,
+            "anti_collapse_repeat_expand_exact_penalty": 0.0,
+            "anti_collapse_repeat_expand_family_penalty": 0.0,
+            "anti_collapse_repeat_expand_override_applied": false,
+            "anti_collapse_cap_guard_penalty": 0.0,
+            "answer_group_distinctness_bonus": 0.0,
+            "duplicate_answer_group_penalty": 0.0,
+            "alternative_maturity_protected": false
+          },
+          {
+            "action": "expand",
+            "branch_id": "div_child_1_2",
+            "priority": 0.7266,
+            "continuation_value": 0.7466,
+            "diversity_bonus": 0.34,
+            "duplicate_cost": 0.36,
+            "coverage_gain": 0.0,
+            "semantic_overlap": 0.0,
+            "group_key": null,
+            "force_explore": true,
+            "gate_mode": "off",
+            "gate_decision": "fallback",
+            "gate_signal": 0.0,
+            "gate_intervened": false,
+            "gate_selected_branch_id": null,
+            "coverage_floor_activated": false,
+            "coverage_floor_reason": null,
+            "top_support_before_action": 0.0,
+            "metalevel_preview_decision": null,
+            "metalevel_preview_best_expand_branch_id": null,
+            "metalevel_branch_override_applied": false,
+            "target_alignment_score": 0.27,
+            "target_alignment_category": "likely_intermediate_or_mistargeted",
+            "early_preservation_activated": false,
+            "early_preservation_reason": null,
+            "anti_collapse_repeat_penalty": 0.0,
+            "anti_collapse_repeat_expand_exact_penalty": 0.0,
+            "anti_collapse_repeat_expand_family_penalty": 0.0,
+            "anti_collapse_repeat_expand_override_applied": false,
+            "anti_collapse_cap_guard_penalty": 0.0,
+            "answer_group_distinctness_bonus": 0.0,
+            "duplicate_answer_group_penalty": 0.0,
+            "alternative_maturity_protected": false
+          },
+          {
+            "action": "expand",
+            "branch_id": "div_child_1_2",
+            "priority": 0.7294,
+            "continuation_value": 0.7494,
+            "diversity_bonus": 0.34,
+            "duplicate_cost": 0.36,
+            "coverage_gain": 0.0,
+            "semantic_overlap": 0.0,
+            "group_key": null,
+            "force_explore": true,
+            "gate_mode": "off",
+            "gate_decision": "fallback",
+            "gate_signal": 0.0,
+            "gate_intervened": false,
+            "gate_selected_branch_id": null,
+            "coverage_floor_activated": false,
+            "coverage_floor_reason": null,
+            "top_support_before_action": 0.0,
+            "metalevel_preview_decision": null,
+            "metalevel_preview_best_expand_branch_id": null,
+            "metalevel_branch_override_applied": false,
+            "target_alignment_score": 0.27,
+            "target_alignment_category": "likely_intermediate_or_mistargeted",
+            "early_preservation_activated": false,
+            "early_preservation_reason": null,
+            "anti_collapse_repeat_penalty": 0.0,
+            "anti_collapse_repeat_expand_exact_penalty": 0.0,
+            "anti_collapse_repeat_expand_family_penalty": 0.0,
+            "anti_collapse_repeat_expand_override_applied": false,
+            "anti_collapse_cap_guard_penalty": 0.0,
+            "answer_group_distinctness_bonus": 0.0,
+            "duplicate_answer_group_penalty": 0.0,
+            "alternative_maturity_protected": false
+          },
+          {
+            "action": "expand",
+            "branch_id": "div_child_1_2",
+            "priority": 1.0127,
+            "continuation_value": 0.8727,
+            "diversity_bonus": 0.14,
+            "duplicate_cost": 0.0,
+            "coverage_gain": 0.0,
+            "semantic_overlap": 0.0,
+            "group_key": "70",
+            "force_explore": false,
+            "gate_mode": "off",
+            "gate_decision": "fallback",
+            "gate_signal": 0.0,
+            "gate_intervened": false,
+            "gate_selected_branch_id": null,
+            "coverage_floor_activated": false,
+            "coverage_floor_reason": null,
+            "top_support_before_action": 1.0,
+            "metalevel_preview_decision": null,
+            "metalevel_preview_best_expand_branch_id": null,
+            "metalevel_branch_override_applied": false,
+            "target_alignment_score": 0.68,
+            "target_alignment_category": "likely_target_aligned",
+            "early_preservation_activated": false,
+            "early_preservation_reason": null,
+            "anti_collapse_repeat_penalty": 0.0,
+            "anti_collapse_repeat_expand_exact_penalty": 0.0,
+            "anti_collapse_repeat_expand_family_penalty": 0.0,
+            "anti_collapse_repeat_expand_override_applied": false,
+            "anti_collapse_cap_guard_penalty": 0.0,
+            "answer_group_distinctness_bonus": 0.0,
+            "duplicate_answer_group_penalty": 0.0,
+            "alternative_maturity_protected": false
+          }
+        ],
+        "answer_support_counts": {
+          "70": 2
+        },
+        "answer_support_entropy": 0.0,
+        "expands_by_group": {
+          "__unknown__": 5,
+          "70": 1
+        },
+        "unique_answer_groups_seen": 1,
+        "forced_explore_steps": 5,
+        "forced_explore_rate": 0.8333333333333334,
+        "early_answer_group_preservation_enabled": false,
+        "early_answer_group_preservation_forced_steps": 0,
+        "coverage_floor_enabled": false,
+        "coverage_floor_forced_steps": 0,
+        "coverage_floor_forced_rate": 0.0,
+        "coverage_floor_target_groups": 2,
+        "duplicate_penalty_applied_rate": 0.8333333333333334,
+        "mean_diversity_bonus_on_expand": 0.3066666666666667,
+        "mean_coverage_gain_on_expand": 0.0,
+        "mean_semantic_overlap_on_expand": 0.0,
+        "marginal_diversity_mode": false,
+        "duplicate_aware_aggregation_mode": false,
+        "answer_group_commit_mode": false,
+        "commit_checks": [],
+        "commit_checks_count": 0,
+        "incumbent_challenger_commit_mode": false,
+        "incumbent_challenger_raw_support_only": false,
+        "incumbent_challenger_checks": [],
+        "incumbent_challenger_checks_count": 0,
+        "incumbent_challenger_commit_triggered": false,
+        "near_tie_forced_steps_used": 0,
+        "incumbent_challenger_intervention_count": 0,
+        "false_non_stop_count": 0,
+        "late_commit_after_selector_count": 0,
+        "commit_deferred_low_continue_value_count": 0,
+        "near_tie_commit_blocked_count": 0,
+        "near_tie_false_continue_count": 0,
+        "near_tie_continuation_rate": 0.0,
+        "late_stage_commit_rate": 0.0,
+        "mean_best_continue_value_when_continue": 0.0,
+        "wrong_commit_risk_subtypes_counts": {
+          "committed_to_intermediate_result": 0,
+          "committed_under_near_tie_ambiguity": 0,
+          "challenger_had_recoverable_upside": 0,
+          "overcounted_weak_corroboration": 0
+        },
+        "challenger_selection_events": [],
+        "challenger_selection_event_count": 0,
+        "challenger_outcome_counts": {},
+        "challenger_overtook_rate": 0.0,
+        "challenger_dominated_rate": 0.0,
+        "wrong_challenger_chosen_count": 0,
+        "commit_action_count": 0,
+        "expand_action_count": 6,
+        "commit_triggered": false,
+        "anti_collapse_answer_group_refinement_enabled": false,
+        "repeated_same_branch_expansion_count": 4,
+        "repeated_same_branch_expansion_rate": 0.6666666666666666,
+        "repeated_same_family_expansion_count": 5,
+        "repeated_same_family_expansion_rate": 0.8333333333333334,
+        "max_consecutive_same_branch_expands": 5,
+        "max_consecutive_same_branch": 5,
+        "max_consecutive_same_family": 6,
+        "repeat_penalty_trigger_count": 0,
+        "repeat_penalty_override_count": 0,
+        "repeat_penalty_alternative_selected_count": 0,
+        "repeated_same_branch_expansion_dominated_budget": true,
+        "top_branch_expand_share": 0.8333333333333334,
+        "branch_creation_count": 3,
+        "answer_group_diversity_realized": 1,
+        "protected_alternative_count": 0,
+        "shallow_preserved_alternative_count": 0,
+        "matured_alternative_count": 0,
+        "alternative_maturity_completion_rate": 0.0,
+        "diversity_needed_gate_mode": "off",
+        "diversity_needed_gate_positive_threshold": 0.12,
+        "diversity_needed_gate_negative_threshold": -0.12,
+        "gate_intervention_count": 0,
+        "gate_favor_diversity_count": 0,
+        "gate_suppress_diversity_count": 0,
+        "early_divergence_timeline": [
+          {
+            "step": 1,
+            "unique_active_groups": 1,
+            "gold_group_present": false,
+            "active_groups": [
+              "__unknown__"
+            ],
+            "top_support_group": null,
+            "top_support_count": 0
+          },
+          {
+            "step": 2,
+            "unique_active_groups": 1,
+            "gold_group_present": false,
+            "active_groups": [
+              "__unknown__"
+            ],
+            "top_support_group": null,
+            "top_support_count": 0
+          },
+          {
+            "step": 3,
+            "unique_active_groups": 1,
+            "gold_group_present": false,
+            "active_groups": [
+              "__unknown__"
+            ],
+            "top_support_group": null,
+            "top_support_count": 0
+          },
+          {
+            "step": 4,
+            "unique_active_groups": 1,
+            "gold_group_present": false,
+            "active_groups": [
+              "__unknown__"
+            ],
+            "top_support_group": null,
+            "top_support_count": 0
+          },
+          {
+            "step": 5,
+            "unique_active_groups": 2,
+            "gold_group_present": true,
+            "active_groups": [
+              "70",
+              "__unknown__"
+            ],
+            "top_support_group": "70",
+            "top_support_count": 1
+          },
+          {
+            "step": 6,
+            "unique_active_groups": 2,
+            "gold_group_present": true,
+            "active_groups": [
+              "70",
+              "__unknown__"
+            ],
+            "top_support_group": "70",
+            "top_support_count": 2
+          }
+        ],
+        "gold_answer_group_key": "70",
+        "first_meaningful_split_step": 5,
+        "second_meaningful_split_step": 6,
+        "gold_group_present_after_first_split": true,
+        "gold_group_present_after_second_split": true,
+        "gold_group_first_present_step": 5,
+        "gold_group_last_present_step": 6,
+        "gold_group_disappeared_step": null,
+        "gold_group_ever_present": true,
+        "gold_group_present_final": true,
+        "early_divergence_failure_category": "not_applicable_or_correct",
+        "regime_failure_category": "not_applicable_or_correct",
+        "unstable_commit_flag": false,
+        "final_prediction": "70",
+        "selected_group": "70",
+        "group_support_fraction": 1.0,
+        "group_score": 1.242339660072846,
+        "aggregation_used": true,
+        "num_groups": 1,
+        "discounted_group_supports": {
+          "70": 0.812136
+        },
+        "answer_group_margin": 0.812136,
+        "top_group_readiness": 0.822,
+        "mean_independence_discount": 1.0,
+        "duplicate_discount_applied_rate": 0.0,
+        "intermediate_result_branch_count": 0
+      },
+      "events": [
+        {
+          "event": "init_branch",
+          "step": 0,
+          "branch_id": "div_0",
+          "snapshot": {
+            "branch_id": "div_0",
+            "score": 0.4517096868654737,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          }
+        },
+        {
+          "event": "init_branch",
+          "step": 0,
+          "branch_id": "div_1",
+          "snapshot": {
+            "branch_id": "div_1",
+            "score": 0.47259793066225836,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          }
+        },
+        {
+          "event": "expand",
+          "step": 0,
+          "branch_id": "div_1",
+          "before": {
+            "branch_id": "div_1",
+            "score": 0.47259793066225836,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          },
+          "after": {
+            "branch_id": "div_1",
+            "score": 0.42582480075939344,
+            "depth": 1,
+            "verify_count": 0,
+            "stalled_steps": 1,
+            "recent_delta": -0.04677312990286492,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand"
+            ],
+            "score_history": [
+              0.47259793066225836
+            ],
+            "depth_history": [
+              0
+            ],
+            "reasoning_text": "step_1"
+          },
+          "score_after": 0.42582480075939344,
+          "became_done": false
+        },
+        {
+          "event": "init_branch",
+          "step": 1,
+          "branch_id": "div_child_1_2",
+          "snapshot": {
+            "branch_id": "div_child_1_2",
+            "score": 0.9467884405870266,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          }
+        },
+        {
+          "event": "expand",
+          "step": 1,
+          "branch_id": "div_child_1_2",
+          "before": {
+            "branch_id": "div_child_1_2",
+            "score": 0.68630662067321,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          },
+          "after": {
+            "branch_id": "div_child_1_2",
+            "score": 0.7061361565334656,
+            "depth": 1,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.019829535860255598,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321
+            ],
+            "depth_history": [
+              0
+            ],
+            "reasoning_text": "step_1"
+          },
+          "score_after": 0.7061361565334656,
+          "became_done": false
+        },
+        {
+          "event": "init_branch",
+          "step": 2,
+          "branch_id": "div_child_2_3",
+          "snapshot": {
+            "branch_id": "div_child_2_3",
+            "score": 0.5378364705416006,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          }
+        },
+        {
+          "event": "expand",
+          "step": 2,
+          "branch_id": "div_child_1_2",
+          "before": {
+            "branch_id": "div_child_1_2",
+            "score": 0.7061361565334656,
+            "depth": 1,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.019829535860255598,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321
+            ],
+            "depth_history": [
+              0
+            ],
+            "reasoning_text": "step_1"
+          },
+          "after": {
+            "branch_id": "div_child_1_2",
+            "score": 0.7666097936426564,
+            "depth": 2,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.06047363710919074,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321,
+              0.7061361565334656
+            ],
+            "depth_history": [
+              0,
+              1
+            ],
+            "reasoning_text": "step_1\nstep_2"
+          },
+          "score_after": 0.7666097936426564,
+          "became_done": false
+        },
+        {
+          "event": "expand",
+          "step": 3,
+          "branch_id": "div_child_1_2",
+          "before": {
+            "branch_id": "div_child_1_2",
+            "score": 0.7666097936426564,
+            "depth": 2,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.06047363710919074,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321,
+              0.7061361565334656
+            ],
+            "depth_history": [
+              0,
+              1
+            ],
+            "reasoning_text": "step_1\nstep_2"
+          },
+          "after": {
+            "branch_id": "div_child_1_2",
+            "score": 0.7893609894027939,
+            "depth": 3,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.02275119576013751,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand",
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321,
+              0.7061361565334656,
+              0.7666097936426564
+            ],
+            "depth_history": [
+              0,
+              1,
+              2
+            ],
+            "reasoning_text": "step_1\nstep_2\nstep_3"
+          },
+          "score_after": 0.7893609894027939,
+          "became_done": false
+        },
+        {
+          "event": "expand",
+          "step": 4,
+          "branch_id": "div_child_1_2",
+          "before": {
+            "branch_id": "div_child_1_2",
+            "score": 0.7893609894027939,
+            "depth": 3,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.02275119576013751,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand",
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321,
+              0.7061361565334656,
+              0.7666097936426564
+            ],
+            "depth_history": [
+              0,
+              1,
+              2
+            ],
+            "reasoning_text": "step_1\nstep_2\nstep_3"
+          },
+          "after": {
+            "branch_id": "div_child_1_2",
+            "score": 0.832690291041538,
+            "depth": 4,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.043329301638744155,
+            "branch_age": 0,
+            "is_done": true,
+            "is_pruned": false,
+            "predicted_answer": "70",
+            "predicted_answer_normalized": "70",
+            "action_history": [
+              "expand",
+              "expand",
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321,
+              0.7061361565334656,
+              0.7666097936426564,
+              0.7893609894027939
+            ],
+            "depth_history": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "reasoning_text": "step_1\nstep_2\nstep_3\nstep_4"
+          },
+          "score_after": 0.832690291041538,
+          "became_done": true
+        },
+        {
+          "event": "expand",
+          "step": 5,
+          "branch_id": "div_child_1_2",
+          "before": {
+            "branch_id": "div_child_1_2",
+            "score": 0.832690291041538,
+            "depth": 4,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.043329301638744155,
+            "branch_age": 0,
+            "is_done": true,
+            "is_pruned": false,
+            "predicted_answer": "70",
+            "predicted_answer_normalized": "70",
+            "action_history": [
+              "expand",
+              "expand",
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321,
+              0.7061361565334656,
+              0.7666097936426564,
+              0.7893609894027939
+            ],
+            "depth_history": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "reasoning_text": "step_1\nstep_2\nstep_3\nstep_4"
+          },
+          "after": {
+            "branch_id": "div_child_1_2",
+            "score": 0.832690291041538,
+            "depth": 4,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.043329301638744155,
+            "branch_age": 0,
+            "is_done": true,
+            "is_pruned": false,
+            "predicted_answer": "70",
+            "predicted_answer_normalized": "70",
+            "action_history": [
+              "expand",
+              "expand",
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.68630662067321,
+              0.7061361565334656,
+              0.7666097936426564,
+              0.7893609894027939
+            ],
+            "depth_history": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "reasoning_text": "step_1\nstep_2\nstep_3\nstep_4"
+          },
+          "score_after": 0.832690291041538,
+          "became_done": true
+        }
+      ],
+      "decision_timeline": [
+        {
+          "step": 0,
+          "action": "expand",
+          "branch_id": "div_1",
+          "remaining_budget_before": 6
+        },
+        {
+          "step": 1,
+          "action": "expand",
+          "branch_id": "div_child_1_2",
+          "remaining_budget_before": 5
+        },
+        {
+          "step": 2,
+          "action": "expand",
+          "branch_id": "div_child_1_2",
+          "remaining_budget_before": 4
+        },
+        {
+          "step": 3,
+          "action": "expand",
+          "branch_id": "div_child_1_2",
+          "remaining_budget_before": 3
+        },
+        {
+          "step": 4,
+          "action": "expand",
+          "branch_id": "div_child_1_2",
+          "remaining_budget_before": 2
+        },
+        {
+          "step": 5,
+          "action": "expand",
+          "branch_id": "div_child_1_2",
+          "remaining_budget_before": 1
+        }
+      ],
+      "final_nodes": [
+        {
+          "branch_id": "div_0",
+          "score": 0.4517096868654737,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "predicted_answer_normalized": null,
+          "action_history": [],
+          "score_history": [],
+          "depth_history": [],
+          "reasoning_text": "",
+          "parent_branch_id": null,
+          "branch_family_id": "div_0"
+        },
+        {
+          "branch_id": "div_1",
+          "score": 0.42582480075939344,
+          "depth": 1,
+          "verify_count": 0,
+          "stalled_steps": 1,
+          "recent_delta": -0.04677312990286492,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "predicted_answer_normalized": null,
+          "action_history": [
+            "expand"
+          ],
+          "score_history": [
+            0.47259793066225836
+          ],
+          "depth_history": [
+            0
+          ],
+          "reasoning_text": "step_1",
+          "parent_branch_id": null,
+          "branch_family_id": "div_1"
+        },
+        {
+          "branch_id": "div_child_1_2",
+          "score": 0.832690291041538,
+          "depth": 4,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.043329301638744155,
+          "branch_age": 0,
+          "is_done": true,
+          "is_pruned": false,
+          "predicted_answer": "70",
+          "predicted_answer_normalized": "70",
+          "action_history": [
+            "expand",
+            "expand",
+            "expand",
+            "expand"
+          ],
+          "score_history": [
+            0.68630662067321,
+            0.7061361565334656,
+            0.7666097936426564,
+            0.7893609894027939
+          ],
+          "depth_history": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "reasoning_text": "step_1\nstep_2\nstep_3\nstep_4",
+          "parent_branch_id": "div_1",
+          "branch_family_id": "div_1"
+        },
+        {
+          "branch_id": "div_child_2_3",
+          "score": 0.6219863135375331,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "predicted_answer_normalized": null,
+          "action_history": [],
+          "score_history": [],
+          "depth_history": [],
+          "reasoning_text": "",
+          "parent_branch_id": "div_child_1_2",
+          "branch_family_id": "div_1"
+        }
+      ]
+    },
+    "self_consistency": {
+      "method": "self_consistency_3",
+      "run_seed": 3832292184,
+      "budget": 6,
+      "prediction_text": "70",
+      "prediction_normalized": "70",
+      "gold_normalized": "70",
+      "is_correct": true,
+      "actions_used": 6,
+      "expansions": 5,
+      "verifications": 1,
+      "budget_exhausted": true,
+      "avg_surviving_branches": 2.0,
+      "metadata": {
+        "n_candidates": 3
+      },
+      "events": [
+        {
+          "event": "init_branch",
+          "step": 0,
+          "branch_id": "bon_0",
+          "snapshot": {
+            "branch_id": "bon_0",
+            "score": 0.4291147382852689,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          }
+        },
+        {
+          "event": "init_branch",
+          "step": 0,
+          "branch_id": "bon_1",
+          "snapshot": {
+            "branch_id": "bon_1",
+            "score": 0.609336106081062,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          }
+        },
+        {
+          "event": "init_branch",
+          "step": 0,
+          "branch_id": "bon_2",
+          "snapshot": {
+            "branch_id": "bon_2",
+            "score": 0.7823190663258526,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          }
+        },
+        {
+          "event": "expand",
+          "step": 0,
+          "branch_id": "bon_0",
+          "before": {
+            "branch_id": "bon_0",
+            "score": 0.4291147382852689,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          },
+          "after": {
+            "branch_id": "bon_0",
+            "score": 0.48217244598203574,
+            "depth": 1,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.05305770769676682,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand"
+            ],
+            "score_history": [
+              0.4291147382852689
+            ],
+            "depth_history": [
+              0
+            ],
+            "reasoning_text": "step_1"
+          },
+          "score_after": 0.48217244598203574,
+          "became_done": false
+        },
+        {
+          "event": "expand",
+          "step": 1,
+          "branch_id": "bon_0",
+          "before": {
+            "branch_id": "bon_0",
+            "score": 0.48217244598203574,
+            "depth": 1,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.05305770769676682,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand"
+            ],
+            "score_history": [
+              0.4291147382852689
+            ],
+            "depth_history": [
+              0
+            ],
+            "reasoning_text": "step_1"
+          },
+          "after": {
+            "branch_id": "bon_0",
+            "score": 0.5313175635458229,
+            "depth": 2,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0491451175637872,
+            "branch_age": 0,
+            "is_done": true,
+            "is_pruned": false,
+            "predicted_answer": "73",
+            "predicted_answer_normalized": "73",
+            "action_history": [
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.4291147382852689,
+              0.48217244598203574
+            ],
+            "depth_history": [
+              0,
+              1
+            ],
+            "reasoning_text": "step_1\nstep_2"
+          },
+          "score_after": 0.5313175635458229,
+          "became_done": true
+        },
+        {
+          "event": "verify",
+          "step": 2,
+          "branch_id": "bon_0",
+          "before": {
+            "branch_id": "bon_0",
+            "score": 0.5313175635458229,
+            "depth": 2,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0491451175637872,
+            "branch_age": 0,
+            "is_done": true,
+            "is_pruned": false,
+            "predicted_answer": "73",
+            "predicted_answer_normalized": "73",
+            "action_history": [
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.4291147382852689,
+              0.48217244598203574
+            ],
+            "depth_history": [
+              0,
+              1
+            ],
+            "reasoning_text": "step_1\nstep_2"
+          },
+          "after": {
+            "branch_id": "bon_0",
+            "score": 0.49551938234375825,
+            "depth": 2,
+            "verify_count": 1,
+            "stalled_steps": 0,
+            "recent_delta": -0.03579818120206468,
+            "branch_age": 0,
+            "is_done": true,
+            "is_pruned": false,
+            "predicted_answer": "73",
+            "predicted_answer_normalized": "73",
+            "action_history": [
+              "expand",
+              "expand",
+              "verify"
+            ],
+            "score_history": [
+              0.4291147382852689,
+              0.48217244598203574,
+              0.5313175635458229
+            ],
+            "depth_history": [
+              0,
+              1,
+              2
+            ],
+            "reasoning_text": "step_1\nstep_2"
+          },
+          "score_after": 0.49551938234375825
+        },
+        {
+          "event": "expand",
+          "step": 3,
+          "branch_id": "bon_1",
+          "before": {
+            "branch_id": "bon_1",
+            "score": 0.609336106081062,
+            "depth": 0,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.0,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [],
+            "score_history": [],
+            "depth_history": [],
+            "reasoning_text": ""
+          },
+          "after": {
+            "branch_id": "bon_1",
+            "score": 0.6871139918287231,
+            "depth": 1,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.07777788574766109,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand"
+            ],
+            "score_history": [
+              0.609336106081062
+            ],
+            "depth_history": [
+              0
+            ],
+            "reasoning_text": "step_1"
+          },
+          "score_after": 0.6871139918287231,
+          "became_done": false
+        },
+        {
+          "event": "expand",
+          "step": 4,
+          "branch_id": "bon_1",
+          "before": {
+            "branch_id": "bon_1",
+            "score": 0.6871139918287231,
+            "depth": 1,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.07777788574766109,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand"
+            ],
+            "score_history": [
+              0.609336106081062
+            ],
+            "depth_history": [
+              0
+            ],
+            "reasoning_text": "step_1"
+          },
+          "after": {
+            "branch_id": "bon_1",
+            "score": 0.7561967061191407,
+            "depth": 2,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.06908271429041757,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.609336106081062,
+              0.6871139918287231
+            ],
+            "depth_history": [
+              0,
+              1
+            ],
+            "reasoning_text": "step_1\nstep_2"
+          },
+          "score_after": 0.7561967061191407,
+          "became_done": false
+        },
+        {
+          "event": "expand",
+          "step": 5,
+          "branch_id": "bon_1",
+          "before": {
+            "branch_id": "bon_1",
+            "score": 0.7561967061191407,
+            "depth": 2,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.06908271429041757,
+            "branch_age": 0,
+            "is_done": false,
+            "is_pruned": false,
+            "predicted_answer": null,
+            "predicted_answer_normalized": null,
+            "action_history": [
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.609336106081062,
+              0.6871139918287231
+            ],
+            "depth_history": [
+              0,
+              1
+            ],
+            "reasoning_text": "step_1\nstep_2"
+          },
+          "after": {
+            "branch_id": "bon_1",
+            "score": 0.7927403713954779,
+            "depth": 3,
+            "verify_count": 0,
+            "stalled_steps": 0,
+            "recent_delta": 0.036543665276337234,
+            "branch_age": 0,
+            "is_done": true,
+            "is_pruned": false,
+            "predicted_answer": "70",
+            "predicted_answer_normalized": "70",
+            "action_history": [
+              "expand",
+              "expand",
+              "expand"
+            ],
+            "score_history": [
+              0.609336106081062,
+              0.6871139918287231,
+              0.7561967061191407
+            ],
+            "depth_history": [
+              0,
+              1,
+              2
+            ],
+            "reasoning_text": "step_1\nstep_2\nstep_3"
+          },
+          "score_after": 0.7927403713954779,
+          "became_done": true
+        }
+      ],
+      "decision_timeline": [
+        {
+          "step": 0,
+          "action": "expand",
+          "branch_id": "bon_0",
+          "remaining_budget_before": 6
+        },
+        {
+          "step": 1,
+          "action": "expand",
+          "branch_id": "bon_0",
+          "remaining_budget_before": 5
+        },
+        {
+          "step": 2,
+          "action": "verify",
+          "branch_id": "bon_0",
+          "remaining_budget_before": 4
+        },
+        {
+          "step": 3,
+          "action": "expand",
+          "branch_id": "bon_1",
+          "remaining_budget_before": 3
+        },
+        {
+          "step": 4,
+          "action": "expand",
+          "branch_id": "bon_1",
+          "remaining_budget_before": 2
+        },
+        {
+          "step": 5,
+          "action": "expand",
+          "branch_id": "bon_1",
+          "remaining_budget_before": 1
+        }
+      ],
+      "final_nodes": [
+        {
+          "branch_id": "bon_0",
+          "score": 0.49551938234375825,
+          "depth": 2,
+          "verify_count": 1,
+          "stalled_steps": 0,
+          "recent_delta": -0.03579818120206468,
+          "branch_age": 0,
+          "is_done": true,
+          "is_pruned": false,
+          "predicted_answer": "73",
+          "predicted_answer_normalized": "73",
+          "action_history": [
+            "expand",
+            "expand",
+            "verify"
+          ],
+          "score_history": [
+            0.4291147382852689,
+            0.48217244598203574,
+            0.5313175635458229
+          ],
+          "depth_history": [
+            0,
+            1,
+            2
+          ],
+          "reasoning_text": "step_1\nstep_2",
+          "parent_branch_id": null,
+          "branch_family_id": "bon_0"
+        },
+        {
+          "branch_id": "bon_1",
+          "score": 0.7927403713954779,
+          "depth": 3,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.036543665276337234,
+          "branch_age": 0,
+          "is_done": true,
+          "is_pruned": false,
+          "predicted_answer": "70",
+          "predicted_answer_normalized": "70",
+          "action_history": [
+            "expand",
+            "expand",
+            "expand"
+          ],
+          "score_history": [
+            0.609336106081062,
+            0.6871139918287231,
+            0.7561967061191407
+          ],
+          "depth_history": [
+            0,
+            1,
+            2
+          ],
+          "reasoning_text": "step_1\nstep_2\nstep_3",
+          "parent_branch_id": null,
+          "branch_family_id": "bon_1"
+        },
+        {
+          "branch_id": "bon_2",
+          "score": 0.7823190663258526,
+          "depth": 0,
+          "verify_count": 0,
+          "stalled_steps": 0,
+          "recent_delta": 0.0,
+          "branch_age": 0,
+          "is_done": false,
+          "is_pruned": false,
+          "predicted_answer": null,
+          "predicted_answer_normalized": null,
+          "action_history": [],
+          "score_history": [],
+          "depth_history": [],
+          "reasoning_text": "",
+          "parent_branch_id": null,
+          "branch_family_id": "bon_2"
+        }
+      ],
+      "structure_type": "sample_forest",
+      "vote_counts": {
+        "73": 1,
+        "70": 1,
+        "None": 1
+      },
+      "final_answer_supporting_sample_nodes": [
+        "bon_1"
+      ],
+      "provenance": "structurally faithful but non-tree"
+    }
+  },
+  "comparison": {
+    "our_final_answer_rerun": "70",
+    "self_consistency_final_answer_rerun": "70",
+    "our_contains_correct_answer": true,
+    "self_consistency_contains_correct_answer": true,
+    "our_final_answer_node_id": "div_child_1_2",
+    "self_consistency_final_answer_supporting_node_ids": [
+      "bon_1"
+    ],
+    "our_correct_answer_node_ids": [
+      "div_child_1_2"
+    ],
+    "self_consistency_correct_answer_node_ids": [
+      "bon_1"
+    ],
+    "divergence_category": "other",
+    "major_reasoning_style_labels": {
+      "our": [
+        "div_0",
+        "div_1"
+      ],
+      "self_consistency": [
+        "bon_0",
+        "bon_1",
+        "bon_2"
+      ]
+    },
+    "budget_usage": {
+      "budget": 6,
+      "our_actions_used": 6,
+      "self_consistency_actions_used": 6,
+      "our_expansions": 6,
+      "self_consistency_expansions": 5,
+      "our_verifications": 0,
+      "self_consistency_verifications": 1
+    }
+  },
+  "provenance_labels": {
+    "selected_case_membership": "exact-directly-recorded",
+    "problem_and_ground_truth": "exact-directly-recorded",
+    "our_structure": "exact-from-rerun-observability",
+    "self_consistency_structure": "structurally faithful but non-tree",
+    "correct_node_identity_our": "exact-from-rerun-observability",
+    "correct_node_identity_self_consistency": "exact-from-rerun-observability"
+  }
+}
