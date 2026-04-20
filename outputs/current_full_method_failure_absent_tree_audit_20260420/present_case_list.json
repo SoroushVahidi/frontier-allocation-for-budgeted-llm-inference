@@ -1,0 +1,15 @@
+{
+  "audit_date": "2026-04-20",
+  "count": 9,
+  "case_ids": [
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_30",
+    "olympiadbench__Hothan_OlympiadBench_13",
+    "olympiadbench__Hothan_OlympiadBench_22",
+    "olympiadbench__Hothan_OlympiadBench_28",
+    "olympiadbench__Hothan_OlympiadBench_34",
+    "openai__gsm8k__openai_gsm8k_10",
+    "openai__gsm8k__openai_gsm8k_2",
+    "openai__gsm8k__openai_gsm8k_21",
+    "openai__gsm8k__openai_gsm8k_24"
+  ]
+}

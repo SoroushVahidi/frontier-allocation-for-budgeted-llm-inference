@@ -1,0 +1,17 @@
+{
+  "audit_date": "2026-04-20",
+  "count": 11,
+  "case_ids": [
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_21",
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_23",
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_29",
+    "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_34",
+    "HuggingFaceH4__aime_2024__HuggingFaceH4_aime_2024_11",
+    "olympiadbench__Hothan_OlympiadBench_14",
+    "olympiadbench__Hothan_OlympiadBench_27",
+    "olympiadbench__Hothan_OlympiadBench_39",
+    "openai__gsm8k__openai_gsm8k_26",
+    "openai__gsm8k__openai_gsm8k_34",
+    "openai__gsm8k__openai_gsm8k_37"
+  ]
+}
