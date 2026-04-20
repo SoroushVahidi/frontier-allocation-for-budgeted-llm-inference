@@ -16,7 +16,6 @@ import importlib.util
 import json
 import math
 import random
-import re
 import statistics
 import sys
 from collections import Counter, defaultdict
@@ -49,7 +48,9 @@ HUNDRED_EXTRA_SEEDS: tuple[int, ...] = (101, 113, 137)
 HUNDRED_EXTRA_BUDGETS: tuple[int, ...] = (14, 16)
 
 
-def _run_observed_with_events(method_name: str, row: dict[str, Any], stream_tag: str) -> dict[str, Any]:
+def _run_observed_with_events(
+    method_name: str, row: dict[str, Any], stream_tag: str
+) -> dict[str, Any]:
     """Same as ``TW._run_observed`` but retains raw generator events for family-expansion analytics."""
     from experiments.branching import SimulatedBranchGenerator
     from experiments.frontier_matrix_core import build_frontier_strategies
@@ -290,7 +291,9 @@ def _answer_group_profile(
     dom_share = float(max(counts.values()) / total) if total else 0.0
     meta_groups = (metadata or {}).get("unique_answer_groups_seen")
     monopolized = bool(len(counts) >= 2 and dom_share >= 0.75)
-    starved = bool(len(counts) >= 2 and dom_share >= 0.6 and meta_groups is not None and int(meta_groups) <= 2)
+    starved = bool(
+        len(counts) >= 2 and dom_share >= 0.6 and meta_groups is not None and int(meta_groups) <= 2
+    )
     return {
         "num_answer_groups": int(len(counts)),
         "answer_group_support": counts,
@@ -318,7 +321,10 @@ def _dominant_wrong_family_depth_profile(
         can = TW.canonicalize_answer(str(n.get("predicted_answer")), dataset=dataset)
         if can:
             buckets[can].append(n)
-    dom_ans = max(buckets.keys(), key=lambda a: (len(buckets[a]), max(float(x.get("score", 0.0)) for x in buckets[a])))
+    dom_ans = max(
+        buckets.keys(),
+        key=lambda a: (len(buckets[a]), max(float(x.get("score", 0.0)) for x in buckets[a])),
+    )
     nodes = buckets[dom_ans]
     depths = [int(n.get("depth", 0)) for n in nodes]
     return {
@@ -327,7 +333,9 @@ def _dominant_wrong_family_depth_profile(
         "max_depth": max(depths) if depths else None,
         "mean_depth": round(float(statistics.mean(depths)), 4) if depths else None,
         "n_nodes": len(nodes),
-        "chosen_in_this_family": bool(chosen_id and any(str(n.get("branch_id")) == str(chosen_id) for n in nodes)),
+        "chosen_in_this_family": bool(
+            chosen_id and any(str(n.get("branch_id")) == str(chosen_id) for n in nodes)
+        ),
     }
 
 
@@ -375,7 +383,11 @@ def _score_gap_profile(
     gold_can: str | None,
 ) -> dict[str, Any]:
     id_to_node = {str(n.get("branch_id")): n for n in final_nodes}
-    chosen_score = float(id_to_node[str(chosen_id)]["score"]) if chosen_id and str(chosen_id) in id_to_node else None
+    chosen_score = (
+        float(id_to_node[str(chosen_id)]["score"])
+        if chosen_id and str(chosen_id) in id_to_node
+        else None
+    )
     if not correct_ids:
         return {
             "chosen_score": chosen_score,
@@ -419,20 +431,35 @@ def _problem_regime_label(problem: str, dataset: str) -> str:
     ds = dataset.lower()
     if "openai/gsm8k" in ds:
         return "gsm8k_style_word_arithmetic"
-    if any(k in t for k in ("triangle", "circle", "angle", "polygon", "rectangle", "degree", "cyclic quadrilateral")):
+    if any(
+        k in t
+        for k in (
+            "triangle",
+            "circle",
+            "angle",
+            "polygon",
+            "rectangle",
+            "degree",
+            "cyclic quadrilateral",
+        )
+    ):
         return "geometry"
     if any(k in t for k in ("\\sum", "sum_", "infinite", "fibonacci", "series")):
         return "symbolic_series_or_formula"
     if any(k in t for k in (" gcd ", "lcm", "mod ", " remainder", "divisible", "prime")):
         return "number_theory"
-    if any(k in t for k in ("choose", "combin", "permut", "ways to", "how many")) and ("graph" not in t):
+    if any(k in t for k in ("choose", "combin", "permut", "ways to", "how many")) and (
+        "graph" not in t
+    ):
         return "counting_combinatorics"
     if any(k in t for k in ("solve", "equation", "polynomial", "quadratic", "variable")):
         return "algebraic_manipulation"
     return "other"
 
 
-def _error_geometry(our_answer_raw: str | None, gold: str, problem: str, dataset: str) -> dict[str, Any]:
+def _error_geometry(
+    our_answer_raw: str | None, gold: str, problem: str, dataset: str
+) -> dict[str, Any]:
     labels: list[str] = []
     detail: dict[str, Any] = {}
     oc = TW.canonicalize_answer(our_answer_raw, dataset=dataset)
@@ -462,7 +489,12 @@ def _error_geometry(our_answer_raw: str | None, gold: str, problem: str, dataset
             labels.append("wrong_local_neighborhood")
         if of * gf < 0 and abs(of) > 1e-6 and abs(gf) > 1e-6:
             labels.append("sign_or_parity_error")
-        if diff == round(diff) and diff > 0 and diff < 25 and any(k in problem.lower() for k in ("+", "-", "*", "/")):
+        if (
+            diff == round(diff)
+            and diff > 0
+            and diff < 25
+            and any(k in problem.lower() for k in ("+", "-", "*", "/"))
+        ):
             labels.append("arithmetic_slip")
         if "how many" in problem.lower() and diff == round(diff):
             labels.append("counting_error")
@@ -495,7 +527,10 @@ def _best_method_advantage_types(
         our["final_nodes"], our_correct_ids, our.get("repair", {}).get("chosen_final_node_id"), ""
     )
     bd = _correct_depth_maturity(
-        best["final_nodes"], best_correct_ids, best.get("repair", {}).get("chosen_final_node_id"), ""
+        best["final_nodes"],
+        best_correct_ids,
+        best.get("repair", {}).get("chosen_final_node_id"),
+        "",
     )
     if failure_type == "absent_from_tree" and best_correct_ids:
         if bd.get("min_depth_correct") is not None:
@@ -645,9 +680,18 @@ def _run_one_case(
         and (our_can != gold_can)
     )
     extraction_mismatch = bool(
-        (our_repair.get("chosen_final_node_answer_canonical") != our_repair.get("extracted_final_answer_canonical"))
-        or (our_repair.get("extracted_final_answer_canonical") != our_repair.get("surfaced_final_answer_canonical"))
-        or (our_repair.get("chosen_final_node_answer_raw") != our_repair.get("chosen_final_node_answer_canonical"))
+        (
+            our_repair.get("chosen_final_node_answer_canonical")
+            != our_repair.get("extracted_final_answer_canonical")
+        )
+        or (
+            our_repair.get("extracted_final_answer_canonical")
+            != our_repair.get("surfaced_final_answer_canonical")
+        )
+        or (
+            our_repair.get("chosen_final_node_answer_raw")
+            != our_repair.get("chosen_final_node_answer_canonical")
+        )
     )
 
     if not our_contains:
@@ -848,26 +892,60 @@ def main() -> None:
         "target_n": TARGET_N,
         "selection_policy": selection_policy,
         "exclusion_case_count": len(excluded),
-        "failure_type_counts": {k: {"n": ft_counts[k], "pct": 100.0 * ft_counts[k] / n} for k in sorted(ft_counts.keys())},
-        "dataset_counts": {k: {"n": ds_counts[k], "pct": 100.0 * ds_counts[k] / n} for k in sorted(ds_counts.keys())},
-        "problem_regime_counts": {k: {"n": reg_counts[k], "pct": 100.0 * reg_counts[k] / n} for k in sorted(reg_counts.keys())},
-        "error_geometry_counts": {k: {"n": err_counts[k], "pct": 100.0 * err_counts[k] / n} for k in sorted(err_counts.keys())},
-        "best_method_advantage_counts": {k: {"n": adv_counts[k], "pct": 100.0 * adv_counts[k] / n} for k in sorted(adv_counts.keys())},
-        "correct_coverage_counts": {k: {"n": cov_counts[k], "pct": 100.0 * cov_counts[k] / n} for k in sorted(cov_counts.keys())},
-        "repeated_same_family_present_n": sum(1 for p in per_case if p["same_family_expansion_severity"]["repeated_same_family_present"]),
+        "failure_type_counts": {
+            k: {"n": ft_counts[k], "pct": 100.0 * ft_counts[k] / n}
+            for k in sorted(ft_counts.keys())
+        },
+        "dataset_counts": {
+            k: {"n": ds_counts[k], "pct": 100.0 * ds_counts[k] / n}
+            for k in sorted(ds_counts.keys())
+        },
+        "problem_regime_counts": {
+            k: {"n": reg_counts[k], "pct": 100.0 * reg_counts[k] / n}
+            for k in sorted(reg_counts.keys())
+        },
+        "error_geometry_counts": {
+            k: {"n": err_counts[k], "pct": 100.0 * err_counts[k] / n}
+            for k in sorted(err_counts.keys())
+        },
+        "best_method_advantage_counts": {
+            k: {"n": adv_counts[k], "pct": 100.0 * adv_counts[k] / n}
+            for k in sorted(adv_counts.keys())
+        },
+        "correct_coverage_counts": {
+            k: {"n": cov_counts[k], "pct": 100.0 * cov_counts[k] / n}
+            for k in sorted(cov_counts.keys())
+        },
+        "repeated_same_family_present_n": sum(
+            1
+            for p in per_case
+            if p["same_family_expansion_severity"]["repeated_same_family_present"]
+        ),
         "distributions": {
             "actions_ours": _distribution_summary([r["actions_ours"] for r in flat_rows]),
             "expansions_ours": _distribution_summary([r["expansions_ours"] for r in flat_rows]),
-            "verifications_ours": _distribution_summary([r["verifications_ours"] for r in flat_rows]),
+            "verifications_ours": _distribution_summary(
+                [r["verifications_ours"] for r in flat_rows]
+            ),
             "action_gap_ours_minus_best": _distribution_summary(
                 [float(r["actions_ours"] - r["actions_best"]) for r in flat_rows]
             ),
             "score_gap": _distribution_summary(_collect_num("score_gap")),
             "longest_consecutive_family_run": _distribution_summary(
-                [float(p["same_family_expansion_severity"].get("longest_consecutive_same_family_run") or 0) for p in per_case]
+                [
+                    float(
+                        p["same_family_expansion_severity"].get(
+                            "longest_consecutive_same_family_run"
+                        )
+                        or 0
+                    )
+                    for p in per_case
+                ]
             ),
             "max_family_share": _distribution_summary(_collect_num("max_family_share")),
-            "num_answer_groups": _distribution_summary([float(r["num_answer_groups"]) for r in flat_rows]),
+            "num_answer_groups": _distribution_summary(
+                [float(r["num_answer_groups"]) for r in flat_rows]
+            ),
         },
         "cross_tabs": {
             "failure_type_x_dataset": _cross_tab(flat_rows, "failure_type", "dataset"),
@@ -875,7 +953,9 @@ def main() -> None:
                 [
                     {
                         **r,
-                        "error_geometry_primary": (r.get("error_geometry") or "other").split("|")[0],
+                        "error_geometry_primary": (r.get("error_geometry") or "other").split("|")[
+                            0
+                        ],
                     }
                     for r in flat_rows
                 ],
@@ -883,11 +963,16 @@ def main() -> None:
                 "error_geometry_primary",
             ),
             "failure_type_x_same_family": _cross_tab(
-                [{**r, "same_family_expansion_present": str(r["same_family_expansion_present"])} for r in flat_rows],
+                [
+                    {**r, "same_family_expansion_present": str(r["same_family_expansion_present"])}
+                    for r in flat_rows
+                ],
                 "failure_type",
                 "same_family_expansion_present",
             ),
-            "failure_type_x_problem_regime": _cross_tab(flat_rows, "failure_type", "problem_regime_label"),
+            "failure_type_x_problem_regime": _cross_tab(
+                flat_rows, "failure_type", "problem_regime_label"
+            ),
         },
         "missingness_notes": {
             "max_family_share_null_when_no_expands": "max_family_share may be null if no expand events were observed",
@@ -902,13 +987,22 @@ def main() -> None:
         "current_full_method_name": current_method,
         "best_method_name": BEST_METHOD_FIXED,
         "selection_policy": selection_policy,
-        "cases": [{"case_id": p["case_id"], "dataset": p["dataset"], "example_id": p["example_id"]} for p in per_case],
+        "cases": [
+            {"case_id": p["case_id"], "dataset": p["dataset"], "example_id": p["example_id"]}
+            for p in per_case
+        ],
         "fair_merge_groups_scanned_to_reach_target": tried_groups,
     }
 
-    (out_dir / "selection_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    (out_dir / "per_case_failure_statistics.json").write_text(json.dumps(per_case, indent=2) + "\n", encoding="utf-8")
-    (out_dir / "aggregate_failure_statistics.json").write_text(json.dumps(aggregate, indent=2) + "\n", encoding="utf-8")
+    (out_dir / "selection_manifest.json").write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+    )
+    (out_dir / "per_case_failure_statistics.json").write_text(
+        json.dumps(per_case, indent=2) + "\n", encoding="utf-8"
+    )
+    (out_dir / "aggregate_failure_statistics.json").write_text(
+        json.dumps(aggregate, indent=2) + "\n", encoding="utf-8"
+    )
 
     csv_path = out_dir / "failure_statistics_table.csv"
     if flat_rows:
@@ -939,9 +1033,7 @@ def main() -> None:
         "with repeated same-family expansion pressure remaining a common companion pattern."
     )
     if absent_n < pns_n:
-        conclusion = (
-            "Selection and scoring errors dominate on this 100-case slice once gold is present; coverage gaps are still material but secondary."
-        )
+        conclusion = "Selection and scoring errors dominate on this 100-case slice once gold is present; coverage gaps are still material but secondary."
 
     lines: list[str] = []
     lines.append("# Hundred-case failure statistics: current full method vs reasoning_beam2")
@@ -1011,8 +1103,12 @@ def main() -> None:
         lines.append(f"- `{k}`: {pct(cov_counts[k], n)}")
     lines.append("")
     lines.append("## Same-family expansion severity (ours)")
-    lines.append(f"- repeated_same_family_present: **{rep_same_n} / {n}** ({100.0 * rep_same_n / n:.1f}%)")
-    lines.append(f"- distribution summaries: see `aggregate_failure_statistics.json` under `distributions`")
+    lines.append(
+        f"- repeated_same_family_present: **{rep_same_n} / {n}** ({100.0 * rep_same_n / n:.1f}%)"
+    )
+    lines.append(
+        "- distribution summaries: see `aggregate_failure_statistics.json` under `distributions`"
+    )
     lines.append("")
     lines.append("## Answer-group maturity (ours)")
     lines.append(
