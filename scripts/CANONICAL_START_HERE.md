@@ -4,86 +4,71 @@ This is the fastest script-level entry point for the current project.
 
 ## Current script-level stance
 
-The current repository is in a **target-definition consolidation phase**.
+The current repository is in a **promoted-line stabilization and evidence-strengthening phase**.
 
-That means the highest-leverage script path is no longer another nearby broad tweak. It is:
-- fresh observability-enabled real runs,
-- semantic worst-failure extraction,
-- bounded oracle mismatch analysis,
-- and answer-recovery-backed target-definition consolidation.
+That means the highest-leverage script path is no longer another unrelated controller family. It is:
+- bounded evaluation of the current promoted anti-collapse line,
+- defeat-case observability and discovered-tree analysis,
+- and controlled confirmation before stronger manuscript claims.
 
 ## Smallest runnable paths
 
-### If you want one script that best reflects the paper direction
+### If you want one script that best reflects the current paper direction
 Start with:
 - `run_cross_strategy_frontier_allocation.py`
 
-### If you want one script for the current leading bounded method line
+### If you want one script for the current promoted bounded method line
 Start with:
-- `run_multistep_branch_utility_target_experiment.py`
-
-### If you want one script for the current target-definition decision point
-Start with:
-- `run_oracle_mismatch_study.py`
+- `run_anti_collapse_answer_group_refinement_bounded_eval_20260419.py`
 
 ### If you want one script for current semantic failure analysis
 Start with:
 - `run_worst_real_failure_casebook_with_reasoning.py`
 
-### If you want one script for forward-looking semantic failure observability
+### If you want one script for current defeat-case tree recovery
 Start with:
-- `run_branch_observability_smoke.py`
+- `build_twenty_defeat_case_trees_20260419.py`
+
+### If you want one script for current branch observability / recovery
+Start with:
+- `run_twenty_defeat_branch_reasoning_recovery_20260419.py`
 
 ## Before you run scripts
 
 For the shortest current repository-facing orientation, read:
-- `../docs/LATEST_STATUS_AFTER_RECENT_PASSES_2026_04_18.md`
+- `../docs/CANONICAL_START_HERE.md`
+- `../docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
+- `../docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 - `../docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
-- `../docs/CURRENT_LEADING_DIRECTION_2026_04_17.md`
 - `../docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
-- `../docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`
-- `../docs/ORACLE_MISMATCH_STUDY_2026_04_18.md`
-- `../docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`
+- `../docs/TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`
+- `../docs/TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`
 
 ## If you want the current paper path
 
 Start with these scripts:
 - `run_cross_strategy_frontier_allocation.py`
-- `evaluate_branch_scorer_controller.py`
-- `evaluate_branch_scorer_robustness.py`
 - `run_new_paper_frontier_matrix.py`
 - `run_comparative_frontier_audit.py`
 - `run_imported_methodology_frontier_eval.py`
+- `run_anti_collapse_answer_group_refinement_bounded_eval_20260419.py`
 
-## If you want the current leading multistep line
+## If you want the current promoted refinement line
 
 Start with these scripts:
-- `run_multistep_branch_utility_target_experiment.py`
-- `run_compute_response_curve_experiment.py`
-- `run_rank_instability_experiment.py`
-- `run_instability_decision_coupling_experiment.py`
-- `build_bruteforce_target_regimes.py`
-- `run_canonical_branch_learning_pass.py`
-- `train_bruteforce_branch_allocator.py`
+- `run_anti_collapse_answer_group_refinement_bounded_eval_20260419.py`
+- `build_twenty_defeat_casebook_20260419.py`
+- `run_twenty_defeat_branch_reasoning_recovery_20260419.py`
+- `build_twenty_defeat_case_trees_20260419.py`
 
-## If you want the current semantic target-definition line
+## If you want current diagnosis / failure-analysis work
 
 Start with these scripts:
 - `run_worst_real_failure_casebook_with_reasoning.py`
-- `run_completion_aware_decision_experiment.py`
-- `run_oracle_mismatch_study.py`
+- `run_twenty_defeat_branch_reasoning_recovery_20260419.py`
+- `build_twenty_defeat_case_trees_20260419.py`
 - `run_branch_observability_smoke.py`
-
-## If you want the current hard-case / near-tie method line
-
-Start with these scripts:
-- `run_near_tie_policy_experiment.py`
-- `run_near_tie_pointwise_expert_experiment.py`
-- `run_ambiguity_calibration_and_fallback_experiment.py`
-- `train_bruteforce_branch_allocator.py`
-- `run_target_fidelity_regime_experiment.py`
-- `run_structured_ambiguity_experiment.py`
-- `run_defer_fallback_experiment.py`
+- `run_oracle_mismatch_study.py`
 
 ## If you want dataset / supervision preparation
 
@@ -99,12 +84,12 @@ Start with these scripts:
 - `run_s1_budget_forcing_baseline.py`
 - `run_tale_baseline.py`
 - `run_l1_baseline.py`
-- external baseline validation/generation scripts described in [`README.md`](README.md)
+- external baseline validation/generation scripts described in `../docs/main_baselines.md`
 
 ## Rule of thumb
 
 - Use this page first.
-- Use [`README.md`](README.md) for the full script index.
-- Use `run_imported_methodology_frontier_eval.py` when you need cleaner manuscript-style fixed/adaptive/oracle summaries.
+- Use `README.md` for the full script index.
+- Treat defeat-case observability and discovered-tree analysis as first-class evidence for method refinement.
 - Treat historical script paths as provenance support, not the default path.
-- The current highest-leverage code path is to use observability-enabled runs to settle the target/oracle definition for hard disagreement states, not to start another broad nearby method sweep.
+- The current highest-leverage code path is to stabilize the promoted anti-collapse answer-group-aware line, not to start another broad nearby method sweep.
