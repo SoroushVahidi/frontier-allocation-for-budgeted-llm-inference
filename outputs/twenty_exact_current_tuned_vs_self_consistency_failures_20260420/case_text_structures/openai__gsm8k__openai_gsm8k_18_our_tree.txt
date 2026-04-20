@@ -1,0 +1,5 @@
+root
+- div_0 [fam=div_0, depth=1, score=0.8263, done=True, ans=80]
+- div_1 [fam=div_1, depth=1, score=0.5385, done=False, ans=None]
+  - div_child_4_2 [fam=div_1, depth=1, score=0.7066, done=False, ans=None]
+    - div_child_5_3 [fam=div_1, depth=0, score=0.6896, done=False, ans=None]

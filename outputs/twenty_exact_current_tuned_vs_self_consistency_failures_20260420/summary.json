@@ -1,0 +1,24 @@
+{
+  "our_method": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1",
+  "other_method": "self_consistency_3",
+  "selected_cases": 20,
+  "exactness": {
+    "our_exact_structure_recovery_cases": 20,
+    "self_consistency_faithful_sample_forest_recovery_cases": 20,
+    "cases_identifying_exact_correct_node_or_sample": 20
+  },
+  "counts": {
+    "correct_answer_absent_from_our_tree": 4,
+    "correct_answer_present_in_our_tree_but_not_selected": 0,
+    "correct_answer_present_in_self_consistency_samples": 15,
+    "both_methods_contain_correct_answer_but_choose_differently": 2,
+    "repeated_same_family_expansion_still_present": 20,
+    "alternative_maturation_still_insufficient": 0,
+    "final_selection_failure_after_correct_answer_present": 0
+  },
+  "dominant_failure_pattern": "other",
+  "failure_type_histogram": {
+    "other": 16,
+    "correct answer absent from our tree": 4
+  }
+}
