@@ -14,109 +14,80 @@ Equivalent local phrasing:
 
 This repository is currently centered on:
 - fixed-budget adaptive test-time compute allocation,
-- branch-priority / next-step allocation over active branches,
-- answer-group-level final selection and commit control,
+- cross-controller frontier allocation,
+- next-step branch allocation over active branches,
+- answer-group-level commit control,
 - useful diversity realization under budget,
 - answer-support aggregation,
-- real-model confirmation of branch-allocation policies,
-- and now a more explicit distinction between **tree-generation quality** and **final output-layer correctness**.
+- and real-model confirmation of branch-allocation policies.
 
-This repository is **not** currently centered on the old binary revise-routing paper.
+This repository is **not** currently centered on the older binary revise-routing paper.
 
-## Current repository state
+## Current state in one paragraph
 
-The current strongest repository-backed picture is:
-- the leading serious broad family remains **broad diversity-aware branch allocation with answer-support aggregation**,
-- bounded diagnostic work points more specifically to **early-to-mid tree-growth control** as a major weakness of earlier variants,
-- the strongest promoted line now combines:
-  - anti-collapse answer-group-aware allocation,
-  - soft repeat-expansion control,
-  - and a deterministic output-layer repair stage,
-- and the current best diagnostic stack now includes:
-  - full method comparison bundles,
-  - exact old-vs-current tree comparisons,
-  - a fresh current-failure set against the strongest adversary baseline,
-  - and output-layer repair diagnostics on the targeted remaining failures.
+The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The codebase now has materially better failure analysis, old-vs-current tree comparison, targeted current-failure bundles, and output-layer repair diagnostics, but it still needs a fresh broad comparison bundle and stronger independent validation before making strong broad-best claims.
 
-The current best broad baseline to beat is still:
-- `self_consistency_3`
+## Fastest reliable reading path
 
-## Current best repository stance
-
-The current repository stance is:
-
-> **Keep the broad diversity/aggregation family as the main line, treat anti-collapse + repeat-expansion control + deterministic output-layer repair as the promoted integrated path, and use stronger controlled validation before broad superiority claims.**
-
-## Fastest reliable start
-
-If you want the shortest trustworthy entry path, read in this order:
+Read these first:
 1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
 2. [`docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
 3. [`docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-4. [`docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`](docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md)
-5. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
-6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+4. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+5. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
+6. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
 
 Then use:
-- [`docs/REPO_MAP.md`](docs/REPO_MAP.md) for the canonical map,
 - [`docs/README.md`](docs/README.md) for grouped navigation,
-- [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md) for runnable entry points.
+- [`docs/REPO_MAP.md`](docs/REPO_MAP.md) for the canonical map,
+- [`scripts/README.md`](scripts/README.md) for runnable entry points,
+- [`docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md) for the current repo audit/cleanup rationale.
 
 ## What to avoid at first
 
-Do **not** start by reading arbitrary experiment notes, historical memos, or one-off outputs in isolation.
+Do **not** start by reading arbitrary one-off status notes or isolated `outputs/` artifacts in isolation.
 
-Do **not** assume the next best move is another unrelated new family.
-
-Use these interpretation rules instead:
-- **Canonical** docs/scripts define the current project identity.
-- **Exploratory** materials are useful active branches, but not the default summary.
+Use this interpretation rule instead:
+- **Canonical** docs define the current project identity.
+- **Exploratory** docs preserve active side branches and narrower ideas.
 - **Historical** materials are provenance-only and should not define the current paper story.
 
-For the formal interpretation rules, see:
+For the full interpretation policy, see:
 - [`docs/README.md`](docs/README.md)
 - [`docs/EXPLORATORY_INDEX.md`](docs/EXPLORATORY_INDEX.md)
 - [`docs/HISTORICAL_AND_ARCHIVE_POLICY.md`](docs/HISTORICAL_AND_ARCHIVE_POLICY.md)
 
-## Current state at a glance
+## What is already strong
 
-### What is already strong
 - frontier/controller experimentation scaffold,
-- broad diversity-aware controller mechanisms,
+- diversity-aware controller mechanisms,
 - answer-support aggregation infrastructure,
 - observability-enabled semantic failure analysis,
-- comparative mistake auditing against the best baseline,
-- bounded real-model confirmation paths,
+- comparative mistake auditing against the strongest baseline,
+- bounded real-model confirmation,
 - exact old-vs-current tree comparison artifacts,
-- fresh exact current-failure bundles,
+- targeted current-failure bundles,
 - output-layer repair diagnostics,
-- and a materially stronger learner-side supervision stack than before.
+- and a stronger learner-side supervision stack than before.
 
-### What is not solved yet
-- robust broad-best ranking confirmation for the latest integrated method,
+## What is not solved yet
+
+- broad-best ranking confirmation for the latest integrated method,
 - stronger independent validation beyond targeted repaired subsets,
 - honest external-baseline completeness closure,
 - stable real-model leadership among close variants,
 - broader paper-grade real-model evidence,
 - and final current-state comparison closure after the newest integrated updates.
 
-### Main bottleneck
-The current bottleneck is now best understood as **split**:
+## Main bottleneck
 
-1. in some cases, the correct answer is still absent from our tree;
+The current bottleneck is now split:
+1. in some cases, the correct answer is still absent from the tree;
 2. in many targeted current-failure cases, the tree already contains the correct answer but the surfaced/evaluated output layer still needed repair.
-
-### Best near-term direction
-The current best near-term direction is:
-- keep the broad diversity/aggregation family,
-- preserve the current integrated promoted line,
-- validate the output-layer repair beyond the targeted 16-case subset,
-- and run a fresh broad comparison bundle that includes the latest integrated method fairly.
 
 ## Repository layout
 
-- `docs/`: canonical interpretation, planning notes, grouped navigation pages, reference/baseline indexes, result/artifact indexes, exploratory notes, and historical guidance.
+- `docs/`: canonical interpretation, planning notes, navigation pages, reference/baseline indexes, result/artifact indexes, exploratory notes, and historical guidance.
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
 - `configs/`: dataset, baseline, and experiment configuration files.
@@ -131,6 +102,4 @@ The strongest current paper story is:
 
 **fixed-budget branch allocation for LLM reasoning, where early tree shape matters, but the latest repository evidence also shows that some remaining errors are no longer pure search failures and instead live in the final output layer after correct internal reasoning has already been found.**
 
-Current manuscript positioning is intentionally honest:
-
-**the repository now has a strong integrated promoted line, a much better exact-failure stack, and a promising deterministic output repair layer, but it is not yet in final broad-best-claim shape because fresh independent validation and a new current full comparison bundle are still needed.**
+The repository now has a strong integrated promoted line and a much better exact-failure stack, but it is **not yet in final broad-best-claim shape** because fresh independent validation and a new current full comparison bundle are still needed.
