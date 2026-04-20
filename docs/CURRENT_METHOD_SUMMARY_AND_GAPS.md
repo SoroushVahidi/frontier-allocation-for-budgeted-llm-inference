@@ -2,12 +2,13 @@
 
 ## Purpose
 
-This note is the compact repository-facing summary of the **current canonical function stack**.
+This note is the compact repository-facing summary of the **current promoted method line** and its remaining gaps.
 
 It is intentionally aligned with the current phase:
 - fixed-budget next-step branch allocation,
-- target/objective consolidation,
-- continuation-value core plus bounded completion-aware correction.
+- answer-group-aware frontier control,
+- anti-collapse behavior under budget,
+- and soft repeat-expansion control inside the same broad family.
 
 It is not a broad new-method proposal.
 
@@ -16,61 +17,65 @@ It is not a broad new-method proposal.
 The current strongest repository-wide decomposition is:
 
 1. **Core objective**: maximize final decision quality under fixed budget.
-2. **Core expansion score**: continuation-centered branch utility (current default: multistep-k3 family).
-3. **Core incumbent/commit-quality score**: bounded completion/current-branch quality evidence.
-4. **Core decision rule**: metalevel expand-vs-commit comparison with bounded local correction in disagreement slices.
-5. **Local modifiers only**: near-tie/instability/uncertainty gates and bounded policy overlays.
+2. **Core family**: broad diversity-aware branch allocation with answer-support aggregation.
+3. **Current promoted refinement**: anti-collapse answer-group-aware allocation.
+4. **Current promoted local control**: soft repeat-expansion control to reduce branch-family monopolization.
+5. **Core decision aim**: preserve and mature answer-distinct alternatives enough that the budget is spent on the right tree shape rather than collapsing too early.
 
 In short:
 
-> **fixed-budget utility objective + continuation-centered expansion + bounded completion-aware incumbent correction + explicit expand-vs-commit metarule.**
+> **fixed-budget branch allocation + answer-group-aware anti-collapse control + soft repeat-expansion penalties inside the broad diversity/aggregation family.**
 
 ## What remains strong
 
 ### 1) Framing
 The frontier-allocation / next-step branch-allocation framing remains the right project center.
 
-### 2) Expansion signal
-Continuation-value-centered supervision remains the strongest default core signal.
+### 2) Broad family
+Broad diversity-aware branch allocation with answer-support aggregation remains the strongest main family in the repo.
 
-### 3) Hard-slice insight
-Near-tie and disagreement slices continue to show distinct behavior; bounded completion-aware evidence is real and useful there.
+### 3) Diagnosis quality
+The repository now has stronger concrete diagnosis than before through:
+- comparative defeat casebooks,
+- branch-reasoning recovery,
+- and discovered-tree reconstructions on failure cases.
 
-### 4) Observability
-Fresh observability-enabled runs now support semantic mismatch adjudication rather than proxy-only diagnosis.
+### 4) Structural refinement direction
+Anti-collapse and answer-group-aware allocation now look more central than generic local threshold rescue.
 
 ## What is now demoted from canonical default role
 
 The following are still useful artifacts but no longer the top-level repository default:
-- broad nearby target-family sweeps as the default next move,
-- treating completion-aware scoring as a global replacement objective,
-- treating instability/defer mechanisms as the primary optimization target,
-- older pairwise+fallback-only summaries as repository-wide canonical framing.
+- ICC / incumbent-challenger metalevel refinement as the promoted main line,
+- broad nearby threshold tweaking as the default next move,
+- older multistep/ICC-centered canonical summaries,
+- and generic diversity bonuses without answer-group structure.
 
 ## Main unresolved gap
 
 The key unresolved gap is now narrow and explicit:
 
-> **freeze and validate the exact metalevel decision definition for hard close-call states among expand(i), expand(j), and commit-now/defer.**
+> **reduce harmful early-to-mid branch-family monopolization without blocking genuinely good incumbent continuation too often.**
 
 Concretely this includes:
-- formal commit-now thresholding relative to best expansion,
-- bounded correction conditions for continuation-vs-completion disagreement,
-- calibration of local ambiguity gates without objective drift.
+- when to preserve an alternative answer-group,
+- when to let the incumbent keep most of the budget,
+- how strong repeat-expansion penalties should be,
+- and how to reduce harmed cases without losing structural gains.
 
 ## Recommended immediate next work
 
-1. Keep the canonical function split fixed across docs/scripts.
-2. Continue disagreement-slice adjudication using observability-enabled case evidence.
-3. Stabilize a single explicit metalevel decision template (expand-vs-commit with bounded correction).
-4. Treat exploratory target families as diagnostics unless and until they beat the canonical stack on accepted metrics.
+1. Keep the current promoted line inside the same broad family.
+2. Allow only small, diagnosis-backed refinements.
+3. Use harmed-case analysis to decide whether the repeat/override controls are too weak or too strong.
+4. Stop local knob-chasing if one more micro-pass does not materially reduce incumbent-blocking harms.
+5. Strengthen broader controlled validation and real-model confirmation once the promoted line stabilizes.
 
 ## Cross-reference
 
-For the canonical function inventory and classification table, use:
-- `docs/FUNCTIONS_AND_OBJECTIVES_STATUS_2026_04_18.md`
-- `docs/CANONICAL_OBJECTIVE_AND_FUNCTION_STACK_2026_04_18.md`
-- `docs/ICC_METALEVEL_DIAGNOSTIC_BRANCH_DEMOTION_2026_04_19.md` (ICC refinement line status: demoted diagnostic branch)
-- `outputs/function_audit_20260418/function_inventory.json`
-- `outputs/function_audit_20260418/canonical_function_stack.json`
-- `outputs/objective_stack_20260418/manifest.json`
+For the current promoted-line summary and entry path, use:
+- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+- `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
+- `docs/TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`
+- `docs/TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`
+- `docs/CURRENT_SAFE_CLAIMS.md`
