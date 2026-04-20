@@ -823,6 +823,16 @@ class GlobalDiversityAggregationController(BaseController):
         repeat_expand_penalty_weight: float = 0.08,
         repeat_expand_family_penalty_weight: float = 0.12,
         repeat_expand_override_margin: float = 0.10,
+        enable_low_marginal_gain_family_cooldown: bool = False,
+        low_marginal_gain_window_size: int = 3,
+        low_marginal_gain_min_threshold: float = 0.015,
+        low_marginal_gain_consecutive_family_trigger: int = 4,
+        low_marginal_gain_cooldown_steps: int = 2,
+        low_marginal_gain_penalty_strength: float = 0.14,
+        low_marginal_gain_override_margin: float = 0.12,
+        low_marginal_gain_override_top_support_min: float = 0.74,
+        low_marginal_gain_answer_group_aware: bool = True,
+        low_marginal_gain_hard_block_ablation: bool = False,
         monopolization_margin_requirement: float = 0.10,
         answer_group_distinctness_bonus: float = 0.10,
         duplicate_answer_group_penalty: float = 0.08,
@@ -922,6 +932,16 @@ class GlobalDiversityAggregationController(BaseController):
         self.repeat_expand_penalty_weight = max(0.0, float(repeat_expand_penalty_weight))
         self.repeat_expand_family_penalty_weight = max(0.0, float(repeat_expand_family_penalty_weight))
         self.repeat_expand_override_margin = max(0.0, float(repeat_expand_override_margin))
+        self.enable_low_marginal_gain_family_cooldown = bool(enable_low_marginal_gain_family_cooldown)
+        self.low_marginal_gain_window_size = max(2, int(low_marginal_gain_window_size))
+        self.low_marginal_gain_min_threshold = max(0.0, float(low_marginal_gain_min_threshold))
+        self.low_marginal_gain_consecutive_family_trigger = max(2, int(low_marginal_gain_consecutive_family_trigger))
+        self.low_marginal_gain_cooldown_steps = max(1, int(low_marginal_gain_cooldown_steps))
+        self.low_marginal_gain_penalty_strength = max(0.0, float(low_marginal_gain_penalty_strength))
+        self.low_marginal_gain_override_margin = max(0.0, float(low_marginal_gain_override_margin))
+        self.low_marginal_gain_override_top_support_min = max(0.0, min(1.0, float(low_marginal_gain_override_top_support_min)))
+        self.low_marginal_gain_answer_group_aware = bool(low_marginal_gain_answer_group_aware)
+        self.low_marginal_gain_hard_block_ablation = bool(low_marginal_gain_hard_block_ablation)
         self.monopolization_margin_requirement = max(0.0, float(monopolization_margin_requirement))
         self.answer_group_distinctness_bonus = max(0.0, float(answer_group_distinctness_bonus))
         self.duplicate_answer_group_penalty = max(0.0, float(duplicate_answer_group_penalty))
@@ -1260,6 +1280,9 @@ class GlobalDiversityAggregationController(BaseController):
         branch_family_ids: dict[str, str],
         last_expanded_family_id: str | None,
         consecutive_same_family_expands: int,
+        family_recent_marginal_gains: dict[str, list[float]],
+        family_cooldown_until_action: dict[str, int],
+        top_support: float,
     ) -> dict[str, dict[str, float]]:
         if (not self.enable_anti_collapse_answer_group_refinement) or actions >= self.anti_collapse_early_window:
             return {}
@@ -1293,6 +1316,43 @@ class GlobalDiversityAggregationController(BaseController):
             if dominant_repeat_penalty > 0.0:
                 repeat_signal_source = "family" if family_repeat_penalty >= exact_repeat_penalty else "exact"
             repeat_penalty += dominant_repeat_penalty
+            low_marginal_gain_penalty = 0.0
+            low_marginal_gain_triggered = False
+            low_marginal_gain_blocked = False
+            low_marginal_gain_override = False
+            low_marginal_gain_recent_mean = 0.0
+            low_marginal_gain_threshold = self.low_marginal_gain_min_threshold
+            low_marginal_gain_window_count = 0
+            if self.enable_low_marginal_gain_family_cooldown:
+                recent = family_recent_marginal_gains.get(family_id, [])
+                window = recent[-self.low_marginal_gain_window_size :]
+                low_marginal_gain_window_count = len(window)
+                low_marginal_gain_recent_mean = float(sum(window) / max(1, len(window))) if window else 0.0
+                if self.low_marginal_gain_answer_group_aware:
+                    # Answer-group-aware refinement: if this group already has many live siblings,
+                    # require higher incremental gain before allowing repeated same-family expansions.
+                    group_dup_factor = max(0, int(active_group_counts.get(gk, 1)) - 1)
+                    low_marginal_gain_threshold = float(
+                        self.low_marginal_gain_min_threshold * (1.0 + 0.20 * float(group_dup_factor))
+                    )
+                cooldown_active = int(actions) < int(family_cooldown_until_action.get(family_id, -1))
+                trigger_from_repeat_low_gain = bool(
+                    family_id == (last_expanded_family_id or "")
+                    and consecutive_same_family_expands >= self.low_marginal_gain_consecutive_family_trigger
+                    and low_marginal_gain_window_count >= self.low_marginal_gain_window_size
+                    and low_marginal_gain_recent_mean < low_marginal_gain_threshold
+                )
+                if trigger_from_repeat_low_gain:
+                    # Trigger reason: repeated same-family allocations are not producing enough recent marginal gain.
+                    family_cooldown_until_action[family_id] = int(actions) + int(self.low_marginal_gain_cooldown_steps)
+                cooldown_active = cooldown_active or bool(
+                    int(actions) < int(family_cooldown_until_action.get(family_id, -1))
+                )
+                low_marginal_gain_triggered = bool(trigger_from_repeat_low_gain or cooldown_active)
+                if low_marginal_gain_triggered:
+                    low_marginal_gain_penalty = float(self.low_marginal_gain_penalty_strength)
+                    if self.low_marginal_gain_hard_block_ablation:
+                        low_marginal_gain_blocked = True
 
             cap_guard_penalty = 0.0
             if (
@@ -1313,10 +1373,23 @@ class GlobalDiversityAggregationController(BaseController):
                 "repeat_expand_family_penalty": float(family_repeat_penalty),
                 "repeat_expand_dominant_penalty": float(dominant_repeat_penalty),
                 "repeat_expand_signal_source": 1.0 if repeat_signal_source == "family" else (0.5 if repeat_signal_source == "exact" else 0.0),
+                "low_marginal_gain_family_penalty": float(low_marginal_gain_penalty),
+                "low_marginal_gain_family_triggered": 1.0 if low_marginal_gain_triggered else 0.0,
+                "low_marginal_gain_family_blocked": 1.0 if low_marginal_gain_blocked else 0.0,
+                "low_marginal_gain_recent_mean": float(low_marginal_gain_recent_mean),
+                "low_marginal_gain_threshold": float(low_marginal_gain_threshold),
+                "low_marginal_gain_window_count": float(low_marginal_gain_window_count),
                 "cap_guard_penalty": float(cap_guard_penalty),
                 "distinctness_bonus": float(distinctness_bonus),
                 "duplicate_answer_group_penalty": float(duplicate_group_penalty),
-                "adjusted_priority_delta": float(distinctness_bonus - repeat_penalty - cap_guard_penalty - duplicate_group_penalty),
+                "adjusted_priority_delta": float(
+                    distinctness_bonus
+                    - repeat_penalty
+                    - low_marginal_gain_penalty
+                    - cap_guard_penalty
+                    - duplicate_group_penalty
+                    - (1e6 if low_marginal_gain_blocked else 0.0)
+                ),
                 "top_continuation": float(top_cont),
                 "second_continuation": float(second_cont),
             }
@@ -1340,6 +1413,7 @@ class GlobalDiversityAggregationController(BaseController):
                 if best_alt is None or alt_score > best_alt:
                     best_alt = alt_score
             override_applied = False
+            low_marginal_gain_override = False
             if penalty_triggered_by_branch.get(branch_id, False) and best_alt is not None:
                 if branch_score >= float(best_alt) + float(self.repeat_expand_override_margin):
                     override_applied = True
@@ -1352,6 +1426,24 @@ class GlobalDiversityAggregationController(BaseController):
                             float(payload.get("repeat_penalty", 0.0)) - float(payload.get("repeat_expand_dominant_penalty", 0.0)),
                         )
                     )
+            # Override for clearly strong incumbent evidence:
+            # if top support is already high and this family still dominates alternatives by margin,
+            # allow continuation even when low-marginal-gain cooldown would otherwise penalize it.
+            if (
+                float(payload.get("low_marginal_gain_family_triggered", 0.0)) > 0.0
+                and best_alt is not None
+                and top_support >= self.low_marginal_gain_override_top_support_min
+            ):
+                if branch_score >= float(best_alt) + float(self.low_marginal_gain_override_margin):
+                    low_marginal_gain_override = True
+                    payload["adjusted_priority_delta"] = float(
+                        payload["adjusted_priority_delta"]
+                        + float(payload.get("low_marginal_gain_family_penalty", 0.0))
+                        + (1e6 if float(payload.get("low_marginal_gain_family_blocked", 0.0)) > 0.0 else 0.0)
+                    )
+                    payload["low_marginal_gain_family_penalty"] = 0.0
+                    payload["low_marginal_gain_family_blocked"] = 0.0
+            payload["low_marginal_gain_family_override_applied"] = 1.0 if low_marginal_gain_override else 0.0
             payload["repeat_expand_override_applied"] = 1.0 if override_applied else 0.0
         return out
 
@@ -2101,6 +2193,11 @@ class GlobalDiversityAggregationController(BaseController):
         repeat_penalty_trigger_count = 0
         repeat_penalty_override_count = 0
         repeat_penalty_alternative_selected_count = 0
+        family_recent_marginal_gains: dict[str, list[float]] = {}
+        family_cooldown_until_action: dict[str, int] = {}
+        low_marginal_gain_trigger_count = 0
+        low_marginal_gain_block_count = 0
+        low_marginal_gain_override_count = 0
         protected_alternatives: dict[str, dict[str, int | str | float]] = {}
         protected_alternative_ids: set[str] = set()
         matured_alternative_ids: set[str] = set()
@@ -2139,6 +2236,9 @@ class GlobalDiversityAggregationController(BaseController):
                 branch_family_ids=branch_family_ids,
                 last_expanded_family_id=last_expanded_family_id,
                 consecutive_same_family_expands=consecutive_same_family_expands,
+                family_recent_marginal_gains=family_recent_marginal_gains,
+                family_cooldown_until_action=family_cooldown_until_action,
+                top_support=float(max(answer_support_counts.values()) / max(1, sum(answer_support_counts.values())) if answer_support_counts else 0.0),
             )
             raw_priority_sorted = sorted(scored, key=lambda x: x[1], reverse=True)
             scored = [
@@ -2162,6 +2262,12 @@ class GlobalDiversityAggregationController(BaseController):
                         repeat_penalty_alternative_selected_count += 1
                 if bool(float(raw_top_adj.get("repeat_expand_override_applied", 0.0)) > 0.0):
                     repeat_penalty_override_count += 1
+                if bool(float(raw_top_adj.get("low_marginal_gain_family_triggered", 0.0)) > 0.0):
+                    low_marginal_gain_trigger_count += 1
+                if bool(float(raw_top_adj.get("low_marginal_gain_family_blocked", 0.0)) > 0.0):
+                    low_marginal_gain_block_count += 1
+                if bool(float(raw_top_adj.get("low_marginal_gain_family_override_applied", 0.0)) > 0.0):
+                    low_marginal_gain_override_count += 1
             branch, priority, pri_meta = scored[0]
             gate_meta = self._diversity_gate_decision(
                 scored=scored,
@@ -2497,6 +2603,24 @@ class GlobalDiversityAggregationController(BaseController):
                         "anti_collapse_repeat_expand_override_applied": bool(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_expand_override_applied", 0.0)) > 0.0
                         ),
+                        "low_marginal_gain_family_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_family_penalty", 0.0)), 4
+                        ),
+                        "low_marginal_gain_family_triggered": bool(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_family_triggered", 0.0)) > 0.0
+                        ),
+                        "low_marginal_gain_family_blocked": bool(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_family_blocked", 0.0)) > 0.0
+                        ),
+                        "low_marginal_gain_family_override_applied": bool(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_family_override_applied", 0.0)) > 0.0
+                        ),
+                        "low_marginal_gain_recent_mean": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_recent_mean", 0.0)), 4
+                        ),
+                        "low_marginal_gain_threshold": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_threshold", 0.0)), 4
+                        ),
                         "anti_collapse_cap_guard_penalty": round(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("cap_guard_penalty", 0.0)), 4
                         ),
@@ -2538,6 +2662,11 @@ class GlobalDiversityAggregationController(BaseController):
                     consecutive_same_family_expands = 1
                 max_consecutive_same_family_expands = max(max_consecutive_same_family_expands, consecutive_same_family_expands)
                 last_expanded_family_id = family_id
+                realized_delta = float(max(0.0, float(result.score_after) - float(result.score_before)))
+                family_recent_marginal_gains.setdefault(family_id, []).append(realized_delta)
+                keep_recent = max(4, self.low_marginal_gain_window_size * 3)
+                if len(family_recent_marginal_gains[family_id]) > keep_recent:
+                    family_recent_marginal_gains[family_id] = family_recent_marginal_gains[family_id][-keep_recent:]
                 if branch.branch_id in protected_alternatives:
                     rem = int(protected_alternatives[branch.branch_id].get("remaining", 0))
                     if rem > 0:
@@ -2594,6 +2723,24 @@ class GlobalDiversityAggregationController(BaseController):
                         ),
                         "anti_collapse_repeat_expand_override_applied": bool(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_expand_override_applied", 0.0)) > 0.0
+                        ),
+                        "low_marginal_gain_family_penalty": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_family_penalty", 0.0)), 4
+                        ),
+                        "low_marginal_gain_family_triggered": bool(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_family_triggered", 0.0)) > 0.0
+                        ),
+                        "low_marginal_gain_family_blocked": bool(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_family_blocked", 0.0)) > 0.0
+                        ),
+                        "low_marginal_gain_family_override_applied": bool(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_family_override_applied", 0.0)) > 0.0
+                        ),
+                        "low_marginal_gain_recent_mean": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_recent_mean", 0.0)), 4
+                        ),
+                        "low_marginal_gain_threshold": round(
+                            float(anti_collapse_adjustments.get(branch.branch_id, {}).get("low_marginal_gain_threshold", 0.0)), 4
                         ),
                         "anti_collapse_cap_guard_penalty": round(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("cap_guard_penalty", 0.0)), 4
@@ -2893,6 +3040,16 @@ class GlobalDiversityAggregationController(BaseController):
                 "repeat_penalty_trigger_count": int(repeat_penalty_trigger_count),
                 "repeat_penalty_override_count": int(repeat_penalty_override_count),
                 "repeat_penalty_alternative_selected_count": int(repeat_penalty_alternative_selected_count),
+                "low_marginal_gain_family_cooldown_enabled": bool(self.enable_low_marginal_gain_family_cooldown),
+                "low_marginal_gain_family_trigger_count": int(low_marginal_gain_trigger_count),
+                "low_marginal_gain_family_block_count": int(low_marginal_gain_block_count),
+                "low_marginal_gain_family_override_count": int(low_marginal_gain_override_count),
+                "low_marginal_gain_window_size": int(self.low_marginal_gain_window_size),
+                "low_marginal_gain_min_threshold": float(self.low_marginal_gain_min_threshold),
+                "low_marginal_gain_consecutive_family_trigger": int(self.low_marginal_gain_consecutive_family_trigger),
+                "low_marginal_gain_cooldown_steps": int(self.low_marginal_gain_cooldown_steps),
+                "low_marginal_gain_penalty_strength": float(self.low_marginal_gain_penalty_strength),
+                "low_marginal_gain_hard_block_ablation": bool(self.low_marginal_gain_hard_block_ablation),
                 "repeated_same_branch_expansion_dominated_budget": bool(repeated_same_branch_domination),
                 "top_branch_expand_share": float(top_branch_expand_share),
                 "branch_creation_count": int(len(branch_expansions)),
