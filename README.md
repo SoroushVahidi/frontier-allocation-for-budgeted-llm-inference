@@ -25,23 +25,25 @@ This repository is **not** currently centered on the older binary revise-routing
 
 ## Current state in one paragraph
 
-The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The repository now also has a cleaner current broad comparison bundle, a fresh exact current-failure bundle against the strongest direct adversary, and a more explicit artifact-interpretation policy so older bounded plot bundles are not mistaken for the current broad ranking surface.
+The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The repository now also has a cleaner current broad comparison bundle, a fresh exact current-failure bundle against the strongest direct adversary, a larger targeted-failure analysis path, and a more explicit artifact-interpretation policy so older bounded plot bundles are not mistaken for the current broad ranking surface.
 
 ## Fastest reliable reading path
 
 Read these first:
-1. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-2. [`docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-3. [`docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-4. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
-5. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-6. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-7. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+1. [`QUICKSTART.md`](QUICKSTART.md)
+2. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
+3. [`docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
+4. [`docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
+5. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
+6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
+7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+8. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
 - [`docs/REPO_MAP.md`](docs/REPO_MAP.md) for the canonical map,
 - [`scripts/README.md`](scripts/README.md) for runnable entry points,
+- [`outputs/README.md`](outputs/README.md) for output-family interpretation,
 - [`docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md) for the current repo audit/cleanup rationale.
 
 ## What to avoid at first
