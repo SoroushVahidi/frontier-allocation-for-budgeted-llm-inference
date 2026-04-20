@@ -93,8 +93,6 @@ def main() -> None:
     dataset_slice_cov = {}
     for row in strict_results["rows"]:
         full = row["variant_metrics"]["full_method"]["dataset_slices"]
-        pairwise = row["pairwise_binary_baseline"]
-        proxy = row["penalized_marginal_proxy_baseline"]
         for ds, vals in full.items():
             dataset_slice_acc.setdefault(ds, []).append(float(vals["accepted_pair_accuracy"]))
             dataset_slice_cov.setdefault(ds, []).append(float(vals["coverage"]))
@@ -215,7 +213,9 @@ def main() -> None:
             "external_l1_max (MODE A adapter)",
         ],
         "external_adjacent_verified_import_only": [
-            s["baseline_key"] for s in external_statuses if s["status"] == "runnable_adjacent"
+            s["baseline_key"]
+            for s in external_statuses
+            if s["status"] in {"runnable_adjacent", "import_validated"}
         ],
         "reference_points": [
             "oracle_frontier_upper_bound",

@@ -80,3 +80,5 @@ secrets.*
 
 !outputs/hundred_current_full_vs_best_failure_statistics_20260420T220416Z/
 !outputs/hundred_current_full_vs_best_failure_statistics_20260420T220416Z/**/*
+!outputs/baseline_repair_and_status_audit_*/
+!outputs/baseline_repair_and_status_audit_*/**/*

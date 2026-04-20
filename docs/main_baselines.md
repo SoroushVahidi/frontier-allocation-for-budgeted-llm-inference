@@ -4,6 +4,8 @@
 
 For this repository phase, baselines are grouped as:
 
+**Normalized v1 status matrix (machine-readable):** `outputs/baseline_repair_and_status_audit_20260420T225833Z/baseline_status_matrix.json` — see `docs/BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`.
+
 1. **Direct baselines** — genuinely close to fixed-budget next-step branch allocation / deliberate branch expansion control.
 2. **Adjacent but important baselines** — reviewer-expected neighbors that are not control-space-equivalent (completion-aware PRM/verifier selection, stop-vs-continue adaptive compute, routing/cascades, and small-gap fixed-budget allocation comparators).
 3. **Ingredient / framing references** — formulation and signal references that should inform framing but not be oversold as direct empirical baselines.
@@ -95,8 +97,8 @@ This extends the comparison set beyond the original four **without** implying th
 
 To keep comparisons reviewer-defensible, this repo now distinguishes two s1 modes:
 
-- **MODE A (primary apples-to-apples):** inference-only s1 budget forcing on the same base model family as our method, no extra s1K post-training.
-- **MODE B (secondary, separately labeled):** full/official s1 path including post-training where feasible; not apples-to-apples with unchanged-base-model controller comparisons.
+- **MODE A (primary fair matched-substrate path):** inference-only s1 budget forcing on the same base model family as our method, no extra s1K post-training (`adapter_based` / `near_direct` in v1 taxonomy — not a claim of reproducing the full upstream s1 training stack).
+- **MODE B (secondary, separately labeled):** full/official s1 path including post-training where feasible; **import-validated reporting only** (`import_validated`), not control-equivalent to MODE A frontier comparisons.
 
 Implementation references:
 - `docs/s1_baseline_integration.md`
@@ -113,8 +115,8 @@ Reporting policy:
 
 TALE (Token-Budget-Aware LLM Reasoning) is integrated as a **published adjacent adaptive-budget baseline** with explicit mode separation:
 
-- **MODE A (`prompt_budgeting_inference_only`)**: runnable in-repo TALE-style prompt/inference token-budgeting adapter (primary fair comparison path).
-- **MODE B (`official_full_adapter`)**: secondary official/full adapter reporting path (may include TALE-PT/post-training; not apples-to-apples).
+- **MODE A (`prompt_budgeting_inference_only`)**: runnable in-repo TALE-style prompt/inference token-budgeting adapter (primary fair comparison path; `adapter_based` / `near_direct`).
+- **MODE B (`official_full_adapter`)**: secondary official/full adapter reporting path (may include TALE-PT/post-training; `import_validated`, not merged with MODE A as control-equivalent).
 
 Implementation references:
 - `docs/tale_baseline_integration.md`
@@ -130,8 +132,8 @@ Methodological caveat:
 
 L1 (*Controlling How Long A Reasoning Model Thinks With Reinforcement Learning*) is integrated as a **direct / near-direct budget-control baseline** with explicit mode separation:
 
-- **MODE A (`inference_only_adapter`)**: runnable in-repo L1-style length-conditioning adapter supporting both `external_l1_exact` (exact target length) and `external_l1_max` (max-length bound).
-- **MODE B (`official_full_adapter`)**: secondary official/full adapter reporting path (may include RL-trained L1 checkpoints; not apples-to-apples with unchanged-base-model controller comparisons).
+- **MODE A (`inference_only_adapter`)**: runnable in-repo L1-style length-conditioning adapter supporting both `external_l1_exact` (exact target length) and `external_l1_max` (max-length bound); `adapter_based` / `near_direct`.
+- **MODE B (`official_full_adapter`)**: secondary official/full adapter reporting path (may include RL-trained L1 checkpoints; `import_validated` via `scripts/verify_l1_mode_b_import.py` when importing official packages; not control-equivalent to MODE A).
 
 Implementation references:
 - `docs/l1_baseline_integration.md`
@@ -142,6 +144,12 @@ Implementation references:
 
 Methodological caveat:
 - L1 controls token-length generation behavior, while our primary method controls frontier stop-vs-act allocation decisions; keep matched-budget reporting explicit and avoid strict control-equivalence claims.
+
+## verifier_guided_search (internal baseline)
+
+- **Role:** Fixed-budget internal simulator baseline implemented in the frontier evaluation stack (not an external paper reproduction).
+- **v1 taxonomy:** `runnable_direct` with `control_equivalence: adjacent` versus external PRM / “Let’s Verify Step by Step” claims — cite as an **implementation neighbor** only.
+- **Evidence:** Appears in committed full-method comparison bundles (for example `outputs/full_method_comparison_bundle/20260419T214335Z/aggregate_comparison_summary.json`); regenerate comparisons via `scripts/run_full_method_comparison_bundle.py` when updating tables.
 
 
 ## External baseline completeness (reviewer-defensible, 2026-04-16 pass)
@@ -158,20 +166,22 @@ Methodological caveat:
 
 For manuscript-safe claims, treat external baselines as follows:
 
-- **Usable now in direct comparisons (MODE A only):**
+- **Usable now for primary matched-substrate comparisons (MODE A adapters only; v1 `adapter_based` / `near_direct`):**
   - s1 via `configs/s1_budget_forcing_inference_only_v1.json` + `scripts/run_s1_budget_forcing_baseline.py`
   - TALE via `configs/tale_prompt_budgeting_v1.json` + `scripts/run_tale_baseline.py`
   - L1 via `configs/l1_inference_adapter_v1.json` + `scripts/run_l1_baseline.py`
-- **Partially usable:** s1 and TALE MODE B are strict official/full-results import + verification paths (usable when valid official packages are supplied); TALE MODE B additionally enforces explicit TALE-vs-TALE-PT variant separation. L1 MODE B remains blocked adapter/reporting path unless externally-produced official/full outputs are imported through `official.results_path`.
-- **BEST-Route status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_best_route_import.py`) with explicit adjacent-only claim boundaries.
-- **when_solve_when_verify status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_when_solve_when_verify_import.py`) for SC-vs-GenRM fixed-budget adjacent comparisons only.
-- **cascade_routing status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_cascade_routing_import.py`) for adjacent routing/cascading/cascade-routing comparisons only.
-- **mob_majority_of_bests status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_mob_import.py`) for adjacent best-of-N/MoB comparisons only.
-- **rest_mcts status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_rest_mcts_import.py`) for adjacent process-reward-guided MCTS comparisons only.
-- **openr status in this pass:** runnable-adjacent via strict import validation (`scripts/verify_openr_import.py`) for adjacent OpenR inference/search comparisons only.
+- **MODE B (import-validated only; v1 `import_validated` / `adjacent`):** s1, TALE, and L1 share the same pattern: usable **only** when valid official/full packages are supplied and pass `scripts/verify_s1_mode_b_import.py`, `scripts/verify_tale_mode_b_import.py`, or `scripts/verify_l1_mode_b_import.py` respectively (TALE MODE B additionally enforces TALE-vs-TALE-PT variant separation). Otherwise runs remain blocked pending `official.results_path`.
+- **BEST-Route:** v1 `import_validated` adjacent neighbor via `scripts/verify_best_route_import.py` (legacy per-baseline JSON may still print `runnable_adjacent` as a synonym).
+- **when_solve_when_verify:** v1 `import_validated` via `scripts/verify_when_solve_when_verify_import.py` (SC-vs-GenRM adjacent slices only).
+- **cascade_routing:** v1 `import_validated` via `scripts/verify_cascade_routing_import.py`.
+- **mob_majority_of_bests:** v1 `import_validated` via `scripts/verify_mob_import.py`.
+- **rest_mcts:** v1 `import_validated` via `scripts/verify_rest_mcts_import.py` (no full ReST-MCTS training loop in-repo).
+- **openr:** v1 `import_validated` via `scripts/verify_openr_import.py`.
 
 Companion artifacts:
 - `docs/external_baseline_completeness_report.md`
+- `docs/BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
+- `outputs/baseline_repair_and_status_audit_20260420T225833Z/baseline_status_matrix.json`
 - `outputs/external_baseline_completeness_summary.json`
 - `outputs/external_baseline_completeness_summary.csv`
 - `outputs/external_baseline_runnability/<run_id>/verification_summary.json`

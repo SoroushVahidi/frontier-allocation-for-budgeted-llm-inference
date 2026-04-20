@@ -162,7 +162,7 @@ These are the references that matter most for reviewer-facing comparison fairnes
 
 **Why:**
 - The repo explicitly treats s1 as a strongest practical stop/continue-style budget baseline.
-- MODE A is runnable and fair for apples-to-apples unchanged-base-model comparison.
+- MODE A is runnable as an **inference-only adapter** on this repository’s substrate and is the **primary fair matched-substrate path** for s1-style budget forcing; it is **not** a blanket claim of reproducing every upstream s1 training variant or stack.
 
 **What idea it gave us:**
 - explicit budget forcing / test-time compute control should be compared directly, not only discussed.

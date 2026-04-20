@@ -1,6 +1,33 @@
 {
   "version": 2,
   "policy": "Documentation and clone URLs only; do not vendor upstream code.",
+  "baseline_status_matrix_v1": "outputs/baseline_repair_and_status_audit_20260420T225833Z/baseline_status_matrix.json",
+  "baseline_repair_audit_doc_v1": "docs/BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md",
+  "normalized_taxonomy_v1": {
+    "status": [
+      "runnable_direct",
+      "runnable_adjacent",
+      "adapter_based",
+      "import_validated",
+      "discuss_only",
+      "blocked",
+      "broken_needs_repair"
+    ],
+    "control_equivalence": [
+      "direct",
+      "near_direct",
+      "adjacent",
+      "ingredient_only"
+    ],
+    "legacy_registry_integration_tokens": [
+      "mode_a_complete_mode_b_partial",
+      "runnable_adjacent",
+      "link_only",
+      "discuss_only",
+      "blocked"
+    ],
+    "mapping_note": "Field `integration` / `completeness_class` remain legacy strings for continuity; paper-facing normalized status lives in baseline_status_matrix_v1 and the repair audit doc."
+  },
   "baselines": {
     "compute_optimal_tts": {
       "clone_url": "https://github.com/RyanLiu112/compute-optimal-tts.git",
@@ -59,8 +86,8 @@
     "mcts_llm_community": {
       "clone_url": "https://github.com/NumberChiffre/mcts-llm.git",
       "doc": "external/mcts_llm_community/README.md",
-      "integration": "link_only",
-      "completeness_class": "link_only",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
       "blocker": "optional_community_reference_no_adapter"
     },
     "llm_tree_search_waterhorse": {
@@ -206,10 +233,8 @@
     "runnable_adjacent",
     "adapter_based",
     "import_validated",
-    "mode_a_only",
-    "mode_b_partial",
-    "link_only",
     "discuss_only",
-    "blocked"
+    "blocked",
+    "broken_needs_repair"
   ]
 }

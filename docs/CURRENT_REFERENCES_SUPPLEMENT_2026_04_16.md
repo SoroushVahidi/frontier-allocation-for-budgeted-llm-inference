@@ -143,7 +143,7 @@ These are useful but should not be oversold as the whole answer:
 ## External baseline priority for this repo
 
 ### Most important direct / near-direct budget-control baselines
-1. **s1** — strongest practical direct/near-direct baseline for explicit budget forcing.
+1. **s1** — strongest practical **adapter_based / near_direct** baseline (MODE A inference-only budget forcing on this repo’s substrate; not a full upstream training reproduction).
 2. **TALE** — strongest adjacent published per-instance budget-allocation baseline.
 3. **L1** — strong controllable-reasoning-length baseline for matched budget comparison.
 

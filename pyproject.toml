@@ -27,6 +27,10 @@ select = ["E", "F", "W", "I"]
 [tool.ruff.lint.per-file-ignores]
 # Long embedded markdown / policy strings; line-length is lower value than readability here.
 "scripts/build_hundred_current_full_vs_best_failure_statistics.py" = ["E501"]
+"scripts/build_baseline_repair_and_status_audit.py" = ["E501"]
+"scripts/generate_external_baseline_completeness_report.py" = ["E501"]
+"scripts/verify_l1_mode_b_import.py" = ["E501"]
+"scripts/build_full_method_comparison_status_20260418.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -91,9 +91,15 @@ Do not blur them into one undifferentiated related-work paragraph.
 - `CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`
 - `REFERENCES_AUDIT_AND_CURATION_2026_04_18.md`
 - `main_baselines.md`
+- `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 - `main_datasets.md`
 - `FULL_METHOD_COMPARISON_STATUS_2026_04_18.md`
 - `external_baseline_completeness_report.md`
+
+## Current baseline status matrix (v1)
+
+- `outputs/baseline_repair_and_status_audit_20260420T225833Z/baseline_status_matrix.json` (and `.csv`)
+- Regenerate: `python scripts/build_baseline_repair_and_status_audit.py`
 
 ## Current results cross-link
 

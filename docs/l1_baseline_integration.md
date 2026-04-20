@@ -34,6 +34,9 @@ Runner:
 Runner:
 - `python scripts/run_l1_baseline.py --config configs/l1_official_full_adapter_v1.json`
 
+Import contract (MODE B):
+- `python scripts/verify_l1_mode_b_import.py --results-path <path> --expected-dataset <ds> --expected-budgets <comma-separated ints>`
+
 ## What is faithful vs adapted
 
 Faithful to L1 core idea:
