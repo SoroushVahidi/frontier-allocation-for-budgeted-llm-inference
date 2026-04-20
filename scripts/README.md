@@ -9,6 +9,7 @@ This file is the runnable-code front door for the repository.
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
 - Current code entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Repository map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
+- Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 - Repo audit/cleanup rationale: [`../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md)
 - Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
@@ -21,23 +22,22 @@ This file is the runnable-code front door for the repository.
 
 ## Most common workflows
 
-### 1. Run the current paper/controller path
+### 1. Run the current broad comparison / evidence path
+- `run_full_method_comparison_bundle.py`
+- `build_twenty_exact_current_full_vs_best_fresh.py`
+
+### 2. Run current diagnosis / targeted method-development
+- `run_fresh_twenty_current_full_improvement_eval_20260420.py`
+- `build_targeted_failure_bundle_from_fresh_loss_surface_20260420.py`
+- `run_near_miss_correction_bundle_eval_20260420.py`
+
+### 3. Run legacy/current frontier scaffolds and bounded comparison layers
 - `run_cross_strategy_frontier_allocation.py`
-- `run_multi_action_allocation_pass.sh`
-- `evaluate_branch_scorer_controller.py`
-- `evaluate_branch_scorer_robustness.py`
 - `run_new_paper_frontier_matrix.py`
 - `run_comparative_frontier_audit.py`
 - `run_imported_methodology_frontier_eval.py`
 
-### 2. Run current diagnosis/failure analysis
-- `run_worst_real_failure_casebook_with_reasoning.py`
-- `build_twenty_defeat_casebook_20260419.py`
-- `build_twenty_defeat_case_trees_20260419.py`
-- `run_branch_observability_smoke.py`
-- `run_oracle_mismatch_study.py`
-
-### 3. Check dataset and baseline readiness
+### 4. Check dataset and baseline readiness
 - `verify_hf_dataset_access.py`
 - `generate_dataset_integration_report.py`
 - `generate_external_baseline_integration_report.py`
@@ -47,19 +47,17 @@ This file is the runnable-code front door for the repository.
 
 | Script | Role |
 |---|---|
+| `run_full_method_comparison_bundle.py` | Current broad matched comparison / ranking bundle |
+| `build_twenty_exact_current_full_vs_best_fresh.py` | Build the fresh exact current-full-vs-best loss surface |
+| `run_fresh_twenty_current_full_improvement_eval_20260420.py` | Evaluate bounded controller improvements on the fresh 20-case slice |
+| `build_targeted_failure_bundle_from_fresh_loss_surface_20260420.py` | Derive a mechanism-homogeneous targeted bundle from the fresh loss surface |
+| `run_near_miss_correction_bundle_eval_20260420.py` | Evaluate the near-miss correction-gate variant on targeted and broad surfaces |
 | `run_cross_strategy_frontier_allocation.py` | Main frontier-allocation scaffold (legacy filename) |
-| `run_multi_action_allocation_pass.sh` | Multi-action allocation run wrapper |
-| `evaluate_branch_scorer_controller.py` | Controller-level comparison for learned/heuristic policies |
-| `evaluate_branch_scorer_robustness.py` | Multi-seed/budget/init robustness sweep |
 | `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
 | `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
 | `run_imported_methodology_frontier_eval.py` | Bounded old-manuscript-style evaluation layer for the current branch-allocation setting |
-| `run_light_external_style_baseline_comparison.py` | Lightweight internal-vs-external-style local comparison |
-| `run_light_anchor_vs_s1_comparison.py` | Lightweight matched anchor vs external s1 baseline adapter |
-| `run_new_paper_stop_vs_act_controller.py` | Stop-vs-act lightweight pipeline |
-| `run_new_paper_stop_vs_act_target_stabilization_pass.py` | Bounded default-target stabilization pass |
-| `run_new_paper_stop_vs_act_matched_comparator_pass.py` | Bounded ACT-vs-STOP comparator pass |
-| `run_new_paper_stop_vs_act_policy_coupled_stop_pass.py` | Bounded policy-coupled STOP-baseline pass |
+| `evaluate_branch_scorer_controller.py` | Controller-level comparison for learned/heuristic policies |
+| `evaluate_branch_scorer_robustness.py` | Multi-seed/budget/init robustness sweep |
 
 ## Exploratory hard-case and branch-learning workflows
 
@@ -106,5 +104,5 @@ Historical entry points are documented in:
 ## Notes
 
 - `run_cross_strategy_frontier_allocation.py` keeps a legacy filename for compatibility; docs refer to the current framing as cross-controller frontier allocation.
-- Stop-vs-act is a bounded helper formulation inside the current project, not the whole project identity.
+- `run_imported_methodology_frontier_eval.py` remains useful, but it is an older bounded evaluation layer and should not be mistaken for the default current broad ranking path.
 - Use the paired docs in `../docs/` when interpreting any narrower experimental line; many exploratory scripts are not intended to stand alone as headline results.
