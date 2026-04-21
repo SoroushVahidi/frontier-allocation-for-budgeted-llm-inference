@@ -856,6 +856,16 @@ class GlobalDiversityAggregationController(BaseController):
         enable_hard_early_root_depth2_coverage_v1: bool = False,
         hard_early_root_coverage_forced_min_depth: int = 0,
         hard_early_coverage_min_remaining_actions_to_release: int = 0,
+        enable_hard_early_root_depth2_then_conditional_depth3_v1: bool = False,
+        depth3_gate_min_top_answer_support: float = 0.55,
+        depth3_gate_min_support_gap: float = 0.12,
+        depth3_gate_min_active_root_families: int = 2,
+        depth3_gate_max_family_share_trigger: float = 0.55,
+        depth3_gate_longest_run_trigger: int = 4,
+        depth3_gate_min_confident_frontier_score: float = 0.62,
+        depth3_gate_min_top_group_support_commit: float = 0.52,
+        depth3_gate_e_max_top_support: float = 0.48,
+        depth3_gate_e_min_answer_groups: int = 2,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -971,6 +981,20 @@ class GlobalDiversityAggregationController(BaseController):
             _hec = 2
         self.hard_early_root_coverage_forced_min_depth = int(_hec)
         self.hard_early_coverage_min_remaining_actions_to_release = max(0, int(hard_early_coverage_min_remaining_actions_to_release))
+        self.enable_hard_early_root_depth2_then_conditional_depth3_v1 = bool(
+            enable_hard_early_root_depth2_then_conditional_depth3_v1
+        )
+        if self.enable_hard_early_root_depth2_then_conditional_depth3_v1:
+            _hec = max(2, _hec)
+        self.depth3_gate_min_top_answer_support = float(depth3_gate_min_top_answer_support)
+        self.depth3_gate_min_support_gap = float(depth3_gate_min_support_gap)
+        self.depth3_gate_min_active_root_families = max(1, int(depth3_gate_min_active_root_families))
+        self.depth3_gate_max_family_share_trigger = float(depth3_gate_max_family_share_trigger)
+        self.depth3_gate_longest_run_trigger = max(1, int(depth3_gate_longest_run_trigger))
+        self.depth3_gate_min_confident_frontier_score = float(depth3_gate_min_confident_frontier_score)
+        self.depth3_gate_min_top_group_support_commit = float(depth3_gate_min_top_group_support_commit)
+        self.depth3_gate_e_max_top_support = float(depth3_gate_e_max_top_support)
+        self.depth3_gate_e_min_answer_groups = max(2, int(depth3_gate_e_min_answer_groups))
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -2169,6 +2193,7 @@ class GlobalDiversityAggregationController(BaseController):
         actions_so_far: int,
         max_actions: int,
         force_disabled: bool,
+        coverage_target_override: int | None = None,
     ) -> dict[str, Any]:
         """Hard minimum per-root-family expandable depth before cross-family concentration.
 
@@ -2180,12 +2205,16 @@ class GlobalDiversityAggregationController(BaseController):
         set when another root family is still pending (not a fixed BFS order).
 
         If no expandable heads remain for a family, it is not pending (cannot improve).
+
+        ``coverage_target_override`` (when set) replaces ``hard_early_root_coverage_forced_min_depth``
+        for this diagnostic only (used by conditional depth-2-then-gated-depth-3 mode).
         """
-        target = int(self.hard_early_root_coverage_forced_min_depth)
+        target = int(coverage_target_override) if coverage_target_override is not None else int(self.hard_early_root_coverage_forced_min_depth)
         if force_disabled or target < 2:
             return {
                 "enabled": bool(target >= 2 and not force_disabled),
                 "hard_early_root_coverage_forced_min_depth": int(target),
+                "coverage_target_override": int(coverage_target_override) if coverage_target_override is not None else None,
                 "force_disabled": bool(force_disabled),
                 "root_families": sorted(root_family_ids),
                 "family_status": {},
@@ -2235,6 +2264,7 @@ class GlobalDiversityAggregationController(BaseController):
         return {
             "enabled": True,
             "hard_early_root_coverage_forced_min_depth": int(target),
+            "coverage_target_override": int(coverage_target_override) if coverage_target_override is not None else None,
             "force_disabled": False,
             "root_families": sorted(root_family_ids),
             "family_status": family_status,
@@ -2244,6 +2274,133 @@ class GlobalDiversityAggregationController(BaseController):
             "remaining_actions_before_step": int(remaining),
             "release_impossible_under_budget": impossible,
             "release_low_remaining_budget": low_rem,
+        }
+
+    def _evaluate_conditional_depth3_gate(
+        self,
+        *,
+        answer_support_counts: dict[str, int],
+        branch_expansions: dict[str, int],
+        branch_family_ids: dict[str, str],
+        root_family_ids: frozenset[str],
+        branches: list[BranchState],
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        actions_so_far: int,
+        max_actions: int,
+        expansions: int,
+        max_consecutive_same_family_expands: int,
+        hard_cov_diag_d2: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Deterministic gate: whether to continue balanced root coverage to depth 3 after depth 2."""
+        support_total = sum(answer_support_counts.values())
+        sorted_counts = sorted(answer_support_counts.values(), reverse=True) if answer_support_counts else []
+        top_c = int(sorted_counts[0]) if sorted_counts else 0
+        second_c = int(sorted_counts[1]) if len(sorted_counts) > 1 else 0
+        top_share = float(top_c / support_total) if support_total > 0 else 0.0
+        gap_share = float((top_c - second_c) / support_total) if support_total > 0 else 0.0
+
+        crit_a_weak_top = bool(top_share < self.depth3_gate_min_top_answer_support)
+        crit_a_weak_gap = bool(gap_share < self.depth3_gate_min_support_gap)
+        criterion_a = bool(crit_a_weak_top or crit_a_weak_gap)
+
+        active = [b for b in branches if not b.is_pruned]
+        active_root_families = 0
+        for fam in root_family_ids:
+            heads = [b for b in active if self._branch_family_id(b, branch_family_ids) == fam and not b.is_done]
+            if heads:
+                active_root_families += 1
+        criterion_b = bool(active_root_families >= self.depth3_gate_min_active_root_families)
+
+        family_expands: dict[str, int] = {}
+        for bid, cnt in branch_expansions.items():
+            fam = str(branch_family_ids.get(bid) or bid)
+            family_expands[fam] = family_expands.get(fam, 0) + int(cnt)
+        denom = max(1, int(expansions))
+        max_family_share = float(max(family_expands.values()) / denom) if family_expands else 0.0
+        crit_c_share = bool(max_family_share > self.depth3_gate_max_family_share_trigger)
+        crit_c_run = bool(int(max_consecutive_same_family_expands) > int(self.depth3_gate_longest_run_trigger))
+        criterion_c = bool(crit_c_share or crit_c_run)
+
+        best_frontier_score = 0.0
+        if scored:
+            best_frontier_score = max(float(self.scorer.score_branch(it[0])) for it in scored)
+        crit_d_frontier = bool(best_frontier_score < self.depth3_gate_min_confident_frontier_score)
+        crit_d_support = bool(top_share < self.depth3_gate_min_top_group_support_commit)
+        criterion_d = bool(crit_d_frontier or crit_d_support)
+
+        n_groups = len(answer_support_counts)
+        crit_e = bool(
+            n_groups >= self.depth3_gate_e_min_answer_groups and top_share < self.depth3_gate_e_max_top_support
+        )
+        criterion_e = bool(crit_e)
+
+        fired = {
+            "A_weak_answer_support": criterion_a,
+            "B_unresolved_family_ambiguity": criterion_b,
+            "C_early_collapse_risk": criterion_c,
+            "D_weak_commit_evidence": criterion_d,
+            "E_weak_alternatives_shallow_maturity": criterion_e,
+        }
+        n_fired = int(sum(1 for v in fired.values() if v))
+        combine_ab = bool(criterion_a and criterion_b)
+        combine_2of5 = bool(n_fired >= 2)
+        raw_wants_depth3 = bool(combine_ab or combine_2of5)
+
+        d2_rel_imp = bool(hard_cov_diag_d2.get("release_impossible_under_budget"))
+        d3_diag = self._hard_early_root_coverage_forced_diagnostic(
+            branches=branches,
+            branch_family_ids=branch_family_ids,
+            root_family_ids=root_family_ids,
+            actions_so_far=actions_so_far,
+            max_actions=max_actions,
+            force_disabled=False,
+            coverage_target_override=3,
+        )
+        d3_rel_imp = bool(d3_diag.get("release_impossible_under_budget"))
+        pending_d3 = list(d3_diag.get("pending_families") or [])
+
+        depth3_status: str
+        if not raw_wants_depth3:
+            depth3_status = "gated_off"
+            combine_depth3 = False
+        elif d2_rel_imp:
+            depth3_status = "gated_on_but_released_impossible_under_budget"
+            combine_depth3 = False
+        elif d3_rel_imp and len(pending_d3) > 0:
+            depth3_status = "gated_on_but_released_impossible_under_budget"
+            combine_depth3 = False
+        else:
+            depth3_status = "gated_on"
+            combine_depth3 = True
+
+        return {
+            "criteria_fired": fired,
+            "criteria_fired_count": n_fired,
+            "combine_rule_2_of_5": combine_2of5,
+            "combine_rule_a_and_b": combine_ab,
+            "raw_wants_depth3": raw_wants_depth3,
+            "combine_depth3": combine_depth3,
+            "depth3_release_status": depth3_status,
+            "frontier_stats_at_gate": {
+                "top_answer_group_support_share": round(top_share, 6),
+                "top_minus_second_support_share": round(gap_share, 6),
+                "best_frontier_branch_score": round(best_frontier_score, 6),
+                "active_root_families_expandable": int(active_root_families),
+                "max_family_expansion_share": round(max_family_share, 6),
+                "max_consecutive_same_family_expands": int(max_consecutive_same_family_expands),
+                "n_answer_groups": int(n_groups),
+            },
+            "diagnostic_depth3_preview": {
+                "pending_families": pending_d3,
+                "release_impossible_under_budget": d3_rel_imp,
+                "actions_needed_sum_lower_bound": int(d3_diag.get("actions_needed_sum_lower_bound") or 0),
+                "remaining_actions_before_step": int(d3_diag.get("remaining_actions_before_step") or 0),
+            },
+            "diagnostic_depth2_at_gate": {
+                "all_root_families_satisfied": bool(hard_cov_diag_d2.get("all_root_families_satisfied")),
+                "release_impossible_under_budget": d2_rel_imp,
+                "pending_families": list(hard_cov_diag_d2.get("pending_families") or []),
+            },
         }
 
     def _apply_hard_early_root_coverage_forced_override(
@@ -2378,6 +2535,11 @@ class GlobalDiversityAggregationController(BaseController):
         hard_early_coverage_budget_released_low_remaining = False
         hard_early_coverage_forced_override_steps = 0
         hard_early_coverage_transition_actions_used: int | None = None
+        cond_phase: str | None = "depth2" if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 else None
+        cond_gate_evaluated = False
+        cond_gate_record: dict[str, Any] | None = None
+        cond_depth3_completed = False
+        cond_depth2_gate_actions: int | None = None
 
         while actions < self.max_actions and branches:
             active = [b for b in branches if not b.is_pruned]
@@ -2584,6 +2746,16 @@ class GlobalDiversityAggregationController(BaseController):
                                 width_depth_forced_challenger_maturation_steps += 1
                             branch, priority, pri_meta = chosen
 
+            cov_override: int | None = None
+            if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 and cond_phase == "depth2":
+                cov_override = 2
+            elif self.enable_hard_early_root_depth2_then_conditional_depth3_v1 and cond_phase == "depth3":
+                cov_override = 3
+            _defer_hard_rel_imp = bool(
+                self.enable_hard_early_root_depth2_then_conditional_depth3_v1
+                and cond_phase == "depth2"
+                and not cond_gate_evaluated
+            )
             hard_cov_diag = self._hard_early_root_coverage_forced_diagnostic(
                 branches=branches,
                 branch_family_ids=branch_family_ids,
@@ -2591,14 +2763,65 @@ class GlobalDiversityAggregationController(BaseController):
                 actions_so_far=actions,
                 max_actions=self.max_actions,
                 force_disabled=hard_early_coverage_force_disabled,
+                coverage_target_override=cov_override,
             )
+            if (
+                self.enable_hard_early_root_depth2_then_conditional_depth3_v1
+                and cond_phase == "depth2"
+                and not cond_gate_evaluated
+                and (
+                    bool(hard_cov_diag.get("all_root_families_satisfied"))
+                    or bool(hard_cov_diag.get("release_impossible_under_budget"))
+                )
+            ):
+                cond_gate_evaluated = True
+                cond_depth2_gate_actions = int(actions)
+                cond_gate_record = self._evaluate_conditional_depth3_gate(
+                    answer_support_counts=answer_support_counts,
+                    branch_expansions=branch_expansions,
+                    branch_family_ids=branch_family_ids,
+                    root_family_ids=root_family_ids,
+                    branches=branches,
+                    scored=scored,
+                    actions_so_far=actions,
+                    max_actions=self.max_actions,
+                    expansions=expansions,
+                    max_consecutive_same_family_expands=max_consecutive_same_family_expands,
+                    hard_cov_diag_d2=hard_cov_diag,
+                )
+                cond_gate_record["actions_at_gate"] = int(actions)
+                if bool(cond_gate_record.get("combine_depth3")):
+                    cond_phase = "depth3"
+                    hard_early_coverage_force_disabled = False
+                    hard_cov_diag = self._hard_early_root_coverage_forced_diagnostic(
+                        branches=branches,
+                        branch_family_ids=branch_family_ids,
+                        root_family_ids=root_family_ids,
+                        actions_so_far=actions,
+                        max_actions=self.max_actions,
+                        force_disabled=False,
+                        coverage_target_override=3,
+                    )
+                else:
+                    cond_phase = "normal"
+                    hard_early_coverage_force_disabled = True
+                    if bool(hard_cov_diag.get("release_impossible_under_budget")):
+                        hard_early_coverage_budget_released_impossible = True
             if self.hard_early_root_coverage_forced_min_depth >= 2 and not hard_early_coverage_force_disabled:
                 if bool(hard_cov_diag.get("release_impossible_under_budget")):
-                    hard_early_coverage_force_disabled = True
-                    hard_early_coverage_budget_released_impossible = True
+                    if not _defer_hard_rel_imp:
+                        hard_early_coverage_force_disabled = True
+                        hard_early_coverage_budget_released_impossible = True
                 elif bool(hard_cov_diag.get("release_low_remaining_budget")):
-                    hard_early_coverage_force_disabled = True
-                    hard_early_coverage_budget_released_low_remaining = True
+                    if not _defer_hard_rel_imp:
+                        hard_early_coverage_force_disabled = True
+                        hard_early_coverage_budget_released_low_remaining = True
+            if (
+                self.enable_hard_early_root_depth2_then_conditional_depth3_v1
+                and cond_phase == "depth3"
+                and hard_early_coverage_force_disabled
+            ):
+                cond_phase = "normal"
             branch, priority, pri_meta, hard_cov_override = self._apply_hard_early_root_coverage_forced_override(
                 scored,
                 branch=branch,
@@ -2631,6 +2854,8 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_early_coverage_release_low_remaining": bool(hard_cov_diag.get("release_low_remaining_budget")),
                 "hard_early_coverage_forced_override": bool(hard_cov_override.get("hard_early_coverage_forced_override")),
                 "hard_early_coverage_override_reason": str(hard_cov_override.get("hard_early_coverage_override_reason") or ""),
+                "conditional_depth2_then_depth3_gate_phase": str(cond_phase or ""),
+                "conditional_depth3_gate_evaluated": bool(cond_gate_evaluated),
             }
 
             metalevel_preview: dict[str, Any] | None = None
@@ -3009,6 +3234,26 @@ class GlobalDiversityAggregationController(BaseController):
                 if bool(post_cov.get("all_root_families_satisfied")):
                     hard_early_coverage_transition_actions_used = int(actions)
 
+            if (
+                self.enable_hard_early_root_depth2_then_conditional_depth3_v1
+                and cond_phase == "depth3"
+                and not cond_depth3_completed
+                and not hard_early_coverage_force_disabled
+            ):
+                post_d3 = self._hard_early_root_coverage_forced_diagnostic(
+                    branches=branches,
+                    branch_family_ids=branch_family_ids,
+                    root_family_ids=root_family_ids,
+                    actions_so_far=actions,
+                    max_actions=self.max_actions,
+                    force_disabled=False,
+                    coverage_target_override=3,
+                )
+                if bool(post_d3.get("all_root_families_satisfied")):
+                    cond_depth3_completed = True
+                    cond_phase = "normal"
+                    hard_early_coverage_force_disabled = True
+
             branches = [b for b in branches if not b.is_pruned]
             if len(branches) > self.max_branches:
                 ranked = sorted(branches, key=self.scorer.score_branch, reverse=True)
@@ -3079,6 +3324,66 @@ class GlobalDiversityAggregationController(BaseController):
                     break
             if all(b.is_done for b in branches):
                 break
+
+        if (
+            self.enable_hard_early_root_depth2_then_conditional_depth3_v1
+            and (not cond_gate_evaluated)
+            and cond_phase == "depth2"
+        ):
+            active_post = [b for b in branches if not b.is_pruned]
+            active_group_counts_post: dict[str, int] = {}
+            for b in active_post:
+                g = self._normalize_answer(b.predicted_answer) or "__unknown__"
+                active_group_counts_post[g] = active_group_counts_post.get(g, 0) + 1
+            scored_post: list[tuple[BranchState, float, dict[str, float | str | None]]] = []
+            for b in active_post:
+                priority, meta = self._branch_priority(
+                    b,
+                    answer_support_counts=answer_support_counts,
+                    active_group_counts=active_group_counts_post,
+                    group_profiles=group_profiles,
+                    global_profiles=global_profiles,
+                    question=question,
+                )
+                scored_post.append((b, priority, meta))
+            scored_post.sort(key=lambda x: x[1], reverse=True)
+            d2_end = self._hard_early_root_coverage_forced_diagnostic(
+                branches=branches,
+                branch_family_ids=branch_family_ids,
+                root_family_ids=root_family_ids,
+                actions_so_far=actions,
+                max_actions=self.max_actions,
+                force_disabled=hard_early_coverage_force_disabled,
+                coverage_target_override=2,
+            )
+            if bool(d2_end.get("all_root_families_satisfied")) or bool(d2_end.get("release_impossible_under_budget")):
+                cond_depth2_gate_actions = int(actions)
+                cond_gate_record = self._evaluate_conditional_depth3_gate(
+                    answer_support_counts=answer_support_counts,
+                    branch_expansions=branch_expansions,
+                    branch_family_ids=branch_family_ids,
+                    root_family_ids=root_family_ids,
+                    branches=branches,
+                    scored=scored_post,
+                    actions_so_far=actions,
+                    max_actions=self.max_actions,
+                    expansions=expansions,
+                    max_consecutive_same_family_expands=max_consecutive_same_family_expands,
+                    hard_cov_diag_d2=d2_end,
+                )
+                cond_gate_record["actions_at_gate"] = int(actions)
+                cond_gate_evaluated = True
+                if bool(cond_gate_record.get("combine_depth3")):
+                    cond_gate_record["depth3_release_status"] = "gated_on_but_run_ended_before_depth3_forcing"
+                    cond_gate_record["combine_depth3"] = False
+            else:
+                cond_gate_record = {
+                    "depth3_release_status": "skipped_run_ended_before_depth2_terminal",
+                    "criteria_fired": {},
+                    "combine_depth3": False,
+                    "raw_wants_depth3": False,
+                    "note": "Controller stopped (commit/budget) before depth-2 forcing reached a terminal diagnostic state.",
+                }
 
         prediction, group_meta = self._final_prediction_from_groups(branches, question=question)
         first_split_step = next((int(x["step"]) for x in early_divergence_timeline if int(x.get("unique_active_groups", 0)) >= 2), None)
@@ -3349,6 +3654,24 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_early_coverage_budget_released_low_remaining": bool(hard_early_coverage_budget_released_low_remaining),
                 "hard_early_coverage_force_disabled_final": bool(hard_early_coverage_force_disabled),
                 "hard_early_coverage_root_families": sorted(root_family_ids),
+                "hard_early_root_depth2_then_conditional_depth3_v1_enabled": bool(
+                    self.enable_hard_early_root_depth2_then_conditional_depth3_v1
+                ),
+                "conditional_coverage_phase_final": str(cond_phase or ""),
+                "conditional_depth2_gate_actions": cond_depth2_gate_actions,
+                "conditional_depth3_gate_record": cond_gate_record,
+                "conditional_depth3_forcing_completed": bool(cond_depth3_completed),
+                "conditional_depth3_gate_thresholds": {
+                    "depth3_gate_min_top_answer_support": float(self.depth3_gate_min_top_answer_support),
+                    "depth3_gate_min_support_gap": float(self.depth3_gate_min_support_gap),
+                    "depth3_gate_min_active_root_families": int(self.depth3_gate_min_active_root_families),
+                    "depth3_gate_max_family_share_trigger": float(self.depth3_gate_max_family_share_trigger),
+                    "depth3_gate_longest_run_trigger": int(self.depth3_gate_longest_run_trigger),
+                    "depth3_gate_min_confident_frontier_score": float(self.depth3_gate_min_confident_frontier_score),
+                    "depth3_gate_min_top_group_support_commit": float(self.depth3_gate_min_top_group_support_commit),
+                    "depth3_gate_e_max_top_support": float(self.depth3_gate_e_max_top_support),
+                    "depth3_gate_e_min_answer_groups": int(self.depth3_gate_e_min_answer_groups),
+                },
                 "hard_early_coverage_final_family_status": (
                     self._hard_early_root_coverage_forced_diagnostic(
                         branches=branches,
@@ -3357,6 +3680,11 @@ class GlobalDiversityAggregationController(BaseController):
                         actions_so_far=actions,
                         max_actions=self.max_actions,
                         force_disabled=hard_early_coverage_force_disabled,
+                        coverage_target_override=(
+                            3
+                            if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 and cond_depth3_completed
+                            else None
+                        ),
                     ).get("family_status")
                     if self.hard_early_root_coverage_forced_min_depth >= 2
                     else {}

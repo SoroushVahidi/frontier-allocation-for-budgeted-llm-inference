@@ -1,0 +1,38 @@
+{
+  "artifact_family": "hundred_conditional_depth3_gate_eval",
+  "created_at_utc": "2026-04-21T01:24:35.561083+00:00",
+  "output_dir": "outputs/hundred_conditional_depth3_gate_eval_20260421T012435Z",
+  "source_per_case_json": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/hundred_current_full_vs_best_failure_statistics_20260420T220416Z/per_case_failure_statistics.json",
+  "baseline_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1__deterministic_output_layer_repair_v1",
+  "depth2_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1__deterministic_output_layer_repair_v1",
+  "depth3_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1__deterministic_output_layer_repair_v1",
+  "gated_depth3_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_conditional_depth3_v1__deterministic_output_layer_repair_v1",
+  "gated_combo_method_name": null,
+  "beam_method_name": "reasoning_beam2",
+  "simulator_stream_tags": {
+    "methods_abcd": "fresh_our",
+    "reasoning_beam2": "fresh_best"
+  },
+  "conditional_depth3_gate_rule": {
+    "combination": "Force depth 3 if (>=2 of criteria A\u2013E) OR (A and B); never force depth 3 if depth-3 lower-bound is infeasible.",
+    "criteria": {
+      "A": "Weak answer support concentration (top share / gap vs thresholds).",
+      "B": "Unresolved root-family ambiguity (active expandable families).",
+      "C": "Early collapse risk (family share or consecutive same-family run).",
+      "D": "No strong commit evidence (frontier score / top-group support).",
+      "E": "Multiple weak answer groups with low top support."
+    },
+    "code": "GlobalDiversityAggregationController._evaluate_conditional_depth3_gate"
+  },
+  "conditional_depth3_gate_thresholds_snapshot": {
+    "depth3_gate_min_top_answer_support": 0.55,
+    "depth3_gate_min_support_gap": 0.12,
+    "depth3_gate_min_active_root_families": 2,
+    "depth3_gate_max_family_share_trigger": 0.55,
+    "depth3_gate_longest_run_trigger": 4,
+    "depth3_gate_min_confident_frontier_score": 0.62,
+    "depth3_gate_min_top_group_support_commit": 0.52,
+    "depth3_gate_e_max_top_support": 0.48,
+    "depth3_gate_e_min_answer_groups": 2
+  }
+}

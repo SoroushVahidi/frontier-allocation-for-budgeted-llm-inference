@@ -1,0 +1,226 @@
+{
+  "created_at_utc": "2026-04-21T01:24:35.561083+00:00",
+  "n_cases": 100,
+  "baseline_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1__deterministic_output_layer_repair_v1",
+  "failure_type_counts": {
+    "baseline": {
+      "absent_from_tree": 78,
+      "present_not_selected": 22
+    },
+    "depth2": {
+      "correct": 67,
+      "present_not_selected": 10,
+      "absent_from_tree": 20,
+      "output_or_extraction_mismatch": 3
+    },
+    "depth3": {
+      "correct": 73,
+      "output_or_extraction_mismatch": 2,
+      "absent_from_tree": 15,
+      "present_not_selected": 10
+    },
+    "gated_depth3": {
+      "correct": 65,
+      "present_not_selected": 10,
+      "absent_from_tree": 21,
+      "output_or_extraction_mismatch": 4
+    }
+  },
+  "absent_from_tree": {
+    "baseline_n": 78,
+    "depth2_n": 20,
+    "depth3_n": 15,
+    "gated_n": 21
+  },
+  "present_not_selected": {
+    "baseline_n": 22,
+    "depth2_n": 10,
+    "depth3_n": 10,
+    "gated_n": 10
+  },
+  "repeated_same_family_present": {
+    "baseline_n": 97,
+    "depth2_n": 86,
+    "depth3_n": 83,
+    "gated_n": 81
+  },
+  "gold_in_tree": {
+    "baseline_n": 22,
+    "depth2_n": 80,
+    "depth3_n": 85,
+    "gated_n": 79
+  },
+  "outcomes_vs_baseline": {
+    "depth2": {
+      "improved": 70,
+      "unchanged_still_wrong": 30
+    },
+    "depth3": {
+      "improved": 75,
+      "unchanged_still_wrong": 25
+    },
+    "gated_depth3": {
+      "improved": 69,
+      "unchanged_still_wrong": 31
+    }
+  },
+  "outcome_depth3_vs_depth2": {
+    "unchanged_correct": 53,
+    "improved": 22,
+    "worsened": 17,
+    "unchanged_still_wrong": 8
+  },
+  "outcome_gated_depth3_vs_depth2": {
+    "unchanged_correct": 48,
+    "unchanged_still_wrong": 9,
+    "worsened": 22,
+    "improved": 21
+  },
+  "outcome_gated_depth3_vs_depth3": {
+    "unchanged_correct": 55,
+    "worsened": 20,
+    "unchanged_still_wrong": 11,
+    "improved": 14
+  },
+  "gated_gate_decision_counts": {
+    "gated_off": 51,
+    "gated_on": 13,
+    "gated_on_but_released_impossible_under_budget": 16,
+    "gated_on_but_run_ended_before_depth3_forcing": 20
+  },
+  "gated_criteria_fired_counts": {
+    "C_early_collapse_risk": 74,
+    "A_weak_answer_support": 26,
+    "D_weak_commit_evidence": 32,
+    "E_weak_alternatives_shallow_maturity": 1,
+    "B_unresolved_family_ambiguity": 23
+  },
+  "gated_depth3_forcing_completed_n": 8,
+  "mean_actions": {
+    "baseline": 11.48,
+    "depth2": 9.73,
+    "depth3": 9.54,
+    "gated": 9.48
+  },
+  "mean_expansions": {
+    "baseline": 10.84,
+    "depth2": 9.14,
+    "depth3": 8.93,
+    "gated": 8.96
+  },
+  "mean_verifications": {
+    "baseline": 0.64,
+    "depth2": 0.59,
+    "depth3": 0.61,
+    "gated": 0.52
+  },
+  "depth2_impossible_release_n": 17,
+  "depth3_impossible_release_n": 34,
+  "gated_impossible_release_n": 21,
+  "gated_split_gate_on": {
+    "n": 13,
+    "mean_actions": 12.3077
+  },
+  "gated_split_gate_off": {
+    "n": 51,
+    "mean_actions": 10.3725
+  },
+  "dataset_outcomes_vs_baseline": {
+    "HuggingFaceH4/MATH-500": {
+      "depth2": {
+        "improved": 18,
+        "worsened": 0,
+        "unchanged_still_wrong": 9
+      },
+      "depth3": {
+        "improved": 19,
+        "worsened": 0,
+        "unchanged_still_wrong": 8
+      },
+      "gated": {
+        "improved": 15,
+        "worsened": 0,
+        "unchanged_still_wrong": 12
+      }
+    },
+    "HuggingFaceH4/aime_2024": {
+      "depth2": {
+        "improved": 11,
+        "worsened": 0,
+        "unchanged_still_wrong": 8
+      },
+      "depth3": {
+        "improved": 14,
+        "worsened": 0,
+        "unchanged_still_wrong": 5
+      },
+      "gated": {
+        "improved": 16,
+        "worsened": 0,
+        "unchanged_still_wrong": 3
+      }
+    },
+    "olympiadbench": {
+      "depth2": {
+        "improved": 21,
+        "worsened": 0,
+        "unchanged_still_wrong": 6
+      },
+      "depth3": {
+        "improved": 23,
+        "worsened": 0,
+        "unchanged_still_wrong": 4
+      },
+      "gated": {
+        "improved": 19,
+        "worsened": 0,
+        "unchanged_still_wrong": 8
+      }
+    },
+    "openai/gsm8k": {
+      "depth2": {
+        "improved": 20,
+        "worsened": 0,
+        "unchanged_still_wrong": 7
+      },
+      "depth3": {
+        "improved": 19,
+        "worsened": 0,
+        "unchanged_still_wrong": 8
+      },
+      "gated": {
+        "improved": 19,
+        "worsened": 0,
+        "unchanged_still_wrong": 8
+      }
+    }
+  },
+  "deltas_absent_from_tree": {
+    "depth2_minus_baseline": -58,
+    "depth3_minus_baseline": -63,
+    "gated_minus_baseline": -57,
+    "gated_minus_depth2": 1,
+    "gated_minus_depth3": 6
+  },
+  "deltas_present_not_selected": {
+    "depth2_minus_baseline": -12,
+    "depth3_minus_baseline": -12,
+    "gated_minus_baseline": -12,
+    "gated_minus_depth2": 0,
+    "gated_minus_depth3": 0
+  },
+  "deltas_repeated_same_family": {
+    "depth2_minus_baseline": -11,
+    "depth3_minus_baseline": -14,
+    "gated_minus_baseline": -16,
+    "gated_minus_depth2": -5,
+    "gated_minus_depth3": -2
+  },
+  "deltas_gold_in_tree": {
+    "depth2_minus_baseline": 58,
+    "depth3_minus_baseline": 63,
+    "gated_minus_baseline": 57,
+    "gated_minus_depth2": -1,
+    "gated_minus_depth3": -6
+  }
+}

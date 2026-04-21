@@ -84,5 +84,7 @@ secrets.*
 !outputs/hundred_hard_early_root_depth2_coverage_eval_*/**/*
 !outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_*/
 !outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_*/**/*
+!outputs/hundred_conditional_depth3_gate_eval_*/
+!outputs/hundred_conditional_depth3_gate_eval_*/**/*
 !outputs/baseline_repair_and_status_audit_*/
 !outputs/baseline_repair_and_status_audit_*/**/*
