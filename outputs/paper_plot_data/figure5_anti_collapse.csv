@@ -1,4 +1,4 @@
-method,budget,accuracy,allocation_entropy,max_family_share,repeated_same_family_present
+method,budget,accuracy,longest_same_family_run,max_family_share,repeated_same_family_present
 fixed_k6,0,0.6944444444444444,3.617063492063492,0.6295060869465632,402
 min6_half,0,0.626984126984127,3.2718253968253967,0.5436142891500035,387
 min6_third,0,0.5734126984126984,2.1825396825396823,0.5129629629629631,287

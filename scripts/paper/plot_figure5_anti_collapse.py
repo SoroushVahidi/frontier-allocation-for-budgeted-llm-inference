@@ -11,14 +11,14 @@ from paper_style import STYLE, method_sort_key
 def main() -> None:
     rows = load_csv(PLOT_DATA_DIR / "figure5_anti_collapse.csv")
     methods = sorted({r["method"] for r in rows}, key=method_sort_key)
-    entropy = []
+    longest_run = []
     max_share = []
     for method in methods:
         mrows = [r for r in rows if r["method"] == method]
-        entropy.append(sum(float(r["allocation_entropy"]) for r in mrows) / max(1, len(mrows)))
+        longest_run.append(sum(float(r["longest_same_family_run"]) for r in mrows) / max(1, len(mrows)))
         max_share.append(sum(float(r["max_family_share"]) for r in mrows) / max(1, len(mrows)))
-    fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.6), sharex=True)
-    axes[0].bar(methods, entropy)
+    fig, axes = plt.subplots(1, 2, figsize=(STYLE.width + 1.2, STYLE.height + 0.6), sharex=True)
+    axes[0].bar(methods, longest_run)
     axes[1].bar(methods, max_share)
 
     axes[0].set_title("Longest Same-Family Run (mean)", fontsize=STYLE.title_size)
@@ -34,7 +34,7 @@ def main() -> None:
         ax.tick_params(axis="x", rotation=28, labelsize=STYLE.tick_size)
         for label in ax.get_xticklabels():
             label.set_ha("right")
-    fig.suptitle("Figure 5: Family-Collapse Diagnostics Across Cap Policies", fontsize=STYLE.title_size)
+    fig.suptitle("Anti-collapse diagnostics", fontsize=STYLE.title_size)
     fig.subplots_adjust(top=0.84, bottom=0.28)
     save_fig(fig, FIGURE_DIR / "figure5_anti_collapse.pdf", FIGURE_DIR / "figure5_anti_collapse.png")
 

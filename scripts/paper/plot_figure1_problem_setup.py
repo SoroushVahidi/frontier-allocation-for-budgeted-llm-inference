@@ -53,19 +53,21 @@ def main() -> None:
         }
 
     anchors = {}
-    anchors["input"] = draw_box(0.50, 0.88, 0.30, 0.095, "Input\nQuestion", "input", 8.0)
-    anchors["frontier"] = draw_box(0.50, 0.71, 0.34, 0.11, "Active Frontier", "frontier", 8.4)
+    anchors["input"] = draw_box(0.50, 0.88, 0.30, 0.095, labels.get("input", "Input Question").replace(" ", "\n", 1), "input", 8.0)
+    anchors["frontier"] = draw_box(0.50, 0.71, 0.34, 0.14, "", "frontier", 8.2)
 
     # Three active branches inside frontier box.
+    # Keep branch labels minimal for single-column readability.
+    ax.text(0.50, 0.728, labels.get("frontier", "Active Frontier"), ha="center", va="center", fontsize=8.2, color="#1f2430", transform=ax.transAxes)
     branch_y = 0.675
-    anchors["branch_a"] = draw_box(0.41, branch_y, 0.095, 0.052, "Branch A", "branch", 7.0)
-    anchors["branch_b"] = draw_box(0.50, branch_y, 0.095, 0.052, "Branch B", "branch", 7.0)
-    anchors["branch_c"] = draw_box(0.59, branch_y, 0.095, 0.052, "Branch C", "branch", 7.0)
+    anchors["branch_a"] = draw_box(0.41, branch_y, 0.085, 0.048, "A", "branch", 7.2)
+    anchors["branch_b"] = draw_box(0.50, branch_y, 0.085, 0.048, "B", "branch", 7.2)
+    anchors["branch_c"] = draw_box(0.59, branch_y, 0.085, 0.048, "C", "branch", 7.2)
 
-    anchors["choose"] = draw_box(0.50, 0.54, 0.34, 0.10, "Choose Next Action", "decision", 8.2)
-    anchors["expand"] = draw_box(0.34, 0.39, 0.25, 0.085, "Expand one branch", "action", 7.8)
-    anchors["commit"] = draw_box(0.66, 0.39, 0.18, 0.085, "Commit", "action", 8.0)
-    anchors["final"] = draw_box(0.50, 0.24, 0.30, 0.095, "Final Answer", "output", 8.0)
+    anchors["choose"] = draw_box(0.50, 0.54, 0.34, 0.10, labels.get("choose", "Choose Next Action"), "decision", 8.2)
+    anchors["expand"] = draw_box(0.34, 0.39, 0.25, 0.085, labels.get("expand", "Expand one branch"), "action", 7.8)
+    anchors["commit"] = draw_box(0.66, 0.39, 0.18, 0.085, labels.get("commit", "Commit"), "action", 8.0)
+    anchors["final"] = draw_box(0.50, 0.24, 0.30, 0.095, labels.get("final", "Final Answer"), "output", 8.0)
 
     arrow_color = "#4b4f56"
 

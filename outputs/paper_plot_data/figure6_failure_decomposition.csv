@@ -1,5 +1,7 @@
-dataset,comparison_adversary,absent_from_tree_failure_rate,present_in_tree_output_layer_failure_rate,other_failure_rate,n_defeat_cases,decomposition_basis
-HuggingFaceH4/MATH-500,reasoning_beam2,0.5588235294117647,0.4411764705882353,0.0,34,canonical_hundred_failure_type
-olympiadbench,reasoning_beam2,0.5757575757575758,0.42424242424242425,0.0,33,canonical_hundred_failure_type
-openai/gsm8k,reasoning_beam2,0.5151515151515151,0.48484848484848486,0.0,33,canonical_hundred_failure_type
-ALL,reasoning_beam2,0.55,0.45,0.0,100,canonical_hundred_failure_type
+method,absent_from_tree_failure_rate,present_in_tree_output_layer_failure_rate,n_rows,decomposition_basis
+baseline,22.5,5.5,4,strict_phased_current_surface
+strict_f2,21.25,6.5,4,strict_phased_current_surface
+strict_f3,24.5,6.75,4,strict_phased_current_surface
+strict_gate1,18.75,9.5,4,strict_phased_current_surface
+strict_gate1_cap_k6 (default),19.0,7.25,4,strict_phased_current_surface
+strict_gate2,25.5,8.25,4,strict_phased_current_surface

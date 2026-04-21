@@ -14,7 +14,7 @@ from paper_style import STYLE, method_sort_key
 def plot_appendix_per_dataset_curves() -> None:
     rows = load_csv(PLOT_DATA_DIR / "appendix_per_dataset_frontier_curves.csv")
     formulas = sorted({r["formula"] for r in rows}, key=method_sort_key)
-    fig, ax = plt.subplots(figsize=(7.8, 4.8))
+    fig, ax = plt.subplots(figsize=(STYLE.width + 1.0, STYLE.height + 0.5))
     for formula in formulas:
         frows = sorted([r for r in rows if r["formula"] == formula], key=lambda r: int(r["budget"]))
         if not frows:
@@ -28,7 +28,7 @@ def plot_appendix_per_dataset_curves() -> None:
             label=formula,
             color=method_color(formula),
         )
-    ax.set_title("Appendix: Budget-Aware Formula Accuracy Curves", fontsize=STYLE.title_size)
+    ax.set_title("Appendix: Budget-aware formula accuracy curves", fontsize=STYLE.title_size)
     ax.set_xlabel("Budget", fontsize=STYLE.label_size)
     ax.set_ylabel("Accuracy", fontsize=STYLE.label_size)
     ax.grid(True, alpha=STYLE.grid_alpha)
@@ -37,13 +37,13 @@ def plot_appendix_per_dataset_curves() -> None:
 
     # Keep legacy appendix filenames for compatibility by copying same plot.
     for legacy in ("appendix_per_dataset_frontier_HuggingFaceH4_MATH-500", "appendix_per_dataset_frontier_Idavidrein_gpqa"):
-        fig2, ax2 = plt.subplots(figsize=(7.8, 4.8))
+        fig2, ax2 = plt.subplots(figsize=(STYLE.width + 1.0, STYLE.height + 0.5))
         for formula in formulas:
             frows = sorted([r for r in rows if r["formula"] == formula], key=lambda r: int(r["budget"]))
             if not frows:
                 continue
             ax2.plot([int(r["budget"]) for r in frows], [float(r["accuracy"]) for r in frows], marker="o", lw=1.8, ms=4.5, label=formula, color=method_color(formula))
-        ax2.set_title(f"Appendix: Budget-Aware Formula Accuracy ({legacy})", fontsize=STYLE.title_size)
+        ax2.set_title(f"Appendix: Budget-aware formula accuracy ({legacy})", fontsize=STYLE.title_size)
         ax2.set_xlabel("Budget", fontsize=STYLE.label_size)
         ax2.set_ylabel("Accuracy", fontsize=STYLE.label_size)
         ax2.grid(True, alpha=STYLE.grid_alpha)
@@ -58,7 +58,7 @@ def plot_appendix_failure_slice() -> None:
     rows = load_csv(path)
     methods = sorted({r["method"] for r in rows}, key=method_sort_key)
 
-    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+    fig, ax = plt.subplots(figsize=(STYLE.width + 0.8, STYLE.height + 0.5))
     x = range(len(methods))
     vals = []
     for m in methods:
@@ -68,7 +68,7 @@ def plot_appendix_failure_slice() -> None:
     ax.set_xticks(list(x))
     ax.set_xticklabels(methods, rotation=25, ha="right", fontsize=STYLE.tick_size)
     ax.set_ylabel("Near-Tie Forced Accuracy", fontsize=STYLE.label_size)
-    ax.set_title("Appendix: Promoted vs Adversary on Failure Slices", fontsize=STYLE.title_size)
+    ax.set_title("Appendix: Promoted vs adversary on failure slices", fontsize=STYLE.title_size)
     ax.grid(True, axis="y", alpha=STYLE.grid_alpha)
     save_fig(fig, FIGURE_DIR / "appendix_promoted_vs_adversary_failure_slices.pdf", FIGURE_DIR / "appendix_promoted_vs_adversary_failure_slices.png")
 

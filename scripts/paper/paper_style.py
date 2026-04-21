@@ -5,15 +5,15 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class FigureStyle:
-    width: float = 7.0
-    height: float = 4.2
-    title_size: int = 13
-    label_size: int = 11
-    tick_size: int = 9
-    legend_size: int = 9
-    line_width: float = 2.0
-    marker_size: float = 5.0
-    grid_alpha: float = 0.22
+    width: float = 6.8
+    height: float = 4.0
+    title_size: int = 12
+    label_size: int = 10
+    tick_size: int = 8
+    legend_size: int = 8
+    line_width: float = 1.8
+    marker_size: float = 4.5
+    grid_alpha: float = 0.20
 
 
 STYLE = FigureStyle()

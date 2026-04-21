@@ -6,43 +6,35 @@ from collections import defaultdict
 from paper_data_sources import (
     PLOT_DATA_DIR,
     load_budget_aware_overall_table,
-    load_canonical_hundred_aggregate,
-    load_canonical_hundred_failure_table,
     load_multidataset_method_metrics,
     write_csv,
 )
 
 
 def build_allocation_composition() -> None:
-    rows = load_multidataset_method_metrics()
+    # Canonical main-paper figure now emphasizes concentration diagnostics, not action-mix shares.
+    rows = load_budget_aware_overall_table()
     out = []
     for r in rows:
-        avg_actions = float(r["avg_actions"])
-        avg_exp = float(r["avg_expansions"])
-        avg_ver = float(r["avg_verifications"])
-        exp_share = (avg_exp / avg_actions) if avg_actions > 0 else 0.0
-        ver_share = (avg_ver / avg_actions) if avg_actions > 0 else 0.0
-
         out.append(
             {
-                "dataset": r["dataset"],
-                "budget": int(float(r["budget"])),
-                "method": r["method"],
-                "component": "Expansion",
-                "component_share": exp_share,
-                "avg_component_actions": avg_exp,
-                "avg_actions": avg_actions,
+                "method": str(r["formula"]),
+                "metric": "max_family_share",
+                "value": float(r["avg_max_family_share"]),
             }
         )
         out.append(
             {
-                "dataset": r["dataset"],
-                "budget": int(float(r["budget"])),
-                "method": r["method"],
-                "component": "Verification",
-                "component_share": ver_share,
-                "avg_component_actions": avg_ver,
-                "avg_actions": avg_actions,
+                "method": str(r["formula"]),
+                "metric": "longest_same_family_run",
+                "value": float(r["avg_longest_same_family_run"]),
+            }
+        )
+        out.append(
+            {
+                "method": str(r["formula"]),
+                "metric": "repeated_same_family_cases",
+                "value": float(r["repeated_same_family_present"]),
             }
         )
 
@@ -58,7 +50,7 @@ def build_anti_collapse_diagnostics() -> None:
                 "method": str(r["formula"]),
                 "budget": int(r.get("budget", 0)),
                 "accuracy": float(r["accuracy"]),
-                "allocation_entropy": float(r["avg_longest_same_family_run"]),
+                "longest_same_family_run": float(r["avg_longest_same_family_run"]),
                 "max_family_share": float(r["avg_max_family_share"]),
                 "repeated_same_family_present": int(r["repeated_same_family_present"]),
             }
@@ -68,41 +60,26 @@ def build_anti_collapse_diagnostics() -> None:
 
 
 def build_failure_decomposition() -> None:
-    agg_json = load_canonical_hundred_aggregate()
-    per_case = load_canonical_hundred_failure_table()
-    by_dataset: dict[str, dict[str, float]] = defaultdict(lambda: {"n": 0.0, "tree": 0.0, "selection": 0.0})
-    for r in per_case:
-        ds = str(r["dataset"])
-        by_dataset[ds]["n"] += 1.0
-        if str(r["failure_type"]) == "absent_from_tree":
-            by_dataset[ds]["tree"] += 1.0
-        elif str(r["failure_type"]) == "present_not_selected":
-            by_dataset[ds]["selection"] += 1.0
+    # Method-level failure decomposition from current strict-phased canonical surface.
+    rows = load_multidataset_method_metrics()
+    by_method: dict[str, dict[str, float]] = defaultdict(lambda: {"n": 0.0, "tree": 0.0, "selection": 0.0})
+    for r in rows:
+        m = str(r["method"])
+        by_method[m]["n"] += 1.0
+        by_method[m]["tree"] += float(r.get("absent_from_tree", 0.0))
+        by_method[m]["selection"] += float(r.get("present_not_selected", 0.0))
     out = []
-    for dataset, stats in sorted(by_dataset.items()):
+    for method, stats in sorted(by_method.items()):
         n = max(1.0, stats["n"])
         out.append(
             {
-                "dataset": dataset,
-                "comparison_adversary": "reasoning_beam2",
+                "method": method,
                 "absent_from_tree_failure_rate": stats["tree"] / n,
                 "present_in_tree_output_layer_failure_rate": stats["selection"] / n,
-                "other_failure_rate": 0.0,
-                "n_defeat_cases": int(stats["n"]),
-                "decomposition_basis": "canonical_hundred_failure_type",
+                "n_rows": int(stats["n"]),
+                "decomposition_basis": "strict_phased_current_surface",
             }
         )
-    out.append(
-        {
-            "dataset": "ALL",
-            "comparison_adversary": "reasoning_beam2",
-            "absent_from_tree_failure_rate": float(agg_json["failure_type_counts"]["absent_from_tree"]["pct"]) / 100.0,
-            "present_in_tree_output_layer_failure_rate": float(agg_json["failure_type_counts"]["present_not_selected"]["pct"]) / 100.0,
-            "other_failure_rate": 0.0,
-            "n_defeat_cases": int(agg_json["target_n"]),
-            "decomposition_basis": "canonical_hundred_failure_type",
-        }
-    )
 
     write_csv(PLOT_DATA_DIR / "figure6_failure_decomposition.csv", out)
 
