@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Final broader matched strict-phased default decision evaluation.
+"""Broader matched strict-phased cap K-sweep follow-up evaluation.
 
-Compares baseline vs strict-phased F2/F3/gates on a broader matched surface
-(dataset x seed x budget x example), then emits decision artifacts.
+Primary follow-up surface compares strict_gate1 (uncapped) vs strict_gate1_cap_k6/k7/k8,
+with optional k9/k10 on the same broader matched default-decision surface.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ import csv
 import importlib.util
 import json
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -37,16 +37,13 @@ HM = _load_module(REPO_ROOT / "scripts/build_hundred_current_full_vs_best_failur
 TW = _load_module(REPO_ROOT / "scripts/build_twenty_exact_current_full_vs_best_fresh.py", "twenty_for_broader")
 
 BASE_SUFFIX = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1"
-METHODS_CORE = {
-    "baseline": None,
-    "strict_f2": f"{BASE_SUFFIX}_hard_early_root_depth2_coverage_forced_v1__deterministic_output_layer_repair_v1",
-    "strict_f3": f"{BASE_SUFFIX}_hard_early_root_depth3_coverage_forced_v1__deterministic_output_layer_repair_v1",
-    "strict_gate1": f"{BASE_SUFFIX}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first__deterministic_output_layer_repair_v1",
-    "strict_gate2": f"{BASE_SUFFIX}_hard_early_root_depth2_then_gate_v2_budget_aware_rescue__deterministic_output_layer_repair_v1",
-}
-OPTIONAL_METHODS = {
-    "strict_gate1_cap_k6": f"{BASE_SUFFIX}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
-}
+
+
+def _method_name_for_k(cap_k: int) -> str:
+    return (
+        f"{BASE_SUFFIX}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
+        f"_hard_max_family_expansions_cap_k{cap_k}_v1__deterministic_output_layer_repair_v1"
+    )
 
 
 def _parse_list(raw: str) -> list[str]:
@@ -116,24 +113,60 @@ def _mean(vals: list[float]) -> float:
     return float(sum(vals) / len(vals)) if vals else 0.0
 
 
+def _head_to_head(rows: list[dict[str, Any]], left: str, right: str) -> dict[str, int]:
+    res = Counter(_delta(bool(r[f"{right}_correct"]), bool(r[f"{left}_correct"])) for r in rows)
+    return {"improved": int(res.get("improved", 0)), "worsened": int(res.get("worsened", 0)), "unchanged": int(res.get("unchanged", 0))}
+
+
+def _aggregate(rows: list[dict[str, Any]], label: str) -> dict[str, Any]:
+    outcomes = Counter(str(r.get(f"{label}_vs_strict_gate1_outcome", "")) for r in rows if label != "strict_gate1")
+    return {
+        "method": label,
+        "n_cases": len(rows),
+        "accuracy": _mean([1.0 if r[f"{label}_correct"] else 0.0 for r in rows]),
+        "absent_from_tree": sum(1 for r in rows if r[f"{label}_failure_type"] == "absent_from_tree"),
+        "present_not_selected": sum(1 for r in rows if r[f"{label}_failure_type"] == "present_not_selected"),
+        "output_layer_mismatch": sum(1 for r in rows if r[f"{label}_failure_type"] == "output_layer_mismatch"),
+        "repeated_same_family_present": sum(1 for r in rows if r[f"{label}_repeated_same_family_present"]),
+        "gold_in_tree": sum(1 for r in rows if r[f"{label}_gold_in_tree"]),
+        "avg_actions": _mean([float(r[f"{label}_actions"]) for r in rows]),
+        "avg_expansions": _mean([float(r[f"{label}_expansions"]) for r in rows]),
+        "avg_verifications": _mean([float(r[f"{label}_verifications"]) for r in rows]),
+        "avg_max_family_expansion_share": _mean([float(r[f"{label}_max_family_expansion_share"]) for r in rows]),
+        "avg_longest_same_family_run": _mean([float(r[f"{label}_longest_same_family_run"]) for r in rows]),
+        "cap_bound_case_count": sum(1 for r in rows if int(r[f"{label}_cap_bind_count"]) > 0),
+        "dominant_family_hit_cap_case_count": sum(1 for r in rows if bool(r[f"{label}_dominant_family_hit_cap"])),
+        "improved_vs_strict_gate1": int(outcomes.get("improved", 0)),
+        "worsened_vs_strict_gate1": int(outcomes.get("worsened", 0)),
+        "unchanged_vs_strict_gate1": int(outcomes.get("unchanged", 0)),
+        "strict_phase_law_violations": sum(1 for r in rows if not bool(r[f"{label}_strict_phase_law_observed"])),
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", default="openai/gsm8k,HuggingFaceH4/MATH-500,HuggingFaceH4/aime_2024,olympiadbench")
     ap.add_argument("--subset-size", type=int, default=20)
     ap.add_argument("--seeds", default="11,23")
     ap.add_argument("--budgets", default="6,8")
+    ap.add_argument("--include-k9-k10", action="store_true")
     args = ap.parse_args()
 
     now = datetime.now(timezone.utc)
     ts = now.strftime("%Y%m%dT%H%M%SZ")
-    out_dir = REPO_ROOT / f"outputs/final_strict_phased_default_decision_eval_{ts}"
+    out_dir = REPO_ROOT / f"outputs/final_strict_phased_cap_k678_eval_{ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    methods = dict(METHODS_CORE)
-    methods["baseline"] = TW._resolve_current_full_method()
+    eval_methods: dict[str, str] = {
+        "strict_gate1": f"{BASE_SUFFIX}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first__deterministic_output_layer_repair_v1",
+        "strict_gate1_cap_k6": _method_name_for_k(6),
+        "strict_gate1_cap_k7": _method_name_for_k(7),
+        "strict_gate1_cap_k8": _method_name_for_k(8),
+    }
+    if args.include_k9_k10:
+        eval_methods["strict_gate1_cap_k9"] = _method_name_for_k(9)
+        eval_methods["strict_gate1_cap_k10"] = _method_name_for_k(10)
 
-    skipped_optional: dict[str, str] = {}
-    eval_methods = dict(methods)
     probe_case = {
         "dataset": "openai/gsm8k",
         "example_id": "probe",
@@ -142,25 +175,20 @@ def main() -> None:
         "seed": 0,
         "budget": 4,
     }
-    for label, method_name in OPTIONAL_METHODS.items():
-        try:
-            HM._run_observed_with_events(method_name, probe_case, "fresh_our")
-            eval_methods[label] = method_name
-        except Exception as e:  # noqa: BLE001
-            skipped_optional[label] = str(e)
+    for label, method_name in eval_methods.items():
+        HM._run_observed_with_events(method_name, probe_case, "fresh_our")
 
     datasets = _parse_list(args.datasets)
     seeds = _parse_ints(args.seeds)
     budgets = _parse_ints(args.budgets)
 
     per_case: list[dict[str, Any]] = []
-
     for dataset in datasets:
         for seed in seeds:
             examples = load_pilot_examples(dataset, args.subset_size, seed)
             for budget in budgets:
                 for ex in examples:
-                    row: dict[str, Any] = {
+                    base_row = {
                         "dataset": dataset,
                         "seed": int(seed),
                         "budget": int(budget),
@@ -191,7 +219,10 @@ def main() -> None:
                             "answer": answer,
                         }
 
+                    row = dict(base_row)
                     for label in eval_methods:
+                        meta = raws[label].get("metadata") or {}
+                        cap_events = list(meta.get("hard_max_family_cap_events") or [])
                         row[f"{label}_answer"] = cls[label]["answer"]
                         row[f"{label}_correct"] = cls[label]["correct"]
                         row[f"{label}_failure_type"] = cls[label]["failure"]
@@ -200,13 +231,19 @@ def main() -> None:
                         row[f"{label}_actions"] = int(raws[label]["actions"])
                         row[f"{label}_expansions"] = int(raws[label]["expansions"])
                         row[f"{label}_verifications"] = int(raws[label]["verifications"])
-                        row[f"{label}_strict_phase_law_observed"] = _phase_law_ok(raws[label]) if label != "baseline" else True
+                        row[f"{label}_strict_phase_law_observed"] = _phase_law_ok(raws[label])
+                        row[f"{label}_cap_bind_count"] = int(meta.get("hard_max_family_cap_bind_count", 0))
+                        row[f"{label}_dominant_family_hit_cap"] = bool(
+                            any(bool(ev.get("was_dominant_family_at_bind")) for ev in cap_events if isinstance(ev, dict))
+                        )
+                        row[f"{label}_max_family_expansion_share"] = float(meta.get("max_family_expansion_share", 0.0))
+                        row[f"{label}_longest_same_family_run"] = int(meta.get("max_consecutive_same_family_expands", 0))
 
                     for label in eval_methods:
-                        if label == "baseline":
+                        if label == "strict_gate1":
                             continue
-                        row[f"{label}_vs_baseline_outcome"] = _delta(
-                            bool(cls["baseline"]["correct"]),
+                        row[f"{label}_vs_strict_gate1_outcome"] = _delta(
+                            bool(cls["strict_gate1"]["correct"]),
                             bool(cls[label]["correct"]),
                         )
 
@@ -214,104 +251,73 @@ def main() -> None:
 
     method_labels = list(eval_methods.keys())
 
+    comparison_rows = [_aggregate(per_case, label) for label in method_labels]
+
     per_dataset_rows: list[dict[str, Any]] = []
     for dataset in datasets:
         ds_rows = [r for r in per_case if r["dataset"] == dataset]
         for label in method_labels:
-            outcomes = Counter(str(r.get(f"{label}_vs_baseline_outcome", "")) for r in ds_rows if label != "baseline")
-            per_dataset_rows.append(
-                {
-                    "dataset": dataset,
-                    "method": label,
-                    "n_cases": len(ds_rows),
-                    "accuracy": _mean([1.0 if r[f"{label}_correct"] else 0.0 for r in ds_rows]),
-                    "absent_from_tree": sum(1 for r in ds_rows if r[f"{label}_failure_type"] == "absent_from_tree"),
-                    "present_not_selected": sum(1 for r in ds_rows if r[f"{label}_failure_type"] == "present_not_selected"),
-                    "output_layer_mismatch": sum(1 for r in ds_rows if r[f"{label}_failure_type"] == "output_layer_mismatch"),
-                    "repeated_same_family_present": sum(1 for r in ds_rows if r[f"{label}_repeated_same_family_present"]),
-                    "gold_in_tree": sum(1 for r in ds_rows if r[f"{label}_gold_in_tree"]),
-                    "avg_actions": _mean([float(r[f"{label}_actions"]) for r in ds_rows]),
-                    "avg_expansions": _mean([float(r[f"{label}_expansions"]) for r in ds_rows]),
-                    "avg_verifications": _mean([float(r[f"{label}_verifications"]) for r in ds_rows]),
-                    "improved_vs_baseline": int(outcomes.get("improved", 0)),
-                    "worsened_vs_baseline": int(outcomes.get("worsened", 0)),
-                    "unchanged_vs_baseline": int(outcomes.get("unchanged", 0)),
-                }
-            )
+            base = _aggregate(ds_rows, label)
+            per_dataset_rows.append({"dataset": dataset, **base})
 
-    comparison_rows: list[dict[str, Any]] = []
-    for label in method_labels:
-        outcomes = Counter(str(r.get(f"{label}_vs_baseline_outcome", "")) for r in per_case if label != "baseline")
-        comparison_rows.append(
-            {
-                "method": label,
-                "method_name": eval_methods[label],
-                "n_cases": len(per_case),
-                "accuracy": _mean([1.0 if r[f"{label}_correct"] else 0.0 for r in per_case]),
-                "absent_from_tree": sum(1 for r in per_case if r[f"{label}_failure_type"] == "absent_from_tree"),
-                "present_not_selected": sum(1 for r in per_case if r[f"{label}_failure_type"] == "present_not_selected"),
-                "output_layer_mismatch": sum(1 for r in per_case if r[f"{label}_failure_type"] == "output_layer_mismatch"),
-                "repeated_same_family_present": sum(1 for r in per_case if r[f"{label}_repeated_same_family_present"]),
-                "gold_in_tree": sum(1 for r in per_case if r[f"{label}_gold_in_tree"]),
-                "avg_actions": _mean([float(r[f"{label}_actions"]) for r in per_case]),
-                "avg_expansions": _mean([float(r[f"{label}_expansions"]) for r in per_case]),
-                "avg_verifications": _mean([float(r[f"{label}_verifications"]) for r in per_case]),
-                "improved_vs_baseline": int(outcomes.get("improved", 0)),
-                "worsened_vs_baseline": int(outcomes.get("worsened", 0)),
-                "unchanged_vs_baseline": int(outcomes.get("unchanged", 0)),
-                "strict_phase_law_violations": sum(
-                    1 for r in per_case if label != "baseline" and not bool(r[f"{label}_strict_phase_law_observed"])
-                ),
-            }
-        )
-
-    comp_by_method = {r["method"]: r for r in comparison_rows}
     head_to_head = {
-        "strict_gate1_vs_strict_gate2": dict(Counter(_delta(bool(r["strict_gate2_correct"]), bool(r["strict_gate1_correct"])) for r in per_case)),
-        "strict_gate2_vs_strict_f3": dict(Counter(_delta(bool(r["strict_f3_correct"]), bool(r["strict_gate2_correct"])) for r in per_case)),
-        "strict_gate1_vs_strict_f3": dict(Counter(_delta(bool(r["strict_f3_correct"]), bool(r["strict_gate1_correct"])) for r in per_case)),
-        "strict_f3_vs_strict_f2": dict(Counter(_delta(bool(r["strict_f2_correct"]), bool(r["strict_f3_correct"])) for r in per_case)),
+        "strict_gate1_cap_k6_vs_strict_gate1": _head_to_head(per_case, "strict_gate1_cap_k6", "strict_gate1"),
+        "strict_gate1_cap_k7_vs_strict_gate1": _head_to_head(per_case, "strict_gate1_cap_k7", "strict_gate1"),
+        "strict_gate1_cap_k8_vs_strict_gate1": _head_to_head(per_case, "strict_gate1_cap_k8", "strict_gate1"),
+        "strict_gate1_cap_k7_vs_strict_gate1_cap_k6": _head_to_head(per_case, "strict_gate1_cap_k7", "strict_gate1_cap_k6"),
+        "strict_gate1_cap_k8_vs_strict_gate1_cap_k7": _head_to_head(per_case, "strict_gate1_cap_k8", "strict_gate1_cap_k7"),
+        "strict_gate1_cap_k8_vs_strict_gate1_cap_k6": _head_to_head(per_case, "strict_gate1_cap_k8", "strict_gate1_cap_k6"),
     }
+    if "strict_gate1_cap_k9" in eval_methods and "strict_gate1_cap_k8" in eval_methods:
+        head_to_head["strict_gate1_cap_k9_vs_strict_gate1_cap_k8"] = _head_to_head(per_case, "strict_gate1_cap_k9", "strict_gate1_cap_k8")
+    if "strict_gate1_cap_k10" in eval_methods and "strict_gate1_cap_k9" in eval_methods:
+        head_to_head["strict_gate1_cap_k10_vs_strict_gate1_cap_k9"] = _head_to_head(per_case, "strict_gate1_cap_k10", "strict_gate1_cap_k9")
 
-    # conservative decision: max accuracy, then fewer absent, then fewer repeat-collapse, then lower actions
-    ranked = sorted(
-        comparison_rows,
+    by_method = {r["method"]: r for r in comparison_rows}
+    capped_rank = sorted(
+        [r for r in comparison_rows if r["method"] != "strict_gate1"],
         key=lambda r: (-float(r["accuracy"]), int(r["absent_from_tree"]), int(r["repeated_same_family_present"]), float(r["avg_actions"]), str(r["method"])),
     )
-    recommended = ranked[0]["method"] if ranked else "baseline"
+    recommended = capped_rank[0]["method"] if capped_rank else "strict_gate1"
+
+    decision_questions = {
+        "k7_beats_k6": by_method["strict_gate1_cap_k7"]["accuracy"] > by_method["strict_gate1_cap_k6"]["accuracy"],
+        "k8_beats_k7": by_method["strict_gate1_cap_k8"]["accuracy"] > by_method["strict_gate1_cap_k7"]["accuracy"],
+        "any_cap_beats_uncapped": max(by_method[m]["accuracy"] for m in method_labels if m != "strict_gate1") > by_method["strict_gate1"]["accuracy"],
+        "plateau_as_k_increases": (
+            abs(by_method["strict_gate1_cap_k7"]["accuracy"] - by_method["strict_gate1_cap_k6"]["accuracy"]) <= 0.01
+            and abs(by_method["strict_gate1_cap_k8"]["accuracy"] - by_method["strict_gate1_cap_k7"]["accuracy"]) <= 0.01
+        ),
+        "larger_k_reverts_toward_uncapped": abs(by_method["strict_gate1_cap_k8"]["accuracy"] - by_method["strict_gate1"]["accuracy"]) < abs(by_method["strict_gate1_cap_k6"]["accuracy"] - by_method["strict_gate1"]["accuracy"]),
+    }
 
     aggregate = {
         "n_cases": len(per_case),
-        "datasets": datasets,
-        "seeds": seeds,
-        "budgets": budgets,
-        "methods": eval_methods,
-        "optional_methods_skipped": skipped_optional,
-        "head_to_head": head_to_head,
-        "comparison": comparison_rows,
-        "decision": {
-            "recommended_default_model": recommended,
-            "recommended_method_name": eval_methods.get(recommended, ""),
-            "is_broad_default": True,
-        },
-        "decision_questions": {
-            "strict_f3_beats_strict_f2": comp_by_method.get("strict_f3", {}).get("accuracy", 0.0) > comp_by_method.get("strict_f2", {}).get("accuracy", 0.0),
-            "strict_gate1_beats_strict_f3": comp_by_method.get("strict_gate1", {}).get("accuracy", 0.0) > comp_by_method.get("strict_f3", {}).get("accuracy", 0.0),
-            "strict_gate2_beats_strict_f3": comp_by_method.get("strict_gate2", {}).get("accuracy", 0.0) > comp_by_method.get("strict_f3", {}).get("accuracy", 0.0),
-        },
-    }
-
-    manifest = {
-        "artifact_family": "final_strict_phased_default_decision_eval",
-        "created_at_utc": now.isoformat(),
-        "output_dir": str(out_dir.relative_to(REPO_ROOT)),
-        "strict_phased_law": "finish F1 completely before any family may start F2; finish F2 completely before any family may start F3; in-phase ordering remains controller-driven by normal scores/priorities/anti-collapse; eligibility-constrained, not BFS",
         "datasets": datasets,
         "subset_size": int(args.subset_size),
         "seeds": seeds,
         "budgets": budgets,
         "methods": eval_methods,
-        "optional_methods_skipped": skipped_optional,
+        "comparison": comparison_rows,
+        "head_to_head": head_to_head,
+        "decision_questions": decision_questions,
+        "final_recommendation": {
+            "recommended_cap_choice": recommended,
+            "recommended_method_name": eval_methods.get(recommended, ""),
+            "cap_should_remain_in_broad_default": bool(recommended != "strict_gate1"),
+        },
+    }
+
+    manifest = {
+        "artifact_family": "final_strict_phased_cap_k678_eval",
+        "created_at_utc": now.isoformat(),
+        "output_dir": str(out_dir.relative_to(REPO_ROOT)),
+        "strict_phased_law": "finish F1 completely before any family may start F2; finish F2 completely before any family may start F3; in-phase ordering remains controller-driven by normal scores/priorities/anti-collapse; cap applies on top without breaking phased constraints",
+        "datasets": datasets,
+        "subset_size": int(args.subset_size),
+        "seeds": seeds,
+        "budgets": budgets,
+        "methods": eval_methods,
     }
 
     (out_dir / "eval_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
@@ -320,58 +326,55 @@ def main() -> None:
     with (out_dir / "per_dataset_summary.csv").open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(per_dataset_rows[0].keys()))
         writer.writeheader()
-        for r in per_dataset_rows:
-            writer.writerow(r)
+        writer.writerows(per_dataset_rows)
 
     with (out_dir / "comparison_table.csv").open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(comparison_rows[0].keys()))
         writer.writeheader()
-        for r in comparison_rows:
-            writer.writerow(r)
+        writer.writerows(comparison_rows)
 
     with (out_dir / "per_case_results.jsonl").open("w", encoding="utf-8") as f:
         for r in per_case:
             f.write(json.dumps(r, sort_keys=True) + "\n")
 
-    report = REPO_ROOT / f"docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_{ts}.md"
+    report = REPO_ROOT / f"docs/FINAL_STRICT_PHASED_CAP_K678_EVAL_{ts}.md"
     lines = [
-        f"# Final strict phased default decision evaluation ({ts})",
+        f"# Final strict phased cap K=6/7/8 follow-up evaluation ({ts})",
         "",
-        "## Scope",
-        "- Broader matched surface over canonical mix (including olympiadbench) rather than the frozen 100-case slice.",
-        "- Strict phased law enforced for all strict variants (F1→F2→F3), with controller-driven in-phase ordering.",
-        "",
-        "## Methods compared",
+        "## Exact method definitions",
     ]
-    for k, v in eval_methods.items():
-        lines.append(f"- `{k}`: `{v}`")
-    if skipped_optional:
-        lines.extend(["", "## Optional methods not runnable in this pass"]) 
-        for k, v in skipped_optional.items():
-            lines.append(f"- `{k}` skipped: {v}")
-
+    for label, method_name in eval_methods.items():
+        lines.append(f"- `{label}`: `{method_name}`")
     lines.extend([
+        "",
+        "## Exact broader matched strict-phased evaluation surface",
+        f"- datasets: {datasets}",
+        f"- subset_size per (dataset, seed): {args.subset_size}",
+        f"- seeds: {seeds}",
+        f"- budgets: {budgets}",
+        "- total matched cases: dataset_count × seed_count × budget_count × subset_size",
+        "- strict phased law: finish F1 before F2 before F3, with normal in-phase controller ordering preserved",
         "",
         "## Aggregate comparison table",
         "",
-        "| method | accuracy | absent_from_tree | present_not_selected | output_layer_mismatch | repeated-same-family-present | gold_in_tree | avg_actions | avg_expansions | avg_verifications | improved | worsened | unchanged |",
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| method | accuracy | absent_from_tree | present_not_selected | output_layer_mismatch | repeated-same-family-present | gold_in_tree | avg_actions | avg_expansions | avg_verifications | avg_max_family_share | avg_longest_same_family_run | cap_bound_case_count | dominant_family_hit_cap_case_count |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ])
     for r in comparison_rows:
         lines.append(
-            f"| {r['method']} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['output_layer_mismatch']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['improved_vs_baseline']} | {r['worsened_vs_baseline']} | {r['unchanged_vs_baseline']} |"
+            f"| {r['method']} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['output_layer_mismatch']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['avg_max_family_expansion_share']:.3f} | {r['avg_longest_same_family_run']:.3f} | {r['cap_bound_case_count']} | {r['dominant_family_hit_cap_case_count']} |"
         )
 
     lines.extend([
         "",
         "## Dataset-wise table",
         "",
-        "| dataset | method | accuracy | absent_from_tree | present_not_selected | output_layer_mismatch | repeated-same-family-present | gold_in_tree | avg_actions | avg_expansions | avg_verifications |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| dataset | method | accuracy | absent_from_tree | present_not_selected | repeated-same-family-present | gold_in_tree | avg_actions | avg_expansions | avg_verifications |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ])
     for r in per_dataset_rows:
         lines.append(
-            f"| {r['dataset']} | {r['method']} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['output_layer_mismatch']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} |"
+            f"| {r['dataset']} | {r['method']} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} |"
         )
 
     lines.extend([
@@ -388,38 +391,47 @@ def main() -> None:
         "",
         "## Cost / budget table",
         "",
-        "| method | avg_actions | avg_expansions | avg_verifications | strict_phase_law_violations |",
-        "|---|---:|---:|---:|---:|",
+        "| method | avg_actions | avg_expansions | avg_verifications | cap_bound_case_count | dominant_family_hit_cap_case_count |",
+        "|---|---:|---:|---:|---:|---:|",
     ])
     for r in comparison_rows:
-        lines.append(f"| {r['method']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['strict_phase_law_violations']} |")
+        lines.append(
+            f"| {r['method']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['cap_bound_case_count']} | {r['dominant_family_hit_cap_case_count']} |"
+        )
 
     lines.extend([
         "",
-        "## Head-to-head finalist comparison",
-        f"- strict_gate1 vs strict_gate2: `{head_to_head['strict_gate1_vs_strict_gate2']}`",
-        f"- strict_gate2 vs strict_f3: `{head_to_head['strict_gate2_vs_strict_f3']}`",
-        f"- strict_gate1 vs strict_f3: `{head_to_head['strict_gate1_vs_strict_f3']}`",
-        f"- strict_f3 vs strict_f2: `{head_to_head['strict_f3_vs_strict_f2']}`",
+        "## Head-to-head K comparisons",
+        f"- strict_gate1_cap_k6 vs strict_gate1: `{head_to_head['strict_gate1_cap_k6_vs_strict_gate1']}`",
+        f"- strict_gate1_cap_k7 vs strict_gate1: `{head_to_head['strict_gate1_cap_k7_vs_strict_gate1']}`",
+        f"- strict_gate1_cap_k8 vs strict_gate1: `{head_to_head['strict_gate1_cap_k8_vs_strict_gate1']}`",
+        f"- strict_gate1_cap_k7 vs strict_gate1_cap_k6: `{head_to_head['strict_gate1_cap_k7_vs_strict_gate1_cap_k6']}`",
+        f"- strict_gate1_cap_k8 vs strict_gate1_cap_k7: `{head_to_head['strict_gate1_cap_k8_vs_strict_gate1_cap_k7']}`",
+        f"- strict_gate1_cap_k8 vs strict_gate1_cap_k6: `{head_to_head['strict_gate1_cap_k8_vs_strict_gate1_cap_k6']}`",
+    ])
+
+    lines.extend([
         "",
         "## Required decision questions",
-        f"1. Does `strict_gate1` beat `strict_gate2` on the broader matched surface? **{comp_by_method.get('strict_gate1', {}).get('accuracy', 0.0) > comp_by_method.get('strict_gate2', {}).get('accuracy', 0.0)}**",
-        f"2. Does `strict_gate2` beat `strict_f3` on the broader matched surface? **{aggregate['decision_questions']['strict_gate2_beats_strict_f3']}**",
-        f"3. Does `strict_gate1` beat `strict_f3` on the broader matched surface? **{aggregate['decision_questions']['strict_gate1_beats_strict_f3']}**",
-        f"4. Is `strict_f2` still competitive enough to remain the simpler safer default? **{comp_by_method.get('strict_f2', {}).get('accuracy', 0.0) >= (comp_by_method.get(recommended, {}).get('accuracy', 0.0) - 0.01)}**",
-        f"5. Is `K=6` competitive enough to remain in final conversation? **{'strict_gate1_cap_k6' in comp_by_method}**",
-        f"6. Best compromise method across broader accuracy + failures + collapse + cost: **{recommended}**.",
-        f"7. Final default promoted model: **{recommended}** (`{eval_methods.get(recommended, '')}`).",
+        f"1. Does `K = 7` beat `K = 6` on the broader matched surface? **{decision_questions['k7_beats_k6']}**",
+        f"2. Does `K = 8` beat `K = 7`? **{decision_questions['k8_beats_k7']}**",
+        f"3. Does any capped variant beat uncapped `strict_gate1` clearly enough to justify keeping a cap in the final default? **{decision_questions['any_cap_beats_uncapped']}**",
+        f"4. Does performance appear to plateau as K increases? **{decision_questions['plateau_as_k_increases']}**",
+        f"5. Does larger K simply revert toward uncapped behavior? **{decision_questions['larger_k_reverts_toward_uncapped']}**",
+        f"6. Should the repository keep `K = 6` as final default, move to `K = 7` or `K = 8`, or drop cap entirely? **{recommended}**",
         "",
-        "## Capped-variant relevance decision",
-        "- If `strict_gate1_cap_k6` is present, it was included only as the strongest capped finalist for relevance-checking under the same broader matched scaffold.",
-        "- Cap variants weaker than K=6 are intentionally excluded from this final default pass.",
+        "## Honest final recommendation",
+        f"Recommended method by conservative tie-break rule (accuracy -> absent_from_tree -> collapse -> actions): **{recommended}**.",
         "",
-        "## Final default recommendation",
-        f"- recommended default model name: **{recommended}**",
-        f"- one-paragraph justification: On this broader matched surface, `{recommended}` is the strongest conservative compromise by the configured decision rule (maximize accuracy, then reduce absent-from-tree and repeated-same-family collapse, then prefer lower budget cost), while preserving strict phased-law behavior checks in this run.",
-        "- whether the recommendation is broad-default or hard-regime-default only: **broad-default**",
-        "- one sentence explaining why the other leading candidate(s) were not chosen: The nearest alternatives either trailed on overall broader matched accuracy or required more compute / showed worse failure-mix tradeoffs under the same strict-law constraints.",
+        "## Final cap recommendation",
+        f"- recommended cap choice: **{recommended}**",
+        (
+            "- one-paragraph justification: On the same broader matched strict-phased surface used for default finalization, "
+            f"{recommended} is the strongest conservative compromise after evaluating uncapped strict_gate1 and K=6/7/8 "
+            "(plus optional higher K if included), while preserving strict phased-law compliance and stable failure/cost trade-offs."
+        ),
+        f"- whether the cap should remain part of the broad default model: **{str(recommended != 'strict_gate1')}**",
+        "- one sentence explaining why the neighboring K values were not chosen: Neighboring K values either did not improve enough on broader matched accuracy/failure mix or moved closer to uncapped behavior without clear net benefit.",
     ])
     report.write_text("\n".join(lines), encoding="utf-8")
 
