@@ -4,35 +4,34 @@ This is the fastest script-level entry point for the current project.
 
 ## Current script-level stance
 
-The current repository is in a **strict-phased promoted-line stabilization and default-decision phase**.
+The current repository is in a **strict-phased default-model consolidation phase**.
 
 That means the highest-leverage script path is now:
-- evaluate strict-phased early-coverage variants under the F1 → F2 → F3 law,
-- compare the strongest current strict force/gate candidates,
-- audit exact loss surfaces against the strongest direct adversary,
-- and produce broader matched evidence before finalizing the default promoted model.
+- understand the finalized broader strict-phased default decision,
+- inspect exact-loss failure statistics against the strongest direct adversary,
+- and treat learned gates and capped variants as controlled alternatives around the current default.
 
 ## Smallest runnable paths
 
-### If you want one script that best reflects the current strict-phased method question
+### If you want one script that best reflects the current default-model decision
 Start with:
-- `run_hundred_three_gate_design_eval_strict_phased.py`
-
-### If you want one script for strict forced F2 vs strict forced F3
-Start with:
-- `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py`
+- `run_broader_strict_phased_default_decision_eval.py`
 
 ### If you want one script for newest exact-loss failure statistics
 Start with:
 - `build_new_hundred_newest_vs_best_failure_statistics.py`
 
+### If you want one script for strict forced/gate comparison context
+Start with:
+- `run_hundred_three_gate_design_eval_strict_phased.py`
+
+### If you want one script for the cap family that produced the current default
+Start with:
+- `run_hard_max_family_expansions_eval.py`
+
 ### If you want one script for learned post-F2 gate work
 Start with:
 - `run_learned_f2_to_f3_gate_v1_eval.py`
-
-### If you want one script for hard family-expansion-cap analysis
-Start with:
-- `run_hard_max_family_expansions_eval.py`
 
 ## Before you run scripts
 
@@ -40,24 +39,16 @@ For the shortest current repository-facing orientation, read:
 - `../docs/CANONICAL_START_HERE.md`
 - `../docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 - `../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+- `../docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
 - `../docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-- `../docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
-- `../docs/CURRENT_SAFE_CLAIMS.md`
+- `../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 
-## If you want the current default-model decision path
+## If you want the current default-model path
 
 Start with these scripts:
-- `run_hundred_three_gate_design_eval_strict_phased.py`
-- `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py`
+- `run_broader_strict_phased_default_decision_eval.py`
 - `build_new_hundred_newest_vs_best_failure_statistics.py`
-- `run_learned_f2_to_f3_gate_v1_eval.py`
 - `run_hard_max_family_expansions_eval.py`
-
-## If you want the strict-phased hard-coverage path only
-
-Start with these scripts:
-- `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py`
-- `run_hundred_three_gate_design_eval_strict_phased.py`
 
 ## If you want current diagnosis / failure-analysis work
 
@@ -72,7 +63,7 @@ Start with these scripts:
 Start with these scripts:
 - `run_learned_f2_to_f3_gate_v1_eval.py`
 - `run_hundred_three_gate_design_eval_strict_phased.py`
-- `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py`
+- `run_broader_strict_phased_default_decision_eval.py`
 
 ## If you want external baseline work
 
@@ -96,6 +87,6 @@ These are still useful, but are no longer the primary front-door path for the cu
 - Use this page first.
 - Use `README.md` for the full script index.
 - Treat strict-phased F1 → F2 → F3 evaluation as the current core control discipline.
-- Treat exact-loss auditing against `reasoning_beam2` as the current strongest direct-adversary failure-analysis path.
-- Treat learned post-F2 gates and hard family-expansion caps as serious controlled experiments, not yet default methods.
-- Treat older script paths as provenance support unless they are explicitly linked from the current docs front door.
+- Treat exact-loss auditing against `reasoning_beam2` as the strongest current direct-adversary failure-analysis path.
+- Treat `strict_gate1_cap_k6` as the current broad default promoted model on the evaluated surface.
+- Treat learned post-F2 gates and alternate cap values as controlled alternatives, not current defaults.
