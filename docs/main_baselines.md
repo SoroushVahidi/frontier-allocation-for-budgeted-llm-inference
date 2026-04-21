@@ -171,7 +171,7 @@ For manuscript-safe claims, treat external baselines as follows:
   - TALE via `configs/tale_prompt_budgeting_v1.json` + `scripts/run_tale_baseline.py`
   - L1 via `configs/l1_inference_adapter_v1.json` + `scripts/run_l1_baseline.py`
 - **MODE B (import-validated only; v1 `import_validated` / `adjacent`):** s1, TALE, and L1 share the same pattern: usable **only** when valid official/full packages are supplied and pass `scripts/verify_s1_mode_b_import.py`, `scripts/verify_tale_mode_b_import.py`, or `scripts/verify_l1_mode_b_import.py` respectively (TALE MODE B additionally enforces TALE-vs-TALE-PT variant separation). Otherwise runs remain blocked pending `official.results_path`.
-- **BEST-Route:** v1 `import_validated` adjacent neighbor via `scripts/verify_best_route_import.py` (legacy per-baseline JSON may still print `runnable_adjacent` as a synonym).
+- **BEST-Route:** v1 `import_validated` adjacent neighbor via `scripts/verify_best_route_import.py` with official-provenance import validation and adjacent-only comparison scope.
 - **when_solve_when_verify:** v1 `import_validated` via `scripts/verify_when_solve_when_verify_import.py` (SC-vs-GenRM adjacent slices only).
 - **cascade_routing:** v1 `import_validated` via `scripts/verify_cascade_routing_import.py`.
 - **mob_majority_of_bests:** v1 `import_validated` via `scripts/verify_mob_import.py`.

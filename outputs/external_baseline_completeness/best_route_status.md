@@ -1,15 +1,19 @@
 # BEST-Route status
 
-- Generated (UTC): `2026-04-16T01:29:17.824519+00:00`
+- Generated (UTC): `2026-04-21T04:54:56.020736+00:00`
 - Baseline: `best_route_microsoft`
-- Status: `runnable_adjacent`
-- Integration kind: `verified_import_only`
+- Resource level: `official`
+- Status: `import_validated`
+- Control equivalence: `adjacent`
+- Integration kind: `official_adjacent_import_validated`
 
 ## Conservative interpretation
-- This is an **adjacent import protocol**, not an in-repo full reproduction.
-- Imported artifacts must pass strict contract validation before use.
+- This is an **official adjacent import-validated** baseline lane.
+- This is **not** an in-repo full BEST-Route training/eval reproduction.
 
 ## Required import contract highlights
+- Config: `configs/best_route_official_import_v1.json`.
+- Validator: `scripts/verify_best_route_import.py`.
 - Required files: `metadata.json` and `results.csv`.
 - Required workflow-stage declarations:
   - mixed_prompt_construction
@@ -22,7 +26,7 @@
 
 ## Safe vs unsafe claims
 Safe now:
-- Reviewer-auditable BEST-Route import/validation path exists in this repo.
+- Reviewer-auditable, official adjacent import-validated BEST-Route path exists in this repo.
 
 Not safe now:
-- Claiming direct, apples-to-apples in-repo BEST-Route reproduction.
+- Claiming direct frontier-allocation equivalence or full paper-faithful in-repo reproduction.

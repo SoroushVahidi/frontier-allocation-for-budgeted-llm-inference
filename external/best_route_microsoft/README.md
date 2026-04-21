@@ -1,41 +1,84 @@
-# BEST-Route (Microsoft Research)
+# BEST-Route (Microsoft) external baseline import lane
 
-- **Repository:** https://github.com/microsoft/best-route-llm
-- **Paper / project page:**
-  - arXiv: https://arxiv.org/abs/2506.22716
-  - Microsoft Research: https://www.microsoft.com/en-us/research/publication/best-route-adaptive-llm-routing-with-test-time-optimal-compute/
-- **License (upstream repo):** MIT (`LICENSE.md` in upstream repository; verify pinned commit during any clone-based reproduction).
-- **Import status in this repo:** **`RUNNABLE_ADJACENT` via verified import protocol only**.
+## Upstream references
 
-## Why this is adjacent (not direct) here
+- **Official repo:** https://github.com/microsoft/best-route-llm
+- **Paper:** https://arxiv.org/abs/2506.22716
+- **Microsoft Research page:** https://www.microsoft.com/en-us/research/publication/best-route-adaptive-llm-routing-with-test-time-optimal-compute/
+- **Upstream license:** MIT (`LICENSE.md` in upstream repo; verify on pinned commit when cloning)
 
-This repository evaluates frontier/action-style adaptive allocation methods. Upstream BEST-Route uses a different workflow shape:
+## What to clone
 
-1. mixed multi-source prompt dataset construction,
-2. per-model multi-sample response-bank generation,
-3. reward-model scoring over response banks,
-4. router training over cost-quality targets,
-5. policy evaluation under routing + best-of-n choices.
+This repository does **not** vendor upstream BEST-Route code.
 
-Because upstream control arms are model+best-of-n variants (bo1..boN), this is not treated as direct control-space equivalence with this repo's native action substrate.
+Recommended local clone target (documented in `configs/best_route_official_import_v1.json`):
 
-## What is now unblocked
+```bash
+git clone https://github.com/microsoft/best-route-llm.git external/best_route_microsoft/upstream/best-route-llm
+```
 
-A strict import-validation protocol now exists in this repo:
+## What the upstream repo is expected to contain
 
+Conservative markers for import-lane validation (if a local clone is available):
+
+- `README.md`
+- `LICENSE.md`
+- training/eval entrypoint markers such as `train_router.py`, `scripts/train_router.py`, or `src/`
+
+These checks are conservative structural checks, not full pipeline execution.
+
+## How this repository uses BEST-Route
+
+BEST-Route is integrated as an **official adjacent import-validated baseline**:
+
+- resource level: `official`
+- status: `import_validated`
+- control equivalence: `adjacent`
+
+BEST-Route is treated as query-level adaptive routing over `(model, best_of_n)` arms, not as frontier-allocation control.
+
+## What is and is not claimed
+
+### Claimed
+
+- This repo can validate imported BEST-Route artifacts through a strict contract.
+- Adjacent comparison rows are allowed only after validator success.
+
+### Not claimed
+
+- Full paper-faithful BEST-Route reproduction inside this repo.
+- Direct control-space equivalence with this repo’s frontier-allocation method.
+
+## Import validation workflow
+
+Canonical files:
+
+- config: `configs/best_route_official_import_v1.json`
 - validator: `scripts/verify_best_route_import.py`
-- canonical integration note: `docs/best_route_integration.md`
 - status artifacts:
   - `outputs/external_baseline_completeness/best_route_status.json`
   - `outputs/external_baseline_completeness/best_route_status.md`
 
-## Non-overclaim boundary
+Example command:
 
-Safe:
+```bash
+python scripts/verify_best_route_import.py \
+  --config configs/best_route_official_import_v1.json \
+  --results-path tests/fixtures/best_route_import_valid \
+  --expected-dataset gsm8k \
+  --expected-split test \
+  --expected-budgets 1,2
+```
 
-- reviewer-auditable adjacent import comparisons after validation.
+## Expected imported artifact shape
 
-Not safe:
+Required package files:
 
-- claiming full in-repo BEST-Route reproduction,
-- claiming apples-to-apples direct comparability with frontier/action-native controllers.
+- `metadata.json`
+- `results.csv`
+
+Contract highlights:
+
+- workflow-stage declarations for BEST-Route pipeline stages,
+- candidate-arm declarations including bo1 and at least one bo>1,
+- results rows tagged `mode=best_route_adjacent_import` and `comparability_scope=adjacent_only`.

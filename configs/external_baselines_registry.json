@@ -100,9 +100,9 @@
     "best_route_microsoft": {
       "clone_url": "https://github.com/microsoft/best-route-llm.git",
       "doc": "external/best_route_microsoft/README.md",
-      "integration": "runnable_adjacent",
-      "completeness_class": "runnable_adjacent",
-      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "adjacent_import_validated_only_not_direct_frontier_allocation_equivalent",
       "integration_doc": "docs/best_route_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/best_route_status.json",

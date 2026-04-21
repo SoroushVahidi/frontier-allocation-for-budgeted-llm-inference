@@ -32,16 +32,18 @@ def main() -> None:
     status: dict[str, Any] = {
         "generated_utc": now,
         "baseline_key": "best_route_microsoft",
-        "status": "runnable_adjacent",
-        "integration_kind": "verified_import_only",
-        "status_taxonomy": [
+        "resource_level": "official",
+        "status": "import_validated",
+        "control_equivalence": "adjacent",
+        "integration_kind": "official_adjacent_import_validated",
+        "status_taxonomy_v1": [
             "runnable_direct",
             "runnable_adjacent",
-            "mode_a_only",
-            "mode_b_partial",
-            "link_only",
+            "adapter_based",
+            "import_validated",
             "discuss_only",
             "blocked",
+            "broken_needs_repair",
         ],
         "upstream": {
             "repo": "https://github.com/microsoft/best-route-llm",
@@ -49,6 +51,7 @@ def main() -> None:
             "project_page": "https://www.microsoft.com/en-us/research/publication/best-route-adaptive-llm-routing-with-test-time-optimal-compute/",
         },
         "protocol": {
+            "config": "configs/best_route_official_import_v1.json",
             "validator_script": "scripts/verify_best_route_import.py",
             "required_package_files": ["metadata.json", "results.csv"],
             "required_workflow_stages": [
@@ -60,14 +63,16 @@ def main() -> None:
             ],
             "candidate_arm_requirement": "model+best-of-n arms must include bo1 and at least one bo>1",
             "comparability_scope": "adjacent_only",
+            "validator_success_verdict": "import_validated",
         },
         "safe_claims": [
-            "This repo now supports a reviewer-auditable BEST-Route adjacent import path.",
+            "This repo supports an official adjacent import-validated BEST-Route baseline lane.",
             "Imports are validated for workflow-stage declarations, candidate-arm structure, and explicit adjacent-only scope.",
         ],
         "not_safe_claims": [
             "Direct apples-to-apples BEST-Route reproduction inside this repo.",
             "Control-space equivalence between BEST-Route bo-arm routing and this repo's frontier/action substrate.",
+            "Paper-faithful full reproduction claim without running the full upstream stack in this repo.",
         ],
     }
 
@@ -82,14 +87,18 @@ def main() -> None:
         "",
         f"- Generated (UTC): `{now}`",
         "- Baseline: `best_route_microsoft`",
-        "- Status: `runnable_adjacent`",
-        "- Integration kind: `verified_import_only`",
+        "- Resource level: `official`",
+        "- Status: `import_validated`",
+        "- Control equivalence: `adjacent`",
+        "- Integration kind: `official_adjacent_import_validated`",
         "",
         "## Conservative interpretation",
-        "- This is an **adjacent import protocol**, not an in-repo full reproduction.",
-        "- Imported artifacts must pass strict contract validation before use.",
+        "- This is an **official adjacent import-validated** baseline lane.",
+        "- This is **not** an in-repo full BEST-Route training/eval reproduction.",
         "",
         "## Required import contract highlights",
+        "- Config: `configs/best_route_official_import_v1.json`.",
+        "- Validator: `scripts/verify_best_route_import.py`.",
         "- Required files: `metadata.json` and `results.csv`.",
         "- Required workflow-stage declarations:",
     ]
@@ -104,10 +113,10 @@ def main() -> None:
             "",
             "## Safe vs unsafe claims",
             "Safe now:",
-            "- Reviewer-auditable BEST-Route import/validation path exists in this repo.",
+            "- Reviewer-auditable, official adjacent import-validated BEST-Route path exists in this repo.",
             "",
             "Not safe now:",
-            "- Claiming direct, apples-to-apples in-repo BEST-Route reproduction.",
+            "- Claiming direct frontier-allocation equivalence or full paper-faithful in-repo reproduction.",
         ]
     )
 

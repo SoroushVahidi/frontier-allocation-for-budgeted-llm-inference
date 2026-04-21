@@ -5,6 +5,7 @@ This validator is intentionally strict about provenance and explicit about compa
 - Accepts only adjacent import mode (not direct apples-to-apples reproduction claims).
 - Requires explicit BEST-Route workflow-stage declarations.
 - Requires model+best-of-n candidate-arm declarations (bo1 and bo>1 present).
+- Optionally validates a local official clone path when present.
 """
 
 from __future__ import annotations
@@ -14,6 +15,9 @@ import csv
 import json
 from pathlib import Path
 from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CONFIG = REPO_ROOT / "configs" / "best_route_official_import_v1.json"
 
 REQUIRED_METADATA_FIELDS = [
     "source.type",
@@ -85,8 +89,83 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--expected-dataset", required=True)
     p.add_argument("--expected-split", default="test")
     p.add_argument("--expected-budgets", required=True, help="Comma-separated integer budgets")
+    p.add_argument("--config", default=str(DEFAULT_CONFIG), help="BEST-Route import config JSON")
+    p.add_argument("--official-repo-path", default=None, help="Optional explicit local path to official repo clone")
     p.add_argument("--output-json", default=None)
     return p.parse_args()
+
+
+def _load_config(config_path: Path) -> dict[str, Any]:
+    if not config_path.exists():
+        return {}
+    try:
+        return json.loads(config_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+
+
+def _verify_official_repo(
+    *,
+    config: dict[str, Any],
+    explicit_path: str | None,
+    issues: list[str],
+    warnings: list[str],
+) -> dict[str, Any]:
+    official = config.get("official", {}) if isinstance(config, dict) else {}
+    clone_url = str(official.get("repo_url", "")).strip()
+    configured_rel = str(official.get("expected_local_clone_path", "")).strip()
+    require_existing = bool(official.get("require_existing_local_clone", False))
+    markers = official.get("expected_repo_markers", [])
+    entry_any = official.get("expected_repo_entrypoints_any", [])
+
+    local_path: Path | None = None
+    if explicit_path:
+        local_path = Path(explicit_path)
+    elif configured_rel:
+        local_path = REPO_ROOT / configured_rel
+
+    local_clone_exists = bool(local_path and local_path.exists())
+
+    if not clone_url:
+        issues.append("missing_official_repo_url_in_config")
+    if not clone_url and not local_clone_exists:
+        issues.append("missing_official_repo_reference_and_local_clone")
+
+    if require_existing and not local_clone_exists:
+        issues.append("blocked_missing_required_local_official_clone")
+
+    if local_path and not local_clone_exists:
+        warnings.append(f"local_official_clone_not_found: {local_path}")
+
+    marker_hits: list[str] = []
+    missing_markers: list[str] = []
+    entry_hits: list[str] = []
+
+    if local_clone_exists and local_path:
+        for marker in markers if isinstance(markers, list) else []:
+            if (local_path / str(marker)).exists():
+                marker_hits.append(str(marker))
+            else:
+                missing_markers.append(str(marker))
+
+        for entry in entry_any if isinstance(entry_any, list) else []:
+            if (local_path / str(entry)).exists():
+                entry_hits.append(str(entry))
+
+        if missing_markers:
+            issues.append(f"incomplete_local_official_clone_missing_markers: {missing_markers}")
+        if entry_any and not entry_hits:
+            issues.append("incomplete_local_official_clone_missing_expected_entrypoints")
+
+    return {
+        "clone_url": clone_url,
+        "configured_expected_local_clone_path": configured_rel,
+        "resolved_local_clone_path": str(local_path) if local_path else "",
+        "local_clone_exists": local_clone_exists,
+        "marker_hits": marker_hits,
+        "missing_markers": missing_markers,
+        "entrypoint_hits_any": entry_hits,
+    }
 
 
 def verify_best_route_import(
@@ -95,9 +174,12 @@ def verify_best_route_import(
     expected_dataset: str,
     expected_split: str,
     expected_budgets: set[int],
+    config: dict[str, Any],
+    official_repo_path: str | None,
 ) -> dict[str, Any]:
     issues: list[str] = []
     errors: list[str] = []
+    warnings: list[str] = []
 
     if requested_path.is_dir():
         package_dir = requested_path
@@ -107,6 +189,13 @@ def verify_best_route_import(
         package_dir = requested_path.parent
         metadata_json = package_dir / "metadata.json"
         results_csv = requested_path
+
+    official_repo_check = _verify_official_repo(
+        config=config,
+        explicit_path=official_repo_path,
+        issues=issues,
+        warnings=warnings,
+    )
 
     if not metadata_json.exists():
         issues.append(f"missing_required_file: {metadata_json}")
@@ -255,14 +344,32 @@ def verify_best_route_import(
     if missing_budgets:
         issues.append(f"missing_expected_budgets: {missing_budgets}")
 
+    has_errors = bool(issues or errors)
+    blocking_repo_issue = any(
+        marker in set(issues)
+        for marker in {
+            "missing_official_repo_reference_and_local_clone",
+            "blocked_missing_required_local_official_clone",
+            "missing_official_repo_url_in_config",
+        }
+    )
+    if has_errors and blocking_repo_issue:
+        verdict = "blocked_missing_official_repo"
+    elif has_errors:
+        verdict = "blocked_incomplete_import"
+    else:
+        verdict = "import_validated"
+
     return {
-        "status": "valid" if not issues and not errors else "invalid",
+        "status": "valid" if verdict == "import_validated" else "invalid",
+        "verdict": verdict,
         "requested_results_path": str(requested_path),
         "resolved_package_dir": str(package_dir),
         "required_files": {
             "metadata_json": str(metadata_json),
             "results_csv": str(results_csv),
         },
+        "official_repo_validation": official_repo_check,
         "expected": {
             "dataset": expected_dataset,
             "split": expected_split,
@@ -275,22 +382,28 @@ def verify_best_route_import(
             "observed_budgets": sorted(observed_budgets),
         },
         "issues": sorted(set(issues)),
+        "warnings": sorted(set(warnings)),
         "errors": errors,
-        "imported_rows": normalized_rows if not issues and not errors else [],
+        "imported_rows": normalized_rows if verdict == "import_validated" else [],
     }
 
 
 def main() -> None:
     args = parse_args()
     expected_budgets = {int(x.strip()) for x in args.expected_budgets.split(",") if x.strip()}
+    config_path = Path(args.config)
+    config = _load_config(config_path)
 
     verification = verify_best_route_import(
         requested_path=Path(args.results_path),
         expected_dataset=args.expected_dataset,
         expected_split=args.expected_split,
         expected_budgets=expected_budgets,
+        config=config,
+        official_repo_path=args.official_repo_path,
     )
 
+    verification["config_path"] = str(config_path)
     out = json.dumps(verification, indent=2)
     if args.output_json:
         Path(args.output_json).write_text(out + "\n", encoding="utf-8")

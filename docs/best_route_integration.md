@@ -1,69 +1,81 @@
-# BEST-Route integration note (reviewer-defensible)
+# BEST-Route integration note (official adjacent import-validated lane)
 
-## Scope
+## Canonical reference
 
-This note defines the conservative integration level used in this repository for **BEST-Route**.
+- **Paper title:** *BEST-Route: Adaptive LLM Routing with Test-Time Optimal Compute*
+- **Authors:** Dujian Ding, Ankur Mallick, Shaokun Zhang, Chi Wang, Daniel Madrigal, Mirian Del Carmen Hipolito Garcia, Menglin Xia, Laks V.S. Lakshmanan, Qingyun Wu, Victor Ruhle
+- **Venue / year / status:** ICML 2025 (main conference; also on arXiv as `2506.22716`)
+- **Paper:** https://arxiv.org/abs/2506.22716
+- **Official code repository:** https://github.com/microsoft/best-route-llm
+- **Project/publication page:** https://www.microsoft.com/en-us/research/publication/best-route-adaptive-llm-routing-with-test-time-optimal-compute/
 
-## Upstream artifacts audited
+## Provenance and repository classification
 
-- Repo: https://github.com/microsoft/best-route-llm
-- README: https://github.com/microsoft/best-route-llm/blob/main/README.md
-- Paper: https://arxiv.org/abs/2506.22716
-- Microsoft Research page: https://www.microsoft.com/en-us/research/publication/best-route-adaptive-llm-routing-with-test-time-optimal-compute/
+- **Provenance level:** `official`
+- **Normalized status (this repo):** `import_validated`
+- **Control-equivalence label (this repo):** `adjacent`
+- **Canonical config:** `configs/best_route_official_import_v1.json`
+- **Canonical validator:** `scripts/verify_best_route_import.py`
 
-Upstream workflow (as documented upstream and respected here):
+This classification means the upstream method/code is official, and this repository provides a conservative import-validation lane. It does **not** mean this repository reproduces the full BEST-Route training stack end-to-end.
 
-1. mixed multi-dataset prompt construction,
-2. multi-sample response generation per model,
-3. armoRM scoring,
-4. proxy reward model training/scoring,
-5. router training.
+## Problem class and scope boundary
 
-Candidate actions in upstream BEST-Route are model+best-of-n arms (e.g., bo1..bo5), which are adjacent—not identical—to this repo's frontier/action control substrate.
+BEST-Route is treated here as an **adjacent query-level adaptive routing** baseline:
 
-## Integration decision in this repository
+- action space: choose `(model, n)` where `n` is best-of-n sampling count,
+- objective: quality/cost tradeoff under routing policy,
+- operating level: query-level routing.
 
-**Status: `runnable_adjacent` (verified import only).**
+This is **not** the same as this repo’s frontier-allocation control problem over active reasoning branches.
 
-What is now unblocked:
+## Safe claims vs unsafe claims
 
-- This repo provides a strict import validator for externally produced BEST-Route outputs:
-  - `scripts/verify_best_route_import.py`
-- This repo provides machine-readable BEST-Route status artifacts:
-  - `outputs/external_baseline_completeness/best_route_status.json`
-  - `outputs/external_baseline_completeness/best_route_status.md`
+### Safe now
 
-What is still intentionally not claimed:
+- BEST-Route is integrated in this repo as an **official adjacent import-validated baseline**.
+- BEST-Route comparison rows can be reported when imported artifacts pass `scripts/verify_best_route_import.py`.
+- BEST-Route should be labeled adjacent-only in comparisons and manuscript text.
 
-- Direct in-repo reproduction of the full upstream BEST-Route training/scoring pipeline.
-- Apples-to-apples control-space equivalence with this repo's frontier/action methods.
+### Not safe now
 
-## Import contract (conservative)
+- Claiming BEST-Route is a direct frontier-allocation baseline.
+- Claiming full paper-faithful BEST-Route reproduction inside this repository.
+- Collapsing “official code exists” into “full in-repo reproduction completed.”
 
-Required package files:
+## Minimum runnable path
 
-- `metadata.json`
-- `results.csv`
+1. Prepare or import a BEST-Route result package (`metadata.json` + `results.csv`) following `configs/best_route_official_import_v1.json`.
+2. Run validator:
 
-Validator requires:
+```bash
+python scripts/verify_best_route_import.py \
+  --config configs/best_route_official_import_v1.json \
+  --results-path tests/fixtures/best_route_import_valid \
+  --expected-dataset gsm8k \
+  --expected-split test \
+  --expected-budgets 1,2
+```
 
-- explicit upstream workflow-stage declarations,
-- candidate-arm schema with model+best-of-n identity,
-- presence of bo1 and at least one bo>1,
-- explicit `adjacent_only` comparability scope,
-- dataset/split/budget consistency checks,
-- numeric sanity checks on reported metrics.
+3. Require verdict `import_validated` before using imports for adjacent comparison reporting.
 
-This contract is designed to make adjacent comparison auditable without overclaiming direct reproducibility.
+## Artifact expectations
 
-## Manuscript-safe wording
+- Package files: `metadata.json`, `results.csv`
+- Metadata requirements include:
+  - upstream repo + paper URLs,
+  - BEST-Route workflow-stage declarations,
+  - candidate-arm schema over model + best-of-n,
+  - provenance identifiers.
+- Results requirements include:
+  - explicit `best_route_adjacent_import` mode,
+  - explicit `adjacent_only` comparability scope,
+  - expected dataset/split/budget coverage,
+  - numeric sanity for quality/cost fields.
 
-Safe now:
+## Difference from our method
 
-- "BEST-Route is integrated as a validated adjacent import protocol in this repo."
-- "Comparisons using imported BEST-Route outputs are adjacent and must be reported as such."
+- **BEST-Route:** adaptive **query routing** over `(model, n)` arms.
+- **Our method focus:** adaptive **frontier allocation** across active reasoning states/branches.
 
-Not safe now:
-
-- "BEST-Route is fully reproduced in-repo."
-- "BEST-Route and frontier-action methods are direct control-equivalent baselines."
+Therefore, BEST-Route is reviewer-relevant and valuable, but remains an **adjacent** (not direct) baseline in this repository’s normalized taxonomy.

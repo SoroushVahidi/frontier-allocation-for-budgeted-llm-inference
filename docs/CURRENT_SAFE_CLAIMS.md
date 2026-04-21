@@ -71,7 +71,7 @@ Not safe to claim yet:
 Safe to claim now:
 - s1, TALE, and L1 MODE A paths are runnable in-repo with auditable artifacts (manifest, summary, per-example rows, fairness report, comparison tables).
 - s1 MODE B is a strict official/full import + verification path and is usable only when a valid package passes verification; TALE and L1 MODE B remain blocked adapter/reporting paths unless official/full outputs are imported.
-- BEST-Route has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_best_route_import.py`).
+- BEST-Route has a strict official adjacent import-validated path and can be used as `import_validated`/`adjacent` only after validation (`scripts/verify_best_route_import.py`).
 - when_solve_when_verify has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_when_solve_when_verify_import.py`).
 - cascade_routing has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_cascade_routing_import.py`).
 - mob_majority_of_bests has a strict adjacent import validator path and can be used as runnable-adjacent only after validation (`scripts/verify_mob_import.py`).
