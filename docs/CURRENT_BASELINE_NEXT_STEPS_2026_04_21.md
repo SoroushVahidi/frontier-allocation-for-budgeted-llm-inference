@@ -27,61 +27,76 @@ At a high level:
 - **official/import-validated adjacent:** `BEST-Route`, `when_solve_when_verify`, `rest_mcts`, and similar adjacent imports
 - **discuss-only:** `Q*`, `Let's Verify Step by Step`, `Rational Metareasoning` and other framing/ingredient references without strong runnable integration
 
-## Current next baseline to strengthen first
+## Current strongest usable external stack
 
-### 1. BEST-Route (strengthened in this pass)
+### Near-direct matched-substrate baselines
+- **s1 MODE A**
+- **TALE MODE A**
+- **L1 MODE A**
 
-**Current role:** official adjacent adaptive-routing baseline with reproducible import-validation artifact lane
+### Adjacent official baselines already strengthened beyond pure import validation
+- **BEST-Route** — stronger than before, but still not stable enough for a full reproduced row in this environment
+- **When To Solve / When To Verify** — strengthened adjacent integration lane
+- **ReST-MCTS*** — now in the strongest current state among the adjacent search baselines because it reached an honest **partial runnable** status
 
-**Why first (now completed):**
-- strongest provenance among the currently non-fully-strengthened external baselines,
-- official code availability,
-- clearer import/validation path than Q*,
-- lower honesty risk than speculative unofficial adapters,
-- reviewer-defensible as an official adaptive-compute neighbor even though it is query-level rather than frontier-level.
+## Current adjacent execution status
 
-**How to treat it:**
+### BEST-Route
+Current safest status:
+- official
+- stronger than pure import validation
+- but still **not** a fully reproduced stable run in this environment
+
+Practical current interpretation:
+- useful as an adjacent comparator with explicit caveats,
+- not yet the strongest clean adjacent baseline for the main external table because its real run path still has unresolved runtime instability.
+
+See:
+- `BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`
+- `BEST_ROUTE_FULL_INTEGRATION_ATTEMPT_20260421T221721Z.md`
+
+### When To Solve / When To Verify
+Current safest status:
 - official
 - import_validated
 - adjacent
 
-**Not safe to claim:**
-- direct frontier-allocation equivalence
-- full faithful paper reproduction unless the repo truly supports that later
-
-## Current next baseline after BEST-Route
-
-### 2. When To Solve / When To Verify (strengthened in this pass)
-
-**Why second:**
-- closer to solve-vs-verify control than BEST-Route,
-- more relevant to bounded verification and continuation-value logic,
-- closer to the repo's branch-allocation story than pure query-level routing,
-- but still safer to integrate after BEST-Route rather than before it.
-
-**Current safest treatment (confirmed):**
-- official
-- import_validated
-- adjacent
-
-**Strengthening status (now complete):**
+Strengthening status:
 - validator lane kept strict and adjacent-only,
 - canonical adjacent runner + comparison contract added,
-- output artifact family now mirrors BEST-Route style (`outputs/when_solve_when_verify_adjacent_integration/<run_id>/`),
-- blocker language now explicitly captures HF/OpenAI/compute requirements for fuller reproduction.
+- output artifact family now mirrors BEST-Route style (`outputs/when_solve_when_verify_adjacent_integration/<run_id>/`).
 
-## Current next baseline after this strengthening
+### ReST-MCTS*
+Current safest status:
+- official
+- adjacent
+- **partial runnable**
 
-### 3. ReST-MCTS* (current next target)
+Why this matters:
+- it is now stronger than a pure import-validated row,
+- it has an artifact-backed official-code integration lane,
+- and it is now ready to appear in the main external-baseline table as an adjacent partial-runnable baseline with explicit caveats.
 
-**Why next:**
-- still official and relevant as a search-guided adjacent baseline,
-- currently import-validated but lacking the same standardized strengthened lane quality now established for BEST-Route and when_solve_when_verify.
+See:
+- `REST_MCTS_PARTIAL_RUNNABLE_INTEGRATION_20260421T225645Z.md`
+- `outputs/rest_mcts_partial_runnable_integration_<run_id>/`
 
-## What should not be next
+## Current next baseline to strengthen
 
-### Q*
-Q* is still scientifically important, but it should **not** be the next external baseline to fix immediately after BEST-Route.
+### 1. BEST-Route crash-fix / stabilization pass
+This is the current highest-value next external-baseline task.
+
+Why next:
+- BEST-Route already has the strongest provenance among the adjacent routing baselines,
+- dependency installation and CLI wiring have already been pushed farther than before,
+- but the real run path still fails due to runtime instability,
+- so the next best move is **stabilization**, not abandoning the baseline.
+
+The goal is not to overclaim full reproduction.
+The goal is to upgrade BEST-Route from “stronger than import validation but unstable” into a cleaner **partial runnable** adjacent baseline.
+
+### 2. Q*
+Q* is still scientifically important, but it should **not** be the next external baseline to fix before BEST-Route stabilization.
 
 Why:
 - closer conceptually to frontier expansion control,
@@ -93,18 +108,18 @@ So Q* remains a **second-wave** or later baseline unless the official-code/prove
 
 ## Practical strengthening order
 
-Recommended order:
-1. **BEST-Route**
-2. **When To Solve / When To Verify**
-3. **ReST-MCTS*** (if stronger official import evidence becomes worth the added heaviness)
-4. **Q*** only after the repo has a clearly caveated unofficial-adapter or stronger provenance-backed path
+Recommended order now:
+1. **BEST-Route stabilization / crash-fix pass**
+2. **Q*** only after BEST-Route is pushed to its strongest honest state
+3. later-wave discuss-only or ingredient references only if their provenance/integration path materially improves
 
 ## Current paper-facing guidance
 
 For manuscript-facing text right now:
 - treat `s1`, `TALE`, and `L1` as the strongest matched-substrate near-direct external comparisons,
-- treat `BEST-Route` as the first external adjacent official baseline to strengthen,
-- treat `when_solve_when_verify` as the next adjacent baseline most worth strengthening after BEST-Route,
+- treat **ReST-MCTS*** as the strongest current adjacent search baseline because it has reached partial-runnable official-code status,
+- treat **BEST-Route** as a strengthened adjacent routing baseline that still needs stabilization before it is as clean as ReST-MCTS* for the main table,
+- treat `when_solve_when_verify` as a strengthened adjacent comparison lane,
 - and treat `Q*` as an important discuss-only or later-wave baseline unless its integration path becomes much stronger.
 
 ## Cross-links
@@ -114,9 +129,3 @@ Also see:
 - `main_baselines.md`
 - `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 - `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-
-
-## BEST-Route strengthening artifact
-
-- `BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`
-- `outputs/best_route_adjacent_integration/<run_id>/`
