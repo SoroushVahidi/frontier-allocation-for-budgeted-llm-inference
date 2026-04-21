@@ -1,6 +1,6 @@
 # Documentation index
 
-This directory contains the documentation front door for the current project.
+This directory is the documentation front door for the current project.
 
 The key distinction is:
 - **Canonical** docs define the current project identity and paper-facing interpretation.
@@ -20,12 +20,11 @@ If you only want the current truth, read:
 8. [`ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 
 If you only want runnable entry points, go to:
-- [`../scripts/README.md`](../scripts/README.md)
 - [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
+- [`../scripts/README.md`](../scripts/README.md)
 
-If you want the current repo-organization rationale, read:
-- [`REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md)
-- [`REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md)
+If you want setup and local development commands, go to:
+- [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
 
 ## Best front-door documents
 
@@ -37,7 +36,6 @@ If you want the current repo-organization rationale, read:
 - [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md): current experiment-family index.
 - [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md): current baseline/reference index.
 - [`CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md): shortest current answer on what external baseline to strengthen next.
-- [`CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`](CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md): focused anti-collapse / branch-allocation literature memo.
 - [`REPO_MAP.md`](REPO_MAP.md): canonical repository map.
 
 ## Canonical docs by purpose
@@ -85,10 +83,3 @@ If you want the current repo-organization rationale, read:
 - Use **exploratory** docs when you need experiment-specific context.
 - Use **historical** docs only for provenance or comparison with older directions.
 - Do not treat arbitrary dated notes as the current whole-repo summary unless they are referenced by the canonical front door.
-
-## Historical interpretation rule
-
-For historical/provenance material, use:
-- [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
-
-That policy governs how older notes, superseded summaries, and archived materials should be interpreted.
