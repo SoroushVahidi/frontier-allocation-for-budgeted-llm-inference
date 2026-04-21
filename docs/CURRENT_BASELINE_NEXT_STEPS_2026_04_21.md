@@ -16,6 +16,15 @@ So the next major strengthening task is no longer default-model selection.
 It is:
 - **external-baseline strengthening and closure**.
 
+## Paper-facing rule
+
+For the NeurIPS paper, the main comparison priority is now:
+1. **our current best method vs external baselines from prior papers**,
+2. then a smaller supporting layer of internal neighboring finalists and ablations.
+
+Do not treat internal repo rankings as the headline paper artifact.
+They are useful for method development and appendices, but the reviewer-facing empirical question is whether the current promoted method stands up against strong external baselines.
+
 ## Current safest baseline taxonomy summary
 
 Use the normalized v1 taxonomy from:
@@ -96,15 +105,34 @@ So Q* remains a **second-wave** or later baseline unless the official-code/prove
 Recommended order:
 1. **BEST-Route**
 2. **When To Solve / When To Verify**
-3. **ReST-MCTS*** (if stronger official import evidence becomes worth the added heaviness)
+3. **ReST-MCTS***
 4. **Q*** only after the repo has a clearly caveated unofficial-adapter or stronger provenance-backed path
+
+## Main paper-facing external comparison stack right now
+
+If the paper table had to be built conservatively from the current repository state, the strongest current external stack would be:
+
+### Near-direct matched-substrate baselines
+- **s1 MODE A**
+- **TALE MODE A**
+- **L1 MODE A**
+
+### Official adjacent baselines
+- **BEST-Route**
+- **When To Solve / When To Verify**
+
+### Next adjacent baseline to strengthen
+- **ReST-MCTS***
+
+This is currently a better paper-facing stack than trying to force weakly integrated or discuss-only baselines into the main table.
 
 ## Current paper-facing guidance
 
 For manuscript-facing text right now:
 - treat `s1`, `TALE`, and `L1` as the strongest matched-substrate near-direct external comparisons,
-- treat `BEST-Route` as the first external adjacent official baseline to strengthen,
-- treat `when_solve_when_verify` as the next adjacent baseline most worth strengthening after BEST-Route,
+- treat `BEST-Route` as the first external adjacent official baseline already strengthened,
+- treat `when_solve_when_verify` as the next strongest adjacent strengthened baseline,
+- treat `rest_mcts` as the next worthwhile adjacent baseline to strengthen,
 - and treat `Q*` as an important discuss-only or later-wave baseline unless its integration path becomes much stronger.
 
 ## Cross-links
@@ -114,7 +142,6 @@ Also see:
 - `main_baselines.md`
 - `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 - `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-
 
 ## BEST-Route strengthening artifact
 
