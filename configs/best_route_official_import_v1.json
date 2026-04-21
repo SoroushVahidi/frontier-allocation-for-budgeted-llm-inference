@@ -1,0 +1,77 @@
+{
+  "baseline_key": "best_route_microsoft",
+  "baseline_display_name": "BEST-Route",
+  "canonical_paper": {
+    "title": "BEST-Route: Adaptive LLM Routing with Test-Time Optimal Compute",
+    "authors": [
+      "Dujian Ding",
+      "Ankur Mallick",
+      "Shaokun Zhang",
+      "Chi Wang",
+      "Daniel Madrigal",
+      "Mirian Del Carmen Hipolito Garcia",
+      "Menglin Xia",
+      "Laks V.S. Lakshmanan",
+      "Qingyun Wu",
+      "Victor Ruhle"
+    ],
+    "venue": "ICML",
+    "year": 2025,
+    "status": "accepted_main_conference",
+    "paper_url": "https://arxiv.org/abs/2506.22716"
+  },
+  "official": {
+    "repo_url": "https://github.com/microsoft/best-route-llm.git",
+    "project_page": "https://www.microsoft.com/en-us/research/publication/best-route-adaptive-llm-routing-with-test-time-optimal-compute/",
+    "expected_local_clone_path": "external/best_route_microsoft/upstream/best-route-llm",
+    "require_existing_local_clone": false,
+    "expected_repo_markers": [
+      "README.md",
+      "LICENSE.md"
+    ],
+    "expected_repo_entrypoints_any": [
+      "train_router.py",
+      "scripts/train_router.py",
+      "src"
+    ],
+    "notes": "If a local clone is supplied, validator checks marker and entrypoint expectations conservatively."
+  },
+  "classification": {
+    "resource_level": "official",
+    "status": "import_validated",
+    "control_equivalence": "adjacent",
+    "baseline_class": "query_level_adaptive_routing",
+    "problem_class_note": "Chooses (model, best_of_n) arms per query under budget-quality constraints; not frontier allocation over active reasoning branches."
+  },
+  "execution_policy": {
+    "training_required_for_full_reproduction": true,
+    "in_repo_full_reproduction_supported": false,
+    "imported_results_expected": true,
+    "allowed_reporting_modes": [
+      "adjacent_import_validated_only"
+    ],
+    "forbidden_reporting_claims": [
+      "direct_frontier_allocation_equivalence",
+      "full_paper_faithful_reproduction_in_repo"
+    ]
+  },
+  "import_contract": {
+    "validator_script": "scripts/verify_best_route_import.py",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "mixed_prompt_construction",
+      "multi_sample_response_generation",
+      "armoRM_scoring",
+      "proxy_reward_model_scoring",
+      "router_training"
+    ],
+    "required_metrics": [
+      "accuracy",
+      "avg_token_cost"
+    ],
+    "required_comparability_scope": "adjacent_only"
+  }
+}

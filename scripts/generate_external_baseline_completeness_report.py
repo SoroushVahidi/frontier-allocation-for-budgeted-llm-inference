@@ -60,7 +60,7 @@ CLASSIFICATION_ROWS: list[dict[str, str]] = [
     {
         "baseline_key": "best_route_microsoft",
         "display_name": "BEST-Route",
-        "category": "runnable_adjacent",
+        "category": "import_validated",
         "status_v1_mode_a": "import_validated",
         "status_v1_mode_b": "not_applicable",
         "control_v1_mode_a": "adjacent",
