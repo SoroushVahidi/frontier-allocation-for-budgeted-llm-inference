@@ -22,6 +22,11 @@ REQUIRED_PATHS = [
     REPO_ROOT / "Makefile",
     REPO_ROOT / "docs" / "README.md",
     REPO_ROOT / "docs" / "CANONICAL_INSTALL_AND_DEV.md",
+    REPO_ROOT / "docs" / "CURRENT_METHOD.md",
+    REPO_ROOT / "docs" / "CURRENT_RESULTS.md",
+    REPO_ROOT / "docs" / "CURRENT_REFERENCES.md",
+    REPO_ROOT / "docs" / "CURRENT_NEXT_STEPS.md",
+    REPO_ROOT / "docs" / "CANONICAL_PAPER_WORKING_SET.md",
     REPO_ROOT / "scripts" / "README.md",
     REPO_ROOT / "experiments" / "frontier_router.py",
     REPO_ROOT / "tests" / "test_frontier_router.py",
@@ -30,7 +35,6 @@ REQUIRED_PATHS = [
 REQUIRED_IMPORTS = [
     "experiments.frontier_router",
 ]
-
 
 
 def main() -> int:
@@ -60,7 +64,7 @@ def main() -> int:
         return 1
 
     print("Repository health check: OK")
-    print("Canonical files present, core import path works, and lightweight structure checks passed.")
+    print("Stable current-doc aliases, canonical files, and core import paths are present.")
     return 0
 
 
