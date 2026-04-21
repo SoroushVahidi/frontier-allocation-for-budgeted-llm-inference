@@ -1320,7 +1320,7 @@ def build_frontier_strategies(
         ] = specs[
             "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v3_ambiguity_after_depth2"
         ]
-        for cap_k in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+        for cap_k in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14):
             specs[
                 f"broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k{cap_k}_v1"
             ] = GlobalDiversityAggregationController(
