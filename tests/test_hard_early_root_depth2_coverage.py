@@ -4,8 +4,31 @@ from __future__ import annotations
 
 import random
 
+from experiments.branching import BranchState
 from experiments.branching import SimulatedBranchGenerator
+from experiments.controllers import GlobalDiversityAggregationController
 from experiments.frontier_matrix_core import build_frontier_strategies, load_pilot_examples
+from experiments.scoring import ScoreConfig, SimpleBranchScorer
+
+
+def _mk_controller(*, max_actions: int = 10, forced_min_depth: int = 3) -> GlobalDiversityAggregationController:
+    return GlobalDiversityAggregationController(
+        SimulatedBranchGenerator(rng=random.Random(0), max_depth=7, finish_prob_base=0.16, answer_noise=0.12),
+        SimpleBranchScorer(ScoreConfig()),
+        max_actions,
+        hard_early_root_coverage_forced_min_depth=forced_min_depth,
+    )
+
+
+def _mk_branch(branch_id: str, depth: int, *, done: bool = False, pruned: bool = False) -> BranchState:
+    return BranchState(
+        branch_id=branch_id,
+        latent_quality=0.5,
+        steps=[f"s{i}" for i in range(depth)],
+        score=0.5,
+        is_done=done,
+        is_pruned=pruned,
+    )
 
 
 def test_hard_early_coverage_methods_registered() -> None:
@@ -118,3 +141,105 @@ def test_gate_v1_design_metadata_emits_design_name() -> None:
     meta = specs[m].run(ex.question, ex.answer).metadata
     thresholds = meta.get("conditional_depth3_gate_thresholds") or {}
     assert thresholds.get("conditional_depth3_gate_design") == "v1_optimistic_collapse_first"
+
+
+def test_strict_phased_depth1_blocks_depth2_entry_until_all_families_reach_depth1() -> None:
+    c = _mk_controller(forced_min_depth=3)
+    b0 = _mk_branch("f0_h", 0)
+    b1 = _mk_branch("f1_h", 1)
+    diag = c._hard_early_root_coverage_forced_diagnostic(
+        branches=[b0, b1],
+        branch_family_ids={"f0_h": "f0", "f1_h": "f1"},
+        root_family_ids=frozenset({"f0", "f1"}),
+        actions_so_far=0,
+        max_actions=8,
+        force_disabled=False,
+    )
+    assert diag.get("current_phase") == "phase_depth1"
+    assert "f0" in (diag.get("phase_pending_families") or [])
+
+
+def test_strict_phased_depth2_blocks_depth3_entry_until_all_families_reach_depth2() -> None:
+    c = _mk_controller(forced_min_depth=3)
+    b0 = _mk_branch("f0_h", 1)
+    b1 = _mk_branch("f1_h", 2)
+    diag = c._hard_early_root_coverage_forced_diagnostic(
+        branches=[b0, b1],
+        branch_family_ids={"f0_h": "f0", "f1_h": "f1"},
+        root_family_ids=frozenset({"f0", "f1"}),
+        actions_so_far=1,
+        max_actions=10,
+        force_disabled=False,
+    )
+    assert diag.get("current_phase") == "phase_depth2"
+    assert "f0" in (diag.get("phase_pending_families") or [])
+
+
+def test_strict_phased_prevents_depth3_start_when_any_family_below_depth2() -> None:
+    c = _mk_controller(forced_min_depth=3)
+    deep = _mk_branch("deep", 3)
+    shallow = _mk_branch("shallow", 1)
+    scored = [(deep, 0.95, {}), (shallow, 0.40, {})]
+    diag = c._hard_early_root_coverage_forced_diagnostic(
+        branches=[deep, shallow],
+        branch_family_ids={"deep": "f0", "shallow": "f1"},
+        root_family_ids=frozenset({"f0", "f1"}),
+        actions_so_far=2,
+        max_actions=12,
+        force_disabled=False,
+    )
+    chosen, _, _, meta = c._apply_hard_early_root_coverage_forced_override(
+        scored,
+        branch=deep,
+        priority=0.95,
+        pri_meta={},
+        branch_family_ids={"deep": "f0", "shallow": "f1"},
+        diag=diag,
+        branches=[deep, shallow],
+    )
+    assert diag.get("current_phase") == "phase_depth2"
+    assert chosen.branch_id == "shallow"
+    assert bool(meta.get("hard_early_coverage_forced_override"))
+
+
+def test_strict_phased_stays_in_depth3_until_completion_or_release() -> None:
+    c = _mk_controller(max_actions=20, forced_min_depth=3)
+    b0 = _mk_branch("f0_h", 2)
+    b1 = _mk_branch("f1_h", 3)
+    diag = c._hard_early_root_coverage_forced_diagnostic(
+        branches=[b0, b1],
+        branch_family_ids={"f0_h": "f0", "f1_h": "f1"},
+        root_family_ids=frozenset({"f0", "f1"}),
+        actions_so_far=5,
+        max_actions=20,
+        force_disabled=False,
+    )
+    assert diag.get("current_phase") == "phase_depth3"
+    assert not bool(diag.get("release_impossible_under_budget"))
+
+
+def test_strict_phased_preserves_score_order_within_same_level_pending_families() -> None:
+    c = _mk_controller(forced_min_depth=2)
+    b0 = _mk_branch("f0_h", 1)
+    b1 = _mk_branch("f1_h", 1)
+    scored = [(b1, 0.91, {}), (b0, 0.62, {})]
+    diag = c._hard_early_root_coverage_forced_diagnostic(
+        branches=[b0, b1],
+        branch_family_ids={"f0_h": "f0", "f1_h": "f1"},
+        root_family_ids=frozenset({"f0", "f1"}),
+        actions_so_far=1,
+        max_actions=8,
+        force_disabled=False,
+    )
+    chosen, _, _, meta = c._apply_hard_early_root_coverage_forced_override(
+        scored,
+        branch=b1,
+        priority=0.91,
+        pri_meta={},
+        branch_family_ids={"f0_h": "f0", "f1_h": "f1"},
+        diag=diag,
+        branches=[b0, b1],
+    )
+    assert diag.get("current_phase") == "phase_depth2"
+    assert chosen.branch_id == "f1_h"
+    assert not bool(meta.get("hard_early_coverage_forced_override"))

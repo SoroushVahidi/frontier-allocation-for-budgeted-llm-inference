@@ -2235,19 +2235,12 @@ class GlobalDiversityAggregationController(BaseController):
         force_disabled: bool,
         coverage_target_override: int | None = None,
     ) -> dict[str, Any]:
-        """Hard minimum per-root-family expandable depth before cross-family concentration.
+        """Strict phased root-family early coverage diagnostic.
 
-        Each initial root (``div_0`` / ``div_1``) defines a *family* id via ``branch_family_ids``.
-        Let ``target = hard_early_root_coverage_forced_min_depth`` (typically 2 or 3). While a
-        family has any non-done, non-pruned head with ``max(depth) < target``, that family is
-        *pending*. Eligible expansions are still ranked by the normal ``scored`` priorities;
-        this layer only removes families that already meet the depth quota from the eligible
-        set when another root family is still pending (not a fixed BFS order).
-
-        If no expandable heads remain for a family, it is not pending (cannot improve).
-
-        ``coverage_target_override`` (when set) replaces ``hard_early_root_coverage_forced_min_depth``
-        for this diagnostic only (used by conditional depth-2-then-gated-depth-3 mode).
+        For forced coverage, phase order is strict and level-by-level:
+        ``phase_depth1`` -> ``phase_depth2`` -> ``phase_depth3`` -> ``phase_normal``.
+        We never permit deeper-phase eligibility while an earlier phase remains unfinished.
+        Within the active phase, candidate ordering still follows controller scoring.
         """
         target = int(coverage_target_override) if coverage_target_override is not None else int(self.hard_early_root_coverage_forced_min_depth)
         if force_disabled or target < 2:
@@ -2264,39 +2257,85 @@ class GlobalDiversityAggregationController(BaseController):
                 "remaining_actions_before_step": max(0, int(max_actions) - int(actions_so_far)),
                 "release_impossible_under_budget": False,
                 "release_low_remaining_budget": False,
+                "current_phase": "phase_normal",
+                "current_phase_depth_requirement": 0,
+                "phase_pending_families": [],
+                "phase_family_status": {},
+                "phase_status_by_depth": {},
+                "max_realized_depth_per_root_family": {},
+                "max_expandable_depth_per_root_family": {},
             }
 
         active = [b for b in branches if not b.is_pruned]
+        max_realized_depth_per_family: dict[str, int | None] = {}
+        max_expandable_depth_per_family: dict[str, int | None] = {}
+        phase_status_by_depth: dict[str, dict[str, Any]] = {}
         family_status: dict[str, dict[str, Any]] = {}
-        pending: list[str] = []
+        current_phase_pending: list[str] = []
+        current_phase_status: dict[str, Any] = {}
+        current_phase_depth = 0
+        phase_name = "phase_normal"
         total_need = 0
+        max_phase_depth = max(1, min(3, int(target)))
+        phase_depths = list(range(1, max_phase_depth + 1))
+
+        family_heads: dict[str, list[BranchState]] = {}
+        family_expandable: dict[str, list[BranchState]] = {}
         for fam in sorted(root_family_ids):
             heads = [b for b in active if self._branch_family_id(b, branch_family_ids) == fam]
             expandable = [b for b in heads if not b.is_done]
-            if not expandable:
-                family_status[fam] = {
-                    "pending": False,
-                    "reason": "no_expandable_heads",
-                    "max_depth_among_expandable": None,
-                    "actions_needed_lower_bound": 0,
+            family_heads[fam] = heads
+            family_expandable[fam] = expandable
+            max_realized_depth_per_family[fam] = max((int(b.depth) for b in heads), default=None)
+            max_expandable_depth_per_family[fam] = max((int(b.depth) for b in expandable), default=None)
+
+        for phase_depth in phase_depths:
+            pending: list[str] = []
+            per_family_status: dict[str, dict[str, Any]] = {}
+            phase_total_need = 0
+            for fam in sorted(root_family_ids):
+                expandable = family_expandable.get(fam, [])
+                if not expandable:
+                    per_family_status[fam] = {
+                        "pending": False,
+                        "reason": "no_expandable_heads",
+                        "max_depth_among_expandable": None,
+                        "actions_needed_lower_bound": 0,
+                    }
+                    continue
+                max_depth = max(int(b.depth) for b in expandable)
+                need = max(0, int(phase_depth) - int(max_depth))
+                is_pending = need > 0
+                per_family_status[fam] = {
+                    "pending": bool(is_pending),
+                    "reason": f"depth_below_{phase_depth}" if is_pending else f"max_expandable_depth_ge_{phase_depth}",
+                    "max_depth_among_expandable": int(max_depth),
+                    "expandable_head_count": int(len(expandable)),
+                    "actions_needed_lower_bound": int(need),
                 }
-                continue
-            max_depth = max(int(b.depth) for b in expandable)
-            need = max(0, target - max_depth)
-            is_pending = need > 0
-            family_status[fam] = {
-                "pending": bool(is_pending),
-                "reason": f"depth_below_{target}" if is_pending else f"max_expandable_depth_ge_{target}",
-                "max_depth_among_expandable": int(max_depth),
-                "expandable_head_count": int(len(expandable)),
-                "actions_needed_lower_bound": int(need),
+                if is_pending:
+                    pending.append(fam)
+                    phase_total_need += int(need)
+            phase_status_by_depth[f"depth_{phase_depth}"] = {
+                "phase_depth_requirement": int(phase_depth),
+                "pending_families": pending,
+                "all_root_families_satisfied": len(pending) == 0,
+                "actions_needed_sum_lower_bound": int(phase_total_need),
+                "family_status": per_family_status,
             }
-            if is_pending:
-                pending.append(fam)
-                total_need += int(need)
+            if current_phase_depth == 0 and pending:
+                current_phase_depth = int(phase_depth)
+                current_phase_pending = list(pending)
+                current_phase_status = per_family_status
+                total_need = int(phase_total_need)
+                phase_name = f"phase_depth{phase_depth}"
+                family_status = per_family_status
+
+        if current_phase_depth == 0:
+            family_status = phase_status_by_depth.get(f"depth_{max_phase_depth}", {}).get("family_status", {})
 
         remaining = max(0, int(max_actions) - int(actions_so_far))
-        impossible = bool(len(pending) > 0 and remaining < int(total_need))
+        impossible = bool(len(current_phase_pending) > 0 and remaining < int(total_need))
         low_rem = bool(
             self.hard_early_coverage_min_remaining_actions_to_release > 0
             and remaining <= int(self.hard_early_coverage_min_remaining_actions_to_release)
@@ -2308,12 +2347,19 @@ class GlobalDiversityAggregationController(BaseController):
             "force_disabled": False,
             "root_families": sorted(root_family_ids),
             "family_status": family_status,
-            "pending_families": pending,
-            "all_root_families_satisfied": len(pending) == 0,
+            "pending_families": current_phase_pending,
+            "all_root_families_satisfied": len(current_phase_pending) == 0,
             "actions_needed_sum_lower_bound": int(total_need),
             "remaining_actions_before_step": int(remaining),
             "release_impossible_under_budget": impossible,
             "release_low_remaining_budget": low_rem,
+            "current_phase": phase_name,
+            "current_phase_depth_requirement": int(current_phase_depth),
+            "phase_pending_families": current_phase_pending,
+            "phase_family_status": current_phase_status,
+            "phase_status_by_depth": phase_status_by_depth,
+            "max_realized_depth_per_root_family": max_realized_depth_per_family,
+            "max_expandable_depth_per_root_family": max_expandable_depth_per_family,
         }
 
     def _evaluate_conditional_depth3_gate(
@@ -2659,6 +2705,9 @@ class GlobalDiversityAggregationController(BaseController):
         hard_early_coverage_budget_released_low_remaining = False
         hard_early_coverage_forced_override_steps = 0
         hard_early_coverage_transition_actions_used: int | None = None
+        hard_early_coverage_phase_last: str = "phase_normal"
+        hard_early_coverage_phase_transition_count = 0
+        hard_early_coverage_phase_transition_log: list[dict[str, Any]] = []
         cond_phase: str | None = "depth2" if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 else None
         cond_gate_evaluated = False
         cond_gate_record: dict[str, Any] | None = None
@@ -2946,6 +2995,31 @@ class GlobalDiversityAggregationController(BaseController):
                 and hard_early_coverage_force_disabled
             ):
                 cond_phase = "normal"
+            current_cov_phase = str(hard_cov_diag.get("current_phase") or "phase_normal")
+            phase_transition_happened = bool(current_cov_phase != hard_early_coverage_phase_last)
+            phase_transition_reason = "steady"
+            if phase_transition_happened:
+                hard_early_coverage_phase_transition_count += 1
+                if current_cov_phase == "phase_normal":
+                    if bool(hard_cov_diag.get("release_impossible_under_budget")):
+                        phase_transition_reason = "release_impossible_under_budget"
+                    elif bool(hard_cov_diag.get("release_low_remaining_budget")):
+                        phase_transition_reason = "release_low_remaining_budget"
+                    else:
+                        phase_transition_reason = "all_required_phases_completed"
+                else:
+                    phase_transition_reason = f"advanced_to_{current_cov_phase}"
+                hard_early_coverage_phase_transition_log.append(
+                    {
+                        "action_index": int(actions),
+                        "from_phase": str(hard_early_coverage_phase_last),
+                        "to_phase": str(current_cov_phase),
+                        "reason": str(phase_transition_reason),
+                        "pending_families": list(hard_cov_diag.get("phase_pending_families") or []),
+                        "phase_depth_requirement": int(hard_cov_diag.get("current_phase_depth_requirement") or 0),
+                    }
+                )
+                hard_early_coverage_phase_last = str(current_cov_phase)
             branch, priority, pri_meta, hard_cov_override = self._apply_hard_early_root_coverage_forced_override(
                 scored,
                 branch=branch,
@@ -2960,6 +3034,7 @@ class GlobalDiversityAggregationController(BaseController):
             hard_cov_trace = {
                 "hard_early_root_coverage_forced_min_depth": int(self.hard_early_root_coverage_forced_min_depth),
                 "hard_early_root_coverage_forced_active": bool(self.hard_early_root_coverage_forced_min_depth >= 2),
+                "hard_early_root_strict_phased_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth >= 2),
                 "hard_early_root_depth2_coverage_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth == 2),
                 "hard_early_root_depth3_coverage_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth >= 3),
                 "hard_early_coverage_force_disabled": bool(hard_early_coverage_force_disabled),
@@ -2976,8 +3051,21 @@ class GlobalDiversityAggregationController(BaseController):
                     hard_cov_diag.get("release_impossible_under_budget")
                 ),
                 "hard_early_coverage_release_low_remaining": bool(hard_cov_diag.get("release_low_remaining_budget")),
+                "hard_early_coverage_current_phase": current_cov_phase,
+                "hard_early_coverage_current_phase_depth_requirement": int(
+                    hard_cov_diag.get("current_phase_depth_requirement") or 0
+                ),
+                "hard_early_coverage_phase_transition_happened": bool(phase_transition_happened),
+                "hard_early_coverage_phase_transition_reason": str(phase_transition_reason),
+                "hard_early_coverage_phase_pending_families": list(hard_cov_diag.get("phase_pending_families") or []),
+                "hard_early_coverage_phase_max_realized_depth_per_root_family": dict(
+                    hard_cov_diag.get("max_realized_depth_per_root_family") or {}
+                ),
                 "hard_early_coverage_forced_override": bool(hard_cov_override.get("hard_early_coverage_forced_override")),
                 "hard_early_coverage_override_reason": str(hard_cov_override.get("hard_early_coverage_override_reason") or ""),
+                "hard_early_coverage_action_blocked_by_phase_incomplete": bool(
+                    hard_cov_override.get("hard_early_coverage_forced_override")
+                ),
                 "conditional_depth2_then_depth3_gate_phase": str(cond_phase or ""),
                 "conditional_depth3_gate_evaluated": bool(cond_gate_evaluated),
             }
@@ -3766,6 +3854,7 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_early_root_coverage_forced_min_depth": int(self.hard_early_root_coverage_forced_min_depth),
                 "hard_early_root_depth2_coverage_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth == 2),
                 "hard_early_root_depth3_coverage_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth >= 3),
+                "hard_early_root_strict_phased_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth >= 2),
                 "hard_early_coverage_forced_override_steps": int(hard_early_coverage_forced_override_steps),
                 "hard_early_coverage_transition_actions_used": hard_early_coverage_transition_actions_used,
                 "hard_early_coverage_completed_fully": bool(
@@ -3777,6 +3866,9 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_early_coverage_budget_released_impossible": bool(hard_early_coverage_budget_released_impossible),
                 "hard_early_coverage_budget_released_low_remaining": bool(hard_early_coverage_budget_released_low_remaining),
                 "hard_early_coverage_force_disabled_final": bool(hard_early_coverage_force_disabled),
+                "hard_early_coverage_phase_transition_count": int(hard_early_coverage_phase_transition_count),
+                "hard_early_coverage_phase_transition_log": hard_early_coverage_phase_transition_log[:12],
+                "hard_early_coverage_phase_final": str(hard_early_coverage_phase_last),
                 "hard_early_coverage_root_families": sorted(root_family_ids),
                 "hard_early_root_depth2_then_conditional_depth3_v1_enabled": bool(
                     self.enable_hard_early_root_depth2_then_conditional_depth3_v1
@@ -3832,6 +3924,23 @@ class GlobalDiversityAggregationController(BaseController):
                             else None
                         ),
                     ).get("family_status")
+                    if self.hard_early_root_coverage_forced_min_depth >= 2
+                    else {}
+                ),
+                "hard_early_coverage_final_phase_status": (
+                    self._hard_early_root_coverage_forced_diagnostic(
+                        branches=branches,
+                        branch_family_ids=branch_family_ids,
+                        root_family_ids=root_family_ids,
+                        actions_so_far=actions,
+                        max_actions=self.max_actions,
+                        force_disabled=hard_early_coverage_force_disabled,
+                        coverage_target_override=(
+                            3
+                            if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 and cond_depth3_completed
+                            else None
+                        ),
+                    )
                     if self.hard_early_root_coverage_forced_min_depth >= 2
                     else {}
                 ),
