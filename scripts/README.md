@@ -28,6 +28,7 @@ This file is the runnable-code front door for the repository.
 - `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py`
 - `run_hundred_three_gate_design_eval_strict_phased.py`
 - `build_new_hundred_newest_vs_best_failure_statistics.py`
+- `build_canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics.py`
 
 ### 2. Run current learned/capped alternatives
 - `run_learned_f2_to_f3_gate_v1_eval.py`
@@ -53,6 +54,7 @@ This file is the runnable-code front door for the repository.
 | `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py` | Strict forced F2 vs strict forced F3 comparison under phased law |
 | `run_hundred_three_gate_design_eval_strict_phased.py` | Strict phased Gate 1 / Gate 2 / Gate 3 comparison |
 | `build_new_hundred_newest_vs_best_failure_statistics.py` | Build the newest-vs-best exact-loss 100-case statistics surface |
+| `build_canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics.py` | Build the finalized-default (`strict_gate1_cap_k6`) canonical exact-loss 100-case statistics bundle |
 | `run_learned_f2_to_f3_gate_v1_eval.py` | Train and evaluate a learned strict post-F2 gate |
 | `run_hard_max_family_expansions_eval.py` | Evaluate hard per-family expansion caps on the strict target |
 | `run_full_method_comparison_bundle.py` | Current broad matched comparison / ranking bundle |

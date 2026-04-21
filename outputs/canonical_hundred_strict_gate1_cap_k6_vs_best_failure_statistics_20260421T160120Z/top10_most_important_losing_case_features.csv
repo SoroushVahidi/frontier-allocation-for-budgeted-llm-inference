@@ -1,0 +1,11 @@
+rank,feature,definition,prevalence_n,prevalence_pct,why_important,improvement_direction
+1,failure_type_absent_from_tree,Gold answer absent from strict_gate1_cap_k6 final tree under deterministic repair replay.,55,55.0,Coverage remains the dominant residual failure mode.,Increase early family diversity and targeted entry to gold-bearing branches.
+2,failure_type_present_not_selected,Gold exists in our tree but final selected answer is wrong.,45,45.0,Large secondary mode indicates selection/scoring opportunity.,Tune answer-group ranking and tie-break logic when gold is present.
+3,repeated_same_family_expansion_present,Observed repeated expansion in the same root family via event-level replay.,88,88.0,Family concentration often co-occurs with absent-from-tree failures.,Strengthen anti-collapse gating under cap pressure.
+4,dominant_family_share_high,Max family share of expansions >=0.60 in a case.,31,31.0,Expansion mass concentration reduces breadth and gold-entry probability.,Raise penalties for dominant-family reuse before F3-like depth.
+5,longest_same_family_run_ge3,Longest consecutive same-family expansion run is >=3.,83,83.0,Long runs indicate local myopia episodes.,Add run-length-aware rescue branching.
+6,answer_group_monopoly,One answer group monopolizes support while alternatives exist.,0,0.0,Group monopoly can suppress late-correct minority branches.,Require challenger-group verification when monopoly signal fires.
+7,comparator_earlier_correct_entry,Comparator shows earlier correct entry advantage tag.,69,69.0,Comparator wins by entering correct basin sooner.,Bias first successful deepening toward under-explored families.
+8,comparator_better_budget_efficiency,Comparator reaches correctness with materially fewer actions.,75,75.0,Budget-use inefficiency leaves less room for corrective exploration.,Reallocate verification vs expansion under cap_k6.
+9,comparator_less_collapse,Comparator has lower family-collapse concentration signal.,13,13.0,Confirms collapse as practical failure accelerator.,Increase cross-family compulsory hops after repeated concentration.
+10,selection_advantage_signal,Comparator tagged with better_selection.,45,45.0,Selection layer still explains a substantial subset.,Improve chosen-node confidence calibration and extraction consistency.

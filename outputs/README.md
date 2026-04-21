@@ -15,6 +15,7 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 ### 2. Current exact loss surfaces and larger direct-adversary failure statistics
 - `twenty_exact_current_full_vs_best_fresh_20260420/`
 - `hundred_current_full_vs_best_failure_statistics_20260420T220416Z/`
+- `canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z/`
 - `new_hundred_newest_vs_best_failure_statistics_20260421T032711Z/`
 
 ### 3. Current strict-phased hard-coverage and gate-comparison stack

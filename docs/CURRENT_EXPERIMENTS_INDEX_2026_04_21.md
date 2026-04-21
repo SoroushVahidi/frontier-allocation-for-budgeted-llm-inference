@@ -31,15 +31,15 @@ The repository's current experimental center is:
 **Current conclusion:**
 - `strict_gate1_cap_k6` is the current broad default promoted model on the evaluated surface.
 
-### 2. Newest-vs-best exact-loss statistics
-**Question:** for the newest selected method, what do the remaining 100 exact losses against the strongest direct adversary look like?
+### 2. Canonical strict_gate1_cap_k6-vs-best exact-loss statistics
+**Question:** for the finalized default `strict_gate1_cap_k6`, what do the remaining 100 exact losses against the strongest direct adversary look like?
 
 **Primary script:**
-- `scripts/build_new_hundred_newest_vs_best_failure_statistics.py`
+- `scripts/build_canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics.py`
 
 **Primary reports/artifacts:**
-- `docs/NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
-- `outputs/new_hundred_newest_vs_best_failure_statistics_20260421T032711Z/`
+- `docs/CANONICAL_HUNDRED_STRICT_GATE1_CAP_K6_VS_BEST_FAILURE_STATISTICS_20260421T160120Z.md`
+- `outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z/`
 
 ### 3. Strict-phased force/gate comparison stack
 **Question:** how did strict forced F2/F3 and strict Gate 1/2/3 compare before the final broader default decision?
@@ -83,7 +83,7 @@ The repository's current experimental center is:
 If your question is "what is the current broad default promoted model?", the shortest experiment path is:
 1. `FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
 2. `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-3. `NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
+3. `CANONICAL_HUNDRED_STRICT_GATE1_CAP_K6_VS_BEST_FAILURE_STATISTICS_20260421T160120Z.md`
 4. `HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`
 
 ## Current leading method candidates
