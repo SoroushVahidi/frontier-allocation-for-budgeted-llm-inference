@@ -155,7 +155,7 @@ def test_strict_phased_depth1_blocks_depth2_entry_until_all_families_reach_depth
         max_actions=8,
         force_disabled=False,
     )
-    assert diag.get("current_phase") == "phase_depth1"
+    assert diag.get("current_phase") == "phase_f1"
     assert "f0" in (diag.get("phase_pending_families") or [])
 
 
@@ -171,7 +171,7 @@ def test_strict_phased_depth2_blocks_depth3_entry_until_all_families_reach_depth
         max_actions=10,
         force_disabled=False,
     )
-    assert diag.get("current_phase") == "phase_depth2"
+    assert diag.get("current_phase") == "phase_f2"
     assert "f0" in (diag.get("phase_pending_families") or [])
 
 
@@ -197,7 +197,7 @@ def test_strict_phased_prevents_depth3_start_when_any_family_below_depth2() -> N
         diag=diag,
         branches=[deep, shallow],
     )
-    assert diag.get("current_phase") == "phase_depth2"
+    assert diag.get("current_phase") == "phase_f2"
     assert chosen.branch_id == "shallow"
     assert bool(meta.get("hard_early_coverage_forced_override"))
 
@@ -214,7 +214,7 @@ def test_strict_phased_stays_in_depth3_until_completion_or_release() -> None:
         max_actions=20,
         force_disabled=False,
     )
-    assert diag.get("current_phase") == "phase_depth3"
+    assert diag.get("current_phase") == "phase_f3"
     assert not bool(diag.get("release_impossible_under_budget"))
 
 
@@ -240,6 +240,48 @@ def test_strict_phased_preserves_score_order_within_same_level_pending_families(
         diag=diag,
         branches=[b0, b1],
     )
-    assert diag.get("current_phase") == "phase_depth2"
+    assert diag.get("current_phase") == "phase_f2"
     assert chosen.branch_id == "f1_h"
     assert not bool(meta.get("hard_early_coverage_forced_override"))
+
+
+def test_strict_phased_gate_evaluation_only_after_f2_completion() -> None:
+    c = _mk_controller(forced_min_depth=3)
+    incomplete_d2 = {
+        "all_root_families_satisfied": False,
+        "release_impossible_under_budget": False,
+        "pending_families": ["f0"],
+    }
+    done = _mk_branch("done", 2, done=True)
+    gate = c._evaluate_conditional_depth3_gate(
+        answer_support_counts={"a": 1},
+        branch_expansions={},
+        branch_family_ids={"done": "f0"},
+        root_family_ids=frozenset({"f0"}),
+        branches=[done],
+        scored=[(done, 0.9, {})],
+        actions_so_far=1,
+        max_actions=10,
+        expansions=1,
+        max_consecutive_same_family_expands=1,
+        hard_cov_diag_d2=incomplete_d2,
+    )
+    assert gate.get("diagnostic_depth2_at_gate", {}).get("all_root_families_satisfied") is False
+
+
+def test_strict_phased_variants_registered() -> None:
+    specs = build_frontier_strategies(
+        generator_factory=lambda: SimulatedBranchGenerator(
+            rng=random.Random(7), max_depth=7, finish_prob_base=0.16, answer_noise=0.12
+        ),
+        budget=10,
+        adaptive_min_expand_grid=[1],
+        rng=random.Random(11),
+        use_openai_api=False,
+        include_broad_diversity_aggregation_methods=True,
+    )
+    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_forced_f2_v1" in specs
+    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_forced_f3_v1" in specs
+    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_1_v1" in specs
+    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_2_v1" in specs
+    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_3_v1" in specs

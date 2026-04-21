@@ -2238,7 +2238,7 @@ class GlobalDiversityAggregationController(BaseController):
         """Strict phased root-family early coverage diagnostic.
 
         For forced coverage, phase order is strict and level-by-level:
-        ``phase_depth1`` -> ``phase_depth2`` -> ``phase_depth3`` -> ``phase_normal``.
+        ``phase_f1`` -> ``phase_f2`` -> ``phase_f3`` -> ``phase_normal``.
         We never permit deeper-phase eligibility while an earlier phase remains unfinished.
         Within the active phase, candidate ordering still follows controller scoring.
         """
@@ -2328,7 +2328,7 @@ class GlobalDiversityAggregationController(BaseController):
                 current_phase_pending = list(pending)
                 current_phase_status = per_family_status
                 total_need = int(phase_total_need)
-                phase_name = f"phase_depth{phase_depth}"
+                phase_name = f"phase_f{phase_depth}"
                 family_status = per_family_status
 
         if current_phase_depth == 0:
@@ -2355,6 +2355,7 @@ class GlobalDiversityAggregationController(BaseController):
             "release_low_remaining_budget": low_rem,
             "current_phase": phase_name,
             "current_phase_depth_requirement": int(current_phase_depth),
+            "current_phase_name_legacy": phase_name.replace("phase_f", "phase_depth"),
             "phase_pending_families": current_phase_pending,
             "phase_family_status": current_phase_status,
             "phase_status_by_depth": phase_status_by_depth,
@@ -2996,6 +2997,13 @@ class GlobalDiversityAggregationController(BaseController):
             ):
                 cond_phase = "normal"
             current_cov_phase = str(hard_cov_diag.get("current_phase") or "phase_normal")
+            if (
+                self.enable_hard_early_root_depth2_then_conditional_depth3_v1
+                and cond_phase == "depth2"
+                and not cond_gate_evaluated
+                and bool(hard_cov_diag.get("all_root_families_satisfied"))
+            ):
+                current_cov_phase = "phase_gate_after_f2"
             phase_transition_happened = bool(current_cov_phase != hard_early_coverage_phase_last)
             phase_transition_reason = "steady"
             if phase_transition_happened:
@@ -3016,7 +3024,11 @@ class GlobalDiversityAggregationController(BaseController):
                         "to_phase": str(current_cov_phase),
                         "reason": str(phase_transition_reason),
                         "pending_families": list(hard_cov_diag.get("phase_pending_families") or []),
-                        "phase_depth_requirement": int(hard_cov_diag.get("current_phase_depth_requirement") or 0),
+                        "phase_depth_requirement": (
+                            2
+                            if current_cov_phase == "phase_gate_after_f2"
+                            else int(hard_cov_diag.get("current_phase_depth_requirement") or 0)
+                        ),
                     }
                 )
                 hard_early_coverage_phase_last = str(current_cov_phase)
@@ -3053,7 +3065,9 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_early_coverage_release_low_remaining": bool(hard_cov_diag.get("release_low_remaining_budget")),
                 "hard_early_coverage_current_phase": current_cov_phase,
                 "hard_early_coverage_current_phase_depth_requirement": int(
-                    hard_cov_diag.get("current_phase_depth_requirement") or 0
+                    2
+                    if current_cov_phase == "phase_gate_after_f2"
+                    else (hard_cov_diag.get("current_phase_depth_requirement") or 0)
                 ),
                 "hard_early_coverage_phase_transition_happened": bool(phase_transition_happened),
                 "hard_early_coverage_phase_transition_reason": str(phase_transition_reason),

@@ -1294,6 +1294,32 @@ def build_frontier_strategies(
             conditional_depth3_gate_design="v3_ambiguity_after_depth2",
             method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v3_ambiguity_after_depth2",
         )
+        # Strict-phased naming aliases for the same protocolized configurations.
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_forced_f2_v1"
+        ] = specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1"
+        ]
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_forced_f3_v1"
+        ] = specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
+        ]
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_1_v1"
+        ] = specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
+        ]
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_2_v1"
+        ] = specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v2_budget_aware_rescue"
+        ]
+        specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_3_v1"
+        ] = specs[
+            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v3_ambiguity_after_depth2"
+        ]
     if include_marginal_coverage_diversity_methods:
         specs["marginal_coverage_diversity_v1"] = GlobalDiversityAggregationController(
             generator_factory(),
