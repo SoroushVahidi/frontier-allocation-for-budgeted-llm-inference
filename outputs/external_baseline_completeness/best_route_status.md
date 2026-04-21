@@ -1,6 +1,6 @@
 # BEST-Route status
 
-- Generated (UTC): `2026-04-21T04:54:56.020736+00:00`
+- Generated (UTC): `2026-04-21T16:14:47.593057+00:00`
 - Baseline: `best_route_microsoft`
 - Resource level: `official`
 - Status: `import_validated`

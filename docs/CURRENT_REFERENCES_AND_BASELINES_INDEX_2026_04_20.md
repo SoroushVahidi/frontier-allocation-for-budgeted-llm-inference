@@ -61,8 +61,8 @@ These notes are now the shortest answer to:
 - `L1` MODE A
 
 ### Current external strengthening order
-1. **BEST-Route** — first external baseline to strengthen properly, as an official adjacent import-validated baseline
-2. **When To Solve / When To Verify** — next best adjacent baseline after BEST-Route
+1. **BEST-Route** — strengthened: official adjacent import-validated baseline with reproducible artifact contract
+2. **When To Solve / When To Verify** — current next adjacent baseline after BEST-Route strengthening
 3. **ReST-MCTS*** — heavier but still important adjacent search-guided neighbor
 4. **Q*** — important scientifically, but later-wave unless stronger provenance/integration becomes available
 
@@ -103,3 +103,8 @@ Use this index first when you need to answer:
 - which references belong in the main paper rather than only the appendix,
 - which current references are closest to the repo's anti-collapse / branch-allocation direction,
 - and which current comparison artifacts support those claims.
+
+
+## Latest BEST-Route strengthening artifact
+
+- `BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`

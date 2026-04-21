@@ -1,0 +1,81 @@
+{
+  "openai/gsm8k": {
+    "status": "valid",
+    "verdict": "import_validated",
+    "requested_results_path": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/best_route_import_valid",
+    "resolved_package_dir": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/best_route_import_valid",
+    "required_files": {
+      "metadata_json": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/best_route_import_valid/metadata.json",
+      "results_csv": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/best_route_import_valid/results.csv"
+    },
+    "official_repo_validation": {
+      "clone_url": "https://github.com/microsoft/best-route-llm.git",
+      "configured_expected_local_clone_path": "external/best_route_microsoft/upstream/best-route-llm",
+      "resolved_local_clone_path": "/workspace/adaptive-reasoning-budget-allocation/external/best_route_microsoft/upstream/best-route-llm",
+      "local_clone_exists": false,
+      "marker_hits": [],
+      "missing_markers": [],
+      "entrypoint_hits_any": []
+    },
+    "expected": {
+      "dataset": "gsm8k",
+      "split": "test",
+      "budgets": [
+        1,
+        2
+      ],
+      "required_workflow_stages": [
+        "mixed_prompt_construction",
+        "multi_sample_response_generation",
+        "armoRM_scoring",
+        "proxy_reward_model_scoring",
+        "router_training"
+      ],
+      "comparability_scope": "adjacent_only"
+    },
+    "observed": {
+      "num_rows": 2,
+      "observed_budgets": [
+        1,
+        2
+      ]
+    },
+    "issues": [],
+    "warnings": [
+      "local_official_clone_not_found: /workspace/adaptive-reasoning-budget-allocation/external/best_route_microsoft/upstream/best-route-llm"
+    ],
+    "errors": [],
+    "imported_rows": [
+      {
+        "mode": "best_route_adjacent_import",
+        "source": "best_route_import_verified",
+        "source_type": "official",
+        "dataset": "gsm8k",
+        "dataset_split": "test",
+        "router_strategy": "best_route_router",
+        "budget_setting": "budget_1",
+        "accuracy": "0.71",
+        "avg_token_cost": "420.0",
+        "candidate_arm_space": "llama3_8b_bo1|llama3_8b_bo3",
+        "comparability_scope": "adjacent_only",
+        "artifact_id": "best-route-demo-001",
+        "commit_or_version": "demo"
+      },
+      {
+        "mode": "best_route_adjacent_import",
+        "source": "best_route_import_verified",
+        "source_type": "official",
+        "dataset": "gsm8k",
+        "dataset_split": "test",
+        "router_strategy": "best_route_router",
+        "budget_setting": "budget_2",
+        "accuracy": "0.74",
+        "avg_token_cost": "670.0",
+        "candidate_arm_space": "llama3_8b_bo1|llama3_8b_bo3",
+        "comparability_scope": "adjacent_only",
+        "artifact_id": "best-route-demo-001",
+        "commit_or_version": "demo"
+      }
+    ]
+  }
+}

@@ -79,3 +79,21 @@ python scripts/verify_best_route_import.py \
 - **Our method focus:** adaptive **frontier allocation** across active reasoning states/branches.
 
 Therefore, BEST-Route is reviewer-relevant and valuable, but remains an **adjacent** (not direct) baseline in this repository’s normalized taxonomy.
+
+
+## Strengthened repository-native integration lane (2026-04-21)
+
+Use the canonical runner to produce an artifact-backed BEST-Route adjacent bundle:
+
+```bash
+python scripts/run_best_route_adjacent_integration.py \
+  --import-config configs/best_route_official_import_v1.json \
+  --contract-config configs/best_route_adjacent_comparison_contract_v1.json
+```
+
+Outputs are written to:
+- `outputs/best_route_adjacent_integration/<run_id>/manifest.json`
+- `outputs/best_route_adjacent_integration/<run_id>/status.json`
+- `outputs/best_route_adjacent_integration/<run_id>/validation_results.json`
+- `outputs/best_route_adjacent_integration/<run_id>/validation_status.csv`
+- `outputs/best_route_adjacent_integration/<run_id>/comparison_ready_rows.csv`
