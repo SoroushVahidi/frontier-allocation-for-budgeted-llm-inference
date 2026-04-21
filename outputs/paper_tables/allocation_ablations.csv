@@ -1,8 +1,0 @@
-ablation_group,variant,setting,support_status,mean_accuracy,delta_vs_adaptive_min_expand_1,notes
-anti_collapse_min_expand_guard,adaptive_min_expand_0,min_expansions_before_prune=0,available,0.2250,-0.1306,Directly supported by canonical full-method comparison bundle.
-anti_collapse_min_expand_guard,adaptive_min_expand_1,min_expansions_before_prune=1,available,0.3556,0.0000,Directly supported by canonical full-method comparison bundle.
-anti_collapse_min_expand_guard,adaptive_min_expand_2,min_expansions_before_prune=2,available,0.4694,0.1139,Directly supported by canonical full-method comparison bundle.
-budget_conditioning,adaptive_budget_guarded,budget_guard_prune_floor and budget-aware thresholds,available_in_imported_frontier_eval_only,,,Present in imported_methodology_frontier_eval; not in full multi-dataset seed bundle.
-family_aware_features,explicit_family_feature_toggle,not available,missing,,,No canonical ablation artifact isolating family-feature toggle.
-difficulty_aware_features,hardness_signal_toggle,not available,missing,,,Only hard/easy reporting exists; no direct training-time feature ablation.
-oracle_inspired_targets,oracle_target_supervision_toggle,not available,missing,,,No canonical paper-grade toggle in current run bundles.

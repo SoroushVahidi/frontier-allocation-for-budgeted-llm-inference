@@ -14,9 +14,11 @@ This note records appendix figure reality in the current checkout and prevents r
   - `outputs/paper_figures/appendix_output_layer_repair.{pdf,png}`
   - `outputs/paper_plot_data/appendix_output_layer_repair.csv`
 
-## Appendix figures still missing
+## Appendix figures removed in cleanup
 
-- Old-vs-current tree-comparison appendix figure (`appendix_old_vs_current_tree_comparison.*`) is still missing in this checkout.
+- Removed as stale/mixed-scope:
+  - `appendix_promoted_vs_adversary_failure_slices.{pdf,png}`
+  - `appendix_promoted_vs_adversary_failure_slices.csv`
 
 ## Missing figures that can be generated from current artifacts
 
@@ -30,6 +32,7 @@ This note records appendix figure reality in the current checkout and prevents r
 
 ## Figures that should not be referenced in paper text
 
+- Do not reference removed bounded-surface figure `appendix_promoted_vs_adversary_failure_slices.pdf`.
 - Do not reference `appendix_broad_comparison_frontier.pdf` (no such figure file in this checkout).
 - Do not reference `appendix_old_vs_current_tree_comparison.pdf` (no such figure file in this checkout).
 

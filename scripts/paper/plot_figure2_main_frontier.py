@@ -12,23 +12,15 @@ from paper_style import STYLE
 
 def main() -> None:
     rows = load_csv(PLOT_DATA_DIR / "figure2_main_frontier.csv")
-    fig, ax = plt.subplots(figsize=(7.2, 4.6))
-
-    for method in sorted_methods(rows):
-        mrows = sorted([r for r in rows if r["method"] == method], key=lambda r: int(r["budget"]))
-        ax.plot(
-            [int(r["budget"]) for r in mrows],
-            [float(r["accuracy"]) for r in mrows],
-            label=method,
-            lw=STYLE.line_width,
-            marker="o",
-            ms=STYLE.marker_size,
-            color=method_color(method),
-        )
-
-    apply_axis_style(ax, "Figure 2: Main Budget-Performance Frontier", "Compute Budget", "Accuracy")
-    ax.legend(fontsize=STYLE.legend_size, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
-    fig.subplots_adjust(right=0.74)
+    methods = sorted_methods(rows)
+    vals = [float(next(r["accuracy"] for r in rows if r["method"] == m)) for m in methods]
+    fig, ax = plt.subplots(figsize=(9.0, 4.8))
+    ax.bar(methods, vals, color=[method_color(m) for m in methods])
+    apply_axis_style(ax, "Figure 2: Strict-Phased Default Decision Accuracy", "Method", "Accuracy")
+    ax.tick_params(axis="x", rotation=28)
+    for label in ax.get_xticklabels():
+        label.set_ha("right")
+    ax.set_ylim(0.0, max(vals) + 0.08)
     save_fig(fig, FIGURE_DIR / "figure2_main_frontier.pdf", FIGURE_DIR / "figure2_main_frontier.png")
 
 

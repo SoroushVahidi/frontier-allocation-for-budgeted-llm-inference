@@ -1,8 +1,13 @@
-\begin{tabular}{lllllll}
+\begin{tabular}{lllllllll}
 \hline
-budget & best_fixed_baseline & best_fixed_gap & promoted_method & promoted_gap & oracle_gap & promoted_to_oracle_ratio \\
+formula & formula_expr & accuracy & absent_from_tree & present_not_selected & repeated_same_family_present & avg_actions & improved_vs_fixed_k6 & worsened_vs_fixed_k6 \\
 \hline
-8 & Reasoning Beam-2 & 0.2500 & Promoted (Strict-Coupled Tie-Aware, bridged) & 0.5278 & 0.0000 & 0.4722 \\
-10 & Self-Consistency-3 & 0.3056 & Promoted (Strict-Coupled Tie-Aware, bridged) & 0.5278 & 0.0000 & 0.4722 \\
+fixed_k6 & K(b)=6 & 0.6944 & 104 & 50 & 402 & 7.8452 & 0 & 0 \\
+min6_half & K(b)=min(6,floor(b/2)) & 0.6270 & 117 & 71 & 387 & 8.2024 & 95 & 129 \\
+min6_third & K(b)=min(6,floor(b/3)) & 0.5734 & 165 & 50 & 287 & 8.5179 & 86 & 147 \\
+min6_quarter & K(b)=min(6,floor(b/4)) & 0.4861 & 221 & 38 & 234 & 8.3353 & 83 & 188 \\
+half & K(b)=max(1,floor(b/2)) & 0.6448 & 117 & 62 & 376 & 7.6647 & 107 & 132 \\
+third & K(b)=max(1,floor(b/3)) & 0.5675 & 169 & 49 & 285 & 8.1012 & 76 & 140 \\
+quarter & K(b)=max(1,floor(b/4)) & 0.4881 & 217 & 41 & 213 & 8.3433 & 75 & 179 \\
 \hline
 \end{tabular}

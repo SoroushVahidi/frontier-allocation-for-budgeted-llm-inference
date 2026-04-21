@@ -1,2 +1,0 @@
-benchmark_surface,method_families,budgets,core_metrics,source
-openai/gsm8k (canonical frontier run),fixed baselines; adaptive_budget_guarded; oracle_frontier_upper_bound,"8, 10",accuracy; avg_actions; gap_to_oracle; budget_exhaustion_rate,outputs/imported_methodology_frontier_eval/20260417T000000Z

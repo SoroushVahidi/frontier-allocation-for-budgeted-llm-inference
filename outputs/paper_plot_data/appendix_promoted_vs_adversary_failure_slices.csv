@@ -1,3 +1,0 @@
-regime,seed,method,forced_pairwise_accuracy,near_tie_forced_accuracy,adjacent_forced_accuracy,coverage,deferred_rate
-all_pairs,11,Binary Forced Baseline,0.38461538461538464,0.0,0.4,1.0,0.0
-all_pairs,11,Strict-Coupled Tie-Aware Posthoc Deferral v1,0.38461538461538464,0.0,0.4,0.5384615384615384,0.46153846153846156

@@ -10,27 +10,32 @@ from paper_style import STYLE, method_sort_key
 
 def main() -> None:
     rows = load_csv(PLOT_DATA_DIR / "figure5_anti_collapse.csv")
-    methods = sorted({r["method"] for r in rows}, key=method_sort_key)[:4]
-    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.2), sharex=True)
-
+    methods = sorted({r["method"] for r in rows}, key=method_sort_key)
+    entropy = []
+    max_share = []
     for method in methods:
-        mrows = sorted([r for r in rows if r["method"] == method], key=lambda r: int(r["budget"]))
-        axes[0].plot([int(r["budget"]) for r in mrows], [float(r["allocation_entropy"]) for r in mrows], marker="o", lw=1.9, ms=4.5, label=method)
-        axes[1].plot([int(r["budget"]) for r in mrows], [float(r["max_family_share"]) for r in mrows], marker="o", lw=1.9, ms=4.5, label=method)
+        mrows = [r for r in rows if r["method"] == method]
+        entropy.append(sum(float(r["allocation_entropy"]) for r in mrows) / max(1, len(mrows)))
+        max_share.append(sum(float(r["max_family_share"]) for r in mrows) / max(1, len(mrows)))
+    fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.6), sharex=True)
+    axes[0].bar(methods, entropy)
+    axes[1].bar(methods, max_share)
 
-    axes[0].set_title("Allocation Entropy", fontsize=STYLE.title_size)
-    axes[0].set_xlabel("Compute Budget", fontsize=STYLE.label_size)
-    axes[0].set_ylabel("Entropy", fontsize=STYLE.label_size)
+    axes[0].set_title("Longest Same-Family Run (mean)", fontsize=STYLE.title_size)
+    axes[0].set_xlabel("Formula / Method", fontsize=STYLE.label_size)
+    axes[0].set_ylabel("Run length", fontsize=STYLE.label_size)
     axes[0].grid(True, alpha=STYLE.grid_alpha)
 
     axes[1].set_title("Max Family Share", fontsize=STYLE.title_size)
-    axes[1].set_xlabel("Compute Budget", fontsize=STYLE.label_size)
+    axes[1].set_xlabel("Formula / Method", fontsize=STYLE.label_size)
     axes[1].set_ylabel("Max Share", fontsize=STYLE.label_size)
     axes[1].grid(True, alpha=STYLE.grid_alpha)
-
-    axes[1].legend(fontsize=STYLE.legend_size, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
-    fig.suptitle("Figure 5: Anti-Collapse Diagnostics", fontsize=STYLE.title_size)
-    fig.subplots_adjust(right=0.81, top=0.83)
+    for ax in axes:
+        ax.tick_params(axis="x", rotation=28, labelsize=STYLE.tick_size)
+        for label in ax.get_xticklabels():
+            label.set_ha("right")
+    fig.suptitle("Figure 5: Family-Collapse Diagnostics Across Cap Policies", fontsize=STYLE.title_size)
+    fig.subplots_adjust(top=0.84, bottom=0.28)
     save_fig(fig, FIGURE_DIR / "figure5_anti_collapse.pdf", FIGURE_DIR / "figure5_anti_collapse.png")
 
 

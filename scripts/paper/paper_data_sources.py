@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -13,10 +14,12 @@ PLOT_DATA_DIR = REPO_ROOT / "outputs" / "paper_plot_data"
 FIGURE_DIR = REPO_ROOT / "outputs" / "paper_figures"
 TABLE_DIR = REPO_ROOT / "outputs" / "paper_tables"
 
-CANONICAL_IMPORT_MULTI = REPO_ROOT / "outputs" / "imported_methodology_frontier_eval" / "20260420T_multidataset_frontier_v1"
-CANONICAL_IMPORT_SINGLE = REPO_ROOT / "outputs" / "imported_methodology_frontier_eval" / "20260417T000000Z"
-CANONICAL_FULL_BUNDLE = REPO_ROOT / "outputs" / "full_method_comparison_bundle" / "20260419T214335Z"
-CANONICAL_NEAR_TIE = REPO_ROOT / "outputs" / "branch_label_bruteforce_learning" / "near_tie_two_stage_complementarity_audit_upgrade_20260417"
+STRICT_PHASED_DEFAULT_DOC = REPO_ROOT / "docs" / "FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md"
+CANONICAL_HUNDRED_DIR = (
+    REPO_ROOT / "outputs" / "canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z"
+)
+BUDGET_AWARE_DIR = REPO_ROOT / "outputs" / "budget_aware_family_cap_eval_20260421T162842Z"
+OUTPUT_LAYER_REPAIR_DIR = REPO_ROOT / "outputs" / "current_failure_output_layer_repair_20260420"
 
 
 class MissingArtifactError(RuntimeError):
@@ -81,34 +84,59 @@ def to_int(v: str) -> int:
 
 
 def load_multidataset_frontier() -> list[dict[str, str]]:
-    rows = read_csv(CANONICAL_IMPORT_MULTI / "budget_frontier_summary.csv")
-    out = []
-    for r in rows:
-        rr = dict(r)
-        rr["method"] = canonical_method_name(r["method"])
-        out.append(rr)
-    return sorted(out, key=lambda r: (dataset_sort_key(r["dataset"]), method_sort_key(r["method"]), to_int(r["budget"])))
+    """Parse the strict-phased broader default comparison table from canonical doc."""
+    ensure_file(STRICT_PHASED_DEFAULT_DOC)
+    txt = STRICT_PHASED_DEFAULT_DOC.read_text(encoding="utf-8")
+    out: list[dict[str, str]] = []
+    in_table = False
+    for line in txt.splitlines():
+        if line.strip().startswith("| dataset | method | accuracy |"):
+            in_table = True
+            continue
+        if in_table:
+            if (not line.strip()) or (not line.strip().startswith("|")):
+                break
+            if line.strip().startswith("|---"):
+                continue
+            parts = [p.strip() for p in line.strip().strip("|").split("|")]
+            if len(parts) < 10:
+                continue
+            dataset, method = parts[0], canonical_method_name(parts[1])
+            out.append(
+                {
+                    "dataset": dataset,
+                    "method": method,
+                    "budget": "0",
+                    "accuracy": str(float(parts[2])),
+                    "gap_to_oracle": "0.0",
+                    "avg_actions": str(float(parts[8])),
+                    "avg_expansions": str(float(parts[9])),
+                    "avg_verifications": str(float(parts[10])),
+                    "absent_from_tree": parts[3],
+                    "present_not_selected": parts[4],
+                    "repeated_same_family_present": parts[6],
+                    "gold_in_tree": parts[7],
+                }
+            )
+    if not out:
+        raise MissingArtifactError(f"Could not parse strict-phased dataset table from {STRICT_PHASED_DEFAULT_DOC}")
+    return sorted(out, key=lambda r: (dataset_sort_key(r["dataset"]), method_sort_key(r["method"])))
 
 
 def load_multidataset_method_metrics() -> list[dict[str, str]]:
-    rows = read_csv(CANONICAL_IMPORT_MULTI / "method_metrics.csv")
-    out = []
-    for r in rows:
-        rr = dict(r)
-        rr["method"] = canonical_method_name(r["method"])
-        out.append(rr)
-    return sorted(out, key=lambda r: (dataset_sort_key(r["dataset"]), method_sort_key(r["method"]), to_int(r["budget"])))
+    # Reuse parsed strict-phased table metrics.
+    return load_multidataset_frontier()
 
 
 def aggregate_frontier_macro(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
     grouped: dict[tuple[str, int], list[dict[str, str]]] = defaultdict(list)
     for r in rows:
-        grouped[(r["method"], to_int(r["budget"]))].append(r)
+        grouped[(r["method"], to_int(r.get("budget", "0")))].append(r)
 
     out: list[dict[str, Any]] = []
     for (method, budget), vals in grouped.items():
         accs = [to_float(v["accuracy"]) for v in vals]
-        gaps = [to_float(v["gap_to_oracle"]) for v in vals]
+        gaps = [to_float(v.get("gap_to_oracle", "0.0")) for v in vals]
         acts = [to_float(v["avg_actions"]) for v in vals]
         out.append(
             {
@@ -121,3 +149,24 @@ def aggregate_frontier_macro(rows: list[dict[str, str]]) -> list[dict[str, Any]]
             }
         )
     return sorted(out, key=lambda r: (method_sort_key(r["method"]), r["budget"]))
+
+
+def load_budget_aware_overall_table() -> list[dict[str, Any]]:
+    payload = json.loads((BUDGET_AWARE_DIR / "aggregate_summary.json").read_text(encoding="utf-8"))
+    return list(payload.get("overall_table", []))
+
+
+def load_budget_aware_per_budget() -> list[dict[str, Any]]:
+    return json.loads((BUDGET_AWARE_DIR / "per_budget_summary.json").read_text(encoding="utf-8"))
+
+
+def load_budget_aware_per_dataset() -> list[dict[str, Any]]:
+    return json.loads((BUDGET_AWARE_DIR / "per_dataset_summary.json").read_text(encoding="utf-8"))
+
+
+def load_canonical_hundred_aggregate() -> dict[str, Any]:
+    return json.loads((CANONICAL_HUNDRED_DIR / "aggregate_failure_statistics.json").read_text(encoding="utf-8"))
+
+
+def load_canonical_hundred_failure_table() -> list[dict[str, str]]:
+    return read_csv(CANONICAL_HUNDRED_DIR / "failure_statistics_table.csv")

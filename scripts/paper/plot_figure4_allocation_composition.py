@@ -9,26 +9,22 @@ from plot_helpers import apply_axis_style, load_csv, method_color, save_fig
 
 def main() -> None:
     rows = load_csv(PLOT_DATA_DIR / "figure4_allocation_composition.csv")
-    target_method = "Promoted (Strict-Coupled Tie-Aware, bridged)"
-    filtered = [r for r in rows if r["method"] == target_method]
-    if not filtered:
-        target_method = sorted({r["method"] for r in rows})[0]
-        filtered = [r for r in rows if r["method"] == target_method]
+    methods = sorted({r["method"] for r in rows})
+    exp = []
+    ver = []
+    for m in methods:
+        mrows = [r for r in rows if r["method"] == m]
+        exp.append(sum(float(r["component_share"]) for r in mrows if r["component"] == "Expansion") / max(1, len(mrows)))
+        ver.append(sum(float(r["component_share"]) for r in mrows if r["component"] == "Verification") / max(1, len(mrows)))
 
-    by_budget = {}
-    for r in filtered:
-        b = int(r["budget"])
-        by_budget.setdefault(b, {})[r["component"]] = float(r["component_share"])
-
-    budgets = sorted(by_budget)
-    exp = [by_budget[b].get("Expansion", 0.0) for b in budgets]
-    ver = [by_budget[b].get("Verification", 0.0) for b in budgets]
-
-    fig, ax = plt.subplots(figsize=(7.4, 4.4))
-    ax.stackplot(budgets, exp, ver, labels=["Expansion share", "Verification share"], alpha=0.9, colors=["#4daf4a", "#377eb8"])
-    apply_axis_style(ax, "Figure 4: Allocation Composition", "Compute Budget", "Action Share")
-    ax.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
-    fig.subplots_adjust(right=0.78)
+    fig, ax = plt.subplots(figsize=(9.2, 4.8))
+    ax.bar(methods, exp, label="Expansion share", color="#4daf4a")
+    ax.bar(methods, ver, bottom=exp, label="Verification share", color="#377eb8")
+    apply_axis_style(ax, "Figure 4: Strict-Phased Allocation Composition", "Method", "Action Share")
+    ax.tick_params(axis="x", rotation=28)
+    for label in ax.get_xticklabels():
+        label.set_ha("right")
+    ax.legend(frameon=False, loc="upper right")
     save_fig(fig, FIGURE_DIR / "figure4_allocation_composition.pdf", FIGURE_DIR / "figure4_allocation_composition.png")
 
 

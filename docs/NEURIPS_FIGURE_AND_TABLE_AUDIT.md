@@ -1,5 +1,10 @@
 # NeurIPS Figure and Table Audit
 
+## 2026-04-21 cleanup note
+
+This audit originally documented bounded imported-methodology surfaces. The active paper artifact set has been re-canonicalized to strict-phased/default evidence bundles.
+Use `docs/PAPER_ARTIFACT_CLEANUP_REPORT_2026_04_21.md` as the current source-of-truth for keep/revise/demote/remove decisions and final artifact lists.
+
 ## Canonical result sources
 
 Primary canonical paper-facing source bundles in this repository state:

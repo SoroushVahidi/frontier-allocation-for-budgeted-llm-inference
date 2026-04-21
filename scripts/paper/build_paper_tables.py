@@ -1,182 +1,145 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 from collections import defaultdict
 
 from paper_data_sources import (
-    CANONICAL_FULL_BUNDLE,
-    CANONICAL_IMPORT_MULTI,
+    BUDGET_AWARE_DIR,
+    CANONICAL_HUNDRED_DIR,
+    STRICT_PHASED_DEFAULT_DOC,
     TABLE_DIR,
+    load_budget_aware_overall_table,
+    load_budget_aware_per_budget,
+    load_canonical_hundred_aggregate,
+    load_canonical_hundred_failure_table,
     load_multidataset_frontier,
-    load_multidataset_method_metrics,
-    read_csv,
-    to_float,
-    to_int,
     write_csv,
     write_tex_table,
 )
 
 
 def table1_benchmark_method_summary() -> list[dict[str, object]]:
-    summary = []
-    summary.append(
+    return [
         {
-            "datasets": "openai/gsm8k; HuggingFaceH4/MATH-500; Idavidrein/gpqa",
-            "controller_families": "adaptive frontier; fixed internal baselines; oracle frontier upper bound",
-            "budgets": "8, 10",
-            "metrics": "accuracy; avg_actions; gap_to_oracle; budget_exhaustion_rate",
-            "canonical_bundle": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1",
+            "surface": "strict-phased broader matched default-decision surface",
+            "datasets": "openai/gsm8k; HuggingFaceH4/MATH-500; HuggingFaceH4/aime_2024; olympiadbench",
+            "methods_compared": "baseline, strict_f2, strict_f3, strict_gate1, strict_gate2, strict_gate1_cap_k6",
+            "default_selected": "strict_gate1_cap_k6",
+            "source_doc": str(STRICT_PHASED_DEFAULT_DOC.relative_to(STRICT_PHASED_DEFAULT_DOC.parents[2])),
         }
-    )
-    return summary
+    ]
 
 
 def table2_main_frontier() -> list[dict[str, object]]:
     rows = load_multidataset_frontier()
-    budgets = sorted({to_int(r["budget"]) for r in rows})
-    tier_labels = {budgets[0]: "low", budgets[-1]: "high"} if budgets else {}
+    budgets = sorted({int(float(r["budget"])) for r in rows})
     out = []
-    for budget in budgets:
-        sub = [r for r in rows if to_int(r["budget"]) == budget and r["method"] != "Oracle Frontier Upper Bound"]
-        # macro over dataset
+    for budget in budgets or [0]:
+        sub = [r for r in rows if int(float(r["budget"])) == budget]
         best_by_method: dict[str, list[float]] = defaultdict(list)
         for r in sub:
-            best_by_method[r["method"]].append(to_float(r["accuracy"]))
+            best_by_method[str(r["method"])].append(float(r["accuracy"]))
         method_macro = {m: sum(v) / len(v) for m, v in best_by_method.items()}
         best_method = max(method_macro.items(), key=lambda kv: kv[1])[0]
-        promoted = method_macro.get("Promoted (Strict-Coupled Tie-Aware, bridged)", -1.0)
-
-        oracle_rows = [r for r in rows if to_int(r["budget"]) == budget and r["method"] == "Oracle Frontier Upper Bound"]
-        oracle_macro = sum(to_float(r["accuracy"]) for r in oracle_rows) / max(1, len(oracle_rows))
-
+        default_acc = method_macro.get("strict_gate1_cap_k6 (default)", -1.0)
         out.append(
             {
-                "budget_tier": tier_labels.get(budget, f"tier_{budget}"),
+                "budget_tier": "full_surface",
                 "budget": budget,
                 "best_method": best_method,
                 "best_accuracy_macro": method_macro[best_method],
-                "promoted_method": "Promoted (Strict-Coupled Tie-Aware, bridged)",
-                "promoted_accuracy_macro": promoted,
-                "oracle_accuracy_macro": oracle_macro,
+                "default_method": "strict_gate1_cap_k6 (default)",
+                "default_accuracy_macro": default_acc,
             }
         )
     return out
 
 
 def table3_oracle_headroom() -> list[dict[str, object]]:
-    rows = load_multidataset_frontier()
-    out = []
-    for budget in sorted({to_int(r["budget"]) for r in rows}):
-        budget_rows = [r for r in rows if to_int(r["budget"]) == budget]
-        by_method_gap: dict[str, list[float]] = defaultdict(list)
-        for r in budget_rows:
-            by_method_gap[r["method"]].append(to_float(r["gap_to_oracle"]))
-        by_method_gap = {m: sum(v) / len(v) for m, v in by_method_gap.items()}
-
-        fixed_candidates = {m: g for m, g in by_method_gap.items() if m in {"Reasoning Beam-2", "Self-Consistency-3", "Reasoning Greedy", "Verifier-Guided Search", "Program-of-Thought"}}
-        best_fixed = min(fixed_candidates.items(), key=lambda kv: kv[1])[0]
-        promoted_gap = by_method_gap.get("Promoted (Strict-Coupled Tie-Aware, bridged)", 1.0)
-
-        out.append(
-            {
-                "budget": budget,
-                "best_fixed_baseline": best_fixed,
-                "best_fixed_gap": fixed_candidates[best_fixed],
-                "promoted_method": "Promoted (Strict-Coupled Tie-Aware, bridged)",
-                "promoted_gap": promoted_gap,
-                "oracle_gap": 0.0,
-                "promoted_to_oracle_ratio": 1.0 - promoted_gap,
-            }
-        )
-    return out
+    rows = load_budget_aware_overall_table()
+    return [
+        {
+            "formula": str(r["formula"]),
+            "formula_expr": str(r["formula_expr"]),
+            "accuracy": float(r["accuracy"]),
+            "absent_from_tree": int(r["absent_from_tree"]),
+            "present_not_selected": int(r["present_not_selected"]),
+            "repeated_same_family_present": int(r["repeated_same_family_present"]),
+            "avg_actions": float(r["avg_actions"]),
+            "improved_vs_fixed_k6": int(r["improved_vs_fixed_k6"]),
+            "worsened_vs_fixed_k6": int(r["worsened_vs_fixed_k6"]),
+        }
+        for r in rows
+    ]
 
 
 def table4_anti_collapse() -> list[dict[str, object]]:
-    rows = load_multidataset_method_metrics()
-    out = []
-    for r in rows:
-        avg_actions = to_float(r["avg_actions"])
-        avg_exp = to_float(r["avg_expansions"])
-        avg_ver = to_float(r["avg_verifications"])
-        p_exp = (avg_exp / avg_actions) if avg_actions > 0 else 0.0
-        p_ver = (avg_ver / avg_actions) if avg_actions > 0 else 0.0
-        max_share = max(p_exp, p_ver)
-        active = int(avg_exp > 0) + int(avg_ver > 0)
-        out.append(
-            {
-                "dataset": r["dataset"],
-                "budget": to_int(r["budget"]),
-                "method": r["method"],
-                "accuracy": to_float(r["accuracy"]),
-                "max_family_share": max_share,
-                "active_family_count": active,
-                "budget_exhaustion_rate": to_float(r["budget_exhaustion_rate"]),
-            }
-        )
-    return out
+    agg = load_canonical_hundred_aggregate()
+    dist = agg["distributions"]
+    return [
+        {
+            "target_n": int(agg["target_n"]),
+            "failure_absent_from_tree_pct": float(agg["failure_type_counts"]["absent_from_tree"]["pct"]),
+            "failure_present_not_selected_pct": float(agg["failure_type_counts"]["present_not_selected"]["pct"]),
+            "repeated_same_family_present_n": int(agg["repeated_same_family_present_n"]),
+            "longest_same_family_run_mean": float(dist["longest_consecutive_family_run"]["mean"]),
+            "max_family_share_mean": float(dist["max_family_share"]["mean"]),
+            "actions_mean": float(dist["actions_ours"]["mean"]),
+            "expansions_mean": float(dist["expansions_ours"]["mean"]),
+            "verifications_mean": float(dist["verifications_ours"]["mean"]),
+        }
+    ]
 
 
 def table5_failure_decomposition() -> list[dict[str, object]]:
-    rows = read_csv(CANONICAL_FULL_BUNDLE / "defeat_case_registry.csv")
-    tree_like = {"under_exploration_or_early_commit", "branch_allocation_gap", "inefficient_budget_spend"}
-    output_like = {"selection_or_aggregation_gap"}
-
-    grouped: dict[str, dict[str, float]] = defaultdict(lambda: {"n": 0.0, "tree": 0.0, "output": 0.0, "other": 0.0})
+    rows = load_canonical_hundred_failure_table()
+    grouped: dict[str, dict[str, int]] = defaultdict(lambda: {"n": 0, "absent": 0, "present": 0})
     for r in rows:
-        k = r["dataset"]
-        grouped[k]["n"] += 1.0
-        subtype = r.get("failure_subtype", "")
-        if subtype in tree_like:
-            grouped[k]["tree"] += 1.0
-        elif subtype in output_like:
-            grouped[k]["output"] += 1.0
-        else:
-            grouped[k]["other"] += 1.0
-
+        ds = str(r["dataset"])
+        grouped[ds]["n"] += 1
+        if str(r["failure_type"]) == "absent_from_tree":
+            grouped[ds]["absent"] += 1
+        elif str(r["failure_type"]) == "present_not_selected":
+            grouped[ds]["present"] += 1
     out = []
-    for dataset, vals in sorted(grouped.items()):
-        n = max(1.0, vals["n"])
+    for ds, vals in sorted(grouped.items()):
+        n = max(1, vals["n"])
         out.append(
             {
-                "dataset": dataset,
-                "absent_from_tree_rate": vals["tree"] / n,
-                "present_in_tree_output_layer_rate": vals["output"] / n,
-                "other_rate": vals["other"] / n,
-                "n_defeat_cases": int(vals["n"]),
-                "basis": "defeat_case_failure_subtype_proxy",
+                "dataset": ds,
+                "n_cases": int(vals["n"]),
+                "absent_from_tree_n": int(vals["absent"]),
+                "present_not_selected_n": int(vals["present"]),
+                "absent_from_tree_rate": vals["absent"] / n,
+                "present_not_selected_rate": vals["present"] / n,
             }
         )
     return out
 
 
 def table6_robustness() -> list[dict[str, object]]:
-    run_manifest = (CANONICAL_IMPORT_MULTI / "summary.json").read_text(encoding="utf-8")
-    _ = run_manifest  # keeps explicit provenance linkage
-
+    payload = json.loads((BUDGET_AWARE_DIR / "aggregate_summary.json").read_text(encoding="utf-8"))
+    per_budget = load_budget_aware_per_budget()
+    budget_count = len({int(r["budget"]) for r in per_budget})
     out = [
         {
-            "axis": "dataset_variation",
+            "axis": "strict_phased_default_status",
             "status": "supported",
-            "evidence": "matched frontier bundle includes GSM8K, MATH-500, GPQA",
-            "source": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/summary.json",
+            "evidence": "final broader strict-phased decision selected strict_gate1_cap_k6",
+            "source": str(STRICT_PHASED_DEFAULT_DOC.relative_to(STRICT_PHASED_DEFAULT_DOC.parents[2])),
         },
         {
             "axis": "budget_variation",
             "status": "supported",
-            "evidence": "budgets 8 and 10 in canonical multi-dataset frontier bundle",
-            "source": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/budget_frontier_summary.csv",
+            "evidence": f"budget-aware cap sweep evaluated {budget_count} budgets; fixed_k6 remained overall winner",
+            "source": str((BUDGET_AWARE_DIR / 'aggregate_summary.json').relative_to(BUDGET_AWARE_DIR.parents[1])),
         },
         {
-            "axis": "seed_variation",
-            "status": "limited",
-            "evidence": "frontier bundle uses fixed single seed per dataset in this run",
-            "source": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/summary.json",
-        },
-        {
-            "axis": "comparison_surface",
-            "status": "incomplete",
-            "evidence": "strict-coupled tie-aware promoted line is alias-bridge in frontier schema, not native controller",
-            "source": "outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/summary.json",
+            "axis": "exact_failure_profile",
+            "status": "supported",
+            "evidence": "canonical hundred strict_gate1_cap_k6-vs-best failure stats available with machine-readable aggregates",
+            "source": str((CANONICAL_HUNDRED_DIR / 'aggregate_failure_statistics.json').relative_to(CANONICAL_HUNDRED_DIR.parents[1])),
         },
     ]
     return out

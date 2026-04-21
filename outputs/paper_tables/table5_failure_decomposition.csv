@@ -1,2 +1,4 @@
-dataset,absent_from_tree_rate,present_in_tree_output_layer_rate,other_rate,n_defeat_cases,basis
-HuggingFaceH4/MATH-500,0.7,0.3,0.0,60,defeat_case_failure_subtype_proxy
+dataset,n_cases,absent_from_tree_n,present_not_selected_n,absent_from_tree_rate,present_not_selected_rate
+HuggingFaceH4/MATH-500,34,19,15,0.5588235294117647,0.4411764705882353
+olympiadbench,33,19,14,0.5757575757575758,0.42424242424242425
+openai/gsm8k,33,17,16,0.5151515151515151,0.48484848484848486

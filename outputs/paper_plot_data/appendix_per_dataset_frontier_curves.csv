@@ -1,49 +1,50 @@
-dataset,method,budget,accuracy,gap_to_oracle
-openai/gsm8k,"Promoted (Strict-Coupled Tie-Aware, bridged)",8,0.5,0.5
-openai/gsm8k,"Promoted (Strict-Coupled Tie-Aware, bridged)",10,0.3333333333333333,0.6666666666666667
-openai/gsm8k,Adaptive Budget Guarded,8,0.5,0.5
-openai/gsm8k,Adaptive Budget Guarded,10,0.3333333333333333,0.6666666666666667
-openai/gsm8k,Reasoning Beam-2,8,0.8333333333333334,0.16666666666666663
-openai/gsm8k,Reasoning Beam-2,10,0.5,0.5
-openai/gsm8k,Self-Consistency-3,8,0.4166666666666667,0.5833333333333333
-openai/gsm8k,Self-Consistency-3,10,0.75,0.25
-openai/gsm8k,Reasoning Greedy,8,0.6666666666666666,0.33333333333333337
-openai/gsm8k,Reasoning Greedy,10,0.5833333333333334,0.41666666666666663
-openai/gsm8k,Verifier-Guided Search,8,0.25,0.75
-openai/gsm8k,Verifier-Guided Search,10,0.4166666666666667,0.5833333333333333
-openai/gsm8k,Program-of-Thought,8,0.0,1.0
-openai/gsm8k,Program-of-Thought,10,0.0,1.0
-openai/gsm8k,Oracle Frontier Upper Bound,8,1.0,0.0
-openai/gsm8k,Oracle Frontier Upper Bound,10,1.0,0.0
-HuggingFaceH4/MATH-500,"Promoted (Strict-Coupled Tie-Aware, bridged)",8,0.4166666666666667,0.5833333333333333
-HuggingFaceH4/MATH-500,"Promoted (Strict-Coupled Tie-Aware, bridged)",10,0.5833333333333334,0.33333333333333326
-HuggingFaceH4/MATH-500,Adaptive Budget Guarded,8,0.4166666666666667,0.5833333333333333
-HuggingFaceH4/MATH-500,Adaptive Budget Guarded,10,0.5833333333333334,0.33333333333333326
-HuggingFaceH4/MATH-500,Reasoning Beam-2,8,0.5,0.5
-HuggingFaceH4/MATH-500,Reasoning Beam-2,10,0.5833333333333334,0.33333333333333326
-HuggingFaceH4/MATH-500,Self-Consistency-3,8,0.5833333333333334,0.41666666666666663
-HuggingFaceH4/MATH-500,Self-Consistency-3,10,0.5,0.41666666666666663
-HuggingFaceH4/MATH-500,Reasoning Greedy,8,0.5,0.5
-HuggingFaceH4/MATH-500,Reasoning Greedy,10,0.3333333333333333,0.5833333333333333
-HuggingFaceH4/MATH-500,Verifier-Guided Search,8,0.16666666666666666,0.8333333333333334
-HuggingFaceH4/MATH-500,Verifier-Guided Search,10,0.5833333333333334,0.33333333333333326
-HuggingFaceH4/MATH-500,Program-of-Thought,8,0.0,1.0
-HuggingFaceH4/MATH-500,Program-of-Thought,10,0.0,0.9166666666666666
-HuggingFaceH4/MATH-500,Oracle Frontier Upper Bound,8,1.0,0.0
-HuggingFaceH4/MATH-500,Oracle Frontier Upper Bound,10,0.9166666666666666,0.0
-Idavidrein/gpqa,"Promoted (Strict-Coupled Tie-Aware, bridged)",8,0.5,0.5
-Idavidrein/gpqa,"Promoted (Strict-Coupled Tie-Aware, bridged)",10,0.4166666666666667,0.5833333333333333
-Idavidrein/gpqa,Adaptive Budget Guarded,8,0.5,0.5
-Idavidrein/gpqa,Adaptive Budget Guarded,10,0.4166666666666667,0.5833333333333333
-Idavidrein/gpqa,Reasoning Beam-2,8,0.9166666666666666,0.08333333333333337
-Idavidrein/gpqa,Reasoning Beam-2,10,0.5833333333333334,0.41666666666666663
-Idavidrein/gpqa,Self-Consistency-3,8,0.8333333333333334,0.16666666666666663
-Idavidrein/gpqa,Self-Consistency-3,10,0.75,0.25
-Idavidrein/gpqa,Reasoning Greedy,8,0.3333333333333333,0.6666666666666667
-Idavidrein/gpqa,Reasoning Greedy,10,0.5,0.5
-Idavidrein/gpqa,Verifier-Guided Search,8,0.5,0.5
-Idavidrein/gpqa,Verifier-Guided Search,10,0.4166666666666667,0.5833333333333333
-Idavidrein/gpqa,Program-of-Thought,8,0.0,1.0
-Idavidrein/gpqa,Program-of-Thought,10,0.0,1.0
-Idavidrein/gpqa,Oracle Frontier Upper Bound,8,1.0,0.0
-Idavidrein/gpqa,Oracle Frontier Upper Bound,10,1.0,0.0
+formula,formula_expr,budget,accuracy,repeated_same_family_present,avg_max_family_share
+fixed_k6,K(b)=6,4,0.5833333333333334,50,0.6736111111111112
+min6_half,"K(b)=min(6,floor(b/2))",4,0.5555555555555556,20,0.5
+min6_third,"K(b)=min(6,floor(b/3))",4,0.3472222222222222,0,0.5
+min6_quarter,"K(b)=min(6,floor(b/4))",4,0.4305555555555556,0,0.5
+half,"K(b)=max(1,floor(b/2))",4,0.4722222222222222,19,0.5
+third,"K(b)=max(1,floor(b/3))",4,0.375,0,0.5
+quarter,"K(b)=max(1,floor(b/4))",4,0.3194444444444444,0,0.5
+fixed_k6,K(b)=6,6,0.625,61,0.7337962962962963
+min6_half,"K(b)=min(6,floor(b/2))",6,0.6111111111111112,59,0.5486111111111112
+min6_third,"K(b)=min(6,floor(b/3))",6,0.5694444444444444,23,0.5
+min6_quarter,"K(b)=min(6,floor(b/4))",6,0.2638888888888889,0,0.5
+half,"K(b)=max(1,floor(b/2))",6,0.625,55,0.5381944444444444
+third,"K(b)=max(1,floor(b/3))",6,0.5555555555555556,25,0.5
+quarter,"K(b)=max(1,floor(b/4))",6,0.25,0,0.5
+fixed_k6,K(b)=6,8,0.7638888888888888,54,0.7056051587301587
+min6_half,"K(b)=min(6,floor(b/2))",8,0.5694444444444444,60,0.5561177248677249
+min6_third,"K(b)=min(6,floor(b/3))",8,0.4861111111111111,20,0.5
+min6_quarter,"K(b)=min(6,floor(b/4))",8,0.5277777777777778,24,0.5
+half,"K(b)=max(1,floor(b/2))",8,0.7083333333333334,56,0.5479497354497354
+third,"K(b)=max(1,floor(b/3))",8,0.4722222222222222,17,0.5
+quarter,"K(b)=max(1,floor(b/4))",8,0.5833333333333334,19,0.5
+fixed_k6,K(b)=6,10,0.75,57,0.6251212522045856
+min6_half,"K(b)=min(6,floor(b/2))",10,0.6666666666666666,62,0.5462962962962963
+min6_third,"K(b)=min(6,floor(b/3))",10,0.625,53,0.5208333333333334
+min6_quarter,"K(b)=min(6,floor(b/4))",10,0.4305555555555556,30,0.5
+half,"K(b)=max(1,floor(b/2))",10,0.6527777777777778,62,0.5621527777777778
+third,"K(b)=max(1,floor(b/3))",10,0.5694444444444444,59,0.5277777777777778
+quarter,"K(b)=max(1,floor(b/4))",10,0.5694444444444444,18,0.5
+fixed_k6,K(b)=6,12,0.7638888888888888,62,0.5776785714285714
+min6_half,"K(b)=min(6,floor(b/2))",12,0.7222222222222222,61,0.5703733766233766
+min6_third,"K(b)=min(6,floor(b/3))",12,0.6666666666666666,66,0.5180555555555555
+min6_quarter,"K(b)=min(6,floor(b/4))",12,0.6527777777777778,59,0.5381944444444444
+half,"K(b)=max(1,floor(b/2))",12,0.6805555555555556,59,0.5675595238095238
+third,"K(b)=max(1,floor(b/3))",12,0.7083333333333334,60,0.5249999999999999
+quarter,"K(b)=max(1,floor(b/4))",12,0.4722222222222222,58,0.5138888888888888
+fixed_k6,K(b)=6,14,0.625,55,0.5502810846560846
+min6_half,"K(b)=min(6,floor(b/2))",14,0.6944444444444444,66,0.5405483405483406
+min6_third,"K(b)=min(6,floor(b/3))",14,0.7083333333333334,65,0.5215277777777777
+min6_quarter,"K(b)=min(6,floor(b/4))",14,0.4722222222222222,60,0.5034722222222222
+half,"K(b)=max(1,floor(b/2))",14,0.7083333333333334,65,0.6172924297924298
+third,"K(b)=max(1,floor(b/3))",14,0.6805555555555556,61,0.5256944444444445
+quarter,"K(b)=max(1,floor(b/4))",14,0.625,63,0.5069444444444444
+fixed_k6,K(b)=6,16,0.75,63,0.5404491341991342
+min6_half,"K(b)=min(6,floor(b/2))",16,0.5694444444444444,59,0.5433531746031747
+min6_third,"K(b)=min(6,floor(b/3))",16,0.6111111111111112,60,0.530324074074074
+min6_quarter,"K(b)=min(6,floor(b/4))",16,0.625,61,0.5368055555555555
+half,"K(b)=max(1,floor(b/2))",16,0.6666666666666666,60,0.6199812918562918
+third,"K(b)=max(1,floor(b/3))",16,0.6111111111111112,63,0.5616512345679012
+quarter,"K(b)=max(1,floor(b/4))",16,0.5972222222222222,55,0.5284722222222222

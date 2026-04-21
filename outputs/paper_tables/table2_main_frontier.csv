@@ -1,3 +1,2 @@
-budget_tier,budget,best_method,best_accuracy_macro,promoted_method,promoted_accuracy_macro,oracle_accuracy_macro
-low,8,Reasoning Beam-2,0.75,"Promoted (Strict-Coupled Tie-Aware, bridged)",0.47222222222222227,1.0
-high,10,Self-Consistency-3,0.6666666666666666,"Promoted (Strict-Coupled Tie-Aware, bridged)",0.4444444444444445,0.9722222222222222
+budget_tier,budget,best_method,best_accuracy_macro,default_method,default_accuracy_macro
+full_surface,0,strict_gate1_cap_k6 (default),0.6718750000000001,strict_gate1_cap_k6 (default),0.6718750000000001

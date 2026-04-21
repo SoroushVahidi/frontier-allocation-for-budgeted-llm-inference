@@ -1,5 +1,4 @@
 axis,status,evidence,source
-dataset_variation,supported,"matched frontier bundle includes GSM8K, MATH-500, GPQA",outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/summary.json
-budget_variation,supported,budgets 8 and 10 in canonical multi-dataset frontier bundle,outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/budget_frontier_summary.csv
-seed_variation,limited,frontier bundle uses fixed single seed per dataset in this run,outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/summary.json
-comparison_surface,incomplete,"strict-coupled tie-aware promoted line is alias-bridge in frontier schema, not native controller",outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/summary.json
+strict_phased_default_status,supported,final broader strict-phased decision selected strict_gate1_cap_k6,adaptive-reasoning-budget-allocation/docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md
+budget_variation,supported,budget-aware cap sweep evaluated 7 budgets; fixed_k6 remained overall winner,outputs/budget_aware_family_cap_eval_20260421T162842Z/aggregate_summary.json
+exact_failure_profile,supported,canonical hundred strict_gate1_cap_k6-vs-best failure stats available with machine-readable aggregates,outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z/aggregate_failure_statistics.json

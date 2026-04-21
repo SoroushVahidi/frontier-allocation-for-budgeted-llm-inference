@@ -1,12 +1,12 @@
-# NeurIPS Paper Artifacts
+## NeurIPS Paper Artifacts
 
-## Canonical input sources
+## Canonical input sources (current)
 
-The paper pipeline reads from:
-- `outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1/`
-- `outputs/imported_methodology_frontier_eval/20260417T000000Z/`
-- `outputs/full_method_comparison_bundle/20260419T214335Z/`
-- `outputs/branch_label_bruteforce_learning/near_tie_two_stage_complementarity_audit_upgrade_20260417/` (appendix support)
+The canonical paper pipeline now reads from:
+- `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- `outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z/`
+- `outputs/budget_aware_family_cap_eval_20260421T162842Z/`
+- `outputs/current_failure_output_layer_repair_20260420/` (appendix output-layer repair)
 
 ## Generated figure outputs
 
@@ -75,8 +75,8 @@ This regenerates:
 - all tables (CSV + TeX),
 - all main and supported appendix figure binaries (PDF + PNG).
 
-## Missing pieces for stronger final submission
+## Policy
 
-- Native strict-coupled/tie-aware controller integration in frontier evaluator (remove alias bridge).
-- Direct committed old-vs-current tree-comparison quantitative plot-data in canonical format.
-- Direct committed output-layer repair effect bundle on the canonical multi-dataset frontier surface.
+- Canonical runner: `python scripts/paper/run_all_neurips_paper_artifacts.py`
+- Compatibility shim: `scripts/paper/run_all_neurips_artifacts.py` (forwards to canonical runner)
+- See cleanup report: `docs/PAPER_ARTIFACT_CLEANUP_REPORT_2026_04_21.md`

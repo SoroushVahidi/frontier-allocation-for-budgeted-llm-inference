@@ -1,2 +1,2 @@
-datasets,controller_families,budgets,metrics,canonical_bundle
-openai/gsm8k; HuggingFaceH4/MATH-500; Idavidrein/gpqa,adaptive frontier; fixed internal baselines; oracle frontier upper bound,"8, 10",accuracy; avg_actions; gap_to_oracle; budget_exhaustion_rate,outputs/imported_methodology_frontier_eval/20260420T_multidataset_frontier_v1
+surface,datasets,methods_compared,default_selected,source_doc
+strict-phased broader matched default-decision surface,openai/gsm8k; HuggingFaceH4/MATH-500; HuggingFaceH4/aime_2024; olympiadbench,"baseline, strict_f2, strict_f3, strict_gate1, strict_gate2, strict_gate1_cap_k6",strict_gate1_cap_k6,adaptive-reasoning-budget-allocation/docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md

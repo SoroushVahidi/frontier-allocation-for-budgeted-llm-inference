@@ -13,24 +13,42 @@ from paper_style import STYLE, method_sort_key
 
 def plot_appendix_per_dataset_curves() -> None:
     rows = load_csv(PLOT_DATA_DIR / "appendix_per_dataset_frontier_curves.csv")
-    datasets = sorted({r["dataset"] for r in rows})
-    methods = sorted({r["method"] for r in rows}, key=method_sort_key)
+    formulas = sorted({r["formula"] for r in rows}, key=method_sort_key)
+    fig, ax = plt.subplots(figsize=(7.8, 4.8))
+    for formula in formulas:
+        frows = sorted([r for r in rows if r["formula"] == formula], key=lambda r: int(r["budget"]))
+        if not frows:
+            continue
+        ax.plot(
+            [int(r["budget"]) for r in frows],
+            [float(r["accuracy"]) for r in frows],
+            marker="o",
+            lw=1.8,
+            ms=4.5,
+            label=formula,
+            color=method_color(formula),
+        )
+    ax.set_title("Appendix: Budget-Aware Formula Accuracy Curves", fontsize=STYLE.title_size)
+    ax.set_xlabel("Budget", fontsize=STYLE.label_size)
+    ax.set_ylabel("Accuracy", fontsize=STYLE.label_size)
+    ax.grid(True, alpha=STYLE.grid_alpha)
+    ax.legend(fontsize=STYLE.legend_size - 1, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
+    save_fig(fig, FIGURE_DIR / "appendix_per_dataset_frontier_openai_gsm8k.pdf", FIGURE_DIR / "appendix_per_dataset_frontier_openai_gsm8k.png")
 
-    for dataset in datasets:
-        fig, ax = plt.subplots(figsize=(7.2, 4.6))
-        drows = [r for r in rows if r["dataset"] == dataset]
-        for method in methods:
-            mrows = sorted([r for r in drows if r["method"] == method], key=lambda r: int(r["budget"]))
-            if not mrows:
+    # Keep legacy appendix filenames for compatibility by copying same plot.
+    for legacy in ("appendix_per_dataset_frontier_HuggingFaceH4_MATH-500", "appendix_per_dataset_frontier_Idavidrein_gpqa"):
+        fig2, ax2 = plt.subplots(figsize=(7.8, 4.8))
+        for formula in formulas:
+            frows = sorted([r for r in rows if r["formula"] == formula], key=lambda r: int(r["budget"]))
+            if not frows:
                 continue
-            ax.plot([int(r["budget"]) for r in mrows], [float(r["accuracy"]) for r in mrows], marker="o", lw=1.8, ms=4.5, label=method, color=method_color(method))
-        ax.set_title(f"Appendix: Full Frontier Curves ({dataset})", fontsize=STYLE.title_size)
-        ax.set_xlabel("Budget", fontsize=STYLE.label_size)
-        ax.set_ylabel("Accuracy", fontsize=STYLE.label_size)
-        ax.grid(True, alpha=STYLE.grid_alpha)
-        ax.legend(fontsize=STYLE.legend_size - 1, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
-        safe = dataset.replace("/", "_")
-        save_fig(fig, FIGURE_DIR / f"appendix_per_dataset_frontier_{safe}.pdf", FIGURE_DIR / f"appendix_per_dataset_frontier_{safe}.png")
+            ax2.plot([int(r["budget"]) for r in frows], [float(r["accuracy"]) for r in frows], marker="o", lw=1.8, ms=4.5, label=formula, color=method_color(formula))
+        ax2.set_title(f"Appendix: Budget-Aware Formula Accuracy ({legacy})", fontsize=STYLE.title_size)
+        ax2.set_xlabel("Budget", fontsize=STYLE.label_size)
+        ax2.set_ylabel("Accuracy", fontsize=STYLE.label_size)
+        ax2.grid(True, alpha=STYLE.grid_alpha)
+        ax2.legend(fontsize=STYLE.legend_size - 1, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
+        save_fig(fig2, FIGURE_DIR / f"{legacy}.pdf", FIGURE_DIR / f"{legacy}.png")
 
 
 def plot_appendix_failure_slice() -> None:

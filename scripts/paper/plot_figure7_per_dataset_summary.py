@@ -15,35 +15,29 @@ def main() -> None:
         datasets = sorted({r["dataset"] for r in rows})
 
     methods = sorted({r["method"] for r in rows}, key=method_sort_key)
-    show_methods = methods[:5]  # keep main figure readable
+    show_methods = methods[:6]
 
-    fig, axes = plt.subplots(1, len(datasets), figsize=(4.8 * len(datasets), 4.4), sharey=True)
+    fig, axes = plt.subplots(1, len(datasets), figsize=(4.6 * len(datasets), 4.6), sharey=True)
     if len(datasets) == 1:
         axes = [axes]
 
     for ax, dataset in zip(axes, datasets):
         drows = [r for r in rows if r["dataset"] == dataset]
+        vals = []
         for method in show_methods:
-            mrows = sorted([r for r in drows if r["method"] == method], key=lambda r: int(r["budget"]))
-            if not mrows:
-                continue
-            ax.plot(
-                [int(r["budget"]) for r in mrows],
-                [float(r["accuracy"]) for r in mrows],
-                marker="o",
-                lw=1.8,
-                ms=4.5,
-                label=method,
-                color=method_color(method),
-            )
+            mrows = [r for r in drows if r["method"] == method]
+            vals.append(float(mrows[0]["accuracy"]) if mrows else 0.0)
+        ax.bar(show_methods, vals, color=[method_color(m) for m in show_methods])
         ax.set_title(dataset, fontsize=STYLE.label_size)
-        ax.set_xlabel("Budget", fontsize=STYLE.label_size)
+        ax.set_xlabel("Method", fontsize=STYLE.label_size)
         ax.grid(True, alpha=STYLE.grid_alpha)
+        ax.tick_params(axis="x", rotation=28)
+        for label in ax.get_xticklabels():
+            label.set_ha("right")
 
     axes[0].set_ylabel("Accuracy", fontsize=STYLE.label_size)
-    axes[-1].legend(fontsize=STYLE.legend_size - 1, frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5))
-    fig.suptitle("Figure 7: Per-Dataset Frontier Summary", fontsize=STYLE.title_size)
-    fig.subplots_adjust(right=0.82, top=0.82)
+    fig.suptitle("Figure 7: Per-Dataset Accuracy on Strict-Phased Surface", fontsize=STYLE.title_size)
+    fig.subplots_adjust(top=0.82, bottom=0.30)
     save_fig(fig, FIGURE_DIR / "figure7_per_dataset_summary.pdf", FIGURE_DIR / "figure7_per_dataset_summary.png")
 
 

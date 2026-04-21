@@ -1,54 +1,7 @@
-\begin{tabular}{lllllll}
+\begin{tabular}{lllllllll}
 \hline
-dataset & budget & method & accuracy & max_family_share & active_family_count & budget_exhaustion_rate \\
+target_n & failure_absent_from_tree_pct & failure_present_not_selected_pct & repeated_same_family_present_n & longest_same_family_run_mean & max_family_share_mean & actions_mean & expansions_mean & verifications_mean \\
 \hline
-openai/gsm8k & 8 & Promoted (Strict-Coupled Tie-Aware, bridged) & 0.5000 & 0.7115 & 2 & 0.0833 \\
-openai/gsm8k & 10 & Promoted (Strict-Coupled Tie-Aware, bridged) & 0.3333 & 0.6184 & 2 & 0.4167 \\
-openai/gsm8k & 8 & Adaptive Budget Guarded & 0.5000 & 0.7115 & 2 & 0.0833 \\
-openai/gsm8k & 10 & Adaptive Budget Guarded & 0.3333 & 0.6184 & 2 & 0.4167 \\
-openai/gsm8k & 8 & Reasoning Beam-2 & 0.8333 & 1.0000 & 1 & 0.0833 \\
-openai/gsm8k & 10 & Reasoning Beam-2 & 0.5000 & 1.0000 & 1 & 0.0000 \\
-openai/gsm8k & 8 & Self-Consistency-3 & 0.4167 & 0.7097 & 2 & 0.8333 \\
-openai/gsm8k & 10 & Self-Consistency-3 & 0.7500 & 0.6505 & 2 & 0.3333 \\
-openai/gsm8k & 8 & Reasoning Greedy & 0.6667 & 1.0000 & 1 & 0.0000 \\
-openai/gsm8k & 10 & Reasoning Greedy & 0.5833 & 1.0000 & 1 & 0.0000 \\
-openai/gsm8k & 8 & Verifier-Guided Search & 0.2500 & 0.5000 & 2 & 0.0000 \\
-openai/gsm8k & 10 & Verifier-Guided Search & 0.4167 & 0.6129 & 2 & 0.0000 \\
-openai/gsm8k & 8 & Program-of-Thought & 0.0000 & 0.5000 & 1 & 0.0000 \\
-openai/gsm8k & 10 & Program-of-Thought & 0.0000 & 0.5000 & 1 & 0.0000 \\
-openai/gsm8k & 8 & Oracle Frontier Upper Bound & 1.0000 & 0.8889 & 2 & 0.0000 \\
-openai/gsm8k & 10 & Oracle Frontier Upper Bound & 1.0000 & 0.9268 & 2 & 0.0833 \\
-HuggingFaceH4/MATH-500 & 8 & Promoted (Strict-Coupled Tie-Aware, bridged) & 0.4167 & 0.7209 & 2 & 0.1667 \\
-HuggingFaceH4/MATH-500 & 10 & Promoted (Strict-Coupled Tie-Aware, bridged) & 0.5833 & 0.6562 & 2 & 0.1667 \\
-HuggingFaceH4/MATH-500 & 8 & Adaptive Budget Guarded & 0.4167 & 0.7209 & 2 & 0.1667 \\
-HuggingFaceH4/MATH-500 & 10 & Adaptive Budget Guarded & 0.5833 & 0.6562 & 2 & 0.1667 \\
-HuggingFaceH4/MATH-500 & 8 & Reasoning Beam-2 & 0.5000 & 1.0000 & 1 & 0.0000 \\
-HuggingFaceH4/MATH-500 & 10 & Reasoning Beam-2 & 0.5833 & 1.0000 & 1 & 0.0000 \\
-HuggingFaceH4/MATH-500 & 8 & Self-Consistency-3 & 0.5833 & 0.7188 & 2 & 1.0000 \\
-HuggingFaceH4/MATH-500 & 10 & Self-Consistency-3 & 0.5000 & 0.6887 & 2 & 0.4167 \\
-HuggingFaceH4/MATH-500 & 8 & Reasoning Greedy & 0.5000 & 1.0000 & 1 & 0.0000 \\
-HuggingFaceH4/MATH-500 & 10 & Reasoning Greedy & 0.3333 & 1.0000 & 1 & 0.0000 \\
-HuggingFaceH4/MATH-500 & 8 & Verifier-Guided Search & 0.1667 & 0.5000 & 2 & 0.0000 \\
-HuggingFaceH4/MATH-500 & 10 & Verifier-Guided Search & 0.5833 & 0.5955 & 2 & 0.0000 \\
-HuggingFaceH4/MATH-500 & 8 & Program-of-Thought & 0.0000 & 0.5000 & 1 & 0.0000 \\
-HuggingFaceH4/MATH-500 & 10 & Program-of-Thought & 0.0000 & 0.5000 & 1 & 0.0000 \\
-HuggingFaceH4/MATH-500 & 8 & Oracle Frontier Upper Bound & 1.0000 & 0.9091 & 2 & 0.0833 \\
-HuggingFaceH4/MATH-500 & 10 & Oracle Frontier Upper Bound & 0.9167 & 0.8235 & 2 & 0.0000 \\
-Idavidrein/gpqa & 8 & Promoted (Strict-Coupled Tie-Aware, bridged) & 0.5000 & 0.7541 & 2 & 0.1667 \\
-Idavidrein/gpqa & 10 & Promoted (Strict-Coupled Tie-Aware, bridged) & 0.4167 & 0.5472 & 2 & 0.3333 \\
-Idavidrein/gpqa & 8 & Adaptive Budget Guarded & 0.5000 & 0.7541 & 2 & 0.1667 \\
-Idavidrein/gpqa & 10 & Adaptive Budget Guarded & 0.4167 & 0.5472 & 2 & 0.3333 \\
-Idavidrein/gpqa & 8 & Reasoning Beam-2 & 0.9167 & 1.0000 & 1 & 0.0000 \\
-Idavidrein/gpqa & 10 & Reasoning Beam-2 & 0.5833 & 1.0000 & 1 & 0.0000 \\
-Idavidrein/gpqa & 8 & Self-Consistency-3 & 0.8333 & 0.7053 & 2 & 0.9167 \\
-Idavidrein/gpqa & 10 & Self-Consistency-3 & 0.7500 & 0.6667 & 2 & 0.5000 \\
-Idavidrein/gpqa & 8 & Reasoning Greedy & 0.3333 & 1.0000 & 1 & 0.0000 \\
-Idavidrein/gpqa & 10 & Reasoning Greedy & 0.5000 & 1.0000 & 1 & 0.0000 \\
-Idavidrein/gpqa & 8 & Verifier-Guided Search & 0.5000 & 0.5000 & 2 & 0.0000 \\
-Idavidrein/gpqa & 10 & Verifier-Guided Search & 0.4167 & 0.6129 & 2 & 0.0000 \\
-Idavidrein/gpqa & 8 & Program-of-Thought & 0.0000 & 0.5000 & 1 & 0.0000 \\
-Idavidrein/gpqa & 10 & Program-of-Thought & 0.0000 & 0.5000 & 1 & 0.0000 \\
-Idavidrein/gpqa & 8 & Oracle Frontier Upper Bound & 1.0000 & 1.0000 & 1 & 0.0000 \\
-Idavidrein/gpqa & 10 & Oracle Frontier Upper Bound & 1.0000 & 0.8929 & 2 & 0.0000 \\
+100 & 55.0000 & 45.0000 & 88 & 4.3500 & 0.5760 & 10.8000 & 9.0500 & 1.7500 \\
 \hline
 \end{tabular}

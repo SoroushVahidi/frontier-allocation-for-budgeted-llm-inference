@@ -1,9 +1,5 @@
 dataset,comparison_adversary,absent_from_tree_failure_rate,present_in_tree_output_layer_failure_rate,other_failure_rate,n_defeat_cases,decomposition_basis
-HuggingFaceH4/MATH-500,adaptive_min_expand_0,0.0,1.0,0.0,2,defeat_case_failure_subtype_proxy
-HuggingFaceH4/MATH-500,adaptive_min_expand_2,0.5833333333333334,0.4166666666666667,0.0,12,defeat_case_failure_subtype_proxy
-HuggingFaceH4/MATH-500,external_l1_exact,1.0,0.0,0.0,5,defeat_case_failure_subtype_proxy
-HuggingFaceH4/MATH-500,external_l1_max,0.7272727272727273,0.2727272727272727,0.0,11,defeat_case_failure_subtype_proxy
-HuggingFaceH4/MATH-500,external_s1_budget_forcing,0.8,0.2,0.0,10,defeat_case_failure_subtype_proxy
-HuggingFaceH4/MATH-500,external_tale_prompt_budgeting,0.7142857142857143,0.2857142857142857,0.0,14,defeat_case_failure_subtype_proxy
-HuggingFaceH4/MATH-500,program_of_thought,0.0,1.0,0.0,1,defeat_case_failure_subtype_proxy
-HuggingFaceH4/MATH-500,reasoning_beam2,0.8,0.2,0.0,5,defeat_case_failure_subtype_proxy
+HuggingFaceH4/MATH-500,reasoning_beam2,0.5588235294117647,0.4411764705882353,0.0,34,canonical_hundred_failure_type
+olympiadbench,reasoning_beam2,0.5757575757575758,0.42424242424242425,0.0,33,canonical_hundred_failure_type
+openai/gsm8k,reasoning_beam2,0.5151515151515151,0.48484848484848486,0.0,33,canonical_hundred_failure_type
+ALL,reasoning_beam2,0.55,0.45,0.0,100,canonical_hundred_failure_type

@@ -8,19 +8,17 @@ older bounded plot/table bundles being read as if they were the current broad re
 The repository now contains multiple valid artifact families created for different phases of the project.
 They should not be mixed without an explicit note about scope.
 
-## Canonical current ranking surface
+## Canonical current ranking/default surface
 
-For the current repository state, the canonical broad comparison surface is:
+For the current repository state, the canonical default-decision surface is:
 
-- `docs/CURRENT_FULL_METHOD_COMPARISON_BUNDLE_STATUS_2026_04_20.md`
-- `docs/CURRENT_RANKING_AND_COMPETITIVE_STATUS_2026_04_20.md`
-- `outputs/current_full_method_comparison_bundle_20260420/`
+- `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
 
 Use this family when the question is:
-- which method is best now,
-- where the latest integrated full method ranks now,
-- what the strongest direct adversary is now,
-- and what the broad competitive bottleneck is now.
+- which strict-phased variant is default now,
+- whether `strict_gate1_cap_k6` remains the promoted default,
+- and how strict finalists compare.
 
 ## Canonical current failure-analysis surface
 
