@@ -15,9 +15,9 @@ If you want the shortest current literature/baseline path, read:
 1. `CURRENT_SAFE_CLAIMS.md`
 2. `CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 3. `CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`
-4. `CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`
+4. `CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`
 5. `main_baselines.md`
-6. `FULL_METHOD_COMPARISON_STATUS_2026_04_18.md`
+6. `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 
 ## Current most relevant reference buckets
 
@@ -31,48 +31,40 @@ Still important as the conceptual backbone for fixed-budget next-step allocation
 Still useful for understanding hard close-branch decisions under limited budget.
 
 ### 4. Budget-aware tree search / widen-vs-deepen control
-This is now one of the most important newer buckets for the repo's current branch-family anti-collapse direction.
+This is one of the most important buckets for the repo's current branch-family anti-collapse direction.
 
-### 5. Residual-progress / low-marginal-gain allocation
-Increasingly important because the repo is now experimenting with low-marginal-gain same-family cooldown and related residual-progress logic.
+### 5. Process signals / verifiers / completion-aware evidence
+Useful as ingredients, bounded corrections, and adjacent baseline families.
 
-### 6. Process signals / verifiers / completion-aware evidence
-Useful as ingredients and bounded corrections, not as the whole method story.
+### 6. Routing / cascades / query-level adaptive compute
+Important as adjacent baselines, especially for the external-baseline story after the default-model lock-in.
 
-### 7. Answer aggregation / final-answer handling
-Still important because not all residual errors are pure tree-generation failures.
+## Current most useful focused reference memos
 
-## Current most useful focused reference memo
-
-For the current branch-family anti-collapse paper direction, use first:
+Use first:
 - `CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`
+- `CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`
 
-That note is the current shortest answer to:
+These notes are now the shortest answer to:
 - which recent references are closest to fixed-budget branch-family control,
-- which ones motivate low-marginal-gain cooldown logic,
+- which external baselines are strongest to strengthen next,
 - and how to separate closest method neighbors from ingredient or adjacent-only references.
 
 ## Current baseline priorities
 
-### Most important practical comparison target
-- `self_consistency_3`
+### Most important practical internal comparison target
+- current strict-phased neighboring finalists around `strict_gate1_cap_k6`
 
-### Important internal / broad-family baselines
-- broad diversity baseline variants
-- earlier strong broad-family variants
-- reasoning-style internal baselines still used in canonical comparison bundles
-- current anti-collapse and low-marginal-gain refinement variants inside the same broad family
+### Strongest current external matched-substrate paths
+- `s1` MODE A
+- `TALE` MODE A
+- `L1` MODE A
 
-### Important external / adjacent baselines
-Use the current comparison and completeness notes for exact runnable status, especially for:
-- s1
-- TALE
-- L1
-- BEST-Route
-- When To Solve, When To Verify
-- cascade-routing style neighbors
-- MoB / best-of-N style neighbors
-- ReST-MCTS / search-guided neighbors
+### Current external strengthening order
+1. **BEST-Route** — first external baseline to strengthen properly, as an official adjacent import-validated baseline
+2. **When To Solve / When To Verify** — next best adjacent baseline after BEST-Route
+3. **ReST-MCTS*** — heavier but still important adjacent search-guided neighbor
+4. **Q*** — important scientifically, but later-wave unless stronger provenance/integration becomes available
 
 ## Current writing rule
 
@@ -88,12 +80,10 @@ Do not blur them into one undifferentiated related-work paragraph.
 ## Current safest reference-facing documents
 
 - `CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`
-- `CURRENT_REFERENCES_SUPPLEMENT_2026_04_16.md`
-- `REFERENCES_AUDIT_AND_CURATION_2026_04_18.md`
+- `CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`
 - `main_baselines.md`
 - `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 - `main_datasets.md`
-- `FULL_METHOD_COMPARISON_STATUS_2026_04_18.md`
 - `external_baseline_completeness_report.md`
 
 ## Current baseline status matrix (v1)
