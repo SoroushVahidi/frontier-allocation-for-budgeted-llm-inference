@@ -23,41 +23,35 @@ python -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-```
-
-If you want editable-package style development, also run:
-
-```bash
 pip install -e .[dev]
 ```
 
-## Default repo-health checks
+## Default development checks
 
 ```bash
-make smoke
+make health
 make lint
 make test
 ```
 
-If your local `Makefile` has not yet been updated to lint all Python directories, run:
+If you want formatting as well:
 
 ```bash
-ruff check scripts experiments tests
-ruff format scripts experiments tests
-pytest
+make format
 ```
 
-## Interpretation rule
+## Interpretation reading order
 
-For current project interpretation, read in this order:
+Read these before doing substantial work:
 1. `README.md`
 2. `docs/README.md`
-3. `docs/PROJECT_MASTER_PLAN.md`
-4. `docs/CURRENT_PROJECT_STATUS.md`
-5. `docs/CURRENT_BOTTLENECKS.md`
+3. `docs/CANONICAL_START_HERE.md`
+4. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+5. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
 6. `docs/CURRENT_SAFE_CLAIMS.md`
-7. `docs/REPO_MAP.md`
-8. `scripts/README.md`
+7. `docs/CURRENT_BOTTLENECKS.md`
+8. `docs/REPO_MAP.md`
+9. `scripts/README.md`
 
 ## Directory roles
 
@@ -68,13 +62,14 @@ For current project interpretation, read in this order:
 - `outputs/`: generated artifacts
 - `tests/`: lightweight regression and repo-health tests
 
-## Current best-practice workflow
+## Best-practice workflow
 
 1. read the canonical docs first,
-2. pick one runnable script from `scripts/README.md`,
-3. write outputs under `outputs/`,
-4. keep new method notes in `docs/` before adding large code paths,
-5. avoid presenting exploratory notes as canonical project truth.
+2. run `make health`,
+3. pick one runnable script from `scripts/README.md`,
+4. write outputs under `outputs/`,
+5. keep new method notes in `docs/` before adding large code paths,
+6. avoid presenting exploratory notes as canonical project truth.
 
 ## Scope note
 
