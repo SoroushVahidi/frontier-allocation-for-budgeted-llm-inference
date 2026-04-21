@@ -1,5 +1,53 @@
 # Main baselines
 
+## What this file is for now
+
+This file is the paper-facing baseline guide for the current repository phase.
+
+Its main job is to answer:
+- which external baselines matter most for the NeurIPS paper,
+- which external baselines are actually usable now,
+- which ones are only adjacent or discuss-only,
+- and how to describe them honestly.
+
+## Main paper-facing rule
+
+For the current paper phase, the main empirical comparison priority is:
+1. **our current best method vs external baselines from prior papers**,
+2. then a smaller supporting layer of internal neighboring methods and ablations.
+
+So this file should be read primarily as an **external-baseline planning document**, not as an internal-method ranking note.
+
+## Short current answer
+
+### Strongest usable external stack right now
+
+#### Near-direct matched-substrate baselines
+- **s1 MODE A**
+- **TALE MODE A**
+- **L1 MODE A**
+
+#### Strongest adjacent official baselines
+- **BEST-Route**
+- **When To Solve / When To Verify**
+
+#### Next adjacent baseline to strengthen
+- **ReST-MCTS***
+
+#### Important but not ready for the main paper table
+- **Q***
+- **Let's Verify Step by Step**
+- **Rational Metareasoning for LLMs**
+- other discuss-only framing or ingredient references
+
+### First external baseline to strengthen fully
+- **BEST-Route**
+
+Why:
+- best current combination of provenance, official code availability, reviewer relevance, and honest integration path,
+- already strengthened as an import-validated adjacent comparator,
+- most natural first candidate for a fuller execution attempt.
+
 ## Canonical baseline taxonomy lock (2026-04-18 final pass)
 
 For this repository phase, baselines are grouped as:
@@ -78,10 +126,10 @@ These four baselines form a strong comparison set because they collectively span
 
 ## Extended external index (new paper track)
 
-For **compute-optimal test-time scaling**, **solve-vs-verify budget trade-offs**, **routing/cascading**, **Best-of-N / MoB-style selection**, and optional community tree-search references, see the audited link-only registry:
+For **compute-optimal test-time scaling**, **solve-vs-verify budget trade-offs**, **routing/cascading**, **Best-of-N / MoB-style selection**, and optional community tree-search references, see the audited registry:
 
-- **`external/README.md`** — master table (sections A–C) + per-baseline README paths
-- **`configs/external_baselines_registry.json`** — machine-readable clone URLs (no vendored code)
+- **`external/README.md`** — master table + per-baseline README paths
+- **`configs/external_baselines_registry.json`** — machine-readable clone URLs and status tags
 - **`python scripts/generate_external_baseline_integration_report.py`** → `outputs/external_baseline_integration_report.{json,md}`
 
 This extends the comparison set beyond the original four **without** implying that every linked repository is author-official for every cited paper; each `external/<name>/README.md` states license and uncertainty explicitly.
@@ -151,31 +199,29 @@ Methodological caveat:
 - **v1 taxonomy:** `runnable_direct` with `control_equivalence: adjacent` versus external PRM / “Let’s Verify Step by Step” claims — cite as an **implementation neighbor** only.
 - **Evidence:** Appears in committed full-method comparison bundles (for example `outputs/full_method_comparison_bundle/20260419T214335Z/aggregate_comparison_summary.json`); regenerate comparisons via `scripts/run_full_method_comparison_bundle.py` when updating tables.
 
-
 ## External baseline completeness (reviewer-defensible, 2026-04-16 pass)
 
 ### compute_optimal_tts status update (2026-04-16)
 
-- `compute_optimal_tts` is now tracked as **`blocked`** (not vague link-only) because the target paper in this repo is OpenReview `4FWAwZtd2n` (ICLR 2025), while the linked codebase self-identifies around arXiv `2502.06703`; official equivalence is unverified.
+- `compute_optimal_tts` is now tracked as **`blocked`** because the target paper in this repo is OpenReview `4FWAwZtd2n` (ICLR 2025), while the linked codebase self-identifies around arXiv `2502.06703`; official equivalence is unverified.
 - A conservative provenance+blocker protocol is now the canonical integration artifact for this baseline:
   - `docs/compute_optimal_tts_integration.md`
   - `outputs/external_baseline_completeness/compute_optimal_tts_status.json`
   - `outputs/external_baseline_completeness/compute_optimal_tts_status.md`
 - Manuscript-safe usage now: discussion-only adjacent baseline until paper↔repo mapping is author-verified and a fair matched-cost adapter protocol is implemented.
 
-
-For manuscript-safe claims, treat external baselines as follows:
+## For manuscript-safe claims, treat external baselines as follows
 
 - **Usable now for primary matched-substrate comparisons (MODE A adapters only; v1 `adapter_based` / `near_direct`):**
   - s1 via `configs/s1_budget_forcing_inference_only_v1.json` + `scripts/run_s1_budget_forcing_baseline.py`
   - TALE via `configs/tale_prompt_budgeting_v1.json` + `scripts/run_tale_baseline.py`
   - L1 via `configs/l1_inference_adapter_v1.json` + `scripts/run_l1_baseline.py`
-- **MODE B (import-validated only; v1 `import_validated` / `adjacent`):** s1, TALE, and L1 share the same pattern: usable **only** when valid official/full packages are supplied and pass `scripts/verify_s1_mode_b_import.py`, `scripts/verify_tale_mode_b_import.py`, or `scripts/verify_l1_mode_b_import.py` respectively (TALE MODE B additionally enforces TALE-vs-TALE-PT variant separation). Otherwise runs remain blocked pending `official.results_path`.
+- **MODE B (import-validated only; v1 `import_validated` / `adjacent`):** s1, TALE, and L1 share the same pattern: usable **only** when valid official/full packages are supplied and pass `scripts/verify_s1_mode_b_import.py`, `scripts/verify_tale_mode_b_import.py`, or `scripts/verify_l1_mode_b_import.py` respectively.
 - **BEST-Route:** v1 `import_validated` adjacent neighbor via `scripts/verify_best_route_import.py` with official-provenance import validation and adjacent-only comparison scope. Strengthened repository-native runner: `scripts/run_best_route_adjacent_integration.py` + `configs/best_route_adjacent_comparison_contract_v1.json` for artifact-backed row export.
-- **when_solve_when_verify:** v1 `official` + `import_validated` via `scripts/verify_when_solve_when_verify_import.py`, with canonical adjacent contract runner `scripts/run_when_solve_when_verify_adjacent_integration.py` and `configs/when_solve_when_verify_adjacent_comparison_contract_v1.json` (fixed-budget solve-vs-verify adjacent slices only; not frontier-allocation direct).
+- **when_solve_when_verify:** v1 `import_validated` adjacent neighbor via `scripts/verify_when_solve_when_verify_import.py`, with canonical adjacent contract runner `scripts/run_when_solve_when_verify_adjacent_integration.py` and `configs/when_solve_when_verify_adjacent_comparison_contract_v1.json`.
+- **rest_mcts:** v1 `import_validated` via `scripts/verify_rest_mcts_import.py` (no full ReST-MCTS training loop in-repo).
 - **cascade_routing:** v1 `import_validated` via `scripts/verify_cascade_routing_import.py`.
 - **mob_majority_of_bests:** v1 `import_validated` via `scripts/verify_mob_import.py`.
-- **rest_mcts:** v1 `import_validated` via `scripts/verify_rest_mcts_import.py` (no full ReST-MCTS training loop in-repo).
 - **openr:** v1 `import_validated` via `scripts/verify_openr_import.py`.
 
 Companion artifacts:
@@ -188,7 +234,6 @@ Companion artifacts:
 
 Safe wording rule:
 - Do **not** claim full official reproduction for any baseline unless the official training/inference stack is actually run in this repo and auditable from artifacts.
-
 
 ## Final baseline-scope guardrail (2026-04-18)
 
