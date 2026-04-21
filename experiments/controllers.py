@@ -853,13 +853,10 @@ class GlobalDiversityAggregationController(BaseController):
         near_miss_correction_max_steps: int = 2,
         near_miss_correction_repeat_family_trigger: int = 5,
         near_miss_correction_min_top_support: float = 0.55,
-        enable_hard_max_family_expansions_v1: bool = False,
-        max_family_expansions_per_run: int = 0,
         enable_hard_early_root_depth2_coverage_v1: bool = False,
         hard_early_root_coverage_forced_min_depth: int = 0,
         hard_early_coverage_min_remaining_actions_to_release: int = 0,
         enable_hard_early_root_depth2_then_conditional_depth3_v1: bool = False,
-        conditional_depth3_gate_design: str = "v0_conditional_depth3_v1",
         depth3_gate_min_top_answer_support: float = 0.55,
         depth3_gate_min_support_gap: float = 0.12,
         depth3_gate_min_active_root_families: int = 2,
@@ -869,25 +866,11 @@ class GlobalDiversityAggregationController(BaseController):
         depth3_gate_min_top_group_support_commit: float = 0.52,
         depth3_gate_e_max_top_support: float = 0.48,
         depth3_gate_e_min_answer_groups: int = 2,
-        gate_v1_family_concentration_share_trigger: float = 0.60,
-        gate_v1_longest_same_family_run_trigger: int = 4,
-        gate_v1_min_alive_families: int = 2,
-        gate_v1_min_answer_groups_rich: int = 3,
-        gate_v1_top_share_strong_incumbent: float = 0.64,
-        gate_v1_support_gap_strong_incumbent: float = 0.16,
-        gate_v1_best_frontier_score_strong: float = 0.66,
-        gate_v2_family_concentration_share_trigger: float = 0.66,
-        gate_v2_longest_same_family_run_trigger: int = 5,
-        gate_v2_max_top_support_for_weak_concentration: float = 0.57,
-        gate_v2_min_remaining_budget_for_depth3: int = 2,
-        gate_v3_max_top_share_ambiguous: float = 0.62,
-        gate_v3_max_top_minus_second_gap_ambiguous: float = 0.14,
-        gate_v3_max_best_frontier_margin_ambiguous: float = 0.08,
-        gate_v3_min_distinct_answer_groups_ambiguous: int = 2,
-        gate_v3_min_active_root_families_ambiguous: int = 2,
-        gate_v3_family_concentration_share_trigger: float = 0.60,
-        gate_v3_depth_asymmetry_trigger: int = 2,
-        gate_v3_ambiguity_signals_required: int = 3,
+        enable_hard_max_family_expansions_cap: bool = False,
+        hard_max_family_expansions_base_cap: int = 6,
+        hard_max_family_expansions_relax_cap: int = 8,
+        hard_max_family_expansions_relax_cap_high: int = 10,
+        hard_max_family_expansions_relax_mode: str = "fixed_k6_control",
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -997,11 +980,6 @@ class GlobalDiversityAggregationController(BaseController):
         self.near_miss_correction_max_steps = max(0, int(near_miss_correction_max_steps))
         self.near_miss_correction_repeat_family_trigger = max(1, int(near_miss_correction_repeat_family_trigger))
         self.near_miss_correction_min_top_support = max(0.0, min(1.0, float(near_miss_correction_min_top_support)))
-        self.enable_hard_max_family_expansions_v1 = bool(enable_hard_max_family_expansions_v1)
-        _max_family_caps = int(max_family_expansions_per_run)
-        if self.enable_hard_max_family_expansions_v1 and _max_family_caps <= 0:
-            _max_family_caps = 3
-        self.max_family_expansions_per_run = max(0, _max_family_caps)
         self.enable_hard_early_root_depth2_coverage_v1 = bool(enable_hard_early_root_depth2_coverage_v1)
         _hec = max(0, min(7, int(hard_early_root_coverage_forced_min_depth)))
         if self.enable_hard_early_root_depth2_coverage_v1 and _hec < 2:
@@ -1013,7 +991,6 @@ class GlobalDiversityAggregationController(BaseController):
         )
         if self.enable_hard_early_root_depth2_then_conditional_depth3_v1:
             _hec = max(2, _hec)
-        self.conditional_depth3_gate_design = str(conditional_depth3_gate_design or "v0_conditional_depth3_v1")
         self.depth3_gate_min_top_answer_support = float(depth3_gate_min_top_answer_support)
         self.depth3_gate_min_support_gap = float(depth3_gate_min_support_gap)
         self.depth3_gate_min_active_root_families = max(1, int(depth3_gate_min_active_root_families))
@@ -1023,25 +1000,15 @@ class GlobalDiversityAggregationController(BaseController):
         self.depth3_gate_min_top_group_support_commit = float(depth3_gate_min_top_group_support_commit)
         self.depth3_gate_e_max_top_support = float(depth3_gate_e_max_top_support)
         self.depth3_gate_e_min_answer_groups = max(2, int(depth3_gate_e_min_answer_groups))
-        self.gate_v1_family_concentration_share_trigger = float(gate_v1_family_concentration_share_trigger)
-        self.gate_v1_longest_same_family_run_trigger = max(1, int(gate_v1_longest_same_family_run_trigger))
-        self.gate_v1_min_alive_families = max(1, int(gate_v1_min_alive_families))
-        self.gate_v1_min_answer_groups_rich = max(1, int(gate_v1_min_answer_groups_rich))
-        self.gate_v1_top_share_strong_incumbent = float(gate_v1_top_share_strong_incumbent)
-        self.gate_v1_support_gap_strong_incumbent = float(gate_v1_support_gap_strong_incumbent)
-        self.gate_v1_best_frontier_score_strong = float(gate_v1_best_frontier_score_strong)
-        self.gate_v2_family_concentration_share_trigger = float(gate_v2_family_concentration_share_trigger)
-        self.gate_v2_longest_same_family_run_trigger = max(1, int(gate_v2_longest_same_family_run_trigger))
-        self.gate_v2_max_top_support_for_weak_concentration = float(gate_v2_max_top_support_for_weak_concentration)
-        self.gate_v2_min_remaining_budget_for_depth3 = max(0, int(gate_v2_min_remaining_budget_for_depth3))
-        self.gate_v3_max_top_share_ambiguous = float(gate_v3_max_top_share_ambiguous)
-        self.gate_v3_max_top_minus_second_gap_ambiguous = float(gate_v3_max_top_minus_second_gap_ambiguous)
-        self.gate_v3_max_best_frontier_margin_ambiguous = float(gate_v3_max_best_frontier_margin_ambiguous)
-        self.gate_v3_min_distinct_answer_groups_ambiguous = max(1, int(gate_v3_min_distinct_answer_groups_ambiguous))
-        self.gate_v3_min_active_root_families_ambiguous = max(1, int(gate_v3_min_active_root_families_ambiguous))
-        self.gate_v3_family_concentration_share_trigger = float(gate_v3_family_concentration_share_trigger)
-        self.gate_v3_depth_asymmetry_trigger = max(1, int(gate_v3_depth_asymmetry_trigger))
-        self.gate_v3_ambiguity_signals_required = max(1, int(gate_v3_ambiguity_signals_required))
+        self.enable_hard_max_family_expansions_cap = bool(enable_hard_max_family_expansions_cap)
+        self.hard_max_family_expansions_base_cap = max(1, int(hard_max_family_expansions_base_cap))
+        self.hard_max_family_expansions_relax_cap = max(
+            self.hard_max_family_expansions_base_cap, int(hard_max_family_expansions_relax_cap)
+        )
+        self.hard_max_family_expansions_relax_cap_high = max(
+            self.hard_max_family_expansions_relax_cap, int(hard_max_family_expansions_relax_cap_high)
+        )
+        self.hard_max_family_expansions_relax_mode = str(hard_max_family_expansions_relax_mode or "fixed_k6_control")
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -2242,12 +2209,19 @@ class GlobalDiversityAggregationController(BaseController):
         force_disabled: bool,
         coverage_target_override: int | None = None,
     ) -> dict[str, Any]:
-        """Strict phased root-family early coverage diagnostic.
+        """Hard minimum per-root-family expandable depth before cross-family concentration.
 
-        For forced coverage, phase order is strict and level-by-level:
-        ``phase_f1`` -> ``phase_f2`` -> ``phase_f3`` -> ``phase_normal``.
-        We never permit deeper-phase eligibility while an earlier phase remains unfinished.
-        Within the active phase, candidate ordering still follows controller scoring.
+        Each initial root (``div_0`` / ``div_1``) defines a *family* id via ``branch_family_ids``.
+        Let ``target = hard_early_root_coverage_forced_min_depth`` (typically 2 or 3). While a
+        family has any non-done, non-pruned head with ``max(depth) < target``, that family is
+        *pending*. Eligible expansions are still ranked by the normal ``scored`` priorities;
+        this layer only removes families that already meet the depth quota from the eligible
+        set when another root family is still pending (not a fixed BFS order).
+
+        If no expandable heads remain for a family, it is not pending (cannot improve).
+
+        ``coverage_target_override`` (when set) replaces ``hard_early_root_coverage_forced_min_depth``
+        for this diagnostic only (used by conditional depth-2-then-gated-depth-3 mode).
         """
         target = int(coverage_target_override) if coverage_target_override is not None else int(self.hard_early_root_coverage_forced_min_depth)
         if force_disabled or target < 2:
@@ -2264,85 +2238,39 @@ class GlobalDiversityAggregationController(BaseController):
                 "remaining_actions_before_step": max(0, int(max_actions) - int(actions_so_far)),
                 "release_impossible_under_budget": False,
                 "release_low_remaining_budget": False,
-                "current_phase": "phase_normal",
-                "current_phase_depth_requirement": 0,
-                "phase_pending_families": [],
-                "phase_family_status": {},
-                "phase_status_by_depth": {},
-                "max_realized_depth_per_root_family": {},
-                "max_expandable_depth_per_root_family": {},
             }
 
         active = [b for b in branches if not b.is_pruned]
-        max_realized_depth_per_family: dict[str, int | None] = {}
-        max_expandable_depth_per_family: dict[str, int | None] = {}
-        phase_status_by_depth: dict[str, dict[str, Any]] = {}
         family_status: dict[str, dict[str, Any]] = {}
-        current_phase_pending: list[str] = []
-        current_phase_status: dict[str, Any] = {}
-        current_phase_depth = 0
-        phase_name = "phase_normal"
+        pending: list[str] = []
         total_need = 0
-        max_phase_depth = max(1, min(3, int(target)))
-        phase_depths = list(range(1, max_phase_depth + 1))
-
-        family_heads: dict[str, list[BranchState]] = {}
-        family_expandable: dict[str, list[BranchState]] = {}
         for fam in sorted(root_family_ids):
             heads = [b for b in active if self._branch_family_id(b, branch_family_ids) == fam]
             expandable = [b for b in heads if not b.is_done]
-            family_heads[fam] = heads
-            family_expandable[fam] = expandable
-            max_realized_depth_per_family[fam] = max((int(b.depth) for b in heads), default=None)
-            max_expandable_depth_per_family[fam] = max((int(b.depth) for b in expandable), default=None)
-
-        for phase_depth in phase_depths:
-            pending: list[str] = []
-            per_family_status: dict[str, dict[str, Any]] = {}
-            phase_total_need = 0
-            for fam in sorted(root_family_ids):
-                expandable = family_expandable.get(fam, [])
-                if not expandable:
-                    per_family_status[fam] = {
-                        "pending": False,
-                        "reason": "no_expandable_heads",
-                        "max_depth_among_expandable": None,
-                        "actions_needed_lower_bound": 0,
-                    }
-                    continue
-                max_depth = max(int(b.depth) for b in expandable)
-                need = max(0, int(phase_depth) - int(max_depth))
-                is_pending = need > 0
-                per_family_status[fam] = {
-                    "pending": bool(is_pending),
-                    "reason": f"depth_below_{phase_depth}" if is_pending else f"max_expandable_depth_ge_{phase_depth}",
-                    "max_depth_among_expandable": int(max_depth),
-                    "expandable_head_count": int(len(expandable)),
-                    "actions_needed_lower_bound": int(need),
+            if not expandable:
+                family_status[fam] = {
+                    "pending": False,
+                    "reason": "no_expandable_heads",
+                    "max_depth_among_expandable": None,
+                    "actions_needed_lower_bound": 0,
                 }
-                if is_pending:
-                    pending.append(fam)
-                    phase_total_need += int(need)
-            phase_status_by_depth[f"depth_{phase_depth}"] = {
-                "phase_depth_requirement": int(phase_depth),
-                "pending_families": pending,
-                "all_root_families_satisfied": len(pending) == 0,
-                "actions_needed_sum_lower_bound": int(phase_total_need),
-                "family_status": per_family_status,
+                continue
+            max_depth = max(int(b.depth) for b in expandable)
+            need = max(0, target - max_depth)
+            is_pending = need > 0
+            family_status[fam] = {
+                "pending": bool(is_pending),
+                "reason": f"depth_below_{target}" if is_pending else f"max_expandable_depth_ge_{target}",
+                "max_depth_among_expandable": int(max_depth),
+                "expandable_head_count": int(len(expandable)),
+                "actions_needed_lower_bound": int(need),
             }
-            if current_phase_depth == 0 and pending:
-                current_phase_depth = int(phase_depth)
-                current_phase_pending = list(pending)
-                current_phase_status = per_family_status
-                total_need = int(phase_total_need)
-                phase_name = f"phase_f{phase_depth}"
-                family_status = per_family_status
-
-        if current_phase_depth == 0:
-            family_status = phase_status_by_depth.get(f"depth_{max_phase_depth}", {}).get("family_status", {})
+            if is_pending:
+                pending.append(fam)
+                total_need += int(need)
 
         remaining = max(0, int(max_actions) - int(actions_so_far))
-        impossible = bool(len(current_phase_pending) > 0 and remaining < int(total_need))
+        impossible = bool(len(pending) > 0 and remaining < int(total_need))
         low_rem = bool(
             self.hard_early_coverage_min_remaining_actions_to_release > 0
             and remaining <= int(self.hard_early_coverage_min_remaining_actions_to_release)
@@ -2354,20 +2282,12 @@ class GlobalDiversityAggregationController(BaseController):
             "force_disabled": False,
             "root_families": sorted(root_family_ids),
             "family_status": family_status,
-            "pending_families": current_phase_pending,
-            "all_root_families_satisfied": len(current_phase_pending) == 0,
+            "pending_families": pending,
+            "all_root_families_satisfied": len(pending) == 0,
             "actions_needed_sum_lower_bound": int(total_need),
             "remaining_actions_before_step": int(remaining),
             "release_impossible_under_budget": impossible,
             "release_low_remaining_budget": low_rem,
-            "current_phase": phase_name,
-            "current_phase_depth_requirement": int(current_phase_depth),
-            "current_phase_name_legacy": phase_name.replace("phase_f", "phase_depth"),
-            "phase_pending_families": current_phase_pending,
-            "phase_family_status": current_phase_status,
-            "phase_status_by_depth": phase_status_by_depth,
-            "max_realized_depth_per_root_family": max_realized_depth_per_family,
-            "max_expandable_depth_per_root_family": max_expandable_depth_per_family,
         }
 
     def _evaluate_conditional_depth3_gate(
@@ -2393,7 +2313,6 @@ class GlobalDiversityAggregationController(BaseController):
         top_share = float(top_c / support_total) if support_total > 0 else 0.0
         gap_share = float((top_c - second_c) / support_total) if support_total > 0 else 0.0
 
-        remaining_actions = max(0, int(max_actions) - int(actions_so_far))
         crit_a_weak_top = bool(top_share < self.depth3_gate_min_top_answer_support)
         crit_a_weak_gap = bool(gap_share < self.depth3_gate_min_support_gap)
         criterion_a = bool(crit_a_weak_top or crit_a_weak_gap)
@@ -2429,99 +2348,17 @@ class GlobalDiversityAggregationController(BaseController):
         )
         criterion_e = bool(crit_e)
 
-        gate_design = str(self.conditional_depth3_gate_design or "v0_conditional_depth3_v1")
-        if gate_design == "v1_optimistic_collapse_first":
-            strong_concentration = bool(
-                max_family_share >= self.gate_v1_family_concentration_share_trigger
-                or int(max_consecutive_same_family_expands) >= self.gate_v1_longest_same_family_run_trigger
-            )
-            weak_alternative_maturation = bool(
-                active_root_families >= self.gate_v1_min_alive_families
-                and (
-                    bool(hard_cov_diag_d2.get("all_root_families_satisfied"))
-                    or bool(len(hard_cov_diag_d2.get("pending_families") or []) > 0)
-                )
-            )
-            low_coverage_richness = bool(len(answer_support_counts) < self.gate_v1_min_answer_groups_rich)
-            no_strong_incumbent = bool(
-                top_share < self.gate_v1_top_share_strong_incumbent
-                or gap_share < self.gate_v1_support_gap_strong_incumbent
-                or best_frontier_score < self.gate_v1_best_frontier_score_strong
-            )
-            safe_to_stop_all = bool(
-                (not strong_concentration)
-                and (not weak_alternative_maturation)
-                and (not low_coverage_richness)
-                and (not no_strong_incumbent)
-            )
-            fired = {
-                "strong_family_concentration_pressure": strong_concentration,
-                "weak_alternative_maturation": weak_alternative_maturation,
-                "low_coverage_richness": low_coverage_richness,
-                "no_strong_incumbent": no_strong_incumbent,
-            }
-            n_fired = int(sum(1 for v in fired.values() if v))
-            raw_wants_depth3 = bool(strong_concentration or n_fired >= 2 or (not safe_to_stop_all))
-            combine_ab = False
-            combine_2of5 = bool(n_fired >= 2)
-        elif gate_design == "v2_budget_aware_rescue":
-            collapse_pressure = bool(
-                max_family_share >= self.gate_v2_family_concentration_share_trigger
-                or int(max_consecutive_same_family_expands) >= self.gate_v2_longest_same_family_run_trigger
-            )
-            poor_alternative_maturity = bool(active_root_families >= 2 and len(answer_support_counts) <= 2)
-            weak_support_concentration = bool(
-                top_share <= self.gate_v2_max_top_support_for_weak_concentration
-                or gap_share < self.depth3_gate_min_support_gap
-            )
-            budget_adequate = bool(remaining_actions >= self.gate_v2_min_remaining_budget_for_depth3)
-            fired = {
-                "collapse_pressure_high": collapse_pressure,
-                "poor_alternative_maturity": poor_alternative_maturity,
-                "weak_answer_support_concentration": weak_support_concentration,
-                "remaining_budget_adequate": budget_adequate,
-            }
-            n_fired = int(sum(1 for v in fired.values() if v))
-            raw_wants_depth3 = bool(collapse_pressure and poor_alternative_maturity and budget_adequate and weak_support_concentration)
-            combine_ab = False
-            combine_2of5 = False
-        elif gate_design == "v3_ambiguity_after_depth2":
-            sorted_scored = sorted(scored, key=lambda x: float(self.scorer.score_branch(x[0])), reverse=True)
-            best_margin = 0.0
-            if len(sorted_scored) >= 2:
-                best_margin = float(self.scorer.score_branch(sorted_scored[0][0]) - self.scorer.score_branch(sorted_scored[1][0]))
-            family_depths: dict[str, list[int]] = {}
-            for b in active:
-                fam = self._branch_family_id(b, branch_family_ids)
-                family_depths.setdefault(fam, []).append(int(b.depth))
-            fam_max = [max(v) for v in family_depths.values() if v]
-            depth_asymmetry = int(max(fam_max) - min(fam_max)) if len(fam_max) >= 2 else 0
-            ambiguity_signals = {
-                "active_root_families_high": bool(active_root_families >= self.gate_v3_min_active_root_families_ambiguous),
-                "top_answer_group_share_not_decisive": bool(top_share <= self.gate_v3_max_top_share_ambiguous),
-                "top_vs_second_support_gap_small": bool(gap_share <= self.gate_v3_max_top_minus_second_gap_ambiguous),
-                "best_frontier_score_margin_small": bool(best_margin <= self.gate_v3_max_best_frontier_margin_ambiguous),
-                "distinct_answer_groups_present": bool(len(answer_support_counts) >= self.gate_v3_min_distinct_answer_groups_ambiguous),
-                "same_family_concentration_present": bool(max_family_share >= self.gate_v3_family_concentration_share_trigger),
-                "depth_asymmetry_across_families": bool(depth_asymmetry >= self.gate_v3_depth_asymmetry_trigger),
-            }
-            fired = ambiguity_signals
-            n_fired = int(sum(1 for v in ambiguity_signals.values() if v))
-            raw_wants_depth3 = bool(n_fired >= self.gate_v3_ambiguity_signals_required)
-            combine_ab = False
-            combine_2of5 = False
-        else:
-            fired = {
-                "A_weak_answer_support": criterion_a,
-                "B_unresolved_family_ambiguity": criterion_b,
-                "C_early_collapse_risk": criterion_c,
-                "D_weak_commit_evidence": criterion_d,
-                "E_weak_alternatives_shallow_maturity": criterion_e,
-            }
-            n_fired = int(sum(1 for v in fired.values() if v))
-            combine_ab = bool(criterion_a and criterion_b)
-            combine_2of5 = bool(n_fired >= 2)
-            raw_wants_depth3 = bool(combine_ab or combine_2of5)
+        fired = {
+            "A_weak_answer_support": criterion_a,
+            "B_unresolved_family_ambiguity": criterion_b,
+            "C_early_collapse_risk": criterion_c,
+            "D_weak_commit_evidence": criterion_d,
+            "E_weak_alternatives_shallow_maturity": criterion_e,
+        }
+        n_fired = int(sum(1 for v in fired.values() if v))
+        combine_ab = bool(criterion_a and criterion_b)
+        combine_2of5 = bool(n_fired >= 2)
+        raw_wants_depth3 = bool(combine_ab or combine_2of5)
 
         d2_rel_imp = bool(hard_cov_diag_d2.get("release_impossible_under_budget"))
         d3_diag = self._hard_early_root_coverage_forced_diagnostic(
@@ -2578,7 +2415,6 @@ class GlobalDiversityAggregationController(BaseController):
                 "release_impossible_under_budget": d2_rel_imp,
                 "pending_families": list(hard_cov_diag_d2.get("pending_families") or []),
             },
-            "gate_design": gate_design,
         }
 
     def _apply_hard_early_root_coverage_forced_override(
@@ -2650,6 +2486,71 @@ class GlobalDiversityAggregationController(BaseController):
         )
         return nb, float(nprior), nmeta, meta_out
 
+    def _conditional_family_cap(
+        self,
+        *,
+        family_expansions: dict[str, int],
+        selected_family: str,
+        answer_support_counts: dict[str, int],
+        active_group_counts: dict[str, int],
+        active_family_count: int,
+        max_consecutive_same_family_expands: int,
+        top_support: float,
+        hard_cov_diag: dict[str, Any],
+    ) -> dict[str, Any]:
+        base = int(self.hard_max_family_expansions_base_cap)
+        out: dict[str, Any] = {
+            "mode": self.hard_max_family_expansions_relax_mode,
+            "base_cap": base,
+            "effective_cap": base,
+            "relaxed": False,
+            "relax_delta": 0,
+            "trigger": "base_only",
+            "selected_family_expansions_pre_action": int(family_expansions.get(selected_family, 0)),
+        }
+        if (not self.enable_hard_max_family_expansions_cap) or self.hard_max_family_expansions_relax_mode == "fixed_k6_control":
+            return out
+        mode = self.hard_max_family_expansions_relax_mode
+        support_total = max(1, sum(answer_support_counts.values()))
+        n_groups = len(answer_support_counts)
+        breadth_complete = bool(hard_cov_diag.get("all_root_families_satisfied")) and (
+            not bool(hard_cov_diag.get("release_impossible_under_budget"))
+        )
+        collapse_warning = bool(
+            max_consecutive_same_family_expands >= self.low_marginal_gain_consecutive_family_trigger
+            or top_support >= max(0.78, self.depth3_gate_max_family_share_trigger + 0.10)
+        )
+        effective = base
+        trigger = "base_only"
+        if mode == "relax_on_cross_family_coverage_complete":
+            if breadth_complete and active_family_count >= 2:
+                effective = self.hard_max_family_expansions_relax_cap
+                trigger = "coverage_complete"
+        elif mode == "relax_on_low_marginal_gain_absence_false":
+            if (not collapse_warning) and active_family_count >= 2 and top_support <= 0.82:
+                effective = self.hard_max_family_expansions_relax_cap
+                trigger = "no_collapse_warning_and_alternatives"
+        elif mode == "relax_on_multi_family_maturity":
+            if n_groups >= 3 and active_family_count >= 2 and top_support <= 0.75:
+                effective = self.hard_max_family_expansions_relax_cap_high
+                trigger = "multi_family_maturity_high_relax"
+            elif n_groups >= 2 and active_family_count >= 2 and top_support <= 0.82:
+                effective = self.hard_max_family_expansions_relax_cap
+                trigger = "multi_family_maturity_relax"
+        elif mode == "relax_on_high_confidence_incumbent_but_no_challenger_gap":
+            sorted_counts = sorted(answer_support_counts.values(), reverse=True)
+            top_c = int(sorted_counts[0]) if sorted_counts else 0
+            second_c = int(sorted_counts[1]) if len(sorted_counts) > 1 else 0
+            support_gap = float((top_c - second_c) / support_total)
+            if breadth_complete and top_support >= 0.62 and support_gap <= 0.30 and (not collapse_warning):
+                effective = self.hard_max_family_expansions_relax_cap
+                trigger = "incumbent_strong_but_challenger_gap_unclear"
+        out["effective_cap"] = int(effective)
+        out["relaxed"] = bool(effective > base)
+        out["relax_delta"] = int(effective - base)
+        out["trigger"] = trigger
+        return out
+
     def run(self, question: str, gold_answer: str) -> MethodResult:
         forced_action_plan_raw = getattr(self, "_forced_action_plan", {}) or {}
         forced_action_plan: dict[int, str] = {}
@@ -2664,10 +2565,6 @@ class GlobalDiversityAggregationController(BaseController):
         branch_expansions: dict[str, int] = {}
         branches: list[BranchState] = [self.generator.init_branch("div_0"), self.generator.init_branch("div_1")]
         branch_family_ids: dict[str, str] = {branches[0].branch_id: branches[0].branch_id, branches[1].branch_id: branches[1].branch_id}
-        family_expansion_counts: dict[str, int] = {
-            branches[0].branch_id: 0,
-            branches[1].branch_id: 0,
-        }
         answer_support_counts: dict[str, int] = {}
         group_profiles: dict[str, list[set[str]]] = {}
         global_profiles: list[set[str]] = []
@@ -2688,11 +2585,6 @@ class GlobalDiversityAggregationController(BaseController):
         uncertainty_verify_steps = 0
         near_miss_correction_activation_count = 0
         near_miss_correction_forced_expand_count = 0
-        hard_max_family_cap_bind_count = 0
-        hard_max_family_cap_forced_verify_count = 0
-        hard_max_family_cap_switch_to_alternative_count = 0
-        hard_max_family_cap_hit_families: set[str] = set()
-        hard_max_family_cap_events: list[dict[str, Any]] = []
         last_expanded_branch_id: str | None = None
         consecutive_same_branch_expands = 0
         max_consecutive_same_branch_expands = 0
@@ -2709,6 +2601,10 @@ class GlobalDiversityAggregationController(BaseController):
         low_marginal_gain_trigger_count = 0
         low_marginal_gain_block_count = 0
         low_marginal_gain_override_count = 0
+        family_cap_block_count = 0
+        family_cap_relax_activation_count = 0
+        family_cap_relax_delta_sum = 0
+        family_cap_activation_by_trigger: dict[str, int] = {}
         protected_alternatives: dict[str, dict[str, int | str | float]] = {}
         protected_alternative_ids: set[str] = set()
         matured_alternative_ids: set[str] = set()
@@ -2722,9 +2618,6 @@ class GlobalDiversityAggregationController(BaseController):
         hard_early_coverage_budget_released_low_remaining = False
         hard_early_coverage_forced_override_steps = 0
         hard_early_coverage_transition_actions_used: int | None = None
-        hard_early_coverage_phase_last: str = "phase_normal"
-        hard_early_coverage_phase_transition_count = 0
-        hard_early_coverage_phase_transition_log: list[dict[str, Any]] = []
         cond_phase: str | None = "depth2" if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 else None
         cond_gate_evaluated = False
         cond_gate_record: dict[str, Any] | None = None
@@ -3012,42 +2905,6 @@ class GlobalDiversityAggregationController(BaseController):
                 and hard_early_coverage_force_disabled
             ):
                 cond_phase = "normal"
-            current_cov_phase = str(hard_cov_diag.get("current_phase") or "phase_normal")
-            if (
-                self.enable_hard_early_root_depth2_then_conditional_depth3_v1
-                and cond_phase == "depth2"
-                and not cond_gate_evaluated
-                and bool(hard_cov_diag.get("all_root_families_satisfied"))
-            ):
-                current_cov_phase = "phase_gate_after_f2"
-            phase_transition_happened = bool(current_cov_phase != hard_early_coverage_phase_last)
-            phase_transition_reason = "steady"
-            if phase_transition_happened:
-                hard_early_coverage_phase_transition_count += 1
-                if current_cov_phase == "phase_normal":
-                    if bool(hard_cov_diag.get("release_impossible_under_budget")):
-                        phase_transition_reason = "release_impossible_under_budget"
-                    elif bool(hard_cov_diag.get("release_low_remaining_budget")):
-                        phase_transition_reason = "release_low_remaining_budget"
-                    else:
-                        phase_transition_reason = "all_required_phases_completed"
-                else:
-                    phase_transition_reason = f"advanced_to_{current_cov_phase}"
-                hard_early_coverage_phase_transition_log.append(
-                    {
-                        "action_index": int(actions),
-                        "from_phase": str(hard_early_coverage_phase_last),
-                        "to_phase": str(current_cov_phase),
-                        "reason": str(phase_transition_reason),
-                        "pending_families": list(hard_cov_diag.get("phase_pending_families") or []),
-                        "phase_depth_requirement": (
-                            2
-                            if current_cov_phase == "phase_gate_after_f2"
-                            else int(hard_cov_diag.get("current_phase_depth_requirement") or 0)
-                        ),
-                    }
-                )
-                hard_early_coverage_phase_last = str(current_cov_phase)
             branch, priority, pri_meta, hard_cov_override = self._apply_hard_early_root_coverage_forced_override(
                 scored,
                 branch=branch,
@@ -3059,10 +2916,50 @@ class GlobalDiversityAggregationController(BaseController):
             )
             if bool(hard_cov_override.get("hard_early_coverage_forced_override")):
                 hard_early_coverage_forced_override_steps += 1
+            family_expansions_now: dict[str, int] = {}
+            for bid, cnt in branch_expansions.items():
+                fam = str(branch_family_ids.get(bid) or bid)
+                family_expansions_now[fam] = family_expansions_now.get(fam, 0) + int(cnt)
+            selected_family_id = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+            active_family_count = len({str(branch_family_ids.get(b.branch_id) or b.branch_id) for b in active})
+            cap_meta = self._conditional_family_cap(
+                family_expansions=family_expansions_now,
+                selected_family=selected_family_id,
+                answer_support_counts=answer_support_counts,
+                active_group_counts=active_group_counts,
+                active_family_count=active_family_count,
+                max_consecutive_same_family_expands=max_consecutive_same_family_expands,
+                top_support=float(max(answer_support_counts.values()) / max(1, sum(answer_support_counts.values())) if answer_support_counts else 0.0),
+                hard_cov_diag=hard_cov_diag,
+            )
+            if bool(cap_meta.get("relaxed")):
+                family_cap_relax_activation_count += 1
+                family_cap_relax_delta_sum += int(cap_meta.get("relax_delta", 0))
+                trig = str(cap_meta.get("trigger") or "unknown")
+                family_cap_activation_by_trigger[trig] = family_cap_activation_by_trigger.get(trig, 0) + 1
+            family_exp_cnt_selected = int(family_expansions_now.get(selected_family_id, 0))
+            if family_exp_cnt_selected >= int(cap_meta.get("effective_cap", 0)):
+                alt = next(
+                    (
+                        item
+                        for item in scored
+                        if int(
+                            family_expansions_now.get(
+                                str(branch_family_ids.get(item[0].branch_id) or item[0].branch_id),
+                                0,
+                            )
+                        )
+                        < int(cap_meta.get("effective_cap", 0))
+                    ),
+                    None,
+                )
+                if alt is not None:
+                    family_cap_block_count += 1
+                    branch, priority, pri_meta = alt
+                    selected_family_id = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
             hard_cov_trace = {
                 "hard_early_root_coverage_forced_min_depth": int(self.hard_early_root_coverage_forced_min_depth),
                 "hard_early_root_coverage_forced_active": bool(self.hard_early_root_coverage_forced_min_depth >= 2),
-                "hard_early_root_strict_phased_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth >= 2),
                 "hard_early_root_depth2_coverage_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth == 2),
                 "hard_early_root_depth3_coverage_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth >= 3),
                 "hard_early_coverage_force_disabled": bool(hard_early_coverage_force_disabled),
@@ -3079,23 +2976,8 @@ class GlobalDiversityAggregationController(BaseController):
                     hard_cov_diag.get("release_impossible_under_budget")
                 ),
                 "hard_early_coverage_release_low_remaining": bool(hard_cov_diag.get("release_low_remaining_budget")),
-                "hard_early_coverage_current_phase": current_cov_phase,
-                "hard_early_coverage_current_phase_depth_requirement": int(
-                    2
-                    if current_cov_phase == "phase_gate_after_f2"
-                    else (hard_cov_diag.get("current_phase_depth_requirement") or 0)
-                ),
-                "hard_early_coverage_phase_transition_happened": bool(phase_transition_happened),
-                "hard_early_coverage_phase_transition_reason": str(phase_transition_reason),
-                "hard_early_coverage_phase_pending_families": list(hard_cov_diag.get("phase_pending_families") or []),
-                "hard_early_coverage_phase_max_realized_depth_per_root_family": dict(
-                    hard_cov_diag.get("max_realized_depth_per_root_family") or {}
-                ),
                 "hard_early_coverage_forced_override": bool(hard_cov_override.get("hard_early_coverage_forced_override")),
                 "hard_early_coverage_override_reason": str(hard_cov_override.get("hard_early_coverage_override_reason") or ""),
-                "hard_early_coverage_action_blocked_by_phase_incomplete": bool(
-                    hard_cov_override.get("hard_early_coverage_forced_override")
-                ),
                 "conditional_depth2_then_depth3_gate_phase": str(cond_phase or ""),
                 "conditional_depth3_gate_evaluated": bool(cond_gate_evaluated),
             }
@@ -3179,41 +3061,6 @@ class GlobalDiversityAggregationController(BaseController):
                         branch, priority, pri_meta = top_item
                     should_expand = True
                     forced_action_applied = True
-            cap_meta: dict[str, Any] = {
-                "hard_max_family_expansions_enabled": bool(self.enable_hard_max_family_expansions_v1),
-                "max_family_expansions_per_run": int(self.max_family_expansions_per_run),
-                "cap_prevented_expand": False,
-                "cap_switch_to_alternative_family": False,
-                "cap_target_family_id": "",
-                "cap_target_family_count_pre_action": 0,
-                "cap_bind_reason": "",
-                "cap_all_expand_families_blocked": False,
-            }
-            if should_expand and self.enable_hard_max_family_expansions_v1 and self.max_family_expansions_per_run > 0:
-                selected_family = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
-                selected_family_count = int(family_expansion_counts.get(selected_family, 0))
-                cap_meta["cap_target_family_id"] = selected_family
-                cap_meta["cap_target_family_count_pre_action"] = selected_family_count
-                if selected_family_count >= self.max_family_expansions_per_run:
-                    cap_meta["cap_prevented_expand"] = True
-                    cap_meta["cap_bind_reason"] = "selected_family_capped"
-                    uncapped_scored = []
-                    for item in scored:
-                        fam = str(branch_family_ids.get(item[0].branch_id) or item[0].branch_id)
-                        if int(family_expansion_counts.get(fam, 0)) < self.max_family_expansions_per_run:
-                            uncapped_scored.append(item)
-                    if uncapped_scored:
-                        branch, priority, pri_meta = uncapped_scored[0]
-                        b_expanded = int(branch_expansions.get(branch.branch_id, 0))
-                        cap_meta["cap_switch_to_alternative_family"] = True
-                        cap_meta["cap_bind_reason"] = "rerouted_to_uncapped_family"
-                        hard_max_family_cap_switch_to_alternative_count += 1
-                    else:
-                        should_expand = False
-                        cap_meta["cap_all_expand_families_blocked"] = True
-                        cap_meta["cap_bind_reason"] = "all_families_capped_for_expand"
-                        hard_max_family_cap_forced_verify_count += 1
-                    hard_max_family_cap_bind_count += 1
             if commit_triggered:
                 break
             near_tie_uncertainty = False
@@ -3369,7 +3216,14 @@ class GlobalDiversityAggregationController(BaseController):
                         "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
                         "near_miss_correction_parent_branch_id": correction_parent_branch_id,
                         "forced_action": forced_action if forced_action_applied else "",
-                        **cap_meta,
+                        "hard_max_family_expansions_cap_enabled": bool(self.enable_hard_max_family_expansions_cap),
+                        "hard_max_family_expansions_mode": str(cap_meta.get("mode") or ""),
+                        "hard_max_family_expansions_base_cap": int(cap_meta.get("base_cap", 0)),
+                        "hard_max_family_expansions_effective_cap": int(cap_meta.get("effective_cap", 0)),
+                        "hard_max_family_expansions_relaxed": bool(cap_meta.get("relaxed", False)),
+                        "hard_max_family_expansions_relax_delta": int(cap_meta.get("relax_delta", 0)),
+                        "hard_max_family_expansions_trigger": str(cap_meta.get("trigger") or ""),
+                        "selected_family_expansions_pre_action": int(cap_meta.get("selected_family_expansions_pre_action", 0)),
                         **hard_cov_trace,
                     }
                 )
@@ -3383,25 +3237,6 @@ class GlobalDiversityAggregationController(BaseController):
                 max_consecutive_same_branch_expands = max(max_consecutive_same_branch_expands, consecutive_same_branch_expands)
                 last_expanded_branch_id = branch.branch_id
                 family_id = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
-                family_expansion_counts[family_id] = int(family_expansion_counts.get(family_id, 0)) + 1
-                if (
-                    self.enable_hard_max_family_expansions_v1
-                    and self.max_family_expansions_per_run > 0
-                    and int(family_expansion_counts.get(family_id, 0)) == int(self.max_family_expansions_per_run)
-                ):
-                    hard_max_family_cap_hit_families.add(family_id)
-                    hard_max_family_cap_events.append(
-                        {
-                            "action_index": int(actions),
-                            "family_id": family_id,
-                            "family_expansions_at_cap": int(family_expansion_counts.get(family_id, 0)),
-                            "cap_value": int(self.max_family_expansions_per_run),
-                            "was_dominant_family_at_bind": bool(
-                                int(family_expansion_counts.get(family_id, 0))
-                                == max(int(v) for v in family_expansion_counts.values())
-                            ),
-                        }
-                    )
                 if family_id == (last_expanded_family_id or ""):
                     repeated_same_family_expansion_count += 1
                     consecutive_same_family_expands += 1
@@ -3511,7 +3346,14 @@ class GlobalDiversityAggregationController(BaseController):
                         "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
                         "near_miss_correction_parent_branch_id": correction_parent_branch_id,
                         "forced_action": forced_action if forced_action_applied else "",
-                        **cap_meta,
+                        "hard_max_family_expansions_cap_enabled": bool(self.enable_hard_max_family_expansions_cap),
+                        "hard_max_family_expansions_mode": str(cap_meta.get("mode") or ""),
+                        "hard_max_family_expansions_base_cap": int(cap_meta.get("base_cap", 0)),
+                        "hard_max_family_expansions_effective_cap": int(cap_meta.get("effective_cap", 0)),
+                        "hard_max_family_expansions_relaxed": bool(cap_meta.get("relaxed", False)),
+                        "hard_max_family_expansions_relax_delta": int(cap_meta.get("relax_delta", 0)),
+                        "hard_max_family_expansions_trigger": str(cap_meta.get("trigger") or ""),
+                        "selected_family_expansions_pre_action": int(cap_meta.get("selected_family_expansions_pre_action", 0)),
                         **hard_cov_trace,
                     }
                 )
@@ -3895,19 +3737,6 @@ class GlobalDiversityAggregationController(BaseController):
                 "low_marginal_gain_cooldown_steps": int(self.low_marginal_gain_cooldown_steps),
                 "low_marginal_gain_penalty_strength": float(self.low_marginal_gain_penalty_strength),
                 "low_marginal_gain_hard_block_ablation": bool(self.low_marginal_gain_hard_block_ablation),
-                "hard_max_family_expansions_v1_enabled": bool(self.enable_hard_max_family_expansions_v1),
-                "max_family_expansions_per_run": int(self.max_family_expansions_per_run),
-                "hard_max_family_expansion_counts": dict(
-                    sorted((str(k), int(v)) for k, v in family_expansion_counts.items())
-                ),
-                "hard_max_family_cap_bind_count": int(hard_max_family_cap_bind_count),
-                "hard_max_family_cap_forced_verify_count": int(hard_max_family_cap_forced_verify_count),
-                "hard_max_family_cap_switch_to_alternative_count": int(
-                    hard_max_family_cap_switch_to_alternative_count
-                ),
-                "hard_max_family_cap_hit_families": sorted(hard_max_family_cap_hit_families),
-                "hard_max_family_cap_hit_family_count": int(len(hard_max_family_cap_hit_families)),
-                "hard_max_family_cap_events": hard_max_family_cap_events[: min(20, len(hard_max_family_cap_events))],
                 "repeated_same_branch_expansion_dominated_budget": bool(repeated_same_branch_domination),
                 "top_branch_expand_share": float(top_branch_expand_share),
                 "branch_creation_count": int(len(branch_expansions)),
@@ -3953,7 +3782,6 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_early_root_coverage_forced_min_depth": int(self.hard_early_root_coverage_forced_min_depth),
                 "hard_early_root_depth2_coverage_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth == 2),
                 "hard_early_root_depth3_coverage_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth >= 3),
-                "hard_early_root_strict_phased_v1_enabled": bool(self.hard_early_root_coverage_forced_min_depth >= 2),
                 "hard_early_coverage_forced_override_steps": int(hard_early_coverage_forced_override_steps),
                 "hard_early_coverage_transition_actions_used": hard_early_coverage_transition_actions_used,
                 "hard_early_coverage_completed_fully": bool(
@@ -3965,19 +3793,29 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_early_coverage_budget_released_impossible": bool(hard_early_coverage_budget_released_impossible),
                 "hard_early_coverage_budget_released_low_remaining": bool(hard_early_coverage_budget_released_low_remaining),
                 "hard_early_coverage_force_disabled_final": bool(hard_early_coverage_force_disabled),
-                "hard_early_coverage_phase_transition_count": int(hard_early_coverage_phase_transition_count),
-                "hard_early_coverage_phase_transition_log": hard_early_coverage_phase_transition_log[:12],
-                "hard_early_coverage_phase_final": str(hard_early_coverage_phase_last),
                 "hard_early_coverage_root_families": sorted(root_family_ids),
                 "hard_early_root_depth2_then_conditional_depth3_v1_enabled": bool(
                     self.enable_hard_early_root_depth2_then_conditional_depth3_v1
                 ),
+                "hard_max_family_expansions_cap_enabled": bool(self.enable_hard_max_family_expansions_cap),
+                "hard_max_family_expansions_relax_mode": str(self.hard_max_family_expansions_relax_mode),
+                "hard_max_family_expansions_base_cap": int(self.hard_max_family_expansions_base_cap),
+                "hard_max_family_expansions_relax_cap": int(self.hard_max_family_expansions_relax_cap),
+                "hard_max_family_expansions_relax_cap_high": int(self.hard_max_family_expansions_relax_cap_high),
+                "hard_max_family_expansions_block_count": int(family_cap_block_count),
+                "hard_max_family_expansions_relax_activation_count": int(family_cap_relax_activation_count),
+                "hard_max_family_expansions_relax_activation_rate": float(
+                    family_cap_relax_activation_count / max(1, len(action_trace))
+                ),
+                "hard_max_family_expansions_mean_relax_delta_on_activation": float(
+                    family_cap_relax_delta_sum / max(1, family_cap_relax_activation_count)
+                ),
+                "hard_max_family_expansions_activation_by_trigger": dict(family_cap_activation_by_trigger),
                 "conditional_coverage_phase_final": str(cond_phase or ""),
                 "conditional_depth2_gate_actions": cond_depth2_gate_actions,
                 "conditional_depth3_gate_record": cond_gate_record,
                 "conditional_depth3_forcing_completed": bool(cond_depth3_completed),
                 "conditional_depth3_gate_thresholds": {
-                    "conditional_depth3_gate_design": str(self.conditional_depth3_gate_design),
                     "depth3_gate_min_top_answer_support": float(self.depth3_gate_min_top_answer_support),
                     "depth3_gate_min_support_gap": float(self.depth3_gate_min_support_gap),
                     "depth3_gate_min_active_root_families": int(self.depth3_gate_min_active_root_families),
@@ -3987,27 +3825,6 @@ class GlobalDiversityAggregationController(BaseController):
                     "depth3_gate_min_top_group_support_commit": float(self.depth3_gate_min_top_group_support_commit),
                     "depth3_gate_e_max_top_support": float(self.depth3_gate_e_max_top_support),
                     "depth3_gate_e_min_answer_groups": int(self.depth3_gate_e_min_answer_groups),
-                    "gate_v1_family_concentration_share_trigger": float(self.gate_v1_family_concentration_share_trigger),
-                    "gate_v1_longest_same_family_run_trigger": int(self.gate_v1_longest_same_family_run_trigger),
-                    "gate_v1_min_alive_families": int(self.gate_v1_min_alive_families),
-                    "gate_v1_min_answer_groups_rich": int(self.gate_v1_min_answer_groups_rich),
-                    "gate_v1_top_share_strong_incumbent": float(self.gate_v1_top_share_strong_incumbent),
-                    "gate_v1_support_gap_strong_incumbent": float(self.gate_v1_support_gap_strong_incumbent),
-                    "gate_v1_best_frontier_score_strong": float(self.gate_v1_best_frontier_score_strong),
-                    "gate_v2_family_concentration_share_trigger": float(self.gate_v2_family_concentration_share_trigger),
-                    "gate_v2_longest_same_family_run_trigger": int(self.gate_v2_longest_same_family_run_trigger),
-                    "gate_v2_max_top_support_for_weak_concentration": float(
-                        self.gate_v2_max_top_support_for_weak_concentration
-                    ),
-                    "gate_v2_min_remaining_budget_for_depth3": int(self.gate_v2_min_remaining_budget_for_depth3),
-                    "gate_v3_max_top_share_ambiguous": float(self.gate_v3_max_top_share_ambiguous),
-                    "gate_v3_max_top_minus_second_gap_ambiguous": float(self.gate_v3_max_top_minus_second_gap_ambiguous),
-                    "gate_v3_max_best_frontier_margin_ambiguous": float(self.gate_v3_max_best_frontier_margin_ambiguous),
-                    "gate_v3_min_distinct_answer_groups_ambiguous": int(self.gate_v3_min_distinct_answer_groups_ambiguous),
-                    "gate_v3_min_active_root_families_ambiguous": int(self.gate_v3_min_active_root_families_ambiguous),
-                    "gate_v3_family_concentration_share_trigger": float(self.gate_v3_family_concentration_share_trigger),
-                    "gate_v3_depth_asymmetry_trigger": int(self.gate_v3_depth_asymmetry_trigger),
-                    "gate_v3_ambiguity_signals_required": int(self.gate_v3_ambiguity_signals_required),
                 },
                 "hard_early_coverage_final_family_status": (
                     self._hard_early_root_coverage_forced_diagnostic(
@@ -4023,23 +3840,6 @@ class GlobalDiversityAggregationController(BaseController):
                             else None
                         ),
                     ).get("family_status")
-                    if self.hard_early_root_coverage_forced_min_depth >= 2
-                    else {}
-                ),
-                "hard_early_coverage_final_phase_status": (
-                    self._hard_early_root_coverage_forced_diagnostic(
-                        branches=branches,
-                        branch_family_ids=branch_family_ids,
-                        root_family_ids=root_family_ids,
-                        actions_so_far=actions,
-                        max_actions=self.max_actions,
-                        force_disabled=hard_early_coverage_force_disabled,
-                        coverage_target_override=(
-                            3
-                            if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 and cond_depth3_completed
-                            else None
-                        ),
-                    )
                     if self.hard_early_root_coverage_forced_min_depth >= 2
                     else {}
                 ),

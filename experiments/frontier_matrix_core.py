@@ -1168,12 +1168,8 @@ def build_frontier_strategies(
             enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
             method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_conditional_depth3_v1_low_marginal_gain_cooldown_v1",
         )
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
-        ] = GlobalDiversityAggregationController(
-            generator_factory(),
-            scorer,
-            budget,
+        strict_gate1_base = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
+        strict_gate1_common: dict[str, Any] = dict(
             max_branches=4,
             min_branch_expansions=1,
             diversity_weight=0.40,
@@ -1197,6 +1193,16 @@ def build_frontier_strategies(
             repeat_expand_penalty_weight=0.065,
             repeat_expand_family_penalty_weight=0.12,
             repeat_expand_override_margin=0.08,
+            enable_low_marginal_gain_family_cooldown=True,
+            low_marginal_gain_window_size=3,
+            low_marginal_gain_min_threshold=0.015,
+            low_marginal_gain_consecutive_family_trigger=4,
+            low_marginal_gain_cooldown_steps=2,
+            low_marginal_gain_penalty_strength=0.14,
+            low_marginal_gain_override_margin=0.12,
+            low_marginal_gain_override_top_support_min=0.74,
+            low_marginal_gain_answer_group_aware=True,
+            low_marginal_gain_hard_block_ablation=False,
             monopolization_margin_requirement=0.11,
             answer_group_distinctness_bonus=0.12,
             duplicate_answer_group_penalty=0.08,
@@ -1207,214 +1213,27 @@ def build_frontier_strategies(
             hard_early_root_coverage_forced_min_depth=2,
             hard_early_coverage_min_remaining_actions_to_release=0,
             enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
-            conditional_depth3_gate_design="v1_optimistic_collapse_first",
-            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first",
+            enable_hard_max_family_expansions_cap=True,
+            hard_max_family_expansions_base_cap=6,
+            hard_max_family_expansions_relax_cap=8,
+            hard_max_family_expansions_relax_cap_high=10,
         )
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v2_budget_aware_rescue"
-        ] = GlobalDiversityAggregationController(
-            generator_factory(),
-            scorer,
-            budget,
-            max_branches=4,
-            min_branch_expansions=1,
-            diversity_weight=0.40,
-            duplicate_penalty=0.15,
-            unknown_answer_bonus=0.08,
-            answer_support_weight=0.55,
-            value_weight=0.45,
-            commit_support_threshold=0.72,
-            commit_delay_min_actions=4,
-            enable_early_answer_group_preservation=True,
-            early_preservation_action_window=5,
-            early_preservation_min_plausible_continuation=0.46,
-            early_preservation_target_alignment_min=0.34,
-            early_preservation_required_group_gap=0.18,
-            early_preservation_challenger_hold_steps=2,
-            enable_anti_collapse_answer_group_refinement=True,
-            anti_collapse_early_window=6,
-            repeated_same_branch_penalty=0.09,
-            repeated_same_branch_cap=3,
-            repeat_expand_free_steps=3,
-            repeat_expand_penalty_weight=0.065,
-            repeat_expand_family_penalty_weight=0.12,
-            repeat_expand_override_margin=0.08,
-            monopolization_margin_requirement=0.11,
-            answer_group_distinctness_bonus=0.12,
-            duplicate_answer_group_penalty=0.08,
-            min_followup_steps_for_preserved_alternative=2,
-            alternative_maturity_window=5,
-            protected_alternative_target_alignment_min=0.48,
-            enable_hard_early_root_depth2_coverage_v1=False,
-            hard_early_root_coverage_forced_min_depth=2,
-            hard_early_coverage_min_remaining_actions_to_release=0,
-            enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
-            conditional_depth3_gate_design="v2_budget_aware_rescue",
-            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v2_budget_aware_rescue",
-        )
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v3_ambiguity_after_depth2"
-        ] = GlobalDiversityAggregationController(
-            generator_factory(),
-            scorer,
-            budget,
-            max_branches=4,
-            min_branch_expansions=1,
-            diversity_weight=0.40,
-            duplicate_penalty=0.15,
-            unknown_answer_bonus=0.08,
-            answer_support_weight=0.55,
-            value_weight=0.45,
-            commit_support_threshold=0.72,
-            commit_delay_min_actions=4,
-            enable_early_answer_group_preservation=True,
-            early_preservation_action_window=5,
-            early_preservation_min_plausible_continuation=0.46,
-            early_preservation_target_alignment_min=0.34,
-            early_preservation_required_group_gap=0.18,
-            early_preservation_challenger_hold_steps=2,
-            enable_anti_collapse_answer_group_refinement=True,
-            anti_collapse_early_window=6,
-            repeated_same_branch_penalty=0.09,
-            repeated_same_branch_cap=3,
-            repeat_expand_free_steps=3,
-            repeat_expand_penalty_weight=0.065,
-            repeat_expand_family_penalty_weight=0.12,
-            repeat_expand_override_margin=0.08,
-            monopolization_margin_requirement=0.11,
-            answer_group_distinctness_bonus=0.12,
-            duplicate_answer_group_penalty=0.08,
-            min_followup_steps_for_preserved_alternative=2,
-            alternative_maturity_window=5,
-            protected_alternative_target_alignment_min=0.48,
-            enable_hard_early_root_depth2_coverage_v1=False,
-            hard_early_root_coverage_forced_min_depth=2,
-            hard_early_coverage_min_remaining_actions_to_release=0,
-            enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
-            conditional_depth3_gate_design="v3_ambiguity_after_depth2",
-            method_name="broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v3_ambiguity_after_depth2",
-        )
-        # Strict-phased naming aliases for the same protocolized configurations.
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_forced_f2_v1"
-        ] = specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1"
-        ]
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_forced_f3_v1"
-        ] = specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
-        ]
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_1_v1"
-        ] = specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
-        ]
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_2_v1"
-        ] = specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v2_budget_aware_rescue"
-        ]
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_3_v1"
-        ] = specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v3_ambiguity_after_depth2"
-        ]
-        for cap_k in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14):
-            specs[
-                f"broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k{cap_k}_v1"
-            ] = GlobalDiversityAggregationController(
+        for relax_mode in (
+            "fixed_k6_control",
+            "relax_on_cross_family_coverage_complete",
+            "relax_on_low_marginal_gain_absence_false",
+            "relax_on_multi_family_maturity",
+            "relax_on_high_confidence_incumbent_but_no_challenger_gap",
+        ):
+            name = f"{strict_gate1_base}_hard_max_family_expansions_cap_k6_v1_{relax_mode}"
+            specs[name] = GlobalDiversityAggregationController(
                 generator_factory(),
                 scorer,
                 budget,
-                max_branches=4,
-                min_branch_expansions=1,
-                diversity_weight=0.40,
-                duplicate_penalty=0.15,
-                unknown_answer_bonus=0.08,
-                answer_support_weight=0.55,
-                value_weight=0.45,
-                commit_support_threshold=0.72,
-                commit_delay_min_actions=4,
-                enable_early_answer_group_preservation=True,
-                early_preservation_action_window=5,
-                early_preservation_min_plausible_continuation=0.46,
-                early_preservation_target_alignment_min=0.34,
-                early_preservation_required_group_gap=0.18,
-                early_preservation_challenger_hold_steps=2,
-                enable_anti_collapse_answer_group_refinement=True,
-                anti_collapse_early_window=6,
-                repeated_same_branch_penalty=0.09,
-                repeated_same_branch_cap=3,
-                repeat_expand_free_steps=3,
-                repeat_expand_penalty_weight=0.065,
-                repeat_expand_family_penalty_weight=0.12,
-                repeat_expand_override_margin=0.08,
-                monopolization_margin_requirement=0.11,
-                answer_group_distinctness_bonus=0.12,
-                duplicate_answer_group_penalty=0.08,
-                min_followup_steps_for_preserved_alternative=2,
-                alternative_maturity_window=5,
-                protected_alternative_target_alignment_min=0.48,
-                enable_hard_max_family_expansions_v1=True,
-                max_family_expansions_per_run=int(cap_k),
-                enable_hard_early_root_depth2_coverage_v1=False,
-                hard_early_root_coverage_forced_min_depth=2,
-                hard_early_coverage_min_remaining_actions_to_release=0,
-                enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
-                conditional_depth3_gate_design="v1_optimistic_collapse_first",
-                method_name=(
-                    "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion"
-                    f"_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k{cap_k}_v1"
-                ),
+                hard_max_family_expansions_relax_mode=relax_mode,
+                method_name=name,
+                **strict_gate1_common,
             )
-        specs[
-            "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v2_budget_aware_rescue_hard_max_family_expansions_cap_k3_v1"
-        ] = GlobalDiversityAggregationController(
-            generator_factory(),
-            scorer,
-            budget,
-            max_branches=4,
-            min_branch_expansions=1,
-            diversity_weight=0.40,
-            duplicate_penalty=0.15,
-            unknown_answer_bonus=0.08,
-            answer_support_weight=0.55,
-            value_weight=0.45,
-            commit_support_threshold=0.72,
-            commit_delay_min_actions=4,
-            enable_early_answer_group_preservation=True,
-            early_preservation_action_window=5,
-            early_preservation_min_plausible_continuation=0.46,
-            early_preservation_target_alignment_min=0.34,
-            early_preservation_required_group_gap=0.18,
-            early_preservation_challenger_hold_steps=2,
-            enable_anti_collapse_answer_group_refinement=True,
-            anti_collapse_early_window=6,
-            repeated_same_branch_penalty=0.09,
-            repeated_same_branch_cap=3,
-            repeat_expand_free_steps=3,
-            repeat_expand_penalty_weight=0.065,
-            repeat_expand_family_penalty_weight=0.12,
-            repeat_expand_override_margin=0.08,
-            monopolization_margin_requirement=0.11,
-            answer_group_distinctness_bonus=0.12,
-            duplicate_answer_group_penalty=0.08,
-            min_followup_steps_for_preserved_alternative=2,
-            alternative_maturity_window=5,
-            protected_alternative_target_alignment_min=0.48,
-            enable_hard_max_family_expansions_v1=True,
-            max_family_expansions_per_run=3,
-            enable_hard_early_root_depth2_coverage_v1=False,
-            hard_early_root_coverage_forced_min_depth=2,
-            hard_early_coverage_min_remaining_actions_to_release=0,
-            enable_hard_early_root_depth2_then_conditional_depth3_v1=True,
-            conditional_depth3_gate_design="v2_budget_aware_rescue",
-            method_name=(
-                "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion"
-                "_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v2_budget_aware_rescue_hard_max_family_expansions_cap_k3_v1"
-            ),
-        )
     if include_marginal_coverage_diversity_methods:
         specs["marginal_coverage_diversity_v1"] = GlobalDiversityAggregationController(
             generator_factory(),
