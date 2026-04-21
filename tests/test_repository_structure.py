@@ -20,10 +20,14 @@ def test_canonical_repo_files_exist() -> None:
 
 
 
-def test_new_polish_docs_exist() -> None:
+def test_stable_current_docs_exist() -> None:
     required = [
         REPO_ROOT / "docs" / "CANONICAL_INSTALL_AND_DEV.md",
-        REPO_ROOT / "docs" / "REPO_POLISH_PASS_2026_04_15.md",
+        REPO_ROOT / "docs" / "CURRENT_METHOD.md",
+        REPO_ROOT / "docs" / "CURRENT_RESULTS.md",
+        REPO_ROOT / "docs" / "CURRENT_REFERENCES.md",
+        REPO_ROOT / "docs" / "CURRENT_NEXT_STEPS.md",
+        REPO_ROOT / "docs" / "CANONICAL_PAPER_WORKING_SET.md",
     ]
     missing = [str(path.relative_to(REPO_ROOT)) for path in required if not path.exists()]
-    assert not missing, f"Missing repo polish docs: {missing}"
+    assert not missing, f"Missing stable current docs: {missing}"
