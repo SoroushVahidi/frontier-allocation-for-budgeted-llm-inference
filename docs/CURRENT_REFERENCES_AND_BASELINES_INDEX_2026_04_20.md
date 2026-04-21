@@ -19,6 +19,17 @@ If you want the shortest current literature/baseline path, read:
 5. `main_baselines.md`
 6. `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 
+## Most important paper-facing distinction
+
+For the current NeurIPS-oriented paper phase, keep these separated:
+- **external baselines that are usable in the main empirical table now,**
+- **external baselines that are adjacent and strengthen the broader story,**
+- **discuss-only references that matter scientifically but are not ready for the main table,**
+- and **internal neighboring methods** that belong mainly in ablations or appendix support.
+
+The main paper question is no longer “which of our internal variants ranks highest?”
+It is “how does the current promoted method compare with strong external baselines from prior papers?”
+
 ## Current most relevant reference buckets
 
 ### 1. Adaptive test-time compute allocation
@@ -59,6 +70,11 @@ These notes are now the shortest answer to:
 - `s1` MODE A
 - `TALE` MODE A
 - `L1` MODE A
+
+### Strongest current adjacent external paths
+- `BEST-Route`
+- `when_solve_when_verify`
+- `rest_mcts`
 
 ### Current external strengthening order
 1. **BEST-Route** — strengthened: official adjacent import-validated baseline with reproducible artifact contract
@@ -103,7 +119,6 @@ Use this index first when you need to answer:
 - which references belong in the main paper rather than only the appendix,
 - which current references are closest to the repo's anti-collapse / branch-allocation direction,
 - and which current comparison artifacts support those claims.
-
 
 ## Latest BEST-Route strengthening artifact
 
