@@ -19,6 +19,12 @@ If you only want the current truth, read:
 7. [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
 8. [`ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 
+If your current task is **paper-facing external baseline work**, read next:
+- [`CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md)
+- [`main_baselines.md`](main_baselines.md)
+- [`BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`](BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md)
+- [`BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`](BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md)
+
 If you only want runnable entry points, go to:
 - [`../scripts/README.md`](../scripts/README.md)
 - [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
@@ -37,7 +43,7 @@ If you want the current repo-organization rationale, read:
 - [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md): current experiment-family index.
 - [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md): current baseline/reference index.
 - [`CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md): shortest current answer on what external baseline to strengthen next.
-- [`CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`](CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md): focused anti-collapse / branch-allocation literature memo.
+- [`main_baselines.md`](main_baselines.md): paper-facing external baseline guide.
 - [`REPO_MAP.md`](REPO_MAP.md): canonical repository map.
 
 ## Canonical docs by purpose
@@ -70,6 +76,7 @@ If you want the current repo-organization rationale, read:
 - [`main_datasets.md`](main_datasets.md)
 - [`main_baselines.md`](main_baselines.md)
 - [`BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`](BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md)
+- [`BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`](BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md)
 
 ## Supporting navigation pages
 
