@@ -29,11 +29,17 @@ If you want the shortest current evidence path, read in this order:
 Use this when you want the decisive broader evaluated default-model result.
 Current conclusion: `strict_gate1_cap_k6` is the current broad default promoted model on the evaluated surface.
 
-### 2. Newest-vs-best exact-loss statistics bundle
+### 2. Canonical strict_gate1_cap_k6-vs-best exact-loss statistics bundle
+- `docs/CANONICAL_HUNDRED_STRICT_GATE1_CAP_K6_VS_BEST_FAILURE_STATISTICS_20260421T160120Z.md`
+- `outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z/`
+
+Use this when you want the current strongest direct-adversary failure-statistics view for the finalized default `strict_gate1_cap_k6` against the resolved exact-loss comparator.
+
+### 2b. Prior newest-vs-best exact-loss statistics bundle (historical)
 - `docs/NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
 - `outputs/new_hundred_newest_vs_best_failure_statistics_20260421T032711Z/`
 
-Use this when you want the current strongest direct-adversary failure-statistics view for the newest selected method against `reasoning_beam2`.
+Use this for historical comparison only; it predates the finalized-default-specific canonical 100-case bundle.
 
 ### 3. Strict-phased force/gate comparison stack
 - `docs/STRICT_PHASED_HARD_EARLY_COVERAGE_REPORT_20260421T020917Z.md`
@@ -75,6 +81,7 @@ The strongest current artifact-backed story is now:
 ## Current machine-readable output families worth preserving
 
 - `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
+- `outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z/`
 - `outputs/new_hundred_newest_vs_best_failure_statistics_20260421T032711Z/`
 - `outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421T020917Z/`
 - `outputs/hundred_three_gate_design_eval_strict_phased_20260421T022459Z/`
@@ -86,7 +93,7 @@ The strongest current artifact-backed story is now:
 ## When to use which artifact
 
 - Use the **final strict-phased default-decision bundle** for the current default-model claim.
-- Use the **newest-vs-best exact-loss bundle** for “what still goes wrong now against the strongest direct adversary?” questions.
+- Use the **canonical strict_gate1_cap_k6-vs-best exact-loss bundle** for “what still goes wrong now against the strongest direct adversary?” questions.
 - Use the **strict-phased force/gate stack** for “why did the final default emerge from the strict-phased family?” questions.
 - Use the **hard-cap sweep** for “why is K=6 the relevant capped variant?” questions.
 - Use the **learned-gate bundle** for controlled learned-alternative interpretation.
