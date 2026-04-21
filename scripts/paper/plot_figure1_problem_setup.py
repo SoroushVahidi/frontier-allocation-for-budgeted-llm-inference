@@ -17,7 +17,7 @@ def main() -> None:
         raise FileNotFoundError(f"Missing figure1 spec: {spec_path}")
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
 
-    fig, ax = plt.subplots(figsize=(3.45, 5.45))
+    fig, ax = plt.subplots(figsize=(3.45, 5.7))
     ax.axis("off")
 
     kind_style = {
@@ -30,31 +30,29 @@ def main() -> None:
     default_style = {"fc": "#f3f4f6", "ec": "#4a4a4a"}
 
     node_map = {n["id"]: n for n in spec["nodes"]}
-    # Strict 3-stage vertical flow with separated auxiliary controls.
+    # Minimal single-column layout: dominant vertical flow + two side auxiliaries.
     node_pos = {
-        "input": (0.50, 0.88),
-        "branches": (0.14, 0.69),
-        "scoring": (0.50, 0.69),
-        "commit": (0.86, 0.69),
-        "support": (0.34, 0.49),
-        "anticollapse": (0.66, 0.49),
-        "repair": (0.84, 0.36),
-        "final": (0.50, 0.28),
+        "input": (0.50, 0.90),
+        "branches": (0.50, 0.77),
+        "scoring": (0.50, 0.64),
+        "commit": (0.50, 0.51),
+        "final": (0.50, 0.38),
+        "support": (0.23, 0.64),
+        "anticollapse": (0.77, 0.64),
+        "repair": (0.78, 0.455),
     }
-    box_mid = (0.24, 0.102)
-    box_aux = (0.29, 0.108)
-    box_top = (0.30, 0.102)
-    box_bottom = (0.30, 0.102)
-    box_repair = (0.22, 0.082)
+    main_size = (0.32, 0.092)      # equal width for all main flow boxes
+    side_size = (0.24, 0.086)      # smaller side modules
+    repair_size = (0.20, 0.072)    # smallest, secondary optional module
     box_size = {
-        "input": box_top,
-        "branches": box_mid,
-        "scoring": box_mid,
-        "commit": box_mid,
-        "support": box_aux,
-        "anticollapse": box_aux,
-        "repair": box_repair,
-        "final": box_bottom,
+        "input": main_size,
+        "branches": main_size,
+        "scoring": main_size,
+        "commit": main_size,
+        "final": main_size,
+        "support": side_size,
+        "anticollapse": side_size,
+        "repair": repair_size,
     }
     forced_label = {
         "input": "Input\nQuestion",
@@ -80,29 +78,16 @@ def main() -> None:
             (x0, y0),
             bw,
             bh,
-            boxstyle="round,pad=0.015,rounding_size=0.018",
+            boxstyle="round,pad=0.012,rounding_size=0.016",
             fc=style["fc"],
             ec=style["ec"],
             lw=1.25,
             transform=ax.transAxes,
         )
         if nid == "repair":
-            patch.set_alpha(0.82)
+            patch.set_alpha(0.72)
             patch.set_linestyle("--")
-            patch.set_linewidth(1.05)
-        ax.add_patch(
-            FancyBboxPatch(
-                (x0, y0),  # shadow-like subtle underlay for consistency
-                bw,
-                bh,
-                boxstyle="round,pad=0.015,rounding_size=0.018",
-                fc=style["fc"],
-                ec="none",
-                lw=0.0,
-                alpha=0.0,
-                transform=ax.transAxes,
-            )
-        )
+            patch.set_linewidth(1.0)
         ax.add_patch(patch)
         wrapped = forced_label.get(nid, n["label"])
         ax.text(
@@ -111,7 +96,7 @@ def main() -> None:
             wrapped,
             ha="center",
             va="center",
-            fontsize=7.85 if nid != "repair" else 7.3,
+            fontsize=7.7 if nid != "repair" else 7.0,
             color="#1e1e1e",
             transform=ax.transAxes,
         )
@@ -140,48 +125,36 @@ def main() -> None:
             textcoords=ax.transAxes,
         )
 
-    # Main flow: Input -> Active Branches -> Branch Scoring -> Commit/Expand -> Final Answer.
-    _arrow((anchors["input"]["bottom"][0], anchors["input"]["bottom"][1] - 0.008), (anchors["branches"]["top"][0], anchors["branches"]["top"][1] + 0.008))
-    _arrow((anchors["branches"]["right"][0] + 0.015, anchors["branches"]["right"][1]), (anchors["scoring"]["left"][0] - 0.015, anchors["scoring"]["left"][1]))
-    _arrow((anchors["scoring"]["right"][0] + 0.015, anchors["scoring"]["right"][1]), (anchors["commit"]["left"][0] - 0.015, anchors["commit"]["left"][1]))
-    # Primary direct path to final answer.
-    _arrow((anchors["commit"]["bottom"][0] - 0.012, anchors["commit"]["bottom"][1] - 0.006), (anchors["final"]["top"][0] + 0.065, anchors["final"]["top"][1] + 0.008), rad=-0.06)
+    # Main vertical flow (short straight arrows).
+    _arrow((anchors["input"]["bottom"][0], anchors["input"]["bottom"][1] - 0.006), (anchors["branches"]["top"][0], anchors["branches"]["top"][1] + 0.006))
+    _arrow((anchors["branches"]["bottom"][0], anchors["branches"]["bottom"][1] - 0.006), (anchors["scoring"]["top"][0], anchors["scoring"]["top"][1] + 0.006))
+    _arrow((anchors["scoring"]["bottom"][0], anchors["scoring"]["bottom"][1] - 0.006), (anchors["commit"]["top"][0], anchors["commit"]["top"][1] + 0.006))
+    _arrow((anchors["commit"]["bottom"][0], anchors["commit"]["bottom"][1] - 0.006), (anchors["final"]["top"][0], anchors["final"]["top"][1] + 0.006))
 
     # Auxiliary modules feed into Branch Scoring.
-    _arrow((anchors["support"]["top"][0], anchors["support"]["top"][1] + 0.006), (anchors["scoring"]["bottom"][0] - 0.055, anchors["scoring"]["bottom"][1] - 0.004))
-    _arrow((anchors["anticollapse"]["top"][0], anchors["anticollapse"]["top"][1] + 0.006), (anchors["scoring"]["bottom"][0] + 0.055, anchors["scoring"]["bottom"][1] - 0.004))
+    _arrow((anchors["support"]["right"][0] + 0.004, anchors["support"]["right"][1]), (anchors["scoring"]["left"][0] - 0.006, anchors["scoring"]["left"][1] - 0.012))
+    _arrow((anchors["anticollapse"]["left"][0] - 0.004, anchors["anticollapse"]["left"][1]), (anchors["scoring"]["right"][0] + 0.006, anchors["scoring"]["right"][1] - 0.012))
 
-    # Optional residual-slice repair path.
-    _arrow(
-        (anchors["commit"]["bottom"][0], anchors["commit"]["bottom"][1] - 0.004),
-        (anchors["repair"]["top"][0], anchors["repair"]["top"][1] + 0.004),
-        rad=-0.03,
+    # Optional secondary repair path (dashed arrow only as requested).
+    ax.annotate(
+        "",
+        xy=(anchors["repair"]["top"][0], anchors["repair"]["top"][1] + 0.005),
+        xytext=(anchors["commit"]["right"][0] + 0.005, anchors["commit"]["right"][1] - 0.005),
+        arrowprops={"arrowstyle": "-|>", "lw": 1.1, "color": arrow_color, "linestyle": "--", "mutation_scale": 10},
+        xycoords=ax.transAxes,
+        textcoords=ax.transAxes,
     )
-    _arrow(
-        (anchors["repair"]["left"][0] - 0.004, anchors["repair"]["left"][1] - 0.001),
-        (anchors["final"]["right"][0] + 0.004, anchors["final"]["right"][1] + 0.005),
-        rad=0.05,
-    )
-    ax.text(
-        0.865,
-        0.415,
-        "optional\nresidual slice",
-        ha="center",
-        va="center",
-        fontsize=6.3,
-        color="#6b5b7f",
-        transform=ax.transAxes,
-    )
+    _arrow((anchors["repair"]["left"][0] - 0.004, anchors["repair"]["left"][1]), (anchors["final"]["right"][0] + 0.005, anchors["final"]["right"][1]))
 
     # Secondary diagnostics panel below main flow.
     notes = spec.get("notes", [])[:2]
-    panel_x, panel_y, panel_w, panel_h = 0.11, 0.02, 0.78, 0.145
+    panel_x, panel_y, panel_w, panel_h = 0.08, 0.02, 0.84, 0.165
     ax.add_patch(
         FancyBboxPatch(
             (panel_x, panel_y),
             panel_w,
             panel_h,
-            boxstyle="round,pad=0.014,rounding_size=0.018",
+            boxstyle="round,pad=0.014,rounding_size=0.016",
             fc="#f7f8fa",
             ec="#ccd2da",
             lw=0.95,
@@ -190,20 +163,20 @@ def main() -> None:
     )
     ax.text(
         panel_x + 0.02,
-        panel_y + panel_h - 0.036,
+        panel_y + panel_h - 0.04,
         "Fixed-budget constraints and diagnostics",
-        fontsize=7.8,
+        fontsize=7.7,
         fontweight="semibold",
         color="#232a34",
         transform=ax.transAxes,
     )
     for idx, note in enumerate(notes):
-        wrapped_note = textwrap.fill(note, width=54)
+        wrapped_note = textwrap.fill(note, width=60)
         ax.text(
             panel_x + 0.02,
-            panel_y + panel_h - 0.065 - idx * 0.049,
+            panel_y + panel_h - 0.074 - idx * 0.053,
             f"- {wrapped_note}",
-            fontsize=7.2,
+            fontsize=7.05,
             color="#2a2f38",
             transform=ax.transAxes,
             va="top",
