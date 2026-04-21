@@ -6,8 +6,11 @@ This directory stores generated artifacts from scripts and evaluation passes.
 
 Use these first for current claims:
 
-### 1. Current broad comparison / ranking
-- `current_full_method_comparison_bundle_20260420/`
+### 1. Final strict-phased default-decision bundle
+- `final_strict_phased_default_decision_eval_20260421T042913Z/`
+
+This is the current primary output family for the broad default-model claim.
+Current conclusion: `strict_gate1_cap_k6` is the repository's broad default promoted model on the evaluated surface.
 
 ### 2. Current exact loss surfaces and larger direct-adversary failure statistics
 - `twenty_exact_current_full_vs_best_fresh_20260420/`
@@ -20,14 +23,14 @@ Use these first for current claims:
 
 ### 4. Current learned and capped alternatives
 - `learned_f2_to_f3_gate_<timestamp>/`
-- `hard_max_family_expansions_eval_20260421T040333Z/`
+- `hard_max_family_expansions_k456_eval_20260421T041916Z/`
 
 ### 5. Current output-layer repair analysis
 - `current_failure_output_layer_repair_20260420/`
 
 ## Historical or bounded paper-facing output families
 
-These are still useful, but they are not the default current ranking source:
+These are still useful, but they are not the default current source for the finalized default-model story:
 - `imported_methodology_frontier_eval/`
 - `paper_plot_data/`
 - older `full_method_comparison_bundle/` runs that predate the current April 20 broad comparison path
@@ -40,7 +43,7 @@ These are still useful, but they are not the default current ranking source:
 
 ## Practical rule of thumb
 
-- Use the broad comparison bundle for current broad ranking claims.
+- Use the final strict-phased default-decision bundle for the current broad default-model claim.
 - Use the newest-vs-best exact-loss families for direct-adversary failure statistics.
-- Use the strict-phased output families for current default-model and gate/force comparisons.
-- Use the learned-gate and hard-cap output families as controlled experimental alternatives, not yet as settled defaults unless the current canonical docs explicitly promote them.
+- Use the strict-phased force/gate families for why the default emerged from the strict-phased family.
+- Use the learned-gate and hard-cap output families as controlled alternatives and supporting evidence, not as the default source unless the canonical docs explicitly promote them.
