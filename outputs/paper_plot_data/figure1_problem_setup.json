@@ -1,6 +1,6 @@
 {
   "figure_id": "figure1_problem_setup",
-  "title": "Fixed-Budget Frontier Allocation for Reasoning",
+  "title": "Frontier Allocation Under a Fixed Budget",
   "nodes": [
     {
       "id": "q",
@@ -14,17 +14,17 @@
     },
     {
       "id": "controllers",
-      "label": "Controller Families",
+      "label": "Controller Family",
       "kind": "process"
     },
     {
       "id": "alloc",
-      "label": "Next-Step Budget Allocation",
+      "label": "Next-Step Budget",
       "kind": "decision"
     },
     {
       "id": "groups",
-      "label": "Answer-Group-Aware Commit Control",
+      "label": "Answer-Group-Aware Control",
       "kind": "process"
     },
     {
