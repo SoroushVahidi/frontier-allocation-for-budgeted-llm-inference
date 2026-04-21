@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Verify When-To-Solve-When-To-Verify adjacent import package.
+"""Verify When-To-Solve-When-To-Verify official adjacent import packages.
 
 Conservative scope:
-- Adjacent import only (not direct in-repo reproduction claim).
-- Requires explicit SC-vs-GenRM strategy coverage and fixed-budget fields.
+- official/import-validated lane only (no direct in-repo full-stack reproduction claim);
+- fixed-budget solve-vs-verify import contract only;
+- optional local official clone checks for expected markers and entrypoint families.
 """
 
 from __future__ import annotations
@@ -13,6 +14,9 @@ import csv
 import json
 from pathlib import Path
 from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CONFIG = REPO_ROOT / "configs" / "when_solve_when_verify_official_import_v1.json"
 
 REQUIRED_METADATA_FIELDS = [
     "source.type",
@@ -66,20 +70,119 @@ def _get_nested(data: dict[str, Any], dotted: str) -> Any:
     return cur
 
 
+def _load_config(config_path: Path) -> dict[str, Any]:
+    if not config_path.exists():
+        return {}
+    try:
+        return json.loads(config_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+
+
+def _verify_official_repo(
+    *,
+    config: dict[str, Any],
+    explicit_path: str | None,
+    issues: list[str],
+    warnings: list[str],
+) -> dict[str, Any]:
+    official = config.get("official", {}) if isinstance(config, dict) else {}
+    clone_url = str(official.get("repo_url", "")).strip()
+    configured_rel = str(official.get("expected_local_clone_path", "")).strip()
+    require_existing = bool(official.get("require_existing_local_clone", False))
+
+    markers_raw = official.get("expected_repo_markers", [])
+    markers = [str(x) for x in markers_raw] if isinstance(markers_raw, list) else []
+
+    entrypoints = official.get("expected_repo_entrypoints", {}) if isinstance(official, dict) else {}
+    generation_any = entrypoints.get("generation_any", []) if isinstance(entrypoints, dict) else []
+    verification_any = entrypoints.get("verification_any", []) if isinstance(entrypoints, dict) else []
+    evaluation_any = entrypoints.get("evaluation_any", []) if isinstance(entrypoints, dict) else []
+
+    local_path: Path | None = None
+    if explicit_path:
+        local_path = Path(explicit_path)
+    elif configured_rel:
+        local_path = REPO_ROOT / configured_rel
+
+    local_clone_exists = bool(local_path and local_path.exists())
+
+    if not clone_url:
+        issues.append("missing_official_repo_url_in_config")
+    if not clone_url and not local_clone_exists:
+        issues.append("missing_official_repo_reference_and_local_clone")
+
+    if require_existing and not local_clone_exists:
+        issues.append("blocked_missing_required_local_official_clone")
+
+    if local_path and not local_clone_exists:
+        warnings.append(f"local_official_clone_not_found: {local_path}")
+
+    marker_hits: list[str] = []
+    missing_markers: list[str] = []
+
+    generation_hits: list[str] = []
+    verification_hits: list[str] = []
+    evaluation_hits: list[str] = []
+
+    if local_clone_exists and local_path:
+        for marker in markers:
+            if (local_path / marker).exists():
+                marker_hits.append(marker)
+            else:
+                missing_markers.append(marker)
+
+        for p in generation_any if isinstance(generation_any, list) else []:
+            if (local_path / str(p)).exists():
+                generation_hits.append(str(p))
+        for p in verification_any if isinstance(verification_any, list) else []:
+            if (local_path / str(p)).exists():
+                verification_hits.append(str(p))
+        for p in evaluation_any if isinstance(evaluation_any, list) else []:
+            if (local_path / str(p)).exists():
+                evaluation_hits.append(str(p))
+
+        if missing_markers:
+            issues.append(f"incomplete_local_official_clone_missing_markers: {missing_markers}")
+        if generation_any and not generation_hits:
+            issues.append("incomplete_local_official_clone_missing_generation_entrypoint")
+        if verification_any and not verification_hits:
+            issues.append("incomplete_local_official_clone_missing_verification_entrypoint")
+        if evaluation_any and not evaluation_hits:
+            issues.append("incomplete_local_official_clone_missing_evaluation_entrypoint")
+
+    return {
+        "clone_url": clone_url,
+        "configured_expected_local_clone_path": configured_rel,
+        "resolved_local_clone_path": str(local_path) if local_path else "",
+        "local_clone_exists": local_clone_exists,
+        "marker_hits": marker_hits,
+        "missing_markers": missing_markers,
+        "entrypoint_hits": {
+            "generation_any": generation_hits,
+            "verification_any": verification_hits,
+            "evaluation_any": evaluation_hits,
+        },
+    }
+
+
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Verify when_solve_when_verify adjacent import package")
+    p = argparse.ArgumentParser(description="Verify when_solve_when_verify official adjacent import package")
     p.add_argument("--results-path", required=True, help="Path to package dir or results.csv")
     p.add_argument("--expected-dataset", required=True)
     p.add_argument("--expected-split", default="test")
+    p.add_argument("--config", default=str(DEFAULT_CONFIG), help="Import config JSON")
+    p.add_argument("--official-repo-path", default=None, help="Optional explicit path to official repo clone")
     p.add_argument("--output-json", default=None)
     return p.parse_args()
 
 
 def verify_when_solve_when_verify_import(
-    *, requested_path: Path, expected_dataset: str, expected_split: str
+    *, requested_path: Path, expected_dataset: str, expected_split: str, config: dict[str, Any] | None = None, official_repo_path: str | None = None
 ) -> dict[str, Any]:
     issues: list[str] = []
     errors: list[str] = []
+    warnings: list[str] = []
 
     if requested_path.is_dir():
         package_dir = requested_path
@@ -89,6 +192,15 @@ def verify_when_solve_when_verify_import(
         package_dir = requested_path.parent
         metadata_json = package_dir / "metadata.json"
         results_csv = requested_path
+
+    loaded_config = config if config is not None else _load_config(DEFAULT_CONFIG)
+
+    official_repo_check = _verify_official_repo(
+        config=loaded_config,
+        explicit_path=official_repo_path,
+        issues=issues,
+        warnings=warnings,
+    )
 
     if not metadata_json.exists():
         issues.append(f"missing_required_file: {metadata_json}")
@@ -216,14 +328,23 @@ def verify_when_solve_when_verify_import(
     if not any(s.startswith("genrm_") for s in observed_strategies):
         issues.append("missing_genrm_strategy")
 
+    if any("blocked_missing_required_local_official_clone" in i for i in issues):
+        verdict = "blocked_missing_official_repo"
+    elif issues or errors:
+        verdict = "blocked_incomplete_import"
+    else:
+        verdict = "import_validated"
+
     return {
-        "status": "valid" if not issues and not errors else "invalid",
+        "status": "valid" if verdict == "import_validated" else "invalid",
+        "verdict": verdict,
         "requested_results_path": str(requested_path),
         "resolved_package_dir": str(package_dir),
         "required_files": {
             "metadata_json": str(metadata_json),
             "results_csv": str(results_csv),
         },
+        "official_repo_check": official_repo_check,
         "expected": {
             "dataset": expected_dataset,
             "split": expected_split,
@@ -236,17 +357,21 @@ def verify_when_solve_when_verify_import(
             "observed_strategy_families": sorted(observed_strategies),
         },
         "issues": sorted(set(issues)),
+        "warnings": sorted(set(warnings)),
         "errors": errors,
-        "imported_rows": normalized_rows if not issues and not errors else [],
+        "imported_rows": normalized_rows if verdict == "import_validated" else [],
     }
 
 
 def main() -> None:
     args = parse_args()
+    config = _load_config(Path(args.config))
     verification = verify_when_solve_when_verify_import(
         requested_path=Path(args.results_path),
         expected_dataset=args.expected_dataset,
         expected_split=args.expected_split,
+        config=config,
+        official_repo_path=args.official_repo_path,
     )
 
     out = json.dumps(verification, indent=2)

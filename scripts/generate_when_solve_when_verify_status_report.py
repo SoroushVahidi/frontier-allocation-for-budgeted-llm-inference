@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate When-To-Solve-When-To-Verify conservative status artifacts."""
+"""Generate When-To-Solve-When-To-Verify official import-validated status artifacts."""
 
 from __future__ import annotations
 
@@ -32,24 +32,35 @@ def main() -> None:
     status: dict[str, Any] = {
         "generated_utc": now,
         "baseline_key": "when_solve_when_verify",
-        "status": "runnable_adjacent",
-        "integration_kind": "verified_import_only",
+        "display_name": "When To Solve, When To Verify",
+        "status": "import_validated",
+        "control_equivalence": "adjacent",
+        "resource_level": "official",
+        "integration_kind": "official_adjacent_import_validated",
         "status_taxonomy": [
             "runnable_direct",
             "runnable_adjacent",
-            "mode_a_only",
-            "mode_b_partial",
-            "link_only",
+            "adapter_based",
+            "import_validated",
             "discuss_only",
             "blocked",
+            "broken_needs_repair",
         ],
         "upstream": {
             "repo": "https://github.com/nishadsinghi/sc-genrm-scaling",
             "paper": "https://arxiv.org/abs/2504.01005",
             "hf_org": "https://huggingface.co/sc-genrm-scaling",
         },
-        "protocol": {
+        "integration": {
+            "config": "configs/when_solve_when_verify_official_import_v1.json",
             "validator_script": "scripts/verify_when_solve_when_verify_import.py",
+            "validator_success_verdict": "import_validated",
+            "validator_blocking_verdicts": [
+                "blocked_missing_official_repo",
+                "blocked_incomplete_import",
+            ],
+        },
+        "protocol": {
             "required_package_files": ["metadata.json", "results.csv"],
             "required_workflow_stages": [
                 "solution_generation",
@@ -63,12 +74,13 @@ def main() -> None:
             "comparability_scope": "adjacent_only",
         },
         "safe_claims": [
-            "This repo supports reviewer-auditable adjacent import of SC-vs-GenRM fixed-budget results.",
-            "Imported outputs are validated for stage declarations, strategy-family coverage, and adjacent-only scope.",
+            "This repo supports reviewer-auditable official adjacent import validation of fixed-budget SC-vs-GenRM outputs.",
+            "Imported outputs are validated for workflow-stage declarations, strategy-family coverage, and adjacent-only comparability scope.",
+            "This baseline is closer to fixed-budget reasoning control than query-level routing baselines, while remaining non-equivalent to frontier allocation.",
         ],
         "not_safe_claims": [
-            "Direct in-repo reproduction of full upstream generation+verification stack.",
-            "Control-space equivalence with this repo's frontier/action-native methods.",
+            "Direct in-repo reproduction of full upstream generation+verification training/inference stack.",
+            "Control-space equivalence with this repo's frontier/action-native branch allocation methods.",
         ],
     }
 
@@ -82,12 +94,18 @@ def main() -> None:
         "",
         f"- Generated (UTC): `{now}`",
         "- Baseline: `when_solve_when_verify`",
-        "- Status: `runnable_adjacent`",
-        "- Integration kind: `verified_import_only`",
+        "- Status: `import_validated`",
+        "- Control-equivalence: `adjacent`",
+        "- Provenance level: `official`",
+        "- Integration kind: `official_adjacent_import_validated`",
         "",
         "## Conservative interpretation",
-        "- This is an adjacent import protocol, not a full in-repo reproduction.",
-        "- Imported outputs must pass strict contract validation.",
+        "- This is an official import-validation lane, not a full in-repo reproduction.",
+        "- Imported outputs must pass strict contract validation with verdict `import_validated`.",
+        "",
+        "## Canonical integration hooks",
+        "- Config: `configs/when_solve_when_verify_official_import_v1.json`.",
+        "- Validator: `scripts/verify_when_solve_when_verify_import.py`.",
         "",
         "## Required import contract highlights",
         "- Required files: `metadata.json` and `results.csv`.",
@@ -102,10 +120,10 @@ def main() -> None:
             "",
             "## Safe vs unsafe claims",
             "Safe now:",
-            "- Validated adjacent import for fixed-budget SC-vs-GenRM comparisons.",
+            "- Official adjacent import-validated reporting for fixed-budget solve-vs-verify comparisons.",
             "",
             "Not safe now:",
-            "- Claiming direct in-repo reproduction or control-equivalent comparability.",
+            "- Claiming direct frontier-allocation comparability or full in-repo paper reproduction.",
         ]
     )
 

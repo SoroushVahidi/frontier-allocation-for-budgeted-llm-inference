@@ -1,6 +1,6 @@
 # External baseline completeness report
 
-- Generated (UTC): `2026-04-21T04:54:56.530398+00:00`
+- Generated (UTC): `2026-04-21T05:09:07.823368+00:00`
 - Scope: external baseline completeness for reviewer-defensible reporting.
 
 ## Canonical taxonomy (v1, paper-safe)
@@ -35,7 +35,7 @@ Machine-readable matrix (normalized fields): `outputs/baseline_repair_and_status
 | L1 (`l1_length_control_rl`) | mode_b_partial | adapter_based | import_validated | near_direct | adjacent | direct | yes_mode_a | runnable | blocked_without_official_results_import |
 | BEST-Route (`best_route_microsoft`) | import_validated | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | Compute-optimal TTS (`compute_optimal_tts`) | blocked | blocked | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
-| When To Solve, When To Verify (`when_solve_when_verify`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
+| When To Solve, When To Verify (`when_solve_when_verify`) | import_validated | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | Cascade routing (`cascade_routing`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | MoB (`mob_majority_of_bests`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | ReST-MCTS* (`rest_mcts`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
