@@ -16,16 +16,19 @@
     ],
     "expected_repo_entrypoints": {
       "generation_any": [
+        "llmonk/generate/generate_solutions.py",
         "generate_samples.py",
         "scripts/generate_samples.py",
         "generation"
       ],
       "verification_any": [
+        "llmonk/verify/generate_verifications.py",
         "verify_generations.py",
         "scripts/verify_generations.py",
         "verification"
       ],
       "evaluation_any": [
+        "llmonk/evaluate/plot_success_rate.py",
         "evaluate.py",
         "scripts/evaluate.py",
         "eval"

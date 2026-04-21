@@ -5,6 +5,8 @@
 - **Official code:** https://github.com/nishadsinghi/sc-genrm-scaling
 - **Import config in this repo:** `configs/when_solve_when_verify_official_import_v1.json`
 - **Validator in this repo:** `scripts/verify_when_solve_when_verify_import.py`
+- **Adjacent integration runner:** `scripts/run_when_solve_when_verify_adjacent_integration.py`
+- **Comparison contract:** `configs/when_solve_when_verify_adjacent_comparison_contract_v1.json`
 
 ## Provenance and claim boundary
 
@@ -61,10 +63,28 @@ python scripts/verify_when_solve_when_verify_import.py \
   --expected-split test
 ```
 
+Then materialize reproducible adjacent-comparison artifacts:
+
+```bash
+python scripts/run_when_solve_when_verify_adjacent_integration.py \
+  --import-config configs/when_solve_when_verify_official_import_v1.json \
+  --contract-config configs/when_solve_when_verify_adjacent_comparison_contract_v1.json
+```
+
 Use imported results only if validator returns:
 
 - `status: "valid"`
 - `verdict: "import_validated"`
+
+## Full-reproduction access caveat
+
+Faithful upstream reproduction likely requires all of:
+
+- vLLM-compatible model access and substantial inference compute,
+- Hugging Face access to upstream datasets/checkpoints,
+- OpenAI API access for GPT-4o-based synthetic verification-data path when reproducing GenRM-FT training setup.
+
+This repository does not claim that full path is currently reproduced end-to-end; the supported lane here is conservative `import_validated` adjacent integration.
 
 ## Expected artifacts/results shape
 

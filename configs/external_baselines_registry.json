@@ -56,9 +56,12 @@
       "integration_doc": "docs/when_solve_when_verify_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/when_solve_when_verify_status.json",
-        "outputs/external_baseline_completeness/when_solve_when_verify_status.md"
+        "outputs/external_baseline_completeness/when_solve_when_verify_status.md",
+        "outputs/when_solve_when_verify_adjacent_integration/<run_id>/status.json"
       ],
-      "config": "configs/when_solve_when_verify_official_import_v1.json"
+      "config": "configs/when_solve_when_verify_official_import_v1.json",
+      "integration_runner": "scripts/run_when_solve_when_verify_adjacent_integration.py",
+      "comparison_contract": "configs/when_solve_when_verify_adjacent_comparison_contract_v1.json"
     },
     "cascade_routing": {
       "clone_url": "https://github.com/eth-sri/cascade-routing.git",

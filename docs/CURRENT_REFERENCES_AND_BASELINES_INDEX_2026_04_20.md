@@ -62,8 +62,8 @@ These notes are now the shortest answer to:
 
 ### Current external strengthening order
 1. **BEST-Route** — strengthened: official adjacent import-validated baseline with reproducible artifact contract
-2. **When To Solve / When To Verify** — current next adjacent baseline after BEST-Route strengthening
-3. **ReST-MCTS*** — heavier but still important adjacent search-guided neighbor
+2. **When To Solve / When To Verify** — strengthened official adjacent import-validated baseline with reproducible contract lane
+3. **ReST-MCTS*** — current next adjacent baseline after BEST-Route + solve/verify strengthening
 4. **Q*** — important scientifically, but later-wave unless stronger provenance/integration becomes available
 
 ## Current writing rule

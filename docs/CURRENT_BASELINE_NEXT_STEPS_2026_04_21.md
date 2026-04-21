@@ -51,7 +51,7 @@ At a high level:
 
 ## Current next baseline after BEST-Route
 
-### 2. When To Solve / When To Verify (current next strengthening target)
+### 2. When To Solve / When To Verify (strengthened in this pass)
 
 **Why second:**
 - closer to solve-vs-verify control than BEST-Route,
@@ -59,10 +59,24 @@ At a high level:
 - closer to the repo's branch-allocation story than pure query-level routing,
 - but still safer to integrate after BEST-Route rather than before it.
 
-**Current safest treatment:**
+**Current safest treatment (confirmed):**
 - official
 - import_validated
 - adjacent
+
+**Strengthening status (now complete):**
+- validator lane kept strict and adjacent-only,
+- canonical adjacent runner + comparison contract added,
+- output artifact family now mirrors BEST-Route style (`outputs/when_solve_when_verify_adjacent_integration/<run_id>/`),
+- blocker language now explicitly captures HF/OpenAI/compute requirements for fuller reproduction.
+
+## Current next baseline after this strengthening
+
+### 3. ReST-MCTS* (current next target)
+
+**Why next:**
+- still official and relevant as a search-guided adjacent baseline,
+- currently import-validated but lacking the same standardized strengthened lane quality now established for BEST-Route and when_solve_when_verify.
 
 ## What should not be next
 

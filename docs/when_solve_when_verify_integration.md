@@ -7,6 +7,8 @@
 - **Official code repository:** https://github.com/nishadsinghi/sc-genrm-scaling
 - **Canonical config in this repo:** `configs/when_solve_when_verify_official_import_v1.json`
 - **Canonical validator in this repo:** `scripts/verify_when_solve_when_verify_import.py`
+- **Canonical adjacent runner in this repo:** `scripts/run_when_solve_when_verify_adjacent_integration.py`
+- **Canonical comparison contract:** `configs/when_solve_when_verify_adjacent_comparison_contract_v1.json`
 
 ## Problem class and safest repo classification
 
@@ -49,10 +51,9 @@ Q* remains important, but current reproducibility/provenance uncertainty makes i
 - This baseline is the next strongest official import candidate with clearer fixed-budget reasoning-control relevance than routing-only neighbors.
 - It is closer to our reasoning-control narrative than BEST-Route while still honestly classified as `adjacent`.
 
-## Minimum viable integration path
+## Strongest current integration path (repository-native)
 
-1. Add/refresh canonical config: `configs/when_solve_when_verify_official_import_v1.json`.
-2. Validate import packages (`metadata.json` + `results.csv`) using:
+1. Validate import packages (`metadata.json` + `results.csv`) using:
 
 ```bash
 python scripts/verify_when_solve_when_verify_import.py \
@@ -62,8 +63,29 @@ python scripts/verify_when_solve_when_verify_import.py \
   --expected-split test
 ```
 
-3. Accept imports for reporting **only** when validator verdict is `import_validated`.
-4. Publish status artifacts in `outputs/external_baseline_completeness/`.
+2. Run the canonical adjacent-integration contract:
+
+```bash
+python scripts/run_when_solve_when_verify_adjacent_integration.py \
+  --import-config configs/when_solve_when_verify_official_import_v1.json \
+  --contract-config configs/when_solve_when_verify_adjacent_comparison_contract_v1.json
+```
+
+3. Accept exports for comparison **only** when:
+   - validator verdict is `import_validated`, and
+   - exported rows remain `comparability_scope=adjacent_only`.
+4. Publish status artifacts in:
+   - `outputs/external_baseline_completeness/`
+   - `outputs/when_solve_when_verify_adjacent_integration/<run_id>/`
+
+## External access requirements for fuller reproduction (not required for import validation)
+
+- **Hugging Face model/data access:** effectively required for upstream GenRM checkpoints and released artifacts.
+- **Large inference compute + vLLM runtime:** required for upstream-scale sampling and verification generation.
+- **OpenAI API access:** required if reproducing the GPT-4o synthetic verification data path for GenRM-FT exactly as described upstream.
+- **Optional local clone of official repo:** improves provenance checks (`--official-repo-path`) but is not mandatory for import-contract validation.
+
+Without those resources, this repo still supports honest import-validation and adjacent comparison-row export; it does not support full faithful upstream reproduction.
 
 ## Manuscript-safe wording
 
