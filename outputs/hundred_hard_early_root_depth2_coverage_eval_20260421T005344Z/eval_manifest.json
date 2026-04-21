@@ -1,0 +1,20 @@
+{
+  "artifact_family": "hundred_hard_early_root_depth2_coverage_eval",
+  "created_at_utc": "2026-04-21T00:53:44.778202+00:00",
+  "output_dir": "outputs/hundred_hard_early_root_depth2_coverage_eval_20260421T005344Z",
+  "source_per_case_json": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/hundred_current_full_vs_best_failure_statistics_20260420T220416Z/per_case_failure_statistics.json",
+  "baseline_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1__deterministic_output_layer_repair_v1",
+  "new_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1__deterministic_output_layer_repair_v1",
+  "beam_method_name": "reasoning_beam2",
+  "combo_method_name": null,
+  "simulator_stream_tags": {
+    "baseline_and_new": "fresh_our",
+    "reasoning_beam2": "fresh_best",
+    "note": "Must match build_hundred_current_full_vs_best_failure_statistics._run_one_case for RNG alignment."
+  },
+  "rule": {
+    "name": "hard_early_root_depth2_coverage_forced_v1",
+    "definition": "Root families are the two initial branches (div_0 / div_1) tracked via branch_family_ids. While any root family has a non-done, non-pruned head with max(depth) < 2, the allocator must not expand a branch whose family already satisfies max(depth)>=2 among its expandable heads; it redirects to the neediest pending family (lowest max expandable depth, then score). If remaining actions are strictly less than the sum of per-family lower bounds (2 - max_depth) over pending families, forcing releases for the rest of the run (impossible-under-budget fallback). If hard_early_coverage_min_remaining_actions_to_release > 0, forcing also releases when remaining actions are at or below that threshold (disabled in these specs: value 0).",
+    "code_insertion": "experiments/controllers.py: GlobalDiversityAggregationController.run(), immediately after the width_depth_allocation_guard block and before incumbent/challenger metalevel."
+  }
+}

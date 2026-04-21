@@ -15,3 +15,11 @@ def test_low_marginal_gain_family_cooldown_methods_registered() -> None:
     )
     assert "broad_diversity_aggregation_strong_v1_anti_collapse_repeat_expansion_low_marginal_gain_cooldown_v1" in specs
     assert "broad_diversity_aggregation_strong_v1_anti_collapse_repeat_expansion_low_marginal_gain_hard_block_ablation_v1" in specs
+    assert (
+        "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1"
+        in specs
+    )
+    assert (
+        "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1_low_marginal_gain_cooldown_v1"
+        in specs
+    )

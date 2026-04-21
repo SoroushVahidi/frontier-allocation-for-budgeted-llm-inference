@@ -1,0 +1,71 @@
+{
+  "created_at_utc": "2026-04-21T00:53:44.778202+00:00",
+  "n_cases": 100,
+  "baseline_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1__deterministic_output_layer_repair_v1",
+  "new_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1__deterministic_output_layer_repair_v1",
+  "aggregate_failure_types": {
+    "baseline": {
+      "absent_from_tree": 78,
+      "present_not_selected": 22
+    },
+    "new": {
+      "correct": 67,
+      "present_not_selected": 10,
+      "absent_from_tree": 20,
+      "output_or_extraction_mismatch": 3
+    }
+  },
+  "absent_from_tree": {
+    "baseline_n": 78,
+    "new_n": 20
+  },
+  "present_not_selected": {
+    "baseline_n": 22,
+    "new_n": 10
+  },
+  "repeated_same_family_present": {
+    "baseline_n": 97,
+    "new_n": 86
+  },
+  "gold_in_tree": {
+    "baseline_n": 22,
+    "new_n": 80
+  },
+  "outcomes_vs_baseline": {
+    "improved": 70,
+    "worsened": 0,
+    "unchanged_still_wrong": 30,
+    "unchanged_correct": 0
+  },
+  "hard_early_coverage_completed_fully_n": 81,
+  "budget_released_impossible_n": 17,
+  "mean_actions_baseline": 11.48,
+  "mean_actions_new": 9.73,
+  "mean_expansions_baseline": 10.84,
+  "mean_expansions_new": 9.14,
+  "cases_helping_tree_entry": 61,
+  "cases_hurting_incumbent": 0,
+  "cases_budget_heavy_incomplete_coverage": 4,
+  "dataset_outcomes_vs_baseline": {
+    "HuggingFaceH4/MATH-500": {
+      "improved": 18,
+      "worsened": 0,
+      "unchanged_still_wrong": 9
+    },
+    "HuggingFaceH4/aime_2024": {
+      "improved": 11,
+      "worsened": 0,
+      "unchanged_still_wrong": 8
+    },
+    "olympiadbench": {
+      "improved": 21,
+      "worsened": 0,
+      "unchanged_still_wrong": 6
+    },
+    "openai/gsm8k": {
+      "improved": 20,
+      "worsened": 0,
+      "unchanged_still_wrong": 7
+    }
+  }
+}

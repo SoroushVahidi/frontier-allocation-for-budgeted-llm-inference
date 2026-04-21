@@ -853,6 +853,8 @@ class GlobalDiversityAggregationController(BaseController):
         near_miss_correction_max_steps: int = 2,
         near_miss_correction_repeat_family_trigger: int = 5,
         near_miss_correction_min_top_support: float = 0.55,
+        enable_hard_early_root_depth2_coverage_v1: bool = False,
+        hard_early_coverage_min_remaining_actions_to_release: int = 0,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -962,6 +964,8 @@ class GlobalDiversityAggregationController(BaseController):
         self.near_miss_correction_max_steps = max(0, int(near_miss_correction_max_steps))
         self.near_miss_correction_repeat_family_trigger = max(1, int(near_miss_correction_repeat_family_trigger))
         self.near_miss_correction_min_top_support = max(0.0, min(1.0, float(near_miss_correction_min_top_support)))
+        self.enable_hard_early_root_depth2_coverage_v1 = bool(enable_hard_early_root_depth2_coverage_v1)
+        self.hard_early_coverage_min_remaining_actions_to_release = max(0, int(hard_early_coverage_min_remaining_actions_to_release))
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -2148,6 +2152,160 @@ class GlobalDiversityAggregationController(BaseController):
             return out
         return out
 
+    def _branch_family_id(self, branch: BranchState, branch_family_ids: dict[str, str]) -> str:
+        return str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+
+    def _hard_early_root_depth2_coverage_diagnostic(
+        self,
+        *,
+        branches: list[BranchState],
+        branch_family_ids: dict[str, str],
+        root_family_ids: frozenset[str],
+        actions_so_far: int,
+        max_actions: int,
+        force_disabled: bool,
+    ) -> dict[str, Any]:
+        """Operational depth-2-from-root per root family: max expandable depth >= 2.
+
+        Each initial root (``div_0`` / ``div_1``) defines a *family* id tracked through
+        ``branch_family_ids`` (children inherit the parent's family). A family satisfies
+        the quota while it still has a non-done, non-pruned head whose ``depth`` is
+        strictly below 2, until ``max(depth) >= 2`` among those heads.
+
+        If no expandable heads remain for a family, that family is treated as *not pending*
+        (cannot be improved under the simulator).
+        """
+        if force_disabled or (not self.enable_hard_early_root_depth2_coverage_v1):
+            return {
+                "enabled": bool(self.enable_hard_early_root_depth2_coverage_v1),
+                "force_disabled": bool(force_disabled),
+                "root_families": sorted(root_family_ids),
+                "family_status": {},
+                "pending_families": [],
+                "all_root_families_satisfied": True,
+                "actions_needed_sum_lower_bound": 0,
+                "remaining_actions_before_step": max(0, int(max_actions) - int(actions_so_far)),
+                "release_impossible_under_budget": False,
+                "release_low_remaining_budget": False,
+            }
+
+        active = [b for b in branches if not b.is_pruned]
+        family_status: dict[str, dict[str, Any]] = {}
+        pending: list[str] = []
+        total_need = 0
+        for fam in sorted(root_family_ids):
+            heads = [b for b in active if self._branch_family_id(b, branch_family_ids) == fam]
+            expandable = [b for b in heads if not b.is_done]
+            if not expandable:
+                family_status[fam] = {
+                    "pending": False,
+                    "reason": "no_expandable_heads",
+                    "max_depth_among_expandable": None,
+                    "actions_needed_lower_bound": 0,
+                }
+                continue
+            max_depth = max(int(b.depth) for b in expandable)
+            need = max(0, 2 - max_depth)
+            is_pending = need > 0
+            family_status[fam] = {
+                "pending": bool(is_pending),
+                "reason": "depth_below_two" if is_pending else "max_expandable_depth_ge_2",
+                "max_depth_among_expandable": int(max_depth),
+                "expandable_head_count": int(len(expandable)),
+                "actions_needed_lower_bound": int(need),
+            }
+            if is_pending:
+                pending.append(fam)
+                total_need += int(need)
+
+        remaining = max(0, int(max_actions) - int(actions_so_far))
+        impossible = bool(len(pending) > 0 and remaining < int(total_need))
+        low_rem = bool(
+            self.hard_early_coverage_min_remaining_actions_to_release > 0
+            and remaining <= int(self.hard_early_coverage_min_remaining_actions_to_release)
+        )
+        return {
+            "enabled": True,
+            "force_disabled": False,
+            "root_families": sorted(root_family_ids),
+            "family_status": family_status,
+            "pending_families": pending,
+            "all_root_families_satisfied": len(pending) == 0,
+            "actions_needed_sum_lower_bound": int(total_need),
+            "remaining_actions_before_step": int(remaining),
+            "release_impossible_under_budget": impossible,
+            "release_low_remaining_budget": low_rem,
+        }
+
+    def _apply_hard_early_root_depth2_coverage_override(
+        self,
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        *,
+        branch: BranchState,
+        priority: float,
+        pri_meta: dict[str, float | str | None],
+        branch_family_ids: dict[str, str],
+        diag: dict[str, Any],
+        branches: list[BranchState],
+    ) -> tuple[BranchState, float, dict[str, float | str | None], dict[str, Any]]:
+        """Prefer under-covered root families (lowest max expandable depth, then score)."""
+        meta_out: dict[str, Any] = {
+            "hard_early_coverage_forced_override": False,
+            "hard_early_coverage_override_reason": "inactive_or_satisfied",
+            "hard_early_coverage_from_branch_id": None,
+            "hard_early_coverage_to_branch_id": None,
+        }
+        if (not diag.get("enabled")) or diag.get("force_disabled"):
+            meta_out["hard_early_coverage_override_reason"] = "disabled"
+            return branch, priority, pri_meta, meta_out
+        if diag.get("release_impossible_under_budget") or diag.get("release_low_remaining_budget"):
+            meta_out["hard_early_coverage_override_reason"] = "released_by_budget_rule"
+            return branch, priority, pri_meta, meta_out
+        pending = list(diag.get("pending_families") or [])
+        if not pending:
+            meta_out["hard_early_coverage_override_reason"] = "all_root_families_satisfied"
+            return branch, priority, pri_meta, meta_out
+
+        active = [b for b in branches if not b.is_pruned]
+
+        def family_max_expandable_depth(fam: str) -> int:
+            heads = [
+                b
+                for b in active
+                if self._branch_family_id(b, branch_family_ids) == fam and (not b.is_done)
+            ]
+            if not heads:
+                return 99
+            return max(int(b.depth) for b in heads)
+
+        sel_fam = self._branch_family_id(branch, branch_family_ids)
+        if sel_fam in pending:
+            meta_out["hard_early_coverage_override_reason"] = "already_on_pending_family"
+            return branch, priority, pri_meta, meta_out
+
+        pending_set = set(pending)
+        cands = [item for item in scored if self._branch_family_id(item[0], branch_family_ids) in pending_set]
+        if not cands:
+            meta_out["hard_early_coverage_override_reason"] = "no_scored_candidate_in_pending_families"
+            return branch, priority, pri_meta, meta_out
+
+        cands.sort(
+            key=lambda it: (
+                family_max_expandable_depth(self._branch_family_id(it[0], branch_family_ids)),
+                -float(it[1]),
+            )
+        )
+        nb, nprior, nmeta = cands[0]
+        meta_out.update(
+            {
+                "hard_early_coverage_forced_override": True,
+                "hard_early_coverage_override_reason": "redirect_from_satisfied_to_pending_root_family",
+                "hard_early_coverage_from_branch_id": branch.branch_id,
+                "hard_early_coverage_to_branch_id": nb.branch_id,
+            }
+        )
+        return nb, float(nprior), nmeta, meta_out
+
     def run(self, question: str, gold_answer: str) -> MethodResult:
         forced_action_plan_raw = getattr(self, "_forced_action_plan", {}) or {}
         forced_action_plan: dict[int, str] = {}
@@ -2203,6 +2361,14 @@ class GlobalDiversityAggregationController(BaseController):
         matured_alternative_ids: set[str] = set()
         gold_group_key = self._normalize_answer(gold_answer) or "__unknown__"
         early_divergence_timeline: list[dict[str, Any]] = []
+        root_family_ids: frozenset[str] = frozenset(
+            {branch_family_ids[branches[0].branch_id], branch_family_ids[branches[1].branch_id]}
+        )
+        hard_early_coverage_force_disabled = False
+        hard_early_coverage_budget_released_impossible = False
+        hard_early_coverage_budget_released_low_remaining = False
+        hard_early_coverage_forced_override_steps = 0
+        hard_early_coverage_transition_actions_used: int | None = None
 
         while actions < self.max_actions and branches:
             active = [b for b in branches if not b.is_pruned]
@@ -2408,6 +2574,52 @@ class GlobalDiversityAggregationController(BaseController):
                             if int(branch_expansions.get(chosen[0].branch_id, 0)) < self.width_depth_challenger_maturation_min_expands:
                                 width_depth_forced_challenger_maturation_steps += 1
                             branch, priority, pri_meta = chosen
+
+            hard_cov_diag = self._hard_early_root_depth2_coverage_diagnostic(
+                branches=branches,
+                branch_family_ids=branch_family_ids,
+                root_family_ids=root_family_ids,
+                actions_so_far=actions,
+                max_actions=self.max_actions,
+                force_disabled=hard_early_coverage_force_disabled,
+            )
+            if self.enable_hard_early_root_depth2_coverage_v1 and not hard_early_coverage_force_disabled:
+                if bool(hard_cov_diag.get("release_impossible_under_budget")):
+                    hard_early_coverage_force_disabled = True
+                    hard_early_coverage_budget_released_impossible = True
+                elif bool(hard_cov_diag.get("release_low_remaining_budget")):
+                    hard_early_coverage_force_disabled = True
+                    hard_early_coverage_budget_released_low_remaining = True
+            branch, priority, pri_meta, hard_cov_override = self._apply_hard_early_root_depth2_coverage_override(
+                scored,
+                branch=branch,
+                priority=priority,
+                pri_meta=pri_meta,
+                branch_family_ids=branch_family_ids,
+                diag=hard_cov_diag,
+                branches=branches,
+            )
+            if bool(hard_cov_override.get("hard_early_coverage_forced_override")):
+                hard_early_coverage_forced_override_steps += 1
+            hard_cov_trace = {
+                "hard_early_root_depth2_coverage_v1_enabled": bool(self.enable_hard_early_root_depth2_coverage_v1),
+                "hard_early_coverage_force_disabled": bool(hard_early_coverage_force_disabled),
+                "hard_early_coverage_phase_active": bool(
+                    self.enable_hard_early_root_depth2_coverage_v1
+                    and (not hard_early_coverage_force_disabled)
+                    and (not bool(hard_cov_diag.get("all_root_families_satisfied")))
+                ),
+                "hard_early_coverage_pending_families": list(hard_cov_diag.get("pending_families") or []),
+                "hard_early_coverage_all_satisfied_pre_action": bool(hard_cov_diag.get("all_root_families_satisfied")),
+                "hard_early_coverage_actions_needed_lb": int(hard_cov_diag.get("actions_needed_sum_lower_bound") or 0),
+                "hard_early_coverage_remaining_actions": int(hard_cov_diag.get("remaining_actions_before_step") or 0),
+                "hard_early_coverage_release_impossible_under_budget": bool(
+                    hard_cov_diag.get("release_impossible_under_budget")
+                ),
+                "hard_early_coverage_release_low_remaining": bool(hard_cov_diag.get("release_low_remaining_budget")),
+                "hard_early_coverage_forced_override": bool(hard_cov_override.get("hard_early_coverage_forced_override")),
+                "hard_early_coverage_override_reason": str(hard_cov_override.get("hard_early_coverage_override_reason") or ""),
+            }
 
             metalevel_preview: dict[str, Any] | None = None
             metalevel_override = False
@@ -2643,6 +2855,7 @@ class GlobalDiversityAggregationController(BaseController):
                         "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
                         "near_miss_correction_parent_branch_id": correction_parent_branch_id,
                         "forced_action": forced_action if forced_action_applied else "",
+                        **hard_cov_trace,
                     }
                 )
                 if correction_branch_spawned:
@@ -2764,8 +2977,25 @@ class GlobalDiversityAggregationController(BaseController):
                         "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
                         "near_miss_correction_parent_branch_id": correction_parent_branch_id,
                         "forced_action": forced_action if forced_action_applied else "",
+                        **hard_cov_trace,
                     }
                 )
+
+            if (
+                self.enable_hard_early_root_depth2_coverage_v1
+                and hard_early_coverage_transition_actions_used is None
+                and not hard_early_coverage_force_disabled
+            ):
+                post_cov = self._hard_early_root_depth2_coverage_diagnostic(
+                    branches=branches,
+                    branch_family_ids=branch_family_ids,
+                    root_family_ids=root_family_ids,
+                    actions_so_far=actions,
+                    max_actions=self.max_actions,
+                    force_disabled=False,
+                )
+                if bool(post_cov.get("all_root_families_satisfied")):
+                    hard_early_coverage_transition_actions_used = int(actions)
 
             branches = [b for b in branches if not b.is_pruned]
             if len(branches) > self.max_branches:
@@ -3092,6 +3322,31 @@ class GlobalDiversityAggregationController(BaseController):
                 "gold_group_present_final": bool(gold_present_final),
                 "early_divergence_failure_category": dominant_failure,
                 "regime_failure_category": regime_failure_category,
+                "hard_early_root_depth2_coverage_v1_enabled": bool(self.enable_hard_early_root_depth2_coverage_v1),
+                "hard_early_coverage_forced_override_steps": int(hard_early_coverage_forced_override_steps),
+                "hard_early_coverage_transition_actions_used": hard_early_coverage_transition_actions_used,
+                "hard_early_coverage_completed_fully": bool(
+                    self.enable_hard_early_root_depth2_coverage_v1
+                    and hard_early_coverage_transition_actions_used is not None
+                    and (not hard_early_coverage_budget_released_impossible)
+                    and (not hard_early_coverage_budget_released_low_remaining)
+                ),
+                "hard_early_coverage_budget_released_impossible": bool(hard_early_coverage_budget_released_impossible),
+                "hard_early_coverage_budget_released_low_remaining": bool(hard_early_coverage_budget_released_low_remaining),
+                "hard_early_coverage_force_disabled_final": bool(hard_early_coverage_force_disabled),
+                "hard_early_coverage_root_families": sorted(root_family_ids),
+                "hard_early_coverage_final_family_status": (
+                    self._hard_early_root_depth2_coverage_diagnostic(
+                        branches=branches,
+                        branch_family_ids=branch_family_ids,
+                        root_family_ids=root_family_ids,
+                        actions_so_far=actions,
+                        max_actions=self.max_actions,
+                        force_disabled=hard_early_coverage_force_disabled,
+                    ).get("family_status")
+                    if self.enable_hard_early_root_depth2_coverage_v1
+                    else {}
+                ),
                 "unstable_commit_flag": bool(
                     any(
                         bool(c.get("commit_rule_satisfied", False))
