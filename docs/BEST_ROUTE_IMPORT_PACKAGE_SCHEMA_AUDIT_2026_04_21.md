@@ -10,3 +10,5 @@ Primary enforcement points:
 - fixture: `tests/fixtures/best_route_import_valid/`
 
 See those files for authoritative behavior.
+
+Template generator and ready-made stubs: `scripts/generate_best_route_import_package_templates.py` and `docs/BEST_ROUTE_IMPORT_PACKAGE_TEMPLATES.md`.

@@ -1,0 +1,50 @@
+{
+  "template_notice": {
+    "is_template": true,
+    "replace_before_treating_as_real_import": true,
+    "description": "Placeholder package generated from validator contract; replace all TEMPLATE_* values with real BEST-Route export data."
+  },
+  "source": {
+    "type": "imported"
+  },
+  "upstream": {
+    "repo_url": "https://github.com/microsoft/best-route-llm",
+    "paper_url": "https://arxiv.org/abs/2506.22716",
+    "workflow_stages_completed": [
+      "mixed_prompt_construction",
+      "multi_sample_response_generation",
+      "armoRM_scoring",
+      "proxy_reward_model_scoring",
+      "router_training"
+    ]
+  },
+  "dataset": {
+    "name": "math500",
+    "split": "test"
+  },
+  "budget": {
+    "unit": "actions",
+    "settings": [
+      1,
+      2
+    ]
+  },
+  "candidate_arms": [
+    {
+      "arm_id": "template_llama3_8b_bo1",
+      "model_name": "TEMPLATE_MODEL_NAME",
+      "best_of_n": 1
+    },
+    {
+      "arm_id": "template_llama3_8b_bo3",
+      "model_name": "TEMPLATE_MODEL_NAME",
+      "best_of_n": 3
+    }
+  ],
+  "provenance": {
+    "exported_at_utc": "2026-04-21T16:49:21Z",
+    "source_uri": "TEMPLATE_SOURCE_URI_REPLACE_ME",
+    "artifact_id": "TEMPLATE_math500_artifact",
+    "commit_or_version_if_available": "TEMPLATE_COMMIT_OR_VERSION"
+  }
+}
