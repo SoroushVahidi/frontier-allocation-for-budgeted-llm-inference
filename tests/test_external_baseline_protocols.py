@@ -22,6 +22,8 @@ def test_verify_best_route_import_valid_fixture() -> None:
         expected_dataset="gsm8k",
         expected_split="test",
         expected_budgets={1, 2},
+        config={"official": {"repo_url": "https://github.com/microsoft/best-route-llm.git"}},
+        official_repo_path=None,
     )
     assert report["status"] == "valid"
     assert report["issues"] == []
@@ -69,6 +71,8 @@ def test_verify_best_route_import_rejects_missing_bo_gt_1(tmp_path: Path) -> Non
         expected_dataset="gsm8k",
         expected_split="test",
         expected_budgets={1},
+        config={"official": {"repo_url": "https://github.com/microsoft/best-route-llm.git"}},
+        official_repo_path=None,
     )
 
     assert report["status"] == "invalid"

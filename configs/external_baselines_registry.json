@@ -50,14 +50,15 @@
     "when_solve_when_verify": {
       "clone_url": "https://github.com/nishadsinghi/sc-genrm-scaling.git",
       "doc": "external/when_solve_when_verify/README.md",
-      "integration": "runnable_adjacent",
-      "completeness_class": "runnable_adjacent",
-      "blocker": "adjacent_import_only_no_direct_stack_reproduction_claim",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "adjacent_import_validated_only_not_direct_frontier_allocation_equivalent",
       "integration_doc": "docs/when_solve_when_verify_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/when_solve_when_verify_status.json",
         "outputs/external_baseline_completeness/when_solve_when_verify_status.md"
-      ]
+      ],
+      "config": "configs/when_solve_when_verify_official_import_v1.json"
     },
     "cascade_routing": {
       "clone_url": "https://github.com/eth-sri/cascade-routing.git",

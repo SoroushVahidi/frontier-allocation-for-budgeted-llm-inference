@@ -1,24 +1,35 @@
 {
-  "generated_utc": "2026-04-16T01:40:38.992096+00:00",
+  "generated_utc": "2026-04-21T05:09:07.031422+00:00",
   "baseline_key": "when_solve_when_verify",
-  "status": "runnable_adjacent",
-  "integration_kind": "verified_import_only",
+  "display_name": "When To Solve, When To Verify",
+  "status": "import_validated",
+  "control_equivalence": "adjacent",
+  "resource_level": "official",
+  "integration_kind": "official_adjacent_import_validated",
   "status_taxonomy": [
     "runnable_direct",
     "runnable_adjacent",
-    "mode_a_only",
-    "mode_b_partial",
-    "link_only",
+    "adapter_based",
+    "import_validated",
     "discuss_only",
-    "blocked"
+    "blocked",
+    "broken_needs_repair"
   ],
   "upstream": {
     "repo": "https://github.com/nishadsinghi/sc-genrm-scaling",
     "paper": "https://arxiv.org/abs/2504.01005",
     "hf_org": "https://huggingface.co/sc-genrm-scaling"
   },
-  "protocol": {
+  "integration": {
+    "config": "configs/when_solve_when_verify_official_import_v1.json",
     "validator_script": "scripts/verify_when_solve_when_verify_import.py",
+    "validator_success_verdict": "import_validated",
+    "validator_blocking_verdicts": [
+      "blocked_missing_official_repo",
+      "blocked_incomplete_import"
+    ]
+  },
+  "protocol": {
     "required_package_files": [
       "metadata.json",
       "results.csv"
@@ -35,11 +46,12 @@
     "comparability_scope": "adjacent_only"
   },
   "safe_claims": [
-    "This repo supports reviewer-auditable adjacent import of SC-vs-GenRM fixed-budget results.",
-    "Imported outputs are validated for stage declarations, strategy-family coverage, and adjacent-only scope."
+    "This repo supports reviewer-auditable official adjacent import validation of fixed-budget SC-vs-GenRM outputs.",
+    "Imported outputs are validated for workflow-stage declarations, strategy-family coverage, and adjacent-only comparability scope.",
+    "This baseline is closer to fixed-budget reasoning control than query-level routing baselines, while remaining non-equivalent to frontier allocation."
   ],
   "not_safe_claims": [
-    "Direct in-repo reproduction of full upstream generation+verification stack.",
-    "Control-space equivalence with this repo's frontier/action-native methods."
+    "Direct in-repo reproduction of full upstream generation+verification training/inference stack.",
+    "Control-space equivalence with this repo's frontier/action-native branch allocation methods."
   ]
 }
