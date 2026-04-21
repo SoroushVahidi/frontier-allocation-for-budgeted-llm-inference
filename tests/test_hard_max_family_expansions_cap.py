@@ -89,4 +89,6 @@ def test_hard_max_family_cap_variants_registered() -> None:
     assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k2_v1" in specs
     assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k3_v1" in specs
     assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k4_v1" in specs
+    assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k5_v1" in specs
+    assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1" in specs
     assert f"{BASE}_hard_early_root_depth2_then_gate_v2_budget_aware_rescue_hard_max_family_expansions_cap_k3_v1" in specs
