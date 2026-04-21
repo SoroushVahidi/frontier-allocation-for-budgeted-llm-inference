@@ -1,0 +1,32 @@
+{
+  "strict_phased_rule": {
+    "phases": [
+      "phase_depth1",
+      "phase_depth2",
+      "phase_depth3",
+      "phase_normal"
+    ],
+    "depth2_variant_policy": "finish depth1 then depth2 then release_to_normal",
+    "depth3_variant_policy": "finish depth1 then depth2 then depth3 then release_to_normal",
+    "release_impossible_under_budget_scope": "current_phase_only"
+  },
+  "comparison_to_previous_non_strict": {
+    "previous_output_dir": "outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421T010733Z",
+    "current_output_dir": "outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421T020917Z",
+    "depth2_improved_vs_baseline_delta": -7,
+    "depth3_improved_vs_baseline_delta": -9,
+    "depth2_correct_count_delta": -6,
+    "depth3_correct_count_delta": -9,
+    "depth3_vs_depth2_improved_delta": 3,
+    "depth3_vs_depth2_worsened_delta": 5,
+    "depth2_impossible_release_delta": -7,
+    "depth3_impossible_release_delta": -21
+  },
+  "headline_results": {
+    "baseline_correct": 0,
+    "depth2_correct": 61,
+    "depth3_correct": 64,
+    "depth2_improved_vs_baseline": 63,
+    "depth3_improved_vs_baseline": 66
+  }
+}
