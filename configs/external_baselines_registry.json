@@ -107,8 +107,11 @@
       "integration_doc": "docs/best_route_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/best_route_status.json",
-        "outputs/external_baseline_completeness/best_route_status.md"
-      ]
+        "outputs/external_baseline_completeness/best_route_status.md",
+        "outputs/best_route_adjacent_integration/<run_id>/status.json"
+      ],
+      "integration_runner": "scripts/run_best_route_adjacent_integration.py",
+      "comparison_contract": "configs/best_route_adjacent_comparison_contract_v1.json"
     },
     "openr": {
       "clone_url": "https://github.com/openreasoner/openr.git",

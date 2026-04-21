@@ -29,11 +29,11 @@ At a high level:
 
 ## Current next baseline to strengthen first
 
-### 1. BEST-Route
+### 1. BEST-Route (strengthened in this pass)
 
-**Current role:** official adjacent adaptive-routing baseline
+**Current role:** official adjacent adaptive-routing baseline with reproducible import-validation artifact lane
 
-**Why first:**
+**Why first (now completed):**
 - strongest provenance among the currently non-fully-strengthened external baselines,
 - official code availability,
 - clearer import/validation path than Q*,
@@ -51,7 +51,7 @@ At a high level:
 
 ## Current next baseline after BEST-Route
 
-### 2. When To Solve / When To Verify
+### 2. When To Solve / When To Verify (current next strengthening target)
 
 **Why second:**
 - closer to solve-vs-verify control than BEST-Route,
@@ -100,3 +100,9 @@ Also see:
 - `main_baselines.md`
 - `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 - `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+
+
+## BEST-Route strengthening artifact
+
+- `BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`
+- `outputs/best_route_adjacent_integration/<run_id>/`

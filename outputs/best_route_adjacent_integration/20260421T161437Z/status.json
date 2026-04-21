@@ -1,0 +1,34 @@
+{
+  "generated_utc": "2026-04-21T16:14:37.004728+00:00",
+  "run_id": "20260421T161437Z",
+  "baseline_key": "best_route_microsoft",
+  "integration_mode_selected": "stronger_import_validated_comparator_with_reproducible_artifact_contract",
+  "status": "import_validated",
+  "control_equivalence": "adjacent",
+  "validated_datasets": [
+    "openai/gsm8k"
+  ],
+  "missing_packages_for_canonical_mix": [
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "olympiadbench"
+  ],
+  "canonical_mix": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "olympiadbench"
+  ],
+  "minimum_required_datasets": [
+    "openai/gsm8k"
+  ],
+  "minimum_required_met": true,
+  "safe_claims_now": [
+    "BEST-Route adjacent import comparison rows are reproducibly exportable for validated datasets.",
+    "Control-space equivalence is not claimed; rows remain adjacent_only."
+  ],
+  "unsafe_claims_now": [
+    "Full upstream BEST-Route reproduction in this repository.",
+    "Frontier-allocation equivalence with strict_gate1_cap_k6 or branch-level controllers."
+  ]
+}

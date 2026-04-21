@@ -90,3 +90,8 @@ secrets.*
 !outputs/baseline_repair_and_status_audit_*/**/*
 !outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_*/
 !outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_*/**/*
+
+!outputs/best_route_adjacent_integration_*/
+!outputs/best_route_adjacent_integration_*/**/*
+!outputs/best_route_adjacent_integration/
+!outputs/best_route_adjacent_integration/**/*
