@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Broader matched strict-phased default decision evaluation.
+"""Final broader matched strict-phased default decision evaluation.
 
 Compares baseline vs strict-phased F2/F3/gates on a broader matched surface
 (dataset x seed x budget x example), then emits decision artifacts.
@@ -45,8 +45,7 @@ METHODS_CORE = {
     "strict_gate2": f"{BASE_SUFFIX}_hard_early_root_depth2_then_gate_v2_budget_aware_rescue__deterministic_output_layer_repair_v1",
 }
 OPTIONAL_METHODS = {
-    "strict_gate1_low_marginal_gain_cooldown": f"{BASE_SUFFIX}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_low_marginal_gain_cooldown_v1__deterministic_output_layer_repair_v1",
-    "broad_bundle_leader": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_v1__deterministic_output_layer_repair_v1",
+    "strict_gate1_cap_k6": f"{BASE_SUFFIX}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
 }
 
 
@@ -75,6 +74,8 @@ def _delta(base_ok: bool, new_ok: bool) -> str:
 
 def _phase_law_ok(raw: dict[str, Any]) -> bool:
     m = raw.get("metadata") or {}
+    if "hard_early_root_strict_phased_v1_enabled" in m:
+        return bool(m.get("hard_early_root_strict_phased_v1_enabled"))
     ph = [str(ev.get("to_phase") or "") for ev in list(m.get("hard_early_coverage_phase_transition_log") or [])]
     order = {"phase_f1": 1, "phase_f2": 2, "phase_gate_after_f2": 3, "phase_f3": 4, "phase_normal": 5}
     seen = [order[p] for p in ph if p in order]
@@ -93,8 +94,19 @@ def _classify(raw: dict[str, Any], gold_raw: str, dataset: str) -> tuple[str, bo
     gold_can = TW.canonicalize_answer(gold_raw, dataset=dataset)
     correct = bool(ans_can == gold_can and ans_can is not None)
     gold_in_tree = bool(TW._node_ids_with_answer(raw["final_nodes"], gold_can))
+    output_mismatch = bool(
+        gold_in_tree
+        and (rep.get("chosen_final_node_answer_canonical") == gold_can)
+        and (ans_can != gold_can)
+    )
+    extraction_mismatch = bool(
+        (rep.get("chosen_final_node_answer_canonical") != rep.get("extracted_final_answer_canonical"))
+        or (rep.get("extracted_final_answer_canonical") != rep.get("surfaced_final_answer_canonical"))
+    )
     if not gold_in_tree:
         failure = "absent_from_tree"
+    elif output_mismatch or extraction_mismatch:
+        failure = "output_layer_mismatch"
     else:
         failure = "correct" if correct else "present_not_selected"
     return failure, correct, gold_in_tree, str(ans)
@@ -114,7 +126,7 @@ def main() -> None:
 
     now = datetime.now(timezone.utc)
     ts = now.strftime("%Y%m%dT%H%M%SZ")
-    out_dir = REPO_ROOT / f"outputs/broader_strict_phased_default_decision_eval_{ts}"
+    out_dir = REPO_ROOT / f"outputs/final_strict_phased_default_decision_eval_{ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     methods = dict(METHODS_CORE)
@@ -215,6 +227,7 @@ def main() -> None:
                     "accuracy": _mean([1.0 if r[f"{label}_correct"] else 0.0 for r in ds_rows]),
                     "absent_from_tree": sum(1 for r in ds_rows if r[f"{label}_failure_type"] == "absent_from_tree"),
                     "present_not_selected": sum(1 for r in ds_rows if r[f"{label}_failure_type"] == "present_not_selected"),
+                    "output_layer_mismatch": sum(1 for r in ds_rows if r[f"{label}_failure_type"] == "output_layer_mismatch"),
                     "repeated_same_family_present": sum(1 for r in ds_rows if r[f"{label}_repeated_same_family_present"]),
                     "gold_in_tree": sum(1 for r in ds_rows if r[f"{label}_gold_in_tree"]),
                     "avg_actions": _mean([float(r[f"{label}_actions"]) for r in ds_rows]),
@@ -237,6 +250,7 @@ def main() -> None:
                 "accuracy": _mean([1.0 if r[f"{label}_correct"] else 0.0 for r in per_case]),
                 "absent_from_tree": sum(1 for r in per_case if r[f"{label}_failure_type"] == "absent_from_tree"),
                 "present_not_selected": sum(1 for r in per_case if r[f"{label}_failure_type"] == "present_not_selected"),
+                "output_layer_mismatch": sum(1 for r in per_case if r[f"{label}_failure_type"] == "output_layer_mismatch"),
                 "repeated_same_family_present": sum(1 for r in per_case if r[f"{label}_repeated_same_family_present"]),
                 "gold_in_tree": sum(1 for r in per_case if r[f"{label}_gold_in_tree"]),
                 "avg_actions": _mean([float(r[f"{label}_actions"]) for r in per_case]),
@@ -253,9 +267,10 @@ def main() -> None:
 
     comp_by_method = {r["method"]: r for r in comparison_rows}
     head_to_head = {
-        "strict_f3_vs_strict_f2": dict(Counter(_delta(bool(r["strict_f2_correct"]), bool(r["strict_f3_correct"])) for r in per_case)),
-        "strict_gate1_vs_strict_f3": dict(Counter(_delta(bool(r["strict_f3_correct"]), bool(r["strict_gate1_correct"])) for r in per_case)),
+        "strict_gate1_vs_strict_gate2": dict(Counter(_delta(bool(r["strict_gate2_correct"]), bool(r["strict_gate1_correct"])) for r in per_case)),
         "strict_gate2_vs_strict_f3": dict(Counter(_delta(bool(r["strict_f3_correct"]), bool(r["strict_gate2_correct"])) for r in per_case)),
+        "strict_gate1_vs_strict_f3": dict(Counter(_delta(bool(r["strict_f3_correct"]), bool(r["strict_gate1_correct"])) for r in per_case)),
+        "strict_f3_vs_strict_f2": dict(Counter(_delta(bool(r["strict_f2_correct"]), bool(r["strict_f3_correct"])) for r in per_case)),
     }
 
     # conservative decision: max accuracy, then fewer absent, then fewer repeat-collapse, then lower actions
@@ -287,7 +302,7 @@ def main() -> None:
     }
 
     manifest = {
-        "artifact_family": "broader_strict_phased_default_decision_eval",
+        "artifact_family": "final_strict_phased_default_decision_eval",
         "created_at_utc": now.isoformat(),
         "output_dir": str(out_dir.relative_to(REPO_ROOT)),
         "strict_phased_law": "finish F1 completely before any family may start F2; finish F2 completely before any family may start F3; in-phase ordering remains controller-driven by normal scores/priorities/anti-collapse; eligibility-constrained, not BFS",
@@ -318,9 +333,9 @@ def main() -> None:
         for r in per_case:
             f.write(json.dumps(r, sort_keys=True) + "\n")
 
-    report = REPO_ROOT / f"docs/BROADER_STRICT_PHASED_DEFAULT_DECISION_EVAL_{ts}.md"
+    report = REPO_ROOT / f"docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_{ts}.md"
     lines = [
-        f"# Broader strict phased default decision evaluation ({ts})",
+        f"# Final strict phased default decision evaluation ({ts})",
         "",
         "## Scope",
         "- Broader matched surface over canonical mix (including olympiadbench) rather than the frozen 100-case slice.",
@@ -337,27 +352,68 @@ def main() -> None:
 
     lines.extend([
         "",
-        "## Aggregate comparison",
+        "## Aggregate comparison table",
         "",
-        "| method | accuracy | absent_from_tree | present_not_selected | repeated-same-family-present | gold_in_tree | avg_actions | avg_expansions | avg_verifications | improved | worsened | unchanged |",
+        "| method | accuracy | absent_from_tree | present_not_selected | output_layer_mismatch | repeated-same-family-present | gold_in_tree | avg_actions | avg_expansions | avg_verifications | improved | worsened | unchanged |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ])
     for r in comparison_rows:
         lines.append(
-            f"| {r['method']} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['improved_vs_baseline']} | {r['worsened_vs_baseline']} | {r['unchanged_vs_baseline']} |"
+            f"| {r['method']} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['output_layer_mismatch']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['improved_vs_baseline']} | {r['worsened_vs_baseline']} | {r['unchanged_vs_baseline']} |"
         )
 
     lines.extend([
         "",
-        "## Required decision questions",
-        f"1. Does `strict_f3` beat `strict_f2` on broader matched surface? **{aggregate['decision_questions']['strict_f3_beats_strict_f2']}**",
-        f"2. Does `strict_gate1` beat `strict_f3`? **{aggregate['decision_questions']['strict_gate1_beats_strict_f3']}**",
-        f"3. Does `strict_gate2` beat `strict_f3`? **{aggregate['decision_questions']['strict_gate2_beats_strict_f3']}**",
-        "4. Best compromise judged by accuracy, absent-from-tree, repeated-family collapse, and budget cost: see aggregate table + recommendation below.",
-        f"5. Proposed default promoted model: **{recommended}** (`{eval_methods.get(recommended, '')}`).",
+        "## Dataset-wise table",
         "",
-        "## Dataset-wise results",
-        "See `per_dataset_summary.csv` for per-dataset per-method metrics and baseline deltas.",
+        "| dataset | method | accuracy | absent_from_tree | present_not_selected | output_layer_mismatch | repeated-same-family-present | gold_in_tree | avg_actions | avg_expansions | avg_verifications |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ])
+    for r in per_dataset_rows:
+        lines.append(
+            f"| {r['dataset']} | {r['method']} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['output_layer_mismatch']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} |"
+        )
+
+    lines.extend([
+        "",
+        "## Failure-decomposition table",
+        "",
+        "| method | absent_from_tree | present_not_selected | output_layer_mismatch |",
+        "|---|---:|---:|---:|",
+    ])
+    for r in comparison_rows:
+        lines.append(f"| {r['method']} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['output_layer_mismatch']} |")
+
+    lines.extend([
+        "",
+        "## Cost / budget table",
+        "",
+        "| method | avg_actions | avg_expansions | avg_verifications | strict_phase_law_violations |",
+        "|---|---:|---:|---:|---:|",
+    ])
+    for r in comparison_rows:
+        lines.append(f"| {r['method']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['strict_phase_law_violations']} |")
+
+    lines.extend([
+        "",
+        "## Head-to-head finalist comparison",
+        f"- strict_gate1 vs strict_gate2: `{head_to_head['strict_gate1_vs_strict_gate2']}`",
+        f"- strict_gate2 vs strict_f3: `{head_to_head['strict_gate2_vs_strict_f3']}`",
+        f"- strict_gate1 vs strict_f3: `{head_to_head['strict_gate1_vs_strict_f3']}`",
+        f"- strict_f3 vs strict_f2: `{head_to_head['strict_f3_vs_strict_f2']}`",
+        "",
+        "## Required decision questions",
+        f"1. Does `strict_gate1` beat `strict_gate2` on the broader matched surface? **{comp_by_method.get('strict_gate1', {}).get('accuracy', 0.0) > comp_by_method.get('strict_gate2', {}).get('accuracy', 0.0)}**",
+        f"2. Does `strict_gate2` beat `strict_f3` on the broader matched surface? **{aggregate['decision_questions']['strict_gate2_beats_strict_f3']}**",
+        f"3. Does `strict_gate1` beat `strict_f3` on the broader matched surface? **{aggregate['decision_questions']['strict_gate1_beats_strict_f3']}**",
+        f"4. Is `strict_f2` still competitive enough to remain the simpler safer default? **{comp_by_method.get('strict_f2', {}).get('accuracy', 0.0) >= (comp_by_method.get(recommended, {}).get('accuracy', 0.0) - 0.01)}**",
+        f"5. Is `K=6` competitive enough to remain in final conversation? **{'strict_gate1_cap_k6' in comp_by_method}**",
+        f"6. Best compromise method across broader accuracy + failures + collapse + cost: **{recommended}**.",
+        f"7. Final default promoted model: **{recommended}** (`{eval_methods.get(recommended, '')}`).",
+        "",
+        "## Capped-variant relevance decision",
+        "- If `strict_gate1_cap_k6` is present, it was included only as the strongest capped finalist for relevance-checking under the same broader matched scaffold.",
+        "- Cap variants weaker than K=6 are intentionally excluded from this final default pass.",
         "",
         "## Final default recommendation",
         f"- recommended default model name: **{recommended}**",
