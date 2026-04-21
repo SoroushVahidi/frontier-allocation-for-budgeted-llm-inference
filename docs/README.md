@@ -36,6 +36,7 @@ If you want the current repo-organization rationale, read:
 - [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md): current artifact-backed result index.
 - [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md): current experiment-family index.
 - [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md): current baseline/reference index.
+- [`CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md): shortest current answer on what external baseline to strengthen next.
 - [`CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`](CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md): focused anti-collapse / branch-allocation literature memo.
 - [`REPO_MAP.md`](REPO_MAP.md): canonical repository map.
 
@@ -65,6 +66,7 @@ If you want the current repo-organization rationale, read:
 
 ### References and baselines
 - [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+- [`CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md)
 - [`main_datasets.md`](main_datasets.md)
 - [`main_baselines.md`](main_baselines.md)
 - [`BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`](BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md)
