@@ -1,0 +1,32 @@
+{
+  "min6_half_vs_fixed_k6": {
+    "improved": 95,
+    "worsened": 129,
+    "unchanged": 280
+  },
+  "min6_third_vs_fixed_k6": {
+    "improved": 86,
+    "worsened": 147,
+    "unchanged": 271
+  },
+  "min6_quarter_vs_fixed_k6": {
+    "improved": 83,
+    "worsened": 188,
+    "unchanged": 233
+  },
+  "half_vs_fixed_k6": {
+    "improved": 107,
+    "worsened": 132,
+    "unchanged": 265
+  },
+  "third_vs_fixed_k6": {
+    "improved": 76,
+    "worsened": 140,
+    "unchanged": 288
+  },
+  "quarter_vs_fixed_k6": {
+    "improved": 75,
+    "worsened": 179,
+    "unchanged": 250
+  }
+}

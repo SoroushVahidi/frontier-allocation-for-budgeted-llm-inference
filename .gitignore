@@ -95,3 +95,6 @@ secrets.*
 !outputs/best_route_adjacent_integration_*/**/*
 !outputs/best_route_adjacent_integration/
 !outputs/best_route_adjacent_integration/**/*
+
+!outputs/budget_aware_family_cap_eval_*/
+!outputs/budget_aware_family_cap_eval_*/**/*

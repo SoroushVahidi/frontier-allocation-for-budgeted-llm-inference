@@ -86,6 +86,7 @@ def test_hard_max_family_cap_variants_registered() -> None:
         use_openai_api=False,
         include_broad_diversity_aggregation_methods=True,
     )
+    assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k1_v1" in specs
     assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k2_v1" in specs
     assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k3_v1" in specs
     assert f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k4_v1" in specs
