@@ -1,11 +1,12 @@
 # Quickstart
 
-This is the shortest operational entry point for the current repository.
+This is the shortest reliable entry point for the current repository.
 
 ## What this repository is about now
 
 The current project studies **fixed-budget adaptive test-time compute allocation for LLM reasoning**.
-The current canonical question is:
+
+The canonical question is:
 
 > Which active branch should receive the next unit of compute, and when should the controller continue versus commit?
 
@@ -16,9 +17,17 @@ This repository is **not** currently centered on the older binary revise-routing
 1. `README.md`
 2. `docs/CANONICAL_START_HERE.md`
 3. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-4. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-5. `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
-6. `scripts/CANONICAL_START_HERE.md`
+4. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+5. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+6. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+7. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+8. `scripts/CANONICAL_START_HERE.md`
+
+## Current promoted default
+
+The current broad default promoted model on the evaluated surface is:
+
+- `strict_gate1_cap_k6`
 
 ## Use these artifact families first
 
@@ -58,5 +67,5 @@ Use them only with explicit scope labeling.
 ## Rule of thumb
 
 - Start from canonical docs, not arbitrary outputs.
-- Use current April 20 bundles for current claims.
+- Use the current April 20–21 bundles for current claims.
 - Treat older derived plot folders as bounded historical surfaces unless explicitly stated otherwise.
