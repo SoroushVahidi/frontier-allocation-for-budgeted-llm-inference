@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 
 from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR
 from plot_helpers import save_fig
-from paper_style import STYLE
 
 
 def main() -> None:
@@ -18,7 +17,7 @@ def main() -> None:
         raise FileNotFoundError(f"Missing figure1 spec: {spec_path}")
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
 
-    fig, ax = plt.subplots(figsize=(3.45, 5.35))
+    fig, ax = plt.subplots(figsize=(3.45, 5.25))
     ax.axis("off")
 
     kind_style = {
@@ -33,19 +32,18 @@ def main() -> None:
     node_map = {n["id"]: n for n in spec["nodes"]}
     # Strict 3-stage vertical flow with separated auxiliary controls.
     node_pos = {
-        "input": (0.50, 0.89),
-        "branches": (0.15, 0.69),
-        "scoring": (0.50, 0.69),
-        "commit": (0.85, 0.69),
-        "support": (0.33, 0.49),
-        "anticollapse": (0.67, 0.49),
-        "final": (0.50, 0.30),
+        "input": (0.50, 0.87),
+        "branches": (0.16, 0.67),
+        "scoring": (0.50, 0.67),
+        "commit": (0.84, 0.67),
+        "support": (0.34, 0.47),
+        "anticollapse": (0.66, 0.47),
+        "final": (0.50, 0.28),
     }
-    box_wide = (0.23, 0.098)
-    box_mid = (0.23, 0.098)
-    box_aux = (0.27, 0.10)
-    box_top = (0.32, 0.10)
-    box_bottom = (0.34, 0.105)
+    box_mid = (0.24, 0.10)
+    box_aux = (0.29, 0.105)
+    box_top = (0.28, 0.10)
+    box_bottom = (0.28, 0.10)
     box_size = {
         "input": box_top,
         "branches": box_mid,
@@ -55,6 +53,16 @@ def main() -> None:
         "anticollapse": box_aux,
         "final": box_bottom,
     }
+    forced_label = {
+        "input": "Input\nQuestion",
+        "branches": "Active\nBranches",
+        "scoring": "Branch\nScoring",
+        "commit": "Commit /\nExpand",
+        "support": "Answer-Group\nSupport",
+        "anticollapse": "Anti-collapse\nControl",
+        "final": "Final\nAnswer",
+    }
+
     anchors: dict[str, dict[str, tuple[float, float]]] = {}
 
     for nid, (cx, cy) in node_pos.items():
@@ -76,17 +84,14 @@ def main() -> None:
                 transform=ax.transAxes,
             )
         )
-        wrap_width = 18
-        if nid in {"branches", "scoring", "commit", "support", "anticollapse"}:
-            wrap_width = 12
-        wrapped = "\n".join(textwrap.wrap(n["label"], width=wrap_width))
+        wrapped = forced_label.get(nid, n["label"])
         ax.text(
             cx,
             cy,
             wrapped,
             ha="center",
             va="center",
-            fontsize=8.7,
+            fontsize=8.0,
             color="#1e1e1e",
             transform=ax.transAxes,
         )
@@ -117,10 +122,10 @@ def main() -> None:
 
     # Main flow: Input -> Active Branches -> Branch Scoring -> Commit/Expand -> Final Answer.
     _arrow((anchors["input"]["bottom"][0], anchors["input"]["bottom"][1] - 0.008), (anchors["branches"]["top"][0], anchors["branches"]["top"][1] + 0.008))
-    _arrow((anchors["branches"]["right"][0] + 0.01, anchors["branches"]["right"][1]), (anchors["scoring"]["left"][0] - 0.01, anchors["scoring"]["left"][1]))
-    _arrow((anchors["scoring"]["right"][0] + 0.01, anchors["scoring"]["right"][1]), (anchors["commit"]["left"][0] - 0.01, anchors["commit"]["left"][1]))
+    _arrow((anchors["branches"]["right"][0] + 0.014, anchors["branches"]["right"][1]), (anchors["scoring"]["left"][0] - 0.014, anchors["scoring"]["left"][1]))
+    _arrow((anchors["scoring"]["right"][0] + 0.014, anchors["scoring"]["right"][1]), (anchors["commit"]["left"][0] - 0.014, anchors["commit"]["left"][1]))
     # Route commit->final around the right side to avoid crossing auxiliary text.
-    bend_pt = (0.90, 0.42)
+    bend_pt = (0.92, 0.40)
     start_pt = (anchors["commit"]["bottom"][0], anchors["commit"]["bottom"][1] - 0.008)
     ax.plot(
         [start_pt[0], bend_pt[0]],
@@ -130,49 +135,49 @@ def main() -> None:
         transform=ax.transAxes,
         solid_capstyle="round",
     )
-    _arrow((bend_pt[0], bend_pt[1]), (anchors["final"]["top"][0] + 0.10, anchors["final"]["top"][1] + 0.008))
+    _arrow((bend_pt[0], bend_pt[1]), (anchors["final"]["top"][0] + 0.07, anchors["final"]["top"][1] + 0.008))
 
     # Auxiliary modules feed into Branch Scoring.
-    _arrow((anchors["support"]["top"][0], anchors["support"]["top"][1] + 0.008), (anchors["scoring"]["bottom"][0] - 0.055, anchors["scoring"]["bottom"][1] - 0.006))
-    _arrow((anchors["anticollapse"]["top"][0], anchors["anticollapse"]["top"][1] + 0.008), (anchors["scoring"]["bottom"][0] + 0.055, anchors["scoring"]["bottom"][1] - 0.006))
+    _arrow((anchors["support"]["top"][0], anchors["support"]["top"][1] + 0.006), (anchors["scoring"]["bottom"][0] - 0.055, anchors["scoring"]["bottom"][1] - 0.004))
+    _arrow((anchors["anticollapse"]["top"][0], anchors["anticollapse"]["top"][1] + 0.006), (anchors["scoring"]["bottom"][0] + 0.055, anchors["scoring"]["bottom"][1] - 0.004))
 
     # Secondary diagnostics panel below main flow.
     notes = spec.get("notes", [])[:2]
-    panel_x, panel_y, panel_w, panel_h = 0.08, 0.04, 0.84, 0.14
+    panel_x, panel_y, panel_w, panel_h = 0.14, 0.03, 0.72, 0.13
     ax.add_patch(
         FancyBboxPatch(
             (panel_x, panel_y),
             panel_w,
             panel_h,
             boxstyle="round,pad=0.014,rounding_size=0.018",
-            fc="#f5f6f8",
-            ec="#c4cad3",
-            lw=1.0,
+            fc="#f7f8fa",
+            ec="#ccd2da",
+            lw=0.95,
             transform=ax.transAxes,
         )
     )
     ax.text(
         panel_x + 0.02,
-        panel_y + panel_h - 0.042,
+        panel_y + panel_h - 0.037,
         "Fixed-budget constraints and diagnostics",
-        fontsize=8.3,
+        fontsize=7.9,
         fontweight="semibold",
         color="#232a34",
         transform=ax.transAxes,
     )
     for idx, note in enumerate(notes):
-        wrapped_note = textwrap.fill(note, width=64)
+        wrapped_note = textwrap.fill(note, width=58)
         ax.text(
             panel_x + 0.02,
-            panel_y + panel_h - 0.072 - idx * 0.051,
+            panel_y + panel_h - 0.067 - idx * 0.045,
             f"- {wrapped_note}",
-            fontsize=7.7,
+            fontsize=7.2,
             color="#2a2f38",
             transform=ax.transAxes,
             va="top",
         )
 
-    ax.set_title(spec.get("title", "Figure 1"), fontsize=10.5, fontweight="bold", color="#1a1a1a", pad=8.0)
+    ax.set_title(spec.get("title", "Figure 1"), fontsize=11.0, fontweight="bold", color="#1a1a1a", pad=10.0)
     save_fig(fig, FIGURE_DIR / "figure1_problem_setup.pdf", FIGURE_DIR / "figure1_problem_setup.png")
 
 
