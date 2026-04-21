@@ -14,98 +14,91 @@ It is meant to answer:
 If you want the shortest current evidence path, read in this order:
 1. `CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 2. `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-3. `CURRENT_SAFE_CLAIMS.md`
-4. `CURRENT_FULL_METHOD_COMPARISON_BUNDLE_STATUS_2026_04_20.md`
-5. `TWENTY_EXACT_CURRENT_FULL_VS_BEST_FRESH_2026_04_20.md`
-6. `STRICT_PHASED_HARD_EARLY_COVERAGE_REPORT_20260421T020917Z.md`
-7. `HUNDRED_THREE_GATE_DESIGN_COMPARISON_STRICT_PHASED_20260421T022459Z.md`
-8. `ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
+3. `FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+4. `CURRENT_SAFE_CLAIMS.md`
+5. `NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
+6. `HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`
+7. `ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
 
 ## Highest-value current result bundles
 
-### 1. Current full comparison / ranking bundle
-- `docs/CURRENT_FULL_METHOD_COMPARISON_BUNDLE_STATUS_2026_04_20.md`
-- `docs/CURRENT_RANKING_AND_COMPETITIVE_STATUS_2026_04_20.md`
-- `outputs/current_full_method_comparison_bundle_20260420/`
+### 1. Final strict-phased default-decision bundle
+- `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
 
-Use this when you want the best current broad ranking picture.
+Use this when you want the decisive broader evaluated default-model result.
+Current conclusion: `strict_gate1_cap_k6` is the current broad default promoted model on the evaluated surface.
 
-### 2. Fresh exact current full-method failures vs best direct method
-- `docs/TWENTY_EXACT_CURRENT_FULL_VS_BEST_FRESH_2026_04_20.md`
-- `docs/HUNDRED_CURRENT_FULL_VS_BEST_FAILURE_STATISTICS_20260420T220416Z.md`
-- `outputs/twenty_exact_current_full_vs_best_fresh_20260420/`
-- `outputs/hundred_current_full_vs_best_failure_statistics_20260420T220416Z/`
+### 2. Newest-vs-best exact-loss statistics bundle
+- `docs/NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
+- `outputs/new_hundred_newest_vs_best_failure_statistics_20260421T032711Z/`
 
-Use this when you want the strongest current exact loss-set and larger failure-statistics view for the latest full integrated method.
+Use this when you want the current strongest direct-adversary failure-statistics view for the newest selected method against `reasoning_beam2`.
 
-### 3. Strict-phased hard-coverage evaluation stack
+### 3. Strict-phased force/gate comparison stack
 - `docs/STRICT_PHASED_HARD_EARLY_COVERAGE_REPORT_20260421T020917Z.md`
 - `docs/HUNDRED_CASE_HARD_EARLY_COVERAGE_DEPTH3_EVAL_20260421T020917Z.md`
 - `docs/HUNDRED_THREE_GATE_DESIGN_COMPARISON_STRICT_PHASED_20260421T022459Z.md`
 - `outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421T020917Z/`
 - `outputs/hundred_three_gate_design_eval_strict_phased_20260421T022459Z/`
 
-Use this when you want the current strict-phased evidence about:
-- forced F2 vs forced F3,
-- strict phase fidelity,
-- and Gate 1 / Gate 2 / Gate 3 comparisons under the F1 → F2 → F3 law.
+Use this when you want the cleanest strict-phased evidence about forced F2 vs forced F3 and Gate 1 / Gate 2 / Gate 3 comparisons under the F1 → F2 → F3 law.
 
-### 4. Output-layer repair bundle
-- `docs/CURRENT_FAILURE_OUTPUT_LAYER_REPAIR_STATUS_2026_04_20.md`
-- `outputs/current_failure_output_layer_repair_20260420/`
+### 4. Hard family-expansion cap follow-up
+- `docs/HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`
+- `outputs/hard_max_family_expansions_k456_eval_20260421T041916Z/`
 
-Use this when you want the strongest targeted diagnosis of the residual after the tree already contains the correct answer.
+Use this when you want the current hard-cap sweep and the evidence that introduced `strict_gate1_cap_k6` into the final default-decision pass.
 
-### 5. Old-vs-current tuned structural repair bundle
-- `docs/TWENTY_CASE_OLD_VS_CURRENT_TUNED_TREE_COMPARISON_2026_04_20.md`
-- `outputs/twenty_case_old_vs_current_tuned_tree_comparison_20260420/`
+### 5. Learned post-F2 gate bundle
+- `docs/LEARNED_F2_TO_F3_GATE_EVAL_20260421T034409Z.md` (or latest corresponding run)
+- `outputs/learned_f2_to_f3_gate_<timestamp>/`
 
-Use this when you want the strongest evidence that the promoted tuned line materially changed tree shape and repaired many old defeats.
+Use this when you want the current learned gate experiment family; treat it as a controlled alternative, not the default.
 
-### 6. Older bounded frontier bundle and derived plot data
-- `outputs/imported_methodology_frontier_eval/20260417T000000Z/`
-- `outputs/paper_plot_data/`
-- `docs/NEURIPS_FIGURE_AND_TABLE_AUDIT.md`
+### 6. Current broad comparison / ranking bundle
+- `docs/CURRENT_FULL_METHOD_COMPARISON_BUNDLE_STATUS_2026_04_20.md`
+- `docs/CURRENT_RANKING_AND_COMPETITIVE_STATUS_2026_04_20.md`
+- `outputs/current_full_method_comparison_bundle_20260420/`
 
-Use this only when you want the older bounded imported-methodology frontier surface.
-These artifacts are still valid, but they are not the default current broad ranking source.
+Use this when you want the current broad comparison/ranking context that predates the final strict-phased default lock-in.
 
 ## Current best evidence story
 
 The strongest current artifact-backed story is now:
 - the promoted integrated broad family remains the main repository line,
-- the latest exact-failure evidence still shows that the dominant residual is upstream tree-entry / branch-family-collapse failure,
-- strict-phased hard-coverage experiments are now the cleanest current intervention family for that bottleneck,
-- under the strict phased law, the strongest default candidates appear to be strict Gate 1 and strict Gate 2 rather than an unconditional forced-F3 default,
-- but a broader matched evaluation is still required before finalizing the default promoted model.
+- the dominant residual remains upstream tree-entry / branch-family-collapse failure,
+- strict-phased hard-coverage experiments were the cleanest intervention family for that bottleneck,
+- capped-family follow-up results identified `strict_gate1_cap_k6` as the strongest capped finalist,
+- and the final broader strict-phased decision pass selected **`strict_gate1_cap_k6`** as the current broad default promoted model on the evaluated surface.
 
 ## Current machine-readable output families worth preserving
 
-- `outputs/current_full_method_comparison_bundle_20260420/`
-- `outputs/twenty_exact_current_full_vs_best_fresh_20260420/`
-- `outputs/hundred_current_full_vs_best_failure_statistics_20260420T220416Z/`
+- `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
+- `outputs/new_hundred_newest_vs_best_failure_statistics_20260421T032711Z/`
 - `outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421T020917Z/`
 - `outputs/hundred_three_gate_design_eval_strict_phased_20260421T022459Z/`
+- `outputs/hard_max_family_expansions_k456_eval_20260421T041916Z/`
+- `outputs/learned_f2_to_f3_gate_<timestamp>/`
+- `outputs/current_full_method_comparison_bundle_20260420/`
 - `outputs/current_failure_output_layer_repair_20260420/`
-- `outputs/twenty_case_old_vs_current_tuned_tree_comparison_20260420/`
-- `outputs/twenty_exact_ours_vs_self_consistency_tree_comparison_20260420/`
-- `outputs/full_method_comparison_bundle/`
 
 ## When to use which artifact
 
-- Use the **current full comparison bundle** for ranking claims and present competitive status.
-- Use the **fresh current full-method failure sets** for “what still goes wrong now against the strongest direct adversary?” questions.
-- Use the **strict-phased hard-coverage stack** for “what happens when we enforce F1 → F2 → F3 shallow coverage barriers?” and “which strict-phased gate/force variants currently look strongest?” questions.
-- Use the **output-layer repair bundle** for “how much of the remaining error was output-layer mismatch after correct internal reasoning?” questions.
-- Use the **old-vs-current tuned bundle** for “did the new method really change the tree?” questions.
-- Use `outputs/paper_plot_data/` only as a derived historical bounded plot-input family, not as the default current source of broad comparison claims.
+- Use the **final strict-phased default-decision bundle** for the current default-model claim.
+- Use the **newest-vs-best exact-loss bundle** for “what still goes wrong now against the strongest direct adversary?” questions.
+- Use the **strict-phased force/gate stack** for “why did the final default emerge from the strict-phased family?” questions.
+- Use the **hard-cap sweep** for “why is K=6 the relevant capped variant?” questions.
+- Use the **learned-gate bundle** for controlled learned-alternative interpretation.
+- Use the **broad comparison bundle** for older/current ranking context, not as the final default-model source.
 
 ## Cross-links
 
 Also see:
 - `CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 - `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-- `CURRENT_METHOD_SUMMARY_AND_GAPS.md`
+- `FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- `CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 - `CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
 - `OUTPUTS_INTERPRETATION_GUIDE.md`
 - `ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
