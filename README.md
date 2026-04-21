@@ -19,13 +19,14 @@ This repository is currently centered on:
 - answer-group-level commit control,
 - useful diversity realization under budget,
 - answer-support aggregation,
+- anti-collapse branch-family control,
 - and real-model confirmation of branch-allocation policies.
 
 This repository is **not** currently centered on the older binary revise-routing paper.
 
 ## Current state in one paragraph
 
-The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The repository now also has a cleaner current broad comparison bundle, a fresh exact current-failure bundle against the strongest direct adversary, a larger targeted-failure analysis path, and a more explicit artifact-interpretation policy so older bounded plot bundles are not mistaken for the current broad ranking surface.
+The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. More recently, the repository has also developed a stronger **strict-phased hard early-coverage** analysis discipline (finish F1, then F2, then F3), which has changed the current default-model question: under the stricter protocol, the strongest default candidates now appear to be **strict Gate 1** and **strict Gate 2**, while a broader matched evaluation is still needed before finalizing the default promoted model.
 
 ## Fastest reliable reading path
 
@@ -33,11 +34,10 @@ Read these first:
 1. [`QUICKSTART.md`](QUICKSTART.md)
 2. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
 3. [`docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-4. [`docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-5. [`docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md)
-6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-8. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+4. [`docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
+5. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
+6. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+7. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
@@ -73,16 +73,17 @@ For the full interpretation policy, see:
 - exact old-vs-current tree comparison artifacts,
 - targeted current-failure bundles,
 - output-layer repair diagnostics,
+- strict-phased hard-coverage experiments,
 - and a stronger learner-side supervision stack than before.
 
 ## What is not solved yet
 
 - broad-best ranking confirmation for the latest integrated method,
-- stronger independent validation beyond targeted repaired subsets,
+- broader matched evaluation under the strict-phased law,
 - honest external-baseline completeness closure,
 - stable real-model leadership among close variants,
 - broader paper-grade real-model evidence,
-- and final current-state comparison closure after the newest integrated updates.
+- and final current-state comparison closure after the newest strict-phased updates.
 
 ## Main bottleneck
 
@@ -106,8 +107,8 @@ Output-layer repair remains useful, but it is no longer the dominant broad bottl
 
 ## Paper-level interpretation
 
-The strongest current paper story is:
+The strongest current paper story is still:
 
 **fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
 
-The repository now has a stronger integrated promoted line, a better exact-failure stack, and a clearer artifact-status policy, but it is **not yet in final broad-best-claim shape** because stronger broad validation and broader current-state comparison closure are still needed.
+The current methodological refinement is that this question is now being studied under a stricter phased shallow-coverage discipline. The repo is therefore in a stronger methodological state than before, but it is **not yet in final broad-default-claim shape** because broader strict-phased matched evaluation is still needed before finalizing the default promoted model.
