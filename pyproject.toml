@@ -32,6 +32,7 @@ select = ["E", "F", "W", "I"]
 "scripts/verify_l1_mode_b_import.py" = ["E501"]
 "scripts/build_full_method_comparison_status_20260418.py" = ["E501"]
 "scripts/run_hundred_hard_early_root_depth2_coverage_eval_20260420.py" = ["E501"]
+"scripts/run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
