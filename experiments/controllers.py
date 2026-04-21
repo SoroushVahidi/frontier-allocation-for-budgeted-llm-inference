@@ -853,6 +853,8 @@ class GlobalDiversityAggregationController(BaseController):
         near_miss_correction_max_steps: int = 2,
         near_miss_correction_repeat_family_trigger: int = 5,
         near_miss_correction_min_top_support: float = 0.55,
+        enable_hard_max_family_expansions_v1: bool = False,
+        max_family_expansions_per_run: int = 0,
         enable_hard_early_root_depth2_coverage_v1: bool = False,
         hard_early_root_coverage_forced_min_depth: int = 0,
         hard_early_coverage_min_remaining_actions_to_release: int = 0,
@@ -995,6 +997,11 @@ class GlobalDiversityAggregationController(BaseController):
         self.near_miss_correction_max_steps = max(0, int(near_miss_correction_max_steps))
         self.near_miss_correction_repeat_family_trigger = max(1, int(near_miss_correction_repeat_family_trigger))
         self.near_miss_correction_min_top_support = max(0.0, min(1.0, float(near_miss_correction_min_top_support)))
+        self.enable_hard_max_family_expansions_v1 = bool(enable_hard_max_family_expansions_v1)
+        _max_family_caps = int(max_family_expansions_per_run)
+        if self.enable_hard_max_family_expansions_v1 and _max_family_caps <= 0:
+            _max_family_caps = 3
+        self.max_family_expansions_per_run = max(0, _max_family_caps)
         self.enable_hard_early_root_depth2_coverage_v1 = bool(enable_hard_early_root_depth2_coverage_v1)
         _hec = max(0, min(7, int(hard_early_root_coverage_forced_min_depth)))
         if self.enable_hard_early_root_depth2_coverage_v1 and _hec < 2:
@@ -2657,6 +2664,10 @@ class GlobalDiversityAggregationController(BaseController):
         branch_expansions: dict[str, int] = {}
         branches: list[BranchState] = [self.generator.init_branch("div_0"), self.generator.init_branch("div_1")]
         branch_family_ids: dict[str, str] = {branches[0].branch_id: branches[0].branch_id, branches[1].branch_id: branches[1].branch_id}
+        family_expansion_counts: dict[str, int] = {
+            branches[0].branch_id: 0,
+            branches[1].branch_id: 0,
+        }
         answer_support_counts: dict[str, int] = {}
         group_profiles: dict[str, list[set[str]]] = {}
         global_profiles: list[set[str]] = []
@@ -2677,6 +2688,11 @@ class GlobalDiversityAggregationController(BaseController):
         uncertainty_verify_steps = 0
         near_miss_correction_activation_count = 0
         near_miss_correction_forced_expand_count = 0
+        hard_max_family_cap_bind_count = 0
+        hard_max_family_cap_forced_verify_count = 0
+        hard_max_family_cap_switch_to_alternative_count = 0
+        hard_max_family_cap_hit_families: set[str] = set()
+        hard_max_family_cap_events: list[dict[str, Any]] = []
         last_expanded_branch_id: str | None = None
         consecutive_same_branch_expands = 0
         max_consecutive_same_branch_expands = 0
@@ -3163,6 +3179,41 @@ class GlobalDiversityAggregationController(BaseController):
                         branch, priority, pri_meta = top_item
                     should_expand = True
                     forced_action_applied = True
+            cap_meta: dict[str, Any] = {
+                "hard_max_family_expansions_enabled": bool(self.enable_hard_max_family_expansions_v1),
+                "max_family_expansions_per_run": int(self.max_family_expansions_per_run),
+                "cap_prevented_expand": False,
+                "cap_switch_to_alternative_family": False,
+                "cap_target_family_id": "",
+                "cap_target_family_count_pre_action": 0,
+                "cap_bind_reason": "",
+                "cap_all_expand_families_blocked": False,
+            }
+            if should_expand and self.enable_hard_max_family_expansions_v1 and self.max_family_expansions_per_run > 0:
+                selected_family = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+                selected_family_count = int(family_expansion_counts.get(selected_family, 0))
+                cap_meta["cap_target_family_id"] = selected_family
+                cap_meta["cap_target_family_count_pre_action"] = selected_family_count
+                if selected_family_count >= self.max_family_expansions_per_run:
+                    cap_meta["cap_prevented_expand"] = True
+                    cap_meta["cap_bind_reason"] = "selected_family_capped"
+                    uncapped_scored = []
+                    for item in scored:
+                        fam = str(branch_family_ids.get(item[0].branch_id) or item[0].branch_id)
+                        if int(family_expansion_counts.get(fam, 0)) < self.max_family_expansions_per_run:
+                            uncapped_scored.append(item)
+                    if uncapped_scored:
+                        branch, priority, pri_meta = uncapped_scored[0]
+                        b_expanded = int(branch_expansions.get(branch.branch_id, 0))
+                        cap_meta["cap_switch_to_alternative_family"] = True
+                        cap_meta["cap_bind_reason"] = "rerouted_to_uncapped_family"
+                        hard_max_family_cap_switch_to_alternative_count += 1
+                    else:
+                        should_expand = False
+                        cap_meta["cap_all_expand_families_blocked"] = True
+                        cap_meta["cap_bind_reason"] = "all_families_capped_for_expand"
+                        hard_max_family_cap_forced_verify_count += 1
+                    hard_max_family_cap_bind_count += 1
             if commit_triggered:
                 break
             near_tie_uncertainty = False
@@ -3318,6 +3369,7 @@ class GlobalDiversityAggregationController(BaseController):
                         "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
                         "near_miss_correction_parent_branch_id": correction_parent_branch_id,
                         "forced_action": forced_action if forced_action_applied else "",
+                        **cap_meta,
                         **hard_cov_trace,
                     }
                 )
@@ -3331,6 +3383,25 @@ class GlobalDiversityAggregationController(BaseController):
                 max_consecutive_same_branch_expands = max(max_consecutive_same_branch_expands, consecutive_same_branch_expands)
                 last_expanded_branch_id = branch.branch_id
                 family_id = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+                family_expansion_counts[family_id] = int(family_expansion_counts.get(family_id, 0)) + 1
+                if (
+                    self.enable_hard_max_family_expansions_v1
+                    and self.max_family_expansions_per_run > 0
+                    and int(family_expansion_counts.get(family_id, 0)) == int(self.max_family_expansions_per_run)
+                ):
+                    hard_max_family_cap_hit_families.add(family_id)
+                    hard_max_family_cap_events.append(
+                        {
+                            "action_index": int(actions),
+                            "family_id": family_id,
+                            "family_expansions_at_cap": int(family_expansion_counts.get(family_id, 0)),
+                            "cap_value": int(self.max_family_expansions_per_run),
+                            "was_dominant_family_at_bind": bool(
+                                int(family_expansion_counts.get(family_id, 0))
+                                == max(int(v) for v in family_expansion_counts.values())
+                            ),
+                        }
+                    )
                 if family_id == (last_expanded_family_id or ""):
                     repeated_same_family_expansion_count += 1
                     consecutive_same_family_expands += 1
@@ -3440,6 +3511,7 @@ class GlobalDiversityAggregationController(BaseController):
                         "near_miss_correction_spawned_branch": bool(correction_branch_spawned),
                         "near_miss_correction_parent_branch_id": correction_parent_branch_id,
                         "forced_action": forced_action if forced_action_applied else "",
+                        **cap_meta,
                         **hard_cov_trace,
                     }
                 )
@@ -3823,6 +3895,19 @@ class GlobalDiversityAggregationController(BaseController):
                 "low_marginal_gain_cooldown_steps": int(self.low_marginal_gain_cooldown_steps),
                 "low_marginal_gain_penalty_strength": float(self.low_marginal_gain_penalty_strength),
                 "low_marginal_gain_hard_block_ablation": bool(self.low_marginal_gain_hard_block_ablation),
+                "hard_max_family_expansions_v1_enabled": bool(self.enable_hard_max_family_expansions_v1),
+                "max_family_expansions_per_run": int(self.max_family_expansions_per_run),
+                "hard_max_family_expansion_counts": dict(
+                    sorted((str(k), int(v)) for k, v in family_expansion_counts.items())
+                ),
+                "hard_max_family_cap_bind_count": int(hard_max_family_cap_bind_count),
+                "hard_max_family_cap_forced_verify_count": int(hard_max_family_cap_forced_verify_count),
+                "hard_max_family_cap_switch_to_alternative_count": int(
+                    hard_max_family_cap_switch_to_alternative_count
+                ),
+                "hard_max_family_cap_hit_families": sorted(hard_max_family_cap_hit_families),
+                "hard_max_family_cap_hit_family_count": int(len(hard_max_family_cap_hit_families)),
+                "hard_max_family_cap_events": hard_max_family_cap_events[: min(20, len(hard_max_family_cap_events))],
                 "repeated_same_branch_expansion_dominated_budget": bool(repeated_same_branch_domination),
                 "top_branch_expand_share": float(top_branch_expand_share),
                 "branch_creation_count": int(len(branch_expansions)),
