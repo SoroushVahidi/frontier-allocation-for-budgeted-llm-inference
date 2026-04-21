@@ -42,6 +42,8 @@ STRICT_GATE1_CAP = {
     2: f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k2_v1__deterministic_output_layer_repair_v1",
     3: f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k3_v1__deterministic_output_layer_repair_v1",
     4: f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k4_v1__deterministic_output_layer_repair_v1",
+    5: f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k5_v1__deterministic_output_layer_repair_v1",
+    6: f"{BASE}_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
 }
 STRICT_GATE2_CAP3 = f"{BASE}_hard_early_root_depth2_then_gate_v2_budget_aware_rescue_hard_max_family_expansions_cap_k3_v1__deterministic_output_layer_repair_v1"
 
@@ -93,10 +95,30 @@ def _mean(vals: list[float]) -> float:
     return float(sum(vals) / len(vals)) if vals else 0.0
 
 
+def _head_to_head(rows: list[dict[str, Any]], left: str, right: str) -> dict[str, Any]:
+    improved = worsened = unchanged = 0
+    for r in rows:
+        l_ok = bool(r[f"{left}_correct"])
+        r_ok = bool(r[f"{right}_correct"])
+        if l_ok and (not r_ok):
+            improved += 1
+        elif (not l_ok) and r_ok:
+            worsened += 1
+        else:
+            unchanged += 1
+    return {
+        "left_method": left,
+        "right_method": right,
+        "left_better": improved,
+        "right_better": worsened,
+        "unchanged": unchanged,
+    }
+
+
 def _aggregate(rows: list[dict[str, Any]], method_key: str) -> dict[str, Any]:
     outcomes = (
-        Counter(r[f"{method_key}_vs_baseline_outcome"] for r in rows)
-        if method_key != "baseline"
+        Counter(r[f"{method_key}_vs_uncapped_target_outcome"] for r in rows)
+        if method_key != "strict_target"
         else Counter()
     )
     cap_bind = sum(1 for r in rows if int(r.get(f"{method_key}_cap_bind_count", 0)) > 0)
@@ -112,9 +134,9 @@ def _aggregate(rows: list[dict[str, Any]], method_key: str) -> dict[str, Any]:
         "avg_actions": _mean([float(r[f"{method_key}_actions"]) for r in rows]),
         "avg_expansions": _mean([float(r[f"{method_key}_expansions"]) for r in rows]),
         "avg_verifications": _mean([float(r[f"{method_key}_verifications"]) for r in rows]),
-        "improved_vs_baseline": int(outcomes.get("improved", 0)),
-        "worsened_vs_baseline": int(outcomes.get("worsened", 0)),
-        "unchanged_vs_baseline": int(outcomes.get("unchanged", 0)),
+        "improved_vs_uncapped_target": int(outcomes.get("improved", 0)),
+        "worsened_vs_uncapped_target": int(outcomes.get("worsened", 0)),
+        "unchanged_vs_uncapped_target": int(outcomes.get("unchanged", 0)),
         "cap_bound_case_count": int(cap_bind),
         "dominant_family_hit_cap_case_count": int(dominant_hit),
     }
@@ -124,13 +146,13 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--per-case-json", type=Path, default=None)
     ap.add_argument("--limit", type=int, default=100)
-    ap.add_argument("--k-values", default="2,3,4")
+    ap.add_argument("--k-values", default="3,4,5,6")
     ap.add_argument("--include-gate2-k3", action="store_true")
     args = ap.parse_args()
 
     now = datetime.now(timezone.utc)
     ts = now.strftime("%Y%m%dT%H%M%SZ")
-    out_dir = REPO_ROOT / f"outputs/hard_max_family_expansions_eval_{ts}"
+    out_dir = REPO_ROOT / f"outputs/hard_max_family_expansions_k456_eval_{ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     per_case_json = args.per_case_json or _latest_new_hundred_file()
@@ -151,7 +173,10 @@ def main() -> None:
     newest_method, newest_info = BN._resolve_newest_method()
 
     target_method = STRICT_GATE1
-    target_method_reason = "Picked strict_gate1 explicitly from latest strict-phased docs because it outperformed strict_gate2 on the broader strict-phased default decision report."
+    target_method_reason = (
+        "Reused prior hard-cap target (strict Gate 1) for direct K-sweep comparability; "
+        "current canonical docs still treat strict Gate 1 as a leading strict-phased candidate."
+    )
 
     k_values = [int(x.strip()) for x in args.k_values.split(",") if x.strip()]
     methods: dict[str, str] = {
@@ -160,6 +185,8 @@ def main() -> None:
         "strict_gate2_reference": STRICT_GATE2,
     }
     for k in k_values:
+        if k not in STRICT_GATE1_CAP:
+            raise ValueError(f"Unsupported K value {k}; available={sorted(STRICT_GATE1_CAP)}")
         methods[f"strict_target_cap_k{k}"] = STRICT_GATE1_CAP[k]
     if args.include_gate2_k3:
         methods["strict_gate2_cap_k3"] = STRICT_GATE2_CAP3
@@ -248,23 +275,24 @@ def main() -> None:
             )
 
         for key in methods:
-            if key == "baseline":
+            if key == "strict_target":
                 continue
-            row[f"{key}_vs_baseline_outcome"] = _delta(bool(row["baseline_correct"]), bool(row[f"{key}_correct"]))
+            row[f"{key}_vs_uncapped_target_outcome"] = _delta(bool(row["strict_target_correct"]), bool(row[f"{key}_correct"]))
 
         rows.append(row)
 
     comparison_rows = [_aggregate(rows, key) for key in methods]
 
+    representative_key = "strict_target_cap_k4" if "strict_target_cap_k4" in methods else f"strict_target_cap_k{k_values[0]}"
     helped = [
         r for r in rows
-        if r.get("strict_target_cap_k3_vs_baseline_outcome") == "improved"
-        and r.get("strict_target_vs_baseline_outcome") != "improved"
+        if r.get(f"{representative_key}_vs_uncapped_target_outcome") == "improved"
+        and r.get("baseline_vs_uncapped_target_outcome") != "improved"
     ][:5]
     harmed = [
         r for r in rows
-        if r.get("strict_target_cap_k3_vs_baseline_outcome") == "worsened"
-        and r.get("strict_target_vs_baseline_outcome") != "worsened"
+        if r.get(f"{representative_key}_vs_uncapped_target_outcome") == "worsened"
+        and r.get("baseline_vs_uncapped_target_outcome") != "worsened"
     ][:5]
 
     dataset_breakdown: dict[str, dict[str, Any]] = {}
@@ -274,23 +302,42 @@ def main() -> None:
             key: _aggregate(ds_rows, key) for key in methods
         }
 
+    h2h = []
+    if "strict_target_cap_k4" in methods and "strict_target_cap_k5" in methods:
+        h2h.append(_head_to_head(rows, "strict_target_cap_k4", "strict_target_cap_k5"))
+    if "strict_target_cap_k5" in methods and "strict_target_cap_k6" in methods:
+        h2h.append(_head_to_head(rows, "strict_target_cap_k5", "strict_target_cap_k6"))
+    if "strict_target_cap_k4" in methods and "strict_target_cap_k6" in methods:
+        h2h.append(_head_to_head(rows, "strict_target_cap_k4", "strict_target_cap_k6"))
+
     summary = {
         "n_cases": len(rows),
         "source_surface": source,
         "comparison": comparison_rows,
+        "head_to_head": h2h,
         "dataset_breakdown": dataset_breakdown,
         "representative_helped_cases": [
-            {"dataset": r["dataset"], "example_id": r["example_id"], "baseline_failure": r["baseline_failure_type"], "cap3_failure": r["strict_target_cap_k3_failure_type"]}
+            {
+                "dataset": r["dataset"],
+                "example_id": r["example_id"],
+                "baseline_failure": r["baseline_failure_type"],
+                f"{representative_key}_failure": r[f"{representative_key}_failure_type"],
+            }
             for r in helped
         ],
         "representative_harmed_cases": [
-            {"dataset": r["dataset"], "example_id": r["example_id"], "baseline_failure": r["baseline_failure_type"], "cap3_failure": r["strict_target_cap_k3_failure_type"]}
+            {
+                "dataset": r["dataset"],
+                "example_id": r["example_id"],
+                "baseline_failure": r["baseline_failure_type"],
+                f"{representative_key}_failure": r[f"{representative_key}_failure_type"],
+            }
             for r in harmed
         ],
     }
 
     manifest = {
-        "artifact_family": "hard_max_family_expansions_eval",
+        "artifact_family": "hard_max_family_expansions_k456_eval",
         "created_at_utc": now.isoformat(),
         "output_dir": str(out_dir.relative_to(REPO_ROOT)),
         "surface_input": surface_input_rel,
@@ -318,10 +365,10 @@ def main() -> None:
         for r in comparison_rows:
             writer.writerow(r)
 
-    report = REPO_ROOT / f"docs/HARD_MAX_FAMILY_EXPANSIONS_EVAL_{ts}.md"
+    report = REPO_ROOT / f"docs/HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_{ts}.md"
     by_method = {r["method"]: r for r in comparison_rows}
     lines = [
-        f"# Hard max family expansions evaluation ({ts})",
+        f"# Hard max family expansions K=4/5/6 evaluation ({ts})",
         "",
         "## Definition",
         "Family expansion cap = no branch family may exceed K expansion actions in a run; once capped, that family is ineligible for further expand actions while verify/commit behavior remains enabled.",
@@ -341,37 +388,67 @@ def main() -> None:
     for key in methods:
         r = by_method[key]
         lines.append(
-            f"| {key} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['improved_vs_baseline']} | {r['worsened_vs_baseline']} | {r['unchanged_vs_baseline']} | {r['cap_bound_case_count']} | {r['dominant_family_hit_cap_case_count']} |"
+            f"| {key} | {r['accuracy']:.4f} | {r['absent_from_tree']} | {r['present_not_selected']} | {r['repeated_same_family_present']} | {r['gold_in_tree']} | {r['avg_actions']:.3f} | {r['avg_expansions']:.3f} | {r['avg_verifications']:.3f} | {r['improved_vs_uncapped_target']} | {r['worsened_vs_uncapped_target']} | {r['unchanged_vs_uncapped_target']} | {r['cap_bound_case_count']} | {r['dominant_family_hit_cap_case_count']} |"
         )
+
+    lines.extend([
+        "",
+        "## Head-to-head K comparisons",
+    ])
+    if h2h:
+        lines.append("| comparison | left_better | right_better | unchanged |")
+        lines.append("|---|---:|---:|---:|")
+        for r in h2h:
+            lines.append(
+                f"| {r['left_method']} vs {r['right_method']} | {r['left_better']} | {r['right_better']} | {r['unchanged']} |"
+            )
 
     lines.extend([
         "",
         "## Representative helped cases",
     ])
     for r in summary["representative_helped_cases"]:
-        lines.append(f"- {r['dataset']} / {r['example_id']}: {r['baseline_failure']} -> {r['cap3_failure']}")
+        lines.append(
+            f"- {r['dataset']} / {r['example_id']}: {r['baseline_failure']} -> {r[f'{representative_key}_failure']}"
+        )
     lines.extend([
         "",
         "## Representative harmed cases",
     ])
     for r in summary["representative_harmed_cases"]:
-        lines.append(f"- {r['dataset']} / {r['example_id']}: {r['baseline_failure']} -> {r['cap3_failure']}")
+        lines.append(
+            f"- {r['dataset']} / {r['example_id']}: {r['baseline_failure']} -> {r[f'{representative_key}_failure']}"
+        )
 
-    cap3 = by_method.get("strict_target_cap_k3", {})
-    target = by_method.get("strict_target", {})
-    verdict = "promising" if float(cap3.get("accuracy", 0.0)) >= float(target.get("accuracy", 0.0)) else "too blunt"
+    cap4 = by_method.get("strict_target_cap_k4", {})
+    cap5 = by_method.get("strict_target_cap_k5", {})
+    cap6 = by_method.get("strict_target_cap_k6", {})
+    acc4 = float(cap4.get("accuracy", 0.0))
+    acc5 = float(cap5.get("accuracy", 0.0))
+    acc6 = float(cap6.get("accuracy", 0.0))
+    if acc5 > acc4 and acc5 >= acc6:
+        verdict = "K=5 is better"
+    elif acc6 > acc4 and acc6 > acc5:
+        verdict = "K=6 is better"
+    elif max(acc5, acc6) <= acc4:
+        verdict = "K=4 remains best or tied-best"
+    else:
+        verdict = "performance appears mixed/flat"
     lines.extend([
         "",
         "## Dataset-wise breakdown",
     ])
     for ds, ds_methods in sorted(dataset_breakdown.items()):
-        k3_row = ds_methods.get("strict_target_cap_k3", {})
+        k4_row = ds_methods.get("strict_target_cap_k4", {})
+        k5_row = ds_methods.get("strict_target_cap_k5", {})
+        k6_row = ds_methods.get("strict_target_cap_k6", {})
         tgt_row = ds_methods.get("strict_target", {})
         lines.append(
             f"- {ds}: strict_target acc={float(tgt_row.get('accuracy', 0.0)):.4f}, "
-            f"cap_k3 acc={float(k3_row.get('accuracy', 0.0)):.4f}, "
-            f"cap_k3 absent={int(k3_row.get('absent_from_tree', 0))}, "
-            f"cap_k3 present_not_selected={int(k3_row.get('present_not_selected', 0))}"
+            f"cap_k4/k5/k6 acc={float(k4_row.get('accuracy', 0.0)):.4f}/"
+            f"{float(k5_row.get('accuracy', 0.0)):.4f}/{float(k6_row.get('accuracy', 0.0)):.4f}, "
+            f"cap_k4 absent={int(k4_row.get('absent_from_tree', 0))}, "
+            f"cap_k4 present_not_selected={int(k4_row.get('present_not_selected', 0))}"
         )
     lines.extend([
         "",
@@ -382,25 +459,43 @@ def main() -> None:
         "## Concise summary",
         f"- files changed: experiments/controllers.py, experiments/frontier_matrix_core.py, "
         f"tests/test_hard_max_family_expansions_cap.py, scripts/run_hard_max_family_expansions_eval.py, "
-        f"docs/HARD_MAX_FAMILY_EXPANSIONS_EVAL_{ts}.md",
+        f"docs/HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_{ts}.md",
         "- commands run: see shell command list in run logs.",
         f"- selected target method: {target_method}",
         f"- selected best comparator: {comparator_method}",
         f"- K values tested: {k_values}",
-        f"- output directory: outputs/hard_max_family_expansions_eval_{ts}",
-        f"- baseline vs capped(K=3) absent_from_tree: "
-        f"{by_method['baseline']['absent_from_tree']} vs {by_method['strict_target_cap_k3']['absent_from_tree']}",
-        f"- baseline vs capped(K=3) present_not_selected: "
-        f"{by_method['baseline']['present_not_selected']} vs {by_method['strict_target_cap_k3']['present_not_selected']}",
-        f"- baseline vs capped(K=3) repeated_same_family_present: "
-        f"{by_method['baseline']['repeated_same_family_present']} vs {by_method['strict_target_cap_k3']['repeated_same_family_present']}",
-        f"- baseline vs capped(K=3) gold_in_tree: "
-        f"{by_method['baseline']['gold_in_tree']} vs {by_method['strict_target_cap_k3']['gold_in_tree']}",
-        f"- baseline vs capped(K=3) improved/worsened/unchanged: "
-        f"{by_method['strict_target_cap_k3']['improved_vs_baseline']}/"
-        f"{by_method['strict_target_cap_k3']['worsened_vs_baseline']}/"
-        f"{by_method['strict_target_cap_k3']['unchanged_vs_baseline']}",
-        f"- one-sentence verdict: hard family-expansion cap looks {verdict} in this run.",
+        f"- output directory: outputs/hard_max_family_expansions_k456_eval_{ts}",
+        f"- uncapped vs K4/K5/K6 accuracy: {by_method['strict_target']['accuracy']:.4f} / "
+        f"{by_method.get('strict_target_cap_k4', {}).get('accuracy', 0.0):.4f} / "
+        f"{by_method.get('strict_target_cap_k5', {}).get('accuracy', 0.0):.4f} / "
+        f"{by_method.get('strict_target_cap_k6', {}).get('accuracy', 0.0):.4f}",
+        f"- uncapped vs K4/K5/K6 absent_from_tree: {by_method['strict_target']['absent_from_tree']} / "
+        f"{int(by_method.get('strict_target_cap_k4', {}).get('absent_from_tree', 0))} / "
+        f"{int(by_method.get('strict_target_cap_k5', {}).get('absent_from_tree', 0))} / "
+        f"{int(by_method.get('strict_target_cap_k6', {}).get('absent_from_tree', 0))}",
+        f"- uncapped vs K4/K5/K6 present_not_selected: {by_method['strict_target']['present_not_selected']} / "
+        f"{int(by_method.get('strict_target_cap_k4', {}).get('present_not_selected', 0))} / "
+        f"{int(by_method.get('strict_target_cap_k5', {}).get('present_not_selected', 0))} / "
+        f"{int(by_method.get('strict_target_cap_k6', {}).get('present_not_selected', 0))}",
+        f"- uncapped vs K4/K5/K6 repeated_same_family_present: {by_method['strict_target']['repeated_same_family_present']} / "
+        f"{int(by_method.get('strict_target_cap_k4', {}).get('repeated_same_family_present', 0))} / "
+        f"{int(by_method.get('strict_target_cap_k5', {}).get('repeated_same_family_present', 0))} / "
+        f"{int(by_method.get('strict_target_cap_k6', {}).get('repeated_same_family_present', 0))}",
+        f"- uncapped vs K4/K5/K6 gold_in_tree: {by_method['strict_target']['gold_in_tree']} / "
+        f"{int(by_method.get('strict_target_cap_k4', {}).get('gold_in_tree', 0))} / "
+        f"{int(by_method.get('strict_target_cap_k5', {}).get('gold_in_tree', 0))} / "
+        f"{int(by_method.get('strict_target_cap_k6', {}).get('gold_in_tree', 0))}",
+        f"- uncapped vs K4/K5/K6 improved/worsened/unchanged: "
+        f"{int(by_method.get('strict_target_cap_k4', {}).get('improved_vs_uncapped_target', 0))}/"
+        f"{int(by_method.get('strict_target_cap_k4', {}).get('worsened_vs_uncapped_target', 0))}/"
+        f"{int(by_method.get('strict_target_cap_k4', {}).get('unchanged_vs_uncapped_target', 0))} ; "
+        f"{int(by_method.get('strict_target_cap_k5', {}).get('improved_vs_uncapped_target', 0))}/"
+        f"{int(by_method.get('strict_target_cap_k5', {}).get('worsened_vs_uncapped_target', 0))}/"
+        f"{int(by_method.get('strict_target_cap_k5', {}).get('unchanged_vs_uncapped_target', 0))} ; "
+        f"{int(by_method.get('strict_target_cap_k6', {}).get('improved_vs_uncapped_target', 0))}/"
+        f"{int(by_method.get('strict_target_cap_k6', {}).get('worsened_vs_uncapped_target', 0))}/"
+        f"{int(by_method.get('strict_target_cap_k6', {}).get('unchanged_vs_uncapped_target', 0))}",
+        f"- one-sentence verdict: {verdict}.",
     ])
     report.write_text("\n".join(lines), encoding="utf-8")
 
