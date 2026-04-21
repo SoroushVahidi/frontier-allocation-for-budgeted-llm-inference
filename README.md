@@ -43,6 +43,8 @@ Read these first:
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
 - [`docs/REPO_MAP.md`](docs/REPO_MAP.md) for the canonical map,
+- [`docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md) for the current external-baseline strengthening order,
+- [`docs/main_baselines.md`](docs/main_baselines.md) for the paper-facing external baseline guide,
 - [`scripts/README.md`](scripts/README.md) for runnable entry points,
 - [`outputs/README.md`](outputs/README.md) for output-family interpretation,
 - [`docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md) for the repo audit/cleanup rationale.
@@ -114,3 +116,10 @@ The strongest current paper story is:
 **fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
 
 The current repository-wide methodological refinement is that this question is now studied under a strict phased shallow-coverage discipline, and the current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**. The repo is therefore in a stronger and more settled state than before, though broader independent confirmation and external-baseline strengthening are still needed before the manuscript-facing story is fully closed.
+
+## Current paper workflow rule
+
+For the current paper phase:
+- treat **our current best method vs external baselines from prior papers** as the main empirical priority,
+- use internal neighboring methods mainly for ablations, diagnostics, and appendix support,
+- and avoid overstating partial external integrations as full reproductions unless the official stack truly runs end to end in this repository.
