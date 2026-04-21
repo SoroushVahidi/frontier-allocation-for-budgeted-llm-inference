@@ -857,6 +857,7 @@ class GlobalDiversityAggregationController(BaseController):
         hard_early_root_coverage_forced_min_depth: int = 0,
         hard_early_coverage_min_remaining_actions_to_release: int = 0,
         enable_hard_early_root_depth2_then_conditional_depth3_v1: bool = False,
+        conditional_depth3_gate_design: str = "v0_conditional_depth3_v1",
         depth3_gate_min_top_answer_support: float = 0.55,
         depth3_gate_min_support_gap: float = 0.12,
         depth3_gate_min_active_root_families: int = 2,
@@ -866,6 +867,25 @@ class GlobalDiversityAggregationController(BaseController):
         depth3_gate_min_top_group_support_commit: float = 0.52,
         depth3_gate_e_max_top_support: float = 0.48,
         depth3_gate_e_min_answer_groups: int = 2,
+        gate_v1_family_concentration_share_trigger: float = 0.60,
+        gate_v1_longest_same_family_run_trigger: int = 4,
+        gate_v1_min_alive_families: int = 2,
+        gate_v1_min_answer_groups_rich: int = 3,
+        gate_v1_top_share_strong_incumbent: float = 0.64,
+        gate_v1_support_gap_strong_incumbent: float = 0.16,
+        gate_v1_best_frontier_score_strong: float = 0.66,
+        gate_v2_family_concentration_share_trigger: float = 0.66,
+        gate_v2_longest_same_family_run_trigger: int = 5,
+        gate_v2_max_top_support_for_weak_concentration: float = 0.57,
+        gate_v2_min_remaining_budget_for_depth3: int = 2,
+        gate_v3_max_top_share_ambiguous: float = 0.62,
+        gate_v3_max_top_minus_second_gap_ambiguous: float = 0.14,
+        gate_v3_max_best_frontier_margin_ambiguous: float = 0.08,
+        gate_v3_min_distinct_answer_groups_ambiguous: int = 2,
+        gate_v3_min_active_root_families_ambiguous: int = 2,
+        gate_v3_family_concentration_share_trigger: float = 0.60,
+        gate_v3_depth_asymmetry_trigger: int = 2,
+        gate_v3_ambiguity_signals_required: int = 3,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -986,6 +1006,7 @@ class GlobalDiversityAggregationController(BaseController):
         )
         if self.enable_hard_early_root_depth2_then_conditional_depth3_v1:
             _hec = max(2, _hec)
+        self.conditional_depth3_gate_design = str(conditional_depth3_gate_design or "v0_conditional_depth3_v1")
         self.depth3_gate_min_top_answer_support = float(depth3_gate_min_top_answer_support)
         self.depth3_gate_min_support_gap = float(depth3_gate_min_support_gap)
         self.depth3_gate_min_active_root_families = max(1, int(depth3_gate_min_active_root_families))
@@ -995,6 +1016,25 @@ class GlobalDiversityAggregationController(BaseController):
         self.depth3_gate_min_top_group_support_commit = float(depth3_gate_min_top_group_support_commit)
         self.depth3_gate_e_max_top_support = float(depth3_gate_e_max_top_support)
         self.depth3_gate_e_min_answer_groups = max(2, int(depth3_gate_e_min_answer_groups))
+        self.gate_v1_family_concentration_share_trigger = float(gate_v1_family_concentration_share_trigger)
+        self.gate_v1_longest_same_family_run_trigger = max(1, int(gate_v1_longest_same_family_run_trigger))
+        self.gate_v1_min_alive_families = max(1, int(gate_v1_min_alive_families))
+        self.gate_v1_min_answer_groups_rich = max(1, int(gate_v1_min_answer_groups_rich))
+        self.gate_v1_top_share_strong_incumbent = float(gate_v1_top_share_strong_incumbent)
+        self.gate_v1_support_gap_strong_incumbent = float(gate_v1_support_gap_strong_incumbent)
+        self.gate_v1_best_frontier_score_strong = float(gate_v1_best_frontier_score_strong)
+        self.gate_v2_family_concentration_share_trigger = float(gate_v2_family_concentration_share_trigger)
+        self.gate_v2_longest_same_family_run_trigger = max(1, int(gate_v2_longest_same_family_run_trigger))
+        self.gate_v2_max_top_support_for_weak_concentration = float(gate_v2_max_top_support_for_weak_concentration)
+        self.gate_v2_min_remaining_budget_for_depth3 = max(0, int(gate_v2_min_remaining_budget_for_depth3))
+        self.gate_v3_max_top_share_ambiguous = float(gate_v3_max_top_share_ambiguous)
+        self.gate_v3_max_top_minus_second_gap_ambiguous = float(gate_v3_max_top_minus_second_gap_ambiguous)
+        self.gate_v3_max_best_frontier_margin_ambiguous = float(gate_v3_max_best_frontier_margin_ambiguous)
+        self.gate_v3_min_distinct_answer_groups_ambiguous = max(1, int(gate_v3_min_distinct_answer_groups_ambiguous))
+        self.gate_v3_min_active_root_families_ambiguous = max(1, int(gate_v3_min_active_root_families_ambiguous))
+        self.gate_v3_family_concentration_share_trigger = float(gate_v3_family_concentration_share_trigger)
+        self.gate_v3_depth_asymmetry_trigger = max(1, int(gate_v3_depth_asymmetry_trigger))
+        self.gate_v3_ambiguity_signals_required = max(1, int(gate_v3_ambiguity_signals_required))
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -2299,6 +2339,7 @@ class GlobalDiversityAggregationController(BaseController):
         top_share = float(top_c / support_total) if support_total > 0 else 0.0
         gap_share = float((top_c - second_c) / support_total) if support_total > 0 else 0.0
 
+        remaining_actions = max(0, int(max_actions) - int(actions_so_far))
         crit_a_weak_top = bool(top_share < self.depth3_gate_min_top_answer_support)
         crit_a_weak_gap = bool(gap_share < self.depth3_gate_min_support_gap)
         criterion_a = bool(crit_a_weak_top or crit_a_weak_gap)
@@ -2334,17 +2375,99 @@ class GlobalDiversityAggregationController(BaseController):
         )
         criterion_e = bool(crit_e)
 
-        fired = {
-            "A_weak_answer_support": criterion_a,
-            "B_unresolved_family_ambiguity": criterion_b,
-            "C_early_collapse_risk": criterion_c,
-            "D_weak_commit_evidence": criterion_d,
-            "E_weak_alternatives_shallow_maturity": criterion_e,
-        }
-        n_fired = int(sum(1 for v in fired.values() if v))
-        combine_ab = bool(criterion_a and criterion_b)
-        combine_2of5 = bool(n_fired >= 2)
-        raw_wants_depth3 = bool(combine_ab or combine_2of5)
+        gate_design = str(self.conditional_depth3_gate_design or "v0_conditional_depth3_v1")
+        if gate_design == "v1_optimistic_collapse_first":
+            strong_concentration = bool(
+                max_family_share >= self.gate_v1_family_concentration_share_trigger
+                or int(max_consecutive_same_family_expands) >= self.gate_v1_longest_same_family_run_trigger
+            )
+            weak_alternative_maturation = bool(
+                active_root_families >= self.gate_v1_min_alive_families
+                and (
+                    bool(hard_cov_diag_d2.get("all_root_families_satisfied"))
+                    or bool(len(hard_cov_diag_d2.get("pending_families") or []) > 0)
+                )
+            )
+            low_coverage_richness = bool(len(answer_support_counts) < self.gate_v1_min_answer_groups_rich)
+            no_strong_incumbent = bool(
+                top_share < self.gate_v1_top_share_strong_incumbent
+                or gap_share < self.gate_v1_support_gap_strong_incumbent
+                or best_frontier_score < self.gate_v1_best_frontier_score_strong
+            )
+            safe_to_stop_all = bool(
+                (not strong_concentration)
+                and (not weak_alternative_maturation)
+                and (not low_coverage_richness)
+                and (not no_strong_incumbent)
+            )
+            fired = {
+                "strong_family_concentration_pressure": strong_concentration,
+                "weak_alternative_maturation": weak_alternative_maturation,
+                "low_coverage_richness": low_coverage_richness,
+                "no_strong_incumbent": no_strong_incumbent,
+            }
+            n_fired = int(sum(1 for v in fired.values() if v))
+            raw_wants_depth3 = bool(strong_concentration or n_fired >= 2 or (not safe_to_stop_all))
+            combine_ab = False
+            combine_2of5 = bool(n_fired >= 2)
+        elif gate_design == "v2_budget_aware_rescue":
+            collapse_pressure = bool(
+                max_family_share >= self.gate_v2_family_concentration_share_trigger
+                or int(max_consecutive_same_family_expands) >= self.gate_v2_longest_same_family_run_trigger
+            )
+            poor_alternative_maturity = bool(active_root_families >= 2 and len(answer_support_counts) <= 2)
+            weak_support_concentration = bool(
+                top_share <= self.gate_v2_max_top_support_for_weak_concentration
+                or gap_share < self.depth3_gate_min_support_gap
+            )
+            budget_adequate = bool(remaining_actions >= self.gate_v2_min_remaining_budget_for_depth3)
+            fired = {
+                "collapse_pressure_high": collapse_pressure,
+                "poor_alternative_maturity": poor_alternative_maturity,
+                "weak_answer_support_concentration": weak_support_concentration,
+                "remaining_budget_adequate": budget_adequate,
+            }
+            n_fired = int(sum(1 for v in fired.values() if v))
+            raw_wants_depth3 = bool(collapse_pressure and poor_alternative_maturity and budget_adequate and weak_support_concentration)
+            combine_ab = False
+            combine_2of5 = False
+        elif gate_design == "v3_ambiguity_after_depth2":
+            sorted_scored = sorted(scored, key=lambda x: float(self.scorer.score_branch(x[0])), reverse=True)
+            best_margin = 0.0
+            if len(sorted_scored) >= 2:
+                best_margin = float(self.scorer.score_branch(sorted_scored[0][0]) - self.scorer.score_branch(sorted_scored[1][0]))
+            family_depths: dict[str, list[int]] = {}
+            for b in active:
+                fam = self._branch_family_id(b, branch_family_ids)
+                family_depths.setdefault(fam, []).append(int(b.depth))
+            fam_max = [max(v) for v in family_depths.values() if v]
+            depth_asymmetry = int(max(fam_max) - min(fam_max)) if len(fam_max) >= 2 else 0
+            ambiguity_signals = {
+                "active_root_families_high": bool(active_root_families >= self.gate_v3_min_active_root_families_ambiguous),
+                "top_answer_group_share_not_decisive": bool(top_share <= self.gate_v3_max_top_share_ambiguous),
+                "top_vs_second_support_gap_small": bool(gap_share <= self.gate_v3_max_top_minus_second_gap_ambiguous),
+                "best_frontier_score_margin_small": bool(best_margin <= self.gate_v3_max_best_frontier_margin_ambiguous),
+                "distinct_answer_groups_present": bool(len(answer_support_counts) >= self.gate_v3_min_distinct_answer_groups_ambiguous),
+                "same_family_concentration_present": bool(max_family_share >= self.gate_v3_family_concentration_share_trigger),
+                "depth_asymmetry_across_families": bool(depth_asymmetry >= self.gate_v3_depth_asymmetry_trigger),
+            }
+            fired = ambiguity_signals
+            n_fired = int(sum(1 for v in ambiguity_signals.values() if v))
+            raw_wants_depth3 = bool(n_fired >= self.gate_v3_ambiguity_signals_required)
+            combine_ab = False
+            combine_2of5 = False
+        else:
+            fired = {
+                "A_weak_answer_support": criterion_a,
+                "B_unresolved_family_ambiguity": criterion_b,
+                "C_early_collapse_risk": criterion_c,
+                "D_weak_commit_evidence": criterion_d,
+                "E_weak_alternatives_shallow_maturity": criterion_e,
+            }
+            n_fired = int(sum(1 for v in fired.values() if v))
+            combine_ab = bool(criterion_a and criterion_b)
+            combine_2of5 = bool(n_fired >= 2)
+            raw_wants_depth3 = bool(combine_ab or combine_2of5)
 
         d2_rel_imp = bool(hard_cov_diag_d2.get("release_impossible_under_budget"))
         d3_diag = self._hard_early_root_coverage_forced_diagnostic(
@@ -2401,6 +2524,7 @@ class GlobalDiversityAggregationController(BaseController):
                 "release_impossible_under_budget": d2_rel_imp,
                 "pending_families": list(hard_cov_diag_d2.get("pending_families") or []),
             },
+            "gate_design": gate_design,
         }
 
     def _apply_hard_early_root_coverage_forced_override(
@@ -3662,6 +3786,7 @@ class GlobalDiversityAggregationController(BaseController):
                 "conditional_depth3_gate_record": cond_gate_record,
                 "conditional_depth3_forcing_completed": bool(cond_depth3_completed),
                 "conditional_depth3_gate_thresholds": {
+                    "conditional_depth3_gate_design": str(self.conditional_depth3_gate_design),
                     "depth3_gate_min_top_answer_support": float(self.depth3_gate_min_top_answer_support),
                     "depth3_gate_min_support_gap": float(self.depth3_gate_min_support_gap),
                     "depth3_gate_min_active_root_families": int(self.depth3_gate_min_active_root_families),
@@ -3671,6 +3796,27 @@ class GlobalDiversityAggregationController(BaseController):
                     "depth3_gate_min_top_group_support_commit": float(self.depth3_gate_min_top_group_support_commit),
                     "depth3_gate_e_max_top_support": float(self.depth3_gate_e_max_top_support),
                     "depth3_gate_e_min_answer_groups": int(self.depth3_gate_e_min_answer_groups),
+                    "gate_v1_family_concentration_share_trigger": float(self.gate_v1_family_concentration_share_trigger),
+                    "gate_v1_longest_same_family_run_trigger": int(self.gate_v1_longest_same_family_run_trigger),
+                    "gate_v1_min_alive_families": int(self.gate_v1_min_alive_families),
+                    "gate_v1_min_answer_groups_rich": int(self.gate_v1_min_answer_groups_rich),
+                    "gate_v1_top_share_strong_incumbent": float(self.gate_v1_top_share_strong_incumbent),
+                    "gate_v1_support_gap_strong_incumbent": float(self.gate_v1_support_gap_strong_incumbent),
+                    "gate_v1_best_frontier_score_strong": float(self.gate_v1_best_frontier_score_strong),
+                    "gate_v2_family_concentration_share_trigger": float(self.gate_v2_family_concentration_share_trigger),
+                    "gate_v2_longest_same_family_run_trigger": int(self.gate_v2_longest_same_family_run_trigger),
+                    "gate_v2_max_top_support_for_weak_concentration": float(
+                        self.gate_v2_max_top_support_for_weak_concentration
+                    ),
+                    "gate_v2_min_remaining_budget_for_depth3": int(self.gate_v2_min_remaining_budget_for_depth3),
+                    "gate_v3_max_top_share_ambiguous": float(self.gate_v3_max_top_share_ambiguous),
+                    "gate_v3_max_top_minus_second_gap_ambiguous": float(self.gate_v3_max_top_minus_second_gap_ambiguous),
+                    "gate_v3_max_best_frontier_margin_ambiguous": float(self.gate_v3_max_best_frontier_margin_ambiguous),
+                    "gate_v3_min_distinct_answer_groups_ambiguous": int(self.gate_v3_min_distinct_answer_groups_ambiguous),
+                    "gate_v3_min_active_root_families_ambiguous": int(self.gate_v3_min_active_root_families_ambiguous),
+                    "gate_v3_family_concentration_share_trigger": float(self.gate_v3_family_concentration_share_trigger),
+                    "gate_v3_depth_asymmetry_trigger": int(self.gate_v3_depth_asymmetry_trigger),
+                    "gate_v3_ambiguity_signals_required": int(self.gate_v3_ambiguity_signals_required),
                 },
                 "hard_early_coverage_final_family_status": (
                     self._hard_early_root_coverage_forced_diagnostic(
