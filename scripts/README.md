@@ -7,6 +7,8 @@ This file is the runnable-code front door for the repository.
 ## Read this first
 
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
+- Current strict-phased status: [`../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
+- Current experiment-family index: [`../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
 - Current code entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Repository map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
 - Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
@@ -15,27 +17,28 @@ This file is the runnable-code front door for the repository.
 
 ## Interpretation labels
 
-- **Canonical**: current frontier-allocation path for the NeurIPS-oriented project.
+- **Canonical**: current strict-phased default-decision path for the NeurIPS-oriented project.
 - **Exploratory**: active side branches and narrower diagnostics, not settled default winners.
 - **Integration/prep**: dataset and baseline readiness tooling.
 - **Historical**: older-track support scripts retained only for provenance.
 
 ## Most common workflows
 
-### 1. Run the current broad comparison / evidence path
+### 1. Run the current strict-phased default-decision path
+- `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py`
+- `run_hundred_three_gate_design_eval_strict_phased.py`
+- `build_new_hundred_newest_vs_best_failure_statistics.py`
+
+### 2. Run current learned/capped alternatives
+- `run_learned_f2_to_f3_gate_v1_eval.py`
+- `run_hard_max_family_expansions_eval.py`
+
+### 3. Run broad comparison / external-baseline support path
 - `run_full_method_comparison_bundle.py`
 - `build_twenty_exact_current_full_vs_best_fresh.py`
-
-### 2. Run current diagnosis / targeted method-development
-- `run_fresh_twenty_current_full_improvement_eval_20260420.py`
-- `build_targeted_failure_bundle_from_fresh_loss_surface_20260420.py`
-- `run_near_miss_correction_bundle_eval_20260420.py`
-
-### 3. Run legacy/current frontier scaffolds and bounded comparison layers
-- `run_cross_strategy_frontier_allocation.py`
-- `run_new_paper_frontier_matrix.py`
-- `run_comparative_frontier_audit.py`
-- `run_imported_methodology_frontier_eval.py`
+- `run_s1_budget_forcing_baseline.py`
+- `run_tale_baseline.py`
+- `run_l1_baseline.py`
 
 ### 4. Check dataset and baseline readiness
 - `verify_hf_dataset_access.py`
@@ -47,36 +50,27 @@ This file is the runnable-code front door for the repository.
 
 | Script | Role |
 |---|---|
+| `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py` | Strict forced F2 vs strict forced F3 comparison under phased law |
+| `run_hundred_three_gate_design_eval_strict_phased.py` | Strict phased Gate 1 / Gate 2 / Gate 3 comparison |
+| `build_new_hundred_newest_vs_best_failure_statistics.py` | Build the newest-vs-best exact-loss 100-case statistics surface |
+| `run_learned_f2_to_f3_gate_v1_eval.py` | Train and evaluate a learned strict post-F2 gate |
+| `run_hard_max_family_expansions_eval.py` | Evaluate hard per-family expansion caps on the strict target |
 | `run_full_method_comparison_bundle.py` | Current broad matched comparison / ranking bundle |
 | `build_twenty_exact_current_full_vs_best_fresh.py` | Build the fresh exact current-full-vs-best loss surface |
-| `run_fresh_twenty_current_full_improvement_eval_20260420.py` | Evaluate bounded controller improvements on the fresh 20-case slice |
-| `build_targeted_failure_bundle_from_fresh_loss_surface_20260420.py` | Derive a mechanism-homogeneous targeted bundle from the fresh loss surface |
-| `run_near_miss_correction_bundle_eval_20260420.py` | Evaluate the near-miss correction-gate variant on targeted and broad surfaces |
-| `run_cross_strategy_frontier_allocation.py` | Main frontier-allocation scaffold (legacy filename) |
-| `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
-| `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
-| `run_imported_methodology_frontier_eval.py` | Bounded old-manuscript-style evaluation layer for the current branch-allocation setting |
-| `evaluate_branch_scorer_controller.py` | Controller-level comparison for learned/heuristic policies |
-| `evaluate_branch_scorer_robustness.py` | Multi-seed/budget/init robustness sweep |
 
-## Exploratory hard-case and branch-learning workflows
+## Exploratory / adjacent controlled experiment workflows
 
 | Script | Role |
 |---|---|
-| `build_bruteforce_target_regimes.py` | Build target regimes for branch-allocation supervision |
-| `train_bruteforce_branch_allocator.py` | Main unified learner training entrypoint from brute-force supervision |
-| `evaluate_bruteforce_branch_allocator.py` | Evaluate trained allocators with hard-slice diagnostics |
-| `run_target_fidelity_regime_experiment.py` | Matched learner comparisons across supervision regimes |
-| `run_hard_case_feature_representation_experiment.py` | Fixed-supervision old-vs-richer feature-set experiment |
-| `run_ambiguity_calibration_and_fallback_experiment.py` | Ambiguity-handling experiments with calibration/fallback control |
-| `run_near_tie_policy_experiment.py` | Dedicated near-tie routing experiments |
-| `run_near_tie_pointwise_expert_experiment.py` | Near-tie pointwise-expert experiments |
-| `run_pairwise_svm_margin_experiment.py` | Matched logistic-vs-SVM margin comparisons |
-| `run_structured_ambiguity_experiment.py` | Representation/defer-target/oracle-proxy ambiguity experiments |
-| `run_defer_fallback_experiment.py` | Defer-only vs defer-plus-fallback comparisons |
-| `run_branch_value_uncertainty_derived_defer_experiment.py` | Value-target + uncertainty-head derived-defer pass |
-| `run_branch_value_uncertainty_strict_validation_pass.py` | Strict validation harness for the value+uncertainty method |
-| `run_cohere_rerank_branch_allocation_experiment.py` | Bounded Cohere Rerank branch-scoring comparison |
+| `run_fresh_twenty_current_full_improvement_eval_20260420.py` | Evaluate bounded controller improvements on the fresh 20-case slice |
+| `build_targeted_failure_bundle_from_fresh_loss_surface_20260420.py` | Derive a mechanism-homogeneous targeted bundle from the fresh loss surface |
+| `run_near_miss_correction_bundle_eval_20260420.py` | Evaluate the near-miss correction-gate variant on targeted and broad surfaces |
+| `run_cross_strategy_frontier_allocation.py` | Older/legacy frontier-allocation scaffold |
+| `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
+| `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
+| `run_imported_methodology_frontier_eval.py` | Older bounded evaluation layer for the current branch-allocation setting |
+| `evaluate_branch_scorer_controller.py` | Controller-level comparison for learned/heuristic policies |
+| `evaluate_branch_scorer_robustness.py` | Multi-seed/budget/init robustness sweep |
 
 ## Integration/preparation scripts
 
@@ -103,6 +97,6 @@ Historical entry points are documented in:
 
 ## Notes
 
-- `run_cross_strategy_frontier_allocation.py` keeps a legacy filename for compatibility; docs refer to the current framing as cross-controller frontier allocation.
-- `run_imported_methodology_frontier_eval.py` remains useful, but it is an older bounded evaluation layer and should not be mistaken for the default current broad ranking path.
+- The current highest-leverage scripts are the strict-phased force/gate comparisons, newest-vs-best exact-loss statistics, learned post-F2 gate, and hard family-expansion-cap analysis.
+- `run_cross_strategy_frontier_allocation.py` and related frontier scripts remain useful, but they are no longer the default first path for the current default-model question.
 - Use the paired docs in `../docs/` when interpreting any narrower experimental line; many exploratory scripts are not intended to stand alone as headline results.
