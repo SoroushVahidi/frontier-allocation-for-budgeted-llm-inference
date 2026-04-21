@@ -11,10 +11,11 @@ def main() -> None:
         "nodes": [
             {"id": "input", "label": "Input Question", "kind": "input"},
             {"id": "branches", "label": "Active Branches", "kind": "state"},
-            {"id": "scoring", "label": "Branch Scoring", "kind": "decision"},
-            {"id": "commit", "label": "Commit / Expand", "kind": "decision"},
-            {"id": "support", "label": "Answer-Group Support", "kind": "process"},
-            {"id": "anticollapse", "label": "Anti-collapse Control", "kind": "process"},
+            {"id": "scoring", "label": "Branch Scoring / Allocation", "kind": "decision"},
+            {"id": "commit", "label": "Commit Decision", "kind": "decision"},
+            {"id": "support", "label": "Answer-Support Aggregation", "kind": "process"},
+            {"id": "anticollapse", "label": "Anti-collapse + Repeat Control", "kind": "process"},
+            {"id": "repair", "label": "Bounded Output Repair", "kind": "process"},
             {"id": "final", "label": "Final Answer", "kind": "output"},
         ],
         "edges": [
@@ -24,6 +25,8 @@ def main() -> None:
             ["commit", "final"],
             ["support", "scoring"],
             ["anticollapse", "scoring"],
+            ["commit", "repair"],
+            ["repair", "final"],
         ],
         "notes": [
             "Fixed budget limits total test-time compute.",

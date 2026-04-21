@@ -14,22 +14,27 @@
     },
     {
       "id": "scoring",
-      "label": "Branch Scoring",
+      "label": "Branch Scoring / Allocation",
       "kind": "decision"
     },
     {
       "id": "commit",
-      "label": "Commit / Expand",
+      "label": "Commit Decision",
       "kind": "decision"
     },
     {
       "id": "support",
-      "label": "Answer-Group Support",
+      "label": "Answer-Support Aggregation",
       "kind": "process"
     },
     {
       "id": "anticollapse",
-      "label": "Anti-collapse Control",
+      "label": "Anti-collapse + Repeat Control",
+      "kind": "process"
+    },
+    {
+      "id": "repair",
+      "label": "Bounded Output Repair",
       "kind": "process"
     },
     {
@@ -62,6 +67,14 @@
     [
       "anticollapse",
       "scoring"
+    ],
+    [
+      "commit",
+      "repair"
+    ],
+    [
+      "repair",
+      "final"
     ]
   ],
   "notes": [
