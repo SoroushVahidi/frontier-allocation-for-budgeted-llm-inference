@@ -8,6 +8,7 @@ Canonical scope is the current NeurIPS-oriented project on:
 - next-step branch allocation over active branches,
 - answer-group-level commit control,
 - answer-group preservation and maturation under budget,
+- anti-collapse branch-family control,
 - and target/oracle quality for hard close-branch decisions.
 
 This repository is **not** currently centered on the older binary revise-routing framing.
@@ -15,12 +16,11 @@ This repository is **not** currently centered on the older binary revise-routing
 ## Fast start
 
 - Start here: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
-- Then read: [`CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`](CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-- Then read: [`CURRENT_EXPERIMENT_RULE_2026_04_18.md`](CURRENT_EXPERIMENT_RULE_2026_04_18.md)
-- Then use: [`REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`](REPOSITORY_MASTER_DASHBOARD_2026_04_18.md) for the shortest dashboard.
-- Then use: [`TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md) and [`TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`](TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md) for the current failure-analysis stack.
+- Then read: [`CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
+- Then read: [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
+- Then use: [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md) for the current evidence path.
+- Then use: [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md) for current experiment-family navigation.
 - Then use: [`REPOSITORY_START_PATHS.md`](REPOSITORY_START_PATHS.md) for goal-based navigation.
-- Then use: [`REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md) for the front-door organization and maintenance rule.
 - Then use: [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md) for runnable entry points.
 
 ## Directory map
@@ -38,32 +38,29 @@ This repository is **not** currently centered on the older binary revise-routing
 
 Read these first for current project interpretation:
 1. `docs/CANONICAL_START_HERE.md`
-2. `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
-3. `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
-4. `docs/REPOSITORY_MASTER_DASHBOARD_2026_04_18.md`
-5. `docs/CURRENT_PROJECT_STATUS.md`
-6. `docs/CURRENT_BOTTLENECKS.md`
+2. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+3. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+4. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+5. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+6. `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
 7. `docs/CURRENT_SAFE_CLAIMS.md`
-8. `docs/CURRENT_METHOD_SUMMARY_AND_GAPS.md`
-9. `docs/WHAT_IS_NOT_WORKING_NOW.md`
-10. `docs/TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`
-11. `docs/TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`
-12. `docs/REPO_MAP.md`
-13. `docs/REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`
+8. `docs/CURRENT_BOTTLENECKS.md`
+9. `docs/REPO_MAP.md`
 
 ## Current highest-value diagnostic / evaluation docs
 
 Use these when you want to understand current evidence:
-- `docs/FULL_METHOD_COMPARISON_STATUS_2026_04_18.md`
-- `docs/ORACLE_MISMATCH_STUDY_2026_04_18.md`
-- `docs/FINAL_ANSWER_RECOVERY_STATUS_2026_04_18.md`
-- `docs/WORST_REAL_FAILURE_CASEBOOK_WITH_REASONING_20260418.md`
-- `docs/TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md`
-- `docs/TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md`
-- `docs/DATASET_ADDITION_PRIORITIES_2026_04_19.md`
+- `docs/TWENTY_EXACT_CURRENT_FULL_VS_BEST_FRESH_2026_04_20.md`
+- `docs/HUNDRED_CURRENT_FULL_VS_BEST_FAILURE_STATISTICS_20260420T220416Z.md`
+- `docs/NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
+- `docs/STRICT_PHASED_HARD_EARLY_COVERAGE_REPORT_20260421T020917Z.md`
+- `docs/HUNDRED_THREE_GATE_DESIGN_COMPARISON_STRICT_PHASED_20260421T022459Z.md`
+- `docs/HARD_MAX_FAMILY_EXPANSIONS_EVAL_20260421T040333Z.md`
+- `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
 
 ## Grouped navigation pages
 
+- `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 - `docs/METHOD_STATUS_INDEX.md`
 - `docs/EVALUATION_AND_BASELINES_INDEX.md`
 - `docs/REPOSITORY_START_PATHS.md`
@@ -72,39 +69,29 @@ Use these when you want to understand current evidence:
 
 ## Canonical scripts now
 
-### Current paper / controller path
-- `scripts/run_cross_strategy_frontier_allocation.py`
-- `scripts/evaluate_branch_scorer_controller.py`
-- `scripts/evaluate_branch_scorer_robustness.py`
-- `scripts/run_new_paper_frontier_matrix.py`
-- `scripts/run_comparative_frontier_audit.py`
-- `scripts/run_imported_methodology_frontier_eval.py`
+### Current strict-phased default-decision path
+- `scripts/run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py`
+- `scripts/run_hundred_three_gate_design_eval_strict_phased.py`
+- `scripts/build_new_hundred_newest_vs_best_failure_statistics.py`
+- `scripts/run_learned_f2_to_f3_gate_v1_eval.py`
+- `scripts/run_hard_max_family_expansions_eval.py`
 
-### Current diagnosis / failure-analysis path
-- `scripts/run_worst_real_failure_casebook_with_reasoning.py`
-- `scripts/build_twenty_defeat_casebook_20260419.py`
-- `scripts/build_twenty_defeat_case_trees_20260419.py`
-- `scripts/run_branch_observability_smoke.py`
-- `scripts/run_oracle_mismatch_study.py`
-
-### Current target-definition / evaluation path
-- `scripts/build_bruteforce_target_regimes.py`
-- `scripts/run_multistep_branch_utility_target_experiment.py`
-- `scripts/run_completion_aware_decision_experiment.py`
-- `scripts/run_value_aware_target_regime_comparison.py`
-- current dataset registry / loader scripts,
-- strict validation and comparison builders,
-- method-comparison status builders and supporting evaluators.
+### Current baseline / broader comparison support path
+- `scripts/run_full_method_comparison_bundle.py`
+- `scripts/build_twenty_exact_current_full_vs_best_fresh.py`
+- `scripts/run_s1_budget_forcing_baseline.py`
+- `scripts/run_tale_baseline.py`
+- `scripts/run_l1_baseline.py`
 
 ## Classification labels
 
 ### Canonical
 - frontier/controller allocation scaffold,
 - branch-priority / next-step allocation framing,
-- canonical status / planning docs,
-- current comparison, oracle-mismatch, answer-recovery, and 20-case failure-analysis notes,
-- current experiment rule and dashboard notes,
-- and the current consolidated current-state / next-work note.
+- strict-phased F1 → F2 → F3 early-coverage experiments,
+- current exact-loss and hundred-case failure-statistics reports,
+- current default-model status note,
+- and the current consolidated evidence/experiments indexes.
 
 ### Exploratory
 - one-off target-family notes,
@@ -122,13 +109,12 @@ Use these when you want to understand current evidence:
 ## Practical collaborator start path
 
 1. Read the canonical docs in order from `docs/CANONICAL_START_HERE.md`.
-2. Use `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md` to understand the current whole-repo situation and the next strongest work.
-3. Use `docs/TWENTY_DEFEAT_CASES_WITH_BRANCH_REASONING_2026_04_19.md` and `docs/TWENTY_DEFEAT_CASES_WITH_DISCOVERED_TREES_2026_04_19.md` to understand the current concrete failure structure.
-4. Use `docs/REPOSITORY_START_PATHS.md` for the shortest path matching your goal.
-5. Use `docs/METHOD_STATUS_INDEX.md` or `docs/EVALUATION_AND_BASELINES_INDEX.md` depending on your question.
-6. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
-7. Treat exploratory notes as evidence traces, not as the default project interpretation.
-8. When writing the paper, use `CURRENT_SAFE_CLAIMS.md` and `PAPER_POSITIONING_NOTE.md` as first constraints.
+2. Use `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md` to understand the current strict-phased method state.
+3. Use `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md` to understand which experiment families are now active.
+4. Use `docs/NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md` and `docs/HUNDRED_THREE_GATE_DESIGN_COMPARISON_STRICT_PHASED_20260421T022459Z.md` to understand the current concrete failure structure and the current gate/force comparisons.
+5. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
+6. Treat exploratory notes as evidence traces, not as the default project interpretation.
+7. When writing the paper, use `CURRENT_SAFE_CLAIMS.md` and `PAPER_POSITIONING_NOTE.md` as first constraints.
 
 ## Practical maintenance rule
 
@@ -136,10 +122,12 @@ When the project phase changes materially, update these together:
 - `README.md`
 - `docs/README.md`
 - `docs/CANONICAL_START_HERE.md`
-- `docs/CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md`
-- `docs/CURRENT_EXPERIMENT_RULE_2026_04_18.md`
+- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+- `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+- `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+- `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 - `docs/REPO_MAP.md`
-- `docs/REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`
-- the most relevant current dashboard/comparison/evaluation summary note
+- `scripts/CANONICAL_START_HERE.md`
+- `outputs/README.md`
 
 This keeps the front door of the repo aligned with the actual state of the project.
