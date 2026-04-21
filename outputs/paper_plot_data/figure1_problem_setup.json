@@ -1,63 +1,71 @@
 {
   "figure_id": "figure1_problem_setup",
-  "title": "Frontier Allocation Under a Fixed Budget",
+  "title": "Frontier allocation for budgeted reasoning",
   "nodes": [
     {
-      "id": "q",
-      "label": "Input Questions",
+      "id": "input",
+      "label": "Input Question",
       "kind": "input"
     },
     {
-      "id": "tree",
+      "id": "branches",
       "label": "Active Branches",
       "kind": "state"
     },
     {
-      "id": "controllers",
-      "label": "Controller Family",
-      "kind": "process"
-    },
-    {
-      "id": "alloc",
-      "label": "Next-Step Budget",
+      "id": "scoring",
+      "label": "Branch Scoring",
       "kind": "decision"
     },
     {
-      "id": "groups",
-      "label": "Answer-Group-Aware Control",
+      "id": "commit",
+      "label": "Commit / Expand",
+      "kind": "decision"
+    },
+    {
+      "id": "support",
+      "label": "Answer-Group Support",
+      "kind": "process"
+    },
+    {
+      "id": "anticollapse",
+      "label": "Anti-collapse Control",
       "kind": "process"
     },
     {
       "id": "final",
-      "label": "Final Answer Selection",
+      "label": "Final Answer",
       "kind": "output"
     }
   ],
   "edges": [
     [
-      "q",
-      "tree"
+      "input",
+      "branches"
     ],
     [
-      "tree",
-      "controllers"
+      "branches",
+      "scoring"
     ],
     [
-      "controllers",
-      "alloc"
+      "scoring",
+      "commit"
     ],
     [
-      "alloc",
-      "groups"
-    ],
-    [
-      "groups",
+      "commit",
       "final"
+    ],
+    [
+      "support",
+      "scoring"
+    ],
+    [
+      "anticollapse",
+      "scoring"
     ]
   ],
   "notes": [
-    "Fixed budget governs total test-time compute.",
-    "Anti-collapse behavior is tracked via allocation composition and concentration diagnostics.",
-    "Failure decomposition distinguishes tree-generation-like vs output-layer-like losses via auditable proxies."
+    "Fixed budget limits total test-time compute.",
+    "Diagnostics separate absent-from-tree from present-but-misselected failures."
   ]
 }

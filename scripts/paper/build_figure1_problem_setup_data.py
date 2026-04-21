@@ -7,26 +7,27 @@ from paper_data_sources import PLOT_DATA_DIR, write_json
 def main() -> None:
     payload = {
         "figure_id": "figure1_problem_setup",
-        "title": "Frontier Allocation Under a Fixed Budget",
+        "title": "Frontier allocation for budgeted reasoning",
         "nodes": [
-            {"id": "q", "label": "Input Questions", "kind": "input"},
-            {"id": "tree", "label": "Active Branches", "kind": "state"},
-            {"id": "controllers", "label": "Controller Family", "kind": "process"},
-            {"id": "alloc", "label": "Next-Step Budget", "kind": "decision"},
-            {"id": "groups", "label": "Answer-Group-Aware Control", "kind": "process"},
-            {"id": "final", "label": "Final Answer Selection", "kind": "output"},
+            {"id": "input", "label": "Input Question", "kind": "input"},
+            {"id": "branches", "label": "Active Branches", "kind": "state"},
+            {"id": "scoring", "label": "Branch Scoring", "kind": "decision"},
+            {"id": "commit", "label": "Commit / Expand", "kind": "decision"},
+            {"id": "support", "label": "Answer-Group Support", "kind": "process"},
+            {"id": "anticollapse", "label": "Anti-collapse Control", "kind": "process"},
+            {"id": "final", "label": "Final Answer", "kind": "output"},
         ],
         "edges": [
-            ["q", "tree"],
-            ["tree", "controllers"],
-            ["controllers", "alloc"],
-            ["alloc", "groups"],
-            ["groups", "final"],
+            ["input", "branches"],
+            ["branches", "scoring"],
+            ["scoring", "commit"],
+            ["commit", "final"],
+            ["support", "scoring"],
+            ["anticollapse", "scoring"],
         ],
         "notes": [
-            "Fixed budget governs total test-time compute.",
-            "Anti-collapse behavior is tracked via allocation composition and concentration diagnostics.",
-            "Failure decomposition distinguishes tree-generation-like vs output-layer-like losses via auditable proxies.",
+            "Fixed budget limits total test-time compute.",
+            "Diagnostics separate absent-from-tree from present-but-misselected failures.",
         ],
     }
     write_json(PLOT_DATA_DIR / "figure1_problem_setup.json", payload)
