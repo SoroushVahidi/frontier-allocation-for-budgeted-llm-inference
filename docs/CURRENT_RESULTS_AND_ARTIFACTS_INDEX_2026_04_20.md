@@ -18,7 +18,8 @@ If you want the shortest current evidence path, read in this order:
 4. `CURRENT_SAFE_CLAIMS.md`
 5. `NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
 6. `HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`
-7. `ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
+7. `BUDGET_AWARE_FAMILY_CAP_EVAL_20260421T162842Z.md`
+8. `ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
 
 ## Highest-value current result bundles
 
@@ -56,6 +57,12 @@ Use this when you want the cleanest strict-phased evidence about forced F2 vs fo
 
 Use this when you want the current hard-cap sweep and the evidence that introduced `strict_gate1_cap_k6` into the final default-decision pass.
 
+### 4b. Budget-aware family-cap formulas check
+- `docs/BUDGET_AWARE_FAMILY_CAP_EVAL_20260421T162842Z.md`
+- `outputs/budget_aware_family_cap_eval_20260421T162842Z/`
+
+Use this when you want the direct answer to whether fixed `K=6` should be replaced with budget-aware K(b) formulas; on this evaluated surface, fixed `K=6` remained best overall and won most budgets.
+
 ### 5. Learned post-F2 gate bundle
 - `docs/LEARNED_F2_TO_F3_GATE_EVAL_20260421T034409Z.md` (or latest corresponding run)
 - `outputs/learned_f2_to_f3_gate_<timestamp>/`
@@ -77,6 +84,7 @@ The strongest current artifact-backed story is now:
 - strict-phased hard-coverage experiments were the cleanest intervention family for that bottleneck,
 - capped-family follow-up results identified `strict_gate1_cap_k6` as the strongest capped finalist,
 - and the final broader strict-phased decision pass selected **`strict_gate1_cap_k6`** as the current broad default promoted model on the evaluated surface.
+- a subsequent budget-aware K(b) formula sweep found fixed `K=6` still best overall on the tested budget grid, so no default replacement is currently justified.
 
 ## Current machine-readable output families worth preserving
 
@@ -86,6 +94,7 @@ The strongest current artifact-backed story is now:
 - `outputs/hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421T020917Z/`
 - `outputs/hundred_three_gate_design_eval_strict_phased_20260421T022459Z/`
 - `outputs/hard_max_family_expansions_k456_eval_20260421T041916Z/`
+- `outputs/budget_aware_family_cap_eval_20260421T162842Z/`
 - `outputs/learned_f2_to_f3_gate_<timestamp>/`
 - `outputs/current_full_method_comparison_bundle_20260420/`
 - `outputs/current_failure_output_layer_repair_20260420/`
@@ -96,6 +105,7 @@ The strongest current artifact-backed story is now:
 - Use the **canonical strict_gate1_cap_k6-vs-best exact-loss bundle** for “what still goes wrong now against the strongest direct adversary?” questions.
 - Use the **strict-phased force/gate stack** for “why did the final default emerge from the strict-phased family?” questions.
 - Use the **hard-cap sweep** for “why is K=6 the relevant capped variant?” questions.
+- Use the **budget-aware K(b) formula sweep** for “should fixed K=6 be replaced by budget-aware family caps?” questions.
 - Use the **learned-gate bundle** for controlled learned-alternative interpretation.
 - Use the **broad comparison bundle** for older/current ranking context, not as the final default-model source.
 
