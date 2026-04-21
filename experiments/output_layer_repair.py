@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+import math
 from typing import Any
 
 from experiments.data import extract_final_answer, normalize_answer_text
@@ -86,21 +87,101 @@ def choose_repair_answer(
     selected_group_hint: str | None,
     dataset: str,
     enable_rescue: bool = True,
+    policy_mode: str = "current_selection_control",
 ) -> dict[str, Any]:
     done_nodes = [n for n in final_nodes if n.get("predicted_answer") is not None]
     selected_group = _to_text(selected_group_hint)
 
+    def _group_nodes(nodes: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+        out: dict[str, list[dict[str, Any]]] = {}
+        for n in nodes:
+            ck = canonicalize_answer(_to_text(n.get("predicted_answer")), dataset=dataset)
+            if ck is None:
+                continue
+            out.setdefault(ck, []).append(n)
+        return out
+
+    def _pick_group_support_only(groups: dict[str, list[dict[str, Any]]]) -> str | None:
+        if not groups:
+            return None
+        ranked = sorted(
+            groups.items(),
+            key=lambda kv: (
+                len(kv[1]),
+                sum(float(x.get("score", 0.0)) for x in kv[1]) / max(1, len(kv[1])),
+                max(float(x.get("score", 0.0)) for x in kv[1]),
+            ),
+            reverse=True,
+        )
+        return ranked[0][0]
+
+    def _pick_group_support_plus_score(groups: dict[str, list[dict[str, Any]]], *, calibrated: bool = False) -> str | None:
+        if not groups:
+            return None
+        scores = [float(n.get("score", 0.0)) for members in groups.values() for n in members]
+        if not scores:
+            return _pick_group_support_only(groups)
+        mn, mx = min(scores), max(scores)
+        mean = sum(scores) / len(scores)
+        var = sum((s - mean) ** 2 for s in scores) / max(1, len(scores))
+        std = math.sqrt(max(var, 1e-12))
+
+        def _norm(s: float) -> float:
+            if calibrated:
+                z = (s - mean) / std
+                return 1.0 / (1.0 + math.exp(-z))
+            if mx <= mn + 1e-12:
+                return 0.5
+            return (s - mn) / (mx - mn)
+
+        total_nodes = sum(len(v) for v in groups.values())
+        group_rows: list[tuple[str, float, int, float, float]] = []
+        for gk, members in groups.items():
+            support = len(members) / max(1, total_nodes)
+            max_score = max(_norm(float(x.get("score", 0.0))) for x in members)
+            mean_score = sum(_norm(float(x.get("score", 0.0))) for x in members) / max(1, len(members))
+            if calibrated:
+                group_score = 0.55 * support + 0.45 * mean_score
+            else:
+                group_score = 0.65 * support + 0.35 * max_score
+            group_rows.append((gk, group_score, len(members), mean_score, max_score))
+        group_rows.sort(key=lambda x: x[1], reverse=True)
+
+        # Tie-break cleanup: near-tie prefers robust multi-branch support.
+        if calibrated and len(group_rows) > 1 and abs(group_rows[0][1] - group_rows[1][1]) <= 0.03:
+            top = sorted(group_rows[:2], key=lambda x: (x[2], x[3], x[4]), reverse=True)[0]
+            return top[0]
+        return group_rows[0][0]
+
     chosen: dict[str, Any] | None = None
-    if selected_group is not None:
-        cands = [
-            n
-            for n in done_nodes
-            if canonicalize_answer(_to_text(n.get("predicted_answer")), dataset=dataset) == canonicalize_answer(selected_group, dataset=dataset)
-        ]
-        if cands:
-            chosen = max(cands, key=lambda n: float(n.get("score", 0.0)))
-    if chosen is None and done_nodes:
-        chosen = max(done_nodes, key=lambda n: float(n.get("score", 0.0)))
+    groups = _group_nodes(done_nodes)
+    policy = str(policy_mode or "current_selection_control")
+    winning_group: str | None = None
+    if policy == "answer_group_support_only":
+        winning_group = _pick_group_support_only(groups)
+    elif policy == "answer_group_support_plus_node_score":
+        winning_group = _pick_group_support_plus_score(groups, calibrated=False)
+    elif policy == "answer_group_support_plus_calibrated_score":
+        winning_group = _pick_group_support_plus_score(groups, calibrated=True)
+    elif policy == "answer_group_support_plus_score_plus_tiebreak_cleanup":
+        winning_group = _pick_group_support_plus_score(groups, calibrated=True)
+    else:
+        if selected_group is not None:
+            cands = [
+                n
+                for n in done_nodes
+                if canonicalize_answer(_to_text(n.get("predicted_answer")), dataset=dataset) == canonicalize_answer(selected_group, dataset=dataset)
+            ]
+            if cands:
+                chosen = max(cands, key=lambda n: float(n.get("score", 0.0)))
+        if chosen is None and done_nodes:
+            chosen = max(done_nodes, key=lambda n: float(n.get("score", 0.0)))
+            winning_group = canonicalize_answer(_to_text(chosen.get("predicted_answer")), dataset=dataset)
+
+    if chosen is None and winning_group is not None:
+        members = groups.get(winning_group, [])
+        if members:
+            chosen = max(members, key=lambda n: float(n.get("score", 0.0)))
 
     chosen_id = _to_text(chosen.get("branch_id")) if chosen else None
     chosen_raw = _to_text(chosen.get("predicted_answer")) if chosen else None
@@ -144,6 +225,9 @@ def choose_repair_answer(
                     }
 
     return {
+        "selection_policy_mode": policy,
+        "selected_group_hint": selected_group,
+        "selected_group_after_policy": winning_group,
         "chosen_final_node_id": chosen_id,
         "chosen_final_node_answer_raw": chosen_raw,
         "chosen_final_node_answer_canonical": chosen_canonical,
