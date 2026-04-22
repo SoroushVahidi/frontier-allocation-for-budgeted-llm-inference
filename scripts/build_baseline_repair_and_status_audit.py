@@ -255,17 +255,24 @@ def _rows() -> list[dict[str, Any]]:
         row(
             "lets_verify_step_by_step",
             "Let's Verify Step by Step",
-            status="discuss_only",
-            control_equivalence="ingredient_only",
+            status="import_validated",
+            control_equivalence="adjacent",
             paper_safe_now=True,
-            repo_command_available=False,
-            artifact_backed_now=_exists("external/lets_verify_step_by_step/README.md"),
+            repo_command_available=True,
+            artifact_backed_now=_exists("scripts/verify_lets_verify_step_by_step_import.py"),
             official_resource_verified=False,
-            primary_commands=[],
-            primary_paths=["external/lets_verify_step_by_step/README.md"],
-            prior_overclaim_risk="PRM family oversold as runnable empirical baseline stack here.",
-            safe_wording_now="Adjacent ingredient / completion-aware evidence family; not integrated as runnable stack.",
-            notes="",
+            primary_commands=[
+                "scripts/verify_lets_verify_step_by_step_import.py",
+                "scripts/run_lets_verify_step_by_step_adjacent_integration.py",
+            ],
+            primary_paths=[
+                "external/lets_verify_step_by_step/README.md",
+                "docs/lets_verify_step_by_step_integration.md",
+                "configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+            ],
+            prior_overclaim_risk="PRM family presented as full faithful in-repo end-to-end paper reproduction.",
+            safe_wording_now="Official adjacent partial-runnable contract lane with explicit adjacent_only scope; no full paper-stack reproduction claim.",
+            notes="Classification is artifact-backed partial_runnable_adjacent in dedicated lane while matrix status remains import_validated.",
         )
     )
     rows.append(

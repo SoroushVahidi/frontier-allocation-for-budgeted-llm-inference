@@ -32,7 +32,7 @@ One of:
 - `direct` — same decision class as the paper’s primary control story (rare; do not claim without evidence).
 - `near_direct` — **matched-substrate** budget neighbor (MODE A adapters for `s1` / `TALE` / `L1`).
 - `adjacent` — reviewer-relevant but **not** control-space-equivalent (routing, imported tree search metrics, MODE B imports, internal `verifier_guided_search` vs external PRM papers).
-- `ingredient_only` — informs method design; not a runnable empirical comparator stack (`Let’s Verify Step by Step` family here).
+- `ingredient_only` — informs method design; not a runnable empirical comparator stack (legacy note; Let’s Verify Step by Step is now strengthened to an adjacent partial-runnable lane in later passes).
 
 ### Other normalized flags (matrix)
 
@@ -55,7 +55,7 @@ One of:
 | when_solve_when_verify | import_validated | adjacent | yes | yes | yes | no |
 | rest_mcts | import_validated | adjacent | yes | yes | yes | no |
 | qstar_deliberative_planning | discuss_only | direct | yes | no | yes | no |
-| lets_verify_step_by_step | discuss_only | ingredient_only | yes | no | yes | no |
+| lets_verify_step_by_step | import_validated | adjacent | yes | yes | yes | no |
 | rational_metareasoning_llm | discuss_only | adjacent | yes | no | yes | no |
 | verifier_guided_search | runnable_direct | adjacent | yes | yes | yes | no |
 
@@ -85,9 +85,9 @@ One of:
 - **Runnable:** **Import validation** is runnable; full upstream stacks are **not** reproduced in-repo.
 - **Class:** `import_validated` / `adjacent` (canonical v1). Legacy `outputs/external_baseline_completeness/*_status.json` may still say `runnable_adjacent` — treat as synonym for this import-only family (see `scripts/generate_external_baseline_completeness_report.py`).
 
-### Q* / Let’s Verify Step by Step / Rational Metareasoning
+### Q* / Rational Metareasoning
 
-- **Paths:** `external/qstar_deliberative_planning/README.md`, `docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md`, `external/lets_verify_step_by_step/README.md`, `external/rational_metareasoning_llm/README.md`.
+- **Paths:** `external/qstar_deliberative_planning/README.md`, `docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md`, `external/rational_metareasoning_llm/README.md`.
 - **Runnable comparator:** **No** reproducible adapter/validator bundle without speculative integration.
 - **Upgrade feasibility:** No conservative upgrade applied. Q* received a dedicated provenance hardening pass documenting canonical paper links and explicit negative findings (no verified official repo/artifacts); upgrading would require pinned official code, license checks, and a matched evaluation contract. **Remain `discuss_only`.**
 
@@ -120,7 +120,7 @@ One of:
 
 ## What remains discuss-only or blocked
 
-- **Discuss-only:** Q*, Let’s Verify Step by Step (ingredient), Rational Metareasoning (framing), Tree-PLV, PGTS, Scaling Automated Process Verifiers, LLM Tree Search (Waterhorse), MCTS-LLM community note.
+- **Discuss-only:** Q*, Rational Metareasoning (framing), Tree-PLV, PGTS, Scaling Automated Process Verifiers, LLM Tree Search (Waterhorse), MCTS-LLM community note.
 - **Blocked:** `compute_optimal_tts` (paper↔repo mapping unverified).
 
 ## Paper wording: too strong before → safe now

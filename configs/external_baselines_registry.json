@@ -218,12 +218,32 @@
     "lets_verify_step_by_step": {
       "clone_url": null,
       "doc": "external/lets_verify_step_by_step/README.md",
-      "integration": "discuss_only",
-      "completeness_class": "discuss_only",
-      "blocker": "reference_family_not_integrated_as_runnable_stack",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_faithful_reproduction_out_of_scope_stable_partial_runnable_adjacent_contract_lane_only",
       "canonical_title": "Let's Verify Step by Step",
       "baseline_class": "adjacent",
-      "paper_phase_priority": "essential_adjacent"
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://arxiv.org/abs/2305.20050",
+      "paper_pdf_url": "https://arxiv.org/pdf/2305.20050.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2305.20050",
+      "official_repo": "https://github.com/openai/prm800k",
+      "integration_doc": "docs/lets_verify_step_by_step_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/lets_verify_step_by_step_status.json",
+        "outputs/external_baseline_completeness/lets_verify_step_by_step_status.md",
+        "outputs/lets_verify_step_by_step_adjacent_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_lets_verify_step_by_step_adjacent_integration.py",
+      "comparison_contract": "configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+      "import_validator": "scripts/verify_lets_verify_step_by_step_import.py",
+      "provenance": {
+        "paper_identity": "verified",
+        "official_repo_found": "yes",
+        "official_public_data_assets_found": "yes",
+        "official_checkpoints_found": "not_publicly_confirmed",
+        "provenance_strength": "paper_and_official_repo_verified_partial_runnable_adjacent_lane"
+      }
     },
     "rational_metareasoning_llm": {
       "clone_url": null,

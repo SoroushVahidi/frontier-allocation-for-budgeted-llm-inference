@@ -1,0 +1,133 @@
+{
+  "contract_config_path": "configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+  "contract": {
+    "baseline_key": "lets_verify_step_by_step",
+    "canonical_title": "Let's Verify Step by Step",
+    "integration_mode": "official_adjacent_partial_runnable_stable_lane",
+    "official_sources": {
+      "canonical_paper_url": "https://arxiv.org/abs/2305.20050",
+      "canonical_pdf_url": "https://arxiv.org/pdf/2305.20050.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2305.20050",
+      "official_repo": "https://github.com/openai/prm800k"
+    },
+    "official_public_artifacts": {
+      "repo_dataset_assets": [
+        "prm800k/data/phase1_train.jsonl",
+        "prm800k/data/phase1_test.jsonl",
+        "prm800k/data/phase2_test.jsonl",
+        "prm800k/math_splits/train.jsonl",
+        "prm800k/math_splits/test.jsonl"
+      ],
+      "repo_eval_assets": [
+        "prm800k/eval/eval.py",
+        "prm800k/grading/grader.py",
+        "prm800k/grading/math_normalize.py"
+      ],
+      "not_publicly_released": [
+        "paper-scale production model checkpoints",
+        "full internal training pipeline used for large-scale paper models"
+      ]
+    },
+    "benchmark_contract": {
+      "canonical_benchmark_family": "MATH",
+      "default_expected_split": "test",
+      "stable_adjacent_subset": [
+        {
+          "subset_id": "math_test_prm800k_import_contract",
+          "expected_dataset": "math",
+          "results_path": "tests/fixtures/lets_verify_step_by_step_import_valid",
+          "minimum_rows": 2,
+          "required_modes": [
+            "prm800k_adjacent_import"
+          ],
+          "comparability_scope": "adjacent_only"
+        }
+      ]
+    },
+    "budget_and_compute_normalization": {
+      "primary_rule": "Report only fixed declared pass@k and verifier_score_threshold settings within each imported row.",
+      "required_metadata_fields": [
+        "evaluation.budget.pass_at_k_values",
+        "evaluation.budget.verifier_score_threshold",
+        "evaluation.budget.compute_budget_note"
+      ],
+      "cross_method_claim_guardrail": "Do not claim control-equivalent compute normalization versus branch-level marginal frontier allocation controllers; all rows remain adjacent_only."
+    },
+    "paper_ingredients": {
+      "exercised_in_this_lane": [
+        "PRM800K data availability and schema-level readiness",
+        "official grading/eval code presence checks",
+        "MATH split references",
+        "contract-validated adjacent result import"
+      ],
+      "not_reproduced_in_this_lane": [
+        "full paper-scale PRM training and model selection stack",
+        "end-to-end faithful replication of published large-model performance"
+      ]
+    },
+    "model_and_path_requirements": {
+      "required_metadata_fields": [
+        "models.generator_model_family",
+        "models.verifier_model_family",
+        "upstream.repo_url",
+        "upstream.paper_url"
+      ],
+      "official_repo_layout_required": [
+        "README.md",
+        "prm800k/data/phase1_train.jsonl",
+        "prm800k/data/phase1_test.jsonl",
+        "prm800k/data/phase2_test.jsonl",
+        "prm800k/math_splits/test.jsonl",
+        "prm800k/eval/eval.py",
+        "prm800k/grading/grader.py"
+      ],
+      "official_repo_path_optional": true
+    },
+    "artifact_requirements": {
+      "required_outputs": [
+        "status.json",
+        "comparison_readiness.json",
+        "summary.json",
+        "summary.md",
+        "manifest.json",
+        "config_snapshot.json",
+        "commands_snapshot.txt",
+        "comparison_ready_rows.csv"
+      ],
+      "optional_outputs": [
+        "verification_report.json",
+        "official_repo_structure.json",
+        "validation_status.csv"
+      ],
+      "output_family": "outputs/lets_verify_step_by_step_adjacent_integration/<run_id>/"
+    },
+    "success_criteria": {
+      "minimum_for_import_validated_adjacent": [
+        "contract_file_present",
+        "stable_subset_verified",
+        "validator_status_valid",
+        "adjacent_scope_enforced"
+      ],
+      "minimum_for_partial_runnable_adjacent": [
+        "minimum_for_import_validated_adjacent",
+        "official_repo_accessible_or_precloned",
+        "official_layout_check_passed"
+      ]
+    },
+    "allowed_claims": [
+      "Official paper and repository provenance are documented and validated against required links and repository structure.",
+      "A stable adjacent runnable lane exists for a contract-bound MATH test subset using PRM800K public assets.",
+      "Integration status is partial_runnable_adjacent with explicit adjacent_only scope and conservative claim boundaries."
+    ],
+    "forbidden_claims": [
+      "Full faithful in-repo reproduction of complete Let's Verify Step by Step training/evaluation stack.",
+      "Direct control-equivalent comparison with branch-level marginal budget-allocation methods.",
+      "Unqualified SOTA claims attributed to this adjacent integration lane."
+    ]
+  },
+  "args": {
+    "output_root": "/workspace/adaptive-reasoning-budget-allocation/outputs/lets_verify_step_by_step_adjacent_integration",
+    "official_repo_path": "/tmp/lets_verify_upstream/prm800k",
+    "skip_clone": false
+  }
+}

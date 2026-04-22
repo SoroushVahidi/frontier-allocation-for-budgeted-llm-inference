@@ -1,0 +1,1 @@
+python scripts/run_lets_verify_step_by_step_adjacent_integration.py --contract-config configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json

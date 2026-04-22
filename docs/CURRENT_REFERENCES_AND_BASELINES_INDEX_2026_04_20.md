@@ -64,7 +64,8 @@ These notes are now the shortest answer to:
 1. **BEST-Route** — strengthened: official adjacent import-validated baseline with reproducible artifact contract
 2. **When To Solve / When To Verify** — strengthened official adjacent import-validated baseline with reproducible contract lane
 3. **ReST-MCTS*** — strengthened with a stable adjacent contract lane and canonical artifacts
-4. **Q*** — now provenance-hardened as discuss-only with explicit blockers; upgrade only after verified official artifacts exist
+4. **Let's Verify Step by Step** — strengthened to an official adjacent partial-runnable PRM800K contract lane with canonical artifacts
+5. **Q*** — now provenance-hardened as discuss-only with explicit blockers; upgrade only after verified official artifacts exist
 
 ## Current writing rule
 
