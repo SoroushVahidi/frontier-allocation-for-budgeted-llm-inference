@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+REPO_ROOT = ROOT.parents[1]
 
 SCRIPTS = [
     "build_figure1_problem_setup_data.py",
@@ -22,18 +23,24 @@ SCRIPTS = [
     "plot_appendix_output_layer_repair.py",
     "plot_appendix_figures.py",
 ]
+EXTERNAL_SCRIPTS = [
+    REPO_ROOT / "scripts" / "run_integrated_controller_component_ablation.py",
+]
 
 
-def run_script(name: str) -> None:
-    cmd = [sys.executable, str(ROOT / name)]
+def run_script(path: Path) -> None:
+    cmd = [sys.executable, str(path)]
     subprocess.run(cmd, check=True)
 
 
 def main() -> None:
     built = []
     for script in SCRIPTS:
-        run_script(script)
+        run_script(ROOT / script)
         built.append(script)
+    for path in EXTERNAL_SCRIPTS:
+        run_script(path)
+        built.append(str(path.relative_to(REPO_ROOT)))
 
     print("=== NeurIPS paper artifacts build completed ===")
     for script in built:

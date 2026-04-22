@@ -39,6 +39,7 @@ If you want the current repo-organization rationale, read:
 - [`CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md): shortest current answer on what external baseline to strengthen next.
 - [`PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md`](PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md): canonical reviewer-facing baseline comparison separation package.
 - [`FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`](FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md): final fairness-audit and manuscript claim-boundary guide.
+- [`INTEGRATED_CONTROLLER_COMPONENT_ABLATION_REPORT_2026_04_22.md`](INTEGRATED_CONTROLLER_COMPONENT_ABLATION_REPORT_2026_04_22.md): canonical-surface component ablation findings and claim-impact summary.
 - [`CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`](CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md): focused anti-collapse / branch-allocation literature memo.
 - [`REPO_MAP.md`](REPO_MAP.md): canonical repository map.
 

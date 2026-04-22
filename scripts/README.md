@@ -38,6 +38,7 @@ This file is the runnable-code front door for the repository.
 ### 3. Run broad comparison / external-baseline support path
 - `run_full_method_comparison_bundle.py`
 - `build_twenty_exact_current_full_vs_best_fresh.py`
+- `run_integrated_controller_component_ablation.py`
 - `run_s1_budget_forcing_baseline.py`
 - `run_tale_baseline.py`
 - `run_l1_baseline.py`
@@ -68,6 +69,7 @@ This file is the runnable-code front door for the repository.
 | `run_hard_max_family_expansions_eval.py` | Evaluate hard per-family expansion caps on the strict target |
 | `run_full_method_comparison_bundle.py` | Current broad matched comparison / ranking bundle |
 | `build_twenty_exact_current_full_vs_best_fresh.py` | Build the fresh exact current-full-vs-best loss surface |
+| `run_integrated_controller_component_ablation.py` | Canonical integrated-controller component ablation on strict-phased surface |
 
 ## Exploratory / adjacent controlled experiment workflows
 
