@@ -65,7 +65,8 @@ These notes are now the shortest answer to:
 2. **When To Solve / When To Verify** — strengthened official adjacent import-validated baseline with reproducible contract lane
 3. **ReST-MCTS*** — strengthened with a stable adjacent contract lane and canonical artifacts
 4. **Let's Verify Step by Step** — strengthened to an official adjacent partial-runnable PRM800K contract lane with canonical artifacts
-5. **Q*** — now provenance-hardened as discuss-only with explicit blockers; upgrade only after verified official artifacts exist
+5. **Tree-PLV** — strengthened to an official-paper-cited adjacent partial-runnable contract lane with canonical artifacts
+6. **Q*** — now provenance-hardened as discuss-only with explicit blockers; upgrade only after verified official artifacts exist
 
 ## Current writing rule
 
@@ -114,7 +115,9 @@ Use this index first when you need to answer:
 ## External adjacent aggregate bundle (new)
 
 - `docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md`
+- `docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T201000Z.md`
 - `outputs/external_adjacent_baseline_bundle/20260422T011400Z/summary.md`
+- `outputs/external_adjacent_baseline_bundle/20260422T201000Z/summary.md`
 - Regenerate: `python scripts/build_external_adjacent_baseline_bundle.py`
 
 ## Q*-family coverage split (2026-04-22)
@@ -128,3 +131,10 @@ Canonical adapter references:
 - `configs/qstar_style_adapter_contract_v1.json`
 - `scripts/run_qstar_style_adapter.py`
 - `docs/QSTAR_STYLE_ADAPTER_20260422T160000Z.md`
+
+
+## Tree-PLV strengthening artifact (2026-04-22)
+
+- `docs/TREE_PLV_FINAL_STRENGTHENING_PASS_20260422T200000Z.md`
+- `docs/tree_plv_integration.md`
+- `outputs/tree_plv_adjacent_integration/<run_id>/`

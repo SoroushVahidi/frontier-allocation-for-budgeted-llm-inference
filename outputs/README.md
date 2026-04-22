@@ -35,6 +35,7 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 - `when_solve_when_verify_adjacent_integration/<run_id>/`
 - `lets_verify_step_by_step_adjacent_integration/<run_id>/`
 - `rest_mcts_adjacent_integration/<run_id>/`
+- `tree_plv_adjacent_integration/<run_id>/`
 
 ## Historical or bounded paper-facing output families
 

@@ -1,0 +1,31 @@
+{
+  "generated_utc": "2026-04-22T03:10:06.025671+00:00",
+  "baseline_key": "tree_plv",
+  "canonical_title": "Advancing Process Verification for Large Language Models via Tree-Based Preference Learning",
+  "classification": "partial_runnable_adjacent",
+  "control_equivalence": "adjacent",
+  "integration_kind": "official_adjacent_contract_lane",
+  "official_sources": {
+    "canonical_paper_url": "https://aclanthology.org/2024.emnlp-main.125/",
+    "canonical_pdf_url": "https://aclanthology.org/2024.emnlp-main.125.pdf",
+    "doi": "https://doi.org/10.18653/v1/2024.emnlp-main.125",
+    "arxiv_url": "https://arxiv.org/abs/2407.00390",
+    "paper_cited_repo": "https://github.com/Hareta-Leila/Tree-PLV"
+  },
+  "stable_subsets_verified": [
+    "gsm8k_test_tree_plv_import_contract"
+  ],
+  "stable_subsets_failed": [],
+  "official_repo_check": {
+    "official_repo_path": "/tmp/tree_plv_upstream/Tree-PLV",
+    "exists": true,
+    "layout_checks": {
+      "README.md": true,
+      "LLMs-Planning/plan-bench/README.md": true,
+      "LLMs-Planning/llm_planning_analysis/README.md": true,
+      "dschat": true
+    },
+    "layout_ok": true,
+    "license_visible": false
+  }
+}
