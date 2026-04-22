@@ -41,6 +41,14 @@ TARGET_BASELINES: list[dict[str, str]] = [
         "repo_command": "python scripts/run_lets_verify_step_by_step_adjacent_integration.py --contract-config configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
     },
     {
+        "baseline_id": "tree_plv",
+        "display_name": "Tree-PLV",
+        "doc": "docs/tree_plv_integration.md",
+        "status_json": "outputs/external_baseline_completeness/tree_plv_status.json",
+        "integration_output_family": "outputs/tree_plv_adjacent_integration",
+        "repo_command": "python scripts/run_tree_plv_adjacent_integration.py --contract-config configs/tree_plv_adjacent_comparison_contract_v1.json",
+    },
+    {
         "baseline_id": "rest_mcts",
         "display_name": "ReST-MCTS*",
         "doc": "docs/rest_mcts_integration.md",
@@ -107,7 +115,7 @@ def _latest_run_status(output_family: str) -> tuple[str, str, str]:
     except json.JSONDecodeError:
         return latest.name, "status_unreadable", "latest_run_status_json_unreadable"
 
-    normalized = str(status_payload.get("status", "unknown"))
+    normalized = str(status_payload.get("status") or status_payload.get("classification") or "unknown")
     return latest.name, normalized, ""
 
 
@@ -129,6 +137,7 @@ def _build_markdown(summary: dict[str, Any]) -> str:
     lines.append("- when_solve_when_verify")
     lines.append("- Let's Verify Step by Step")
     lines.append("- ReST-MCTS*")
+    lines.append("- Tree-PLV")
     lines.append("")
     lines.append("These remain **adjacent** (not control-equivalent direct frontier-allocation baselines).")
     lines.append("")
@@ -146,7 +155,7 @@ def _build_markdown(summary: dict[str, Any]) -> str:
     lines.append("")
     lines.append("## Out of scope")
     lines.append("")
-    lines.append("- Full official upstream training/inference reproduction for all three baselines.")
+    lines.append("- Full official upstream training/inference reproduction for all included adjacent baselines.")
     lines.append("- Reframing adjacent baselines as direct control-equivalent branch-allocation methods.")
     lines.append("- Taxonomy changes beyond conservative aggregation on top of current status artifacts.")
     lines.append("")
@@ -201,6 +210,15 @@ def build_bundle(output_root: Path, run_id: str, registry_path: Path, matrix_pat
         if latest_run_id:
             artifacts.append(f"{spec['integration_output_family']}/{latest_run_id}/status.json")
 
+        artifact_backed = bool(matrix_row.get("artifact_backed_now", bool(status_payload)))
+        repo_command_available = bool(matrix_row.get("repo_command_available", bool(registry_row.get("integration_runner"))))
+        paper_safe = bool(
+            matrix_row.get(
+                "paper_safe_now",
+                status in {"import_validated", "adapter_based", "runnable_direct", "runnable_adjacent"},
+            )
+        )
+
         row = {
             "baseline_id": baseline_id,
             "display_name": spec["display_name"],
@@ -208,9 +226,9 @@ def build_bundle(output_root: Path, run_id: str, registry_path: Path, matrix_pat
             "status": status,
             "control_equivalence": control,
             "current_safest_comparison_scope": safest_scope,
-            "artifact_backed_now": _format_bool(matrix_row.get("artifact_backed_now", False)),
-            "repo_command_available": _format_bool(matrix_row.get("repo_command_available", False)),
-            "paper_safe_now": _format_bool(matrix_row.get("paper_safe_now", False)),
+            "artifact_backed_now": _format_bool(artifact_backed),
+            "repo_command_available": _format_bool(repo_command_available),
+            "paper_safe_now": _format_bool(paper_safe),
             "key_limitation": key_limitation,
             "registry_integration": str(registry_row.get("integration", "unknown")),
             "latest_integration_run_id": latest_run_id,

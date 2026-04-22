@@ -36,15 +36,15 @@ For this repository phase, baselines are grouped as:
 ## Tree-PLV
 
 - **Canonical title:** *Advancing Process Verification for Large Language Models via Tree-Based Preference Learning*
-- **Venue / year:** 2024 arXiv
-- **Role in our project:** State-level / step-level process verifier baseline.
-- **Problem formulation:** Learns a process verifier from tree-constructed preference pairs over intermediate reasoning states.
-- **Core method:** Best-first tree construction plus preference learning for step-level verification.
-- **Main benchmarks:** GSM8K, MATH, CSQA, and StrategyQA.
-- **Official code:** Not found in official sources.
-- **Data / benchmark links:** TODO: Add verified links to the paper's benchmark/task pages after manual source confirmation.
-- **Reproducibility caveats:** The paper is public, but no official code was identified.
-- **How it differs from our target method:** It improves step-level verification, but does not directly solve budgeted online compute allocation over reasoning trees.
+- **Venue / year:** EMNLP 2024 (ACL Anthology 2024.emnlp-main.125)
+- **Role in our project:** Official-paper-cited process-verifier/search-adjacent baseline.
+- **Problem formulation:** Learns process verification signals from tree-constructed preference data over reasoning states.
+- **Core method:** Tree-based candidate state construction + preference learning for verifier guidance.
+- **Main benchmarks (paper):** GSM8K, MATH, CSQA, StrategyQA.
+- **Official resources:** ACL Anthology page/PDF + DOI + arXiv; paper-cited repo `Hareta-Leila/Tree-PLV`.
+- **Current repo status:** `import_validated` (matrix) with a stabilized `partial_runnable_adjacent` contract lane.
+- **Canonical integration assets:** `configs/tree_plv_adjacent_comparison_contract_v1.json`, `scripts/verify_tree_plv_import.py`, `scripts/run_tree_plv_adjacent_integration.py`, `docs/tree_plv_integration.md`.
+- **How it differs from our target method:** verifier/preference-learning neighbor, not direct branch-level marginal budget-allocation control.
 
 ## PGTS
 

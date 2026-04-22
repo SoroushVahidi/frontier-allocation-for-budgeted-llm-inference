@@ -1,6 +1,6 @@
 # External baseline completeness report
 
-- Generated (UTC): `2026-04-22T02:49:24.773478+00:00`
+- Generated (UTC): `2026-04-22T03:11:22.119832+00:00`
 - Scope: external baseline completeness for reviewer-defensible reporting.
 
 ## Canonical taxonomy (v1, paper-safe)
@@ -43,7 +43,7 @@ Machine-readable matrix (normalized fields): `outputs/baseline_repair_and_status
 | ReST-MCTS* (`rest_mcts`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | MCTS-LLM (community) (`mcts_llm_community`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
 | OpenR (`openr`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
-| Tree-PLV (`tree_plv`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
+| Tree-PLV (`tree_plv`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | PGTS (`pgts`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
 | Scaling Automated Process Verifiers (`scaling_automated_process_verifiers`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
 | LLM Tree Search (Waterhorse) (`llm_tree_search_waterhorse`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |

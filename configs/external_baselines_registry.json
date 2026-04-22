@@ -145,11 +145,36 @@
       "comparison_contract": "configs/rest_mcts_adjacent_comparison_contract_v2.json"
     },
     "tree_plv": {
-      "clone_url": null,
+      "clone_url": "https://github.com/Hareta-Leila/Tree-PLV.git",
       "doc": "external/tree_plv/README.md",
-      "integration": "discuss_only",
-      "completeness_class": "discuss_only",
-      "blocker": "official_code_unverified"
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_faithful_reproduction_out_of_scope_partial_runnable_adjacent_contract_lane_only",
+      "canonical_title": "Advancing Process Verification for Large Language Models via Tree-Based Preference Learning",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://aclanthology.org/2024.emnlp-main.125/",
+      "paper_pdf_url": "https://aclanthology.org/2024.emnlp-main.125.pdf",
+      "doi": "https://doi.org/10.18653/v1/2024.emnlp-main.125",
+      "arxiv_url": "https://arxiv.org/abs/2407.00390",
+      "official_repo": "https://github.com/Hareta-Leila/Tree-PLV",
+      "integration_doc": "docs/tree_plv_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/tree_plv_status.json",
+        "outputs/external_baseline_completeness/tree_plv_status.md",
+        "outputs/tree_plv_adjacent_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_tree_plv_adjacent_integration.py",
+      "comparison_contract": "configs/tree_plv_adjacent_comparison_contract_v1.json",
+      "import_validator": "scripts/verify_tree_plv_import.py",
+      "provenance": {
+        "paper_identity": "verified",
+        "paper_cited_repo_found": "yes",
+        "paper_cited_repo_clonable": "yes",
+        "official_checkpoints_found": "not_publicly_confirmed",
+        "license_file_visible_in_audited_repo_snapshot": "no",
+        "provenance_strength": "paper_and_paper_cited_repo_verified_partial_runnable_adjacent_lane"
+      }
     },
     "pgts": {
       "clone_url": null,

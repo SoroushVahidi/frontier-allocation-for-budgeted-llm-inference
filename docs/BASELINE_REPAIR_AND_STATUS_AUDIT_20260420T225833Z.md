@@ -120,7 +120,7 @@ One of:
 
 ## What remains discuss-only or blocked
 
-- **Discuss-only:** Q*, Rational Metareasoning (framing), Tree-PLV, PGTS, Scaling Automated Process Verifiers, LLM Tree Search (Waterhorse), MCTS-LLM community note.
+- **Discuss-only:** Q*, Rational Metareasoning (framing), PGTS, Scaling Automated Process Verifiers, LLM Tree Search (Waterhorse), MCTS-LLM community note.\n- **Strengthened adjacent lane (post-audit):** Tree-PLV now has an official-paper-cited partial-runnable adjacent contract lane (`docs/tree_plv_integration.md`, `scripts/run_tree_plv_adjacent_integration.py`) with conservative claim boundaries.
 - **Blocked:** `compute_optimal_tts` (paper↔repo mapping unverified).
 
 ## Paper wording: too strong before → safe now

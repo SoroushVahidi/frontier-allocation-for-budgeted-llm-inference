@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-04-22T02:49:24.773478+00:00",
+  "generated_utc": "2026-04-22T03:11:22.119832+00:00",
   "taxonomy_v1_status": [
     "runnable_direct",
     "runnable_adjacent",
@@ -225,17 +225,17 @@
     {
       "baseline_key": "tree_plv",
       "display_name": "Tree-PLV",
-      "category": "discuss_only",
-      "status_v1_mode_a": "discuss_only",
+      "category": "runnable_adjacent",
+      "status_v1_mode_a": "import_validated",
       "status_v1_mode_b": "not_applicable",
       "control_v1_mode_a": "adjacent",
       "control_v1_mode_b": "not_applicable",
       "directness": "adjacent",
-      "usable_now": "no",
-      "mode_a": "not_applicable",
+      "usable_now": "yes_verified_import",
+      "mode_a": "adjacent_import_validator",
       "mode_b": "not_applicable",
-      "blocker": "Official code/repro path not confirmed for this repo's integration policy.",
-      "next_requirement": "Confirm official code + licensing before adapter work."
+      "blocker": "Not blocked for adjacent use; full faithful benchmark-faithful reproduction remains out-of-scope.",
+      "next_requirement": "If pursuing stronger claims, provide auditable official checkpoint/training evidence and license clarification."
     },
     {
       "baseline_key": "pgts",
@@ -293,8 +293,9 @@
     "cascade_routing (adjacent import validator)",
     "mob_majority_of_bests (adjacent import validator)",
     "rest_mcts (adjacent import validator)",
-    "openr (adjacent import validator)"
+    "openr (adjacent import validator)",
+    "tree_plv (adjacent partial-runnable contract lane)"
   ],
   "single_next_priority": "mcts_llm_community",
-  "single_next_priority_rationale": "mcts_llm_community is now v1 `discuss_only` (optional community link; no adapter). Next integration effort should pick a discuss_only row with a clear canonical paper mapping (for example Tree-PLV or PGTS) only after official code + license confirmation."
+  "single_next_priority_rationale": "mcts_llm_community is now v1 `discuss_only` (optional community link; no adapter). Next integration effort should pick a discuss_only row with a clear canonical paper mapping (for example PGTS) only after official code + license confirmation."
 }

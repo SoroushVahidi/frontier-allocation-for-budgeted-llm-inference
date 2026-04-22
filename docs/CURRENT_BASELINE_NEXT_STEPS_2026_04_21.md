@@ -156,3 +156,12 @@ Use policy:
 - keep official Q* paper and unofficial adapter as separate rows,
 - label adapter rows as unofficial/caveated,
 - avoid any wording implying faithful or official reproduction.
+
+
+## Tree-PLV final strengthening artifact
+
+- `docs/TREE_PLV_FINAL_STRENGTHENING_PASS_20260422T200000Z.md`
+- `docs/tree_plv_integration.md`
+- `outputs/tree_plv_adjacent_integration/<run_id>/`
+
+Current safest classification: **partial_runnable_adjacent** (matrix-normalized status remains `import_validated`, control label `adjacent`).
