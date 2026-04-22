@@ -12,3 +12,9 @@ The main remaining failure mechanism story from current strict loss analysis is 
 
 ## Canonical output bundle
 - `outputs/paper_facing_baseline_tables/20260422T231500Z/`
+
+## Simple scaling axis explicitness update (2026-04-22)
+- The near-direct package explicitly treats `external_s1_budget_forcing` as the reviewer-facing representative for simple inference-time scaling in the matched adapter lane.
+- Coverage audit artifact: `outputs/simple_scaling_baseline_coverage_audit/20260422T235959Z/coverage_decision.json` and `outputs/paper_facing_baseline_tables/20260422T231500Z/simple_scaling_axis_explicit_note.md`.
+- No additional Best-of-N/self-consistency direct baseline was added in this pass to avoid redundant baseline sprawl.
+
