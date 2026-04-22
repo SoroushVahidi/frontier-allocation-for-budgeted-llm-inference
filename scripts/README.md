@@ -11,6 +11,7 @@ This file is the runnable-code front door for the repository.
 - Current experiment-family index: [`../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
 - Current code entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Repository map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
+- Contributor placement and maintenance guide: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 - Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 - Repo audit/cleanup rationale: [`../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md)
 - Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
@@ -47,6 +48,13 @@ This file is the runnable-code front door for the repository.
 - `generate_external_baseline_integration_report.py`
 - `build_external_adjacent_baseline_bundle.py`
 - `list_external_baselines.py`
+
+### 5. Run maintenance checks
+- `make smoke`
+- `make health`
+- `make lint`
+- `make test`
+- `make check`
 
 ## Canonical scripts (current project path)
 
