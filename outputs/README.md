@@ -56,6 +56,9 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 ### 10. Paper method decision bundle (strict_gate1_cap_k6 vs strict_f3)
 - `paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3/<timestamp>/`
 
+### 11. Paper-facing strict_f3 component-ablation packaging family
+- `component_ablation_strict_f3_paper_surface/<timestamp>/`
+
 ## Manuscript-facing package families (generated when those scripts are run)
 
 These are important for manuscript baseline/fairness packaging, but may be absent in a minimal checkout if not regenerated yet:

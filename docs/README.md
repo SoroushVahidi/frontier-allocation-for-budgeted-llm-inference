@@ -42,6 +42,7 @@ If you want the current repo-organization rationale, read:
 - [`FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`](FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md): final fairness-audit and manuscript claim-boundary guide.
 - [`INTEGRATED_CONTROLLER_COMPONENT_ABLATION_REPORT_2026_04_22.md`](INTEGRATED_CONTROLLER_COMPONENT_ABLATION_REPORT_2026_04_22.md): strict-phased promoted-default-surface component ablation findings.
 - [`MANUSCRIPT_SURFACE_COMPONENT_ABLATION_REPORT_2026_04_22.md`](MANUSCRIPT_SURFACE_COMPONENT_ABLATION_REPORT_2026_04_22.md): manuscript-facing strict_f3 matched-surface component ablation findings.
+- `COMPONENT_ABLATION_STRICT_F3_PAPER_SURFACE_<timestamp>.md`: canonical paper-facing packaging report for the existing strict_f3 manuscript-surface component ablation (non-rerun consolidation).
 - [`PAPER_METHOD_DECISION_BUNDLE_20260422T175142Z.md`](PAPER_METHOD_DECISION_BUNDLE_20260422T175142Z.md): direct manuscript-method decision bundle comparing `strict_gate1_cap_k6` vs `strict_f3` on one matched surface.
 - [`CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`](CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md): focused anti-collapse / branch-allocation literature memo.
 - [`REPO_MAP.md`](REPO_MAP.md): canonical repository map.
