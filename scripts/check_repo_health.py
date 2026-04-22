@@ -12,8 +12,11 @@ from __future__ import annotations
 import importlib
 from pathlib import Path
 import sys
+import traceback
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 REQUIRED_PATHS = [
     REPO_ROOT / "README.md",
@@ -47,17 +50,21 @@ def main() -> int:
             print(f"- {path}")
         return 1
 
-    failed_imports: list[str] = []
+    failed_imports: list[tuple[str, str]] = []
     for name in REQUIRED_IMPORTS:
         try:
             importlib.import_module(name)
-        except Exception:
-            failed_imports.append(name)
+        except Exception as exc:
+            failed_imports.append((name, f"{type(exc).__name__}: {exc}"))
 
     if failed_imports:
         print("Failed imports:")
-        for name in failed_imports:
-            print(f"- {name}")
+        for name, detail in failed_imports:
+            print(f"- {name} ({detail})")
+            print("  Traceback:")
+            tb_lines = traceback.format_exc().splitlines()
+            for line in tb_lines[-12:]:
+                print(f"  {line}")
         return 1
 
     print("Repository health check: OK")

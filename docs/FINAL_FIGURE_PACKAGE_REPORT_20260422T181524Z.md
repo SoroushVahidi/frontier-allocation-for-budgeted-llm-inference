@@ -68,7 +68,7 @@
   - Axis labels and titles standardized and non-conflicting.
   - `figure3_failure_decomposition` legend/layout was cleaned so legend text does not overlap the plotted region.
   - Main Figure 3 keeps only `strict_f3`, `strict_gate1_cap_k6`, and `external_l1_max` because `external_l1_max` is the strongest fair near-direct external baseline on the locked manuscript surface.
-  - Expanded all-externals appendix view is provided at `outputs/paper_figures/figure3_failure_decomposition_all_externals_appendix.{pdf,png}`.
+  - Non-canonical “expanded externals” appendix variants are not kept under `outputs/paper_figures/` to avoid duplicating the main figure story and to keep the canonical output root single-source-of-truth.
 
 ## Omitted figures and rationale
 - Prior broad default and formula-sweep heavy figures were omitted from final manuscript package because they conflict with the locked manuscript-facing strict_f3 story or add low-value redundancy under page pressure.

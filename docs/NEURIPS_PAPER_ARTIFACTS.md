@@ -55,6 +55,7 @@ Appendix figures and data:
 - `outputs/paper_tables/table4_anti_collapse.{csv,tex}`
 - `outputs/paper_tables/table5_failure_decomposition.{csv,tex}`
 - `outputs/paper_tables/table6_robustness.{csv,tex}`
+- `outputs/paper_tables/table7_component_ablation.{csv,tex}`
 - `outputs/paper_tables/table8_method_contract.{csv,tex}`
 - `outputs/paper_tables/table9_surface_decision_contract.{csv,tex}`
 - `outputs/paper_tables/table10_manuscript_stability_check.{csv,tex}`
@@ -74,6 +75,7 @@ The manuscript-facing strict_f3 component-ablation figure input is derived from:
 - Appendix Figure A3: Allocation-composition diagnostic (absolute action mix plus verification share context).
 - Appendix Figure A4: Strict-F3 component-ablation deltas on the matched manuscript-facing surface, with grouped comparison between full method, component removals, and reduced variants.
 - Tables 1-6: benchmark/method surface, frontier comparison, oracle headroom, anti-collapse summary, failure decomposition, robustness/limitations.
+- Table 7: integrated-controller toggle ablation summary on the strict-phased broader matched surface (supplemental engineering decomposition; distinct contract from Appendix Figure A4).
 - Table 8: compact manuscript-facing method naming/comparison contract.
 - Table 9: compact surface-sensitivity decision contract (`strict_f3` manuscript-facing winner vs `strict_gate1_cap_k6` broader operational default on separate surface).
 - Table 10: compact per-seed stability packaging for `strict_f3` vs `strict_gate1_cap_k6` from existing manuscript decision-bundle artifacts.

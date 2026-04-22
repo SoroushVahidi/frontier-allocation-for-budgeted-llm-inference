@@ -71,6 +71,6 @@ Recommended wording discipline:
 
 - Table: `outputs/paper_tables/table7_component_ablation.csv`
 - Table TeX: `outputs/paper_tables/table7_component_ablation.tex`
-- Figure: `outputs/paper_figures/figure8_component_ablation.{pdf,png}`
+- Figure (optional companion plot, stored with the run bundle): `outputs/integrated_controller_component_ablation_<timestamp>/integrated_controller_component_ablation.{pdf,png}`
 
-These were generated because the ablation produced meaningful variant spread on canonical-surface accuracy.
+These were generated because the ablation produced meaningful variant spread on the strict-phased broader matched surface.

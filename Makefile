@@ -13,26 +13,26 @@ help:
 	@echo "  check   Run health, lint, and test together"
 
 setup:
-	pip install --upgrade pip
-	pip install -r requirements.txt
-	pip install -e .[dev]
+	python3 -m pip install --upgrade pip
+	python3 -m pip install -r requirements.txt
+	python3 -m pip install -e .[dev]
 
 smoke:
-	python scripts/smoke_test.py
+	python3 scripts/smoke_test.py
 
 health:
-	python scripts/check_repo_health.py
+	python3 scripts/check_repo_health.py
 
 format:
-	ruff format $(PY_DIRS)
+	python3 -m ruff format $(PY_DIRS)
 
 lint:
-	ruff check $(PY_DIRS)
+	python3 -m ruff check $(PY_DIRS)
 
 test:
-	pytest -q
+	python3 -m pytest -q
 
 check:
-	python scripts/check_repo_health.py
-	ruff check $(PY_DIRS)
-	pytest -q
+	python3 scripts/check_repo_health.py
+	python3 -m ruff check $(PY_DIRS)
+	python3 -m pytest -q

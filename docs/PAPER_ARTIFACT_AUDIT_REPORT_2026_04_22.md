@@ -1,5 +1,14 @@
 # Paper Artifact Audit Report (2026-04-22)
 
+## Status note (read this first)
+
+This document is a **dated intermediate audit snapshot** from 2026-04-22. It is retained for provenance, but it **does not describe the current canonical NeurIPS paper output set** after the later manuscript-facing figure/table repackaging (including the reduced main-paper figure set and appendix A1-A4 naming).
+
+For the current authoritative artifact list and regeneration policy, use:
+
+- `docs/NEURIPS_PAPER_ARTIFACTS.md`
+- `docs/FINAL_FIGURE_PACKAGE_REPORT_20260422T181524Z.md`
+
 ## Scope
 
 This audit completed an end-to-end cleanup of the NeurIPS paper-facing figure and table pipeline under:

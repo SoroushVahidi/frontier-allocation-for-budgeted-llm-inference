@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from experiments.branching import BranchState
+from experiments.branching import APIBranchGenerator, BranchState
 
 
 class CandidateVerifier(Protocol):
@@ -25,7 +25,7 @@ class LLMVerifyProxyVerifier:
     and maps the post-verify branch score into a scalar ranking signal.
     """
 
-    def __init__(self, generator: "APIBranchGenerator") -> None:
+    def __init__(self, generator: APIBranchGenerator) -> None:
         self._gen = generator
 
     def score(self, branch: BranchState, question: str) -> float:

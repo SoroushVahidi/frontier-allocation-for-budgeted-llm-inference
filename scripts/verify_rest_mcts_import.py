@@ -160,6 +160,9 @@ def verify_rest_mcts_import(
     issues: list[str] = []
     errors: list[str] = []
 
+    if contract_config is None:
+        contract_config = DEFAULT_CONTRACT
+
     if requested_path.is_dir():
         package_dir = requested_path
         metadata_json = package_dir / "metadata.json"
@@ -294,21 +297,8 @@ def verify_rest_mcts_import(
     if "mcts" not in observed_search_modes:
         issues.append("missing_mcts_search_mode")
 
-    contract = _check_contract(contract_config) if contract_config else {
-        "contract_path": "",
-        "contract_exists": False,
-        "contract_valid_json": False,
-        "required_sections_ok": False,
-        "issues": ["contract_not_checked"],
-    }
-    repo_check = _check_official_repo_path(official_repo_path, contract_config) if contract_config else {
-        "checked": False,
-        "official_repo_path": "",
-        "exists": False,
-        "layout_ok": False,
-        "layout_checks": {},
-        "issues": [],
-    }
+    contract = _check_contract(contract_config)
+    repo_check = _check_official_repo_path(official_repo_path, contract_config)
 
     if contract.get("issues"):
         issues.extend([f"contract:{x}" for x in contract["issues"]])

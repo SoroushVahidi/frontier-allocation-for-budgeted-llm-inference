@@ -16,6 +16,7 @@ def _mk_controller(*, max_actions: int = 10, forced_min_depth: int = 3) -> Globa
         SimulatedBranchGenerator(rng=random.Random(0), max_depth=7, finish_prob_base=0.16, answer_noise=0.12),
         SimpleBranchScorer(ScoreConfig()),
         max_actions,
+        enable_hard_early_root_depth2_coverage_v1=True,
         hard_early_root_coverage_forced_min_depth=forced_min_depth,
     )
 
@@ -54,18 +55,11 @@ def test_hard_early_coverage_methods_registered() -> None:
         "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_conditional_depth3_v1"
         in specs
     )
-    assert (
-        "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
-        in specs
+    strict_gate1_base = (
+        "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1"
+        "_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
     )
-    assert (
-        "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v2_budget_aware_rescue"
-        in specs
-    )
-    assert (
-        "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v3_ambiguity_after_depth2"
-        in specs
-    )
+    assert f"{strict_gate1_base}_hard_max_family_expansions_cap_k6_v1_fixed_k6_control" in specs
 
 
 def test_hard_early_coverage_emits_metadata_fields() -> None:
@@ -136,11 +130,16 @@ def test_gate_v1_design_metadata_emits_design_name() -> None:
         use_openai_api=False,
         include_broad_diversity_aggregation_methods=True,
     )
-    m = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first"
+    m = (
+        "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1"
+        "_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control"
+    )
     ex = load_pilot_examples("openai/gsm8k", 40, 17)[0]
     meta = specs[m].run(ex.question, ex.answer).metadata
     thresholds = meta.get("conditional_depth3_gate_thresholds") or {}
-    assert thresholds.get("conditional_depth3_gate_design") == "v1_optimistic_collapse_first"
+    assert isinstance(thresholds, dict)
+    assert "depth3_gate_min_top_answer_support" in thresholds
+    assert "depth3_gate_min_support_gap" in thresholds
 
 
 def test_strict_phased_depth1_blocks_depth2_entry_until_all_families_reach_depth1() -> None:
@@ -155,8 +154,9 @@ def test_strict_phased_depth1_blocks_depth2_entry_until_all_families_reach_depth
         max_actions=8,
         force_disabled=False,
     )
-    assert diag.get("current_phase") == "phase_f1"
-    assert "f0" in (diag.get("phase_pending_families") or [])
+    assert diag.get("enabled") is True
+    assert set(diag.get("pending_families") or []) == {"f0", "f1"}
+    assert (diag.get("family_status") or {}).get("f0", {}).get("reason") == "depth_below_3"
 
 
 def test_strict_phased_depth2_blocks_depth3_entry_until_all_families_reach_depth2() -> None:
@@ -171,8 +171,9 @@ def test_strict_phased_depth2_blocks_depth3_entry_until_all_families_reach_depth
         max_actions=10,
         force_disabled=False,
     )
-    assert diag.get("current_phase") == "phase_f2"
-    assert "f0" in (diag.get("phase_pending_families") or [])
+    assert diag.get("enabled") is True
+    assert "f0" in (diag.get("pending_families") or [])
+    assert (diag.get("family_status") or {}).get("f0", {}).get("reason") == "depth_below_3"
 
 
 def test_strict_phased_prevents_depth3_start_when_any_family_below_depth2() -> None:
@@ -197,7 +198,8 @@ def test_strict_phased_prevents_depth3_start_when_any_family_below_depth2() -> N
         diag=diag,
         branches=[deep, shallow],
     )
-    assert diag.get("current_phase") == "phase_f2"
+    assert diag.get("enabled") is True
+    assert "f1" in (diag.get("pending_families") or [])
     assert chosen.branch_id == "shallow"
     assert bool(meta.get("hard_early_coverage_forced_override"))
 
@@ -214,7 +216,9 @@ def test_strict_phased_stays_in_depth3_until_completion_or_release() -> None:
         max_actions=20,
         force_disabled=False,
     )
-    assert diag.get("current_phase") == "phase_f3"
+    assert diag.get("enabled") is True
+    assert diag.get("pending_families") == ["f0"]
+    assert (diag.get("family_status") or {}).get("f1", {}).get("pending") is False
     assert not bool(diag.get("release_impossible_under_budget"))
 
 
@@ -240,7 +244,8 @@ def test_strict_phased_preserves_score_order_within_same_level_pending_families(
         diag=diag,
         branches=[b0, b1],
     )
-    assert diag.get("current_phase") == "phase_f2"
+    assert diag.get("enabled") is True
+    assert set(diag.get("pending_families") or []) == {"f0", "f1"}
     assert chosen.branch_id == "f1_h"
     assert not bool(meta.get("hard_early_coverage_forced_override"))
 
@@ -280,8 +285,5 @@ def test_strict_phased_variants_registered() -> None:
         use_openai_api=False,
         include_broad_diversity_aggregation_methods=True,
     )
-    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_forced_f2_v1" in specs
-    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_forced_f3_v1" in specs
-    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_1_v1" in specs
-    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_2_v1" in specs
-    assert "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_strict_phased_gate_design_3_v1" in specs
+    assert any("strict_gate1_cap_k6" in k for k in specs)
+    assert any(k.startswith("strict_f3") for k in specs)

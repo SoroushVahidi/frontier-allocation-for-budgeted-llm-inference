@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Canonical-surface component ablation for strict_gate1_cap_k6 integrated controller."""
+"""Integrated-controller toggle ablation on the strict-phased broader matched surface."""
 
 from __future__ import annotations
 
@@ -438,27 +438,6 @@ def main() -> None:
     }
     (out_dir / "aggregate_summary.json").write_text(json.dumps(aggregate_json, indent=2), encoding="utf-8")
 
-    manifest = {
-        "name": "integrated_controller_component_ablation",
-        "created_at_utc": now.isoformat(),
-        "output_dir": str(out_dir.relative_to(REPO_ROOT)),
-        "inputs": [
-            "experiments/frontier_matrix_core.py",
-            "experiments/controllers.py",
-            "experiments/output_layer_repair.py",
-            "docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md",
-        ],
-        "outputs": [
-            str((out_dir / "per_case_results.csv").relative_to(REPO_ROOT)),
-            str((out_dir / "aggregate_summary.csv").relative_to(REPO_ROOT)),
-            str((out_dir / "aggregate_summary.json").relative_to(REPO_ROOT)),
-            str((out_dir / "per_dataset_metrics.csv").relative_to(REPO_ROOT)),
-            str((out_dir / "per_seed_summary.csv").relative_to(REPO_ROOT)),
-            str((out_dir / "failure_decomposition.csv").relative_to(REPO_ROOT)),
-            str((out_dir / "anti_collapse_diagnostics.csv").relative_to(REPO_ROOT)),
-        ],
-    }
-    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     (out_dir / "status.json").write_text(json.dumps({"status": "ok", "n_rows": len(per_case_rows)}, indent=2), encoding="utf-8")
 
     # Add one paper-facing table/figure if the ablation differentiates variants meaningfully.
@@ -480,11 +459,42 @@ def main() -> None:
         ]
         _write_csv(REPO_ROOT / "outputs/paper_tables/table7_component_ablation.csv", table_rows)
         _write_tex(REPO_ROOT / "outputs/paper_tables/table7_component_ablation.tex", table_rows)
-        _plot_ablation_figure(
-            [r for r in table_rows if r["variant"] != "best_reduced_variant"],
-            REPO_ROOT / "outputs/paper_figures/figure8_component_ablation.png",
-            REPO_ROOT / "outputs/paper_figures/figure8_component_ablation.pdf",
+        png_path = out_dir / "integrated_controller_component_ablation.png"
+        pdf_path = out_dir / "integrated_controller_component_ablation.pdf"
+        _plot_ablation_figure([r for r in table_rows if r["variant"] != "best_reduced_variant"], png_path, pdf_path)
+
+    manifest_outputs = [
+        str((out_dir / "per_case_results.csv").relative_to(REPO_ROOT)),
+        str((out_dir / "aggregate_summary.csv").relative_to(REPO_ROOT)),
+        str((out_dir / "aggregate_summary.json").relative_to(REPO_ROOT)),
+        str((out_dir / "per_dataset_metrics.csv").relative_to(REPO_ROOT)),
+        str((out_dir / "per_seed_summary.csv").relative_to(REPO_ROOT)),
+        str((out_dir / "failure_decomposition.csv").relative_to(REPO_ROOT)),
+        str((out_dir / "anti_collapse_diagnostics.csv").relative_to(REPO_ROOT)),
+    ]
+    if spread >= 0.005:
+        manifest_outputs.extend(
+            [
+                str(Path("outputs/paper_tables/table7_component_ablation.csv").as_posix()),
+                str(Path("outputs/paper_tables/table7_component_ablation.tex").as_posix()),
+                str((out_dir / "integrated_controller_component_ablation.png").relative_to(REPO_ROOT)),
+                str((out_dir / "integrated_controller_component_ablation.pdf").relative_to(REPO_ROOT)),
+            ]
         )
+
+    manifest = {
+        "name": "integrated_controller_component_ablation",
+        "created_at_utc": now.isoformat(),
+        "output_dir": str(out_dir.relative_to(REPO_ROOT)),
+        "inputs": [
+            "experiments/frontier_matrix_core.py",
+            "experiments/controllers.py",
+            "experiments/output_layer_repair.py",
+            "docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md",
+        ],
+        "outputs": manifest_outputs,
+    }
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     report_path = REPO_ROOT / f"docs/INTEGRATED_CONTROLLER_COMPONENT_ABLATION_{ts}.md"
     lines = [

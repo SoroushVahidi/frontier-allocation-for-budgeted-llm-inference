@@ -1,5 +1,14 @@
 # Paper Artifact Cleanup Report (2026-04-21)
 
+## Status note (read this first)
+
+This document is a **dated intermediate cleanup snapshot** from 2026-04-21. It is retained for provenance, but it **does not describe the current canonical NeurIPS paper output set** after the later manuscript-facing figure/table repackaging.
+
+For the current authoritative artifact list and regeneration policy, use:
+
+- `docs/NEURIPS_PAPER_ARTIFACTS.md`
+- `docs/FINAL_FIGURE_PACKAGE_REPORT_20260422T181524Z.md`
+
 ## Scope
 
 This cleanup canonicalizes paper-facing artifacts around the current strict-phased default story:
