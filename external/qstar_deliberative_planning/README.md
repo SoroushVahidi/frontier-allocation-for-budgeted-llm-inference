@@ -45,3 +45,17 @@ Use Q* as a direct-family conceptual reference and motivation anchor for deliber
 ## Canonical provenance audit for this pass
 
 - `docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md`
+
+## Unofficial runnable comparator lane (separate from official paper record)
+
+To reduce reviewer concerns about missing close conceptual comparisons **without** overclaiming reproduction, this repository now includes a separate runnable adapter lane:
+
+- Adapter id: `qstar_style_adapter`
+- Contract: `configs/qstar_style_adapter_contract_v1.json`
+- Runner: `scripts/run_qstar_style_adapter.py`
+- Artifacts: `outputs/qstar_style_adapter/<run_id>/`
+
+Important:
+- This adapter is **unofficial** and **caveated**.
+- It is inspired by Q*-style deliberative search, but it is **not** the official Q* baseline.
+- The official paper record above remains discuss-only unless verified official artifacts become available.

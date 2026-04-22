@@ -1,0 +1,1 @@
+python scripts/run_qstar_style_adapter.py --contract-config configs/qstar_style_adapter_contract_v1.json --run-id 20260422T160500Z

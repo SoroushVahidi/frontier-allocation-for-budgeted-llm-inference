@@ -195,3 +195,21 @@ Safe wording rule:
 - Do not reframe this baseline section as a generic routing paper, generic adaptive-TTC survey, or best-of-N paper.
 - Keep the center on **fixed-budget next-step branch allocation**, **continuation-value core**, and **bounded completion-aware correction in near-tie disagreement slices**.
 - Preserve status honesty with explicit labels: `runnable_direct`, `runnable_adjacent`, `adapter_based`, `import_validated`, `discuss_only`, `blocked`.
+
+## Q*-family separation update (2026-04-22 unofficial adapter lane)
+
+The repository now keeps a strict two-lane Q*-family split:
+
+1. **Official paper record** — `qstar_deliberative_planning`
+   - remains `discuss_only` and provenance-hardened,
+   - no verified official runnable artifact path is claimed.
+
+2. **Unofficial runnable comparator** — `qstar_style_adapter`
+   - contract: `configs/qstar_style_adapter_contract_v1.json`
+   - runner: `scripts/run_qstar_style_adapter.py`
+   - artifacts: `outputs/qstar_style_adapter/<run_id>/`
+   - role: caveated conceptual-family stress test only.
+
+Table guardrail:
+- If reported, label as **"Q*-style adapter (unofficial, caveated)"**.
+- Do not place this lane in tables that imply official Q* reproduction.
