@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-04-22T03:11:22.119832+00:00",
+  "generated_utc": "2026-04-22T20:05:14.474641+00:00",
   "taxonomy_v1_status": [
     "runnable_direct",
     "runnable_adjacent",
@@ -71,6 +71,36 @@
       "mode_b": "blocked_without_official_results_import",
       "blocker": "MODE B requires externally-produced full L1 outputs; RL training path is not reproduced in this repo.",
       "next_requirement": "Provide exported official/full L1 metrics and set official.results_path."
+    },
+    {
+      "baseline_key": "conformal_thinking",
+      "display_name": "Conformal Thinking",
+      "category": "discuss_only",
+      "status_v1_mode_a": "discuss_only",
+      "status_v1_mode_b": "not_applicable",
+      "control_v1_mode_a": "adjacent",
+      "control_v1_mode_b": "not_applicable",
+      "directness": "adjacent",
+      "usable_now": "no",
+      "mode_a": "not_applicable",
+      "mode_b": "not_applicable",
+      "blocker": "Primary arXiv sources verified; official public code is not clearly verified.",
+      "next_requirement": "Verify official public code provenance before any official reproduction claim."
+    },
+    {
+      "baseline_key": "conformal_thinking_mode_a",
+      "display_name": "Conformal Thinking MODE A",
+      "category": "adapter_based",
+      "status_v1_mode_a": "adapter_based",
+      "status_v1_mode_b": "not_applicable",
+      "control_v1_mode_a": "adjacent",
+      "control_v1_mode_b": "not_applicable",
+      "directness": "adjacent",
+      "usable_now": "yes_mode_a",
+      "mode_a": "runnable",
+      "mode_b": "not_applicable",
+      "blocker": "Paper-inspired matched-substrate adapter only; not an official reproduction.",
+      "next_requirement": "Run and audit diagnostics before any manuscript-facing table promotion."
     },
     {
       "baseline_key": "best_route_microsoft",

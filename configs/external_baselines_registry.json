@@ -400,6 +400,48 @@
         "outputs/training_free_difficulty_proxies_mode_a/<run_id>/diagnostic_report.md"
       ],
       "guardrail": "query_level_global_budget_adapter_not_branch_level_control_equivalent"
+    },
+    "conformal_thinking": {
+      "clone_url": null,
+      "doc": "external/conformal_thinking/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_public_code_not_clearly_verified_from_primary_arxiv_sources",
+      "canonical_title": "Conformal Thinking: Risk Control for Reasoning on a Compute Budget",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://arxiv.org/abs/2602.03814",
+      "paper_pdf_url": "https://arxiv.org/pdf/2602.03814.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2602.03814",
+      "integration_doc": "docs/conformal_thinking_integration.md",
+      "provenance": {
+        "paper_identity": "verified",
+        "primary_source_used": "arxiv_abs_and_pdf",
+        "official_repo_found": "not_clearly_verified",
+        "provenance_strength": "paper_verified_official_code_unverified"
+      }
+    },
+    "conformal_thinking_mode_a": {
+      "clone_url": null,
+      "doc": "external/conformal_thinking/README.md",
+      "integration": "adapter_based",
+      "completeness_class": "adapter_based",
+      "blocker": "unofficial_matched_substrate_adapter_not_official_reproduction",
+      "canonical_title": "Conformal Thinking MODE A adapter (paper-inspired)",
+      "baseline_class": "adjacent_adapter_early_exit",
+      "paper_phase_priority": "reviewer_coverage_support",
+      "target_paper_url": "https://arxiv.org/abs/2602.03814",
+      "paper_pdf_url": "https://arxiv.org/pdf/2602.03814.pdf",
+      "contract": "configs/conformal_thinking_mode_a_v1.json",
+      "integration_runner": "scripts/run_conformal_thinking_mode_a.py",
+      "integration_doc": "docs/conformal_thinking_integration.md",
+      "status_artifacts": [
+        "outputs/conformal_thinking_mode_a/<run_id>/status.json",
+        "outputs/conformal_thinking_mode_a/<run_id>/comparison_summary.csv",
+        "outputs/conformal_thinking_mode_a/<run_id>/diagnostic_summary.json",
+        "outputs/conformal_thinking_mode_a/<run_id>/diagnostic_report.md"
+      ],
+      "guardrail": "risk_controlled_early_exit_adapter_not_branch_level_control_equivalent"
     }
   },
   "completeness_taxonomy": [

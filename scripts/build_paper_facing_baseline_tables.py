@@ -16,6 +16,7 @@ DEFAULT_FULL_COMPARISON_RUN = "20260422T230000Z"
 DEFAULT_ADJACENT_BUNDLE_RUN = "20260422T201000Z"
 DEFAULT_LOSS_RUN = "20260422T230000Z"
 OUR_METHOD = "strict_f3"
+READINESS_MATRIX = REPO_ROOT / "outputs/external_baseline_readiness/paper_readiness_decision_matrix.json"
 
 ADJACENT_INTEGRATION_OUTPUT_DIR = {
     "best_route_microsoft": "best_route_adjacent_integration",
@@ -112,6 +113,7 @@ def build_tables(run_id: str, full_comparison_run: str, adjacent_bundle_run: str
     strongest = json.loads((full_dir / "strongest_external_baseline.json").read_text(encoding="utf-8"))
     adjacent_df = pd.read_csv(adjacent_bundle)
     registry = json.loads(registry_path.read_text(encoding="utf-8"))["baselines"]
+    readiness_matrix = json.loads(READINESS_MATRIX.read_text(encoding="utf-8")) if READINESS_MATRIX.exists() else None
 
     near_direct_external = class_rank_df[
         (class_rank_df["taxonomy_label"] == "near_direct")
@@ -217,6 +219,7 @@ def build_tables(run_id: str, full_comparison_run: str, adjacent_bundle_run: str
             "adjacent": "Shown in separate table with caveated safe scope.",
             "discussion_only": "Shown as references with blockers, not integrated baselines.",
         },
+        "external_readiness_matrix": "outputs/external_baseline_readiness/paper_readiness_decision_matrix.json" if readiness_matrix else None,
     }
     _write_json(out_dir / "paper_facing_baseline_summary.json", summary)
 
@@ -253,6 +256,7 @@ def build_tables(run_id: str, full_comparison_run: str, adjacent_bundle_run: str
             "external_adjacent_bundle": str(adjacent_bundle.relative_to(REPO_ROOT)),
             "external_registry": str(registry_path.relative_to(REPO_ROOT)),
             "loss_analysis_run": str(loss_dir.relative_to(REPO_ROOT)),
+            "external_readiness_matrix": str(READINESS_MATRIX.relative_to(REPO_ROOT)) if READINESS_MATRIX.exists() else None,
         },
         "outputs": [
             "near_direct_ranking.csv",

@@ -248,3 +248,20 @@ Implementation references:
 
 Methodological caveat:
 - This is a query/sample-level allocator (`adjacent`) and is not branch-level frontier-control equivalent.
+
+## Conformal Thinking integration status (2026-04 MODE A adapter)
+
+*Conformal Thinking: Risk Control for Reasoning on a Compute Budget* is integrated with a conservative two-lane split:
+
+- **Official paper record (`conformal_thinking`)**: `discuss_only` pending clearly verified official public code from primary arXiv sources.
+- **Runnable comparator lane (`conformal_thinking_mode_a`)**: `adapter_based` paper-inspired matched-substrate MODE A baseline for risk-controlled early-exit stopping under per-query max compute.
+
+Implementation references:
+- `external/conformal_thinking/README.md`
+- `docs/conformal_thinking_integration.md`
+- `configs/conformal_thinking_mode_a_v1.json`
+- `scripts/run_conformal_thinking_mode_a.py`
+
+Methodological caveat:
+- This lane is a risk-controlled early-exit / stopping comparator and remains `adjacent`, not branch-level frontier allocation control-equivalent.
+- Keep wording as **paper-inspired matched-substrate adapter** and do not claim official reproduction.

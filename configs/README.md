@@ -19,6 +19,7 @@ YAML and JSON configuration for experiments and tooling.
 | [`tale_official_adapter_v1.json`](tale_official_adapter_v1.json) | MODE B TALE baseline: official/full adapter reporting path (separately labeled, may include TALE-PT) |
 | [`l1_inference_adapter_v1.json`](l1_inference_adapter_v1.json) | MODE A L1 baseline: inference-only L1-style length-conditioned adapter (Exact + Max variants) |
 | [`l1_official_full_adapter_v1.json`](l1_official_full_adapter_v1.json) | MODE B L1 baseline: official/full adapter reporting path (separately labeled, may include RL-trained L1 checkpoints) |
+| [`conformal_thinking_mode_a_v1.json`](conformal_thinking_mode_a_v1.json) | MODE A Conformal Thinking baseline: risk-controlled early-exit adapter with validation-calibrated thresholding under max per-query budget |
 
 ## Conventions
 
