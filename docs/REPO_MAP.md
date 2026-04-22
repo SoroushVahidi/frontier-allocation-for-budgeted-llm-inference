@@ -16,18 +16,18 @@ This repository is **not** currently centered on the older binary revise-routing
 ## Fast start
 
 - Start here: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
-- Then read: [`CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
 - Then read: [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-- Then read: [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-- Then use: [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md) for artifact navigation.
-- Then use: [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md) for experiment-family navigation.
+- Then read: [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
+- Then read: [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+- Then read: [`CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md)
+- Then use: [`main_baselines.md`](main_baselines.md) and [`EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md`](EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md)
 - Then use: [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md) for runnable entry points.
 
 ## Directory map
 
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
-- `docs/`: canonical status/planning notes plus grouped method/evaluation indexes, exploratory notes, and historical guidance.
+- `docs/`: canonical status/planning notes, grouped method/evaluation indexes, baseline/reference docs, exploratory notes, and historical guidance.
 - `configs/`: dataset, baseline, and experiment configuration files.
 - `datasets/`: dataset policy/readme assets.
 - `external/`: external baseline references and integration notes.
@@ -38,12 +38,12 @@ This repository is **not** currently centered on the older binary revise-routing
 
 Read these first for current project interpretation:
 1. `docs/CANONICAL_START_HERE.md`
-2. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-3. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-4. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
-5. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-6. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
-7. `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
+2. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+3. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+4. `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
+5. `docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`
+6. `docs/main_baselines.md`
+7. `docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md`
 8. `docs/CURRENT_SAFE_CLAIMS.md`
 9. `docs/REPO_MAP.md`
 
@@ -75,17 +75,18 @@ Use these when you want to understand current evidence:
 
 ### Current baseline / broader comparison support path
 - `scripts/run_full_method_comparison_bundle.py`
-- `scripts/build_twenty_exact_current_full_vs_best_fresh.py`
 - `scripts/run_s1_budget_forcing_baseline.py`
 - `scripts/run_tale_baseline.py`
 - `scripts/run_l1_baseline.py`
+- `scripts/run_rest_mcts_adjacent_integration.py`
+- `scripts/run_lets_verify_step_by_step_adjacent_integration.py`
 
 ## Practical collaborator start path
 
 1. Read the canonical docs in order from `docs/CANONICAL_START_HERE.md`.
 2. Use `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md` to understand the current strict-phased method state.
-3. Use `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md` to see the decisive default-model result.
-4. Use `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md` to understand which experiment families are now active.
+3. Use `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`, `docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`, and `docs/main_baselines.md` to understand the current baseline stack and comparison guardrails.
+4. Use `docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md` when you need the compact manuscript-safe adjacent-baseline picture.
 5. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
 6. Treat exploratory notes as evidence traces, not as the default project interpretation.
 
@@ -95,10 +96,11 @@ When the project phase changes materially, update these together:
 - `README.md`
 - `docs/README.md`
 - `docs/CANONICAL_START_HERE.md`
-- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 - `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
 - `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-- `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+- `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
+- `docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`
+- `docs/main_baselines.md`
 - `docs/REPO_MAP.md`
 - `scripts/CANONICAL_START_HERE.md`
 - `outputs/README.md`
