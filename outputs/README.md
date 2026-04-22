@@ -29,6 +29,39 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 ### 5. Current output-layer repair analysis
 - `current_failure_output_layer_repair_20260420/`
 
+## Current external baseline artifact families
+
+Use these when the task is paper-facing external-baseline interpretation rather than internal method selection.
+
+### Near-direct matched-substrate baselines
+- `s1_*`
+- `tale_*`
+- `l1_*`
+
+These remain the strongest current near-direct external comparison families.
+
+### BEST-Route
+- `best_route_adjacent_integration/<run_id>/`
+- `best_route_full_integration_attempt_20260421T221721Z/`
+
+Interpretation:
+- stronger than pure import validation,
+- but not yet a fully stable reproduced baseline in this environment.
+
+### When To Solve / When To Verify
+- `when_solve_when_verify_adjacent_integration/<run_id>/`
+
+Interpretation:
+- strengthened adjacent official baseline lane.
+
+### ReST-MCTS*
+- `rest_mcts_partial_runnable_integration_20260421T225645Z/`
+
+Interpretation:
+- current strongest adjacent search baseline artifact family,
+- partial runnable official-code integration with explicit caveats,
+- safe for main external-baseline table use when labeled honestly.
+
 ## Historical or bounded paper-facing output families
 
 These are still useful, but they are not the default current source for the finalized default-model story:
@@ -41,6 +74,7 @@ These are still useful, but they are not the default current source for the fina
 
 - Do not use an output folder as a headline evidence source unless it is linked from the current canonical docs.
 - Check `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`, `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`, and `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md` before using a folder for manuscript claims.
+- For external baselines, also check `docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`, `docs/main_baselines.md`, and the specific baseline integration report.
 
 ## Practical rule of thumb
 
@@ -48,3 +82,5 @@ These are still useful, but they are not the default current source for the fina
 - Use the newest-vs-best exact-loss families for direct-adversary failure statistics.
 - Use the strict-phased force/gate families for why the default emerged from the strict-phased family.
 - Use the learned-gate and hard-cap output families as controlled alternatives and supporting evidence, not as the default source unless the canonical docs explicitly promote them.
+- Use the ReST-MCTS* partial-runnable artifact family for the current strongest adjacent search-baseline story.
+- Use the BEST-Route artifact families with explicit caveats until the runtime-stability problem is resolved.
