@@ -1,0 +1,4 @@
+slice,strict_f3_accuracy,strict_gate1_cap_k6_accuracy,delta_strict_f3_minus_strict_gate1_cap_k6,higher_on_slice
+seed=11,0.6333333333333333,0.6944444444444444,-0.061111111111111116,Strict-Gate1-Cap-K6
+seed=23,0.6833333333333333,0.6111111111111112,0.07222222222222219,Strict-F3
+mean_across_available_seeds,,,0.005555555555555536,Strict-F3

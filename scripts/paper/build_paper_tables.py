@@ -15,9 +15,12 @@ from paper_data_sources import (
     load_canonical_hundred_aggregate,
     load_canonical_hundred_failure_table,
     load_multidataset_frontier,
+    load_paper_method_eval_manifest,
+    load_paper_method_per_seed_summary,
     write_csv,
     write_tex_table,
 )
+from paper_style import manuscript_method_display_name
 
 
 def table1_benchmark_method_summary() -> list[dict[str, object]]:
@@ -152,6 +155,109 @@ def table6_robustness() -> list[dict[str, object]]:
     return out
 
 
+def table8_method_contract() -> list[dict[str, object]]:
+    # Compact manuscript-facing method naming/comparison contract.
+    rows = [
+        ("strict_f3", "strict_f3", "strict-phased", "internal", "yes", "manuscript-facing internal winner"),
+        ("strict_gate1_cap_k6", "strict_gate1_cap_k6", "strict-phased capped gate", "internal", "yes", "broader operational default on different surface"),
+        ("strict_f2", "strict_f2", "strict-phased", "internal", "yes", "internal anchor on matched surface"),
+        ("external_l1_max", "external_l1_max", "near-direct external", "near_direct_external", "yes", "strongest fair near-direct external anchor"),
+        ("external_l1_exact", "external_l1_exact", "near-direct external", "near_direct_external", "yes", "fair near-direct external comparator"),
+        ("external_tale_prompt_budgeting", "external_tale_prompt_budgeting", "near-direct external", "near_direct_external", "yes", "fair near-direct external comparator"),
+        ("external_s1_budget_forcing", "external_s1_budget_forcing", "near-direct external", "near_direct_external", "yes", "fair near-direct external comparator"),
+        ("BEST-Route", "best_route_adjacent_integration", "adjacent baseline", "adjacent", "no", "adjacent/import-validated contract only"),
+        ("when_solve_when_verify", "when_solve_when_verify_adjacent_integration", "adjacent baseline", "adjacent", "no", "adjacent/import-validated contract only"),
+        ("ReST-MCTS*", "rest_mcts_adjacent_integration", "adjacent baseline", "adjacent", "no", "adjacent/import-validated contract only"),
+    ]
+    return [
+        {
+            "display_name": manuscript_method_display_name(display) if display.startswith(("strict_", "external_")) else display,
+            "runtime_or_artifact_name": runtime_name,
+            "method_family": family,
+            "comparison_class": comp_class,
+            "included_in_main_matched_comparison": included,
+            "note": note,
+        }
+        for display, runtime_name, family, comp_class, included, note in rows
+    ]
+
+
+def table9_surface_decision_contract() -> list[dict[str, object]]:
+    manifest = load_paper_method_eval_manifest()
+    sel = manifest.get("surface_selection", {})
+    manuscript_datasets = "; ".join(sel.get("datasets", []))
+    manuscript_budgets = ", ".join(str(b) for b in sel.get("budgets", []))
+    manuscript_seeds = ", ".join(str(s) for s in sel.get("seeds", []))
+
+    broader_rows = load_multidataset_frontier()
+    broader_datasets = sorted({r["dataset"] for r in broader_rows})
+    broader_budgets = sorted({int(float(r["budget"])) for r in broader_rows})
+
+    return [
+        {
+            "surface_name": "canonical manuscript-facing matched internal surface",
+            "datasets": manuscript_datasets,
+            "budgets": manuscript_budgets,
+            "seeds": manuscript_seeds,
+            "winner": manuscript_method_display_name("strict_f3"),
+            "intended_use": "manuscript-facing internal method identity and paper-facing matched comparisons",
+        },
+        {
+            "surface_name": "broader strict-phased operational/default surface",
+            "datasets": "; ".join(broader_datasets),
+            "budgets": ", ".join(str(b) for b in broader_budgets),
+            "seeds": "seed-aggregated canonical surface",
+            "winner": manuscript_method_display_name("strict_gate1_cap_k6"),
+            "intended_use": "broader operational defaulting context; not the manuscript-facing winner contract",
+        },
+    ]
+
+
+def table10_manuscript_stability_check() -> list[dict[str, object]]:
+    # Package existing per-seed artifact into manuscript-ready compact table.
+    rows = load_paper_method_per_seed_summary()
+    methods = {"strict_f3", "strict_gate1_cap_k6"}
+    by_seed: dict[str, dict[str, float]] = defaultdict(dict)
+    for r in rows:
+        method = str(r["method"])
+        if method not in methods:
+            continue
+        seed = str(r["seed"])
+        by_seed[seed][method] = float(r["mean_accuracy"])
+
+    out: list[dict[str, object]] = []
+    deltas: list[float] = []
+    for seed in sorted(by_seed.keys(), key=lambda s: int(s)):
+        f3 = by_seed[seed].get("strict_f3")
+        gate = by_seed[seed].get("strict_gate1_cap_k6")
+        if f3 is None or gate is None:
+            continue
+        delta = f3 - gate
+        deltas.append(delta)
+        out.append(
+            {
+                "slice": f"seed={seed}",
+                "strict_f3_accuracy": f3,
+                "strict_gate1_cap_k6_accuracy": gate,
+                "delta_strict_f3_minus_strict_gate1_cap_k6": delta,
+                "higher_on_slice": manuscript_method_display_name("strict_f3") if delta > 0 else manuscript_method_display_name("strict_gate1_cap_k6"),
+            }
+        )
+
+    if deltas:
+        mean_delta = sum(deltas) / len(deltas)
+        out.append(
+            {
+                "slice": "mean_across_available_seeds",
+                "strict_f3_accuracy": "",
+                "strict_gate1_cap_k6_accuracy": "",
+                "delta_strict_f3_minus_strict_gate1_cap_k6": mean_delta,
+                "higher_on_slice": manuscript_method_display_name("strict_f3") if mean_delta > 0 else manuscript_method_display_name("strict_gate1_cap_k6"),
+            }
+        )
+    return out
+
+
 def write_table(prefix: str, rows: list[dict[str, object]]) -> None:
     csv_path = TABLE_DIR / f"{prefix}.csv"
     tex_path = TABLE_DIR / f"{prefix}.tex"
@@ -166,6 +272,9 @@ def main() -> None:
     write_table("table4_anti_collapse", table4_anti_collapse())
     write_table("table5_failure_decomposition", table5_failure_decomposition())
     write_table("table6_robustness", table6_robustness())
+    write_table("table8_method_contract", table8_method_contract())
+    write_table("table9_surface_decision_contract", table9_surface_decision_contract())
+    write_table("table10_manuscript_stability_check", table10_manuscript_stability_check())
 
 
 if __name__ == "__main__":

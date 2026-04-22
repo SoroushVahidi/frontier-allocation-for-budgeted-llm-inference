@@ -1,0 +1,3 @@
+surface_name,datasets,budgets,seeds,winner,intended_use
+canonical manuscript-facing matched internal surface,HuggingFaceH4/MATH-500; HuggingFaceH4/aime_2024; openai/gsm8k,"4, 6, 8","11, 23",Strict-F3,manuscript-facing internal method identity and paper-facing matched comparisons
+broader strict-phased operational/default surface,HuggingFaceH4/MATH-500; HuggingFaceH4/aime_2024; olympiadbench; openai/gsm8k,0,seed-aggregated canonical surface,Strict-Gate1-Cap-K6,broader operational defaulting context; not the manuscript-facing winner contract

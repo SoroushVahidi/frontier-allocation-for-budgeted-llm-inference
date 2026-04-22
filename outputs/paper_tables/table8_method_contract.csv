@@ -1,0 +1,11 @@
+display_name,runtime_or_artifact_name,method_family,comparison_class,included_in_main_matched_comparison,note
+Strict-F3,strict_f3,strict-phased,internal,yes,manuscript-facing internal winner
+Strict-Gate1-Cap-K6,strict_gate1_cap_k6,strict-phased capped gate,internal,yes,broader operational default on different surface
+Strict-F2,strict_f2,strict-phased,internal,yes,internal anchor on matched surface
+L1-Max,external_l1_max,near-direct external,near_direct_external,yes,strongest fair near-direct external anchor
+L1-Exact,external_l1_exact,near-direct external,near_direct_external,yes,fair near-direct external comparator
+TALE,external_tale_prompt_budgeting,near-direct external,near_direct_external,yes,fair near-direct external comparator
+s1,external_s1_budget_forcing,near-direct external,near_direct_external,yes,fair near-direct external comparator
+BEST-Route,best_route_adjacent_integration,adjacent baseline,adjacent,no,adjacent/import-validated contract only
+when_solve_when_verify,when_solve_when_verify_adjacent_integration,adjacent baseline,adjacent,no,adjacent/import-validated contract only
+ReST-MCTS*,rest_mcts_adjacent_integration,adjacent baseline,adjacent,no,adjacent/import-validated contract only

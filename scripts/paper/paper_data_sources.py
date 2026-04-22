@@ -16,6 +16,9 @@ TABLE_DIR = REPO_ROOT / "outputs" / "paper_tables"
 STRICT_PHASED_DEFAULT_DOC = REPO_ROOT / "docs" / "FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md"
 MANUSCRIPT_METHOD_DECISION_DOC = REPO_ROOT / "docs" / "INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md"
 EXTERNAL_READINESS_DOC = REPO_ROOT / "docs" / "CANONICAL_EXTERNAL_BASELINE_PAPER_READINESS_DECISION_2026_04_22.md"
+PAPER_METHOD_DECISION_DIR = (
+    REPO_ROOT / "outputs" / "paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3" / "20260422T175142Z"
+)
 STRICT_PHASED_FRONTIER_CSV = PLOT_DATA_DIR / "sources" / "strict_phased_multidataset_frontier.csv"
 CANONICAL_HUNDRED_DIR = (
     REPO_ROOT / "outputs" / "canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z"
@@ -194,3 +197,11 @@ def load_canonical_hundred_aggregate() -> dict[str, Any]:
 
 def load_canonical_hundred_failure_table() -> list[dict[str, str]]:
     return read_csv(CANONICAL_HUNDRED_DIR / "failure_statistics_table.csv")
+
+
+def load_paper_method_per_seed_summary() -> list[dict[str, str]]:
+    return read_csv(PAPER_METHOD_DECISION_DIR / "per_seed_summary.csv")
+
+
+def load_paper_method_eval_manifest() -> dict[str, Any]:
+    return read_json(PAPER_METHOD_DECISION_DIR / "eval_manifest.json")
