@@ -66,6 +66,7 @@
 - Plot readability:
   - Simplified comparator set to avoid legend crowding.
   - Axis labels and titles standardized and non-conflicting.
+  - `figure3_failure_decomposition` legend/layout was cleaned so legend text does not overlap the plotted region.
 
 ## Omitted figures and rationale
 - Prior broad default and formula-sweep heavy figures were omitted from final manuscript package because they conflict with the locked manuscript-facing strict_f3 story or add low-value redundancy under page pressure.

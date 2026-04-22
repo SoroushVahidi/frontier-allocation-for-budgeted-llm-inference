@@ -20,12 +20,12 @@ def main() -> None:
 
     fig, ax = plt.subplots(figsize=(STYLE.width + 0.2, STYLE.height + 0.5))
     x = np.arange(len(labels))
-    ax.bar(x, tree, label="Absent from tree", color="#e41a1c")
+    ax.bar(x, tree, label="Absent-from-tree", color="#e41a1c")
     ax.bar(
         x,
         selected_wrong,
         bottom=tree,
-        label="Present but not selected (incl. output-layer)",
+        label="Present-not-selected / output-layer",
         color="#377eb8",
     )
 
@@ -35,8 +35,14 @@ def main() -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=20, ha="right", fontsize=STYLE.tick_size)
     ax.grid(True, axis="y", alpha=STYLE.grid_alpha)
-    ax.legend(frameon=False, fontsize=STYLE.legend_size, loc="upper right")
-    fig.subplots_adjust(bottom=0.24)
+    ax.legend(
+        frameon=False,
+        fontsize=STYLE.legend_size,
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.17),
+        ncols=2,
+    )
+    fig.subplots_adjust(bottom=0.30)
 
     save_fig(fig, FIGURE_DIR / "figure3_failure_decomposition.pdf", FIGURE_DIR / "figure3_failure_decomposition.png")
 
