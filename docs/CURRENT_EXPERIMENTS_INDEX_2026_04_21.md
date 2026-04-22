@@ -78,6 +78,16 @@ The repository's current experimental center is:
 **Current role:**
 - promising controlled alternative, not current default.
 
+### 6. Manuscript-facing matched-surface multi-seed stability rerun
+**Question:** does the manuscript-facing winner claim (`strict_f3`) remain stable under a materially larger seed set on the exact matched manuscript surface?
+
+**Primary script:**
+- `scripts/run_matched_surface_multiseed_main_comparison.py`
+
+**Primary reports/artifacts:**
+- `docs/MATCHED_SURFACE_MULTI_SEED_MAIN_COMPARISON_20260423T002000Z.md`
+- `outputs/matched_surface_multiseed_main_comparison_20260423T002000Z/`
+
 ## Current default-model story
 
 If your question is "what is the current broad default promoted model?", the shortest experiment path is:

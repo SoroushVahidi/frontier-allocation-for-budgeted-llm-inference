@@ -1,0 +1,16 @@
+{
+  "artifact_family": "matched_surface_multiseed_main_comparison",
+  "command": "python scripts/run_matched_surface_multiseed_main_comparison.py --timestamp 20260423T002000Z --seeds 11,23,37,41,53,67 --n-perm 2000 --n-boot 2000",
+  "files": [
+    "pairwise_significance.csv",
+    "paper_ready_failure_table.csv",
+    "paper_ready_failure_table.tex",
+    "paper_ready_main_table.csv",
+    "paper_ready_main_table.tex",
+    "paper_ready_oracle_gap_table.csv",
+    "per_method_summary.csv",
+    "per_seed_results.csv"
+  ],
+  "output_dir": "outputs/matched_surface_multiseed_main_comparison_20260423T002000Z",
+  "timestamp": "20260423T002000Z"
+}
