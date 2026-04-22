@@ -4,7 +4,7 @@ This directory stores generated artifacts from scripts and evaluation passes.
 
 ## Current-canonical output families
 
-Use these first for current claims:
+Use these first for current claims.
 
 ### 1. Final strict-phased default-decision bundle
 - `final_strict_phased_default_decision_eval_20260421T042913Z/`
@@ -29,6 +29,18 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 ### 5. Current output-layer repair analysis
 - `current_failure_output_layer_repair_20260420/`
 
+### 6. Current official-adjacent external baseline families
+- `best_route_runtime_stabilization/<run_id>/`
+- `when_solve_when_verify_adjacent_integration/<run_id>/`
+- `lets_verify_step_by_step_adjacent_integration/<run_id>/`
+- `rest_mcts_adjacent_integration/<run_id>/`
+- `external_adjacent_baseline_bundle/<run_id>/`
+
+### 7. Current unofficial but explicitly caveated comparator families
+- `qstar_style_adapter/<run_id>/`
+
+These should be interpreted using their companion docs and caveat language, not as official reproductions.
+
 ## Historical or bounded paper-facing output families
 
 These are still useful, but they are not the default current source for the finalized default-model story:
@@ -40,11 +52,12 @@ These are still useful, but they are not the default current source for the fina
 ## Interpretation rule
 
 - Do not use an output folder as a headline evidence source unless it is linked from the current canonical docs.
-- Check `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`, `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`, and `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md` before using a folder for manuscript claims.
+- Check `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`, `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`, `docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`, and `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md` before using a folder for manuscript claims.
 
 ## Practical rule of thumb
 
 - Use the final strict-phased default-decision bundle for the current broad default-model claim.
 - Use the newest-vs-best exact-loss families for direct-adversary failure statistics.
 - Use the strict-phased force/gate families for why the default emerged from the strict-phased family.
-- Use the learned-gate and hard-cap output families as controlled alternatives and supporting evidence, not as the default source unless the canonical docs explicitly promote them.
+- Use the stabilized official-adjacent baseline families for the current external-comparison story.
+- Use unofficial caveated adapter families only with the exact manuscript-safe wording specified in their docs.
