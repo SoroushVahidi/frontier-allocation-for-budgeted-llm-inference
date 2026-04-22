@@ -7,12 +7,14 @@ This file is the runnable-code front door for the repository.
 ## Read this first
 
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
-- Current strict-phased status: [`../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-- Current experiment-family index: [`../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
+- Stable method front door: [`../docs/CURRENT_METHOD.md`](../docs/CURRENT_METHOD.md)
+- Stable results front door: [`../docs/CURRENT_RESULTS.md`](../docs/CURRENT_RESULTS.md)
+- Stable references front door: [`../docs/CURRENT_REFERENCES.md`](../docs/CURRENT_REFERENCES.md)
+- Stable next-steps front door: [`../docs/CURRENT_NEXT_STEPS.md`](../docs/CURRENT_NEXT_STEPS.md)
+- Canonical paper working set: [`../docs/CANONICAL_PAPER_WORKING_SET.md`](../docs/CANONICAL_PAPER_WORKING_SET.md)
 - Current code entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Repository map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
 - Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
-- Repo audit/cleanup rationale: [`../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md)
 - Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
 ## Interpretation labels
