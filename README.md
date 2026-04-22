@@ -26,19 +26,18 @@ This repository is **not** currently centered on the older binary revise-routing
 
 ## Current state in one paragraph
 
-The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The repository now studies these refinements under a strict-phased hard early-coverage discipline (finish F1, then F2, then F3), and the current broader strict-phased default-decision pass has selected **`strict_gate1_cap_k6`** as the current broad default promoted model on the evaluated surface.
+The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair** under a strict phased hard early-coverage discipline. The current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**.
 
 ## Fastest reliable reading path
 
 Read these first:
 1. [`QUICKSTART.md`](QUICKSTART.md)
 2. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-3. [`docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-4. [`docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-5. [`docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-8. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+3. [`docs/CURRENT_METHOD.md`](docs/CURRENT_METHOD.md)
+4. [`docs/CURRENT_RESULTS.md`](docs/CURRENT_RESULTS.md)
+5. [`docs/CURRENT_REFERENCES.md`](docs/CURRENT_REFERENCES.md)
+6. [`docs/CURRENT_NEXT_STEPS.md`](docs/CURRENT_NEXT_STEPS.md)
+7. [`docs/CANONICAL_PAPER_WORKING_SET.md`](docs/CANONICAL_PAPER_WORKING_SET.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
@@ -46,6 +45,17 @@ Then use:
 - [`scripts/README.md`](scripts/README.md) for runnable entry points,
 - [`outputs/README.md`](outputs/README.md) for output-family interpretation,
 - [`docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md) for the repo audit/cleanup rationale.
+
+## Stable current aliases
+
+To reduce navigation entropy, the repository now includes stable front-door aliases that point to the current dated source notes:
+- [`docs/CURRENT_METHOD.md`](docs/CURRENT_METHOD.md)
+- [`docs/CURRENT_RESULTS.md`](docs/CURRENT_RESULTS.md)
+- [`docs/CURRENT_REFERENCES.md`](docs/CURRENT_REFERENCES.md)
+- [`docs/CURRENT_NEXT_STEPS.md`](docs/CURRENT_NEXT_STEPS.md)
+- [`docs/CANONICAL_PAPER_WORKING_SET.md`](docs/CANONICAL_PAPER_WORKING_SET.md)
+
+These files are intentionally short and should be kept updated as the current project state changes.
 
 ## What to avoid at first
 
@@ -98,7 +108,7 @@ Output-layer repair remains useful, but it is no longer the dominant broad bottl
 
 ## Repository layout
 
-- `docs/`: canonical interpretation, planning notes, navigation pages, reference/baseline indexes, result/artifact indexes, exploratory notes, and historical guidance.
+- `docs/`: canonical interpretation, stable current aliases, planning notes, navigation pages, reference/baseline indexes, result/artifact indexes, exploratory notes, and historical guidance.
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
 - `configs/`: dataset, baseline, and experiment configuration files.
@@ -112,5 +122,3 @@ Output-layer repair remains useful, but it is no longer the dominant broad bottl
 The strongest current paper story is:
 
 **fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
-
-The current repository-wide methodological refinement is that this question is now studied under a strict phased shallow-coverage discipline, and the current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**. The repo is therefore in a stronger and more settled state than before, though broader independent confirmation and external-baseline strengthening are still needed before the manuscript-facing story is fully closed.
