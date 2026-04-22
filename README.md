@@ -20,25 +20,25 @@ This repository is currently centered on:
 - useful diversity realization under budget,
 - answer-support aggregation,
 - anti-collapse branch-family control,
-- and real-model confirmation of branch-allocation policies.
+- and paper-facing comparison against both near-direct and adjacent external baselines.
 
 This repository is **not** currently centered on the older binary revise-routing paper.
 
 ## Current state in one paragraph
 
-The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The repository now studies these refinements under a strict-phased hard early-coverage discipline (finish F1, then F2, then F3), and the current broader strict-phased default-decision pass has selected **`strict_gate1_cap_k6`** as the current broad default promoted model on the evaluated surface.
+The repository now has two important current-facing decisions that should be kept distinct. First, the broader strict-phased default-decision pass selected **`strict_gate1_cap_k6`** as the current broad promoted default on that evaluated surface. Second, the newer explicit in-house decision artifact defines **`strict_f3`** as the repository’s single canonical **“our method”** among non-external in-house methods on the strongest current canonical matched surface. The external comparison stack is also materially stronger than before, with near-direct baselines (`s1`, `TALE`, `L1`), official adjacent lanes (BEST-Route, when_solve_when_verify, ReST-MCTS*, Let’s Verify Step by Step, Tree-PLV), and clearly caveated discuss-only or unofficial comparator coverage where official runnable artifacts are weak.
 
 ## Fastest reliable reading path
 
 Read these first:
 1. [`QUICKSTART.md`](QUICKSTART.md)
 2. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-3. [`docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-4. [`docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-5. [`docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
+3. [`docs/CURRENT_OUR_METHOD_STATUS_20260422T001521Z.md`](docs/CURRENT_OUR_METHOD_STATUS_20260422T001521Z.md)
+4. [`docs/FINAL_INHOUSE_METHOD_DECISION_20260422T001521Z.md`](docs/FINAL_INHOUSE_METHOD_DECISION_20260422T001521Z.md)
+5. [`docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
 6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
 7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-8. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+8. [`docs/main_baselines.md`](docs/main_baselines.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
@@ -69,23 +69,19 @@ For the full interpretation policy, see:
 - diversity-aware controller mechanisms,
 - answer-support aggregation infrastructure,
 - observability-enabled semantic failure analysis,
-- comparative mistake auditing against the strongest baseline,
+- comparative mistake auditing against the strongest baselines,
 - bounded real-model confirmation,
-- exact old-vs-current tree comparison artifacts,
-- targeted current-failure bundles,
-- output-layer repair diagnostics,
 - strict-phased hard-coverage experiments,
-- strict force/gate comparison bundles,
-- capped-family anti-collapse experiments,
+- stabilized adjacent external baseline lanes,
+- clearer in-house winner selection,
 - and a stronger learner-side supervision stack than before.
 
 ## What is not solved yet
 
 - broader independent confirmation beyond the current finalized broader pass,
-- honest external-baseline completeness closure,
 - stable real-model leadership among close variants under wider conditions,
 - broader paper-grade real-model evidence,
-- and final manuscript-facing consolidation of the newest strict-phased default into all comparison and claim layers.
+- and final manuscript-facing consolidation of the newest strict-phased and in-house-winner decisions into all comparison and claim layers.
 
 ## Main bottleneck
 
@@ -113,4 +109,8 @@ The strongest current paper story is:
 
 **fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
 
-The current repository-wide methodological refinement is that this question is now studied under a strict phased shallow-coverage discipline, and the current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**. The repo is therefore in a stronger and more settled state than before, though broader independent confirmation and external-baseline strengthening are still needed before the manuscript-facing story is fully closed.
+The current front-door naming rule is:
+- **our method** = `strict_f3`
+- **current broad promoted strict-phased default on its evaluated surface** = `strict_gate1_cap_k6`
+
+That separation makes the repo’s paper-facing interpretation cleaner and more honest.
