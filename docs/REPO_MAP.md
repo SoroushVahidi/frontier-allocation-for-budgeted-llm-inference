@@ -22,6 +22,7 @@ This repository is **not** currently centered on the older binary revise-routing
 - Then use: [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md) for artifact navigation.
 - Then use: [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md) for experiment-family navigation.
 - Then use: [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md) for runnable entry points.
+- Then use: [`../CONTRIBUTING.md`](../CONTRIBUTING.md) for placement, naming, and maintenance rules.
 
 ## Directory map
 
@@ -31,7 +32,9 @@ This repository is **not** currently centered on the older binary revise-routing
 - `configs/`: dataset, baseline, and experiment configuration files.
 - `datasets/`: dataset policy/readme assets.
 - `external/`: external baseline references and integration notes.
+- `references/`: literature notes and paper/reference provenance.
 - `outputs/`: generated artifacts and paper-support outputs.
+- `tests/`: lightweight regression and repository-health checks.
 - `archive/`: preserved historical / provenance-only material.
 
 ## Canonical docs now
@@ -48,7 +51,9 @@ Read these first for current project interpretation:
 9. `docs/FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`
 10. `docs/DATASET_EXPANSION_INTEGRATION_20260422T120000Z.md`
 11. `docs/CURRENT_SAFE_CLAIMS.md`
-12. `docs/REPO_MAP.md`
+12. `docs/CANONICAL_INSTALL_AND_DEV.md`
+13. `CONTRIBUTING.md`
+14. `docs/REPO_MAP.md`
 
 ## Current highest-value diagnostic / evaluation docs
 
@@ -90,7 +95,8 @@ Use these when you want to understand current evidence:
 3. Use `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md` to see the decisive default-model result.
 4. Use `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md` to understand which experiment families are now active.
 5. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
-6. Treat exploratory notes as evidence traces, not as the default project interpretation.
+6. Use `CONTRIBUTING.md` before adding new files or output families.
+7. Treat exploratory notes as evidence traces, not as the default project interpretation.
 
 ## Practical maintenance rule
 
@@ -103,6 +109,8 @@ When the project phase changes materially, update these together:
 - `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
 - `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 - `docs/REPO_MAP.md`
+- `docs/CANONICAL_INSTALL_AND_DEV.md`
+- `CONTRIBUTING.md`
 - `scripts/CANONICAL_START_HERE.md`
 - `outputs/README.md`
 
