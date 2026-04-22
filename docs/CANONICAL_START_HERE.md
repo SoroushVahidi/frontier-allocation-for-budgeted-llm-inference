@@ -19,7 +19,7 @@ This repository is **not** currently centered on the old binary revise-routing p
 
 The current bounded repository stance is:
 
-> **keep the broad diversity/aggregation family as the main line, study early tree-shape control under a strict phased F1 → F2 → F3 law, and treat `strict_gate1_cap_k6` as the current broad default promoted model on the evaluated broader surface.**
+> **Keep the broad diversity/aggregation family as the main line, study early tree-shape control under a strict phased F1 -> F2 -> F3 law, and treat `strict_gate1_cap_k6` as the current broad default promoted model on the evaluated broader surface.**
 
 The repository is now in a **default-model consolidation and evidence-strengthening phase**, not a broad nearby-experiment phase.
 
@@ -34,7 +34,7 @@ The repository is now in a **default-model consolidation and evidence-strengthen
 7. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
 8. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
 9. [`REPO_MAP.md`](REPO_MAP.md)
-10. [`REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md)
+10. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
 
 ## If your goal is method improvement
 
@@ -59,6 +59,7 @@ Then read next:
 Start with:
 - [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
 - [`../scripts/README.md`](../scripts/README.md)
+- [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
 - [`../scripts/HISTORICAL_INDEX.md`](../scripts/HISTORICAL_INDEX.md) if you specifically need old script entry points
 
 ## Interpretation rules
@@ -68,7 +69,7 @@ Start with:
 - Treat **historical material** as provenance, not as the current project identity.
 
 See also:
-- [`README.md`](README.md)
+- [`../README.md`](../README.md)
 - [`REPO_MAP.md`](REPO_MAP.md)
 - [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
 - [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)

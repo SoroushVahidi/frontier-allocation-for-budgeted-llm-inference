@@ -2,9 +2,15 @@
 
 This directory stores generated artifacts from scripts and evaluation passes.
 
+## How to use this directory
+
+- Treat `outputs/` as an artifact store, not as the documentation front door.
+- Use the linked docs to understand which output families are canonical, exploratory, or historical.
+- Do not use an output folder as a headline evidence source unless it is linked from the current canonical docs.
+
 ## Current-canonical output families
 
-Use these first for current claims:
+Use these first for current claims.
 
 ### 1. Final strict-phased default-decision bundle
 - `final_strict_phased_default_decision_eval_20260421T042913Z/`
@@ -80,8 +86,10 @@ Important distinction:
 
 ## Interpretation rule
 
-- Do not use an output folder as a headline evidence source unless it is linked from the current canonical docs.
-- Check `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`, `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`, and `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md` before using a folder for manuscript claims.
+Check these docs before using a folder for manuscript claims:
+- `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+- `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+- `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
 
 ## Practical rule of thumb
 
