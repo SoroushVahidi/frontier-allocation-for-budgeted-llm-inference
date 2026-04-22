@@ -49,6 +49,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--stability-run", default="20260422T045249Z")
     p.add_argument("--failure-run", default="20260422T045249Z")
     p.add_argument("--inhouse-run", default="20260422T001521Z")
+    p.add_argument("--breadth-run", default=None)
     return p.parse_args()
 
 
@@ -69,6 +70,7 @@ def main() -> None:
     stability_dir = REPO_ROOT / "outputs/multi_seed_stability" / args.stability_run
     failure_dir = REPO_ROOT / "outputs/failure_mechanism_robustness" / args.failure_run
     inhouse_dir = REPO_ROOT / "outputs/final_inhouse_method_decision_20260422T001521Z"
+    breadth_dir = REPO_ROOT / "outputs/breadth_dataset_eval" / args.breadth_run if args.breadth_run else None
 
     near = pd.read_csv(paper_dir / "near_direct_ranking.csv")
     near_methods = [
@@ -211,6 +213,24 @@ def main() -> None:
         {"table_id": "Appendix D", "file_csv": "appendix_d_extended_budget_robustness.csv", "file_md": "appendix_d_extended_budget_robustness.md"},
         {"table_id": "Appendix E", "file_csv": "appendix_e_extended_failure_slices.csv", "file_md": "appendix_e_extended_failure_slices.md"},
     ])
+    breadth_added = False
+    if breadth_dir is not None and (breadth_dir / "breadth_comparison_summary.csv").exists():
+        breadth_df = pd.read_csv(breadth_dir / "breadth_comparison_summary.csv")
+        breadth_df.to_csv(out_dir / "appendix_f_breadth_dataset_results.csv", index=False)
+        write_md_table(
+            out_dir / "appendix_f_breadth_dataset_results.md",
+            breadth_df,
+            "Appendix F — Breadth dataset results",
+            intro=f"Source run: outputs/breadth_dataset_eval/{args.breadth_run}",
+        )
+        appendix_index = pd.concat(
+            [
+                appendix_index,
+                pd.DataFrame([{"table_id": "Appendix F", "file_csv": "appendix_f_breadth_dataset_results.csv", "file_md": "appendix_f_breadth_dataset_results.md"}]),
+            ],
+            ignore_index=True,
+        )
+        breadth_added = True
     appendix_index.to_csv(out_dir / "appendix_tables_index.csv", index=False)
 
     breadth_gap = True
@@ -226,6 +246,8 @@ def main() -> None:
         "publication_critical_gap_remaining": critical_gap,
         "dataset_breadth_gap_present": breadth_gap,
         "dataset_breadth_gap_note": gap_note,
+        "breadth_dataset_eval_run": args.breadth_run,
+        "breadth_appendix_table": "appendix_f_breadth_dataset_results.csv" if breadth_added else None,
         "main_tables": main_index.to_dict("records"),
         "appendix_tables": appendix_index.to_dict("records"),
     }
@@ -272,7 +294,7 @@ def main() -> None:
         "",
         f"- Run ID: `{args.run_id}`",
         "- Main-paper table files generated: 6",
-        "- Appendix table files generated: 5",
+        f"- Appendix table files generated: {len(appendix_index)}",
         f"- Publication-critical empirical gap remaining: `{critical_gap}`",
         f"- Dataset breadth note: {gap_note}",
     ]
