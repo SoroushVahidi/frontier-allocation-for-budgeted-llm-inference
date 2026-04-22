@@ -52,8 +52,11 @@ def main() -> None:
     out_dir = REPO_ROOT / "outputs/budget_sweep_robustness" / args.run_id
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    df = pd.read_csv(args.surface_csv)
-    df = df[df["method"].isin(methods) & df["dataset"].isin(datasets) & df["budget"].isin(budgets)].copy()
+    raw_df = pd.read_csv(args.surface_csv)
+    available_datasets = sorted(raw_df["dataset"].dropna().unique().tolist())
+    requested_missing_datasets = [d for d in datasets if d not in available_datasets]
+
+    df = raw_df[raw_df["method"].isin(methods) & raw_df["dataset"].isin(datasets) & raw_df["budget"].isin(budgets)].copy()
     df["is_correct"] = df["is_correct"].astype(int)
 
     curve = (
@@ -93,16 +96,25 @@ def main() -> None:
     deltas = h2h.get("delta_our_minus_strongest", pd.Series(dtype=float))
     strictly_ahead = bool(len(deltas) > 0 and (deltas > 0).all())
 
+    per_budget_delta = []
+    if "budget" in h2h.columns and "delta_our_minus_strongest" in h2h.columns:
+        per_budget_delta = [
+            {"budget": int(row["budget"]), "delta_our_minus_strongest": float(row["delta_our_minus_strongest"])}
+            for _, row in h2h.sort_values("budget").iterrows()
+        ]
+
     summary = {
         "run_id": args.run_id,
         "surface_csv": str(args.surface_csv.relative_to(REPO_ROOT)),
         "methods": methods,
         "datasets": datasets,
+        "requested_missing_datasets": requested_missing_datasets,
         "budgets": budgets,
         "our_method": our,
         "strongest_fair_external_baseline": strongest,
         "strict_f3_ahead_all_budgets": strictly_ahead,
         "mean_delta_our_minus_strongest": float(deltas.mean()) if len(deltas) else None,
+        "per_budget_delta_our_minus_strongest": per_budget_delta,
     }
     _write_json(out_dir / "summary.json", summary)
     _write_json(out_dir / "status.json", {"status": "ok", **summary})
@@ -136,6 +148,7 @@ def main() -> None:
         f"- Strongest fair external baseline: `{strongest}`",
         f"- Methods: `{methods}`",
         f"- Datasets: `{datasets}`",
+        f"- Requested datasets missing from canonical surface: `{requested_missing_datasets}`",
         f"- Budgets: `{budgets}`",
         f"- strict_f3 ahead at every budget: `{strictly_ahead}`",
     ]

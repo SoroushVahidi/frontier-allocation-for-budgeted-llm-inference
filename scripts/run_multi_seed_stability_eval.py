@@ -51,8 +51,18 @@ def main() -> None:
     out_dir = REPO_ROOT / "outputs/multi_seed_stability" / args.run_id
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    df = pd.read_csv(args.surface_csv)
-    df = df[df["method"].isin(methods) & df["dataset"].isin(datasets) & df["budget"].isin(budgets) & df["seed"].isin(seeds)].copy()
+    raw_df = pd.read_csv(args.surface_csv)
+    available_datasets = sorted(raw_df["dataset"].dropna().unique().tolist())
+    available_seeds = sorted(int(x) for x in raw_df["seed"].dropna().unique().tolist())
+    requested_missing_datasets = [d for d in datasets if d not in available_datasets]
+    requested_missing_seeds = [s for s in seeds if s not in available_seeds]
+
+    df = raw_df[
+        raw_df["method"].isin(methods)
+        & raw_df["dataset"].isin(datasets)
+        & raw_df["budget"].isin(budgets)
+        & raw_df["seed"].isin(seeds)
+    ].copy()
     df["is_correct"] = df["is_correct"].astype(int)
 
     per_seed = (
@@ -93,8 +103,14 @@ def main() -> None:
         "protocol_note": "Repeated stochastic evaluation over available canonical seeds; this is evaluation-seed stability, not training-seed variation.",
         "methods": methods,
         "datasets": datasets,
+        "requested_missing_datasets": requested_missing_datasets,
         "budgets": budgets,
         "seeds": seeds,
+        "requested_missing_seeds": requested_missing_seeds,
+        "feasible_seed_count": int(df["seed"].nunique()) if not df.empty else 0,
+        "seed_count_limit_note": "Fewer than 3 evaluation seeds are currently available on this canonical surface."
+        if (int(df["seed"].nunique()) if not df.empty else 0) < 3
+        else None,
         "best_method_by_mean": stability.iloc[0]["method"] if not stability.empty else None,
     }
     _write_json(out_dir / "summary.json", summary)
@@ -109,8 +125,11 @@ def main() -> None:
         "This report summarizes repeated evaluation-seed stability (not training-seed variation).",
         f"- Methods: `{methods}`",
         f"- Datasets: `{datasets}`",
+        f"- Requested datasets missing from canonical surface: `{requested_missing_datasets}`",
         f"- Budgets: `{budgets}`",
         f"- Seeds: `{seeds}`",
+        f"- Requested seeds missing from canonical surface: `{requested_missing_seeds}`",
+        f"- Feasible seed count on this surface: `{summary['feasible_seed_count']}`",
     ]
     (out_dir / "summary.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 

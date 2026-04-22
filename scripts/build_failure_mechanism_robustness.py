@@ -52,8 +52,15 @@ def main() -> None:
     out_dir = REPO_ROOT / "outputs/failure_mechanism_robustness" / args.run_id
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    df = pd.read_csv(args.surface_csv)
-    df = df[df["dataset"].isin(datasets) & df["budget"].isin(budgets) & df["method"].isin([args.our_method, strongest])].copy()
+    raw_df = pd.read_csv(args.surface_csv)
+    available_datasets = sorted(raw_df["dataset"].dropna().unique().tolist())
+    requested_missing_datasets = [d for d in datasets if d not in available_datasets]
+
+    df = raw_df[
+        raw_df["dataset"].isin(datasets)
+        & raw_df["budget"].isin(budgets)
+        & raw_df["method"].isin([args.our_method, strongest])
+    ].copy()
 
     keys = ["dataset", "seed", "budget", "example_id"]
     our = df[df["method"] == args.our_method][keys + ["is_correct", "failure_type", "absent_from_tree", "present_not_selected", "repeated_same_family_present", "output_layer_mismatch"]].copy()
@@ -109,12 +116,22 @@ def main() -> None:
             "absent_from_tree_max_minus_min": float(by_budget["absent_from_tree_rate"].max() - by_budget["absent_from_tree_rate"].min()) if len(by_budget) else None,
             "present_not_selected_max_minus_min": float(by_budget["present_not_selected_rate"].max() - by_budget["present_not_selected_rate"].min()) if len(by_budget) else None,
         },
+        "budget_slice_dominant_mechanism": [
+            {
+                "budget": int(row["budget"]),
+                "dominant_mechanism": "absent_from_tree"
+                if float(row["absent_from_tree_rate"]) >= float(row["present_not_selected_rate"])
+                else "present_not_selected",
+            }
+            for _, row in by_budget.sort_values("budget").iterrows()
+        ],
     }
     _write_json(out_dir / "feature_summary.json", feature_summary)
 
     summary = {
         "run_id": args.run_id,
         "datasets": datasets,
+        "requested_missing_datasets": requested_missing_datasets,
         "budgets": budgets,
         "our_method": args.our_method,
         "strongest_fair_external_baseline": strongest,
@@ -132,6 +149,7 @@ def main() -> None:
         "",
         f"- Our method: `{args.our_method}`",
         f"- Strongest fair external baseline: `{strongest}`",
+        f"- Requested datasets missing from canonical surface: `{requested_missing_datasets}`",
         f"- Loss count (our wrong, baseline correct): `{len(losses)}`",
         f"- Dominant mechanism overall: `{feature_summary['dominant_mechanism_overall']}`",
     ]
