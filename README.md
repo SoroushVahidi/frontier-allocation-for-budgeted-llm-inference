@@ -42,6 +42,19 @@ Read these first:
 9. [`docs/CANONICAL_INSTALL_AND_DEV.md`](docs/CANONICAL_INSTALL_AND_DEV.md)
 10. [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
+## Canonical first-run command block
+
+For the current broad default-decision evidence path:
+
+```bash
+make setup
+python scripts/run_broader_strict_phased_default_decision_eval.py
+```
+
+Then read:
+- [`docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
+- `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
+
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
 - [`docs/REPO_MAP.md`](docs/REPO_MAP.md) for the canonical map,

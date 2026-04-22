@@ -36,6 +36,23 @@ The repository is now in a **default-model consolidation and evidence-strengthen
 9. [`REPO_MAP.md`](REPO_MAP.md)
 10. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
 
+## Canonical first-run command block
+
+For collaborators who want one direct command path to the current broad default evidence:
+
+```bash
+make setup
+python ../scripts/run_broader_strict_phased_default_decision_eval.py
+```
+
+Then inspect:
+- [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
+- `../outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
+
+## Terminology note
+
+- **Answer-support aggregation** and **answer-group preservation/maturation** refer to the same controller layer in this repository: aggregation and commit behavior over answer groups under fixed budget.
+
 ## If your goal is method improvement
 
 Then read next:

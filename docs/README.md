@@ -2,6 +2,10 @@
 
 This directory contains the documentation front door for the current project.
 
+Authority note:
+- `CANONICAL_START_HERE.md` is the interpretation authority for current repository stance.
+- This file (`docs/README.md`) is the navigation index across canonical, exploratory, and historical docs.
+
 The key distinction is:
 - **Canonical** docs define the current project identity and paper-facing interpretation.
 - **Exploratory** docs preserve active side branches and narrower investigations.
