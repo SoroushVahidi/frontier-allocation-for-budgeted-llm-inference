@@ -44,8 +44,9 @@ Read these first for current project interpretation:
 5. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
 6. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 7. `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
-8. `docs/CURRENT_SAFE_CLAIMS.md`
-9. `docs/REPO_MAP.md`
+8. `docs/PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md`
+9. `docs/CURRENT_SAFE_CLAIMS.md`
+10. `docs/REPO_MAP.md`
 
 ## Current highest-value diagnostic / evaluation docs
 

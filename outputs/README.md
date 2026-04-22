@@ -37,6 +37,9 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 - `rest_mcts_adjacent_integration/<run_id>/`
 - `tree_plv_adjacent_integration/<run_id>/`
 
+### 7. Paper-facing baseline comparison package
+- `paper_facing_baseline_tables/20260422T231500Z/`
+
 ## Historical or bounded paper-facing output families
 
 These are still useful, but they are not the default current source for the finalized default-model story:
