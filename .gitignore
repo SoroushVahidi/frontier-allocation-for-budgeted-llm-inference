@@ -98,3 +98,5 @@ secrets.*
 
 !outputs/budget_aware_family_cap_eval_*/
 !outputs/budget_aware_family_cap_eval_*/**/*
+!outputs/external_adjacent_baseline_bundle/
+!outputs/external_adjacent_baseline_bundle/**/*
