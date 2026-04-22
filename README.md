@@ -39,6 +39,8 @@ Read these first:
 6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
 7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
 8. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+9. [`docs/CANONICAL_INSTALL_AND_DEV.md`](docs/CANONICAL_INSTALL_AND_DEV.md)
+10. [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
@@ -98,14 +100,26 @@ Output-layer repair remains useful, but it is no longer the dominant broad bottl
 
 ## Repository layout
 
-- `docs/`: canonical interpretation, planning notes, navigation pages, reference/baseline indexes, result/artifact indexes, exploratory notes, and historical guidance.
+- `docs/`: canonical interpretation, planning notes, navigation pages, reference/baseline indexes, exploratory notes, and historical guidance.
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
 - `configs/`: dataset, baseline, and experiment configuration files.
 - `datasets/`: dataset policy and dataset-readiness assets.
 - `external/`: external baseline references and integration notes.
+- `references/`: literature notes, paper summaries, and reference-facing provenance.
 - `outputs/`: generated artifacts and paper-support outputs.
+- `tests/`: lightweight regression and repository-health checks.
 - `archive/`: provenance-only historical material.
+
+## Repository maintenance
+
+For day-to-day repo hygiene, use:
+- [`docs/CANONICAL_INSTALL_AND_DEV.md`](docs/CANONICAL_INSTALL_AND_DEV.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- `make help`
+- `make check`
+
+These are the current operational front door for keeping the repo aligned as new scripts, docs, and output families are added.
 
 ## Paper-level interpretation
 
