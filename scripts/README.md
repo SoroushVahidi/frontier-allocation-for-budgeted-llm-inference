@@ -8,11 +8,12 @@ This file is the runnable-code front door for the repository.
 
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
 - Current strict-phased status: [`../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-- Current experiment-family index: [`../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
+- Current results/artifacts index: [`../docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](../docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
+- Current baseline/reference index: [`../docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](../docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+- Current baseline next steps: [`../docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](../docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md)
 - Current code entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Repository map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
 - Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
-- Repo audit/cleanup rationale: [`../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md)
 - Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
 ## Interpretation labels
@@ -34,17 +35,20 @@ This file is the runnable-code front door for the repository.
 - `run_learned_f2_to_f3_gate_v1_eval.py`
 - `run_hard_max_family_expansions_eval.py`
 
-### 3. Run broad comparison / external-baseline support path
-- `run_full_method_comparison_bundle.py`
-- `build_twenty_exact_current_full_vs_best_fresh.py`
+### 3. Run near-direct and adjacent external baseline support paths
 - `run_s1_budget_forcing_baseline.py`
 - `run_tale_baseline.py`
 - `run_l1_baseline.py`
+- `run_rest_mcts_adjacent_integration.py`
+- `run_lets_verify_step_by_step_adjacent_integration.py`
+- `build_external_adjacent_baseline_bundle.py`
 
 ### 4. Check dataset and baseline readiness
 - `verify_hf_dataset_access.py`
 - `generate_dataset_integration_report.py`
 - `generate_external_baseline_integration_report.py`
+- `verify_lets_verify_step_by_step_import.py`
+- `verify_rest_mcts_import.py`
 - `list_external_baselines.py`
 
 ## Canonical scripts (current project path)
@@ -58,21 +62,6 @@ This file is the runnable-code front door for the repository.
 | `run_learned_f2_to_f3_gate_v1_eval.py` | Train and evaluate a learned strict post-F2 gate |
 | `run_hard_max_family_expansions_eval.py` | Evaluate hard per-family expansion caps on the strict target |
 | `run_full_method_comparison_bundle.py` | Current broad matched comparison / ranking bundle |
-| `build_twenty_exact_current_full_vs_best_fresh.py` | Build the fresh exact current-full-vs-best loss surface |
-
-## Exploratory / adjacent controlled experiment workflows
-
-| Script | Role |
-|---|---|
-| `run_fresh_twenty_current_full_improvement_eval_20260420.py` | Evaluate bounded controller improvements on the fresh 20-case slice |
-| `build_targeted_failure_bundle_from_fresh_loss_surface_20260420.py` | Derive a mechanism-homogeneous targeted bundle from the fresh loss surface |
-| `run_near_miss_correction_bundle_eval_20260420.py` | Evaluate the near-miss correction-gate variant on targeted and broad surfaces |
-| `run_cross_strategy_frontier_allocation.py` | Older/legacy frontier-allocation scaffold |
-| `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
-| `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
-| `run_imported_methodology_frontier_eval.py` | Older bounded evaluation layer for the current branch-allocation setting |
-| `evaluate_branch_scorer_controller.py` | Controller-level comparison for learned/heuristic policies |
-| `evaluate_branch_scorer_robustness.py` | Multi-seed/budget/init robustness sweep |
 
 ## Integration/preparation scripts
 
@@ -89,7 +78,26 @@ This file is the runnable-code front door for the repository.
 | `build_external_prm_mathshepherd_apps_corpus.py` | Build conservative canonical-aligned external rows |
 | `prepare_external_reasoning_datasets.py` | Readiness ranking and normalized previews |
 | `generate_external_baseline_integration_report.py` | External baseline integration report |
+| `build_external_adjacent_baseline_bundle.py` | Aggregate manuscript-safe bundle for official adjacent baseline status |
+| `run_rest_mcts_adjacent_integration.py` | Canonical ReST-MCTS adjacent contract runner with standardized artifact family export |
+| `verify_rest_mcts_import.py` | Strict validator for ReST-MCTS adjacent import contract packages |
+| `run_lets_verify_step_by_step_adjacent_integration.py` | Canonical Let's Verify Step by Step adjacent contract runner with PRM800K public-asset checks and standardized artifacts |
+| `verify_lets_verify_step_by_step_import.py` | Strict validator for Let's Verify Step by Step adjacent import contract packages |
 | `list_external_baselines.py` | Print external baseline registry |
+
+## Exploratory / adjacent controlled experiment workflows
+
+| Script | Role |
+|---|---|
+| `run_fresh_twenty_current_full_improvement_eval_20260420.py` | Evaluate bounded controller improvements on the fresh 20-case slice |
+| `build_targeted_failure_bundle_from_fresh_loss_surface_20260420.py` | Derive a mechanism-homogeneous targeted bundle from the fresh loss surface |
+| `run_near_miss_correction_bundle_eval_20260420.py` | Evaluate the near-miss correction-gate variant on targeted and broad surfaces |
+| `run_cross_strategy_frontier_allocation.py` | Older/legacy frontier-allocation scaffold |
+| `run_new_paper_frontier_matrix.py` | Frontier matrix / anti-collapse summary tables |
+| `run_comparative_frontier_audit.py` | Matched-budget comparative audit |
+| `run_imported_methodology_frontier_eval.py` | Older bounded evaluation layer for the current branch-allocation setting |
+| `evaluate_branch_scorer_controller.py` | Controller-level comparison for learned/heuristic policies |
+| `evaluate_branch_scorer_robustness.py` | Multi-seed/budget/init robustness sweep |
 
 ## Historical/provenance scripts
 
@@ -99,6 +107,6 @@ Historical entry points are documented in:
 
 ## Notes
 
-- The current highest-leverage scripts are the strict-phased force/gate comparisons, newest-vs-best exact-loss statistics, learned post-F2 gate, and hard family-expansion-cap analysis.
+- The current highest-leverage scripts are the strict-phased force/gate comparisons and the canonical adjacent baseline lanes that now support the paper-facing comparison stack.
 - `run_cross_strategy_frontier_allocation.py` and related frontier scripts remain useful, but they are no longer the default first path for the current default-model question.
 - Use the paired docs in `../docs/` when interpreting any narrower experimental line; many exploratory scripts are not intended to stand alone as headline results.
