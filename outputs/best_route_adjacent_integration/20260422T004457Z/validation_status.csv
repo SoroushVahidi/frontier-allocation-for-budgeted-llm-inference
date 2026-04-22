@@ -1,0 +1,5 @@
+canonical_dataset,expected_dataset,expected_split,status,verdict,results_path,num_imported_rows,num_issues,num_warnings
+openai/gsm8k,gsm8k,test,valid,import_validated,/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/best_route_import_valid,2,0,1
+HuggingFaceH4/MATH-500,math500,test,missing_package,blocked_missing_import_package,,0,,
+HuggingFaceH4/aime_2024,aime2024,test,missing_package,blocked_missing_import_package,,0,,
+olympiadbench,olympiadbench,test,missing_package,blocked_missing_import_package,,0,,

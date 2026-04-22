@@ -120,3 +120,11 @@ Also see:
 
 - `BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`
 - `outputs/best_route_adjacent_integration/<run_id>/`
+
+
+## BEST-Route runtime stabilization follow-up (2026-04-22)
+
+- Two-lane pass completed via `scripts/run_best_route_runtime_stabilization_pass.py`.
+- Latest artifact family: `outputs/best_route_runtime_stabilization/<run_id>/`.
+- Report: `docs/BEST_ROUTE_RUNTIME_STABILIZATION_PASS_20260422T020000Z.md`.
+- Current safest classification remains **partial-runnable adjacent** (stronger than import-only, not full faithful reproduction).
