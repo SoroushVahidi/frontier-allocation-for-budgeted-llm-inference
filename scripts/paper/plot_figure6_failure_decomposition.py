@@ -27,7 +27,7 @@ def _plot(rows: list[dict[str, str]], out_pdf: str, out_png: str, title: str, no
     )
 
     ax.set_title(title, fontsize=STYLE.title_size)
-    ax.set_xlabel("Method", fontsize=STYLE.label_size)
+    ax.set_xlabel("Method", fontsize=STYLE.label_size, labelpad=12)
     ax.set_ylabel("Failure rate", fontsize=STYLE.label_size)
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=18, ha="right", fontsize=STYLE.tick_size)
@@ -56,8 +56,8 @@ def _plot(rows: list[dict[str, str]], out_pdf: str, out_png: str, title: str, no
             )
 
     ax.set_ylim(0.0, max(a + p for a, p in zip(absent, present_not_selected)) + 0.06)
-    fig.subplots_adjust(right=0.76, bottom=0.26)
-    fig.text(0.01, 0.02, note, ha="left", va="bottom", fontsize=STYLE.tick_size - 1, color="#333333")
+    fig.subplots_adjust(right=0.76, bottom=0.34)
+    fig.text(0.01, 0.008, note, ha="left", va="bottom", fontsize=STYLE.tick_size - 2, color="#333333")
 
     save_fig(fig, FIGURE_DIR / out_pdf, FIGURE_DIR / out_png)
 
