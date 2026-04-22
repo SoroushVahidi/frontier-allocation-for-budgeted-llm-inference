@@ -39,6 +39,7 @@ This file is the runnable-code front door for the repository.
 - `run_full_method_comparison_bundle.py`
 - `build_twenty_exact_current_full_vs_best_fresh.py`
 - `run_integrated_controller_component_ablation.py`
+- `run_manuscript_surface_component_ablation.py`
 - `run_s1_budget_forcing_baseline.py`
 - `run_tale_baseline.py`
 - `run_l1_baseline.py`
@@ -70,6 +71,7 @@ This file is the runnable-code front door for the repository.
 | `run_full_method_comparison_bundle.py` | Current broad matched comparison / ranking bundle |
 | `build_twenty_exact_current_full_vs_best_fresh.py` | Build the fresh exact current-full-vs-best loss surface |
 | `run_integrated_controller_component_ablation.py` | Canonical integrated-controller component ablation on strict-phased surface |
+| `run_manuscript_surface_component_ablation.py` | Manuscript-facing strict_f3 component ablation on canonical matched surface |
 
 ## Exploratory / adjacent controlled experiment workflows
 
@@ -114,6 +116,14 @@ This file is the runnable-code front door for the repository.
 Historical entry points are documented in:
 - [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 - `../archive/historical_scripts/`
+
+## Paper-facing script note
+
+There are two ablation surfaces on purpose:
+- `run_integrated_controller_component_ablation.py`: strict-phased default surface around the promoted broad default line.
+- `run_manuscript_surface_component_ablation.py`: manuscript-facing fairness/matched surface around `strict_f3`.
+
+Keep these surfaces separated in interpretation and manuscript claims.
 
 ## Notes
 

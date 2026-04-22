@@ -23,7 +23,7 @@ The canonical paper pipeline now reads from:
 ## Generated figure outputs
 
 Main-paper figures (PDF + PNG):
-- `outputs/paper_figures/figure1_problem_setup.{pdf,png}`
+- `outputs/paper_figures/figure1.jpg`
 - `outputs/paper_figures/figure2_main_frontier.{pdf,png}`
 - `outputs/paper_figures/figure3_oracle_gap.{pdf,png}`
 - `outputs/paper_figures/figure4_allocation_composition.{pdf,png}`
@@ -64,6 +64,7 @@ Outputs:
 - `outputs/paper_figures/figure8_component_ablation.{pdf,png}`
 - `outputs/paper_tables/table7_component_ablation.{csv,tex}`
 - `outputs/integrated_controller_component_ablation_<timestamp>/...`
+- `outputs/manuscript_surface_component_ablation_<timestamp>/...` (manuscript-facing strict_f3 matched-surface ablation family)
 
 ## Claim support mapping
 

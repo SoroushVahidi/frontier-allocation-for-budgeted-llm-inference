@@ -85,6 +85,10 @@ When adding a new paper-facing figure or table:
 
 The repository now treats `outputs/paper_plot_data/` as the canonical machine-readable output directory for the NeurIPS paper pipeline. Historical bounded artifacts remain valid only when explicitly labeled as historical and tied to their original source bundle.
 
+Interpretation guardrail:
+- `outputs/paper_plot_data/` is canonical for paper figure/table reproducibility.
+- It does **not** replace the canonical broad default-decision evidence surface for repository-wide default-model claims.
+
 ## Specific note on `program_of_thought`
 
 If a plot built from `outputs/paper_plot_data/` shows `program_of_thought` at zero accuracy, that is not automatically a plotting bug.
