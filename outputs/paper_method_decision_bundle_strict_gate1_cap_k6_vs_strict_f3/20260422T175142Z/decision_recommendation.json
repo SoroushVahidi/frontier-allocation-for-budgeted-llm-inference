@@ -1,0 +1,25 @@
+{
+  "experiment_name": "paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3",
+  "reason": "strict_f3 remains stronger on the decision surface and is at least as strong as the top fair near-direct external comparator.",
+  "recommendation": "paper should center strict_f3",
+  "run_id": "20260422T175142Z",
+  "strongest_fair_near_direct_external": "external_l1_max",
+  "surface": {
+    "budgets": [
+      4,
+      6,
+      8
+    ],
+    "datasets": [
+      "HuggingFaceH4/MATH-500",
+      "HuggingFaceH4/aime_2024",
+      "openai/gsm8k"
+    ],
+    "seeds": [
+      11,
+      23
+    ],
+    "surface_id": "canonical_full_method_ranking_20260421T212948Z",
+    "surface_path": "outputs/canonical_full_method_ranking_20260421T212948Z"
+  }
+}
