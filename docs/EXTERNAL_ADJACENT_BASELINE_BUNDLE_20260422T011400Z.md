@@ -48,7 +48,7 @@ python scripts/build_external_adjacent_baseline_bundle.py
 
 - `best_route_microsoft`: official, `import_validated`, `adjacent`.
 - `when_solve_when_verify`: official, `import_validated`, `adjacent`.
-- `rest_mcts`: official, `import_validated`, `adjacent` (with separate lane-specific notes that full self-training reproduction remains out of scope).
+- `rest_mcts`: official, `import_validated`, `adjacent` with a stabilized `partial_runnable_adjacent` lane (`scripts/run_rest_mcts_adjacent_integration.py`, contract v2, canonical artifacts) while full self-training reproduction remains out of scope.
 
 ## Safe manuscript scope for this family
 

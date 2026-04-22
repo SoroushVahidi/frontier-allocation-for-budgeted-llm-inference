@@ -91,6 +91,7 @@ This file is the runnable-code front door for the repository.
 | `prepare_external_reasoning_datasets.py` | Readiness ranking and normalized previews |
 | `generate_external_baseline_integration_report.py` | External baseline integration report |
 | `build_external_adjacent_baseline_bundle.py` | Aggregate manuscript-safe bundle for BEST-Route / when_solve_when_verify / ReST-MCTS* adjacent baseline status |
+| `run_rest_mcts_adjacent_integration.py` | Canonical ReST-MCTS adjacent contract runner with standardized artifact family export |
 | `list_external_baselines.py` | Print external baseline registry |
 
 ## Historical/provenance scripts

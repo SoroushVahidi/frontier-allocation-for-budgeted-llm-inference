@@ -134,15 +134,15 @@
       "doc": "external/rest_mcts/README.md",
       "integration": "import_validated",
       "completeness_class": "import_validated",
-      "blocker": "full_self_training_heavy_partial_runnable_official_search_eval_only",
+      "blocker": "full_self_training_reproduction_out_of_scope_stable_adjacent_contract_lane_only",
       "integration_doc": "docs/rest_mcts_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/rest_mcts_status.json",
         "outputs/external_baseline_completeness/rest_mcts_status.md",
-        "outputs/rest_mcts_partial_runnable_integration/<run_id>/comparison_readiness.json"
+        "outputs/rest_mcts_adjacent_integration/<run_id>/comparison_readiness.json"
       ],
-      "integration_runner": "scripts/run_rest_mcts_partial_runnable_integration.py",
-      "comparison_contract": "configs/rest_mcts_adjacent_comparison_contract_v1.json"
+      "integration_runner": "scripts/run_rest_mcts_adjacent_integration.py",
+      "comparison_contract": "configs/rest_mcts_adjacent_comparison_contract_v2.json"
     },
     "tree_plv": {
       "clone_url": null,

@@ -30,7 +30,7 @@ For this repository phase, baselines are grouped as:
 - **Main benchmarks:** MATH, SciBench, and college-level scientific reasoning tasks.
 - **Official code:** https://github.com/THUDM/ReST-MCTS
 - **Data / benchmark links:** See the official repository and paper resources for benchmark setup details; exact reconstruction of full data flows may require manual verification.
-- **Reproducibility caveats:** Full upstream training/evaluation reproduction remains heavyweight; this repo now supports adjacent import validation via `scripts/verify_rest_mcts_import.py` with conservative claim boundaries.
+- **Reproducibility caveats:** Full upstream training/evaluation reproduction remains heavyweight; this repo now supports a stabilized adjacent contract lane via `scripts/run_rest_mcts_adjacent_integration.py` plus strict import validation via `scripts/verify_rest_mcts_import.py`, with conservative claim boundaries.
 - **How it differs from our target method:** It uses reward-guided search, but does not cleanly formulate marginal budget allocation over reasoning trees with strong guarantees.
 
 ## Tree-PLV
@@ -175,7 +175,7 @@ For manuscript-safe claims, treat external baselines as follows:
 - **when_solve_when_verify:** v1 `official` + `import_validated` via `scripts/verify_when_solve_when_verify_import.py`, with canonical adjacent contract runner `scripts/run_when_solve_when_verify_adjacent_integration.py` and `configs/when_solve_when_verify_adjacent_comparison_contract_v1.json` (fixed-budget solve-vs-verify adjacent slices only; not frontier-allocation direct).
 - **cascade_routing:** v1 `import_validated` via `scripts/verify_cascade_routing_import.py`.
 - **mob_majority_of_bests:** v1 `import_validated` via `scripts/verify_mob_import.py`.
-- **rest_mcts:** partial-runnable adjacent lane via `scripts/run_rest_mcts_partial_runnable_integration.py` (official search/eval path with artifact export) plus strict import validation via `scripts/verify_rest_mcts_import.py`; no full ReST-MCTS training loop in-repo.
+- **rest_mcts:** stabilized partial-runnable adjacent lane via `scripts/run_rest_mcts_adjacent_integration.py` + `configs/rest_mcts_adjacent_comparison_contract_v2.json` with canonical outputs under `outputs/rest_mcts_adjacent_integration/<run_id>/`, plus strict import validation via `scripts/verify_rest_mcts_import.py`; no full ReST-MCTS training loop in-repo.
 - **openr:** v1 `import_validated` via `scripts/verify_openr_import.py`.
 
 Companion artifacts:

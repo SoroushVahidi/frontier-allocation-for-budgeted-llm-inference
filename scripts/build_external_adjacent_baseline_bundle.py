@@ -37,8 +37,8 @@ TARGET_BASELINES: list[dict[str, str]] = [
         "display_name": "ReST-MCTS*",
         "doc": "docs/rest_mcts_integration.md",
         "status_json": "outputs/external_baseline_completeness/rest_mcts_status.json",
-        "integration_output_family": "outputs/rest_mcts_partial_runnable_integration",
-        "repo_command": "python scripts/run_rest_mcts_partial_runnable_integration.py",
+        "integration_output_family": "outputs/rest_mcts_adjacent_integration",
+        "repo_command": "python scripts/run_rest_mcts_adjacent_integration.py --contract-config configs/rest_mcts_adjacent_comparison_contract_v2.json",
     },
 ]
 

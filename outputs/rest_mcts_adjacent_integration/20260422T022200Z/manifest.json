@@ -1,0 +1,26 @@
+{
+  "generated_utc": "2026-04-22T02:22:01.624664+00:00",
+  "run_id": "20260422T022200Z",
+  "script": "scripts/run_rest_mcts_adjacent_integration.py",
+  "output_dir": "outputs/rest_mcts_adjacent_integration/20260422T022200Z",
+  "commands": [
+    "python scripts/run_rest_mcts_adjacent_integration.py --contract-config configs/rest_mcts_adjacent_comparison_contract_v2.json"
+  ],
+  "clone_result": {
+    "action": "clone_official_repo",
+    "command": "git clone --depth 1 https://github.com/THUDM/ReST-MCTS.git /tmp/rest_mcts_upstream/ReST-MCTS",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Cloning into '/tmp/rest_mcts_upstream/ReST-MCTS'...\n"
+  },
+  "artifacts": [
+    "status.json",
+    "comparison_readiness.json",
+    "summary.json",
+    "summary.md",
+    "manifest.json",
+    "config_snapshot.json",
+    "commands_snapshot.txt",
+    "comparison_ready_rows.csv"
+  ]
+}
