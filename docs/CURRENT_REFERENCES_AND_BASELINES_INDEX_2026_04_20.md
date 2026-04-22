@@ -64,7 +64,7 @@ These notes are now the shortest answer to:
 1. **BEST-Route** — strengthened: official adjacent import-validated baseline with reproducible artifact contract
 2. **When To Solve / When To Verify** — strengthened official adjacent import-validated baseline with reproducible contract lane
 3. **ReST-MCTS*** — current next adjacent baseline after BEST-Route + solve/verify strengthening
-4. **Q*** — important scientifically, but later-wave unless stronger provenance/integration becomes available
+4. **Q*** — now provenance-hardened as discuss-only with explicit blockers; upgrade only after verified official artifacts exist
 
 ## Current writing rule
 
@@ -81,6 +81,7 @@ Do not blur them into one undifferentiated related-work paragraph.
 
 - `CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`
 - `CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`
+- `QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md`
 - `main_baselines.md`
 - `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 - `main_datasets.md`

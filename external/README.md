@@ -139,7 +139,7 @@ This repo keeps the baseline universe aligned to **fixed-budget next-step branch
 
 | Family | Canonical title | Class | Current external status | Essential? |
 |---|---|---|---|---|
-| qstar_deliberative_planning | Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning | direct | discuss-only (not-yet-integrated) | yes |
+| qstar_deliberative_planning | Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning | direct | discuss-only (provenance-hardened; integration-blocked pending verified official artifacts) | yes |
 | lets_verify_step_by_step | Let's Verify Step by Step | adjacent completion-aware PRM/verifier | discuss-only | yes (adjacent) |
 | rational_metareasoning_llm | Rational Metareasoning for Large Language Models | adjacent stop-vs-continue | discuss-only | yes (adjacent) |
 | efficient_contextual_llm_cascades | Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning | adjacent routing/cascade | import_validated (via cascade import validation) | optional unless scope broadens |
