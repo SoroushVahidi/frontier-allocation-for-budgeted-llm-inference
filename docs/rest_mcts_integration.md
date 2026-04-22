@@ -20,15 +20,20 @@ Upstream workflow shape (as documented upstream):
 
 ## Integration decision in this repository
 
-**Status: `runnable_adjacent` (verified import only).**
+**Status: `partial_runnable` (official-code search/eval lane + verified import).**
 
 What is now unblocked:
 
 - Strict import validator:
   - `scripts/verify_rest_mcts_import.py`
+- Canonical partial-runnable integration runner:
+  - `scripts/run_rest_mcts_partial_runnable_integration.py`
+- Canonical comparison contract:
+  - `configs/rest_mcts_adjacent_comparison_contract_v1.json`
 - Machine-readable status artifacts:
   - `outputs/external_baseline_completeness/rest_mcts_status.json`
   - `outputs/external_baseline_completeness/rest_mcts_status.md`
+  - `outputs/rest_mcts_partial_runnable_integration_<run_id>/`
 
 What is still intentionally not claimed:
 

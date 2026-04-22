@@ -19,6 +19,12 @@
 
 This classification means the upstream method/code is official, and this repository provides a conservative import-validation lane. It does **not** mean this repository reproduces the full BEST-Route training stack end-to-end.
 
+## Runtime status update (2026-04-21 segfault-fix pass)
+
+- A focused runtime pass (`scripts/run_best_route_segfault_fix_pass.py`) now establishes a **stable tiny synthetic router run** in this environment.
+- This required non-upstream compatibility pinning (`transformers==4.50.0`, `tokenizers==0.21.4`) because upstream-pinned `transformers==4.44.0` / `tokenizers==0.19.x` is not installable under Python 3.14 in this container.
+- Therefore BEST-Route is now best treated here as **partial runnable (adjacent)** for tiny synthetic path evidence, while full official benchmark-faithful reproduction remains out of scope.
+
 ## Problem class and scope boundary
 
 BEST-Route is treated here as an **adjacent query-level adaptive routing** baseline:
