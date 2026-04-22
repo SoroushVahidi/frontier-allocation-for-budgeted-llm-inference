@@ -1,0 +1,15 @@
+{
+  "name": "manuscript_surface_component_ablation",
+  "run_id": "20260422T172218Z",
+  "output_dir": "outputs/manuscript_surface_component_ablation_20260422T172218Z",
+  "outputs": [
+    "aggregate_summary.csv",
+    "aggregate_summary.json",
+    "per_dataset_summary.csv",
+    "per_seed_summary.csv",
+    "failure_decomposition.csv",
+    "compute_allocation_diagnostics.csv",
+    "per_case_results.csv",
+    "status.json"
+  ]
+}
