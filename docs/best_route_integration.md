@@ -19,6 +19,14 @@
 
 This classification means the upstream method/code is official, and this repository provides a conservative import-validation lane. It does **not** mean this repository reproduces the full BEST-Route training stack end-to-end.
 
+## Runtime status update (2026-04-22 stabilization pass)
+
+- A two-lane runtime pass (`scripts/run_best_route_runtime_stabilization_pass.py`) now enforces:
+  - **Lane A:** stable adjacent import-validation and comparison-row export.
+  - **Lane B:** explicit crash-isolation matrix + tiny synthetic router run.
+- In this pass, the runner produced a full two-lane artifact bundle under `outputs/best_route_runtime_stabilization/<run_id>/` and recorded all 10 requested crash-isolation tests.
+- This still required non-upstream compatibility pinning (`transformers==4.50.0`, `tokenizers==0.21.4`) in this container context; full benchmark-faithful upstream reproduction remains out of scope.
+
 ## Problem class and scope boundary
 
 BEST-Route is treated here as an **adjacent query-level adaptive routing** baseline:
@@ -97,3 +105,16 @@ Outputs are written to:
 - `outputs/best_route_adjacent_integration/<run_id>/validation_results.json`
 - `outputs/best_route_adjacent_integration/<run_id>/validation_status.csv`
 - `outputs/best_route_adjacent_integration/<run_id>/comparison_ready_rows.csv`
+
+
+Runtime stabilization runner:
+
+```bash
+python scripts/run_best_route_runtime_stabilization_pass.py
+```
+
+Outputs are written to:
+- `outputs/best_route_runtime_stabilization/<run_id>/manifest.json`
+- `outputs/best_route_runtime_stabilization/<run_id>/stage_status.csv`
+- `outputs/best_route_runtime_stabilization/<run_id>/crash_isolation_matrix.csv`
+- `outputs/best_route_runtime_stabilization/<run_id>/comparison_readiness.json`

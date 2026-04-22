@@ -1,0 +1,1 @@
+python scripts/run_tree_plv_adjacent_integration.py --contract-config configs/tree_plv_adjacent_comparison_contract_v1.json

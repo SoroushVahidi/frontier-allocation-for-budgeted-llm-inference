@@ -1,0 +1,73 @@
+{
+  "gsm8k_test_tree_plv_import_contract": {
+    "baseline_key": "tree_plv",
+    "status": "valid",
+    "verdict": "import_validated",
+    "issues": [],
+    "errors": [],
+    "contract_check": {
+      "contract_path": "/workspace/adaptive-reasoning-budget-allocation/configs/tree_plv_adjacent_comparison_contract_v1.json",
+      "contract_exists": true,
+      "contract_valid_json": true,
+      "required_sections_ok": true,
+      "issues": []
+    },
+    "official_repo_check": {
+      "checked": true,
+      "official_repo_path": "/tmp/tree_plv_upstream/Tree-PLV",
+      "exists": true,
+      "layout_ok": true,
+      "layout_checks": {
+        "README.md": true,
+        "LLMs-Planning/plan-bench/README.md": true,
+        "LLMs-Planning/llm_planning_analysis/README.md": true,
+        "dschat": true
+      },
+      "license_visible": false,
+      "issues": [
+        "no_license_file_visible_in_repo_root"
+      ]
+    },
+    "package_dir": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/tree_plv_import_valid",
+    "requested_path": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/tree_plv_import_valid",
+    "expected_dataset": "gsm8k",
+    "expected_split": "test",
+    "imported_rows": [
+      {
+        "mode": "tree_plv_adjacent_import",
+        "source": "tree_plv_import_verified",
+        "source_type": "author-produced",
+        "dataset": "gsm8k",
+        "dataset_split": "test",
+        "base_model": "llama3-8b-instruct",
+        "verifier_model": "tree-plv-style-prm",
+        "search_policy": "best_first_tree",
+        "max_tree_depth": "3",
+        "num_candidates": "16",
+        "accuracy": "0.614",
+        "num_examples": "200",
+        "artifact_id": "tree_plv_fixture_gsm8k_test_v1",
+        "commit_or_version": "fixture-v1",
+        "comparability_scope": "adjacent_only"
+      },
+      {
+        "mode": "tree_plv_adjacent_import",
+        "source": "tree_plv_import_verified",
+        "source_type": "author-produced",
+        "dataset": "gsm8k",
+        "dataset_split": "test",
+        "base_model": "llama3-8b-instruct",
+        "verifier_model": "tree-plv-style-prm",
+        "search_policy": "best_first_tree",
+        "max_tree_depth": "4",
+        "num_candidates": "16",
+        "accuracy": "0.623",
+        "num_examples": "200",
+        "artifact_id": "tree_plv_fixture_gsm8k_test_v1",
+        "commit_or_version": "fixture-v1",
+        "comparability_scope": "adjacent_only"
+      }
+    ],
+    "safe_claim_scope": "adjacent_only"
+  }
+}

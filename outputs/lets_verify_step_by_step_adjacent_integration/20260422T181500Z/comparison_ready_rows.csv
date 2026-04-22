@@ -1,0 +1,3 @@
+baseline_id,baseline_mode,subset_id,dataset,split,generator_model,verifier_model,pass_at_k,verifier_score_threshold,accuracy,comparability_scope,artifact_id,commit_or_version
+lets_verify_step_by_step,adjacent_partial_runnable,math_test_prm800k_import_contract,math,test,gpt-4-class,prm-style,1,0.0,0.59,adjacent_only,lets_verify_fixture_math_test_v1,fixture-v1
+lets_verify_step_by_step,adjacent_partial_runnable,math_test_prm800k_import_contract,math,test,gpt-4-class,prm-style,5,0.0,0.71,adjacent_only,lets_verify_fixture_math_test_v1,fixture-v1

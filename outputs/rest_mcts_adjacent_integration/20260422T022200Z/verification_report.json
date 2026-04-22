@@ -1,0 +1,74 @@
+{
+  "math_test_import_contract": {
+    "status": "valid",
+    "baseline": "rest_mcts",
+    "integration_kind": "adjacent_import_validator",
+    "package_dir": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/rest_mcts_import_valid",
+    "issues": [],
+    "errors": [],
+    "imported_rows": [
+      {
+        "mode": "rest_mcts_adjacent_import",
+        "source": "rest_mcts_import_verified",
+        "source_type": "official",
+        "dataset": "math",
+        "dataset_split": "test",
+        "policy_model": "llama3-8b-instruct",
+        "value_model": "mistral-7b",
+        "search_mode": "mcts",
+        "self_training_iteration": "1",
+        "iteration_limit": "50",
+        "branch": "3",
+        "accuracy": "0.612",
+        "num_examples": "500",
+        "artifact_id": "rest_mcts_fixture_v1",
+        "commit_or_version": "main",
+        "comparability_scope": "adjacent_only"
+      },
+      {
+        "mode": "rest_mcts_adjacent_import",
+        "source": "rest_mcts_import_verified",
+        "source_type": "official",
+        "dataset": "math",
+        "dataset_split": "test",
+        "policy_model": "llama3-8b-instruct",
+        "value_model": "mistral-7b",
+        "search_mode": "cot",
+        "self_training_iteration": "1",
+        "iteration_limit": "50",
+        "branch": "1",
+        "accuracy": "0.574",
+        "num_examples": "500",
+        "artifact_id": "rest_mcts_fixture_v1",
+        "commit_or_version": "main",
+        "comparability_scope": "adjacent_only"
+      }
+    ],
+    "safe_claim_scope": "adjacent_only",
+    "unsafe_claims": [
+      "direct in-repo full reproduction of upstream ReST-MCTS self-training stack",
+      "control-space-equivalent direct comparability claims versus frontier/action-native controllers"
+    ],
+    "contract_check": {
+      "contract_path": "/workspace/adaptive-reasoning-budget-allocation/configs/rest_mcts_adjacent_comparison_contract_v2.json",
+      "contract_exists": true,
+      "contract_valid_json": true,
+      "required_sections_ok": true,
+      "issues": []
+    },
+    "official_repo_path_check": {
+      "checked": true,
+      "official_repo_path": "/tmp/rest_mcts_upstream/ReST-MCTS",
+      "exists": true,
+      "layout_ok": true,
+      "layout_checks": {
+        "README.md": true,
+        "MCTS/task.py": true,
+        "evaluate.py": true,
+        "self_train/self_train_dpo.py": true,
+        "PRM/train_VM_mistral.py": true
+      },
+      "issues": []
+    }
+  }
+}

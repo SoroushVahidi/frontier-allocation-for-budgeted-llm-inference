@@ -1,0 +1,278 @@
+{
+  "meta": {
+    "created_at_utc": "2026-04-21T19:09:41.979336+00:00",
+    "taxonomy": {
+      "status": [
+        "runnable_direct",
+        "runnable_adjacent",
+        "adapter_based",
+        "import_validated",
+        "discuss_only",
+        "blocked",
+        "broken_needs_repair"
+      ],
+      "control_equivalence": [
+        "direct",
+        "near_direct",
+        "adjacent",
+        "ingredient_only"
+      ]
+    },
+    "legacy_mapping_note": "Registry field `integration` / `completeness_class` may still use older tokens (`mode_a_complete_mode_b_partial`, `runnable_adjacent`). Map: mode_a runnable paths \u2192 adapter_based; strict-import neighbors \u2192 import_validated; MODE B partial \u2192 import_validated or blocked depending on assets."
+  },
+  "baselines": [
+    {
+      "baseline_id": "s1_mode_a",
+      "display_name": "s1 (MODE A: inference-only budget forcing)",
+      "status": "adapter_based",
+      "control_equivalence": "near_direct",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/run_s1_budget_forcing_baseline.py"
+      ],
+      "primary_paths_checked": [
+        "configs/s1_budget_forcing_inference_only_v1.json",
+        "docs/s1_baseline_integration.md"
+      ],
+      "prior_overclaim_risk": "Calling MODE A a full s1 reproduction or identical to official s1 training stack.",
+      "safe_wording_now": "MODE A is an inference-only budget-forcing adapter on this repo's substrate; near-direct, not official s1 training.",
+      "notes": "MODE B uses verify_s1_mode_b_import.py when importing official CSV packages."
+    },
+    {
+      "baseline_id": "s1_mode_b",
+      "display_name": "s1 (MODE B: official/full import)",
+      "status": "import_validated",
+      "control_equivalence": "adjacent",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/verify_s1_mode_b_import.py",
+        "scripts/run_s1_baseline_comparison_bundle.py"
+      ],
+      "primary_paths_checked": [
+        "configs/s1_full_or_official_adapter_v1.json",
+        "docs/s1_baseline_integration.md"
+      ],
+      "prior_overclaim_risk": "Treating MODE B as apples-to-apples with unchanged-base frontier controllers.",
+      "safe_wording_now": "MODE B is separately labeled import reporting; not control-equivalent to MODE A comparisons.",
+      "notes": "Requires user-supplied official package; validator enforces contract."
+    },
+    {
+      "baseline_id": "tale_mode_a",
+      "display_name": "TALE (MODE A: prompt/token budgeting adapter)",
+      "status": "adapter_based",
+      "control_equivalence": "near_direct",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/run_tale_baseline.py"
+      ],
+      "primary_paths_checked": [
+        "configs/tale_prompt_budgeting_v1.json",
+        "docs/tale_baseline_integration.md"
+      ],
+      "prior_overclaim_risk": "Equating per-instance token budgeting with frontier branch allocation control.",
+      "safe_wording_now": "Adjacent near-direct budget neighbor; explicit non-equivalence to stop-vs-act frontier control.",
+      "notes": "MODE B: verify_tale_mode_b_import.py + tale_official_adapter_v1.json."
+    },
+    {
+      "baseline_id": "tale_mode_b",
+      "display_name": "TALE (MODE B: official/full import)",
+      "status": "import_validated",
+      "control_equivalence": "adjacent",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/verify_tale_mode_b_import.py"
+      ],
+      "primary_paths_checked": [
+        "configs/tale_official_adapter_v1.json",
+        "docs/tale_baseline_integration.md"
+      ],
+      "prior_overclaim_risk": "Omitting TALE vs TALE-PT variant separation when citing MODE B.",
+      "safe_wording_now": "Validator requires tale_variant fields; still not direct reproduction of full upstream training.",
+      "notes": ""
+    },
+    {
+      "baseline_id": "l1_mode_a",
+      "display_name": "L1 (MODE A: LCPO-style inference adapter)",
+      "status": "adapter_based",
+      "control_equivalence": "near_direct",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/run_l1_baseline.py"
+      ],
+      "primary_paths_checked": [
+        "configs/l1_inference_adapter_v1.json",
+        "docs/l1_baseline_integration.md"
+      ],
+      "prior_overclaim_risk": "Claiming MODE A reproduces L1 RL or official LCPO training dynamics.",
+      "safe_wording_now": "Inference-only length conditioning on this substrate; matched-budget reporting only.",
+      "notes": "MODE B: verify_l1_mode_b_import.py (parity with s1/TALE)."
+    },
+    {
+      "baseline_id": "l1_mode_b",
+      "display_name": "L1 (MODE B: official/full import)",
+      "status": "import_validated",
+      "control_equivalence": "adjacent",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/verify_l1_mode_b_import.py"
+      ],
+      "primary_paths_checked": [
+        "configs/l1_official_full_adapter_v1.json",
+        "docs/l1_baseline_integration.md"
+      ],
+      "prior_overclaim_risk": "MODE B without imported official rows still described as complete L1.",
+      "safe_wording_now": "Blocked or import-validated only when CSV+metadata pass strict checks.",
+      "notes": "Added verify_l1_mode_b_import.py in baseline repair pass for parity."
+    },
+    {
+      "baseline_id": "best_route_microsoft",
+      "display_name": "BEST-Route (Microsoft)",
+      "status": "import_validated",
+      "control_equivalence": "adjacent",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/verify_best_route_import.py"
+      ],
+      "primary_paths_checked": [
+        "docs/best_route_integration.md",
+        "external/best_route_microsoft/README.md"
+      ],
+      "prior_overclaim_risk": "Routing baseline described as direct branch-allocation comparator.",
+      "safe_wording_now": "Import-validated adjacent neighbor only; routing action space \u2260 frontier expand/verify.",
+      "notes": ""
+    },
+    {
+      "baseline_id": "when_solve_when_verify",
+      "display_name": "When To Solve, When To Verify",
+      "status": "import_validated",
+      "control_equivalence": "adjacent",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/verify_when_solve_when_verify_import.py"
+      ],
+      "primary_paths_checked": [
+        "docs/when_solve_when_verify_integration.md",
+        "external/when_solve_when_verify/README.md"
+      ],
+      "prior_overclaim_risk": "SC-vs-GenRM slice presented as full paper reproduction.",
+      "safe_wording_now": "Strict import validation for adjacent SC-vs-GenRM budget comparisons only.",
+      "notes": ""
+    },
+    {
+      "baseline_id": "rest_mcts",
+      "display_name": "ReST-MCTS*",
+      "status": "import_validated",
+      "control_equivalence": "adjacent",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/verify_rest_mcts_import.py"
+      ],
+      "primary_paths_checked": [
+        "docs/rest_mcts_integration.md",
+        "external/rest_mcts/README.md"
+      ],
+      "prior_overclaim_risk": "Upstream training + self-training loop implied as runnable in-repo.",
+      "safe_wording_now": "Clone + import validation only; no full ReST-MCTS training reproduction claim.",
+      "notes": ""
+    },
+    {
+      "baseline_id": "qstar_deliberative_planning",
+      "display_name": "Q* (deliberative planning)",
+      "status": "discuss_only",
+      "control_equivalence": "direct",
+      "paper_safe_now": true,
+      "repo_command_available": false,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [],
+      "primary_paths_checked": [
+        "external/qstar_deliberative_planning/README.md",
+        "docs/main_baselines.md"
+      ],
+      "prior_overclaim_risk": "Implying integrated runnable Q* baseline in this repository.",
+      "safe_wording_now": "Essential direct family target for framing; discuss-only until adapter exists.",
+      "notes": "No verified official repo wired; do not upgrade without reproducible integration."
+    },
+    {
+      "baseline_id": "lets_verify_step_by_step",
+      "display_name": "Let's Verify Step by Step",
+      "status": "discuss_only",
+      "control_equivalence": "ingredient_only",
+      "paper_safe_now": true,
+      "repo_command_available": false,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [],
+      "primary_paths_checked": [
+        "external/lets_verify_step_by_step/README.md"
+      ],
+      "prior_overclaim_risk": "PRM family oversold as runnable empirical baseline stack here.",
+      "safe_wording_now": "Adjacent ingredient / completion-aware evidence family; not integrated as runnable stack.",
+      "notes": ""
+    },
+    {
+      "baseline_id": "rational_metareasoning_llm",
+      "display_name": "Rational Metareasoning for LLMs",
+      "status": "discuss_only",
+      "control_equivalence": "adjacent",
+      "paper_safe_now": true,
+      "repo_command_available": false,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [],
+      "primary_paths_checked": [
+        "external/rational_metareasoning_llm/README.md"
+      ],
+      "prior_overclaim_risk": "Framing reference described as implemented metareasoning controller.",
+      "safe_wording_now": "Conceptual stop-vs-continue/value-of-computation neighbor; discuss-only.",
+      "notes": ""
+    },
+    {
+      "baseline_id": "verifier_guided_search",
+      "display_name": "verifier_guided_search (internal)",
+      "status": "runnable_direct",
+      "control_equivalence": "adjacent",
+      "paper_safe_now": true,
+      "repo_command_available": true,
+      "artifact_backed_now": true,
+      "official_resource_verified": false,
+      "primary_commands_checked": [
+        "scripts/run_full_method_comparison_bundle.py"
+      ],
+      "primary_paths_checked": [
+        "experiments/frontier_matrix_core.py",
+        "experiments/controllers.py"
+      ],
+      "prior_overclaim_risk": "Equating internal heuristic VGS with external PRM papers one-to-one.",
+      "safe_wording_now": "Internal fixed-budget simulator baseline; cite as implementation neighbor, not PRM reproduction.",
+      "notes": "Distinct from 'Let's Verify Step by Step' paper baseline row."
+    }
+  ]
+}

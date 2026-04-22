@@ -1,0 +1,26 @@
+{
+  "generated_utc": "2026-04-22T02:49:22.457372+00:00",
+  "run_id": "20260422T181500Z",
+  "script": "scripts/run_lets_verify_step_by_step_adjacent_integration.py",
+  "output_dir": "outputs/lets_verify_step_by_step_adjacent_integration/20260422T181500Z",
+  "commands": [
+    "python scripts/run_lets_verify_step_by_step_adjacent_integration.py --contract-config configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json"
+  ],
+  "clone_result": {
+    "action": "clone_official_repo",
+    "command": "git clone --depth 1 https://github.com/openai/prm800k.git /tmp/lets_verify_upstream/prm800k",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Cloning into '/tmp/lets_verify_upstream/prm800k'...\nFiltering content:  66% (4/6), 12.89 MiB | 15.74 MiB/s\nFiltering content:  83% (5/6), 12.89 MiB | 15.74 MiB/s\nFiltering content: 100% (6/6), 12.89 MiB | 15.74 MiB/s\nFiltering content: 100% (6/6), 465.82 MiB | 11.92 MiB/s\nFiltering content: 100% (6/6), 465.82 MiB | 11.69 MiB/s, done.\n"
+  },
+  "artifacts": [
+    "status.json",
+    "comparison_readiness.json",
+    "summary.json",
+    "summary.md",
+    "manifest.json",
+    "config_snapshot.json",
+    "commands_snapshot.txt",
+    "comparison_ready_rows.csv"
+  ]
+}

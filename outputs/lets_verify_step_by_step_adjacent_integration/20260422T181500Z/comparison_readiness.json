@@ -1,0 +1,19 @@
+{
+  "baseline": "lets_verify_step_by_step",
+  "run_id": "20260422T181500Z",
+  "classification": "partial_runnable_adjacent",
+  "status": "ready_adjacent_partial_runnable",
+  "adjacent_only": true,
+  "minimum_contract_met": true,
+  "official_repo_layout_ok": true,
+  "safe_claims": [
+    "Official paper and repository provenance are documented and validated against required links and repository structure.",
+    "A stable adjacent runnable lane exists for a contract-bound MATH test subset using PRM800K public assets.",
+    "Integration status is partial_runnable_adjacent with explicit adjacent_only scope and conservative claim boundaries."
+  ],
+  "unsafe_claims": [
+    "Full faithful in-repo reproduction of complete Let's Verify Step by Step training/evaluation stack.",
+    "Direct control-equivalent comparison with branch-level marginal budget-allocation methods.",
+    "Unqualified SOTA claims attributed to this adjacent integration lane."
+  ]
+}

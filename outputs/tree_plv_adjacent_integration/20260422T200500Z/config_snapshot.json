@@ -1,0 +1,133 @@
+{
+  "contract_config_path": "configs/tree_plv_adjacent_comparison_contract_v1.json",
+  "contract": {
+    "baseline_key": "tree_plv",
+    "canonical_title": "Advancing Process Verification for Large Language Models via Tree-Based Preference Learning",
+    "integration_mode": "official_adjacent_partial_runnable_stable_lane",
+    "official_sources": {
+      "canonical_paper_url": "https://aclanthology.org/2024.emnlp-main.125/",
+      "canonical_pdf_url": "https://aclanthology.org/2024.emnlp-main.125.pdf",
+      "doi": "https://doi.org/10.18653/v1/2024.emnlp-main.125",
+      "arxiv_url": "https://arxiv.org/abs/2407.00390",
+      "paper_cited_repo": "https://github.com/Hareta-Leila/Tree-PLV"
+    },
+    "verified_public_artifacts": {
+      "paper_identity": [
+        "ACL Anthology canonical page",
+        "ACL Anthology PDF",
+        "DOI",
+        "arXiv abstract"
+      ],
+      "repo_identity": [
+        "Paper-cited GitHub repository exists and is clonable"
+      ],
+      "repo_runtime_signals": [
+        "Repository contains planning pipeline READMEs with runnable command examples"
+      ],
+      "not_verified": [
+        "No explicit LICENSE file was found in the audited default branch snapshot",
+        "No official pretrained checkpoint release was found in audited repository docs",
+        "No benchmark-faithful one-command Tree-PLV verifier reproduction path was found"
+      ]
+    },
+    "benchmark_contract": {
+      "canonical_benchmark_family": "GSM8K/MATH/CSQA/StrategyQA (paper-level)",
+      "default_expected_split": "test",
+      "stable_adjacent_subset": [
+        {
+          "subset_id": "gsm8k_test_tree_plv_import_contract",
+          "expected_dataset": "gsm8k",
+          "results_path": "tests/fixtures/tree_plv_import_valid",
+          "minimum_rows": 2,
+          "required_modes": [
+            "tree_plv_adjacent_import"
+          ],
+          "comparability_scope": "adjacent_only"
+        }
+      ]
+    },
+    "budget_and_compute_normalization": {
+      "primary_rule": "Report only declared max_tree_depth and num_candidates in each imported row; comparisons stay adjacent_only.",
+      "required_metadata_fields": [
+        "evaluation.budget.max_tree_depth_values",
+        "evaluation.budget.num_candidates_values",
+        "evaluation.budget.compute_budget_note"
+      ],
+      "cross_method_claim_guardrail": "Do not claim direct compute/control equivalence to branch-level marginal frontier allocation controllers."
+    },
+    "paper_ingredients": {
+      "exercised_in_this_lane": [
+        "Canonical paper and paper-cited repository provenance validation",
+        "Repository structure and command-surface validation for the cited repo",
+        "Contract-validated adjacent benchmark import slice",
+        "Machine-readable artifact export for downstream comparison bundling"
+      ],
+      "not_reproduced_in_this_lane": [
+        "Full end-to-end Tree-PLV training stack reproduction",
+        "Paper-scale verifier training/checkpoint reproduction",
+        "Canonical benchmark metric replication from official checkpoints"
+      ]
+    },
+    "model_and_path_requirements": {
+      "required_metadata_fields": [
+        "models.base_model_family",
+        "models.verifier_model_family",
+        "upstream.repo_url",
+        "upstream.paper_url"
+      ],
+      "official_repo_layout_required": [
+        "README.md",
+        "LLMs-Planning/plan-bench/README.md",
+        "LLMs-Planning/llm_planning_analysis/README.md",
+        "dschat"
+      ],
+      "official_repo_path_optional": true
+    },
+    "artifact_requirements": {
+      "required_outputs": [
+        "status.json",
+        "comparison_readiness.json",
+        "summary.json",
+        "summary.md",
+        "manifest.json",
+        "config_snapshot.json",
+        "commands_snapshot.txt",
+        "comparison_ready_rows.csv"
+      ],
+      "optional_outputs": [
+        "verification_report.json",
+        "official_repo_structure.json",
+        "validation_status.csv"
+      ],
+      "output_family": "outputs/tree_plv_adjacent_integration/<run_id>/"
+    },
+    "success_criteria": {
+      "minimum_for_import_validated_adjacent": [
+        "contract_file_present",
+        "stable_subset_verified",
+        "validator_status_valid",
+        "adjacent_scope_enforced"
+      ],
+      "minimum_for_partial_runnable_adjacent": [
+        "minimum_for_import_validated_adjacent",
+        "official_repo_accessible_or_precloned",
+        "official_layout_check_passed"
+      ]
+    },
+    "allowed_claims": [
+      "Tree-PLV is integrated in this repository as an official-paper-cited adjacent baseline with a stable partial-runnable contract lane.",
+      "This lane validates provenance, contract completeness, optional cited-repo structure, and exports machine-readable adjacent-only artifacts.",
+      "Final classification in this repo lane is partial_runnable_adjacent, not full faithful reproduction."
+    ],
+    "forbidden_claims": [
+      "Full faithful in-repo reproduction of the complete Tree-PLV paper stack.",
+      "Direct control-equivalent comparison with branch-level marginal budget-allocation methods.",
+      "Any claim that official released checkpoints were validated when none were verified in this pass."
+    ]
+  },
+  "args": {
+    "output_root": "/workspace/adaptive-reasoning-budget-allocation/outputs/tree_plv_adjacent_integration",
+    "official_repo_path": "/tmp/tree_plv_upstream/Tree-PLV",
+    "skip_clone": false
+  }
+}

@@ -1,49 +1,22 @@
-dataset,budget,method,component,component_share,avg_component_actions,avg_actions
-openai/gsm8k,0,strict_gate1_cap_k6 (default),Expansion,0.929460580912863,5.6,6.025
-openai/gsm8k,0,strict_gate1_cap_k6 (default),Verification,0.07053941908713693,0.425,6.025
-openai/gsm8k,0,strict_gate1,Expansion,0.9194782608695652,5.287,5.75
-openai/gsm8k,0,strict_gate1,Verification,0.08052173913043478,0.463,5.75
-openai/gsm8k,0,strict_f2,Expansion,0.9265595299809919,5.362,5.787
-openai/gsm8k,0,strict_f2,Verification,0.07344047001900812,0.425,5.787
-openai/gsm8k,0,strict_f3,Expansion,0.9047619047619048,5.7,6.3
-openai/gsm8k,0,strict_f3,Verification,0.09523809523809523,0.6,6.3
-openai/gsm8k,0,strict_gate2,Expansion,0.9093953488372093,4.888,5.375
-openai/gsm8k,0,strict_gate2,Verification,0.09060465116279069,0.487,5.375
-openai/gsm8k,0,baseline,Expansion,0.9034645669291339,5.737,6.35
-openai/gsm8k,0,baseline,Verification,0.09653543307086615,0.613,6.35
-HuggingFaceH4/MATH-500,0,strict_gate1_cap_k6 (default),Expansion,0.9267241379310345,5.375,5.8
-HuggingFaceH4/MATH-500,0,strict_gate1_cap_k6 (default),Verification,0.07327586206896551,0.425,5.8
-HuggingFaceH4/MATH-500,0,strict_gate1,Expansion,0.9281123139377537,5.487,5.912
-HuggingFaceH4/MATH-500,0,strict_gate1,Verification,0.07188768606224628,0.425,5.912
-HuggingFaceH4/MATH-500,0,strict_f2,Expansion,0.9190041493775933,5.537,6.025
-HuggingFaceH4/MATH-500,0,strict_f2,Verification,0.0808298755186722,0.487,6.025
-HuggingFaceH4/MATH-500,0,strict_f3,Expansion,0.9279661016949151,5.475,5.9
-HuggingFaceH4/MATH-500,0,strict_f3,Verification,0.07203389830508473,0.425,5.9
-HuggingFaceH4/MATH-500,0,strict_gate2,Expansion,0.9353333333333333,5.612,6.0
-HuggingFaceH4/MATH-500,0,strict_gate2,Verification,0.06466666666666666,0.388,6.0
-HuggingFaceH4/MATH-500,0,baseline,Expansion,0.8913340156943023,5.225,5.862
-HuggingFaceH4/MATH-500,0,baseline,Verification,0.10866598430569771,0.637,5.862
-olympiadbench,0,strict_gate1_cap_k6 (default),Expansion,0.9198240866035182,5.438,5.912
-olympiadbench,0,strict_gate1_cap_k6 (default),Verification,0.08034506089309879,0.475,5.912
-olympiadbench,0,strict_gate1,Expansion,0.9403872282608696,5.537,5.888
-olympiadbench,0,strict_gate1,Verification,0.059442934782608696,0.35,5.888
-olympiadbench,0,strict_f2,Expansion,0.918161998993795,5.475,5.963
-olympiadbench,0,strict_f2,Verification,0.0816703001844709,0.487,5.963
-olympiadbench,0,strict_f3,Expansion,0.9203206806282722,5.625,6.112
-olympiadbench,0,strict_f3,Verification,0.07967931937172774,0.487,6.112
-olympiadbench,0,strict_gate2,Expansion,0.9224489795918368,5.65,6.125
-olympiadbench,0,strict_gate2,Verification,0.07755102040816327,0.475,6.125
-olympiadbench,0,baseline,Expansion,0.91763596353348,5.838,6.362
-olympiadbench,0,baseline,Verification,0.08252121974221943,0.525,6.362
-HuggingFaceH4/aime_2024,0,strict_gate1_cap_k6 (default),Expansion,0.9153043478260869,5.263,5.75
-HuggingFaceH4/aime_2024,0,strict_gate1_cap_k6 (default),Verification,0.08469565217391305,0.487,5.75
-HuggingFaceH4/aime_2024,0,strict_gate1,Expansion,0.9145299145299145,5.35,5.85
-HuggingFaceH4/aime_2024,0,strict_gate1,Verification,0.08547008547008547,0.5,5.85
-HuggingFaceH4/aime_2024,0,strict_f2,Expansion,0.9196634774001979,5.575,6.062
-HuggingFaceH4/aime_2024,0,strict_f2,Verification,0.08033652259980203,0.487,6.062
-HuggingFaceH4/aime_2024,0,strict_f3,Expansion,0.9308943089430893,5.725,6.15
-HuggingFaceH4/aime_2024,0,strict_f3,Verification,0.06910569105691056,0.425,6.15
-HuggingFaceH4/aime_2024,0,strict_gate2,Expansion,0.9353599465508601,5.6,5.987
-HuggingFaceH4/aime_2024,0,strict_gate2,Verification,0.06480708201102389,0.388,5.987
-HuggingFaceH4/aime_2024,0,baseline,Expansion,0.8852406244970223,5.5,6.213
-HuggingFaceH4/aime_2024,0,baseline,Verification,0.11475937550297761,0.713,6.213
+method,metric,value
+fixed_k6,avg_actions,7.845238095238095
+fixed_k6,avg_expansions,6.948412698412699
+fixed_k6,avg_verifications,0.8968253968253969
+min6_half,avg_actions,8.202380952380953
+min6_half,avg_expansions,7.3273809523809526
+min6_half,avg_verifications,0.875
+min6_third,avg_actions,8.517857142857142
+min6_third,avg_expansions,5.253968253968254
+min6_third,avg_verifications,3.263888888888889
+min6_quarter,avg_actions,8.33531746031746
+min6_quarter,avg_expansions,4.057539682539683
+min6_quarter,avg_verifications,4.277777777777778
+half,avg_actions,7.6646825396825395
+half,avg_expansions,7.3353174603174605
+half,avg_verifications,0.32936507936507936
+third,avg_actions,8.101190476190476
+third,avg_expansions,5.067460317460317
+third,avg_verifications,3.0337301587301586
+quarter,avg_actions,8.343253968253968
+quarter,avg_expansions,4.009920634920635
+quarter,avg_verifications,4.333333333333333

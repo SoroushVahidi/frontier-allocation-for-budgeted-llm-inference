@@ -1,0 +1,3 @@
+method,class,status,comparability,blocker_reason,caveat
+strict_gate1,inhouse,blocked,not_comparable_on_surface,method_not_present_on_canonical_matched_surface,Blocked for this decision bundle; kept in manifest for transparent comparability accounting.
+strict_gate2,inhouse,blocked,not_comparable_on_surface,method_not_present_on_canonical_matched_surface,Blocked for this decision bundle; kept in manifest for transparent comparability accounting.

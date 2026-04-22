@@ -12,6 +12,7 @@ This file is the runnable-code front door for the repository.
 - Current code entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
 - Setup and local checks: [`../docs/CANONICAL_INSTALL_AND_DEV.md`](../docs/CANONICAL_INSTALL_AND_DEV.md)
 - Repository map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
+- Contributor placement and maintenance guide: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 - Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 - Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
@@ -37,6 +38,9 @@ This file is the runnable-code front door for the repository.
 ### 3. Run broad comparison or baseline support
 - `run_full_method_comparison_bundle.py`
 - `build_twenty_exact_current_full_vs_best_fresh.py`
+- `run_integrated_controller_component_ablation.py`
+- `run_manuscript_surface_component_ablation.py`
+- `run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py`
 - `run_s1_budget_forcing_baseline.py`
 - `run_tale_baseline.py`
 - `run_l1_baseline.py`
@@ -45,7 +49,15 @@ This file is the runnable-code front door for the repository.
 - `verify_hf_dataset_access.py`
 - `generate_dataset_integration_report.py`
 - `generate_external_baseline_integration_report.py`
+- `build_external_adjacent_baseline_bundle.py`
 - `list_external_baselines.py`
+
+### 5. Run maintenance checks
+- `make smoke`
+- `make health`
+- `make lint`
+- `make test`
+- `make check`
 
 ## Canonical scripts (current project path)
 
@@ -59,6 +71,9 @@ This file is the runnable-code front door for the repository.
 | `run_hard_max_family_expansions_eval.py` | Evaluate hard per-family expansion caps on the strict target |
 | `run_full_method_comparison_bundle.py` | Current broad matched comparison and ranking bundle |
 | `build_twenty_exact_current_full_vs_best_fresh.py` | Build the fresh exact current-full-vs-best loss surface |
+| `run_integrated_controller_component_ablation.py` | Canonical integrated-controller component ablation on strict-phased surface |
+| `run_manuscript_surface_component_ablation.py` | Manuscript-facing strict_f3 component ablation on canonical matched surface |
+| `run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py` | Focused manuscript decision bundle comparing strict_gate1_cap_k6 vs strict_f3 with fair near-direct externals |
 
 ## Exploratory or adjacent controlled workflows
 
@@ -89,6 +104,13 @@ This file is the runnable-code front door for the repository.
 | `build_external_prm_mathshepherd_apps_corpus.py` | Build conservative canonical-aligned external rows |
 | `prepare_external_reasoning_datasets.py` | Readiness ranking and normalized previews |
 | `generate_external_baseline_integration_report.py` | External baseline integration report |
+| `build_external_adjacent_baseline_bundle.py` | Aggregate manuscript-safe bundle for BEST-Route / when_solve_when_verify / ReST-MCTS* adjacent baseline status |
+| `run_rest_mcts_adjacent_integration.py` | Canonical ReST-MCTS adjacent contract runner with standardized artifact family export |
+| `run_lets_verify_step_by_step_adjacent_integration.py` | Canonical Let's Verify Step by Step adjacent contract runner with PRM800K public-asset checks and standardized artifacts |
+| `verify_lets_verify_step_by_step_import.py` | Strict validator for Let's Verify Step by Step adjacent import contract packages |
+| `run_tree_plv_adjacent_integration.py` | Canonical Tree-PLV adjacent contract runner with conservative paper↔repo checks and standardized artifacts |
+| `verify_tree_plv_import.py` | Strict validator for Tree-PLV adjacent import contract packages |
+| `generate_tree_plv_status_report.py` | Generate machine-readable Tree-PLV completeness status artifacts |
 | `list_external_baselines.py` | Print external baseline registry |
 
 ## Historical and provenance scripts
@@ -96,6 +118,14 @@ This file is the runnable-code front door for the repository.
 Historical entry points are documented in:
 - [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 - `../archive/historical_scripts/`
+
+## Paper-facing script note
+
+There are two ablation surfaces on purpose:
+- `run_integrated_controller_component_ablation.py`: strict-phased default surface around the promoted broad default line.
+- `run_manuscript_surface_component_ablation.py`: manuscript-facing fairness/matched surface around `strict_f3`.
+
+Keep these surfaces separated in interpretation and manuscript claims.
 
 ## Notes
 

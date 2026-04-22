@@ -1,0 +1,10 @@
+{
+  "artifact_family": "final_inhouse_method_decision",
+  "timestamp_utc": "20260422T001521Z",
+  "source_surface": "canonical_full_method_ranking_20260421T212948Z",
+  "winner_method": "strict_f3",
+  "winner_non_external": true,
+  "final_naming_rule": "From now on, our method means strict_f3.",
+  "considered_reasoning_beam2": true,
+  "reasoning_beam1_status": "excluded_missing_runnable_artifact"
+}

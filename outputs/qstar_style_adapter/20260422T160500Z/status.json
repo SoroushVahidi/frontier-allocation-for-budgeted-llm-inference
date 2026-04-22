@@ -1,0 +1,25 @@
+{
+  "generated_utc": "2026-04-22T02:35:20.944013+00:00",
+  "baseline_id": "qstar_style_adapter",
+  "classification": "unofficial_adapter_caveated",
+  "control_equivalence": "direct_family_caveated",
+  "conceptual_source": {
+    "canonical_paper_title": "Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning",
+    "paper_url": "https://arxiv.org/abs/2406.14283",
+    "paper_pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+    "doi": "https://doi.org/10.48550/arXiv.2406.14283",
+    "source_status": "paper_verified_artifacts_unverified"
+  },
+  "allowed_claims": [
+    "unofficial_qstar_style_comparator",
+    "caveated_conceptual_family_stress_test",
+    "adapter_based_local_substrate_comparison_only"
+  ],
+  "forbidden_claims": [
+    "official_qstar_baseline_reproduced",
+    "faithful_qstar_replication",
+    "official_code_or_checkpoint_equivalence"
+  ],
+  "official_reproduction_claim": false,
+  "ready": true
+}

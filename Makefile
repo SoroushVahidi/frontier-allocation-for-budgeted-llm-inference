@@ -1,29 +1,38 @@
-.PHONY: setup health smoke format lint test help
+.PHONY: setup smoke health format lint test check help
+
+PY_DIRS := scripts experiments tests
 
 help:
 	@echo "Available targets:"
-	@echo "  setup   Install dependencies into the active virtual environment"
-	@echo "  health  Run the lightweight repository health check"
-	@echo "  smoke   Alias for health"
-	@echo "  format  Auto-format Python source files with ruff"
-	@echo "  lint    Lint Python source files with ruff"
+	@echo "  setup   Install runtime and developer dependencies into the active environment"
+	@echo "  smoke   Run the lightweight smoke test"
+	@echo "  health  Run the repository structure/import health check"
+	@echo "  format  Auto-format Python files with ruff"
+	@echo "  lint    Lint Python files with ruff"
 	@echo "  test    Run pytest"
+	@echo "  check   Run health, lint, and test together"
 
 setup:
 	pip install --upgrade pip
 	pip install -r requirements.txt
 	pip install -e .[dev]
 
+smoke:
+	python scripts/smoke_test.py
+
 health:
 	python scripts/check_repo_health.py
 
-smoke: health
-
 format:
-	ruff format scripts/ experiments/ tests/
+	ruff format $(PY_DIRS)
 
 lint:
-	ruff check scripts/ experiments/ tests/
+	ruff check $(PY_DIRS)
 
 test:
-	pytest
+	pytest -q
+
+check:
+	python scripts/check_repo_health.py
+	ruff check $(PY_DIRS)
+	pytest -q

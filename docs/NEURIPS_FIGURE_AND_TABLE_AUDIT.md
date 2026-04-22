@@ -1,4 +1,13 @@
-# NeurIPS Figure and Table Audit
+# NeurIPS Figure and Table Audit (Historical)
+
+## Historical status
+
+This file is retained for provenance and historical context only.
+
+Do not use it as current canonical paper-artifact policy. Current source-of-truth files are:
+- `docs/NEURIPS_PAPER_ARTIFACTS.md`
+- `docs/PAPER_ARTIFACT_CLEANUP_REPORT_2026_04_21.md`
+- `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
 
 ## 2026-04-21 cleanup note
 

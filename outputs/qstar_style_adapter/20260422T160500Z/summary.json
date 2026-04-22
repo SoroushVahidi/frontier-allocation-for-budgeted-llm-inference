@@ -1,0 +1,8 @@
+{
+  "run_id": "20260422T160500Z",
+  "baseline_id": "qstar_style_adapter",
+  "dataset": "openai/gsm8k",
+  "num_seed_budget_cells": 4,
+  "mean_accuracy": 0.42708333333333337,
+  "output_dir": "outputs/qstar_style_adapter/20260422T160500Z"
+}

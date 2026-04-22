@@ -1,0 +1,26 @@
+{
+  "generated_utc": "2026-04-22T03:10:06.025803+00:00",
+  "run_id": "20260422T200500Z",
+  "script": "scripts/run_tree_plv_adjacent_integration.py",
+  "output_dir": "outputs/tree_plv_adjacent_integration/20260422T200500Z",
+  "commands": [
+    "python scripts/run_tree_plv_adjacent_integration.py --contract-config configs/tree_plv_adjacent_comparison_contract_v1.json"
+  ],
+  "clone_result": {
+    "action": "clone_official_repo",
+    "command": "git clone --depth 1 https://github.com/Hareta-Leila/Tree-PLV.git /tmp/tree_plv_upstream/Tree-PLV",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Cloning into '/tmp/tree_plv_upstream/Tree-PLV'...\nUpdating files:  45% (4024/8898)\nUpdating files:  46% (4094/8898)\nUpdating files:  47% (4183/8898)\nUpdating files:  48% (4272/8898)\nUpdating files:  49% (4361/8898)\nUpdating files:  50% (4449/8898)\nUpdating files:  51% (4538/8898)\nUpdating files:  52% (4627/8898)\nUpdating files:  53% (4716/8898)\nUpdating files:  54% (4805/8898)\nUpdating files:  55% (4894/8898)\nUpdating files:  56% (4983/8898)\nUpdating files:  57% (5072/8898)\nUpdating files:  58% (5161/8898)\nUpdating files:  59% (5250/8898)\nUpdating files:  60% (5339/8898)\nUpdating files:  61% (5428/8898)\nUpdating files:  62% (5517/8898)\nUpdating files:  63% (5606/8898)\nUpdating files:  64% (5695/8898)\nUpdating files:  65% (5784/8898)\nUpdating files:  66% (5873/8898)\nUpdating files:  67% (5962/8898)\nUpdating files:  68% (6051/8898)\nUpdating files:  69% (6140/8898)\nUpdating files:  70% (6229/8898)\nUpdating files:  71% (6318/8898)\nUpdating files:  72% (6407/8898)\nUpdating files:  73% (6496/8898)\nUpdating files:  74% (6585/8898)\nUpdating files:  75% (6674/8898)\nUpdating files:  76% (6763/8898)\nUpdating files:  77% (6852/8898)\nUpdating files:  78% (6941/8898)\nUpdating files:  79% (7030/8898)\nUpdating files:  80% (7119/8898)\nUpdating files:  81% (7208/8898)\nUpdating files:  82% (7297/8898)\nUpdating files:  83% (7386/8898)\nUpdating files:  84% (7475/8898)\nUpdating files:  85% (7564/8898)\nUpdating files:  86% (7653/8898)\nUpdating files:  87% (7742/8898)\nUpdating files:  88% (7831/8898)\nUpdating files:  89% (7920/8898)\nUpdating files:  90% (8009/8898)\nUpdating files:  91% (8098/8898)\nUpdating files:  92% (8187/8898)\nUpdating files:  93% (8276/8898)\nUpdating files:  94% (8365/8898)\nUpdating files:  95% (8454/8898)\nUpdating files:  95% (8540/8898)\nUpdating files:  96% (8543/8898)\nUpdating files:  96% (8572/8898)\nUpdating files:  97% (8632/8898)\nUpdating files:  97% (8682/8898)\nUpdating files:  98% (8721/8898)\nUpdating files:  99% (8810/8898)\nUpdating files:  99% (8887/8898)\nUpdating files: 100% (8898/8898)\nUpdating files: 100% (8898/8898), done.\n"
+  },
+  "artifacts": [
+    "status.json",
+    "comparison_readiness.json",
+    "summary.json",
+    "summary.md",
+    "manifest.json",
+    "config_snapshot.json",
+    "commands_snapshot.txt",
+    "comparison_ready_rows.csv"
+  ]
+}

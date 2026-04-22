@@ -1,6 +1,6 @@
 # Documentation index
 
-This directory is the documentation front door for the current project.
+This directory contains the documentation front door for the current project.
 
 The key distinction is:
 - **Canonical** docs define the current project identity and paper-facing interpretation.
@@ -20,11 +20,13 @@ If you only want the current truth, read:
 8. [`ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 
 If you only want runnable entry points, go to:
-- [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
 - [`../scripts/README.md`](../scripts/README.md)
+- [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
 
-If you want setup and local development commands, go to:
-- [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
+If you want the current repo-organization rationale, read:
+- [`REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md)
+- [`REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md`](REPOSITORY_POLISH_AND_ORGANIZATION_2026_04_19.md)
+- [`REPOSITORY_FRONT_DOOR_POLISH_AUDIT_2026_04_22.md`](REPOSITORY_FRONT_DOOR_POLISH_AUDIT_2026_04_22.md)
 
 ## Best front-door documents
 
@@ -36,6 +38,12 @@ If you want setup and local development commands, go to:
 - [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md): current experiment-family index.
 - [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md): current baseline/reference index.
 - [`CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md): shortest current answer on what external baseline to strengthen next.
+- [`PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md`](PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md): canonical reviewer-facing baseline comparison separation package.
+- [`FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`](FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md): final fairness-audit and manuscript claim-boundary guide.
+- [`INTEGRATED_CONTROLLER_COMPONENT_ABLATION_REPORT_2026_04_22.md`](INTEGRATED_CONTROLLER_COMPONENT_ABLATION_REPORT_2026_04_22.md): strict-phased promoted-default-surface component ablation findings.
+- [`MANUSCRIPT_SURFACE_COMPONENT_ABLATION_REPORT_2026_04_22.md`](MANUSCRIPT_SURFACE_COMPONENT_ABLATION_REPORT_2026_04_22.md): manuscript-facing strict_f3 matched-surface component ablation findings.
+- [`PAPER_METHOD_DECISION_BUNDLE_20260422T175142Z.md`](PAPER_METHOD_DECISION_BUNDLE_20260422T175142Z.md): direct manuscript-method decision bundle comparing `strict_gate1_cap_k6` vs `strict_f3` on one matched surface.
+- [`CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`](CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md): focused anti-collapse / branch-allocation literature memo.
 - [`REPO_MAP.md`](REPO_MAP.md): canonical repository map.
 
 ## Canonical docs by purpose
@@ -58,9 +66,11 @@ If you want setup and local development commands, go to:
 ### Evaluation, outputs, and assets
 - [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
 - [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
+- [`DATASET_EXPANSION_INTEGRATION_20260422T120000Z.md`](DATASET_EXPANSION_INTEGRATION_20260422T120000Z.md)
 - [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md)
 - [`OUTPUTS_INTERPRETATION_GUIDE.md`](OUTPUTS_INTERPRETATION_GUIDE.md)
 - [`ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+- [`NEURIPS_PAPER_ARTIFACTS.md`](NEURIPS_PAPER_ARTIFACTS.md)
 
 ### References and baselines
 - [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
@@ -83,3 +93,10 @@ If you want setup and local development commands, go to:
 - Use **exploratory** docs when you need experiment-specific context.
 - Use **historical** docs only for provenance or comparison with older directions.
 - Do not treat arbitrary dated notes as the current whole-repo summary unless they are referenced by the canonical front door.
+
+## Historical interpretation rule
+
+For historical/provenance material, use:
+- [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
+
+That policy governs how older notes, superseded summaries, and archived materials should be interpreted.

@@ -106,14 +106,15 @@
       "doc": "external/best_route_microsoft/README.md",
       "integration": "import_validated",
       "completeness_class": "import_validated",
-      "blocker": "adjacent_import_validated_only_not_direct_frontier_allocation_equivalent",
+      "blocker": "full_official_stack_still_heavy_even_after_two_lane_stabilization_partial_runnable_only",
       "integration_doc": "docs/best_route_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/best_route_status.json",
         "outputs/external_baseline_completeness/best_route_status.md",
-        "outputs/best_route_adjacent_integration/<run_id>/status.json"
+        "outputs/best_route_adjacent_integration/<run_id>/status.json",
+        "outputs/best_route_runtime_stabilization/<run_id>/comparison_readiness.json"
       ],
-      "integration_runner": "scripts/run_best_route_adjacent_integration.py",
+      "integration_runner": "scripts/run_best_route_runtime_stabilization_pass.py",
       "comparison_contract": "configs/best_route_adjacent_comparison_contract_v1.json"
     },
     "openr": {
@@ -131,21 +132,49 @@
     "rest_mcts": {
       "clone_url": "https://github.com/THUDM/ReST-MCTS.git",
       "doc": "external/rest_mcts/README.md",
-      "integration": "runnable_adjacent",
-      "completeness_class": "runnable_adjacent",
-      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_self_training_reproduction_out_of_scope_stable_adjacent_contract_lane_only",
       "integration_doc": "docs/rest_mcts_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/rest_mcts_status.json",
-        "outputs/external_baseline_completeness/rest_mcts_status.md"
-      ]
+        "outputs/external_baseline_completeness/rest_mcts_status.md",
+        "outputs/rest_mcts_adjacent_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_rest_mcts_adjacent_integration.py",
+      "comparison_contract": "configs/rest_mcts_adjacent_comparison_contract_v2.json"
     },
     "tree_plv": {
-      "clone_url": null,
+      "clone_url": "https://github.com/Hareta-Leila/Tree-PLV.git",
       "doc": "external/tree_plv/README.md",
-      "integration": "discuss_only",
-      "completeness_class": "discuss_only",
-      "blocker": "official_code_unverified"
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_faithful_reproduction_out_of_scope_partial_runnable_adjacent_contract_lane_only",
+      "canonical_title": "Advancing Process Verification for Large Language Models via Tree-Based Preference Learning",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://aclanthology.org/2024.emnlp-main.125/",
+      "paper_pdf_url": "https://aclanthology.org/2024.emnlp-main.125.pdf",
+      "doi": "https://doi.org/10.18653/v1/2024.emnlp-main.125",
+      "arxiv_url": "https://arxiv.org/abs/2407.00390",
+      "official_repo": "https://github.com/Hareta-Leila/Tree-PLV",
+      "integration_doc": "docs/tree_plv_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/tree_plv_status.json",
+        "outputs/external_baseline_completeness/tree_plv_status.md",
+        "outputs/tree_plv_adjacent_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_tree_plv_adjacent_integration.py",
+      "comparison_contract": "configs/tree_plv_adjacent_comparison_contract_v1.json",
+      "import_validator": "scripts/verify_tree_plv_import.py",
+      "provenance": {
+        "paper_identity": "verified",
+        "paper_cited_repo_found": "yes",
+        "paper_cited_repo_clonable": "yes",
+        "official_checkpoints_found": "not_publicly_confirmed",
+        "license_file_visible_in_audited_repo_snapshot": "no",
+        "provenance_strength": "paper_and_paper_cited_repo_verified_partial_runnable_adjacent_lane"
+      }
     },
     "pgts": {
       "clone_url": null,
@@ -189,20 +218,57 @@
       "doc": "external/qstar_deliberative_planning/README.md",
       "integration": "discuss_only",
       "completeness_class": "discuss_only",
-      "blocker": "no_verified_official_repo_adapter_integration_yet",
+      "blocker": "no_verified_official_repo_or_artifacts_discuss_only_until_provenance_upgrades",
       "canonical_title": "Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning",
       "baseline_class": "direct",
-      "paper_phase_priority": "essential"
+      "paper_phase_priority": "essential",
+      "target_paper_url": "https://arxiv.org/abs/2406.14283",
+      "paper_pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2406.14283",
+      "integration_doc": "docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/qstar_deliberative_planning_status.json",
+        "outputs/external_baseline_completeness/qstar_deliberative_planning_status.md"
+      ],
+      "provenance": {
+        "paper_identity": "verified",
+        "openreview_found": "not_verified",
+        "official_repo_found": "no",
+        "official_project_page_found": "no",
+        "official_checkpoints_found": "no",
+        "official_license_verified": "no",
+        "provenance_strength": "paper_verified_artifacts_unverified"
+      }
     },
     "lets_verify_step_by_step": {
       "clone_url": null,
       "doc": "external/lets_verify_step_by_step/README.md",
-      "integration": "discuss_only",
-      "completeness_class": "discuss_only",
-      "blocker": "reference_family_not_integrated_as_runnable_stack",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_faithful_reproduction_out_of_scope_stable_partial_runnable_adjacent_contract_lane_only",
       "canonical_title": "Let's Verify Step by Step",
       "baseline_class": "adjacent",
-      "paper_phase_priority": "essential_adjacent"
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://arxiv.org/abs/2305.20050",
+      "paper_pdf_url": "https://arxiv.org/pdf/2305.20050.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2305.20050",
+      "official_repo": "https://github.com/openai/prm800k",
+      "integration_doc": "docs/lets_verify_step_by_step_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/lets_verify_step_by_step_status.json",
+        "outputs/external_baseline_completeness/lets_verify_step_by_step_status.md",
+        "outputs/lets_verify_step_by_step_adjacent_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_lets_verify_step_by_step_adjacent_integration.py",
+      "comparison_contract": "configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+      "import_validator": "scripts/verify_lets_verify_step_by_step_import.py",
+      "provenance": {
+        "paper_identity": "verified",
+        "official_repo_found": "yes",
+        "official_public_data_assets_found": "yes",
+        "official_checkpoints_found": "not_publicly_confirmed",
+        "provenance_strength": "paper_and_official_repo_verified_partial_runnable_adjacent_lane"
+      }
     },
     "rational_metareasoning_llm": {
       "clone_url": null,
@@ -233,6 +299,27 @@
       "canonical_title": "Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence",
       "baseline_class": "ingredient_adjacent_boundary",
       "paper_phase_priority": "essential_framing"
+    },
+    "qstar_style_adapter": {
+      "clone_url": null,
+      "doc": "docs/QSTAR_STYLE_ADAPTER_20260422T160000Z.md",
+      "integration": "adapter_based",
+      "completeness_class": "adapter_based",
+      "blocker": "unofficial_caveated_adapter_not_official_qstar_reproduction",
+      "canonical_title": "Q*-style deliberative-search adapter (unofficial)",
+      "baseline_class": "direct_family_unofficial_adapter",
+      "paper_phase_priority": "reviewer_coverage_support",
+      "target_paper_url": "https://arxiv.org/abs/2406.14283",
+      "paper_pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2406.14283",
+      "contract": "configs/qstar_style_adapter_contract_v1.json",
+      "integration_runner": "scripts/run_qstar_style_adapter.py",
+      "status_artifacts": [
+        "outputs/qstar_style_adapter/<run_id>/status.json",
+        "outputs/qstar_style_adapter/<run_id>/summary.json",
+        "outputs/qstar_style_adapter/<run_id>/manifest.json"
+      ],
+      "guardrail": "keep_separate_from_official_qstar_paper_record"
     }
   },
   "completeness_taxonomy": [

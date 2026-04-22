@@ -15,82 +15,105 @@ This repository is **not** currently centered on the older binary revise-routing
 
 ## Fast start
 
-Read these first:
-1. [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
-2. [`CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-3. [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-4. [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-5. [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-6. [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
-7. [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-8. [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
+- Start here: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
+- Then read: [`CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
+- Then read: [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
+- Then read: [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
+- Then use: [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md) for artifact navigation.
+- Then use: [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md) for experiment-family navigation.
+- Then use: [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md) for runnable entry points.
+- Then use: [`../CONTRIBUTING.md`](../CONTRIBUTING.md) for placement, naming, and maintenance rules.
 
 ## Directory map
 
-- `docs/`: canonical status notes, navigation pages, planning notes, reference/baseline indexes, exploratory notes, and historical guidance.
 - `scripts/`: runnable entry points and orchestration wrappers.
-- `experiments/`: reusable implementation modules and compact result notes.
+- `experiments/`: implementation modules and compact result notes.
+- `docs/`: canonical status/planning notes plus grouped method/evaluation indexes, exploratory notes, and historical guidance.
 - `configs/`: dataset, baseline, and experiment configuration files.
-- `datasets/`: dataset policy and readiness assets.
+- `datasets/`: dataset policy/readme assets.
 - `external/`: external baseline references and integration notes.
+- `references/`: literature notes and paper/reference provenance.
 - `outputs/`: generated artifacts and paper-support outputs.
-- `archive/`: preserved historical and provenance-only material.
+- `tests/`: lightweight regression and repository-health checks.
+- `archive/`: preserved historical / provenance-only material.
 
-## Current highest-value reading set
+## Canonical docs now
 
-### Project state
-- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-- `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+Read these first for current project interpretation:
+1. `docs/CANONICAL_START_HERE.md`
+2. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+3. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+4. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+5. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+6. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+7. `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
+8. `docs/PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md`
+9. `docs/FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`
+10. `docs/MANUSCRIPT_SURFACE_COMPONENT_ABLATION_REPORT_2026_04_22.md`
+11. `docs/NEURIPS_PAPER_ARTIFACTS.md`
+12. `docs/DATASET_EXPANSION_INTEGRATION_20260422T120000Z.md`
+13. `docs/CURRENT_SAFE_CLAIMS.md`
+14. `docs/CANONICAL_INSTALL_AND_DEV.md`
+15. `CONTRIBUTING.md`
+16. `docs/REPO_MAP.md`
+
+## Current highest-value diagnostic / evaluation docs
+
+Use these when you want to understand current evidence:
 - `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
-- `docs/CURRENT_SAFE_CLAIMS.md`
-- `docs/CURRENT_BOTTLENECKS.md`
+- `docs/NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
+- `docs/HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`
+- `docs/HUNDRED_THREE_GATE_DESIGN_COMPARISON_STRICT_PHASED_20260421T022459Z.md`
+- `docs/STRICT_PHASED_HARD_EARLY_COVERAGE_REPORT_20260421T020917Z.md`
 
-### Evaluation and evidence
-- `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+## Grouped navigation pages
+
 - `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 - `docs/EVALUATION_AND_BASELINES_INDEX.md`
-- `outputs/README.md`
+- `docs/REPOSITORY_START_PATHS.md`
+- `docs/EXPLORATORY_INDEX.md`
+- `scripts/HISTORICAL_INDEX.md`
 
-### Code entry points
-- `docs/CANONICAL_INSTALL_AND_DEV.md`
-- `scripts/CANONICAL_START_HERE.md`
-- `scripts/README.md`
+## Canonical scripts now
 
-## Current canonical scripts
-
-### Default-decision and failure-analysis path
+### Current default-decision and failure-analysis path
 - `scripts/run_broader_strict_phased_default_decision_eval.py`
 - `scripts/build_new_hundred_newest_vs_best_failure_statistics.py`
 - `scripts/run_hard_max_family_expansions_eval.py`
 - `scripts/run_hundred_three_gate_design_eval_strict_phased.py`
 - `scripts/run_learned_f2_to_f3_gate_v1_eval.py`
 
-### Baseline and broader comparison support path
+### Current baseline / broader comparison support path
 - `scripts/run_full_method_comparison_bundle.py`
 - `scripts/build_twenty_exact_current_full_vs_best_fresh.py`
 - `scripts/run_s1_budget_forcing_baseline.py`
 - `scripts/run_tale_baseline.py`
 - `scripts/run_l1_baseline.py`
 
-## Practical collaborator path
+## Practical collaborator start path
 
 1. Read the canonical docs in order from `docs/CANONICAL_START_HERE.md`.
 2. Use `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md` to understand the current strict-phased method state.
 3. Use `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md` to see the decisive default-model result.
-4. Use `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md` to understand which experiment families are active.
-5. Use `docs/CANONICAL_INSTALL_AND_DEV.md` and `scripts/CANONICAL_START_HERE.md` to start running code.
-6. Treat exploratory notes as evidence traces, not as the default project interpretation.
+4. Use `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md` to understand which experiment families are now active.
+5. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
+6. Use `CONTRIBUTING.md` before adding new files or output families.
+7. Treat exploratory notes as evidence traces, not as the default project interpretation.
 
-## Maintenance rule
+## Practical maintenance rule
 
 When the project phase changes materially, update these together:
 - `README.md`
-- `QUICKSTART.md`
 - `docs/README.md`
 - `docs/CANONICAL_START_HERE.md`
+- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+- `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+- `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+- `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 - `docs/REPO_MAP.md`
 - `docs/CANONICAL_INSTALL_AND_DEV.md`
-- `scripts/README.md`
+- `CONTRIBUTING.md`
+- `scripts/CANONICAL_START_HERE.md`
 - `outputs/README.md`
 
-This keeps the repository front door aligned with the actual state of the project.
+This keeps the front door of the repo aligned with the actual state of the project.

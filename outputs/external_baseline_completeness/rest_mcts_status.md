@@ -1,27 +1,24 @@
 # rest_mcts status
 
-- Generated (UTC): `2026-04-16T02:17:13.689937+00:00`
+- Generated (UTC): `2026-04-22T12:00:00+00:00`
 - Baseline: `rest_mcts`
-- Status: `runnable_adjacent`
-- Integration kind: `verified_import_only`
+- Status (v1): `import_validated`
+- Lane strength: `partial_runnable_adjacent`
+- Integration kind: `official_adjacent_contract_lane`
 
 ## Conservative interpretation
-- This is an adjacent import protocol, not full in-repo reproduction.
-- Imported outputs must pass strict contract validation.
+- This is an official adjacent contract lane, not full in-repo reproduction.
+- Imported outputs must pass strict validator checks under an explicit contract.
 
-## Required import contract highlights
-- Required files: `metadata.json` and `results.csv`.
-- Required workflow-stage declarations:
-  - value_model_bootstrap_or_training
-  - mcts_trace_generation
-  - policy_self_training
-  - benchmark_evaluation
-- Results must include `mcts` search rows with explicit search settings and metrics.
-- Comparability scope must be explicitly `adjacent_only`.
+## Canonical contract lane
+- Contract: `configs/rest_mcts_adjacent_comparison_contract_v2.json`
+- Runner: `scripts/run_rest_mcts_adjacent_integration.py`
+- Validator: `scripts/verify_rest_mcts_import.py`
+- Output family: `outputs/rest_mcts_adjacent_integration/<run_id>/`
 
 ## Safe vs unsafe claims
 Safe now:
-- Validated adjacent import for ReST-MCTS outputs.
+- Artifact-backed adjacent integration with machine-readable outputs.
 
 Not safe now:
-- Claiming direct in-repo reproduction or control-equivalent comparability.
+- Claiming full faithful in-repo reproduction or direct control-equivalent comparability.

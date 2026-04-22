@@ -1,4 +1,8 @@
-# NeurIPS Figures and Tables Status
+# NeurIPS Figures and Tables Status (Historical)
+
+This file is retained as a historical snapshot. For current canonical paper artifact status and regeneration policy, use:
+- `docs/NEURIPS_PAPER_ARTIFACTS.md`
+- `docs/PAPER_ARTIFACT_CLEANUP_REPORT_2026_04_21.md`
 
 ## Successfully built
 

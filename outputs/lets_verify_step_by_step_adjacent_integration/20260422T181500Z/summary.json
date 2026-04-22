@@ -1,0 +1,8 @@
+{
+  "baseline": "lets_verify_step_by_step",
+  "classification": "partial_runnable_adjacent",
+  "minimum_contract_met": true,
+  "official_repo_layout_ok": true,
+  "comparison_ready_rows": 2,
+  "output_dir": "outputs/lets_verify_step_by_step_adjacent_integration/20260422T181500Z"
+}

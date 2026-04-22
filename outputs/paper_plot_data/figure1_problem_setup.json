@@ -1,71 +1,15 @@
 {
   "figure_id": "figure1_problem_setup",
-  "title": "Frontier allocation for budgeted reasoning",
-  "nodes": [
-    {
-      "id": "input",
-      "label": "Input Question",
-      "kind": "input"
-    },
-    {
-      "id": "branches",
-      "label": "Active Branches",
-      "kind": "state"
-    },
-    {
-      "id": "scoring",
-      "label": "Branch Scoring",
-      "kind": "decision"
-    },
-    {
-      "id": "commit",
-      "label": "Commit / Expand",
-      "kind": "decision"
-    },
-    {
-      "id": "support",
-      "label": "Answer-Group Support",
-      "kind": "process"
-    },
-    {
-      "id": "anticollapse",
-      "label": "Anti-collapse Control",
-      "kind": "process"
-    },
-    {
-      "id": "final",
-      "label": "Final Answer",
-      "kind": "output"
-    }
-  ],
-  "edges": [
-    [
-      "input",
-      "branches"
-    ],
-    [
-      "branches",
-      "scoring"
-    ],
-    [
-      "scoring",
-      "commit"
-    ],
-    [
-      "commit",
-      "final"
-    ],
-    [
-      "support",
-      "scoring"
-    ],
-    [
-      "anticollapse",
-      "scoring"
-    ]
-  ],
-  "notes": [
-    "Fixed budget limits total test-time compute.",
-    "Diagnostics separate absent-from-tree from present-but-misselected failures."
-  ]
+  "title": "Frontier allocation under a fixed budget",
+  "labels": {
+    "input": "Input Question",
+    "frontier": "Active Frontier",
+    "branch_a": "Branch A",
+    "branch_b": "Branch B",
+    "branch_c": "Branch C",
+    "choose": "Choose Next Action",
+    "expand": "Expand one branch",
+    "commit": "Commit",
+    "final": "Final Answer"
+  }
 }

@@ -14,8 +14,8 @@ For this repository phase, baselines are grouped as:
 
 | Family | Canonical paper title | Repo short name | Class | Runnable status | Essential this paper phase? | Why it matters here | Why not fully equivalent when non-direct |
 |---|---|---|---|---|---|---|---|
-| Deliberative planning search | Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning | qstar_deliberative_planning | **direct** | discuss-only / not-yet-integrated | **essential** | Closest published family to deliberate multi-step branch planning under budget pressure. | N/A (direct family target). |
-| Completion-aware PRM/verifier | Let's Verify Step by Step | lets_verify_step_by_step | **adjacent** | discuss-only (reference/ingredient + external note) | **essential adjacent** | Core completion/process-evidence family relevant to bounded correction in disagreement slices. | Optimizes verifier/process scoring, not explicit next-step branch allocation over active frontier. |
+| Deliberative planning search | Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning | qstar_deliberative_planning | **direct** | discuss-only (provenance-hardened; integration-blocked pending verified official artifacts) | **essential** | Closest published family to deliberate multi-step branch planning under budget pressure. | N/A (direct family target). |
+| Completion-aware PRM/verifier | Let's Verify Step by Step | lets_verify_step_by_step | **adjacent** | partial_runnable_adjacent (official adjacent contract lane via PRM800K public assets) | **essential adjacent** | Core completion/process-evidence family relevant to bounded correction in disagreement slices. | Optimizes verifier/process scoring, not explicit next-step branch allocation over active frontier. |
 | Adaptive stop-vs-continue compute | Rational Metareasoning for Large Language Models | rational_metareasoning_llm | **adjacent** | discuss-only (framing/theory) | **essential adjacent** | Provides value-of-computation framing for continuation decisions under cost. | Primarily stop/continue metareasoning framing, not direct multi-branch frontier allocation control. |
 | Routing / cascades | Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning | efficient_contextual_llm_cascades | **adjacent** | runnable-adjacent via cascade routing import validator | optional (essential only if scope broadens to routing-first framing) | Reviewer-expected adaptive-compute routing comparator. | Route/cascade action space differs from branch-level next-step allocation among active reasoning branches. |
 | Small-gap fixed-budget allocation | Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence | best_arm_identification_fixed_budget | **ingredient-adjacent boundary** | discuss-only framing reference | **essential framing** | Strongest theoretical lens for hard near-tie disagreement states and gap-sensitive budget allocation. | Classical bandit abstraction is not a direct empirical LLM reasoning baseline stack. |
@@ -30,21 +30,21 @@ For this repository phase, baselines are grouped as:
 - **Main benchmarks:** MATH, SciBench, and college-level scientific reasoning tasks.
 - **Official code:** https://github.com/THUDM/ReST-MCTS
 - **Data / benchmark links:** See the official repository and paper resources for benchmark setup details; exact reconstruction of full data flows may require manual verification.
-- **Reproducibility caveats:** Full upstream training/evaluation reproduction remains heavyweight; this repo now supports adjacent import validation via `scripts/verify_rest_mcts_import.py` with conservative claim boundaries.
+- **Reproducibility caveats:** Full upstream training/evaluation reproduction remains heavyweight; this repo now supports a stabilized adjacent contract lane via `scripts/run_rest_mcts_adjacent_integration.py` plus strict import validation via `scripts/verify_rest_mcts_import.py`, with conservative claim boundaries.
 - **How it differs from our target method:** It uses reward-guided search, but does not cleanly formulate marginal budget allocation over reasoning trees with strong guarantees.
 
 ## Tree-PLV
 
 - **Canonical title:** *Advancing Process Verification for Large Language Models via Tree-Based Preference Learning*
-- **Venue / year:** 2024 arXiv
-- **Role in our project:** State-level / step-level process verifier baseline.
-- **Problem formulation:** Learns a process verifier from tree-constructed preference pairs over intermediate reasoning states.
-- **Core method:** Best-first tree construction plus preference learning for step-level verification.
-- **Main benchmarks:** GSM8K, MATH, CSQA, and StrategyQA.
-- **Official code:** Not found in official sources.
-- **Data / benchmark links:** TODO: Add verified links to the paper's benchmark/task pages after manual source confirmation.
-- **Reproducibility caveats:** The paper is public, but no official code was identified.
-- **How it differs from our target method:** It improves step-level verification, but does not directly solve budgeted online compute allocation over reasoning trees.
+- **Venue / year:** EMNLP 2024 (ACL Anthology 2024.emnlp-main.125)
+- **Role in our project:** Official-paper-cited process-verifier/search-adjacent baseline.
+- **Problem formulation:** Learns process verification signals from tree-constructed preference data over reasoning states.
+- **Core method:** Tree-based candidate state construction + preference learning for verifier guidance.
+- **Main benchmarks (paper):** GSM8K, MATH, CSQA, StrategyQA.
+- **Official resources:** ACL Anthology page/PDF + DOI + arXiv; paper-cited repo `Hareta-Leila/Tree-PLV`.
+- **Current repo status:** `import_validated` (matrix) with a stabilized `partial_runnable_adjacent` contract lane.
+- **Canonical integration assets:** `configs/tree_plv_adjacent_comparison_contract_v1.json`, `scripts/verify_tree_plv_import.py`, `scripts/run_tree_plv_adjacent_integration.py`, `docs/tree_plv_integration.md`.
+- **How it differs from our target method:** verifier/preference-learning neighbor, not direct branch-level marginal budget-allocation control.
 
 ## PGTS
 
@@ -171,11 +171,11 @@ For manuscript-safe claims, treat external baselines as follows:
   - TALE via `configs/tale_prompt_budgeting_v1.json` + `scripts/run_tale_baseline.py`
   - L1 via `configs/l1_inference_adapter_v1.json` + `scripts/run_l1_baseline.py`
 - **MODE B (import-validated only; v1 `import_validated` / `adjacent`):** s1, TALE, and L1 share the same pattern: usable **only** when valid official/full packages are supplied and pass `scripts/verify_s1_mode_b_import.py`, `scripts/verify_tale_mode_b_import.py`, or `scripts/verify_l1_mode_b_import.py` respectively (TALE MODE B additionally enforces TALE-vs-TALE-PT variant separation). Otherwise runs remain blocked pending `official.results_path`.
-- **BEST-Route:** v1 `import_validated` adjacent neighbor via `scripts/verify_best_route_import.py` with official-provenance import validation and adjacent-only comparison scope. Strengthened repository-native runner: `scripts/run_best_route_adjacent_integration.py` + `configs/best_route_adjacent_comparison_contract_v1.json` for artifact-backed row export.
+- **BEST-Route:** adjacent baseline with strict import-validation lane (`scripts/verify_best_route_import.py`) plus a focused runtime pass (`scripts/run_best_route_runtime_stabilization_pass.py`) that demonstrates a stable tiny synthetic router run under non-upstream compatibility pins; full official benchmark-faithful stack reproduction remains unclaimed.
 - **when_solve_when_verify:** v1 `official` + `import_validated` via `scripts/verify_when_solve_when_verify_import.py`, with canonical adjacent contract runner `scripts/run_when_solve_when_verify_adjacent_integration.py` and `configs/when_solve_when_verify_adjacent_comparison_contract_v1.json` (fixed-budget solve-vs-verify adjacent slices only; not frontier-allocation direct).
 - **cascade_routing:** v1 `import_validated` via `scripts/verify_cascade_routing_import.py`.
 - **mob_majority_of_bests:** v1 `import_validated` via `scripts/verify_mob_import.py`.
-- **rest_mcts:** v1 `import_validated` via `scripts/verify_rest_mcts_import.py` (no full ReST-MCTS training loop in-repo).
+- **rest_mcts:** stabilized partial-runnable adjacent lane via `scripts/run_rest_mcts_adjacent_integration.py` + `configs/rest_mcts_adjacent_comparison_contract_v2.json` with canonical outputs under `outputs/rest_mcts_adjacent_integration/<run_id>/`, plus strict import validation via `scripts/verify_rest_mcts_import.py`; no full ReST-MCTS training loop in-repo.
 - **openr:** v1 `import_validated` via `scripts/verify_openr_import.py`.
 
 Companion artifacts:
@@ -195,3 +195,21 @@ Safe wording rule:
 - Do not reframe this baseline section as a generic routing paper, generic adaptive-TTC survey, or best-of-N paper.
 - Keep the center on **fixed-budget next-step branch allocation**, **continuation-value core**, and **bounded completion-aware correction in near-tie disagreement slices**.
 - Preserve status honesty with explicit labels: `runnable_direct`, `runnable_adjacent`, `adapter_based`, `import_validated`, `discuss_only`, `blocked`.
+
+## Q*-family separation update (2026-04-22 unofficial adapter lane)
+
+The repository now keeps a strict two-lane Q*-family split:
+
+1. **Official paper record** — `qstar_deliberative_planning`
+   - remains `discuss_only` and provenance-hardened,
+   - no verified official runnable artifact path is claimed.
+
+2. **Unofficial runnable comparator** — `qstar_style_adapter`
+   - contract: `configs/qstar_style_adapter_contract_v1.json`
+   - runner: `scripts/run_qstar_style_adapter.py`
+   - artifacts: `outputs/qstar_style_adapter/<run_id>/`
+   - role: caveated conceptual-family stress test only.
+
+Table guardrail:
+- If reported, label as **"Q*-style adapter (unofficial, caveated)"**.
+- Do not place this lane in tables that imply official Q* reproduction.
