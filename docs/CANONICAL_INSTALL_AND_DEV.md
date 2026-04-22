@@ -21,13 +21,16 @@ Use this document when you need the shortest reliable answer to:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+make setup
 ```
 
-If you want editable-package style development, also run:
+Equivalent manual path:
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
 pip install -e .[dev]
 ```
 
@@ -35,16 +38,15 @@ pip install -e .[dev]
 
 ```bash
 make smoke
+make health
 make lint
 make test
 ```
 
-If your local `Makefile` has not yet been updated to lint all Python directories, run:
+For the most common pre-commit maintenance pass, run:
 
 ```bash
-ruff check scripts experiments tests
-ruff format scripts experiments tests
-pytest
+make check
 ```
 
 ## Interpretation rule
@@ -57,7 +59,8 @@ For current project interpretation, read in this order:
 5. `docs/CURRENT_BOTTLENECKS.md`
 6. `docs/CURRENT_SAFE_CLAIMS.md`
 7. `docs/REPO_MAP.md`
-8. `scripts/README.md`
+8. `CONTRIBUTING.md`
+9. `scripts/README.md`
 
 ## Directory roles
 
@@ -65,16 +68,18 @@ For current project interpretation, read in this order:
 - `experiments/`: reusable implementation modules and controller logic
 - `docs/`: canonical notes, status docs, and supporting references
 - `external/`: external baseline notes and integration-facing references
+- `references/`: paper/reference summaries and literature-facing provenance notes
 - `outputs/`: generated artifacts
 - `tests/`: lightweight regression and repo-health tests
 
 ## Current best-practice workflow
 
 1. read the canonical docs first,
-2. pick one runnable script from `scripts/README.md`,
-3. write outputs under `outputs/`,
-4. keep new method notes in `docs/` before adding large code paths,
-5. avoid presenting exploratory notes as canonical project truth.
+2. use `CONTRIBUTING.md` before adding new scripts, docs, or output families,
+3. pick one runnable script from `scripts/README.md`,
+4. write outputs under `outputs/`,
+5. keep new method notes in `docs/` before adding large code paths,
+6. avoid presenting exploratory notes as canonical project truth.
 
 ## Scope note
 
