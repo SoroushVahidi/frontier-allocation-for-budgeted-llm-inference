@@ -20,25 +20,25 @@ This repository is currently centered on:
 - useful diversity realization under budget,
 - answer-support aggregation,
 - anti-collapse branch-family control,
-- and real-model confirmation of branch-allocation policies.
+- and reviewer-defensible comparison against both near-direct and adjacent external baselines.
 
 This repository is **not** currently centered on the older binary revise-routing paper.
 
 ## Current state in one paragraph
 
-The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The repository now studies these refinements under a strict-phased hard early-coverage discipline (finish F1, then F2, then F3), and the current broader strict-phased default-decision pass has selected **`strict_gate1_cap_k6`** as the current broad default promoted model on the evaluated surface.
+The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation** under the strict-phased hard early-coverage discipline. The current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**. At the same time, the repository has now materially strengthened its paper-facing external baseline stack: near-direct matched-substrate baselines (`s1`, `TALE`, `L1`), official adjacent lanes such as BEST-Route, when_solve_when_verify, ReST-MCTS*, and Let's Verify Step by Step, plus a clearly caveated unofficial Q*-style adapter lane for reviewer-defense coverage.
 
 ## Fastest reliable reading path
 
 Read these first:
 1. [`QUICKSTART.md`](QUICKSTART.md)
 2. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-3. [`docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-4. [`docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-5. [`docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-8. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+3. [`docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
+4. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
+5. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+6. [`docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md)
+7. [`docs/main_baselines.md`](docs/main_baselines.md)
+8. [`docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md`](docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
@@ -71,18 +71,14 @@ For the full interpretation policy, see:
 - observability-enabled semantic failure analysis,
 - comparative mistake auditing against the strongest baseline,
 - bounded real-model confirmation,
-- exact old-vs-current tree comparison artifacts,
-- targeted current-failure bundles,
-- output-layer repair diagnostics,
 - strict-phased hard-coverage experiments,
-- strict force/gate comparison bundles,
-- capped-family anti-collapse experiments,
+- stabilized adjacent external baseline lanes,
+- paper-facing external baseline documentation and aggregate bundles,
 - and a stronger learner-side supervision stack than before.
 
 ## What is not solved yet
 
 - broader independent confirmation beyond the current finalized broader pass,
-- honest external-baseline completeness closure,
 - stable real-model leadership among close variants under wider conditions,
 - broader paper-grade real-model evidence,
 - and final manuscript-facing consolidation of the newest strict-phased default into all comparison and claim layers.
@@ -98,7 +94,7 @@ Output-layer repair remains useful, but it is no longer the dominant broad bottl
 
 ## Repository layout
 
-- `docs/`: canonical interpretation, planning notes, navigation pages, reference/baseline indexes, result/artifact indexes, exploratory notes, and historical guidance.
+- `docs/`: canonical interpretation, baseline/reference indexes, result/artifact indexes, exploratory notes, and historical guidance.
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
 - `configs/`: dataset, baseline, and experiment configuration files.
@@ -113,4 +109,4 @@ The strongest current paper story is:
 
 **fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
 
-The current repository-wide methodological refinement is that this question is now studied under a strict phased shallow-coverage discipline, and the current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**. The repo is therefore in a stronger and more settled state than before, though broader independent confirmation and external-baseline strengthening are still needed before the manuscript-facing story is fully closed.
+The current repository-wide methodological refinement is that this question is now studied under a strict phased shallow-coverage discipline, with **`strict_gate1_cap_k6`** as the current broad default promoted model on the evaluated surface. The repo is also now in a materially stronger baseline-comparison state than before, because the external comparison stack is organized into near-direct, official adjacent, and clearly caveated unofficial comparator lanes rather than a single undifferentiated baseline bucket.
