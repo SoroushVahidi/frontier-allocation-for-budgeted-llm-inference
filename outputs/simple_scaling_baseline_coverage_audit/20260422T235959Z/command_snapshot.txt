@@ -1,0 +1,1 @@
+python scripts/build_simple_scaling_baseline_coverage_audit.py --run-id 20260422T235959Z --paper-tables-run 20260422T231500Z

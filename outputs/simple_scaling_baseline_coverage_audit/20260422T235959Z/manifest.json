@@ -1,0 +1,15 @@
+{
+  "decision": "no_new_baseline_added",
+  "new_baseline_added": false,
+  "outputs": [
+    "coverage_decision.json",
+    "coverage_decision.md",
+    "direct_baseline_role_matrix.csv",
+    "reviewer_expectation_notes.md",
+    "manifest.json",
+    "config_snapshot.json",
+    "command_snapshot.txt"
+  ],
+  "paper_facing_update": "outputs/paper_facing_baseline_tables/20260422T231500Z/simple_scaling_axis_explicit_note.md",
+  "run_id": "20260422T235959Z"
+}
