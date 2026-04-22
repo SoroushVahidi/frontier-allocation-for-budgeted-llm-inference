@@ -11,29 +11,31 @@ from paper_style import STYLE, method_sort_key
 def main() -> None:
     rows = load_csv(PLOT_DATA_DIR / "figure4_allocation_composition.csv")
     methods = sorted({r["method"] for r in rows}, key=method_sort_key)
-    max_share = []
-    longest_run = []
+    avg_actions = []
+    avg_expansions = []
+    avg_verifications = []
     for m in methods:
         mrows = [r for r in rows if r["method"] == m]
-        max_share.append(next(float(r["value"]) for r in mrows if r["metric"] == "max_family_share"))
-        longest_run.append(next(float(r["value"]) for r in mrows if r["metric"] == "longest_same_family_run"))
+        avg_actions.append(next(float(r["value"]) for r in mrows if r["metric"] == "avg_actions"))
+        avg_expansions.append(next(float(r["value"]) for r in mrows if r["metric"] == "avg_expansions"))
+        avg_verifications.append(next(float(r["value"]) for r in mrows if r["metric"] == "avg_verifications"))
 
-    fig, axes = plt.subplots(1, 2, figsize=(STYLE.width + 1.2, STYLE.height + 0.6), sharex=True)
-    axes[0].bar(methods, max_share, color=[method_color(m) for m in methods])
-    axes[0].set_title("Max family share", fontsize=STYLE.title_size)
-    axes[0].set_ylabel("Share", fontsize=STYLE.label_size)
-    axes[0].grid(True, axis="y", alpha=STYLE.grid_alpha)
+    fig, ax = plt.subplots(figsize=(STYLE.width + 1.4, STYLE.height + 1.0))
+    x = list(range(len(methods)))
+    w = 0.23
 
-    axes[1].bar(methods, longest_run, color=[method_color(m) for m in methods])
-    axes[1].set_title("Longest same-family run", fontsize=STYLE.title_size)
-    axes[1].set_ylabel("Run length", fontsize=STYLE.label_size)
-    axes[1].grid(True, axis="y", alpha=STYLE.grid_alpha)
+    ax.bar([i - w for i in x], avg_actions, width=w, label="Avg actions", color="#4e79a7")
+    ax.bar(x, avg_expansions, width=w, label="Avg expansions", color="#59a14f")
+    ax.bar([i + w for i in x], avg_verifications, width=w, label="Avg verifications", color="#f28e2b")
 
-    for ax in axes:
-        ax.set_xlabel("Method", fontsize=STYLE.label_size)
-        ax.tick_params(axis="x", rotation=26, labelsize=STYLE.tick_size)
-        for label in ax.get_xticklabels():
-            label.set_ha("right")
+    ax.set_xticks(x)
+    ax.set_xticklabels(methods, rotation=26, ha="right", fontsize=STYLE.tick_size)
+    ax.set_xlabel("Method / formula", fontsize=STYLE.label_size)
+    ax.set_ylabel("Mean count per case", fontsize=STYLE.label_size)
+    ax.set_title("Action allocation composition", fontsize=STYLE.title_size)
+    ax.grid(True, axis="y", alpha=STYLE.grid_alpha)
+    ax.legend(frameon=False, fontsize=STYLE.legend_size, ncols=3, loc="upper center", bbox_to_anchor=(0.5, -0.16))
+    fig.subplots_adjust(bottom=0.30)
     save_fig(fig, FIGURE_DIR / "figure4_allocation_composition.pdf", FIGURE_DIR / "figure4_allocation_composition.png")
 
 

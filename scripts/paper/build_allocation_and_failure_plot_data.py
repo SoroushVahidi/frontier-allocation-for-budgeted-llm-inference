@@ -12,29 +12,29 @@ from paper_data_sources import (
 
 
 def build_allocation_composition() -> None:
-    # Canonical main-paper figure now emphasizes concentration diagnostics, not action-mix shares.
+    # Main-paper allocation composition: action mix by method/formula.
     rows = load_budget_aware_overall_table()
     out = []
     for r in rows:
         out.append(
             {
                 "method": str(r["formula"]),
-                "metric": "max_family_share",
-                "value": float(r["avg_max_family_share"]),
+                "metric": "avg_actions",
+                "value": float(r["avg_actions"]),
             }
         )
         out.append(
             {
                 "method": str(r["formula"]),
-                "metric": "longest_same_family_run",
-                "value": float(r["avg_longest_same_family_run"]),
+                "metric": "avg_expansions",
+                "value": float(r["avg_expansions"]),
             }
         )
         out.append(
             {
                 "method": str(r["formula"]),
-                "metric": "repeated_same_family_cases",
-                "value": float(r["repeated_same_family_present"]),
+                "metric": "avg_verifications",
+                "value": float(r["avg_verifications"]),
             }
         )
 

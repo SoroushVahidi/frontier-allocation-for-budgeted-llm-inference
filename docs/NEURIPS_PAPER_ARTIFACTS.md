@@ -1,9 +1,21 @@
 ## NeurIPS Paper Artifacts
 
+## Canonical paper pipeline model
+
+- Canonical entrypoint: `python scripts/paper/run_all_neurips_paper_artifacts.py`
+- Canonical output roots:
+  - `outputs/paper_plot_data/` (machine-readable figure data)
+  - `outputs/paper_figures/` (publication figure binaries)
+  - `outputs/paper_tables/` (publication tables)
+- Artifact classes:
+  - main-paper artifacts,
+  - appendix artifacts,
+  - historical/provenance-only artifacts (outside canonical paper output roots unless explicitly noted).
+
 ## Canonical input sources (current)
 
 The canonical paper pipeline now reads from:
-- `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- `outputs/paper_plot_data/sources/strict_phased_multidataset_frontier.csv`
 - `outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z/`
 - `outputs/budget_aware_family_cap_eval_20260421T162842Z/`
 - `outputs/current_failure_output_layer_repair_20260420/` (appendix output-layer repair)
@@ -29,8 +41,8 @@ Main-paper plot data:
 - `outputs/paper_plot_data/figure7_per_dataset_summary.csv`
 
 Appendix figures and data:
-- `outputs/paper_figures/appendix_*.{pdf,png}`
-- `outputs/paper_plot_data/appendix_*.csv`
+- `outputs/paper_figures/appendix_budget_formula_curves.{pdf,png}`
+- `outputs/paper_plot_data/appendix_per_dataset_frontier_curves.csv`
 - `outputs/paper_figures/appendix_output_layer_repair.{pdf,png}`
 - `outputs/paper_plot_data/appendix_output_layer_repair.csv`
 
@@ -63,6 +75,9 @@ Appendix recommended:
 - per-dataset full curve panels for all methods,
 - promoted-vs-adversary failure-slice comparison,
 - additional dense method comparisons.
+
+Historical / provenance-only:
+- older bounded imported-methodology artifacts and associated historical audits are preserved for traceability only and are not canonical paper outputs.
 
 ## How to regenerate
 

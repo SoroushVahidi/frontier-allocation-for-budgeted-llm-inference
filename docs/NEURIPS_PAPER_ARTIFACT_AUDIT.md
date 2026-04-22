@@ -1,4 +1,10 @@
-# NeurIPS Paper Artifact Audit
+# NeurIPS Paper Artifact Audit (Historical)
+
+This file is retained for historical provenance. It is not the canonical source for current paper artifact policy.
+
+Use instead:
+- `docs/NEURIPS_PAPER_ARTIFACTS.md`
+- `docs/PAPER_ARTIFACT_CLEANUP_REPORT_2026_04_21.md`
 
 ## Canonical project identity
 

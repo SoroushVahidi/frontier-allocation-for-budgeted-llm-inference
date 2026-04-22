@@ -35,12 +35,12 @@ Use this family when the question is:
 - repeated same-family expansion frequency,
 - and whether output-layer mismatch is still dominant.
 
-## Older bounded frontier plot surface
+## Older bounded frontier plot surface (historical)
 
 The following family is still valid, but only for its original bounded scope:
 
 - `outputs/imported_methodology_frontier_eval/20260417T000000Z/`
-- derived CSVs under `outputs/paper_plot_data/`
+- older derived CSVs under legacy bounded bundles (pre-cleanup)
 - `docs/NEURIPS_FIGURE_AND_TABLE_AUDIT.md`
 
 Interpretation rule:
@@ -62,7 +62,7 @@ Therefore:
 
 ### Safe with bounded-scope labeling
 - figures/tables derived from `outputs/imported_methodology_frontier_eval/20260417T000000Z/`
-- files currently stored under `outputs/paper_plot_data/`
+- legacy bounded figures/tables that were derived from older imported-methodology surfaces
 
 Required label for bounded-scope use:
 - state clearly that the artifact is from the older bounded imported-methodology frontier surface
@@ -70,7 +70,7 @@ Required label for bounded-scope use:
 
 ### Not safe for current headline claims
 - any figure/table that mixes April 17 imported-methodology rows with April 19–20 current comparison rows without explicit normalization and documentation
-- any figure/table that uses `outputs/paper_plot_data/` as if it were the current canonical broad ranking source
+- any figure/table that mixes historical bounded sources with current canonical sources without explicit normalization and labeling
 - any one-off exploratory run not referenced by current canonical docs
 
 ## Practical maintenance rule
@@ -80,6 +80,10 @@ When adding a new paper-facing figure or table:
 2. record whether it is current-canonical or bounded-historical;
 3. store or link the machine-readable source beside the figure/table;
 4. add/update a note in `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md` if the artifact becomes current-facing.
+
+## 2026-04-22 policy alignment note
+
+The repository now treats `outputs/paper_plot_data/` as the canonical machine-readable output directory for the NeurIPS paper pipeline. Historical bounded artifacts remain valid only when explicitly labeled as historical and tied to their original source bundle.
 
 ## Specific note on `program_of_thought`
 
