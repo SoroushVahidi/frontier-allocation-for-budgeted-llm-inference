@@ -359,6 +359,47 @@
         "outputs/learning_how_hard_to_think_mode_a/<run_id>/diagnostic_report.md"
       ],
       "guardrail": "paper_inspired_matched_substrate_comparator_not_official_reproduction"
+    },
+    "adaptive_test_time_compute_allocation_training_free_proxies": {
+      "clone_url": null,
+      "doc": "external/training_free_difficulty_proxies/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_public_code_not_clearly_verified_from_openreview_primary_sources",
+      "canonical_title": "Adaptive Test-Time Compute Allocation via Training-Free Difficulty Proxies",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://openreview.net/forum?id=ztGHhyicWs",
+      "paper_pdf_url": "https://openreview.net/pdf?id=ztGHhyicWs",
+      "integration_doc": "docs/training_free_difficulty_proxies_integration.md",
+      "provenance": {
+        "paper_identity": "verified",
+        "official_repo_found": "not_clearly_verified",
+        "openreview_primary_source_used": "yes",
+        "provenance_strength": "paper_verified_official_code_unverified"
+      }
+    },
+    "training_free_difficulty_proxies_mode_a": {
+      "clone_url": null,
+      "doc": "external/training_free_difficulty_proxies/README.md",
+      "integration": "adapter_based",
+      "completeness_class": "adapter_based",
+      "blocker": "unofficial_matched_substrate_adapter_not_official_reproduction",
+      "canonical_title": "Training-free difficulty proxies MODE A adapter (paper-inspired)",
+      "baseline_class": "adjacent_adapter_query_level",
+      "paper_phase_priority": "reviewer_coverage_support",
+      "target_paper_url": "https://openreview.net/forum?id=ztGHhyicWs",
+      "paper_pdf_url": "https://openreview.net/pdf?id=ztGHhyicWs",
+      "contract": "configs/training_free_difficulty_proxies_mode_a_v1.json",
+      "integration_runner": "scripts/run_training_free_difficulty_proxies_mode_a.py",
+      "integration_doc": "docs/training_free_difficulty_proxies_integration.md",
+      "status_artifacts": [
+        "outputs/training_free_difficulty_proxies_mode_a/<run_id>/status.json",
+        "outputs/training_free_difficulty_proxies_mode_a/<run_id>/comparison_summary.csv",
+        "outputs/training_free_difficulty_proxies_mode_a/<run_id>/diagnostic_summary.json",
+        "outputs/training_free_difficulty_proxies_mode_a/<run_id>/diagnostic_report.md"
+      ],
+      "guardrail": "query_level_global_budget_adapter_not_branch_level_control_equivalent"
     }
   },
   "completeness_taxonomy": [

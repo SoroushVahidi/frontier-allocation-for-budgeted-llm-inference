@@ -231,3 +231,20 @@ Implementation references:
 
 Methodological caveat:
 - Keep wording as **paper-inspired matched-substrate comparator**; do not claim official code-level reproduction.
+
+
+## Training-free difficulty proxies integration status (2026-04 MODE A adapter)
+
+*Adaptive Test-Time Compute Allocation via Training-Free Difficulty Proxies* is integrated with a conservative two-lane split:
+
+- **Official paper record (`adaptive_test_time_compute_allocation_training_free_proxies`)**: `discuss_only` pending clear official public code verification from OpenReview primary sources.
+- **Runnable comparator lane (`training_free_difficulty_proxies_mode_a`)**: `adapter_based` query-level global-budget MODE A adapter with DIPA-style `P_i ∝ 1 / M_i^lambda` allocation over unsolved instances.
+
+Implementation references:
+- `external/training_free_difficulty_proxies/README.md`
+- `docs/training_free_difficulty_proxies_integration.md`
+- `configs/training_free_difficulty_proxies_mode_a_v1.json`
+- `scripts/run_training_free_difficulty_proxies_mode_a.py`
+
+Methodological caveat:
+- This is a query/sample-level allocator (`adjacent`) and is not branch-level frontier-control equivalent.
