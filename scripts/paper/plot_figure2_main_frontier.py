@@ -4,31 +4,34 @@ from __future__ import annotations
 import matplotlib.pyplot as plt
 
 from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR
-from plot_helpers import apply_axis_style, load_csv, method_color, save_fig, sorted_methods
+from plot_helpers import apply_axis_style, load_csv, method_color, save_fig
 from paper_style import STYLE
 
 
 def main() -> None:
     rows = load_csv(PLOT_DATA_DIR / "figure2_main_frontier.csv")
-    methods = sorted_methods(rows)
-    vals = [float(next(r["accuracy"] for r in rows if r["method"] == m)) for m in methods]
-    fig, ax = plt.subplots(figsize=(STYLE.width, STYLE.height + 0.7))
-    bars = ax.bar(methods, vals, color=[method_color(m) for m in methods])
+    methods = ["strict_f3", "strict_gate1_cap_k6", "external_l1_max"]
+    fig, ax = plt.subplots(figsize=(STYLE.width + 0.4, STYLE.height + 0.6))
+    for method in methods:
+        mrows = sorted([r for r in rows if r["method"] == method], key=lambda r: int(r["budget"]))
+        ax.plot(
+            [int(r["budget"]) for r in mrows],
+            [float(r["accuracy"]) for r in mrows],
+            marker="o",
+            linewidth=2.1,
+            markersize=4.8,
+            label=method,
+            color=method_color(method),
+        )
     apply_axis_style(
         ax,
-        "Strict-phased main method comparison",
-        "Method",
-        "Macro accuracy",
+        "Budget-performance frontier on matched manuscript surface",
+        "Budget",
+        "Mean accuracy",
     )
-    ax.tick_params(axis="x", rotation=26)
-    for idx, label in enumerate(ax.get_xticklabels()):
-        label.set_ha("right")
-        # Bold current default and strongest competitor for visual focus.
-        if methods[idx] == "strict_gate1_cap_k6 (default)" or vals[idx] == max(vals):
-            label.set_fontweight("bold")
-            bars[idx].set_edgecolor("#111111")
-            bars[idx].set_linewidth(1.2)
-    ax.set_ylim(0.0, max(vals) + 0.08)
+    ax.set_xticks([4, 6, 8])
+    ax.set_ylim(0.35, 0.75)
+    ax.legend(frameon=False, fontsize=STYLE.legend_size, loc="lower right")
     save_fig(fig, FIGURE_DIR / "figure2_main_frontier.pdf", FIGURE_DIR / "figure2_main_frontier.png")
 
 

@@ -4,26 +4,38 @@ from __future__ import annotations
 import matplotlib.pyplot as plt
 
 from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR
-from plot_helpers import apply_axis_style, load_csv, method_color, save_fig, sorted_methods
+from plot_helpers import apply_axis_style, load_csv, method_color, save_fig
 from paper_style import STYLE
 
 
 def main() -> None:
-    rows = load_csv(PLOT_DATA_DIR / "figure3_oracle_gap.csv")
-    methods = sorted_methods(rows)
-    vals = [float(next(r["oracle_gap"] for r in rows if r["method"] == m)) for m in methods]
-    fig, ax = plt.subplots(figsize=(STYLE.width, STYLE.height + 0.6))
-    ax.bar(methods, vals, color=[method_color(m) for m in methods])
+    rows = load_csv(PLOT_DATA_DIR / "appendix_a1_oracle_gap_regret.csv")
+    methods = ["strict_f3", "strict_gate1_cap_k6", "external_l1_max"]
+    fig, ax = plt.subplots(figsize=(STYLE.width + 0.4, STYLE.height + 0.6))
+    for method in methods:
+        mrows = sorted([r for r in rows if r["method"] == method], key=lambda r: int(r["budget"]))
+        ax.plot(
+            [int(r["budget"]) for r in mrows],
+            [float(r["mean_regret_vs_inhouse_oracle"]) for r in mrows],
+            marker="o",
+            linewidth=2.0,
+            markersize=4.8,
+            label=method,
+            color=method_color(method),
+        )
     apply_axis_style(
         ax,
-        "Residual error proxy on strict-phased surface",
-        "Method",
-        "Residual error (1 - macro accuracy)",
+        "Oracle gap / regret on matched manuscript surface",
+        "Budget",
+        "Mean regret vs in-house oracle",
     )
-    ax.tick_params(axis="x", rotation=28)
-    for label in ax.get_xticklabels():
-        label.set_ha("right")
-    save_fig(fig, FIGURE_DIR / "figure3_oracle_gap.pdf", FIGURE_DIR / "figure3_oracle_gap.png")
+    ax.set_xticks([4, 6, 8])
+    ax.legend(frameon=False, fontsize=STYLE.legend_size, loc="upper right")
+    save_fig(
+        fig,
+        FIGURE_DIR / "appendix_figure_a1_oracle_gap_regret.pdf",
+        FIGURE_DIR / "appendix_figure_a1_oracle_gap_regret.png",
+    )
 
 
 if __name__ == "__main__":

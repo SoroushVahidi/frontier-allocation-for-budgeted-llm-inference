@@ -11,7 +11,6 @@ REPO_ROOT = ROOT.parents[1]
 SCRIPTS = [
     "build_figure1_problem_setup_data.py",
     "build_main_frontier_plot_data.py",
-    "build_allocation_and_failure_plot_data.py",
     "build_paper_tables.py",
     "plot_figure1_problem_setup.py",
     "plot_figure2_main_frontier.py",
@@ -19,13 +18,9 @@ SCRIPTS = [
     "plot_figure4_allocation_composition.py",
     "plot_figure5_anti_collapse.py",
     "plot_figure6_failure_decomposition.py",
-    "plot_figure7_per_dataset_summary.py",
-    "plot_appendix_output_layer_repair.py",
-    "plot_appendix_figures.py",
+    "plot_appendix_a4_component_ablation.py",
 ]
-EXTERNAL_SCRIPTS = [
-    REPO_ROOT / "scripts" / "run_integrated_controller_component_ablation.py",
-]
+EXTERNAL_SCRIPTS = []
 
 
 def run_script(path: Path) -> None:
