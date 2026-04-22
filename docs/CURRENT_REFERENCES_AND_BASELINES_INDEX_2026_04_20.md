@@ -108,3 +108,9 @@ Use this index first when you need to answer:
 ## Latest BEST-Route strengthening artifact
 
 - `BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`
+
+## External adjacent aggregate bundle (new)
+
+- `docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md`
+- `outputs/external_adjacent_baseline_bundle/20260422T011400Z/summary.md`
+- Regenerate: `python scripts/build_external_adjacent_baseline_bundle.py`

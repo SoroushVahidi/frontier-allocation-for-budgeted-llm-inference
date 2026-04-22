@@ -45,6 +45,7 @@ This file is the runnable-code front door for the repository.
 - `verify_hf_dataset_access.py`
 - `generate_dataset_integration_report.py`
 - `generate_external_baseline_integration_report.py`
+- `build_external_adjacent_baseline_bundle.py`
 - `list_external_baselines.py`
 
 ## Canonical scripts (current project path)
@@ -89,6 +90,7 @@ This file is the runnable-code front door for the repository.
 | `build_external_prm_mathshepherd_apps_corpus.py` | Build conservative canonical-aligned external rows |
 | `prepare_external_reasoning_datasets.py` | Readiness ranking and normalized previews |
 | `generate_external_baseline_integration_report.py` | External baseline integration report |
+| `build_external_adjacent_baseline_bundle.py` | Aggregate manuscript-safe bundle for BEST-Route / when_solve_when_verify / ReST-MCTS* adjacent baseline status |
 | `list_external_baselines.py` | Print external baseline registry |
 
 ## Historical/provenance scripts
