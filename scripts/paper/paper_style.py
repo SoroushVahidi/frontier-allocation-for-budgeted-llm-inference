@@ -73,6 +73,9 @@ METHOD_NAME_MAP = {
 }
 
 METHOD_COLORS = {
+    "strict_gate1_cap_k6": "#377eb8",
+    "strict_f3": "#1b9e77",
+    "external_l1_max": "#984ea3",
     "strict_gate1_cap_k6 (default)": "#1b9e77",
     "strict_gate1": "#377eb8",
     "strict_f2": "#4daf4a",

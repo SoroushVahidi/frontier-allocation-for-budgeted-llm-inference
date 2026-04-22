@@ -1,5 +1,0 @@
-metric,count,total,rate
-Targeted subset size,16,16,1.0
-Incorrect before repair,16,16,1.0
-Correct after repair,16,16,1.0
-Unresolved after repair,0,16,0.0
