@@ -47,6 +47,15 @@ def _target_methods() -> list[str]:
     return methods
 
 
+def _appendix_oracle_gap_methods(main_methods: list[str]) -> list[str]:
+    # Appendix A1 can include one additional fair near-direct baseline
+    # for broader context while keeping the chart readable.
+    methods = list(main_methods)
+    if "external_l1_exact" not in methods:
+        methods.append("external_l1_exact")
+    return methods
+
+
 def _build_main_frontier(methods: list[str]) -> None:
     rows = read_csv(DECISION_DIR / "budget_performance_frontier.csv")
     out = []
@@ -157,12 +166,13 @@ def _build_appendix_component_ablation() -> None:
 
 def main() -> None:
     PLOT_DATA_DIR.mkdir(parents=True, exist_ok=True)
-    methods = _target_methods()
-    _build_main_frontier(methods)
-    _build_main_failure_decomposition(methods)
-    _build_appendix_oracle_gap(methods)
-    _build_appendix_anti_collapse(methods)
-    _build_appendix_allocation(methods)
+    main_methods = _target_methods()
+    appendix_methods = _appendix_oracle_gap_methods(main_methods)
+    _build_main_frontier(main_methods)
+    _build_main_failure_decomposition(main_methods)
+    _build_appendix_oracle_gap(appendix_methods)
+    _build_appendix_anti_collapse(main_methods)
+    _build_appendix_allocation(main_methods)
     _build_appendix_component_ablation()
 
 

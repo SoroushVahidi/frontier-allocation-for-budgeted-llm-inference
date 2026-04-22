@@ -18,8 +18,9 @@ def main() -> None:
     ax.set_title("Anti-collapse diagnostic: repeated same-family case rate", fontsize=STYLE.title_size)
     ax.set_xlabel("Method", fontsize=STYLE.label_size)
     ax.set_ylabel("Repeated same-family case rate", fontsize=STYLE.label_size)
-    ax.tick_params(axis="x", rotation=18, labelsize=STYLE.tick_size)
+    ax.tick_params(axis="x", rotation=24, labelsize=STYLE.tick_size)
     ax.grid(True, axis="y", alpha=STYLE.grid_alpha)
+    fig.subplots_adjust(bottom=0.23)
     save_fig(
         fig,
         FIGURE_DIR / "appendix_figure_a2_anti_collapse.pdf",

@@ -4,7 +4,7 @@ from __future__ import annotations
 import matplotlib.pyplot as plt
 import numpy as np
 
-from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR, REPO_ROOT, read_csv
+from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR
 from plot_helpers import load_csv, save_fig
 from paper_style import STYLE, manuscript_method_display_name
 
@@ -75,32 +75,6 @@ def main() -> None:
         "figure3_failure_decomposition.png",
         "Failure decomposition on matched manuscript surface",
         "* Main-table externals are readiness-approved MODE A near-direct comparators under explicit boundary caveats.",
-    )
-
-    # Optional appendix-expanded view with all fair near-direct externals.
-    source_rows = read_csv(
-        REPO_ROOT
-        / "outputs"
-        / "paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3"
-        / "20260422T175142Z"
-        / "failure_decomposition.csv"
-    )
-    appendix_order = [
-        "strict_f3",
-        "strict_gate1_cap_k6",
-        "external_l1_max",
-        "external_tale_prompt_budgeting",
-        "external_s1_budget_forcing",
-        "external_l1_exact",
-    ]
-    source_rows = [r for r in source_rows if r["method"] in appendix_order]
-    source_rows = sorted(source_rows, key=lambda r: appendix_order.index(r["method"]))
-    _plot(
-        source_rows,
-        "figure3_failure_decomposition_all_externals_appendix.pdf",
-        "figure3_failure_decomposition_all_externals_appendix.png",
-        "Failure decomposition (expanded fair near-direct externals)",
-        "* external_l1_max remains the strongest fair near-direct external baseline; others shown for appendix completeness.",
     )
 
 

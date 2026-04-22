@@ -10,7 +10,14 @@ from paper_style import STYLE, manuscript_method_display_name
 
 def main() -> None:
     rows = load_csv(PLOT_DATA_DIR / "appendix_a1_oracle_gap_regret.csv")
-    preferred = ["strict_f3", "strict_gate1_cap_k6", "external_l1_max", "external_tale_prompt_budgeting", "external_s1_budget_forcing"]
+    preferred = [
+        "strict_f3",
+        "strict_gate1_cap_k6",
+        "external_l1_max",
+        "external_l1_exact",
+        "external_tale_prompt_budgeting",
+        "external_s1_budget_forcing",
+    ]
     methods_present = sorted({r["method"] for r in rows})
     methods = [m for m in preferred if m in methods_present] + [m for m in methods_present if m not in preferred]
     fig, ax = plt.subplots(figsize=(STYLE.width + 0.4, STYLE.height + 0.6))
@@ -40,7 +47,7 @@ def main() -> None:
         bbox_to_anchor=(1.01, 1.0),
         borderaxespad=0.0,
     )
-    fig.subplots_adjust(right=0.74)
+    fig.subplots_adjust(right=0.71)
     save_fig(
         fig,
         FIGURE_DIR / "appendix_figure_a1_oracle_gap_regret.pdf",

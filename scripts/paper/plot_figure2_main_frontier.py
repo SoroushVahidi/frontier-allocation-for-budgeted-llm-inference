@@ -33,7 +33,14 @@ def main() -> None:
     )
     ax.set_xticks([4, 6, 8])
     ax.set_ylim(0.35, 0.75)
-    ax.legend(frameon=False, fontsize=STYLE.legend_size, loc="lower right")
+    ax.legend(
+        frameon=False,
+        fontsize=STYLE.legend_size,
+        ncols=3,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.22),
+    )
+    fig.subplots_adjust(top=0.80)
     save_fig(fig, FIGURE_DIR / "figure2_main_frontier.pdf", FIGURE_DIR / "figure2_main_frontier.png")
 
 

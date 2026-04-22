@@ -28,6 +28,7 @@ Method-status contract for these manuscript artifacts:
 
 Main-paper figures (PDF + PNG):
 - `outputs/paper_figures/figure1.jpg`
+- `outputs/paper_figures/figure1_problem_setup.{pdf,png}` (canonical vector/raster companion exports)
 - `outputs/paper_figures/figure2_main_frontier.{pdf,png}`
 - `outputs/paper_figures/figure3_failure_decomposition.{pdf,png}`
 

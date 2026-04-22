@@ -11,6 +11,9 @@ budget,method,method_class,oracle_accuracy,method_accuracy,mean_regret_vs_inhous
 4,external_tale_prompt_budgeting,near_direct_external,0.925,0.475,0.45
 6,external_tale_prompt_budgeting,near_direct_external,0.9333333333333333,0.48333333333333334,0.45
 8,external_tale_prompt_budgeting,near_direct_external,0.9666666666666667,0.475,0.49166666666666664
+4,external_l1_exact,near_direct_external,0.925,0.44166666666666665,0.48333333333333334
+6,external_l1_exact,near_direct_external,0.9333333333333333,0.44166666666666665,0.49166666666666664
+8,external_l1_exact,near_direct_external,0.9666666666666667,0.39166666666666666,0.575
 4,external_l1_max,near_direct_external,0.925,0.4666666666666667,0.4583333333333333
 6,external_l1_max,near_direct_external,0.9333333333333333,0.525,0.4083333333333333
 8,external_l1_max,near_direct_external,0.9666666666666667,0.5,0.4666666666666667

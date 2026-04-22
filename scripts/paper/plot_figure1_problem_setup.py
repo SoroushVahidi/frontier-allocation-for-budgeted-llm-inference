@@ -89,6 +89,9 @@ def main() -> None:
     _arrow((anchors["commit"]["bottom"][0] - 0.02, anchors["commit"]["bottom"][1] - 0.004), (anchors["final"]["top"][0] + 0.06, anchors["final"]["top"][1] + 0.004))
 
     ax.set_title(spec.get("title", "Figure 1"), fontsize=11.0, fontweight="bold", color="#1a1a1a", pad=8.0)
+    # Keep legacy manuscript include path in sync with canonical regeneration.
+    (FIGURE_DIR / "figure1.jpg").parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(FIGURE_DIR / "figure1.jpg", dpi=300, bbox_inches="tight")
     save_fig(fig, FIGURE_DIR / "figure1_problem_setup.pdf", FIGURE_DIR / "figure1_problem_setup.png")
 
 

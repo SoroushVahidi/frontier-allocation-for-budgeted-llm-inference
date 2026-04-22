@@ -27,6 +27,9 @@ Notes:
 - `appendix_a3_allocation_composition.csv`
 - `appendix_a4_component_ablation.csv`
 
+Appendix note:
+- `appendix_a1_oracle_gap_regret.csv` may include one additional fair near-direct baseline (`external_l1_exact`) beyond the main-paper method set for readability-preserving appendix context.
+
 ## Historical/provenance-only policy
 
 Historical bounded CSVs should remain in their original source bundles, not in this directory.
