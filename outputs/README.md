@@ -47,6 +47,9 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 - `dataset_expansion_integration/20260422T120000Z/`
 - `dataset_expansion_access/20260422T120000Z/`
 
+### 10. Integrated controller component ablation package
+- `integrated_controller_component_ablation_<timestamp>/`
+
 ## Paper artifact output families
 
 ### Canonical paper-facing outputs (generated artifacts)

@@ -1,0 +1,8 @@
+variant,n_cases,accuracy,absent_from_tree,present_not_selected,output_layer_mismatch,repeated_same_family_present,gold_in_tree,avg_actions,avg_expansions,avg_verifications,avg_max_family_expansion_share,avg_longest_same_family_run,anti_collapse_trigger_count,repeat_penalty_trigger_count,low_marginal_gain_trigger_count,low_marginal_gain_block_count
+allocation_only_core,320,0.6125,94,30,0,261,226,5.784375,5.74375,0.040625,0.0,0.0,0,0,0,0
+full_integrated,320,0.628125,86,33,0,267,234,5.875,5.478125,0.396875,0.0,0.0,0,0,62,0
+no_answer_support,320,0.584375,96,32,13,266,224,5.896875,5.49375,0.403125,0.0,0.0,0,0,73,0
+no_anti_collapse,320,0.590625,100,31,0,272,220,6.0375,5.978125,0.059375,0.0,0.0,0,0,0,0
+no_output_repair,320,0.628125,86,33,0,267,234,5.875,5.478125,0.396875,0.0,0.0,0,0,62,0
+no_repeat_expansion_control,320,0.63125,92,26,0,258,228,5.821875,5.75,0.071875,0.0,0.0,0,0,0,0
+best_reduced_variant,320,0.63125,92,26,0,258,228,5.821875,5.75,0.071875,0.0,0.0,0,0,0,0

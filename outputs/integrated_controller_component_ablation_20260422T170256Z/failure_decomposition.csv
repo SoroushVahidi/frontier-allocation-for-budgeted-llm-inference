@@ -1,0 +1,7 @@
+variant,n_cases,absent_from_tree_n,present_not_selected_n,output_layer_mismatch_n,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate
+allocation_only_core,320,94,30,0,0.29375,0.09375,0.0
+full_integrated,320,86,33,0,0.26875,0.103125,0.0
+no_answer_support,320,96,32,13,0.3,0.1,0.040625
+no_anti_collapse,320,100,31,0,0.3125,0.096875,0.0
+no_output_repair,320,86,33,0,0.26875,0.103125,0.0
+no_repeat_expansion_control,320,92,26,0,0.2875,0.08125,0.0

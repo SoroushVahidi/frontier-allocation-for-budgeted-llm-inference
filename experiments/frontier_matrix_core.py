@@ -1234,6 +1234,77 @@ def build_frontier_strategies(
                 method_name=name,
                 **strict_gate1_common,
             )
+        # Canonical component-ablation variants for strict_gate1_cap_k6.
+        no_answer_support_cfg = dict(strict_gate1_common)
+        no_answer_support_cfg.update(
+            {
+                "answer_support_weight": 0.0,
+                "value_weight": 1.0,
+            }
+        )
+        specs[
+            "strict_gate1_cap_k6_ablation_no_answer_support_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="fixed_k6_control",
+            method_name="strict_gate1_cap_k6_ablation_no_answer_support_v1",
+            **no_answer_support_cfg,
+        )
+        no_anti_cfg = dict(strict_gate1_common)
+        no_anti_cfg.update(
+            {
+                "enable_anti_collapse_answer_group_refinement": False,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs[
+            "strict_gate1_cap_k6_ablation_no_anti_collapse_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="fixed_k6_control",
+            method_name="strict_gate1_cap_k6_ablation_no_anti_collapse_v1",
+            **no_anti_cfg,
+        )
+        no_repeat_cfg = dict(strict_gate1_common)
+        no_repeat_cfg.update(
+            {
+                "repeat_expand_penalty_weight": 0.0,
+                "repeat_expand_family_penalty_weight": 0.0,
+                "repeated_same_branch_penalty": 0.0,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs[
+            "strict_gate1_cap_k6_ablation_no_repeat_expansion_control_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="fixed_k6_control",
+            method_name="strict_gate1_cap_k6_ablation_no_repeat_expansion_control_v1",
+            **no_repeat_cfg,
+        )
+        alloc_only_cfg = dict(strict_gate1_common)
+        alloc_only_cfg.update(
+            {
+                "enable_anti_collapse_answer_group_refinement": False,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs[
+            "strict_gate1_cap_k6_ablation_allocation_only_core_v1"
+        ] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="fixed_k6_control",
+            method_name="strict_gate1_cap_k6_ablation_allocation_only_core_v1",
+            **alloc_only_cfg,
+        )
     if include_marginal_coverage_diversity_methods:
         specs["marginal_coverage_diversity_v1"] = GlobalDiversityAggregationController(
             generator_factory(),
