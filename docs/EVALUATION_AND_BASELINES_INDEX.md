@@ -12,12 +12,14 @@ This page groups the most useful evaluation- and comparison-facing notes.
 
 - `BASELINE_FINAL_STATUS_2026_04_18.md`
 - `external_baseline_completeness_report.md`
+- `EXTERNAL_BASELINE_PAPER_READINESS_DECISION_PACKAGE.md`
 - `main_baselines.md`
 - `cascade_routing_integration.md`
 - `mob_majority_of_bests_integration.md`
 - `rest_mcts_integration.md`
 - `openr_integration.md`
 - `l1_baseline_integration.md`
+- `conformal_thinking_integration.md`
 
 ## How to use this page
 

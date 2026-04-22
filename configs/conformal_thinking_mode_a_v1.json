@@ -1,0 +1,37 @@
+{
+  "version": "v1",
+  "paper": {
+    "title": "Conformal Thinking: Risk Control for Reasoning on a Compute Budget",
+    "arxiv": "https://arxiv.org/abs/2602.03814",
+    "pdf": "https://arxiv.org/pdf/2602.03814.pdf",
+    "intent": "Paper-inspired matched-substrate MODE A adapter for risk-controlled early-exit reasoning under per-query compute budgets."
+  },
+  "dataset": {
+    "name": "openai/gsm8k",
+    "subset_size": 36,
+    "seeds": [11, 23, 37],
+    "calibration_fraction": 0.5
+  },
+  "budget": {
+    "max_steps_per_query": 10,
+    "fixed_truncation_steps": 6,
+    "step_token_cost": 64
+  },
+  "signals": {
+    "confidence_smoothing": 0.35,
+    "progress_window": 2,
+    "difficulty_length_weight": 0.55,
+    "difficulty_digit_weight": 0.25,
+    "difficulty_symbol_weight": 0.2
+  },
+  "calibration": {
+    "risk_target_upper": 0.2,
+    "risk_target_lower": 0.25,
+    "threshold_grid_points": 41,
+    "finite_sample_correction": "plus_one",
+    "allow_dual_threshold": true
+  },
+  "output": {
+    "root_dir": "outputs/conformal_thinking_mode_a"
+  }
+}
