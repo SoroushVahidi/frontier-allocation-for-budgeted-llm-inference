@@ -59,6 +59,9 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 ### 11. Paper-facing strict_f3 component-ablation packaging family
 - `component_ablation_strict_f3_paper_surface/<timestamp>/`
 
+### 12. Manuscript matched-surface multi-seed main-comparison stability family
+- `matched_surface_multiseed_main_comparison_<timestamp>/`
+
 ## Manuscript-facing package families (generated when those scripts are run)
 
 These are important for manuscript baseline/fairness packaging, but may be absent in a minimal checkout if not regenerated yet:
