@@ -16,40 +16,50 @@ This repository is **not** currently centered on the older binary revise-routing
 ## Fast start
 
 - Start here: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
-- Then read: [`CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-- Then read: [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-- Then read: [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-- Then use: [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md) for artifact navigation.
-- Then use: [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md) for experiment-family navigation.
+- Then read: [`CURRENT_METHOD.md`](CURRENT_METHOD.md)
+- Then read: [`CURRENT_RESULTS.md`](CURRENT_RESULTS.md)
+- Then read: [`CURRENT_REFERENCES.md`](CURRENT_REFERENCES.md)
+- Then read: [`CURRENT_NEXT_STEPS.md`](CURRENT_NEXT_STEPS.md)
+- Then use: [`CANONICAL_PAPER_WORKING_SET.md`](CANONICAL_PAPER_WORKING_SET.md)
 - Then use: [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md) for runnable entry points.
 
 ## Directory map
 
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
-- `docs/`: canonical status/planning notes plus grouped method/evaluation indexes, exploratory notes, and historical guidance.
+- `docs/`: canonical status/planning notes, stable current aliases, grouped method/evaluation indexes, exploratory notes, and historical guidance.
 - `configs/`: dataset, baseline, and experiment configuration files.
 - `datasets/`: dataset policy/readme assets.
 - `external/`: external baseline references and integration notes.
 - `outputs/`: generated artifacts and paper-support outputs.
 - `archive/`: preserved historical / provenance-only material.
 
-## Canonical docs now
+## Stable canonical docs now
 
 Read these first for current project interpretation:
 1. `docs/CANONICAL_START_HERE.md`
-2. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-3. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-4. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
-5. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-6. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
-7. `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
-8. `docs/CURRENT_SAFE_CLAIMS.md`
-9. `docs/REPO_MAP.md`
+2. `docs/CURRENT_METHOD.md`
+3. `docs/CURRENT_RESULTS.md`
+4. `docs/CURRENT_REFERENCES.md`
+5. `docs/CURRENT_NEXT_STEPS.md`
+6. `docs/CURRENT_SAFE_CLAIMS.md`
+7. `docs/CANONICAL_PAPER_WORKING_SET.md`
+8. `docs/REPO_MAP.md`
+
+## Canonical dated source docs behind the stable aliases
+
+Use these when you need the actual dated source notes that define the current state:
+- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+- `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+- `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+- `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+- `docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
+- `docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`
 
 ## Current highest-value diagnostic / evaluation docs
 
-Use these when you want to understand current evidence:
+Use these when you want to understand the current evidence surface in more detail:
 - `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
 - `docs/NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
 - `docs/HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`
@@ -83,11 +93,10 @@ Use these when you want to understand current evidence:
 ## Practical collaborator start path
 
 1. Read the canonical docs in order from `docs/CANONICAL_START_HERE.md`.
-2. Use `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md` to understand the current strict-phased method state.
-3. Use `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md` to see the decisive default-model result.
-4. Use `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md` to understand which experiment families are now active.
-5. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
-6. Treat exploratory notes as evidence traces, not as the default project interpretation.
+2. Use the stable aliases in `docs/CURRENT_METHOD.md`, `docs/CURRENT_RESULTS.md`, `docs/CURRENT_REFERENCES.md`, and `docs/CURRENT_NEXT_STEPS.md` before diving into dated source notes.
+3. Use `docs/CANONICAL_PAPER_WORKING_SET.md` when the goal is paper writing or fast repo familiarization.
+4. Use `scripts/CANONICAL_START_HERE.md` to find current runnable entry points.
+5. Treat exploratory notes as evidence traces, not as the default project interpretation.
 
 ## Practical maintenance rule
 
@@ -95,10 +104,11 @@ When the project phase changes materially, update these together:
 - `README.md`
 - `docs/README.md`
 - `docs/CANONICAL_START_HERE.md`
-- `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-- `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-- `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-- `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+- `docs/CURRENT_METHOD.md`
+- `docs/CURRENT_RESULTS.md`
+- `docs/CURRENT_REFERENCES.md`
+- `docs/CURRENT_NEXT_STEPS.md`
+- `docs/CANONICAL_PAPER_WORKING_SET.md`
 - `docs/REPO_MAP.md`
 - `scripts/CANONICAL_START_HERE.md`
 - `outputs/README.md`
