@@ -16,7 +16,12 @@ DEFAULT_FULL_COMPARISON_RUN = "20260422T230000Z"
 DEFAULT_ADJACENT_BUNDLE_RUN = "20260422T201000Z"
 DEFAULT_LOSS_RUN = "20260422T230000Z"
 OUR_METHOD = "strict_f3"
-READINESS_MATRIX = REPO_ROOT / "outputs/external_baseline_readiness/paper_readiness_decision_matrix.json"
+READINESS_MATRIX = REPO_ROOT / "docs/external_baseline_paper_readiness_decision_matrix.json"
+READINESS_TO_METHOD = {
+    "l1_length_control_rl": "external_l1_max",
+    "tale_token_budget_aware_reasoning": "external_tale_prompt_budgeting",
+    "s1_simple_test_time_scaling": "external_s1_budget_forcing",
+}
 
 ADJACENT_INTEGRATION_OUTPUT_DIR = {
     "best_route_microsoft": "best_route_adjacent_integration",
@@ -119,6 +124,19 @@ def build_tables(run_id: str, full_comparison_run: str, adjacent_bundle_run: str
         (class_rank_df["taxonomy_label"] == "near_direct")
         & (class_rank_df["comparability_scope"] == "full matched surface")
     ].copy()
+    main_table_external_methods: set[str] = set()
+    appendix_only_external_keys: list[str] = []
+    if readiness_matrix:
+        rows_rm = list(readiness_matrix.get("rows", []))
+        for rr in rows_rm:
+            key = str(rr.get("baseline_key", ""))
+            decision = str(rr.get("readiness_decision", ""))
+            if decision == "main_table_ready" and key in READINESS_TO_METHOD:
+                main_table_external_methods.add(READINESS_TO_METHOD[key])
+            elif decision == "appendix_only":
+                appendix_only_external_keys.append(key)
+    if main_table_external_methods:
+        near_direct_external = near_direct_external[near_direct_external["baseline"].isin(main_table_external_methods)].copy()
 
     strict_row = ranking_df[ranking_df["method"] == OUR_METHOD].iloc[0]
     near_rows = [
@@ -153,6 +171,12 @@ def build_tables(run_id: str, full_comparison_run: str, adjacent_bundle_run: str
 
     near_df = pd.DataFrame(near_rows).sort_values(["score_primary", "method_name"], ascending=[False, True]).reset_index(drop=True)
     near_df.to_csv(out_dir / "near_direct_ranking.csv", index=False)
+
+    appendix_policy = pd.DataFrame(
+        [{"baseline_key": k, "placement": "appendix_only"} for k in sorted(set(appendix_only_external_keys))]
+    )
+    if not appendix_policy.empty:
+        appendix_policy.to_csv(out_dir / "appendix_only_external_baselines.csv", index=False)
 
     adj_rows: list[dict[str, Any]] = []
     for baseline_id in ["best_route_microsoft", "when_solve_when_verify", "rest_mcts", "lets_verify_step_by_step", "tree_plv"]:
@@ -219,7 +243,9 @@ def build_tables(run_id: str, full_comparison_run: str, adjacent_bundle_run: str
             "adjacent": "Shown in separate table with caveated safe scope.",
             "discussion_only": "Shown as references with blockers, not integrated baselines.",
         },
-        "external_readiness_matrix": "outputs/external_baseline_readiness/paper_readiness_decision_matrix.json" if readiness_matrix else None,
+        "main_table_external_methods": sorted(main_table_external_methods),
+        "appendix_only_external_baseline_keys": sorted(set(appendix_only_external_keys)),
+        "external_readiness_matrix": "docs/external_baseline_paper_readiness_decision_matrix.json" if readiness_matrix else None,
     }
     _write_json(out_dir / "paper_facing_baseline_summary.json", summary)
 
@@ -229,6 +255,8 @@ def build_tables(run_id: str, full_comparison_run: str, adjacent_bundle_run: str
         f"Run ID: `{run_id}`",
         "",
         f"- Our method: `{OUR_METHOD}`",
+        f"- Main-table external methods (from readiness policy): `{sorted(main_table_external_methods)}`",
+        f"- Appendix-only external baseline keys (from readiness policy): `{sorted(set(appendix_only_external_keys))}`",
         f"- Strongest fair external baseline: `{summary['strongest_fair_external_baseline']}`",
         f"- Accuracy gap (our - strongest fair external): {summary['gap_vs_our']:.6f}",
         f"- Strict-loss examples available: {summary['strict_loss_examples_available']}",

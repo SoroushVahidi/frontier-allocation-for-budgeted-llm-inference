@@ -2,6 +2,12 @@ method,metric,value
 external_l1_max,avg_actions,2.0694444444444446
 external_l1_max,avg_expansions,2.0694444444444446
 external_l1_max,avg_verifications,0.0
+external_s1_budget_forcing,avg_actions,3.4055555555555554
+external_s1_budget_forcing,avg_expansions,3.4055555555555554
+external_s1_budget_forcing,avg_verifications,0.0
+external_tale_prompt_budgeting,avg_actions,2.063888888888889
+external_tale_prompt_budgeting,avg_expansions,2.063888888888889
+external_tale_prompt_budgeting,avg_verifications,0.0
 strict_f3,avg_actions,5.222222222222222
 strict_f3,avg_expansions,4.847222222222222
 strict_f3,avg_verifications,0.375

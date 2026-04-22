@@ -64,7 +64,9 @@ def _plot(rows: list[dict[str, str]], out_pdf: str, out_png: str, title: str, no
 
 def main() -> None:
     main_rows = load_csv(PLOT_DATA_DIR / "figure3_failure_decomposition.csv")
-    main_order = ["strict_f3", "strict_gate1_cap_k6", "external_l1_max"]
+    preferred_main_order = ["strict_f3", "strict_gate1_cap_k6", "external_l1_max", "external_tale_prompt_budgeting", "external_s1_budget_forcing"]
+    methods_present = [r["method"] for r in main_rows]
+    main_order = [m for m in preferred_main_order if m in methods_present] + [m for m in sorted(set(methods_present)) if m not in preferred_main_order]
     main_rows = sorted(main_rows, key=lambda r: main_order.index(r["method"]))
 
     _plot(
@@ -72,7 +74,7 @@ def main() -> None:
         "figure3_failure_decomposition.pdf",
         "figure3_failure_decomposition.png",
         "Failure decomposition on matched manuscript surface",
-        "* external_l1_max is the strongest fair near-direct external baseline on the locked decision surface.",
+        "* Main-table externals are readiness-approved MODE A near-direct comparators under explicit boundary caveats.",
     )
 
     # Optional appendix-expanded view with all fair near-direct externals.

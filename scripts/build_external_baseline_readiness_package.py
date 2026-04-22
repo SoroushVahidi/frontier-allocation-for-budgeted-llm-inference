@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import csv
 import json
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -11,257 +10,214 @@ from typing import Any
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-
+REGISTRY_PATH = REPO_ROOT / "configs/external_baselines_registry.json"
 CANONICAL_RANKING = REPO_ROOT / "outputs/canonical_full_method_ranking_20260421T212948Z/overall_ranking.csv"
 ADJACENT_BUNDLE = REPO_ROOT / "outputs/external_adjacent_baseline_bundle/20260422T201000Z/summary.csv"
 
-
-@dataclass(frozen=True)
-class Decision:
-    readiness: str
-    claim_boundary: str
-    fairness_for_main_table: str
-    scientific_meaningfulness: str
-    recommendation_reason: str
-
-
-DECISION_OVERRIDES: dict[str, Decision] = {
-    "s1_simple_test_time_scaling": Decision(
-        readiness="main_table_ready",
-        claim_boundary="MODE A only (inference-only adapter; not official full-stack reproduction)",
-        fairness_for_main_table="yes_with_mode_a_boundary",
-        scientific_meaningfulness="near_direct practical compute-scaling comparator",
-        recommendation_reason="Included in canonical ranking with auditable rows; near-direct matched-substrate comparator.",
-    ),
-    "tale_token_budget_aware_reasoning": Decision(
-        readiness="main_table_ready",
-        claim_boundary="MODE A only (prompt-budgeting adapter; not official TALE-PT/full stack)",
-        fairness_for_main_table="yes_with_mode_a_boundary",
-        scientific_meaningfulness="near_direct/adjacent practical token-budgeting comparator",
-        recommendation_reason="Included in canonical ranking with auditable rows; strong practical neighbor under shared budget accounting.",
-    ),
-    "l1_length_control_rl": Decision(
-        readiness="main_table_ready",
-        claim_boundary="MODE A only (external_l1_exact/external_l1_max adapter rows; not official RL stack)",
-        fairness_for_main_table="yes_with_mode_a_boundary",
-        scientific_meaningfulness="near_direct practical length-control comparator",
-        recommendation_reason="Included in canonical ranking with strongest external row (`external_l1_max`) under matched-substrate conventions.",
-    ),
-    "best_route_microsoft": Decision(
-        readiness="appendix_only",
-        claim_boundary="adjacent import-validated routing comparator",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent reviewer-useful routing comparator",
-        recommendation_reason="Auditable adjacent contract lane exists, but control space differs from frontier allocation.",
-    ),
-    "when_solve_when_verify": Decision(
-        readiness="appendix_only",
-        claim_boundary="adjacent solve-vs-verify import-validated comparator",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent reviewer-useful comparator",
-        recommendation_reason="Official import-validation exists; no direct frontier-control equivalence.",
-    ),
-    "rest_mcts": Decision(
-        readiness="appendix_only",
-        claim_boundary="adjacent partial-runnable contract lane only",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent search/verifier comparator",
-        recommendation_reason="Import-validated + partial-runnable evidence is present, but full stack is out-of-scope.",
-    ),
-    "tree_plv": Decision(
-        readiness="appendix_only",
-        claim_boundary="adjacent partial-runnable verifier-learning comparator",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent verifier/preference-learning comparator",
-        recommendation_reason="Paper-linked provenance plus import-validated partial-runnable lane; still non-equivalent control space.",
-    ),
-    "lets_verify_step_by_step": Decision(
-        readiness="appendix_only",
-        claim_boundary="adjacent ingredient/completion-aware comparator",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent reviewer-expected verifier family",
-        recommendation_reason="Adjacent lane artifacts exist in bundle outputs, but should remain separated from main-table direct ranking.",
-    ),
-    "cascade_routing": Decision(
-        readiness="appendix_only",
-        claim_boundary="adjacent import-validated cascade routing comparator",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent routing comparator",
-        recommendation_reason="Status artifacts and validator evidence exist; remains control-space non-equivalent.",
-    ),
-    "mob_majority_of_bests": Decision(
-        readiness="appendix_only",
-        claim_boundary="adjacent import-validated best-of-n style comparator",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent selection comparator",
-        recommendation_reason="Status artifacts and validator evidence exist; still adjacent query/completion selection family.",
-    ),
-    "openr": Decision(
-        readiness="appendix_only",
-        claim_boundary="adjacent import-validated comparator",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent reasoning-system comparator",
-        recommendation_reason="Status artifacts and validator evidence exist; non-equivalent control space.",
-    ),
-    "qstar_style_adapter": Decision(
-        readiness="repo_only_not_paper_facing_yet",
-        claim_boundary="unofficial caveated adapter only",
-        fairness_for_main_table="no_unofficial_provenance",
-        scientific_meaningfulness="conceptual stress test only",
-        recommendation_reason="Runnable but explicitly caveated as unofficial and not official Q* reproduction evidence.",
-    ),
-    "learning_how_hard_to_think_mode_a": Decision(
-        readiness="repo_only_not_paper_facing_yet",
-        claim_boundary="paper-inspired MODE A adapter; adjacent",
-        fairness_for_main_table="no_missing_artifacts_and_non_equivalent_control",
-        scientific_meaningfulness="potentially useful adjacent comparator",
-        recommendation_reason="No auditable run artifacts currently present; integration docs already position this lane as caveated and mixed-strength.",
-    ),
-    "training_free_difficulty_proxies_mode_a": Decision(
-        readiness="repo_only_not_paper_facing_yet",
-        claim_boundary="paper-inspired MODE A adapter; query-level adjacent",
-        fairness_for_main_table="no_missing_artifacts_and_non_equivalent_control",
-        scientific_meaningfulness="adjacent query-level budget allocator",
-        recommendation_reason="No auditable run artifacts currently present; query-level control is not frontier-equivalent.",
-    ),
-    "conformal_thinking": Decision(
-        readiness="discuss_only",
-        claim_boundary="official-paper record only (official public code unverified)",
-        fairness_for_main_table="no",
-        scientific_meaningfulness="adjacent early-exit risk-control reference",
-        recommendation_reason="Primary paper verified, but no clearly verified official public repository from primary sources.",
-    ),
-    "conformal_thinking_mode_a": Decision(
-        readiness="repo_only_not_paper_facing_yet",
-        claim_boundary="paper-inspired MODE A risk-controlled early-exit adapter",
-        fairness_for_main_table="no_control_space_mismatch",
-        scientific_meaningfulness="adjacent early-exit comparator",
-        recommendation_reason="Adapter lane should remain caveated until run artifacts are audited and stability is demonstrated.",
-    ),
-    "compute_optimal_tts": Decision(
-        readiness="discuss_only",
-        claim_boundary="blocked provenance / mapping",
-        fairness_for_main_table="no_blocked",
-        scientific_meaningfulness="adjacent but blocked",
-        recommendation_reason="Registry marks unresolved paper↔repo mapping blocker.",
-    ),
+NEAR_DIRECT_MODE_A_KEYS = {
+    "s1_simple_test_time_scaling",
+    "tale_token_budget_aware_reasoning",
+    "l1_length_control_rl",
+}
+MODE_A_NEW_ADDITIONS = {
+    "learning_how_hard_to_think_mode_a",
+    "training_free_difficulty_proxies_mode_a",
 }
 
 
-def _default_decision(key: str, integration: str) -> Decision:
-    if integration in {"discuss_only", "blocked"}:
-        return Decision(
-            readiness="discuss_only",
-            claim_boundary="related-work only",
-            fairness_for_main_table="no",
-            scientific_meaningfulness="framing or blocked reference",
-            recommendation_reason="No fair runnable in-repo lane with auditable artifacts.",
-        )
-    if integration in {"import_validated", "runnable_adjacent"}:
-        return Decision(
-            readiness="appendix_only",
-            claim_boundary="adjacent import-validated",
-            fairness_for_main_table="no_control_space_mismatch",
-            scientific_meaningfulness="adjacent comparator",
-            recommendation_reason="Runnable/validated as adjacent lane but not direct control-equivalent.",
-        )
-    if integration == "adapter_based":
-        return Decision(
-            readiness="repo_only_not_paper_facing_yet",
-            claim_boundary="adapter lane",
-            fairness_for_main_table="no_without_matched_audited_results",
-            scientific_meaningfulness="depends_on_artifact_strength",
-            recommendation_reason="Adapter exists but paper-facing evidence is incomplete.",
-        )
-    return Decision(
-        readiness="repo_only_not_paper_facing_yet",
-        claim_boundary="unknown",
-        fairness_for_main_table="no",
-        scientific_meaningfulness="unknown",
-        recommendation_reason="Conservative fallback.",
-    )
+def _exists(rel_path: str | None) -> bool:
+    return bool(rel_path) and (REPO_ROOT / rel_path).exists()
 
 
-def _exists_any(pattern: str) -> bool:
+def _expand_glob(pattern: str) -> list[str]:
     if "<run_id>" in pattern:
         pattern = pattern.replace("<run_id>", "*")
-    return any(REPO_ROOT.glob(pattern))
-
-
-def _build_rows() -> list[dict[str, Any]]:
-    registry = json.loads((REPO_ROOT / "configs/external_baselines_registry.json").read_text(encoding="utf-8"))["baselines"]
-    ranking_df = pd.read_csv(CANONICAL_RANKING) if CANONICAL_RANKING.exists() else pd.DataFrame()
-    adjacent_df = pd.read_csv(ADJACENT_BUNDLE) if ADJACENT_BUNDLE.exists() else pd.DataFrame()
-
-    score_map: dict[str, float] = {}
-    method_to_key = {
-        "external_s1_budget_forcing": "s1_simple_test_time_scaling",
-        "external_tale_prompt_budgeting": "tale_token_budget_aware_reasoning",
-        "external_l1_max": "l1_length_control_rl",
-        "external_l1_exact": "l1_length_control_rl",
-    }
-    if not ranking_df.empty:
-        for _, row in ranking_df.iterrows():
-            m = str(row.get("method", ""))
-            if m in method_to_key:
-                key = method_to_key[m]
-                score = float(row.get("mean_accuracy", 0.0))
-                score_map[key] = max(score_map.get(key, -1.0), score)
-
-    adjacent_status: dict[str, str] = {}
-    if not adjacent_df.empty and "baseline_id" in adjacent_df.columns:
-        for _, row in adjacent_df.iterrows():
-            adjacent_status[str(row["baseline_id"])] = str(row.get("latest_integration_status", "unknown"))
-
-    rows: list[dict[str, Any]] = []
-    for key, info in registry.items():
-        decision = DECISION_OVERRIDES.get(key, _default_decision(key, str(info.get("integration", "unknown"))))
-        status_artifacts = info.get("status_artifacts", [])
-        existing_artifacts = [p for p in status_artifacts if _exists_any(p)]
-        runner = info.get("integration_runner")
-        control = "adjacent"
-        if key in {"s1_simple_test_time_scaling", "tale_token_budget_aware_reasoning", "l1_length_control_rl"}:
-            control = "near_direct (MODE A)"
-        elif key in {"qstar_deliberative_planning"}:
-            control = "direct_family (discuss_only)"
-
-        rows.append(
-            {
-                "baseline_key": key,
-                "current_status_classification": info.get("integration", "unknown"),
-                "control_equivalence": control,
-                "runnable_now": "yes" if runner and (REPO_ROOT / runner).exists() else "no_or_import_only",
-                "auditable_artifacts": "yes" if existing_artifacts else "no_or_weak",
-                "auditable_artifact_count": len(existing_artifacts),
-                "scientific_meaningfulness": decision.scientific_meaningfulness,
-                "neurips_main_table_fair": decision.fairness_for_main_table,
-                "claim_boundary": decision.claim_boundary,
-                "readiness_decision": decision.readiness,
-                "recommendation_reason": decision.recommendation_reason,
-                "ranking_signal_mean_accuracy": score_map.get(key),
-                "adjacent_bundle_status": adjacent_status.get(key),
-            }
-        )
-    return rows
+    return [str(p.relative_to(REPO_ROOT)) for p in REPO_ROOT.glob(pattern)]
 
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
+    if not rows:
+        return
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         writer.writeheader()
         writer.writerows(rows)
 
 
-def main() -> None:
-    rows = _build_rows()
-    generated_utc = datetime.now(timezone.utc).isoformat()
+def _load_score_map() -> dict[str, float]:
+    if not CANONICAL_RANKING.exists():
+        return {}
+    df = pd.read_csv(CANONICAL_RANKING)
+    method_to_key = {
+        "external_s1_budget_forcing": "s1_simple_test_time_scaling",
+        "external_tale_prompt_budgeting": "tale_token_budget_aware_reasoning",
+        "external_l1_max": "l1_length_control_rl",
+        "external_l1_exact": "l1_length_control_rl",
+    }
+    out: dict[str, float] = {}
+    for _, row in df.iterrows():
+        method = str(row.get("method", ""))
+        if method in method_to_key:
+            key = method_to_key[method]
+            out[key] = max(out.get(key, -1.0), float(row.get("mean_accuracy", 0.0)))
+    return out
 
-    out_dir = REPO_ROOT / "outputs/external_baseline_readiness"
+
+def _load_adjacent_status() -> dict[str, str]:
+    if not ADJACENT_BUNDLE.exists():
+        return {}
+    df = pd.read_csv(ADJACENT_BUNDLE)
+    if "baseline_id" not in df.columns:
+        return {}
+    return {str(r["baseline_id"]): str(r.get("latest_integration_status", "unknown")) for _, r in df.iterrows()}
+
+
+def _decision(
+    key: str,
+    integration: str,
+    control_equivalence: str,
+    has_runner: bool,
+    found_artifact_count: int,
+    ranking_signal: float | None,
+) -> tuple[str, str, str, str, str]:
+    # returns: readiness_decision, neurips_main_table_fair, claim_boundary, scientific_meaningfulness, reason
+    if key in MODE_A_NEW_ADDITIONS:
+        return (
+            "repo_only_not_paper_facing_yet",
+            "no_missing_artifacts_and_non_equivalent_control",
+            "paper-inspired MODE A adapter only; no audited run artifacts yet",
+            "paper-inspired adjacent adapter comparator",
+            "Mixed/early status and currently no auditable run artifacts in this repo; keep out of manuscript-facing tables.",
+        )
+
+    if integration == "adapter_based":
+        return (
+            "repo_only_not_paper_facing_yet",
+            "no_without_stronger_audited_evidence",
+            "unofficial or adapter-only lane",
+            "useful exploratory comparator",
+            "Adapter exists but current evidence is not robust enough for paper-facing empirical claims.",
+        )
+
+    if key in NEAR_DIRECT_MODE_A_KEYS and ranking_signal is not None:
+        return (
+            "main_table_ready",
+            "yes_with_mode_a_boundary",
+            "MODE A adapter comparator on matched substrate only (not official full-stack reproduction)",
+            "near-direct practical comparator under matched budget accounting",
+            "Appears in canonical matched ranking with auditable comparison rows; safe for main table with explicit MODE A boundary.",
+        )
+
+    if integration in {"import_validated", "runnable_adjacent"}:
+        if found_artifact_count > 0 and (has_runner or integration == "runnable_adjacent"):
+            return (
+                "appendix_only",
+                "no_control_space_mismatch",
+                "adjacent comparator; non-equivalent control space",
+                "adjacent but reviewer-useful comparator",
+                "Runnable/import-validated with auditable artifacts, but not control-equivalent to frontier next-step allocation.",
+            )
+        return (
+            "repo_only_not_paper_facing_yet",
+            "no_missing_auditability",
+            "adjacent comparator with weak current artifact evidence",
+            "adjacent comparator with weak evidence",
+            "Integration label exists, but auditable artifact support is currently weak; keep repo-only until refreshed.",
+        )
+
+    if integration in {"discuss_only", "blocked"}:
+        boundary = "blocked or discuss-only reference"
+        if key == "qstar_deliberative_planning":
+            boundary = "direct-family framing reference only (no verified runnable official stack)"
+        return (
+            "discuss_only",
+            "no",
+            boundary,
+            "related-work or framing reference",
+            "No fair runnable, auditable in-repo comparison lane currently available.",
+        )
+
+    return (
+        "repo_only_not_paper_facing_yet",
+        "no_unknown",
+        "unknown",
+        "unknown",
+        "Conservative fallback due to incomplete metadata.",
+    )
+
+
+def build_rows() -> list[dict[str, Any]]:
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))["baselines"]
+    score_map = _load_score_map()
+    adjacent_status = _load_adjacent_status()
+
+    rows: list[dict[str, Any]] = []
+    for key, info in registry.items():
+        integration = str(info.get("integration", "unknown"))
+        runner = info.get("integration_runner")
+        contract = info.get("contract")
+        integration_doc = info.get("integration_doc")
+        status_artifacts = [str(x) for x in info.get("status_artifacts", [])]
+
+        found_matches: list[str] = []
+        for p in status_artifacts:
+            found_matches.extend(_expand_glob(p))
+
+        ranking_signal = score_map.get(key)
+        control_equivalence = "adjacent"
+        if key in NEAR_DIRECT_MODE_A_KEYS:
+            control_equivalence = "near_direct_mode_a"
+        elif key == "qstar_deliberative_planning":
+            control_equivalence = "direct_family_discuss_only"
+
+        readiness, fairness, claim_boundary, scientific_meaningfulness, reason = _decision(
+            key=key,
+            integration=integration,
+            control_equivalence=control_equivalence,
+            has_runner=_exists(runner),
+            found_artifact_count=len(found_matches),
+            ranking_signal=ranking_signal,
+        )
+
+        rows.append(
+            {
+                "baseline_key": key,
+                "current_status_classification": integration,
+                "control_equivalence": control_equivalence,
+                "runnable_now": "yes" if _exists(runner) else "no_or_import_only",
+                "runner_path": runner or "",
+                "runner_exists": bool(_exists(runner)),
+                "contract_path": contract or "",
+                "contract_exists": bool(_exists(contract)),
+                "integration_doc": integration_doc or "",
+                "integration_doc_exists": bool(_exists(integration_doc)),
+                "auditable_artifacts": "yes" if found_matches else "no_or_weak",
+                "auditable_artifact_count": len(found_matches),
+                "status_artifact_patterns_count": len(status_artifacts),
+                "latest_artifact_examples": " | ".join(sorted(found_matches)[:3]),
+                "adjacent_bundle_status": adjacent_status.get(key, "not_in_adjacent_bundle"),
+                "ranking_signal_mean_accuracy": ranking_signal,
+                "scientific_meaningfulness": scientific_meaningfulness,
+                "neurips_main_table_fair": fairness,
+                "claim_boundary": claim_boundary,
+                "readiness_decision": readiness,
+                "recommendation_reason": reason,
+                "registry_blocker": str(info.get("blocker", "")),
+                "paper_phase_priority": str(info.get("paper_phase_priority", "")),
+                "baseline_class": str(info.get("baseline_class", "")),
+            }
+        )
+
+    return sorted(rows, key=lambda r: (r["readiness_decision"], r["baseline_key"]))
+
+
+def main() -> None:
+    rows = build_rows()
+    generated_utc = datetime.now(timezone.utc).isoformat()
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+    out_dir = REPO_ROOT / f"outputs/canonical_external_baseline_paper_readiness_decision_{ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
-    json_path = out_dir / "paper_readiness_decision_matrix.json"
-    csv_path = out_dir / "paper_readiness_decision_matrix.csv"
-    docs_json_path = REPO_ROOT / "docs/external_baseline_paper_readiness_decision_matrix.json"
-    docs_csv_path = REPO_ROOT / "docs/external_baseline_paper_readiness_decision_matrix.csv"
 
     payload = {
         "generated_utc": generated_utc,
@@ -271,79 +227,108 @@ def main() -> None:
             "repo_only_not_paper_facing_yet",
             "discuss_only",
         ],
+        "source_inputs": {
+            "registry": str(REGISTRY_PATH.relative_to(REPO_ROOT)),
+            "canonical_ranking": str(CANONICAL_RANKING.relative_to(REPO_ROOT)) if CANONICAL_RANKING.exists() else None,
+            "adjacent_bundle": str(ADJACENT_BUNDLE.relative_to(REPO_ROOT)) if ADJACENT_BUNDLE.exists() else None,
+        },
         "rows": rows,
     }
-    json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    _write_csv(csv_path, rows)
-    docs_json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    _write_csv(docs_csv_path, rows)
 
-    by_decision: dict[str, list[str]] = {}
-    for row in rows:
-        by_decision.setdefault(row["readiness_decision"], []).append(row["baseline_key"])
+    # Canonical runtime outputs
+    (out_dir / "external_baseline_readiness_decision_matrix.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    _write_csv(out_dir / "external_baseline_readiness_decision_matrix.csv", rows)
 
-    near_direct_rank = sorted(
-        [r for r in rows if r["baseline_key"] in {"s1_simple_test_time_scaling", "tale_token_budget_aware_reasoning", "l1_length_control_rl"}],
-        key=lambda x: (x["ranking_signal_mean_accuracy"] is None, -(x["ranking_signal_mean_accuracy"] or -1.0), x["baseline_key"]),
+    # Stable docs + plumbing copies
+    (REPO_ROOT / "docs/external_baseline_paper_readiness_decision_matrix.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    _write_csv(REPO_ROOT / "docs/external_baseline_paper_readiness_decision_matrix.csv", rows)
+    out_copy = REPO_ROOT / "outputs/external_baseline_readiness"
+    out_copy.mkdir(parents=True, exist_ok=True)
+    (out_copy / "paper_readiness_decision_matrix.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    _write_csv(out_copy / "paper_readiness_decision_matrix.csv", rows)
+
+    df = pd.DataFrame(rows)
+    by_decision = {k: sorted(df[df["readiness_decision"] == k]["baseline_key"].tolist()) for k in payload["decision_labels"]}
+
+    near_direct_rank = (
+        df[df["baseline_key"].isin(sorted(NEAR_DIRECT_MODE_A_KEYS))]
+        .sort_values(["ranking_signal_mean_accuracy", "baseline_key"], ascending=[False, True])
     )
 
-    md = REPO_ROOT / "docs/EXTERNAL_BASELINE_PAPER_READINESS_DECISION_PACKAGE.md"
-    lines = [
-        "# External baseline paper-readiness decision package",
+    md_lines = [
+        "# Canonical external baseline paper-facing readiness decision package",
         "",
         f"- Generated (UTC): `{generated_utc}`",
-        "- Scope: full audit of all current external baseline entries in `configs/external_baselines_registry.json`.",
-        "- Decision labels: `main_table_ready`, `appendix_only`, `repo_only_not_paper_facing_yet`, `discuss_only`.",
+        f"- Registry entries audited: `{len(rows)}`",
+        f"- Runtime artifact bundle: `outputs/{out_dir.name}/`",
         "",
-        "## Canonical decisions (conservative)",
+        "## Canonical recommendation buckets",
     ]
-    for label in ["main_table_ready", "appendix_only", "repo_only_not_paper_facing_yet", "discuss_only"]:
-        keys = sorted(by_decision.get(label, []))
-        lines.append(f"- **{label}** ({len(keys)}): {', '.join(f'`{k}`' for k in keys) if keys else '(none)'}")
+    for label in payload["decision_labels"]:
+        keys = by_decision.get(label, [])
+        md_lines.append(f"- **{label}** ({len(keys)}): {', '.join(f'`{k}`' for k in keys) if keys else '(none)'}")
 
-    lines += [
+    md_lines += [
         "",
         "## MODE A additions (explicit decision)",
-        "- `learning_how_hard_to_think_mode_a`: **repo_only_not_paper_facing_yet** (no auditable run artifacts found; keep caveated).",
-        "- `training_free_difficulty_proxies_mode_a`: **repo_only_not_paper_facing_yet** (no auditable run artifacts found; query-level control mismatch).",
-        "- Conservative manuscript guidance now: keep both out of manuscript-facing empirical tables in this repository state.",
-        "",
-        "## Strongest baseline ranking for this paper state",
-        "",
-        "### Direct / near-direct practical comparators",
-    ]
-    for idx, row in enumerate(near_direct_rank, 1):
-        score = row["ranking_signal_mean_accuracy"]
-        score_text = "n/a" if score is None else f"{score:.6f}"
-        lines.append(f"{idx}. `{row['baseline_key']}` (canonical ranking signal mean_accuracy: {score_text})")
-
-    lines += [
-        "",
-        "### Adjacent but reviewer-useful comparators",
-        "- `tree_plv`, `rest_mcts`, `lets_verify_step_by_step`, `best_route_microsoft`, `when_solve_when_verify`, `cascade_routing`, `mob_majority_of_bests`, `openr`.",
-        "",
-        "### Framing-only / discuss-only references",
-        "- `qstar_deliberative_planning`, `rational_metareasoning_llm`, `best_arm_identification_fixed_budget`, `pgts`, `scaling_automated_process_verifiers`, `compute_optimal_tts`, `mcts_llm_community`, `llm_tree_search_waterhorse`, `learning_how_hard_to_think`, `adaptive_test_time_compute_allocation_training_free_proxies`.",
-        "",
-        "## Machine-readable matrix",
-        "- `docs/external_baseline_paper_readiness_decision_matrix.json`",
-        "- `docs/external_baseline_paper_readiness_decision_matrix.csv`",
-        "- (runtime copy) `outputs/external_baseline_readiness/paper_readiness_decision_matrix.json`",
-        "- (runtime copy) `outputs/external_baseline_readiness/paper_readiness_decision_matrix.csv`",
+        "- `learning_how_hard_to_think_mode_a`: **repo_only_not_paper_facing_yet**.",
+        "- `training_free_difficulty_proxies_mode_a`: **repo_only_not_paper_facing_yet**.",
+        "- Rationale: both remain mixed/early and currently lack audited run artifacts on this repo state.",
         "",
         "## Concise recommendation",
-        "- **Main table (safe now):** `l1_length_control_rl`, `tale_token_budget_aware_reasoning`, `s1_simple_test_time_scaling` (MODE A adapter rows only).",
-        "- **Appendix only:** adjacent import-validated/partial-runnable baselines listed above.",
-        "- **Keep out of empirical tables for now:** all `repo_only_not_paper_facing_yet` and `discuss_only` rows (including both new MODE A additions).",
+        "- **Main table (safe now):** near-direct MODE A comparators with canonical matched ranking rows: `l1_length_control_rl`, `tale_token_budget_aware_reasoning`, `s1_simple_test_time_scaling`.",
+        "- **Appendix only:** auditable adjacent import-validated/runnable-adjacent comparators.",
+        "- **Keep out of empirical tables:** all `repo_only_not_paper_facing_yet` + `discuss_only` baselines.",
         "",
-        "## Evidence fields audited per baseline",
-        "- registry entry",
-        "- integration docs / runners / configs when present",
-        "- status artifact presence",
-        "- adjacent bundle integration status (when available)",
-        "- canonical ranking signal availability (near-direct MODE A families)",
+        "## Strongest external baseline ranking (near-direct practical lane)",
     ]
-    md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    for i, (_, row) in enumerate(near_direct_rank.iterrows(), start=1):
+        score = row["ranking_signal_mean_accuracy"]
+        score_txt = "n/a" if pd.isna(score) else f"{float(score):.6f}"
+        md_lines.append(f"{i}. `{row['baseline_key']}` (canonical ranking signal mean_accuracy: {score_txt})")
+
+    md_lines += [
+        "",
+        "## Files",
+        "- `docs/external_baseline_paper_readiness_decision_matrix.json`",
+        "- `docs/external_baseline_paper_readiness_decision_matrix.csv`",
+        "- `outputs/external_baseline_readiness/paper_readiness_decision_matrix.json`",
+        "- `outputs/external_baseline_readiness/paper_readiness_decision_matrix.csv`",
+        "",
+        "## Audit evidence fields included per baseline",
+        "- registry status/class/blocker",
+        "- runner/config/doc existence",
+        "- status artifact pattern count and found artifact count",
+        "- adjacent bundle status (when present)",
+        "- canonical ranking signal (for near-direct mode-A comparators)",
+        "- explicit claim boundary and fairness label",
+    ]
+    (out_dir / "report.md").write_text("\n".join(md_lines) + "\n", encoding="utf-8")
+    (REPO_ROOT / "docs/CANONICAL_EXTERNAL_BASELINE_PAPER_READINESS_DECISION_2026_04_22.md").write_text(
+        "\n".join(md_lines)
+        + "\n\n"
+        + "This report is canonical for manuscript writing until superseded by a newer dated decision package.\n",
+        encoding="utf-8",
+    )
+
+    manifest = {
+        "artifact_family": "canonical_external_baseline_paper_readiness_decision",
+        "output_dir": f"outputs/{out_dir.name}",
+        "generated_utc": generated_utc,
+        "inputs": payload["source_inputs"],
+        "outputs": [
+            "external_baseline_readiness_decision_matrix.json",
+            "external_baseline_readiness_decision_matrix.csv",
+            "report.md",
+        ],
+        "docs_written": [
+            "docs/external_baseline_paper_readiness_decision_matrix.json",
+            "docs/external_baseline_paper_readiness_decision_matrix.csv",
+            "docs/CANONICAL_EXTERNAL_BASELINE_PAPER_READINESS_DECISION_2026_04_22.md",
+        ],
+    }
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    print(out_dir)
 
 
 if __name__ == "__main__":

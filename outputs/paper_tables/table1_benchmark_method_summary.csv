@@ -1,2 +1,2 @@
-surface,datasets,methods_compared,default_selected,source_doc
-strict-phased broader matched default-decision surface,openai/gsm8k; HuggingFaceH4/MATH-500; HuggingFaceH4/aime_2024; olympiadbench,"baseline, strict_f2, strict_f3, strict_gate1, strict_gate2, strict_gate1_cap_k6",strict_gate1_cap_k6 (default),adaptive-reasoning-budget-allocation/docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md
+surface,datasets,methods_compared,manuscript_main_method,runner_up_anchor,source_doc
+manuscript-facing canonical matched internal decision surface,openai/gsm8k; HuggingFaceH4/MATH-500; HuggingFaceH4/aime_2024; olympiadbench,strict_f3; strict_gate1_cap_k6; broad-family finalists; internal anchors,strict_f3,strict_gate1_cap_k6,adaptive-reasoning-budget-allocation/docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md
