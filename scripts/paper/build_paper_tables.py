@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import json
 from collections import defaultdict
 
 from paper_data_sources import (
@@ -25,7 +24,7 @@ def table1_benchmark_method_summary() -> list[dict[str, object]]:
             "surface": "strict-phased broader matched default-decision surface",
             "datasets": "openai/gsm8k; HuggingFaceH4/MATH-500; HuggingFaceH4/aime_2024; olympiadbench",
             "methods_compared": "baseline, strict_f2, strict_f3, strict_gate1, strict_gate2, strict_gate1_cap_k6",
-            "default_selected": "strict_gate1_cap_k6",
+            "default_selected": "strict_gate1_cap_k6 (default)",
             "source_doc": str(STRICT_PHASED_DEFAULT_DOC.relative_to(STRICT_PHASED_DEFAULT_DOC.parents[2])),
         }
     ]
@@ -119,7 +118,6 @@ def table5_failure_decomposition() -> list[dict[str, object]]:
 
 
 def table6_robustness() -> list[dict[str, object]]:
-    payload = json.loads((BUDGET_AWARE_DIR / "aggregate_summary.json").read_text(encoding="utf-8"))
     per_budget = load_budget_aware_per_budget()
     budget_count = len({int(r["budget"]) for r in per_budget})
     out = [

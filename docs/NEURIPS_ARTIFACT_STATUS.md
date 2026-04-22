@@ -1,4 +1,8 @@
-# NeurIPS Artifact Status
+# NeurIPS Artifact Status (Historical)
+
+This file is a historical status snapshot. For current canonical paper artifact policy and outputs, refer to:
+- `docs/NEURIPS_PAPER_ARTIFACTS.md`
+- `docs/PAPER_ARTIFACT_CLEANUP_REPORT_2026_04_21.md`
 
 ## What was successfully built
 
