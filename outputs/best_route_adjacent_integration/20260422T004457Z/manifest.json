@@ -1,0 +1,18 @@
+{
+  "generated_utc": "2026-04-22T00:44:57.734657+00:00",
+  "run_id": "20260422T004457Z",
+  "script": "scripts/run_best_route_adjacent_integration.py",
+  "import_config": "configs/best_route_official_import_v1.json",
+  "contract_config": "configs/best_route_adjacent_comparison_contract_v1.json",
+  "output_dir": "outputs/best_route_adjacent_integration/20260422T004457Z",
+  "commands": [
+    "python scripts/run_best_route_adjacent_integration.py --import-config configs/best_route_official_import_v1.json --contract-config configs/best_route_adjacent_comparison_contract_v1.json"
+  ],
+  "artifacts": [
+    "manifest.json",
+    "status.json",
+    "validation_results.json",
+    "validation_status.csv",
+    "comparison_ready_rows.csv"
+  ]
+}
