@@ -5,12 +5,13 @@ import matplotlib.pyplot as plt
 
 from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR
 from plot_helpers import load_csv, save_fig
-from paper_style import STYLE
+from paper_style import STYLE, manuscript_method_display_name
 
 
 def main() -> None:
     rows = load_csv(PLOT_DATA_DIR / "appendix_a3_allocation_composition.csv")
     methods = ["strict_f3", "strict_gate1_cap_k6", "external_l1_max"]
+    display_methods = [manuscript_method_display_name(m) for m in methods]
     avg_actions = []
     avg_expansions = []
     avg_verifications = []
@@ -29,7 +30,7 @@ def main() -> None:
     ax.bar([i + w for i in x], avg_verifications, width=w, label="Avg verifications", color="#f28e2b")
 
     ax.set_xticks(x)
-    ax.set_xticklabels(methods, rotation=26, ha="right", fontsize=STYLE.tick_size)
+    ax.set_xticklabels(display_methods, rotation=26, ha="right", fontsize=STYLE.tick_size)
     ax.set_xlabel("Method", fontsize=STYLE.label_size)
     ax.set_ylabel("Mean count per case", fontsize=STYLE.label_size)
     ax.set_title("Allocation composition", fontsize=STYLE.title_size)

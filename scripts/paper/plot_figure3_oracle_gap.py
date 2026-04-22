@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR
 from plot_helpers import apply_axis_style, load_csv, method_color, save_fig
-from paper_style import STYLE
+from paper_style import STYLE, manuscript_method_display_name
 
 
 def main() -> None:
@@ -22,7 +22,7 @@ def main() -> None:
             marker="o",
             linewidth=2.0,
             markersize=4.8,
-            label=method,
+            label=manuscript_method_display_name(method),
             color=method_color(method),
         )
     apply_axis_style(
@@ -32,7 +32,15 @@ def main() -> None:
         "Mean regret vs in-house oracle",
     )
     ax.set_xticks([4, 6, 8])
-    ax.legend(frameon=False, fontsize=STYLE.legend_size, loc="upper right")
+    # Keep legend outside axes so line endpoints and labels never collide.
+    ax.legend(
+        frameon=False,
+        fontsize=STYLE.legend_size,
+        loc="upper left",
+        bbox_to_anchor=(1.01, 1.0),
+        borderaxespad=0.0,
+    )
+    fig.subplots_adjust(right=0.74)
     save_fig(
         fig,
         FIGURE_DIR / "appendix_figure_a1_oracle_gap_regret.pdf",

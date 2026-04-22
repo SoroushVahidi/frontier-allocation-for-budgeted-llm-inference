@@ -72,6 +72,15 @@ METHOD_NAME_MAP = {
     "oracle_frontier_upper_bound": "Oracle Frontier Upper Bound",
 }
 
+MANUSCRIPT_METHOD_DISPLAY_NAME_MAP = {
+    "strict_f3": "Strict-F3",
+    "strict_gate1_cap_k6": "Strict-Gate1-Cap-K6",
+    "external_l1_max": "L1-Max",
+    "external_tale_prompt_budgeting": "TALE",
+    "external_s1_budget_forcing": "S1-Budget-Forcing",
+    "external_l1_exact": "L1-Exact",
+}
+
 METHOD_COLORS = {
     "strict_gate1_cap_k6": "#377eb8",
     "strict_f3": "#1b9e77",
@@ -110,6 +119,10 @@ METRIC_NAME_MAP = {
 
 def canonical_method_name(raw: str) -> str:
     return METHOD_NAME_MAP.get(raw, raw)
+
+
+def manuscript_method_display_name(raw: str) -> str:
+    return MANUSCRIPT_METHOD_DISPLAY_NAME_MAP.get(raw, raw)
 
 
 def method_sort_key(name: str) -> tuple[int, str]:

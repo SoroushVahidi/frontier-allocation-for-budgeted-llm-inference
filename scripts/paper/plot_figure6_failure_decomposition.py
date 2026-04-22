@@ -6,12 +6,12 @@ import numpy as np
 
 from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR, REPO_ROOT, read_csv
 from plot_helpers import load_csv, save_fig
-from paper_style import STYLE
+from paper_style import STYLE, manuscript_method_display_name
 
 
 def _plot(rows: list[dict[str, str]], out_pdf: str, out_png: str, title: str, note: str) -> None:
-    labels = [r["method"] for r in rows]
-    labels = ["external_l1_max*" if m == "external_l1_max" else m for m in labels]
+    labels = [manuscript_method_display_name(r["method"]) for r in rows]
+    labels = ["L1-Max*" if label == "L1-Max" else label for label in labels]
     absent = [float(r["absent_from_tree_rate"]) for r in rows]
     present_not_selected = [float(r["present_not_selected_rate"]) + float(r["output_layer_mismatch_rate"]) for r in rows]
 
