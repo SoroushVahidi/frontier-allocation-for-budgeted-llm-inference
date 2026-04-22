@@ -21,4 +21,7 @@
 
 ## Appendix Figures
 
+- **Appendix Figure A2.** Anti-collapse diagnostic comparison on the matched manuscript surface. Left: repeated same-family case rate (lower indicates less branch-family concentration). Right: average expansions per case (context for interpreting near-zero repetition rates in shallow external trajectories). Methods shown: Strict-F3, Strict-Gate1-Cap-K6, and L1-Max.
+- **Appendix Figure A3.** Allocation-composition diagnostic on the matched manuscript surface. Left: stacked average expansions + average verifications with total average actions marker. Right: verification share of actions (%). Methods shown: Strict-F3, Strict-Gate1-Cap-K6, and L1-Max.
+- **Appendix Figure A4.** Strict-F3 component-ablation deltas on the matched manuscript-facing surface, plotted as accuracy differences (percentage points) relative to Full Strict-F3. Colors separate Full method, component-removal ablations, and reduced variants. Largest drop appears when repeat-expansion control is removed.
 - **Appendix Figure (Output-layer repair).** On the subset where correct internal reasoning is already present in the tree, deterministic output-layer repair materially improves surfaced-answer correctness; on the full current 20-case failure slice, the remaining unresolved portion indicates a broader upstream tree-generation bottleneck.

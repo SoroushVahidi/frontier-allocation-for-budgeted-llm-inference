@@ -70,9 +70,9 @@ The manuscript-facing strict_f3 component-ablation figure input is derived from:
 - Figure 2: Budget-performance frontier on the matched manuscript surface.
 - Figure 3: Failure decomposition on the matched manuscript surface.
 - Appendix Figure A1: Oracle gap / regret on the matched manuscript surface.
-- Appendix Figure A2: Anti-collapse diagnostic comparison.
-- Appendix Figure A3: Allocation composition comparison.
-- Appendix Figure A4: strict_f3 component-ablation summary.
+- Appendix Figure A2: Anti-collapse diagnostic comparison (repeated same-family rate plus average expansions context).
+- Appendix Figure A3: Allocation-composition diagnostic (absolute action mix plus verification share context).
+- Appendix Figure A4: Strict-F3 component-ablation deltas on the matched manuscript-facing surface, with grouped comparison between full method, component removals, and reduced variants.
 - Tables 1-6: benchmark/method surface, frontier comparison, oracle headroom, anti-collapse summary, failure decomposition, robustness/limitations.
 - Table 8: compact manuscript-facing method naming/comparison contract.
 - Table 9: compact surface-sensitivity decision contract (`strict_f3` manuscript-facing winner vs `strict_gate1_cap_k6` broader operational default on separate surface).
