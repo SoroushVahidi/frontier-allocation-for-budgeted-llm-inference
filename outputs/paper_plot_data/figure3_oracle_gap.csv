@@ -1,7 +1,0 @@
-method,budget,oracle_gap,normalized_regret,n_datasets,aggregation
-strict_gate1_cap_k6 (default),0,0.3281249999999999,0.3281249999999999,4,strict_phased_broader_surface
-strict_gate1,0,0.3531249999999999,0.3531249999999999,4,strict_phased_broader_surface
-strict_f2,0,0.34687499999999993,0.34687499999999993,4,strict_phased_broader_surface
-strict_f3,0,0.390625,0.390625,4,strict_phased_broader_surface
-strict_gate2,0,0.421875,0.421875,4,strict_phased_broader_surface
-baseline,0,0.35,0.35,4,strict_phased_broader_surface
