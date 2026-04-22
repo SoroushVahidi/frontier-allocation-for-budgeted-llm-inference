@@ -1,0 +1,64 @@
+{
+  "blocked_methods": [
+    "strict_gate1",
+    "strict_gate2"
+  ],
+  "experiment_name": "paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3",
+  "external_question": {
+    "strict_f3_gap_vs_strongest_external": 0.1611111111111111,
+    "strict_gate1_cap_k6_gap_vs_strongest_external": 0.15555555555555556,
+    "strongest_fair_near_direct_external": "external_l1_max"
+  },
+  "inhouse_question": {
+    "strict_f3_mean_accuracy": 0.6583333333333333,
+    "strict_gate1_cap_k6_mean_accuracy": 0.6527777777777778,
+    "strict_gate1_cap_k6_minus_strict_f3": -0.005555555555555536
+  },
+  "recommendation": {
+    "experiment_name": "paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3",
+    "reason": "strict_f3 remains stronger on the decision surface and is at least as strong as the top fair near-direct external comparator.",
+    "recommendation": "paper should center strict_f3",
+    "run_id": "20260422T175142Z",
+    "strongest_fair_near_direct_external": "external_l1_max",
+    "surface": {
+      "budgets": [
+        4,
+        6,
+        8
+      ],
+      "datasets": [
+        "HuggingFaceH4/MATH-500",
+        "HuggingFaceH4/aime_2024",
+        "openai/gsm8k"
+      ],
+      "seeds": [
+        11,
+        23
+      ],
+      "surface_id": "canonical_full_method_ranking_20260421T212948Z",
+      "surface_path": "outputs/canonical_full_method_ranking_20260421T212948Z"
+    }
+  },
+  "requested_methods": [
+    "strict_gate1_cap_k6",
+    "strict_gate1",
+    "strict_f2",
+    "strict_f3",
+    "strict_gate2",
+    "external_s1_budget_forcing",
+    "external_tale_prompt_budgeting",
+    "external_l1_exact",
+    "external_l1_max"
+  ],
+  "run_id": "20260422T175142Z",
+  "runnable_methods": [
+    "strict_gate1_cap_k6",
+    "strict_f2",
+    "strict_f3",
+    "external_s1_budget_forcing",
+    "external_tale_prompt_budgeting",
+    "external_l1_exact",
+    "external_l1_max"
+  ],
+  "surface_id": "canonical_full_method_ranking_20260421T212948Z"
+}
