@@ -6,6 +6,8 @@ from collections import defaultdict
 from paper_data_sources import (
     BUDGET_AWARE_DIR,
     CANONICAL_HUNDRED_DIR,
+    MANUSCRIPT_METHOD_DECISION_DOC,
+    EXTERNAL_READINESS_DOC,
     STRICT_PHASED_DEFAULT_DOC,
     TABLE_DIR,
     load_budget_aware_overall_table,
@@ -21,11 +23,12 @@ from paper_data_sources import (
 def table1_benchmark_method_summary() -> list[dict[str, object]]:
     return [
         {
-            "surface": "strict-phased broader matched default-decision surface",
+            "surface": "manuscript-facing canonical matched internal decision surface",
             "datasets": "openai/gsm8k; HuggingFaceH4/MATH-500; HuggingFaceH4/aime_2024; olympiadbench",
-            "methods_compared": "baseline, strict_f2, strict_f3, strict_gate1, strict_gate2, strict_gate1_cap_k6",
-            "default_selected": "strict_gate1_cap_k6 (default)",
-            "source_doc": str(STRICT_PHASED_DEFAULT_DOC.relative_to(STRICT_PHASED_DEFAULT_DOC.parents[2])),
+            "methods_compared": "strict_f3; strict_gate1_cap_k6; broad-family finalists; internal anchors",
+            "manuscript_main_method": "strict_f3",
+            "runner_up_anchor": "strict_gate1_cap_k6",
+            "source_doc": str(MANUSCRIPT_METHOD_DECISION_DOC.relative_to(MANUSCRIPT_METHOD_DECISION_DOC.parents[2])),
         }
     ]
 
@@ -41,15 +44,15 @@ def table2_main_frontier() -> list[dict[str, object]]:
             best_by_method[str(r["method"])].append(float(r["accuracy"]))
         method_macro = {m: sum(v) / len(v) for m, v in best_by_method.items()}
         best_method = max(method_macro.items(), key=lambda kv: kv[1])[0]
-        default_acc = method_macro.get("strict_gate1_cap_k6 (default)", -1.0)
+        main_method_acc = method_macro.get("strict_f3", -1.0)
         out.append(
             {
                 "budget_tier": "full_surface",
                 "budget": budget,
                 "best_method": best_method,
                 "best_accuracy_macro": method_macro[best_method],
-                "default_method": "strict_gate1_cap_k6 (default)",
-                "default_accuracy_macro": default_acc,
+                "main_method": "strict_f3",
+                "main_method_accuracy_macro": main_method_acc,
             }
         )
     return out
@@ -122,21 +125,27 @@ def table6_robustness() -> list[dict[str, object]]:
     budget_count = len({int(r["budget"]) for r in per_budget})
     out = [
         {
-            "axis": "strict_phased_default_status",
+            "axis": "manuscript_method_status",
             "status": "supported",
-            "evidence": "final broader strict-phased decision selected strict_gate1_cap_k6",
+            "evidence": "resolved internal manuscript-facing decision selects strict_f3; strict_gate1_cap_k6 retained as runner-up anchor",
+            "source": str(MANUSCRIPT_METHOD_DECISION_DOC.relative_to(MANUSCRIPT_METHOD_DECISION_DOC.parents[2])),
+        },
+        {
+            "axis": "broad_default_context",
+            "status": "supported",
+            "evidence": f"broader strict-phased default/cap evaluation remains available for operational-default context ({budget_count} budget points in cap sweep package)",
             "source": str(STRICT_PHASED_DEFAULT_DOC.relative_to(STRICT_PHASED_DEFAULT_DOC.parents[2])),
         },
         {
-            "axis": "budget_variation",
+            "axis": "external_baseline_policy",
             "status": "supported",
-            "evidence": f"budget-aware cap sweep evaluated {budget_count} budgets; fixed_k6 remained overall winner",
-            "source": str((BUDGET_AWARE_DIR / 'aggregate_summary.json').relative_to(BUDGET_AWARE_DIR.parents[1])),
+            "evidence": "main-table vs appendix-only external readiness decisions are explicitly locked in canonical policy",
+            "source": str(EXTERNAL_READINESS_DOC.relative_to(EXTERNAL_READINESS_DOC.parents[2])),
         },
         {
             "axis": "exact_failure_profile",
             "status": "supported",
-            "evidence": "canonical hundred strict_gate1_cap_k6-vs-best failure stats available with machine-readable aggregates",
+            "evidence": "canonical failure-statistics artifacts remain available as targeted mechanism evidence",
             "source": str((CANONICAL_HUNDRED_DIR / 'aggregate_failure_statistics.json').relative_to(CANONICAL_HUNDRED_DIR.parents[1])),
         },
     ]

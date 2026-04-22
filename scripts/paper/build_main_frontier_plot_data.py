@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from paper_data_sources import PLOT_DATA_DIR, REPO_ROOT, read_csv, write_csv
@@ -10,6 +11,12 @@ DECISION_DIR = (
     REPO_ROOT / "outputs" / "paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3" / "20260422T175142Z"
 )
 ABLATION_DIR = REPO_ROOT / "outputs" / "component_ablation_strict_f3_paper_surface" / "20260422T180445Z"
+READINESS_MATRIX = REPO_ROOT / "docs" / "external_baseline_paper_readiness_decision_matrix.json"
+READINESS_TO_METHOD = {
+    "l1_length_control_rl": "external_l1_max",
+    "tale_token_budget_aware_reasoning": "external_tale_prompt_budgeting",
+    "s1_simple_test_time_scaling": "external_s1_budget_forcing",
+}
 
 
 def _pick_strongest_external() -> str:
@@ -19,9 +26,25 @@ def _pick_strongest_external() -> str:
     return external_rows[0]["method"]
 
 
+def _main_table_external_methods() -> list[str]:
+    payload = json.loads(READINESS_MATRIX.read_text(encoding="utf-8"))
+    rows = list(payload.get("rows", []))
+    selected = [
+        READINESS_TO_METHOD[r["baseline_key"]]
+        for r in rows
+        if r.get("readiness_decision") == "main_table_ready" and r.get("baseline_key") in READINESS_TO_METHOD
+    ]
+    return sorted(set(selected))
+
+
 def _target_methods() -> list[str]:
-    strongest_external = _pick_strongest_external()
-    return ["strict_f3", "strict_gate1_cap_k6", strongest_external]
+    methods = ["strict_f3", "strict_gate1_cap_k6"]
+    selected = _main_table_external_methods()
+    if selected:
+        methods.extend(selected)
+    else:
+        methods.append(_pick_strongest_external())
+    return methods
 
 
 def _build_main_frontier(methods: list[str]) -> None:
