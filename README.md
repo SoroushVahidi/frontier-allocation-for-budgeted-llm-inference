@@ -128,3 +128,11 @@ The strongest current paper story is:
 **fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
 
 The current repository-wide methodological refinement is that this question is now studied under a strict phased shallow-coverage discipline, and the current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**. The repo is therefore in a stronger and more settled state than before, though broader independent confirmation and external-baseline strengthening are still needed before the manuscript-facing story is fully closed.
+
+## Broad default vs manuscript-facing surface
+
+Two surfaces coexist and should not be conflated:
+- **Broad default surface**: where `strict_gate1_cap_k6` is the current promoted default.
+- **Manuscript-facing matched/fairness surface**: where `strict_f3` remains the manuscript-locked method for near-direct external comparison packages.
+
+Use canonical docs to keep this separation explicit when interpreting results and paper claims.

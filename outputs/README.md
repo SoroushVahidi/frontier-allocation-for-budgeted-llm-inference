@@ -37,18 +37,22 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 - `rest_mcts_adjacent_integration/<run_id>/`
 - `tree_plv_adjacent_integration/<run_id>/`
 
-### 7. Paper-facing baseline comparison package
-- `paper_facing_baseline_tables/20260422T231500Z/`
-
-### 8. Fairness-audit package for direct baselines
-- `fairness_audit_direct_baselines/20260422T235900Z/`
-
-### 9. Dataset-expansion integration package
+### 7. Dataset-expansion integration package
 - `dataset_expansion_integration/20260422T120000Z/`
 - `dataset_expansion_access/20260422T120000Z/`
 
-### 10. Integrated controller component ablation package
+### 8. Integrated controller component ablation package
 - `integrated_controller_component_ablation_<timestamp>/`
+
+### 9. Manuscript-surface component ablation package
+- `manuscript_surface_component_ablation_<timestamp>/`
+
+## Manuscript-facing package families (generated when those scripts are run)
+
+These are important for manuscript baseline/fairness packaging, but may be absent in a minimal checkout if not regenerated yet:
+- `paper_facing_baseline_tables/<run_id>/`
+- `fairness_audit_direct_baselines/<run_id>/`
+- `publication_tables_package/<run_id>/`
 
 ## Paper artifact output families
 
@@ -66,6 +70,10 @@ These remain useful as provenance or bounded-scope evidence, but they are not di
 - `imported_methodology_frontier_eval/`
 - older `full_method_comparison_bundle/` runs that predate the current April 20 broad comparison path
 - older bounded targeted-eval bundles that predate the strict-phased law
+
+Important distinction:
+- `paper_plot_data/`, `paper_figures/`, and `paper_tables/` are canonical **paper artifact outputs**.
+- They are not a substitute for the canonical **broad default-decision evidence surface**, which remains the strict-phased default-decision family.
 
 ## Interpretation rule
 

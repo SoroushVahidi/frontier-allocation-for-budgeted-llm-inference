@@ -33,6 +33,10 @@ Start with:
 Start with:
 - `run_learned_f2_to_f3_gate_v1_eval.py`
 
+### If you want one script for manuscript-facing component attribution
+Start with:
+- `run_manuscript_surface_component_ablation.py`
+
 ## Before you run scripts
 
 For the shortest current repository-facing orientation, read:
@@ -72,6 +76,11 @@ Start with these scripts:
 - `run_tale_baseline.py`
 - `run_l1_baseline.py`
 - external baseline validation/generation scripts described in `../docs/main_baselines.md`
+
+## If you want paper-facing artifact regeneration
+
+Start with:
+- `paper/run_all_neurips_paper_artifacts.py`
 
 ## Historical / broader research scaffolds
 
