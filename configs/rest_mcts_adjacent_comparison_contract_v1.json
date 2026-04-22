@@ -1,0 +1,20 @@
+{
+  "baseline_key": "rest_mcts",
+  "integration_mode": "adjacent_partial_runnable",
+  "default_expected_split": "test",
+  "dataset_import_packages": {
+    "math": {
+      "expected_dataset": "math",
+      "results_path": "tests/fixtures/rest_mcts_import_valid"
+    }
+  },
+  "coverage_policy": {
+    "minimum_for_adjacent_row_export": [
+      "math"
+    ]
+  },
+  "notes": [
+    "Adjacent-only comparability. No direct control-equivalence claims.",
+    "Partial runnable lane uses official search/eval code path with deterministic mock backend in this environment."
+  ]
+}

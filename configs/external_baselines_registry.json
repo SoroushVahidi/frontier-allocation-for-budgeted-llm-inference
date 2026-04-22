@@ -106,14 +106,15 @@
       "doc": "external/best_route_microsoft/README.md",
       "integration": "import_validated",
       "completeness_class": "import_validated",
-      "blocker": "adjacent_import_validated_only_not_direct_frontier_allocation_equivalent",
+      "blocker": "full_official_stack_still_heavy_but_tiny_synthetic_router_run_stable_with_non_upstream_pins",
       "integration_doc": "docs/best_route_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/best_route_status.json",
         "outputs/external_baseline_completeness/best_route_status.md",
-        "outputs/best_route_adjacent_integration/<run_id>/status.json"
+        "outputs/best_route_adjacent_integration/<run_id>/status.json",
+        "outputs/best_route_segfault_fix_<run_id>/comparison_readiness.json"
       ],
-      "integration_runner": "scripts/run_best_route_adjacent_integration.py",
+      "integration_runner": "scripts/run_best_route_segfault_fix_pass.py",
       "comparison_contract": "configs/best_route_adjacent_comparison_contract_v1.json"
     },
     "openr": {
@@ -131,14 +132,17 @@
     "rest_mcts": {
       "clone_url": "https://github.com/THUDM/ReST-MCTS.git",
       "doc": "external/rest_mcts/README.md",
-      "integration": "runnable_adjacent",
-      "completeness_class": "runnable_adjacent",
-      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_self_training_heavy_partial_runnable_official_search_eval_only",
       "integration_doc": "docs/rest_mcts_integration.md",
       "status_artifacts": [
         "outputs/external_baseline_completeness/rest_mcts_status.json",
-        "outputs/external_baseline_completeness/rest_mcts_status.md"
-      ]
+        "outputs/external_baseline_completeness/rest_mcts_status.md",
+        "outputs/rest_mcts_partial_runnable_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_rest_mcts_partial_runnable_integration.py",
+      "comparison_contract": "configs/rest_mcts_adjacent_comparison_contract_v1.json"
     },
     "tree_plv": {
       "clone_url": null,

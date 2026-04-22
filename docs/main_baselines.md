@@ -171,11 +171,11 @@ For manuscript-safe claims, treat external baselines as follows:
   - TALE via `configs/tale_prompt_budgeting_v1.json` + `scripts/run_tale_baseline.py`
   - L1 via `configs/l1_inference_adapter_v1.json` + `scripts/run_l1_baseline.py`
 - **MODE B (import-validated only; v1 `import_validated` / `adjacent`):** s1, TALE, and L1 share the same pattern: usable **only** when valid official/full packages are supplied and pass `scripts/verify_s1_mode_b_import.py`, `scripts/verify_tale_mode_b_import.py`, or `scripts/verify_l1_mode_b_import.py` respectively (TALE MODE B additionally enforces TALE-vs-TALE-PT variant separation). Otherwise runs remain blocked pending `official.results_path`.
-- **BEST-Route:** v1 `import_validated` adjacent neighbor via `scripts/verify_best_route_import.py` with official-provenance import validation and adjacent-only comparison scope. Strengthened repository-native runner: `scripts/run_best_route_adjacent_integration.py` + `configs/best_route_adjacent_comparison_contract_v1.json` for artifact-backed row export.
+- **BEST-Route:** adjacent baseline with strict import-validation lane (`scripts/verify_best_route_import.py`) plus a focused runtime pass (`scripts/run_best_route_segfault_fix_pass.py`) that demonstrates a stable tiny synthetic router run under non-upstream compatibility pins; full official benchmark-faithful stack reproduction remains unclaimed.
 - **when_solve_when_verify:** v1 `official` + `import_validated` via `scripts/verify_when_solve_when_verify_import.py`, with canonical adjacent contract runner `scripts/run_when_solve_when_verify_adjacent_integration.py` and `configs/when_solve_when_verify_adjacent_comparison_contract_v1.json` (fixed-budget solve-vs-verify adjacent slices only; not frontier-allocation direct).
 - **cascade_routing:** v1 `import_validated` via `scripts/verify_cascade_routing_import.py`.
 - **mob_majority_of_bests:** v1 `import_validated` via `scripts/verify_mob_import.py`.
-- **rest_mcts:** v1 `import_validated` via `scripts/verify_rest_mcts_import.py` (no full ReST-MCTS training loop in-repo).
+- **rest_mcts:** partial-runnable adjacent lane via `scripts/run_rest_mcts_partial_runnable_integration.py` (official search/eval path with artifact export) plus strict import validation via `scripts/verify_rest_mcts_import.py`; no full ReST-MCTS training loop in-repo.
 - **openr:** v1 `import_validated` via `scripts/verify_openr_import.py`.
 
 Companion artifacts:
