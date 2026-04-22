@@ -1,0 +1,2 @@
+status,note
+not_derived,Oracle-gap/frontier-regret cannot be honestly derived from this ablation bundle because oracle/reference-best columns are not present in source machine-readable artifacts.

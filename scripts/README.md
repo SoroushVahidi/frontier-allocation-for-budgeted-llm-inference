@@ -40,6 +40,7 @@ This file is the runnable-code front door for the repository.
 - `build_twenty_exact_current_full_vs_best_fresh.py`
 - `run_integrated_controller_component_ablation.py`
 - `run_manuscript_surface_component_ablation.py`
+- `package_strict_f3_component_ablation_paper_surface.py`
 - `run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py`
 - `run_s1_budget_forcing_baseline.py`
 - `run_tale_baseline.py`
@@ -73,6 +74,7 @@ This file is the runnable-code front door for the repository.
 | `build_twenty_exact_current_full_vs_best_fresh.py` | Build the fresh exact current-full-vs-best loss surface |
 | `run_integrated_controller_component_ablation.py` | Canonical integrated-controller component ablation on strict-phased surface |
 | `run_manuscript_surface_component_ablation.py` | Manuscript-facing strict_f3 component ablation on canonical matched surface |
+| `package_strict_f3_component_ablation_paper_surface.py` | Non-rerun paper-facing packaging for existing strict_f3 manuscript-surface ablation artifacts |
 | `run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py` | Focused manuscript decision bundle comparing strict_gate1_cap_k6 vs strict_f3 with fair near-direct externals |
 
 ## Exploratory or adjacent controlled workflows
