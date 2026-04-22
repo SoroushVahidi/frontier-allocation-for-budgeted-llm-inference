@@ -213,3 +213,38 @@ The repository now keeps a strict two-lane Q*-family split:
 Table guardrail:
 - If reported, label as **"Q*-style adapter (unofficial, caveated)"**.
 - Do not place this lane in tables that imply official Q* reproduction.
+
+
+## Learning How Hard to Think integration status (2026-04 MODE A adapter)
+
+*Learning How Hard to Think: Input-Adaptive Allocation of LM Computation* is integrated with an explicit two-lane conservative split:
+
+- **Official paper record (`learning_how_hard_to_think`)**: `discuss_only` until an official public code repository is clearly verified from the primary OpenReview source.
+- **Runnable comparator lane (`learning_how_hard_to_think_mode_a`)**: `adapter_based` paper-inspired matched-substrate MODE A baseline via adaptive best-of-k-style allocation under fixed/matched budget.
+- Includes a required sanity bundle against `uniform_matched_compute`, `fixed_k_matched_compute`, `easy_to_hard_ordering`, and `hard_to_easy_ordering` under identical budget accounting.
+
+Implementation references:
+- `external/learning_how_hard_to_think/README.md`
+- `docs/learning_how_hard_to_think_integration.md`
+- `configs/learning_how_hard_to_think_mode_a_v1.json`
+- `scripts/run_learning_how_hard_to_think_mode_a.py`
+
+Methodological caveat:
+- Keep wording as **paper-inspired matched-substrate comparator**; do not claim official code-level reproduction.
+
+
+## Training-free difficulty proxies integration status (2026-04 MODE A adapter)
+
+*Adaptive Test-Time Compute Allocation via Training-Free Difficulty Proxies* is integrated with a conservative two-lane split:
+
+- **Official paper record (`adaptive_test_time_compute_allocation_training_free_proxies`)**: `discuss_only` pending clear official public code verification from OpenReview primary sources.
+- **Runnable comparator lane (`training_free_difficulty_proxies_mode_a`)**: `adapter_based` query-level global-budget MODE A adapter with DIPA-style `P_i ∝ 1 / M_i^lambda` allocation over unsolved instances.
+
+Implementation references:
+- `external/training_free_difficulty_proxies/README.md`
+- `docs/training_free_difficulty_proxies_integration.md`
+- `configs/training_free_difficulty_proxies_mode_a_v1.json`
+- `scripts/run_training_free_difficulty_proxies_mode_a.py`
+
+Methodological caveat:
+- This is a query/sample-level allocator (`adjacent`) and is not branch-level frontier-control equivalent.
