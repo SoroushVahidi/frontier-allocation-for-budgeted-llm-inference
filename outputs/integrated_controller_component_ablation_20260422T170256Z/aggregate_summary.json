@@ -1,0 +1,56 @@
+{
+  "artifact_family": "integrated_controller_component_ablation",
+  "timestamp_utc": "2026-04-22T17:02:56.463897+00:00",
+  "surface": {
+    "datasets": [
+      "openai/gsm8k",
+      "HuggingFaceH4/MATH-500",
+      "HuggingFaceH4/aime_2024",
+      "olympiadbench"
+    ],
+    "seeds": [
+      11,
+      23
+    ],
+    "budgets": [
+      6,
+      8
+    ],
+    "subset_size_per_dataset_seed": 20,
+    "canonical_reference_doc": "docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md"
+  },
+  "variants": [
+    {
+      "variant": "full_integrated",
+      "runtime_method": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control",
+      "enable_output_repair": true
+    },
+    {
+      "variant": "no_answer_support",
+      "runtime_method": "strict_gate1_cap_k6_ablation_no_answer_support_v1",
+      "enable_output_repair": true
+    },
+    {
+      "variant": "no_anti_collapse",
+      "runtime_method": "strict_gate1_cap_k6_ablation_no_anti_collapse_v1",
+      "enable_output_repair": true
+    },
+    {
+      "variant": "no_repeat_expansion_control",
+      "runtime_method": "strict_gate1_cap_k6_ablation_no_repeat_expansion_control_v1",
+      "enable_output_repair": true
+    },
+    {
+      "variant": "no_output_repair",
+      "runtime_method": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control",
+      "enable_output_repair": false
+    },
+    {
+      "variant": "allocation_only_core",
+      "runtime_method": "strict_gate1_cap_k6_ablation_allocation_only_core_v1",
+      "enable_output_repair": false
+    }
+  ],
+  "best_reduced_variant": "no_repeat_expansion_control",
+  "total_case_evaluations": 1920
+}

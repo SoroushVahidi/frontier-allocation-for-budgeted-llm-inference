@@ -1,0 +1,94 @@
+{
+  "contract_config_path": "configs/qstar_style_adapter_contract_v1.json",
+  "contract": {
+    "baseline_id": "qstar_style_adapter",
+    "display_name": "Q*-style deliberative search adapter (unofficial)",
+    "version": "v1",
+    "status": "adapter_based_unofficial",
+    "control_equivalence": "direct_family_caveated",
+    "scope": {
+      "paper_phase": "current",
+      "intended_use": "reviewer-facing conceptual-family stress test under matched local substrate",
+      "not_for": [
+        "official_qstar_reproduction",
+        "faithful_training_artifact_claims",
+        "official_repo_equivalence_claims"
+      ]
+    },
+    "conceptual_source": {
+      "canonical_paper_title": "Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning",
+      "paper_url": "https://arxiv.org/abs/2406.14283",
+      "paper_pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2406.14283",
+      "source_status": "paper_verified_artifacts_unverified"
+    },
+    "benchmark_contract": {
+      "dataset": "openai/gsm8k",
+      "subset_size": 24,
+      "seeds": [
+        11,
+        23
+      ],
+      "budgets": [
+        4,
+        6
+      ],
+      "normalization": {
+        "primary_budget_unit": "actions",
+        "action_to_token_equivalent": 64.0
+      }
+    },
+    "adapter_approximation": {
+      "approximated_ingredients": [
+        "deliberative_search_over_partial_reasoning_traces",
+        "best_first_style_frontier_expansion",
+        "value_like_heuristic_branch_selection",
+        "bounded_search_budget"
+      ],
+      "not_reproduced": [
+        "official_qstar_training_pipeline",
+        "official_qstar_reward_or_value_model",
+        "official_qstar_data_generation_and_filtering",
+        "exact_upstream_model_stack"
+      ],
+      "algorithm_defaults": {
+        "max_frontier_width": 3,
+        "verify_every_n_actions": 2,
+        "branch_spawn_score_threshold": 0.66,
+        "commit_threshold": 0.86,
+        "heuristic_weights": {
+          "score": 0.62,
+          "depth_bonus": 0.16,
+          "momentum": 0.12,
+          "uncertainty_bonus": 0.1
+        }
+      }
+    },
+    "allowed_claims": [
+      "unofficial_qstar_style_comparator",
+      "caveated_conceptual_family_stress_test",
+      "adapter_based_local_substrate_comparison_only"
+    ],
+    "forbidden_claims": [
+      "official_qstar_baseline_reproduced",
+      "faithful_qstar_replication",
+      "official_code_or_checkpoint_equivalence"
+    ],
+    "artifact_requirements": {
+      "output_root": "outputs/qstar_style_adapter",
+      "required_outputs": [
+        "status.json",
+        "summary.json",
+        "summary.md",
+        "manifest.json",
+        "config_snapshot.json",
+        "commands_snapshot.txt",
+        "comparison_summary.csv"
+      ]
+    }
+  },
+  "args": {
+    "seed": 20260422,
+    "output_root": "/workspace/adaptive-reasoning-budget-allocation/outputs/qstar_style_adapter"
+  }
+}

@@ -1,0 +1,7 @@
+method,rank,mean_accuracy,axis_simple_inference_scaling,best_of_n_or_sc_style,paper_main_table_expected,notes
+strict_f3,1,0.658333,other_near_direct_budget_control,no,yes,near-direct baseline but not the canonical simple-scaling representative
+external_s1_budget_forcing,15,0.433333,primary_representative,no,yes,s1 budget forcing directly scales inference-time thinking budget on matched substrate
+external_tale_prompt_budgeting,12,0.477778,other_near_direct_budget_control,no,yes,near-direct baseline but not the canonical simple-scaling representative
+external_l1_exact,16,0.425,other_near_direct_budget_control,no,yes,near-direct baseline but not the canonical simple-scaling representative
+external_l1_max,11,0.497222,other_near_direct_budget_control,no,yes,near-direct baseline but not the canonical simple-scaling representative
+self_consistency_3,9,0.566667,internal_reference,yes,no,internal self-consistency comparator present in canonical ranking

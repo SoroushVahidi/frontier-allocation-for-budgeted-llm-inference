@@ -1,0 +1,14 @@
+{
+  "official_repo_path": "/tmp/lets_verify_upstream/prm800k",
+  "exists": true,
+  "layout_checks": {
+    "README.md": true,
+    "prm800k/data/phase1_train.jsonl": true,
+    "prm800k/data/phase1_test.jsonl": true,
+    "prm800k/data/phase2_test.jsonl": true,
+    "prm800k/math_splits/test.jsonl": true,
+    "prm800k/eval/eval.py": true,
+    "prm800k/grading/grader.py": true
+  },
+  "layout_ok": true
+}

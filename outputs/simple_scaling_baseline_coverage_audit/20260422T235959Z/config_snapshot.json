@@ -1,0 +1,6 @@
+{
+  "canonical_ranking": "outputs/canonical_full_method_ranking_20260421T212948Z/overall_ranking.csv",
+  "paper_tables_run": "20260422T231500Z",
+  "s1_config": "configs/s1_budget_forcing_inference_only_v1.json",
+  "s1_runner": "scripts/run_s1_budget_forcing_baseline.py"
+}

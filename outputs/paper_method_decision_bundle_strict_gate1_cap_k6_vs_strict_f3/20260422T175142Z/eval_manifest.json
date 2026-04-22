@@ -1,0 +1,117 @@
+{
+  "experiment_name": "paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3",
+  "method_status_table": [
+    {
+      "baseline_status_matrix_row": {},
+      "class": "inhouse",
+      "method": "strict_gate1_cap_k6",
+      "on_decision_surface": true,
+      "status": "runnable"
+    },
+    {
+      "baseline_status_matrix_row": {},
+      "class": "inhouse",
+      "method": "strict_gate1",
+      "on_decision_surface": false,
+      "status": "blocked"
+    },
+    {
+      "baseline_status_matrix_row": {},
+      "class": "inhouse",
+      "method": "strict_f2",
+      "on_decision_surface": true,
+      "status": "runnable"
+    },
+    {
+      "baseline_status_matrix_row": {},
+      "class": "inhouse",
+      "method": "strict_f3",
+      "on_decision_surface": true,
+      "status": "runnable"
+    },
+    {
+      "baseline_status_matrix_row": {},
+      "class": "inhouse",
+      "method": "strict_gate2",
+      "on_decision_surface": false,
+      "status": "blocked"
+    },
+    {
+      "baseline_status_matrix_row": {},
+      "class": "near_direct_external",
+      "method": "external_s1_budget_forcing",
+      "on_decision_surface": true,
+      "status": "runnable"
+    },
+    {
+      "baseline_status_matrix_row": {},
+      "class": "near_direct_external",
+      "method": "external_tale_prompt_budgeting",
+      "on_decision_surface": true,
+      "status": "runnable"
+    },
+    {
+      "baseline_status_matrix_row": {},
+      "class": "near_direct_external",
+      "method": "external_l1_exact",
+      "on_decision_surface": true,
+      "status": "runnable"
+    },
+    {
+      "baseline_status_matrix_row": {},
+      "class": "near_direct_external",
+      "method": "external_l1_max",
+      "on_decision_surface": true,
+      "status": "runnable"
+    }
+  ],
+  "output_files": [
+    "aggregate_summary.json",
+    "anti_collapse_plot_data.csv",
+    "blocked_or_caveated_methods.csv",
+    "budget_performance_frontier.csv",
+    "collapse_diagnostics.csv",
+    "comparison_table.csv",
+    "decision_recommendation.json",
+    "decision_table.csv",
+    "failure_decomposition.csv",
+    "failure_decomposition_plot_data.csv",
+    "oracle_gap_regret.csv",
+    "per_dataset_summary.csv",
+    "per_seed_summary.csv"
+  ],
+  "requested_methods": [
+    "strict_gate1_cap_k6",
+    "strict_gate1",
+    "strict_f2",
+    "strict_f3",
+    "strict_gate2",
+    "external_s1_budget_forcing",
+    "external_tale_prompt_budgeting",
+    "external_l1_exact",
+    "external_l1_max"
+  ],
+  "run_id": "20260422T175142Z",
+  "surface_selection": {
+    "budgets": [
+      4,
+      6,
+      8
+    ],
+    "datasets": [
+      "HuggingFaceH4/MATH-500",
+      "HuggingFaceH4/aime_2024",
+      "openai/gsm8k"
+    ],
+    "reason": "Single reproducible matched surface that already includes fair near-direct external baselines and both core manuscript contenders strict_gate1_cap_k6 and strict_f3.",
+    "seeds": [
+      11,
+      23
+    ],
+    "source_files": [
+      "outputs/canonical_full_method_ranking_20260421T212948Z/per_case_outcomes.csv",
+      "outputs/canonical_full_method_ranking_20260421T212948Z/overall_ranking.csv"
+    ],
+    "surface_id": "canonical_full_method_ranking_20260421T212948Z"
+  }
+}

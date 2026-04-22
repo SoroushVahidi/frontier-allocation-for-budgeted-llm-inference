@@ -1,0 +1,35 @@
+{
+  "source": {
+    "type": "author-produced"
+  },
+  "upstream": {
+    "repo_url": "https://github.com/Hareta-Leila/Tree-PLV",
+    "paper_url": "https://aclanthology.org/2024.emnlp-main.125/",
+    "workflow_stages_completed": [
+      "tree_preference_pair_construction",
+      "process_verifier_training_or_import",
+      "benchmark_evaluation"
+    ]
+  },
+  "dataset": {
+    "name": "gsm8k",
+    "split": "test"
+  },
+  "evaluation": {
+    "budget": {
+      "max_tree_depth_values": [3, 4],
+      "num_candidates_values": [16],
+      "compute_budget_note": "Fixed-depth/fixed-candidate adjacent import slice; adjacent-only comparability."
+    }
+  },
+  "models": {
+    "base_model_family": "llama3-8b-instruct",
+    "verifier_model_family": "tree-plv-style-prm"
+  },
+  "provenance": {
+    "exported_at_utc": "2026-04-22T19:00:00Z",
+    "source_uri": "tests/fixtures/tree_plv_import_valid",
+    "artifact_id": "tree_plv_fixture_gsm8k_test_v1",
+    "commit_or_version_if_available": "fixture-v1"
+  }
+}

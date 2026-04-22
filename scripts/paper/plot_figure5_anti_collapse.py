@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR
 from plot_helpers import load_csv, save_fig
@@ -17,9 +18,10 @@ def main() -> None:
         mrows = [r for r in rows if r["method"] == method]
         longest_run.append(sum(float(r["longest_same_family_run"]) for r in mrows) / max(1, len(mrows)))
         max_share.append(sum(float(r["max_family_share"]) for r in mrows) / max(1, len(mrows)))
+    x = np.arange(len(methods))
     fig, axes = plt.subplots(1, 2, figsize=(STYLE.width + 1.2, STYLE.height + 0.6), sharex=True)
-    axes[0].bar(methods, longest_run)
-    axes[1].bar(methods, max_share)
+    axes[0].bar(x, longest_run, color="#e15759")
+    axes[1].bar(x, max_share, color="#76b7b2")
 
     axes[0].set_title("Longest Same-Family Run (mean)", fontsize=STYLE.title_size)
     axes[0].set_xlabel("Formula / Method", fontsize=STYLE.label_size)
@@ -31,9 +33,8 @@ def main() -> None:
     axes[1].set_ylabel("Max Share", fontsize=STYLE.label_size)
     axes[1].grid(True, alpha=STYLE.grid_alpha)
     for ax in axes:
-        ax.tick_params(axis="x", rotation=28, labelsize=STYLE.tick_size)
-        for label in ax.get_xticklabels():
-            label.set_ha("right")
+        ax.set_xticks(x)
+        ax.set_xticklabels(methods, rotation=28, ha="right", fontsize=STYLE.tick_size)
     fig.suptitle("Anti-collapse diagnostics", fontsize=STYLE.title_size)
     fig.subplots_adjust(top=0.84, bottom=0.28)
     save_fig(fig, FIGURE_DIR / "figure5_anti_collapse.pdf", FIGURE_DIR / "figure5_anti_collapse.png")

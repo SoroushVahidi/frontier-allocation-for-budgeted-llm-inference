@@ -1,0 +1,19 @@
+{
+  "baseline": "rest_mcts",
+  "run_id": "20260422T022200Z",
+  "classification": "partial_runnable_adjacent",
+  "status": "ready_adjacent_partial_runnable",
+  "adjacent_only": true,
+  "minimum_contract_met": true,
+  "official_repo_layout_ok": true,
+  "safe_claims": [
+    "Official-source provenance is documented and validated against required links and repository structure.",
+    "A stable adjacent runnable lane exists for a contract-bound MATH test import subset.",
+    "Integration status is partial_runnable_adjacent with explicit adjacent_only scope."
+  ],
+  "unsafe_claims": [
+    "Full faithful in-repo reproduction of complete ReST-MCTS self-training pipeline.",
+    "Direct control-equivalent comparison with frontier/action-native branch-allocation methods.",
+    "Unqualified SOTA claims based on this adjacent integration lane."
+  ]
+}

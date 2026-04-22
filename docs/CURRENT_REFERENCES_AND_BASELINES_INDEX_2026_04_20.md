@@ -63,8 +63,10 @@ These notes are now the shortest answer to:
 ### Current external strengthening order
 1. **BEST-Route** — strengthened: official adjacent import-validated baseline with reproducible artifact contract
 2. **When To Solve / When To Verify** — strengthened official adjacent import-validated baseline with reproducible contract lane
-3. **ReST-MCTS*** — current next adjacent baseline after BEST-Route + solve/verify strengthening
-4. **Q*** — important scientifically, but later-wave unless stronger provenance/integration becomes available
+3. **ReST-MCTS*** — strengthened with a stable adjacent contract lane and canonical artifacts
+4. **Let's Verify Step by Step** — strengthened to an official adjacent partial-runnable PRM800K contract lane with canonical artifacts
+5. **Tree-PLV** — strengthened to an official-paper-cited adjacent partial-runnable contract lane with canonical artifacts
+6. **Q*** — now provenance-hardened as discuss-only with explicit blockers; upgrade only after verified official artifacts exist
 
 ## Current writing rule
 
@@ -81,6 +83,7 @@ Do not blur them into one undifferentiated related-work paragraph.
 
 - `CURRENT_BRANCH_ALLOCATION_AND_ANTI_COLLAPSE_REFERENCES_2026_04_20.md`
 - `CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`
+- `QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md`
 - `main_baselines.md`
 - `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
 - `main_datasets.md`
@@ -108,3 +111,30 @@ Use this index first when you need to answer:
 ## Latest BEST-Route strengthening artifact
 
 - `BEST_ROUTE_STRENGTHENING_PASS_2026_04_21.md`
+
+## External adjacent aggregate bundle (new)
+
+- `docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md`
+- `docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T201000Z.md`
+- `outputs/external_adjacent_baseline_bundle/20260422T011400Z/summary.md`
+- `outputs/external_adjacent_baseline_bundle/20260422T201000Z/summary.md`
+- Regenerate: `python scripts/build_external_adjacent_baseline_bundle.py`
+
+## Q*-family coverage split (2026-04-22)
+
+For current paper-phase reviewer coverage, keep the Q*-family in two separate records:
+
+- **Official paper record:** `qstar_deliberative_planning` (discuss-only; provenance-hardened).
+- **Unofficial runnable comparator:** `qstar_style_adapter` (caveated adapter lane; not official reproduction).
+
+Canonical adapter references:
+- `configs/qstar_style_adapter_contract_v1.json`
+- `scripts/run_qstar_style_adapter.py`
+- `docs/QSTAR_STYLE_ADAPTER_20260422T160000Z.md`
+
+
+## Tree-PLV strengthening artifact (2026-04-22)
+
+- `docs/TREE_PLV_FINAL_STRENGTHENING_PASS_20260422T200000Z.md`
+- `docs/tree_plv_integration.md`
+- `outputs/tree_plv_adjacent_integration/<run_id>/`

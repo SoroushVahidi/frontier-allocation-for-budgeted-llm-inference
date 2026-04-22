@@ -1,0 +1,50 @@
+{
+  "generated_utc": "2026-04-22T01:37:36+00:00",
+  "baseline_key": "qstar_deliberative_planning",
+  "status": "discuss_only",
+  "status_v1": "discuss_only",
+  "control_equivalence": "direct",
+  "integration_state": "blocked_pending_verified_official_artifacts",
+  "canonical_paper": {
+    "title": "Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning",
+    "authors": [
+      "Chaojie Wang",
+      "Yanchen Deng",
+      "Zhiyi Lyu",
+      "Liang Zeng",
+      "Jujie He",
+      "Shuicheng Yan",
+      "Bo An"
+    ],
+    "venue_year": "arXiv preprint (under review), 2024",
+    "paper_url": "https://arxiv.org/abs/2406.14283",
+    "pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+    "doi": "https://doi.org/10.48550/arXiv.2406.14283"
+  },
+  "provenance": {
+    "openreview_found": "not_verified",
+    "official_repo_found": false,
+    "official_project_page_found": false,
+    "official_checkpoints_found": false,
+    "official_license_verified": false,
+    "provenance_strength": "paper_verified_artifacts_unverified"
+  },
+  "safe_claims": [
+    "Q* is a direct-family conceptual neighbor for deliberative branch reasoning.",
+    "This repository verifies the canonical paper identity and DOI for Q*.",
+    "Q* remains discuss_only in this repository with explicit provenance blockers."
+  ],
+  "not_safe_claims": [
+    "Official runnable Q* reproduction in this repository.",
+    "Verified official Q* code/checkpoint import path.",
+    "Direct empirical comparability claims without verified artifacts."
+  ],
+  "main_blockers": [
+    "No verified official repository found for the exact paper in this pass.",
+    "No verified official project page found for the exact paper in this pass.",
+    "No verified official checkpoints/artifacts found for the exact paper in this pass.",
+    "No verified official code/artifact license found for this exact paper in this pass."
+  ],
+  "integration_doc": "docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md",
+  "next_exact_step": "Upgrade only after verifiable official artifacts exist and a strict provenance-backed import/adapter contract is added."
+}

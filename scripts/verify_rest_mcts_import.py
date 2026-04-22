@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Verify ReST-MCTS adjacent import package.
-
-Conservative scope:
-- Adjacent import only (not direct in-repo reproduction claim).
-- Requires explicit workflow-stage declarations aligned to upstream ReST-MCTS pipeline.
-- Requires explicit MCTS-search result rows under fixed search settings.
-"""
+"""Verify ReST-MCTS adjacent import package with conservative claim boundaries."""
 
 from __future__ import annotations
 
@@ -14,6 +8,8 @@ import csv
 import json
 from pathlib import Path
 from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_METADATA_FIELDS = [
     "source.type",
@@ -60,6 +56,7 @@ REQUIRED_RESULTS_COLUMNS = [
 
 ALLOWED_SOURCE_TYPES = {"official", "author-produced", "imported"}
 ALLOWED_SEARCH_MODES = {"mcts", "cot", "tot"}
+DEFAULT_CONTRACT = REPO_ROOT / "configs" / "rest_mcts_adjacent_comparison_contract_v2.json"
 
 
 def _get_nested(data: dict[str, Any], dotted: str) -> Any:
@@ -76,11 +73,90 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--results-path", required=True, help="Path to package dir or results.csv")
     p.add_argument("--expected-dataset", required=True)
     p.add_argument("--expected-split", default="test")
+    p.add_argument("--contract-config", default=str(DEFAULT_CONTRACT))
+    p.add_argument("--official-repo-path", default=None)
     p.add_argument("--output-json", default=None)
     return p.parse_args()
 
 
-def verify_rest_mcts_import(*, requested_path: Path, expected_dataset: str, expected_split: str) -> dict[str, Any]:
+def _check_contract(contract_config: Path) -> dict[str, Any]:
+    info: dict[str, Any] = {
+        "contract_path": str(contract_config),
+        "contract_exists": contract_config.exists(),
+        "contract_valid_json": False,
+        "required_sections_ok": False,
+        "issues": [],
+    }
+    if not contract_config.exists():
+        info["issues"].append("missing_contract_config")
+        return info
+
+    try:
+        payload = json.loads(contract_config.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        info["issues"].append(f"invalid_contract_json: {exc}")
+        return info
+
+    info["contract_valid_json"] = True
+    required_sections = [
+        "official_sources",
+        "benchmark_contract",
+        "budget_and_compute_normalization",
+        "model_and_path_requirements",
+        "artifact_requirements",
+        "allowed_claims",
+        "not_allowed_claims",
+    ]
+    missing = [s for s in required_sections if s not in payload]
+    if missing:
+        info["issues"].append(f"missing_contract_sections: {missing}")
+    else:
+        info["required_sections_ok"] = True
+    return info
+
+
+def _check_official_repo_path(official_repo_path: Path | None, contract_config: Path) -> dict[str, Any]:
+    result = {
+        "checked": official_repo_path is not None,
+        "official_repo_path": str(official_repo_path) if official_repo_path else "",
+        "exists": False,
+        "layout_ok": False,
+        "layout_checks": {},
+        "issues": [],
+    }
+    if official_repo_path is None:
+        return result
+
+    result["exists"] = official_repo_path.exists()
+    if not official_repo_path.exists():
+        result["issues"].append("official_repo_path_missing")
+        return result
+
+    required_layout: list[str] = []
+    if contract_config.exists():
+        try:
+            contract = json.loads(contract_config.read_text(encoding="utf-8"))
+            required_layout = list(contract.get("model_and_path_requirements", {}).get("official_repo_layout_required", []))
+        except json.JSONDecodeError:
+            required_layout = []
+
+    if required_layout:
+        checks = {rel: (official_repo_path / rel).exists() for rel in required_layout}
+        result["layout_checks"] = checks
+        result["layout_ok"] = all(checks.values())
+        if not result["layout_ok"]:
+            result["issues"].append("official_repo_layout_incomplete")
+    return result
+
+
+def verify_rest_mcts_import(
+    *,
+    requested_path: Path,
+    expected_dataset: str,
+    expected_split: str,
+    contract_config: Path | None = None,
+    official_repo_path: Path | None = None,
+) -> dict[str, Any]:
     issues: list[str] = []
     errors: list[str] = []
 
@@ -118,6 +194,10 @@ def verify_rest_mcts_import(*, requested_path: Path, expected_dataset: str, expe
         upstream_repo = str(_get_nested(metadata, "upstream.repo_url") or "")
         if "THUDM/ReST-MCTS" not in upstream_repo:
             issues.append("upstream_repo_mismatch")
+
+        paper_url = str(_get_nested(metadata, "upstream.paper_url") or "")
+        if "2406.03816" not in paper_url:
+            issues.append("upstream_paper_mismatch")
 
         observed_stages = _get_nested(metadata, "upstream.workflow_stages_completed")
         if not isinstance(observed_stages, list):
@@ -214,6 +294,25 @@ def verify_rest_mcts_import(*, requested_path: Path, expected_dataset: str, expe
     if "mcts" not in observed_search_modes:
         issues.append("missing_mcts_search_mode")
 
+    contract = _check_contract(contract_config) if contract_config else {
+        "contract_path": "",
+        "contract_exists": False,
+        "contract_valid_json": False,
+        "required_sections_ok": False,
+        "issues": ["contract_not_checked"],
+    }
+    repo_check = _check_official_repo_path(official_repo_path, contract_config) if contract_config else {
+        "checked": False,
+        "official_repo_path": "",
+        "exists": False,
+        "layout_ok": False,
+        "layout_checks": {},
+        "issues": [],
+    }
+
+    if contract.get("issues"):
+        issues.extend([f"contract:{x}" for x in contract["issues"]])
+
     return {
         "status": "valid" if not issues and not errors else "invalid",
         "baseline": "rest_mcts",
@@ -227,6 +326,8 @@ def verify_rest_mcts_import(*, requested_path: Path, expected_dataset: str, expe
             "direct in-repo full reproduction of upstream ReST-MCTS self-training stack",
             "control-space-equivalent direct comparability claims versus frontier/action-native controllers",
         ],
+        "contract_check": contract,
+        "official_repo_path_check": repo_check,
     }
 
 
@@ -236,6 +337,8 @@ def main() -> None:
         requested_path=Path(args.results_path),
         expected_dataset=args.expected_dataset,
         expected_split=args.expected_split,
+        contract_config=Path(args.contract_config).resolve() if args.contract_config else None,
+        official_repo_path=Path(args.official_repo_path).resolve() if args.official_repo_path else None,
     )
 
     if args.output_json:

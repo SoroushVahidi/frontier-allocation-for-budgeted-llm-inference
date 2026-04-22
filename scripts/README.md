@@ -10,10 +10,10 @@ This file is the runnable-code front door for the repository.
 - Current strict-phased status: [`../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
 - Current experiment-family index: [`../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
 - Current code entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
-- Current external-baseline strengthening order: [`../docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md`](../docs/CURRENT_BASELINE_NEXT_STEPS_2026_04_21.md)
-- Paper-facing baseline guide: [`../docs/main_baselines.md`](../docs/main_baselines.md)
 - Repository map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
+- Contributor placement and maintenance guide: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 - Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+- Repo audit/cleanup rationale: [`../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md`](../docs/REPOSITORY_AUDIT_AND_CLEANUP_2026_04_20.md)
 - Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
 ## Interpretation labels
@@ -31,27 +31,33 @@ This file is the runnable-code front door for the repository.
 - `build_new_hundred_newest_vs_best_failure_statistics.py`
 - `build_canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics.py`
 
-### 2. Run current learned or capped alternatives
+### 2. Run current learned/capped alternatives
 - `run_learned_f2_to_f3_gate_v1_eval.py`
 - `run_hard_max_family_expansions_eval.py`
 
-### 3. Run the current near-direct external baseline stack
+### 3. Run broad comparison / external-baseline support path
+- `run_full_method_comparison_bundle.py`
+- `build_twenty_exact_current_full_vs_best_fresh.py`
+- `run_integrated_controller_component_ablation.py`
+- `run_manuscript_surface_component_ablation.py`
+- `run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py`
 - `run_s1_budget_forcing_baseline.py`
 - `run_tale_baseline.py`
 - `run_l1_baseline.py`
 
-### 4. Run the current adjacent external baseline stack
-- `run_best_route_adjacent_integration.py`
-- `run_best_route_full_integration_attempt.py`
-- `run_when_solve_when_verify_adjacent_integration.py`
-- `run_rest_mcts_partial_runnable_integration.py`
-- `verify_rest_mcts_import.py`
-
-### 5. Check dataset and baseline readiness
+### 4. Check dataset and baseline readiness
 - `verify_hf_dataset_access.py`
 - `generate_dataset_integration_report.py`
 - `generate_external_baseline_integration_report.py`
+- `build_external_adjacent_baseline_bundle.py`
 - `list_external_baselines.py`
+
+### 5. Run maintenance checks
+- `make smoke`
+- `make health`
+- `make lint`
+- `make test`
+- `make check`
 
 ## Canonical scripts (current project path)
 
@@ -65,25 +71,11 @@ This file is the runnable-code front door for the repository.
 | `run_hard_max_family_expansions_eval.py` | Evaluate hard per-family expansion caps on the strict target |
 | `run_full_method_comparison_bundle.py` | Current broad matched comparison / ranking bundle |
 | `build_twenty_exact_current_full_vs_best_fresh.py` | Build the fresh exact current-full-vs-best loss surface |
+| `run_integrated_controller_component_ablation.py` | Canonical integrated-controller component ablation on strict-phased surface |
+| `run_manuscript_surface_component_ablation.py` | Manuscript-facing strict_f3 component ablation on canonical matched surface |
+| `run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py` | Focused manuscript decision bundle comparing strict_gate1_cap_k6 vs strict_f3 with fair near-direct externals |
 
-## External baseline scripts worth knowing first
-
-| Script | Role |
-|---|---|
-| `run_s1_budget_forcing_baseline.py` | MODE A matched-substrate s1 baseline |
-| `run_tale_baseline.py` | MODE A matched-substrate TALE baseline |
-| `run_l1_baseline.py` | MODE A matched-substrate L1 baseline |
-| `run_best_route_adjacent_integration.py` | BEST-Route adjacent import-validated integration lane |
-| `run_best_route_full_integration_attempt.py` | BEST-Route stronger execution attempt / stabilization lane |
-| `verify_best_route_import.py` | Strict BEST-Route import validation |
-| `run_when_solve_when_verify_adjacent_integration.py` | When-To-Solve/Verify adjacent integration lane |
-| `verify_when_solve_when_verify_import.py` | Strict solve/verify import validation |
-| `run_rest_mcts_partial_runnable_integration.py` | ReST-MCTS* official-code partial-runnable integration lane |
-| `verify_rest_mcts_import.py` | ReST-MCTS import validation lane |
-| `generate_external_baseline_integration_report.py` | Generate the current external baseline integration summary |
-| `list_external_baselines.py` | Print external baseline registry |
-
-## Exploratory or adjacent controlled workflows
+## Exploratory / adjacent controlled experiment workflows
 
 | Script | Role |
 |---|---|
@@ -112,6 +104,13 @@ This file is the runnable-code front door for the repository.
 | `build_external_prm_mathshepherd_apps_corpus.py` | Build conservative canonical-aligned external rows |
 | `prepare_external_reasoning_datasets.py` | Readiness ranking and normalized previews |
 | `generate_external_baseline_integration_report.py` | External baseline integration report |
+| `build_external_adjacent_baseline_bundle.py` | Aggregate manuscript-safe bundle for BEST-Route / when_solve_when_verify / ReST-MCTS* adjacent baseline status |
+| `run_rest_mcts_adjacent_integration.py` | Canonical ReST-MCTS adjacent contract runner with standardized artifact family export |
+| `run_lets_verify_step_by_step_adjacent_integration.py` | Canonical Let's Verify Step by Step adjacent contract runner with PRM800K public-asset checks and standardized artifacts |
+| `verify_lets_verify_step_by_step_import.py` | Strict validator for Let's Verify Step by Step adjacent import contract packages |
+| `run_tree_plv_adjacent_integration.py` | Canonical Tree-PLV adjacent contract runner with conservative paper↔repo checks and standardized artifacts |
+| `verify_tree_plv_import.py` | Strict validator for Tree-PLV adjacent import contract packages |
+| `generate_tree_plv_status_report.py` | Generate machine-readable Tree-PLV completeness status artifacts |
 | `list_external_baselines.py` | Print external baseline registry |
 
 ## Historical/provenance scripts
@@ -120,9 +119,16 @@ Historical entry points are documented in:
 - [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 - `../archive/historical_scripts/`
 
+## Paper-facing script note
+
+There are two ablation surfaces on purpose:
+- `run_integrated_controller_component_ablation.py`: strict-phased default surface around the promoted broad default line.
+- `run_manuscript_surface_component_ablation.py`: manuscript-facing fairness/matched surface around `strict_f3`.
+
+Keep these surfaces separated in interpretation and manuscript claims.
+
 ## Notes
 
-- The current highest-leverage internal scripts are the strict-phased force/gate comparisons, newest-vs-best exact-loss statistics, learned post-F2 gate, and hard family-expansion-cap analysis.
-- The current strongest paper-facing external stack is the MODE A `s1` / `TALE` / `L1` runners plus ReST-MCTS* as the strongest adjacent search baseline, with BEST-Route still needing stabilization.
+- The current highest-leverage scripts are the strict-phased force/gate comparisons, newest-vs-best exact-loss statistics, learned post-F2 gate, and hard family-expansion-cap analysis.
 - `run_cross_strategy_frontier_allocation.py` and related frontier scripts remain useful, but they are no longer the default first path for the current default-model question.
 - Use the paired docs in `../docs/` when interpreting any narrower experimental line; many exploratory scripts are not intended to stand alone as headline results.

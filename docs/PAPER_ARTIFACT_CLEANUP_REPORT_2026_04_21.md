@@ -5,7 +5,7 @@
 This cleanup canonicalizes paper-facing artifacts around the current strict-phased default story:
 
 - default method: `strict_gate1_cap_k6`
-- canonical default-decision evidence: `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- canonical default-comparison machine-readable evidence: `outputs/paper_plot_data/sources/strict_phased_multidataset_frontier.csv`
 - canonical failure decomposition evidence: `outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z/`
 - canonical K-formula follow-up evidence: `outputs/budget_aware_family_cap_eval_20260421T162842Z/`
 
@@ -20,7 +20,7 @@ This cleanup canonicalizes paper-facing artifacts around the current strict-phas
 | `figure6_failure_decomposition.*` | canonical hundred failure statistics | current-canonical | revised | regenerated |
 | `figure7_per_dataset_summary.*` | strict-phased dataset table | current-canonical | revised | regenerated |
 | `appendix_output_layer_repair.*` | output-layer repair bundle | current-canonical appendix | kept | regenerated |
-| `appendix_per_dataset_frontier_*.{pdf,png}` | budget-aware formula curves | appendix/historical-compatible | revised | regenerated |
+| `appendix_budget_formula_curves.*` | budget-aware formula curves | current-canonical appendix | revised | regenerated |
 | legacy `appendix_promoted_vs_adversary_failure_slices.*` | old bounded frontier slice CSV | bounded-historical | removed | deleted |
 | legacy non-`table[1-6]_*.{csv,tex}` in `outputs/paper_tables/` | mixed older surfaces | bounded-historical | removed | deleted |
 | legacy extra CSVs in `outputs/paper_plot_data/` | mixed older surfaces | bounded-historical | removed | deleted |
@@ -30,6 +30,11 @@ This cleanup canonicalizes paper-facing artifacts around the current strict-phas
 - Canonical entrypoint: `python scripts/paper/run_all_neurips_paper_artifacts.py`
 - `scripts/paper/run_all_neurips_artifacts.py` is retained as a compatibility shim and forwards to the canonical runner.
 - Plot/table builders are now wired to strict-phased/current bundles rather than older imported frontier defaults.
+- Canonical output roots for paper artifacts are:
+  - `outputs/paper_plot_data/` for machine-readable plot data,
+  - `outputs/paper_figures/` for figure binaries,
+  - `outputs/paper_tables/` for table CSV/TeX.
+- Historical bounded bundles remain provenance-only unless explicitly relabeled for bounded use.
 
 ## Final Main-Paper Artifact Set
 
@@ -40,9 +45,7 @@ This cleanup canonicalizes paper-facing artifacts around the current strict-phas
 
 - `appendix_output_layer_repair.{pdf,png}` + `appendix_output_layer_repair.csv`
 - `appendix_per_dataset_frontier_curves.csv`
-- `appendix_per_dataset_frontier_HuggingFaceH4_MATH-500.{pdf,png}`
-- `appendix_per_dataset_frontier_Idavidrein_gpqa.{pdf,png}`
-- `appendix_per_dataset_frontier_openai_gsm8k.{pdf,png}`
+- `appendix_budget_formula_curves.{pdf,png}`
 
 ## Regeneration Command
 

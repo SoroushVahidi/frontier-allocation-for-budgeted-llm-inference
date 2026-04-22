@@ -1,0 +1,9 @@
+{
+  "baseline": "tree_plv",
+  "classification": "partial_runnable_adjacent",
+  "minimum_contract_met": true,
+  "official_repo_layout_ok": true,
+  "official_repo_license_visible": false,
+  "comparison_ready_rows": 2,
+  "output_dir": "outputs/tree_plv_adjacent_integration/20260422T200500Z"
+}

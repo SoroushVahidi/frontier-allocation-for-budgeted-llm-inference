@@ -1,6 +1,6 @@
 # External baseline completeness report
 
-- Generated (UTC): `2026-04-21T19:09:41.860622+00:00`
+- Generated (UTC): `2026-04-22T03:11:22.119832+00:00`
 - Scope: external baseline completeness for reviewer-defensible reporting.
 
 ## Canonical taxonomy (v1, paper-safe)
@@ -36,12 +36,14 @@ Machine-readable matrix (normalized fields): `outputs/baseline_repair_and_status
 | BEST-Route (`best_route_microsoft`) | import_validated | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | Compute-optimal TTS (`compute_optimal_tts`) | blocked | blocked | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
 | When To Solve, When To Verify (`when_solve_when_verify`) | import_validated | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
+| Q* (`qstar_deliberative_planning`) | discuss_only | discuss_only | not_applicable | direct | not_applicable | direct | no | not_applicable | not_applicable |
 | Cascade routing (`cascade_routing`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | MoB (`mob_majority_of_bests`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
+| Let's Verify Step by Step (`lets_verify_step_by_step`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | ReST-MCTS* (`rest_mcts`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | MCTS-LLM (community) (`mcts_llm_community`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
 | OpenR (`openr`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
-| Tree-PLV (`tree_plv`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
+| Tree-PLV (`tree_plv`) | runnable_adjacent | import_validated | not_applicable | adjacent | not_applicable | adjacent | yes_verified_import | adjacent_import_validator | not_applicable |
 | PGTS (`pgts`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
 | Scaling Automated Process Verifiers (`scaling_automated_process_verifiers`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |
 | LLM Tree Search (Waterhorse) (`llm_tree_search_waterhorse`) | discuss_only | discuss_only | not_applicable | adjacent | not_applicable | adjacent | no | not_applicable | not_applicable |

@@ -1,0 +1,3 @@
+mode,source_type,dataset,split,base_model,verifier_model,search_policy,max_tree_depth,num_candidates,accuracy,num_examples,artifact_id,commit_or_version,comparability_scope
+tree_plv_adjacent_import,author-produced,gsm8k,test,llama3-8b-instruct,tree-plv-style-prm,best_first_tree,3,16,0.614,200,tree_plv_fixture_gsm8k_test_v1,fixture-v1,adjacent_only
+tree_plv_adjacent_import,author-produced,gsm8k,test,llama3-8b-instruct,tree-plv-style-prm,best_first_tree,4,16,0.623,200,tree_plv_fixture_gsm8k_test_v1,fixture-v1,adjacent_only

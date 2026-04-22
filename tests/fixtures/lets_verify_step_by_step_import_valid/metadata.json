@@ -1,0 +1,35 @@
+{
+  "source": {
+    "type": "official"
+  },
+  "upstream": {
+    "repo_url": "https://github.com/openai/prm800k",
+    "paper_url": "https://arxiv.org/abs/2305.20050",
+    "workflow_stages_completed": [
+      "dataset_ready",
+      "verifier_scoring_or_import",
+      "math_split_evaluation"
+    ]
+  },
+  "dataset": {
+    "name": "math",
+    "split": "test"
+  },
+  "evaluation": {
+    "budget": {
+      "pass_at_k_values": [1, 5],
+      "verifier_score_threshold": 0.0,
+      "compute_budget_note": "Fixed-pass@k adjacent slice with declared verifier threshold; adjacent-only import contract."
+    }
+  },
+  "models": {
+    "generator_model_family": "gpt-4-class",
+    "verifier_model_family": "prm-style"
+  },
+  "provenance": {
+    "exported_at_utc": "2026-04-22T00:00:00Z",
+    "source_uri": "tests/fixtures/lets_verify_step_by_step_import_valid",
+    "artifact_id": "lets_verify_fixture_math_test_v1",
+    "commit_or_version_if_available": "fixture-v1"
+  }
+}

@@ -17,12 +17,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_PATHS = [
     REPO_ROOT / "README.md",
+    REPO_ROOT / "CONTRIBUTING.md",
     REPO_ROOT / "pyproject.toml",
     REPO_ROOT / "requirements.txt",
     REPO_ROOT / "Makefile",
     REPO_ROOT / "docs" / "README.md",
     REPO_ROOT / "docs" / "CANONICAL_INSTALL_AND_DEV.md",
     REPO_ROOT / "scripts" / "README.md",
+    REPO_ROOT / "outputs" / "README.md",
     REPO_ROOT / "experiments" / "frontier_router.py",
     REPO_ROOT / "tests" / "test_frontier_router.py",
 ]
@@ -30,7 +32,6 @@ REQUIRED_PATHS = [
 REQUIRED_IMPORTS = [
     "experiments.frontier_router",
 ]
-
 
 
 def main() -> int:
@@ -60,7 +61,7 @@ def main() -> int:
         return 1
 
     print("Repository health check: OK")
-    print("Canonical files present, core import path works, and lightweight structure checks passed.")
+    print("Canonical files present, contributor front door is intact, and core import path works.")
     return 0
 
 

@@ -98,3 +98,11 @@ secrets.*
 
 !outputs/budget_aware_family_cap_eval_*/
 !outputs/budget_aware_family_cap_eval_*/**/*
+!outputs/external_adjacent_baseline_bundle/
+!outputs/external_adjacent_baseline_bundle/**/*
+
+!outputs/rest_mcts_adjacent_integration/
+!outputs/rest_mcts_adjacent_integration/**/*
+
+!outputs/qstar_style_adapter/
+!outputs/qstar_style_adapter/**/*

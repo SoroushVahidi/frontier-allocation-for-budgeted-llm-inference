@@ -1,0 +1,53 @@
+{
+  "generated_utc": "2026-04-22T02:49:23.638381+00:00",
+  "baseline_key": "lets_verify_step_by_step",
+  "display_name": "Let's Verify Step by Step",
+  "status": "import_validated",
+  "classification": "partial_runnable_adjacent",
+  "control_equivalence": "adjacent",
+  "resource_level": "official",
+  "integration_kind": "official_adjacent_partial_runnable_contract_lane",
+  "status_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "adapter_based",
+    "import_validated",
+    "discuss_only",
+    "blocked",
+    "broken_needs_repair"
+  ],
+  "upstream": {
+    "repo": "https://github.com/openai/prm800k",
+    "paper": "https://arxiv.org/abs/2305.20050",
+    "paper_pdf": "https://arxiv.org/pdf/2305.20050.pdf",
+    "doi": "https://doi.org/10.48550/arXiv.2305.20050"
+  },
+  "integration": {
+    "contract": "configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+    "validator_script": "scripts/verify_lets_verify_step_by_step_import.py",
+    "runner_script": "scripts/run_lets_verify_step_by_step_adjacent_integration.py",
+    "validator_success_verdict": "import_validated",
+    "runner_success_classification": "partial_runnable_adjacent"
+  },
+  "protocol": {
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "dataset_ready",
+      "verifier_scoring_or_import",
+      "math_split_evaluation"
+    ],
+    "required_comparability_scope": "adjacent_only"
+  },
+  "safe_claims": [
+    "This repo supports an artifact-backed partial-runnable adjacent lane for Let's Verify Step by Step using official public PRM800K assets.",
+    "The lane validates official-source mapping, repo layout expectations, and contract-bound MATH import subset outputs.",
+    "Comparisons are adjacent-only and explicitly not treated as branch-allocation control-equivalent."
+  ],
+  "not_safe_claims": [
+    "Full faithful end-to-end reproduction of the complete paper-scale training/evaluation pipeline.",
+    "Direct control-equivalence to branch-level marginal frontier allocation methods."
+  ]
+}

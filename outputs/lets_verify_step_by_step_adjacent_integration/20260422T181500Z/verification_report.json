@@ -1,0 +1,70 @@
+{
+  "math_test_prm800k_import_contract": {
+    "baseline_key": "lets_verify_step_by_step",
+    "status": "valid",
+    "verdict": "import_validated",
+    "issues": [],
+    "errors": [],
+    "contract_check": {
+      "contract_path": "/workspace/adaptive-reasoning-budget-allocation/configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+      "contract_exists": true,
+      "contract_valid_json": true,
+      "required_sections_ok": true,
+      "issues": []
+    },
+    "official_repo_check": {
+      "checked": true,
+      "official_repo_path": "/tmp/lets_verify_upstream/prm800k",
+      "exists": true,
+      "layout_ok": true,
+      "layout_checks": {
+        "README.md": true,
+        "prm800k/data/phase1_train.jsonl": true,
+        "prm800k/data/phase1_test.jsonl": true,
+        "prm800k/data/phase2_test.jsonl": true,
+        "prm800k/math_splits/test.jsonl": true,
+        "prm800k/eval/eval.py": true,
+        "prm800k/grading/grader.py": true
+      },
+      "issues": []
+    },
+    "package_dir": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/lets_verify_step_by_step_import_valid",
+    "requested_path": "/workspace/adaptive-reasoning-budget-allocation/tests/fixtures/lets_verify_step_by_step_import_valid",
+    "expected_dataset": "math",
+    "expected_split": "test",
+    "imported_rows": [
+      {
+        "mode": "prm800k_adjacent_import",
+        "source": "lets_verify_step_by_step_import_verified",
+        "source_type": "official",
+        "dataset": "math",
+        "dataset_split": "test",
+        "generator_model": "gpt-4-class",
+        "verifier_model": "prm-style",
+        "pass_at_k": "1",
+        "verifier_score_threshold": "0.0",
+        "accuracy": "0.59",
+        "num_examples": "100",
+        "artifact_id": "lets_verify_fixture_math_test_v1",
+        "commit_or_version": "fixture-v1",
+        "comparability_scope": "adjacent_only"
+      },
+      {
+        "mode": "prm800k_adjacent_import",
+        "source": "lets_verify_step_by_step_import_verified",
+        "source_type": "official",
+        "dataset": "math",
+        "dataset_split": "test",
+        "generator_model": "gpt-4-class",
+        "verifier_model": "prm-style",
+        "pass_at_k": "5",
+        "verifier_score_threshold": "0.0",
+        "accuracy": "0.71",
+        "num_examples": "100",
+        "artifact_id": "lets_verify_fixture_math_test_v1",
+        "commit_or_version": "fixture-v1",
+        "comparability_scope": "adjacent_only"
+      }
+    ]
+  }
+}

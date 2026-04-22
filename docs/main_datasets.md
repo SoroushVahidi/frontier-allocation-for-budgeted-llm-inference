@@ -43,6 +43,7 @@ To address ambiguity-regime coverage without broad random expansion, the reposit
 Policy note:
 - These four are integrated as **evaluation-first** additions.
 - They should not be conflated with external supervision/pretraining sources unless a run explicitly documents that usage.
+- Latest text-only integration artifact bundle: `outputs/dataset_expansion_integration/20260422T120000Z/` with manuscript note `docs/DATASET_EXPANSION_INTEGRATION_20260422T120000Z.md`.
 
 ## Recommended first experimental subset
 

@@ -1,0 +1,20 @@
+{
+  "baseline": "tree_plv",
+  "run_id": "20260422T200500Z",
+  "classification": "partial_runnable_adjacent",
+  "status": "ready_adjacent_partial_runnable",
+  "adjacent_only": true,
+  "minimum_contract_met": true,
+  "official_repo_layout_ok": true,
+  "official_repo_license_visible": false,
+  "safe_claims": [
+    "Tree-PLV is integrated in this repository as an official-paper-cited adjacent baseline with a stable partial-runnable contract lane.",
+    "This lane validates provenance, contract completeness, optional cited-repo structure, and exports machine-readable adjacent-only artifacts.",
+    "Final classification in this repo lane is partial_runnable_adjacent, not full faithful reproduction."
+  ],
+  "unsafe_claims": [
+    "Full faithful in-repo reproduction of the complete Tree-PLV paper stack.",
+    "Direct control-equivalent comparison with branch-level marginal budget-allocation methods.",
+    "Any claim that official released checkpoints were validated when none were verified in this pass."
+  ]
+}

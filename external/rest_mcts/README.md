@@ -1,32 +1,44 @@
-# ReST-MCTS* external code note
+# ReST-MCTS* external baseline note (official adjacent lane)
 
 - **Canonical title:** ReST-MCTS*: LLM Self-Training via Process Reward Guided Tree Search
-- **Paper:** https://arxiv.org/abs/2406.03816
-- **Official paper link status:** Confirmed (arXiv).
-- **Official code link:** https://github.com/THUDM/ReST-MCTS
-- **Repository status:** Exists, appears official (matches arXiv-linked code URL), and is publicly reachable.
-- **Venue / year:** NeurIPS 2024
-- **License:** **Unclear / not declared** in repository metadata at verification time (`license: null` via GitHub API; no top-level `LICENSE` file observed).
-- **Import status:** Runnable-adjacent via strict import validation (no vendored code; no direct reproduction claim).
-- **Reason:** This repo keeps conservative boundaries: adjacent-only verified import of upstream-produced artifacts, without claiming full in-repo reproduction or control-equivalence.
+- **Official repository:** https://github.com/THUDM/ReST-MCTS
+- **Official project page:** https://rest-mcts.github.io
+- **NeurIPS 2024 page:** https://proceedings.neurips.cc/paper_files/paper/2024/hash/76ec4dc30e9faaf0e4b6093eaa377218-Abstract-Conference.html
+- **arXiv abstract:** https://arxiv.org/abs/2406.03816
+- **arXiv PDF:** https://arxiv.org/pdf/2406.03816.pdf
 
-## Canonical adjacent protocol in this repo
+## Integration status in this repository
 
-- Integration note: `docs/rest_mcts_integration.md`
+**Current classification:** `partial_runnable_adjacent` (official-source + contract-verified adjacent lane).
+
+This repository does **not** claim full faithful in-repo reproduction of the full upstream self-training stack.
+
+## Canonical adjacent contract and runnable lane
+
+- Contract: `configs/rest_mcts_adjacent_comparison_contract_v2.json`
 - Validator: `scripts/verify_rest_mcts_import.py`
-- Status artifacts:
-  - `outputs/external_baseline_completeness/rest_mcts_status.json`
-  - `outputs/external_baseline_completeness/rest_mcts_status.md`
+- Canonical runner: `scripts/run_rest_mcts_adjacent_integration.py`
+- Backward-compatible wrapper: `scripts/run_rest_mcts_partial_runnable_integration.py`
+- Canonical output family: `outputs/rest_mcts_adjacent_integration/<run_id>/`
 
-## Setup notes (upstream)
+## Required scope guardrails
 
-If you want to run upstream code locally, clone directly from the official repository and follow its instructions:
+Allowed now:
+- Official-source provenance reporting.
+- Adjacent benchmark rows under explicit `adjacent_only` scope.
+- Stable contract-based artifact generation for paper tables.
 
-1. `git clone https://github.com/THUDM/ReST-MCTS.git`
-2. Review upstream documentation and dependency files (e.g., `requirements_mistral.txt`, `requirements_sciglm.txt`) before environment setup.
-3. Verify license terms manually if you plan to redistribute or vendor any part of the code.
+Not allowed now:
+- Claiming full in-repo reproduction of complete ReST-MCTS training/self-training pipeline.
+- Claiming direct control-equivalence to branch-level frontier-allocation controllers.
 
-## Verification notes (this repo)
+## Verification protocol summary
 
-- Public accessibility verified using `git ls-remote`.
-- License metadata checked via GitHub API.
+1. Validate import package (`metadata.json` + `results.csv`) against the contract.
+2. Check required upstream workflow-stage declarations and search-budget fields.
+3. Verify optional official repo path layout (`MCTS/task.py`, `evaluate.py`, self-train and PRM entrypoints).
+4. Export machine-readable status, readiness, summary, manifest, and CSV rows in canonical output family.
+
+## License caveat
+
+As with other external integrations in this repo, users must verify upstream license terms directly before vendoring or redistribution.

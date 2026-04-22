@@ -39,6 +39,8 @@ Read these first:
 6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
 7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
 8. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+9. [`docs/CANONICAL_INSTALL_AND_DEV.md`](docs/CANONICAL_INSTALL_AND_DEV.md)
+10. [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
@@ -98,14 +100,26 @@ Output-layer repair remains useful, but it is no longer the dominant broad bottl
 
 ## Repository layout
 
-- `docs/`: canonical interpretation, planning notes, navigation pages, reference/baseline indexes, result/artifact indexes, exploratory notes, and historical guidance.
+- `docs/`: canonical interpretation, planning notes, navigation pages, reference/baseline indexes, exploratory notes, and historical guidance.
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
 - `configs/`: dataset, baseline, and experiment configuration files.
 - `datasets/`: dataset policy and dataset-readiness assets.
 - `external/`: external baseline references and integration notes.
+- `references/`: literature notes, paper summaries, and reference-facing provenance.
 - `outputs/`: generated artifacts and paper-support outputs.
+- `tests/`: lightweight regression and repository-health checks.
 - `archive/`: provenance-only historical material.
+
+## Repository maintenance
+
+For day-to-day repo hygiene, use:
+- [`docs/CANONICAL_INSTALL_AND_DEV.md`](docs/CANONICAL_INSTALL_AND_DEV.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- `make help`
+- `make check`
+
+These are the current operational front door for keeping the repo aligned as new scripts, docs, and output families are added.
 
 ## Paper-level interpretation
 
@@ -114,3 +128,11 @@ The strongest current paper story is:
 **fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
 
 The current repository-wide methodological refinement is that this question is now studied under a strict phased shallow-coverage discipline, and the current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**. The repo is therefore in a stronger and more settled state than before, though broader independent confirmation and external-baseline strengthening are still needed before the manuscript-facing story is fully closed.
+
+## Broad default vs manuscript-facing surface
+
+Two surfaces coexist and should not be conflated:
+- **Broad default surface**: where `strict_gate1_cap_k6` is the current promoted default.
+- **Manuscript-facing matched/fairness surface**: where `strict_f3` remains the manuscript-locked method for near-direct external comparison packages.
+
+Use canonical docs to keep this separation explicit when interpreting results and paper claims.

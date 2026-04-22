@@ -1,0 +1,8 @@
+method,method_group,reason,origin_type
+external_l1_exact,external_baseline_family,external baseline,external
+external_l1_max,external_baseline_family,external baseline,external
+external_s1_budget_forcing,external_baseline_family,external baseline,external
+external_tale_prompt_budgeting,external_baseline_family,external baseline,external
+reasoning_beam1,reasoning_baseline_family,missing runnable artifact in current build_frontier_strategies,internal
+strict_gate1,strict_family,not runnable on canonical full ranking surface (runtime key missing),internal
+strict_gate2,strict_family,not runnable on canonical full ranking surface (runtime key missing),internal

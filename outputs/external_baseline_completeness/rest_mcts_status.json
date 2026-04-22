@@ -1,24 +1,28 @@
 {
-  "generated_utc": "2026-04-16T02:17:13.689937+00:00",
+  "generated_utc": "2026-04-22T12:00:00+00:00",
   "baseline_key": "rest_mcts",
-  "status": "runnable_adjacent",
-  "integration_kind": "verified_import_only",
-  "status_taxonomy": [
+  "status": "import_validated",
+  "lane_strength": "partial_runnable_adjacent",
+  "integration_kind": "official_adjacent_contract_lane",
+  "status_taxonomy_v1": [
     "runnable_direct",
     "runnable_adjacent",
-    "mode_a_only",
-    "mode_b_partial",
-    "link_only",
+    "adapter_based",
+    "import_validated",
     "discuss_only",
-    "blocked"
+    "blocked",
+    "broken_needs_repair"
   ],
   "upstream": {
     "repo": "https://github.com/THUDM/ReST-MCTS",
-    "readme": "https://github.com/THUDM/ReST-MCTS/blob/main/README.md",
+    "project_page": "https://rest-mcts.github.io",
+    "neurips_2024": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/76ec4dc30e9faaf0e4b6093eaa377218-Abstract-Conference.html",
     "paper": "https://arxiv.org/abs/2406.03816",
-    "project_page": "https://rest-mcts.github.io/"
+    "pdf": "https://arxiv.org/pdf/2406.03816.pdf"
   },
   "protocol": {
+    "contract": "configs/rest_mcts_adjacent_comparison_contract_v2.json",
+    "runner": "scripts/run_rest_mcts_adjacent_integration.py",
     "validator_script": "scripts/verify_rest_mcts_import.py",
     "required_package_files": [
       "metadata.json",
@@ -36,11 +40,11 @@
     "comparability_scope": "adjacent_only"
   },
   "safe_claims": [
-    "This repo supports reviewer-auditable adjacent import of ReST-MCTS outputs.",
-    "Imported outputs are validated for upstream workflow declarations, fixed search metadata, and explicit adjacent-only scope."
+    "This repo supports a stable, contract-validated adjacent lane for ReST-MCTS artifact import and reporting.",
+    "Machine-readable status/readiness artifacts are exported under outputs/rest_mcts_adjacent_integration/<run_id>/."
   ],
   "not_safe_claims": [
-    "Direct in-repo full reproduction of upstream ReST-MCTS self-training and training-stack results.",
+    "Full faithful in-repo reproduction of complete upstream ReST-MCTS self-training pipeline.",
     "Control-equivalent direct comparability claims with frontier/action-native controllers."
   ]
 }

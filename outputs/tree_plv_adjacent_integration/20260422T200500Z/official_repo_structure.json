@@ -1,0 +1,12 @@
+{
+  "official_repo_path": "/tmp/tree_plv_upstream/Tree-PLV",
+  "exists": true,
+  "layout_checks": {
+    "README.md": true,
+    "LLMs-Planning/plan-bench/README.md": true,
+    "LLMs-Planning/llm_planning_analysis/README.md": true,
+    "dschat": true
+  },
+  "layout_ok": true,
+  "license_visible": false
+}

@@ -103,6 +103,21 @@ CLASSIFICATION_ROWS: list[dict[str, str]] = [
         "next_requirement": "If pursuing direct comparability, justify and implement control-space alignment beyond adjacent import.",
     },
     {
+        "baseline_key": "qstar_deliberative_planning",
+        "display_name": "Q*",
+        "category": "discuss_only",
+        "status_v1_mode_a": "discuss_only",
+        "status_v1_mode_b": "not_applicable",
+        "control_v1_mode_a": "direct",
+        "control_v1_mode_b": "not_applicable",
+        "directness": "direct",
+        "usable_now": "no",
+        "mode_a": "not_applicable",
+        "mode_b": "not_applicable",
+        "blocker": "Canonical paper identity is verified, but no verified official repo/project page/checkpoints are confirmed for this exact paper in this repo pass.",
+        "next_requirement": "Keep discuss_only until verified official artifacts exist; then add strict provenance-backed import/adapter contract.",
+    },
+    {
         "baseline_key": "cascade_routing",
         "display_name": "Cascade routing",
         "category": "runnable_adjacent",
@@ -131,6 +146,21 @@ CLASSIFICATION_ROWS: list[dict[str, str]] = [
         "mode_b": "not_applicable",
         "blocker": "Not blocked for adjacent use; direct full-stack reproduction and control-equivalence claims remain out-of-scope.",
         "next_requirement": "If pursuing direct comparability, justify and implement control-space alignment beyond adjacent import.",
+    },
+    {
+        "baseline_key": "lets_verify_step_by_step",
+        "display_name": "Let's Verify Step by Step",
+        "category": "runnable_adjacent",
+        "status_v1_mode_a": "import_validated",
+        "status_v1_mode_b": "not_applicable",
+        "control_v1_mode_a": "adjacent",
+        "control_v1_mode_b": "not_applicable",
+        "directness": "adjacent",
+        "usable_now": "yes_verified_import",
+        "mode_a": "adjacent_import_validator",
+        "mode_b": "not_applicable",
+        "blocker": "Not blocked for adjacent use; full faithful end-to-end paper-stack reproduction remains out-of-scope.",
+        "next_requirement": "If pursuing stronger claims, provide auditable official checkpoints/training stack evidence before upgrading beyond partial_runnable_adjacent.",
     },
     {
         "baseline_key": "rest_mcts",
@@ -180,17 +210,17 @@ CLASSIFICATION_ROWS: list[dict[str, str]] = [
     {
         "baseline_key": "tree_plv",
         "display_name": "Tree-PLV",
-        "category": "discuss_only",
-        "status_v1_mode_a": "discuss_only",
+        "category": "runnable_adjacent",
+        "status_v1_mode_a": "import_validated",
         "status_v1_mode_b": "not_applicable",
         "control_v1_mode_a": "adjacent",
         "control_v1_mode_b": "not_applicable",
         "directness": "adjacent",
-        "usable_now": "no",
-        "mode_a": "not_applicable",
+        "usable_now": "yes_verified_import",
+        "mode_a": "adjacent_import_validator",
         "mode_b": "not_applicable",
-        "blocker": "Official code/repro path not confirmed for this repo's integration policy.",
-        "next_requirement": "Confirm official code + licensing before adapter work.",
+        "blocker": "Not blocked for adjacent use; full faithful benchmark-faithful reproduction remains out-of-scope.",
+        "next_requirement": "If pursuing stronger claims, provide auditable official checkpoint/training evidence and license clarification.",
     },
     {
         "baseline_key": "pgts",
@@ -298,16 +328,18 @@ def main() -> None:
             "l1_length_control_rl (MODE A)",
             "best_route_microsoft (adjacent import validator)",
             "when_solve_when_verify (adjacent import validator)",
+            "lets_verify_step_by_step (adjacent partial-runnable contract lane)",
             "cascade_routing (adjacent import validator)",
             "mob_majority_of_bests (adjacent import validator)",
             "rest_mcts (adjacent import validator)",
             "openr (adjacent import validator)",
+            "tree_plv (adjacent partial-runnable contract lane)",
         ],
         "single_next_priority": "mcts_llm_community",
         "single_next_priority_rationale": (
             "mcts_llm_community is now v1 `discuss_only` (optional community link; no adapter). "
             "Next integration effort should pick a discuss_only row with a clear canonical paper mapping "
-            "(for example Tree-PLV or PGTS) only after official code + license confirmation."
+            "(for example PGTS) only after official code + license confirmation."
         ),
     }
 

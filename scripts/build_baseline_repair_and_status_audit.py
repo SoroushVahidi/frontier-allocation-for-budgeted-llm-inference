@@ -142,7 +142,7 @@ def _rows() -> list[dict[str, Any]]:
             primary_paths=["configs/tale_official_adapter_v1.json", "docs/tale_baseline_integration.md"],
             prior_overclaim_risk="Omitting TALE vs TALE-PT variant separation when citing MODE B.",
             safe_wording_now="Validator requires tale_variant fields; still not direct reproduction of full upstream training.",
-            notes="",
+            notes="Stabilized canonical output family: outputs/rest_mcts_adjacent_integration/<run_id>/.",
         )
     )
     rows.append(
@@ -223,10 +223,10 @@ def _rows() -> list[dict[str, Any]]:
             repo_command_available=True,
             artifact_backed_now=_exists("scripts/verify_rest_mcts_import.py"),
             official_resource_verified=False,
-            primary_commands=["scripts/verify_rest_mcts_import.py"],
+            primary_commands=["scripts/verify_rest_mcts_import.py", "scripts/run_rest_mcts_adjacent_integration.py"],
             primary_paths=["docs/rest_mcts_integration.md", "external/rest_mcts/README.md"],
             prior_overclaim_risk="Upstream training + self-training loop implied as runnable in-repo.",
-            safe_wording_now="Clone + import validation only; no full ReST-MCTS training reproduction claim.",
+            safe_wording_now="Contract-bound adjacent lane with verified import + official layout checks; no full ReST-MCTS training reproduction claim.",
             notes="",
         )
     )
@@ -241,27 +241,38 @@ def _rows() -> list[dict[str, Any]]:
             artifact_backed_now=_exists("external/qstar_deliberative_planning/README.md"),
             official_resource_verified=False,
             primary_commands=[],
-            primary_paths=["external/qstar_deliberative_planning/README.md", "docs/main_baselines.md"],
+            primary_paths=[
+                "external/qstar_deliberative_planning/README.md",
+                "docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md",
+                "docs/main_baselines.md",
+            ],
             prior_overclaim_risk="Implying integrated runnable Q* baseline in this repository.",
-            safe_wording_now="Essential direct family target for framing; discuss-only until adapter exists.",
-            notes="No verified official repo wired; do not upgrade without reproducible integration.",
+            safe_wording_now="Essential direct-family conceptual neighbor; discuss-only with explicit provenance blockers.",
+            notes="No verified official repo/artifacts wired for exact paper; do not upgrade without reproducible integration contract.",
         )
     )
     rows.append(
         row(
             "lets_verify_step_by_step",
             "Let's Verify Step by Step",
-            status="discuss_only",
-            control_equivalence="ingredient_only",
+            status="import_validated",
+            control_equivalence="adjacent",
             paper_safe_now=True,
-            repo_command_available=False,
-            artifact_backed_now=_exists("external/lets_verify_step_by_step/README.md"),
+            repo_command_available=True,
+            artifact_backed_now=_exists("scripts/verify_lets_verify_step_by_step_import.py"),
             official_resource_verified=False,
-            primary_commands=[],
-            primary_paths=["external/lets_verify_step_by_step/README.md"],
-            prior_overclaim_risk="PRM family oversold as runnable empirical baseline stack here.",
-            safe_wording_now="Adjacent ingredient / completion-aware evidence family; not integrated as runnable stack.",
-            notes="",
+            primary_commands=[
+                "scripts/verify_lets_verify_step_by_step_import.py",
+                "scripts/run_lets_verify_step_by_step_adjacent_integration.py",
+            ],
+            primary_paths=[
+                "external/lets_verify_step_by_step/README.md",
+                "docs/lets_verify_step_by_step_integration.md",
+                "configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+            ],
+            prior_overclaim_risk="PRM family presented as full faithful in-repo end-to-end paper reproduction.",
+            safe_wording_now="Official adjacent partial-runnable contract lane with explicit adjacent_only scope; no full paper-stack reproduction claim.",
+            notes="Classification is artifact-backed partial_runnable_adjacent in dedicated lane while matrix status remains import_validated.",
         )
     )
     rows.append(
