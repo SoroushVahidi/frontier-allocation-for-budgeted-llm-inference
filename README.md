@@ -20,25 +20,26 @@ This repository is currently centered on:
 - useful diversity realization under budget,
 - answer-support aggregation,
 - anti-collapse branch-family control,
-- and real-model confirmation of branch-allocation policies.
+- and reviewer-defensible comparison against both near-direct and adjacent external baselines.
 
 This repository is **not** currently centered on the older binary revise-routing paper.
 
 ## Current state in one paragraph
 
-The strongest current repository-backed line remains the **broad diversity-aware branch-allocation family with answer-support aggregation**. The current promoted integrated path adds **anti-collapse allocation**, **soft repeat-expansion control**, and **deterministic output-layer repair**. The repository now studies these refinements under a strict-phased hard early-coverage discipline (finish F1, then F2, then F3), and the current broader strict-phased default-decision pass has selected **`strict_gate1_cap_k6`** as the current broad default promoted model on the evaluated surface.
+The repository now has a clearer paper-facing separation than before. The broader strict-phased default-decision pass still identifies **`strict_gate1_cap_k6`** as the current broad promoted default on its own evaluated surface, but the explicit in-house winner artifact defines **`strict_f3`** as the repository’s single canonical **our method**. The paper-facing comparison layer is now also materially stronger: a fair near-direct ranking, a separate published adjacent-baseline table, a discussion-only recent-paper layer, a direct-baseline fairness audit, and an explicit simple-scaling coverage audit that states no extra direct baseline was needed.
 
 ## Fastest reliable reading path
 
 Read these first:
 1. [`QUICKSTART.md`](QUICKSTART.md)
 2. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-3. [`docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-4. [`docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-5. [`docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-6. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-7. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-8. [`docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+3. [`docs/CURRENT_OUR_METHOD_STATUS_20260422T001521Z.md`](docs/CURRENT_OUR_METHOD_STATUS_20260422T001521Z.md)
+4. [`docs/FINAL_INHOUSE_METHOD_DECISION_20260422T001521Z.md`](docs/FINAL_INHOUSE_METHOD_DECISION_20260422T001521Z.md)
+5. [`docs/PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md`](docs/PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md)
+6. [`docs/FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`](docs/FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md)
+7. [`docs/SIMPLE_SCALING_BASELINE_COVERAGE_DECISION_20260422T235959Z.md`](docs/SIMPLE_SCALING_BASELINE_COVERAGE_DECISION_20260422T235959Z.md)
+8. [`docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
+9. [`docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](docs/CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
 
 Then use:
 - [`docs/README.md`](docs/README.md) for grouped navigation,
@@ -69,23 +70,19 @@ For the full interpretation policy, see:
 - diversity-aware controller mechanisms,
 - answer-support aggregation infrastructure,
 - observability-enabled semantic failure analysis,
-- comparative mistake auditing against the strongest baseline,
 - bounded real-model confirmation,
-- exact old-vs-current tree comparison artifacts,
-- targeted current-failure bundles,
-- output-layer repair diagnostics,
 - strict-phased hard-coverage experiments,
-- strict force/gate comparison bundles,
-- capped-family anti-collapse experiments,
+- stabilized adjacent external baseline lanes,
+- explicit in-house winner selection,
+- paper-facing baseline separation and claim-boundary artifacts,
 - and a stronger learner-side supervision stack than before.
 
 ## What is not solved yet
 
 - broader independent confirmation beyond the current finalized broader pass,
-- honest external-baseline completeness closure,
-- stable real-model leadership among close variants under wider conditions,
-- broader paper-grade real-model evidence,
-- and final manuscript-facing consolidation of the newest strict-phased default into all comparison and claim layers.
+- stronger budget-sweep / stability / failure-mechanism robustness coverage,
+- broader paper-grade non-math dataset breadth in the final reported results,
+- and final manuscript-facing consolidation of the latest comparison and fairness artifacts into the paper text.
 
 ## Main bottleneck
 
@@ -98,7 +95,7 @@ Output-layer repair remains useful, but it is no longer the dominant broad bottl
 
 ## Repository layout
 
-- `docs/`: canonical interpretation, planning notes, navigation pages, reference/baseline indexes, result/artifact indexes, exploratory notes, and historical guidance.
+- `docs/`: canonical interpretation, planning notes, navigation pages, baseline/reference indexes, result/artifact indexes, exploratory notes, and historical guidance.
 - `scripts/`: runnable entry points and orchestration wrappers.
 - `experiments/`: implementation modules and compact result notes.
 - `configs/`: dataset, baseline, and experiment configuration files.
@@ -113,4 +110,8 @@ The strongest current paper story is:
 
 **fixed-budget branch allocation for LLM reasoning, where the dominant remaining problem is not just final answer repair but early tree-shape control under budget: preventing one family from monopolizing compute, getting plausible alternatives into the tree, and then selecting correctly among them.**
 
-The current repository-wide methodological refinement is that this question is now studied under a strict phased shallow-coverage discipline, and the current broad default promoted model on the evaluated surface is **`strict_gate1_cap_k6`**. The repo is therefore in a stronger and more settled state than before, though broader independent confirmation and external-baseline strengthening are still needed before the manuscript-facing story is fully closed.
+Current front-door naming rule:
+- **our method** = `strict_f3`
+- **current broad promoted strict-phased default on its evaluated surface** = `strict_gate1_cap_k6`
+
+This separation keeps the repo’s paper-facing interpretation cleaner and more honest.
