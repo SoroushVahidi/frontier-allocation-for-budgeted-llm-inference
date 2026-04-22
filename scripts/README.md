@@ -25,6 +25,11 @@ This file is the runnable-code front door for the repository.
 
 ## Most common workflows
 
+### 0. Canonical first run (broad default decision)
+- `run_broader_strict_phased_default_decision_eval.py`
+- Read `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- Inspect `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
+
 ### 1. Run the current strict-phased default-decision path
 - `run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py`
 - `run_hundred_three_gate_design_eval_strict_phased.py`

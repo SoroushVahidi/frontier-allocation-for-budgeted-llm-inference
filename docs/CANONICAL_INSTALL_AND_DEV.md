@@ -53,14 +53,16 @@ make check
 
 For current project interpretation, read in this order:
 1. `README.md`
-2. `docs/README.md`
-3. `docs/PROJECT_MASTER_PLAN.md`
-4. `docs/CURRENT_PROJECT_STATUS.md`
-5. `docs/CURRENT_BOTTLENECKS.md`
-6. `docs/CURRENT_SAFE_CLAIMS.md`
-7. `docs/REPO_MAP.md`
-8. `CONTRIBUTING.md`
-9. `scripts/README.md`
+2. `docs/CANONICAL_START_HERE.md`
+3. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+4. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+5. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+6. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+7. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+8. `docs/CURRENT_SAFE_CLAIMS.md`
+9. `docs/REPO_MAP.md`
+10. `CONTRIBUTING.md`
+11. `scripts/README.md`
 
 ## Directory roles
 

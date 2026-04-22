@@ -88,6 +88,13 @@ This regenerates:
 - all tables (CSV + TeX),
 - all main and supported appendix figure binaries (PDF + PNG).
 
+Reproducibility caveat:
+- The current paper runner is reproducible from committed canonical machine-readable bundles, including timestamped decision/ablation inputs listed above.
+- It is a canonical packaging/regeneration path, not a full raw experiment recomputation pipeline by itself.
+
+Script naming note:
+- Some `scripts/paper/plot_figure*.py` filenames are legacy-numbered, while emitted figure filenames are canonical. Treat output filenames under `outputs/paper_figures/` as the source of truth.
+
 ## Policy
 
 - Canonical runner: `python scripts/paper/run_all_neurips_paper_artifacts.py`

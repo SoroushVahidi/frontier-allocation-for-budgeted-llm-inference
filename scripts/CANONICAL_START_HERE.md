@@ -94,7 +94,7 @@ These are still useful, but are no longer the primary front-door path for the cu
 ## Rule of thumb
 
 - Use this page first.
-- Use `README.md` for the full script index.
+- Use `scripts/README.md` for the full script index.
 - Treat strict-phased F1 → F2 → F3 evaluation as the current core control discipline.
 - Treat exact-loss auditing against `reasoning_beam2` as the strongest current direct-adversary failure-analysis path.
 - Treat `strict_gate1_cap_k6` as the current broad default promoted model on the evaluated surface.

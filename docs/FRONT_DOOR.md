@@ -1,30 +1,10 @@
-# Front door
+# Front Door Redirect
 
-This is the shortest reliable entry point for the current repository.
+Use these two pages instead of this legacy front-door duplicate:
 
-## Project identity
+1. [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md) - interpretation authority for the current repository stance.
+2. [`README.md`](README.md) - navigation index across canonical, exploratory, and historical docs.
 
-This repository is for the current NeurIPS-oriented project on fixed-budget adaptive test-time compute allocation for LLM reasoning.
-
-The central question is:
-
-> Which active branch should receive the next unit of compute, and when should the system continue versus commit?
-
-The repository is currently centered on cross-controller frontier allocation, next-step branch allocation, answer-group-aware preservation and commit control, anti-collapse behavior under budget, and the distinction between tree-generation failures and output-layer failures.
-
-It is not currently centered on the older binary revise-routing manuscript.
-
-## Shortest reading path
-
-1. [CANONICAL_START_HERE.md](CANONICAL_START_HERE.md)
-2. [CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md](CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-3. [CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md](CURRENT_STATE_AND_NEXT_WORK_2026_04_19.md)
-4. [CURRENT_SAFE_CLAIMS.md](CURRENT_SAFE_CLAIMS.md)
-5. [CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-
-## Goal-based navigation
-
-- [REPOSITORY_START_PATHS.md](REPOSITORY_START_PATHS.md)
-- [REPO_MAP.md](REPO_MAP.md)
-- [README.md](README.md)
-- [../scripts/CANONICAL_START_HERE.md](../scripts/CANONICAL_START_HERE.md)
+For runnable entry points:
+- [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
+- [`../scripts/README.md`](../scripts/README.md)

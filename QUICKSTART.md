@@ -14,14 +14,26 @@ This repository is **not** currently centered on the older binary revise-routing
 
 ## Read in this order
 
-1. `README.md`
-2. `docs/CANONICAL_START_HERE.md`
-3. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-4. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-5. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
-6. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-7. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
-8. `scripts/CANONICAL_START_HERE.md`
+1. `docs/CANONICAL_START_HERE.md`
+2. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+3. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+4. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+5. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+6. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+7. `scripts/CANONICAL_START_HERE.md`
+
+## Canonical first-run command block
+
+For a reproducible first pass through the current broad default evidence path:
+
+```bash
+make setup
+python scripts/run_broader_strict_phased_default_decision_eval.py
+```
+
+Then review:
+- `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+- `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
 
 ## Current promoted default
 
