@@ -48,6 +48,22 @@ def test_alias_resolution_for_math500_and_amo_bench() -> None:
 
 
 def test_alias_resolution_for_new_requested_datasets() -> None:
+    drop = resolve_dataset_spec("DROP")
+    assert drop.key == "allenai/drop"
+    assert drop.repo_id == "ucinlp/drop"
+
+    musr = resolve_dataset_spec("musr")
+    assert musr.key == "TAUR-Lab/MuSR"
+    assert "narrative" in musr.question_fields
+
+    bbh = resolve_dataset_spec("bbh")
+    assert bbh.key == "openeval/BIG-Bench-Hard"
+    assert "target" in bbh.answer_fields
+
+    aqua = resolve_dataset_spec("AQuA-RAT")
+    assert aqua.key == "deepmind/aqua_rat"
+    assert "correct" in aqua.answer_fields
+
     aime_2025 = resolve_dataset_spec("aime_2025")
     assert aime_2025.key == "MathArena/aime_2025"
     assert "problem" in aime_2025.question_fields
