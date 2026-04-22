@@ -193,10 +193,27 @@
       "doc": "external/qstar_deliberative_planning/README.md",
       "integration": "discuss_only",
       "completeness_class": "discuss_only",
-      "blocker": "no_verified_official_repo_adapter_integration_yet",
+      "blocker": "no_verified_official_repo_or_artifacts_discuss_only_until_provenance_upgrades",
       "canonical_title": "Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning",
       "baseline_class": "direct",
-      "paper_phase_priority": "essential"
+      "paper_phase_priority": "essential",
+      "target_paper_url": "https://arxiv.org/abs/2406.14283",
+      "paper_pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2406.14283",
+      "integration_doc": "docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/qstar_deliberative_planning_status.json",
+        "outputs/external_baseline_completeness/qstar_deliberative_planning_status.md"
+      ],
+      "provenance": {
+        "paper_identity": "verified",
+        "openreview_found": "not_verified",
+        "official_repo_found": "no",
+        "official_project_page_found": "no",
+        "official_checkpoints_found": "no",
+        "official_license_verified": "no",
+        "provenance_strength": "paper_verified_artifacts_unverified"
+      }
     },
     "lets_verify_step_by_step": {
       "clone_url": null,

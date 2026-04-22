@@ -87,9 +87,9 @@ One of:
 
 ### Q* / Let’s Verify Step by Step / Rational Metareasoning
 
-- **Paths:** `external/qstar_deliberative_planning/README.md`, `external/lets_verify_step_by_step/README.md`, `external/rational_metareasoning_llm/README.md`.
+- **Paths:** `external/qstar_deliberative_planning/README.md`, `docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md`, `external/lets_verify_step_by_step/README.md`, `external/rational_metareasoning_llm/README.md`.
 - **Runnable comparator:** **No** reproducible adapter/validator bundle without speculative integration.
-- **Upgrade feasibility:** No conservative upgrade applied; upgrading would require pinned official code, license checks, and a matched evaluation contract. **Remain `discuss_only`.**
+- **Upgrade feasibility:** No conservative upgrade applied. Q* received a dedicated provenance hardening pass documenting canonical paper links and explicit negative findings (no verified official repo/artifacts); upgrading would require pinned official code, license checks, and a matched evaluation contract. **Remain `discuss_only`.**
 
 ### verifier_guided_search (internal)
 

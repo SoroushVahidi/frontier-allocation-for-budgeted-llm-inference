@@ -241,10 +241,14 @@ def _rows() -> list[dict[str, Any]]:
             artifact_backed_now=_exists("external/qstar_deliberative_planning/README.md"),
             official_resource_verified=False,
             primary_commands=[],
-            primary_paths=["external/qstar_deliberative_planning/README.md", "docs/main_baselines.md"],
+            primary_paths=[
+                "external/qstar_deliberative_planning/README.md",
+                "docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md",
+                "docs/main_baselines.md",
+            ],
             prior_overclaim_risk="Implying integrated runnable Q* baseline in this repository.",
-            safe_wording_now="Essential direct family target for framing; discuss-only until adapter exists.",
-            notes="No verified official repo wired; do not upgrade without reproducible integration.",
+            safe_wording_now="Essential direct-family conceptual neighbor; discuss-only with explicit provenance blockers.",
+            notes="No verified official repo/artifacts wired for exact paper; do not upgrade without reproducible integration contract.",
         )
     )
     rows.append(

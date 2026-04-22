@@ -89,7 +89,7 @@ Why:
 - no equally clean official integration path in the current repo state,
 - more likely to tempt overclaiming via an unofficial adapter.
 
-So Q* remains a **second-wave** or later baseline unless the official-code/provenance situation becomes much stronger.
+So Q* now remains a **provenance-hardened discuss-only** baseline with explicit blockers unless the official-code/provenance situation becomes much stronger.
 
 ## Practical strengthening order
 
@@ -97,7 +97,7 @@ Recommended order:
 1. **BEST-Route**
 2. **When To Solve / When To Verify**
 3. **ReST-MCTS*** (if stronger official import evidence becomes worth the added heaviness)
-4. **Q*** only after the repo has a clearly caveated unofficial-adapter or stronger provenance-backed path
+4. **Q*** only after verified official artifacts exist or a strictly caveated/auditable adapter contract is added
 
 ## Current paper-facing guidance
 
@@ -105,7 +105,7 @@ For manuscript-facing text right now:
 - treat `s1`, `TALE`, and `L1` as the strongest matched-substrate near-direct external comparisons,
 - treat `BEST-Route` as the first external adjacent official baseline to strengthen,
 - treat `when_solve_when_verify` as the next adjacent baseline most worth strengthening after BEST-Route,
-- and treat `Q*` as an important discuss-only or later-wave baseline unless its integration path becomes much stronger.
+- and treat `Q*` as an important discuss-only baseline with explicit provenance blockers unless its integration path becomes much stronger.
 
 ## Cross-links
 
@@ -113,6 +113,7 @@ Also see:
 - `CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`
 - `main_baselines.md`
 - `BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`
+- `QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md`
 - `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
 
 
