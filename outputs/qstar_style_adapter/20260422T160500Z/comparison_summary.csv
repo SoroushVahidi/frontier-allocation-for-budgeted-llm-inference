@@ -1,0 +1,5 @@
+baseline_id,method,dataset,seed,budget_actions,n_examples,accuracy,avg_actions,avg_expansions,avg_verifications,budget_exhaustion_rate,comparability_scope
+qstar_style_adapter,qstar_style_deliberative_search,openai/gsm8k,11,4,24,0.375,2.8333333333333335,2.5,0.3333333333333333,0.5,unofficial_caveated_adapter_only
+qstar_style_adapter,qstar_style_deliberative_search,openai/gsm8k,11,6,24,0.2916666666666667,3.0416666666666665,2.5,0.5416666666666666,0.20833333333333334,unofficial_caveated_adapter_only
+qstar_style_adapter,qstar_style_deliberative_search,openai/gsm8k,23,4,24,0.4583333333333333,2.5416666666666665,2.25,0.2916666666666667,0.375,unofficial_caveated_adapter_only
+qstar_style_adapter,qstar_style_deliberative_search,openai/gsm8k,23,6,24,0.5833333333333334,3.7916666666666665,2.9583333333333335,0.8333333333333334,0.4166666666666667,unofficial_caveated_adapter_only

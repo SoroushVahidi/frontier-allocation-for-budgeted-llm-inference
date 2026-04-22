@@ -135,3 +135,18 @@ Also see:
 
 - `docs/REST_MCTS_FINAL_STRENGTHENING_PASS_20260422T120000Z.md`
 - `outputs/rest_mcts_adjacent_integration/<run_id>/`
+
+## Q* reviewer-coverage adapter update (2026-04-22)
+
+A caveated runnable lane is now available strictly for reviewer-coverage support:
+
+- `qstar_style_adapter` via `configs/qstar_style_adapter_contract_v1.json` and `scripts/run_qstar_style_adapter.py`.
+
+This does **not** change the official Q* paper record classification:
+
+- `qstar_deliberative_planning` remains provenance-hardened `discuss_only` pending verified official artifacts.
+
+Use policy:
+- keep official Q* paper and unofficial adapter as separate rows,
+- label adapter rows as unofficial/caveated,
+- avoid any wording implying faithful or official reproduction.

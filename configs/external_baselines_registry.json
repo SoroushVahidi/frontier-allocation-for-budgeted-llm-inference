@@ -254,6 +254,27 @@
       "canonical_title": "Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence",
       "baseline_class": "ingredient_adjacent_boundary",
       "paper_phase_priority": "essential_framing"
+    },
+    "qstar_style_adapter": {
+      "clone_url": null,
+      "doc": "docs/QSTAR_STYLE_ADAPTER_20260422T160000Z.md",
+      "integration": "adapter_based",
+      "completeness_class": "adapter_based",
+      "blocker": "unofficial_caveated_adapter_not_official_qstar_reproduction",
+      "canonical_title": "Q*-style deliberative-search adapter (unofficial)",
+      "baseline_class": "direct_family_unofficial_adapter",
+      "paper_phase_priority": "reviewer_coverage_support",
+      "target_paper_url": "https://arxiv.org/abs/2406.14283",
+      "paper_pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2406.14283",
+      "contract": "configs/qstar_style_adapter_contract_v1.json",
+      "integration_runner": "scripts/run_qstar_style_adapter.py",
+      "status_artifacts": [
+        "outputs/qstar_style_adapter/<run_id>/status.json",
+        "outputs/qstar_style_adapter/<run_id>/summary.json",
+        "outputs/qstar_style_adapter/<run_id>/manifest.json"
+      ],
+      "guardrail": "keep_separate_from_official_qstar_paper_record"
     }
   },
   "completeness_taxonomy": [

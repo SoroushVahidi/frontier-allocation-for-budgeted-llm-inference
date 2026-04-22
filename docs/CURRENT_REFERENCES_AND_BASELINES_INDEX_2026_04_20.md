@@ -115,3 +115,15 @@ Use this index first when you need to answer:
 - `docs/EXTERNAL_ADJACENT_BASELINE_BUNDLE_20260422T011400Z.md`
 - `outputs/external_adjacent_baseline_bundle/20260422T011400Z/summary.md`
 - Regenerate: `python scripts/build_external_adjacent_baseline_bundle.py`
+
+## Q*-family coverage split (2026-04-22)
+
+For current paper-phase reviewer coverage, keep the Q*-family in two separate records:
+
+- **Official paper record:** `qstar_deliberative_planning` (discuss-only; provenance-hardened).
+- **Unofficial runnable comparator:** `qstar_style_adapter` (caveated adapter lane; not official reproduction).
+
+Canonical adapter references:
+- `configs/qstar_style_adapter_contract_v1.json`
+- `scripts/run_qstar_style_adapter.py`
+- `docs/QSTAR_STYLE_ADAPTER_20260422T160000Z.md`

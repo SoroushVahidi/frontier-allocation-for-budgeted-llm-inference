@@ -103,3 +103,6 @@ secrets.*
 
 !outputs/rest_mcts_adjacent_integration/
 !outputs/rest_mcts_adjacent_integration/**/*
+
+!outputs/qstar_style_adapter/
+!outputs/qstar_style_adapter/**/*
