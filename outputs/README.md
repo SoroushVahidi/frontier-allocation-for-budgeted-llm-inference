@@ -29,6 +29,12 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 ### 5. Current output-layer repair analysis
 - `current_failure_output_layer_repair_20260420/`
 
+
+### 6. External adjacent baseline canonical families
+- `best_route_runtime_stabilization/<run_id>/`
+- `when_solve_when_verify_adjacent_integration/<run_id>/`
+- `rest_mcts_adjacent_integration/<run_id>/`
+
 ## Historical or bounded paper-facing output families
 
 These are still useful, but they are not the default current source for the finalized default-model story:

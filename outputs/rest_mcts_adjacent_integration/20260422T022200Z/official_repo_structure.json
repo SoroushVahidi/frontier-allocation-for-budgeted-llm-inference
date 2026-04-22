@@ -1,0 +1,12 @@
+{
+  "official_repo_path": "/tmp/rest_mcts_upstream/ReST-MCTS",
+  "exists": true,
+  "layout_checks": {
+    "README.md": true,
+    "MCTS/task.py": true,
+    "evaluate.py": true,
+    "self_train/self_train_dpo.py": true,
+    "PRM/train_VM_mistral.py": true
+  },
+  "layout_ok": true
+}

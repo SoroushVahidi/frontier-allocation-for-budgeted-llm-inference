@@ -1,70 +1,71 @@
-# rest_mcts integration note (reviewer-defensible)
+# ReST-MCTS integration note (final stabilized adjacent lane)
 
-## Scope
+## Scope and status
 
-This note defines the conservative integration level used in this repository for **ReST-MCTS\***.
+This repo integrates **ReST-MCTS\*** as an **official adjacent** baseline with a contract-bound runnable lane.
 
-## Upstream artifacts audited
+- **Current classification:** `partial_runnable_adjacent`
+- **Control equivalence:** `adjacent` (not direct frontier-allocation equivalence)
+- **Primary lane:** contract-validated import + official repo layout verification + canonical artifact family export
 
-- Repo: https://github.com/THUDM/ReST-MCTS
-- README: https://github.com/THUDM/ReST-MCTS/blob/main/README.md
-- Paper: https://arxiv.org/abs/2406.03816
-- Project page: https://rest-mcts.github.io/
+## Official provenance set
 
-Upstream workflow shape (as documented upstream):
+- Official repo: https://github.com/THUDM/ReST-MCTS
+- Official project page: https://rest-mcts.github.io
+- NeurIPS 2024 page: https://proceedings.neurips.cc/paper_files/paper/2024/hash/76ec4dc30e9faaf0e4b6093eaa377218-Abstract-Conference.html
+- arXiv: https://arxiv.org/abs/2406.03816
+- PDF: https://arxiv.org/pdf/2406.03816.pdf
 
-1. bootstrap/train a process reward model (value model),
-2. run MCTS-guided trace generation (`MCTS/task.py`, `evaluate.py` in `mcts` mode, and generation scripts),
-3. run self-training for policy model updates (e.g., `self_train/self_train_dpo.py` plus related generation/vm_critic helpers),
-4. evaluate benchmark performance after self-training iterations.
+## Canonical contract
 
-## Integration decision in this repository
+- `configs/rest_mcts_adjacent_comparison_contract_v2.json`
 
-**Status: `partial_runnable` (official-code search/eval lane + verified import).**
+The contract defines:
+- official source mapping,
+- benchmark subset and required split,
+- declared budget/compute normalization fields,
+- model/path requirements,
+- required artifact family,
+- success criteria,
+- allowed vs disallowed claims.
 
-What is now unblocked:
+## Canonical scripts
 
-- Strict import validator:
-  - `scripts/verify_rest_mcts_import.py`
-- Canonical partial-runnable integration runner:
-  - `scripts/run_rest_mcts_partial_runnable_integration.py`
-- Canonical comparison contract:
-  - `configs/rest_mcts_adjacent_comparison_contract_v1.json`
-- Machine-readable status artifacts:
-  - `outputs/external_baseline_completeness/rest_mcts_status.json`
-  - `outputs/external_baseline_completeness/rest_mcts_status.md`
-  - `outputs/rest_mcts_partial_runnable_integration_<run_id>/`
+- Import/asset verifier: `scripts/verify_rest_mcts_import.py`
+- Adjacent runner: `scripts/run_rest_mcts_adjacent_integration.py`
+- Legacy wrapper: `scripts/run_rest_mcts_partial_runnable_integration.py`
 
-What is still intentionally not claimed:
+## Canonical output family
 
-- Direct in-repo reproduction of the full upstream ReST-MCTS training/evaluation stack.
-- Control-space equivalence between upstream process-reward-guided MCTS self-training and this repo's frontier/action-native controllers.
+- `outputs/rest_mcts_adjacent_integration/<run_id>/`
 
-## Import contract (conservative)
+Expected artifacts:
+- `status.json`
+- `comparison_readiness.json`
+- `summary.json`
+- `summary.md`
+- `manifest.json`
+- `config_snapshot.json`
+- `commands_snapshot.txt`
+- `comparison_ready_rows.csv`
 
-Required package files:
+## Runnable lane definition
 
-- `metadata.json`
-- `results.csv`
+Minimum stable lane for this phase:
+1. verify the contract-defined subset package,
+2. enforce `adjacent_only` comparability scope,
+3. verify official repo layout (if local path present/clone succeeds),
+4. export standardized artifacts for downstream reporting.
 
-Validator requires:
+This lane is intentionally conservative and robust for reviewer-defensible adjacent reporting.
 
-- explicit upstream workflow-stage declarations,
-- dataset/split consistency,
-- declared policy/value model families plus fixed search settings,
-- result rows containing `mcts` search mode with numeric sanity checks,
-- explicit `adjacent_only` comparability scope.
+## Explicit out-of-scope items
 
-This protocol enables reviewer-auditable adjacent comparisons without overclaiming direct reproduction.
+Not claimed in this phase:
+- full faithful in-repo reproduction of the complete ReST-MCTS self-training loop,
+- direct control-equivalent comparison to branch-level marginal budget-allocation methods,
+- unqualified benchmark SOTA claims from this adjacent lane.
 
 ## Manuscript-safe wording
 
-Safe now:
-
-- "ReST-MCTS is integrated via a validated adjacent import protocol."
-- "Imported ReST-MCTS outputs are used only in adjacent-comparison scope."
-
-Not safe now:
-
-- "ReST-MCTS is fully reproduced in this repository."
-- "ReST-MCTS is directly control-equivalent to frontier/action-native controllers."
+> ReST-MCTS* is integrated in this repository as an official adjacent baseline through a contract-validated, artifact-backed lane. We use it for adjacent-only comparison context with explicit scope guardrails, and we do not claim full in-repo faithful reproduction of the complete upstream self-training pipeline.

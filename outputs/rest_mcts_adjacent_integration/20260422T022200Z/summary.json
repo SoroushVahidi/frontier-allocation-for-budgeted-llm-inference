@@ -1,0 +1,8 @@
+{
+  "baseline": "rest_mcts",
+  "classification": "partial_runnable_adjacent",
+  "minimum_contract_met": true,
+  "official_repo_layout_ok": true,
+  "comparison_ready_rows": 2,
+  "output_dir": "outputs/rest_mcts_adjacent_integration/20260422T022200Z"
+}

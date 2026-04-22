@@ -72,11 +72,11 @@ At a high level:
 
 ## Current next baseline after this strengthening
 
-### 3. ReST-MCTS* (current next target)
+### 3. ReST-MCTS* (strengthened in this pass)
 
 **Why next:**
-- still official and relevant as a search-guided adjacent baseline,
-- currently import-validated but lacking the same standardized strengthened lane quality now established for BEST-Route and when_solve_when_verify.
+- official and relevant as a search-guided adjacent baseline,
+- now upgraded with a canonical contract v2, stable adjacent runner, and standardized artifact family.
 
 ## What should not be next
 
@@ -96,7 +96,7 @@ So Q* now remains a **provenance-hardened discuss-only** baseline with explicit 
 Recommended order:
 1. **BEST-Route**
 2. **When To Solve / When To Verify**
-3. **ReST-MCTS*** (if stronger official import evidence becomes worth the added heaviness)
+3. **ReST-MCTS*** (now strengthened to a stable adjacent contract lane)
 4. **Q*** only after verified official artifacts exist or a strictly caveated/auditable adapter contract is added
 
 ## Current paper-facing guidance
@@ -129,3 +129,9 @@ Also see:
 - Latest artifact family: `outputs/best_route_runtime_stabilization/<run_id>/`.
 - Report: `docs/BEST_ROUTE_RUNTIME_STABILIZATION_PASS_20260422T020000Z.md`.
 - Current safest classification remains **partial-runnable adjacent** (stronger than import-only, not full faithful reproduction).
+
+
+## ReST-MCTS final strengthening artifact
+
+- `docs/REST_MCTS_FINAL_STRENGTHENING_PASS_20260422T120000Z.md`
+- `outputs/rest_mcts_adjacent_integration/<run_id>/`

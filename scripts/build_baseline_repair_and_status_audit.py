@@ -142,7 +142,7 @@ def _rows() -> list[dict[str, Any]]:
             primary_paths=["configs/tale_official_adapter_v1.json", "docs/tale_baseline_integration.md"],
             prior_overclaim_risk="Omitting TALE vs TALE-PT variant separation when citing MODE B.",
             safe_wording_now="Validator requires tale_variant fields; still not direct reproduction of full upstream training.",
-            notes="",
+            notes="Stabilized canonical output family: outputs/rest_mcts_adjacent_integration/<run_id>/.",
         )
     )
     rows.append(
@@ -223,10 +223,10 @@ def _rows() -> list[dict[str, Any]]:
             repo_command_available=True,
             artifact_backed_now=_exists("scripts/verify_rest_mcts_import.py"),
             official_resource_verified=False,
-            primary_commands=["scripts/verify_rest_mcts_import.py"],
+            primary_commands=["scripts/verify_rest_mcts_import.py", "scripts/run_rest_mcts_adjacent_integration.py"],
             primary_paths=["docs/rest_mcts_integration.md", "external/rest_mcts/README.md"],
             prior_overclaim_risk="Upstream training + self-training loop implied as runnable in-repo.",
-            safe_wording_now="Clone + import validation only; no full ReST-MCTS training reproduction claim.",
+            safe_wording_now="Contract-bound adjacent lane with verified import + official layout checks; no full ReST-MCTS training reproduction claim.",
             notes="",
         )
     )
