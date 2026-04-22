@@ -6,6 +6,7 @@ This note introduces a manuscript-safe aggregate reporting layer for the strengt
 
 - BEST-Route
 - when_solve_when_verify
+- Let's Verify Step by Step
 - ReST-MCTS*
 
 It consolidates existing integration/status artifacts into one paper-facing bundle without changing any underlying baseline lane semantics.
@@ -48,6 +49,7 @@ python scripts/build_external_adjacent_baseline_bundle.py
 
 - `best_route_microsoft`: official, `import_validated`, `adjacent`.
 - `when_solve_when_verify`: official, `import_validated`, `adjacent`.
+- `lets_verify_step_by_step`: official, `import_validated`, `adjacent` with a stabilized `partial_runnable_adjacent` lane (`scripts/run_lets_verify_step_by_step_adjacent_integration.py`, contract v1, canonical artifacts) while full paper-stack reproduction remains out of scope.
 - `rest_mcts`: official, `import_validated`, `adjacent` with a stabilized `partial_runnable_adjacent` lane (`scripts/run_rest_mcts_adjacent_integration.py`, contract v2, canonical artifacts) while full self-training reproduction remains out of scope.
 
 ## Safe manuscript scope for this family
@@ -66,4 +68,4 @@ Out of scope now:
 
 ## Manuscript-safe paragraph (ready to reuse)
 
-> We report BEST-Route, When To Solve/When To Verify, and ReST-MCTS* as **official adjacent external baselines** with conservative, artifact-backed integration status. In this repository they are used under import-validated/partial-runnable adjacent protocols for reviewer-defensible comparison context, but they are not treated as direct control-equivalent substitutes for our branch-level marginal budget-allocation objective. We therefore keep these adjacent rows explicitly separated from near-direct matched-substrate MODE A baselines (s1/TALE/L1) and avoid full in-repo faithful-reproduction claims.
+> We report BEST-Route, When To Solve/When To Verify, Let's Verify Step by Step, and ReST-MCTS* as **official adjacent external baselines** with conservative, artifact-backed integration status. In this repository they are used under import-validated/partial-runnable adjacent protocols for reviewer-defensible comparison context, but they are not treated as direct control-equivalent substitutes for our branch-level marginal budget-allocation objective. We therefore keep these adjacent rows explicitly separated from near-direct matched-substrate MODE A baselines (s1/TALE/L1) and avoid full in-repo faithful-reproduction claims.

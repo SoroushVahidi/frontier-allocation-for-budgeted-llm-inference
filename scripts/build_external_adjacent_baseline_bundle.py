@@ -33,6 +33,14 @@ TARGET_BASELINES: list[dict[str, str]] = [
         "repo_command": "python scripts/run_when_solve_when_verify_adjacent_integration.py --import-config configs/when_solve_when_verify_official_import_v1.json --contract-config configs/when_solve_when_verify_adjacent_comparison_contract_v1.json",
     },
     {
+        "baseline_id": "lets_verify_step_by_step",
+        "display_name": "Let's Verify Step by Step",
+        "doc": "docs/lets_verify_step_by_step_integration.md",
+        "status_json": "outputs/external_baseline_completeness/lets_verify_step_by_step_status.json",
+        "integration_output_family": "outputs/lets_verify_step_by_step_adjacent_integration",
+        "repo_command": "python scripts/run_lets_verify_step_by_step_adjacent_integration.py --contract-config configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+    },
+    {
         "baseline_id": "rest_mcts",
         "display_name": "ReST-MCTS*",
         "doc": "docs/rest_mcts_integration.md",
@@ -119,6 +127,7 @@ def _build_markdown(summary: dict[str, Any]) -> str:
     lines.append("This bundle aggregates manuscript-safe status for the strengthened **official adjacent** baselines:")
     lines.append("- BEST-Route")
     lines.append("- when_solve_when_verify")
+    lines.append("- Let's Verify Step by Step")
     lines.append("- ReST-MCTS*")
     lines.append("")
     lines.append("These remain **adjacent** (not control-equivalent direct frontier-allocation baselines).")

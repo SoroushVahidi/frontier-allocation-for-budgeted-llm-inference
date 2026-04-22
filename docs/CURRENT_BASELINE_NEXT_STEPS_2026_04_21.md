@@ -25,7 +25,8 @@ Use the normalized v1 taxonomy from:
 At a high level:
 - **MODE A adapter-based near-direct:** `s1`, `TALE`, `L1`
 - **official/import-validated adjacent:** `BEST-Route`, `when_solve_when_verify`, `rest_mcts`, and similar adjacent imports
-- **discuss-only:** `Q*`, `Let's Verify Step by Step`, `Rational Metareasoning` and other framing/ingredient references without strong runnable integration
+- **discuss-only:** `Q*`, `Rational Metareasoning` and other framing/ingredient references without strong runnable integration
+- **newly strengthened adjacent partial-runnable lane:** `Let's Verify Step by Step` via PRM800K contract validation and canonical output artifacts
 
 ## Current next baseline to strengthen first
 
@@ -135,6 +136,11 @@ Also see:
 
 - `docs/REST_MCTS_FINAL_STRENGTHENING_PASS_20260422T120000Z.md`
 - `outputs/rest_mcts_adjacent_integration/<run_id>/`
+
+## Let's Verify Step by Step final strengthening artifact
+
+- `docs/LETS_VERIFY_STEP_BY_STEP_FINAL_STRENGTHENING_PASS_20260422T180000Z.md`
+- `outputs/lets_verify_step_by_step_adjacent_integration/<run_id>/`
 
 ## Q* reviewer-coverage adapter update (2026-04-22)
 

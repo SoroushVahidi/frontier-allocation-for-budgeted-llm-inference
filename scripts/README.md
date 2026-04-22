@@ -92,6 +92,8 @@ This file is the runnable-code front door for the repository.
 | `generate_external_baseline_integration_report.py` | External baseline integration report |
 | `build_external_adjacent_baseline_bundle.py` | Aggregate manuscript-safe bundle for BEST-Route / when_solve_when_verify / ReST-MCTS* adjacent baseline status |
 | `run_rest_mcts_adjacent_integration.py` | Canonical ReST-MCTS adjacent contract runner with standardized artifact family export |
+| `run_lets_verify_step_by_step_adjacent_integration.py` | Canonical Let's Verify Step by Step adjacent contract runner with PRM800K public-asset checks and standardized artifacts |
+| `verify_lets_verify_step_by_step_import.py` | Strict validator for Let's Verify Step by Step adjacent import contract packages |
 | `list_external_baselines.py` | Print external baseline registry |
 
 ## Historical/provenance scripts

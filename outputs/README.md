@@ -33,6 +33,7 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 ### 6. External adjacent baseline canonical families
 - `best_route_runtime_stabilization/<run_id>/`
 - `when_solve_when_verify_adjacent_integration/<run_id>/`
+- `lets_verify_step_by_step_adjacent_integration/<run_id>/`
 - `rest_mcts_adjacent_integration/<run_id>/`
 
 ## Historical or bounded paper-facing output families

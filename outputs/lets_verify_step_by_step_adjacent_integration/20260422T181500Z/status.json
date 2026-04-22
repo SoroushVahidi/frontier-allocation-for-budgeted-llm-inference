@@ -1,0 +1,32 @@
+{
+  "generated_utc": "2026-04-22T02:49:22.457205+00:00",
+  "baseline_key": "lets_verify_step_by_step",
+  "canonical_title": "Let's Verify Step by Step",
+  "classification": "partial_runnable_adjacent",
+  "control_equivalence": "adjacent",
+  "integration_kind": "official_adjacent_contract_lane",
+  "official_sources": {
+    "canonical_paper_url": "https://arxiv.org/abs/2305.20050",
+    "canonical_pdf_url": "https://arxiv.org/pdf/2305.20050.pdf",
+    "doi": "https://doi.org/10.48550/arXiv.2305.20050",
+    "official_repo": "https://github.com/openai/prm800k"
+  },
+  "stable_subsets_verified": [
+    "math_test_prm800k_import_contract"
+  ],
+  "stable_subsets_failed": [],
+  "official_repo_check": {
+    "official_repo_path": "/tmp/lets_verify_upstream/prm800k",
+    "exists": true,
+    "layout_checks": {
+      "README.md": true,
+      "prm800k/data/phase1_train.jsonl": true,
+      "prm800k/data/phase1_test.jsonl": true,
+      "prm800k/data/phase2_test.jsonl": true,
+      "prm800k/math_splits/test.jsonl": true,
+      "prm800k/eval/eval.py": true,
+      "prm800k/grading/grader.py": true
+    },
+    "layout_ok": true
+  }
+}
