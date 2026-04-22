@@ -45,6 +45,7 @@ These strengthen comparisons for **fixed test-time compute**, **verifier vs gene
 | s1: Simple test-time scaling (EMNLP 2025) | Test-time budget forcing / thinking-length scaling | `MODE_A_COMPLETE_MODE_B_PARTIAL` (v1: MODE A `adapter_based`, MODE B `import_validated`) | https://github.com/simplescaling/s1 | **Apache-2.0** |
 | TALE (Token-Budget-Aware LLM Reasoning) | Per-instance token-budget-aware reasoning | `MODE_A_COMPLETE_MODE_B_PARTIAL` (v1: MODE A `adapter_based`, MODE B `import_validated`) | https://github.com/GeniusHTX/TALE | Unknown (re-check upstream) |
 | L1 (LCPO length control) | RL-trained controllable reasoning length (Exact/Max) | `MODE_A_COMPLETE_MODE_B_PARTIAL` (v1: MODE A `adapter_based`, MODE B `import_validated`) | https://github.com/cmu-l3/l1 | **Apache-2.0** |
+| Learning How Hard to Think (OpenReview 6qUUgw9bAZ) | Input-adaptive compute allocation / adaptive best-of-k | `ADAPTER_BASED` (MODE A paper-inspired matched-substrate comparator) | Official public repo not clearly verified from OpenReview page | N/A |
 
 Per-baseline notes:
 
@@ -59,6 +60,7 @@ Per-baseline notes:
 - `external/s1_simple_test_time_scaling/README.md`
 - `external/tale_token_budget_aware_reasoning/README.md`
 - `external/l1_length_control_rl/README.md`
+- `external/learning_how_hard_to_think/README.md`
 
 ---
 

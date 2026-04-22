@@ -1,0 +1,73 @@
+{
+  "version": "learning_how_hard_to_think_mode_a_v1",
+  "mode": "mode_a_paper_inspired_matched_substrate_adapter",
+  "provenance": {
+    "paper_title": "Learning How Hard to Think: Input-Adaptive Allocation of LM Computation",
+    "paper_url": "https://openreview.net/forum?id=6qUUgw9bAZ",
+    "source_of_truth": "openreview_page_primary",
+    "official_public_code_verified": false,
+    "official_public_code_notes": "No clearly attributable official public repository was verified from the OpenReview page during this integration pass."
+  },
+  "model": {
+    "use_openai_api": false,
+    "provider": "openai",
+    "name": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180,
+    "timeout_seconds": 45
+  },
+  "dataset": {
+    "name": "openai/gsm8k",
+    "subset_size": 24,
+    "seeds": [
+      11,
+      23
+    ]
+  },
+  "budget": {
+    "grid": [
+      5,
+      7
+    ],
+    "unit": "actions_per_example",
+    "control_variable": "per-example candidate count k under fixed matched total action budget",
+    "matching_policy": "Convert action budget to candidate-slot budget via candidate_action_cap, allocate slots by policy, then evaluate BestOfN with max_actions = k * candidate_action_cap."
+  },
+  "adapter": {
+    "algorithm": "adaptive_best_of_k_allocator",
+    "candidate_action_cap": 2,
+    "min_k": 1,
+    "max_k": 4,
+    "difficulty_estimator": {
+      "type": "heuristic_text_complexity",
+      "length_weight": 0.55,
+      "digit_weight": 0.2,
+      "symbol_weight": 0.15,
+      "multi_step_weight": 0.1
+    },
+    "weighted_allocator": {
+      "temperature": 0.7,
+      "mix_alpha": 0.75
+    },
+    "sanity_bundle_policies": [
+      "learning_how_hard_to_think_mode_a",
+      "uniform_matched_compute",
+      "fixed_k_matched_compute",
+      "easy_to_hard_ordering",
+      "hard_to_easy_ordering"
+    ],
+    "faithful_core": [
+      "input_adaptive_compute_allocation",
+      "adaptive_best_of_k_style_candidate_count",
+      "fixed_or_matched_total_compute_budget"
+    ],
+    "known_approximations": [
+      "uses_in_repo_simulated_generator_or_local_model_interface",
+      "uses_heuristic_difficulty_predictor_instead_of_paper_specific_predictor",
+      "not_an_official_reproduction"
+    ]
+  },
+  "output": {
+    "root_dir": "outputs/learning_how_hard_to_think_mode_a"
+  }
+}

@@ -213,3 +213,21 @@ The repository now keeps a strict two-lane Q*-family split:
 Table guardrail:
 - If reported, label as **"Q*-style adapter (unofficial, caveated)"**.
 - Do not place this lane in tables that imply official Q* reproduction.
+
+
+## Learning How Hard to Think integration status (2026-04 MODE A adapter)
+
+*Learning How Hard to Think: Input-Adaptive Allocation of LM Computation* is integrated with an explicit two-lane conservative split:
+
+- **Official paper record (`learning_how_hard_to_think`)**: `discuss_only` until an official public code repository is clearly verified from the primary OpenReview source.
+- **Runnable comparator lane (`learning_how_hard_to_think_mode_a`)**: `adapter_based` paper-inspired matched-substrate MODE A baseline via adaptive best-of-k-style allocation under fixed/matched budget.
+- Includes a required sanity bundle against `uniform_matched_compute`, `fixed_k_matched_compute`, `easy_to_hard_ordering`, and `hard_to_easy_ordering` under identical budget accounting.
+
+Implementation references:
+- `external/learning_how_hard_to_think/README.md`
+- `docs/learning_how_hard_to_think_integration.md`
+- `configs/learning_how_hard_to_think_mode_a_v1.json`
+- `scripts/run_learning_how_hard_to_think_mode_a.py`
+
+Methodological caveat:
+- Keep wording as **paper-inspired matched-substrate comparator**; do not claim official code-level reproduction.
