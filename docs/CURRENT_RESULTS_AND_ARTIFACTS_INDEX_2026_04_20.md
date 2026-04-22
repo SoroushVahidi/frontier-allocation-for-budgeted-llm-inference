@@ -9,17 +9,24 @@ It is meant to answer:
 - which artifacts support the current promoted method line,
 - and where collaborators should look first when they want evidence rather than planning notes.
 
+Surface clarification:
+- Manuscript-facing internal winner on the canonical manuscript-facing matched surface: `strict_f3`.
+- Broader operational default on the broader strict-phased surface: `strict_gate1_cap_k6`.
+- Canonical decision package: `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`.
+
 ## Fastest artifact path
 
 If you want the shortest current evidence path, read in this order:
-1. `CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-2. `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-3. `FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
-4. `CURRENT_SAFE_CLAIMS.md`
-5. `NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
-6. `HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`
-7. `BUDGET_AWARE_FAMILY_CAP_EVAL_20260421T162842Z.md`
-8. `ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
+1. `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
+2. `MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`
+3. `CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+4. `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+5. `FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+6. `CURRENT_SAFE_CLAIMS.md`
+7. `NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`
+8. `HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`
+9. `BUDGET_AWARE_FAMILY_CAP_EVAL_20260421T162842Z.md`
+10. `ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
 
 ## Highest-value current result bundles
 
@@ -28,7 +35,7 @@ If you want the shortest current evidence path, read in this order:
 - `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
 
 Use this when you want the decisive broader evaluated default-model result.
-Current conclusion: `strict_gate1_cap_k6` is the current broad default promoted model on the evaluated surface.
+Current conclusion: `strict_gate1_cap_k6` is the broader operational default on the evaluated broader strict-phased surface.
 
 ### 2. Canonical strict_gate1_cap_k6-vs-best exact-loss statistics bundle
 - `docs/CANONICAL_HUNDRED_STRICT_GATE1_CAP_K6_VS_BEST_FAILURE_STATISTICS_20260421T160120Z.md`
@@ -83,7 +90,7 @@ The strongest current artifact-backed story is now:
 - the dominant residual remains upstream tree-entry / branch-family-collapse failure,
 - strict-phased hard-coverage experiments were the cleanest intervention family for that bottleneck,
 - capped-family follow-up results identified `strict_gate1_cap_k6` as the strongest capped finalist,
-- and the final broader strict-phased decision pass selected **`strict_gate1_cap_k6`** as the current broad default promoted model on the evaluated surface.
+- and the final broader strict-phased decision pass selected **`strict_gate1_cap_k6`** as the broader operational default on that evaluated broader surface.
 - a subsequent budget-aware K(b) formula sweep found fixed `K=6` still best overall on the tested budget grid, so no default replacement is currently justified.
 
 ## Current machine-readable output families worth preserving
@@ -112,6 +119,8 @@ The strongest current artifact-backed story is now:
 ## Cross-links
 
 Also see:
+- `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
+- `MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`
 - `CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
 - `CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
 - `FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`

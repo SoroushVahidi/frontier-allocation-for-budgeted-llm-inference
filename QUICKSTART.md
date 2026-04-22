@@ -15,12 +15,14 @@ This repository is **not** currently centered on the older binary revise-routing
 ## Read in this order
 
 1. `docs/CANONICAL_START_HERE.md`
-2. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-3. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-4. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
-5. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-6. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
-7. `scripts/CANONICAL_START_HERE.md`
+2. `docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
+3. `docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`
+4. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+5. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+6. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+7. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
+8. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
+9. `scripts/CANONICAL_START_HERE.md`
 
 ## Canonical first-run command block
 
@@ -35,11 +37,10 @@ Then review:
 - `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
 - `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
 
-## Current promoted default
+## Canonical method-status clarification
 
-The current broad default promoted model on the evaluated surface is:
-
-- `strict_gate1_cap_k6`
+- Manuscript-facing internal winner on the canonical manuscript-facing matched surface: `strict_f3`
+- Broader operational default on the broader strict-phased surface: `strict_gate1_cap_k6`
 
 ## Use these artifact families first
 

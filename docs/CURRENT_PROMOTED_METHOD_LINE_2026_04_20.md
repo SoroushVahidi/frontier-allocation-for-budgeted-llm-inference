@@ -7,7 +7,11 @@ This note gives the shortest canonical answer to:
 - why it is promoted,
 - what problem it is trying to solve,
 - what evidence currently supports it,
-- and what the current refinement discipline has now selected as the default model.
+- and what the current refinement discipline has now selected as the broader operational default model.
+
+Surface note:
+- This note tracks promoted line + broader operational defaulting.
+- For manuscript-facing internal winner status on the canonical manuscript-facing matched surface, see `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md` (`strict_f3`).
 
 ## Current promoted line
 
@@ -29,7 +33,7 @@ for forced shallow balanced coverage over root families.
 
 Under that stricter law, the broader default-decision pass selected:
 
-> **`strict_gate1_cap_k6` as the current broad default promoted model on the evaluated surface.**
+> **`strict_gate1_cap_k6` as the broader operational default on the evaluated broader strict-phased surface.**
 
 ## Why this line is promoted
 
@@ -76,11 +80,11 @@ It is **not** yet safe to claim that this line is:
 - broadly superior to all strong external baselines,
 - or fully closed without broader independent confirmation and stronger external-baseline maturity.
 
-But it **is** now safe to say that the repository has selected a current broad default promoted model for the evaluated strict-phased surface.
+But it **is** now safe to say that the repository has selected a broader operational default for the evaluated broader strict-phased surface.
 
-## Current default promoted model inside the line
+## Current broader operational default model inside the line
 
-The current broad default promoted model is:
+The current broader operational default model is:
 - **`strict_gate1_cap_k6`**
 
 The strongest nearby anchors remain:

@@ -19,22 +19,24 @@ This repository is **not** currently centered on the old binary revise-routing p
 
 The current bounded repository stance is:
 
-> **Keep the broad diversity/aggregation family as the main line, study early tree-shape control under a strict phased F1 -> F2 -> F3 law, and treat `strict_gate1_cap_k6` as the current broad default promoted model on the evaluated broader surface.**
+> **Keep the broad diversity/aggregation family as the main line, study early tree-shape control under a strict phased F1 -> F2 -> F3 law, treat `strict_gate1_cap_k6` as the broader operational default on the broader strict-phased surface, and treat `strict_f3` as the manuscript-facing internal winner on the canonical manuscript-facing matched surface.**
 
 The repository is now in a **default-model consolidation and evidence-strengthening phase**, not a broad nearby-experiment phase.
 
 ## Read these first
 
 1. [`CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-2. [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-3. [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-4. [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-5. [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
-6. [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-7. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-8. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
-9. [`REPO_MAP.md`](REPO_MAP.md)
-10. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
+2. [`INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`](INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md)
+3. [`MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`](MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md)
+4. [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
+5. [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
+6. [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
+7. [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
+8. [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
+9. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
+10. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
+11. [`REPO_MAP.md`](REPO_MAP.md)
+12. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
 
 ## Canonical first-run command block
 

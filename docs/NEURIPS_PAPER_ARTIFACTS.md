@@ -19,6 +19,11 @@ The canonical paper pipeline for the finalized manuscript figure package now rea
 - `outputs/component_ablation_strict_f3_paper_surface/20260422T180445Z/`
 - `outputs/paper_plot_data/figure1_problem_setup.json` (Figure 1 schematic input; unchanged)
 
+Method-status contract for these manuscript artifacts:
+- manuscript-facing internal winner on canonical manuscript-facing matched surface: `strict_f3`
+- broader operational default on broader strict-phased surface (separate contract): `strict_gate1_cap_k6`
+- decision authority: `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
+
 ## Generated figure outputs
 
 Main-paper figures (PDF + PNG):

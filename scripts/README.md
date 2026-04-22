@@ -7,6 +7,8 @@ This file is the runnable-code front door for the repository.
 ## Read this first
 
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
+- Canonical internal method decision package: [`../docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`](../docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md)
+- One-minute disambiguation note: [`../docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`](../docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md)
 - Current strict-phased status: [`../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](../docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
 - Current experiment-family index: [`../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](../docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
 - Current code entry path: [`CANONICAL_START_HERE.md`](CANONICAL_START_HERE.md)
@@ -129,8 +131,8 @@ Historical entry points are documented in:
 ## Paper-facing script note
 
 There are two ablation surfaces on purpose:
-- `run_integrated_controller_component_ablation.py`: strict-phased default surface around the promoted broad default line.
-- `run_manuscript_surface_component_ablation.py`: manuscript-facing fairness/matched surface around `strict_f3`.
+- `run_integrated_controller_component_ablation.py`: broader strict-phased operational surface around the broader operational default line (`strict_gate1_cap_k6`).
+- `run_manuscript_surface_component_ablation.py`: canonical manuscript-facing matched internal surface around the manuscript-facing internal winner (`strict_f3`).
 
 Keep these surfaces separated in interpretation and manuscript claims.
 

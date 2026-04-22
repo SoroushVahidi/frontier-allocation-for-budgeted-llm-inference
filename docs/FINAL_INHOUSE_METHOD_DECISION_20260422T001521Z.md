@@ -67,6 +67,11 @@ Top ranks:
 ## Safe repository-facing conclusion
 Among non-external repository-designed methods on the strongest current canonical matched surface, `strict_f3` is the single best in-house method and should be the repository’s one canonical “our method”.
 
+Scope clarification:
+- This winner statement is for the manuscript-facing/canonical matched internal ranking surface.
+- It does not replace the broader operational default decision on the broader strict-phased surface (`strict_gate1_cap_k6`).
+- See `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md` for the unified two-surface interpretation contract.
+
 ## Exact wording to use from now on
 **From now on, our method means `strict_f3`.**
 

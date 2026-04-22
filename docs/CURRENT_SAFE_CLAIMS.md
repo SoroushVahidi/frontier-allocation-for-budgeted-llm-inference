@@ -54,6 +54,13 @@ Every central claim in the paper should map cleanly to one of the following supp
 
 If a claim does not map to one of these, it is probably not safe to present as established.
 
+## Method naming safety rule
+
+- Always attach a surface label when naming an internal winner/default.
+- Manuscript-facing matched internal surface winner: `strict_f3`.
+- Broader strict-phased operational default: `strict_gate1_cap_k6`.
+- Canonical authority: `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`.
+
 ## Current controller-family claims (2026-04-17 update)
 
 Safe to claim now:

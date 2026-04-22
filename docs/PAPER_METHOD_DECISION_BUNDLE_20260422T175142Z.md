@@ -33,6 +33,14 @@
 - Recommendation: **paper should center strict_f3**
 - Reason: strict_f3 remains stronger on the decision surface and is at least as strong as the top fair near-direct external comparator.
 
+## Surface contract note
+
+This bundle is manuscript-facing and does not redefine the broader operational default decision on the broader strict-phased surface.
+
+- Manuscript-facing internal winner (this matched surface): `strict_f3`
+- Broader operational default (different surface): `strict_gate1_cap_k6`
+- Canonical cross-surface decision package: `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
+
 ## Artifact paths
 - `outputs/paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3/20260422T175142Z/`
 - `docs/PAPER_METHOD_DECISION_BUNDLE_20260422T175142Z.md`

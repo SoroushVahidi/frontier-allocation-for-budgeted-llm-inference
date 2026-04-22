@@ -4,8 +4,12 @@
 
 This note is the shortest current answer to:
 - what the strict-phased hard-coverage experiments changed,
-- what the repository's final default promoted model is on the current broader evaluated surface,
+- what the repository's broader operational default is on the current broader evaluated strict-phased surface,
 - and what still remains open after that default decision.
+
+Scope note:
+- This file is about the broader operational strict-phased surface.
+- For manuscript-facing internal method identity on the canonical manuscript-facing matched surface, see `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md` (`strict_f3`).
 
 ## Current status in one paragraph
 
@@ -37,15 +41,15 @@ This also makes the experiments easier to interpret scientifically: improvements
 The decisive broader strict-phased default-decision pass concluded that:
 - `strict_gate1_cap_k6` outperformed the other serious finalists on the evaluated broader surface,
 - including uncapped `strict_gate1`, `strict_gate2`, `strict_f3`, and `strict_f2`,
-- and should therefore be treated as the repository's current broad default promoted model.
+- and should therefore be treated as the repository's broader operational default on this broader strict-phased surface.
 
 Primary evidence artifact:
 - `FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
 - `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
 
-## Current default model
+## Current broader operational default model
 
-### Broad default promoted model
+### Broader operational default model
 - **`strict_gate1_cap_k6`**
 
 ### Why it won
@@ -71,16 +75,16 @@ These remain useful ablations and comparison anchors, but they are not the curre
 
 ### Finalized now
 - the repository's strict phased F1 → F2 → F3 law as the correct experimental control discipline
-- the current broad default promoted model on the evaluated broader surface: **`strict_gate1_cap_k6`**
+- the broader operational default on the evaluated broader strict-phased surface: **`strict_gate1_cap_k6`**
 
 ### Not fully closed yet
 - broader independent confirmation beyond the currently evaluated broader surface
 - stronger external-baseline completeness closure
 - broader real-model evidence and final manuscript-facing external comparison maturity
 
-## Current safest repository-facing conclusion
+## Current safest broader-surface conclusion
 
-> **Strict phased shallow coverage is now the correct experimental protocol, and `strict_gate1_cap_k6` is the repository's current broad default promoted model on the evaluated broader strict-phased surface.**
+> **Strict phased shallow coverage is now the correct experimental protocol, and `strict_gate1_cap_k6` is the repository's current broader operational default on the evaluated broader strict-phased surface.**
 
 ## Current reading path
 
