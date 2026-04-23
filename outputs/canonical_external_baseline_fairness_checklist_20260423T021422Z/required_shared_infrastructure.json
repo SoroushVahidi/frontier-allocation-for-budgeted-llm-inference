@@ -1,0 +1,32 @@
+{
+  "shared_infrastructure_version": "v1",
+  "required_components": [
+    "canonical matched-surface runner interface",
+    "uniform compute ledger (attempts + verifier/tool/controller overhead)",
+    "shared answer extraction and final aggregation module",
+    "dataset eligibility manifest with verifiable-task tags",
+    "multi-seed evaluation harness with fixed prompts/decoding",
+    "baseline registry entries with provenance + fairness tier"
+  ],
+  "per_baseline_blockers": {
+    "zhai_constrained_budget_selector": [
+      "registry entry missing",
+      "contract config missing",
+      "audited runner missing"
+    ],
+    "dipa_difficulty_proxy_allocator": [
+      "official lane remains discuss-only",
+      "main-table contract needs per-attempt verifiable-task lock",
+      "audited multi-seed artifact bundle missing for upgraded lane"
+    ],
+    "compute_optimal_tts": [
+      "paper\u2194repo provenance unresolved",
+      "matched-accounting adapter protocol missing"
+    ],
+    "bilal_adaptive_ttc": [
+      "only note-level presence",
+      "shared PRM/tool/search infra not established",
+      "runner + contract + auditable outputs missing"
+    ]
+  }
+}
