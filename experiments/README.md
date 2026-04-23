@@ -1,33 +1,26 @@
-# Experiments
+# Experiments directory guide
 
-This directory contains experiment implementation code plus lightweight result notes. Large result trees belong under **`outputs/`** (gitignored).
+This directory contains implementation modules and compact experiment/result notes.
 
-## What is actually here (current state)
+## Role
 
-Core modules:
+- Keep experiment logic close to method components.
+- Preserve lightweight result-note provenance for local runs.
+- Avoid treating single note files here as canonical manuscript truth by default.
 
-- `controllers.py`: controller policies (greedy, best-of-n, beam, adaptive variants).
-- `branching.py`: branch generators (simulation + API-backed pathways).
-- `scoring.py`: branch scoring utilities.
-- `data.py`: pilot/example data utilities.
-- `hf_datasets.py`: dataset sampling/adapter helpers.
-- `branch_scorer_v3.py`: learned branch-scorer simulation/evaluation helpers.
+## Interpretation
 
-Result/diagnostic notes:
+- **Canonical interpretation lives in `docs/`**, especially `docs/CANONICAL_START_HERE.md`, `docs/PAPER_SOURCE_OF_TRUTH.md`, and `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`.
+- Files in `experiments/` are implementation/provenance support unless explicitly promoted by canonical docs.
 
-- `branch_scorer_v3_result_note.md`
-- `branch_scorer_v4_result_note.md`
-- `adaptive_min_expand_note.md`
-- `eptree_baseline_note.md`
-- `pilot_*.md`
+## Conventions
 
-## How this maps to the two paper tracks
+- Prefer clear, surface-aware naming.
+- Keep deterministic assumptions explicit in matching notes.
+- Do not delete older notes that still carry provenance; mark superseded status in docs instead.
 
-- Old manuscript track (binary revise-routing): mostly orchestrated from `scripts/` and manuscript docs.
-- New track (cross-controller frontier allocation): uses these modules heavily via `scripts/run_cross_strategy_frontier_allocation.py` and learned-scorer scripts.
+## Related navigation
 
-## Reproducibility notes
-
-- Do not commit raw model outputs or large data files.
-- Prefer running through scripts in `scripts/` and configs in `configs/`.
-- Write run artifacts under **`outputs/`** only (legacy singular `output/` is deprecated and gitignored).
+- `scripts/README.md` for runnable entry points.
+- `outputs/README.md` for artifact-family interpretation.
+- `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md` for experiment-family context.
