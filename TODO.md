@@ -1,35 +1,27 @@
-# TODO
+# TODO (current maintenance backlog)
 
-First 10 concrete tasks for this project.
+This backlog intentionally reflects the current NeurIPS-facing consolidation phase.
 
----
+## Must keep current
 
-- [ ] **1. Literature review: test-time compute scaling**
-  Read and take notes on Snell et al. (2024), OpenAI o1 report, DeepSeek-R1, and Brown et al. (2024). Add notes to `references/papers/`.
+- [ ] Keep front-door docs synchronized: `README.md`, `QUICKSTART.md`, `docs/CANONICAL_START_HERE.md`, `docs/REPO_MAP.md`, `docs/CANONICAL_INSTALL_AND_DEV.md`, `scripts/CANONICAL_START_HERE.md`.
+- [ ] Keep manuscript claim boundaries synchronized with canonical artifact families (`docs/PAPER_SOURCE_OF_TRUTH.md`, `outputs/README.md`).
+- [ ] Keep the `strict_f3` (manuscript matched surface) vs `strict_gate1_cap_k6` (broader operational surface) distinction explicit everywhere.
 
-- [ ] **2. Literature review: process reward models**
-  Read Lightman et al. (2023) and Math-Shepherd (Wang et al., 2024). Summarize relevance to value estimation in `references/papers/`.
+## Engineering hygiene
 
-- [ ] **3. Literature review: tree search for LLM reasoning**
-  Read Tree of Thoughts (Yao et al., 2023) and RAP (Hao et al., 2023). Note connections to this project's formulation.
+- [ ] Maintain lightweight checks (`make smoke`, `make health`, `make test`, `make check`) as low-friction defaults.
+- [ ] Extend unit tests only for stable utility logic (avoid brittle tests around volatile exploratory scripts).
+- [ ] Keep dependency files (`requirements*.txt`, `pyproject.toml`) consistent and minimal.
 
-- [ ] **4. Refine the problem formulation**
-  Based on the literature, update `docs/problem_statement.md` with a cleaner formal model. Decide on budget unit and tree vs. graph structure.
+## Documentation debt (low-risk)
 
-- [ ] **5. Identify the key baseline**
-  Determine the primary comparison point: uniform allocation, best-of-N, or beam search? Justify in `docs/research_plan.md`.
+- [ ] Mark superseded notes as such rather than deleting provenance-important files.
+- [ ] Reduce duplicate navigation language when updating canonical docs.
+- [ ] Keep `docs/PAPER_BASELINE_HONESTY_STATUS.md` and `docs/PAPER_OPEN_GAPS_AND_RISKS.md` aligned with latest fairness-boundary docs.
 
-- [ ] **6. Set up GSM8K evaluation harness**
-  Implement a minimal script to evaluate a model on GSM8K with a fixed token budget. Add to `experiments/`.
+## Explicitly out of scope for this TODO
 
-- [ ] **7. Implement uniform allocation baseline**
-  Implement uniform compute allocation as a baseline strategy. Evaluate on GSM8K.
-
-- [ ] **8. Draft the formal model**
-  Write a first draft of the formal problem model in `theory/model.md`, including notation, assumptions, and objective.
-
-- [ ] **9. Survey bandit literature for connections**
-  Read Audibert & Bubeck (2010) on best-arm identification. Assess whether the budget allocation problem reduces to a known bandit problem.
-
-- [ ] **10. Define matched-budget evaluation protocol**
-  Write a clear protocol for matched-budget comparisons in `experiments/README.md`. Ensure all future experiments follow this protocol.
+- Rewriting historical experimental claims.
+- Promoting supportive artifacts to canonical headline evidence without a canonical decision-doc update.
+- Changing scientific conclusions without new artifact-backed evidence.

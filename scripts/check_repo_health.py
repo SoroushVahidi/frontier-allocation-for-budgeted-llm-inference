@@ -20,18 +20,23 @@ if str(REPO_ROOT) not in sys.path:
 
 REQUIRED_PATHS = [
     REPO_ROOT / "README.md",
+    REPO_ROOT / "QUICKSTART.md",
     REPO_ROOT / "CONTRIBUTING.md",
+    REPO_ROOT / "TODO.md",
     REPO_ROOT / "pyproject.toml",
     REPO_ROOT / "requirements.txt",
     REPO_ROOT / "requirements-dev.txt",
     REPO_ROOT / "Makefile",
-    REPO_ROOT / "docs" / "README.md",
+    REPO_ROOT / "docs" / "CANONICAL_START_HERE.md",
+    REPO_ROOT / "docs" / "CANONICAL_EXPERIMENT_STACK.md",
+    REPO_ROOT / "docs" / "REPO_MAP.md",
     REPO_ROOT / "docs" / "CANONICAL_INSTALL_AND_DEV.md",
-    REPO_ROOT / "docs" / "PAPER_START_HERE.md",
     REPO_ROOT / "docs" / "PAPER_SOURCE_OF_TRUTH.md",
-    REPO_ROOT / "docs" / "PAPER_ARTIFACT_MAP.md",
-    REPO_ROOT / "docs" / "PAPER_REPRODUCTION_CHECKLIST.md",
-    REPO_ROOT / "scripts" / "README.md",
+    REPO_ROOT / "docs" / "PAPER_BASELINE_HONESTY_STATUS.md",
+    REPO_ROOT / "docs" / "PAPER_OPEN_GAPS_AND_RISKS.md",
+    REPO_ROOT / "scripts" / "CANONICAL_START_HERE.md",
+    REPO_ROOT / "scripts" / "paper" / "run_all_neurips_paper_artifacts.py",
+    REPO_ROOT / "scripts" / "paper" / "run_all_neurips_artifacts.py",
     REPO_ROOT / "outputs" / "README.md",
     REPO_ROOT / "experiments" / "frontier_router.py",
     REPO_ROOT / "tests" / "test_frontier_router.py",
@@ -55,25 +60,25 @@ def main() -> int:
             print(f"- {path}")
         return 1
 
-    failed_imports: list[tuple[str, str]] = []
+    failed_imports: list[tuple[str, str, str]] = []
     for name in REQUIRED_IMPORTS:
         try:
             importlib.import_module(name)
         except Exception as exc:
-            failed_imports.append((name, f"{type(exc).__name__}: {exc}"))
+            tb = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+            failed_imports.append((name, f"{type(exc).__name__}: {exc}", tb))
 
     if failed_imports:
         print("Failed imports:")
-        for name, detail in failed_imports:
+        for name, detail, tb in failed_imports:
             print(f"- {name} ({detail})")
-            print("  Traceback:")
-            tb_lines = traceback.format_exc().splitlines()
-            for line in tb_lines[-12:]:
+            print("  Traceback (tail):")
+            for line in tb.splitlines()[-12:]:
                 print(f"  {line}")
         return 1
 
     print("Repository health check: OK")
-    print("Canonical files present, contributor front door is intact, and core import path works.")
+    print("Canonical front door, artifact runners, and core import paths are intact.")
     return 0
 
 
