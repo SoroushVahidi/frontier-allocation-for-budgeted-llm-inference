@@ -1,0 +1,5 @@
+baseline_id,placement,fairness_eligibility_tier,downgrade_reason,main_table_eligible_now
+zhai_constrained_budget_selector,main_table_candidate_after_contract_and_runner,candidate_main_table_cleanest_target,currently_not_present_in_registry_docs_or_runners,yes
+dipa_difficulty_proxy_allocator,main_table_conditional_else_appendix,conditional_main_table,official code unverified and current repo lane is paper-inspired adapter,yes
+compute_optimal_tts,appendix_only,appendix_only,paper-repo mapping unresolved + no fair matched adapter protocol,no
+bilal_adaptive_ttc,adjacent_only,adjacent_only,only paper-level note exists; no registered runner/contract/artifacts,no

@@ -1,0 +1,18 @@
+{
+  "version": "v1",
+  "canonical_counted_budget_unit": "generation_attempt_equivalent_on_shared_backbone_prompt_decoding",
+  "rules": [
+    "All methods must map their budget to generation_attempt_equivalent (GAE) units.",
+    "Verifier/tool/reward-model invocations must be converted to GAE via fixed cost multipliers and included.",
+    "Controller scoring overhead above negligible threshold must be counted.",
+    "Answer extraction and final aggregation must use repository canonical rules.",
+    "Any offline calibration/training must be explicitly declared and either amortized or marked non-comparable."
+  ],
+  "matched_surface_requirements": {
+    "backbone_model": "fixed",
+    "prompt_template": "fixed",
+    "decoding_settings": "fixed",
+    "sampling_settings": "fixed",
+    "success_metric": "fixed"
+  }
+}

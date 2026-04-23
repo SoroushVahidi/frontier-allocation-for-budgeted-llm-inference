@@ -1,0 +1,11 @@
+violation_code,applies_to,severity,trigger,required_fix
+budget_unit_mismatch_without_normalization,all,high,budget/accounting object differs and normalization rule absent,normalize to shared counted-compute unit
+answer_extraction_rule_mismatch,all,high,different extraction regex/verifier without controlled contract,use canonical extractor or dual-reported controlled ablation
+uncontrolled_final_selection,all,high,"final aggregation differs (e.g., best-of-n vs first-correct) without matched rule",lock shared final aggregation contract
+asymmetric_verifier_or_reward_model_access,"bilal_adaptive_ttc,zhai_constrained_budget_selector",high,method receives verifier/RM unavailable to others,share identical verifier/RM stack or downgrade to adjacent-only
+controller_overhead_inconsistently_counted,all,medium,selector/proxy/tool overhead counted for some baselines but not others,publish uniform overhead policy and recompute
+hidden_offline_calibration_cost,"zhai_constrained_budget_selector,compute_optimal_tts",high,offline optimization/sweeps omitted from budget statement,declare and amortize offline cost or mark not comparable
+backbone_prompt_temperature_mismatch,all,high,backbone/prompt/temperature differ across compared rows,re-run on canonical matched surface
+endpoint_metric_mismatch,all,high,different success metrics across methods,single endpoint metric contract
+tool_or_search_overhead_ignored,bilal_adaptive_ttc,high,search/tool calls not counted,count all external calls in compute ledger
+whole_stack_change_not_just_allocator,"compute_optimal_tts,bilal_adaptive_ttc",high,method modifies inference stack beyond allocation under fixed substrate,instantiate mechanism as matched-substrate adapter or keep appendix/adjacent

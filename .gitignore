@@ -112,3 +112,6 @@ secrets.*
 !outputs/l1_feasibility_and_fairness_pass_*/**/*
 !outputs/canonical_matched_surface_regime_breakdown_*/
 !outputs/canonical_matched_surface_regime_breakdown_*/**/*
+
+!outputs/canonical_external_baseline_fairness_checklist_*/
+!outputs/canonical_external_baseline_fairness_checklist_*/**/*
