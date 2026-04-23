@@ -40,6 +40,7 @@ Scan-first map for manuscript artifact usage and regeneration provenance.
 | Artifact family | Use policy |
 |---|---|
 | `outputs/*adjacent_integration*/` | appendix/supportive; adjacent import-validated baselines |
+| `outputs/extended_budget_frontier_<run_id>/` | appendix/robustness-only extended budgets (10/12/14); do not replace canonical 4/6/8 main artifacts without explicit promotion |
 | `outputs/hundred_*` strict-phased sweeps | supportive mechanism evidence unless promoted explicitly |
 | `outputs/hard_max_family_expansions_*` | supportive ablation / mechanism explanation |
 | `outputs/imported_methodology_frontier_eval/` | historical/provenance unless explicitly scoped |
