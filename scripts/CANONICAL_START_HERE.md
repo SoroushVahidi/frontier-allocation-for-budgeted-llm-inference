@@ -2,6 +2,8 @@
 
 Fastest script-level entry path aligned with current canonical docs.
 
+Companion manuscript snapshot: `docs/MANUSCRIPT_SUPPORT_DASHBOARD.md`.
+
 ## First, keep method-surface scope explicit
 
 - Manuscript-facing matched-surface internal winner: `strict_f3`

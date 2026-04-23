@@ -21,6 +21,7 @@ This page defines which files are safe to cite for manuscript claims.
 - `FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`
 - `EXTERNAL_BASELINE_PAPER_READINESS_DECISION_PACKAGE.md`
 - `PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md`
+- `MAIN_TABLE_EXTERNAL_BASELINE_FAIRNESS_AUDIT_20260423T205134Z.md`
 
 ## Canonical artifact families (paper-facing)
 
@@ -48,6 +49,11 @@ Use these for ablations, mechanism discussion, or appendix context unless promot
 - `archive/`
 - superseded dated docs not linked by canonical front-door pages
 - older bounded surfaces explicitly marked as legacy/historical in `outputs/README.md` or `docs/HISTORICAL_AND_ARCHIVE_POLICY.md`
+
+## Canonical status notes
+
+- Conditional-risk variant remains supportive/appendix-level and does not replace the canonical manuscript-facing method lock (`strict_f3`).
+- External main-table baseline fairness audit outcome: no material issue found on the current near-direct main-table comparison surface.
 
 ## Claim discipline
 
