@@ -1,0 +1,14 @@
+{
+  "artifact_family": "l1_feasibility_and_fairness_pass",
+  "timestamp": "20260423T005455Z",
+  "classification": "not_worth_strengthening_now",
+  "required_files": [
+    "manifest.json",
+    "config_snapshot.json",
+    "feasibility_report.json",
+    "feasibility_report.csv",
+    "notes.txt"
+  ],
+  "optional_files_created": [],
+  "scope": "bounded feasibility and fairness closure only"
+}

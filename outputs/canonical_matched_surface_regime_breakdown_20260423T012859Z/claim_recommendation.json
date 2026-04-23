@@ -1,0 +1,28 @@
+{
+  "timestamp_utc": "2026-04-23T01:29:50.742210+00:00",
+  "source_surface": "outputs/matched_surface_multiseed_main_comparison_20260423T002000Z",
+  "question": "Should the manuscript make regime-qualified claims on canonical matched surface?",
+  "answer": "yes_with_qualification",
+  "core_finding": "strict_f3 exceeds the strongest available external comparator mean accuracy in all 9 dataset\u00d7budget regimes on this canonical matched surface.",
+  "all_dataset_budget_regimes_positive_delta_vs_best_external": true,
+  "num_dataset_budget_regimes": 9,
+  "mean_delta_across_regimes": 0.09629629629629628,
+  "weakest_regime": {
+    "dataset": "HuggingFaceH4/aime_2024",
+    "budget": 6,
+    "strict_f3_mean_accuracy": 0.575,
+    "best_external_method": "tale",
+    "best_external_mean_accuracy": 0.5333333333333333,
+    "delta_strict_f3_minus_best_external": 0.04166666666666663
+  },
+  "strongest_regime": {
+    "dataset": "HuggingFaceH4/MATH-500",
+    "budget": 8,
+    "strict_f3_mean_accuracy": 0.675,
+    "best_external_method": "s1",
+    "best_external_mean_accuracy": 0.48333333333333334,
+    "delta_strict_f3_minus_best_external": 0.1916666666666667
+  },
+  "qualification": "Seed-level deltas are not uniformly positive inside every regime, so claims should be phrased as regime-mean dominance on this surface, not per-seed universal dominance.",
+  "paper_recommendation": "Use regime-qualified statements (dataset\u00d7budget means) in manuscript-facing text and explicitly note seed-level variability."
+}

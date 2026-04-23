@@ -1,0 +1,6 @@
+Canonical matched-surface regime breakdown timestamp: 20260423T012859Z
+Scope: bounded manuscript-facing regime-qualified claim check (no new experimentation).
+Result: yes_with_qualification
+strict_f3 exceeds the strongest available external comparator mean accuracy in all 9 dataset×budget regimes on this canonical matched surface.
+Seed-level deltas are not uniformly positive inside every regime, so claims should be phrased as regime-mean dominance on this surface, not per-seed universal dominance.
+Use regime-qualified statements (dataset×budget means) in manuscript-facing text and explicitly note seed-level variability.

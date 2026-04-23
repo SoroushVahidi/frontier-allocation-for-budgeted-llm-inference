@@ -108,3 +108,7 @@ secrets.*
 !outputs/qstar_style_adapter/**/*
 !outputs/matched_surface_multiseed_main_comparison_*/
 !outputs/matched_surface_multiseed_main_comparison_*/**/*
+!outputs/l1_feasibility_and_fairness_pass_*/
+!outputs/l1_feasibility_and_fairness_pass_*/**/*
+!outputs/canonical_matched_surface_regime_breakdown_*/
+!outputs/canonical_matched_surface_regime_breakdown_*/**/*
