@@ -1,0 +1,67 @@
+{
+  "blocked_methods": [],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "methods_requested": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f2",
+    "l1_max",
+    "tale",
+    "s1",
+    "l1_exact",
+    "zhai_cpo_mode_a"
+  ],
+  "methods_runnable": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f2",
+    "l1_max",
+    "tale",
+    "s1",
+    "l1_exact",
+    "zhai_cpo_mode_a"
+  ],
+  "pairwise_significance": [
+    {
+      "ci95_high_diff": 0.04907407407407405,
+      "ci95_low_diff": -0.030555555555555558,
+      "mean_accuracy_diff_a_minus_b": 0.004629629629629613,
+      "method_a": "strict_f3",
+      "method_b": "strict_gate1_cap_k6",
+      "n_seed_pairs": 6,
+      "permutation_pvalue_two_sided": 0.9040959040959041,
+      "status": "ok"
+    },
+    {
+      "ci95_high_diff": 0.18611111111111112,
+      "ci95_low_diff": 0.08148148148148145,
+      "mean_accuracy_diff_a_minus_b": 0.13703703703703704,
+      "method_a": "strict_f3",
+      "method_b": "l1_max",
+      "n_seed_pairs": 6,
+      "permutation_pvalue_two_sided": 0.03796203796203796,
+      "status": "ok"
+    }
+  ],
+  "seeds": [
+    11,
+    23,
+    37,
+    41,
+    53,
+    67
+  ],
+  "strict_f3_still_wins_on_mean": true,
+  "strict_rerun_of_manuscript_matched_surface": true,
+  "surface_id": "canonical_full_method_ranking_20260421T212948Z",
+  "winner_by_mean_accuracy": "strict_f3"
+}

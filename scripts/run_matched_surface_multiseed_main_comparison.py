@@ -53,6 +53,7 @@ METHOD_RUNTIME_MAP = {
     "tale": "external_tale_prompt_budgeting",
     "s1": "external_s1_budget_forcing",
     "l1_exact": "external_l1_exact",
+    "zhai_cpo_mode_a": "external_zhai_cpo_mode_a",
 }
 
 
@@ -114,6 +115,7 @@ def run_observed(method_short: str, runtime_name: str, dataset: str, seed: int, 
         include_external_s1_baseline=True,
         include_external_tale_baseline=True,
         include_external_l1_baseline=True,
+        include_external_zhai_cpo_baseline=True,
     )
     if runtime_name not in specs:
         raise KeyError(runtime_name)
@@ -240,7 +242,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     seeds = [int(x.strip()) for x in args.seeds.split(",") if x.strip()]
-    methods_requested = ["strict_f3", "strict_gate1_cap_k6", "strict_f2", "l1_max", "tale", "s1", "l1_exact"]
+    methods_requested = ["strict_f3", "strict_gate1_cap_k6", "strict_f2", "l1_max", "tale", "s1", "l1_exact", "zhai_cpo_mode_a"]
 
     out_dir = REPO_ROOT / f"outputs/matched_surface_multiseed_main_comparison_{args.timestamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -256,6 +258,7 @@ def main() -> None:
         include_external_s1_baseline=True,
         include_external_tale_baseline=True,
         include_external_l1_baseline=True,
+        include_external_zhai_cpo_baseline=True,
     )
 
     methods_runnable = []

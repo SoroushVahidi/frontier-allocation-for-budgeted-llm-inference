@@ -1,0 +1,26 @@
+{
+  "artifact_family": "canonical_external_baseline_closure",
+  "timestamp": "20260424T000020Z",
+  "input_dir": "outputs/matched_surface_multiseed_main_comparison_20260423T235900Z",
+  "source_files": {
+    "raw_case_results": "outputs/matched_surface_multiseed_main_comparison_20260423T235900Z/raw_case_results.csv",
+    "readiness_matrix": "docs/external_baseline_paper_readiness_decision_matrix.json",
+    "fairness_presence_audit": "outputs/canonical_external_baseline_fairness_checklist_20260423T021422Z/baseline_presence_audit.csv"
+  },
+  "main_table_externals": [
+    "l1_exact",
+    "l1_max",
+    "s1",
+    "tale",
+    "zhai_cpo_mode_a"
+  ],
+  "zhai_integration": {
+    "integrated": true,
+    "label": "MODE A matched-substrate adapter (not full upstream reproduction)"
+  },
+  "dipa_status": {
+    "integrated_in_surface": false,
+    "decision": "appendix_only",
+    "reason": "query-level global-budget adapter lane not equivalent to per-case matched-surface accounting"
+  }
+}
