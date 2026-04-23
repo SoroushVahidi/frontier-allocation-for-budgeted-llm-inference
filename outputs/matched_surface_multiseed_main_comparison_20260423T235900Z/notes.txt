@@ -1,0 +1,6 @@
+Surface: canonical_full_method_ranking_20260421T212948Z
+This is a strict rerun of the manuscript-facing matched contract (same datasets/budgets/protocol, larger seed set).
+Requested methods: strict_f3, strict_gate1_cap_k6, strict_f2, l1_max, tale, s1, l1_exact, zhai_cpo_mode_a
+Runnable methods: strict_f3, strict_gate1_cap_k6, strict_f2, l1_max, tale, s1, l1_exact, zhai_cpo_mode_a
+Blocked methods: none
+Paired significance uses paired permutation test on per-seed mean-accuracy deltas (two-sided).

@@ -1,0 +1,322 @@
+[
+  {
+    "method": "l1_exact",
+    "baseline_key": "l1_length_control_rl",
+    "status_bucket": "main_table_fair_near_direct",
+    "is_main_table": 1,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 0,
+    "rationale": "Matched per-case contract; same dataset/budget/seed/extraction/accounting."
+  },
+  {
+    "method": "l1_max",
+    "baseline_key": "l1_length_control_rl",
+    "status_bucket": "main_table_fair_near_direct",
+    "is_main_table": 1,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 0,
+    "rationale": "Matched per-case contract; same dataset/budget/seed/extraction/accounting."
+  },
+  {
+    "method": "s1",
+    "baseline_key": "s1_simple_test_time_scaling",
+    "status_bucket": "main_table_fair_near_direct",
+    "is_main_table": 1,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 0,
+    "rationale": "Matched per-case contract; same dataset/budget/seed/extraction/accounting."
+  },
+  {
+    "method": "strict_f2",
+    "baseline_key": "",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "No baseline taxonomy mapping."
+  },
+  {
+    "method": "strict_f3",
+    "baseline_key": "",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "No baseline taxonomy mapping."
+  },
+  {
+    "method": "strict_gate1_cap_k6",
+    "baseline_key": "",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "No baseline taxonomy mapping."
+  },
+  {
+    "method": "tale",
+    "baseline_key": "tale_token_budget_aware_reasoning",
+    "status_bucket": "main_table_fair_near_direct",
+    "is_main_table": 1,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 0,
+    "rationale": "Matched per-case contract; same dataset/budget/seed/extraction/accounting."
+  },
+  {
+    "method": "zhai_cpo_mode_a",
+    "baseline_key": "zhai_constrained_budget_selector",
+    "status_bucket": "main_table_fair_near_direct",
+    "is_main_table": 1,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 0,
+    "rationale": "Matched per-case contract; same dataset/budget/seed/extraction/accounting."
+  },
+  {
+    "method": "dipa_mode_a",
+    "baseline_key": "training_free_difficulty_proxies_mode_a",
+    "status_bucket": "appendix_only",
+    "is_main_table": 0,
+    "is_appendix": 1,
+    "is_adjacent_only": 0,
+    "is_blocked": 0,
+    "rationale": "Training-free difficulty proxy lane remains adapter/query-level and not case-level matched-equivalent."
+  },
+  {
+    "method": "best_route_microsoft",
+    "baseline_key": "best_route_microsoft",
+    "status_bucket": "adjacent_only",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 1,
+    "is_blocked": 0,
+    "rationale": "adjacent comparator; non-equivalent control space"
+  },
+  {
+    "method": "cascade_routing",
+    "baseline_key": "cascade_routing",
+    "status_bucket": "adjacent_only",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 1,
+    "is_blocked": 0,
+    "rationale": "adjacent comparator; non-equivalent control space"
+  },
+  {
+    "method": "lets_verify_step_by_step",
+    "baseline_key": "lets_verify_step_by_step",
+    "status_bucket": "adjacent_only",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 1,
+    "is_blocked": 0,
+    "rationale": "adjacent comparator; non-equivalent control space"
+  },
+  {
+    "method": "mob_majority_of_bests",
+    "baseline_key": "mob_majority_of_bests",
+    "status_bucket": "adjacent_only",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 1,
+    "is_blocked": 0,
+    "rationale": "adjacent comparator; non-equivalent control space"
+  },
+  {
+    "method": "openr",
+    "baseline_key": "openr",
+    "status_bucket": "adjacent_only",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 1,
+    "is_blocked": 0,
+    "rationale": "adjacent comparator; non-equivalent control space"
+  },
+  {
+    "method": "rest_mcts",
+    "baseline_key": "rest_mcts",
+    "status_bucket": "adjacent_only",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 1,
+    "is_blocked": 0,
+    "rationale": "adjacent comparator; non-equivalent control space"
+  },
+  {
+    "method": "tree_plv",
+    "baseline_key": "tree_plv",
+    "status_bucket": "adjacent_only",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 1,
+    "is_blocked": 0,
+    "rationale": "adjacent comparator; non-equivalent control space"
+  },
+  {
+    "method": "when_solve_when_verify",
+    "baseline_key": "when_solve_when_verify",
+    "status_bucket": "adjacent_only",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 1,
+    "is_blocked": 0,
+    "rationale": "adjacent comparator; non-equivalent control space"
+  },
+  {
+    "method": "adaptive_test_time_compute_allocation_training_free_proxies",
+    "baseline_key": "adaptive_test_time_compute_allocation_training_free_proxies",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "best_arm_identification_fixed_budget",
+    "baseline_key": "best_arm_identification_fixed_budget",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "compute_optimal_tts",
+    "baseline_key": "compute_optimal_tts",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "conformal_thinking",
+    "baseline_key": "conformal_thinking",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "learning_how_hard_to_think",
+    "baseline_key": "learning_how_hard_to_think",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "llm_tree_search_waterhorse",
+    "baseline_key": "llm_tree_search_waterhorse",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "mcts_llm_community",
+    "baseline_key": "mcts_llm_community",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "pgts",
+    "baseline_key": "pgts",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "qstar_deliberative_planning",
+    "baseline_key": "qstar_deliberative_planning",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "direct-family framing reference only (no verified runnable official stack)"
+  },
+  {
+    "method": "rational_metareasoning_llm",
+    "baseline_key": "rational_metareasoning_llm",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "scaling_automated_process_verifiers",
+    "baseline_key": "scaling_automated_process_verifiers",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "blocked or discuss-only reference"
+  },
+  {
+    "method": "conformal_thinking_mode_a",
+    "baseline_key": "conformal_thinking_mode_a",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "unofficial or adapter-only lane"
+  },
+  {
+    "method": "efficient_contextual_llm_cascades",
+    "baseline_key": "efficient_contextual_llm_cascades",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "adjacent comparator with weak current artifact evidence"
+  },
+  {
+    "method": "learning_how_hard_to_think_mode_a",
+    "baseline_key": "learning_how_hard_to_think_mode_a",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "paper-inspired MODE A adapter only; no audited run artifacts yet"
+  },
+  {
+    "method": "qstar_style_adapter",
+    "baseline_key": "qstar_style_adapter",
+    "status_bucket": "blocked",
+    "is_main_table": 0,
+    "is_appendix": 0,
+    "is_adjacent_only": 0,
+    "is_blocked": 1,
+    "rationale": "unofficial or adapter-only lane"
+  }
+]

@@ -1,0 +1,33 @@
+method,baseline_key,status_bucket,is_main_table,is_appendix,is_adjacent_only,is_blocked,rationale
+l1_exact,l1_length_control_rl,main_table_fair_near_direct,1,0,0,0,Matched per-case contract; same dataset/budget/seed/extraction/accounting.
+l1_max,l1_length_control_rl,main_table_fair_near_direct,1,0,0,0,Matched per-case contract; same dataset/budget/seed/extraction/accounting.
+s1,s1_simple_test_time_scaling,main_table_fair_near_direct,1,0,0,0,Matched per-case contract; same dataset/budget/seed/extraction/accounting.
+strict_f2,,blocked,0,0,0,1,No baseline taxonomy mapping.
+strict_f3,,blocked,0,0,0,1,No baseline taxonomy mapping.
+strict_gate1_cap_k6,,blocked,0,0,0,1,No baseline taxonomy mapping.
+tale,tale_token_budget_aware_reasoning,main_table_fair_near_direct,1,0,0,0,Matched per-case contract; same dataset/budget/seed/extraction/accounting.
+zhai_cpo_mode_a,zhai_constrained_budget_selector,main_table_fair_near_direct,1,0,0,0,Matched per-case contract; same dataset/budget/seed/extraction/accounting.
+dipa_mode_a,training_free_difficulty_proxies_mode_a,appendix_only,0,1,0,0,Training-free difficulty proxy lane remains adapter/query-level and not case-level matched-equivalent.
+best_route_microsoft,best_route_microsoft,adjacent_only,0,0,1,0,adjacent comparator; non-equivalent control space
+cascade_routing,cascade_routing,adjacent_only,0,0,1,0,adjacent comparator; non-equivalent control space
+lets_verify_step_by_step,lets_verify_step_by_step,adjacent_only,0,0,1,0,adjacent comparator; non-equivalent control space
+mob_majority_of_bests,mob_majority_of_bests,adjacent_only,0,0,1,0,adjacent comparator; non-equivalent control space
+openr,openr,adjacent_only,0,0,1,0,adjacent comparator; non-equivalent control space
+rest_mcts,rest_mcts,adjacent_only,0,0,1,0,adjacent comparator; non-equivalent control space
+tree_plv,tree_plv,adjacent_only,0,0,1,0,adjacent comparator; non-equivalent control space
+when_solve_when_verify,when_solve_when_verify,adjacent_only,0,0,1,0,adjacent comparator; non-equivalent control space
+adaptive_test_time_compute_allocation_training_free_proxies,adaptive_test_time_compute_allocation_training_free_proxies,blocked,0,0,0,1,blocked or discuss-only reference
+best_arm_identification_fixed_budget,best_arm_identification_fixed_budget,blocked,0,0,0,1,blocked or discuss-only reference
+compute_optimal_tts,compute_optimal_tts,blocked,0,0,0,1,blocked or discuss-only reference
+conformal_thinking,conformal_thinking,blocked,0,0,0,1,blocked or discuss-only reference
+learning_how_hard_to_think,learning_how_hard_to_think,blocked,0,0,0,1,blocked or discuss-only reference
+llm_tree_search_waterhorse,llm_tree_search_waterhorse,blocked,0,0,0,1,blocked or discuss-only reference
+mcts_llm_community,mcts_llm_community,blocked,0,0,0,1,blocked or discuss-only reference
+pgts,pgts,blocked,0,0,0,1,blocked or discuss-only reference
+qstar_deliberative_planning,qstar_deliberative_planning,blocked,0,0,0,1,direct-family framing reference only (no verified runnable official stack)
+rational_metareasoning_llm,rational_metareasoning_llm,blocked,0,0,0,1,blocked or discuss-only reference
+scaling_automated_process_verifiers,scaling_automated_process_verifiers,blocked,0,0,0,1,blocked or discuss-only reference
+conformal_thinking_mode_a,conformal_thinking_mode_a,blocked,0,0,0,1,unofficial or adapter-only lane
+efficient_contextual_llm_cascades,efficient_contextual_llm_cascades,blocked,0,0,0,1,adjacent comparator with weak current artifact evidence
+learning_how_hard_to_think_mode_a,learning_how_hard_to_think_mode_a,blocked,0,0,0,1,paper-inspired MODE A adapter only; no audited run artifacts yet
+qstar_style_adapter,qstar_style_adapter,blocked,0,0,0,1,unofficial or adapter-only lane

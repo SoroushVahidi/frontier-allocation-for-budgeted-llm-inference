@@ -1,0 +1,6 @@
+contract_dimension,value
+datasets,"HuggingFaceH4/MATH-500,HuggingFaceH4/aime_2024,openai/gsm8k"
+budgets_actions,"4,6,8"
+seeds,"11,23,37,41,53,67"
+answer_extraction,canonicalize_answer + choose_repair_answer
+compute_accounting,"actions, expansions, verifications matched per-case"

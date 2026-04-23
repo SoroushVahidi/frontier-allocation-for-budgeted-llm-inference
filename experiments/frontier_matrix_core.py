@@ -122,6 +122,7 @@ def build_frontier_strategies(
     tale_token_budget_per_question_char: float = 0.75,
     tale_token_per_action: float = 64.0,
     include_external_l1_baseline: bool = False,
+    include_external_zhai_cpo_baseline: bool = False,
     include_selective_sc_hybrid_methods: bool = False,
     include_broad_diversity_aggregation_methods: bool = False,
     include_marginal_coverage_diversity_methods: bool = False,
@@ -320,6 +321,21 @@ def build_frontier_strategies(
             token_per_action=l1_token_per_action,
             prompt_style=l1_prompt_style,
             method_name="external_l1_max",
+        )
+    if include_external_zhai_cpo_baseline:
+        specs["external_zhai_cpo_mode_a"] = AdaptiveController(
+            generator_factory(),
+            scorer,
+            budget,
+            high_threshold=0.70,
+            low_threshold=0.40,
+            max_branches=3,
+            allow_verify=True,
+            min_expansions_before_prune=1,
+            adaptive_min_expand=True,
+            verify_exploration_floor=1,
+            budget_guard_prune_floor=0.35,
+            method_name="external_zhai_cpo_mode_a",
         )
     if include_selective_sc_hybrid_methods:
         specs["intermediate_trap_aware_near_tie_v1"] = IntermediateTrapAwareNearTieController(

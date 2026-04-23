@@ -1,0 +1,3 @@
+method_a,method_b,status,n_seed_pairs,mean_accuracy_diff_a_minus_b,ci95_low_diff,ci95_high_diff,permutation_pvalue_two_sided
+strict_f3,strict_gate1_cap_k6,ok,6,0.004629629629629613,-0.030555555555555558,0.04907407407407405,0.9040959040959041
+strict_f3,l1_max,ok,6,0.13703703703703704,0.08148148148148145,0.18611111111111112,0.03796203796203796
