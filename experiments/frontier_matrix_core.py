@@ -1123,6 +1123,68 @@ def build_frontier_strategies(
             method_name="strict_f3_ablation_upstream_only_core_v1",
             **strict_f3_upstream_cfg,
         )
+        strict_f3_conditional_early_cap_cfg = dict(strict_f3_base_cfg)
+        strict_f3_conditional_early_cap_cfg.update(
+            {
+                "enable_hard_max_family_expansions_cap": True,
+                "hard_max_family_expansions_base_cap": 2,
+                "hard_max_family_expansions_relax_cap": 6,
+                "hard_max_family_expansions_relax_cap_high": 6,
+                "hard_max_family_expansions_conditional_early_window_actions": 6,
+                "hard_max_family_expansions_conditional_risk_family_share_trigger": 0.60,
+                "hard_max_family_expansions_conditional_risk_consecutive_run_trigger": 3,
+                "hard_max_family_expansions_conditional_min_rival_maturity_expansions": 2,
+            }
+        )
+        specs["strict_f3_conditional_early_risk_cap_k2_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="conditional_early_risk_cap",
+            method_name="strict_f3_conditional_early_risk_cap_k2_v1",
+            **strict_f3_conditional_early_cap_cfg,
+        )
+        specs["strict_f3_conditional_early_risk_cap_k2_rival_maturation_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            hard_max_family_expansions_relax_mode="conditional_early_risk_cap_with_rival_maturation",
+            method_name="strict_f3_conditional_early_risk_cap_k2_rival_maturation_v1",
+            **strict_f3_conditional_early_cap_cfg,
+        )
+        strict_f3_conditional_sensitivity: list[tuple[str, dict[str, Any]]] = [
+            (
+                "strict_f3_conditional_early_risk_cap_k2_window5_v1",
+                {"hard_max_family_expansions_conditional_early_window_actions": 5},
+            ),
+            (
+                "strict_f3_conditional_early_risk_cap_k2_window7_v1",
+                {"hard_max_family_expansions_conditional_early_window_actions": 7},
+            ),
+            (
+                "strict_f3_conditional_early_risk_cap_k2_share55_v1",
+                {"hard_max_family_expansions_conditional_risk_family_share_trigger": 0.55},
+            ),
+            (
+                "strict_f3_conditional_early_risk_cap_k2_share65_v1",
+                {"hard_max_family_expansions_conditional_risk_family_share_trigger": 0.65},
+            ),
+            (
+                "strict_f3_conditional_early_risk_cap_k3_v1",
+                {"hard_max_family_expansions_base_cap": 3},
+            ),
+        ]
+        for name, overrides in strict_f3_conditional_sensitivity:
+            cfg = dict(strict_f3_conditional_early_cap_cfg)
+            cfg.update(overrides)
+            specs[name] = GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                hard_max_family_expansions_relax_mode="conditional_early_risk_cap",
+                method_name=name,
+                **cfg,
+            )
         specs[
             "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1_low_marginal_gain_cooldown_v1"
         ] = GlobalDiversityAggregationController(
