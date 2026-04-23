@@ -114,3 +114,19 @@ Script naming note:
 - Canonical runner: `python scripts/paper/run_all_neurips_paper_artifacts.py`
 - Compatibility shim: `scripts/paper/run_all_neurips_artifacts.py` (forwards to canonical runner)
 - See cleanup report: `docs/PAPER_ARTIFACT_CLEANUP_REPORT_2026_04_21.md`
+
+
+## Extended-budget robustness (appendix-only extension; non-canonical main replacement)
+
+A conservative extension path is available for budgets `10,12,14` without altering canonical 4/6/8 paper artifacts:
+
+- Runner: `python scripts/run_extended_budget_frontier_robustness.py --run-id <run_id>`
+- Example output family: `outputs/extended_budget_frontier_<run_id>/`
+- Optional appendix plot-data packager:
+  - `python scripts/paper/build_appendix_extended_budget_frontier_plot_data.py --extended-bundle-dir outputs/extended_budget_frontier_<run_id>`
+- Optional appendix plot-data outputs:
+  - `outputs/paper_plot_data/appendix_extended_budget_frontier.csv`
+  - `outputs/paper_plot_data/appendix_extended_budget_method_ranking.csv`
+  - `outputs/paper_plot_data/appendix_extended_budget_head_to_head.csv`
+
+Policy: this path is robustness/appendix support only and does not overwrite canonical main-paper 4/6/8 figure/table artifacts unless explicitly promoted later.
