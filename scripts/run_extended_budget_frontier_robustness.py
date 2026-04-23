@@ -225,9 +225,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run extended-budget (10/12/14) manuscript-surface robustness bundle.")
     parser.add_argument("--run-id", default=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
     parser.add_argument("--budgets", default=",".join(str(x) for x in BUDGETS))
+    parser.add_argument("--seeds", default=",".join(str(x) for x in SEEDS))
     args = parser.parse_args()
 
     budgets = _parse_int_list(args.budgets)
+    seeds = _parse_int_list(args.seeds)
     out_dir = REPO_ROOT / "outputs" / f"extended_budget_frontier_{args.run_id}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -254,7 +256,7 @@ def main() -> None:
 
     per_case_rows: list[dict[str, Any]] = []
     for dataset in DATASETS:
-        for seed in SEEDS:
+        for seed in seeds:
             examples = load_pilot_examples(dataset, SUBSET_SIZE, seed)
             for budget in budgets:
                 for example in examples:
@@ -380,7 +382,7 @@ def main() -> None:
         "source_surface_reference": "outputs/canonical_full_method_ranking_20260421T212948Z",
         "evaluation_contract": {
             "datasets": DATASETS,
-            "seeds": SEEDS,
+            "seeds": seeds,
             "budgets": budgets,
             "subset_size_per_dataset_seed": SUBSET_SIZE,
             "methods_requested": [m for m, _ in METHOD_SPECS],
@@ -393,7 +395,8 @@ def main() -> None:
     note_lines = [
         "# Extended budget frontier robustness note",
         "",
-        "This bundle extends the manuscript-facing budget study to budgets 10/12/14 using the same matched dataset/seed contract as the canonical full ranking surface (datasets: gsm8k, MATH-500, aime_2024; seeds: 11/23; subset size: 20).",
+        f"This bundle extends the manuscript-facing budget study to budgets {','.join(str(b) for b in budgets)} using the same matched dataset contract as the canonical full ranking surface (datasets: gsm8k, MATH-500, aime_2024; subset size: 20), with configurable seed coverage.",
+        f"- Seeds used: `{','.join(str(s) for s in seeds)}`.",
         "",
         "## Conservative decision interpretation",
         f"- strict_f3 wins all extended budgets: **{stability_flags['strict_f3_wins_all_extended_budgets']}**.",
