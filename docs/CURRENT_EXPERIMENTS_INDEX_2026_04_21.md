@@ -88,6 +88,26 @@ The repository's current experimental center is:
 - `docs/MATCHED_SURFACE_MULTI_SEED_MAIN_COMPARISON_20260423T002000Z.md`
 - `outputs/matched_surface_multiseed_main_comparison_20260423T002000Z/`
 
+### 7. Manuscript-facing matched-surface multi-seed strict_f3 component-ablation rerun
+**Question:** on the exact manuscript-facing matched surface, which strict_f3 components are genuinely responsible for gains vs upstream/downstream failure slices?
+
+**Primary script:**
+- `scripts/run_matched_surface_multiseed_strict_f3_ablation.py`
+
+**Primary reports/artifacts:**
+- `docs/MATCHED_SURFACE_MULTI_SEED_STRICT_F3_ABLATION_20260423T120000Z.md`
+- `outputs/matched_surface_multiseed_strict_f3_ablation_20260423T120000Z/`
+
+### 8. Manuscript-facing matched-surface s1 fairness-closure lane
+**Question:** is `s1` reviewer-defensible as a main-table external comparator under strict matched realized-token accounting on the canonical manuscript-facing surface?
+
+**Primary script:**
+- `scripts/run_s1_matched_surface_fairness_closure.py`
+
+**Primary reports/artifacts:**
+- `docs/S1_MATCHED_SURFACE_FAIRNESS_CLOSURE_20260423T151500Z.md`
+- `outputs/s1_matched_surface_fairness_closure_20260423T151500Z/`
+
 ## Current default-model story
 
 If your question is "what is the current broad default promoted model?", the shortest experiment path is:

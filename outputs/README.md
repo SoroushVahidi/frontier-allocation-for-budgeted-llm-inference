@@ -62,6 +62,12 @@ Current conclusion: `strict_gate1_cap_k6` is the repository's broad default prom
 ### 12. Manuscript matched-surface multi-seed main-comparison stability family
 - `matched_surface_multiseed_main_comparison_<timestamp>/`
 
+### 13. Manuscript matched-surface multi-seed strict_f3 component-ablation family
+- `matched_surface_multiseed_strict_f3_ablation_<timestamp>/`
+
+### 14. Manuscript matched-surface s1 fairness-closure family
+- `s1_matched_surface_fairness_closure_<timestamp>/`
+
 ## Manuscript-facing package families (generated when those scripts are run)
 
 These are important for manuscript baseline/fairness packaging, but may be absent in a minimal checkout if not regenerated yet:
