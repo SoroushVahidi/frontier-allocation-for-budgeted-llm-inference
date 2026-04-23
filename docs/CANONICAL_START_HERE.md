@@ -1,103 +1,51 @@
 # Canonical start here
 
-This is the fastest reliable entry point for collaborators, future manuscript work, and implementation agents.
+Fastest reliable orientation for collaborators, reviewers, and manuscript-writing agents.
 
-## Current project identity
+## Current repository identity
 
-The repository’s canonical direction is:
+Canonical scope:
 - fixed-budget adaptive test-time compute allocation,
-- cross-controller frontier allocation,
-- next-step branch allocation over active branches,
-- answer-group-level commit control,
-- answer-group preservation and maturation under budget,
-- anti-collapse branch-family control,
-- and supervision-target quality for branch allocation.
+- branch-level frontier allocation,
+- answer-group evidence aggregation,
+- anti-collapse / repeated-family control,
+- conservative claim boundaries.
 
-This repository is **not** currently centered on the old binary revise-routing paper.
+Not the current scope:
+- re-centering on the old binary revise-routing storyline,
+- promoting supportive artifacts to headline evidence without canonical promotion.
 
-## Current repository stance
+## Non-negotiable method-surface distinction
 
-The current bounded repository stance is:
+- **Manuscript-facing matched-surface internal winner:** `strict_f3`
+- **Broader operational default on a different surface:** `strict_gate1_cap_k6`
 
-> **Keep the broad diversity/aggregation family as the main line, study early tree-shape control under a strict phased F1 -> F2 -> F3 law, treat `strict_gate1_cap_k6` as the broader operational default on the broader strict-phased surface, and treat `strict_f3` as the manuscript-facing internal winner on the canonical manuscript-facing matched surface.**
+See:
+- [`INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`](INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md)
+- [`MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`](MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md)
 
-The repository is now in a **default-model consolidation and evidence-strengthening phase**, not a broad nearby-experiment phase.
+## Read in this order
 
-## Read these first
+1. [`CANONICAL_EXPERIMENT_STACK.md`](CANONICAL_EXPERIMENT_STACK.md)
+2. [`PAPER_SOURCE_OF_TRUTH.md`](PAPER_SOURCE_OF_TRUTH.md)
+3. [`PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
+4. [`PAPER_BASELINE_HONESTY_STATUS.md`](PAPER_BASELINE_HONESTY_STATUS.md)
+5. [`PAPER_OPEN_GAPS_AND_RISKS.md`](PAPER_OPEN_GAPS_AND_RISKS.md)
+6. [`FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`](FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md)
+7. [`REPO_MAP.md`](REPO_MAP.md)
+8. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
+9. [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
 
-1. [`CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`](CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md)
-2. [`INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`](INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md)
-3. [`MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`](MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md)
-4. [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-5. [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-6. [`CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`](CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md)
-7. [`CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`](CURRENT_EXPERIMENTS_INDEX_2026_04_21.md)
-8. [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-9. [`CURRENT_SAFE_CLAIMS.md`](CURRENT_SAFE_CLAIMS.md)
-10. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
-11. [`REPO_MAP.md`](REPO_MAP.md)
-12. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
-13. [`PAPER_START_HERE.md`](PAPER_START_HERE.md)
-
-## Canonical first-run command block
-
-For collaborators who want one direct command path to the current broad default evidence:
+## Canonical first commands
 
 ```bash
 make setup
-python ../scripts/run_broader_strict_phased_default_decision_eval.py
+make check
+python ../scripts/paper/run_all_neurips_paper_artifacts.py
 ```
-
-Then inspect:
-- [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-- `../outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
-
-## Terminology note
-
-- **Answer-support aggregation** and **answer-group preservation/maturation** refer to the same controller layer in this repository: aggregation and commit behavior over answer groups under fixed budget.
-
-## If your goal is method improvement
-
-Then read next:
-- [`CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`](CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md)
-- [`FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`](FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md)
-- [`CURRENT_METHOD_SUMMARY_AND_GAPS.md`](CURRENT_METHOD_SUMMARY_AND_GAPS.md)
-- [`WHAT_IS_NOT_WORKING_NOW.md`](WHAT_IS_NOT_WORKING_NOW.md)
-- [`NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md`](NEW_HUNDRED_NEWEST_VS_BEST_FAILURE_STATISTICS_20260421T032711Z.md)
-- [`HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md`](HARD_MAX_FAMILY_EXPANSIONS_K456_EVAL_20260421T041916Z.md)
-
-## If your goal is baselines / comparison
-
-Then read next:
-- [`EVALUATION_AND_BASELINES_INDEX.md`](EVALUATION_AND_BASELINES_INDEX.md)
-- [`main_baselines.md`](main_baselines.md)
-- [`BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md`](BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md)
-- [`CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md`](CURRENT_REFERENCES_AND_BASELINES_INDEX_2026_04_20.md)
-
-## If your goal is to run code
-
-Start with:
-- [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
-- [`../scripts/README.md`](../scripts/README.md)
-- [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
-- [`../scripts/HISTORICAL_INDEX.md`](../scripts/HISTORICAL_INDEX.md) if you specifically need old script entry points
 
 ## Interpretation rules
 
-- Treat **canonical docs** as the default truth.
-- Treat **exploratory docs** as evidence traces and active branches.
-- Treat **historical material** as provenance, not as the current project identity.
-
-See also:
-- [`../README.md`](../README.md)
-- [`REPO_MAP.md`](REPO_MAP.md)
-- [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
-- [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
-
-
-## Paper-writing front door
-
-If your immediate goal is manuscript drafting, continue with:
-- [`PAPER_START_HERE.md`](PAPER_START_HERE.md)
-- [`PAPER_SOURCE_OF_TRUTH.md`](PAPER_SOURCE_OF_TRUTH.md)
-- [`PAPER_ARTIFACT_MAP.md`](PAPER_ARTIFACT_MAP.md)
+- Canonical docs are interpretation authority.
+- Exploratory docs/artifacts are bounded evidence, not automatic headline claims.
+- Historical materials are preserved for provenance, not current default truth.

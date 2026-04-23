@@ -8,10 +8,11 @@ Contributions and collaboration are still effectively by maintainer coordination
 
 Before adding or reorganizing anything, read:
 1. `README.md`
-2. `docs/README.md`
-3. `docs/REPO_MAP.md`
-4. `docs/CANONICAL_INSTALL_AND_DEV.md`
-5. `scripts/README.md`
+2. `docs/CANONICAL_START_HERE.md`
+3. `docs/CANONICAL_EXPERIMENT_STACK.md`
+4. `docs/REPO_MAP.md`
+5. `docs/CANONICAL_INSTALL_AND_DEV.md`
+6. `scripts/README.md`
 
 ## Core organizational rule
 

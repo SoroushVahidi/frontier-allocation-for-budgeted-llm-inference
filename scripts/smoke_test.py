@@ -17,7 +17,7 @@ def main() -> None:
     print(f"Python version: {sys.version}")
     print()
     print("Research project: Adaptive Test-Time Compute Allocation for LLM Reasoning")
-    print("Status: Early-stage research. Formulation under development.")
+    print("Status: Active NeurIPS-facing research; use canonical docs for claim scope and provenance.")
     print()
     print("All checks passed.")
 
