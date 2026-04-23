@@ -24,10 +24,12 @@ from experiments.output_layer_repair import canonicalize_answer, choose_repair_a
 
 STRICT_F3 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
 STRICT_GATE1_CAP_K6 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control"
+STRICT_F2 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1"
 
 METHODS = {
     "strict_f3": {"runtime": STRICT_F3, "enable_output_repair": True, "group": "main"},
     "strict_gate1_cap_k6": {"runtime": STRICT_GATE1_CAP_K6, "enable_output_repair": True, "group": "strong_neighbor"},
+    "strict_f2": {"runtime": STRICT_F2, "enable_output_repair": True, "group": "strong_neighbor"},
     "self_consistency_3": {"runtime": "self_consistency_3", "enable_output_repair": True, "group": "simple_baseline"},
     "external_l1_max": {"runtime": "external_l1_max", "enable_output_repair": True, "group": "external_baseline"},
     "strict_f3_no_anti_collapse": {"runtime": "strict_f3_ablation_no_anti_collapse_v1", "enable_output_repair": True, "group": "diagnostic"},
@@ -95,6 +97,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--subset-size", type=int, default=4)
     p.add_argument("--seeds", default="11,23")
     p.add_argument("--budgets", default="4,6")
+    p.add_argument("--methods", default="strict_f3,strict_gate1_cap_k6,strict_f2,external_l1_max")
     p.add_argument("--temperature", type=float, default=0.1)
     p.add_argument("--max-output-tokens", type=int, default=220)
     p.add_argument("--timeout-seconds", type=int, default=45)
@@ -145,6 +148,10 @@ def main() -> None:
     datasets = [d.strip() for d in args.datasets.split(",") if d.strip()]
     seeds = [int(x.strip()) for x in args.seeds.split(",") if x.strip()]
     budgets = [int(x.strip()) for x in args.budgets.split(",") if x.strip()]
+    methods = [m.strip() for m in args.methods.split(",") if m.strip()]
+    invalid = [m for m in methods if m not in METHODS]
+    if invalid:
+        raise ValueError(f"Unknown methods requested: {invalid}. Available={sorted(METHODS)}")
 
     out_dir = REPO_ROOT / f"outputs/canonical_real_model_validation_{args.timestamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -186,7 +193,8 @@ def main() -> None:
                 )
 
                 for ex in examples:
-                    for method, cfg in METHODS.items():
+                    for method in methods:
+                        cfg = METHODS[method]
                         runtime = str(cfg["runtime"])
                         if runtime not in specs:
                             error_rows.append(
@@ -332,7 +340,7 @@ def main() -> None:
         )
     write_csv(out_dir / "repair_impact_summary.csv", repair_impact)
 
-    methods_compared = [{"method": m, **cfg} for m, cfg in METHODS.items()]
+    methods_compared = [{"method": m, **METHODS[m]} for m in methods]
     (out_dir / "methods_compared.json").write_text(json.dumps(methods_compared, indent=2) + "\n", encoding="utf-8")
     (out_dir / "providers_and_models.json").write_text(
         json.dumps({"providers": [{"provider": args.provider, "model": args.model}]}, indent=2) + "\n", encoding="utf-8"
@@ -411,7 +419,7 @@ def main() -> None:
         f"- Subset size per dataset per seed: {args.subset_size}",
         f"- Seeds: {seeds}",
         f"- Budgets: {budgets}",
-        f"- Methods: {list(METHODS.keys())}",
+        f"- Methods: {methods}",
         "- Prompting/decoding: APIBranchGenerator JSON protocols, temperature/max token limits set in command.",
         "- Answer extraction/grading: deterministic choose_repair_answer + canonicalize_answer.",
         "- Retry/error handling: provider-level retries inside APIBranchGenerator, per-example failures logged to retry_error_log.csv.",
