@@ -1,57 +1,29 @@
 # References
 
-This directory is for tracking papers, notes, and citation management for the project.
+This directory tracks literature and citation provenance for the fixed-budget frontier-allocation paper track.
 
----
+## Role
 
-## How References Are Tracked
+- Maintain paper notes under `references/papers/`.
+- Maintain manuscript bibliography in `references/references.bib`.
+- Preserve source provenance for claim-boundary audits.
 
-Papers and references are managed as follows:
+## Conventions
 
-1. **Paper notes**: Add a short markdown file per paper under `references/papers/` with the format `AuthorYear_ShortTitle.md`. Include: citation, abstract summary, key findings, and relevance to this project.
+1. Add one note per paper in `references/papers/` using `AuthorYear_ShortTitle.md`.
+2. Keep notes concise: summary, key results, relevance, and caveats.
+3. Add every cited paper to `references/references.bib`.
+4. Keep baseline-comparability and fairness caveats explicit (especially for external baselines).
 
-2. **BibTeX file**: Maintain a single `references/references.bib` file for all citations used in the paper draft.
+## Where interpretation lives
 
-3. **Related work notes**: High-level synthesis and comparison notes go in `docs/related_work.md`.
+`references/` is a literature/provenance store. Current project interpretation authority remains in canonical docs:
+- `docs/CANONICAL_START_HERE.md`
+- `docs/PAPER_SOURCE_OF_TRUTH.md`
+- `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
+- `docs/PAPER_BASELINE_HONESTY_STATUS.md`
 
----
+## Related indexes
 
-## Directory Layout (Planned)
-
-```
-references/
-├── README.md               # This file
-├── references.bib          # BibTeX citations (to be created)
-└── papers/                 # Per-paper notes (to be populated)
-    └── ExampleAuthor2024_ShortTitle.md
-```
-
----
-
-## Template for Paper Notes
-
-```markdown
-# [Author(s), Year] Title
-
-**Venue:** ...
-**Link:** ...
-
-## Summary
-...
-
-## Key Results
-- ...
-
-## Relevance to This Project
-...
-
-## Open Questions
-...
-```
-
----
-
-## TODO
-
-- [ ] Add BibTeX entries for all papers in the literature review checklist (`docs/research_plan.md`).
-- [ ] Create a note for each reviewed paper under `references/papers/`.
+- `references/INDEX.md`
+- `references/REFERENCE_TRACKER.md`
