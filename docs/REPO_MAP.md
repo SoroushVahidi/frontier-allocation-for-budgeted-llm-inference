@@ -37,6 +37,19 @@ This repository is **not** currently centered on the older binary revise-routing
 - `tests/`: lightweight regression and repository-health checks.
 - `archive/`: preserved historical / provenance-only material.
 
+
+## Paper-writing pack (new canonical workflow layer)
+
+Use this short pack when preparing NeurIPS manuscript artifacts:
+- `docs/PAPER_START_HERE.md`
+- `docs/PAPER_SOURCE_OF_TRUTH.md`
+- `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
+- `docs/PAPER_ARTIFACT_MAP.md`
+- `docs/PAPER_FIGURES_AND_TABLES_PLAN.md`
+- `docs/PAPER_BASELINE_HONESTY_STATUS.md`
+- `docs/PAPER_REPRODUCTION_CHECKLIST.md`
+- `docs/PAPER_OPEN_GAPS_AND_RISKS.md`
+
 ## Canonical docs now
 
 Read these first for current project interpretation:

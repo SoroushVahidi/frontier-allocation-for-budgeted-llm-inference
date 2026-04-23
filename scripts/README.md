@@ -16,6 +16,8 @@ This file is the runnable-code front door for the repository.
 - Repository map: [`../docs/REPO_MAP.md`](../docs/REPO_MAP.md)
 - Contributor placement and maintenance guide: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 - Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
+- Paper artifact map: [`../docs/PAPER_ARTIFACT_MAP.md`](../docs/PAPER_ARTIFACT_MAP.md)
+- Paper reproduction checklist: [`../docs/PAPER_REPRODUCTION_CHECKLIST.md`](../docs/PAPER_REPRODUCTION_CHECKLIST.md)
 - Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
 ## Interpretation labels
@@ -67,6 +69,7 @@ This file is the runnable-code front door for the repository.
 - `make lint`
 - `make test`
 - `make check`
+- `make prepaper`
 
 ## Canonical scripts (current project path)
 

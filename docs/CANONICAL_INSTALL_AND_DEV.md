@@ -30,8 +30,8 @@ Equivalent manual path:
 python -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
-pip install -e .[dev]
+pip install -r requirements-dev.txt
+# or: pip install -r requirements.txt && pip install -e .[dev]
 ```
 
 ## Default repo-health checks
@@ -49,6 +49,12 @@ For the most common pre-commit maintenance pass, run:
 make check
 ```
 
+For a pre-manuscript gate, run:
+
+```bash
+make prepaper
+```
+
 ## Interpretation rule
 
 For current project interpretation, read in this order:
@@ -63,6 +69,9 @@ For current project interpretation, read in this order:
 9. `docs/REPO_MAP.md`
 10. `CONTRIBUTING.md`
 11. `scripts/README.md`
+12. `docs/PAPER_START_HERE.md`
+13. `docs/PAPER_SOURCE_OF_TRUTH.md`
+14. `docs/PAPER_ARTIFACT_MAP.md`
 
 ## Directory roles
 

@@ -1,19 +1,5 @@
-# Core research dependencies (keep minimal)
-# Add packages here as experiments require them.
-
-# Example future additions (uncomment as needed):
-# torch>=2.2
-# transformers>=4.40
-# datasets>=2.18
+# Core runtime dependencies
 numpy>=1.26
 datasets>=2.18
 huggingface_hub>=0.23
-
-# pyyaml>=6.0
-# tqdm>=4.66
-# pandas>=2.2
-
-# Development tools
-ruff>=0.4
-pytest>=8.0
 scikit-learn>=1.4

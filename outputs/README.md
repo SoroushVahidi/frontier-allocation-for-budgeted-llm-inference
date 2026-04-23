@@ -106,6 +106,8 @@ Check these docs before using a folder for manuscript claims:
 - `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
 - `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
 - `docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`
+- `docs/PAPER_SOURCE_OF_TRUTH.md`
+- `docs/PAPER_ARTIFACT_MAP.md`
 
 ## Practical rule of thumb
 

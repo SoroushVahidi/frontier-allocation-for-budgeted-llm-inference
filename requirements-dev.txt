@@ -1,0 +1,5 @@
+-r requirements.txt
+
+# Developer tooling
+ruff>=0.4
+pytest>=8.0

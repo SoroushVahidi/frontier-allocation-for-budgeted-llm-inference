@@ -142,14 +142,22 @@ def _verify_official_repo(
             if (local_path / str(p)).exists():
                 evaluation_hits.append(str(p))
 
+        def _record_clone_observation(message: str) -> None:
+            # Optional local clone inspection should not invalidate package-contract checks
+            # unless strict local clone enforcement is explicitly requested.
+            if require_existing:
+                issues.append(message)
+            else:
+                warnings.append(message)
+
         if missing_markers:
-            issues.append(f"incomplete_local_official_clone_missing_markers: {missing_markers}")
+            _record_clone_observation(f"incomplete_local_official_clone_missing_markers: {missing_markers}")
         if generation_any and not generation_hits:
-            issues.append("incomplete_local_official_clone_missing_generation_entrypoint")
+            _record_clone_observation("incomplete_local_official_clone_missing_generation_entrypoint")
         if verification_any and not verification_hits:
-            issues.append("incomplete_local_official_clone_missing_verification_entrypoint")
+            _record_clone_observation("incomplete_local_official_clone_missing_verification_entrypoint")
         if evaluation_any and not evaluation_hits:
-            issues.append("incomplete_local_official_clone_missing_evaluation_entrypoint")
+            _record_clone_observation("incomplete_local_official_clone_missing_evaluation_entrypoint")
 
     return {
         "clone_url": clone_url,
