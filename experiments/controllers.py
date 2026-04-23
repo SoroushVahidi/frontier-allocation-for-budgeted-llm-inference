@@ -4061,6 +4061,15 @@ class S1BudgetForcingController(BaseController):
         self.wait_token = wait_token
         self.method_name = method_name
 
+    @staticmethod
+    def _estimate_token_count(text: str | None) -> int:
+        if text is None:
+            return 0
+        s = str(text).strip()
+        if not s:
+            return 0
+        return len(s.split())
+
     def run(self, question: str, gold_answer: str) -> MethodResult:
         branch = self.generator.init_branch("s1_0")
         actions = expansions = verifications = 0
@@ -4087,6 +4096,10 @@ class S1BudgetForcingController(BaseController):
             surviving_trace.append(1)
 
         prediction = branch.predicted_answer
+        realized_reasoning_tokens_estimate = sum(self._estimate_token_count(step) for step in branch.steps)
+        final_answer_tokens_estimate = self._estimate_token_count(prediction)
+        continuation_override_tokens_estimate = forced_continue_events * self._estimate_token_count(self.wait_token)
+        total_generated_tokens_estimate = realized_reasoning_tokens_estimate + final_answer_tokens_estimate
         return MethodResult(
             method=self.method_name,
             prediction=prediction,
@@ -4102,6 +4115,12 @@ class S1BudgetForcingController(BaseController):
                 "min_thinking_steps": self.min_thinking_steps,
                 "wait_token": self.wait_token,
                 "forced_continue_events": forced_continue_events,
+                "nominal_budget_actions": self.max_actions,
+                "realized_reasoning_tokens_estimate": realized_reasoning_tokens_estimate,
+                "final_answer_tokens_estimate": final_answer_tokens_estimate,
+                "total_generated_tokens_estimate": total_generated_tokens_estimate,
+                "continuation_override_tokens_estimate": continuation_override_tokens_estimate,
+                "continuation_override_accounting_policy": "forced_continue_events * wait_token_word_count",
                 "final_score": self.scorer.score_branch(branch),
             },
         )
