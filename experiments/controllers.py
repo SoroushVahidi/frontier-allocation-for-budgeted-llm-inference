@@ -871,6 +871,10 @@ class GlobalDiversityAggregationController(BaseController):
         hard_max_family_expansions_relax_cap: int = 8,
         hard_max_family_expansions_relax_cap_high: int = 10,
         hard_max_family_expansions_relax_mode: str = "fixed_k6_control",
+        hard_max_family_expansions_conditional_early_window_actions: int = 6,
+        hard_max_family_expansions_conditional_risk_family_share_trigger: float = 0.60,
+        hard_max_family_expansions_conditional_risk_consecutive_run_trigger: int = 3,
+        hard_max_family_expansions_conditional_min_rival_maturity_expansions: int = 2,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -1009,6 +1013,18 @@ class GlobalDiversityAggregationController(BaseController):
             self.hard_max_family_expansions_relax_cap, int(hard_max_family_expansions_relax_cap_high)
         )
         self.hard_max_family_expansions_relax_mode = str(hard_max_family_expansions_relax_mode or "fixed_k6_control")
+        self.hard_max_family_expansions_conditional_early_window_actions = max(
+            0, int(hard_max_family_expansions_conditional_early_window_actions)
+        )
+        self.hard_max_family_expansions_conditional_risk_family_share_trigger = max(
+            0.0, min(1.0, float(hard_max_family_expansions_conditional_risk_family_share_trigger))
+        )
+        self.hard_max_family_expansions_conditional_risk_consecutive_run_trigger = max(
+            1, int(hard_max_family_expansions_conditional_risk_consecutive_run_trigger)
+        )
+        self.hard_max_family_expansions_conditional_min_rival_maturity_expansions = max(
+            1, int(hard_max_family_expansions_conditional_min_rival_maturity_expansions)
+        )
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -2497,6 +2513,7 @@ class GlobalDiversityAggregationController(BaseController):
         max_consecutive_same_family_expands: int,
         top_support: float,
         hard_cov_diag: dict[str, Any],
+        actions_so_far: int,
     ) -> dict[str, Any]:
         base = int(self.hard_max_family_expansions_base_cap)
         out: dict[str, Any] = {
@@ -2545,6 +2562,35 @@ class GlobalDiversityAggregationController(BaseController):
             if breadth_complete and top_support >= 0.62 and support_gap <= 0.30 and (not collapse_warning):
                 effective = self.hard_max_family_expansions_relax_cap
                 trigger = "incumbent_strong_but_challenger_gap_unclear"
+        elif mode == "conditional_early_risk_cap":
+            early_window = int(actions_so_far) < int(self.hard_max_family_expansions_conditional_early_window_actions)
+            risk_triggered = bool(
+                max_consecutive_same_family_expands >= self.hard_max_family_expansions_conditional_risk_consecutive_run_trigger
+                or top_support >= self.hard_max_family_expansions_conditional_risk_family_share_trigger
+            )
+            if (not early_window) or (not risk_triggered) or active_family_count < 2:
+                effective = self.hard_max_family_expansions_relax_cap
+                trigger = "conditional_relaxed_nonrisk_or_late"
+            else:
+                trigger = "conditional_tight_cap_on_early_risk"
+        elif mode == "conditional_early_risk_cap_with_rival_maturation":
+            early_window = int(actions_so_far) < int(self.hard_max_family_expansions_conditional_early_window_actions)
+            risk_triggered = bool(
+                max_consecutive_same_family_expands >= self.hard_max_family_expansions_conditional_risk_consecutive_run_trigger
+                or top_support >= self.hard_max_family_expansions_conditional_risk_family_share_trigger
+            )
+            rival_expands = [
+                int(v) for fam, v in family_expansions.items() if str(fam) != str(selected_family)
+            ]
+            rival_mature = bool(
+                rival_expands
+                and max(rival_expands) >= int(self.hard_max_family_expansions_conditional_min_rival_maturity_expansions)
+            )
+            if (not early_window) or (not risk_triggered) or active_family_count < 2 or rival_mature:
+                effective = self.hard_max_family_expansions_relax_cap
+                trigger = "conditional_relaxed_rival_mature_or_nonrisk_or_late"
+            else:
+                trigger = "conditional_tight_cap_wait_rival_maturity"
         out["effective_cap"] = int(effective)
         out["relaxed"] = bool(effective > base)
         out["relax_delta"] = int(effective - base)
@@ -2931,6 +2977,7 @@ class GlobalDiversityAggregationController(BaseController):
                 max_consecutive_same_family_expands=max_consecutive_same_family_expands,
                 top_support=float(max(answer_support_counts.values()) / max(1, sum(answer_support_counts.values())) if answer_support_counts else 0.0),
                 hard_cov_diag=hard_cov_diag,
+                actions_so_far=actions,
             )
             if bool(cap_meta.get("relaxed")):
                 family_cap_relax_activation_count += 1
@@ -3802,6 +3849,18 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_max_family_expansions_base_cap": int(self.hard_max_family_expansions_base_cap),
                 "hard_max_family_expansions_relax_cap": int(self.hard_max_family_expansions_relax_cap),
                 "hard_max_family_expansions_relax_cap_high": int(self.hard_max_family_expansions_relax_cap_high),
+                "hard_max_family_expansions_conditional_early_window_actions": int(
+                    self.hard_max_family_expansions_conditional_early_window_actions
+                ),
+                "hard_max_family_expansions_conditional_risk_family_share_trigger": float(
+                    self.hard_max_family_expansions_conditional_risk_family_share_trigger
+                ),
+                "hard_max_family_expansions_conditional_risk_consecutive_run_trigger": int(
+                    self.hard_max_family_expansions_conditional_risk_consecutive_run_trigger
+                ),
+                "hard_max_family_expansions_conditional_min_rival_maturity_expansions": int(
+                    self.hard_max_family_expansions_conditional_min_rival_maturity_expansions
+                ),
                 "hard_max_family_expansions_block_count": int(family_cap_block_count),
                 "hard_max_family_expansions_relax_activation_count": int(family_cap_relax_activation_count),
                 "hard_max_family_expansions_relax_activation_rate": float(
