@@ -16,6 +16,8 @@ This page defines which files are safe to cite for manuscript claims.
 - `FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
 - `PAPER_METHOD_DECISION_BUNDLE_20260422T175142Z.md`
 - `MATCHED_SURFACE_MULTI_SEED_MAIN_COMPARISON_20260423T235900Z.md`
+- `CONDITIONAL_RISK_CAP_MANUSCRIPT_PROMOTION_DECISION_20260423T203259Z.md`
+- `CONDITIONAL_RISK_CAP_PROMOTION_DECISION_CONFIRMATION_20260423.md`
 - `FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`
 - `EXTERNAL_BASELINE_PAPER_READINESS_DECISION_PACKAGE.md`
 - `PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md`
@@ -25,6 +27,7 @@ This page defines which files are safe to cite for manuscript claims.
 - `outputs/final_strict_phased_default_decision_eval_20260421T042913Z/`
 - `outputs/paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3/<timestamp>/`
 - `outputs/matched_surface_multiseed_main_comparison_20260423T235900Z/`
+- `outputs/matched_surface_multiseed_main_comparison_20260423T203259Z/` (conditional-risk promotion-decision supplement)
 - `outputs/paper_plot_data/`
 - `outputs/paper_figures/`
 - `outputs/paper_tables/`
