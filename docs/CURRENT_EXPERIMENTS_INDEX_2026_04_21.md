@@ -108,6 +108,30 @@ The repository's current experimental center is:
 - `docs/S1_MATCHED_SURFACE_FAIRNESS_CLOSURE_20260423T151500Z.md`
 - `outputs/s1_matched_surface_fairness_closure_20260423T151500Z/`
 
+### 9. L1 feasibility and fairness bounded pass
+**Question:** should `L1` be the next full implementation-strength external baseline target, or should it remain non-primary pending stronger fairness closure?
+
+**Primary artifact bundle:**
+- `outputs/l1_feasibility_and_fairness_pass_20260423T005455Z/`
+
+**Primary report:**
+- `docs/L1_FEASIBILITY_AND_FAIRNESS_PASS_20260423T005455Z.md`
+
+**Current recommendation:**
+- `not_worth_strengthening_now` (keep L1 in conservative discussion context until canonical realized-length accounting and official-import comparability are upgraded).
+
+### 10. Canonical matched-surface regime-breakdown pass
+**Question:** should manuscript-facing claims be upgraded from aggregate-only to regime-qualified (dataset×budget) statements on the canonical matched surface?
+
+**Primary artifact bundle:**
+- `outputs/canonical_matched_surface_regime_breakdown_20260423T012859Z/`
+
+**Primary report:**
+- `docs/CANONICAL_MATCHED_SURFACE_REGIME_BREAKDOWN_20260423T012859Z.md`
+
+**Current recommendation:**
+- use **regime-qualified claims** on canonical matched-surface regime means, with an explicit seed-variability caveat (no universal per-seed dominance claim).
+
 ## Current default-model story
 
 If your question is "what is the current broad default promoted model?", the shortest experiment path is:
