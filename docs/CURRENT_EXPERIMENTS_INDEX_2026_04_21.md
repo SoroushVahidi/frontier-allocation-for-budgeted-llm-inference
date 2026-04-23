@@ -132,6 +132,16 @@ The repository's current experimental center is:
 **Current recommendation:**
 - use **regime-qualified claims** on canonical matched-surface regime means, with an explicit seed-variability caveat (no universal per-seed dominance claim).
 
+### 11. Canonical matched benchmark + bounded hindsight regret closure
+**Question:** on one exact manuscript-facing matched surface, who wins by raw score, who is closest to the attainable (bounded hindsight) frontier, and how much headroom remains?
+
+**Primary script:**
+- `scripts/run_canonical_matched_benchmark_and_regret.py`
+
+**Primary reports/artifacts:**
+- `docs/CANONICAL_MATCHED_BENCHMARK_AND_REGRET_20260423T180500Z.md`
+- `outputs/canonical_matched_benchmark_and_regret_20260423T180500Z/`
+
 ## Current default-model story
 
 If your question is "what is the current broad default promoted model?", the shortest experiment path is:
