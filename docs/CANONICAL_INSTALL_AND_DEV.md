@@ -1,6 +1,6 @@
 # Canonical install and development
 
-Practical setup + low-friction developer workflow for this repository.
+Practical setup + low-friction workflow for repository maintenance and manuscript-support tasks.
 
 ## Environment
 
@@ -36,7 +36,7 @@ make prepaper
 
 Read (in order):
 1. `CANONICAL_START_HERE.md`
-2. `CANONICAL_EXPERIMENT_STACK.md`
+2. `MANUSCRIPT_SUPPORT_DASHBOARD.md`
 3. `PAPER_SOURCE_OF_TRUTH.md`
 4. `REPO_MAP.md`
 5. `../scripts/CANONICAL_START_HERE.md`
@@ -44,8 +44,9 @@ Read (in order):
 
 ## Workflow rules
 
-1. Start from canonical docs before running or interpreting experiments.
+1. Start from canonical docs before running/interpreting anything.
 2. Keep runnable logic in `scripts/` and reusable logic in `experiments/`.
 3. Keep generated artifacts in `outputs/`.
 4. Preserve claim boundaries and surface distinctions in docs and PRs.
 5. Prefer small, scoped, reviewable changes.
+6. This maintenance path is for cleanup/polish/consistency; do not use it to reopen scientific decisions without new canonical evidence.

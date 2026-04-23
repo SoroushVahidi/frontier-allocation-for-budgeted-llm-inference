@@ -4,7 +4,7 @@ This backlog intentionally reflects the current NeurIPS-facing consolidation pha
 
 ## Must keep current
 
-- [ ] Keep front-door docs synchronized: `README.md`, `QUICKSTART.md`, `docs/CANONICAL_START_HERE.md`, `docs/REPO_MAP.md`, `docs/CANONICAL_INSTALL_AND_DEV.md`, `scripts/CANONICAL_START_HERE.md`.
+- [ ] Keep front-door docs synchronized: `README.md`, `QUICKSTART.md`, `docs/CANONICAL_START_HERE.md`, `docs/MANUSCRIPT_SUPPORT_DASHBOARD.md`, `docs/REPO_MAP.md`, `docs/CANONICAL_INSTALL_AND_DEV.md`, `scripts/CANONICAL_START_HERE.md`.
 - [ ] Keep manuscript claim boundaries synchronized with canonical artifact families (`docs/PAPER_SOURCE_OF_TRUTH.md`, `outputs/README.md`).
 - [ ] Keep the `strict_f3` (manuscript matched surface) vs `strict_gate1_cap_k6` (broader operational surface) distinction explicit everywhere.
 

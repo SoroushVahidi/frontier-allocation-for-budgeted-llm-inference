@@ -11,10 +11,6 @@ Canonical scope:
 - anti-collapse / repeated-family control,
 - conservative claim boundaries.
 
-Not the current scope:
-- re-centering on the old binary revise-routing storyline,
-- promoting supportive artifacts to headline evidence without canonical promotion.
-
 ## Non-negotiable method-surface distinction
 
 - **Manuscript-facing matched-surface internal winner:** `strict_f3`
@@ -27,11 +23,11 @@ See:
 ## Read in this order
 
 1. [`CANONICAL_EXPERIMENT_STACK.md`](CANONICAL_EXPERIMENT_STACK.md)
-2. [`PAPER_SOURCE_OF_TRUTH.md`](PAPER_SOURCE_OF_TRUTH.md)
-3. [`PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
-4. [`PAPER_BASELINE_HONESTY_STATUS.md`](PAPER_BASELINE_HONESTY_STATUS.md)
-5. [`PAPER_OPEN_GAPS_AND_RISKS.md`](PAPER_OPEN_GAPS_AND_RISKS.md)
-6. [`FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`](FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md)
+2. [`MANUSCRIPT_SUPPORT_DASHBOARD.md`](MANUSCRIPT_SUPPORT_DASHBOARD.md)
+3. [`PAPER_SOURCE_OF_TRUTH.md`](PAPER_SOURCE_OF_TRUTH.md)
+4. [`PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
+5. [`FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`](FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md)
+6. [`MAIN_TABLE_EXTERNAL_BASELINE_FAIRNESS_AUDIT_20260423T205134Z.md`](MAIN_TABLE_EXTERNAL_BASELINE_FAIRNESS_AUDIT_20260423T205134Z.md)
 7. [`REPO_MAP.md`](REPO_MAP.md)
 8. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
 9. [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
@@ -47,5 +43,5 @@ python ../scripts/paper/run_all_neurips_paper_artifacts.py
 ## Interpretation rules
 
 - Canonical docs are interpretation authority.
-- Exploratory docs/artifacts are bounded evidence, not automatic headline claims.
+- Supportive/appendix artifacts remain bounded unless canonically promoted.
 - Historical materials are preserved for provenance, not current default truth.
