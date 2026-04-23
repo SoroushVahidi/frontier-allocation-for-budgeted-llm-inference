@@ -1,0 +1,79 @@
+{
+  "blocked_methods": [],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "methods_requested": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f2",
+    "strict_f3_conditional_early_risk_cap_k2_v1",
+    "l1_max",
+    "tale",
+    "s1",
+    "l1_exact",
+    "zhai_cpo_mode_a"
+  ],
+  "methods_runnable": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f2",
+    "strict_f3_conditional_early_risk_cap_k2_v1",
+    "l1_max",
+    "tale",
+    "s1",
+    "l1_exact",
+    "zhai_cpo_mode_a"
+  ],
+  "pairwise_significance": [
+    {
+      "ci95_high_diff": 0.04814814814814813,
+      "ci95_low_diff": -0.02870370370370373,
+      "mean_accuracy_diff_a_minus_b": 0.004629629629629613,
+      "method_a": "strict_f3",
+      "method_b": "strict_gate1_cap_k6",
+      "n_seed_pairs": 6,
+      "permutation_pvalue_two_sided": 0.9092181563687263,
+      "status": "ok"
+    },
+    {
+      "ci95_high_diff": 0.18611111111111112,
+      "ci95_low_diff": 0.0851851851851852,
+      "mean_accuracy_diff_a_minus_b": 0.13703703703703704,
+      "method_a": "strict_f3",
+      "method_b": "l1_max",
+      "n_seed_pairs": 6,
+      "permutation_pvalue_two_sided": 0.03159368126374725,
+      "status": "ok"
+    },
+    {
+      "ci95_high_diff": 0.012962962962962935,
+      "ci95_low_diff": -0.05740740740740732,
+      "mean_accuracy_diff_a_minus_b": -0.021296296296296275,
+      "method_a": "strict_f3_conditional_early_risk_cap_k2_v1",
+      "method_b": "strict_f3",
+      "n_seed_pairs": 6,
+      "permutation_pvalue_two_sided": 0.38852229554089185,
+      "status": "ok"
+    }
+  ],
+  "seeds": [
+    11,
+    23,
+    37,
+    41,
+    53,
+    67
+  ],
+  "strict_f3_still_wins_on_mean": true,
+  "strict_rerun_of_manuscript_matched_surface": true,
+  "surface_id": "canonical_full_method_ranking_20260421T212948Z",
+  "winner_by_mean_accuracy": "strict_f3"
+}

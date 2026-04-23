@@ -49,12 +49,14 @@ METHOD_RUNTIME_MAP = {
     "strict_f3": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1",
     "strict_gate1_cap_k6": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control",
     "strict_f2": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1",
+    "strict_f3_conditional_early_risk_cap_k2_v1": "strict_f3_conditional_early_risk_cap_k2_v1",
     "l1_max": "external_l1_max",
     "tale": "external_tale_prompt_budgeting",
     "s1": "external_s1_budget_forcing",
     "l1_exact": "external_l1_exact",
     "zhai_cpo_mode_a": "external_zhai_cpo_mode_a",
 }
+DEFAULT_METHODS = ["strict_f3", "strict_gate1_cap_k6", "strict_f2", "l1_max", "tale", "s1", "l1_exact", "zhai_cpo_mode_a"]
 
 
 def utc_timestamp() -> str:
@@ -234,6 +236,7 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Run manuscript matched-surface multi-seed main comparison.")
     p.add_argument("--timestamp", default=utc_timestamp())
     p.add_argument("--seeds", default=",".join(str(s) for s in DEFAULT_SEEDS))
+    p.add_argument("--methods", default=",".join(DEFAULT_METHODS))
     p.add_argument("--n-perm", type=int, default=5000)
     p.add_argument("--n-boot", type=int, default=5000)
     return p.parse_args()
@@ -242,7 +245,10 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     seeds = [int(x.strip()) for x in args.seeds.split(",") if x.strip()]
-    methods_requested = ["strict_f3", "strict_gate1_cap_k6", "strict_f2", "l1_max", "tale", "s1", "l1_exact", "zhai_cpo_mode_a"]
+    methods_requested = [x.strip() for x in str(args.methods).split(",") if x.strip()]
+    unknown = [m for m in methods_requested if m not in METHOD_RUNTIME_MAP]
+    if unknown:
+        raise ValueError(f"Unknown method keys: {unknown}. Available: {sorted(METHOD_RUNTIME_MAP.keys())}")
 
     out_dir = REPO_ROOT / f"outputs/matched_surface_multiseed_main_comparison_{args.timestamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -345,6 +351,8 @@ def main() -> None:
     by_key_method = {(r["dataset"], int(r["seed"]), int(r["budget"]), r["example_id"], r["method"]): r for r in rows}
 
     pair_specs = [("strict_f3", "strict_gate1_cap_k6"), ("strict_f3", "l1_max")]
+    if "strict_f3_conditional_early_risk_cap_k2_v1" in methods_requested:
+        pair_specs.append(("strict_f3_conditional_early_risk_cap_k2_v1", "strict_f3"))
     pairwise_rows = []
     for a, b in pair_specs:
         if a not in methods_runnable or b not in methods_runnable:
@@ -526,6 +534,7 @@ def main() -> None:
     report_path = REPO_ROOT / "docs" / f"MATCHED_SURFACE_MULTI_SEED_MAIN_COMPARISON_{args.timestamp}.md"
     summary_by_method = {r["method"]: r for r in summary_rows}
     f3 = summary_by_method.get("strict_f3")
+    cond = summary_by_method.get("strict_f3_conditional_early_risk_cap_k2_v1")
     gate = summary_by_method.get("strict_gate1_cap_k6")
     l1 = summary_by_method.get("l1_max")
 
@@ -536,6 +545,14 @@ def main() -> None:
 
     p_f3_gate = next((r for r in pairwise_rows if r.get("method_a") == "strict_f3" and r.get("method_b") == "strict_gate1_cap_k6"), None)
     p_f3_l1 = next((r for r in pairwise_rows if r.get("method_a") == "strict_f3" and r.get("method_b") == "l1_max"), None)
+    p_cond_f3 = next(
+        (
+            r
+            for r in pairwise_rows
+            if r.get("method_a") == "strict_f3_conditional_early_risk_cap_k2_v1" and r.get("method_b") == "strict_f3"
+        ),
+        None,
+    )
 
     interpretation = "mixed / fragile support"
     if f3 and summary_rows and summary_rows[0]["method"] == "strict_f3":
@@ -570,12 +587,15 @@ def main() -> None:
         f"- Winner by mean accuracy: `{aggregate_summary['winner_by_mean_accuracy']}`.",
         f"- strict_f3 mean accuracy: {f3['mean_accuracy']:.4f} (std {f3['std_accuracy']:.4f}, CI95 [{f3['ci95_low_accuracy']:.4f}, {f3['ci95_high_accuracy']:.4f}])." if f3 else "- strict_f3 missing.",
         f"- strict_gate1_cap_k6 mean accuracy: {gate['mean_accuracy']:.4f} (std {gate['std_accuracy']:.4f}, CI95 [{gate['ci95_low_accuracy']:.4f}, {gate['ci95_high_accuracy']:.4f}])." if gate else "- strict_gate1_cap_k6 missing.",
+        f"- strict_f3_conditional_early_risk_cap_k2_v1 mean accuracy: {cond['mean_accuracy']:.4f} (std {cond['std_accuracy']:.4f}, CI95 [{cond['ci95_low_accuracy']:.4f}, {cond['ci95_high_accuracy']:.4f}])." if cond else "- strict_f3_conditional_early_risk_cap_k2_v1 not requested.",
         f"- l1_max mean accuracy: {l1['mean_accuracy']:.4f} (std {l1['std_accuracy']:.4f}, CI95 [{l1['ci95_low_accuracy']:.4f}, {l1['ci95_high_accuracy']:.4f}])." if l1 else "- l1_max missing.",
         f"- strict_f3 minus strict_gate1_cap_k6 mean gap: {_gap(f3, gate)}.",
+        f"- strict_f3_conditional_early_risk_cap_k2_v1 minus strict_f3 mean gap: {_gap(cond, f3)}." if cond else "- strict_f3_conditional_early_risk_cap_k2_v1 minus strict_f3 mean gap: NA.",
         f"- strict_f3 minus l1_max mean gap: {_gap(f3, l1)}.",
         "",
         "## Uncertainty and significance",
         f"- strict_f3 vs strict_gate1_cap_k6 paired permutation p-value: {p_f3_gate.get('permutation_pvalue_two_sided', 'NA') if p_f3_gate else 'NA'}.",
+        f"- strict_f3_conditional_early_risk_cap_k2_v1 vs strict_f3 paired permutation p-value: {p_cond_f3.get('permutation_pvalue_two_sided', 'NA') if p_cond_f3 else 'NA'}.",
         f"- strict_f3 vs l1_max paired permutation p-value: {p_f3_l1.get('permutation_pvalue_two_sided', 'NA') if p_f3_l1 else 'NA'}.",
         "",
         "## Honest interpretation for paper-writing",
