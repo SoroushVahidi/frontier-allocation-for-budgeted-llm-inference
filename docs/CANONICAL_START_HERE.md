@@ -37,6 +37,7 @@ The repository is now in a **default-model consolidation and evidence-strengthen
 10. [`CURRENT_BOTTLENECKS.md`](CURRENT_BOTTLENECKS.md)
 11. [`REPO_MAP.md`](REPO_MAP.md)
 12. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
+13. [`PAPER_START_HERE.md`](PAPER_START_HERE.md)
 
 ## Canonical first-run command block
 
@@ -92,3 +93,11 @@ See also:
 - [`REPO_MAP.md`](REPO_MAP.md)
 - [`EXPLORATORY_INDEX.md`](EXPLORATORY_INDEX.md)
 - [`HISTORICAL_AND_ARCHIVE_POLICY.md`](HISTORICAL_AND_ARCHIVE_POLICY.md)
+
+
+## Paper-writing front door
+
+If your immediate goal is manuscript drafting, continue with:
+- [`PAPER_START_HERE.md`](PAPER_START_HERE.md)
+- [`PAPER_SOURCE_OF_TRUTH.md`](PAPER_SOURCE_OF_TRUTH.md)
+- [`PAPER_ARTIFACT_MAP.md`](PAPER_ARTIFACT_MAP.md)

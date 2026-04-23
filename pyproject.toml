@@ -9,7 +9,12 @@ description = "Research code for adaptive test-time compute allocation for LLM r
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
-dependencies = []
+dependencies = [
+    "numpy>=1.26",
+    "datasets>=2.18",
+    "huggingface_hub>=0.23",
+    "scikit-learn>=1.4",
+]
 
 [project.optional-dependencies]
 dev = [

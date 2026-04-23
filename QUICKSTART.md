@@ -15,14 +15,16 @@ This repository is **not** currently centered on the older binary revise-routing
 ## Read in this order
 
 1. `docs/CANONICAL_START_HERE.md`
-2. `docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
-3. `docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`
-4. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
-5. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
-6. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
-7. `docs/CURRENT_RESULTS_AND_ARTIFACTS_INDEX_2026_04_20.md`
-8. `docs/CURRENT_EXPERIMENTS_INDEX_2026_04_21.md`
-9. `scripts/CANONICAL_START_HERE.md`
+2. `docs/PAPER_START_HERE.md`
+3. `docs/PAPER_SOURCE_OF_TRUTH.md`
+4. `docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
+5. `docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`
+6. `docs/CURRENT_PROMOTED_METHOD_LINE_2026_04_20.md`
+7. `docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md`
+8. `docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md`
+9. `docs/PAPER_ARTIFACT_MAP.md`
+10. `docs/PAPER_REPRODUCTION_CHECKLIST.md`
+11. `scripts/CANONICAL_START_HERE.md`
 
 ## Canonical first-run command block
 
@@ -82,3 +84,15 @@ Use them only with explicit scope labeling.
 - Start from canonical docs, not arbitrary outputs.
 - Use the current April 20–21 bundles for current claims.
 - Treat older derived plot folders as bounded historical surfaces unless explicitly stated otherwise.
+
+
+## Manuscript-safe paper writing path
+
+Use this minimal sequence before drafting claims or plotting final paper tables:
+- `docs/PAPER_START_HERE.md`
+- `docs/PAPER_SOURCE_OF_TRUTH.md`
+- `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
+- `docs/PAPER_ARTIFACT_MAP.md`
+- `docs/PAPER_FIGURES_AND_TABLES_PLAN.md`
+- `docs/PAPER_BASELINE_HONESTY_STATUS.md`
+- `docs/PAPER_OPEN_GAPS_AND_RISKS.md`

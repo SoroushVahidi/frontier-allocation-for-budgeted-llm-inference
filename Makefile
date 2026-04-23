@@ -1,4 +1,4 @@
-.PHONY: setup smoke health format lint test check help
+.PHONY: setup smoke health format lint test check prepaper help
 
 PY_DIRS := scripts experiments tests
 
@@ -11,6 +11,7 @@ help:
 	@echo "  lint    Lint Python files with ruff"
 	@echo "  test    Run pytest"
 	@echo "  check   Run health, lint, and test together"
+	@echo "  prepaper Run repo checks plus paper artifact/claim checklist gate"
 
 setup:
 	python3 -m pip install --upgrade pip
@@ -36,3 +37,10 @@ check:
 	python3 scripts/check_repo_health.py
 	python3 -m ruff check $(PY_DIRS)
 	python3 -m pytest -q
+
+prepaper:
+	python3 scripts/check_repo_health.py
+	python3 -m ruff check $(PY_DIRS)
+	python3 -m pytest -q
+	python3 scripts/smoke_test.py
+	@echo "Pre-paper gate: use docs/PAPER_REPRODUCTION_CHECKLIST.md before regenerating manuscript artifacts."
