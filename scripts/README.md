@@ -51,6 +51,7 @@ This file is the runnable-code front door for the repository.
 - `run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py`
 - `run_s1_budget_forcing_baseline.py`
 - `run_tale_baseline.py`
+- `run_tale_matched_surface_fairness_closure.py`
 - `run_l1_baseline.py`
 
 ### 4. Check dataset and baseline readiness

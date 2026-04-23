@@ -12,6 +12,7 @@ This document defines a conservative TALE integration for the fixed-budget compu
 
 Runner:
 - `python scripts/run_tale_baseline.py --config configs/tale_prompt_budgeting_v1.json`
+- `python scripts/run_tale_matched_surface_fairness_closure.py --timestamp <UTC_TIMESTAMP>`
 
 ## MODE B (secondary): `official_full_adapter`
 
@@ -98,6 +99,10 @@ Per run (`outputs/tale_baseline/<run_id>/`):
 
 Additional artifacts include:
 - `summary.csv`, `summary_per_seed.csv`, `per_example.jsonl`, `note.md`, `comparison_to_ours.csv`, `frontier_summary.csv`.
+
+For manuscript-surface fairness closure packaging:
+- `outputs/tale_matched_surface_fairness_closure_<timestamp>/`
+- `docs/TALE_MATCHED_SURFACE_FAIRNESS_CLOSURE_<timestamp>.md`
 
 ---
 
