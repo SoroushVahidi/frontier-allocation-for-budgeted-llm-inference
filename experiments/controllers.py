@@ -817,6 +817,11 @@ class GlobalDiversityAggregationController(BaseController):
         early_preservation_challenger_hold_steps: int = 1,
         enable_anti_collapse_answer_group_refinement: bool = False,
         anti_collapse_early_window: int = 6,
+        enable_conditional_anti_collapse_activation: bool = False,
+        conditional_anti_collapse_min_actions: int = 2,
+        conditional_anti_collapse_max_family_share_trigger: float = 0.58,
+        conditional_anti_collapse_max_active_groups_for_low_coverage: int = 1,
+        conditional_anti_collapse_min_consecutive_family_expands: int = 3,
         repeated_same_branch_penalty: float = 0.08,
         repeated_same_branch_cap: int = 3,
         repeat_expand_free_steps: int = 3,
@@ -948,6 +953,17 @@ class GlobalDiversityAggregationController(BaseController):
         self.early_preservation_challenger_hold_steps = max(0, int(early_preservation_challenger_hold_steps))
         self.enable_anti_collapse_answer_group_refinement = bool(enable_anti_collapse_answer_group_refinement)
         self.anti_collapse_early_window = max(1, int(anti_collapse_early_window))
+        self.enable_conditional_anti_collapse_activation = bool(enable_conditional_anti_collapse_activation)
+        self.conditional_anti_collapse_min_actions = max(0, int(conditional_anti_collapse_min_actions))
+        self.conditional_anti_collapse_max_family_share_trigger = max(
+            0.0, min(1.0, float(conditional_anti_collapse_max_family_share_trigger))
+        )
+        self.conditional_anti_collapse_max_active_groups_for_low_coverage = max(
+            1, int(conditional_anti_collapse_max_active_groups_for_low_coverage)
+        )
+        self.conditional_anti_collapse_min_consecutive_family_expands = max(
+            1, int(conditional_anti_collapse_min_consecutive_family_expands)
+        )
         self.repeated_same_branch_penalty = max(0.0, float(repeated_same_branch_penalty))
         self.repeated_same_branch_cap = max(1, int(repeated_same_branch_cap))
         self.repeat_expand_free_steps = max(0, int(repeat_expand_free_steps))
@@ -1349,6 +1365,23 @@ class GlobalDiversityAggregationController(BaseController):
     ) -> dict[str, dict[str, float]]:
         if (not self.enable_anti_collapse_answer_group_refinement) or actions >= self.anti_collapse_early_window:
             return {}
+        if self.enable_conditional_anti_collapse_activation:
+            total_group_expands_for_gate = max(1, sum(int(v) for v in expand_by_group.values()))
+            max_group_share = (
+                max(float(v) for v in expand_by_group.values()) / float(total_group_expands_for_gate)
+                if expand_by_group
+                else 0.0
+            )
+            active_group_count = len([k for k, v in active_group_counts.items() if str(k) != "__unknown__" and int(v) > 0])
+            low_coverage_state = active_group_count <= self.conditional_anti_collapse_max_active_groups_for_low_coverage
+            high_repeat_state = consecutive_same_family_expands >= self.conditional_anti_collapse_min_consecutive_family_expands
+            high_concentration_state = max_group_share >= self.conditional_anti_collapse_max_family_share_trigger
+            cond_active = (
+                actions >= self.conditional_anti_collapse_min_actions
+                and (low_coverage_state or high_repeat_state or high_concentration_state)
+            )
+            if not cond_active:
+                return {}
         continuation_sorted = sorted([float(item[2].get("continuation_value", 0.0)) for item in scored], reverse=True)
         top_cont = continuation_sorted[0] if continuation_sorted else 0.0
         second_cont = continuation_sorted[1] if len(continuation_sorted) > 1 else top_cont

@@ -1096,6 +1096,69 @@ def build_frontier_strategies(
             method_name="strict_f3_ablation_no_anti_collapse_v1",
             **strict_f3_no_anti_cfg,
         )
+        strict_f3_anti_collapse_weak_cfg = dict(strict_f3_base_cfg)
+        strict_f3_anti_collapse_weak_cfg.update(
+            {
+                "anti_collapse_early_window": 5,
+                "repeat_expand_penalty_weight": 0.03,
+                "repeat_expand_family_penalty_weight": 0.06,
+                "repeated_same_branch_penalty": 0.05,
+                "answer_group_distinctness_bonus": 0.07,
+                "duplicate_answer_group_penalty": 0.04,
+                "enable_low_marginal_gain_family_cooldown": False,
+            }
+        )
+        specs["strict_f3_anti_collapse_weak_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_anti_collapse_weak_v1",
+            **strict_f3_anti_collapse_weak_cfg,
+        )
+        specs["strict_f3_anti_collapse_default_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_anti_collapse_default_v1",
+            **strict_f3_base_cfg,
+        )
+        strict_f3_anti_collapse_strong_cfg = dict(strict_f3_base_cfg)
+        strict_f3_anti_collapse_strong_cfg.update(
+            {
+                "anti_collapse_early_window": 8,
+                "repeat_expand_penalty_weight": 0.09,
+                "repeat_expand_family_penalty_weight": 0.16,
+                "repeated_same_branch_penalty": 0.12,
+                "answer_group_distinctness_bonus": 0.16,
+                "duplicate_answer_group_penalty": 0.12,
+                "enable_low_marginal_gain_family_cooldown": True,
+                "low_marginal_gain_penalty_strength": 0.18,
+            }
+        )
+        specs["strict_f3_anti_collapse_strong_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_anti_collapse_strong_v1",
+            **strict_f3_anti_collapse_strong_cfg,
+        )
+        strict_f3_anti_collapse_conditional_cfg = dict(strict_f3_base_cfg)
+        strict_f3_anti_collapse_conditional_cfg.update(
+            {
+                "enable_conditional_anti_collapse_activation": True,
+                "conditional_anti_collapse_min_actions": 2,
+                "conditional_anti_collapse_max_family_share_trigger": 0.60,
+                "conditional_anti_collapse_max_active_groups_for_low_coverage": 1,
+                "conditional_anti_collapse_min_consecutive_family_expands": 3,
+            }
+        )
+        specs["strict_f3_anti_collapse_conditional_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_anti_collapse_conditional_v1",
+            **strict_f3_anti_collapse_conditional_cfg,
+        )
         strict_f3_no_repeat_cfg = dict(strict_f3_base_cfg)
         strict_f3_no_repeat_cfg.update(
             {
