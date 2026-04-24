@@ -1,0 +1,2 @@
+scope,provider_completed,partial,expected_rows,evaluated_rows,error_rows,api_failure_rate,best_ours_method,best_ours_accuracy,best_external_method,best_external_accuracy,ours_minus_external,positive_dataset_budget_majority,safe_main_paper,safe_appendix_only,safe_supportive_only,not_safe,final_safety_label
+openai,1,0,120,120,0,0.0,strict_f3,0.5333333333333333,self_consistency_3,0.5666666666666667,-0.033333333333333326,0,0,0,0,1,not safe

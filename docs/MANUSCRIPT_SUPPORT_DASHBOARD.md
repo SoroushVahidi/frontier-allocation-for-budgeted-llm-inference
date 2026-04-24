@@ -41,6 +41,7 @@ Primary decision authority:
 - Conditional-risk cap promotion investigation outputs and notes.
 - Component ablations and bounded mechanism diagnostics unless explicitly promoted.
 - Adjacent baselines (appendix-only policy lanes).
+- Real-model ours-vs-external canonical package scaffolding and dry-run manifests (`REAL_MODEL_OURS_VS_EXTERNAL_VALIDATION_20260424T002900Z.md`, `outputs/real_model_ours_vs_external_validation_20260424T002900Z/`) pending full API-backed completion.
 
 ### Historical / provenance
 - Legacy dated status notes and superseded summaries retained for traceability.

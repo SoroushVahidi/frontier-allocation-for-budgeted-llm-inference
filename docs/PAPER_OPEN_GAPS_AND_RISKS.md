@@ -15,6 +15,8 @@ Live list of missing pieces before submission-quality evidence closure.
 3. **Real-model breadth and stability**
    - Current real-model confirmation is useful but bounded.
    - Need wider-condition confirmation for stronger generalization claims.
+   - New canonical wrapper/package scaffold now exists (`scripts/run_real_model_ours_vs_external_validation.py`, dry-run package: `outputs/real_model_ours_vs_external_validation_20260424T002900Z/`), but full API-backed completion is still open.
+   - OpenAI real-model smoke run now completed (`outputs/real_model_ours_vs_external_validation_20260424T_OPENAI_REAL_SMOKE/`), with nonzero evaluated rows but small-sample/openai-only status; still not headline-safe and still requires larger follow-up.
 
 4. **Manuscript consolidation debt**
    - Surface-specific claims (`strict_gate1_cap_k6` vs `strict_f3`) must remain explicitly separated across all sections.

@@ -115,3 +115,5 @@ secrets.*
 
 !outputs/canonical_external_baseline_fairness_checklist_*/
 !outputs/canonical_external_baseline_fairness_checklist_*/**/*
+!outputs/real_model_ours_vs_external_validation_*/
+!outputs/real_model_ours_vs_external_validation_*/**/*
