@@ -31,9 +31,13 @@ SCRIPT_WHITELIST = [
     "scripts/paper",
     "scripts/check_repo_health.py",
     "scripts/smoke_test.py",
-    "scripts/audit_anonymous_supplement.py",
     "scripts/build_anonymous_neurips_supplement.py",
 ]
+
+SUPPLEMENT_EXCLUDE_PATHS = {
+    "scripts/audit_anonymous_supplement.py",
+    "scripts/verify_compute_optimal_tts_provenance.py",
+}
 
 DOCS_WHITELIST = [
     "docs/NEURIPS_PAPER_ARTIFACTS.md",
@@ -268,6 +272,8 @@ def main() -> int:
             copy_tree(source, SUPPLEMENT_ROOT / relative)
 
     for relative in SCRIPT_WHITELIST + DOCS_WHITELIST:
+        if relative in SUPPLEMENT_EXCLUDE_PATHS:
+            continue
         source = repo_root / relative
         if not source.exists():
             continue
