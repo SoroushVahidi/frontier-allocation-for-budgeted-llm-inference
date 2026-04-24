@@ -1,0 +1,3 @@
+comparison,simulation_mean_difference,real_model_mean_difference,direction_consistent,real_model_rows,simulation_rows
+strict_f3_vs_strict_gate1_cap_k6,0.004629444444444446,0.09588675,True,12,9
+strict_f3_vs_external_l1_max,0.13777779999999998,-0.08719358333333334,False,24,15

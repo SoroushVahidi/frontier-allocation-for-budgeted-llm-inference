@@ -1,0 +1,118 @@
+evidence_layer,provider,dataset,budget,method_a,method_b,comparison_rule,n_paired,accuracy_a,accuracy_b,mean_difference,bootstrap_ci_low,bootstrap_ci_high,permutation_p_value,win_count,tie_count,loss_count,interpretation
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,4,strict_f3,strict_gate1_cap_k6,required,120,0.641667,0.608333,0.033333,-0.091667,0.15,0.6888,31,62,27,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,4,strict_f3,external_l1_max,required,120,0.641667,0.525,0.116667,-0.008333,0.241667,0.0828,36,62,22,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,4,strict_gate1_cap_k6,external_l1_max,required,120,0.608333,0.525,0.083333,-0.05,0.208333,0.2518,36,58,26,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,4,strict_f3,external_l1_max,required,120,0.641667,0.525,0.116667,-0.008333,0.241667,0.0828,36,62,22,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,4,strict_f3,external_l1_max,family_if_available,120,0.641667,0.525,0.116667,-0.008333,0.241667,0.0828,36,62,22,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,6,strict_f3,strict_gate1_cap_k6,required,120,0.6,0.616667,-0.016667,-0.15,0.108333,0.8988,29,60,31,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,6,strict_f3,external_l1_max,required,120,0.6,0.525,0.075,-0.058333,0.2,0.3178,38,53,29,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,6,strict_gate1_cap_k6,external_l1_max,required,120,0.616667,0.525,0.091667,-0.008333,0.191667,0.1264,27,77,16,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,6,strict_gate1_cap_k6,external_l1_max,required,120,0.616667,0.525,0.091667,-0.008333,0.191667,0.1264,27,77,16,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,6,strict_gate1_cap_k6,external_l1_max,family_if_available,120,0.616667,0.525,0.091667,-0.008333,0.191667,0.1264,27,77,16,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,8,strict_f3,strict_gate1_cap_k6,required,120,0.675,0.641667,0.033333,-0.083333,0.158333,0.6914,29,66,25,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,8,strict_f3,external_l1_max,required,120,0.675,0.466667,0.208333,0.091667,0.316667,0.0014,42,61,17,strict_f3 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,8,strict_gate1_cap_k6,external_l1_max,required,120,0.641667,0.466667,0.175,0.05,0.308333,0.0138,43,55,22,strict_gate1_cap_k6 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,8,strict_f3_conditional_early_risk_cap_k2_v1,external_l1_max,required,120,0.725,0.466667,0.258333,0.141667,0.375,0.0,46,59,15,strict_f3_conditional_early_risk_cap_k2_v1 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/MATH-500,8,strict_f3_conditional_early_risk_cap_k2_v1,external_l1_max,family_if_available,120,0.725,0.466667,0.258333,0.141667,0.375,0.0,46,59,15,strict_f3_conditional_early_risk_cap_k2_v1 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,4,strict_f3,strict_gate1_cap_k6,required,120,0.6,0.558333,0.041667,-0.083333,0.158333,0.6048,31,63,26,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,4,strict_f3,external_l1_max,required,120,0.6,0.441667,0.158333,0.041667,0.266667,0.016,38,63,19,strict_f3 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,4,strict_gate1_cap_k6,external_l1_max,required,120,0.558333,0.441667,0.116667,-0.016667,0.25,0.1086,39,56,25,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,4,strict_f3,external_l1_max,required,120,0.6,0.441667,0.158333,0.041667,0.266667,0.016,38,63,19,strict_f3 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,4,strict_f3,external_l1_max,family_if_available,120,0.6,0.441667,0.158333,0.041667,0.266667,0.016,38,63,19,strict_f3 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,6,strict_f3,strict_gate1_cap_k6,required,120,0.575,0.608333,-0.033333,-0.158333,0.083333,0.6968,27,62,31,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,6,strict_f3,external_l1_max,required,120,0.575,0.466667,0.108333,-0.016667,0.241667,0.1254,38,57,25,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,6,strict_gate1_cap_k6,external_l1_max,required,120,0.608333,0.466667,0.141667,0.016667,0.266667,0.0494,43,51,26,strict_gate1_cap_k6 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,6,strict_f2,external_l1_max,required,120,0.625,0.466667,0.158333,0.033333,0.291667,0.0216,41,57,22,strict_f2 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,6,strict_f2,external_l1_max,family_if_available,120,0.625,0.466667,0.158333,0.033333,0.291667,0.0216,41,57,22,strict_f2 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,8,strict_f3,strict_gate1_cap_k6,required,120,0.616667,0.708333,-0.091667,-0.208333,0.025,0.1762,22,65,33,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,8,strict_f3,external_l1_max,required,120,0.616667,0.466667,0.15,0.025,0.275,0.0248,40,58,22,strict_f3 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,8,strict_gate1_cap_k6,external_l1_max,required,120,0.708333,0.466667,0.241667,0.125,0.358333,0.0002,41,67,12,strict_gate1_cap_k6 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,8,strict_f2,external_l1_max,required,120,0.716667,0.466667,0.25,0.133333,0.375,0.0,45,60,15,strict_f2 statistically stronger
+matched_surface_simulation,simulation,HuggingFaceH4/aime_2024,8,strict_f2,external_l1_max,family_if_available,120,0.716667,0.466667,0.25,0.133333,0.375,0.0,45,60,15,strict_f2 statistically stronger
+matched_surface_simulation,simulation,openai/gsm8k,4,strict_f3,strict_gate1_cap_k6,required,120,0.575,0.516667,0.058333,-0.058333,0.166667,0.4114,29,69,22,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,openai/gsm8k,4,strict_f3,external_l1_max,required,120,0.575,0.525,0.05,-0.075,0.175,0.5014,32,62,26,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,openai/gsm8k,4,strict_gate1_cap_k6,external_l1_max,required,120,0.516667,0.525,-0.008333,-0.125,0.108333,1.0,25,69,26,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,openai/gsm8k,4,strict_f3_conditional_early_risk_cap_k2_v1,external_l1_max,required,120,0.6,0.525,0.075,-0.05,0.191667,0.2664,31,67,22,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,openai/gsm8k,4,strict_f3_conditional_early_risk_cap_k2_v1,external_l1_max,family_if_available,120,0.6,0.525,0.075,-0.05,0.191667,0.2664,31,67,22,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,openai/gsm8k,6,strict_f3,strict_gate1_cap_k6,required,120,0.666667,0.633333,0.033333,-0.091667,0.158333,0.6884,31,62,27,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,openai/gsm8k,6,strict_f3,external_l1_max,required,120,0.666667,0.525,0.141667,0.025,0.266667,0.0404,38,61,21,strict_f3 statistically stronger
+matched_surface_simulation,simulation,openai/gsm8k,6,strict_gate1_cap_k6,external_l1_max,required,120,0.633333,0.525,0.108333,-0.016667,0.233333,0.115,37,59,24,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,openai/gsm8k,6,strict_f3,external_l1_max,required,120,0.666667,0.525,0.141667,0.025,0.266667,0.0404,38,61,21,strict_f3 statistically stronger
+matched_surface_simulation,simulation,openai/gsm8k,6,strict_f3,external_l1_max,family_if_available,120,0.666667,0.525,0.141667,0.025,0.266667,0.0404,38,61,21,strict_f3 statistically stronger
+matched_surface_simulation,simulation,openai/gsm8k,8,strict_f3,strict_gate1_cap_k6,required,120,0.641667,0.658333,-0.016667,-0.141667,0.1,0.893,27,64,29,difference fragile / not statistically decisive
+matched_surface_simulation,simulation,openai/gsm8k,8,strict_f3,external_l1_max,required,120,0.641667,0.416667,0.225,0.1,0.35,0.0014,48,51,21,strict_f3 statistically stronger
+matched_surface_simulation,simulation,openai/gsm8k,8,strict_gate1_cap_k6,external_l1_max,required,120,0.658333,0.416667,0.241667,0.108333,0.383333,0.0006,49,51,20,strict_gate1_cap_k6 statistically stronger
+matched_surface_simulation,simulation,openai/gsm8k,8,strict_f3_conditional_early_risk_cap_k2_v1,external_l1_max,required,120,0.658333,0.416667,0.241667,0.116667,0.375,0.0006,47,55,18,strict_f3_conditional_early_risk_cap_k2_v1 statistically stronger
+matched_surface_simulation,simulation,openai/gsm8k,8,strict_f3_conditional_early_risk_cap_k2_v1,external_l1_max,family_if_available,120,0.658333,0.416667,0.241667,0.116667,0.375,0.0006,47,55,18,strict_f3_conditional_early_risk_cap_k2_v1 statistically stronger
+real_model_ours_vs_external,cohere,openai/gsm8k,4,strict_f3,strict_gate1_cap_k6,required,34,0.558824,0.558824,0.0,-0.147059,0.147059,1.0,3,28,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,4,strict_f3,external_l1_max,required,34,0.558824,0.764706,-0.205882,-0.382353,-0.029412,0.068,2,23,9,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,4,strict_gate1_cap_k6,external_l1_max,required,36,0.555556,0.777778,-0.222222,-0.388889,-0.055556,0.0382,2,24,10,external_l1_max statistically stronger
+real_model_ours_vs_external,cohere,openai/gsm8k,4,strict_f3,self_consistency_3,required_if_available,32,0.5625,0.625,-0.0625,-0.25,0.09375,0.7224,3,24,5,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,4,strict_f3,external_l1_max,required,34,0.558824,0.764706,-0.205882,-0.382353,-0.029412,0.068,2,23,9,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,4,strict_f3,external_l1_max,family_if_available,34,0.558824,0.764706,-0.205882,-0.382353,-0.029412,0.068,2,23,9,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,6,strict_f3,strict_gate1_cap_k6,required,17,0.588235,0.588235,0.0,-0.235294,0.235294,1.0,2,13,2,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,6,strict_f3,external_l1_max,required,16,0.5625,0.6875,-0.125,-0.375,0.125,0.625,1,12,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,6,strict_gate1_cap_k6,external_l1_max,required,17,0.529412,0.647059,-0.117647,-0.411765,0.176471,0.726562,3,9,5,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,6,strict_f3,self_consistency_3,required_if_available,13,0.615385,0.846154,-0.230769,-0.538462,0.076923,0.375,1,8,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,6,strict_f3,external_l1_max,required,16,0.5625,0.6875,-0.125,-0.375,0.125,0.625,1,12,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,6,strict_f3,self_consistency_3,family_if_available,13,0.615385,0.846154,-0.230769,-0.538462,0.076923,0.375,1,8,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,8,strict_f3,strict_gate1_cap_k6,required,20,0.6,0.55,0.05,-0.15,0.25,1.0,3,15,2,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,8,strict_f3,external_l1_max,required,20,0.6,0.75,-0.15,-0.35,0.05,0.375,1,15,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,8,strict_gate1_cap_k6,external_l1_max,required,20,0.55,0.75,-0.2,-0.45,0.0,0.21875,1,14,5,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,8,strict_f3,self_consistency_3,required_if_available,19,0.578947,0.684211,-0.105263,-0.315789,0.105263,0.625,1,15,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,8,strict_f2,external_l1_max,required,18,0.666667,0.722222,-0.055556,-0.333333,0.166667,1.0,2,13,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,cohere,openai/gsm8k,8,strict_f2,external_l1_max,family_if_available,18,0.666667,0.722222,-0.055556,-0.333333,0.166667,1.0,2,13,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,4,strict_f3,strict_gate1_cap_k6,required,40,0.625,0.35,0.275,0.125,0.425,0.0024,12,27,1,strict_f3 statistically stronger
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,4,strict_f3,external_l1_max,required,40,0.625,0.575,0.05,-0.075,0.175,0.6776,4,34,2,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,4,strict_gate1_cap_k6,external_l1_max,required,40,0.35,0.575,-0.225,-0.375,-0.075,0.0108,1,29,10,external_l1_max statistically stronger
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,4,strict_f3,self_consistency_3,required_if_available,40,0.625,0.6,0.025,0.0,0.075,1.0,1,39,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,4,strict_f3,external_l1_max,required,40,0.625,0.575,0.05,-0.075,0.175,0.6776,4,34,2,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,4,strict_f3,self_consistency_3,family_if_available,40,0.625,0.6,0.025,0.0,0.075,1.0,1,39,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,6,strict_f3,strict_gate1_cap_k6,required,40,0.525,0.55,-0.025,-0.125,0.05,1.0,1,37,2,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,6,strict_f3,external_l1_max,required,40,0.525,0.625,-0.1,-0.25,0.025,0.2862,2,32,6,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,6,strict_gate1_cap_k6,external_l1_max,required,40,0.55,0.625,-0.075,-0.225,0.075,0.5036,3,31,6,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,6,strict_f3,self_consistency_3,required_if_available,40,0.525,0.625,-0.1,-0.225,0.025,0.3008,2,32,6,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,6,strict_f2,external_l1_max,required,40,0.55,0.625,-0.075,-0.2,0.05,0.4484,2,33,5,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,6,strict_f2,external_l1_max,family_if_available,40,0.55,0.625,-0.075,-0.2,0.05,0.4484,2,33,5,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,8,strict_f3,strict_gate1_cap_k6,required,40,0.65,0.625,0.025,-0.05,0.1,1.0,2,37,1,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,8,strict_f3,external_l1_max,required,40,0.65,0.675,-0.025,-0.15,0.1,1.0,3,33,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,8,strict_gate1_cap_k6,external_l1_max,required,40,0.625,0.675,-0.05,-0.15,0.05,0.6208,1,36,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,8,strict_f3,self_consistency_3,required_if_available,40,0.65,0.7,-0.05,-0.175,0.075,0.6926,2,34,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,8,strict_f2,external_l1_max,required,40,0.65,0.675,-0.025,-0.15,0.075,1.0,2,35,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/MATH-500,8,strict_f2,self_consistency_3,family_if_available,40,0.65,0.7,-0.05,-0.175,0.075,0.691,2,34,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,4,strict_f3,strict_gate1_cap_k6,required,40,0.05,0.0,0.05,0.0,0.125,0.5036,2,38,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,4,strict_f3,external_l1_max,required,40,0.05,0.1,-0.05,-0.15,0.05,0.6296,1,36,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,4,strict_gate1_cap_k6,external_l1_max,required,40,0.0,0.1,-0.1,-0.2,-0.025,0.1246,0,36,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,4,strict_f3,self_consistency_3,required_if_available,40,0.05,0.025,0.025,0.0,0.075,1.0,1,39,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,4,strict_f3,external_l1_max,required,40,0.05,0.1,-0.05,-0.15,0.05,0.6296,1,36,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,4,strict_f3,external_l1_max,family_if_available,40,0.05,0.1,-0.05,-0.15,0.05,0.6296,1,36,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,6,strict_f3,strict_gate1_cap_k6,required,40,0.0,0.0,0.0,0.0,0.0,1.0,0,40,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,6,strict_f3,external_l1_max,required,40,0.0,0.15,-0.15,-0.275,-0.05,0.0342,0,34,6,external_l1_max statistically stronger
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,6,strict_gate1_cap_k6,external_l1_max,required,40,0.0,0.15,-0.15,-0.275,-0.05,0.0326,0,34,6,external_l1_max statistically stronger
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,6,strict_f3,self_consistency_3,required_if_available,40,0.0,0.125,-0.125,-0.225,-0.025,0.0606,0,35,5,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,6,strict_f2,external_l1_max,required,40,0.025,0.15,-0.125,-0.225,-0.025,0.0638,0,35,5,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,6,strict_f2,external_l1_max,family_if_available,40,0.025,0.15,-0.125,-0.225,-0.025,0.0638,0,35,5,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,8,strict_f3,strict_gate1_cap_k6,required,40,0.15,0.05,0.1,0.025,0.2,0.1232,4,36,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,8,strict_f3,external_l1_max,required,40,0.15,0.15,0.0,-0.1,0.1,1.0,2,36,2,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,8,strict_gate1_cap_k6,external_l1_max,required,40,0.05,0.15,-0.1,-0.2,-0.025,0.1264,0,36,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,8,strict_f3,self_consistency_3,required_if_available,40,0.15,0.15,0.0,-0.125,0.125,1.0,3,34,3,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,8,strict_f2,external_l1_max,required,40,0.15,0.15,0.0,-0.1,0.1,1.0,2,36,2,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,HuggingFaceH4/aime_2024,8,strict_f2,external_l1_max,family_if_available,40,0.15,0.15,0.0,-0.1,0.1,1.0,2,36,2,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,4,strict_f3,strict_gate1_cap_k6,required,40,0.875,0.225,0.65,0.5,0.775,0.0,26,14,0,strict_f3 statistically stronger
+real_model_ours_vs_external,openai,openai/gsm8k,4,strict_f3,external_l1_max,required,40,0.875,0.85,0.025,0.0,0.075,1.0,1,39,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,4,strict_gate1_cap_k6,external_l1_max,required,40,0.225,0.85,-0.625,-0.775,-0.475,0.0,0,15,25,external_l1_max statistically stronger
+real_model_ours_vs_external,openai,openai/gsm8k,4,strict_f3,self_consistency_3,required_if_available,40,0.875,0.8,0.075,0.0,0.175,0.2434,3,37,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,4,strict_f3,external_l1_max,required,40,0.875,0.85,0.025,0.0,0.075,1.0,1,39,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,4,strict_f3,external_l1_max,family_if_available,40,0.875,0.85,0.025,0.0,0.075,1.0,1,39,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,6,strict_f3,strict_gate1_cap_k6,required,40,0.6,0.6,0.0,-0.15,0.15,1.0,4,32,4,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,6,strict_f3,external_l1_max,required,40,0.6,0.875,-0.275,-0.425,-0.15,0.0008,0,29,11,external_l1_max statistically stronger
+real_model_ours_vs_external,openai,openai/gsm8k,6,strict_gate1_cap_k6,external_l1_max,required,40,0.6,0.875,-0.275,-0.425,-0.15,0.0018,0,29,11,external_l1_max statistically stronger
+real_model_ours_vs_external,openai,openai/gsm8k,6,strict_f3,self_consistency_3,required_if_available,40,0.6,0.875,-0.275,-0.425,-0.15,0.0012,0,29,11,self_consistency_3 statistically stronger
+real_model_ours_vs_external,openai,openai/gsm8k,6,strict_f3,external_l1_max,required,40,0.6,0.875,-0.275,-0.425,-0.15,0.0008,0,29,11,external_l1_max statistically stronger
+real_model_ours_vs_external,openai,openai/gsm8k,6,strict_f3,external_l1_max,family_if_available,40,0.6,0.875,-0.275,-0.425,-0.15,0.0008,0,29,11,external_l1_max statistically stronger
+real_model_ours_vs_external,openai,openai/gsm8k,8,strict_f3,strict_gate1_cap_k6,required,39,0.871795,0.846154,0.025641,0.0,0.102564,1.0,1,38,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,8,strict_f3,external_l1_max,required,40,0.875,0.875,0.0,0.0,0.0,1.0,0,40,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,8,strict_gate1_cap_k6,external_l1_max,required,39,0.846154,0.871795,-0.025641,-0.076923,0.0,1.0,0,38,1,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,8,strict_f3,self_consistency_3,required_if_available,40,0.875,0.875,0.0,0.0,0.0,1.0,0,40,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,8,strict_f3,external_l1_max,required,40,0.875,0.875,0.0,0.0,0.0,1.0,0,40,0,difference fragile / not statistically decisive
+real_model_ours_vs_external,openai,openai/gsm8k,8,strict_f3,external_l1_max,family_if_available,40,0.875,0.875,0.0,0.0,0.0,1.0,0,40,0,difference fragile / not statistically decisive

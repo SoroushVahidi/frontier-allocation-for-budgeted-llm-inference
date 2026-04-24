@@ -22,6 +22,7 @@ This page defines which files are safe to cite for manuscript claims.
 - `EXTERNAL_BASELINE_PAPER_READINESS_DECISION_PACKAGE.md`
 - `PAPER_FACING_BASELINE_COMPARISON_PACKAGE_20260422T231500Z.md`
 - `MAIN_TABLE_EXTERNAL_BASELINE_FAIRNESS_AUDIT_20260423T205134Z.md`
+- `UNIFIED_CLAIM_SAFETY_STATISTICAL_AUDIT_20260424T200000Z.md` (claim-boundary guardrail and manuscript-safe wording authority)
 
 ## Canonical artifact families (paper-facing)
 
@@ -33,6 +34,7 @@ This page defines which files are safe to cite for manuscript claims.
 - `outputs/paper_figures/`
 - `outputs/paper_tables/`
 - `outputs/paper_facing_baseline_tables/<run_id>/`
+- `outputs/unified_claim_safety_statistical_audit_20260424T200000Z/` (cross-artifact claim-safety and statistical-boundary package)
 
 ## Supportive-only families (do not over-claim)
 

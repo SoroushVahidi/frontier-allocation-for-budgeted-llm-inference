@@ -1,0 +1,13 @@
+{
+  "abstract_safe_sentence": "We present an action-budgeted frontier-allocation formulation that is competitive on matched surfaces, with mixed real-model evidence reported conservatively.",
+  "forbidden_phrases_to_avoid": [
+    "state-of-the-art across providers",
+    "universal dominance",
+    "statistically decisive everywhere",
+    "fully compute-matched fairness"
+  ],
+  "intro_safe_contribution_sentence": "Our contribution is a formulation-level controller and diagnostic framework with bounded empirical support rather than universal dominance.",
+  "limitations_sentence": "Comparisons are primarily action-budget matched; token/latency/hardware comparability remains partially bounded by available artifacts.",
+  "real_model_appendix_sentence": "OpenAI/Cohere real-model checks are reported as corroborative appendix evidence and not as standalone dominance proof.",
+  "results_safe_sentence": "Strict-F3 is a practical manuscript-facing representative, but pairwise gains over nearby variants are small and surface-sensitive."
+}

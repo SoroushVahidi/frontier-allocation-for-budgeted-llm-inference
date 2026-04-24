@@ -124,3 +124,5 @@ terminals/
 !outputs/canonical_external_baseline_fairness_checklist_*/**/*
 !outputs/real_model_ours_vs_external_validation_*/
 !outputs/real_model_ours_vs_external_validation_*/**/*
+!outputs/unified_claim_safety_statistical_audit_*/
+!outputs/unified_claim_safety_statistical_audit_*/**/*

@@ -1,0 +1,24 @@
+{
+  "api_required": false,
+  "discovered_artifacts": 17,
+  "limitations": 6,
+  "offline_only": true,
+  "output_dir": "outputs/unified_claim_safety_statistical_audit_20260424T200000Z",
+  "pairwise_rows": 117,
+  "per_case_rows": 32278,
+  "repo_root": "/workspace/adaptive-reasoning-budget-allocation",
+  "required_outputs": [
+    "manifest.json",
+    "artifact_inventory.csv",
+    "artifact_limitations.csv",
+    "claim_safety_table.csv",
+    "pairwise_statistical_tests.csv",
+    "winner_instability_by_surface.csv",
+    "real_model_vs_simulation_consistency.csv",
+    "token_latency_accounting_summary.csv",
+    "component_ablation_claim_support.csv",
+    "manuscript_recommended_wording.json",
+    "STATUS.md"
+  ],
+  "timestamp": "20260424T200000Z"
+}
