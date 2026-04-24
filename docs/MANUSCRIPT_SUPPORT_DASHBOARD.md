@@ -45,6 +45,7 @@ Primary decision authority:
 - Real-model token/accounting appendix package scaffold added (`scripts/run_real_model_token_accounting_validation.py`) to report accuracy plus token/latency/cost diagnostics on the manuscript-facing GSM8K/MATH-500/AIME budgets 4/6/8 surface; keep appendix-only framing unless materially larger API-backed evidence arrives.
 - Cross-provider appendix validation (OpenAI + Cohere) now runs through the same token-accounting script and outputs unified provider/method summaries; maintain appendix-only framing unless larger-sample evidence materially strengthens robustness.
 - A new small OpenAI appendix accounting result package is available (`REAL_MODEL_TOKEN_ACCOUNTING_VALIDATION_20260424T170000Z_SMALL_APPENDIX.md`), explicitly maintained as appendix-only and non-headline.
+- OpenAI main-run artifact audit now exists (`OPENAI_REAL_MODEL_MAIN_RUN_AUDIT_20260424T160513Z.md`; outputs in `outputs/openai_real_model_main_run_audit_20260424T160513Z/`): `strict_f3` > `strict_gate1_cap_k6`, but no OpenAI evidence of frontier-allocation dominance over `external_l1_max`; maintain appendix-only/non-headline usage.
 
 ### Historical / provenance
 - Legacy dated status notes and superseded summaries retained for traceability.

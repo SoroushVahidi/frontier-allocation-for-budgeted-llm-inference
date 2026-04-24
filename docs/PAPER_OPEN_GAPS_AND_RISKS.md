@@ -17,6 +17,7 @@ Live list of missing pieces before submission-quality evidence closure.
    - Need wider-condition confirmation for stronger generalization claims.
    - New canonical wrapper/package scaffold now exists (`scripts/run_real_model_ours_vs_external_validation.py`, dry-run package: `outputs/real_model_ours_vs_external_validation_20260424T002900Z/`), but full API-backed completion is still open.
    - OpenAI real-model smoke run now completed (`outputs/real_model_ours_vs_external_validation_20260424T_OPENAI_REAL_SMOKE/`), with nonzero evaluated rows but small-sample/openai-only status; still not headline-safe and still requires larger follow-up.
+   - OpenAI real-model main-run artifact audit completed (`outputs/openai_real_model_main_run_audit_20260424T160513Z/`, `docs/OPENAI_REAL_MODEL_MAIN_RUN_AUDIT_20260424T160513Z.md`): `strict_f3` beats `strict_gate1_cap_k6`, but frontier-allocation does **not** dominate `external_l1_max`; keep appendix-only framing and avoid dominance overclaims.
 
    - Appendix reviewer-risk-reduction token/accounting validation scaffold now added (`scripts/run_real_model_token_accounting_validation.py`) with dry-run-safe packaging and resumable per-case artifacts (`outputs/real_model_token_accounting_validation_<timestamp>/`).
    - This closes packaging/diagnostic visibility risk, but does **not** by itself close broader real-model breadth risk without larger API-backed runs.
