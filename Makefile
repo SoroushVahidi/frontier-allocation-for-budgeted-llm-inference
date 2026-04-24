@@ -1,4 +1,4 @@
-.PHONY: setup smoke health format lint test check prepaper help
+.PHONY: setup smoke health format lint test check prepaper anonymous-audit anonymous-supplement help
 
 PY_DIRS := scripts experiments tests
 
@@ -44,3 +44,10 @@ prepaper:
 	python3 -m pytest -q
 	python3 scripts/smoke_test.py
 	@echo "Pre-paper gate: use docs/PAPER_REPRODUCTION_CHECKLIST.md before regenerating manuscript artifacts."
+
+anonymous-audit:
+	python scripts/audit_anonymous_supplement.py
+
+anonymous-supplement:
+	python scripts/build_anonymous_neurips_supplement.py
+	python scripts/audit_anonymous_supplement.py --path dist/neurips2026_anonymous_supplement
