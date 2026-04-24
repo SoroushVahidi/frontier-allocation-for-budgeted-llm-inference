@@ -258,11 +258,15 @@ def _classification_metrics(y_true: np.ndarray, pred: np.ndarray, prob: np.ndarr
     return out
 
 
-def _regression_metrics(y_true: np.ndarray, pred: np.ndarray) -> dict[str, float]:
+def _regression_metrics(y_true: np.ndarray, pred: np.ndarray) -> dict[str, float | None]:
+    # sklearn's r2_score is undefined for n < 2; keep smoke tests warning-free.
+    r2_value: float | None = None
+    if len(y_true) >= 2:
+        r2_value = float(r2_score(y_true, pred))
     return {
         "mae": float(mean_absolute_error(y_true, pred)),
         "rmse": float(math.sqrt(mean_squared_error(y_true, pred))),
-        "r2": float(r2_score(y_true, pred)),
+        "r2": r2_value,
     }
 
 

@@ -49,5 +49,4 @@ anonymous-audit:
 	python scripts/audit_anonymous_supplement.py
 
 anonymous-supplement:
-	python scripts/build_anonymous_neurips_supplement.py
-	python scripts/audit_anonymous_supplement.py --path dist/neurips2026_anonymous_supplement
+	python scripts/build_anonymous_supplement.py
