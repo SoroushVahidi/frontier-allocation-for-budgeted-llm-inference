@@ -1,31 +1,38 @@
 #!/usr/bin/env python3
-"""Build anonymous NeurIPS 2026 supplementary package staging directory and ZIP."""
+"""Build an anonymized NeurIPS 2026 supplement staging directory and ZIP."""
 
 from __future__ import annotations
 
-import os
+import re
 import shutil
 from pathlib import Path
 
 SUPPLEMENT_ROOT = Path("dist/neurips2026_anonymous_supplement")
 ZIP_BASE = Path("dist/neurips2026_anonymous_supplement")
+ZIP_PATH = Path("dist/neurips2026_anonymous_supplement.zip")
 
 TOP_LEVEL_FILES = [
-    "QUICKSTART.md",
     "pyproject.toml",
     "requirements.txt",
     "Makefile",
+    "QUICKSTART.md",
 ]
 
 TOP_LEVEL_DIRS = [
     "experiments",
-    "scripts",
     "configs",
     "tests",
-    "references",
     "outputs/paper_plot_data",
     "outputs/paper_tables",
     "outputs/paper_figures",
+]
+
+SCRIPT_WHITELIST = [
+    "scripts/paper",
+    "scripts/check_repo_health.py",
+    "scripts/smoke_test.py",
+    "scripts/audit_anonymous_supplement.py",
+    "scripts/build_anonymous_neurips_supplement.py",
 ]
 
 DOCS_WHITELIST = [
@@ -37,12 +44,16 @@ DOCS_WHITELIST = [
     "docs/CANONICAL_START_HERE.md",
     "docs/CANONICAL_INSTALL_AND_DEV.md",
     "scripts/CANONICAL_START_HERE.md",
+    "docs/ANONYMOUS_SUPPLEMENT_PREPARATION.md",
 ]
 
 EXCLUDE_DIR_NAMES = {
     ".git",
     ".github",
     "archive",
+    "logs",
+    "jobs",
+    "notebooks",
     "__pycache__",
     ".pytest_cache",
     ".mypy_cache",
@@ -63,11 +74,35 @@ EXCLUDE_SUBSTRINGS = [
     "real_model_ours_vs_external_validation_20260424T_OPENAI_REAL_SMOKE",
 ]
 
+RESTRICTED_PATTERNS = [
+    re.compile(r"\b(Soroush|Vahidi|SoroushVahidi|NJIT|New Jersey Institute of Technology)\b", re.IGNORECASE),
+    re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"),
+    re.compile(r"\b(OPENAI_API_KEY|COHERE_API_KEY|HF_TOKEN|GEMINI_API_KEY)\b"),
+    re.compile(r"\b(sk-[A-Za-z0-9]{16,}|gsk_[A-Za-z0-9]{16,})\b"),
+    re.compile(r"Bearer\s+[A-Za-z0-9._\-]{16,}", re.IGNORECASE),
+    re.compile(r"github\.com/(Soroush|SoroushVahidi)", re.IGNORECASE),
+    re.compile(r"(/home/|/Users/|/mnt/|/scratch/|/project/|/run/user/)", re.IGNORECASE),
+]
+
+TEXT_EXTENSIONS = {
+    ".md",
+    ".txt",
+    ".py",
+    ".toml",
+    ".yaml",
+    ".yml",
+    ".json",
+    ".csv",
+    ".tsv",
+    ".ini",
+    ".cfg",
+    ".sh",
+    ".rst",
+}
+
 README_TEXT = """# Anonymous Supplementary Package
 
-This is the anonymous supplementary package for **“Adaptive Frontier Allocation for Budgeted LLM Inference.”**
-
-It supports reproduction of the manuscript-facing figures and tables.
+This is the anonymous supplement for NeurIPS 2026 submission review.
 
 ## Main Commands
 
@@ -82,13 +117,10 @@ python scripts/paper/run_all_neurips_paper_artifacts.py
 - `outputs/paper_figures/`
 - `outputs/paper_tables/`
 
-## Claim Surface and Method Semantics
+## Scope and Claim Boundaries
 
-- Claims are tied to the matched manuscript-facing surface.
-- `strict_f3` is the manuscript-facing internal method on that surface.
-- `strict_gate1_cap_k6` is a broader operational default on a different surface and should not be collapsed with `strict_f3`.
-- External baselines are near-direct matched-substrate adapter baselines, not full official reproductions.
-- Real-model OpenAI smoke evidence, if present, is development-only and not used as headline evidence.
+This package is restricted to reviewer-facing reproducibility materials and
+claim-boundary documentation for manuscript-facing evidence only.
 """
 
 REPRODUCIBILITY_TEXT = """# Reproducibility
@@ -97,95 +129,98 @@ REPRODUCIBILITY_TEXT = """# Reproducibility
 
 - Python >= 3.10
 
-## Install Dependencies
+## Install
 
 ```bash
 python -m pip install -r requirements.txt
 python -m pip install -e .[dev]
 ```
 
-## Validate Package
+## Validate
 
 ```bash
 make check
 ```
 
-## Regenerate Manuscript-Facing Artifacts
+## Regenerate Paper Artifacts
 
 ```bash
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
 
-## Expected Regenerated Outputs
+## Expected Outputs
 
 - `outputs/paper_plot_data/`
 - `outputs/paper_figures/`
 - `outputs/paper_tables/`
-
-## Scope Notes
-
-- The paper artifact runner regenerates figures/tables from committed canonical machine-readable bundles.
-- It does **not** recompute every historical raw experiment artifact present in the broader project history.
-- No API keys are required for reproducing the paper-facing artifact package.
-- Optional API-backed real-model scripts are development-only and are not required for paper artifact reproduction.
 """
 
 CLAIM_BOUNDARIES_TEXT = """# Claim Boundaries
 
-- The main paper-facing claim is bounded to the matched manuscript-facing comparison surface.
-- `strict_f3` is not claimed to universally dominate `strict_gate1_cap_k6`.
-- The main comparison is our frontier-allocation family vs near-direct external budget-control baselines.
-- Adjacent baselines are not merged into the main ranking because control spaces are non-equivalent.
-- Real-model smoke validation is not headline-safe unless later explicitly promoted by canonical docs.
-- Do not cite exploratory/historical outputs as paper evidence.
+- Main claims are bounded to manuscript-facing, matched-surface comparisons.
+- `strict_f3` and `strict_gate1_cap_k6` are distinct and not collapsed.
+- Adjacent baselines are not treated as control-equivalent to main comparisons.
+- Real-model smoke outputs are development-only unless explicitly promoted.
+- Historical exploratory outputs are out of scope for paper claims.
 """
 
 ANONYMITY_TEXT = """# Anonymity
 
-This package has been stripped of:
+This supplement excludes author identities, institutional identifiers,
+private links, local absolute paths, and secrets.
 
-- Author names and GitHub usernames.
-- Email addresses and private URLs.
-- Local absolute paths and institutional identifiers.
-- API keys, token-like secrets, and repository metadata.
-
-Reviewer guidance:
-
-- Use only this local package for evaluation.
-- Do not depend on external private links or private repository history.
-
-A de-anonymized public repository can be provided after acceptance.
+Reviewers should evaluate only this package and avoid any external identity
+resolution attempts.
 """
 
 
 def should_skip(path: Path) -> bool:
-    name = path.name
-    if name in EXCLUDE_DIR_NAMES:
+    if any(part in EXCLUDE_DIR_NAMES for part in path.parts):
         return True
     rel = path.as_posix()
     if any(token in rel for token in EXCLUDE_SUBSTRINGS):
         return True
-    for pattern in EXCLUDE_FILE_GLOBS:
-        if path.match(pattern):
-            return True
-    return False
+    return any(path.match(pattern) for pattern in EXCLUDE_FILE_GLOBS)
+
+
+def is_text_file(path: Path) -> bool:
+    if path.suffix.lower() in TEXT_EXTENSIONS:
+        return True
+    try:
+        sample = path.read_bytes()[:2048]
+    except OSError:
+        return False
+    return b"\x00" not in sample
+
+
+def contains_restricted_content(path: Path) -> bool:
+    if not is_text_file(path):
+        return False
+    try:
+        content = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+    return any(pattern.search(content) for pattern in RESTRICTED_PATTERNS)
+
+
+def copy_file(src: Path, dst: Path) -> bool:
+    if should_skip(src):
+        return False
+    if contains_restricted_content(src):
+        return False
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dst)
+    return True
 
 
 def copy_tree(src: Path, dst: Path) -> None:
-    for current_root, dirnames, filenames in os.walk(src):
-        current = Path(current_root)
-        rel_root = current.relative_to(src)
-
-        dirnames[:] = [d for d in dirnames if not should_skip(Path(d)) and not should_skip(rel_root / d)]
-
-        (dst / rel_root).mkdir(parents=True, exist_ok=True)
-        for filename in filenames:
-            source_file = current / filename
-            rel_file = rel_root / filename
-            if should_skip(source_file) or should_skip(rel_file):
-                continue
-            (dst / rel_file.parent).mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source_file, dst / rel_file)
+    for source_file in src.rglob("*"):
+        if not source_file.is_file():
+            continue
+        rel = source_file.relative_to(src)
+        if should_skip(rel) or should_skip(source_file):
+            continue
+        copy_file(source_file, dst / rel)
 
 
 def write_text(path: Path, text: str) -> None:
@@ -225,19 +260,22 @@ def main() -> int:
     for relative in TOP_LEVEL_FILES:
         source = repo_root / relative
         if source.exists():
-            shutil.copy2(source, SUPPLEMENT_ROOT / relative)
+            copy_file(source, SUPPLEMENT_ROOT / relative)
 
     for relative in TOP_LEVEL_DIRS:
         source = repo_root / relative
-        if source.exists():
+        if source.exists() and source.is_dir():
             copy_tree(source, SUPPLEMENT_ROOT / relative)
 
-    for relative in DOCS_WHITELIST:
+    for relative in SCRIPT_WHITELIST + DOCS_WHITELIST:
         source = repo_root / relative
-        if source.exists():
-            destination = SUPPLEMENT_ROOT / relative
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, destination)
+        if not source.exists():
+            continue
+        destination = SUPPLEMENT_ROOT / relative
+        if source.is_dir():
+            copy_tree(source, destination)
+        else:
+            copy_file(source, destination)
 
     write_text(SUPPLEMENT_ROOT / "README.md", README_TEXT)
     write_text(SUPPLEMENT_ROOT / "REPRODUCIBILITY.md", REPRODUCIBILITY_TEXT)
@@ -246,8 +284,10 @@ def main() -> int:
     write_manifest(SUPPLEMENT_ROOT)
 
     archive_path = shutil.make_archive(str(ZIP_BASE), "zip", root_dir=SUPPLEMENT_ROOT)
+    zip_size_mb = ZIP_PATH.stat().st_size / (1024 * 1024) if ZIP_PATH.exists() else 0.0
     print(f"[build] staging_dir={SUPPLEMENT_ROOT}")
     print(f"[build] zip={archive_path}")
+    print(f"[build] zip_size_mb={zip_size_mb:.3f}")
     return 0
 
 
