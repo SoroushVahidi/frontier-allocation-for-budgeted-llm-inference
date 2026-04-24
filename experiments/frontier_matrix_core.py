@@ -18,6 +18,7 @@ from experiments.controllers import (
     GlobalDiversityAggregationController,
     GreedyController,
     IntermediateTrapAwareNearTieController,
+    TreeOfThoughtMatchedBudgetController,
     ProgramOfThoughtController,
     S1BudgetForcingController,
     SelectiveSelfConsistencyHybridController,
@@ -138,6 +139,30 @@ def build_frontier_strategies(
         "reasoning_greedy": GreedyController(generator_factory(), scorer, budget),
         "self_consistency_3": BestOfNController(generator_factory(), scorer, budget, n_candidates=3),
         "reasoning_beam2": BeamController(generator_factory(), scorer, budget, width=2),
+        "tot_bfs_matched_budget": TreeOfThoughtMatchedBudgetController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="tot_bfs_matched_budget",
+            search_mode="bfs",
+            frontier_width=3,
+        ),
+        "tot_beam_matched_budget": TreeOfThoughtMatchedBudgetController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="tot_beam_matched_budget",
+            search_mode="beam",
+            frontier_width=3,
+        ),
+        "tot_dfs_matched_budget": TreeOfThoughtMatchedBudgetController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="tot_dfs_matched_budget",
+            search_mode="dfs",
+            frontier_width=3,
+        ),
     }
     for min_expand in adaptive_min_expand_grid:
         specs[f"adaptive_min_expand_{min_expand}"] = AdaptiveController(

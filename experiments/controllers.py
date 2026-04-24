@@ -185,6 +185,95 @@ class BeamController(BaseController):
         )
 
 
+class TreeOfThoughtMatchedBudgetController(BaseController):
+    """Matched-budget ToT-style controller adapter.
+
+    This is intentionally a light-weight adapter for this repository's branch API, not
+    an official reproduction of the Tree-of-Thoughts reference implementation.
+    """
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        method_name: str,
+        search_mode: str = "bfs",
+        frontier_width: int = 3,
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.method_name = method_name
+        self.search_mode = search_mode.strip().lower()
+        self.frontier_width = max(1, int(frontier_width))
+
+    def _pick_active_idx(self, frontier: list[BranchState]) -> int | None:
+        active = [(i, b) for i, b in enumerate(frontier) if not b.is_done and not b.is_pruned]
+        if not active:
+            return None
+        if self.search_mode == "dfs":
+            return active[-1][0]
+        if self.search_mode == "beam":
+            scored = sorted(active, key=lambda t: (-float(self.scorer.score_branch(t[1])), str(t[1].branch_id), t[0]))
+            return scored[0][0]
+        # bfs default
+        return active[0][0]
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        actions = expansions = verifications = 0
+        surviving_trace: list[int] = []
+        frontier: list[BranchState] = [self.generator.init_branch(f"{self.method_name}_root")]
+
+        while actions < self.max_actions:
+            idx = self._pick_active_idx(frontier)
+            if idx is None:
+                break
+            branch = frontier[idx]
+            self.generator.expand(branch, question, gold_answer)
+            actions += 1
+            expansions += 1
+
+            # Deterministic frontier pruning by score then branch id.
+            live = [b for b in frontier if not b.is_pruned]
+            live_sorted = sorted(
+                live,
+                key=lambda b: (-float(self.scorer.score_branch(b)), str(b.branch_id)),
+            )
+            keep_ids = {b.branch_id for b in live_sorted[: self.frontier_width]}
+            for b in live:
+                if b.branch_id not in keep_ids and not b.is_pruned:
+                    self.generator.prune(b)
+            frontier = [b for b in frontier if not b.is_pruned]
+            surviving_trace.append(len(frontier))
+
+            if branch.is_done:
+                continue
+            if len(frontier) < self.frontier_width and actions < self.max_actions:
+                child = self.generator.init_branch(f"{self.method_name}_n{actions}_{len(frontier)}")
+                child.score = 0.5 * child.score + 0.5 * branch.score
+                child.steps = list(branch.steps)
+                frontier.append(child)
+
+        best_branch = self.scorer.pick_best(frontier)
+        prediction = best_branch.predicted_answer if best_branch else None
+        return MethodResult(
+            method=self.method_name,
+            prediction=prediction,
+            is_correct=self._answers_match(prediction, gold_answer),
+            actions_used=actions,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)),
+            budget_exhausted=actions >= self.max_actions,
+            metadata={
+                "search_mode": self.search_mode,
+                "frontier_width": self.frontier_width,
+                "adapter_note": "matched_budget_adapter_not_official_tot_reproduction",
+                "scoring_accounting": "scoring_folded_into_expand_action_no_extra_verifier_calls",
+            },
+        )
+
+
 class AdaptiveController(BaseController):
     def __init__(
         self,
