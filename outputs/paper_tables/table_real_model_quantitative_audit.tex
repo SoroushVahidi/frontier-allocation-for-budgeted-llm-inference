@@ -1,0 +1,9 @@
+\begin{tabular}{llllllllllll}
+\hline
+run & provider & method\_a & method\_b & accuracy\_a & accuracy\_b & paired\_n & mean\_difference & bootstrap\_ci\_low & bootstrap\_ci\_high & permutation\_p\_value & interpretation \\
+\hline
+real\_model\_ours\_vs\_external\_validation\_20260424T\_COHERE\_REAL\_MAIN & cohere & strict\_f3 & external\_l1\_max & 0.5833 & 0.7432 & 70 & -0.1714 & -0.2857 & -0.0571 & 0.0113 & not\_headline \\
+real\_model\_ours\_vs\_external\_validation\_20260424T\_OPENAI\_REAL\_MAIN & openai & strict\_f3 & external\_l1\_max & 0.4833 & 0.5417 & 360 & -0.0583 & -0.0944 & -0.0194 & 0.0033 & not\_headline \\
+real\_model\_ours\_vs\_external\_validation\_20260424T\_OPENAI\_REAL\_SMOKE & openai & strict\_f3 & self\_consistency\_3 & 0.5333 & 0.5667 & 30 & -0.0333 & -0.1000 & 0.0000 & 1.0000 & not\_headline \\
+\hline
+\end{tabular}

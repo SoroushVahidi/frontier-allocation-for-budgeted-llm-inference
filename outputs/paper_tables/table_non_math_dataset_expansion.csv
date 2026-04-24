@@ -1,0 +1,17 @@
+dataset,method,mean_accuracy,ci,mean_actions,key_pairwise_interpretation,evidence_strength
+Idavidrein/gpqa,strict_f3,0.623333,"[-0.049451, 0.064103]",5.3,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,self_consistency_3,0.62,"[-0.049451, 0.064103]",5.926667,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,strict_f3_anti_collapse_weak_v1,0.586667,"[-0.049451, 0.064103]",5.08,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,self_consistency_5,0.576667,"[-0.049451, 0.064103]",6.0,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,strict_gate1_cap_k6,0.57,"[-0.049451, 0.064103]",5.176667,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,external_s1_budget_forcing,0.476667,"[-0.049451, 0.064103]",3.293333,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,external_tale_prompt_budgeting,0.476667,"[-0.049451, 0.064103]",2.086667,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,external_l1_max,0.426667,"[-0.049451, 0.064103]",2.04,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,strict_f3_anti_collapse_weak_v1,0.634146,"[-0.049451, 0.064103]",5.207317,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,strict_f3,0.626016,"[-0.049451, 0.064103]",5.329268,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,self_consistency_3,0.613821,"[-0.049451, 0.064103]",5.894309,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,strict_gate1_cap_k6,0.605691,"[-0.049451, 0.064103]",5.231707,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,self_consistency_5,0.560976,"[-0.049451, 0.064103]",6.0,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,external_s1_budget_forcing,0.520325,"[-0.049451, 0.064103]",3.337398,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,external_l1_max,0.479675,"[-0.049451, 0.064103]",2.004065,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,external_tale_prompt_budgeting,0.463415,"[-0.049451, 0.064103]",2.105691,pilot_evidence,pilot_evidence
