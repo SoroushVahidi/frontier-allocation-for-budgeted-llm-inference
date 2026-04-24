@@ -59,6 +59,7 @@ Appendix figures and data:
 - `outputs/paper_tables/table8_method_contract.{csv,tex}`
 - `outputs/paper_tables/table9_surface_decision_contract.{csv,tex}`
 - `outputs/paper_tables/table10_manuscript_stability_check.{csv,tex}`
+- `outputs/paper_tables/table_claim_safety_statistical_tests.{csv,tex}`
 
 ## Component ablation support
 
@@ -79,6 +80,7 @@ The manuscript-facing strict_f3 component-ablation figure input is derived from:
 - Table 8: compact manuscript-facing method naming/comparison contract.
 - Table 9: compact surface-sensitivity decision contract (`strict_f3` manuscript-facing winner vs `strict_gate1_cap_k6` broader operational default on separate surface).
 - Table 10: compact per-seed stability packaging for `strict_f3` vs `strict_gate1_cap_k6` from existing manuscript decision-bundle artifacts.
+- Claim-safety statistical table: paired/bootstrap/permutation evidence table for paper-relevant matched-surface rows; supports safe claim-boundary wording (internal top pair is fragile/non-decisive, and external comparisons are slice-specific under matched action-budget substrate constraints).
 
 ## Main paper vs appendix placement
 
@@ -99,7 +101,7 @@ Run:
 
 This regenerates:
 - all plot-data CSV/JSON,
-- all tables (CSV + TeX),
+- all tables (CSV + TeX), including `table_claim_safety_statistical_tests.{csv,tex}`,
 - all main and supported appendix figure binaries (PDF + PNG).
 
 Reproducibility caveat:

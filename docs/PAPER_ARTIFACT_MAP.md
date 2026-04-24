@@ -10,6 +10,7 @@ Scan-first map for manuscript artifact usage and regeneration provenance.
 | `outputs/paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3/<ts>/` | manuscript-facing decision package between operational default and matched-surface winner | `scripts/run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py` | `PAPER_METHOD_DECISION_BUNDLE_20260422T175142Z.md` |
 | `outputs/matched_surface_multiseed_main_comparison_20260423T235900Z/` | manuscript matched-surface multi-seed stability context | `scripts/run_matched_surface_multiseed_main_comparison.py` | `MATCHED_SURFACE_MULTI_SEED_MAIN_COMPARISON_20260423T235900Z.md` |
 | `outputs/paper_figures/`, `outputs/paper_tables/`, `outputs/paper_plot_data/` | final paper-facing figure/table/rendered plotting artifacts | `scripts/paper/run_all_neurips_paper_artifacts.py` | `NEURIPS_PAPER_ARTIFACTS.md` |
+| `outputs/unified_claim_safety_statistical_audit_20260424T200000Z/` + `outputs/paper_tables/table_claim_safety_statistical_tests.{csv,tex}` | paper-facing claim-safety statistical boundary table (paired/bootstrap/permutation) | `scripts/paper/build_claim_safety_statistical_table.py` (or via canonical paper runner) | `CLAIM_SAFETY_STATISTICAL_TABLE_NOTE.md` |
 
 ## B. Ablations
 
@@ -51,3 +52,9 @@ Scan-first map for manuscript artifact usage and regeneration provenance.
 2. Pick artifact family from this map only.
 3. Verify script + doc provenance before citing numbers.
 4. Keep surface qualifier on any strict method claim.
+
+
+## Claim-boundary note
+
+- `strict_f3` vs `strict_gate1_cap_k6` should be reported as fragile/non-decisive on matched-surface slices unless future evidence changes this.
+- External baseline comparisons in claim-safety tables are slice-specific and action-budget/matched-substrate constrained; do not phrase them as universal dominance.
