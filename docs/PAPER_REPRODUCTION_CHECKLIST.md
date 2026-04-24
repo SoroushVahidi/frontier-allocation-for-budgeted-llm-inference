@@ -23,6 +23,7 @@ If any item fails, do not publish paper artifact updates until resolved or expli
 - [ ] `python scripts/run_broader_strict_phased_default_decision_eval.py`
 - [ ] `python scripts/run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py`
 - [ ] `python scripts/paper/run_all_neurips_paper_artifacts.py`
+- [ ] `python scripts/paper/build_claim_safety_statistical_table.py` (optional direct spot-check; canonical runner also executes it)
 
 ## 3) Artifact regeneration (supportive but recommended)
 
@@ -34,6 +35,7 @@ If any item fails, do not publish paper artifact updates until resolved or expli
 
 - [ ] All manuscript numeric claims map to canonical artifact families in `PAPER_ARTIFACT_MAP.md`.
 - [ ] All speculative statements are moved to limitations/open gaps.
+- [ ] Claim-safety wording uses top-cluster/surface-dependent language; no "statistical dominance" wording for `strict_f3` vs `strict_gate1_cap_k6`.
 - [ ] Any missing artifacts are explicitly marked as missing.
 
 ## 5) Final pre-draft gate

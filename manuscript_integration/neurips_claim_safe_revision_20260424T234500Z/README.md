@@ -8,7 +8,7 @@ This package converts existing audit and experiment artifacts into manuscript-re
 ### Safe for main text
 1. **Formulation + diagnostics claim (primary)**: the paper is strongest as an operational formulation plus diagnostic evaluation under action-budget matching.
 2. **Method specification claim**: the controller can be specified operationally (implementation-level state, gates, commit logic, bounded repair), while acknowledging heuristic/state-dependent components.
-3. **Strict-F3 positioning claim**: Strict-F3 is a manuscript-matched representative and is competitive with Strict-Gate1-Cap-K6, but not decisively dominant.
+3. **Top-cluster positioning claim**: Strict-F3 and Strict-Gate1-Cap-K6 form a statistically close matched-surface top cluster; Strict-F3 is used as a representative for continuity, not as a decisive winner.
 4. **Baseline framing claim**: frontier methods are competitive but non-dominant versus `external_l1_max` in aggregate claim-safety framing.
 
 ### Appendix-only claims
@@ -58,6 +58,8 @@ This package converts existing audit and experiment artifacts into manuscript-re
 
 **Manuscript action**:
 - Insert `statistical_strength_insert.tex`
+- Insert `main_results_claim_safety_table_insert.tex`
+- Insert `appendix_claim_boundary_insert.tex`
 
 ### 4) Baseline fairness and budget-accounting limitations
 **Address**: Clarify near-direct matched-substrate baseline role, action-budget as primary contract, and token/latency/dollar as appendix diagnostics rather than full systems-cost equivalence.
@@ -72,10 +74,11 @@ This package converts existing audit and experiment artifacts into manuscript-re
 - Insert `baseline_fairness_budget_accounting_insert.tex`
 
 ## Safe manuscript positioning (single-paragraph version)
-The claim-safe version of the paper should present adaptive reasoning-budget allocation as an operationally specified controller formulation evaluated under action-budget-matched comparisons, with evidence emphasizing diagnostic and bounded robustness value rather than universal dominance. Matched-surface simulation supports competitiveness of Strict-F3 as a representative method, but pairwise margins against Strict-Gate1-Cap-K6 are fragile and winner identity is surface-sensitive. Real-model and held-out artifacts provide appendix-level corroboration and limitation context, not headline superiority claims.
+The claim-safe version of the paper should present adaptive reasoning-budget allocation as an operationally specified controller formulation evaluated under action-budget-matched comparisons, with evidence emphasizing diagnostic and bounded robustness value rather than across-all-slice dominance. Matched-surface simulation supports competitiveness of Strict-F3 as a representative method, but pairwise margins against Strict-Gate1-Cap-K6 are fragile and winner identity is surface-sensitive. Real-model and held-out artifacts provide appendix-level corroboration and limitation context, not headline superiority claims.
 
 ## Package contents
 - LaTeX inserts: method/specification, scope boundaries, statistical strength, fairness/budget accounting, limitations rewrite
 - Main claim box and abstract-safe revision text
+- Main-results and appendix claim-boundary insert paragraphs tied to the new claim-safety statistical table
 - Forbidden overclaim checklist
 - Four paper-ready CSV + LaTeX tables

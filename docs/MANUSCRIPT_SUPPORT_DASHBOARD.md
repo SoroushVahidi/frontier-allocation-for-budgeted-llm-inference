@@ -5,7 +5,7 @@ Compact collaborator view of the current manuscript-facing state.
 ## Current manuscript-facing claim surface
 
 - Core setting: fixed-budget adaptive test-time compute allocation with branch-level allocation.
-- Manuscript-facing internal method on the matched surface: `strict_f3`.
+- Matched-surface internal top cluster: `strict_f3` and `strict_gate1_cap_k6` are statistically close; `strict_f3` is used as representative for continuity.
 - Broader operational default on a separate surface: `strict_gate1_cap_k6`.
 - The two surfaces are intentionally separate and must not be collapsed.
 
@@ -26,7 +26,7 @@ Primary decision authority:
 
 ## Resolved outcomes (current)
 
-- **Internal manuscript method:** `strict_f3` remains the manuscript-facing internal winner on the canonical matched surface.
+- **Internal manuscript positioning:** leading frontier-allocation variants form a close matched-surface top cluster; avoid decisive winner phrasing for `strict_f3` vs `strict_gate1_cap_k6`.
 - **Conditional-risk investigation:** completed; remains supportive/appendix-level and does not replace `strict_f3`.
 - **Matched-surface stability:** strengthened by multi-seed rerun evidence package.
 - **Main-table external fairness:** audited with no material issue found for current near-direct main-table policy.

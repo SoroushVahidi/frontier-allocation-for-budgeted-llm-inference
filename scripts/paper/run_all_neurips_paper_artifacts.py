@@ -12,6 +12,7 @@ SCRIPTS = [
     "build_figure1_problem_setup_data.py",
     "build_main_frontier_plot_data.py",
     "build_paper_tables.py",
+    "build_claim_safety_statistical_table.py",
     "plot_figure1_problem_setup.py",
     "plot_figure2_main_frontier.py",
     "plot_figure3_oracle_gap.py",

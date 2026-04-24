@@ -22,6 +22,8 @@ Notes:
 
 ## Appendix artifacts
 
+- `claim_safety_statistical_tests.csv` (paper-table companion data; claim-boundary statistical evidence)
+
 - `appendix_a1_oracle_gap_regret.csv`
 - `appendix_a2_anti_collapse.csv`
 - `appendix_a3_allocation_composition.csv`
@@ -33,3 +35,9 @@ Appendix note:
 ## Historical/provenance-only policy
 
 Historical bounded CSVs should remain in their original source bundles, not in this directory.
+
+
+## Claim-boundary guidance
+
+- `claim_safety_statistical_tests.csv` accompanies the paper table and should be cited with matched-surface/action-budget caveats.
+- Do not convert slice-specific wins vs external baselines into universal dominance claims.
