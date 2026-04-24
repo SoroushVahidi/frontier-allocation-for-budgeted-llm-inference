@@ -1,0 +1,54 @@
+{
+  "artifact_family": "real_model_ours_vs_external_validation",
+  "timestamp": "20260424T002900Z",
+  "output_dir": "outputs/real_model_ours_vs_external_validation_20260424T002900Z",
+  "provider_status": {
+    "openai": {
+      "provider": "openai",
+      "attempted": true,
+      "completed": false,
+      "reason": "dry_run_no_api_calls",
+      "model": "gpt-4.1-mini",
+      "timestamp": "20260424T002900Z",
+      "error": "dry_run_no_api_calls",
+      "canonical_output_dir": ""
+    },
+    "cohere": {
+      "provider": "cohere",
+      "attempted": true,
+      "completed": false,
+      "reason": "dry_run_no_api_calls",
+      "model": "command-r-plus-08-2024",
+      "timestamp": "20260424T002900Z",
+      "error": "dry_run_no_api_calls",
+      "canonical_output_dir": ""
+    }
+  },
+  "files": [
+    "manifest.json",
+    "run_config.json",
+    "commands.sh",
+    "api_key_readiness.json",
+    "openai/aggregate_summary.csv",
+    "openai/per_dataset_summary.csv",
+    "openai/per_budget_summary.csv",
+    "openai/seed_summary.csv",
+    "openai/per_example_rows.csv",
+    "openai/failure_decomposition.csv",
+    "openai/retry_error_log.csv",
+    "cohere/aggregate_summary.csv",
+    "cohere/per_dataset_summary.csv",
+    "cohere/per_budget_summary.csv",
+    "cohere/seed_summary.csv",
+    "cohere/per_example_rows.csv",
+    "cohere/failure_decomposition.csv",
+    "cohere/retry_error_log.csv",
+    "combined_ours_vs_external_summary.csv",
+    "combined_provider_summary.csv",
+    "combined_budget_curve.csv",
+    "combined_dataset_summary.csv",
+    "combined_failure_decomposition.csv",
+    "claim_safety_matrix.csv",
+    "summary.md"
+  ]
+}
