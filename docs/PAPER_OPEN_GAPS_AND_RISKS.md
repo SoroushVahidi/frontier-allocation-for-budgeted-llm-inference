@@ -18,6 +18,10 @@ Live list of missing pieces before submission-quality evidence closure.
    - New canonical wrapper/package scaffold now exists (`scripts/run_real_model_ours_vs_external_validation.py`, dry-run package: `outputs/real_model_ours_vs_external_validation_20260424T002900Z/`), but full API-backed completion is still open.
    - OpenAI real-model smoke run now completed (`outputs/real_model_ours_vs_external_validation_20260424T_OPENAI_REAL_SMOKE/`), with nonzero evaluated rows but small-sample/openai-only status; still not headline-safe and still requires larger follow-up.
 
+   - Appendix reviewer-risk-reduction token/accounting validation scaffold now added (`scripts/run_real_model_token_accounting_validation.py`) with dry-run-safe packaging and resumable per-case artifacts (`outputs/real_model_token_accounting_validation_<timestamp>/`).
+   - This closes packaging/diagnostic visibility risk, but does **not** by itself close broader real-model breadth risk without larger API-backed runs.
+   - Cross-provider extension (OpenAI+Cohere) is now supported in the same runner and can emit a unified appendix package (`outputs/cross_provider_real_model_token_accounting_validation_<timestamp>/`) to reduce provider-robustness risk without changing the primary action-budget manuscript contract.
+
 4. **Manuscript consolidation debt**
    - Surface-specific claims (`strict_gate1_cap_k6` vs `strict_f3`) must remain explicitly separated across all sections.
 
