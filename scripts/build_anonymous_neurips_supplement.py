@@ -15,7 +15,6 @@ TOP_LEVEL_FILES = [
     "pyproject.toml",
     "requirements.txt",
     "Makefile",
-    "LICENSE",
 ]
 
 TOP_LEVEL_DIRS = [

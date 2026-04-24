@@ -5,7 +5,7 @@ This document defines the conservative process used to build an anonymized suppl
 ## Included in the Anonymous Supplement
 
 - Reviewer-facing top-level docs: `README.md`, `REPRODUCIBILITY.md`, `CLAIM_BOUNDARIES.md`, `ANONYMITY.md`, `MANIFEST.md`.
-- Reproduction essentials: `pyproject.toml`, `requirements.txt`, `Makefile`, `QUICKSTART.md`, `LICENSE`.
+- Reproduction essentials: `pyproject.toml`, `requirements.txt`, `Makefile`, `QUICKSTART.md`.
 - Runtime/config/test code paths required for manuscript artifact checks and regeneration:
   - `experiments/`
   - `scripts/`
@@ -49,13 +49,28 @@ print(z.exists(), z.stat().st_size)
 PY
 ```
 
-## Latest Build Snapshot
+## Final Readiness Audit (2026-04-24 UTC)
 
+- Exact commands run:
+  - `make check`
+  - `make anonymous-supplement`
+  - `python scripts/audit_anonymous_supplement.py --path dist/neurips2026_anonymous_supplement`
+  - ZIP inspection (file count/size) via inline Python (`zipfile`)
+  - Direct staged-token scan over `dist/neurips2026_anonymous_supplement/` (case-insensitive) with redacted snippets
 - ZIP path: `dist/neurips2026_anonymous_supplement.zip`
-- ZIP size: 2.25 MB (2,358,951 bytes)
-- Audit output root: `outputs/anonymization_audit/`
-- Remaining warnings: 3 warnings in staged supplement audit (absolute-path token references in script text)
+- ZIP size: 2.249132 MB (2,358,386 bytes)
+- Audit output directory: `outputs/anonymization_audit/20260424T012634Z`
 - Blocking findings: 0
+- Warning findings: 3
+- Remaining warning explanation:
+  - `scripts/audit_anonymous_supplement.py:52` uses absolute-path tokens as a regex detection pattern (`/home/`, `/Users/`, etc.); this is scanner logic, not leaked local provenance.
+  - `scripts/verify_compute_optimal_tts_provenance.py:63` and `:149` contain the phrase `OpenReview/project/repo` in explanatory text; the `/project/` substring is a generic word token, not a machine-local absolute path.
+- Upload readiness: ready to upload.
+- Remaining manual action required: none.
+
+### Final anonymization fix applied
+
+- Removed `LICENSE` from the anonymous supplement top-level copy list because it contained a real author-name string; this avoids identity leakage while preserving reproducibility-critical files.
 
 ## Notes
 
