@@ -1,0 +1,7 @@
+artifact_family,severity,detail
+openai_real_model_audit,missing,No matches for outputs/openai_real_model_main_run_audit_*
+cohere_real_model_audit,missing,No matches for outputs/cohere_real_model_main_run_audit_*
+cross_provider_real_model_audit,missing,No matches for outputs/cross_provider_real_model_main_run_audit_*
+token_accounting,missing,No matches for outputs/real_model_token_accounting_validation_*
+cross_token_accounting,missing,No matches for outputs/cross_provider_real_model_token_accounting_validation_*
+canonical_real_model_validation,missing,No matches for outputs/canonical_real_model_validation_*
