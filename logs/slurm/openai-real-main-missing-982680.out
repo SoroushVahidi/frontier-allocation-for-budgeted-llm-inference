@@ -1,0 +1,4 @@
+OPENAI_API_KEY present: true
+python: /apps/easybuild/software/Anaconda3/2023.09-0/bin/python3
+Python 3.11.5
+Running slice: dataset=openai/gsm8k seed=23 budget=8

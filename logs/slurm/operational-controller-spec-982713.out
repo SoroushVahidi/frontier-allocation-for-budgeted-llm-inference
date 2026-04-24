@@ -1,0 +1,14 @@
+hostname: n0111
+date: 2026-04-24T17:21:22-04:00
+pwd: /home/sv96/adaptive-reasoning-budget-allocation
+python: /apps/easybuild/software/Anaconda3/2023.09-0/bin/python3
+Python 3.11.5
+OPENAI_API_KEY present: true
+COHERE_API_KEY present: true
+Running static/code/doc operational specification audit (no API calls)
+{
+  "status": "ok",
+  "out_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/operational_controller_specification_20260424T164500Z",
+  "doc_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/docs/OPERATIONAL_CONTROLLER_SPECIFICATION_FOR_MANUSCRIPT_20260424T164500Z.md"
+}
+{'status': 'ok', 'output_dir': 'outputs/operational_controller_specification_20260424T164500Z', 'doc_path': 'docs/OPERATIONAL_CONTROLLER_SPECIFICATION_FOR_MANUSCRIPT_20260424T164500Z.md'}
