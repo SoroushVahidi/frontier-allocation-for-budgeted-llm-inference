@@ -1,0 +1,5 @@
+scope,role,method,n_failures,absent_from_tree,present_not_selected,output_layer_mismatch,absent_from_tree_share,present_not_selected_share,output_layer_mismatch_share
+combined,best_ours,strict_f3,186,186,0,0,1.0,0.0,0.0
+combined,best_external,external_l1_max,165,165,0,0,1.0,0.0,0.0
+openai,best_ours,strict_f3,186,186,0,0,1.0,0.0,0.0
+openai,best_external,external_l1_max,165,165,0,0,1.0,0.0,0.0

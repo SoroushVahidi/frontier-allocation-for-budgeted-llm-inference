@@ -1,0 +1,2 @@
+provider,best_ours_method,best_ours_accuracy,best_external_method,best_external_accuracy,ours_minus_external,n_rows
+openai,,0.0,,0.0,0.0,0

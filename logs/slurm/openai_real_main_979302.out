@@ -1,0 +1,8 @@
+hostname: n0111
+date: 2026-04-23T22:44:38-04:00
+pwd: /home/sv96/adaptive-reasoning-budget-allocation
+python: /apps/easybuild/software/Anaconda3/2023.09-0/bin/python3
+Python 3.11.5
+OPENAI_API_KEY set: true
+OpenAI package import: true
+OpenAI API usable: true

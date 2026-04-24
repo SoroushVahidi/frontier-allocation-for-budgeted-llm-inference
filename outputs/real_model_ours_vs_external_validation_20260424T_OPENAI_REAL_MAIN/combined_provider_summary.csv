@@ -1,0 +1,2 @@
+provider,best_ours_method,best_ours_accuracy,best_external_method,best_external_accuracy,ours_minus_external,n_rows
+openai,strict_f3,0.48333333333333334,external_l1_max,0.5416666666666666,-0.05833333333333329,1799
