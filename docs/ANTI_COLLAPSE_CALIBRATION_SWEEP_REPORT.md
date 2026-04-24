@@ -5,15 +5,15 @@ The strict_f3 manuscript-facing component ablations raised a concern that removi
 This targeted sweep calibrates anti-collapse intensity/activation on the same canonical matched surface.
 
 ## Outcome classification
-Default anti-collapse appears overactive/miscalibrated on this surface; weaker or conditional anti-collapse is favored over fixed default.
+Default anti-collapse appears overactive/miscalibrated on this surface. Weak anti-collapse is favored here, off also beats default, strong is approximately near-default, and conditional underperforms default.
 
 ## Manuscript-safe framing
 Early tree-shape control remains important, but the fixed anti-collapse heuristic is surface-sensitive.
 The calibration sweep indicates whether answer-distinct preservation should be weakened, conditioned, or treated as a diagnostic design axis.
 
 ## Forbidden wording
-- Anti-collapse universally improves performance.
-- Anti-collapse **always** improves accuracy.
-- Every component of Strict-F3 independently improves accuracy.
-- Figure 7 proves anti-collapse is beneficial.
-- The full controller is validated component-by-component.
+- Any phrase asserting anti-collapse as universally performance-improving.
+- Any phrase asserting anti-collapse as always improving accuracy.
+- Any phrase asserting every Strict-F3 component as independently accuracy-improving.
+- Any phrase asserting Figure 7 as proof that anti-collapse is beneficial.
+- Any phrase asserting full controller validation component-by-component.

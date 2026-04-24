@@ -65,7 +65,10 @@ def _classification(rows: list[dict[str, Any]]) -> str:
     if best_name == "anti_collapse_default":
         return "default best; earlier anti-collapse concern likely seed/surface fragile"
     if best_name in {"anti_collapse_weak", "anti_collapse_conditional"}:
-        return "default likely overactive/miscalibrated; weaker/conditional anti-collapse favored"
+        return (
+            "default appears overactive/miscalibrated; weak anti-collapse is favored on this surface, "
+            "off also beats default, strong is near-default, and conditional underperforms"
+        )
     if best_name == "anti_collapse_off":
         return "off best; anti-collapse not validated as independent accuracy-improving component"
     default_acc = _to_float(by_variant.get("anti_collapse_default", {}).get("mean_accuracy"))
@@ -99,7 +102,7 @@ def main() -> None:
                 "output_layer_mismatch_rate": round(_to_float(r.get("output_layer_mismatch_rate")), 4),
                 "avg_actions": round(_to_float(r.get("avg_actions")), 4),
                 "classification": section_classification,
-                "safe_note": "surface-sensitive calibration result; no universal anti-collapse claim",
+                "safe_note": "surface-sensitive calibration tradeoff; anti-collapse is a design axis, not a universally validated gain",
             }
         )
 

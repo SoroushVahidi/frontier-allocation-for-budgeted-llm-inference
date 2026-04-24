@@ -10,6 +10,7 @@ This package converts existing audit and experiment artifacts into manuscript-re
 2. **Method specification claim**: the controller can be specified operationally (implementation-level state, gates, commit logic, bounded repair), while acknowledging heuristic/state-dependent components.
 3. **Top-cluster positioning claim**: Strict-F3 and Strict-Gate1-Cap-K6 form a statistically close matched-surface top cluster; Strict-F3 is used as a representative for continuity, not as a decisive winner.
 4. **Baseline framing claim**: frontier methods are competitive but non-dominant versus `external_l1_max` in aggregate claim-safety framing.
+5. **Anti-collapse framing claim**: anti-collapse is calibration-sensitive on the matched surface (weak best, off above default, conditional below default), so it is not presented as an independently validated universal gain.
 
 ### Appendix-only claims
 1. OpenAI/Cohere real-model results as bounded robustness corroboration.
@@ -72,6 +73,17 @@ This package converts existing audit and experiment artifacts into manuscript-re
 
 **Manuscript action**:
 - Insert `baseline_fairness_budget_accounting_insert.tex`
+
+### 5) Figure 7 anti-collapse contradiction
+**Address**: make anti-collapse interpretation explicitly non-monotonic and calibration-sensitive, using the six-seed calibration table rather than blanket component-validation language.
+
+**Evidence artifacts**:
+- `outputs/anti_collapse_calibration_sweep_20260424T213046Z/calibration_summary.csv`
+- `outputs/paper_tables/table_anti_collapse_calibration.csv`
+
+**Manuscript action**:
+- Update results/ablation text and Figure 7 discussion to: weak anti-collapse best, off > default, strong ~ default, conditional < default.
+- Remove wording that implies component-wise independent validation or universal anti-collapse benefit.
 
 ## Safe manuscript positioning (single-paragraph version)
 The claim-safe version of the paper should present adaptive reasoning-budget allocation as an operationally specified controller formulation evaluated under action-budget-matched comparisons, with evidence emphasizing diagnostic and bounded robustness value rather than across-all-slice dominance. Matched-surface simulation supports competitiveness of Strict-F3 as a representative method, but pairwise margins against Strict-Gate1-Cap-K6 are fragile and winner identity is surface-sensitive. Real-model and held-out artifacts provide appendix-level corroboration and limitation context, not headline superiority claims.
