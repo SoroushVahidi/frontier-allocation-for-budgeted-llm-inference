@@ -68,6 +68,13 @@ Thumbs.db
 secrets.*
 *.key
 *.pem
+*.token
+*token*.txt
+*credentials*.json
+
+# Local agent/editor runtime logs
+.cursor/
+terminals/
 
 !outputs/full_method_comparison_bundle/
 !outputs/full_method_comparison_bundle/**/*

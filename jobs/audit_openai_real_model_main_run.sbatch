@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-REPO_DIR="/home/sv96/adaptive-reasoning-budget-allocation"
+REPO_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 cd "$REPO_DIR"
 
 mkdir -p logs

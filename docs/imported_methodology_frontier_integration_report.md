@@ -7,7 +7,7 @@ All imported ideas were adapted to the current fixed-budget **branch/frontier al
 
 ## Historical repository assets inspected and selectively adapted
 
-Historical repository inspected: `https://github.com/SoroushVahidi/-adaptive-llm-inference`.
+Historical repository inspected: `https://github.com/<ANON_ORG>/<ANON_REPO>`.
 
 Repository-grounded files used as templates for evaluation discipline and artifacts:
 

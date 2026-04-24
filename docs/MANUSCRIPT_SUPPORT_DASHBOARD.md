@@ -46,6 +46,9 @@ Primary decision authority:
 - Cross-provider appendix validation (OpenAI + Cohere) now runs through the same token-accounting script and outputs unified provider/method summaries; maintain appendix-only framing unless larger-sample evidence materially strengthens robustness.
 - A new small OpenAI appendix accounting result package is available (`REAL_MODEL_TOKEN_ACCOUNTING_VALIDATION_20260424T170000Z_SMALL_APPENDIX.md`), explicitly maintained as appendix-only and non-headline.
 - OpenAI main-run artifact audit now exists (`OPENAI_REAL_MODEL_MAIN_RUN_AUDIT_20260424T160513Z.md`; outputs in `outputs/openai_real_model_main_run_audit_20260424T160513Z/`): `strict_f3` > `strict_gate1_cap_k6`, but no OpenAI evidence of frontier-allocation dominance over `external_l1_max`; maintain appendix-only/non-headline usage.
+- Cohere main-run artifact audit now exists (`COHERE_REAL_MODEL_MAIN_RUN_AUDIT_20260424T163700Z.md`; outputs in `outputs/cohere_real_model_main_run_audit_20260424T163700Z/`): `strict_f3` > `strict_gate1_cap_k6`, but no Cohere evidence of frontier-allocation dominance over `external_l1_max`; keep appendix-only framing.
+- Cross-provider audit now exists (`CROSS_PROVIDER_REAL_MODEL_MAIN_RUN_AUDIT_20260424T163701Z.md`; outputs in `outputs/cross_provider_real_model_main_run_audit_20260424T163701Z/`): OpenAI and Cohere agree on appendix-only status (competitive and diagnostically informative, not universally dominant).
+- Operational method-specification audit now exists (`OPERATIONAL_CONTROLLER_SPECIFICATION_FOR_MANUSCRIPT_20260424T164500Z.md`; outputs in `outputs/operational_controller_specification_20260424T164500Z/`): this materially improves implementation transparency, but unresolved gaps (no single closed-form objective; heuristic gates) remain and should stay explicit.
 
 ### Historical / provenance
 - Legacy dated status notes and superseded summaries retained for traceability.

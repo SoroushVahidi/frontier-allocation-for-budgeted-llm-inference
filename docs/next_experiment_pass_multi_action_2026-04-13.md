@@ -40,7 +40,7 @@ The run script auto-builds/trains scorer artifacts if missing, then runs robustn
 Working directory:
 
 ```bash
-cd /home/sv96/adaptive-reasoning-budget-allocation
+cd <REPO_ROOT>
 ```
 
 Environment setup (repo-consistent with existing job scripts):
@@ -68,7 +68,7 @@ Required environment variables:
 ### Direct shell launch (no sbatch)
 
 ```bash
-cd /home/sv96/adaptive-reasoning-budget-allocation
+cd <REPO_ROOT>
 source ~/.bashrc
 conda activate base
 bash scripts/run_multi_action_allocation_pass.sh
@@ -77,7 +77,7 @@ bash scripts/run_multi_action_allocation_pass.sh
 ### Batch launch on Wulver
 
 ```bash
-cd /home/sv96/adaptive-reasoning-budget-allocation
+cd <REPO_ROOT>
 sbatch jobs/multi_action_allocation_pass.sbatch
 ```
 

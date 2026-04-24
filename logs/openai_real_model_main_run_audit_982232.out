@@ -1,13 +1,13 @@
 hostname: n0099
 date: 2026-04-24T12:05:13-04:00
-pwd: /home/sv96/adaptive-reasoning-budget-allocation
+pwd: <REPO_ROOT>
 python: /apps/easybuild/software/Anaconda3/2023.09-0/bin/python3
 Python 3.11.5
-OPENAI_API_KEY set: true
+API_KEY_PRESENT: true
 Running artifact-only OpenAI main-run audit (no API calls required)
 {
   "status": "ok",
-  "out_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/openai_real_model_main_run_audit_20260424T160513Z",
-  "doc_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/docs/OPENAI_REAL_MODEL_MAIN_RUN_AUDIT_20260424T160513Z.md"
+  "out_dir": "<CLUSTER_HOME>/<REPO_ROOT>/outputs/openai_real_model_main_run_audit_20260424T160513Z",
+  "doc_path": "<CLUSTER_HOME>/<REPO_ROOT>/docs/OPENAI_REAL_MODEL_MAIN_RUN_AUDIT_20260424T160513Z.md"
 }
 {'status': 'ok', 'latest_audit_dir': 'outputs/openai_real_model_main_run_audit_20260424T160513Z'}

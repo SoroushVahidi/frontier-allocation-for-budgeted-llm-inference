@@ -58,6 +58,20 @@ Output roots:
 - `outputs/paper_figures/`
 - `outputs/paper_tables/`
 
+## Anonymous supplement workflow
+
+```bash
+python scripts/audit_anonymous_supplement.py
+python scripts/build_anonymous_neurips_supplement.py
+python scripts/audit_anonymous_supplement.py --path dist/neurips2026_anonymous_supplement
+```
+
+## Claim-safety boundaries (reviewer-facing)
+
+- Matched-surface manuscript method remains `strict_f3`; broader operational default remains `strict_gate1_cap_k6`.
+- OpenAI/Cohere real-model audits are currently appendix-only: competitive and diagnostically informative, not universally dominant.
+- Do not claim frontier-allocation dominance over `external_l1_max` from current real-model slices.
+
 ## Interpretation discipline
 
 Use canonical docs + canonical artifact families for manuscript claims.

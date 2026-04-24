@@ -1,10 +1,10 @@
 hostname: n0111
 date: 2026-04-24T04:37:09-04:00
-pwd: /home/sv96/adaptive-reasoning-budget-allocation
+pwd: <REPO_ROOT>
 python: /apps/easybuild/software/Anaconda3/2023.09-0/bin/python3
 Python 3.11.5
-OPENAI_API_KEY present: true
-COHERE_API_KEY present: true
+API_KEY_PRESENT: true
+API_KEY_PRESENT: true
 Cohere package import: true
 Cohere API usable: true
 Expected output directory: outputs/real_model_ours_vs_external_validation_20260424T_COHERE_REAL_MAIN/
