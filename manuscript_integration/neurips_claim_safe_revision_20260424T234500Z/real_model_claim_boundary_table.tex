@@ -1,0 +1,14 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{Real-model claim-boundary summary (OpenAI, Cohere, and cross-provider audits).}
+\begin{tabular}{p{0.11\linewidth}p{0.22\linewidth}p{0.24\linewidth}p{0.12\linewidth}p{0.24\linewidth}}
+\hline
+\textbf{Provider} & \textbf{Strict-F3 vs Strict-Gate1-Cap-K6} & \textbf{Frontier family vs external\_l1\_max} & \textbf{Disposition} & \textbf{Safe wording} \\
+\hline
+OpenAI & Supportive in aggregate; mixed per-slice. & Mixed; several slices favor or tie external\_l1\_max. & appendix-only & OpenAI real-model results indicate competitiveness but not dominance over external\_l1\_max. \\
+Cohere & Supportive in aggregate; sparse/incomplete coverage. & Mixed to unfavorable vs external\_l1\_max on available gsm8k slices. & appendix-only & Cohere evidence is coverage-limited and should be used as bounded corroboration. \\
+Cross-provider & A=yes in audit summary. & B=no and C=competitive-not-dominant in audit framing. & appendix-only & Combined real-model evidence supports non-dominant competitive framing and overclaim constraints. \\
+\hline
+\end{tabular}
+\end{table*}

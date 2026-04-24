@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{Appendix Table A5: Surface sensitivity and winner instability.}
+\begin{tabular}{p{0.22\linewidth}c p{0.16\linewidth} c p{0.28\linewidth}}
+\hline
+\textbf{Dataset} & \textbf{Budget} & \textbf{Evidence layer} & \textbf{Instability rate} & \textbf{Interpretation} \\
+\hline
+openai/gsm8k & 4 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+openai/gsm8k & 6 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+openai/gsm8k & 8 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+HuggingFaceH4/MATH-500 & 4 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+HuggingFaceH4/MATH-500 & 6 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+HuggingFaceH4/MATH-500 & 8 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+HuggingFaceH4/aime\_2024 & 4 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+HuggingFaceH4/aime\_2024 & 6 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+HuggingFaceH4/aime\_2024 & 8 & simulation & 0.333 & Winner instability present on matched simulation surface. \\
+openai/gsm8k & 4 & openai & 0.000 & No provider-level winner flip in available OpenAI slice. \\
+openai/gsm8k & 4 & cohere & 0.000 & No provider-level winner flip in available Cohere slice (coverage-limited). \\
+\hline
+\end{tabular}
+\end{table*}
