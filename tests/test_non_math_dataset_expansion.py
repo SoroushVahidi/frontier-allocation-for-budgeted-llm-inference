@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
-from scripts.run_non_math_dataset_expansion import _load_gpqa_examples
+import pytest
+
+from scripts.run_non_math_dataset_expansion import _load_gpqa_examples, _load_natural_plan_examples
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,6 +22,18 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
 def test_gpqa_loader_is_deterministic() -> None:
     a = _load_gpqa_examples(subset_size=5, seed=11)
     b = _load_gpqa_examples(subset_size=5, seed=11)
+    assert [x.question for x in a] == [x.question for x in b]
+    assert [x.answer for x in a] == [x.answer for x in b]
+
+
+@pytest.mark.skipif(
+    not (REPO_ROOT / "datasets/natural-plan").exists(),
+    reason="Natural Plan local git dataset clone unavailable in test environment.",
+)
+def test_natural_plan_loader_is_deterministic() -> None:
+    a = _load_natural_plan_examples(subset_size=5, seed=11, task_name="trip_planning")
+    b = _load_natural_plan_examples(subset_size=5, seed=11, task_name="trip_planning")
+    assert [x.example_id for x in a] == [x.example_id for x in b]
     assert [x.question for x in a] == [x.question for x in b]
     assert [x.answer for x in a] == [x.answer for x in b]
 
@@ -78,8 +93,16 @@ def test_non_math_dataset_expansion_outputs_and_guards() -> None:
     summary_text = (out_dir / "summary.md").read_text(encoding="utf-8").lower()
     assert "universal dominance" in summary_text
 
-    combined_text = "\n".join((out_dir / f).read_text(encoding="utf-8") for f in ["manifest.json", "summary.md"])
-    assert "hf_" not in combined_text.lower()
+    generated_text = []
+    for path in out_dir.glob("*"):
+        if path.is_file() and path.suffix in {".json", ".md", ".csv", ".tex"}:
+            generated_text.append(path.read_text(encoding="utf-8"))
+    combined_text = "\n".join(generated_text).lower()
+    assert "hf_" not in combined_text
+    for env_key in ("HF_TOKEN", "HUGGINGFACE_TOKEN", "HUGGINGFACEHUB_API_TOKEN"):
+        token = (os.getenv(env_key) or "").strip()
+        if token:
+            assert token.lower() not in combined_text
 
 
 def test_table_builder_outputs() -> None:

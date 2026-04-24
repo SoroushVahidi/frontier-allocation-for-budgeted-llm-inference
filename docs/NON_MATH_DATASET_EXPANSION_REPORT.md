@@ -1,63 +1,54 @@
 # Non-Math Dataset Expansion Report
 
-## What was added?
-- Added a selective non-math expansion run at:
-  - `outputs/non_math_dataset_expansion_20260424T230500Z/`
-- Datasets successfully included:
-  - `google-deepmind/natural-plan`
-  - `Idavidrein/gpqa` (GPQA Diamond config)
+## Which non-math datasets were added?
+- Added **Natural Plan** via `google-deepmind/natural-plan`.
+- Added **GPQA Diamond** via `Idavidrein/gpqa` (config `gpqa_diamond`).
 
-## Why these datasets?
-- **Natural Plan** was first priority and is now integrated via the existing git-clone dataset pathway.
-- **GPQA Diamond** was second priority and was feasible through Hugging Face access in this environment.
-- Both are non-math reasoning-oriented and expand evidence beyond GSM8K/MATH/AIME-only matched surfaces.
+## Why were they selected?
+- They directly address the reviewer concern that the matched surface was math-only.
+- Natural Plan provides non-math planning-style reasoning with deterministic exact-match style grading under repository canonicalization.
+- GPQA Diamond provides non-math, expert-level science multiple-choice reasoning with deterministic option mapping and letter-label evaluation.
 
-## Subset/config choices
-- Budgets: `4,6,8`
-- Seeds: `11,23,37,41,53`
-- Subset target per dataset/seed: `20` (pilot-scale in this run)
-- Natural Plan task selection: `trip_planning` (deterministic filtering where available)
-- GPQA config: `gpqa_diamond` with deterministic option shuffling and letter-label gold answers for automatic MC grading.
+## Which configs/subsets were used?
+- Runner: `scripts/run_non_math_dataset_expansion.py`.
+- Output bundle: `outputs/non_math_dataset_expansion_20260424T223313Z/`.
+- Budgets: `4, 6, 8`.
+- Seeds: `11, 23, 37, 41, 53`.
+- Subset size target: `120` examples per dataset per seed.
+- Natural Plan selection: deterministic subset, filtered to task `trip_planning` when available.
+- GPQA Diamond selection: deterministic dataset shuffle per seed, deterministic option shuffle keyed by `(seed, index, question)`.
 
-## Methods/baselines evaluated
-- `strict_f3`
-- `strict_gate1_cap_k6`
-- `strict_f3_anti_collapse_weak_v1`
-- `external_l1_max`
-- `external_s1_budget_forcing`
-- `external_tale_prompt_budgeting`
-- `self_consistency_3`
-- `self_consistency_5`
-
-## Key quantitative findings
-Aggregate over both non-math datasets in this run:
-- `strict_f3`: **0.6245**
-- `self_consistency_3`: **0.6172**
-- `strict_f3_anti_collapse_weak_v1`: **0.6081**
-- `external_l1_max`: **0.4505**
-
-Paired tests:
-- `strict_f3` vs `self_consistency_3`: delta **+0.0073**, 95% CI **[-0.0495, 0.0641]**, p **0.8497** (not decisive)
-- `strict_f3` vs `external_l1_max`: delta **+0.1740**, 95% CI **[0.1136, 0.2326]**, p **0.00033** (decisive)
-- `strict_f3_anti_collapse_weak_v1` vs `strict_f3`: delta **-0.0165**, 95% CI **[-0.0733, 0.0385]**, p **0.6081** (no clear improvement)
-- `strict_f3` vs `strict_gate1_cap_k6`: delta **+0.0385**, 95% CI **[-0.0183, 0.0971]**, p **0.2239** (not decisive)
-
-Per-dataset top methods in this run:
-- GPQA Diamond: `strict_f3` (`0.6233`) narrowly above `self_consistency_3` (`0.6200`)
-- Natural Plan (trip planning slice): `strict_f3_anti_collapse_weak_v1` (`0.6341`), with `strict_f3` (`0.6260`) close behind
+## Which methods and baselines were evaluated?
+- Frontier-allocation family:
+  - `strict_f3`
+  - `strict_gate1_cap_k6`
+  - `strict_f3_anti_collapse_weak_v1`
+- Budget-matched external baselines:
+  - `external_l1_max`
+  - `external_s1_budget_forcing`
+  - `external_tale_prompt_budgeting`
+- Budget-matched self-consistency baselines:
+  - `self_consistency_3`
+  - `self_consistency_5`
 
 ## Does frontier allocation remain competitive beyond math?
-- Yes, in this run frontier variants remain competitive on both added non-math datasets.
-- The strongest supported claim is superiority vs `external_l1_max` under matched budgets.
-- Against self-consistency (`SC3`/`SC5`), point estimates are favorable for `strict_f3` but not statistically decisive at this pilot scale.
+Yes, on this non-math bundle frontier allocation remains competitive and strong:
+- Best overall method was `strict_f3_anti_collapse_weak_v1` with mean accuracy `0.6292`.
+- `strict_f3_anti_collapse_weak_v1` vs `external_l1_max`: delta `+0.1547`, 95% CI `[0.1301, 0.1778]`, permutation p-value `0.00033`.
+- This supports a stronger claim against the near-direct length-control baseline under matched budgets.
 
-## Does calibrated weak anti-collapse help beyond math?
-- Not consistently in this run.
-- It helps on Natural Plan slice but underperforms `strict_f3` on GPQA aggregate; pooled paired test does not support a reliable net gain.
+## Does `strict_f3_anti_collapse_weak_v1` improve over default `strict_f3` beyond math?
+- Directionally yes, but not decisively in this run:
+  - delta `+0.0158`, 95% CI `[-0.0061, 0.0386]`, p-value `0.1879`.
+- So the anti-collapse weak variant is promising but not yet conclusively superior to default `strict_f3` on this bundle.
 
-## Promote to main paper or keep as held-out evidence?
-- This run should remain **held-out/appendix pilot evidence** because subset size is pilot-scale (`20` per dataset/seed).
-- It strengthens the broader external-validity narrative but does not yet justify universal or headline dominance wording.
+## Are results strong enough to promote into the main paper, or remain held-out/appendix evidence?
+- Since subset size is substantial (`120`/dataset/seed) and both Natural Plan + GPQA Diamond were feasible, the evidence is stronger than a pilot-only pass.
+- Still, because several internal pairwise comparisons are not all decisive (e.g., anti-collapse vs `strict_f3`, anti-collapse vs `self_consistency_5`), the safest framing is:
+  - **main-paper supportive external-validity evidence with calibrated wording**, and
+  - full detail retained in appendix/supplement tables.
 
-## Manuscript claim now supported
-> Beyond math-only matched surfaces, frontier-allocation methods remain competitive on held-out non-math datasets (Natural Plan and GPQA Diamond) and decisively outperform strong near-direct length-control baselines under matched budgets; comparisons vs self-consistency are promising but not statistically decisive in pilot-scale evaluation.
+## What exact manuscript claim is now supported?
+A defensible strengthened claim is:
+
+> Frontier-allocation methods remain competitive beyond math-only benchmarks: on non-math Natural Plan and GPQA Diamond, frontier allocation is at least competitive with budget-matched self-consistency baselines and significantly outperforms strong budget-matched near-direct baselines (e.g., `external_l1_max`), while not supporting universal dominance claims.
