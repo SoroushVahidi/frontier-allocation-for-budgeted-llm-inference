@@ -49,6 +49,9 @@ outputs/*
 !outputs/data_consolidation_20260418/
 !outputs/data_consolidation_20260418/**/*
 
+# Local dataset clones (e.g. google-deepmind/natural-plan); keep out of git
+external_datasets/
+
 # Legacy singular output directory (prefer outputs/ for all new runs)
 output/
 
