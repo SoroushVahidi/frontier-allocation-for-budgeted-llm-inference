@@ -1,0 +1,7 @@
+field,value
+openai_fallback_recommended,yes_bounded_confirmation_only
+purpose,Calibration and cross-provider consistency check for claim-safety; not to replace or hide Cohere adverse result
+minimum_scope,"provider=openai; dataset=openai/gsm8k; methods=strict_f3,external_l1_max; seeds=11|23; budgets=4|6|8; matched-pair delta with bootstrap CI and cost-normalized metrics"
+outcome_that_would_change_manuscript,"If OpenAI shows clear strict_f3 advantage with adequate matched size AND uncertainty bounds while Cohere remains adverse, manuscript may report provider-heterogeneous mixed evidence (still not universal dominance)"
+outcome_that_would_not_change_manuscript,"OpenAI parity/mixed/negative results, or positive-only-on-one-slice results with small matched sets, do not justify main-paper dominance claims"
+non_negotiable_rule,All final text must retain explicit Cohere adverse finding and appendix/diagnostic framing unless broader robust evidence is produced

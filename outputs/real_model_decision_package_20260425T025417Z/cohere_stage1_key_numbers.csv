@@ -1,0 +1,18 @@
+metric,scope,value,notes,source_artifact
+matched_examples,overall,30,Paired strict_f3 vs external_l1_max matched set,paired_summary.csv
+strict_f3_accuracy,overall,0.5333333333,On matched examples,paired_summary.csv
+external_l1_max_accuracy,overall,0.8000000000,On matched examples,paired_summary.csv
+paired_delta_strict_f3_minus_external_l1_max,overall,-0.2666666667,Negative means strict_f3 worse,paired_summary.csv
+bootstrap95_low,overall,-0.4666666667,CI excludes zero on negative side,paired_summary.csv
+bootstrap95_high,overall,-0.0666666667,CI excludes zero on negative side,paired_summary.csv
+budget_delta,4,-0.3000000000,All budgets negative,per_budget_pairwise.csv
+budget_delta,6,-0.3000000000,All budgets negative,per_budget_pairwise.csv
+budget_delta,8,-0.2000000000,All budgets negative,per_budget_pairwise.csv
+seed_delta,11,-0.2000000000,Both seeds negative,per_seed_pairwise.csv
+seed_delta,23,-0.3333333333,More negative seed,per_seed_pairwise.csv
+cost_norm_accuracy_per_1k_tokens,strict_f3,0.0076329785,Worse than external_l1_max,cost_normalized_pairwise.csv
+cost_norm_accuracy_per_1k_tokens,external_l1_max,0.0354874197,Better than strict_f3,cost_normalized_pairwise.csv
+cost_norm_accuracy_per_dollar,strict_f3,1.5019908399,Worse than external_l1_max,cost_normalized_pairwise.csv
+cost_norm_accuracy_per_dollar,external_l1_max,6.4222363511,Better than strict_f3,cost_normalized_pairwise.csv
+runner_correctness,matched_example_ids,warn,strict_f3=66 external_l1_max=30 matched=30,runner_correctness_audit.csv
+claim_tier,overall,diagnostic_only_incomplete,Do not claim main-paper dominance,claim_safety_table.csv

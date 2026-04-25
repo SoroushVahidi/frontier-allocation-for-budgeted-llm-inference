@@ -1,0 +1,7 @@
+decision_id,question,answer,status,evidence,recommended_action
+Q1,Use current Cohere Stage-1 as main-paper real-model evidence?,No,not_safe,"Matched set=30; strict_f3 acc=0.5333 vs external_l1_max acc=0.8000; paired delta=-0.2667; CI [-0.4667,-0.0667]","Do not use this comparison as main-paper dominance evidence"
+Q2,Claim strict_f3/frontier allocation beats external_l1_max under real API execution?,No,not_safe,"All budgets 4/6/8 negative deltas (-0.3,-0.3,-0.2); both seeds negative (11:-0.2,23:-0.3333)","Remove/avoid superiority wording"
+Q3,Does evidence support appendix/diagnostic framing only?,Yes,diagnostic_unfavorable_incomplete,"Claim tier diagnostic_only_incomplete; incomplete matched IDs warning and incomplete slices",Appendix-only diagnostic framing
+Q4,Must manuscript claim language be changed now?,Yes,change_now_required,"Negative paired result + unfavorable cost-normalized view + runner checks pass",Immediate claim-language downgrade
+Q5,Best immediate next step?,Revise framing now and run bounded OpenAI fallback as calibration,prioritized,"Cohere signal is adverse but incomplete; fallback should calibrate cross-provider consistency only",Execute ranked options (E then B)
+Q6,Safest NeurIPS-facing story?,Bounded formulation+diagnostic story with non-dominance on real-model comparisons,safe,"Unified claim safety audit marks frontier-vs-external not_safe and formulation+diagnostic framing safe",Center paper on formulation + bounded evidence
