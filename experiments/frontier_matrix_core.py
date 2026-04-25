@@ -15,6 +15,7 @@ from experiments.controllers import (
     AdaptiveController,
     BeamController,
     BestOfNController,
+    DirectReserveGateRerankController,
     GlobalDiversityAggregationController,
     GreedyController,
     IntermediateTrapAwareNearTieController,
@@ -1103,6 +1104,19 @@ def build_frontier_strategies(
         )
         strict_f3_no_answer_cfg = dict(strict_f3_base_cfg)
         strict_f3_no_answer_cfg.update({"answer_support_weight": 0.0, "value_weight": 1.0})
+        specs["strict_f3_direct_reserve_gate_rerank_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="strict_f3_direct_reserve_gate_rerank_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            method_name="strict_f3_direct_reserve_gate_rerank_v1",
+        )
         specs["strict_f3_ablation_no_answer_support_aggregation_v1"] = GlobalDiversityAggregationController(
             generator_factory(),
             scorer,

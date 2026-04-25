@@ -5282,6 +5282,180 @@ class TALEPromptBudgetingController(BaseController):
         )
 
 
+
+
+class DirectReserveGateRerankController(BaseController):
+    """Diagnostic hybrid: reserve direct-chain attempts, gate branching, then rerank by answer-group support.
+
+    This controller is intentionally diagnostic/experimental and should not replace canonical strict_f3.
+    """
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        strict_controller_factory: callable,
+        direct_prompt_style: str = "Let's think step by step and output the final answer within \boxed{}.",
+        direct_token_budget: int = 512,
+        direct_token_per_action: float = 64.0,
+        gate_top_support_threshold: float = 0.75,
+        gate_top2_gap_threshold: float = 0.50,
+        gate_entropy_threshold: float = 0.55,
+        method_name: str = "strict_f3_direct_reserve_gate_rerank_v1",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.strict_controller_factory = strict_controller_factory
+        self.direct_prompt_style = direct_prompt_style
+        self.direct_token_budget = max(1, int(direct_token_budget))
+        self.direct_token_per_action = max(1.0, float(direct_token_per_action))
+        self.gate_top_support_threshold = float(gate_top_support_threshold)
+        self.gate_top2_gap_threshold = float(gate_top2_gap_threshold)
+        self.gate_entropy_threshold = float(gate_entropy_threshold)
+        self.method_name = method_name
+
+    def _direct_reserve_attempts(self) -> int:
+        if self.max_actions <= 4:
+            return 1
+        if self.max_actions <= 6:
+            return 2 if self.max_actions >= 6 else 1
+        if self.max_actions <= 8:
+            return 2
+        return 2
+
+    @staticmethod
+    def _entropy(counts: dict[str, int]) -> float:
+        total = max(1, sum(int(v) for v in counts.values()))
+        probs = [float(v) / total for v in counts.values() if int(v) > 0]
+        if len(probs) <= 1:
+            return 0.0
+        ent = -sum(p * math.log(max(1e-12, p)) for p in probs)
+        return float(ent / math.log(len(probs)))
+
+    def _run_direct_attempt(self, question: str, gold_answer: str, idx: int, max_actions: int) -> tuple[str | None, int, list[dict[str, Any]]]:
+        branch = self.generator.init_branch(f"direct_reserve_{idx}")
+        actions = 0
+        trace: list[dict[str, Any]] = []
+        prompt = f"{question}\n\n{self.direct_prompt_style} Think for maximum {self.direct_token_budget} tokens."
+        while actions < max_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, prompt, gold_answer)
+            actions += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            trace.append(
+                {
+                    "action": "expand",
+                    "branch_id": branch.branch_id,
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                }
+            )
+        return branch.predicted_answer, actions, trace
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        reserve_attempts = self._direct_reserve_attempts()
+        per_attempt_cap = max(1, int(round(self.direct_token_budget / self.direct_token_per_action)))
+        direct_answers: list[str | None] = []
+        direct_actions = 0
+        direct_trace: list[dict[str, Any]] = []
+
+        for i in range(reserve_attempts):
+            if direct_actions >= self.max_actions:
+                break
+            ans, used, tr = self._run_direct_attempt(question, gold_answer, i, min(per_attempt_cap, self.max_actions - direct_actions))
+            direct_answers.append(ans)
+            direct_actions += int(used)
+            direct_trace.extend(tr)
+
+        direct_counts: Counter[str] = Counter((_normalize_answer(a) or "__unknown__") for a in direct_answers if a is not None)
+        total_direct = max(1, sum(direct_counts.values()))
+        sorted_counts = sorted(direct_counts.items(), key=lambda kv: kv[1], reverse=True)
+        top_group = sorted_counts[0][0] if sorted_counts else "__unknown__"
+        top_count = int(sorted_counts[0][1]) if sorted_counts else 0
+        second_count = int(sorted_counts[1][1]) if len(sorted_counts) > 1 else 0
+        top_support = float(top_count / total_direct)
+        top2_gap = float((top_count - second_count) / total_direct)
+        entropy = self._entropy(dict(direct_counts))
+
+        remaining_budget = max(0, self.max_actions - direct_actions)
+        direct_stable = bool(top_support >= self.gate_top_support_threshold and top2_gap >= self.gate_top2_gap_threshold and entropy <= self.gate_entropy_threshold)
+        gate_decision = "select_direct" if (direct_stable and remaining_budget <= max(2, self.max_actions // 3)) else "allow_frontier"
+
+        frontier_result: MethodResult | None = None
+        if remaining_budget > 0 and gate_decision == "allow_frontier":
+            frontier = self.strict_controller_factory(remaining_budget)
+            frontier_result = frontier.run(question, gold_answer)
+
+        candidate_answers: list[str | None] = list(direct_answers)
+        if frontier_result is not None:
+            candidate_answers.append(frontier_result.prediction)
+
+        group_counts: Counter[str] = Counter((_normalize_answer(a) or "__unknown__") for a in candidate_answers if a is not None)
+        if not group_counts:
+            prediction = None
+            selected_group = "__unknown__"
+        else:
+            max_support = max(group_counts.values())
+            tied_groups = sorted([g for g, c in group_counts.items() if c == max_support])
+            if len(tied_groups) == 1:
+                selected_group = tied_groups[0]
+            else:
+                selected_group = top_group if top_group in tied_groups else tied_groups[0]
+            # recover original answer text for selected group
+            prediction = next((a for a in candidate_answers if (_normalize_answer(a) or "__unknown__") == selected_group), None)
+
+        support_sorted = sorted(group_counts.items(), key=lambda kv: kv[1], reverse=True)
+        rerank_top_group = support_sorted[0][0] if support_sorted else "__unknown__"
+        rerank_top = int(support_sorted[0][1]) if support_sorted else 0
+        rerank_second = int(support_sorted[1][1]) if len(support_sorted) > 1 else 0
+        rerank_gap = float((rerank_top - rerank_second) / max(1, sum(group_counts.values())))
+
+        gold_group = _normalize_answer(gold_answer)
+        gold_present = int(gold_group in group_counts)
+        absent_from_tree = int(not gold_present)
+        present_not_selected = int(gold_present and selected_group != gold_group)
+
+        actions_used = int(direct_actions + (frontier_result.actions_used if frontier_result else 0))
+        expansions = int(direct_actions + (frontier_result.expansions if frontier_result else 0))
+        verifications = int(frontier_result.verifications if frontier_result else 0)
+        metadata = {
+            "method_family": "diagnostic_direct_reserve_gate_rerank",
+            "diagnostic_only": True,
+            "not_canonical": True,
+            "direct_reserve_attempts_planned": int(reserve_attempts),
+            "direct_reserve_attempts_executed": int(len(direct_answers)),
+            "direct_reserve_actions_used": int(direct_actions),
+            "branching_gate_decision": str(gate_decision),
+            "direct_answer_group_counts": dict(direct_counts),
+            "direct_top_support": float(top_support),
+            "direct_top2_support_gap": float(top2_gap),
+            "direct_answer_entropy": float(entropy),
+            "remaining_budget_before_frontier": int(remaining_budget),
+            "frontier_executed": bool(frontier_result is not None),
+            "selected_answer_group": str(selected_group),
+            "top_answer_group": str(rerank_top_group),
+            "answer_group_support_counts": dict(group_counts),
+            "top2_support_gap": float(rerank_gap),
+            "gold_answer_present_in_candidate_pool": int(gold_present),
+            "absent_from_tree": int(absent_from_tree),
+            "present_not_selected": int(present_not_selected),
+            "direct_action_trace": direct_trace,
+            "frontier_metadata": (frontier_result.metadata if frontier_result else {}),
+        }
+        return MethodResult(
+            method=self.method_name,
+            prediction=prediction,
+            is_correct=self._answers_match(prediction, gold_answer),
+            actions_used=actions_used,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=float(frontier_result.avg_surviving_branches if frontier_result else 1.0),
+            budget_exhausted=bool(actions_used >= self.max_actions),
+            metadata=metadata,
+        )
+
 class L1LengthControlController(BaseController):
     """External baseline adapter for L1/LCPO-style length-conditioned control.
 
