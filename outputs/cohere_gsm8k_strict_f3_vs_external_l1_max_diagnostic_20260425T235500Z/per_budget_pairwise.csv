@@ -1,0 +1,4 @@
+budget,matched_examples,strict_f3_accuracy,external_l1_max_accuracy,paired_delta_strict_f3_minus_external_l1_max,bootstrap95_low,bootstrap95_high,strict_f3_wins,ties,strict_f3_losses
+4,10,0.5,0.8,-0.3,-0.6,0.0,0,7,3
+6,10,0.5,0.8,-0.3,-0.7,0.1,1,5,4
+8,10,0.6,0.8,-0.2,-0.5,0.0,0,8,2

@@ -1,0 +1,3 @@
+question,answer,evidence
+Does strict_f3 beat external_l1_max under Cohere Stage-1 GSM8K?,no_or_mixed,"matched=30, delta=-0.26666666666666666"
+Claim safety tier,diagnostic_only_incomplete,Do not claim main-paper dominance if negative/mixed/incomplete.

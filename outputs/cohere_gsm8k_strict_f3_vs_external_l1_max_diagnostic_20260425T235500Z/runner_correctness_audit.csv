@@ -1,0 +1,7 @@
+check,status,detail
+same_dataset_scope,pass,openai/gsm8k only
+same_seed_scope,pass,"11,23 only"
+same_budget_scope,pass,"4,6,8 only"
+matched_example_ids,warn,strict_f3=66 external_l1_max=30 matched=30
+answer_normalizer,pass,canonicalize_answer + choose_repair_answer in run_cohere_real_model_cost_normalized_validation.py
+scoring_logic,pass,exact_match based on canonicalized surfaced_final_answer == canonicalized gold_answer
