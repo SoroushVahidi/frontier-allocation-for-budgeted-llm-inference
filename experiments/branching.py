@@ -172,6 +172,27 @@ class APIBranchGenerator:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.timeout_seconds = timeout_seconds
+        self.total_input_tokens = 0
+        self.total_output_tokens = 0
+        self.total_api_calls = 0
+        self.total_retry_attempts = 0
+        self.last_request_meta: dict[str, Any] = {}
+
+    def reset_usage_counters(self) -> None:
+        self.total_input_tokens = 0
+        self.total_output_tokens = 0
+        self.total_api_calls = 0
+        self.total_retry_attempts = 0
+        self.last_request_meta = {}
+
+    def snapshot_usage_counters(self) -> dict[str, int]:
+        return {
+            "input_tokens": int(self.total_input_tokens),
+            "output_tokens": int(self.total_output_tokens),
+            "total_tokens": int(self.total_input_tokens + self.total_output_tokens),
+            "api_calls": int(self.total_api_calls),
+            "retry_attempts": int(self.total_retry_attempts),
+        }
 
     def init_branch(self, branch_id: str) -> BranchState:
         return BranchState(branch_id=branch_id, latent_quality=0.5, score=0.5)
@@ -270,6 +291,28 @@ class APIBranchGenerator:
             try:
                 with request.urlopen(req, timeout=self.timeout_seconds) as resp:
                     body = json.loads(resp.read().decode("utf-8"))
+                    usage = body.get("usage", {}) if isinstance(body, dict) else {}
+                    tokens = usage.get("tokens", {}) if isinstance(usage, dict) else {}
+                    billed = usage.get("billed_units", {}) if isinstance(usage, dict) else {}
+                    in_tok = tokens.get("input_tokens", billed.get("input_tokens", 0)) if isinstance(tokens, dict) else 0
+                    out_tok = tokens.get("output_tokens", billed.get("output_tokens", 0)) if isinstance(tokens, dict) else 0
+                    try:
+                        in_tok_i = int(in_tok or 0)
+                    except Exception:
+                        in_tok_i = 0
+                    try:
+                        out_tok_i = int(out_tok or 0)
+                    except Exception:
+                        out_tok_i = 0
+                    self.total_input_tokens += in_tok_i
+                    self.total_output_tokens += out_tok_i
+                    self.total_api_calls += 1
+                    self.total_retry_attempts += int(attempt)
+                    self.last_request_meta = {
+                        "attempts": int(attempt + 1),
+                        "input_tokens": in_tok_i,
+                        "output_tokens": out_tok_i,
+                    }
                 break
             except error.HTTPError as exc:  # pragma: no cover - network path
                 err_body = exc.read().decode("utf-8", errors="ignore")
