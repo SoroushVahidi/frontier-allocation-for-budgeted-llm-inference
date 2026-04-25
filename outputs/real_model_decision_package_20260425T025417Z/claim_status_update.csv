@@ -1,0 +1,6 @@
+claim_area,previous_or_target_language,updated_status,confidence,required_change,justification
+real_model_dominance_over_external_l1_max,Potential superiority framing,not_safe,high,remove_from_main_claims,"Current Cohere Stage-1 matched evidence is significantly negative for strict_f3"
+frontier_allocation_beats_external_l1_max_under_real_api,Dominance implication,not_safe,high,forbid_superiority_wording,"Negative delta overall and by budget/seed"
+real_model_cross_provider_generality,Pending,mixed_incomplete,medium,appendix_only_until_confirmed,"Current package is Cohere-only diagnostic with incomplete slices"
+manuscript_real_model_role,Possible headline support,diagnostic_appendix_only,high,reframe_now,"Unified claim safety and current Cohere diagnostic both disallow dominance claims"
+algorithm_readiness_for_submission,Implied stable advantage,needs_improvement_or_reframing,medium,avoid_blind_api_expansion,"Negative signal persists under correctness checks"

@@ -1,0 +1,32 @@
+{
+  "package_name": "real_model_decision_package",
+  "timestamp": "20260425T025417Z",
+  "created_utc": "2026-04-25T02:54:17Z",
+  "inputs": [
+    "outputs/cohere_gsm8k_strict_f3_vs_external_l1_max_diagnostic_20260425T235500Z/",
+    "docs/COHERE_GSM8K_STRICT_F3_VS_EXTERNAL_L1_MAX_DIAGNOSTIC_20260425T235500Z.md",
+    "outputs/cohere_real_model_cost_normalized_validation_20260425T133000Z_COHERE_STAGE1_MIN/",
+    "docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260425T133000Z_COHERE_STAGE1_MIN.md",
+    "docs/UNIFIED_CLAIM_SAFETY_STATISTICAL_AUDIT_20260424T200000Z.md",
+    "docs/MANUSCRIPT_SUPPORT_DASHBOARD.md",
+    "docs/PAPER_SOURCE_OF_TRUTH.md"
+  ],
+  "outputs": [
+    "manifest.json",
+    "real_model_decision_table.csv",
+    "cohere_stage1_key_numbers.csv",
+    "claim_status_update.csv",
+    "recommended_manuscript_changes.md",
+    "next_action_options.csv",
+    "failure_diagnosis_summary.csv",
+    "openai_fallback_decision.csv"
+  ],
+  "decision_summary": {
+    "cohere_stage1_status": "diagnostic_unfavorable_incomplete",
+    "real_model_dominance_claim": "not_safe",
+    "manuscript_action": "reframe_now_appendix_only_for_real_model_dominance_comparisons",
+    "primary_option": "E",
+    "secondary_option": "B"
+  },
+  "notes": "No new experimental results were generated; package synthesizes existing repository artifacts under conservative claim-safety rules."
+}

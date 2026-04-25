@@ -1,0 +1,7 @@
+failure_signal,evidence_type,severity,interpretation,implication
+paired_performance_negative,statistical,high,"strict_f3 underperforms external_l1_max on matched Cohere Stage-1 set",Cannot support superiority claim
+negative_across_all_budgets,slice_consistency,high,"Budgets 4/6/8 all negative",Not likely single-budget artifact
+negative_across_seeds,seed_consistency,medium_high,"Seeds 11 and 23 both negative; seed 23 more negative",Signal not seed-idiosyncratic
+cost_normalized_disadvantage,efficiency,high,"strict_f3 worse per token and per dollar",Even efficiency framing does not rescue claim
+runner_checks_pass,pipeline_validity,medium_high,"Scoring/normalization checks pass",Treat as substantive warning not obvious bug
+matched_ids_incomplete,data_completeness,medium,"Matched IDs warning indicates partial overlap limitations",Result is diagnostic_unfavorable_incomplete, not universal final evidence
