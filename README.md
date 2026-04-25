@@ -1,78 +1,42 @@
-# adaptive-reasoning-budget-allocation
+# Adaptive Reasoning Budget Allocation (Anonymous NeurIPS 2026 Repository)
 
-NeurIPS-facing research codebase for **fixed-budget adaptive test-time compute allocation for LLM reasoning**.
+This repository studies **frontier allocation for budgeted LLM inference** under explicit action-budget contracts.
 
-## Project identity (canonical)
+## Main reproducible claims (paper-facing)
 
-This repository centers on:
-- branch-level frontier allocation under fixed budget,
-- answer-group evidence aggregation,
-- anti-collapse / repeated-same-family control,
-- manuscript claim-boundary discipline.
+- The paper uses a **matched action-budget surface** and **matched-budget adapter baselines**.
+- Canonical tables/figures are regenerated from committed scripts and artifacts without external LLM APIs.
+- Real-model provider runs are retained as **supporting/diagnostic real-model audits** (not evidence of universal dominance).
 
-## Non-negotiable two-surface distinction
-
-- **Manuscript-facing matched-surface internal winner:** `strict_f3`
-- **Broader operational default on a different surface:** `strict_gate1_cap_k6`
-
-See:
-- [`docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`](docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md)
-- [`docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`](docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md)
-
-## Fastest reliable path (front door)
-
-1. [`QUICKSTART.md`](QUICKSTART.md)
-2. [`docs/CANONICAL_START_HERE.md`](docs/CANONICAL_START_HERE.md)
-3. [`docs/MANUSCRIPT_SUPPORT_DASHBOARD.md`](docs/MANUSCRIPT_SUPPORT_DASHBOARD.md)
-4. [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md)
-5. [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
-6. [`scripts/CANONICAL_START_HERE.md`](scripts/CANONICAL_START_HERE.md)
-
-## Developer checks
+## Canonical reproduction path (no API keys required)
 
 ```bash
-make setup
-make smoke
-make health
-make lint
-make test
-make check
-```
-
-## Paper artifact regeneration
-
-Canonical runner:
-
-```bash
+python scripts/check_repo_health.py
+python -m ruff check
+python -m pytest
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
 
-Compatibility alias (intentionally retained):
-
-```bash
-python scripts/paper/run_all_neurips_artifacts.py
-```
-
-Output roots:
+Canonical outputs:
+- `outputs/paper_tables/`
 - `outputs/paper_plot_data/`
 - `outputs/paper_figures/`
-- `outputs/paper_tables/`
 
-## Anonymous supplement workflow
+## Reviewer navigation
 
-```bash
-python scripts/audit_anonymous_supplement.py
-python scripts/build_anonymous_neurips_supplement.py
-python scripts/audit_anonymous_supplement.py --path dist/neurips2026_anonymous_supplement
-```
+- `docs/REVIEWER_QUICKSTART.md`
+- `docs/PAPER_SOURCE_OF_TRUTH.md`
+- `docs/RESULTS_GUIDE.md`
+- `docs/CLAIM_BOUNDARIES.md`
+- `docs/ARTIFACT_MANIFEST.md`
 
-## Claim-safety boundaries (reviewer-facing)
+## Scope separation
 
-- Matched-surface manuscript method remains `strict_f3`; broader operational default remains `strict_gate1_cap_k6`.
-- OpenAI/Cohere real-model audits are currently appendix-only: competitive and diagnostically informative, not universally dominant.
-- Do not claim frontier-allocation dominance over `external_l1_max` from current real-model slices.
+- **Paper-facing canonical evidence:** matched-surface manuscript artifacts used by paper tables/figures.
+- **Appendix/supporting evidence:** robustness, ablations, and contract/fairness checks.
+- **Exploratory/provenance-only evidence:** negative/partial runs and exploratory algorithm attempts.
+- **Non-review/private/local-only:** machine-local traces, task metadata, and private execution leftovers (flagged in manifests; not used for claims).
 
-## Interpretation discipline
+## External API note
 
-Use canonical docs + canonical artifact families for manuscript claims.
-Do not elevate exploratory or historical outputs to headline evidence unless a canonical decision document explicitly promotes them.
+Paper artifact regeneration does **not** require OpenAI/Cohere keys. Optional real-model scripts that require provider keys are explicitly labeled and are not required for reviewer reproduction.

@@ -1,0 +1,5 @@
+artifact_class,examples,status
+paper_facing_canonical,outputs/paper_tables; outputs/paper_plot_data; outputs/paper_figures,fixed
+appendix_supporting,anti-collapse sweeps; external-validity bundles; ToT adapters,fixed
+exploratory_provenance_only,real-model diagnostics; failure traces; strict_f3_case_split_direction_aware_v1,fixed
+non_review_private_local_only,local/task metadata/path leaks in legacy artifacts,needs_manual_review

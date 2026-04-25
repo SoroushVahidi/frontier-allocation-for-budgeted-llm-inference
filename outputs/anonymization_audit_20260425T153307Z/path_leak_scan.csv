@@ -1,0 +1,3 @@
+file,line,finding_type,match,status
+scripts/build_anonymous_neurips_supplement.py,88,users_path,/Users/|/mnt/|/scratch/|/project/|/run/user/),needs_manual_review
+scripts/audit_anonymous_supplement.py,83,users_path,/Users/|/mnt/|/scratch/|/project/|/run/user/),needs_manual_review

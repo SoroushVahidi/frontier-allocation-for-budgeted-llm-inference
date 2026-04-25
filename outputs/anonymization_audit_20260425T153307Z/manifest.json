@@ -1,0 +1,18 @@
+{
+  "timestamp_utc": "20260425T153307Z",
+  "scan_scope": "repository text files excluding .git",
+  "generated_files": [
+    "identity_string_scan.csv",
+    "path_leak_scan.csv",
+    "api_secret_scan.csv",
+    "external_link_scan.csv",
+    "files_changed.csv",
+    "remaining_risks.csv"
+  ],
+  "status_labels": [
+    "fixed",
+    "safe_context",
+    "intentional_public_citation",
+    "needs_manual_review"
+  ]
+}

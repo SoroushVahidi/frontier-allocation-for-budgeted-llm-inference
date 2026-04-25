@@ -134,3 +134,9 @@ terminals/
 !outputs/tot_matched_budget_baseline_*/**/*
 !outputs/case_split_direction_aware_offline_eval_*/
 !outputs/case_split_direction_aware_offline_eval_*/**/*
+!outputs/anonymization_audit_*/
+!outputs/anonymization_audit_*/**/*
+!outputs/repository_claim_safety_cleanup_*/
+!outputs/repository_claim_safety_cleanup_*/**/*
+!outputs/repository_cleanup_and_anonymization_*/
+!outputs/repository_cleanup_and_anonymization_*/**/*
