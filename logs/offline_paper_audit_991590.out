@@ -1,0 +1,1201 @@
+==== Offline Submission Audit Start ====
+date_utc=2026-04-25T18:16:43Z
+hostname=n0111
+python_path=/apps/easybuild/software/Anaconda3/2023.09-0/bin/python
+python_version=Python 3.11.5
+git_commit=353966ce450edb8209bf9e7da926ddee08aeddc2
+policy=NO_PROVIDER_API_CALLS (Cohere/OpenAI/external generative APIs disabled for this audit)
+---- step=check_repo_health ----
+cmd=python scripts/check_repo_health.py
+adaptive-reasoning-budget-allocation
+=====================================
+Python version: 3.11.5
+
+Repository health check: OK
+Canonical front door, artifact runners, and core import paths are intact.
+step=check_repo_health rc=0
+---- step=ruff_check ----
+cmd=python -m ruff check
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:37:5
+   [1m[94m|[0m
+[1m[94m35 |[0m         answer = remove_boxed(last_boxed_only_string(output))
+[1m[94m36 |[0m         return answer
+[1m[94m37 |[0m     except:
+   [1m[94m|[0m     [1m[91m^^^^^^[0m
+[1m[94m38 |[0m         return ""
+   [1m[94m|[0m
+
+[1m[91mE721 [0m[1mUse `is` and `is not` for type comparisons, or `isinstance()` for isinstance checks[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:46:8
+   [1m[94m|[0m
+[1m[94m44 |[0m     gt_answer is final gt answer
+[1m[94m45 |[0m     """
+[1m[94m46 |[0m     if type(gt_answer) == str and "\\boxed" in gt_answer:
+   [1m[94m|[0m        [1m[91m^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m47 |[0m         gt_answer = normalize_final_answer(remove_boxed(last_boxed_only_string(gt_answer)))
+[1m[94m48 |[0m     else:
+   [1m[94m|[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:55:5
+   [1m[94m|[0m
+[1m[94m53 |[0m     try:
+[1m[94m54 |[0m         raw_check = float(predicted_ans) == float(gt_answer)
+[1m[94m55 |[0m     except:
+   [1m[94m|[0m     [1m[91m^^^^^^[0m
+[1m[94m56 |[0m         pass
+[1m[94m57 |[0m     return is_equiv_hendrycks(predicted_ans, gt_answer) or raw_check
+   [1m[94m|[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:84:1
+   [1m[94m|[0m
+[1m[94m82 |[0m         problem_0_solutions = [x for x in os.listdir(problem_0_path) if "solution_" in x]
+[1m[94m83 |[0m         num_solutions = len(problem_0_solutions)
+[1m[94m84 |[0m     
+   [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m85 |[0m         solution_0_path = os.path.join(problem_0_path, "solution_0.yaml")
+[1m[94m86 |[0m         solution_0_yaml = load_yaml(solution_0_path)
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:140:1
+    [1m[94m|[0m
+[1m[94m138 |[0m                 raise Exception("math_type not recognized")
+[1m[94m139 |[0m             solutions.append(predicted_answer)
+[1m[94m140 |[0m         
+    [1m[94m|[0m [1m[91m^^^^^^^^[0m
+[1m[94m141 |[0m         except:
+[1m[94m142 |[0m             print(f'COULD NOT FIND SOLUTION\tPROBLEM_ID: {problem_id}, SOLUTION_ID: {solution_id}')
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:141:9
+    [1m[94m|[0m
+[1m[94m139 |[0m             solutions.append(predicted_answer)
+[1m[94m140 |[0m         
+[1m[94m141 |[0m         except:
+    [1m[94m|[0m         [1m[91m^^^^^^[0m
+[1m[94m142 |[0m             print(f'COULD NOT FIND SOLUTION\tPROBLEM_ID: {problem_id}, SOLUTION_ID: {solution_id}')
+[1m[94m143 |[0m             raise Exception("Couldn't find solution")
+    [1m[94m|[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:147:1
+    [1m[94m|[0m
+[1m[94m145 |[0m     if len(solutions) == 1:
+[1m[94m146 |[0m         return solutions[0]
+[1m[94m147 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m148 |[0m     return solutions
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:156:1
+    [1m[94m|[0m
+[1m[94m154 |[0m     """
+[1m[94m155 |[0m     Check if a solution is marked as correct or incorrect in the given text.
+[1m[94m156 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m157 |[0m     Args:
+[1m[94m158 |[0m         text (str): The text to analyze
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:159:1
+    [1m[94m|[0m
+[1m[94m157 |[0m     Args:
+[1m[94m158 |[0m         text (str): The text to analyze
+[1m[94m159 |[0m         
+    [1m[94m|[0m [1m[91m^^^^^^^^[0m
+[1m[94m160 |[0m     Returns:
+[1m[94m161 |[0m         bool or None: True if correct, False if incorrect, None if no status found
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:165:1
+    [1m[94m|[0m
+[1m[94m163 |[0m     # Convert text to lowercase for case-insensitive matching
+[1m[94m164 |[0m     text = text.lower()
+[1m[94m165 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m166 |[0m     # Define patterns for solution status indicators
+[1m[94m167 |[0m     patterns = [
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:175:1
+    [1m[94m|[0m
+[1m[94m173 |[0m         r'assessment\s*:?\s*[\[\(]?\s*correct\s*[\]\)]?'
+[1m[94m174 |[0m     ]
+[1m[94m175 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m176 |[0m     # Check for incorrect first (as it's more specific)
+[1m[94m177 |[0m     for pattern in patterns:
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:180:1
+    [1m[94m|[0m
+[1m[94m178 |[0m         if 'incorrect' in pattern and re.search(pattern, text):
+[1m[94m179 |[0m             return False
+[1m[94m180 |[0m             
+    [1m[94m|[0m [1m[91m^^^^^^^^^^^^[0m
+[1m[94m181 |[0m     # Then check for correct
+[1m[94m182 |[0m     for pattern in patterns:
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:185:1
+    [1m[94m|[0m
+[1m[94m183 |[0m         if 'correct' in pattern and re.search(pattern, text):
+[1m[94m184 |[0m             return True
+[1m[94m185 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m186 |[0m     # If neither is found, return None
+[1m[94m187 |[0m     return None
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:262:1
+    [1m[94m|[0m
+[1m[94m260 |[0m     else:
+[1m[94m261 |[0m         return extract_final_verification(verification["verification"])
+[1m[94m262 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m263 |[0m
+[1m[94m264 |[0m def get_verification_scores(problem_id, solution_id, verification_ids, verifications_dir, use_logprobs, use_hybrid):
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:267:1
+    [1m[94m|[0m
+[1m[94m265 |[0m     if isinstance(verification_ids, int):
+[1m[94m266 |[0m         verification_ids = [verification_ids]
+[1m[94m267 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m268 |[0m     path = os.path.join(verifications_dir, f"problem_{problem_id}", f"solution_{solution_id}.yaml")
+[1m[94m269 |[0m     yaml = load_yaml(path)
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:278:9
+    [1m[94m|[0m
+[1m[94m276 |[0m             verification_extracted = verification_extraction_wrapper(verification, use_hybrid, use_logprobs)
+[1m[94m277 |[0m             verification_scores.append(verification_extracted)
+[1m[94m278 |[0m         except:
+    [1m[94m|[0m         [1m[91m^^^^^^[0m
+[1m[94m279 |[0m             print("could not find verification for: ", problem_id, solution_id, verification_id)
+[1m[94m280 |[0m             raise Exception(
+    [1m[94m|[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:292:5
+    [1m[94m|[0m
+[1m[94m290 |[0m     try:
+[1m[94m291 |[0m         verifications = [x for x in verifications if not np.isnan(x)]
+[1m[94m292 |[0m     except:
+    [1m[94m|[0m     [1m[91m^^^^^^[0m
+[1m[94m293 |[0m         print('verifications:')
+[1m[94m294 |[0m         print(verifications)
+    [1m[94m|[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:375:5
+    [1m[94m|[0m
+[1m[94m373 |[0m         all_samples = np.array([random.sample(range(total_num_solutions), num_solutions)
+[1m[94m374 |[0m                            for _ in range(num_reps)])
+[1m[94m375 |[0m     except:
+    [1m[94m|[0m     [1m[91m^^^^^^[0m
+[1m[94m376 |[0m         print("total_num_solutions: ", total_num_solutions, " num_solutions: ", num_solutions)
+[1m[94m377 |[0m         raise Exception
+    [1m[94m|[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:378:1
+    [1m[94m|[0m
+[1m[94m376 |[0m         print("total_num_solutions: ", total_num_solutions, " num_solutions: ", num_solutions)
+[1m[94m377 |[0m         raise Exception
+[1m[94m378 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m379 |[0m     for i in range(num_reps):
+[1m[94m380 |[0m         sampled_idxs = all_samples[i]
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/eval_utils.py:396:1
+    [1m[94m|[0m
+[1m[94m394 |[0m         # Find prediction with highest rating
+[1m[94m395 |[0m         predicted_solution = max(weighted_predictions, key=weighted_predictions.get)
+[1m[94m396 |[0m         
+    [1m[94m|[0m [1m[91m^^^^^^^^[0m
+[1m[94m397 |[0m         sorted_dict = dict(sorted(weighted_predictions.items(), key=lambda item: item[1], reverse=True))
+[1m[94m398 |[0m         successes[i] = get_solution_correctness(predicted_solution, gt_answer)
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/math_datasets.py:38:9
+   [1m[94m|[0m
+[1m[94m36 |[0m         try:
+[1m[94m37 |[0m             correct = is_correct(sample, result["gt_answer"], config.dset)
+[1m[94m38 |[0m         except:
+   [1m[94m|[0m         [1m[91m^^^^^^[0m
+[1m[94m39 |[0m             print("SKIPPING SAMPLE PATH BECAUSE CANNOT ASSESS CORRECTNESS: ", config.sample_path)
+[1m[94m40 |[0m             return 
+   [1m[94m|[0m
+
+[1m[91mW292 [0m[[1m[96m*[0m] [1mNo newline at end of file[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/math_datasets.py:85:11
+   [1m[94m|[0m
+[1m[94m84 |[0m if __name__ == "__main__":
+[1m[94m85 |[0m     main()
+   [1m[94m|[0m           [1m[91m^[0m
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd trailing newline[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/math_pass_k.py:113:17
+    [1m[94m|[0m
+[1m[94m111 |[0m                 try:
+[1m[94m112 |[0m                     num_correct = sum(is_corrects)
+[1m[94m113 |[0m                 except:
+    [1m[94m|[0m                 [1m[91m^^^^^^[0m
+[1m[94m114 |[0m                     print("file_path: ", file_path)
+[1m[94m115 |[0m                     print(is_corrects)
+    [1m[94m|[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/math_pass_k.py:133:1
+    [1m[94m|[0m
+[1m[94m131 |[0m                 num_samples_list.append(num_samples)
+[1m[94m132 |[0m                 num_correct_list.append(num_correct)
+[1m[94m133 |[0m             
+    [1m[94m|[0m [1m[91m^^^^^^^^^^^^[0m
+[1m[94m134 |[0m     if not num_samples_list:
+[1m[94m135 |[0m         print("No YAML files found in the directory.")
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:31:1
+   [1m[94m|[0m
+[1m[94m29 |[0m     np.random.seed(seed)
+[1m[94m30 |[0m     random.seed(seed)
+[1m[94m31 |[0m     
+   [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m32 |[0m     gt_solution = get_gt_solution(problem_id, samples_dir)
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:46:1
+   [1m[94m|[0m
+[1m[94m44 |[0m                 )
+[1m[94m45 |[0m         verifications.append(verifications_for_solution)
+[1m[94m46 |[0m     
+   [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m47 |[0m     verifications = np.array(verifications, dtype=float)
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:87:1
+   [1m[94m|[0m
+[1m[94m85 |[0m     np.random.seed(seed)
+[1m[94m86 |[0m     random.seed(seed)
+[1m[94m87 |[0m     
+   [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m88 |[0m     gt_solution = all_gt_solutions[problem_id]
+[1m[94m89 |[0m     predicted_solutions = all_predicted_solutions[problem_id]
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:135:1
+    [1m[94m|[0m
+[1m[94m133 |[0m         for s in num_solutions_list:
+[1m[94m134 |[0m             predicted_solutions_with_verifications = predicted_solutions[:np.size(solution_scores)]
+[1m[94m135 |[0m             
+    [1m[94m|[0m [1m[91m^^^^^^^^^^^^[0m
+[1m[94m136 |[0m             if best_of_n:
+[1m[94m137 |[0m                 best_of_k_val = compute_best_of_k(solution_scores, predicted_solutions_with_verifications, gt_solution, s)
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:139:1
+    [1m[94m|[0m
+[1m[94m137 |[0m                 best_of_k_val = compute_best_of_k(solution_scores, predicted_solutions_with_verifications, gt_solution, s)
+[1m[94m138 |[0m                 results["best_of_k"][(s, v)] = best_of_k_val
+[1m[94m139 |[0m             
+    [1m[94m|[0m [1m[91m^^^^^^^^^^^^[0m
+[1m[94m140 |[0m             if weighted_sc:
+[1m[94m141 |[0m                 weighted_sc_val = compute_weighted_sc(solution_scores, predicted_solutions_with_verifications, gt_solution, s, num_re[1m[94m…[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:187:1
+    [1m[94m|[0m
+[1m[94m185 |[0m     np.random.seed(seed)
+[1m[94m186 |[0m     random.seed(seed)
+[1m[94m187 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m188 |[0m     # Create the directory to save plots if it doesn't already exist
+[1m[94m189 |[0m     Path(plot_save_dir).mkdir(parents=True, exist_ok=True)
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:218:1
+    [1m[94m|[0m
+[1m[94m216 |[0m             all_verifications = raw_data["all_verifications"]
+[1m[94m217 |[0m             num_problems = len(all_gt_solutions)
+[1m[94m218 |[0m             
+    [1m[94m|[0m [1m[91m^^^^^^^^^^^^[0m
+[1m[94m219 |[0m         else:
+[1m[94m220 |[0m             print("RAW DATA DID NOT EXIST OR RECOMPUTE FLAG SET, COMPUTING FROM SCRATCH")
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:227:1
+    [1m[94m|[0m
+[1m[94m225 |[0m             if num_problems is None:
+[1m[94m226 |[0m                 num_problems = num_problems_
+[1m[94m227 |[0m             
+    [1m[94m|[0m [1m[91m^^^^^^^^^^^^[0m
+[1m[94m228 |[0m             if max_num_solutions_with_verifs is None:
+[1m[94m229 |[0m                 num_solutions = num_solutions_
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:232:1
+    [1m[94m|[0m
+[1m[94m230 |[0m             else:
+[1m[94m231 |[0m                 num_solutions = max_num_solutions_with_verifs
+[1m[94m232 |[0m             
+    [1m[94m|[0m [1m[91m^^^^^^^^^^^^[0m
+[1m[94m233 |[0m             if max_num_solutions_without_verifs is None:
+[1m[94m234 |[0m                 total_num_solution_without_verifications = total_num_solution_without_verifications_
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:246:1
+    [1m[94m|[0m
+[1m[94m244 |[0m             # total_num_solution_without_verifications = 128
+[1m[94m245 |[0m             # num_verifications = 32
+[1m[94m246 |[0m             
+    [1m[94m|[0m [1m[91m^^^^^^^^^^^^[0m
+[1m[94m247 |[0m             print(f"num problems = {num_problems}, num solutions with verifications = {num_solutions}, total num solutions without ve[1m[94m…[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:463:1
+    [1m[94m|[0m
+[1m[94m461 |[0m     import argparse
+[1m[94m462 |[0m     import yaml
+[1m[94m463 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m464 |[0m     # Create an argument parser for just the config file path
+[1m[94m465 |[0m     parser = argparse.ArgumentParser(description="Compute success rate at different k values.")
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:467:1
+    [1m[94m|[0m
+[1m[94m465 |[0m     parser = argparse.ArgumentParser(description="Compute success rate at different k values.")
+[1m[94m466 |[0m     parser.add_argument("--config", type=str, required=True, help="Path to the YAML configuration file.")
+[1m[94m467 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m468 |[0m     # Parse the single argument
+[1m[94m469 |[0m     args = parser.parse_args()
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:470:1
+    [1m[94m|[0m
+[1m[94m468 |[0m     # Parse the single argument
+[1m[94m469 |[0m     args = parser.parse_args()
+[1m[94m470 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m471 |[0m     # Load configuration from YAML file
+[1m[94m472 |[0m     try:
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:478:1
+    [1m[94m|[0m
+[1m[94m476 |[0m         print(f"Error loading configuration file: {e}")
+[1m[94m477 |[0m         exit(1)
+[1m[94m478 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m479 |[0m     # Check for required parameters
+[1m[94m480 |[0m     required_params = ["samples_dir", "verifications_dir", "all_num_solutions_plot", 
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:483:1
+    [1m[94m|[0m
+[1m[94m481 |[0m                       "all_num_solutions_plot_no_verif", "all_num_verifications_plot", 
+[1m[94m482 |[0m                       "plot_save_dir"]
+[1m[94m483 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m484 |[0m     for param in required_params:
+[1m[94m485 |[0m         if param not in config:
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:487:1
+    [1m[94m|[0m
+[1m[94m485 |[0m         if param not in config:
+[1m[94m486 |[0m             raise ValueError(f"Required parameter '{param}' not found in configuration file")
+[1m[94m487 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m488 |[0m     # Set default values for optional parameters
+[1m[94m489 |[0m     defaults = {
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:511:1
+    [1m[94m|[0m
+[1m[94m509 |[0m         "num_reps_sc": 25,
+[1m[94m510 |[0m     }
+[1m[94m511 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m512 |[0m     # Update config with defaults for missing parameters
+[1m[94m513 |[0m     for key, value in defaults.items():
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:516:1
+    [1m[94m|[0m
+[1m[94m514 |[0m         if key not in config:
+[1m[94m515 |[0m             config[key] = value
+[1m[94m516 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m517 |[0m     # Check for conflicting parameters
+[1m[94m518 |[0m     if config["fix_num_solutions"] == config["fix_num_verifications"] and config["fix_num_solutions"]:
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:520:1
+    [1m[94m|[0m
+[1m[94m518 |[0m     if config["fix_num_solutions"] == config["fix_num_verifications"] and config["fix_num_solutions"]:
+[1m[94m519 |[0m         raise Exception("You can only plot either fix num solutions or fix num verifications")
+[1m[94m520 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m521 |[0m     # If user does not specify any flag among best_of_n, weighted_sc, majority_voting, coverage, plot everything
+[1m[94m522 |[0m     if not any([config["best_of_n"], config["weighted_sc"], config["majority_voting"], config["coverage"]]):
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:527:1
+    [1m[94m|[0m
+[1m[94m525 |[0m         config["majority_voting"] = True
+[1m[94m526 |[0m         config["coverage"] = True
+[1m[94m527 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m528 |[0m     # Call the main function with the configuration
+[1m[94m529 |[0m     main(
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW292 [0m[[1m[96m*[0m] [1mNo newline at end of file[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/plot_success_rate.py:556:6
+    [1m[94m|[0m
+[1m[94m554 |[0m         num_reps_sc=config["num_reps_sc"],
+[1m[94m555 |[0m         lambda_=config["lamb"]
+[1m[94m556 |[0m     )
+    [1m[94m|[0m      [1m[91m^[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd trailing newline[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:40:1
+   [1m[94m|[0m
+[1m[94m38 |[0m         item["Incorrect Answer 3"],
+[1m[94m39 |[0m     ]
+[1m[94m40 |[0m     
+   [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m41 |[0m     random.shuffle(answers)
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:108:1
+    [1m[94m|[0m
+[1m[94m106 |[0m         messages = [{"role": "user", "content": prompt}]
+[1m[94m107 |[0m         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+[1m[94m108 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m109 |[0m     
+[1m[94m110 |[0m     if config.rerun == False:   # if config.rerun == False, that means the code will skip over solutions that have already been gener[1m[94m…[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:109:1
+    [1m[94m|[0m
+[1m[94m107 |[0m         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+[1m[94m108 |[0m     
+[1m[94m109 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m110 |[0m     if config.rerun == False:   # if config.rerun == False, that means the code will skip over solutions that have already been gener[1m[94m…[0m
+[1m[94m111 |[0m         if outpath.exists():
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mE712 [0m[1mAvoid equality comparisons to `False`; use `not config.rerun:` for false checks[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:110:8
+    [1m[94m|[0m
+[1m[94m110 |[0m     if config.rerun == False:   # if config.rerun == False, that means the code will skip over solutions that have already been gener[1m[94m…[0m
+    [1m[94m|[0m        [1m[91m^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m111 |[0m         if outpath.exists():
+[1m[94m112 |[0m             file = load_yaml(outpath)
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mReplace with `not config.rerun`[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:136:1
+    [1m[94m|[0m
+[1m[94m135 |[0m     num_iters = int(np.ceil(num_samples / batch_size))  # if num_samples is not a multiple of batch size, generate the closest number[1m[94m…[0m
+[1m[94m136 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m137 |[0m     for _ in tqdm(range(num_iters), desc=f"Item {item['id']}"):
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:153:1
+    [1m[94m|[0m
+[1m[94m151 |[0m         print(respj.keys())
+[1m[94m152 |[0m         samples.extend(respj["text"])
+[1m[94m153 |[0m         
+    [1m[94m|[0m [1m[91m^^^^^^^^[0m
+[1m[94m154 |[0m         if len(samples) >= config.save_every_n_samples:
+[1m[94m155 |[0m             print("saving generations during sampling ... ")
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:182:1
+    [1m[94m|[0m
+[1m[94m180 |[0m             )
+[1m[94m181 |[0m         )
+[1m[94m182 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m183 |[0m     elif config.dataset == 'aime25':
+[1m[94m184 |[0m         test_dataset = list(
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:189:1
+    [1m[94m|[0m
+[1m[94m187 |[0m             )
+[1m[94m188 |[0m         )
+[1m[94m189 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m190 |[0m     elif config.dataset == 'amc23':
+[1m[94m191 |[0m         test_dataset = list(
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:196:1
+    [1m[94m|[0m
+[1m[94m194 |[0m             )
+[1m[94m195 |[0m         )
+[1m[94m196 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m197 |[0m     elif config.dataset == 'gpqa_diamond_64':
+[1m[94m198 |[0m         test_dataset = list(
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/generate_solutions.py:203:1
+    [1m[94m|[0m
+[1m[94m201 |[0m             )
+[1m[94m202 |[0m         )
+[1m[94m203 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m204 |[0m     else:
+[1m[94m205 |[0m         raise Exception("Unknown dataset")
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW292 [0m[[1m[96m*[0m] [1mNo newline at end of file[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/prompts.py:195:4
+    [1m[94m|[0m
+[1m[94m193 |[0m ```
+[1m[94m194 |[0m
+[1m[94m195 |[0m """
+    [1m[94m|[0m    [1m[91m^[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd trailing newline[0m
+
+[1m[91mW292 [0m[[1m[96m*[0m] [1mNo newline at end of file[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/generate/vllm_server.py:138:6
+    [1m[94m|[0m
+[1m[94m136 |[0m         log_level="debug",
+[1m[94m137 |[0m         timeout_keep_alive=TIMEOUT_KEEP_ALIVE,
+[1m[94m138 |[0m     )
+    [1m[94m|[0m      [1m[91m^[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd trailing newline[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/utils.py:32:9
+   [1m[94m|[0m
+[1m[94m30 |[0m         try:
+[1m[94m31 |[0m             existing_data = load_yaml(path)
+[1m[94m32 |[0m         except:
+   [1m[94m|[0m         [1m[91m^^^^^^[0m
+[1m[94m33 |[0m             save_yaml(path, data)
+[1m[94m34 |[0m             return
+   [1m[94m|[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/utils.py:39:1
+   [1m[94m|[0m
+[1m[94m37 |[0m         if existing_data is None:
+[1m[94m38 |[0m             save_yaml(path, data)
+[1m[94m39 |[0m         
+   [1m[94m|[0m [1m[91m^^^^^^^^[0m
+[1m[94m40 |[0m         # file exists and is not None
+[1m[94m41 |[0m         else:
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/utils.py:60:1
+   [1m[94m|[0m
+[1m[94m58 |[0m                     # If key doesn't exist, initialize it with the data
+[1m[94m59 |[0m                     existing_data[key] = data.get(key, [])
+[1m[94m60 |[0m         
+   [1m[94m|[0m [1m[91m^^^^^^^^[0m
+[1m[94m61 |[0m             # Save the updated data back to the file
+[1m[94m62 |[0m             save_yaml(path, existing_data)
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW605 [0m[[1m[96m*[0m] [1mInvalid escape sequence: `\ `[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/demo.ipynb:cell 4:9:3
+   [1m[94m|[0m
+[1m[94m 7 |[0m # insert the problem and solution in the template
+[1m[94m 8 |[0m question = "Let $\\mathbf{a},$ $\\mathbf{b},$ and $\\mathbf{c}$ be three vectors\
+[1m[94m 9 |[0m   \ such that $\\|\\mathbf{a}\\| = \\|\\mathbf{b}\\| = \\|\\mathbf{c}\\| = 2.$  Also,\
+   [1m[94m|[0m   [1m[91m^^[0m
+[1m[94m10 |[0m   \ the angle between any two of these vectors is $\\arccos \\frac{5}{8}.$  Find the\
+[1m[94m11 |[0m   \ volume of the parallelepiped generated by $\\mathbf{a},$ $\\mathbf{b},$ and $\\\
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd backslash to escape sequence[0m
+
+[1m[91mW605 [0m[[1m[96m*[0m] [1mInvalid escape sequence: `\ `[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/demo.ipynb:cell 4:10:3
+   [1m[94m|[0m
+[1m[94m 8 |[0m question = "Let $\\mathbf{a},$ $\\mathbf{b},$ and $\\mathbf{c}$ be three vectors\
+[1m[94m 9 |[0m   \ such that $\\|\\mathbf{a}\\| = \\|\\mathbf{b}\\| = \\|\\mathbf{c}\\| = 2.$  Also,\
+[1m[94m10 |[0m   \ the angle between any two of these vectors is $\\arccos \\frac{5}{8}.$  Find the\
+   [1m[94m|[0m   [1m[91m^^[0m
+[1m[94m11 |[0m   \ volume of the parallelepiped generated by $\\mathbf{a},$ $\\mathbf{b},$ and $\\\
+[1m[94m12 |[0m   mathbf{c}.$"
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd backslash to escape sequence[0m
+
+[1m[91mW605 [0m[[1m[96m*[0m] [1mInvalid escape sequence: `\ `[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/demo.ipynb:cell 4:11:3
+   [1m[94m|[0m
+[1m[94m 9 |[0m   \ such that $\\|\\mathbf{a}\\| = \\|\\mathbf{b}\\| = \\|\\mathbf{c}\\| = 2.$  Also,\
+[1m[94m10 |[0m   \ the angle between any two of these vectors is $\\arccos \\frac{5}{8}.$  Find the\
+[1m[94m11 |[0m   \ volume of the parallelepiped generated by $\\mathbf{a},$ $\\mathbf{b},$ and $\\\
+   [1m[94m|[0m   [1m[91m^^[0m
+[1m[94m12 |[0m   mathbf{c}.$"
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd backslash to escape sequence[0m
+
+[1m[91mW605 [0m[[1m[96m*[0m] [1mInvalid escape sequence: `\ `[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/demo.ipynb:cell 4:15:3
+   [1m[94m|[0m
+[1m[94m14 |[0m solution = "The volume of the parallelepiped generated by $\\mathbf{a},$\
+[1m[94m15 |[0m   \ $\\mathbf{b},$ and $\\mathbf{c}$ is equal to $\\left|\\mathbf{a}\\cdot(\\mathbf{b}\\\
+   [1m[94m|[0m   [1m[91m^^[0m
+[1m[94m16 |[0m   times\\mathbf{c})\\right|.$  Since the angle between any two of the vectors is $\\\
+[1m[94m17 |[0m   arccos\\frac{5}{8},$ we have\n\n\\begin{align*}\n\\left|\\mathbf{a}\\cdot(\\mathbf{b}\\\
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd backslash to escape sequence[0m
+
+[1m[91mW605 [0m[[1m[96m*[0m] [1mInvalid escape sequence: `\ `[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/demo.ipynb:cell 4:22:3
+   [1m[94m|[0m
+[1m[94m20 |[0m   right|\\sin\\phi\\cos\\theta\\\\\n&=(2)(2)(2)\\cdot\\frac{21}{64}\\cdot\\frac{5}{8}\\\
+[1m[94m21 |[0m   \\\n&=\\boxed{\\frac{105}{32}}.\n\\end{align*}\nFinal Answer: The final answer is\
+[1m[94m22 |[0m   \ $\\frac{105}{32}$. I hope it is correct."
+   [1m[94m|[0m   [1m[91m^^[0m
+[1m[94m23 |[0m
+[1m[94m24 |[0m prompt = prompt_template.format(question, solution)
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd backslash to escape sequence[0m
+
+[1m[91mE712 [0m[1mAvoid equality comparisons to `False`; use `not os.path.exists(file_path):` for false checks[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:56:8
+   [1m[94m|[0m
+[1m[94m54 |[0m ):
+[1m[94m55 |[0m     file_path = os.path.join(samples_dir, f"{problem_id}.yaml")
+[1m[94m56 |[0m     if os.path.exists(file_path) == False:
+   [1m[94m|[0m        [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m57 |[0m         print("FILE DOESNT EXIST: ", file_path)
+[1m[94m58 |[0m         return None
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mReplace with `not os.path.exists(file_path)`[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+  [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:94:1
+   [1m[94m|[0m
+[1m[94m92 |[0m     messages = [{"role": "user", "content": prompt}]
+[1m[94m93 |[0m     formatted_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+[1m[94m94 |[0m     
+   [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m95 |[0m     return (formatted_prompt, problem_id, solution_id)
+   [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:134:1
+    [1m[94m|[0m
+[1m[94m132 |[0m def run_inference(batch_idx, config, batch_loader, tokenizer, prompt_template_path):
+[1m[94m133 |[0m     batch = batch_loader(batch_idx)  # list containing tuples of (problem_id, solution_id, verification_id)
+[1m[94m134 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m135 |[0m     prompts = [
+[1m[94m136 |[0m         prepare_prompt(
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:153:9
+    [1m[94m|[0m
+[1m[94m151 |[0m         try:
+[1m[94m152 |[0m             p_yes, p_no = extract_P_yes(output['logprobs'], tokenizer)
+[1m[94m153 |[0m         except:
+    [1m[94m|[0m         [1m[91m^^^^^^[0m
+[1m[94m154 |[0m             p_yes, p_no = -1, -1
+    [1m[94m|[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:175:1
+    [1m[94m|[0m
+[1m[94m173 |[0m         num_samples = config.num_verifications
+[1m[94m174 |[0m         save_path = prepare_save_path(config.output_dir, instance[1], instance[2], verification_id)
+[1m[94m175 |[0m         
+    [1m[94m|[0m [1m[91m^^^^^^^^[0m
+[1m[94m176 |[0m         # check if sufficient number of verifications have been generated at this path
+[1m[94m177 |[0m         # Check if the file exists
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mE722 [0m[1mDo not use bare `except`[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:184:13
+    [1m[94m|[0m
+[1m[94m182 |[0m                     data = yaml.safe_load(file)
+[1m[94m183 |[0m                     yaml_loaded = True
+[1m[94m184 |[0m             except:  # if the yaml file cannot be loaded
+    [1m[94m|[0m             [1m[91m^^^^^^[0m
+[1m[94m185 |[0m                 yaml_loaded = False
+    [1m[94m|[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:255:1
+    [1m[94m|[0m
+[1m[94m253 |[0m     num_batches = num_problems * num_solutions // config.batch_size
+[1m[94m254 |[0m     print("Num Batches: ", num_batches)
+[1m[94m255 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m256 |[0m     batch_loader = BatchLoader(
+[1m[94m257 |[0m         num_problems,
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW293 [0m[[1m[96m*[0m] [1mBlank line contains whitespace[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:264:1
+    [1m[94m|[0m
+[1m[94m262 |[0m         config.solution_offset,
+[1m[94m263 |[0m     )
+[1m[94m264 |[0m     
+    [1m[94m|[0m [1m[91m^^^^[0m
+[1m[94m265 |[0m     batch_idxs = list(range(num_batches))
+[1m[94m266 |[0m     print(batch_idxs)
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mRemove whitespace from blank line[0m
+
+[1m[91mW292 [0m[[1m[96m*[0m] [1mNo newline at end of file[0m
+   [1m[94m-->[0m external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/verify/generate_verifications.py:299:50
+    [1m[94m|[0m
+[1m[94m297 |[0m     main()
+[1m[94m298 |[0m     end_time = time.time()
+[1m[94m299 |[0m     print("time taken = ", end_time - start_time)
+    [1m[94m|[0m                                                  [1m[91m^[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: [1mAdd trailing newline[0m
+
+Found 74 errors.
+[[36m*[0m] 58 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).
+step=ruff_check rc=1
+---- step=pytest ----
+cmd=python -m pytest
+============================= test session starts ==============================
+platform linux -- Python 3.11.5, pytest-7.4.0, pluggy-1.6.0
+rootdir: /mmfs1/home/sv96/adaptive-reasoning-budget-allocation
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, anyio-4.12.1
+collected 117 items
+
+tests/test_anti_collapse_calibration_sweep.py ...                        [  2%]
+tests/test_bruteforce_branch_allocator_learning.py ..................... [ 20%]
+.....                                                                    [ 24%]
+tests/test_bruteforce_branch_label_generator.py ....                     [ 28%]
+tests/test_claim_safety_statistical_table.py .                           [ 29%]
+tests/test_conformal_thinking_mode_a.py ....                             [ 32%]
+tests/test_dataset_experiment_readiness.py ..                            [ 34%]
+tests/test_dataset_registry.py .....                                     [ 38%]
+tests/test_diversity_needed_feasibility.py .                             [ 39%]
+tests/test_external_baseline_protocols.py .............                  [ 50%]
+tests/test_frontier_router.py ......                                     [ 55%]
+tests/test_frontier_target_construction_labels.py ..                     [ 57%]
+tests/test_frontier_target_construction_resume.py ..                     [ 58%]
+tests/test_frontier_target_construction_stop_vs_act.py ..                [ 60%]
+tests/test_hard_early_root_depth2_coverage.py ............               [ 70%]
+tests/test_hard_max_family_expansions_cap.py ......                      [ 76%]
+tests/test_held_out_surface_generalization_claim_safety.py ..            [ 77%]
+tests/test_learning_how_hard_to_think_mode_a.py ...                      [ 80%]
+tests/test_low_marginal_gain_family_cooldown.py .                        [ 81%]
+tests/test_non_math_dataset_expansion.py .s..                            [ 84%]
+tests/test_non_math_external_validity_experiment.py FF                   [ 86%]
+tests/test_paper_artifact_runner_claim_safety_integration.py ..          [ 88%]
+tests/test_real_model_quantitative_audit_table.py .                      [ 88%]
+tests/test_real_model_token_accounting_validation_smoke.py ..            [ 90%]
+tests/test_repository_structure.py ..                                    [ 92%]
+tests/test_tot_matched_budget_baseline.py ....                           [ 95%]
+tests/test_training_free_difficulty_proxies_mode_a.py ...                [ 98%]
+tests/test_unified_claim_safety_statistical_audit.py ..                  [100%]
+
+=================================== FAILURES ===================================
+___________ test_non_math_external_validity_outputs_and_claim_safety ___________
+
+    def test_non_math_external_validity_outputs_and_claim_safety() -> None:
+        ts = "TESTNONMATH20260424T000000Z"
+        out_dir = REPO_ROOT / "outputs" / f"non_math_external_validity_{ts}"
+        if out_dir.exists():
+            for p in sorted(out_dir.glob("**/*"), reverse=True):
+                if p.is_file():
+                    p.unlink()
+                elif p.is_dir():
+                    p.rmdir()
+    
+        cmd = [
+            sys.executable,
+            "scripts/run_non_math_external_validity_experiment.py",
+            "--timestamp",
+            ts,
+            "--dataset",
+            "TIGER-Lab/MMLU-Pro",
+            "--subset-size",
+            "8",
+            "--seeds",
+            "11,23",
+            "--budgets",
+            "4,6",
+        ]
+>       subprocess.run(cmd, cwd=REPO_ROOT, check=True)
+
+tests/test_non_math_external_validity_experiment.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['/apps/easybuild/software/Anaconda3/2023.09-0/bin/python', 'scripts/run_non_math_external_validity_experiment.py', '--timestamp', 'TESTNONMATH20260424T000000Z', '--dataset', 'TIGER-Lab/MMLU-Pro', ...],)
+kwargs = {'cwd': PosixPath('/mmfs1/home/sv96/adaptive-reasoning-budget-allocation')}
+process = <Popen: returncode: 1 args: ['/apps/easybuild/software/Anaconda3/2023.09-0/b...>
+stdout = None, stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['/apps/easybuild/software/Anaconda3/2023.09-0/bin/python', 'scripts/run_non_math_external_validity_experiment.py', '--timestamp', 'TESTNONMATH20260424T000000Z', '--dataset', 'TIGER-Lab/MMLU-Pro', '--subset-size', '8', '--seeds', '11,23', '--budgets', '4,6']' returned non-zero exit status 1.
+
+/apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_non_math_external_validity_experiment.py", line 397, in <module>
+    main()
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_non_math_external_validity_experiment.py", line 310, in main
+    examples = load_non_math_examples(dataset, subset_size=args.subset_size, seed=seed)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_non_math_external_validity_experiment.py", line 106, in load_non_math_examples
+    return load_pilot_examples(dataset, subset_size, seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/experiments/frontier_matrix_core.py", line 52, in load_pilot_examples
+    rows = sample_hf_examples(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/experiments/hf_datasets.py", line 848, in sample_hf_examples
+    ds = load_dataset(spec.repo_id, split=split_to_use, token=token)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/load.py", line 2062, in load_dataset
+    builder_instance = load_dataset_builder(
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/load.py", line 1819, in load_dataset_builder
+    builder_instance: DatasetBuilder = builder_cls(
+                                       ^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/builder.py", line 395, in __init__
+    self.info = DatasetInfo.from_directory(self._cache_dir)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/info.py", line 279, in from_directory
+    return cls.from_dict(dataset_info_dict)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/info.py", line 284, in from_dict
+    return cls(**{k: v for k, v in dataset_info_dict.items() if k in field_names})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 20, in __init__
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/info.py", line 170, in __post_init__
+    self.features = Features.from_dict(self.features)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/features/features.py", line 1888, in from_dict
+    obj = generate_from_dict(dic)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/features/features.py", line 1468, in generate_from_dict
+    return {key: generate_from_dict(value) for key, value in obj.items()}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/features/features.py", line 1468, in <dictcomp>
+    return {key: generate_from_dict(value) for key, value in obj.items()}
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sv96/.local/lib/python3.11/site-packages/datasets/features/features.py", line 1474, in generate_from_dict
+    raise ValueError(f"Feature type '{_type}' not found. Available feature types: {list(_FEATURE_TYPES.keys())}")
+ValueError: Feature type 'List' not found. Available feature types: ['Value', 'ClassLabel', 'Translation', 'TranslationVariableLanguages', 'LargeList', 'Sequence', 'Array2D', 'Array3D', 'Array4D', 'Array5D', 'Audio', 'Image', 'Video', 'Pdf']
+_______________________ test_paper_builder_outputs_exist _______________________
+
+    def test_paper_builder_outputs_exist() -> None:
+        cmd = [sys.executable, "scripts/paper/build_non_math_external_validity_table.py"]
+>       subprocess.run(cmd, cwd=REPO_ROOT, check=True)
+
+tests/test_non_math_external_validity_experiment.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['/apps/easybuild/software/Anaconda3/2023.09-0/bin/python', 'scripts/paper/build_non_math_external_validity_table.py'],)
+kwargs = {'cwd': PosixPath('/mmfs1/home/sv96/adaptive-reasoning-budget-allocation')}
+process = <Popen: returncode: 1 args: ['/apps/easybuild/software/Anaconda3/2023.09-0/b...>
+stdout = None, stderr = None, retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['/apps/easybuild/software/Anaconda3/2023.09-0/bin/python', 'scripts/paper/build_non_math_external_validity_table.py']' returned non-zero exit status 1.
+
+/apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/paper/build_non_math_external_validity_table.py", line 157, in <module>
+    main()
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/paper/build_non_math_external_validity_table.py", line 143, in main
+    non_math_dir = args.input_dir or _latest_non_math_dir()
+                                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/paper/build_non_math_external_validity_table.py", line 21, in _latest_non_math_dir
+    raise FileNotFoundError("No outputs/non_math_external_validity_*/main_summary.csv artifacts found.")
+FileNotFoundError: No outputs/non_math_external_validity_*/main_summary.csv artifacts found.
+=========================== short test summary info ============================
+FAILED tests/test_non_math_external_validity_experiment.py::test_non_math_external_validity_outputs_and_claim_safety
+FAILED tests/test_non_math_external_validity_experiment.py::test_paper_builder_outputs_exist
+================== 2 failed, 114 passed, 1 skipped in 55.88s ===================
+step=pytest rc=1
+---- step=paper_artifacts_regeneration ----
+cmd=python scripts/paper/run_all_neurips_paper_artifacts.py
+Built claim-safety paper table from: outputs/unified_claim_safety_statistical_audit_20260424T200000Z/pairwise_statistical_tests.csv
+- outputs/paper_tables/table_claim_safety_statistical_tests.csv
+- outputs/paper_tables/table_claim_safety_statistical_tests.tex
+- outputs/paper_plot_data/claim_safety_statistical_tests.csv
+Built anti-collapse paper table from: outputs/anti_collapse_calibration_sweep_20260424TTESTACALZ/calibration_summary.csv
+- outputs/paper_tables/table_anti_collapse_calibration.csv
+- outputs/paper_tables/table_anti_collapse_calibration.tex
+- outputs/paper_plot_data/anti_collapse_calibration.csv
+=== NeurIPS paper artifacts build completed ===
+- build_figure1_problem_setup_data.py
+- build_main_frontier_plot_data.py
+- build_paper_tables.py
+- build_claim_safety_statistical_table.py
+- build_anti_collapse_calibration_table.py
+- plot_figure1_problem_setup.py
+- plot_figure2_main_frontier.py
+- plot_figure3_oracle_gap.py
+- plot_figure4_allocation_composition.py
+- plot_figure5_anti_collapse.py
+- plot_figure6_failure_decomposition.py
+- plot_appendix_a4_component_ablation.py
+Output roots:
+- outputs/paper_plot_data
+- outputs/paper_figures
+- outputs/paper_tables
+step=paper_artifacts_regeneration rc=0
+==== Final artifact pointers ====
+out_dir=outputs/offline_submission_audit_20260425T181643Z
+report=docs/OFFLINE_SUBMISSION_AUDIT_20260425T181643Z.md
+repo_health_pass=pass
+ruff_pass=fail
+pytest_pass=fail
+paper_artifacts_pass=pass
+==== Offline Submission Audit End ====

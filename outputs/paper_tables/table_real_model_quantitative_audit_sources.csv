@@ -1,3 +1,3 @@
 run_dir,provider,model,n_rows
-outputs/real_model_ours_vs_external_validation_20260424T_COHERE_REAL_MAIN,cohere,command-r-plus-08-2024,359
+outputs/real_model_ours_vs_external_validation_20260425T_WULVER_COHERE_LONG,cohere,command-r-plus-08-2024,1440
 outputs/real_model_ours_vs_external_validation_20260424T_OPENAI_REAL_MAIN,openai,gpt-4.1-mini,1799
