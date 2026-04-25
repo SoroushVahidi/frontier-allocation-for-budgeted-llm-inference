@@ -30,6 +30,7 @@ STRICT_F2 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_re
 METHODS: dict[str, dict[str, Any]] = {
     "strict_f3": {"runtime": STRICT_F3, "enable_output_repair": True},
     "strict_gate1_cap_k6": {"runtime": STRICT_GATE1_CAP_K6, "enable_output_repair": True},
+    "strict_f3_anti_collapse_weak_v1": {"runtime": "strict_f3_anti_collapse_weak_v1", "enable_output_repair": True},
     "strict_f2": {"runtime": STRICT_F2, "enable_output_repair": True},
     "external_l1_max": {"runtime": "external_l1_max", "enable_output_repair": True},
     "self_consistency_3": {"runtime": "self_consistency_3", "enable_output_repair": True},
