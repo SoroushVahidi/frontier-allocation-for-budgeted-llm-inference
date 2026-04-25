@@ -3912,6 +3912,8 @@ class GlobalDiversityAggregationController(BaseController):
                     {
                         "action": "expand",
                         "branch_id": branch.branch_id,
+                        "parent_branch_id": branch.parent_branch_id,
+                        "branch_depth": int(branch.depth),
                         "priority": round(priority, 4),
                         "continuation_value": round(float(pri_meta["continuation_value"]), 4),
                         "diversity_bonus": round(float(pri_meta["diversity_bonus"]), 4),
@@ -4025,6 +4027,10 @@ class GlobalDiversityAggregationController(BaseController):
                         "seeded_from_strategy_prompt": bool(use_seed_prompt),
                         "typed_seeded": bool(typed_seeded_active),
                         "initial_seed_order": int(branch_strategy_seed_order.get(branch.branch_id, -1)),
+                        "prompt_text": str((branch.trace_events[-1] if branch.trace_events else {}).get("prompt_text", "")),
+                        "response_text": str((branch.trace_events[-1] if branch.trace_events else {}).get("response_text", "")),
+                        "reasoning_text": str((branch.trace_events[-1] if branch.trace_events else {}).get("reasoning_text", "")),
+                        "extracted_answer": str((branch.trace_events[-1] if branch.trace_events else {}).get("extracted_answer", "") or ""),
                         **hard_cov_trace,
                     }
                 )
@@ -4066,6 +4072,7 @@ class GlobalDiversityAggregationController(BaseController):
                 elif len(branches) < self.max_branches and actions < self.max_actions:
                     child = self.generator.init_branch(f"div_child_{actions}_{len(branches)}")
                     child.score = 0.5 * child.score + 0.5 * branch.score
+                    child.parent_branch_id = branch.branch_id
                     branches.append(child)
                     branch_expansions[child.branch_id] = 0
                     branch_family_ids[child.branch_id] = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
@@ -4086,6 +4093,8 @@ class GlobalDiversityAggregationController(BaseController):
                     {
                         "action": "verify",
                         "branch_id": branch.branch_id,
+                        "parent_branch_id": branch.parent_branch_id,
+                        "branch_depth": int(branch.depth),
                         "priority": round(priority, 4),
                         "score_after": round(float(result.score_after), 4),
                         "force_explore": bool(force_explore),
@@ -4200,6 +4209,10 @@ class GlobalDiversityAggregationController(BaseController):
                             / max(1, sum(family_expansions_by_strategy.values()))
                         ),
                         "direction_guard_triggered": bool(direction_guard_triggered_count > 0),
+                        "prompt_text": str((branch.trace_events[-1] if branch.trace_events else {}).get("prompt_text", "")),
+                        "response_text": str((branch.trace_events[-1] if branch.trace_events else {}).get("response_text", "")),
+                        "reasoning_text": str((branch.trace_events[-1] if branch.trace_events else {}).get("reasoning_text", "")),
+                        "extracted_answer": str((branch.trace_events[-1] if branch.trace_events else {}).get("extracted_answer", "") or ""),
                         **hard_cov_trace,
                     }
                 )
@@ -4886,6 +4899,25 @@ class GlobalDiversityAggregationController(BaseController):
                         for c in commit_checks
                     )
                 ),
+                "final_branch_states": (
+                    [
+                        {
+                            "branch_id": str(b.branch_id),
+                            "parent_branch_id": str(b.parent_branch_id or ""),
+                            "branch_depth": int(b.depth),
+                            "score": float(b.score),
+                            "predicted_answer": str(b.predicted_answer or ""),
+                            "is_done": bool(b.is_done),
+                            "is_pruned": bool(b.is_pruned),
+                            "steps": list(b.steps),
+                            "trace_events": list(b.trace_events),
+                            "strategy_family": str(branch_strategy_family.get(b.branch_id, "")),
+                        }
+                        for b in branches
+                    ]
+                    if bool(getattr(self, "emit_full_traces", False))
+                    else []
+                ),
                 "final_prediction": prediction,
                 **group_meta,
             },
@@ -5300,6 +5332,7 @@ class L1LengthControlController(BaseController):
         branch = self.generator.init_branch(f"l1_{self.control_mode}_0")
         actions = expansions = verifications = 0
         surviving_trace: list[int] = []
+        action_trace: list[dict[str, Any]] = []
 
         budgeted_question = self._compose_budgeted_question(question)
         budget_actions = max(1, int(round(self.token_budget / self.token_per_action)))
@@ -5310,6 +5343,19 @@ class L1LengthControlController(BaseController):
             actions += 1
             expansions += 1
             surviving_trace.append(1)
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            action_trace.append(
+                {
+                    "action": "expand",
+                    "branch_id": branch.branch_id,
+                    "parent_branch_id": branch.parent_branch_id,
+                    "branch_depth": int(branch.depth),
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                }
+            )
 
         prediction = branch.predicted_answer
         generated_tokens_estimate = self._estimate_generated_tokens(prediction)
@@ -5340,6 +5386,24 @@ class L1LengthControlController(BaseController):
                 "token_budget_violation": bool(violation),
                 "prompt_style": self.prompt_style,
                 "final_score": self.scorer.score_branch(branch),
+                "action_trace": action_trace,
+                "final_branch_states": (
+                    [
+                        {
+                            "branch_id": str(branch.branch_id),
+                            "parent_branch_id": str(branch.parent_branch_id or ""),
+                            "branch_depth": int(branch.depth),
+                            "score": float(branch.score),
+                            "predicted_answer": str(branch.predicted_answer or ""),
+                            "is_done": bool(branch.is_done),
+                            "is_pruned": bool(branch.is_pruned),
+                            "steps": list(branch.steps),
+                            "trace_events": list(branch.trace_events),
+                        }
+                    ]
+                    if bool(getattr(self, "emit_full_traces", False))
+                    else []
+                ),
             },
         )
 

@@ -31,6 +31,8 @@ class BranchState:
     action_history: list[str] = field(default_factory=list)
     score_history: list[float] = field(default_factory=list)
     depth_history: list[int] = field(default_factory=list)
+    parent_branch_id: str | None = None
+    trace_events: list[dict[str, Any]] = field(default_factory=list)
 
     @property
     def depth(self) -> int:
@@ -88,6 +90,16 @@ class SimulatedBranchGenerator:
             branch.is_done = True
             is_correct = self.rng.random() < max(0.05, branch.score - self.answer_noise)
             branch.predicted_answer = gold_answer if is_correct else self._make_wrong_answer(gold_answer)
+        branch.trace_events.append(
+            {
+                "action": "expand",
+                "prompt_text": question,
+                "response_text": branch.steps[-1] if branch.steps else "",
+                "reasoning_text": "\n".join(branch.steps),
+                "extracted_answer": branch.predicted_answer,
+                "branch_depth": branch.depth,
+            }
+        )
 
         return BranchActionResult("expand", score_before, branch.score, branch.is_done)
 
@@ -101,6 +113,16 @@ class SimulatedBranchGenerator:
         jitter = self.rng.uniform(-0.03, 0.03)
         branch.score = min(1.0, max(0.0, branch.score + correction + jitter))
         branch.recent_delta = branch.score - score_before
+        branch.trace_events.append(
+            {
+                "action": "verify",
+                "prompt_text": question,
+                "response_text": "",
+                "reasoning_text": "\n".join(branch.steps),
+                "extracted_answer": branch.predicted_answer,
+                "branch_depth": branch.depth,
+            }
+        )
         return BranchActionResult("verify", score_before, branch.score, branch.is_done)
 
     @staticmethod
@@ -177,6 +199,9 @@ class APIBranchGenerator:
         self.total_api_calls = 0
         self.total_retry_attempts = 0
         self.last_request_meta: dict[str, Any] = {}
+        self.last_prompt_text: str = ""
+        self.last_response_text: str = ""
+        self.last_action_type: str = ""
 
     def reset_usage_counters(self) -> None:
         self.total_input_tokens = 0
@@ -211,6 +236,9 @@ class APIBranchGenerator:
             "temperature": self.temperature,
         }
         text = self._call_api(payload, prompt=prompt)
+        self.last_prompt_text = prompt
+        self.last_response_text = text
+        self.last_action_type = "expand"
         data = self._safe_json(text)
 
         action = str(data.get("action", "continue")).strip().lower()
@@ -228,6 +256,16 @@ class APIBranchGenerator:
         if action == "final" or answer:
             branch.is_done = True
             branch.predicted_answer = answer or self._extract_last_number(step)
+        branch.trace_events.append(
+            {
+                "action": "expand",
+                "prompt_text": prompt,
+                "response_text": text,
+                "reasoning_text": "\n".join(branch.steps),
+                "extracted_answer": branch.predicted_answer,
+                "branch_depth": branch.depth,
+            }
+        )
 
         return BranchActionResult("expand", score_before, branch.score, branch.is_done)
 
@@ -242,6 +280,9 @@ class APIBranchGenerator:
             "temperature": min(0.2, self.temperature),
         }
         text = self._call_api(payload, prompt=prompt)
+        self.last_prompt_text = prompt
+        self.last_response_text = text
+        self.last_action_type = "verify"
         data = self._safe_json(text)
         confidence = self._clip01(self._to_float(data.get("confidence", branch.score)))
         maybe_answer = str(data.get("candidate_answer", "")).strip()
@@ -249,6 +290,16 @@ class APIBranchGenerator:
         branch.score = 0.5 * branch.score + 0.5 * confidence
         if maybe_answer and branch.predicted_answer is None:
             branch.predicted_answer = maybe_answer
+        branch.trace_events.append(
+            {
+                "action": "verify",
+                "prompt_text": prompt,
+                "response_text": text,
+                "reasoning_text": "\n".join(branch.steps),
+                "extracted_answer": branch.predicted_answer,
+                "branch_depth": branch.depth,
+            }
+        )
         return BranchActionResult("verify", score_before, branch.score, branch.is_done)
 
     @staticmethod
