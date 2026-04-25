@@ -1,0 +1,3 @@
+area,risk,status
+identity_scan,High volume of historical docs may still contain deanonymizing terms in filenames/legacy notes,needs_manual_review
+external_links,Some GitHub owner URLs may indirectly reveal prior workspace practices,needs_manual_review

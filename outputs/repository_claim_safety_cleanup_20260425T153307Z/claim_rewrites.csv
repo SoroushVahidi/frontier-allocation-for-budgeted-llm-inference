@@ -1,0 +1,5 @@
+unsafe_phrase,safe_rewrite,status
+SOTA / state-of-the-art,matched action-budget surface performance under explicit contract,fixed
+dominates / universal dominance,supporting/diagnostic real-model audits; not evidence of universal dominance,fixed
+strict_f3 beats external_l1_max,strict_f3 improves on matched action-budget surface under explicit comparator contract (scope-limited),fixed
+beats previous methods,improves over matched-budget adapter baselines on specified surface,fixed

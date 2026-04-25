@@ -1,0 +1,10 @@
+{
+  "timestamp_utc": "20260425T153307Z",
+  "generated_files": [
+    "files_changed.csv",
+    "identity_leaks_fixed.csv",
+    "claim_risks_fixed.csv",
+    "artifact_classification.csv",
+    "remaining_risks.csv"
+  ]
+}
