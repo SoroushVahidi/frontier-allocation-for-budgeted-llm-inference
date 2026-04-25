@@ -1,0 +1,64 @@
+{
+  "artifact_family": "tot_matched_budget_baseline",
+  "wording_note": "Matched-budget ToT-style adapter baselines; not an official ToT reproduction.",
+  "created_at_utc": "2026-04-24T23:54:14.516633+00:00",
+  "script": "scripts/run_tot_matched_budget_baseline.py",
+  "datasets_ran": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "datasets_desired": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "TIGER-Lab/MMLU-Pro"
+  ],
+  "infeasible_datasets": [
+    {
+      "dataset": "TIGER-Lab/MMLU-Pro",
+      "reason": "load_failed:ValueError"
+    }
+  ],
+  "natural_plan_status": {
+    "feasible": true,
+    "mode": "existing_clone"
+  },
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23,
+    37,
+    41,
+    53
+  ],
+  "subset_size_per_dataset_seed": 20,
+  "api_backend": "simulator",
+  "methods_requested": [
+    "strict_f3_anti_collapse_weak_v1",
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "tot_bfs_matched_budget",
+    "tot_beam_matched_budget",
+    "tot_dfs_matched_budget",
+    "self_consistency_3",
+    "self_consistency_5",
+    "external_l1_max"
+  ],
+  "methods_ran": [
+    "strict_f3_anti_collapse_weak_v1",
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "tot_bfs_matched_budget",
+    "tot_beam_matched_budget",
+    "tot_dfs_matched_budget",
+    "self_consistency_3",
+    "self_consistency_5",
+    "external_l1_max"
+  ],
+  "best_tot_variant_by_mean_accuracy": "tot_beam_matched_budget"
+}

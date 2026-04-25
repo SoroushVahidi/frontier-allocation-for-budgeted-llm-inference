@@ -126,3 +126,6 @@ terminals/
 !outputs/real_model_ours_vs_external_validation_*/**/*
 !outputs/unified_claim_safety_statistical_audit_*/
 !outputs/unified_claim_safety_statistical_audit_*/**/*
+
+!outputs/tot_matched_budget_baseline_*/
+!outputs/tot_matched_budget_baseline_*/**/*

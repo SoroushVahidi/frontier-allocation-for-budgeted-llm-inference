@@ -1,0 +1,9 @@
+{
+  "artifact_family": "tot_matched_budget_baseline",
+  "wording_note": "Fixture for CI; matched-budget ToT-style adapters; not official ToT.",
+  "datasets_ran": ["openai/gsm8k"],
+  "budgets": [6],
+  "seeds": [11],
+  "subset_size_per_dataset_seed": 2,
+  "methods_ran": ["strict_f3_anti_collapse_weak_v1", "tot_beam_matched_budget"]
+}

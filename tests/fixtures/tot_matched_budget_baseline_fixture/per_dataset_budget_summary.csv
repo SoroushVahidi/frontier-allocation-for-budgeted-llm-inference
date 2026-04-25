@@ -1,0 +1,4 @@
+dataset,budget,method,n_cases,mean_accuracy,avg_actions,avg_expansions,avg_verifications,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate
+openai/gsm8k,6,strict_f3_anti_collapse_weak_v1,2,0.6,5.0,4.5,0.5,0.2,0.1,0.0
+openai/gsm8k,6,tot_beam_matched_budget,2,0.5,5.0,5.0,0.0,0.3,0.1,0.0
+openai/gsm8k,6,tot_bfs_matched_budget,2,0.45,4.0,4.0,0.0,0.35,0.1,0.0

@@ -1,0 +1,3 @@
+method_a,method_b,n_paired,accuracy_a,accuracy_b,mean_difference,bootstrap_ci_low,bootstrap_ci_high,permutation_p_value
+strict_f3_anti_collapse_weak_v1,tot_beam_matched_budget,2,0.6,0.5,0.1,0.05,0.15,0.25
+strict_f3_anti_collapse_weak_v1,tot_bfs_matched_budget,2,0.6,0.45,0.15,0.1,0.2,0.2
