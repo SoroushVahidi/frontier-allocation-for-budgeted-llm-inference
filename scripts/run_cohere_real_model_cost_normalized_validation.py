@@ -205,7 +205,22 @@ def ensure_cohere_readiness(*, model: str, timestamp: str) -> tuple[bool, str]:
             "print('READINESS_OK',bool(r))"
         ),
     ]
-    probe = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        probe = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
+    except subprocess.TimeoutExpired:
+        err = "cohere readiness probe timed out after 90s"
+        report_path = write_readiness_failure_report(
+            timestamp=timestamp,
+            checked_envs=checked,
+            env_state={"COHERE_API_KEY": status},
+            failure_type="network timeout",
+            command_attempted=" ".join(cmd),
+            error_message=err,
+            remediation="Retry; if persistent, verify Cohere network reachability from this environment.",
+        )
+        print("Cohere experiment cancelled before execution because Cohere API access was not usable.")
+        print(f"Failure report: {report_path}")
+        return False, err
     if probe.returncode != 0:
         err = (probe.stderr or probe.stdout or "unknown readiness failure")[:1000]
         report_path = write_readiness_failure_report(
