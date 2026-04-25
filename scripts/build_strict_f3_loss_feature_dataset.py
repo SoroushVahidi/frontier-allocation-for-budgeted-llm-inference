@@ -52,7 +52,7 @@ OPS = {
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Build rich strict_f3 vs external_l1_max failure traces dataset")
+    p = argparse.ArgumentParser(description="Build strict_f3 vs external_l1_max more-loss-cases package")
     p.add_argument("--timestamp", default=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
     p.add_argument(
         "--records-path",
@@ -446,21 +446,33 @@ def main() -> None:
                 }
             )
 
-        for idx, ev in enumerate(ext_action_trace):
-            external_traces.append(
-                {
-                    "provider": args.provider,
-                    "dataset": dataset,
-                    "seed": seed,
-                    "budget": budget,
-                    "example_id": example_id,
-                    "trace_index": idx,
-                    "action": (ev.get("action") if isinstance(ev, dict) else "NA"),
-                    "raw_event": ev,
-                }
-            )
+        external_traces.append(
+            {
+                "provider": args.provider,
+                "model": str(e.get("model") or args.model),
+                "dataset": dataset,
+                "seed": seed,
+                "budget": budget,
+                "example_id": example_id,
+                "method": "external_l1_max",
+                "question": q,
+                "gold_answer": gold,
+                "gold_answer_canonical": gold_can,
+                "final_answer_raw": e_raw,
+                "final_answer_canonical": e_can,
+                "correct": e_ok,
+                "input_tokens": _safe_int(e.get("input_tokens")),
+                "output_tokens": _safe_int(e.get("output_tokens")),
+                "total_tokens": _safe_int(e.get("total_tokens")),
+                "latency_seconds": _safe_float(e.get("latency_seconds")),
+                "estimated_cost_usd": _safe_float(e.get("estimated_cost_usd")),
+                "result_metadata": e_meta if e_meta else "NA",
+                "action_trace": ext_action_trace if ext_action_trace else "NA",
+                "record_raw": e,
+            }
+        )
 
-    out_dir = REPO_ROOT / "outputs" / f"strict_f3_vs_external_l1_max_rich_failure_traces_{ts}"
+    out_dir = REPO_ROOT / "outputs" / f"strict_f3_vs_external_l1_max_more_loss_cases_{ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     loss_cases = [r for r in matched_examples if r["comparison_case_type"] == "strict_f3_loss_external_win"]
@@ -469,13 +481,15 @@ def main() -> None:
     both_wrong = [r for r in matched_examples if r["comparison_case_type"] == "both_wrong"]
 
     _write_jsonl(out_dir / "matched_examples.jsonl", matched_examples)
+    _write_csv(out_dir / "matched_examples.csv", matched_examples)
     _write_jsonl(out_dir / "loss_cases_strict_f3_wrong_external_correct.jsonl", loss_cases)
+    _write_csv(out_dir / "loss_cases_strict_f3_wrong_external_correct.csv", loss_cases)
     _write_jsonl(out_dir / "strict_f3_win_cases.jsonl", strict_wins)
     _write_jsonl(out_dir / "both_correct_cases.jsonl", both_correct)
     _write_jsonl(out_dir / "both_wrong_cases.jsonl", both_wrong)
     _write_jsonl(out_dir / "strict_f3_branch_traces.jsonl", strict_branch_traces)
-    _write_jsonl(out_dir / "external_l1_max_traces.jsonl", external_traces)
     _write_jsonl(out_dir / "strict_f3_step_traces.jsonl", strict_step_traces)
+    _write_jsonl(out_dir / "external_l1_max_records.jsonl", external_traces)
 
     aux_cols = [c for c in rich_features[0].keys() if c not in PRIMARY_FEATURES] if rich_features else []
     rich_columns = PRIMARY_FEATURES + aux_cols
@@ -577,17 +591,36 @@ def main() -> None:
     else:
         _write_csv(out_dir / "incomplete_slices.csv", [], fieldnames=["provider", "dataset", "seed", "budget", "method", "reason"])
 
-    implications = [
-        "1. Add counting/combinatorics-specific root diversification when operation_type_guess=counting_combinatorics and nearest path score is low.",
-        "2. Use path-proximity-aware continuation scoring: upweight branches with high nearest-gold-path proxy similarity.",
-        "3. Delay commit when a promising but shallow branch exists (abandoned_promising_branch=true or committed_before_promising_branch_matured=true).",
-        "4. Add fallback to external_l1_max when answer-group entropy is high and top2 support gap is small.",
-        "5. Increase exploration budget when nearest_gold_path_depth remains shallow at budget 4/6 with absent gold final answer in tree.",
-        "6. Train a learned risk gate over the 20 primary rich features to predict strict_f3_loss_external_win.",
-        "7. Add answer-group entropy trigger for extra expansions before final selection.",
-        "8. Prevent branch abandonment for high-proximity branches by minimum maturation constraints.",
-    ]
-    (out_dir / "candidate_algorithm_implications.md").write_text("# Candidate algorithm implications\n\n" + "\n".join(f"- {x}" for x in implications) + "\n", encoding="utf-8")
+    feat_by_key = {
+        (str(r.get("dataset")), int(r.get("seed", -1)), int(r.get("budget", -1)), str(r.get("example_id"))): r
+        for r in rich_features
+    }
+    manual_lines = ["# loss_cases_for_manual_inspection", ""]
+    for i, row in enumerate(loss_cases, start=1):
+        key = (str(row.get("dataset")), int(row.get("seed", -1)), int(row.get("budget", -1)), str(row.get("example_id")))
+        feat = feat_by_key.get(key, {})
+        manual_lines.extend(
+            [
+                f"## Case {i}",
+                f"- case_number: {i}",
+                f"- seed: {row.get('seed', 'NA')}",
+                f"- budget: {row.get('budget', 'NA')}",
+                f"- example_id: {row.get('example_id', 'NA')}",
+                f"- question: {row.get('question', 'NA')}",
+                f"- gold_answer: {row.get('gold_answer', 'NA')}",
+                f"- strict_f3_final_answer: {row.get('strict_f3_final_answer_raw', 'NA')}",
+                f"- external_l1_max_final_answer: {row.get('external_l1_max_final_answer_raw', 'NA')}",
+                f"- strict_f3_failure_tag: {feat.get('strict_f3_failure_tag', 'NA')}",
+                f"- strict_f3_gold_final_answer_in_tree: {feat.get('strict_f3_gold_final_answer_in_tree', 'NA')}",
+                f"- operation_type_guess: {feat.get('operation_type_guess', 'NA')}",
+                f"- estimated_reasoning_steps: {feat.get('estimated_reasoning_steps_required', 'NA')}",
+                f"- nearest_gold_path_score_depth: score={feat.get('strict_f3_nearest_gold_path_score', 'NA')}, depth={feat.get('strict_f3_nearest_gold_path_depth', 'NA')}",
+                f"- branch_path_notes: abandoned_promising={feat.get('strict_f3_abandoned_promising_branch', 'NA')}, committed_before_matured={feat.get('strict_f3_committed_before_promising_branch_matured', 'NA')}, correct_region_entered={feat.get('strict_f3_correct_region_entered', 'NA')}",
+                "- manual_notes:",
+                "",
+            ]
+        )
+    (out_dir / "loss_cases_for_manual_inspection.md").write_text("\n".join(manual_lines), encoding="utf-8")
 
     reached_100 = len(loss_cases) >= 100
     manifest = {
@@ -615,13 +648,16 @@ def main() -> None:
         "files": [
             "manifest.json",
             "matched_examples.jsonl",
+            "matched_examples.csv",
             "loss_cases_strict_f3_wrong_external_correct.jsonl",
+            "loss_cases_strict_f3_wrong_external_correct.csv",
+            "loss_cases_for_manual_inspection.md",
             "strict_f3_win_cases.jsonl",
             "both_correct_cases.jsonl",
             "both_wrong_cases.jsonl",
             "strict_f3_branch_traces.jsonl",
-            "external_l1_max_traces.jsonl",
             "strict_f3_step_traces.jsonl",
+            "external_l1_max_records.jsonl",
             "rich_feature_table.csv",
             "rich_feature_table.jsonl",
             "feature_summary.csv",
@@ -630,13 +666,12 @@ def main() -> None:
             "budget_seed_summary.csv",
             "api_cost_summary.csv",
             "incomplete_slices.csv",
-            "candidate_algorithm_implications.md",
             "README.md",
         ],
     }
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
-    readme = f"""# strict_f3 vs external_l1_max rich failure traces
+    readme = f"""# strict_f3 vs external_l1_max more loss cases
 
 - Timestamp: {ts}
 - Matched examples: {len(matched_examples)}
@@ -653,29 +688,34 @@ Unavailable values are encoded as `NA` and listed in `manifest.json`.
     abandoned = sum(1 for r in losses_feat if r.get("strict_f3_abandoned_promising_branch") is True)
     early_commit = sum(1 for r in losses_feat if r.get("strict_f3_committed_before_promising_branch_matured") is True)
 
+    present_not_selected = sum(1 for r in losses_feat if r.get("strict_f3_gold_final_answer_in_tree") is True)
+    parse_extract = sum(1 for r in losses_feat if "parse" in str(r.get("strict_f3_failure_tag", "")).lower() or "extract" in str(r.get("strict_f3_failure_tag", "")).lower())
     report_lines = [
-        f"# STRICT_F3_EXTERNAL_L1_MAX_RICH_FAILURE_TRACES_{ts}",
+        f"# STRICT_F3_VS_EXTERNAL_L1_MAX_MORE_LOSS_CASES_{ts}",
         "",
-        "## Required answers",
+        "## Required questions answered",
         f"1. Matched examples collected: **{len(matched_examples)}**.",
-        f"2. strict_f3 wrong / external_l1_max correct cases: **{len(loss_cases)}**.",
+        f"2. strict_f3-loss / external_l1_max-win cases collected: **{len(loss_cases)}**.",
         f"3. Reached 100 loss cases: **{reached_100}**.",
-        f"4. Dominant failure modes: {', '.join([f'{k} ({v})' for k,v in ftag.most_common(4)]) if ftag else 'NA'}.",
-        f"5. Among absent-from-tree losses, median nearest-gold-path depth: **{median_nearest_depth}**.",
-        f"6. Failure mechanism mix (loss cases): never entered region={never_region}, abandoned promising branch={abandoned}, committed early={early_commit}, selected poorly/other={max(0, len(losses_feat)-never_region-abandoned-early_commit)}.",
-        "7. Most useful features for controller design (empirical separability in this run): strict_f3_nearest_gold_path_score, strict_f3_correct_region_entered, strict_f3_abandoned_promising_branch, strict_f3_answer_entropy, strict_f3_top2_support_gap, strict_f3_selected_answer_support_fraction, and cost/latency ratios.",
-        "8. Concrete algorithmic changes are in `candidate_algorithm_implications.md` (8 hypotheses).",
+        f"4. If not reached: {'Target reached.' if reached_100 else 'Insufficient observed strict_f3-loss/external-win volume in collected matched pairs and/or incomplete slices due runtime/API limits; see incomplete_slices.csv.'}",
+        f"5. Cases available for manual inspection: **{len(loss_cases)}** (`loss_cases_for_manual_inspection.md`).",
+        f"6. Dominant operation types among loss cases: {', '.join([f'{k} ({v})' for k, v in op.most_common(5)]) if op else 'NA'}.",
+        f"7. Share absent-from-tree among losses: {(len(absent_losses) / max(1, len(losses_feat))) if losses_feat else 'NA'}.",
+        f"8. Share present-in-tree but not selected among losses: {(present_not_selected / max(1, len(losses_feat))) if losses_feat else 'NA'}.",
+        f"9. Share parse/extraction failures among losses: {(parse_extract / max(1, len(losses_feat))) if losses_feat else 'NA'}.",
+        f"10. Absent-from-tree nearest-path/proximity pattern: median_depth={median_nearest_depth}, mean_nearest_score={(statistics.mean([_safe_float(r.get('strict_f3_nearest_gold_path_score', 0.0)) for r in absent_losses]) if absent_losses else 'NA')}.",
+        f"11. Loss concentration by budget: { {int(r['budget']): sum(1 for x in loss_cases if int(x['budget'])==int(r['budget'])) for r in budget_seed_rows} if budget_seed_rows else {} }.",
+        f"12. Loss concentration by seed: { {int(r['seed']): sum(1 for x in loss_cases if int(x['seed'])==int(r['seed'])) for r in budget_seed_rows} if budget_seed_rows else {} }.",
+        f"13. Unavailable fields that must be added later: {sorted(unavailable_fields) if unavailable_fields else []}.",
         "",
-        "## Analysis prompts addressed",
-        f"- Share of strict_f3 losses with gold final answer absent from tree: {len(absent_losses) / max(1, len(losses_feat)) if losses_feat else 'NA'}.",
-        f"- Counting/combinatorics average nearest-path score in losses: {statistics.mean([_safe_float(r.get('strict_f3_nearest_gold_path_score', 0.0)) for r in losses_feat if r.get('operation_type_guess')=='counting_combinatorics']) if any(r.get('operation_type_guess')=='counting_combinatorics' for r in losses_feat) else 'NA'}.",
-        f"- Low-budget (4/6) shallow-nearest-path loss share: {sum(1 for r in losses_feat if int(r.get('budget',0)) in {4,6} and (_safe_int(r.get('strict_f3_nearest_gold_path_depth',99),99) <= 2))/max(1, sum(1 for r in losses_feat if int(r.get('budget',0)) in {4,6})) if losses_feat else 'NA'}.",
-        f"- High entropy / low support / small top2-gap exploratory signal available in rich_feature_table (rows={len(rich_features)}).",
+        "## Notes",
+        "- Path proximity uses a heuristic token-and-number overlap score (`heuristic_jaccard_numbers_keywords`).",
+        "- If dataset gold rationale is unavailable, fallback source is `question + gold answer`.",
         "",
-        "## Outputs",
-        f"- `outputs/strict_f3_vs_external_l1_max_rich_failure_traces_{ts}/`",
+        "## Output package",
+        f"- `outputs/strict_f3_vs_external_l1_max_more_loss_cases_{ts}/`",
     ]
-    (REPO_ROOT / "docs" / f"STRICT_F3_EXTERNAL_L1_MAX_RICH_FAILURE_TRACES_{ts}.md").write_text("\n".join(report_lines) + "\n", encoding="utf-8")
+    (REPO_ROOT / "docs" / f"STRICT_F3_VS_EXTERNAL_L1_MAX_MORE_LOSS_CASES_{ts}.md").write_text("\n".join(report_lines) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
