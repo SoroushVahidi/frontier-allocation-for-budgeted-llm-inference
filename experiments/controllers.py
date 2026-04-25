@@ -19,6 +19,7 @@ from experiments.problem_type_utils import classify_problem_type
 from experiments.prm_partial_scorer import PartialBranchScorer
 from experiments.scoring import SimpleBranchScorer
 from experiments.typed_strategy_prompts import TypedStrategyPrompt, get_typed_strategy_prompts
+from experiments.reasoning_diversity import compute_reasoning_diversity_components, reasoning_signature
 from experiments.verifiers import CandidateVerifier
 
 
@@ -1043,6 +1044,13 @@ class GlobalDiversityAggregationController(BaseController):
         direction_single_family_penalty_weight: float = 0.5,
         direction_commit_guard_top2_gap_threshold: float = 0.12,
         enable_typed_strategy_seeded_v1: bool = False,
+        enable_reasoning_diversity_bonus_v1: bool = False,
+        reasoning_diversity_lambda_strategy: float = 0.40,
+        reasoning_diversity_lambda_operation: float = 0.30,
+        reasoning_diversity_lambda_intermediate: float = 0.25,
+        reasoning_diversity_lambda_answer: float = 0.20,
+        reasoning_diversity_lambda_role: float = 0.20,
+        reasoning_diversity_lambda_redundancy: float = 0.50,
         enable_family_normalized_rerank_v1: bool = False,
         family_rerank_selection_mode: str = "family_normalized_full",
         family_rerank_support_weight: float = 1.0,
@@ -1232,6 +1240,13 @@ class GlobalDiversityAggregationController(BaseController):
         self.direction_single_family_penalty_weight = float(direction_single_family_penalty_weight)
         self.direction_commit_guard_top2_gap_threshold = float(direction_commit_guard_top2_gap_threshold)
         self.enable_typed_strategy_seeded_v1 = bool(enable_typed_strategy_seeded_v1)
+        self.enable_reasoning_diversity_bonus_v1 = bool(enable_reasoning_diversity_bonus_v1)
+        self.reasoning_diversity_lambda_strategy = float(reasoning_diversity_lambda_strategy)
+        self.reasoning_diversity_lambda_operation = float(reasoning_diversity_lambda_operation)
+        self.reasoning_diversity_lambda_intermediate = float(reasoning_diversity_lambda_intermediate)
+        self.reasoning_diversity_lambda_answer = float(reasoning_diversity_lambda_answer)
+        self.reasoning_diversity_lambda_role = float(reasoning_diversity_lambda_role)
+        self.reasoning_diversity_lambda_redundancy = float(reasoning_diversity_lambda_redundancy)
         self.enable_family_normalized_rerank_v1 = bool(enable_family_normalized_rerank_v1)
         self.family_rerank_selection_mode = str(family_rerank_selection_mode or "family_normalized_full")
         self.family_rerank_support_weight = float(family_rerank_support_weight)
@@ -1483,6 +1498,8 @@ class GlobalDiversityAggregationController(BaseController):
         group_profiles: dict[str, list[set[str]]],
         global_profiles: list[set[str]],
         question: str = "",
+        existing_reasoning_signatures: list[dict[str, Any]] | None = None,
+        strategy_family: str | None = None,
     ) -> tuple[float, dict[str, float | str | None]]:
         continuation = float(self.scorer.score_branch(branch))
         group = self._normalize_answer(branch.predicted_answer)
@@ -1504,7 +1521,47 @@ class GlobalDiversityAggregationController(BaseController):
                 global_profiles=global_profiles,
             )
         target_alignment_score, target_alignment_meta = self._target_alignment_score(question=question, branch=branch)
-        priority = continuation + diversity_bonus + self.coverage_weight * coverage_gain - self.overlap_weight * semantic_overlap - duplicate_cost
+        rd_meta: dict[str, float | str | None] = {
+            "strategy_family_novelty": 0.0,
+            "operation_sequence_novelty": 0.0,
+            "intermediate_value_novelty": 0.0,
+            "answer_group_novelty": 0.0,
+            "reasoning_role_novelty": 0.0,
+            "redundancy_penalty": 0.0,
+            "plausibility_score": 0.5,
+            "useful_reasoning_diversity_bonus": 0.0,
+            "reasoning_signature_key": "",
+            "operation_sequence_key": "",
+            "reasoning_role": "unknown",
+            "selected_due_to_reasoning_diversity": 0.0,
+            "seen_signature_count_before_selection": float(len(existing_reasoning_signatures or [])),
+        }
+        rd_bonus = 0.0
+        if self.enable_reasoning_diversity_bonus_v1:
+            if strategy_family is not None:
+                setattr(branch, "strategy_family", strategy_family)
+            sig = reasoning_signature(branch, question=question)
+            comps = compute_reasoning_diversity_components(sig, existing_reasoning_signatures or [])
+            weighted = (
+                self.reasoning_diversity_lambda_strategy * float(comps.get("strategy_family_novelty", 0.0))
+                + self.reasoning_diversity_lambda_operation * float(comps.get("operation_sequence_novelty", 0.0))
+                + self.reasoning_diversity_lambda_intermediate * float(comps.get("intermediate_value_novelty", 0.0))
+                + self.reasoning_diversity_lambda_answer * float(comps.get("answer_group_novelty", 0.0))
+                + self.reasoning_diversity_lambda_role * float(comps.get("reasoning_role_novelty", 0.0))
+                - self.reasoning_diversity_lambda_redundancy * float(comps.get("redundancy_penalty", 0.0))
+            )
+            rd_bonus = float(weighted) * float(comps.get("plausibility_score", 0.5))
+            rd_meta.update({k: float(v) for k, v in comps.items()})
+            rd_meta.update(
+                {
+                    "reasoning_signature_key": str(sig.get("signature_key", "")),
+                    "operation_sequence_key": str(sig.get("operation_sequence_key", "")),
+                    "reasoning_role": str(sig.get("reasoning_role", "unknown")),
+                }
+            )
+        priority = continuation + diversity_bonus + self.coverage_weight * coverage_gain - self.overlap_weight * semantic_overlap - duplicate_cost + rd_bonus
+        rd_meta["final_priority_with_reasoning_diversity"] = float(priority)
+        rd_meta["base_priority_score"] = float(continuation + diversity_bonus + self.coverage_weight * coverage_gain - self.overlap_weight * semantic_overlap - duplicate_cost)
         return priority, {
             "continuation_value": continuation,
             "diversity_bonus": diversity_bonus,
@@ -1516,6 +1573,7 @@ class GlobalDiversityAggregationController(BaseController):
             "target_alignment_category": str(target_alignment_meta.get("target_alignment_category", "unknown")),
             "target_alignment_reason": str(target_alignment_meta.get("target_alignment_reason", "none")),
             **coverage_meta,
+            **rd_meta,
         }
 
     def _target_alignment_score(self, *, question: str, branch: BranchState) -> tuple[float, dict[str, Any]]:
@@ -3224,6 +3282,7 @@ class GlobalDiversityAggregationController(BaseController):
         )
         case_split_direction_aware_forced_coverage_steps = 0
         case_split_direction_aware_delay_commit_blocks = 0
+        reasoning_signatures_seen: list[dict[str, Any]] = []
 
         while actions < self.max_actions and branches:
             active = [b for b in branches if not b.is_pruned]
@@ -3244,6 +3303,8 @@ class GlobalDiversityAggregationController(BaseController):
                     group_profiles=group_profiles,
                     global_profiles=global_profiles,
                     question=question,
+                    existing_reasoning_signatures=reasoning_signatures_seen,
+                    strategy_family=str(branch_strategy_family.get(b.branch_id, "direct_formula_family")),
                 )
                 scored.append((b, priority, meta))
             anti_collapse_adjustments = self._anti_collapse_priority_adjustments(
@@ -3677,6 +3738,9 @@ class GlobalDiversityAggregationController(BaseController):
                         branch, priority, pri_meta = alt
                         case_split_direction_aware_forced_coverage_steps += 1
 
+            if self.enable_reasoning_diversity_bonus_v1 and scored:
+                top_no_rd = sorted(scored, key=lambda x: float(x[2].get("base_priority_score", x[1])), reverse=True)[0][0]
+                pri_meta["selected_due_to_reasoning_diversity"] = 1.0 if branch.branch_id != top_no_rd.branch_id else 0.0
             group_key = str(pri_meta.get("group_key") or "__unknown__")
             expand_by_group[group_key] = expand_by_group.get(group_key, 0) + 1
             b_expanded = branch_expansions.get(branch.branch_id, 0)
@@ -3869,6 +3933,21 @@ class GlobalDiversityAggregationController(BaseController):
                         "metalevel_branch_override_applied": bool(metalevel_override),
                         "target_alignment_score": round(float(pri_meta.get("target_alignment_score", 0.0)), 4),
                         "target_alignment_category": str(pri_meta.get("target_alignment_category", "unknown")),
+                        "base_priority_score": round(float(pri_meta.get("base_priority_score", 0.0)), 4),
+                        "strategy_family_novelty": round(float(pri_meta.get("strategy_family_novelty", 0.0)), 4),
+                        "operation_sequence_novelty": round(float(pri_meta.get("operation_sequence_novelty", 0.0)), 4),
+                        "intermediate_value_novelty": round(float(pri_meta.get("intermediate_value_novelty", 0.0)), 4),
+                        "answer_group_novelty": round(float(pri_meta.get("answer_group_novelty", 0.0)), 4),
+                        "reasoning_role_novelty": round(float(pri_meta.get("reasoning_role_novelty", 0.0)), 4),
+                        "redundancy_penalty": round(float(pri_meta.get("redundancy_penalty", 0.0)), 4),
+                        "plausibility_score": round(float(pri_meta.get("plausibility_score", 0.5)), 4),
+                        "useful_reasoning_diversity_bonus": round(float(pri_meta.get("useful_reasoning_diversity_bonus", 0.0)), 4),
+                        "final_priority_with_reasoning_diversity": round(float(pri_meta.get("final_priority_with_reasoning_diversity", priority)), 4),
+                        "reasoning_signature_key": str(pri_meta.get("reasoning_signature_key", "")),
+                        "operation_sequence_key": str(pri_meta.get("operation_sequence_key", "")),
+                        "reasoning_role": str(pri_meta.get("reasoning_role", "unknown")),
+                        "seen_signature_count_before_selection": int(pri_meta.get("seen_signature_count_before_selection", 0.0)),
+                        "selected_due_to_reasoning_diversity": bool(float(pri_meta.get("selected_due_to_reasoning_diversity", 0.0)) > 0.0),
                         "early_preservation_activated": bool(early_preservation_meta.get("activated", False)),
                         "early_preservation_reason": early_preservation_meta.get("reason"),
                         "anti_collapse_repeat_penalty": round(
@@ -4023,6 +4102,21 @@ class GlobalDiversityAggregationController(BaseController):
                         "metalevel_branch_override_applied": bool(metalevel_override),
                         "target_alignment_score": round(float(pri_meta.get("target_alignment_score", 0.0)), 4),
                         "target_alignment_category": str(pri_meta.get("target_alignment_category", "unknown")),
+                        "base_priority_score": round(float(pri_meta.get("base_priority_score", 0.0)), 4),
+                        "strategy_family_novelty": round(float(pri_meta.get("strategy_family_novelty", 0.0)), 4),
+                        "operation_sequence_novelty": round(float(pri_meta.get("operation_sequence_novelty", 0.0)), 4),
+                        "intermediate_value_novelty": round(float(pri_meta.get("intermediate_value_novelty", 0.0)), 4),
+                        "answer_group_novelty": round(float(pri_meta.get("answer_group_novelty", 0.0)), 4),
+                        "reasoning_role_novelty": round(float(pri_meta.get("reasoning_role_novelty", 0.0)), 4),
+                        "redundancy_penalty": round(float(pri_meta.get("redundancy_penalty", 0.0)), 4),
+                        "plausibility_score": round(float(pri_meta.get("plausibility_score", 0.5)), 4),
+                        "useful_reasoning_diversity_bonus": round(float(pri_meta.get("useful_reasoning_diversity_bonus", 0.0)), 4),
+                        "final_priority_with_reasoning_diversity": round(float(pri_meta.get("final_priority_with_reasoning_diversity", priority)), 4),
+                        "reasoning_signature_key": str(pri_meta.get("reasoning_signature_key", "")),
+                        "operation_sequence_key": str(pri_meta.get("operation_sequence_key", "")),
+                        "reasoning_role": str(pri_meta.get("reasoning_role", "unknown")),
+                        "seen_signature_count_before_selection": int(pri_meta.get("seen_signature_count_before_selection", 0.0)),
+                        "selected_due_to_reasoning_diversity": bool(float(pri_meta.get("selected_due_to_reasoning_diversity", 0.0)) > 0.0),
                         "early_preservation_activated": bool(early_preservation_meta.get("activated", False)),
                         "early_preservation_reason": early_preservation_meta.get("reason"),
                         "anti_collapse_repeat_penalty": round(
@@ -4109,6 +4203,18 @@ class GlobalDiversityAggregationController(BaseController):
                         **hard_cov_trace,
                     }
                 )
+
+            if self.enable_reasoning_diversity_bonus_v1:
+                sig_row = {
+                    "strategy_family": str(branch_strategy_family.get(branch.branch_id, "direct_formula_family")),
+                    "operation_sequence_key": str(pri_meta.get("operation_sequence_key", "")),
+                    "intermediate_values": [],
+                    "reasoning_role": str(pri_meta.get("reasoning_role", "unknown")),
+                    "answer_group": str(pri_meta.get("group_key") or "__unknown__"),
+                    "signature_key": str(pri_meta.get("reasoning_signature_key", "")),
+                    "text_available": bool(len(getattr(branch, "steps", [])) > 0),
+                }
+                reasoning_signatures_seen.append(sig_row)
 
             if (
                 self.hard_early_root_coverage_forced_min_depth >= 2
@@ -4539,6 +4645,9 @@ class GlobalDiversityAggregationController(BaseController):
                 "gate_suppress_diversity_count": int(
                     sum(1 for a in action_trace if str(a.get("gate_decision")) == "suppress_diversity_push")
                 ),
+                "enable_reasoning_diversity_bonus_v1": bool(self.enable_reasoning_diversity_bonus_v1),
+                "reasoning_diversity_signature_count": int(len(reasoning_signatures_seen)),
+                "reasoning_diversity_selection_change_count": int(sum(1 for a in action_trace if bool(a.get("selected_due_to_reasoning_diversity", False)))),
                 "question_shape_label": str(question_shape_label),
                 "problem_type_label": str(problem_type_label),
                 "direction_guard_triggered": bool(direction_guard_triggered_count > 0),

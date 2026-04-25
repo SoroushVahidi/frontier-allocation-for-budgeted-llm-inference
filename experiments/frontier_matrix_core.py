@@ -1167,6 +1167,25 @@ def build_frontier_strategies(
             method_name="strict_f3_direction_combinatorics_guard_v1",
             **strict_f3_direction_combinatorics_guard_cfg,
         )
+        strict_f3_reasoning_diversity_bonus_v1_cfg = dict(strict_f3_base_cfg)
+        strict_f3_reasoning_diversity_bonus_v1_cfg.update(
+            {
+                "enable_reasoning_diversity_bonus_v1": True,
+                "reasoning_diversity_lambda_strategy": 0.40,
+                "reasoning_diversity_lambda_operation": 0.30,
+                "reasoning_diversity_lambda_intermediate": 0.25,
+                "reasoning_diversity_lambda_answer": 0.20,
+                "reasoning_diversity_lambda_role": 0.20,
+                "reasoning_diversity_lambda_redundancy": 0.50,
+            }
+        )
+        specs["strict_f3_reasoning_diversity_bonus_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_reasoning_diversity_bonus_v1",
+            **strict_f3_reasoning_diversity_bonus_v1_cfg,
+        )
         strict_f3_typed_strategy_seeded_cfg = dict(strict_f3_direction_combinatorics_guard_cfg)
         strict_f3_typed_strategy_seeded_cfg.update(
             {
