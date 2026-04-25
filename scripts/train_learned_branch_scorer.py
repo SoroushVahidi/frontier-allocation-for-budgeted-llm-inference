@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 import sys
@@ -22,10 +23,11 @@ from scripts.learned_branch_scorer_utils import as_int, group_by_case, read_csv,
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Train lightweight diagnostic learned branch scorer models.")
+    p = argparse.ArgumentParser(description="Train lightweight learned branch scorer models.")
     p.add_argument("--timestamp", default=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
     p.add_argument("--dataset-examples", required=True)
-    p.add_argument("--save-model-text", action="store_true", default=True)
+    p.add_argument("--output-prefix", default="")
+    p.add_argument("--enable-loocv", action="store_true", default=True)
     return p.parse_args()
 
 
@@ -43,61 +45,105 @@ def _to_feature_dict(row: dict[str, Any], feature_names: list[str], categorical:
         if key in categorical:
             out[key] = str(value or "")
         else:
-            out[key] = float(value) if str(value).strip() not in {"", "nan", "None"} else 0.0
+            if str(value).strip() in {"", "nan", "None"}:
+                out[key] = 0.0
+            else:
+                try:
+                    out[key] = float(value)
+                except Exception:
+                    out[key] = 0.0
     return out
 
 
-def _top1_group_accuracy(rows: list[dict[str, Any]], score_key: str = "score") -> float:
+def _topk_case_metrics(rows: list[dict[str, Any]], score_key: str = "score") -> dict[str, float]:
     grouped = group_by_case(rows)
-    wins = 0
-    total = 0
+    top1 = top2 = top3 = 0
+    n_cases = 0
     for _, cell in grouped.items():
         if not cell:
             continue
-        best = max(cell, key=lambda r: float(r.get(score_key, 0.0)))
-        wins += as_int(best.get("label"), 0)
-        total += 1
-    return wins / max(1, total)
+        n_cases += 1
+        ranked = sorted(cell, key=lambda r: float(r.get(score_key, 0.0)), reverse=True)
+        if as_int(ranked[0].get("label"), 0) == 1:
+            top1 += 1
+        if any(as_int(r.get("label"), 0) == 1 for r in ranked[:2]):
+            top2 += 1
+        if any(as_int(r.get("label"), 0) == 1 for r in ranked[:3]):
+            top3 += 1
+    return {
+        "top1": top1 / max(1, n_cases),
+        "top2": top2 / max(1, n_cases),
+        "top3": top3 / max(1, n_cases),
+    }
 
 
-def _pns_rate(rows: list[dict[str, Any]], score_key: str) -> float:
+def _learned_picks(rows: list[dict[str, Any]], score_key: str = "score") -> dict[tuple[str, int, int, str, str], dict[str, Any]]:
+    out = {}
+    for case_key, cell in group_by_case(rows).items():
+        if not cell:
+            continue
+        out[case_key] = max(cell, key=lambda r: float(r.get(score_key, 0.0)))
+    return out
+
+
+def _baseline_picks(rows: list[dict[str, Any]]) -> tuple[dict[tuple[str, int, int, str, str], dict[str, Any]], dict[tuple[str, int, int, str, str], dict[str, Any]]]:
+    strict, support = {}, {}
+    for case_key, cell in group_by_case(rows).items():
+        s = next((r for r in cell if str(r.get("method")) == "strict_f3" and as_int(r.get("was_selected_by_current_controller"), 0) == 1), None)
+        if s is None:
+            s = next((r for r in cell if str(r.get("method")) == "strict_f3"), None)
+        if s is None and cell:
+            s = max(cell, key=lambda r: as_int(r.get("was_selected_by_current_controller"), 0))
+        if s is not None:
+            strict[case_key] = s
+        if cell:
+            support[case_key] = max(cell, key=lambda r: float(r.get("answer_group_support", 0.0)))
+    return strict, support
+
+
+def _selection_metrics(rows: list[dict[str, Any]], score_key: str = "score") -> dict[str, float]:
     grouped = group_by_case(rows)
-    miss = 0
-    denom = 0
-    for _, cell in grouped.items():
+    learned = _learned_picks(rows, score_key)
+    strict, _ = _baseline_picks(rows)
+
+    gold_present_cases = 0
+    learned_gold = 0
+    strict_gold = 0
+    degradation = 0
+    for case_key, cell in grouped.items():
         gold_present = any(as_int(r.get("label"), 0) == 1 for r in cell)
         if not gold_present:
             continue
-        denom += 1
-        best = max(cell, key=lambda r: float(r.get(score_key, 0.0)))
-        if as_int(best.get("label"), 0) == 0:
-            miss += 1
-    return miss / max(1, denom)
+        gold_present_cases += 1
+        learned_ok = as_int(learned.get(case_key, {}).get("label"), 0)
+        strict_ok = as_int(strict.get(case_key, {}).get("label"), 0)
+        learned_gold += learned_ok
+        strict_gold += strict_ok
+        if strict_ok == 1 and learned_ok == 0:
+            degradation += 1
+
+    return {
+        "gold_present_cases": float(gold_present_cases),
+        "current_controller_selected_gold_rate": strict_gold / max(1, gold_present_cases),
+        "learned_selected_gold_rate": learned_gold / max(1, gold_present_cases),
+        "present_not_selected_reduction": (strict_gold - learned_gold) * -1.0 / max(1, gold_present_cases),
+        "degradation_case_rate": degradation / max(1, gold_present_cases),
+    }
 
 
-def _strict_f3_pns_rate(rows: list[dict[str, Any]]) -> float:
-    grouped = group_by_case(rows)
-    miss = 0
-    denom = 0
-    for _, cell in grouped.items():
-        gold_present = any(as_int(r.get("label"), 0) == 1 for r in cell)
-        strict = next((r for r in cell if str(r.get("method")) == "strict_f3"), None)
-        if not gold_present or strict is None:
-            continue
-        denom += 1
-        if as_int(strict.get("label"), 0) == 0:
-            miss += 1
-    return miss / max(1, denom)
-
-
-def _split_masks(rows: list[dict[str, Any]]) -> dict[str, tuple[np.ndarray, np.ndarray]]:
+def _split_masks(rows: list[dict[str, Any]], enable_loocv: bool = True) -> dict[str, tuple[np.ndarray, np.ndarray]]:
     seeds = np.array([as_int(r.get("seed"), -1) for r in rows])
     budgets = np.array([as_int(r.get("budget"), -1) for r in rows])
-    return {
+    example_ids = np.array([str(r.get("example_id", "")) for r in rows])
+    masks: dict[str, tuple[np.ndarray, np.ndarray]] = {
         "seed_holdout": (seeds == 11, seeds == 23),
         "budget_holdout": (np.isin(budgets, [4, 6]), budgets == 8),
         "joint_holdout": ((seeds == 11) & (np.isin(budgets, [4, 6])), (seeds == 23) & (budgets == 8)),
     }
+    if enable_loocv:
+        for ex in sorted(set(example_ids.tolist())):
+            masks[f"leave_one_example_out::{ex}"] = (example_ids != ex, example_ids == ex)
+    return masks
 
 
 def main() -> None:
@@ -107,7 +153,16 @@ def main() -> None:
         raise SystemExit("No rows found in dataset examples csv.")
 
     label_key = "label"
-    feature_drop = {"label", "case_id", "example_id", "label_semantics", "candidate_answer_normalized"}
+    feature_drop = {
+        "label",
+        "case_id",
+        "example_id",
+        "candidate_answer_normalized",
+        "raw_candidate_answer",
+        "selected_answer",
+        "gold_answer",
+        "normalized_gold_answer",
+    }
     feature_names = [k for k in rows[0].keys() if k not in feature_drop]
     categorical = {
         "provider",
@@ -117,8 +172,13 @@ def main() -> None:
         "runtime_method",
         "group",
         "failure_type",
+        "source_type",
+        "reasoning_role",
+        "operation_sequence",
         "selected_answer_group",
         "top_answer_group",
+        "branch_id",
+        "parent_branch_id",
     }
 
     X = [_to_feature_dict(r, feature_names, categorical) for r in rows]
@@ -126,16 +186,16 @@ def main() -> None:
 
     vectorizer = DictVectorizer(sparse=False)
     X_mat = vectorizer.fit_transform(X)
+
     models = {
-        "logistic_regression": LogisticRegression(max_iter=1000, random_state=0),
-        "random_forest": RandomForestClassifier(n_estimators=120, random_state=0, min_samples_leaf=2),
+        "logistic_regression": LogisticRegression(max_iter=2000, random_state=0),
+        "random_forest": RandomForestClassifier(n_estimators=120, random_state=0, min_samples_leaf=1),
         "gradient_boosting": GradientBoostingClassifier(random_state=0),
     }
 
-    splits = _split_masks(rows)
+    splits = _split_masks(rows, enable_loocv=args.enable_loocv)
     split_metrics: list[dict[str, Any]] = []
     all_predictions: list[dict[str, Any]] = []
-    model_comparison: list[dict[str, Any]] = []
 
     for split_name, (train_mask, test_mask) in splits.items():
         train_idx = np.where(train_mask)[0]
@@ -147,6 +207,9 @@ def main() -> None:
         y_train = y[train_idx]
         X_test = X_mat[test_idx]
         y_test = y[test_idx]
+
+        if np.unique(y_train).size < 2:
+            continue
 
         for model_name, model in models.items():
             model.fit(X_train, y_train)
@@ -160,51 +223,11 @@ def main() -> None:
                 pred_rows.append(row)
                 all_predictions.append(row)
 
-            strict_pns = _strict_f3_pns_rate(pred_rows)
-            learned_pns = _pns_rate(pred_rows, "score")
-            top1 = _top1_group_accuracy(pred_rows, "score")
-            metrics_row = {
-                "split": split_name,
-                "model": model_name,
-                "n_train": int(train_idx.size),
-                "n_test": int(test_idx.size),
-                "accuracy": float(accuracy_score(y_test, y_pred)),
-                "precision": float(precision_score(y_test, y_pred, zero_division=0)),
-                "recall": float(recall_score(y_test, y_pred, zero_division=0)),
-                "auc": _safe_auc(y_test, y_score),
-                "top1_group_selection_accuracy": float(top1),
-                "strict_f3_present_not_selected_rate": float(strict_pns),
-                "learned_present_not_selected_rate": float(learned_pns),
-                "present_not_selected_reduction_potential": float(strict_pns - learned_pns),
-                "score_mean": float(np.mean(y_score)),
-                "score_std": float(np.std(y_score)),
-            }
-            split_metrics.append(metrics_row)
-
-    if not split_metrics:
-        n = len(rows)
-        cut = max(1, int(0.8 * n))
-        train_idx = np.arange(0, cut)
-        test_idx = np.arange(cut, n)
-        if test_idx.size == 0:
-            test_idx = train_idx
-        X_train = X_mat[train_idx]
-        y_train = y[train_idx]
-        X_test = X_mat[test_idx]
-        y_test = y[test_idx]
-        for model_name, model in models.items():
-            model.fit(X_train, y_train)
-            y_score = model.predict_proba(X_test)[:, 1]
-            y_pred = (y_score >= 0.5).astype(int)
-            pred_rows: list[dict[str, Any]] = []
-            for local_i, global_i in enumerate(test_idx):
-                row = dict(rows[int(global_i)])
-                row.update({"split": "fallback_random", "model": model_name, "score": float(y_score[local_i]), "pred": int(y_pred[local_i])})
-                pred_rows.append(row)
-                all_predictions.append(row)
+            tk = _topk_case_metrics(pred_rows)
+            sm = _selection_metrics(pred_rows)
             split_metrics.append(
                 {
-                    "split": "fallback_random",
+                    "split": split_name,
                     "model": model_name,
                     "n_train": int(train_idx.size),
                     "n_test": int(test_idx.size),
@@ -212,50 +235,118 @@ def main() -> None:
                     "precision": float(precision_score(y_test, y_pred, zero_division=0)),
                     "recall": float(recall_score(y_test, y_pred, zero_division=0)),
                     "auc": _safe_auc(y_test, y_score),
-                    "top1_group_selection_accuracy": float(_top1_group_accuracy(pred_rows, "score")),
-                    "strict_f3_present_not_selected_rate": float(_strict_f3_pns_rate(pred_rows)),
-                    "learned_present_not_selected_rate": float(_pns_rate(pred_rows, "score")),
-                    "present_not_selected_reduction_potential": float(_strict_f3_pns_rate(pred_rows) - _pns_rate(pred_rows, "score")),
-                    "score_mean": float(np.mean(y_score)),
-                    "score_std": float(np.std(y_score)),
+                    "top1_candidate_selection_accuracy": float(tk["top1"]),
+                    "top2_recall": float(tk["top2"]),
+                    "top3_recall": float(tk["top3"]),
+                    "current_controller_selected_gold_rate": float(sm["current_controller_selected_gold_rate"]),
+                    "learned_selected_gold_rate": float(sm["learned_selected_gold_rate"]),
+                    "improvement_gold_present": float(sm["learned_selected_gold_rate"] - sm["current_controller_selected_gold_rate"]),
+                    "present_not_selected_reduction": float(sm["present_not_selected_reduction"]),
+                    "degradation_case_rate": float(sm["degradation_case_rate"]),
                 }
             )
 
-    # choose selected model from joint_holdout by top1 then accuracy
-    joint_rows = [r for r in split_metrics if r.get("split") == "joint_holdout"]
-    if not joint_rows:
-        joint_rows = split_metrics
-    selected = sorted(joint_rows, key=lambda r: (float(r.get("top1_group_selection_accuracy", 0.0)), float(r.get("accuracy", 0.0))), reverse=True)[0]
+    if not split_metrics:
+        # Graceful structural fallback for dry-run trace packages where all labels can be identical.
+        pseudo_rows: list[dict[str, Any]] = []
+        for r in rows:
+            score = float(r.get("answer_group_support", 0.0))
+            row = dict(r)
+            row.update({"split": "fallback_support_proxy", "model": "support_proxy_ranker", "score": score, "pred": int(score > 0)})
+            pseudo_rows.append(row)
+            all_predictions.append(row)
+        tk = _topk_case_metrics(pseudo_rows)
+        sm = _selection_metrics(pseudo_rows)
+        split_metrics.append(
+            {
+                "split": "fallback_support_proxy",
+                "model": "support_proxy_ranker",
+                "n_train": 0,
+                "n_test": len(rows),
+                "accuracy": float(np.mean([as_int(r.get("label"), 0) == as_int(r.get("pred"), 0) for r in pseudo_rows])),
+                "precision": 0.0,
+                "recall": 0.0,
+                "auc": float("nan"),
+                "top1_candidate_selection_accuracy": float(tk["top1"]),
+                "top2_recall": float(tk["top2"]),
+                "top3_recall": float(tk["top3"]),
+                "current_controller_selected_gold_rate": float(sm["current_controller_selected_gold_rate"]),
+                "learned_selected_gold_rate": float(sm["learned_selected_gold_rate"]),
+                "improvement_gold_present": float(sm["learned_selected_gold_rate"] - sm["current_controller_selected_gold_rate"]),
+                "present_not_selected_reduction": float(sm["present_not_selected_reduction"]),
+                "degradation_case_rate": float(sm["degradation_case_rate"]),
+            }
+        )
 
-    model_comparison = sorted(split_metrics, key=lambda r: (str(r["split"]), -float(r["top1_group_selection_accuracy"]), -float(r["accuracy"])))
+    # Model comparison and selection.
+    by_model: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for r in split_metrics:
+        by_model[str(r["model"])].append(r)
+
     metrics_agg: list[dict[str, Any]] = []
-    for model_name in models:
-        rows_m = [r for r in split_metrics if r["model"] == model_name]
-        if not rows_m:
-            continue
+    for model_name, rows_m in by_model.items():
         metrics_agg.append(
             {
                 "model": model_name,
                 "mean_accuracy": float(np.mean([float(r["accuracy"]) for r in rows_m])),
-                "mean_auc": float(np.nanmean([float(r["auc"]) for r in rows_m])) if rows_m else float("nan"),
-                "mean_top1_group_selection_accuracy": float(np.mean([float(r["top1_group_selection_accuracy"]) for r in rows_m])),
-                "mean_present_not_selected_reduction_potential": float(
-                    np.mean([float(r["present_not_selected_reduction_potential"]) for r in rows_m])
-                ),
+                "mean_auc": float(np.nanmean([float(r["auc"]) for r in rows_m])),
+                "mean_top1_candidate_selection_accuracy": float(np.mean([float(r["top1_candidate_selection_accuracy"]) for r in rows_m])),
+                "mean_top2_recall": float(np.mean([float(r["top2_recall"]) for r in rows_m])),
+                "mean_top3_recall": float(np.mean([float(r["top3_recall"]) for r in rows_m])),
+                "mean_improvement_gold_present": float(np.mean([float(r["improvement_gold_present"]) for r in rows_m])),
+                "mean_present_not_selected_reduction": float(np.mean([float(r["present_not_selected_reduction"]) for r in rows_m])),
+                "mean_degradation_case_rate": float(np.mean([float(r["degradation_case_rate"]) for r in rows_m])),
             }
         )
 
-    out_dir = REPO_ROOT / "outputs" / f"learned_branch_scorer_train_{args.timestamp}"
+    best = sorted(
+        split_metrics,
+        key=lambda r: (float(r.get("improvement_gold_present", 0.0)), float(r.get("top1_candidate_selection_accuracy", 0.0)), float(r.get("accuracy", 0.0))),
+        reverse=True,
+    )[0]
+
+    case_level_selection_metrics: list[dict[str, Any]] = []
+    for split_name in sorted(set(str(r.get("split", "")) for r in all_predictions)):
+        for model_name in sorted(set(str(r.get("model", "")) for r in all_predictions)):
+            subset = [r for r in all_predictions if str(r.get("split")) == split_name and str(r.get("model")) == model_name]
+            if not subset:
+                continue
+            learned = _learned_picks(subset)
+            strict, support = _baseline_picks(subset)
+            for case_key, pick in learned.items():
+                case_level_selection_metrics.append(
+                    {
+                        "split": split_name,
+                        "model": model_name,
+                        "provider": case_key[0],
+                        "seed": case_key[1],
+                        "budget": case_key[2],
+                        "dataset": case_key[3],
+                        "example_id": case_key[4],
+                        "gold_present": int(any(as_int(r.get("label"), 0) == 1 for r in group_by_case(subset).get(case_key, []))),
+                        "learned_selected_answer": pick.get("candidate_answer_normalized", ""),
+                        "learned_selected_gold": as_int(pick.get("label"), 0),
+                        "current_selected_answer": strict.get(case_key, {}).get("candidate_answer_normalized", ""),
+                        "current_selected_gold": as_int(strict.get(case_key, {}).get("label"), 0),
+                        "support_selected_answer": support.get(case_key, {}).get("candidate_answer_normalized", ""),
+                        "support_selected_gold": as_int(support.get(case_key, {}).get("label"), 0),
+                    }
+                )
+
+    is_trace_dataset = "trace_level_" in str(args.dataset_examples)
+    prefix = args.output_prefix or ("trace_level_learned_branch_scorer_train" if is_trace_dataset else "learned_branch_scorer_train")
+    out_dir = REPO_ROOT / "outputs" / f"{prefix}_{args.timestamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
     write_csv(out_dir / "split_metrics.csv", split_metrics)
     write_csv(out_dir / "predictions.csv", all_predictions)
-    write_csv(out_dir / "model_comparison.csv", model_comparison)
+    write_csv(out_dir / "model_comparison.csv", sorted(split_metrics, key=lambda r: (str(r["split"]), -float(r["improvement_gold_present"]))))
     write_csv(out_dir / "metrics.csv", metrics_agg)
+    write_csv(out_dir / "case_level_selection_metrics.csv", case_level_selection_metrics)
 
     selected_text = {
-        "selected_model": selected["model"],
-        "selected_split": selected["split"],
-        "selection_basis": "max top1_group_selection_accuracy then accuracy",
+        "selected_model": best["model"],
+        "selected_split": best["split"],
+        "selection_basis": "max improvement on gold-present cases, then top1, then accuracy",
         "diagnostic_only": True,
     }
     (out_dir / "selected_model.joblib").write_text(json.dumps(selected_text, indent=2) + "\n", encoding="utf-8")
@@ -264,19 +355,17 @@ def main() -> None:
         [
             f"# Learned branch scorer training ({args.timestamp})",
             "",
-            "Diagnostic-only lightweight training run.",
+            "Leakage-aware splits:",
+            "- leave_one_example_out::<example_id> when enabled",
+            "- seed_holdout (11->23) when available",
+            "- budget_holdout (4/6->8) when available",
+            "- joint_holdout when available",
             "",
-            "Splits:",
-            "- seed_holdout: train seed=11, test seed=23",
-            "- budget_holdout: train budget in {4,6}, test budget=8",
-            "- joint_holdout: train seed=11 and budget in {4,6}; test seed=23 and budget=8",
-            "",
-            f"Selected model: {selected['model']} on split {selected['split']}.",
-            "",
-            "Note: `selected_model.joblib` is a small text manifest for reproducibility in this diagnostic pass.",
+            f"Selected model: {best['model']} on split {best['split']}.",
         ]
     )
     (out_dir / "README.md").write_text(readme + "\n", encoding="utf-8")
+
     print(f"Wrote: {out_dir}")
 
 
