@@ -1147,6 +1147,36 @@ def build_frontier_strategies(
             method_name="strict_f3_anti_collapse_default_v1",
             **strict_f3_base_cfg,
         )
+        strict_f3_exhaustive_depth2_probe_cfg = dict(strict_f3_base_cfg)
+        strict_f3_exhaustive_depth2_probe_cfg.update(
+            {
+                "enable_hard_early_root_depth2_coverage_v1": True,
+                "hard_early_root_coverage_forced_min_depth": 2,
+                "hard_early_coverage_min_remaining_actions_to_release": 0,
+            }
+        )
+        specs["strict_f3_exhaustive_depth2_probe"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_exhaustive_depth2_probe",
+            **strict_f3_exhaustive_depth2_probe_cfg,
+        )
+        strict_f3_exhaustive_depth3_probe_cfg = dict(strict_f3_base_cfg)
+        strict_f3_exhaustive_depth3_probe_cfg.update(
+            {
+                "enable_hard_early_root_depth2_coverage_v1": True,
+                "hard_early_root_coverage_forced_min_depth": 3,
+                "hard_early_coverage_min_remaining_actions_to_release": 0,
+            }
+        )
+        specs["strict_f3_exhaustive_depth3_probe"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_exhaustive_depth3_probe",
+            **strict_f3_exhaustive_depth3_probe_cfg,
+        )
         strict_f3_case_split_direction_aware_cfg = dict(strict_f3_base_cfg)
         strict_f3_case_split_direction_aware_cfg.update(
             {

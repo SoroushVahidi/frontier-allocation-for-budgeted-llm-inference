@@ -4097,6 +4097,28 @@ class GlobalDiversityAggregationController(BaseController):
                 "hard_early_coverage_budget_released_impossible": bool(hard_early_coverage_budget_released_impossible),
                 "hard_early_coverage_budget_released_low_remaining": bool(hard_early_coverage_budget_released_low_remaining),
                 "hard_early_coverage_force_disabled_final": bool(hard_early_coverage_force_disabled),
+                "exhaustive_probe_budget_truncated": bool(
+                    hard_early_coverage_budget_released_impossible or hard_early_coverage_budget_released_low_remaining
+                ),
+                "exhaustive_probe_transition_actions_used": hard_early_coverage_transition_actions_used,
+                "exhaustive_probe_planned_shallow_nodes_unexpanded": int(
+                    (
+                        self._hard_early_root_coverage_forced_diagnostic(
+                            branches=branches,
+                            branch_family_ids=branch_family_ids,
+                            root_family_ids=root_family_ids,
+                            actions_so_far=actions,
+                            max_actions=self.max_actions,
+                            force_disabled=hard_early_coverage_force_disabled,
+                            coverage_target_override=(
+                                3
+                                if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 and cond_depth3_completed
+                                else None
+                            ),
+                        ).get("actions_needed_sum_lower_bound")
+                    )
+                    or 0
+                ),
                 "hard_early_coverage_root_families": sorted(root_family_ids),
                 "hard_early_root_depth2_then_conditional_depth3_v1_enabled": bool(
                     self.enable_hard_early_root_depth2_then_conditional_depth3_v1
