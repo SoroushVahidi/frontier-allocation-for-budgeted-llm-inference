@@ -1,0 +1,6 @@
+provider,method,n_slices,total_scored_examples,mean_accuracy_across_slices,mean_total_tokens_per_scored_example,mean_latency_seconds_per_scored_example,estimated_total_cost_usd
+cohere,external_l1_max,18,45,0.7833333333333333,487.0444444444444,0.8798456277777778,0.12110699999999999
+cohere,self_consistency_3,18,0,0.0,0.0,0.0,0.0
+cohere,strict_f2,18,0,0.0,0.0,0.0,0.0
+cohere,strict_f3,18,45,0.5166666666666667,955.6222222222223,1.5730401333333335,0.218733
+cohere,strict_gate1_cap_k6,18,30,0.5,976.5,2.134657133333333,0.153273

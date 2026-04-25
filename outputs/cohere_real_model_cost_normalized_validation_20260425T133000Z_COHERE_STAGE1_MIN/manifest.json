@@ -1,0 +1,55 @@
+{
+  "artifact_family": "cohere_real_model_cost_normalized_validation",
+  "timestamp": "20260425T133000Z_COHERE_STAGE1_MIN",
+  "providers": [
+    "cohere"
+  ],
+  "models": {
+    "cohere": "command-r-plus-08-2024",
+    "openai": "gpt-4o-mini"
+  },
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23
+  ],
+  "methods": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f2",
+    "external_l1_max",
+    "self_consistency_3"
+  ],
+  "target_scored_per_slice": 100,
+  "max_examples": 0,
+  "provider_status": {
+    "cohere": {
+      "ready": "1",
+      "reason": "summarize_only"
+    }
+  },
+  "pricing": {
+    "input_cost_per_1k": 0.003,
+    "output_cost_per_1k": 0.015
+  },
+  "outputs": [
+    "manifest.json",
+    "slice_summary.csv",
+    "method_summary.csv",
+    "cost_normalized_summary.csv",
+    "pairwise_comparisons.csv",
+    "incomplete_slices.csv",
+    "claim_safety_table.csv",
+    "per_example_records.jsonl",
+    "raw/failures.jsonl"
+  ]
+}
