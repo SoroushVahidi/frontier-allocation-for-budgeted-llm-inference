@@ -1147,6 +1147,53 @@ def build_frontier_strategies(
             method_name="strict_f3_anti_collapse_default_v1",
             **strict_f3_base_cfg,
         )
+        strict_f3_case_split_direction_aware_cfg = dict(strict_f3_base_cfg)
+        strict_f3_case_split_direction_aware_cfg.update(
+            {
+                "enable_case_split_direction_aware_v1": True,
+                "case_split_direction_aware_labels": ("counting_combinatorics", "case_split"),
+                "case_split_direction_aware_min_distinct_families": 3,
+                "case_split_direction_aware_early_window_actions": 5,
+                "case_split_direction_aware_delay_commit_until_families": 2,
+                "case_split_direction_aware_repeat_penalty_multiplier": 1.8,
+                "case_split_direction_aware_unresolved_branch_bonus": 0.08,
+            }
+        )
+        specs["strict_f3_case_split_direction_aware_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_case_split_direction_aware_v1",
+            **strict_f3_case_split_direction_aware_cfg,
+        )
+        ablations: list[tuple[str, dict[str, Any]]] = [
+            (
+                "strict_f3_case_split_direction_aware_v1_no_delayed_commit",
+                {"case_split_direction_aware_disable_delay_commit_ablation": True},
+            ),
+            (
+                "strict_f3_case_split_direction_aware_v1_no_stronger_repeat_family_penalty",
+                {"case_split_direction_aware_disable_repeat_penalty_ablation": True},
+            ),
+            (
+                "strict_f3_case_split_direction_aware_v1_no_unresolved_branch_preservation",
+                {"case_split_direction_aware_disable_unresolved_preservation_ablation": True},
+            ),
+            (
+                "strict_f3_case_split_direction_aware_v1_detector_off",
+                {"case_split_direction_aware_detector_off": True},
+            ),
+        ]
+        for name, overrides in ablations:
+            cfg = dict(strict_f3_case_split_direction_aware_cfg)
+            cfg.update(overrides)
+            specs[name] = GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=name,
+                **cfg,
+            )
         strict_f3_anti_collapse_strong_cfg = dict(strict_f3_base_cfg)
         strict_f3_anti_collapse_strong_cfg.update(
             {

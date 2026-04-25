@@ -42,6 +42,58 @@ class BranchGenerator(Protocol):
     def prune(branch: BranchState) -> Any: ...
 
 
+CASE_SPLIT_LABELS: tuple[str, ...] = (
+    "counting_combinatorics",
+    "case_split",
+    "multi_step_arithmetic",
+    "ratio_percent",
+    "comparison",
+    "unit_conversion",
+    "algebra_like",
+    "unknown",
+)
+
+
+def classify_question_shape(question: str) -> str:
+    """Lightweight transparent detector for case-split / counting-ish question shapes."""
+    q = (question or "").strip().lower()
+    if not q:
+        return "unknown"
+
+    counting_terms = (
+        "how many",
+        "ways",
+        "different ways",
+        "arrange",
+        "choose",
+        "combination",
+        "permutation",
+        "possible",
+        "number of",
+    )
+    case_split_terms = ("case", "if", "either", " or ", "at least", "at most", "exactly")
+    ratio_terms = ("percent", "%", "ratio", "proportion", "fraction")
+    comparison_terms = ("greater than", "less than", "more than", "fewer than", "compare", "difference between")
+    unit_terms = ("km", "meter", "meters", "cm", "kg", "gram", "grams", "minute", "hour", "mile", "inch", "feet")
+    algebra_terms = ("solve for", "equation", "variable", "let x", "find x", "quadratic")
+
+    if any(t in q for t in counting_terms):
+        return "counting_combinatorics"
+    if any(t in q for t in case_split_terms):
+        return "case_split"
+    if any(t in q for t in ratio_terms):
+        return "ratio_percent"
+    if any(t in q for t in comparison_terms):
+        return "comparison"
+    if any(t in q for t in unit_terms):
+        return "unit_conversion"
+    if any(t in q for t in algebra_terms):
+        return "algebra_like"
+    if re.search(r"\d", q) and ((" then " in q) or (" after " in q) or (" total " in q)):
+        return "multi_step_arithmetic"
+    return "unknown"
+
+
 @dataclass
 class MethodResult:
     """Per-method result for one example."""
@@ -969,6 +1021,17 @@ class GlobalDiversityAggregationController(BaseController):
         hard_max_family_expansions_conditional_risk_family_share_trigger: float = 0.60,
         hard_max_family_expansions_conditional_risk_consecutive_run_trigger: int = 3,
         hard_max_family_expansions_conditional_min_rival_maturity_expansions: int = 2,
+        enable_case_split_direction_aware_v1: bool = False,
+        case_split_direction_aware_labels: tuple[str, ...] = ("counting_combinatorics", "case_split"),
+        case_split_direction_aware_min_distinct_families: int = 3,
+        case_split_direction_aware_early_window_actions: int = 5,
+        case_split_direction_aware_delay_commit_until_families: int = 2,
+        case_split_direction_aware_repeat_penalty_multiplier: float = 1.6,
+        case_split_direction_aware_unresolved_branch_bonus: float = 0.08,
+        case_split_direction_aware_disable_delay_commit_ablation: bool = False,
+        case_split_direction_aware_disable_repeat_penalty_ablation: bool = False,
+        case_split_direction_aware_disable_unresolved_preservation_ablation: bool = False,
+        case_split_direction_aware_detector_off: bool = False,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -1130,6 +1193,17 @@ class GlobalDiversityAggregationController(BaseController):
         self.hard_max_family_expansions_conditional_min_rival_maturity_expansions = max(
             1, int(hard_max_family_expansions_conditional_min_rival_maturity_expansions)
         )
+        self.enable_case_split_direction_aware_v1 = bool(enable_case_split_direction_aware_v1)
+        self.case_split_direction_aware_labels = tuple(str(x) for x in case_split_direction_aware_labels)
+        self.case_split_direction_aware_min_distinct_families = max(2, int(case_split_direction_aware_min_distinct_families))
+        self.case_split_direction_aware_early_window_actions = max(1, int(case_split_direction_aware_early_window_actions))
+        self.case_split_direction_aware_delay_commit_until_families = max(1, int(case_split_direction_aware_delay_commit_until_families))
+        self.case_split_direction_aware_repeat_penalty_multiplier = max(1.0, float(case_split_direction_aware_repeat_penalty_multiplier))
+        self.case_split_direction_aware_unresolved_branch_bonus = max(0.0, float(case_split_direction_aware_unresolved_branch_bonus))
+        self.case_split_direction_aware_disable_delay_commit_ablation = bool(case_split_direction_aware_disable_delay_commit_ablation)
+        self.case_split_direction_aware_disable_repeat_penalty_ablation = bool(case_split_direction_aware_disable_repeat_penalty_ablation)
+        self.case_split_direction_aware_disable_unresolved_preservation_ablation = bool(case_split_direction_aware_disable_unresolved_preservation_ablation)
+        self.case_split_direction_aware_detector_off = bool(case_split_direction_aware_detector_off)
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -1451,6 +1525,7 @@ class GlobalDiversityAggregationController(BaseController):
         family_recent_marginal_gains: dict[str, list[float]],
         family_cooldown_until_action: dict[str, int],
         top_support: float,
+        case_split_direction_aware_active: bool = False,
     ) -> dict[str, dict[str, float]]:
         if (not self.enable_anti_collapse_answer_group_refinement) or actions >= self.anti_collapse_early_window:
             return {}
@@ -1497,6 +1572,8 @@ class GlobalDiversityAggregationController(BaseController):
             exact_repeat_penalty = self.repeat_expand_penalty_weight * float(exact_repeat_steps)
             family_repeat_penalty = self.repeat_expand_family_penalty_weight * float(family_repeat_steps)
             dominant_repeat_penalty = max(exact_repeat_penalty, family_repeat_penalty)
+            if case_split_direction_aware_active and (not self.case_split_direction_aware_disable_repeat_penalty_ablation):
+                dominant_repeat_penalty *= self.case_split_direction_aware_repeat_penalty_multiplier
             repeat_signal_source = "none"
             if dominant_repeat_penalty > 0.0:
                 repeat_signal_source = "family" if family_repeat_penalty >= exact_repeat_penalty else "exact"
@@ -1552,6 +1629,14 @@ class GlobalDiversityAggregationController(BaseController):
                 1.0 / (1.0 + float(expand_by_group.get(gk, 0)))
             )
             duplicate_group_penalty = self.duplicate_answer_group_penalty * max(0.0, float(active_group_counts.get(gk, 1) - 1))
+            unresolved_branch_bonus = 0.0
+            if (
+                case_split_direction_aware_active
+                and (not self.case_split_direction_aware_disable_unresolved_preservation_ablation)
+                and (not branch.is_done)
+                and branch.predicted_answer is None
+            ):
+                unresolved_branch_bonus = self.case_split_direction_aware_unresolved_branch_bonus
             out[branch.branch_id] = {
                 "repeat_penalty": float(repeat_penalty),
                 "repeat_expand_exact_penalty": float(exact_repeat_penalty),
@@ -1567,8 +1652,10 @@ class GlobalDiversityAggregationController(BaseController):
                 "cap_guard_penalty": float(cap_guard_penalty),
                 "distinctness_bonus": float(distinctness_bonus),
                 "duplicate_answer_group_penalty": float(duplicate_group_penalty),
+                "unresolved_branch_bonus": float(unresolved_branch_bonus),
                 "adjusted_priority_delta": float(
                     distinctness_bonus
+                    + unresolved_branch_bonus
                     - repeat_penalty
                     - low_marginal_gain_penalty
                     - cap_guard_penalty
@@ -2791,6 +2878,12 @@ class GlobalDiversityAggregationController(BaseController):
         cond_gate_record: dict[str, Any] | None = None
         cond_depth3_completed = False
         cond_depth2_gate_actions: int | None = None
+        question_shape_label = "unknown" if self.case_split_direction_aware_detector_off else classify_question_shape(question)
+        case_split_direction_aware_active = bool(
+            self.enable_case_split_direction_aware_v1 and (question_shape_label in self.case_split_direction_aware_labels)
+        )
+        case_split_direction_aware_forced_coverage_steps = 0
+        case_split_direction_aware_delay_commit_blocks = 0
 
         while actions < self.max_actions and branches:
             active = [b for b in branches if not b.is_pruned]
@@ -2827,6 +2920,7 @@ class GlobalDiversityAggregationController(BaseController):
                 family_recent_marginal_gains=family_recent_marginal_gains,
                 family_cooldown_until_action=family_cooldown_until_action,
                 top_support=float(max(answer_support_counts.values()) / max(1, sum(answer_support_counts.values())) if answer_support_counts else 0.0),
+                case_split_direction_aware_active=case_split_direction_aware_active,
             )
             raw_priority_sorted = sorted(scored, key=lambda x: x[1], reverse=True)
             scored = [
@@ -3174,6 +3268,29 @@ class GlobalDiversityAggregationController(BaseController):
                     incumbent_challenger_checks.append({**metalevel_preview, "actions_used": int(actions), "decision_stage": "pre_action"})
                     break
 
+            if case_split_direction_aware_active and actions < self.case_split_direction_aware_early_window_actions and scored:
+                family_expansions_snapshot: dict[str, int] = {}
+                for bid, cnt in branch_expansions.items():
+                    fam = str(branch_family_ids.get(bid) or bid)
+                    family_expansions_snapshot[fam] = family_expansions_snapshot.get(fam, 0) + int(cnt)
+                explored_families = {fam for fam, cnt in family_expansions_snapshot.items() if cnt > 0}
+                min_families_budget_aware = min(
+                    self.case_split_direction_aware_min_distinct_families,
+                    max(2, min(int(self.max_actions), len({str(branch_family_ids.get(b.branch_id) or b.branch_id) for b in active}))),
+                )
+                if len(explored_families) < min_families_budget_aware:
+                    alt = next(
+                        (
+                            item
+                            for item in scored
+                            if str(branch_family_ids.get(item[0].branch_id) or item[0].branch_id) not in explored_families
+                        ),
+                        None,
+                    )
+                    if alt is not None:
+                        branch, priority, pri_meta = alt
+                        case_split_direction_aware_forced_coverage_steps += 1
+
             group_key = str(pri_meta.get("group_key") or "__unknown__")
             expand_by_group[group_key] = expand_by_group.get(group_key, 0) + 1
             b_expanded = branch_expansions.get(branch.branch_id, 0)
@@ -3198,6 +3315,19 @@ class GlobalDiversityAggregationController(BaseController):
             if support_total > 0:
                 top_support = max(answer_support_counts.values()) / support_total
             force_explore = bool(actions < self.commit_delay_min_actions or top_support < self.commit_support_threshold)
+            if (
+                case_split_direction_aware_active
+                and (not self.case_split_direction_aware_disable_delay_commit_ablation)
+                and actions < self.case_split_direction_aware_early_window_actions
+            ):
+                family_expansions_snapshot2: dict[str, int] = {}
+                for bid, cnt in branch_expansions.items():
+                    fam = str(branch_family_ids.get(bid) or bid)
+                    family_expansions_snapshot2[fam] = family_expansions_snapshot2.get(fam, 0) + int(cnt)
+                distinct_families = sum(1 for cnt in family_expansions_snapshot2.values() if cnt > 0)
+                if distinct_families < self.case_split_direction_aware_delay_commit_until_families:
+                    force_explore = True
+                    case_split_direction_aware_delay_commit_blocks += 1
             if gate_meta.get("gate_decision") == "suppress_diversity_push":
                 force_explore = False
             if force_explore:
@@ -3935,6 +4065,11 @@ class GlobalDiversityAggregationController(BaseController):
                 "gate_suppress_diversity_count": int(
                     sum(1 for a in action_trace if str(a.get("gate_decision")) == "suppress_diversity_push")
                 ),
+                "question_shape_label": str(question_shape_label),
+                "case_split_direction_aware_v1_enabled": bool(self.enable_case_split_direction_aware_v1),
+                "case_split_direction_aware_v1_active": bool(case_split_direction_aware_active),
+                "case_split_direction_aware_forced_coverage_steps": int(case_split_direction_aware_forced_coverage_steps),
+                "case_split_direction_aware_delay_commit_blocks": int(case_split_direction_aware_delay_commit_blocks),
                 "early_divergence_timeline": early_divergence_timeline[: min(12, len(early_divergence_timeline))],
                 "gold_answer_group_key": str(gold_group_key),
                 "first_meaningful_split_step": first_split_step,

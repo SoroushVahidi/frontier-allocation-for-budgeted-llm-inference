@@ -132,3 +132,5 @@ terminals/
 
 !outputs/tot_matched_budget_baseline_*/
 !outputs/tot_matched_budget_baseline_*/**/*
+!outputs/case_split_direction_aware_offline_eval_*/
+!outputs/case_split_direction_aware_offline_eval_*/**/*

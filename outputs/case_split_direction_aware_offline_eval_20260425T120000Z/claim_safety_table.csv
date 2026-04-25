@@ -1,0 +1,4 @@
+claim,delta,status
+overall_improvement_vs_strict_f3,-0.01333333333333342,exploratory_or_appendix
+case_subset_improvement,-0.006134969325153339,worse
+non_case_subset_harm,-0.023809523809523836,harm_observed

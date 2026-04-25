@@ -1,0 +1,72 @@
+{
+  "timestamp": "20260425T120000Z",
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23,
+    37,
+    41,
+    53
+  ],
+  "subset_size": 40,
+  "methods_requested": [
+    "strict_f3",
+    "strict_f3_case_split_direction_aware_v1",
+    "strict_f3_case_split_direction_aware_v1_no_delayed_commit",
+    "strict_f3_case_split_direction_aware_v1_no_stronger_repeat_family_penalty",
+    "strict_f3_case_split_direction_aware_v1_no_unresolved_branch_preservation",
+    "strict_f3_case_split_direction_aware_v1_detector_off",
+    "strict_gate1_cap_k6",
+    "strict_f3_anti_collapse_weak_v1",
+    "external_l1_max",
+    "external_tale_prompt_budgeting",
+    "external_s1_budget_forcing",
+    "tot_bfs_matched_budget",
+    "tot_beam_matched_budget",
+    "tot_dfs_matched_budget",
+    "self_consistency_3"
+  ],
+  "methods_resolved": [
+    "external_l1_max",
+    "external_s1_budget_forcing",
+    "external_tale_prompt_budgeting",
+    "self_consistency_3",
+    "strict_f3",
+    "strict_f3_anti_collapse_weak_v1",
+    "strict_f3_case_split_direction_aware_v1",
+    "strict_f3_case_split_direction_aware_v1_detector_off",
+    "strict_f3_case_split_direction_aware_v1_no_delayed_commit",
+    "strict_f3_case_split_direction_aware_v1_no_stronger_repeat_family_penalty",
+    "strict_f3_case_split_direction_aware_v1_no_unresolved_branch_preservation",
+    "strict_gate1_cap_k6",
+    "tot_beam_matched_budget",
+    "tot_bfs_matched_budget",
+    "tot_dfs_matched_budget"
+  ],
+  "api_policy": "offline_simulator_only_no_paid_or_generative_external_api",
+  "command": "python scripts/run_case_split_direction_aware_offline_eval.py",
+  "outputs": [
+    "manifest.json",
+    "per_case_outcomes.csv",
+    "main_summary.csv",
+    "per_dataset_summary.csv",
+    "per_budget_summary.csv",
+    "per_seed_summary.csv",
+    "case_split_subset_summary.csv",
+    "non_case_split_subset_summary.csv",
+    "failure_decomposition.csv",
+    "pairwise_comparisons.csv",
+    "ablation_summary.csv",
+    "claim_safety_table.csv",
+    "README.md"
+  ]
+}
