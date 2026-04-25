@@ -7,6 +7,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from experiments.branching import SimulatedBranchGenerator
 from experiments.frontier_matrix_core import build_frontier_strategies
 from scripts.run_family_normalized_rerank_eval import (
@@ -14,6 +16,7 @@ from scripts.run_family_normalized_rerank_eval import (
     family_normalized_support_from_counts,
 )
 
+ARTIFACT_CASES_CSV = Path("outputs/detailed_loss_case_package_20260425T_WULVER_COHERE_LONG_DETAIL/all_paired_cases.csv")
 
 STRICT_F3_RUNTIME = (
     "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_"
@@ -83,6 +86,8 @@ def test_two_families_can_beat_many_same_family_under_full_score() -> None:
 
 
 def test_smoke_runner_outputs_and_ablation() -> None:
+    if not ARTIFACT_CASES_CSV.exists():
+        pytest.skip(f"artifact-dependent test requires {ARTIFACT_CASES_CSV}")
     ts = "20260425T_FAMILY_NORMALIZED_RERANK_TEST_DRY"
     out = Path("outputs") / f"family_normalized_rerank_eval_{ts}"
     if out.exists():
@@ -145,4 +150,3 @@ def test_smoke_runner_outputs_and_ablation() -> None:
         o = sum(int(r["is_correct"]) for r in oracle) / max(1, len(oracle))
         ff = sum(int(r["is_correct"]) for r in full) / max(1, len(full))
         assert o >= ff
-

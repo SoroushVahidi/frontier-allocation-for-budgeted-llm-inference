@@ -4,9 +4,13 @@ import random
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from experiments.branching import SimulatedBranchGenerator
 from experiments.frontier_matrix_core import build_frontier_strategies
 from experiments.problem_type_utils import classify_problem_type
+
+ARTIFACT_CASES_CSV = Path("outputs/detailed_loss_case_package_20260425T_WULVER_COHERE_LONG_DETAIL/all_paired_cases.csv")
 
 
 def test_problem_type_classifier_detects_combinatorics() -> None:
@@ -99,6 +103,8 @@ def test_output_csv_headers_non_empty(tmp_path: Path) -> None:
 
 
 def test_dry_run_completes_without_api_keys() -> None:
+    if not ARTIFACT_CASES_CSV.exists():
+        pytest.skip(f"artifact-dependent test requires {ARTIFACT_CASES_CSV}")
     cmd = [
         "python",
         "scripts/run_direction_combinatorics_guard_eval.py",
@@ -109,4 +115,3 @@ def test_dry_run_completes_without_api_keys() -> None:
         "2",
     ]
     subprocess.run(cmd, check=True)
-

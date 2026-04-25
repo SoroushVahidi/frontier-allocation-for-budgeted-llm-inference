@@ -50,6 +50,11 @@ python -m pytest tests/test_ten_case_loss_deep_dive.py \
   tests/test_family_normalized_rerank.py \
   tests/test_typed_strategy_seeded.py \
   tests/test_direction_combinatorics_guard.py
+
+# Artifact-dependent integration checks (require generated package):
+python -m pytest tests/test_family_normalized_rerank.py::test_smoke_runner_outputs_and_ablation \
+  tests/test_typed_strategy_seeded.py::test_dry_run_and_outputs_exist \
+  tests/test_direction_combinatorics_guard.py::test_dry_run_completes_without_api_keys
 ```
 
 ## What not to claim yet

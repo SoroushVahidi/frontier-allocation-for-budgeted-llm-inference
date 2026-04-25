@@ -21,12 +21,25 @@ python -m py_compile scripts/run_typed_strategy_seeded_eval.py
 python -m py_compile scripts/run_direction_combinatorics_guard_eval.py
 ```
 
-## 3) Tests (lightweight/local)
+## 3) Tests
+
+### 3a) Unit/smoke tests (artifact-independent)
 ```bash
 python -m pytest tests/test_ten_case_loss_deep_dive.py \
   tests/test_family_normalized_rerank.py \
   tests/test_typed_strategy_seeded.py \
   tests/test_direction_combinatorics_guard.py
+```
+
+### 3b) Artifact-dependent integration checks
+These target script-level dry-run output packages and require:
+`outputs/detailed_loss_case_package_20260425T_WULVER_COHERE_LONG_DETAIL/all_paired_cases.csv`
+
+If the artifact is missing, these tests skip gracefully with a clear message.
+```bash
+python -m pytest tests/test_family_normalized_rerank.py::test_smoke_runner_outputs_and_ablation \
+  tests/test_typed_strategy_seeded.py::test_dry_run_and_outputs_exist \
+  tests/test_direction_combinatorics_guard.py::test_dry_run_completes_without_api_keys
 ```
 
 ## 4) Canonical paper table regeneration
