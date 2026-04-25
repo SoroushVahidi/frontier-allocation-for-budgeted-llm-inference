@@ -503,11 +503,13 @@ def main() -> None:
                                 total_tok = 0
                                 exact_match = 0
                                 eval_diag: dict[str, Any] = {}
+                                result_metadata: dict[str, Any] = {}
+                                final_nodes: list[dict[str, Any]] = []
                                 try:
                                     result = controller.run(ex.question, ex.answer)
                                     latency = time.perf_counter() - t0
                                     obs = controller.generator
-                                    final_nodes = []
+                                    result_metadata = dict(getattr(result, "metadata", {}) or {})
                                     if hasattr(obs, "registry"):
                                         for _, b in sorted(obs.registry.items(), key=lambda kv: kv[0]):
                                             reasoning_text = "\n".join(str(x) for x in getattr(b, "steps", [])) if getattr(b, "steps", None) else ""
@@ -557,6 +559,8 @@ def main() -> None:
                                     "gold_in_tree": int(eval_diag.get("gold_in_tree", 0)),
                                     "parse_extraction_failure": int(eval_diag.get("parse_extraction_failure", 0)),
                                     "failure_tag": (eval_diag.get("failure_tag") if status == "scored" else "API/runtime failure"),
+                                    "result_metadata": result_metadata if status == "scored" else {},
+                                    "final_nodes": final_nodes if status == "scored" else [],
                                     "attempted": 1,
                                     "scored": int(status == "scored"),
                                     "failed": int(status == "failed"),
