@@ -1043,6 +1043,14 @@ class GlobalDiversityAggregationController(BaseController):
         direction_single_family_penalty_weight: float = 0.5,
         direction_commit_guard_top2_gap_threshold: float = 0.12,
         enable_typed_strategy_seeded_v1: bool = False,
+        enable_family_normalized_rerank_v1: bool = False,
+        family_rerank_selection_mode: str = "family_normalized_full",
+        family_rerank_support_weight: float = 1.0,
+        family_rerank_process_weight: float = 0.5,
+        family_rerank_verifier_weight: float = 1.0,
+        family_rerank_diversity_weight: float = 0.4,
+        family_rerank_single_family_penalty_weight: float = 0.5,
+        family_rerank_dominant_family_penalty_weight: float = 0.3,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -1224,6 +1232,14 @@ class GlobalDiversityAggregationController(BaseController):
         self.direction_single_family_penalty_weight = float(direction_single_family_penalty_weight)
         self.direction_commit_guard_top2_gap_threshold = float(direction_commit_guard_top2_gap_threshold)
         self.enable_typed_strategy_seeded_v1 = bool(enable_typed_strategy_seeded_v1)
+        self.enable_family_normalized_rerank_v1 = bool(enable_family_normalized_rerank_v1)
+        self.family_rerank_selection_mode = str(family_rerank_selection_mode or "family_normalized_full")
+        self.family_rerank_support_weight = float(family_rerank_support_weight)
+        self.family_rerank_process_weight = float(family_rerank_process_weight)
+        self.family_rerank_verifier_weight = float(family_rerank_verifier_weight)
+        self.family_rerank_diversity_weight = float(family_rerank_diversity_weight)
+        self.family_rerank_single_family_penalty_weight = float(family_rerank_single_family_penalty_weight)
+        self.family_rerank_dominant_family_penalty_weight = float(family_rerank_dominant_family_penalty_weight)
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -2017,17 +2033,30 @@ class GlobalDiversityAggregationController(BaseController):
         total_support = sum(float(v["discounted_support"]) for v in groups.values())
         runtime_family_map: dict[str, str] = getattr(self, "_runtime_branch_strategy_family", {}) or {}
         branch_family_counts_by_group: dict[str, Counter[str]] = defaultdict(Counter)
+        family_best_branch_score_by_group: dict[str, dict[str, float]] = defaultdict(dict)
+        family_mean_branch_score_by_group: dict[str, dict[str, float]] = defaultdict(dict)
         for b in done:
             gk = self._normalize_answer(b.predicted_answer)
             if gk is None:
                 continue
             sf = str(runtime_family_map.get(b.branch_id, "__unknown_family__"))
             branch_family_counts_by_group[gk][sf] += 1
+        for gk in groups:
+            grouped_by_family: dict[str, list[float]] = defaultdict(list)
+            for b in done:
+                if self._normalize_answer(b.predicted_answer) != gk:
+                    continue
+                fam = str(runtime_family_map.get(b.branch_id, "__unknown_family__"))
+                grouped_by_family[fam].append(float(self.scorer.score_branch(b)))
+            for fam, scores in grouped_by_family.items():
+                family_best_branch_score_by_group[gk][fam] = float(max(scores)) if scores else 0.0
+                family_mean_branch_score_by_group[gk][fam] = float(sum(scores) / max(1, len(scores)))
         top2_gap = float(summary["support_margin"]) / max(1e-8, float(total_support))
         combi_guard_active = bool(
             self.enable_direction_combinatorics_guard_v1 and classify_problem_type(question) == "counting_combinatorics"
         )
-        best_group_key = None
+        pre_rerank_selected_group = str(summary["top_group"]) if summary.get("top_group") is not None else None
+        best_group_key = pre_rerank_selected_group
         best_group_score = -10.0
         best_group_support = 0.0
         verifier_scores_by_answer_group: dict[str, float] = {}
@@ -2036,6 +2065,16 @@ class GlobalDiversityAggregationController(BaseController):
         final_group_scores_by_answer_group: dict[str, float] = {}
         mean_branch_scores_by_answer_group: dict[str, float] = {}
         best_branch_scores_by_answer_group: dict[str, float] = {}
+        raw_support_by_answer_group: dict[str, int] = {}
+        family_normalized_support_by_answer_group: dict[str, float] = {}
+        num_supporting_strategy_families_by_answer_group: dict[str, int] = {}
+        dominant_family_share_by_answer_group: dict[str, float] = {}
+        mean_process_score_by_answer_group: dict[str, float] = {}
+        mean_verifier_score_by_answer_group: dict[str, float] = {}
+        family_representative_scores_by_answer_group: dict[str, dict[str, float]] = defaultdict(dict)
+        family_best_verifier_score_by_answer_group: dict[str, dict[str, float]] = defaultdict(dict)
+        family_mean_verifier_score_by_answer_group: dict[str, dict[str, float]] = defaultdict(dict)
+        family_process_quality_by_answer_group: dict[str, dict[str, float]] = defaultdict(dict)
         for gk, gmeta in groups.items():
             support_fraction = float(gmeta["discounted_support"]) / max(1e-8, total_support)
             quality_mean = float(gmeta["support_quality_mean"])
@@ -2072,15 +2111,85 @@ class GlobalDiversityAggregationController(BaseController):
             scored_members = [float(self.scorer.score_branch(b)) for b in members_for_group]
             mean_branch_scores_by_answer_group[gk] = float(sum(scored_members) / max(1, len(scored_members)))
             best_branch_scores_by_answer_group[gk] = float(max(scored_members) if scored_members else 0.0)
-            final_group_scores_by_answer_group[gk] = float(group_score)
-            if group_score > best_group_score:
-                best_group_score = group_score
+            raw_support_by_answer_group[gk] = int(gmeta.get("member_count", 0))
+            fam_counter = branch_family_counts_by_group.get(gk, Counter())
+            family_normalized_support_by_answer_group[gk] = float(sum(min(1.0, float(v)) for v in fam_counter.values()))
+            num_supporting_strategy_families_by_answer_group[gk] = int(len([f for f, v in fam_counter.items() if int(v) > 0]))
+            dominant_family_share_by_answer_group[gk] = float(
+                max(fam_counter.values()) / max(1, sum(fam_counter.values()))
+            ) if fam_counter else 0.0
+            process_score = 0.5 * quality_mean + 0.5 * readiness_mean
+            mean_process_score_by_answer_group[gk] = float(process_score)
+            mean_verifier_score_by_answer_group[gk] = float(verifier_scores_by_answer_group.get(gk, 0.5 if combi_guard_active else 0.0))
+            for fam, cnt in fam_counter.items():
+                family_best = float(family_best_branch_score_by_group.get(gk, {}).get(fam, 0.0))
+                family_mean = float(family_mean_branch_score_by_group.get(gk, {}).get(fam, 0.0))
+                fam_verifier = float(verifier_scores_by_answer_group.get(gk, 0.5 if combi_guard_active else 0.0))
+                family_best_verifier_score_by_answer_group[gk][fam] = fam_verifier
+                family_mean_verifier_score_by_answer_group[gk][fam] = fam_verifier
+                family_process_quality_by_answer_group[gk][fam] = process_score
+                family_representative_scores_by_answer_group[gk][fam] = float(max(family_best, family_mean) + 0.25 * fam_verifier)
+
+        total_family_normalized_support = max(1e-8, sum(family_normalized_support_by_answer_group.values()))
+        family_rerank_active = bool(self.enable_family_normalized_rerank_v1)
+        selection_mode = str(
+            getattr(self, "_runtime_selection_mode_override", None)
+            or self.family_rerank_selection_mode
+            or "family_normalized_full"
+        ) if family_rerank_active else "support_plus_verifier_plus_strategy_diversity"
+        for gk in groups:
+            support_fraction = float(groups[gk]["discounted_support"]) / max(1e-8, total_support)
+            normalized_support_fraction = float(family_normalized_support_by_answer_group.get(gk, 0.0) / total_family_normalized_support)
+            diversity_score = float(num_supporting_strategy_families_by_answer_group.get(gk, 0))
+            single_family_penalty = 1.0 if int(num_supporting_strategy_families_by_answer_group.get(gk, 0)) <= 1 else 0.0
+            dominant_family_penalty = float(dominant_family_share_by_answer_group.get(gk, 0.0))
+            verifier_score = float(mean_verifier_score_by_answer_group.get(gk, 0.0))
+            process_score = float(mean_process_score_by_answer_group.get(gk, 0.0))
+            if not family_rerank_active:
+                rerank_score = float(
+                    self.direction_support_weight * support_fraction
+                    + self.direction_process_weight * process_score
+                    + self.direction_verifier_weight * verifier_score
+                    + self.direction_strategy_diversity_weight * diversity_score
+                    - self.direction_single_family_penalty_weight * single_family_penalty
+                )
+            elif selection_mode == "raw_support_only":
+                rerank_score = float(raw_support_by_answer_group.get(gk, 0))
+            elif selection_mode == "family_normalized_support_only":
+                rerank_score = normalized_support_fraction
+            elif selection_mode == "verifier_only":
+                rerank_score = verifier_score
+            elif selection_mode == "process_only":
+                rerank_score = process_score
+            elif selection_mode == "support_plus_verifier":
+                rerank_score = support_fraction + verifier_score
+            elif selection_mode == "family_normalized_support_plus_verifier":
+                rerank_score = normalized_support_fraction + verifier_score
+            elif selection_mode == "family_normalized_support_plus_process_plus_verifier":
+                rerank_score = normalized_support_fraction + process_score + verifier_score
+            else:
+                rerank_score = (
+                    self.family_rerank_support_weight * normalized_support_fraction
+                    + self.family_rerank_process_weight * process_score
+                    + self.family_rerank_verifier_weight * verifier_score
+                    + self.family_rerank_diversity_weight * diversity_score
+                    - self.family_rerank_single_family_penalty_weight * single_family_penalty
+                    - self.family_rerank_dominant_family_penalty_weight * dominant_family_penalty
+                )
+            final_group_scores_by_answer_group[gk] = float(rerank_score)
+            if float(rerank_score) > best_group_score:
+                best_group_score = float(rerank_score)
                 best_group_key = gk
                 best_group_support = support_fraction
 
+        if family_rerank_active and selection_mode == "oracle_if_gold_present":
+            gold_key = self._normalize_answer(getattr(self, "_runtime_gold_answer_for_selection", None))
+            if gold_key is not None and gold_key in groups:
+                best_group_key = gold_key
+
         members = [b for b in done if self._normalize_answer(b.predicted_answer) == best_group_key] if best_group_key is not None else done
         best_member = max(members, key=self.scorer.score_branch)
-        pre_guard_group = str(summary["top_group"]) if summary.get("top_group") is not None else None
+        pre_guard_group = str(pre_rerank_selected_group) if pre_rerank_selected_group is not None else None
         commit_guard_triggered = bool(
             combi_guard_active
             and (
@@ -2116,6 +2225,12 @@ class GlobalDiversityAggregationController(BaseController):
             "verifier_reason_by_answer_group": verifier_reason_by_answer_group if combi_guard_active else {},
             "pre_guard_selected_answer_group": pre_guard_group,
             "post_guard_selected_answer_group": best_group_key,
+            "pre_rerank_selected_answer_group": pre_rerank_selected_group,
+            "post_rerank_selected_answer_group": best_group_key,
+            "selection_changed_by_family_rerank": bool(
+                pre_rerank_selected_group is not None and str(pre_rerank_selected_group) != str(best_group_key)
+            ),
+            "selection_mode": selection_mode if family_rerank_active else "legacy_direction_guard_scoring",
             "selected_answer_strategy_families": selected_families,
             "budget_available_for_verifier": True,
             "verifier_used_real_call": False,
@@ -2131,6 +2246,18 @@ class GlobalDiversityAggregationController(BaseController):
                 str(gk): {str(f): int(c) for f, c in fam_counter.items()}
                 for gk, fam_counter in branch_family_counts_by_group.items()
             },
+            "raw_support_count_by_answer_group": raw_support_by_answer_group,
+            "family_normalized_support_by_answer_group": family_normalized_support_by_answer_group,
+            "num_supporting_strategy_families_by_answer_group": num_supporting_strategy_families_by_answer_group,
+            "dominant_family_share_by_answer_group": dominant_family_share_by_answer_group,
+            "mean_process_score_by_answer_group": mean_process_score_by_answer_group,
+            "mean_verifier_score_by_answer_group": mean_verifier_score_by_answer_group,
+            "family_best_branch_scores_by_answer_group": family_best_branch_score_by_group,
+            "family_mean_branch_scores_by_answer_group": family_mean_branch_score_by_group,
+            "family_best_verifier_scores_by_answer_group": family_best_verifier_score_by_answer_group,
+            "family_mean_verifier_scores_by_answer_group": family_mean_verifier_score_by_answer_group,
+            "family_process_quality_by_answer_group": family_process_quality_by_answer_group,
+            "family_representative_scores_by_answer_group": family_representative_scores_by_answer_group,
             "answer_group_final_scores": final_group_scores_by_answer_group,
             "answer_group_mean_branch_scores": mean_branch_scores_by_answer_group,
             "answer_group_best_branch_scores": best_branch_scores_by_answer_group,
@@ -4151,6 +4278,7 @@ class GlobalDiversityAggregationController(BaseController):
                 }
 
         self._runtime_branch_strategy_family = dict(branch_strategy_family)
+        self._runtime_gold_answer_for_selection = str(gold_answer)
         prediction, group_meta = self._final_prediction_from_groups(branches, question=question)
         verifier_scores_snapshot = group_meta.get("verifier_scores_by_answer_group", {}) if isinstance(group_meta, dict) else {}
         if isinstance(verifier_scores_snapshot, dict) and verifier_scores_snapshot:

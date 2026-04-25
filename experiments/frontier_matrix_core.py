@@ -1180,6 +1180,26 @@ def build_frontier_strategies(
             method_name="strict_f3_typed_strategy_seeded_v1",
             **strict_f3_typed_strategy_seeded_cfg,
         )
+        strict_f3_typed_strategy_family_normalized_rerank_cfg = dict(strict_f3_typed_strategy_seeded_cfg)
+        strict_f3_typed_strategy_family_normalized_rerank_cfg.update(
+            {
+                "enable_family_normalized_rerank_v1": True,
+                "family_rerank_selection_mode": "family_normalized_full",
+                "family_rerank_support_weight": 1.0,
+                "family_rerank_process_weight": 0.5,
+                "family_rerank_verifier_weight": 1.0,
+                "family_rerank_diversity_weight": 0.4,
+                "family_rerank_single_family_penalty_weight": 0.5,
+                "family_rerank_dominant_family_penalty_weight": 0.3,
+            }
+        )
+        specs["strict_f3_typed_strategy_family_normalized_rerank_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_typed_strategy_family_normalized_rerank_v1",
+            **strict_f3_typed_strategy_family_normalized_rerank_cfg,
+        )
         strict_f3_exhaustive_depth2_probe_cfg = dict(strict_f3_base_cfg)
         strict_f3_exhaustive_depth2_probe_cfg.update(
             {
