@@ -1,42 +1,63 @@
 # Adaptive Reasoning Budget Allocation (Anonymous NeurIPS 2026 Repository)
 
-This repository studies **frontier allocation for budgeted LLM inference** under explicit action-budget contracts.
+This repository studies **frontier allocation for budgeted LLM inference** under explicit compute/action-budget contracts.
 
-## Main reproducible claims (paper-facing)
+## Project goal
+Build and evaluate methods that allocate limited reasoning budget more effectively than fixed or naive allocation policies, while preserving transparent, reproducible evidence boundaries.
 
-- The paper uses a **matched action-budget surface** and **matched-budget adapter baselines**.
-- Canonical tables/figures are regenerated from committed scripts and artifacts without external LLM APIs.
-- Real-model provider runs are retained as **supporting/diagnostic real-model audits** (not evidence of universal dominance).
+## Method family (high-level)
+- Frontier-aware allocation/controller methods.
+- Matched-budget internal comparisons (`strict_f3`, `strict_gate1_cap_k6`, related variants).
+- External adapter baselines under documented contract/fairness checks.
+- Diagnostic variants for failure analysis (not automatically canonical).
 
-## Canonical reproduction path (no API keys required)
+## Current main result status
+- Canonical manuscript-facing evidence is generated into:
+  - `outputs/paper_tables/`
+  - `outputs/paper_plot_data/`
+  - `outputs/paper_figures/`
+- These are the primary sources for paper claims.
 
+## Reproduce canonical outputs (local, no external API required)
 ```bash
 python scripts/check_repo_health.py
-python -m ruff check
 python -m pytest
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
 
-Canonical outputs:
-- `outputs/paper_tables/`
-- `outputs/paper_plot_data/`
-- `outputs/paper_figures/`
+## Inspect real-model validation (diagnostic/supporting)
+- OpenAI/Cohere validation artifacts live under:
+  - `outputs/real_model_ours_vs_external_validation_20260424T_OPENAI_REAL_MAIN/`
+  - `outputs/real_model_ours_vs_external_validation_20260424T_COHERE_REAL_MAIN/`
+  - `outputs/real_model_ours_vs_external_validation_20260425T_WULVER_COHERE_LONG/`
+- Treat these as diagnostic/stress-test evidence unless explicitly promoted for a bounded claim.
 
-## Reviewer navigation
+## Inspect failure diagnostics
+- Detailed loss-case analysis and deep-dive packages are documented in:
+  - `docs/DETAILED_LOSS_CASE_ANALYSIS_20260425T_WULVER_COHERE_LONG_DETAIL.md`
+  - `docs/TEN_CASE_LOSS_DEEP_DIVE_20260425T221500Z.md`
 
-- `docs/REVIEWER_QUICKSTART.md`
-- `docs/PAPER_SOURCE_OF_TRUTH.md`
+## Safe-claims policy
+Before writing manuscript text, read:
+- `docs/SAFE_CLAIMS_FOR_NEURIPS_2026.md`
 - `docs/RESULTS_GUIDE.md`
-- `docs/CLAIM_BOUNDARIES.md`
-- `docs/ARTIFACT_MANIFEST.md`
+- `docs/PAPER_SOURCE_OF_TRUTH.md`
 
-## Scope separation
+## Tests
+Run focused local checks:
+```bash
+python -m pytest tests/test_ten_case_loss_deep_dive.py \
+  tests/test_family_normalized_rerank.py \
+  tests/test_typed_strategy_seeded.py \
+  tests/test_direction_combinatorics_guard.py
 
-- **Paper-facing canonical evidence:** matched-surface manuscript artifacts used by paper tables/figures.
-- **Appendix/supporting evidence:** robustness, ablations, and contract/fairness checks.
-- **Exploratory/provenance-only evidence:** negative/partial runs and exploratory algorithm attempts.
-- **Non-review/private/local-only:** machine-local traces, task metadata, and private execution leftovers (flagged in manifests; not used for claims).
+# Artifact-dependent integration checks (require generated package):
+python -m pytest tests/test_family_normalized_rerank.py::test_smoke_runner_outputs_and_ablation \
+  tests/test_typed_strategy_seeded.py::test_dry_run_and_outputs_exist \
+  tests/test_direction_combinatorics_guard.py::test_dry_run_completes_without_api_keys
+```
 
-## External API note
-
-Paper artifact regeneration does **not** require OpenAI/Cohere keys. Optional real-model scripts that require provider keys are explicitly labeled and are not required for reviewer reproduction.
+## What not to claim yet
+- Do **not** claim robust/universal superiority over external baselines.
+- Do **not** present diagnostic variants as final methods unless validated and promoted.
+- Do **not** assume historical runs have complete trace coverage.

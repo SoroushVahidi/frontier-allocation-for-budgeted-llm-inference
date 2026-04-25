@@ -1,16 +1,25 @@
 from __future__ import annotations
 
+import csv
 import json
 import random
-import subprocess
-import csv
 import shutil
+import subprocess
 from pathlib import Path
+
+import pytest
 
 from experiments.branching import SimulatedBranchGenerator
 from experiments.frontier_matrix_core import build_frontier_strategies
 from experiments.problem_type_utils import classify_problem_type
 from experiments.typed_strategy_prompts import get_typed_strategy_prompts
+
+ARTIFACT_CASES_CSV = Path("outputs/detailed_loss_case_package_20260425T_WULVER_COHERE_LONG_DETAIL/all_paired_cases.csv")
+
+STRICT_F3_RUNTIME = (
+    "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_"
+    "repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
+)
 
 
 def _build_specs() -> dict[str, object]:
@@ -72,6 +81,8 @@ def test_commit_guard_and_diversity_metadata_emitted() -> None:
 
 
 def test_dry_run_and_outputs_exist() -> None:
+    if not ARTIFACT_CASES_CSV.exists():
+        pytest.skip(f"artifact-dependent test requires {ARTIFACT_CASES_CSV}")
     ts = "20260425T_TYPED_STRATEGY_SEEDED_TEST_DRY"
     out = Path("outputs") / f"typed_strategy_seeded_eval_{ts}"
     if out.exists():
@@ -142,10 +153,3 @@ def test_dry_run_and_outputs_exist() -> None:
         o_acc = sum(int(r["is_correct"]) for r in oracle) / max(1, len(oracle))
         n_acc = sum(int(r["is_correct"]) for r in normal) / max(1, len(normal))
         assert o_acc >= n_acc
-
-
-STRICT_F3_RUNTIME = (
-    "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_"
-    "repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
-)
-
