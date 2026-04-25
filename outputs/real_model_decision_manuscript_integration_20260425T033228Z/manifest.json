@@ -1,0 +1,29 @@
+{
+  "timestamp": "20260425T033228Z",
+  "generated_at_utc": "2026-04-25T03:36:19.797922+00:00",
+  "integration_report": "docs/REAL_MODEL_DECISION_MANUSCRIPT_INTEGRATION_20260425T033228Z.md",
+  "source_decision_package": "docs/REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md",
+  "source_decision_artifacts": "outputs/real_model_decision_package_20260425T025417Z/",
+  "artifacts": {
+    "unsafe_phrase_scan_csv": "outputs/real_model_decision_manuscript_integration_20260425T033228Z/unsafe_phrase_scan.csv",
+    "files_changed_csv": "outputs/real_model_decision_manuscript_integration_20260425T033228Z/files_changed.csv",
+    "claim_wording_update_csv": "outputs/real_model_decision_manuscript_integration_20260425T033228Z/claim_wording_update.csv"
+  },
+  "unsafe_phrase_matches": 115,
+  "changed_files_count": 13,
+  "changed_files": [
+    "docs/MANUSCRIPT_SUPPORT_DASHBOARD.md",
+    "docs/PAPER_SOURCE_OF_TRUTH.md",
+    "docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md",
+    "manuscript_integration/neurips_claim_safe_revision_20260424T234500Z/README.md",
+    "manuscript_integration/neurips_claim_safe_revision_20260424T234500Z/abstract_safe_revision.txt",
+    "manuscript_integration/neurips_claim_safe_revision_20260424T234500Z/main_results_claim_safety_table_insert.tex",
+    "manuscript_integration/neurips_claim_safe_revision_20260424T234500Z/limitations_rewrite.tex",
+    "manuscript_integration/neurips_claim_safe_revision_20260424T234500Z/appendix_claim_boundary_insert.tex",
+    "docs/REAL_MODEL_DECISION_MANUSCRIPT_INTEGRATION_20260425T033228Z.md",
+    "outputs/real_model_decision_manuscript_integration_20260425T033228Z/manifest.json",
+    "outputs/real_model_decision_manuscript_integration_20260425T033228Z/unsafe_phrase_scan.csv",
+    "outputs/real_model_decision_manuscript_integration_20260425T033228Z/files_changed.csv",
+    "outputs/real_model_decision_manuscript_integration_20260425T033228Z/claim_wording_update.csv"
+  ]
+}

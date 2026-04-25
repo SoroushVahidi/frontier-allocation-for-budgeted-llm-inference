@@ -1,0 +1,6 @@
+wording_type,wording,authoritative_location
+safe,Main-paper evidence is the matched action-budget simulation/diagnostic surface; real-model packages are appendix-only diagnostics.,docs/MANUSCRIPT_SUPPORT_DASHBOARD.md
+safe,Cohere Stage-1 real-model evidence is mixed/unfavorable versus external_l1_max and is not support for dominance claims.,docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md
+safe,"REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md is a claim-boundary guardrail authority, not headline numerical evidence.",docs/PAPER_SOURCE_OF_TRUTH.md
+forbidden,Real-model evidence establishes dominance/superiority over external_l1_max.,docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md
+forbidden,Use real-model evidence as main-paper headline performance evidence.,docs/PAPER_SOURCE_OF_TRUTH.md

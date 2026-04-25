@@ -51,6 +51,7 @@ Primary decision authority:
 - Operational method-specification audit now exists (`OPERATIONAL_CONTROLLER_SPECIFICATION_FOR_MANUSCRIPT_20260424T164500Z.md`; outputs in `outputs/operational_controller_specification_20260424T164500Z/`): this materially improves implementation transparency, but unresolved gaps (no single closed-form objective; heuristic gates) remain and should stay explicit.
 - Unified offline claim-safety statistical audit now exists (`UNIFIED_CLAIM_SAFETY_STATISTICAL_AUDIT_20260424T200000Z.md`; outputs in `outputs/unified_claim_safety_statistical_audit_20260424T200000Z/`): strict_f3 vs strict_gate1_cap_k6 remains fragile/surface-sensitive and frontier-allocation vs `external_l1_max` remains mixed/non-dominant; preserve bounded/appendix framing for real-model claims.
 - Held-out surface generalization + claim-safety runner is now added (`scripts/run_held_out_surface_generalization_claim_safety.py`) with dry-run package (`outputs/held_out_surface_generalization_claim_safety_20260424T231500Z_DRY/`) and conservative report (`HELD_OUT_SURFACE_GENERALIZATION_CLAIM_SAFETY_20260424T231500Z_DRY.md`); this currently reinforces mixed/non-dominant framing, not SOTA/dominance framing.
+- Real-model decision package now exists (`REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md`; artifacts in `outputs/real_model_decision_package_20260425T025417Z/`): Cohere Stage-1 is unfavorable for dominance claims (`strict_f3`=0.5333 vs `external_l1_max`=0.8000; paired delta=-0.2667, bootstrap 95% CI [-0.4667, -0.0667], budget deltas b4=-0.3/b6=-0.3/b8=-0.2, seed deltas s11=-0.2/s23=-0.3333, and cost-normalized diagnostics favor `external_l1_max`); maintain appendix-only/diagnostic usage and do not use this as main-paper superiority evidence.
 
 ### Historical / provenance
 - Legacy dated status notes and superseded summaries retained for traceability.
@@ -62,11 +63,13 @@ Primary decision authority:
 2. `CANONICAL_START_HERE.md`
 3. `PAPER_SOURCE_OF_TRUTH.md`
 4. `INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
-5. `MAIN_TABLE_EXTERNAL_BASELINE_FAIRNESS_AUDIT_20260423T205134Z.md`
-6. `../scripts/CANONICAL_START_HERE.md`
+5. `REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md` (claim-boundary guardrail; appendix-only real-model usage)
+6. `MAIN_TABLE_EXTERNAL_BASELINE_FAIRNESS_AUDIT_20260423T205134Z.md`
+7. `../scripts/CANONICAL_START_HERE.md`
 
 ## Guardrails
 
 - Do not promote exploratory artifacts to headline manuscript evidence without a canonical decision-doc update.
 - Keep the method-surface distinction explicit in docs, figures, and tables.
+- For real-model wording, treat `REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md` as a hard guardrail: no claims of real-model dominance/superiority over `external_l1_max` are manuscript-safe from current Cohere Stage-1 evidence.
 - Preserve historical provenance; demote with labels instead of deleting context.

@@ -24,6 +24,7 @@ This page defines which files are safe to cite for manuscript claims.
 - `MAIN_TABLE_EXTERNAL_BASELINE_FAIRNESS_AUDIT_20260423T205134Z.md`
 - `UNIFIED_CLAIM_SAFETY_STATISTICAL_AUDIT_20260424T200000Z.md` (claim-boundary guardrail and manuscript-safe wording authority)
 - `HELD_OUT_SURFACE_GENERALIZATION_CLAIM_SAFETY_20260424T231500Z_DRY.md` (held-out-surface claim-safety scaffold; currently supportive/process-level while full run is pending)
+- `REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md` (real-model claim-boundary guardrail authority; Cohere Stage-1 is unfavorable/mixed vs `external_l1_max`, so appendix-only diagnostic usage)
 
 ## Canonical artifact families (paper-facing)
 
@@ -45,6 +46,7 @@ This page defines which files are safe to cite for manuscript claims.
 - `outputs/new_hundred_newest_vs_best_failure_statistics_20260421T032711Z/`
 - `outputs/hundred_*` strict-phased diagnostics and gate sweeps
 - `outputs/*adjacent_integration*/` external adjacent adapters
+- `outputs/real_model_decision_package_20260425T025417Z/` (real-model guardrail artifacts; supportive/diagnostic only, not headline numerical evidence)
 
 Use these for ablations, mechanism discussion, or appendix context unless promoted by a canonical decision document.
 
@@ -58,6 +60,7 @@ Use these for ablations, mechanism discussion, or appendix context unless promot
 
 - Conditional-risk variant remains supportive/appendix-level and does not replace the canonical manuscript-facing method lock (`strict_f3`).
 - External main-table baseline fairness audit outcome: no material issue found on the current near-direct main-table comparison surface.
+- Real-model decision-package outcome (Cohere Stage-1): unfavorable to real-model dominance claims over `external_l1_max`; keep all real-model evidence appendix-only/diagnostic unless materially stronger future evidence arrives.
 
 ## Claim discipline
 
