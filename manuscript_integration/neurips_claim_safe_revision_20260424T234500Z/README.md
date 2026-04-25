@@ -13,7 +13,7 @@ This package converts existing audit and experiment artifacts into manuscript-re
 5. **Anti-collapse framing claim**: anti-collapse is calibration-sensitive on the matched surface (weak best, off above default, conditional below default), so it is not presented as an independently validated universal gain.
 
 ### Appendix-only claims
-1. OpenAI/Cohere real-model results as bounded robustness corroboration.
+1. OpenAI/Cohere real-model results as bounded robustness corroboration; specifically, the Cohere Stage-1 decision package is mixed/unfavorable vs `external_l1_max` and serves as a claim-boundary guardrail rather than superiority evidence.
 2. Held-out/dry-run surface checks as boundary/sensitivity evidence.
 3. Token/latency/cost accounting details as diagnostic fairness accounting (not equivalence proof).
 
