@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from collections import Counter
+from collections import Counter, defaultdict
 import math
 import re
 from typing import Any, Protocol
@@ -15,6 +15,7 @@ from sklearn.linear_model import LogisticRegression
 
 from experiments.branching import BranchState
 from experiments.objective_function_stack import compute_process_quality, compute_target_completion
+from experiments.problem_type_utils import classify_problem_type
 from experiments.prm_partial_scorer import PartialBranchScorer
 from experiments.scoring import SimpleBranchScorer
 from experiments.verifiers import CandidateVerifier
@@ -1032,6 +1033,14 @@ class GlobalDiversityAggregationController(BaseController):
         case_split_direction_aware_disable_repeat_penalty_ablation: bool = False,
         case_split_direction_aware_disable_unresolved_preservation_ablation: bool = False,
         case_split_direction_aware_detector_off: bool = False,
+        enable_direction_combinatorics_guard_v1: bool = False,
+        direction_family_cap_share_precoverage: float = 0.60,
+        direction_support_weight: float = 1.0,
+        direction_process_weight: float = 0.5,
+        direction_verifier_weight: float = 1.0,
+        direction_strategy_diversity_weight: float = 0.5,
+        direction_single_family_penalty_weight: float = 0.5,
+        direction_commit_guard_top2_gap_threshold: float = 0.12,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -1204,6 +1213,14 @@ class GlobalDiversityAggregationController(BaseController):
         self.case_split_direction_aware_disable_repeat_penalty_ablation = bool(case_split_direction_aware_disable_repeat_penalty_ablation)
         self.case_split_direction_aware_disable_unresolved_preservation_ablation = bool(case_split_direction_aware_disable_unresolved_preservation_ablation)
         self.case_split_direction_aware_detector_off = bool(case_split_direction_aware_detector_off)
+        self.enable_direction_combinatorics_guard_v1 = bool(enable_direction_combinatorics_guard_v1)
+        self.direction_family_cap_share_precoverage = max(0.0, min(1.0, float(direction_family_cap_share_precoverage)))
+        self.direction_support_weight = float(direction_support_weight)
+        self.direction_process_weight = float(direction_process_weight)
+        self.direction_verifier_weight = float(direction_verifier_weight)
+        self.direction_strategy_diversity_weight = float(direction_strategy_diversity_weight)
+        self.direction_single_family_penalty_weight = float(direction_single_family_penalty_weight)
+        self.direction_commit_guard_top2_gap_threshold = float(direction_commit_guard_top2_gap_threshold)
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -1888,6 +1905,40 @@ class GlobalDiversityAggregationController(BaseController):
             return 0.0
         return float(max(float(self.scorer.score_branch(b)) for b in active))
 
+    def _direction_verifier_heuristic(
+        self,
+        *,
+        question: str,
+        answer_group: str,
+        family_count: int,
+        support_gap: float,
+    ) -> tuple[str, float, str]:
+        q = (question or "").lower()
+        has_order_signal = any(x in q for x in ("order", "arrange", "seating", "line up"))
+        has_unordered_signal = any(x in q for x in ("choose", "combination", "group", "pair"))
+        score = 0.50
+        reasons: list[str] = []
+        if has_order_signal and has_unordered_signal:
+            score -= 0.08
+            reasons.append("ordered_vs_unordered_ambiguity")
+        if family_count >= 2:
+            score += 0.12
+            reasons.append("multi_family_support")
+        if support_gap < self.direction_commit_guard_top2_gap_threshold:
+            score -= 0.07
+            reasons.append("low_support_gap")
+        if answer_group == "__unknown__":
+            score -= 0.10
+            reasons.append("unknown_answer_group")
+        score = max(0.0, min(1.0, float(score)))
+        if score >= 0.66:
+            verdict = "verifier_pass"
+        elif score >= 0.42:
+            verdict = "verifier_warn"
+        else:
+            verdict = "verifier_fail"
+        return verdict, score, ",".join(reasons) if reasons else "no_issue_detected"
+
     def _commit_by_answer_group_margin(self, *, branches: list[BranchState], actions: int, question: str = "") -> tuple[bool, dict[str, Any]]:
         summary = self._group_support_summary(branches, question=question)
         one_step_value = self._estimate_one_step_value(branches)
@@ -1935,18 +1986,55 @@ class GlobalDiversityAggregationController(BaseController):
             }
 
         total_support = sum(float(v["discounted_support"]) for v in groups.values())
+        runtime_family_map: dict[str, str] = getattr(self, "_runtime_branch_strategy_family", {}) or {}
+        branch_family_counts_by_group: dict[str, Counter[str]] = defaultdict(Counter)
+        for b in done:
+            gk = self._normalize_answer(b.predicted_answer)
+            if gk is None:
+                continue
+            sf = str(runtime_family_map.get(b.branch_id, "__unknown_family__"))
+            branch_family_counts_by_group[gk][sf] += 1
+        top2_gap = float(summary["support_margin"]) / max(1e-8, float(total_support))
+        combi_guard_active = bool(
+            self.enable_direction_combinatorics_guard_v1 and classify_problem_type(question) == "counting_combinatorics"
+        )
         best_group_key = None
         best_group_score = -10.0
         best_group_support = 0.0
+        verifier_scores_by_answer_group: dict[str, float] = {}
+        verifier_verdicts_by_answer_group: dict[str, str] = {}
+        verifier_reason_by_answer_group: dict[str, str] = {}
         for gk, gmeta in groups.items():
             support_fraction = float(gmeta["discounted_support"]) / max(1e-8, total_support)
             quality_mean = float(gmeta["support_quality_mean"])
             readiness_mean = float(gmeta["readiness_mean"])
-            group_score = (
+            base_group_score = (
                 self.answer_support_weight * support_fraction
                 + self.value_weight * quality_mean
                 + self.support_quality_weight * readiness_mean
             )
+            group_score = float(base_group_score)
+            if combi_guard_active:
+                fam_count = int(len(branch_family_counts_by_group.get(gk, {})))
+                verdict, verifier_score, verifier_reason = self._direction_verifier_heuristic(
+                    question=question,
+                    answer_group=str(gk),
+                    family_count=fam_count,
+                    support_gap=top2_gap,
+                )
+                verifier_scores_by_answer_group[gk] = float(verifier_score)
+                verifier_verdicts_by_answer_group[gk] = verdict
+                verifier_reason_by_answer_group[gk] = verifier_reason
+                diversity_bonus = 1.0 if fam_count >= 2 else 0.0
+                single_family_penalty = 1.0 if fam_count <= 1 else 0.0
+                process_score = 0.5 * quality_mean + 0.5 * readiness_mean
+                group_score = (
+                    self.direction_support_weight * support_fraction
+                    + self.direction_process_weight * process_score
+                    + self.direction_verifier_weight * verifier_score
+                    + self.direction_strategy_diversity_weight * diversity_bonus
+                    - self.direction_single_family_penalty_weight * single_family_penalty
+                )
             if group_score > best_group_score:
                 best_group_score = group_score
                 best_group_key = gk
@@ -1954,6 +2042,16 @@ class GlobalDiversityAggregationController(BaseController):
 
         members = [b for b in done if self._normalize_answer(b.predicted_answer) == best_group_key] if best_group_key is not None else done
         best_member = max(members, key=self.scorer.score_branch)
+        pre_guard_group = str(summary["top_group"]) if summary.get("top_group") is not None else None
+        commit_guard_triggered = bool(
+            combi_guard_active
+            and (
+                len(groups) > 1
+                or top2_gap < self.direction_commit_guard_top2_gap_threshold
+                or int(len(branch_family_counts_by_group.get(str(best_group_key), {}))) <= 1
+            )
+        )
+        answer_group_support_counts = {k: int(v.get("member_count", 0)) for k, v in groups.items()}
         return best_member.predicted_answer, {
             "selected_group": best_group_key,
             "group_support_fraction": float(best_group_support),
@@ -1968,6 +2066,20 @@ class GlobalDiversityAggregationController(BaseController):
             "intermediate_result_branch_count": int(
                 sum(1 for row in summary.get("branch_support_rows", []) if bool(row.get("intermediate_result_mismatch", False)))
             ),
+            "commit_guard_triggered": bool(commit_guard_triggered),
+            "commit_guard_reason": (
+                "combinatorics_disagreement_or_low_gap_or_single_family"
+                if commit_guard_triggered
+                else "not_triggered"
+            ),
+            "verifier_scores_by_answer_group": verifier_scores_by_answer_group if combi_guard_active else {},
+            "verifier_verdicts_by_answer_group": verifier_verdicts_by_answer_group if combi_guard_active else {},
+            "verifier_reason_by_answer_group": verifier_reason_by_answer_group if combi_guard_active else {},
+            "pre_guard_selected_answer_group": pre_guard_group,
+            "post_guard_selected_answer_group": best_group_key,
+            "top2_support_gap": float(top2_gap),
+            "answer_entropy": float(self._support_entropy(answer_group_support_counts)),
+            "answer_group_support_counts": answer_group_support_counts,
         }
 
     def _incumbent_challenger_commit_state(
@@ -2820,6 +2932,25 @@ class GlobalDiversityAggregationController(BaseController):
         branch_expansions: dict[str, int] = {}
         branches: list[BranchState] = [self.generator.init_branch("div_0"), self.generator.init_branch("div_1")]
         branch_family_ids: dict[str, str] = {branches[0].branch_id: branches[0].branch_id, branches[1].branch_id: branches[1].branch_id}
+        strategy_families = [
+            "direct_formula_family",
+            "explicit_case_split_family",
+            "enumeration_or_decomposition_family",
+            "sanity_check_verifier_family",
+        ]
+        branch_strategy_family: dict[str, str] = {}
+        for idx, b in enumerate(branches):
+            branch_strategy_family[b.branch_id] = strategy_families[idx % len(strategy_families)]
+        family_expansions_by_strategy: dict[str, int] = {k: 0 for k in strategy_families}
+        direction_guard_triggered_count = 0
+        family_cap_blocked_expansion = 0
+        family_min_coverage_forced_expansion = 0
+        commit_guard_triggered_count = 0
+        verifier_calls = 0
+        verifier_pass = 0
+        verifier_warn = 0
+        verifier_fail = 0
+        selected_family_at_commit: str | None = None
         answer_support_counts: dict[str, int] = {}
         group_profiles: dict[str, list[set[str]]] = {}
         global_profiles: list[set[str]] = []
@@ -2878,6 +3009,10 @@ class GlobalDiversityAggregationController(BaseController):
         cond_gate_record: dict[str, Any] | None = None
         cond_depth3_completed = False
         cond_depth2_gate_actions: int | None = None
+        problem_type_label = classify_problem_type(question)
+        combinatorics_guard_active = bool(
+            self.enable_direction_combinatorics_guard_v1 and problem_type_label == "counting_combinatorics"
+        )
         question_shape_label = "unknown" if self.case_split_direction_aware_detector_off else classify_question_shape(question)
         case_split_direction_aware_active = bool(
             self.enable_case_split_direction_aware_v1 and (question_shape_label in self.case_split_direction_aware_labels)
@@ -3090,6 +3225,52 @@ class GlobalDiversityAggregationController(BaseController):
                             if int(branch_expansions.get(chosen[0].branch_id, 0)) < self.width_depth_challenger_maturation_min_expands:
                                 width_depth_forced_challenger_maturation_steps += 1
                             branch, priority, pri_meta = chosen
+
+            if combinatorics_guard_active and scored:
+                required_families = 2 if self.max_actions < 6 else 3
+                seen_families = {
+                    fam
+                    for fam, cnt in family_expansions_by_strategy.items()
+                    if int(cnt) > 0
+                }
+                selected_strategy_family = str(branch_strategy_family.get(branch.branch_id, "direct_formula_family"))
+                selected_cnt = int(family_expansions_by_strategy.get(selected_strategy_family, 0))
+                dominant_share = (
+                    selected_cnt / max(1, sum(int(v) for v in family_expansions_by_strategy.values()))
+                )
+                missing_families = [
+                    fam for fam in strategy_families if fam not in seen_families
+                ]
+                if len(seen_families) < required_families and missing_families:
+                    alt = next(
+                        (
+                            item
+                            for item in scored
+                            if str(branch_strategy_family.get(item[0].branch_id, "direct_formula_family")) in missing_families
+                        ),
+                        None,
+                    )
+                    if alt is not None and alt[0].branch_id != branch.branch_id:
+                        branch, priority, pri_meta = alt
+                        selected_strategy_family = str(branch_strategy_family.get(branch.branch_id, "direct_formula_family"))
+                        direction_guard_triggered_count += 1
+                        family_min_coverage_forced_expansion += 1
+                if (
+                    len(seen_families) < required_families
+                    and dominant_share > self.direction_family_cap_share_precoverage
+                ):
+                    alt = next(
+                        (
+                            item
+                            for item in scored
+                            if str(branch_strategy_family.get(item[0].branch_id, "direct_formula_family")) != selected_strategy_family
+                        ),
+                        None,
+                    )
+                    if alt is not None and alt[0].branch_id != branch.branch_id:
+                        branch, priority, pri_meta = alt
+                        direction_guard_triggered_count += 1
+                        family_cap_blocked_expansion += 1
 
             cov_override: int | None = None
             if self.enable_hard_early_root_depth2_then_conditional_depth3_v1 and cond_phase == "depth2":
@@ -3404,6 +3585,9 @@ class GlobalDiversityAggregationController(BaseController):
                     branches.append(correction_branch)
                     branch_expansions[correction_branch.branch_id] = 0
                     branch_family_ids[correction_branch.branch_id] = parent_family_id
+                    branch_strategy_family[correction_branch.branch_id] = str(
+                        branch_strategy_family.get(branch.branch_id, "sanity_check_verifier_family")
+                    )
                     branch = correction_branch
                     priority = float(priority) + 0.01
                     b_expanded = 0
@@ -3436,6 +3620,8 @@ class GlobalDiversityAggregationController(BaseController):
                 actions += 1
                 expansions += 1
                 branch_expansions[branch.branch_id] = b_expanded + 1
+                sfam = str(branch_strategy_family.get(branch.branch_id, "direct_formula_family"))
+                family_expansions_by_strategy[sfam] = int(family_expansions_by_strategy.get(sfam, 0)) + 1
                 action_trace.append(
                     {
                         "action": "expand",
@@ -3523,6 +3709,16 @@ class GlobalDiversityAggregationController(BaseController):
                         "hard_max_family_expansions_relax_delta": int(cap_meta.get("relax_delta", 0)),
                         "hard_max_family_expansions_trigger": str(cap_meta.get("trigger") or ""),
                         "selected_family_expansions_pre_action": int(cap_meta.get("selected_family_expansions_pre_action", 0)),
+                        "strategy_family": sfam,
+                        "is_combinatorics_family": bool(combinatorics_guard_active),
+                        "direction_id": sfam,
+                        "direction_summary": sfam.replace("_", " "),
+                        "case_split_signature": ("explicit_case_split" if "case_split" in sfam else ""),
+                        "family_expansions_so_far": int(family_expansions_by_strategy.get(sfam, 0)),
+                        "family_budget_share_so_far": float(
+                            family_expansions_by_strategy.get(sfam, 0) / max(1, sum(family_expansions_by_strategy.values()))
+                        ),
+                        "direction_guard_triggered": bool(direction_guard_triggered_count > 0),
                         **hard_cov_trace,
                     }
                 )
@@ -3567,6 +3763,11 @@ class GlobalDiversityAggregationController(BaseController):
                     branches.append(child)
                     branch_expansions[child.branch_id] = 0
                     branch_family_ids[child.branch_id] = str(branch_family_ids.get(branch.branch_id) or branch.branch_id)
+                    if combinatorics_guard_active:
+                        missing_family = next((fam for fam in strategy_families if family_expansions_by_strategy.get(fam, 0) == 0), None)
+                        branch_strategy_family[child.branch_id] = str(missing_family or sfam)
+                    else:
+                        branch_strategy_family[child.branch_id] = sfam
             else:
                 result = self.generator.verify(branch, question)
                 actions += 1
@@ -3653,6 +3854,27 @@ class GlobalDiversityAggregationController(BaseController):
                         "hard_max_family_expansions_relax_delta": int(cap_meta.get("relax_delta", 0)),
                         "hard_max_family_expansions_trigger": str(cap_meta.get("trigger") or ""),
                         "selected_family_expansions_pre_action": int(cap_meta.get("selected_family_expansions_pre_action", 0)),
+                        "strategy_family": str(branch_strategy_family.get(branch.branch_id, "direct_formula_family")),
+                        "is_combinatorics_family": bool(combinatorics_guard_active),
+                        "direction_id": str(branch_strategy_family.get(branch.branch_id, "direct_formula_family")),
+                        "direction_summary": str(branch_strategy_family.get(branch.branch_id, "direct_formula_family")).replace("_", " "),
+                        "case_split_signature": (
+                            "explicit_case_split"
+                            if "case_split" in str(branch_strategy_family.get(branch.branch_id, ""))
+                            else ""
+                        ),
+                        "family_expansions_so_far": int(
+                            family_expansions_by_strategy.get(
+                                str(branch_strategy_family.get(branch.branch_id, "direct_formula_family")), 0
+                            )
+                        ),
+                        "family_budget_share_so_far": float(
+                            family_expansions_by_strategy.get(
+                                str(branch_strategy_family.get(branch.branch_id, "direct_formula_family")), 0
+                            )
+                            / max(1, sum(family_expansions_by_strategy.values()))
+                        ),
+                        "direction_guard_triggered": bool(direction_guard_triggered_count > 0),
                         **hard_cov_trace,
                     }
                 )
@@ -3824,7 +4046,27 @@ class GlobalDiversityAggregationController(BaseController):
                     "note": "Controller stopped (commit/budget) before depth-2 forcing reached a terminal diagnostic state.",
                 }
 
+        self._runtime_branch_strategy_family = dict(branch_strategy_family)
         prediction, group_meta = self._final_prediction_from_groups(branches, question=question)
+        verifier_scores_snapshot = group_meta.get("verifier_scores_by_answer_group", {}) if isinstance(group_meta, dict) else {}
+        if isinstance(verifier_scores_snapshot, dict) and verifier_scores_snapshot:
+            verifier_calls += int(len(verifier_scores_snapshot))
+            for v in (group_meta.get("verifier_verdicts_by_answer_group", {}) or {}).values():
+                if str(v) == "verifier_pass":
+                    verifier_pass += 1
+                elif str(v) == "verifier_warn":
+                    verifier_warn += 1
+                elif str(v) == "verifier_fail":
+                    verifier_fail += 1
+        if bool(group_meta.get("commit_guard_triggered", False)):
+            commit_guard_triggered_count += 1
+        selected_family_at_commit = str(
+            branch_strategy_family.get(
+                str(next((b.branch_id for b in branches if self._normalize_answer(b.predicted_answer) == group_meta.get("selected_group")), "")),
+                "",
+            )
+            or ""
+        )
         first_split_step = next((int(x["step"]) for x in early_divergence_timeline if int(x.get("unique_active_groups", 0)) >= 2), None)
         second_split_step = None
         if first_split_step is not None:
@@ -4066,6 +4308,29 @@ class GlobalDiversityAggregationController(BaseController):
                     sum(1 for a in action_trace if str(a.get("gate_decision")) == "suppress_diversity_push")
                 ),
                 "question_shape_label": str(question_shape_label),
+                "problem_type_label": str(problem_type_label),
+                "direction_guard_triggered": bool(direction_guard_triggered_count > 0),
+                "required_family_coverage_satisfied": bool(
+                    len({fam for fam, cnt in family_expansions_by_strategy.items() if int(cnt) > 0})
+                    >= (2 if self.max_actions < 6 else 3)
+                ),
+                "num_strategy_families_seen": int(
+                    len({fam for fam, cnt in family_expansions_by_strategy.items() if int(cnt) > 0})
+                ),
+                "dominant_family_share": float(
+                    (max(family_expansions_by_strategy.values()) / max(1, sum(family_expansions_by_strategy.values())))
+                    if family_expansions_by_strategy
+                    else 0.0
+                ),
+                "family_cap_blocked_expansion": int(family_cap_blocked_expansion),
+                "family_min_coverage_forced_expansion": int(family_min_coverage_forced_expansion),
+                "selected_family_at_commit": selected_family_at_commit,
+                "strategy_family_expansions": {k: int(v) for k, v in family_expansions_by_strategy.items()},
+                "commit_guard_triggered_count": int(commit_guard_triggered_count),
+                "verifier_calls": int(verifier_calls),
+                "verifier_pass_count": int(verifier_pass),
+                "verifier_warn_count": int(verifier_warn),
+                "verifier_fail_count": int(verifier_fail),
                 "case_split_direction_aware_v1_enabled": bool(self.enable_case_split_direction_aware_v1),
                 "case_split_direction_aware_v1_active": bool(case_split_direction_aware_active),
                 "case_split_direction_aware_forced_coverage_steps": int(case_split_direction_aware_forced_coverage_steps),

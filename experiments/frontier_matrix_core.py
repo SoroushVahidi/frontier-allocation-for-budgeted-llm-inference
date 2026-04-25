@@ -1147,6 +1147,26 @@ def build_frontier_strategies(
             method_name="strict_f3_anti_collapse_default_v1",
             **strict_f3_base_cfg,
         )
+        strict_f3_direction_combinatorics_guard_cfg = dict(strict_f3_base_cfg)
+        strict_f3_direction_combinatorics_guard_cfg.update(
+            {
+                "enable_direction_combinatorics_guard_v1": True,
+                "direction_family_cap_share_precoverage": 0.60,
+                "direction_support_weight": 1.0,
+                "direction_process_weight": 0.5,
+                "direction_verifier_weight": 1.0,
+                "direction_strategy_diversity_weight": 0.5,
+                "direction_single_family_penalty_weight": 0.5,
+                "direction_commit_guard_top2_gap_threshold": 0.12,
+            }
+        )
+        specs["strict_f3_direction_combinatorics_guard_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strict_f3_direction_combinatorics_guard_v1",
+            **strict_f3_direction_combinatorics_guard_cfg,
+        )
         strict_f3_exhaustive_depth2_probe_cfg = dict(strict_f3_base_cfg)
         strict_f3_exhaustive_depth2_probe_cfg.update(
             {
