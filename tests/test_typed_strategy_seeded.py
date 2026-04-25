@@ -1,0 +1,120 @@
+from __future__ import annotations
+
+import json
+import random
+import subprocess
+from pathlib import Path
+
+from experiments.branching import SimulatedBranchGenerator
+from experiments.frontier_matrix_core import build_frontier_strategies
+from experiments.problem_type_utils import classify_problem_type
+from experiments.typed_strategy_prompts import get_typed_strategy_prompts
+
+
+def _build_specs() -> dict[str, object]:
+    return build_frontier_strategies(
+        generator_factory=lambda: SimulatedBranchGenerator(
+            rng=random.Random(17), max_depth=7, finish_prob_base=0.16, answer_noise=0.12
+        ),
+        budget=8,
+        adaptive_min_expand_grid=[1],
+        rng=random.Random(19),
+        use_openai_api=False,
+        include_broad_diversity_aggregation_methods=True,
+        include_external_l1_baseline=True,
+    )
+
+
+def test_combinatorics_problem_type_detection() -> None:
+    q = "How many distinct groups can be selected and arranged from 5 people?"
+    assert classify_problem_type(q) == "counting_combinatorics"
+
+
+def test_typed_strategy_prompt_generation_families_and_difference() -> None:
+    prompts = get_typed_strategy_prompts("How many ways?", "counting_combinatorics")
+    families = {p.strategy_family for p in prompts}
+    required = {
+        "direct_formula_family",
+        "explicit_case_split_family",
+        "enumeration_or_decomposition_family",
+        "small_example_pattern_family",
+        "sanity_check_verifier_family",
+    }
+    assert required.issubset(families)
+    texts = [p.strategy_prompt for p in prompts]
+    assert len(set(texts)) == len(texts)
+
+
+def test_typed_seeded_branch_metadata_emitted_and_default_strict_f3_present() -> None:
+    specs = _build_specs()
+    res = specs["strict_f3_typed_strategy_seeded_v1"].run("How many ways can 4 books be arranged?", "24")
+    meta = res.metadata or {}
+    assert meta.get("problem_type_label") == "counting_combinatorics"
+    assert int(meta.get("num_typed_strategy_branches_seeded", 0)) >= 5
+    assert "typed_strategy_branch_metadata" in meta
+    assert STRICT_F3_RUNTIME in specs
+
+
+def test_commit_guard_and_diversity_metadata_emitted() -> None:
+    specs = _build_specs()
+    res = specs["strict_f3_typed_strategy_seeded_v1"].run(
+        "How many possible pairs can be selected from 6 students?",
+        "15",
+    )
+    meta = res.metadata or {}
+    assert "commit_guard_triggered_count" in meta
+    assert "typed_strategy_redundancy_detected" in meta
+    assert "typed_strategy_families_seen" in meta
+
+
+def test_dry_run_and_outputs_exist() -> None:
+    ts = "20260425T_TYPED_STRATEGY_SEEDED_TEST_DRY"
+    subprocess.run(
+        [
+            "python",
+            "scripts/run_typed_strategy_seeded_eval.py",
+            "--timestamp",
+            ts,
+            "--dry-run",
+            "--slice",
+            "loss150",
+            "--max-cases",
+            "2",
+            "--emit-traces",
+            "--resume",
+        ],
+        check=True,
+    )
+    out = Path("outputs") / f"typed_strategy_seeded_eval_{ts}"
+    required = [
+        "summary.csv",
+        "slice_summary.csv",
+        "per_case_results.csv",
+        "per_case_strategy_metadata.jsonl",
+        "per_branch_strategy_traces.jsonl",
+        "typed_strategy_diversity_summary.csv",
+        "answer_group_by_strategy_summary.csv",
+        "transition_summary.csv",
+        "commit_guard_summary.csv",
+        "verifier_diagnostics.csv",
+        "present_not_selected_repairs.csv",
+        "absent_from_tree_repairs.csv",
+        "hurt_cases.csv",
+        "missing_fields_report.csv",
+        "README.md",
+    ]
+    for f in required:
+        p = out / f
+        assert p.exists()
+        txt = p.read_text(encoding="utf-8")
+        assert txt.strip()
+    md_path = out / "per_case_strategy_metadata.jsonl"
+    first = md_path.read_text(encoding="utf-8").splitlines()[0]
+    _ = json.loads(first)
+
+
+STRICT_F3_RUNTIME = (
+    "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_"
+    "repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
+)
+

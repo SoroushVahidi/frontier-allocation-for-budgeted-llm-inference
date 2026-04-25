@@ -18,6 +18,7 @@ from experiments.objective_function_stack import compute_process_quality, comput
 from experiments.problem_type_utils import classify_problem_type
 from experiments.prm_partial_scorer import PartialBranchScorer
 from experiments.scoring import SimpleBranchScorer
+from experiments.typed_strategy_prompts import TypedStrategyPrompt, get_typed_strategy_prompts
 from experiments.verifiers import CandidateVerifier
 
 
@@ -1041,6 +1042,7 @@ class GlobalDiversityAggregationController(BaseController):
         direction_strategy_diversity_weight: float = 0.5,
         direction_single_family_penalty_weight: float = 0.5,
         direction_commit_guard_top2_gap_threshold: float = 0.12,
+        enable_typed_strategy_seeded_v1: bool = False,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -1221,6 +1223,7 @@ class GlobalDiversityAggregationController(BaseController):
         self.direction_strategy_diversity_weight = float(direction_strategy_diversity_weight)
         self.direction_single_family_penalty_weight = float(direction_single_family_penalty_weight)
         self.direction_commit_guard_top2_gap_threshold = float(direction_commit_guard_top2_gap_threshold)
+        self.enable_typed_strategy_seeded_v1 = bool(enable_typed_strategy_seeded_v1)
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
         self.method_name = method_name
 
@@ -2052,6 +2055,7 @@ class GlobalDiversityAggregationController(BaseController):
             )
         )
         answer_group_support_counts = {k: int(v.get("member_count", 0)) for k, v in groups.items()}
+        selected_families = sorted(set(branch_family_counts_by_group.get(str(best_group_key), {}).keys()))
         return best_member.predicted_answer, {
             "selected_group": best_group_key,
             "group_support_fraction": float(best_group_support),
@@ -2077,6 +2081,14 @@ class GlobalDiversityAggregationController(BaseController):
             "verifier_reason_by_answer_group": verifier_reason_by_answer_group if combi_guard_active else {},
             "pre_guard_selected_answer_group": pre_guard_group,
             "post_guard_selected_answer_group": best_group_key,
+            "selected_answer_strategy_families": selected_families,
+            "budget_available_for_verifier": True,
+            "verifier_used_real_call": False,
+            "verifier_used_heuristic": bool(combi_guard_active),
+            "selection_changed_by_guard": bool(pre_guard_group is not None and str(pre_guard_group) != str(best_group_key)),
+            "correct_answer_strategy_families": [],
+            "guard_repaired_case": False,
+            "guard_hurt_case": False,
             "top2_support_gap": float(top2_gap),
             "answer_entropy": float(self._support_entropy(answer_group_support_counts)),
             "answer_group_support_counts": answer_group_support_counts,
@@ -2936,11 +2948,16 @@ class GlobalDiversityAggregationController(BaseController):
             "direct_formula_family",
             "explicit_case_split_family",
             "enumeration_or_decomposition_family",
+            "small_example_pattern_family",
             "sanity_check_verifier_family",
         ]
         branch_strategy_family: dict[str, str] = {}
+        branch_strategy_prompt_obj: dict[str, TypedStrategyPrompt] = {}
+        branch_strategy_prompt_text: dict[str, str] = {}
+        branch_strategy_seed_order: dict[str, int] = {}
         for idx, b in enumerate(branches):
             branch_strategy_family[b.branch_id] = strategy_families[idx % len(strategy_families)]
+            branch_strategy_seed_order[b.branch_id] = idx
         family_expansions_by_strategy: dict[str, int] = {k: 0 for k in strategy_families}
         direction_guard_triggered_count = 0
         family_cap_blocked_expansion = 0
@@ -3013,6 +3030,25 @@ class GlobalDiversityAggregationController(BaseController):
         combinatorics_guard_active = bool(
             self.enable_direction_combinatorics_guard_v1 and problem_type_label == "counting_combinatorics"
         )
+        typed_seeded_active = bool(self.enable_typed_strategy_seeded_v1 and problem_type_label == "counting_combinatorics")
+        if typed_seeded_active:
+            typed_prompts = get_typed_strategy_prompts(question, problem_type_label)
+            if typed_prompts:
+                branches = [self.generator.init_branch(f"typed_{i}") for i in range(len(typed_prompts))]
+                branch_family_ids = {b.branch_id: b.branch_id for b in branches}
+                root_family_ids = frozenset(branch_family_ids.values())
+                branch_strategy_family = {}
+                branch_strategy_prompt_obj = {}
+                branch_strategy_prompt_text = {}
+                branch_strategy_seed_order = {}
+                family_expansions_by_strategy = {tp.strategy_family: 0 for tp in typed_prompts}
+                for i, b in enumerate(branches):
+                    tp = typed_prompts[i]
+                    branch_strategy_family[b.branch_id] = tp.strategy_family
+                    branch_strategy_prompt_obj[b.branch_id] = tp
+                    branch_strategy_prompt_text[b.branch_id] = tp.strategy_prompt
+                    branch_strategy_seed_order[b.branch_id] = i
+                strategy_families = [tp.strategy_family for tp in typed_prompts]
         question_shape_label = "unknown" if self.case_split_direction_aware_detector_off else classify_question_shape(question)
         case_split_direction_aware_active = bool(
             self.enable_case_split_direction_aware_v1 and (question_shape_label in self.case_split_direction_aware_labels)
@@ -3588,6 +3624,12 @@ class GlobalDiversityAggregationController(BaseController):
                     branch_strategy_family[correction_branch.branch_id] = str(
                         branch_strategy_family.get(branch.branch_id, "sanity_check_verifier_family")
                     )
+                    branch_strategy_seed_order[correction_branch.branch_id] = int(
+                        branch_strategy_seed_order.get(branch.branch_id, -1)
+                    )
+                    if branch.branch_id in branch_strategy_prompt_obj:
+                        branch_strategy_prompt_obj[correction_branch.branch_id] = branch_strategy_prompt_obj[branch.branch_id]
+                        branch_strategy_prompt_text[correction_branch.branch_id] = branch_strategy_prompt_text.get(branch.branch_id, "")
                     branch = correction_branch
                     priority = float(priority) + 0.01
                     b_expanded = 0
@@ -3616,7 +3658,18 @@ class GlobalDiversityAggregationController(BaseController):
                 should_expand = False
                 uncertainty_verify_steps += 1
             if should_expand:
-                result = self.generator.expand(branch, question, gold_answer)
+                strategy_instruction = str(branch_strategy_prompt_text.get(branch.branch_id, "")).strip()
+                use_seed_prompt = bool(
+                    typed_seeded_active
+                    and strategy_instruction
+                    and int(branch_expansions.get(branch.branch_id, 0)) == 0
+                )
+                seeded_question = (
+                    f"{question}\n\n[Typed strategy instruction]\n{strategy_instruction}\n"
+                    if use_seed_prompt
+                    else question
+                )
+                result = self.generator.expand(branch, seeded_question, gold_answer)
                 actions += 1
                 expansions += 1
                 branch_expansions[branch.branch_id] = b_expanded + 1
@@ -3719,6 +3772,11 @@ class GlobalDiversityAggregationController(BaseController):
                             family_expansions_by_strategy.get(sfam, 0) / max(1, sum(family_expansions_by_strategy.values()))
                         ),
                         "direction_guard_triggered": bool(direction_guard_triggered_count > 0),
+                        "strategy_prompt_text": strategy_instruction if use_seed_prompt else "",
+                        "strategy_prompt_hash": str(abs(hash(strategy_instruction))) if strategy_instruction else "",
+                        "seeded_from_strategy_prompt": bool(use_seed_prompt),
+                        "typed_seeded": bool(typed_seeded_active),
+                        "initial_seed_order": int(branch_strategy_seed_order.get(branch.branch_id, -1)),
                         **hard_cov_trace,
                     }
                 )
@@ -3768,6 +3826,10 @@ class GlobalDiversityAggregationController(BaseController):
                         branch_strategy_family[child.branch_id] = str(missing_family or sfam)
                     else:
                         branch_strategy_family[child.branch_id] = sfam
+                    branch_strategy_seed_order[child.branch_id] = int(branch_strategy_seed_order.get(branch.branch_id, -1))
+                    if branch.branch_id in branch_strategy_prompt_obj:
+                        branch_strategy_prompt_obj[child.branch_id] = branch_strategy_prompt_obj[branch.branch_id]
+                        branch_strategy_prompt_text[child.branch_id] = branch_strategy_prompt_text.get(branch.branch_id, "")
             else:
                 result = self.generator.verify(branch, question)
                 actions += 1
@@ -4326,6 +4388,95 @@ class GlobalDiversityAggregationController(BaseController):
                 "family_min_coverage_forced_expansion": int(family_min_coverage_forced_expansion),
                 "selected_family_at_commit": selected_family_at_commit,
                 "strategy_family_expansions": {k: int(v) for k, v in family_expansions_by_strategy.items()},
+                "num_typed_strategy_branches_seeded": int(
+                    len([bid for bid in branch_strategy_seed_order if int(branch_strategy_seed_order.get(bid, -1)) >= 0])
+                    if typed_seeded_active
+                    else 0
+                ),
+                "typed_strategy_families_seeded": sorted(
+                    {str(branch_strategy_family.get(bid, "")) for bid in branch_strategy_seed_order if int(branch_strategy_seed_order.get(bid, -1)) >= 0}
+                )
+                if typed_seeded_active
+                else [],
+                "typed_strategy_families_seen": sorted({fam for fam, cnt in family_expansions_by_strategy.items() if int(cnt) > 0})
+                if typed_seeded_active
+                else [],
+                "typed_strategy_family_expansion_counts": {k: int(v) for k, v in family_expansions_by_strategy.items()},
+                "typed_strategy_family_action_counts": {k: int(v) for k, v in family_expansions_by_strategy.items()},
+                "typed_strategy_family_answer_groups": (
+                    {
+                        fam: sorted(
+                            {
+                                str(self._normalize_answer(b.predicted_answer) or "__unknown__")
+                                for b in branches
+                                if str(branch_strategy_family.get(b.branch_id, "")) == fam and b.predicted_answer is not None
+                            }
+                        )
+                        for fam in family_expansions_by_strategy
+                    }
+                    if typed_seeded_active
+                    else {}
+                ),
+                "dominant_typed_strategy_family": (
+                    max(family_expansions_by_strategy.items(), key=lambda kv: kv[1])[0]
+                    if typed_seeded_active and family_expansions_by_strategy
+                    else ""
+                ),
+                "dominant_typed_strategy_family_share": float(
+                    (max(family_expansions_by_strategy.values()) / max(1, sum(family_expansions_by_strategy.values())))
+                    if typed_seeded_active and family_expansions_by_strategy
+                    else 0.0
+                ),
+                "typed_strategy_min_coverage_satisfied": bool(
+                    len({fam for fam, cnt in family_expansions_by_strategy.items() if int(cnt) > 0})
+                    >= (2 if self.max_actions < 6 else 3)
+                )
+                if typed_seeded_active
+                else False,
+                "typed_strategy_forced_expansion_count": int(family_min_coverage_forced_expansion),
+                "typed_strategy_cap_block_count": int(family_cap_blocked_expansion),
+                "typed_strategy_redundancy_detected": bool(
+                    len(
+                        {
+                            str(self._normalize_answer(b.predicted_answer) or "__unknown__")
+                            for b in branches
+                            if b.predicted_answer is not None
+                        }
+                    )
+                    <= 1
+                ),
+                "typed_strategy_branch_metadata": (
+                    [
+                        {
+                            "branch_id": str(b.branch_id),
+                            "strategy_family": str(branch_strategy_family.get(b.branch_id, "")),
+                            "strategy_name": (
+                                str(branch_strategy_prompt_obj[b.branch_id].strategy_name)
+                                if b.branch_id in branch_strategy_prompt_obj
+                                else ""
+                            ),
+                            "strategy_prompt_hash": str(abs(hash(str(branch_strategy_prompt_text.get(b.branch_id, ""))))),
+                            "strategy_prompt_text": str(branch_strategy_prompt_text.get(b.branch_id, "")),
+                            "strategy_rationale": (
+                                str(branch_strategy_prompt_obj[b.branch_id].strategy_rationale)
+                                if b.branch_id in branch_strategy_prompt_obj
+                                else ""
+                            ),
+                            "expected_failure_mode_addressed": (
+                                str(branch_strategy_prompt_obj[b.branch_id].expected_failure_mode_addressed)
+                                if b.branch_id in branch_strategy_prompt_obj
+                                else ""
+                            ),
+                            "initial_seed_order": int(branch_strategy_seed_order.get(b.branch_id, -1)),
+                            "typed_seeded": bool(typed_seeded_active),
+                            "problem_type_label": str(problem_type_label),
+                            "seeded_from_strategy_prompt": bool(b.branch_id in branch_strategy_prompt_obj),
+                        }
+                        for b in branches
+                    ]
+                    if typed_seeded_active
+                    else []
+                ),
                 "commit_guard_triggered_count": int(commit_guard_triggered_count),
                 "verifier_calls": int(verifier_calls),
                 "verifier_pass_count": int(verifier_pass),
