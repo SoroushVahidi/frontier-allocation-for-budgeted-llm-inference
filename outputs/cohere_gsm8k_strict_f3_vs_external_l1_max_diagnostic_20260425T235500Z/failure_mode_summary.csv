@@ -1,0 +1,6 @@
+failure_mode,count,share
+correct answer absent from explored tree,9,0.2571428571428571
+correct answer present but not selected,3,0.08571428571428572
+parse/extraction failure,0,0.0
+API/runtime failure,0,0.0
+unknown,23,0.6571428571428571

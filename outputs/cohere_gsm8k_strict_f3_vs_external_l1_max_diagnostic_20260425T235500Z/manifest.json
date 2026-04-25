@@ -1,0 +1,37 @@
+{
+  "artifact_family": "cohere_gsm8k_strict_f3_vs_external_l1_max_diagnostic",
+  "timestamp": "20260425T235500Z",
+  "base_run_timestamp": "20260425T133000Z_COHERE_STAGE1_MIN",
+  "source_dir": "outputs/cohere_real_model_cost_normalized_validation_20260425T133000Z_COHERE_STAGE1_MIN",
+  "dataset": [
+    "openai/gsm8k"
+  ],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23
+  ],
+  "methods": [
+    "strict_f3",
+    "external_l1_max"
+  ],
+  "target_scored_per_slice": 100,
+  "outputs": [
+    "manifest.json",
+    "paired_summary.csv",
+    "per_budget_pairwise.csv",
+    "per_seed_pairwise.csv",
+    "per_example_disagreements.jsonl",
+    "strict_f3_loses_cases.jsonl",
+    "strict_f3_wins_cases.jsonl",
+    "failure_mode_summary.csv",
+    "cost_normalized_pairwise.csv",
+    "runner_correctness_audit.csv",
+    "incomplete_slices.csv",
+    "claim_safety_table.csv"
+  ]
+}

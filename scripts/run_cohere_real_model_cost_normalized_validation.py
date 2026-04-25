@@ -331,6 +331,49 @@ def evaluate_example(result: Any, dataset: str, gold_answer: str, final_nodes: l
     return int(bool(surfaced_can == gold_can and surfaced_can is not None))
 
 
+def evaluate_with_diagnostics(
+    result: Any,
+    dataset: str,
+    gold_answer: str,
+    final_nodes: list[dict[str, Any]],
+    enable_output_repair: bool,
+) -> dict[str, Any]:
+    md = result.metadata or {}
+    repaired = choose_repair_answer(
+        final_nodes=final_nodes,
+        selected_group_hint=md.get("selected_group"),
+        dataset=dataset,
+        enable_rescue=bool(enable_output_repair),
+    )
+    surfaced_raw = repaired.get("surfaced_final_answer_raw")
+    surfaced_can = canonicalize_answer(surfaced_raw, dataset=dataset)
+    gold_can = canonicalize_answer(gold_answer, dataset=dataset)
+    exact_match = int(bool(surfaced_can == gold_can and surfaced_can is not None))
+    gold_in_tree = int(any(n.get("predicted_answer_normalized") == gold_can for n in final_nodes))
+    parse_failure = int(not exact_match and surfaced_can is None)
+    if exact_match:
+        failure_tag = "correct"
+    elif parse_failure:
+        failure_tag = "parse/extraction failure"
+    elif not gold_in_tree:
+        failure_tag = "correct answer absent from explored tree"
+    elif gold_in_tree:
+        failure_tag = "correct answer present but not selected"
+    else:
+        failure_tag = "unknown"
+    return {
+        "exact_match": exact_match,
+        "gold_answer_canonical": gold_can,
+        "surfaced_final_answer_raw": surfaced_raw,
+        "surfaced_final_answer_canonical": surfaced_can,
+        "chosen_final_node_answer_raw": repaired.get("chosen_final_node_answer_raw"),
+        "chosen_final_node_answer_canonical": repaired.get("chosen_final_node_answer_canonical"),
+        "gold_in_tree": gold_in_tree,
+        "parse_extraction_failure": parse_failure,
+        "failure_tag": failure_tag,
+    }
+
+
 def bootstrap_paired_ci(diffs: list[float], n_boot: int = 1000, seed: int = 7) -> tuple[float, float]:
     if not diffs:
         return (0.0, 0.0)
@@ -459,6 +502,7 @@ def main() -> None:
                                 out_tok = 0
                                 total_tok = 0
                                 exact_match = 0
+                                eval_diag: dict[str, Any] = {}
                                 try:
                                     result = controller.run(ex.question, ex.answer)
                                     latency = time.perf_counter() - t0
@@ -477,7 +521,8 @@ def main() -> None:
                                                     "predicted_answer_normalized": pred_norm,
                                                 }
                                             )
-                                    exact_match = evaluate_example(result, dataset, str(ex.answer), final_nodes, enable_repair)
+                                    eval_diag = evaluate_with_diagnostics(result, dataset, str(ex.answer), final_nodes, enable_repair)
+                                    exact_match = int(eval_diag["exact_match"])
                                     scored += 1
                                     if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "snapshot_usage_counters"):
                                         usage = controller.generator.base.snapshot_usage_counters()
@@ -502,6 +547,16 @@ def main() -> None:
                                     "status": status,
                                     "error": err_text,
                                     "exact_match": int(exact_match),
+                                    "question": str(ex.question),
+                                    "gold_answer": str(ex.answer),
+                                    "gold_answer_canonical": eval_diag.get("gold_answer_canonical"),
+                                    "final_answer_raw": eval_diag.get("surfaced_final_answer_raw"),
+                                    "final_answer_canonical": eval_diag.get("surfaced_final_answer_canonical"),
+                                    "selected_answer_raw": eval_diag.get("chosen_final_node_answer_raw"),
+                                    "selected_answer_canonical": eval_diag.get("chosen_final_node_answer_canonical"),
+                                    "gold_in_tree": int(eval_diag.get("gold_in_tree", 0)),
+                                    "parse_extraction_failure": int(eval_diag.get("parse_extraction_failure", 0)),
+                                    "failure_tag": (eval_diag.get("failure_tag") if status == "scored" else "API/runtime failure"),
                                     "attempted": 1,
                                     "scored": int(status == "scored"),
                                     "failed": int(status == "failed"),

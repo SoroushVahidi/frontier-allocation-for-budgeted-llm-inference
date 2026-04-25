@@ -9,9 +9,7 @@
     "openai": "gpt-4o-mini"
   },
   "datasets": [
-    "openai/gsm8k",
-    "HuggingFaceH4/MATH-500",
-    "HuggingFaceH4/aime_2024"
+    "openai/gsm8k"
   ],
   "budgets": [
     4,
@@ -24,13 +22,10 @@
   ],
   "methods": [
     "strict_f3",
-    "strict_gate1_cap_k6",
-    "strict_f2",
-    "external_l1_max",
-    "self_consistency_3"
+    "external_l1_max"
   ],
   "target_scored_per_slice": 100,
-  "max_examples": 0,
+  "max_examples": 140,
   "provider_status": {
     "cohere": {
       "ready": "1",
