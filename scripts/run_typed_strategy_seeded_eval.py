@@ -37,6 +37,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--slice", choices=["loss150", "present_not_selected", "absent_from_tree", "all720"], default="loss150")
     p.add_argument("--emit-traces", action="store_true")
     p.add_argument("--skip-real-api-if-no-key", action="store_true")
+    p.add_argument("--selection-ablation", action="store_true")
     return p.parse_args()
 
 
@@ -80,6 +81,111 @@ def as_float(v: Any, d: float = 0.0) -> float:
         return d
 
 
+def rank_map(score_by_group: dict[str, float], *, higher_better: bool = True) -> dict[str, int]:
+    items = sorted(score_by_group.items(), key=lambda kv: kv[1], reverse=higher_better)
+    return {k: i + 1 for i, (k, _) in enumerate(items)}
+
+
+def parse_family_counts(raw: dict[str, Any]) -> dict[str, dict[str, int]]:
+    out: dict[str, dict[str, int]] = {}
+    for gk, vv in (raw or {}).items():
+        inner: dict[str, int] = {}
+        if isinstance(vv, dict):
+            for fam, cnt in vv.items():
+                inner[str(fam)] = as_int(cnt, 0)
+        out[str(gk)] = inner
+    return out
+
+
+def selection_failure_reason(
+    *,
+    gold_group: str,
+    selected_group: str,
+    support_by_group: dict[str, float],
+    verifier_by_group: dict[str, float],
+    diversity_by_group: dict[str, float],
+    family_counts_by_group: dict[str, dict[str, int]],
+    guard_triggered: bool,
+    guard_changed: bool,
+) -> str:
+    if gold_group not in support_by_group:
+        return "gold_group_missing_from_final_groups"
+    if support_by_group.get(gold_group, 0.0) < 0.2:
+        return "gold_group_low_support"
+    if verifier_by_group.get(gold_group, 0.0) < 0.45:
+        return "gold_group_low_verifier_score"
+    if len([k for k, v in family_counts_by_group.get(gold_group, {}).items() if int(v) > 0]) <= 1:
+        return "gold_group_single_family_only"
+    if support_by_group.get(selected_group, 0.0) > support_by_group.get(gold_group, 0.0):
+        return "wrong_group_higher_support"
+    if verifier_by_group.get(selected_group, 0.0) > verifier_by_group.get(gold_group, 0.0):
+        return "wrong_group_higher_verifier_score"
+    if diversity_by_group.get(selected_group, 0.0) > diversity_by_group.get(gold_group, 0.0):
+        return "wrong_group_higher_diversity"
+    if not guard_triggered:
+        return "commit_guard_not_triggered"
+    if guard_triggered and (not guard_changed):
+        return "commit_guard_triggered_but_no_selection_change"
+    return "unknown"
+
+
+def run_selection_ablation(
+    *,
+    row: dict[str, Any],
+    support_by_group: dict[str, float],
+    verifier_by_group: dict[str, float],
+    diversity_by_group: dict[str, float],
+    final_by_group: dict[str, float],
+) -> list[dict[str, Any]]:
+    groups = sorted(set(support_by_group) | set(verifier_by_group) | set(diversity_by_group) | set(final_by_group))
+    if not groups:
+        return []
+    gold_group = str(row.get("gold_answer_group") or "NA")
+
+    def choose(rule: str) -> str:
+        if rule == "support_only":
+            return max(groups, key=lambda g: support_by_group.get(g, 0.0))
+        if rule == "verifier_only":
+            return max(groups, key=lambda g: verifier_by_group.get(g, 0.0))
+        if rule == "support_plus_verifier":
+            return max(groups, key=lambda g: support_by_group.get(g, 0.0) + verifier_by_group.get(g, 0.0))
+        if rule == "support_plus_strategy_diversity":
+            return max(groups, key=lambda g: support_by_group.get(g, 0.0) + diversity_by_group.get(g, 0.0))
+        if rule == "support_plus_verifier_plus_strategy_diversity":
+            return max(
+                groups,
+                key=lambda g: support_by_group.get(g, 0.0) + verifier_by_group.get(g, 0.0) + diversity_by_group.get(g, 0.0),
+            )
+        if rule == "oracle_if_gold_present":
+            if gold_group in groups:
+                return gold_group
+            return max(groups, key=lambda g: final_by_group.get(g, 0.0))
+        return max(groups, key=lambda g: final_by_group.get(g, 0.0))
+
+    rules = [
+        "support_only",
+        "verifier_only",
+        "support_plus_verifier",
+        "support_plus_strategy_diversity",
+        "support_plus_verifier_plus_strategy_diversity",
+        "oracle_if_gold_present",
+    ]
+    return [
+        {
+            "method": row.get("method"),
+            "example_id": row.get("example_id"),
+            "seed": row.get("seed"),
+            "budget": row.get("budget"),
+            "rule": rule,
+            "selected_group": choose(rule),
+            "gold_group": gold_group,
+            "is_correct": int(choose(rule) == gold_group and gold_group != "NA"),
+            "gold_present_in_groups": int(gold_group in groups),
+        }
+        for rule in rules
+    ]
+
+
 def pick_slice(rows: list[dict[str, str]], sl: str) -> list[dict[str, str]]:
     if sl == "loss150":
         return [r for r in rows if str(r.get("pair_type")) == "strict_f3_wrong_external_correct"]
@@ -107,6 +213,7 @@ def main() -> None:
     per_case = list(existing)
     per_case_strategy_metadata: list[dict[str, Any]] = []
     per_branch_strategy_traces: list[dict[str, Any]] = []
+    selection_ablation_per_case: list[dict[str, Any]] = []
     missing_fields: Counter[str] = Counter()
 
     methods = [
@@ -179,6 +286,31 @@ def main() -> None:
                 else:
                     failure_type = "present_not_selected"
             answer_counts = dict(meta.get("answer_group_support_counts") or {})
+            family_counts_by_group = parse_family_counts(dict(meta.get("answer_group_strategy_family_counts") or {}))
+            support_by_group = {str(k): float(v) for k, v in answer_counts.items()}
+            verifier_by_group = {str(k): as_float(v, 0.0) for k, v in dict(meta.get("verifier_scores_by_answer_group") or {}).items()}
+            final_by_group = {str(k): as_float(v, 0.0) for k, v in dict(meta.get("answer_group_final_scores") or {}).items()}
+            mean_branch_by_group = {str(k): as_float(v, 0.0) for k, v in dict(meta.get("answer_group_mean_branch_scores") or {}).items()}
+            best_branch_by_group = {str(k): as_float(v, 0.0) for k, v in dict(meta.get("answer_group_best_branch_scores") or {}).items()}
+            diversity_by_group = {
+                str(g): float(len([f for f, c in fam.items() if int(c) > 0])) for g, fam in family_counts_by_group.items()
+            }
+            gold_group = str(canonicalize_answer(g, dataset="openai/gsm8k") or "NA")
+            selected_group = str(meta.get("selected_group") or meta.get("post_guard_selected_answer_group") or "NA")
+            rank_support = rank_map(support_by_group, higher_better=True)
+            rank_final = rank_map(final_by_group, higher_better=True)
+            gold_fams = sorted([f for f, c in family_counts_by_group.get(gold_group, {}).items() if int(c) > 0])
+            sel_fams = sorted([f for f, c in family_counts_by_group.get(selected_group, {}).items() if int(c) > 0])
+            failure_reason = selection_failure_reason(
+                gold_group=gold_group,
+                selected_group=selected_group,
+                support_by_group=support_by_group,
+                verifier_by_group=verifier_by_group,
+                diversity_by_group=diversity_by_group,
+                family_counts_by_group=family_counts_by_group,
+                guard_triggered=bool(meta.get("commit_guard_triggered", False)),
+                guard_changed=bool(meta.get("selection_changed_by_guard", False)),
+            )
             answer_entropy = as_float(meta.get("answer_entropy", 0.0))
             top2_gap = as_float(meta.get("top2_support_gap", 0.0))
             distinct_groups = len(answer_counts)
@@ -230,9 +362,29 @@ def main() -> None:
                 "verifier_scores_by_answer_group": json.dumps(meta.get("verifier_scores_by_answer_group", {})),
                 "verifier_verdicts_by_answer_group": json.dumps(meta.get("verifier_verdicts_by_answer_group", {})),
                 "verifier_reason_by_answer_group": json.dumps(meta.get("verifier_reason_by_answer_group", {})),
+                "gold_answer_group": gold_group,
+                "selected_answer_group": selected_group,
                 "pre_guard_selected_answer_group": meta.get("pre_guard_selected_answer_group", "NA"),
                 "post_guard_selected_answer_group": meta.get("post_guard_selected_answer_group", "NA"),
+                "gold_answer_strategy_families": json.dumps(gold_fams),
                 "selected_answer_strategy_families": json.dumps(meta.get("selected_answer_strategy_families", [])),
+                "answer_group_support_counts": json.dumps(support_by_group),
+                "answer_group_strategy_family_counts": json.dumps(family_counts_by_group),
+                "answer_group_best_branch_score": json.dumps(best_branch_by_group),
+                "answer_group_mean_branch_score": json.dumps(mean_branch_by_group),
+                "answer_group_best_verifier_score": json.dumps(verifier_by_group),
+                "answer_group_mean_verifier_score": json.dumps(verifier_by_group),
+                "answer_group_diversity_score": json.dumps(diversity_by_group),
+                "answer_group_final_score": json.dumps(final_by_group),
+                "gold_group_rank_by_support": as_int(rank_support.get(gold_group, -1), -1),
+                "gold_group_rank_by_final_score": as_int(rank_final.get(gold_group, -1), -1),
+                "selected_group_rank_by_support": as_int(rank_support.get(selected_group, -1), -1),
+                "selected_group_rank_by_final_score": as_int(rank_final.get(selected_group, -1), -1),
+                "score_gap_selected_minus_gold": as_float(final_by_group.get(selected_group, 0.0) - final_by_group.get(gold_group, 0.0)),
+                "support_gap_selected_minus_gold": as_float(support_by_group.get(selected_group, 0.0) - support_by_group.get(gold_group, 0.0)),
+                "verifier_gap_selected_minus_gold": as_float(verifier_by_group.get(selected_group, 0.0) - verifier_by_group.get(gold_group, 0.0)),
+                "diversity_gap_selected_minus_gold": as_float(diversity_by_group.get(selected_group, 0.0) - diversity_by_group.get(gold_group, 0.0)),
+                "selection_failure_reason": failure_reason,
                 "correct_answer_strategy_families": json.dumps(meta.get("correct_answer_strategy_families", [])),
                 "selection_changed_by_guard": int(bool(meta.get("selection_changed_by_guard", False))),
                 "guard_repaired_case": int(bool(meta.get("guard_repaired_case", False))),
@@ -264,6 +416,16 @@ def main() -> None:
                     per_branch_strategy_traces.append(
                         {"method": m, "example_id": example_id, "seed": seed, "budget": budget, **dict(t)}
                     )
+            if args.selection_ablation and m == "strict_f3_typed_strategy_seeded_v1":
+                selection_ablation_per_case.extend(
+                    run_selection_ablation(
+                        row=row,
+                        support_by_group=support_by_group,
+                        verifier_by_group=verifier_by_group,
+                        diversity_by_group=diversity_by_group,
+                        final_by_group=final_by_group,
+                    )
+                )
             done.add(key)
 
     write_csv(out_dir / "per_case_results.csv", per_case)
@@ -327,9 +489,35 @@ def main() -> None:
         out_dir / "verifier_diagnostics.csv",
         [{"method": r["method"], "example_id": r["example_id"], "verifier_used_heuristic": r["verifier_used_heuristic"], "verifier_used_real_call": r["verifier_used_real_call"]} for r in per_case],
     )
-    write_csv(out_dir / "present_not_selected_repairs.csv", [r for r in per_case if "present_not_selected -> correct" in r["transition_from_baseline_failure_type"]])
+    write_csv(
+        out_dir / "present_not_selected_repairs.csv",
+        [
+            r
+            for r in per_case
+            if str(r.get("method")) == "strict_f3_typed_strategy_seeded_v1"
+            and "present_not_selected" in str(r.get("transition_from_baseline_failure_type", ""))
+        ],
+    )
     write_csv(out_dir / "absent_from_tree_repairs.csv", [r for r in per_case if "absent_from_tree -> correct" in r["transition_from_baseline_failure_type"]])
     write_csv(out_dir / "hurt_cases.csv", [r for r in per_case if as_int(r["guard_hurt_case"]) == 1])
+    if args.selection_ablation:
+        write_csv(out_dir / "selection_ablation_per_case.csv", selection_ablation_per_case)
+        by_rule: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for rr in selection_ablation_per_case:
+            by_rule[str(rr["rule"])].append(rr)
+        write_csv(
+            out_dir / "selection_ablation_summary.csv",
+            [
+                {
+                    "rule": rule,
+                    "n": len(rows),
+                    "accuracy": sum(as_int(r["is_correct"]) for r in rows) / max(1, len(rows)),
+                    "gold_present_rate": sum(as_int(r["gold_present_in_groups"]) for r in rows) / max(1, len(rows)),
+                }
+                for rule, rows in by_rule.items()
+            ],
+            fieldnames=["rule", "n", "accuracy", "gold_present_rate"],
+        )
     write_csv(
         out_dir / "missing_fields_report.csv",
         [{"field": k, "missing_count": int(v)} for k, v in sorted(missing_fields.items(), key=lambda kv: kv[0])],
@@ -343,6 +531,7 @@ def main() -> None:
         f"- slice: {args.slice}",
         f"- dry_run: {bool(args.dry_run)}",
         f"- emit_traces: {bool(args.emit_traces)}",
+        f"- selection_ablation: {bool(args.selection_ablation)}",
         f"- input_package: `{args.input_package}`",
     ]
     (out_dir / "README.md").write_text("\n".join(readme) + "\n", encoding="utf-8")

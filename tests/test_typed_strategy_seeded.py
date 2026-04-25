@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import random
 import subprocess
+import csv
+import shutil
 from pathlib import Path
 
 from experiments.branching import SimulatedBranchGenerator
@@ -65,10 +67,15 @@ def test_commit_guard_and_diversity_metadata_emitted() -> None:
     assert "commit_guard_triggered_count" in meta
     assert "typed_strategy_redundancy_detected" in meta
     assert "typed_strategy_families_seen" in meta
+    assert "answer_group_strategy_family_counts" in meta
+    assert "answer_group_final_scores" in meta
 
 
 def test_dry_run_and_outputs_exist() -> None:
     ts = "20260425T_TYPED_STRATEGY_SEEDED_TEST_DRY"
+    out = Path("outputs") / f"typed_strategy_seeded_eval_{ts}"
+    if out.exists():
+        shutil.rmtree(out)
     subprocess.run(
         [
             "python",
@@ -81,11 +88,10 @@ def test_dry_run_and_outputs_exist() -> None:
             "--max-cases",
             "2",
             "--emit-traces",
-            "--resume",
+            "--selection-ablation",
         ],
         check=True,
     )
-    out = Path("outputs") / f"typed_strategy_seeded_eval_{ts}"
     required = [
         "summary.csv",
         "slice_summary.csv",
@@ -101,16 +107,41 @@ def test_dry_run_and_outputs_exist() -> None:
         "absent_from_tree_repairs.csv",
         "hurt_cases.csv",
         "missing_fields_report.csv",
+        "selection_ablation_summary.csv",
+        "selection_ablation_per_case.csv",
         "README.md",
     ]
     for f in required:
         p = out / f
         assert p.exists()
         txt = p.read_text(encoding="utf-8")
-        assert txt.strip()
+        if p.suffix == ".csv":
+            assert txt.splitlines()
+            assert txt.splitlines()[0].strip()
+        elif p.suffix == ".jsonl":
+            # Empty JSONL is acceptable for smoke slices with no emitted traces.
+            if txt.strip():
+                _ = json.loads(txt.splitlines()[0])
+        else:
+            assert txt.strip()
     md_path = out / "per_case_strategy_metadata.jsonl"
-    first = md_path.read_text(encoding="utf-8").splitlines()[0]
-    _ = json.loads(first)
+    md_lines = md_path.read_text(encoding="utf-8").splitlines()
+    if md_lines:
+        _ = json.loads(md_lines[0])
+    with (out / "per_case_results.csv").open("r", encoding="utf-8", newline="") as f:
+        hdr = list(csv.DictReader(f).fieldnames or [])
+    assert "selection_failure_reason" in hdr
+    assert "gold_answer_group" in hdr
+    assert "answer_group_final_score" in hdr
+    with (out / "selection_ablation_per_case.csv").open("r", encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    assert rows
+    oracle = [r for r in rows if r.get("rule") == "oracle_if_gold_present" and r.get("gold_present_in_groups") == "1"]
+    normal = [r for r in rows if r.get("rule") == "support_plus_verifier_plus_strategy_diversity" and r.get("gold_present_in_groups") == "1"]
+    if oracle and normal:
+        o_acc = sum(int(r["is_correct"]) for r in oracle) / max(1, len(oracle))
+        n_acc = sum(int(r["is_correct"]) for r in normal) / max(1, len(normal))
+        assert o_acc >= n_acc
 
 
 STRICT_F3_RUNTIME = (

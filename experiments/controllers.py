@@ -1915,18 +1915,44 @@ class GlobalDiversityAggregationController(BaseController):
         answer_group: str,
         family_count: int,
         support_gap: float,
+        family_support_counts: Counter[str] | None = None,
     ) -> tuple[str, float, str]:
         q = (question or "").lower()
         has_order_signal = any(x in q for x in ("order", "arrange", "seating", "line up"))
         has_unordered_signal = any(x in q for x in ("choose", "combination", "group", "pair"))
+        has_double_count_risk = any(x in q for x in ("at least", "at most", "different", "distinct", "overlap", "duplicate"))
+        has_missing_case_risk = any(x in q for x in ("remaining", "left", "except", "not", "without", "either", "or"))
+        fam_counts = family_support_counts or Counter()
+        explicit_case_split_support = int(fam_counts.get("explicit_case_split_family", 0))
+        enumeration_support = int(fam_counts.get("enumeration_or_decomposition_family", 0))
+        direct_only_support = bool(int(fam_counts.get("direct_formula_family", 0)) > 0 and len([k for k, v in fam_counts.items() if int(v) > 0]) == 1)
+        sanity_support = int(fam_counts.get("sanity_check_verifier_family", 0))
         score = 0.50
         reasons: list[str] = []
         if has_order_signal and has_unordered_signal:
             score -= 0.08
             reasons.append("ordered_vs_unordered_ambiguity")
+        if has_double_count_risk and explicit_case_split_support <= 0 and enumeration_support <= 0:
+            score -= 0.06
+            reasons.append("double_counting_risk_without_structure")
+        if has_missing_case_risk and explicit_case_split_support <= 0 and enumeration_support <= 0:
+            score -= 0.05
+            reasons.append("missing_case_risk_without_case_coverage")
         if family_count >= 2:
             score += 0.12
             reasons.append("multi_family_support")
+        if explicit_case_split_support > 0:
+            score += 0.06
+            reasons.append("explicit_case_split_support")
+        if enumeration_support > 0:
+            score += 0.05
+            reasons.append("enumeration_or_decomposition_support")
+        if direct_only_support:
+            score -= 0.07
+            reasons.append("direct_formula_only_support")
+        if sanity_support > 0:
+            score += 0.04
+            reasons.append("sanity_check_family_support")
         if support_gap < self.direction_commit_guard_top2_gap_threshold:
             score -= 0.07
             reasons.append("low_support_gap")
@@ -2007,6 +2033,9 @@ class GlobalDiversityAggregationController(BaseController):
         verifier_scores_by_answer_group: dict[str, float] = {}
         verifier_verdicts_by_answer_group: dict[str, str] = {}
         verifier_reason_by_answer_group: dict[str, str] = {}
+        final_group_scores_by_answer_group: dict[str, float] = {}
+        mean_branch_scores_by_answer_group: dict[str, float] = {}
+        best_branch_scores_by_answer_group: dict[str, float] = {}
         for gk, gmeta in groups.items():
             support_fraction = float(gmeta["discounted_support"]) / max(1e-8, total_support)
             quality_mean = float(gmeta["support_quality_mean"])
@@ -2024,6 +2053,7 @@ class GlobalDiversityAggregationController(BaseController):
                     answer_group=str(gk),
                     family_count=fam_count,
                     support_gap=top2_gap,
+                    family_support_counts=branch_family_counts_by_group.get(gk, Counter()),
                 )
                 verifier_scores_by_answer_group[gk] = float(verifier_score)
                 verifier_verdicts_by_answer_group[gk] = verdict
@@ -2038,6 +2068,11 @@ class GlobalDiversityAggregationController(BaseController):
                     + self.direction_strategy_diversity_weight * diversity_bonus
                     - self.direction_single_family_penalty_weight * single_family_penalty
                 )
+            members_for_group = [b for b in done if self._normalize_answer(b.predicted_answer) == gk]
+            scored_members = [float(self.scorer.score_branch(b)) for b in members_for_group]
+            mean_branch_scores_by_answer_group[gk] = float(sum(scored_members) / max(1, len(scored_members)))
+            best_branch_scores_by_answer_group[gk] = float(max(scored_members) if scored_members else 0.0)
+            final_group_scores_by_answer_group[gk] = float(group_score)
             if group_score > best_group_score:
                 best_group_score = group_score
                 best_group_key = gk
@@ -2092,6 +2127,13 @@ class GlobalDiversityAggregationController(BaseController):
             "top2_support_gap": float(top2_gap),
             "answer_entropy": float(self._support_entropy(answer_group_support_counts)),
             "answer_group_support_counts": answer_group_support_counts,
+            "answer_group_strategy_family_counts": {
+                str(gk): {str(f): int(c) for f, c in fam_counter.items()}
+                for gk, fam_counter in branch_family_counts_by_group.items()
+            },
+            "answer_group_final_scores": final_group_scores_by_answer_group,
+            "answer_group_mean_branch_scores": mean_branch_scores_by_answer_group,
+            "answer_group_best_branch_scores": best_branch_scores_by_answer_group,
         }
 
     def _incumbent_challenger_commit_state(
