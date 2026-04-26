@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_real_model_cost_normalized_validation.py", line 984, in <module>
+    main()
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_real_model_cost_normalized_validation.py", line 423, in main
+    raise ValueError(f"Unknown method: {m}")
+ValueError: Unknown method: tale

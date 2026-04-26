@@ -1,0 +1,43 @@
+==== Cohere Non-Math External Validity Audit Start ====
+date_utc=2026-04-26T00:08:23Z
+hostname=n0098
+git_commit=486e311c270ad792b3b4094684bdab20e8902293
+python_path=/apps/easybuild/software/Anaconda3/2023.09-0/bin/python
+python_version=Python 3.11.5
+policy=COHERE_ONLY_NO_OPENAI
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: cohere in /home/sv96/.local/lib/python3.11/site-packages (6.1.0)
+Requirement already satisfied: fastavro<2.0.0,>=1.9.4 in /home/sv96/.local/lib/python3.11/site-packages (from cohere) (1.12.1)
+Requirement already satisfied: httpx>=0.21.2 in /home/sv96/.local/lib/python3.11/site-packages (from cohere) (0.28.1)
+Requirement already satisfied: pydantic>=1.9.2 in /home/sv96/.local/lib/python3.11/site-packages (from cohere) (2.12.5)
+Requirement already satisfied: pydantic-core<2.44.0,>=2.18.2 in /home/sv96/.local/lib/python3.11/site-packages (from cohere) (2.41.5)
+Requirement already satisfied: requests<3.0.0,>=2.0.0 in /home/sv96/.local/lib/python3.11/site-packages (from cohere) (2.32.5)
+Requirement already satisfied: tokenizers<1,>=0.15 in /home/sv96/.local/lib/python3.11/site-packages (from cohere) (0.22.2)
+Requirement already satisfied: types-requests<3.0.0,>=2.0.0 in /home/sv96/.local/lib/python3.11/site-packages (from cohere) (2.33.0.20260408)
+Requirement already satisfied: typing_extensions>=4.0.0 in /home/sv96/.local/lib/python3.11/site-packages (from cohere) (4.15.0)
+Requirement already satisfied: anyio in /home/sv96/.local/lib/python3.11/site-packages (from httpx>=0.21.2->cohere) (4.12.1)
+Requirement already satisfied: certifi in /apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/site-packages (from httpx>=0.21.2->cohere) (2023.7.22)
+Requirement already satisfied: httpcore==1.* in /home/sv96/.local/lib/python3.11/site-packages (from httpx>=0.21.2->cohere) (1.0.9)
+Requirement already satisfied: idna in /apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/site-packages (from httpx>=0.21.2->cohere) (3.4)
+Requirement already satisfied: h11>=0.16 in /home/sv96/.local/lib/python3.11/site-packages (from httpcore==1.*->httpx>=0.21.2->cohere) (0.16.0)
+Requirement already satisfied: annotated-types>=0.6.0 in /home/sv96/.local/lib/python3.11/site-packages (from pydantic>=1.9.2->cohere) (0.7.0)
+Requirement already satisfied: typing-inspection>=0.4.2 in /home/sv96/.local/lib/python3.11/site-packages (from pydantic>=1.9.2->cohere) (0.4.2)
+Requirement already satisfied: charset_normalizer<4,>=2 in /apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/site-packages (from requests<3.0.0,>=2.0.0->cohere) (2.0.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /home/sv96/.local/lib/python3.11/site-packages (from requests<3.0.0,>=2.0.0->cohere) (2.6.3)
+Requirement already satisfied: huggingface-hub<2.0,>=0.16.4 in /home/sv96/.local/lib/python3.11/site-packages (from tokenizers<1,>=0.15->cohere) (1.8.0)
+Requirement already satisfied: filelock>=3.10.0 in /home/sv96/.local/lib/python3.11/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (3.20.1)
+Requirement already satisfied: fsspec>=2023.5.0 in /home/sv96/.local/lib/python3.11/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (2025.3.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.4.2 in /home/sv96/.local/lib/python3.11/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (1.4.2)
+Requirement already satisfied: packaging>=20.9 in /apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (23.1)
+Requirement already satisfied: pyyaml>=5.1 in /apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (6.0)
+Requirement already satisfied: tqdm>=4.42.1 in /home/sv96/.local/lib/python3.11/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (4.67.3)
+Requirement already satisfied: typer in /home/sv96/.local/lib/python3.11/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (0.24.1)
+Requirement already satisfied: click>=8.2.1 in /home/sv96/.local/lib/python3.11/site-packages (from typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (8.3.1)
+Requirement already satisfied: shellingham>=1.3.0 in /home/sv96/.local/lib/python3.11/site-packages (from typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (1.5.4)
+Requirement already satisfied: rich>=12.3.0 in /home/sv96/.local/lib/python3.11/site-packages (from typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (14.3.3)
+Requirement already satisfied: annotated-doc>=0.0.2 in /home/sv96/.local/lib/python3.11/site-packages (from typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (0.0.4)
+Requirement already satisfied: markdown-it-py>=2.2.0 in /apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/site-packages (from rich>=12.3.0->typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (2.2.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/site-packages (from rich>=12.3.0->typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (2.15.1)
+Requirement already satisfied: mdurl~=0.1 in /apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/site-packages (from markdown-it-py>=2.2.0->rich>=12.3.0->typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (0.1.0)
+COHERE_API_KEY=present
+COHERE_READINESS_OK
