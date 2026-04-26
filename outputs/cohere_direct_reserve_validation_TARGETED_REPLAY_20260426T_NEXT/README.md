@@ -1,6 +1,6 @@
 # Cohere direct reserve validation (TARGETED_REPLAY_20260426T_NEXT)
 
-Real API enabled: `False`
+Real API enabled: `True`
 Planned examples: `5`
 
 Required outputs generated:
