@@ -1,0 +1,19 @@
+{
+  "budget": 4,
+  "dataset": "openai/gsm8k",
+  "exclude_outputs": [
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z"
+  ],
+  "loss_artifacts": [
+    "outputs/matched_surface_multiseed_main_comparison_20260423T203259Z/raw_case_results.csv"
+  ],
+  "max_cases": 20,
+  "n_candidate_problem_ids": 20,
+  "n_candidates_after_exclusion": 0,
+  "n_excluded_problem_ids": 20,
+  "n_planned_problem_ids": 0,
+  "seed": 37,
+  "status": "insufficient_disjoint_candidates",
+  "total_overlap_count": 0
+}

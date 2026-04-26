@@ -168,3 +168,5 @@ terminals/
 !outputs/direct_reserve_candidate_scorer_cross_slice_eval_*/**/*
 !outputs/direct_reserve_candidate_scorer_degradation_analysis_*/
 !outputs/direct_reserve_candidate_scorer_degradation_analysis_*/**/*
+!outputs/direct_reserve_disjoint_case_plan_*/
+!outputs/direct_reserve_disjoint_case_plan_*/**/*

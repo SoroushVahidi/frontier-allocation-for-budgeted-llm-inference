@@ -1,0 +1,5 @@
+stratum,label,requested,available_after_exclusion,planned
+absent_from_tree,absent,7,0,0
+present_not_selected,present-not-selected,6,0,0
+control_correct,control,7,0,0
+unknown,unknown,0,0,0
