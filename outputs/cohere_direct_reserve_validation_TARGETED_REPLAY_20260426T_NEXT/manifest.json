@@ -35,8 +35,8 @@
     "/workspace/outputs/manuscript_surface_component_ablation_20260422T172218Z/per_case_results.csv"
   ],
   "exclude_previous_output": [],
-  "run_real_api_requested": false,
-  "real_api_enabled": false,
-  "dry_run": true,
+  "run_real_api_requested": true,
+  "real_api_enabled": true,
+  "dry_run": false,
   "emit_full_traces": true
 }

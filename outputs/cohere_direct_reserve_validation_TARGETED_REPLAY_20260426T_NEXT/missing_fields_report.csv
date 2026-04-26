@@ -1,3 +1,7 @@
 field,missing_count
-action_trace,5
-tree_of_decisions,5
+action_trace,0
+final_branch_states,0
+tree_of_decisions,0
+selection_rationale_metadata,0
+token_cost_latency_fields,5
+note,token_estimate_cost_latency_marked_missing_when_API_metadata_NA_in_all_5_runs
