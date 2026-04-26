@@ -170,3 +170,7 @@ terminals/
 !outputs/direct_reserve_candidate_scorer_degradation_analysis_*/**/*
 !outputs/direct_reserve_disjoint_case_plan_*/
 !outputs/direct_reserve_disjoint_case_plan_*/**/*
+!outputs/fresh_gsm8k_direct_reserve_scorer_plan_*/
+!outputs/fresh_gsm8k_direct_reserve_scorer_plan_*/**/*
+!outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/
+!outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/**/*
