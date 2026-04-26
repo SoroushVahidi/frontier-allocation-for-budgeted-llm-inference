@@ -1,0 +1,30 @@
+{
+  "low": {
+    "budgets": [
+      4,
+      6
+    ],
+    "winner": "fixed_k6",
+    "winner_expr": "K(b)=6",
+    "accuracy": 0.6041666666666666
+  },
+  "medium": {
+    "budgets": [
+      8,
+      10
+    ],
+    "winner": "fixed_k6",
+    "winner_expr": "K(b)=6",
+    "accuracy": 0.7569444444444444
+  },
+  "high": {
+    "budgets": [
+      12,
+      14,
+      16
+    ],
+    "winner": "fixed_k6",
+    "winner_expr": "K(b)=6",
+    "accuracy": 0.7129629629629629
+  }
+}

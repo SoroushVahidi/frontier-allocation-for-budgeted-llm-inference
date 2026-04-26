@@ -1,0 +1,4 @@
+provider,strict_f3_vs_strict_gate1_cap_k6,frontier_family_vs_external_l1_max,disposition,safe_wording
+OpenAI,"Supportive in aggregate; mixed per-slice","Mixed; several slices favor or tie external_l1_max",appendix-only,"OpenAI real-model results indicate competitiveness but not dominance over external_l1_max."
+Cohere,"Supportive in aggregate; sparse/incomplete coverage","Mixed to unfavorable vs external_l1_max on available gsm8k slices",appendix-only,"Cohere evidence is coverage-limited and should be used as bounded corroboration."
+Cross-provider,"A=yes in audit summary","B=no and C=competitive-not-dominant in audit framing",appendix-only,"Combined real-model evidence supports non-dominant competitive framing and overclaim constraints."

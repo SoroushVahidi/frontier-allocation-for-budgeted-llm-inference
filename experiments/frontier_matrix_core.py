@@ -16,6 +16,7 @@ from experiments.controllers import (
     BeamController,
     BestOfNController,
     DirectReserveGateRerankController,
+    DirectReserveFrontierGateController,
     DirectReserveLearnedOverrideController,
     GlobalDiversityAggregationController,
     GreedyController,
@@ -1163,6 +1164,13 @@ def build_frontier_strategies(
             scorer,
             budget,
             method_name="direct_reserve_strong_plus_diverse_v1",
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_frontier_gate_v1"] = DirectReserveFrontierGateController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_frontier_gate_v1",
             **direct_reserve_plus_diverse_kwargs,
         )
         specs["direct_reserve_strong_plus_diverse_learned_override_v1"] = DirectReserveLearnedOverrideController(

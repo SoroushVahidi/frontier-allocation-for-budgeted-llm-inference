@@ -1,0 +1,54 @@
+seed: 7
+pilot_size: 12
+hf_dataset_name: openai/gsm8k
+hf_dataset_config: main
+hf_dataset_split: test
+gsm8k_split: test
+# Optional: path to local GSM8K JSONL (question/answer fields).
+gsm8k_jsonl_path: null
+# Keep fallback available only as a hard backup if GSM8K loading truly fails.
+allow_mock_data: true
+
+output_dir: outputs/pilot
+
+model:
+  use_openai_api: true
+  name: gpt-4.1-mini
+  temperature: 0.2
+  max_output_tokens: 220
+  timeout_seconds: 45
+
+budget:
+  max_actions_per_problem: 8
+
+methods:
+  best_of_n:
+    n_candidates: 3
+  fixed_width_beam:
+    width: 2
+  adaptive:
+    high_threshold: 0.72
+    low_threshold: 0.42
+    max_branches: 3
+    min_expansions_before_prune: 0
+  adaptive_min_expand:
+    enabled: true
+    high_threshold: 0.72
+    low_threshold: 0.42
+    max_branches: 3
+    min_expansions_before_prune: 1
+  adaptive_no_verify:
+    enabled: false
+    high_threshold: 0.72
+    low_threshold: 0.42
+    max_branches: 3
+
+scoring:
+  completion_bonus: 0.10
+  depth_penalty: 0.02
+
+simulation:
+  # Placeholder local simulation knobs (used only if API mode is disabled).
+  max_depth: 5
+  finish_prob_base: 0.22
+  answer_noise: 0.20

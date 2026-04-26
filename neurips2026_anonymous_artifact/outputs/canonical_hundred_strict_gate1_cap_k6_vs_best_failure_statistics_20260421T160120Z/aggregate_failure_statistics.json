@@ -1,0 +1,347 @@
+{
+  "created_at_utc": "2026-04-21T16:01:20.590016+00:00",
+  "current_full_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
+  "best_method_name": "reasoning_beam2",
+  "target_n": 100,
+  "selection_policy": {
+    "eligibility": "our current full method wrong + best method correct",
+    "ranking": [
+      "higher loss_support_count first",
+      "higher max_budget_with_loss first",
+      "higher observability_priority first",
+      "dataset/example_id lexical tie-break"
+    ],
+    "excluded_case_sources": [
+      "outputs/twenty_defeat_case_trees_20260419/manifest.json",
+      "outputs/current_failure_output_layer_repair_20260420/per_case_results.jsonl"
+    ],
+    "target_count": 100,
+    "best_method_selected": "reasoning_beam2",
+    "newest_method_selected": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
+    "newest_method_resolution": {
+      "selection_rule": "Use finalized broad default method from strict-phased default decision/status docs",
+      "strict_phased_default_doc": "docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md",
+      "strict_phased_status_doc": "docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md",
+      "resolved_method": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
+      "target_short_name": "strict_gate1_cap_k6"
+    },
+    "best_comparator_resolution": {
+      "selection_rule": "Choose strongest direct adversary from canonical exact-loss comparator sweep (`build_twenty_exact_current_full_vs_best_fresh.py`) and validate against canonical direct-adversary doc hint.",
+      "exact_loss_evidence_doc": "docs/CURRENT_RANKING_AND_COMPETITIVE_STATUS_2026_04_20.md",
+      "hinted_direct_adversary_from_doc": "reasoning_beam2",
+      "candidate_correct_counts": {
+        "reasoning_beam2": 5467,
+        "self_consistency_3": 4932,
+        "reasoning_greedy": 4601,
+        "verifier_guided_search": 3469
+      },
+      "base_resolution_evidence": {
+        "hinted_best_method_from_canonical_doc": null,
+        "selection_rule": "highest accuracy among direct registered baselines on same eval surface",
+        "candidate_correct_counts": {
+          "reasoning_beam2": 5467,
+          "self_consistency_3": 4932,
+          "reasoning_greedy": 4601,
+          "verifier_guided_search": 3469
+        },
+        "candidate_accuracy": {
+          "reasoning_beam2": 0.5694791666666666,
+          "self_consistency_3": 0.51375,
+          "reasoning_greedy": 0.4792708333333333,
+          "verifier_guided_search": 0.36135416666666664
+        },
+        "total_rows": 9600
+      },
+      "resolved_best_comparator": "reasoning_beam2"
+    },
+    "surface_expansion": {
+      "subset_size": 96,
+      "extra_seeds": [
+        101,
+        113,
+        137
+      ],
+      "extra_budgets": [
+        14,
+        16
+      ]
+    },
+    "dataset_fair_merge": "within-dataset global rank preserved; round-robin across datasets in lexicographic order",
+    "verification_search": "within each (dataset, example_id), try group_rows sorted by (-budget,-seed) until repair-consistent exact loss holds"
+  },
+  "exclusion_case_count": 136,
+  "failure_type_counts": {
+    "absent_from_tree": {
+      "n": 55,
+      "pct": 55.0
+    },
+    "present_not_selected": {
+      "n": 45,
+      "pct": 45.0
+    }
+  },
+  "dataset_counts": {
+    "HuggingFaceH4/MATH-500": {
+      "n": 34,
+      "pct": 34.0
+    },
+    "olympiadbench": {
+      "n": 33,
+      "pct": 33.0
+    },
+    "openai/gsm8k": {
+      "n": 33,
+      "pct": 33.0
+    }
+  },
+  "problem_regime_counts": {
+    "algebraic_manipulation": {
+      "n": 9,
+      "pct": 9.0
+    },
+    "counting_combinatorics": {
+      "n": 5,
+      "pct": 5.0
+    },
+    "geometry": {
+      "n": 10,
+      "pct": 10.0
+    },
+    "gsm8k_style_word_arithmetic": {
+      "n": 33,
+      "pct": 33.0
+    },
+    "number_theory": {
+      "n": 6,
+      "pct": 6.0
+    },
+    "other": {
+      "n": 34,
+      "pct": 34.0
+    },
+    "symbolic_series_or_formula": {
+      "n": 3,
+      "pct": 3.0
+    }
+  },
+  "error_geometry_counts": {
+    "arithmetic_slip": {
+      "n": 44,
+      "pct": 44.0
+    },
+    "counting_error": {
+      "n": 21,
+      "pct": 21.0
+    },
+    "near_miss": {
+      "n": 58,
+      "pct": 58.0
+    },
+    "other": {
+      "n": 11,
+      "pct": 11.0
+    },
+    "sign_or_parity_error": {
+      "n": 3,
+      "pct": 3.0
+    },
+    "wrong_local_neighborhood": {
+      "n": 11,
+      "pct": 11.0
+    }
+  },
+  "best_method_advantage_counts": {
+    "better_budget_efficiency": {
+      "n": 75,
+      "pct": 75.0
+    },
+    "better_selection": {
+      "n": 45,
+      "pct": 45.0
+    },
+    "earlier_correct_entry": {
+      "n": 69,
+      "pct": 69.0
+    },
+    "less_collapse": {
+      "n": 13,
+      "pct": 13.0
+    },
+    "multiple_correct_beams": {
+      "n": 21,
+      "pct": 21.0
+    }
+  },
+  "correct_coverage_counts": {
+    "multiple": {
+      "n": 1,
+      "pct": 1.0
+    },
+    "none": {
+      "n": 55,
+      "pct": 55.0
+    },
+    "single": {
+      "n": 44,
+      "pct": 44.0
+    }
+  },
+  "repeated_same_family_present_n": 88,
+  "distributions": {
+    "actions_ours": {
+      "n": 100,
+      "missing": 0,
+      "min": 2.0,
+      "mean": 10.8,
+      "p50": 12.0,
+      "p90": 16.0,
+      "max": 16.0
+    },
+    "expansions_ours": {
+      "n": 100,
+      "missing": 0,
+      "min": 2.0,
+      "mean": 9.05,
+      "p50": 12.0,
+      "p90": 12.0,
+      "max": 12.0
+    },
+    "verifications_ours": {
+      "n": 100,
+      "missing": 0,
+      "min": 0.0,
+      "mean": 1.75,
+      "p50": 2.0,
+      "p90": 4.0,
+      "max": 4.0
+    },
+    "action_gap_ours_minus_best": {
+      "n": 100,
+      "missing": 0,
+      "min": -5.0,
+      "mean": 6.56,
+      "p50": 8.0,
+      "p90": 13.0,
+      "max": 14.0
+    },
+    "score_gap": {
+      "n": 45,
+      "missing": 55,
+      "min": -0.22665173075259526,
+      "mean": 0.14642,
+      "p50": 0.11089775852794259,
+      "p90": 0.3473282292463136,
+      "max": 0.5298453952539762
+    },
+    "longest_consecutive_family_run": {
+      "n": 100,
+      "missing": 0,
+      "min": 1.0,
+      "mean": 4.35,
+      "p50": 5.0,
+      "p90": 6.0,
+      "max": 6.0
+    },
+    "max_family_share": {
+      "n": 100,
+      "missing": 0,
+      "min": 0.5,
+      "mean": 0.57605,
+      "p50": 0.5,
+      "p90": 0.7550000000000004,
+      "max": 0.857143
+    },
+    "num_answer_groups": {
+      "n": 100,
+      "missing": 0,
+      "min": 1.0,
+      "mean": 2.24,
+      "p50": 2.0,
+      "p90": 3.0,
+      "max": 4.0
+    }
+  },
+  "cross_tabs": {
+    "failure_type_x_dataset": {
+      "absent_from_tree": {
+        "HuggingFaceH4/MATH-500": 19,
+        "olympiadbench": 19,
+        "openai/gsm8k": 17
+      },
+      "present_not_selected": {
+        "HuggingFaceH4/MATH-500": 15,
+        "olympiadbench": 14,
+        "openai/gsm8k": 16
+      }
+    },
+    "failure_type_x_error_geometry_primary": {
+      "absent_from_tree": {
+        "near_miss": 33,
+        "other": 7,
+        "wrong_local_neighborhood": 6,
+        "arithmetic_slip": 7,
+        "counting_error": 1,
+        "sign_or_parity_error": 1
+      },
+      "present_not_selected": {
+        "near_miss": 25,
+        "wrong_local_neighborhood": 5,
+        "counting_error": 3,
+        "arithmetic_slip": 6,
+        "other": 4,
+        "sign_or_parity_error": 2
+      }
+    },
+    "failure_type_x_error_geometry": {
+      "absent_from_tree": {
+        "near_miss": 33,
+        "other": 7,
+        "wrong_local_neighborhood": 6,
+        "arithmetic_slip": 7,
+        "counting_error": 1,
+        "sign_or_parity_error": 1
+      },
+      "present_not_selected": {
+        "near_miss": 25,
+        "wrong_local_neighborhood": 5,
+        "counting_error": 3,
+        "arithmetic_slip": 6,
+        "other": 4,
+        "sign_or_parity_error": 2
+      }
+    },
+    "failure_type_x_same_family": {
+      "absent_from_tree": {
+        "True": 45,
+        "False": 10
+      },
+      "present_not_selected": {
+        "True": 43,
+        "False": 2
+      }
+    },
+    "failure_type_x_problem_regime": {
+      "absent_from_tree": {
+        "number_theory": 5,
+        "counting_combinatorics": 1,
+        "gsm8k_style_word_arithmetic": 17,
+        "geometry": 7,
+        "other": 18,
+        "symbolic_series_or_formula": 3,
+        "algebraic_manipulation": 4
+      },
+      "present_not_selected": {
+        "other": 16,
+        "number_theory": 1,
+        "gsm8k_style_word_arithmetic": 16,
+        "counting_combinatorics": 4,
+        "geometry": 3,
+        "algebraic_manipulation": 5
+      }
+    }
+  },
+  "missingness_notes": {
+    "max_family_share_null_when_no_expands": "max_family_share may be null if no expand events were observed",
+    "score_gap_null_when_no_correct_node": "score_gap null when correct nodes absent or scores unavailable"
+  }
+}

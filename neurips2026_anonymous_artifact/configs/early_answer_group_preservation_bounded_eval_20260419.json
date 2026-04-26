@@ -1,0 +1,13 @@
+{
+  "datasets": ["openai/gsm8k", "HuggingFaceH4/MATH-500", "HuggingFaceH4/aime_2024"],
+  "subset_size": 20,
+  "seeds": [11, 23],
+  "budgets": [6, 8],
+  "adaptive_grid": [1],
+  "methods": {
+    "baseline_broad": "broad_diversity_aggregation_strong_v1",
+    "reference_best": "self_consistency_3",
+    "early_preservation": "broad_diversity_aggregation_strong_v1_early_answer_group_preservation_v1"
+  },
+  "output_dir": "outputs/early_answer_group_preservation_bounded_eval_20260419"
+}

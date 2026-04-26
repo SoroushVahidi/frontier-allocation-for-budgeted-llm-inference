@@ -1,0 +1,15 @@
+{
+  "strongest_reduced_variant": "no_anti_collapse",
+  "component_most_critical_for_accuracy": "no_repeat_expansion_control",
+  "component_most_critical_for_absent_from_tree": "no_repeat_expansion_control",
+  "output_repair_secondary_effect_supported": true,
+  "manuscript_narrative_support": "partial",
+  "narrative_caveat": "Some removals improve bounded-surface accuracy; claims should be component-specific and conservative.",
+  "source_of_truth": {
+    "output_dir": "outputs/manuscript_surface_component_ablation_20260422T172218Z",
+    "reports": [
+      "docs/MANUSCRIPT_SURFACE_COMPONENT_ABLATION_REPORT_2026_04_22.md",
+      "docs/MANUSCRIPT_SURFACE_COMPONENT_ABLATION_20260422T172218Z.md"
+    ]
+  }
+}

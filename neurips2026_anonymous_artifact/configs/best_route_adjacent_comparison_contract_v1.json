@@ -1,0 +1,40 @@
+{
+  "baseline_key": "best_route_microsoft",
+  "integration_mode": "stronger_import_validated_comparator",
+  "canonical_benchmark_mix": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "olympiadbench"
+  ],
+  "default_expected_split": "test",
+  "dataset_import_packages": {
+    "openai/gsm8k": {
+      "results_path": "tests/fixtures/best_route_import_valid",
+      "expected_dataset": "gsm8k",
+      "expected_budgets": [1, 2]
+    },
+    "HuggingFaceH4/MATH-500": {
+      "results_path": null,
+      "expected_dataset": "math500",
+      "expected_budgets": [1, 2]
+    },
+    "HuggingFaceH4/aime_2024": {
+      "results_path": null,
+      "expected_dataset": "aime2024",
+      "expected_budgets": [1, 2]
+    },
+    "olympiadbench": {
+      "results_path": null,
+      "expected_dataset": "olympiadbench",
+      "expected_budgets": [1, 2]
+    }
+  },
+  "coverage_policy": {
+    "minimum_for_adjacent_row_export": [
+      "openai/gsm8k"
+    ],
+    "full_mix_required_for_claim": false,
+    "full_mix_claim_blocker": "Missing imported BEST-Route packages for one or more canonical datasets."
+  }
+}

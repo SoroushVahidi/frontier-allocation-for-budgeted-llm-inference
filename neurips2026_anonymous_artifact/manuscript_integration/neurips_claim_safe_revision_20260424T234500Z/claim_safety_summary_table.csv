@@ -1,0 +1,7 @@
+Claim,Evidence layer,Status,Quantitative support,Safe manuscript wording
+Top internal frontier-allocation cluster on matched surface,matched_surface_simulation,Safe,"Strict-F3 vs Strict-Gate1-Cap-K6 rows are fragile/non-decisive across matched slices","Leading frontier-allocation variants are statistically close; exact winner is surface-dependent."
+Strict-F3 decisively dominates Strict-Gate1-Cap-K6,matched_surface_simulation,Not safe,"Mixed signs across dataset-budget slices; many p-values non-significant and CIs cross zero","Strict-F3 is a representative for continuity/diagnostics, not a decisive universal winner."
+Frontier allocation dominates external_l1_max,simulation+real_model,Not safe,"Matched-surface rows are mixed; some slices favor frontier variants and others are non-decisive","External comparisons are slice-specific under matched action-budget/substrate constraints."
+Real-model evidence as headline proof,openai+cohere_real_model,Not safe,"Cross-provider audits mark real-model disposition as appendix-only","Real-model evidence is bounded corroboration in the appendix."
+Action-budget implies full cost equivalence,token_latency_accounting,Not safe,"Token/latency accounting exists but is partial and diagnostic","Action-budget matching is primary; token/latency/cost are supplementary diagnostics."
+Operational controller fully specified,operational_spec,Safe,"Operational specification document provides deterministic implementation-level definitions","Equation 4 is an abstraction; implementation-level policy details govern reproducibility."

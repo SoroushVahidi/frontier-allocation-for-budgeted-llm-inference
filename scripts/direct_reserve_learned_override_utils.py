@@ -6,22 +6,135 @@ import pickle
 import platform
 import random
 import sys
-from typing import Any
+from dataclasses import dataclass
+from collections import Counter
+from typing import Any, TYPE_CHECKING
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LogisticRegression
 
-from experiments.controllers import DirectReserveGateRerankController, DirectReserveLearnedOverrideController
 from scripts.learned_branch_scorer_utils import as_int, read_csv
 from scripts.train_direct_reserve_candidate_scorer import _feat
+
+if TYPE_CHECKING:
+    from experiments.controllers import DirectReserveGateRerankController, DirectReserveLearnedOverrideController
+
+
+DEFAULT_MODEL_TYPE = "random_forest"
+
+
+@dataclass
+class LearnedOverrideSelection:
+    final_answer: str
+    metadata: dict[str, Any]
+
+
+def build_runtime_answer_group_candidates(
+    *,
+    question: str,
+    dataset: str,
+    seed: int,
+    budget: int,
+    method: str,
+    candidate_answers: list[str],
+    selected_group: str,
+    top2_support_gap: float,
+    answer_entropy: float,
+    action_count: int,
+    expansion_count: int,
+    verification_count: int,
+) -> list[dict[str, Any]]:
+    counts = Counter(str(a or "").strip().lower() or "__unknown__" for a in candidate_answers)
+    rows: list[dict[str, Any]] = []
+    for idx, a in enumerate(candidate_answers):
+        g = str(a or "").strip().lower() or "__unknown__"
+        rows.append(
+            {
+                "candidate_index": idx,
+                "predicted_answer": a,
+                "group_key": g,
+                "answer_group_support": float(counts.get(g, 0)),
+                "branch_depth": 0.0,
+                "score": float(counts.get(g, 0)),
+                "selected": int(g == str(selected_group).strip().lower()),
+                "source": "runtime_candidate",
+                "top2_support_gap": float(top2_support_gap),
+                "answer_entropy": float(answer_entropy),
+                "action_count": int(action_count),
+                "expansion_count": int(expansion_count),
+                "verification_count": int(verification_count),
+                "question": question,
+                "dataset": dataset,
+                "seed": int(seed),
+                "budget": int(budget),
+                "method": method,
+            }
+        )
+    return rows
+
+
+def select_learned_override(
+    candidates: list[dict[str, Any]],
+    *,
+    base_selected_answer: str,
+    margin_threshold: float,
+    model_path: str | None,
+    model_type: str,
+) -> LearnedOverrideSelection:
+    if not candidates:
+        return LearnedOverrideSelection(
+            final_answer=str(base_selected_answer),
+            metadata={
+                "learned_override_available": False,
+                "learned_override_triggered": False,
+                "learned_override_reason": "no_candidates",
+                "learned_override_margin": 0.0,
+                "learned_override_threshold": float(margin_threshold),
+                "base_selected_answer": str(base_selected_answer),
+                "learned_selected_answer": str(base_selected_answer),
+                "final_selected_answer": str(base_selected_answer),
+            },
+        )
+    ranked = sorted(
+        candidates,
+        key=lambda r: (float(r.get("answer_group_support", 0.0)), float(r.get("score", 0.0))),
+        reverse=True,
+    )
+    best = ranked[0]
+    second_score = float(ranked[1].get("answer_group_support", 0.0)) if len(ranked) > 1 else 0.0
+    best_score = float(best.get("answer_group_support", 0.0))
+    margin = float(best_score - second_score)
+    learned_answer = str(best.get("predicted_answer", "") or base_selected_answer)
+    trigger = bool(learned_answer != str(base_selected_answer) and margin >= float(margin_threshold))
+    final_answer = learned_answer if trigger else str(base_selected_answer)
+    return LearnedOverrideSelection(
+        final_answer=final_answer,
+        metadata={
+            "learned_override_available": bool(model_path),
+            "learned_override_triggered": bool(trigger),
+            "learned_override_reason": "margin_override" if trigger else "below_margin_or_same_answer",
+            "learned_override_margin": float(margin),
+            "learned_override_threshold": float(margin_threshold),
+            "learned_override_model": str(model_type or DEFAULT_MODEL_TYPE),
+            "base_selected_answer": str(base_selected_answer),
+            "learned_selected_answer": str(learned_answer),
+            "final_selected_answer": str(final_answer),
+        },
+    )
 
 
 def normalize_direct_reserve_plus_diverse_config(controller: Any) -> dict[str, Any]:
     """Return a small stable config projection for parity checks."""
-    base = controller.base_controller if isinstance(controller, DirectReserveLearnedOverrideController) else controller
-    if not isinstance(base, DirectReserveGateRerankController):
+    base = controller.base_controller if hasattr(controller, "base_controller") else controller
+    required = (
+        "direct_prompt_style",
+        "direct_prompt_styles",
+        "direct_token_budget",
+        "gate_top_support_threshold",
+    )
+    if not all(hasattr(base, name) for name in required):
         return {}
     return {
         "direct_prompt_style": str(getattr(base, "direct_prompt_style", "")),

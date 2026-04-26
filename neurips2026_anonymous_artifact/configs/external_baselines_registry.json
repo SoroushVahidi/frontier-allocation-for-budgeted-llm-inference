@@ -1,0 +1,456 @@
+{
+  "version": 2,
+  "policy": "Documentation and clone URLs only; do not vendor upstream code.",
+  "baseline_status_matrix_v1": "outputs/baseline_repair_and_status_audit_20260420T225833Z/baseline_status_matrix.json",
+  "baseline_repair_audit_doc_v1": "docs/BASELINE_REPAIR_AND_STATUS_AUDIT_20260420T225833Z.md",
+  "normalized_taxonomy_v1": {
+    "status": [
+      "runnable_direct",
+      "runnable_adjacent",
+      "adapter_based",
+      "import_validated",
+      "discuss_only",
+      "blocked",
+      "broken_needs_repair"
+    ],
+    "control_equivalence": [
+      "direct",
+      "near_direct",
+      "adjacent",
+      "ingredient_only"
+    ],
+    "legacy_registry_integration_tokens": [
+      "mode_a_complete_mode_b_partial",
+      "runnable_adjacent",
+      "link_only",
+      "discuss_only",
+      "blocked"
+    ],
+    "mapping_note": "Field `integration` / `completeness_class` remain legacy strings for continuity; paper-facing normalized status lives in baseline_status_matrix_v1 and the repair audit doc."
+  },
+  "baselines": {
+    "compute_optimal_tts": {
+      "clone_url": "https://github.com/RyanLiu112/compute-optimal-tts.git",
+      "doc": "external/compute_optimal_tts/README.md",
+      "integration": "blocked",
+      "completeness_class": "blocked",
+      "blocker": "unverified_paper_repo_mapping_plus_missing_verified_official_import_contract_execution",
+      "provenance": {
+        "target_paper": "https://openreview.net/forum?id=4FWAwZtd2n",
+        "linked_repo": "https://github.com/RyanLiu112/compute-optimal-tts",
+        "paper_repo_match_strength": "weak",
+        "official_for_target_paper": "unverified"
+      },
+      "integration_doc": "docs/compute_optimal_tts_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/compute_optimal_tts_status.json",
+        "outputs/external_baseline_completeness/compute_optimal_tts_status.md"
+      ]
+    },
+    "when_solve_when_verify": {
+      "clone_url": "https://github.com/nishadsinghi/sc-genrm-scaling.git",
+      "doc": "external/when_solve_when_verify/README.md",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "adjacent_import_validated_only_not_direct_frontier_allocation_equivalent",
+      "integration_doc": "docs/when_solve_when_verify_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/when_solve_when_verify_status.json",
+        "outputs/external_baseline_completeness/when_solve_when_verify_status.md",
+        "outputs/when_solve_when_verify_adjacent_integration/<run_id>/status.json"
+      ],
+      "config": "configs/when_solve_when_verify_official_import_v1.json",
+      "integration_runner": "scripts/run_when_solve_when_verify_adjacent_integration.py",
+      "comparison_contract": "configs/when_solve_when_verify_adjacent_comparison_contract_v1.json"
+    },
+    "cascade_routing": {
+      "clone_url": "https://github.com/eth-sri/cascade-routing.git",
+      "doc": "external/cascade_routing/README.md",
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration_doc": "docs/cascade_routing_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/cascade_routing_status.json",
+        "outputs/external_baseline_completeness/cascade_routing_status.md"
+      ]
+    },
+    "mob_majority_of_bests": {
+      "clone_url": "https://github.com/arakhsha/mob.git",
+      "doc": "external/mob_majority_of_bests/README.md",
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration_doc": "docs/mob_majority_of_bests_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/mob_majority_of_bests_status.json",
+        "outputs/external_baseline_completeness/mob_majority_of_bests_status.md"
+      ]
+    },
+    "mcts_llm_community": {
+      "clone_url": "https://github.com/NumberChiffre/mcts-llm.git",
+      "doc": "external/mcts_llm_community/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "optional_community_reference_no_adapter"
+    },
+    "llm_tree_search_waterhorse": {
+      "clone_url": "https://github.com/waterhorse1/LLM_Tree_Search.git",
+      "doc": "external/llm_tree_search_waterhorse/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "license_uncertain"
+    },
+    "best_route_microsoft": {
+      "clone_url": "https://github.com/microsoft/best-route-llm.git",
+      "doc": "external/best_route_microsoft/README.md",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_official_stack_still_heavy_even_after_two_lane_stabilization_partial_runnable_only",
+      "integration_doc": "docs/best_route_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/best_route_status.json",
+        "outputs/external_baseline_completeness/best_route_status.md",
+        "outputs/best_route_adjacent_integration/<run_id>/status.json",
+        "outputs/best_route_runtime_stabilization/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_best_route_runtime_stabilization_pass.py",
+      "comparison_contract": "configs/best_route_adjacent_comparison_contract_v1.json"
+    },
+    "openr": {
+      "clone_url": "https://github.com/openreasoner/openr.git",
+      "doc": "external/openr/README.md",
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "integration_doc": "docs/openr_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/openr_status.json",
+        "outputs/external_baseline_completeness/openr_status.md"
+      ]
+    },
+    "rest_mcts": {
+      "clone_url": "https://github.com/THUDM/ReST-MCTS.git",
+      "doc": "external/rest_mcts/README.md",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_self_training_reproduction_out_of_scope_stable_adjacent_contract_lane_only",
+      "integration_doc": "docs/rest_mcts_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/rest_mcts_status.json",
+        "outputs/external_baseline_completeness/rest_mcts_status.md",
+        "outputs/rest_mcts_adjacent_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_rest_mcts_adjacent_integration.py",
+      "comparison_contract": "configs/rest_mcts_adjacent_comparison_contract_v2.json"
+    },
+    "tree_plv": {
+      "clone_url": "https://github.com/Hareta-Leila/Tree-PLV.git",
+      "doc": "external/tree_plv/README.md",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_faithful_reproduction_out_of_scope_partial_runnable_adjacent_contract_lane_only",
+      "canonical_title": "Advancing Process Verification for Large Language Models via Tree-Based Preference Learning",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://aclanthology.org/2024.emnlp-main.125/",
+      "paper_pdf_url": "https://aclanthology.org/2024.emnlp-main.125.pdf",
+      "doi": "https://doi.org/10.18653/v1/2024.emnlp-main.125",
+      "arxiv_url": "https://arxiv.org/abs/2407.00390",
+      "official_repo": "https://github.com/Hareta-Leila/Tree-PLV",
+      "integration_doc": "docs/tree_plv_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/tree_plv_status.json",
+        "outputs/external_baseline_completeness/tree_plv_status.md",
+        "outputs/tree_plv_adjacent_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_tree_plv_adjacent_integration.py",
+      "comparison_contract": "configs/tree_plv_adjacent_comparison_contract_v1.json",
+      "import_validator": "scripts/verify_tree_plv_import.py",
+      "provenance": {
+        "paper_identity": "verified",
+        "paper_cited_repo_found": "yes",
+        "paper_cited_repo_clonable": "yes",
+        "official_checkpoints_found": "not_publicly_confirmed",
+        "license_file_visible_in_audited_repo_snapshot": "no",
+        "provenance_strength": "paper_and_paper_cited_repo_verified_partial_runnable_adjacent_lane"
+      }
+    },
+    "pgts": {
+      "clone_url": null,
+      "doc": "external/pgts/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_code_unverified"
+    },
+    "scaling_automated_process_verifiers": {
+      "clone_url": null,
+      "doc": "external/scaling_automated_process_verifiers/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_code_unverified"
+    },
+    "s1_simple_test_time_scaling": {
+      "clone_url": "https://github.com/simplescaling/s1",
+      "doc": "external/s1_simple_test_time_scaling/README.md",
+      "integration": "mode_a_complete_mode_b_partial",
+      "completeness_class": "mode_b_partial",
+      "blocker": "mode_b_requires_verified_official_results_import_contract",
+      "mode_b_policy": "usable_via_verified_official_import"
+    },
+    "tale_token_budget_aware_reasoning": {
+      "clone_url": "https://github.com/GeniusHTX/TALE",
+      "doc": "external/tale_token_budget_aware_reasoning/README.md",
+      "integration": "mode_a_complete_mode_b_partial",
+      "completeness_class": "mode_b_partial",
+      "blocker": "mode_b_requires_verified_official_results_import_contract_with_variant_identity",
+      "mode_b_policy": "usable_via_verified_official_import_with_tale_variant_separation"
+    },
+    "l1_length_control_rl": {
+      "clone_url": "https://github.com/cmu-l3/l1.git",
+      "doc": "external/l1_length_control_rl/README.md",
+      "integration": "mode_a_complete_mode_b_partial",
+      "completeness_class": "mode_b_partial",
+      "blocker": "runnable_mode_a_blocked_mode_b_without_official_results"
+    },
+    "qstar_deliberative_planning": {
+      "clone_url": null,
+      "doc": "external/qstar_deliberative_planning/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "no_verified_official_repo_or_artifacts_discuss_only_until_provenance_upgrades",
+      "canonical_title": "Q*: Improving Multi-step Reasoning for LLMs with Deliberative Planning",
+      "baseline_class": "direct",
+      "paper_phase_priority": "essential",
+      "target_paper_url": "https://arxiv.org/abs/2406.14283",
+      "paper_pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2406.14283",
+      "integration_doc": "docs/QSTAR_PROVENANCE_AND_INTEGRATION_PASS_20260422T013736Z.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/qstar_deliberative_planning_status.json",
+        "outputs/external_baseline_completeness/qstar_deliberative_planning_status.md"
+      ],
+      "provenance": {
+        "paper_identity": "verified",
+        "openreview_found": "not_verified",
+        "official_repo_found": "no",
+        "official_project_page_found": "no",
+        "official_checkpoints_found": "no",
+        "official_license_verified": "no",
+        "provenance_strength": "paper_verified_artifacts_unverified"
+      }
+    },
+    "lets_verify_step_by_step": {
+      "clone_url": null,
+      "doc": "external/lets_verify_step_by_step/README.md",
+      "integration": "import_validated",
+      "completeness_class": "import_validated",
+      "blocker": "full_faithful_reproduction_out_of_scope_stable_partial_runnable_adjacent_contract_lane_only",
+      "canonical_title": "Let's Verify Step by Step",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://arxiv.org/abs/2305.20050",
+      "paper_pdf_url": "https://arxiv.org/pdf/2305.20050.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2305.20050",
+      "official_repo": "https://github.com/openai/prm800k",
+      "integration_doc": "docs/lets_verify_step_by_step_integration.md",
+      "status_artifacts": [
+        "outputs/external_baseline_completeness/lets_verify_step_by_step_status.json",
+        "outputs/external_baseline_completeness/lets_verify_step_by_step_status.md",
+        "outputs/lets_verify_step_by_step_adjacent_integration/<run_id>/comparison_readiness.json"
+      ],
+      "integration_runner": "scripts/run_lets_verify_step_by_step_adjacent_integration.py",
+      "comparison_contract": "configs/lets_verify_step_by_step_adjacent_comparison_contract_v1.json",
+      "import_validator": "scripts/verify_lets_verify_step_by_step_import.py",
+      "provenance": {
+        "paper_identity": "verified",
+        "official_repo_found": "yes",
+        "official_public_data_assets_found": "yes",
+        "official_checkpoints_found": "not_publicly_confirmed",
+        "provenance_strength": "paper_and_official_repo_verified_partial_runnable_adjacent_lane"
+      }
+    },
+    "rational_metareasoning_llm": {
+      "clone_url": null,
+      "doc": "external/rational_metareasoning_llm/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "theory_framing_reference_not_integrated_as_runnable_stack",
+      "canonical_title": "Rational Metareasoning for Large Language Models",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent"
+    },
+    "efficient_contextual_llm_cascades": {
+      "clone_url": "https://github.com/eth-sri/cascade-routing.git",
+      "doc": "external/cascade_routing/README.md",
+      "integration": "runnable_adjacent",
+      "completeness_class": "runnable_adjacent",
+      "blocker": "adjacent_import_only_no_direct_control_space_equivalence_claim",
+      "canonical_title": "Efficient Contextual LLM Cascades through Budget-Constrained Policy Learning",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "optional_unless_scope_broadens"
+    },
+    "best_arm_identification_fixed_budget": {
+      "clone_url": null,
+      "doc": "external/best_arm_identification_fixed_budget/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "theoretical_framing_reference_not_direct_empirical_llm_baseline",
+      "canonical_title": "Best Arm Identification: A Unified Approach to Fixed Budget and Fixed Confidence",
+      "baseline_class": "ingredient_adjacent_boundary",
+      "paper_phase_priority": "essential_framing"
+    },
+    "qstar_style_adapter": {
+      "clone_url": null,
+      "doc": "docs/QSTAR_STYLE_ADAPTER_20260422T160000Z.md",
+      "integration": "adapter_based",
+      "completeness_class": "adapter_based",
+      "blocker": "unofficial_caveated_adapter_not_official_qstar_reproduction",
+      "canonical_title": "Q*-style deliberative-search adapter (unofficial)",
+      "baseline_class": "direct_family_unofficial_adapter",
+      "paper_phase_priority": "reviewer_coverage_support",
+      "target_paper_url": "https://arxiv.org/abs/2406.14283",
+      "paper_pdf_url": "https://arxiv.org/pdf/2406.14283.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2406.14283",
+      "contract": "configs/qstar_style_adapter_contract_v1.json",
+      "integration_runner": "scripts/run_qstar_style_adapter.py",
+      "status_artifacts": [
+        "outputs/qstar_style_adapter/<run_id>/status.json",
+        "outputs/qstar_style_adapter/<run_id>/summary.json",
+        "outputs/qstar_style_adapter/<run_id>/manifest.json"
+      ],
+      "guardrail": "keep_separate_from_official_qstar_paper_record"
+    },
+    "learning_how_hard_to_think": {
+      "clone_url": null,
+      "doc": "external/learning_how_hard_to_think/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_public_code_not_clearly_verified_from_primary_openreview_source",
+      "canonical_title": "Learning How Hard to Think: Input-Adaptive Allocation of LM Computation",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://openreview.net/forum?id=6qUUgw9bAZ",
+      "integration_doc": "docs/learning_how_hard_to_think_integration.md",
+      "provenance": {
+        "paper_identity": "verified",
+        "official_repo_found": "not_clearly_verified",
+        "openreview_primary_source_used": "yes",
+        "provenance_strength": "paper_verified_official_code_unverified"
+      }
+    },
+    "learning_how_hard_to_think_mode_a": {
+      "clone_url": null,
+      "doc": "external/learning_how_hard_to_think/README.md",
+      "integration": "adapter_based",
+      "completeness_class": "adapter_based",
+      "blocker": "unofficial_adapter_not_official_method_reproduction",
+      "canonical_title": "Learning How Hard to Think MODE A adapter (paper-inspired)",
+      "baseline_class": "adjacent_adapter",
+      "paper_phase_priority": "reviewer_coverage_support",
+      "target_paper_url": "https://openreview.net/forum?id=6qUUgw9bAZ",
+      "contract": "configs/learning_how_hard_to_think_mode_a_v1.json",
+      "integration_runner": "scripts/run_learning_how_hard_to_think_mode_a.py",
+      "integration_doc": "docs/learning_how_hard_to_think_integration.md",
+      "status_artifacts": [
+        "outputs/learning_how_hard_to_think_mode_a/<run_id>/status.json",
+        "outputs/learning_how_hard_to_think_mode_a/<run_id>/comparison_summary.csv",
+        "outputs/learning_how_hard_to_think_mode_a/<run_id>/diagnostic_summary.json",
+        "outputs/learning_how_hard_to_think_mode_a/<run_id>/diagnostic_report.md"
+      ],
+      "guardrail": "paper_inspired_matched_substrate_comparator_not_official_reproduction"
+    },
+    "adaptive_test_time_compute_allocation_training_free_proxies": {
+      "clone_url": null,
+      "doc": "external/training_free_difficulty_proxies/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_public_code_not_clearly_verified_from_openreview_primary_sources",
+      "canonical_title": "Adaptive Test-Time Compute Allocation via Training-Free Difficulty Proxies",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://openreview.net/forum?id=ztGHhyicWs",
+      "paper_pdf_url": "https://openreview.net/pdf?id=ztGHhyicWs",
+      "integration_doc": "docs/training_free_difficulty_proxies_integration.md",
+      "provenance": {
+        "paper_identity": "verified",
+        "official_repo_found": "not_clearly_verified",
+        "openreview_primary_source_used": "yes",
+        "provenance_strength": "paper_verified_official_code_unverified"
+      }
+    },
+    "training_free_difficulty_proxies_mode_a": {
+      "clone_url": null,
+      "doc": "external/training_free_difficulty_proxies/README.md",
+      "integration": "adapter_based",
+      "completeness_class": "adapter_based",
+      "blocker": "unofficial_matched_substrate_adapter_not_official_reproduction",
+      "canonical_title": "Training-free difficulty proxies MODE A adapter (paper-inspired)",
+      "baseline_class": "adjacent_adapter_query_level",
+      "paper_phase_priority": "reviewer_coverage_support",
+      "target_paper_url": "https://openreview.net/forum?id=ztGHhyicWs",
+      "paper_pdf_url": "https://openreview.net/pdf?id=ztGHhyicWs",
+      "contract": "configs/training_free_difficulty_proxies_mode_a_v1.json",
+      "integration_runner": "scripts/run_training_free_difficulty_proxies_mode_a.py",
+      "integration_doc": "docs/training_free_difficulty_proxies_integration.md",
+      "status_artifacts": [
+        "outputs/training_free_difficulty_proxies_mode_a/<run_id>/status.json",
+        "outputs/training_free_difficulty_proxies_mode_a/<run_id>/comparison_summary.csv",
+        "outputs/training_free_difficulty_proxies_mode_a/<run_id>/diagnostic_summary.json",
+        "outputs/training_free_difficulty_proxies_mode_a/<run_id>/diagnostic_report.md"
+      ],
+      "guardrail": "query_level_global_budget_adapter_not_branch_level_control_equivalent"
+    },
+    "conformal_thinking": {
+      "clone_url": null,
+      "doc": "external/conformal_thinking/README.md",
+      "integration": "discuss_only",
+      "completeness_class": "discuss_only",
+      "blocker": "official_public_code_not_clearly_verified_from_primary_arxiv_sources",
+      "canonical_title": "Conformal Thinking: Risk Control for Reasoning on a Compute Budget",
+      "baseline_class": "adjacent",
+      "paper_phase_priority": "essential_adjacent",
+      "target_paper_url": "https://arxiv.org/abs/2602.03814",
+      "paper_pdf_url": "https://arxiv.org/pdf/2602.03814.pdf",
+      "doi": "https://doi.org/10.48550/arXiv.2602.03814",
+      "integration_doc": "docs/conformal_thinking_integration.md",
+      "provenance": {
+        "paper_identity": "verified",
+        "primary_source_used": "arxiv_abs_and_pdf",
+        "official_repo_found": "not_clearly_verified",
+        "provenance_strength": "paper_verified_official_code_unverified"
+      }
+    },
+    "conformal_thinking_mode_a": {
+      "clone_url": null,
+      "doc": "external/conformal_thinking/README.md",
+      "integration": "adapter_based",
+      "completeness_class": "adapter_based",
+      "blocker": "unofficial_matched_substrate_adapter_not_official_reproduction",
+      "canonical_title": "Conformal Thinking MODE A adapter (paper-inspired)",
+      "baseline_class": "adjacent_adapter_early_exit",
+      "paper_phase_priority": "reviewer_coverage_support",
+      "target_paper_url": "https://arxiv.org/abs/2602.03814",
+      "paper_pdf_url": "https://arxiv.org/pdf/2602.03814.pdf",
+      "contract": "configs/conformal_thinking_mode_a_v1.json",
+      "integration_runner": "scripts/run_conformal_thinking_mode_a.py",
+      "integration_doc": "docs/conformal_thinking_integration.md",
+      "status_artifacts": [
+        "outputs/conformal_thinking_mode_a/<run_id>/status.json",
+        "outputs/conformal_thinking_mode_a/<run_id>/comparison_summary.csv",
+        "outputs/conformal_thinking_mode_a/<run_id>/diagnostic_summary.json",
+        "outputs/conformal_thinking_mode_a/<run_id>/diagnostic_report.md"
+      ],
+      "guardrail": "risk_controlled_early_exit_adapter_not_branch_level_control_equivalent"
+    }
+  },
+  "completeness_taxonomy": [
+    "runnable_direct",
+    "runnable_adjacent",
+    "adapter_based",
+    "import_validated",
+    "discuss_only",
+    "blocked",
+    "broken_needs_repair"
+  ]
+}

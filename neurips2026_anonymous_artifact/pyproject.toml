@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-reasoning-budget-allocation"
+version = "0.1.0"
+description = "Research code for adaptive test-time compute allocation for LLM reasoning."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+    "numpy>=1.26",
+    "datasets>=2.18",
+    "huggingface_hub>=0.23",
+    "scikit-learn>=1.4",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.4",
+    "pytest>=8.0",
+]
+
+[tool.setuptools]
+packages = ["experiments"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    # Research code ergonomics: keep lint signal focused on correctness issues (imports/undefined names/etc.)
+    # rather than formatting churn across a large historical script corpus.
+    "E501",  # line-too-long
+    "I001",  # unsorted-imports
+    "E402",  # module-import-not-at-top-of-file (common in scripts that adjust sys.path)
+    "E731",  # lambda-assignment
+    "F841",  # unused-variable (often intermediate bookkeeping in one-off analysis scripts)
+    "E701",  # multiple-statements-on-one-line (colon)
+    "E702",  # multiple-statements-on-one-line (semicolon)
+    "E741",  # ambiguous-variable-name
+    "E401",  # multiple-imports-on-one-line
+    "F401",  # unused-import (common in one-off research scripts; keep signal elsewhere)
+    "F541",  # f-string-missing-placeholders (often used for uniform list rendering in report builders)
+    "W291",  # trailing-whitespace
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Long embedded markdown / policy strings; line-length is lower value than readability here.
+"scripts/build_hundred_current_full_vs_best_failure_statistics.py" = ["E501"]
+"scripts/build_baseline_repair_and_status_audit.py" = ["E501"]
+"scripts/generate_external_baseline_completeness_report.py" = ["E501"]
+"scripts/verify_l1_mode_b_import.py" = ["E501"]
+"scripts/build_full_method_comparison_status_20260418.py" = ["E501"]
+"scripts/run_hundred_hard_early_root_depth2_coverage_eval_20260420.py" = ["E501"]
+"scripts/run_hundred_hard_early_coverage_depth2_vs_depth3_eval_20260421.py" = ["E501"]
+"scripts/run_learned_f2_to_f3_gate_v1_eval.py" = ["E501", "E402"]
+"scripts/run_hard_max_family_expansions_eval.py" = ["E501", "E402"]
+"scripts/run_hundred_conditional_depth3_gate_eval_20260421.py" = ["E501"]
+"tests/test_hard_max_family_expansions_cap.py" = ["E501", "I001"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,24 @@
+{
+  "run_id": "refreshed_comparative_failure_casebook_20260419",
+  "script": "scripts/run_refreshed_comparative_failure_casebook_20260419.py",
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024",
+    "olympiadbench"
+  ],
+  "subset_size": 24,
+  "seeds": [11, 23, 37],
+  "budgets": [4, 6, 8],
+  "methods": {
+    "our_method": "broad_diversity_aggregation_strong_v1",
+    "baselines": [
+      "self_consistency_3",
+      "adaptive_min_expand_1",
+      "selective_sc_hybrid_v1",
+      "broad_diversity_aggregation_v1",
+      "broad_diversity_aggregation_strong_v1_diversity_needed_gate"
+    ]
+  },
+  "notes": "Diagnosis-only refreshed comparative failure re-audit; no new method family."
+}

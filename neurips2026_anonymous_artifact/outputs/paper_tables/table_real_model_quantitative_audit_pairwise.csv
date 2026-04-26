@@ -1,0 +1,13 @@
+scope,method_a,method_b,n_paired,accuracy_a,accuracy_b,mean_difference,bootstrap_ci_low,bootstrap_ci_high,permutation_p_value,status
+all_providers,strict_f3_anti_collapse_weak_v1,external_l1_max,0,,,,,,,unavailable_in_artifacts
+all_providers,strict_f3_anti_collapse_weak_v1,self_consistency_3,0,,,,,,,unavailable_in_artifacts
+all_providers,strict_f3_anti_collapse_weak_v1,strict_f3,0,,,,,,,unavailable_in_artifacts
+all_providers,strict_f3,strict_gate1_cap_k6,359,0.4818941504178273,0.3593314763231198,0.12256267409470752,0.08356545961002786,0.16434540389972144,0.0003332222592469177,ok
+cohere:command-r-plus-08-2024,strict_f3_anti_collapse_weak_v1,external_l1_max,0,,,,,,,unavailable_in_artifacts
+cohere:command-r-plus-08-2024,strict_f3_anti_collapse_weak_v1,self_consistency_3,0,,,,,,,unavailable_in_artifacts
+cohere:command-r-plus-08-2024,strict_f3_anti_collapse_weak_v1,strict_f3,0,,,,,,,unavailable_in_artifacts
+cohere:command-r-plus-08-2024,strict_f3,strict_gate1_cap_k6,0,,,,,,,unavailable_in_artifacts
+openai:gpt-4.1-mini,strict_f3_anti_collapse_weak_v1,external_l1_max,0,,,,,,,unavailable_in_artifacts
+openai:gpt-4.1-mini,strict_f3_anti_collapse_weak_v1,self_consistency_3,0,,,,,,,unavailable_in_artifacts
+openai:gpt-4.1-mini,strict_f3_anti_collapse_weak_v1,strict_f3,0,,,,,,,unavailable_in_artifacts
+openai:gpt-4.1-mini,strict_f3,strict_gate1_cap_k6,359,0.4818941504178273,0.3593314763231198,0.12256267409470752,0.08356545961002786,0.16434540389972144,0.0003332222592469177,ok

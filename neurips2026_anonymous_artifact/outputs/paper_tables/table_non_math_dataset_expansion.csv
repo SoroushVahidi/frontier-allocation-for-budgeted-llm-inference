@@ -1,0 +1,17 @@
+dataset,method,mean_accuracy,ci,mean_actions,key_pairwise_interpretation,evidence_strength
+Idavidrein/gpqa,self_consistency_5,0.666667,"[-0.05, 0.35]",5.0,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,strict_f3,0.666667,"[-0.05, 0.35]",4.333333,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,strict_gate1_cap_k6,0.625,"[-0.05, 0.35]",4.583333,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,self_consistency_3,0.583333,"[-0.05, 0.35]",5.0,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,strict_f3_anti_collapse_weak_v1,0.583333,"[-0.05, 0.35]",4.5,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,external_tale_prompt_budgeting,0.458333,"[-0.05, 0.35]",1.875,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,external_l1_max,0.416667,"[-0.05, 0.35]",2.0,pilot_evidence,pilot_evidence
+Idavidrein/gpqa,external_s1_budget_forcing,0.333333,"[-0.05, 0.35]",3.333333,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,strict_f3,0.6875,"[-0.05, 0.35]",3.875,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,strict_f3_anti_collapse_weak_v1,0.6875,"[-0.05, 0.35]",4.5625,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,external_s1_budget_forcing,0.625,"[-0.05, 0.35]",3.5625,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,self_consistency_5,0.625,"[-0.05, 0.35]",5.0,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,external_l1_max,0.5625,"[-0.05, 0.35]",2.125,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,external_tale_prompt_budgeting,0.5625,"[-0.05, 0.35]",2.25,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,strict_gate1_cap_k6,0.5625,"[-0.05, 0.35]",4.25,pilot_evidence,pilot_evidence
+google-deepmind/natural-plan,self_consistency_3,0.4375,"[-0.05, 0.35]",5.0,pilot_evidence,pilot_evidence

@@ -1,0 +1,17 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{Claim-safety summary for manuscript positioning.}
+\begin{tabular}{p{0.2\linewidth}p{0.15\linewidth}p{0.12\linewidth}p{0.23\linewidth}p{0.23\linewidth}}
+\hline
+\textbf{Claim} & \textbf{Evidence layer} & \textbf{Status} & \textbf{Quantitative support} & \textbf{Safe manuscript wording} \\
+\hline
+Top internal frontier-allocation cluster on matched surface & matched\_surface\_simulation & Safe & Strict-F3 vs Strict-Gate1-Cap-K6 rows are fragile/non-decisive across matched slices. & Leading frontier-allocation variants are statistically close; exact winner is surface-dependent. \\
+Strict-F3 decisively dominates Strict-Gate1-Cap-K6 & matched\_surface\_simulation & Not safe & Mixed signs across dataset--budget slices; many p-values non-significant and CIs cross zero. & Strict-F3 is a representative for continuity/diagnostics, not a decisive universal winner. \\
+Frontier allocation dominates external\_l1\_max & simulation+real\_model & Not safe & Matched-surface rows are mixed; some slices favor frontier variants and others are non-decisive. & External comparisons are slice-specific under matched action-budget/substrate constraints. \\
+Real-model evidence as headline proof & openai+cohere\_real\_model & Not safe & Cross-provider audits mark real-model disposition as appendix-only. & Real-model evidence is bounded corroboration in the appendix. \\
+Action-budget implies full cost equivalence & token\_latency\_accounting & Not safe & Token/latency accounting exists but is partial and diagnostic. & Action-budget matching is primary; token/latency/cost are supplementary diagnostics. \\
+Operational controller fully specified & operational\_spec & Safe & Operational specification provides deterministic implementation-level definitions. & Equation~4 is an abstraction; implementation-level policy details govern reproducibility. \\
+\hline
+\end{tabular}
+\end{table*}

@@ -1,0 +1,6 @@
+variant,avg_distinct_answer_groups_explored,avg_repeated_family_concentration,avg_repeated_family_expansion_rate,avg_longest_same_family_run
+anti_collapse_off,1.0,0.0,0.5833333333333334,0.0
+anti_collapse_weak,1.0,0.0,0.625,0.0
+anti_collapse_default,0.8333333333333334,0.0,0.5833333333333334,0.0
+anti_collapse_strong,1.3333333333333333,0.0,0.5000000000000001,0.0
+anti_collapse_conditional,1.1666666666666667,0.0,0.625,0.0

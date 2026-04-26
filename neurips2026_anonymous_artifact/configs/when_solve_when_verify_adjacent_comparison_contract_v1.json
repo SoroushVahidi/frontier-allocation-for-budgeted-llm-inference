@@ -1,0 +1,50 @@
+{
+  "baseline_key": "when_solve_when_verify",
+  "baseline_display_name": "When To Solve, When To Verify",
+  "integration_mode": "official_adjacent_import_validated",
+  "canonical_benchmark_mix": [
+    "math128"
+  ],
+  "default_expected_split": "test",
+  "coverage_policy": {
+    "minimum_for_adjacent_row_export": [
+      "math128"
+    ],
+    "notes": "Rows are exportable when required datasets pass import validation. This contract is adjacent-only and does not imply direct frontier-control equivalence."
+  },
+  "dataset_import_packages": {
+    "math128": {
+      "results_path": "tests/fixtures/when_solve_when_verify_import_valid",
+      "expected_dataset": "math128"
+    }
+  },
+  "comparison_row_schema": {
+    "required_fields": [
+      "mode",
+      "source_type",
+      "dataset",
+      "dataset_split",
+      "generator_model",
+      "verifier_model",
+      "strategy_family",
+      "num_solutions",
+      "num_verifications",
+      "compute_budget_tokens",
+      "success_rate",
+      "artifact_id",
+      "commit_or_version",
+      "comparability_scope"
+    ],
+    "comparability_scope_required": "adjacent_only"
+  },
+  "safe_reporting": {
+    "allow": [
+      "official adjacent import-validated solve-vs-verify baseline rows",
+      "fixed-budget SC-vs-GenRM comparative slices under imported artifact contract"
+    ],
+    "forbid": [
+      "direct frontier-allocation equivalence claims",
+      "full in-repo faithful reproduction claims for upstream stack"
+    ]
+  }
+}

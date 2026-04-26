@@ -1,0 +1,28 @@
+{
+  "name": "low_marginal_gain_family_cooldown_bounded_eval_20260420_v1",
+  "description": "Bounded evaluation of conditional same-family low-marginal-gain cooldown against current promoted integrated line on the latest fresh 20-case current-full-vs-best surface.",
+  "source_surface_doc": "docs/TWENTY_EXACT_CURRENT_FULL_VS_BEST_FRESH_2026_04_20.md",
+  "methods": {
+    "baseline": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1",
+    "soft_low_marginal_gain_cooldown": "broad_diversity_aggregation_strong_v1_anti_collapse_repeat_expansion_low_marginal_gain_cooldown_v1",
+    "hard_block_ablation": "broad_diversity_aggregation_strong_v1_anti_collapse_repeat_expansion_low_marginal_gain_hard_block_ablation_v1"
+  },
+  "simulator": {
+    "max_depth": 7,
+    "finish_prob_base": 0.16,
+    "answer_noise": 0.12
+  },
+  "determinism": {
+    "seed_hash_namespace": "low_marginal_gain_family_cooldown_eval",
+    "pilot_seed_search_order": [
+      11,
+      23,
+      37,
+      59,
+      71,
+      83,
+      97,
+      109
+    ]
+  }
+}

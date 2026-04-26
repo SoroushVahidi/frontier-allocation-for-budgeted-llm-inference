@@ -1,0 +1,151 @@
+[
+  {
+    "rank": 1,
+    "feature": "failure_type_absent_from_tree",
+    "definition": "Gold answer absent from strict_gate1_cap_k6 final tree under deterministic repair replay.",
+    "prevalence_n": 55,
+    "prevalence_pct": 55.0,
+    "why_important": "Coverage remains the dominant residual failure mode.",
+    "improvement_direction": "Increase early family diversity and targeted entry to gold-bearing branches.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 2,
+    "feature": "failure_type_present_not_selected",
+    "definition": "Gold exists in our tree but final selected answer is wrong.",
+    "prevalence_n": 45,
+    "prevalence_pct": 45.0,
+    "why_important": "Large secondary mode indicates selection/scoring opportunity.",
+    "improvement_direction": "Tune answer-group ranking and tie-break logic when gold is present.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 3,
+    "feature": "repeated_same_family_expansion_present",
+    "definition": "Observed repeated expansion in the same root family via event-level replay.",
+    "prevalence_n": 88,
+    "prevalence_pct": 88.0,
+    "why_important": "Family concentration often co-occurs with absent-from-tree failures.",
+    "improvement_direction": "Strengthen anti-collapse gating under cap pressure.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 4,
+    "feature": "dominant_family_share_high",
+    "definition": "Max family share of expansions >=0.60 in a case.",
+    "prevalence_n": 31,
+    "prevalence_pct": 31.0,
+    "summary_stat": {
+      "mean": 0.576
+    },
+    "why_important": "Expansion mass concentration reduces breadth and gold-entry probability.",
+    "improvement_direction": "Raise penalties for dominant-family reuse before F3-like depth.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 5,
+    "feature": "longest_same_family_run_ge3",
+    "definition": "Longest consecutive same-family expansion run is >=3.",
+    "prevalence_n": 83,
+    "prevalence_pct": 83.0,
+    "summary_stat": {
+      "p50": 5.0
+    },
+    "why_important": "Long runs indicate local myopia episodes.",
+    "improvement_direction": "Add run-length-aware rescue branching.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 6,
+    "feature": "answer_group_monopoly",
+    "definition": "One answer group monopolizes support while alternatives exist.",
+    "prevalence_n": 0,
+    "prevalence_pct": 0.0,
+    "summary_stat": {
+      "mean_num_answer_groups": 2.24
+    },
+    "why_important": "Group monopoly can suppress late-correct minority branches.",
+    "improvement_direction": "Require challenger-group verification when monopoly signal fires.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 7,
+    "feature": "comparator_earlier_correct_entry",
+    "definition": "Comparator shows earlier correct entry advantage tag.",
+    "prevalence_n": 69,
+    "prevalence_pct": 69.0,
+    "why_important": "Comparator wins by entering correct basin sooner.",
+    "improvement_direction": "Bias first successful deepening toward under-explored families.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 8,
+    "feature": "comparator_better_budget_efficiency",
+    "definition": "Comparator reaches correctness with materially fewer actions.",
+    "prevalence_n": 75,
+    "prevalence_pct": 75.0,
+    "why_important": "Budget-use inefficiency leaves less room for corrective exploration.",
+    "improvement_direction": "Reallocate verification vs expansion under cap_k6.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 9,
+    "feature": "comparator_less_collapse",
+    "definition": "Comparator has lower family-collapse concentration signal.",
+    "prevalence_n": 13,
+    "prevalence_pct": 13.0,
+    "why_important": "Confirms collapse as practical failure accelerator.",
+    "improvement_direction": "Increase cross-family compulsory hops after repeated concentration.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  },
+  {
+    "rank": 10,
+    "feature": "selection_advantage_signal",
+    "definition": "Comparator tagged with better_selection.",
+    "prevalence_n": 45,
+    "prevalence_pct": 45.0,
+    "why_important": "Selection layer still explains a substantial subset.",
+    "improvement_direction": "Improve chosen-node confidence calibration and extraction consistency.",
+    "cross_tab_failure_type": {
+      "absent_from_tree": 55,
+      "present_not_selected": 45,
+      "output_or_extraction_mismatch": 0
+    }
+  }
+]

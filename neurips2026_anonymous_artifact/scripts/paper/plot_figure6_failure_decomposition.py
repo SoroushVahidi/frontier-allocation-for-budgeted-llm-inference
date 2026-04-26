@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from paper_data_sources import FIGURE_DIR, PLOT_DATA_DIR
+from plot_helpers import load_csv, save_fig
+from paper_style import STYLE, manuscript_method_display_name
+
+
+def _plot(rows: list[dict[str, str]], out_pdf: str, out_png: str, title: str, note: str) -> None:
+    labels = [manuscript_method_display_name(r["method"]) for r in rows]
+    labels = ["L1-Max*" if label == "L1-Max" else label for label in labels]
+    absent = [float(r["absent_from_tree_rate"]) for r in rows]
+    present_not_selected = [float(r["present_not_selected_rate"]) + float(r["output_layer_mismatch_rate"]) for r in rows]
+
+    fig, ax = plt.subplots(figsize=(STYLE.width + 1.2, STYLE.height + 0.8))
+    x = np.arange(len(labels))
+    ax.bar(x, absent, label="Absent-from-tree", color="#e41a1c")
+    ax.bar(
+        x,
+        present_not_selected,
+        bottom=absent,
+        label="Present-not-selected",
+        color="#377eb8",
+    )
+
+    ax.set_title(title, fontsize=STYLE.title_size)
+    ax.set_xlabel("Method", fontsize=STYLE.label_size, labelpad=12)
+    ax.set_ylabel("Failure rate", fontsize=STYLE.label_size)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=18, ha="right", fontsize=STYLE.tick_size)
+    ax.grid(True, axis="y", alpha=STYLE.grid_alpha)
+    ax.legend(  # keep legend outside to avoid bar/title overlap
+        frameon=False,
+        fontsize=STYLE.legend_size,
+        loc="upper left",
+        bbox_to_anchor=(1.01, 1.0),
+        borderaxespad=0.0,
+    )
+
+    # Annotate stacked totals and present-not-selected segment values.
+    for i, (a, p) in enumerate(zip(absent, present_not_selected)):
+        total = a + p
+        ax.text(i, total + 0.009, f"{total:.3f}", ha="center", va="bottom", fontsize=STYLE.tick_size - 1, color="#333333")
+        if p > 0:
+            ax.text(
+                i,
+                a + p / 2.0,
+                f"{p:.3f}",
+                ha="center",
+                va="center",
+                fontsize=STYLE.tick_size - 1,
+                color="white",
+            )
+
+    ax.set_ylim(0.0, max(a + p for a, p in zip(absent, present_not_selected)) + 0.06)
+    fig.subplots_adjust(right=0.76, bottom=0.34)
+    fig.text(0.01, 0.008, note, ha="left", va="bottom", fontsize=STYLE.tick_size - 2, color="#333333")
+
+    save_fig(fig, FIGURE_DIR / out_pdf, FIGURE_DIR / out_png)
+
+
+def main() -> None:
+    main_rows = load_csv(PLOT_DATA_DIR / "figure3_failure_decomposition.csv")
+    preferred_main_order = ["strict_f3", "strict_gate1_cap_k6", "external_l1_max", "external_tale_prompt_budgeting", "external_s1_budget_forcing"]
+    methods_present = [r["method"] for r in main_rows]
+    main_order = [m for m in preferred_main_order if m in methods_present] + [m for m in sorted(set(methods_present)) if m not in preferred_main_order]
+    main_rows = sorted(main_rows, key=lambda r: main_order.index(r["method"]))
+
+    _plot(
+        main_rows,
+        "figure3_failure_decomposition.pdf",
+        "figure3_failure_decomposition.png",
+        "Failure decomposition on matched manuscript surface",
+        "* Main-table externals are readiness-approved MODE A near-direct comparators under explicit boundary caveats.",
+    )
+
+
+if __name__ == "__main__":
+    main()

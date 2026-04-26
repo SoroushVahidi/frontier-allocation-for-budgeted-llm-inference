@@ -1,0 +1,132 @@
+{
+  "version": "tale_official_adapter_v1",
+  "mode": "official_full_adapter",
+  "provenance": {
+    "paper": "https://aclanthology.org/2025.findings-acl.1274/",
+    "official_code": "https://github.com/GeniusHTX/TALE",
+    "intent": "Secondary TALE official/full adapter reporting path; may include TALE-PT post-training and is not apples-to-apples."
+  },
+  "model": {
+    "use_openai_api": false,
+    "provider": "openai",
+    "name": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180,
+    "timeout_seconds": 45
+  },
+  "dataset": {
+    "name": "openai/gsm8k",
+    "subset_size": 32,
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "split": "test"
+  },
+  "budget": {
+    "grid": [
+      4,
+      6,
+      8
+    ],
+    "unit": "action",
+    "action_to_token_equivalent": 64.0,
+    "matching_policy": "Keep official/full TALE rows separately labeled; avoid direct control-equivalence claims."
+  },
+  "tale": {
+    "token_budget_default": 256,
+    "token_budget_min": 64,
+    "token_budget_max": 512,
+    "token_budget_per_question_char": 0.75,
+    "token_per_action": 64.0,
+    "prompt_template": "Let's think step by step and use less than {budget} tokens.",
+    "estimator": "char_length_linear"
+  },
+  "methods": {
+    "include": [
+      "adaptive_min_expand_1",
+      "external_tale_prompt_budgeting"
+    ],
+    "adaptive_min_expand_grid": [
+      1
+    ]
+  },
+  "official": {
+    "results_path": "",
+    "contract_version": "tale_mode_b_official_import_v1",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_metadata_fields": [
+      "source.type",
+      "tale_variant.kind",
+      "tale_variant.name",
+      "tale_variant.includes_post_training",
+      "model.checkpoint",
+      "dataset.name",
+      "dataset.split",
+      "prompt.template",
+      "prompt.family",
+      "budget.unit",
+      "budget.settings",
+      "token_accounting.prompt_tokens_field",
+      "token_accounting.completion_tokens_field",
+      "token_accounting.total_tokens_field",
+      "decoding.temperature",
+      "decoding.top_p",
+      "decoding.max_new_tokens",
+      "metrics.schema_version",
+      "metrics.primary",
+      "provenance.exported_at_utc",
+      "provenance.source_uri",
+      "provenance.artifact_id",
+      "provenance.version_or_commit_if_available"
+    ],
+    "required_results_columns": [
+      "mode",
+      "source_type",
+      "tale_variant_kind",
+      "tale_variant_name",
+      "includes_post_training",
+      "dataset",
+      "split",
+      "model_checkpoint",
+      "prompt_family",
+      "prompt_template",
+      "budget_setting",
+      "accuracy",
+      "exact_match",
+      "avg_token_cost",
+      "temperature",
+      "top_p",
+      "max_new_tokens",
+      "artifact_id",
+      "version_or_commit"
+    ],
+    "allowed_tale_variant_kinds": [
+      "tale_inference_budgeting",
+      "tale_pt",
+      "official_tale_other"
+    ],
+    "status_policy": "If results_path is empty, MODE B is blocked. If provided, results must pass strict verification or import is rejected."
+  },
+  "metrics": {
+    "primary": [
+      "accuracy",
+      "exact_match",
+      "avg_generated_tokens",
+      "budget_adherence_rate",
+      "budget_violation_rate",
+      "budget_exhaustion_rate"
+    ],
+    "frontier": "Pareto frontier over (mean_avg_generated_tokens, mean_accuracy)."
+  },
+  "output": {
+    "root_dir": "outputs/tale_baseline"
+  },
+  "reproducibility": {
+    "notes": "MODE B is official/full TALE results import only with strict verification and explicit TALE-vs-TALE-PT variant identity; no local full reproduction claim."
+  }
+}

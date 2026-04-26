@@ -1,0 +1,77 @@
+{
+  "baseline_key": "when_solve_when_verify",
+  "baseline_display_name": "When To Solve, When To Verify",
+  "canonical_paper": {
+    "title": "When To Solve, When To Verify: Compute-Optimal Problem Solving and Generative Verification for LLM Reasoning",
+    "paper_url": "https://arxiv.org/abs/2504.01005",
+    "year": 2025,
+    "status": "arxiv"
+  },
+  "official": {
+    "repo_url": "https://github.com/nishadsinghi/sc-genrm-scaling.git",
+    "expected_local_clone_path": "external/when_solve_when_verify/upstream/sc-genrm-scaling",
+    "require_existing_local_clone": false,
+    "expected_repo_markers": [
+      "README.md"
+    ],
+    "expected_repo_entrypoints": {
+      "generation_any": [
+        "llmonk/generate/generate_solutions.py",
+        "generate_samples.py",
+        "scripts/generate_samples.py",
+        "generation"
+      ],
+      "verification_any": [
+        "llmonk/verify/generate_verifications.py",
+        "verify_generations.py",
+        "scripts/verify_generations.py",
+        "verification"
+      ],
+      "evaluation_any": [
+        "llmonk/evaluate/plot_success_rate.py",
+        "evaluate.py",
+        "scripts/evaluate.py",
+        "eval"
+      ]
+    },
+    "notes": "If local clone is present, validator checks markers and at least one generation/verification/evaluation entrypoint per family."
+  },
+  "classification": {
+    "resource_level": "official",
+    "status": "import_validated",
+    "control_equivalence": "adjacent",
+    "baseline_class": "fixed_budget_solve_vs_verify_allocation",
+    "problem_class_note": "Allocates fixed test-time compute between candidate solution generation and generated verification, not frontier allocation across active branches."
+  },
+  "execution_policy": {
+    "training_required_for_full_reproduction": true,
+    "in_repo_full_reproduction_supported": false,
+    "import_only_evaluation_supported": true,
+    "reporting_mode": "adjacent_import_validated_only",
+    "forbidden_reporting_claims": [
+      "direct_frontier_allocation_equivalence",
+      "full_paper_faithful_reproduction_in_repo"
+    ]
+  },
+  "import_contract": {
+    "validator_script": "scripts/verify_when_solve_when_verify_import.py",
+    "required_package_files": [
+      "metadata.json",
+      "results.csv"
+    ],
+    "required_workflow_stages": [
+      "solution_generation",
+      "verification_generation",
+      "fixed_budget_evaluation"
+    ],
+    "required_strategies": [
+      "self_consistency",
+      "genrm_best_of_n_or_genrm_weighted_sc"
+    ],
+    "required_metrics": [
+      "success_rate",
+      "compute_budget_tokens"
+    ],
+    "required_comparability_scope": "adjacent_only"
+  }
+}

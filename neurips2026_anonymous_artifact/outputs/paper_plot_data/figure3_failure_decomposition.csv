@@ -1,0 +1,6 @@
+method,method_class,n_cases,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate
+external_l1_max,near_direct_external,360,0.5027777777777778,0.0,0.0
+external_s1_budget_forcing,near_direct_external,360,0.5666666666666667,0.0,0.0
+external_tale_prompt_budgeting,near_direct_external,360,0.5222222222222223,0.0,0.0
+strict_f3,inhouse,360,0.2777777777777778,0.06388888888888888,0.0
+strict_gate1_cap_k6,inhouse,360,0.2777777777777778,0.06944444444444445,0.0

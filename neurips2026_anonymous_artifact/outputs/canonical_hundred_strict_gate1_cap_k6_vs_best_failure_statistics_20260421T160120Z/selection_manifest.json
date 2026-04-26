@@ -1,0 +1,612 @@
+{
+  "artifact_family": "canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics",
+  "created_at_utc": "2026-04-21T16:01:20.590016+00:00",
+  "output_dir": "outputs/canonical_hundred_strict_gate1_cap_k6_vs_best_failure_statistics_20260421T160120Z",
+  "selected_newest_method_name": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
+  "selected_best_comparator_name": "reasoning_beam2",
+  "newest_method_resolution": {
+    "selection_rule": "Use finalized broad default method from strict-phased default decision/status docs",
+    "strict_phased_default_doc": "docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md",
+    "strict_phased_status_doc": "docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md",
+    "resolved_method": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
+    "target_short_name": "strict_gate1_cap_k6"
+  },
+  "best_comparator_resolution": {
+    "selection_rule": "Choose strongest direct adversary from canonical exact-loss comparator sweep (`build_twenty_exact_current_full_vs_best_fresh.py`) and validate against canonical direct-adversary doc hint.",
+    "exact_loss_evidence_doc": "docs/CURRENT_RANKING_AND_COMPETITIVE_STATUS_2026_04_20.md",
+    "hinted_direct_adversary_from_doc": "reasoning_beam2",
+    "candidate_correct_counts": {
+      "reasoning_beam2": 5467,
+      "self_consistency_3": 4932,
+      "reasoning_greedy": 4601,
+      "verifier_guided_search": 3469
+    },
+    "base_resolution_evidence": {
+      "hinted_best_method_from_canonical_doc": null,
+      "selection_rule": "highest accuracy among direct registered baselines on same eval surface",
+      "candidate_correct_counts": {
+        "reasoning_beam2": 5467,
+        "self_consistency_3": 4932,
+        "reasoning_greedy": 4601,
+        "verifier_guided_search": 3469
+      },
+      "candidate_accuracy": {
+        "reasoning_beam2": 0.5694791666666666,
+        "self_consistency_3": 0.51375,
+        "reasoning_greedy": 0.4792708333333333,
+        "verifier_guided_search": 0.36135416666666664
+      },
+      "total_rows": 9600
+    },
+    "resolved_best_comparator": "reasoning_beam2"
+  },
+  "selection_policy": {
+    "eligibility": "our current full method wrong + best method correct",
+    "ranking": [
+      "higher loss_support_count first",
+      "higher max_budget_with_loss first",
+      "higher observability_priority first",
+      "dataset/example_id lexical tie-break"
+    ],
+    "excluded_case_sources": [
+      "outputs/twenty_defeat_case_trees_20260419/manifest.json",
+      "outputs/current_failure_output_layer_repair_20260420/per_case_results.jsonl"
+    ],
+    "target_count": 100,
+    "best_method_selected": "reasoning_beam2",
+    "newest_method_selected": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
+    "newest_method_resolution": {
+      "selection_rule": "Use finalized broad default method from strict-phased default decision/status docs",
+      "strict_phased_default_doc": "docs/FINAL_STRICT_PHASED_DEFAULT_DECISION_EVAL_20260421T042913Z.md",
+      "strict_phased_status_doc": "docs/CURRENT_DEFAULT_MODEL_AND_STRICT_PHASED_STATUS_2026_04_21.md",
+      "resolved_method": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1__deterministic_output_layer_repair_v1",
+      "target_short_name": "strict_gate1_cap_k6"
+    },
+    "best_comparator_resolution": {
+      "selection_rule": "Choose strongest direct adversary from canonical exact-loss comparator sweep (`build_twenty_exact_current_full_vs_best_fresh.py`) and validate against canonical direct-adversary doc hint.",
+      "exact_loss_evidence_doc": "docs/CURRENT_RANKING_AND_COMPETITIVE_STATUS_2026_04_20.md",
+      "hinted_direct_adversary_from_doc": "reasoning_beam2",
+      "candidate_correct_counts": {
+        "reasoning_beam2": 5467,
+        "self_consistency_3": 4932,
+        "reasoning_greedy": 4601,
+        "verifier_guided_search": 3469
+      },
+      "base_resolution_evidence": {
+        "hinted_best_method_from_canonical_doc": null,
+        "selection_rule": "highest accuracy among direct registered baselines on same eval surface",
+        "candidate_correct_counts": {
+          "reasoning_beam2": 5467,
+          "self_consistency_3": 4932,
+          "reasoning_greedy": 4601,
+          "verifier_guided_search": 3469
+        },
+        "candidate_accuracy": {
+          "reasoning_beam2": 0.5694791666666666,
+          "self_consistency_3": 0.51375,
+          "reasoning_greedy": 0.4792708333333333,
+          "verifier_guided_search": 0.36135416666666664
+        },
+        "total_rows": 9600
+      },
+      "resolved_best_comparator": "reasoning_beam2"
+    },
+    "surface_expansion": {
+      "subset_size": 96,
+      "extra_seeds": [
+        101,
+        113,
+        137
+      ],
+      "extra_budgets": [
+        14,
+        16
+      ]
+    },
+    "dataset_fair_merge": "within-dataset global rank preserved; round-robin across datasets in lexicographic order",
+    "verification_search": "within each (dataset, example_id), try group_rows sorted by (-budget,-seed) until repair-consistent exact loss holds"
+  },
+  "cases": [
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_68",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_68"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_72",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_72"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_73",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_73"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_78",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_78"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_47",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_47"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_35",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_35"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_40",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_40"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_84",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_84"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_80",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_80"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_58",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_58"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_71",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_71"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_34",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_34"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_54",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_54"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_35",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_35"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_60",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_60"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_18",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_18"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_37",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_37"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_70",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_70"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_35",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_35"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_69",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_69"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_30",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_30"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_41",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_41"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_87",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_87"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_27",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_27"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_64",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_64"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_50",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_50"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_32",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_32"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_75",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_75"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_65",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_65"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_88",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_88"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_84",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_84"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_73",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_73"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_68",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_68"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_42",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_42"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_79",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_79"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_45",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_45"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_29",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_29"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_82",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_82"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_56",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_56"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_71",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_71"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_29",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_29"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_25",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_25"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_15",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_15"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_3",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_3"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_87",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_87"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_38",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_38"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_6",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_6"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_84",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_84"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_76",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_76"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_95",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_95"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_76",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_76"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_72",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_72"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_51",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_51"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_48",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_48"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_82",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_82"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_77",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_77"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_91",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_91"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_81",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_81"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_43",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_43"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_74",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_74"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_25",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_25"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_17",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_17"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_2",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_2"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_66",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_66"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_30",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_30"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_41",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_41"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_92",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_92"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_57",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_57"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_67",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_67"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_61",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_61"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_9",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_9"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_83",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_83"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_7",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_7"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_26",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_26"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_7",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_7"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_37",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_37"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_46",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_46"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_82",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_82"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_48",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_48"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_14",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_14"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_21",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_21"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_57",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_57"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_83",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_83"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_24",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_24"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_34",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_34"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_13",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_13"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_44",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_44"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_63",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_63"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_53",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_53"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_93",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_93"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_36",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_36"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_58",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_58"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_36",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_36"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_77",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_77"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_60",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_60"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_69",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_69"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_87",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_87"
+    },
+    {
+      "case_id": "olympiadbench__Hothan_OlympiadBench_63",
+      "dataset": "olympiadbench",
+      "example_id": "Hothan_OlympiadBench_63"
+    },
+    {
+      "case_id": "openai__gsm8k__openai_gsm8k_11",
+      "dataset": "openai/gsm8k",
+      "example_id": "openai_gsm8k_11"
+    },
+    {
+      "case_id": "HuggingFaceH4__MATH-500__HuggingFaceH4_MATH-500_14",
+      "dataset": "HuggingFaceH4/MATH-500",
+      "example_id": "HuggingFaceH4_MATH-500_14"
+    }
+  ],
+  "fair_merge_groups_scanned_to_reach_target": 100
+}

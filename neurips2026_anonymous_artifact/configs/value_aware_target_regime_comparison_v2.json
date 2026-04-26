@@ -1,0 +1,20 @@
+{
+  "script": "scripts/run_value_aware_target_regime_comparison.py",
+  "description": "Bounded matched comparison for value-aware, ambiguity-aware, and expand-vs-commit decomposed supervision.",
+  "seed": 17,
+  "max_frontier_states": 60,
+  "rollout_samples_per_candidate": 10,
+  "target_estimation_repeats": 2,
+  "paired_rollout_comparison": true,
+  "max_allocation_samples": 24,
+  "frontier_budget": 7,
+  "defer_threshold_selection": "fixed",
+  "defer_eval_threshold_override": -1.0,
+  "methods": [
+    "baseline_default",
+    "value_aware",
+    "value_aware_ambiguity",
+    "value_aware_ambiguity_decomposed",
+    "value_aware_ambiguity_decomposed_stabilized"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "pilot_name": "stop_vs_act_oracle_label_pilot_v1",
+  "status": "planned_not_yet_run",
+  "anchor_baseline": {
+    "target_mode": "proxy_best_other_gain",
+    "note": "Current default remains anchor baseline."
+  },
+  "teacher": {
+    "teacher_mode": "offline_policy_coupled_oracle_rollout",
+    "paired_randomness_required": true,
+    "horizon": 6,
+    "rollout_depth": 9,
+    "paired_rollouts_per_state": 64
+  },
+  "pilot_grid": {
+    "seeds": [51, 52],
+    "budgets": [10, 14],
+    "target_states_total": 1200,
+    "min_states_total": 600,
+    "stratification": [
+      "remaining_budget_decile",
+      "gap_to_best_other_gain_bucket"
+    ]
+  },
+  "required_row_fields": [
+    "state_id",
+    "example_id",
+    "budget",
+    "remaining_budget",
+    "current_branch_id",
+    "q_act",
+    "q_stop",
+    "oracle_action_gap",
+    "oracle_label_act",
+    "horizon",
+    "rollout_depth",
+    "teacher_mode",
+    "paired_randomness_used"
+  ],
+  "quality_gates": {
+    "min_schema_valid_rate": 0.99,
+    "min_gap_consistency_rate": 0.99,
+    "min_label_sign_consistency_rate": 0.99,
+    "min_non_missing_core_rate": 0.99,
+    "min_paired_randomness_rate": 0.95,
+    "gap_consistency_tolerance": 1e-06
+  },
+  "expected_outputs": [
+    "oracle_stop_vs_act_labels.jsonl",
+    "oracle_label_manifest.json",
+    "oracle_label_quality_report.json"
+  ],
+  "claims_policy": {
+    "safe_after_pilot": [
+      "pipeline operationality on pilot subset",
+      "schema and quality-gate reproducibility"
+    ],
+    "not_safe_after_pilot": [
+      "robust controller superiority claims",
+      "generalization claims across broad regimes"
+    ]
+  }
+}

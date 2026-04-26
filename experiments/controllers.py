@@ -5751,6 +5751,169 @@ class DirectReserveLearnedOverrideController(BaseController):
             metadata=metadata,
         )
 
+
+class DirectReserveFrontierGateController(DirectReserveGateRerankController):
+    """Diagnostic controller that protects a direct reserve from weak frontier overrides."""
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        strict_controller_factory: callable,
+        direct_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        direct_prompt_styles: list[str] | None = None,
+        direct_reserve_attempts_override: int | None = None,
+        direct_token_budget: int = 512,
+        direct_token_per_action: float = 64.0,
+        gate_top_support_threshold: float = 0.75,
+        gate_top2_gap_threshold: float = 0.50,
+        gate_entropy_threshold: float = 0.55,
+        frontier_override_min_support_margin: int = 1,
+        frontier_override_min_maturity: int = 2,
+        method_name: str = "direct_reserve_frontier_gate_v1",
+    ) -> None:
+        super().__init__(
+            generator,
+            scorer,
+            max_actions_per_problem,
+            strict_controller_factory=strict_controller_factory,
+            direct_prompt_style=direct_prompt_style,
+            direct_prompt_styles=direct_prompt_styles,
+            direct_reserve_attempts_override=direct_reserve_attempts_override,
+            direct_token_budget=direct_token_budget,
+            direct_token_per_action=direct_token_per_action,
+            gate_top_support_threshold=gate_top_support_threshold,
+            gate_top2_gap_threshold=gate_top2_gap_threshold,
+            gate_entropy_threshold=gate_entropy_threshold,
+            method_name=method_name,
+        )
+        self.frontier_override_min_support_margin = max(1, int(frontier_override_min_support_margin))
+        self.frontier_override_min_maturity = max(1, int(frontier_override_min_maturity))
+        self.method_name = method_name
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        reserve_attempts = self._direct_reserve_attempts()
+        per_attempt_cap = max(1, int(round(self.direct_token_budget / self.direct_token_per_action)))
+        direct_answers: list[str | None] = []
+        direct_actions = 0
+
+        for i in range(reserve_attempts):
+            if direct_actions >= self.max_actions:
+                break
+            ans, used, _trace = self._run_direct_attempt(
+                question, gold_answer, i, min(per_attempt_cap, self.max_actions - direct_actions)
+            )
+            direct_answers.append(ans)
+            direct_actions += int(used)
+
+        direct_counts: Counter[str] = Counter((_normalize_answer(a) or "__unknown__") for a in direct_answers if a is not None)
+        sorted_counts = sorted(direct_counts.items(), key=lambda kv: kv[1], reverse=True)
+        incumbent_group = sorted_counts[0][0] if sorted_counts else "__unknown__"
+        incumbent_support = int(sorted_counts[0][1]) if sorted_counts else 0
+        direct_total = max(1, sum(direct_counts.values()))
+        second_support = int(sorted_counts[1][1]) if len(sorted_counts) > 1 else 0
+        direct_top_support = float(incumbent_support / direct_total)
+        direct_gap = float((incumbent_support - second_support) / direct_total)
+        direct_entropy = self._entropy(dict(direct_counts))
+        incumbent_answer = next(
+            (a for a in direct_answers if (_normalize_answer(a) or "__unknown__") == incumbent_group),
+            direct_answers[0] if direct_answers else None,
+        )
+
+        remaining_budget = max(0, self.max_actions - direct_actions)
+        incumbent_uncertain = bool(
+            direct_top_support < self.gate_top_support_threshold
+            or direct_gap < self.gate_top2_gap_threshold
+            or direct_entropy > self.gate_entropy_threshold
+        )
+        should_expand_frontier = bool(remaining_budget > 0 and incumbent_uncertain)
+
+        frontier_result: MethodResult | None = None
+        if should_expand_frontier:
+            frontier = self.strict_controller_factory(remaining_budget)
+            frontier_result = frontier.run(question, gold_answer)
+
+        frontier_answer = frontier_result.prediction if frontier_result else None
+        frontier_group = (_normalize_answer(frontier_answer) if frontier_answer is not None else "__unknown__") or "__unknown__"
+        direct_frontier_agree = bool(frontier_answer is not None and frontier_group == incumbent_group)
+
+        frontier_support_counts: dict[str, int] = {}
+        if frontier_result and isinstance(frontier_result.metadata, dict):
+            raw = frontier_result.metadata.get("answer_group_support_counts", {})
+            if isinstance(raw, dict):
+                for k, v in raw.items():
+                    try:
+                        frontier_support_counts[str(k)] = int(v)
+                    except Exception:
+                        continue
+        frontier_support = int(frontier_support_counts.get(frontier_group, 0))
+        frontier_maturity = int((frontier_result.expansions if frontier_result else 0) + (frontier_result.verifications if frontier_result else 0))
+        override_margin = float(frontier_support - incumbent_support)
+
+        # Heuristic challenger score (I_t): only positive for mature, non-incumbent challengers.
+        incumbent_challenge_score = 0.0
+        if frontier_result and frontier_group != incumbent_group:
+            incumbent_challenge_score = 1.0 if (frontier_support >= 2 and frontier_maturity >= self.frontier_override_min_maturity) else -1.0
+
+        override_reason = "reserve_default"
+        frontier_override_triggered = False
+        if frontier_result is None:
+            override_reason = "frontier_not_run_or_budget_exhausted"
+        elif direct_frontier_agree:
+            override_reason = "direct_frontier_agree"
+        elif frontier_support <= 1:
+            override_reason = "single_weak_frontier_branch"
+        elif frontier_maturity < self.frontier_override_min_maturity:
+            override_reason = "frontier_not_mature"
+        elif override_margin < float(self.frontier_override_min_support_margin):
+            override_reason = "insufficient_support_margin"
+        else:
+            frontier_override_triggered = True
+            override_reason = "frontier_support_margin_override"
+
+        final_answer = frontier_answer if frontier_override_triggered else incumbent_answer
+        reserve_used = bool(not frontier_override_triggered)
+
+        actions_used = int(direct_actions + (frontier_result.actions_used if frontier_result else 0))
+        expansions = int(direct_actions + (frontier_result.expansions if frontier_result else 0))
+        verifications = int(frontier_result.verifications if frontier_result else 0)
+
+        metadata = {
+            "method_family": "diagnostic_direct_reserve_frontier_gate",
+            "diagnostic_only": True,
+            "not_canonical": True,
+            "direct_reserve_answer": incumbent_answer,
+            "frontier_candidate_answer": frontier_answer,
+            "final_answer": final_answer,
+            "reserve_used": bool(reserve_used),
+            "frontier_override_triggered": bool(frontier_override_triggered),
+            "override_margin": float(override_margin),
+            "override_reason": str(override_reason),
+            "direct_frontier_agree": bool(direct_frontier_agree),
+            "incumbent_support": int(incumbent_support),
+            "frontier_support": int(frontier_support),
+            "incumbent_challenge_score": float(incumbent_challenge_score),
+            "remaining_budget_before_frontier": int(remaining_budget),
+            "frontier_executed": bool(frontier_result is not None),
+            "direct_answer_group_counts": dict(direct_counts),
+            "frontier_answer_group_counts": dict(frontier_support_counts),
+            "frontier_metadata": dict(frontier_result.metadata or {}) if frontier_result else {},
+        }
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=actions_used,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=float(frontier_result.avg_surviving_branches if frontier_result else 1.0),
+            budget_exhausted=bool(actions_used >= self.max_actions),
+            metadata=metadata,
+        )
+
+
 class L1LengthControlController(BaseController):
     """External baseline adapter for L1/LCPO-style length-conditioned control.
 

@@ -1,0 +1,168 @@
+{
+  "new_paper_external_reasoning_datasets": [
+    {
+      "dataset_key": "prm800k",
+      "hf_dataset_id": "tasksource/PRM800K",
+      "supervision_type": "step_supervision",
+      "structure_type": "trajectory_with_step_labels",
+      "variant_candidates": [
+        "tasksource/PRM800K"
+      ],
+      "selection_note": "Canonical HF-hosted PRM800K variant for process-step supervision."
+    },
+    {
+      "dataset_key": "math_shepherd",
+      "hf_dataset_id": "peiyi9979/Math-Shepherd",
+      "supervision_type": "step_supervision",
+      "structure_type": "trajectory_with_step_labels",
+      "variant_candidates": [
+        "peiyi9979/Math-Shepherd",
+        "trl-lib/math_shepherd"
+      ],
+      "selection_note": "Raw Math-Shepherd card selected for traceability; TRL mirror retained as swap option."
+    },
+    {
+      "dataset_key": "ultrainteract_pair",
+      "hf_dataset_id": "openbmb/UltraInteract_pair",
+      "supervision_type": "pairwise_preference",
+      "structure_type": "interaction_or_trajectory_pair",
+      "variant_candidates": [
+        "openbmb/UltraInteract_pair"
+      ],
+      "selection_note": "Chosen/rejected pairwise interaction supervision source."
+    },
+    {
+      "dataset_key": "ultrainteract_sft",
+      "hf_dataset_id": "openbmb/UltraInteract_sft",
+      "supervision_type": "trajectory_supervision",
+      "structure_type": "interaction_or_trajectory_single",
+      "variant_candidates": [
+        "openbmb/UltraInteract_sft"
+      ],
+      "selection_note": "SFT trajectory supervision source for interaction-style prompts."
+    },
+    {
+      "dataset_key": "deepstep_math_5k",
+      "hf_dataset_id": "BlackSnowDot/DeepStep-Math-5K",
+      "supervision_type": "process_reward",
+      "structure_type": "step_labeled_math_trajectory",
+      "variant_candidates": [
+        "BlackSnowDot/DeepStep-Math-5K"
+      ],
+      "selection_note": "Public DeepStep release with positive/negative step-labeled splits."
+    },
+    {
+      "dataset_key": "webinstruct_verified",
+      "hf_dataset_id": "TIGER-Lab/WebInstruct-verified",
+      "supervision_type": "trajectory_supervision",
+      "structure_type": "instruction_answer_pair",
+      "variant_candidates": [
+        "TIGER-Lab/WebInstruct-verified"
+      ],
+      "selection_note": "Verified instruction-answer corpus; broad trajectory/SFT-style coverage."
+    },
+    {
+      "dataset_key": "judgelm_collection_v1",
+      "hf_dataset_id": "BAAI/JudgeLM-data-collection-v1.0",
+      "supervision_type": "judge_preference",
+      "structure_type": "pairwise_judgment_records",
+      "variant_candidates": [
+        "BAAI/JudgeLM-data-collection-v1.0"
+      ],
+      "selection_note": "Primary JudgeLM judged pairwise response collection."
+    },
+    {
+      "dataset_key": "judgelm_100k",
+      "hf_dataset_id": "BAAI/JudgeLM-100K",
+      "supervision_type": "judge_preference",
+      "structure_type": "pairwise_judgment_records",
+      "variant_candidates": [
+        "BAAI/JudgeLM-100K"
+      ],
+      "selection_note": "Secondary JudgeLM release with similar schema and lighter scale."
+    },
+    {
+      "dataset_key": "mt_bench_human_judgments",
+      "hf_dataset_id": "lmsys/mt_bench_human_judgments",
+      "supervision_type": "judge_preference",
+      "structure_type": "human_pairwise_judgment",
+      "variant_candidates": [
+        "lmsys/mt_bench_human_judgments"
+      ],
+      "selection_note": "Stable public MT-Bench human annotation source."
+    },
+    {
+      "dataset_key": "prometheus_feedback_collection",
+      "hf_dataset_id": "prometheus-eval/Feedback-Collection",
+      "supervision_type": "verifier_supervision",
+      "structure_type": "rubric_feedback_records",
+      "variant_candidates": [
+        "prometheus-eval/Feedback-Collection"
+      ],
+      "selection_note": "Rubric-style feedback suitable for verifier/judge-style supervision."
+    },
+    {
+      "dataset_key": "prometheus_preference_collection",
+      "hf_dataset_id": "prometheus-eval/Preference-Collection",
+      "supervision_type": "judge_preference",
+      "structure_type": "rubric_pairwise_preference",
+      "variant_candidates": [
+        "prometheus-eval/Preference-Collection"
+      ],
+      "selection_note": "Rubric-conditioned pairwise preference source."
+    },
+    {
+      "dataset_key": "math_verify_s1k_r1",
+      "hf_dataset_id": "HuggingFaceH4/s1k_r1_math_verify",
+      "supervision_type": "verifier_supervision",
+      "structure_type": "math_generation_with_correctness_signals",
+      "variant_candidates": [
+        "HuggingFaceH4/s1k_r1_math_verify"
+      ],
+      "selection_note": "Concrete public math_verify-style dataset release used for integration."
+    },
+    {
+      "dataset_key": "arctraj",
+      "hf_dataset_id": "SejinKimm/ARCTraj",
+      "supervision_type": "trajectory_supervision",
+      "structure_type": "arc_trajectory_table_payload",
+      "variant_candidates": [
+        "SejinKimm/ARCTraj"
+      ],
+      "selection_note": "Public ARCTraj release; schema is table-centric and requires downstream parsing choices."
+    },
+    {
+      "dataset_key": "apps",
+      "hf_dataset_id": "codeparrot/apps",
+      "supervision_type": "verifier_backed_code_reasoning",
+      "structure_type": "coding_problem_with_testcase_verifier",
+      "variant_candidates": [
+        "codeparrot/apps"
+      ],
+      "selection_note": "APPS coding benchmark with testcase-based verification signal; branch-level supervision is derived, not native."
+    }
+  ],
+  "candidate_audit": [
+    {
+      "candidate_name": "PairS",
+      "requested_source": "GitHub: cambridgeltl/PairS (or stable HF mirror)",
+      "chosen_source": "GitHub: cambridgeltl/PairS",
+      "integration_status": "not_integrated",
+      "reason": "Code repository found, but no canonical standalone dataset artifact or stable HF mirror identified."
+    },
+    {
+      "candidate_name": "AgentPRM / InversePRM",
+      "requested_source": "Concrete public dataset release",
+      "chosen_source": "HF: Jolandaaa/agentprm (gated), no inverseprm dataset found",
+      "integration_status": "not_integrated",
+      "reason": "agentprm is gated/inaccessible in this environment; no stable public InversePRM dataset artifact identified."
+    },
+    {
+      "candidate_name": "APPS",
+      "requested_source": "HF coding benchmark with executable verification signal",
+      "chosen_source": "HF: codeparrot/apps",
+      "integration_status": "integrated",
+      "reason": "Public HF dataset is accessible; testcase fields support verifier-backed derived supervision paths."
+    }
+  ]
+}

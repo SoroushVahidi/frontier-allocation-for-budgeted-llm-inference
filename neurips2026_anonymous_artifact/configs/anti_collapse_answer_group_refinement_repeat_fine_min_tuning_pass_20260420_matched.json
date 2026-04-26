@@ -1,0 +1,18 @@
+{
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "seeds": [11, 23],
+  "budgets": [6, 8],
+  "subset_size": 20,
+  "adaptive_grid": [1],
+  "methods": {
+    "baseline_broad": "broad_diversity_aggregation_strong_v1",
+    "anti_collapse_refinement": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_v1",
+    "anti_collapse_repeat_fine": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_v1",
+    "anti_collapse_repeat_fine_min_tuned": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1"
+  },
+  "output_dir": "outputs/anti_collapse_answer_group_refinement_repeat_fine_min_tuning_pass_20260420_matched"
+}

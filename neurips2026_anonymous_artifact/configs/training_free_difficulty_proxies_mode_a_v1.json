@@ -1,0 +1,58 @@
+{
+  "version": "training_free_difficulty_proxies_mode_a_v1",
+  "mode": "mode_a_paper_inspired_matched_substrate_adapter",
+  "provenance": {
+    "paper_title": "Adaptive Test-Time Compute Allocation via Training-Free Difficulty Proxies",
+    "paper_url": "https://openreview.net/forum?id=ztGHhyicWs",
+    "paper_pdf_url": "https://openreview.net/pdf?id=ztGHhyicWs",
+    "source_of_truth": "openreview_page_and_pdf_primary",
+    "official_public_code_verified": false,
+    "official_public_code_notes": "No clearly attributable official public repository was verified from the OpenReview page/PDF during this integration pass."
+  },
+  "dataset": {
+    "name": "openai/gsm8k",
+    "subset_size": 24,
+    "seeds": [11, 23]
+  },
+  "budget": {
+    "unit": "attempt_pulls",
+    "global_budget_definition": "Each pull is one additional generation attempt for one currently unsolved instance.",
+    "global_budget_multipliers": [1.0, 1.5, 2.0]
+  },
+  "cheap_input_proxy": {
+    "type": "question_text_heuristic",
+    "length_weight": 0.8,
+    "digit_weight": 0.2
+  },
+  "dipa": {
+    "policy": "Pk ∝ 1 / M_k^lambda over active unsolved instances",
+    "lambda_scale": 1.0,
+    "lambda_min": 0.25,
+    "generation_proxy": "mgl_char_length_on_failed_attempts_mean",
+    "mgl_floor": 1.0,
+    "sanity_bundle_policies": [
+      "uniform",
+      "fixed_round_robin",
+      "easy_to_hard_mgl",
+      "hard_to_easy_mgl",
+      "dipa_mgl"
+    ]
+  },
+  "faithfulness": {
+    "preserved_core": [
+      "global_test_set_budget",
+      "per_pull_budget_unit",
+      "arm_elimination_on_success",
+      "dynamic_generation_proxy_update",
+      "dipa_style_probabilistic_allocation"
+    ],
+    "known_approximations": [
+      "query_level_adapter_not_branch_level_controller",
+      "generation_outcomes_and_lengths_use_matched_substrate_simulator",
+      "no_official_training_or_private_infrastructure_reproduction"
+    ]
+  },
+  "output": {
+    "root_dir": "outputs/training_free_difficulty_proxies_mode_a"
+  }
+}

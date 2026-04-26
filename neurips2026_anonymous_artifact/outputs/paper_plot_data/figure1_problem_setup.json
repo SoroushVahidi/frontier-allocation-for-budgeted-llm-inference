@@ -1,0 +1,15 @@
+{
+  "figure_id": "figure1_problem_setup",
+  "title": "Frontier allocation under a fixed budget",
+  "labels": {
+    "input": "Input Question",
+    "frontier": "Active Frontier",
+    "branch_a": "Branch A",
+    "branch_b": "Branch B",
+    "branch_c": "Branch C",
+    "choose": "Choose Next Action",
+    "expand": "Expand one branch",
+    "commit": "Commit",
+    "final": "Final Answer"
+  }
+}

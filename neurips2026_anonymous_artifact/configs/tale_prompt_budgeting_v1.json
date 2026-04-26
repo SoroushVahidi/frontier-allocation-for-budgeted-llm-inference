@@ -1,0 +1,64 @@
+{
+  "version": "tale_prompt_budgeting_v1",
+  "mode": "prompt_budgeting_inference_only",
+  "provenance": {
+    "paper": "https://aclanthology.org/2025.findings-acl.1274/",
+    "official_code": "https://github.com/GeniusHTX/TALE",
+    "intent": "Primary fair TALE-style baseline: per-instance prompt token-budgeting adapter on unchanged base model family."
+  },
+  "model": {
+    "use_openai_api": false,
+    "provider": "openai",
+    "name": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180,
+    "timeout_seconds": 45
+  },
+  "dataset": {
+    "name": "openai/gsm8k",
+    "subset_size": 32,
+    "seeds": [11, 23, 37]
+  },
+  "budget": {
+    "grid": [4, 6, 8],
+    "unit": "action",
+    "action_to_token_equivalent": 64.0,
+    "matching_policy": "Primary table rows use matched average generated-token compute between our method and TALE adapter."
+  },
+  "tale": {
+    "token_budget_default": 256,
+    "token_budget_min": 64,
+    "token_budget_max": 512,
+    "token_budget_per_question_char": 0.75,
+    "token_per_action": 64.0,
+    "prompt_template": "Let's think step by step and use less than {budget} tokens.",
+    "estimator": "char_length_linear"
+  },
+  "methods": {
+    "include": [
+      "adaptive_min_expand_1",
+      "reasoning_greedy",
+      "self_consistency_3",
+      "verifier_guided_search",
+      "external_tale_prompt_budgeting"
+    ],
+    "adaptive_min_expand_grid": [1]
+  },
+  "metrics": {
+    "primary": [
+      "accuracy",
+      "exact_match",
+      "avg_generated_tokens",
+      "budget_adherence_rate",
+      "budget_violation_rate",
+      "budget_exhaustion_rate"
+    ],
+    "frontier": "Pareto frontier over (mean_avg_generated_tokens, mean_accuracy)."
+  },
+  "output": {
+    "root_dir": "outputs/tale_baseline"
+  },
+  "reproducibility": {
+    "notes": "Deterministic seed list in config. Manifest stores estimator and prompt-template metadata for auditing."
+  }
+}

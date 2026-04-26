@@ -1,0 +1,12 @@
+dataset,budget,evidence_layer,instability_rate,interpretation
+openai/gsm8k,4,simulation,0.333333,"Winner instability present on matched simulation surface."
+openai/gsm8k,6,simulation,0.333333,"Winner instability present on matched simulation surface."
+openai/gsm8k,8,simulation,0.333333,"Winner instability present on matched simulation surface."
+HuggingFaceH4/MATH-500,4,simulation,0.333333,"Winner instability present on matched simulation surface."
+HuggingFaceH4/MATH-500,6,simulation,0.333333,"Winner instability present on matched simulation surface."
+HuggingFaceH4/MATH-500,8,simulation,0.333333,"Winner instability present on matched simulation surface."
+HuggingFaceH4/aime_2024,4,simulation,0.333333,"Winner instability present on matched simulation surface."
+HuggingFaceH4/aime_2024,6,simulation,0.333333,"Winner instability present on matched simulation surface."
+HuggingFaceH4/aime_2024,8,simulation,0.333333,"Winner instability present on matched simulation surface."
+openai/gsm8k,4,openai,0.0,"No provider-level winner flip in available OpenAI slice."
+openai/gsm8k,4,cohere,0.0,"No provider-level winner flip in available Cohere slice (coverage-limited)."
