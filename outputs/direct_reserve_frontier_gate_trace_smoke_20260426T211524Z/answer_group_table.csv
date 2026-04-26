@@ -1,0 +1,18 @@
+example_id,dataset,provider,model,budget,seed,method,answer_group,support_count,maturity,family_count,depth_max,depth_mean,best_branch_score,branch_ids,family_counts,metadata
+trace_smoke_1,offline/smoke,offline,simulated,6,223,external_l1_max,28,1,1,0,1,1.0,0.6699733879379834,"[""l1_max_0""]",{},{}
+trace_smoke_1,offline/smoke,offline,simulated,6,223,strict_f3_anti_collapse_default_v1,__unknown__,4,4,0,2,1.5,0.7430873947739842,"[""div_0"", ""div_1"", ""div_child_1_2"", ""div_child_2_3""]",{},{}
+trace_smoke_1,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,25,1,1,0,1,1.0,1.0,"[""direct_reserve_1""]",{},{}
+trace_smoke_1,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,28,1,1,0,1,1.0,1.0,"[""direct_reserve_0""]",{},{}
+trace_smoke_1,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,__unknown__,3,3,0,2,0.6666666666666666,0.7430873947739842,"[""div_0"", ""div_1"", ""div_child_1_2""]",{},{}
+trace_smoke_2,offline/smoke,offline,simulated,6,223,external_l1_max,10,1,1,0,3,3.0,0.7383505479995065,"[""l1_max_0""]",{},{}
+trace_smoke_2,offline/smoke,offline,simulated,6,223,strict_f3_anti_collapse_default_v1,10,1,1,1,1,1.0,0.9696089231785066,"[""div_1""]","{""explicit_case_split_family"": 1}",{}
+trace_smoke_2,offline/smoke,offline,simulated,6,223,strict_f3_anti_collapse_default_v1,__unknown__,3,3,0,2,1.3333333333333333,0.7176154596672047,"[""div_0"", ""div_child_2_2"", ""div_child_3_3""]",{},{}
+trace_smoke_2,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,10,1,1,0,1,1.0,1.0,"[""direct_reserve_0""]",{},{}
+trace_smoke_2,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,12,1,1,0,1,1.0,1.0,"[""direct_reserve_1""]",{},{}
+trace_smoke_2,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,__unknown__,2,2,0,1,0.5,0.708314679058958,"[""div_0"", ""div_1""]",{},{}
+trace_smoke_3,offline/smoke,offline,simulated,6,223,external_l1_max,7,1,1,0,3,3.0,1.0,"[""l1_max_0""]",{},{}
+trace_smoke_3,offline/smoke,offline,simulated,6,223,strict_f3_anti_collapse_default_v1,4,1,1,1,1,1.0,0.5652340191550277,"[""div_1""]","{""explicit_case_split_family"": 1}",{}
+trace_smoke_3,offline/smoke,offline,simulated,6,223,strict_f3_anti_collapse_default_v1,6,1,1,1,1,1.0,0.38314319225496596,"[""div_0""]","{""direct_formula_family"": 1}",{}
+trace_smoke_3,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,5,1,1,0,1,1.0,1.0,"[""direct_reserve_1""]",{},{}
+trace_smoke_3,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,7,1,1,0,1,1.0,1.0,"[""direct_reserve_0""]",{},{}
+trace_smoke_3,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,__unknown__,3,3,0,2,0.6666666666666666,0.7430873947739842,"[""div_0"", ""div_1"", ""div_child_1_2""]",{},{}

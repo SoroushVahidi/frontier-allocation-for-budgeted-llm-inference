@@ -1,0 +1,10 @@
+example_id,dataset,provider,model,budget,seed,method,trace_path,trace_available,n_branches,n_answer_groups
+trace_smoke_1,offline/smoke,offline,simulated,6,223,external_l1_max,traces/trace_smoke_1_external_l1_max.json,True,1,1
+trace_smoke_1,offline/smoke,offline,simulated,6,223,strict_f3_anti_collapse_default_v1,traces/trace_smoke_1_strict_f3_anti_collapse_default_v1.json,True,4,1
+trace_smoke_1,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,traces/trace_smoke_1_direct_reserve_frontier_gate_v1.json,True,5,3
+trace_smoke_2,offline/smoke,offline,simulated,6,223,external_l1_max,traces/trace_smoke_2_external_l1_max.json,True,1,1
+trace_smoke_2,offline/smoke,offline,simulated,6,223,strict_f3_anti_collapse_default_v1,traces/trace_smoke_2_strict_f3_anti_collapse_default_v1.json,True,4,2
+trace_smoke_2,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,traces/trace_smoke_2_direct_reserve_frontier_gate_v1.json,True,4,3
+trace_smoke_3,offline/smoke,offline,simulated,6,223,external_l1_max,traces/trace_smoke_3_external_l1_max.json,True,1,1
+trace_smoke_3,offline/smoke,offline,simulated,6,223,strict_f3_anti_collapse_default_v1,traces/trace_smoke_3_strict_f3_anti_collapse_default_v1.json,True,2,2
+trace_smoke_3,offline/smoke,offline,simulated,6,223,direct_reserve_frontier_gate_v1,traces/trace_smoke_3_direct_reserve_frontier_gate_v1.json,True,5,3

@@ -1,0 +1,9 @@
+{
+  "artifact_family": "direct_reserve_frontier_gate_trace_smoke",
+  "n_answer_groups": 17,
+  "n_branches": 27,
+  "n_traces": 9,
+  "real_api_allowed": false,
+  "real_api_used": false,
+  "timestamp": "20260426T211524Z"
+}

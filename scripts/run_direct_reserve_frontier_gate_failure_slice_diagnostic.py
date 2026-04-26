@@ -24,6 +24,11 @@ EXTERNAL_METHOD = "external_l1_max"
 GATE_METHOD = "direct_reserve_frontier_gate_v1"
 SUPPORT_FIELDS = ("answer_group_support_counts", "support_margin", "top2_support_gap")
 MATURITY_FIELDS = ("frontier_maturity", "action_count", "actions_used", "expansions")
+REQUIRED_TRACE_FIELDS = (
+    "candidate_branch_table.csv",
+    "answer_group_table.csv",
+    "per_case_trace_index.csv",
+)
 
 PER_CASE_FIELDS = [
     "example_id",
@@ -201,21 +206,55 @@ def _maturity(row: dict[str, Any]) -> int:
     return 0
 
 
+def _field_coverage(source_dir: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    requirements = {
+        "candidate_branch_table.csv": {"example_id", "seed", "budget", "method", "branch_id", "answer_group", "branch_score"},
+        "answer_group_table.csv": {"example_id", "seed", "budget", "method", "answer_group", "support_count", "maturity"},
+        "per_case_trace_index.csv": {"example_id", "seed", "budget", "method", "trace_path", "trace_available"},
+    }
+    for filename, required in requirements.items():
+        path = source_dir / filename
+        table = _read_csv(path)
+        present = set(table[0]) if table else set()
+        missing = sorted(required - present)
+        rows.append(
+            {
+                "field_group": filename,
+                "present": int(path.exists() and bool(table)),
+                "row_count": len(table),
+                "missing_count": len(missing),
+                "missing_fields": ";".join(missing),
+                "impact": "usable" if path.exists() and table and not missing else "fallback_or_limited",
+            }
+        )
+    return rows
+
+
 def _has_usable_candidate_pool(source_dir: Path) -> bool:
-    candidate_rows = _read_csv(source_dir / "candidate_branch_table.csv")
-    if not candidate_rows:
-        return False
-    required = {"example_id", "seed", "budget"}
-    return required.issubset(set(candidate_rows[0]))
+    coverage = _field_coverage(source_dir)
+    return all(int(row["present"]) == 1 and int(row["missing_count"]) == 0 for row in coverage)
+
+
+def _trace_lookup(source_dir: Path) -> tuple[dict[tuple[str, int, int, str], list[dict[str, str]]], dict[tuple[str, int, int, str], list[dict[str, str]]]]:
+    branches_by_case: dict[tuple[str, int, int, str], list[dict[str, str]]] = defaultdict(list)
+    groups_by_case: dict[tuple[str, int, int, str], list[dict[str, str]]] = defaultdict(list)
+    for row in _read_csv(source_dir / "candidate_branch_table.csv"):
+        key = (str(row.get("example_id", "")), _bool_int(row.get("seed")), _bool_int(row.get("budget")), str(row.get("method", "")))
+        branches_by_case[key].append(row)
+    for row in _read_csv(source_dir / "answer_group_table.csv"):
+        key = (str(row.get("example_id", "")), _bool_int(row.get("seed")), _bool_int(row.get("budget")), str(row.get("method", "")))
+        groups_by_case[key].append(row)
+    return branches_by_case, groups_by_case
 
 
 def build_diagnostic(source_dir: Path, diagnostic_dir: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     matched = _load_matched_rows(source_dir)
     paired_summary = _read_csv(diagnostic_dir / "paired_summary.csv")
     expected = _bool_int(paired_summary[0].get("matched_examples")) if paired_summary else 0
-    # The current Cohere Stage-1 package has only paired correctness rows, not
-    # reusable candidate-pool/frontier support metadata. Keep the label limited.
+    field_coverage = _field_coverage(source_dir)
     mode = "paired_candidate_pool_diagnostic" if _has_usable_candidate_pool(source_dir) else "diagnostic_limited_prediction_level"
+    branches_by_case, groups_by_case = _trace_lookup(source_dir) if mode == "paired_candidate_pool_diagnostic" else ({}, {})
 
     rows: list[dict[str, Any]] = []
     audit: list[dict[str, Any]] = []
@@ -226,9 +265,24 @@ def build_diagnostic(source_dir: Path, diagnostic_dir: Path) -> tuple[list[dict[
         frontier_answer = _pick_prediction(strict_row)
         external_ok = _bool_int(external_row.get("exact_match"))
         strict_ok = _bool_int(strict_row.get("exact_match"))
-        missing_support = not any(str(strict_row.get(k, "")).strip() for k in SUPPORT_FIELDS)
-        missing_maturity = not any(str(strict_row.get(k, "")).strip() for k in MATURITY_FIELDS)
-        margin, maturity, support_available = _support_margin(strict_row, direct_answer, frontier_answer)
+        strict_trace_key = (cell["example_id"], cell["seed"], cell["budget"], STRICT_METHOD)
+        external_trace_key = (cell["example_id"], cell["seed"], cell["budget"], EXTERNAL_METHOD)
+        trace_groups = groups_by_case.get(strict_trace_key, [])
+        trace_branches = branches_by_case.get(strict_trace_key, [])
+        frontier_group_row = next((g for g in trace_groups if str(g.get("answer_group")) == str(frontier_answer)), {})
+        incumbent_group_row = next((g for g in trace_groups if str(g.get("answer_group")) == str(direct_answer)), {})
+        missing_support = not any(str(strict_row.get(k, "")).strip() for k in SUPPORT_FIELDS) and not trace_groups
+        missing_maturity = not any(str(strict_row.get(k, "")).strip() for k in MATURITY_FIELDS) and not trace_branches
+        if trace_groups:
+            frontier_support_trace = _bool_int(frontier_group_row.get("support_count"))
+            incumbent_support_trace = _bool_int(incumbent_group_row.get("support_count"))
+            margin, maturity, support_available = (
+                float(frontier_support_trace - incumbent_support_trace),
+                _bool_int(frontier_group_row.get("maturity")),
+                True,
+            )
+        else:
+            margin, maturity, support_available = _support_margin(strict_row, direct_answer, frontier_answer)
 
         override = False
         if not frontier_answer:
@@ -297,7 +351,7 @@ def build_diagnostic(source_dir: Path, diagnostic_dir: Path) -> tuple[list[dict[
 
     if expected and len(rows) != expected:
         raise RuntimeError(f"matched row count mismatch: built {len(rows)} rows, paired_summary expects {expected}")
-    return rows, audit, {"diagnostic_mode": mode, "expected_matched_examples": expected}
+    return rows, audit, {"diagnostic_mode": mode, "expected_matched_examples": expected, "field_coverage": field_coverage}
 
 
 def summarize(rows: list[dict[str, Any]], mode: str) -> dict[str, Any]:
@@ -329,8 +383,8 @@ def summarize(rows: list[dict[str, Any]], mode: str) -> dict[str, Any]:
     }
 
 
-def _missing_report(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [
+def _missing_report(rows: list[dict[str, Any]], field_coverage: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+    report = [
         {
             "field_group": "support_or_maturity",
             "missing_count": sum(_bool_int(r["missing_support_or_maturity_fields"]) for r in rows),
@@ -347,6 +401,8 @@ def _missing_report(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "impact": "correctness_loaded_from_cached_exact_match_fields",
         },
     ]
+    report.extend(field_coverage or [])
+    return report
 
 
 def _write_readme(out_dir: Path, summary: dict[str, Any]) -> None:
@@ -449,7 +505,7 @@ def main() -> int:
     _write_csv(out_dir / "per_case_results.csv", rows, PER_CASE_FIELDS)
     _write_csv(out_dir / "summary.csv", [summary])
     _write_csv(out_dir / "override_audit.csv", audit)
-    _write_csv(out_dir / "missing_fields_report.csv", _missing_report(rows))
+    _write_csv(out_dir / "missing_fields_report.csv", _missing_report(rows, list(meta.get("field_coverage", []))))
     _write_readme(out_dir, summary)
     _write_json(
         out_dir / "manifest.json",

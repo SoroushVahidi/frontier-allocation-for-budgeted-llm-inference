@@ -5798,15 +5798,17 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         per_attempt_cap = max(1, int(round(self.direct_token_budget / self.direct_token_per_action)))
         direct_answers: list[str | None] = []
         direct_actions = 0
+        direct_trace: list[dict[str, Any]] = []
 
         for i in range(reserve_attempts):
             if direct_actions >= self.max_actions:
                 break
-            ans, used, _trace = self._run_direct_attempt(
+            ans, used, trace_rows = self._run_direct_attempt(
                 question, gold_answer, i, min(per_attempt_cap, self.max_actions - direct_actions)
             )
             direct_answers.append(ans)
             direct_actions += int(used)
+            direct_trace.extend(trace_rows)
 
         direct_counts: Counter[str] = Counter((_normalize_answer(a) or "__unknown__") for a in direct_answers if a is not None)
         sorted_counts = sorted(direct_counts.items(), key=lambda kv: kv[1], reverse=True)
@@ -5833,6 +5835,8 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         frontier_result: MethodResult | None = None
         if should_expand_frontier:
             frontier = self.strict_controller_factory(remaining_budget)
+            if bool(getattr(self, "emit_full_traces", False)):
+                setattr(frontier, "emit_full_traces", True)
             frontier_result = frontier.run(question, gold_answer)
 
         frontier_answer = frontier_result.prediction if frontier_result else None
@@ -5851,6 +5855,21 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         frontier_support = int(frontier_support_counts.get(frontier_group, 0))
         frontier_maturity = int((frontier_result.expansions if frontier_result else 0) + (frontier_result.verifications if frontier_result else 0))
         override_margin = float(frontier_support - incumbent_support)
+        frontier_meta = dict(frontier_result.metadata or {}) if frontier_result else {}
+        frontier_families = frontier_meta.get("answer_group_strategy_family_counts", {})
+        if isinstance(frontier_families, dict):
+            frontier_candidate_family_count = len(dict(frontier_families.get(frontier_group, {}) or {}))
+        else:
+            frontier_candidate_family_count = 0
+        frontier_final_states = list(frontier_meta.get("final_branch_states", [])) if isinstance(frontier_meta.get("final_branch_states", []), list) else []
+        frontier_group_states = [
+            s
+            for s in frontier_final_states
+            if (_normalize_answer(str(s.get("predicted_answer", ""))) or "__unknown__") == frontier_group
+        ]
+        frontier_depths = [int(s.get("branch_depth", 0) or 0) for s in frontier_group_states]
+        frontier_depth_max = max(frontier_depths) if frontier_depths else None
+        frontier_depth_mean = (sum(frontier_depths) / max(1, len(frontier_depths))) if frontier_depths else None
 
         # Heuristic challenger score (I_t): only positive for mature, non-incumbent challengers.
         incumbent_challenge_score = 0.0
@@ -5879,13 +5898,69 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         actions_used = int(direct_actions + (frontier_result.actions_used if frontier_result else 0))
         expansions = int(direct_actions + (frontier_result.expansions if frontier_result else 0))
         verifications = int(frontier_result.verifications if frontier_result else 0)
+        support_margin = float(frontier_support - incumbent_support)
+        maturity_margin = float(frontier_maturity - len(direct_answers))
+        action_trace = list(frontier_meta.get("action_trace", [])) if isinstance(frontier_meta.get("action_trace", []), list) else []
+        final_branch_states = list(frontier_final_states)
+        for i, answer in enumerate(direct_answers):
+            group_key = _normalize_answer(answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": "direct_reserve",
+                    "branch_id": f"direct_reserve_{i}",
+                    "group_key": group_key,
+                    "is_terminal": 1,
+                    "selected": int(group_key == (_normalize_answer(final_answer) or "__unknown__")),
+                    "source": "direct_reserve",
+                }
+            )
+            final_branch_states.append(
+                {
+                    "branch_id": f"direct_reserve_{i}",
+                    "parent_branch_id": "",
+                    "branch_depth": 1,
+                    "score": float(direct_counts.get(group_key, 0)),
+                    "predicted_answer": "" if answer is None else str(answer),
+                    "is_done": bool(answer is not None),
+                    "is_pruned": False,
+                    "steps": [],
+                    "trace_events": [r for r in direct_trace if str(r.get("branch_id")) == f"direct_reserve_{i}"],
+                    "strategy_family": "direct_reserve",
+                    "source": "direct_reserve",
+                    "selected": int(group_key == (_normalize_answer(final_answer) or "__unknown__")),
+                }
+            )
+        combined_group_counts = Counter(dict(frontier_support_counts))
+        for group, count in direct_counts.items():
+            combined_group_counts[group] += int(count)
 
         metadata = {
             "method_family": "diagnostic_direct_reserve_frontier_gate",
             "diagnostic_only": True,
             "not_canonical": True,
             "direct_reserve_answer": incumbent_answer,
+            "direct_reserve_source_method": "direct_reserve_attempts",
+            "direct_reserve_attempts": direct_trace,
+            "direct_reserve_num_attempts": int(len(direct_answers)),
+            "direct_reserve_attempts_planned": int(reserve_attempts),
+            "direct_reserve_attempts_executed": int(len(direct_answers)),
+            "direct_reserve_agreement_count": int(incumbent_support),
+            "direct_reserve_confidence_proxy": float(direct_top_support),
+            "direct_reserve_parse_success": bool(incumbent_answer is not None and str(incumbent_answer).strip()),
+            "direct_reserve_metadata": {
+                "direct_answer_group_counts": dict(direct_counts),
+                "direct_top_support": float(direct_top_support),
+                "direct_top2_support_gap": float(direct_gap),
+                "direct_answer_entropy": float(direct_entropy),
+            },
             "frontier_candidate_answer": frontier_answer,
+            "frontier_candidate_support": int(frontier_support),
+            "frontier_candidate_maturity": int(frontier_maturity),
+            "frontier_candidate_family_count": int(frontier_candidate_family_count),
+            "frontier_candidate_depth_max": frontier_depth_max,
+            "frontier_candidate_depth_mean": frontier_depth_mean,
+            "frontier_candidate_metadata": dict(frontier_meta),
             "final_answer": final_answer,
             "reserve_used": bool(reserve_used),
             "frontier_override_triggered": bool(frontier_override_triggered),
@@ -5894,12 +5969,37 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "direct_frontier_agree": bool(direct_frontier_agree),
             "incumbent_support": int(incumbent_support),
             "frontier_support": int(frontier_support),
+            "support_margin": float(support_margin),
+            "maturity_margin": float(maturity_margin),
+            "override_thresholds": {
+                "frontier_override_min_support_margin": int(self.frontier_override_min_support_margin),
+                "frontier_override_min_maturity": int(self.frontier_override_min_maturity),
+                "gate_top_support_threshold": float(self.gate_top_support_threshold),
+                "gate_top2_gap_threshold": float(self.gate_top2_gap_threshold),
+                "gate_entropy_threshold": float(self.gate_entropy_threshold),
+            },
+            "guard_decision_inputs": {
+                "incumbent_group": str(incumbent_group),
+                "frontier_group": str(frontier_group),
+                "incumbent_support": int(incumbent_support),
+                "frontier_support": int(frontier_support),
+                "frontier_maturity": int(frontier_maturity),
+                "support_margin": float(support_margin),
+                "maturity_margin": float(maturity_margin),
+                "incumbent_uncertain": bool(incumbent_uncertain),
+                "should_expand_frontier": bool(should_expand_frontier),
+            },
             "incumbent_challenge_score": float(incumbent_challenge_score),
             "remaining_budget_before_frontier": int(remaining_budget),
             "frontier_executed": bool(frontier_result is not None),
             "direct_answer_group_counts": dict(direct_counts),
             "frontier_answer_group_counts": dict(frontier_support_counts),
-            "frontier_metadata": dict(frontier_result.metadata or {}) if frontier_result else {},
+            "answer_group_support_counts": dict(combined_group_counts),
+            "answer_group_strategy_family_counts": frontier_meta.get("answer_group_strategy_family_counts", {}),
+            "answer_group_best_branch_scores": frontier_meta.get("answer_group_best_branch_scores", {}),
+            "frontier_metadata": dict(frontier_meta),
+            "action_trace": action_trace,
+            "final_branch_states": final_branch_states if bool(getattr(self, "emit_full_traces", False)) else [],
         }
         return MethodResult(
             method=self.method_name,
