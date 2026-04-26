@@ -43,6 +43,14 @@ Before writing manuscript text, read:
 - `docs/RESULTS_GUIDE.md`
 - `docs/PAPER_SOURCE_OF_TRUTH.md`
 
+## Repository organization and artifact classes
+For a reviewer-safe map of canonical, diagnostic, and provenance artifacts, see:
+- `docs/RESULTS_AND_ARTIFACTS_GUIDE.md`
+- `docs/METHOD_AND_VARIANT_MAP.md`
+- `docs/DIRECT_RESERVE_LEARNED_SCORER_STATUS.md`
+- `docs/NONMATH_FAILURE_DIAGNOSIS_AND_ROADMAP.md`
+- `docs/IDEAS_AND_REFERENCES_FOR_FUTURE_WORK.md`
+
 ## Tests
 Run focused local checks:
 ```bash

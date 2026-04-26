@@ -1,0 +1,67 @@
+path,artifact_class,purpose,size_bytes,recommendation
+tests/README.md,appendix_supporting,test,654,keep as supporting evidence
+tests/__init__.py,appendix_supporting,test,54,keep as supporting evidence
+tests/fixtures/best_route_import_valid/metadata.json,appendix_supporting,test,904,keep as supporting evidence
+tests/fixtures/best_route_import_valid/results.csv,appendix_supporting,test,460,keep as supporting evidence
+tests/fixtures/cascade_routing_import_valid/metadata.json,appendix_supporting,test,827,keep as supporting evidence
+tests/fixtures/cascade_routing_import_valid/results.csv,appendix_supporting,test,694,keep as supporting evidence
+tests/fixtures/lets_verify_step_by_step_import_valid/metadata.json,appendix_supporting,test,959,keep as supporting evidence
+tests/fixtures/lets_verify_step_by_step_import_valid/results.csv,appendix_supporting,test,445,keep as supporting evidence
+tests/fixtures/mob_import_valid/metadata.json,appendix_supporting,test,814,keep as supporting evidence
+tests/fixtures/mob_import_valid/results.csv,appendix_supporting,test,375,keep as supporting evidence
+tests/fixtures/openr_import_valid/metadata.json,appendix_supporting,test,847,keep as supporting evidence
+tests/fixtures/openr_import_valid/results.csv,appendix_supporting,test,451,keep as supporting evidence
+tests/fixtures/rest_mcts_import_valid/metadata.json,appendix_supporting,test,906,keep as supporting evidence
+tests/fixtures/rest_mcts_import_valid/results.csv,appendix_supporting,test,460,keep as supporting evidence
+tests/fixtures/tot_matched_budget_baseline_fixture/manifest.json,appendix_supporting,test,334,keep as supporting evidence
+tests/fixtures/tot_matched_budget_baseline_fixture/pairwise_statistical_tests.csv,appendix_supporting,test,288,keep as supporting evidence
+tests/fixtures/tot_matched_budget_baseline_fixture/per_dataset_budget_summary.csv,appendix_supporting,test,380,keep as supporting evidence
+tests/fixtures/tree_plv_import_valid/metadata.json,appendix_supporting,test,998,keep as supporting evidence
+tests/fixtures/tree_plv_import_valid/results.csv,appendix_supporting,test,527,keep as supporting evidence
+tests/fixtures/when_solve_when_verify_import_valid/metadata.json,appendix_supporting,test,758,keep as supporting evidence
+tests/fixtures/when_solve_when_verify_import_valid/results.csv,appendix_supporting,test,567,keep as supporting evidence
+tests/test_anti_collapse_calibration_sweep.py,appendix_supporting,test,3322,keep as supporting evidence
+tests/test_bounded_real_trace_workflow.py,appendix_supporting,test,7670,keep as supporting evidence
+tests/test_bruteforce_branch_allocator_learning.py,appendix_supporting,test,28277,keep as supporting evidence
+tests/test_bruteforce_branch_label_generator.py,appendix_supporting,test,4632,keep as supporting evidence
+tests/test_case_split_direction_aware.py,appendix_supporting,test,1593,keep as supporting evidence
+tests/test_claim_safety_statistical_table.py,appendix_supporting,test,5289,keep as supporting evidence
+tests/test_cohere_coverage_generation_ablation.py,appendix_supporting,test,4059,keep as supporting evidence
+tests/test_cohere_direct_reserve_validation.py,diagnostic_current,test,4666,keep; label diagnostic-only
+tests/test_conformal_thinking_mode_a.py,appendix_supporting,test,1955,keep as supporting evidence
+tests/test_dataset_experiment_readiness.py,appendix_supporting,test,1945,keep as supporting evidence
+tests/test_dataset_registry.py,appendix_supporting,test,4464,keep as supporting evidence
+tests/test_detailed_loss_case_package.py,appendix_supporting,test,3658,keep as supporting evidence
+tests/test_direct_reserve_candidate_scorer.py,diagnostic_current,test,9006,keep; label diagnostic-only
+tests/test_direct_reserve_gate_rerank.py,diagnostic_current,test,2556,keep; label diagnostic-only
+tests/test_direct_reserve_margin_gated.py,diagnostic_current,test,3688,keep; label diagnostic-only
+tests/test_direction_combinatorics_guard.py,appendix_supporting,test,4266,keep as supporting evidence
+tests/test_disjoint_direct_reserve_scorer_planner.py,diagnostic_current,test,3884,keep; label diagnostic-only
+tests/test_diversity_needed_feasibility.py,appendix_supporting,test,619,keep as supporting evidence
+tests/test_external_baseline_protocols.py,appendix_supporting,test,15499,keep as supporting evidence
+tests/test_family_normalized_rerank.py,appendix_supporting,test,5428,keep as supporting evidence
+tests/test_fresh_gsm8k_direct_reserve_scorer_planner.py,diagnostic_current,test,3736,keep; label diagnostic-only
+tests/test_frontier_router.py,appendix_supporting,test,4004,keep as supporting evidence
+tests/test_frontier_target_construction_labels.py,appendix_supporting,test,2789,keep as supporting evidence
+tests/test_frontier_target_construction_resume.py,appendix_supporting,test,4762,keep as supporting evidence
+tests/test_frontier_target_construction_stop_vs_act.py,appendix_supporting,test,2373,keep as supporting evidence
+tests/test_hard_early_root_depth2_coverage.py,appendix_supporting,test,12010,keep as supporting evidence
+tests/test_hard_max_family_expansions_cap.py,appendix_supporting,test,5346,keep as supporting evidence
+tests/test_held_out_surface_generalization_claim_safety.py,appendix_supporting,test,2671,keep as supporting evidence
+tests/test_learned_branch_scorer_pipeline.py,appendix_supporting,test,3569,keep as supporting evidence
+tests/test_learning_how_hard_to_think_mode_a.py,appendix_supporting,test,1997,keep as supporting evidence
+tests/test_low_marginal_gain_family_cooldown.py,appendix_supporting,test,1734,keep as supporting evidence
+tests/test_non_math_dataset_expansion.py,appendix_supporting,test,3970,keep as supporting evidence
+tests/test_non_math_external_validity_experiment.py,appendix_supporting,test,2564,keep as supporting evidence
+tests/test_paper_artifact_runner_claim_safety_integration.py,appendix_supporting,test,555,keep as supporting evidence
+tests/test_real_model_quantitative_audit_table.py,appendix_supporting,test,3093,keep as supporting evidence
+tests/test_real_model_token_accounting_validation_smoke.py,appendix_supporting,test,2720,keep as supporting evidence
+tests/test_reasoning_diversity_bonus.py,appendix_supporting,test,4440,keep as supporting evidence
+tests/test_repository_structure.py,appendix_supporting,test,940,keep as supporting evidence
+tests/test_shallow_exhaustive_probe_methods.py,appendix_supporting,test,1688,keep as supporting evidence
+tests/test_ten_case_loss_deep_dive.py,appendix_supporting,test,849,keep as supporting evidence
+tests/test_tot_matched_budget_baseline.py,appendix_supporting,test,2892,keep as supporting evidence
+tests/test_trace_level_learned_branch_scorer_pipeline.py,appendix_supporting,test,6851,keep as supporting evidence
+tests/test_training_free_difficulty_proxies_mode_a.py,appendix_supporting,test,1260,keep as supporting evidence
+tests/test_typed_strategy_seeded.py,appendix_supporting,test,5872,keep as supporting evidence
+tests/test_unified_claim_safety_statistical_audit.py,appendix_supporting,test,3373,keep as supporting evidence

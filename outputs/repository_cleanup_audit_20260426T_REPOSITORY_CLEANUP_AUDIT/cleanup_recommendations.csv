@@ -1,0 +1,6 @@
+topic,recommendation
+canonical_claims,Use paper artifacts and paper runner only for headline claims.
+learned_scorer,Keep RF/pairwise learned scorer diagnostic-current; HGB should not be recommended.
+non_math,Treat Wulver/non-math evidence as provenance-only or appendix-supporting until rerun with domain checks.
+privacy,Scrub or exclude high/medium identity-scan findings before anonymous supplement release.
+cleanup,Do not delete timestamped evidence; consolidate interpretation in docs first.
