@@ -174,3 +174,5 @@ terminals/
 !outputs/fresh_gsm8k_direct_reserve_scorer_plan_*/**/*
 !outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/
 !outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/**/*
+!outputs/repository_cleanup_audit_*/
+!outputs/repository_cleanup_audit_*/**/*
