@@ -1,0 +1,34 @@
+{
+  "both_wrong_cases": 7,
+  "calibrated_near_direct_frontier_gate_v1_accuracy": 0.7,
+  "direct_reserve_frontier_gate_v1_accuracy": 0.6666666666666666,
+  "direct_reserve_frontier_gate_v2_accuracy": 0.7333333333333333,
+  "external_l1_max_accuracy": 0.7,
+  "frontier_better_than_l1_cases": 5,
+  "gold_absent_from_frontier_in_l1_better_cases": 0,
+  "l1_answer_present_but_not_selected_in_l1_better_cases": 6,
+  "l1_better_than_strict_f3_cases": 6,
+  "l1_better_union_cases": 9,
+  "matched_examples": 30,
+  "near_direct_reserve_frontier_gate_v1_accuracy": 0.7333333333333333,
+  "recommended_next_algorithmic_fix": "better direct preservation plus verifier/answer selection calibration; gold is present in the traced frontier support for these L1-better cases, so selection/preservation is the immediate bottleneck.",
+  "strict_f3_accuracy": 0.5666666666666667,
+  "top_3_failure_labels": [
+    [
+      "insufficient_branch_diversity",
+      13
+    ],
+    [
+      "unknown_needs_manual_review",
+      5
+    ],
+    [
+      "direct_answer_should_have_been_preserved",
+      3
+    ]
+  ],
+  "trace_index_rows": 90,
+  "trace_json_collision_note": "trace JSON filenames are example/method-qualified, not seed/budget-qualified; CSV tables and per_example_records are authoritative.",
+  "trace_json_file_count": 15,
+  "wrong_frontier_answer_more_supported_than_gold": 1
+}
