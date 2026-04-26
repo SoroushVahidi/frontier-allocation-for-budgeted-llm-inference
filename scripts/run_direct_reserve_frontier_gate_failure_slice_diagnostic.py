@@ -97,6 +97,10 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _display_path(path: Path) -> str:
+    return str(path.relative_to(REPO_ROOT) if path.is_relative_to(REPO_ROOT) else path)
+
+
 def _bool_int(value: Any) -> int:
     if isinstance(value, bool):
         return int(value)
@@ -380,7 +384,7 @@ def _write_status_doc(out_dir: Path, summary: dict[str, Any]) -> None:
         interpretation = "method copies or matches external_l1_max; do not overclaim"
     text = (
         "# DIRECT_RESERVE_FRONTIER_GATE_FAILURE_SLICE_STATUS\n\n"
-        f"- Output directory: `{out_dir.relative_to(REPO_ROOT)}`\n"
+        f"- Output directory: `{_display_path(out_dir)}`\n"
         f"- Diagnostic type: `{mode}`\n"
         f"- Matched examples: {summary['matched_examples']}\n"
         f"- `external_l1_max` accuracy: {summary['external_l1_max_accuracy']:.4f}\n"
@@ -404,6 +408,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--diagnostic-dir", default=str(DEFAULT_DIAGNOSTIC_DIR.relative_to(REPO_ROOT)))
     p.add_argument("--output-root", default="outputs")
     p.add_argument("--allow-real-api", action="store_true", help="Reserved flag; default run is strictly cached/offline.")
+    p.add_argument("--skip-status-doc", action="store_true", help=argparse.SUPPRESS)
     return p.parse_args()
 
 
@@ -451,8 +456,8 @@ def main() -> int:
         {
             "artifact_family": "direct_reserve_frontier_gate_failure_slice",
             "timestamp": args.timestamp,
-            "source_dir": str(source_dir.relative_to(REPO_ROOT) if source_dir.is_relative_to(REPO_ROOT) else source_dir),
-            "diagnostic_dir": str(diagnostic_dir.relative_to(REPO_ROOT) if diagnostic_dir.is_relative_to(REPO_ROOT) else diagnostic_dir),
+            "source_dir": _display_path(source_dir),
+            "diagnostic_dir": _display_path(diagnostic_dir),
             "real_api_allowed": bool(args.allow_real_api),
             "real_api_used": False,
             "diagnostic_type": summary["diagnostic_type"],
@@ -467,7 +472,8 @@ def main() -> int:
             ],
         },
     )
-    _write_status_doc(out_dir, summary)
+    if not args.skip_status_doc:
+        _write_status_doc(out_dir, summary)
     print(f"Wrote {summary['diagnostic_type']} to {out_dir}")
     return 0
 

@@ -91,6 +91,7 @@ def test_summary_metrics_are_consistent_with_per_case_rows(tmp_path: Path) -> No
             str(out_root),
             "--timestamp",
             "CONSISTENT",
+            "--skip-status-doc",
         ],
         cwd=REPO,
     )
@@ -123,6 +124,7 @@ def test_no_real_api_calls_are_made_unless_flag_is_passed(tmp_path: Path) -> Non
             str(out_root),
             "--timestamp",
             "OFFLINE",
+            "--skip-status-doc",
         ],
         cwd=REPO,
         env=env,

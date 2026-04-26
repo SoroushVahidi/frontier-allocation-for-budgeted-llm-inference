@@ -1,6 +1,6 @@
 # DIRECT_RESERVE_FRONTIER_GATE_FAILURE_SLICE_STATUS
 
-- Output directory: `outputs/direct_reserve_frontier_gate_failure_slice_20260426T210345Z`
+- Output directory: `outputs/direct_reserve_frontier_gate_failure_slice_20260426T210544Z`
 - Diagnostic type: `diagnostic_limited_prediction_level`
 - Matched examples: 30
 - `external_l1_max` accuracy: 0.7667
