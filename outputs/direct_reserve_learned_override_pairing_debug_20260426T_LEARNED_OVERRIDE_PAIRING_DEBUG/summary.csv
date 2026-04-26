@@ -1,0 +1,2 @@
+validation_output,n_cases,candidate_pool_diff_count,fallback_mismatch_count,metadata_consistency_issue_count,unpaired_or_stochastic_candidate_pool_count,mismatch_reasons
+/workspace/outputs/cohere_direct_reserve_validation_learned_override_tiny_real_20260426T_LEARNED_OVERRIDE_TINY_REAL,10,3,0,0,3,"{""answer_normalization_diff"": 2, ""candidate_pool_differs"": 3, ""none"": 5}"

@@ -31,6 +31,12 @@ Fresh GSM8K validation used 20 new problem IDs with 0 overlap against prior scor
 
 The runtime default is a conservative learned-score margin threshold of `0.05`. Offline validation keeps the threshold configurable through `scripts/run_direct_reserve_learned_override_eval.py --thresholds`.
 
+## Runtime pairing invariant
+
+`direct_reserve_strong_plus_diverse_learned_override_v1` must be a final-selector wrapper around the same candidate pool produced by `direct_reserve_strong_plus_diverse_v1`, not a different generator. For any single candidate pool, if the learned override is disabled, unavailable, missing required features, below threshold, or otherwise not triggered, the final selected answer must equal the base plus-diverse selected answer recorded in `base_selected_answer`.
+
+The tiny real Cohere validation exposed an evaluation pairing issue: the runner executed base plus-diverse and learned-override as separate stochastic API calls, so their candidate pools could differ even when the constructor settings matched. Its method-level 0.80 vs 0.50 comparison is therefore an unpaired generation delta, not evidence that the learned selector degraded a shared candidate pool. Future real validation should use paired candidate pools or deterministic replay before interpreting base-vs-learned differences as selector effects.
+
 ## Offline threshold sweep
 
 Artifact path: `outputs/direct_reserve_learned_override_eval_20260426T_LEARNED_OVERRIDE_DIAGNOSTIC/`.

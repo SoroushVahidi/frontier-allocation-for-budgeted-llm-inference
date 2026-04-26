@@ -58,6 +58,10 @@ def _as_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
+def _selected_gold(answer: Any, gold: Any) -> int:
+    return int(str(answer or "").strip() != "" and str(answer or "").strip() == str(gold or "").strip())
+
+
 def _key(row: dict[str, Any]) -> tuple[str, int, int]:
     return (str(row.get("example_id", "")), _as_int(row.get("seed", 0)), _as_int(row.get("budget", 0)))
 
@@ -121,10 +125,15 @@ def build_eval(validation_dir: Path, out_dir: Path, plan_dir: Path | None) -> di
         triggered = _as_int(l.get("learned_override_triggered", 0))
         available = _as_int(l.get("learned_override_available", 0))
         missing = _missing_fallback(l)
+        gold = l.get("gold_answer") or b.get("gold_answer") or ""
+        pre_override_answer = l.get("base_selected_answer", "")
+        final_answer = l.get("final_selected_answer_after_learned_override") or l.get("normalized_selected_answer") or ""
+        pre_override_ok = _selected_gold(pre_override_answer, gold)
         degradation = int(base_ok == 1 and learned_ok == 0)
         improvement = int(base_ok == 0 and learned_ok == 1)
-        selector_degradation = int(triggered == 1 and degradation == 1)
-        selector_improvement = int(triggered == 1 and improvement == 1)
+        selector_degradation = int(triggered == 1 and pre_override_ok == 1 and learned_ok == 0)
+        selector_improvement = int(triggered == 1 and pre_override_ok == 0 and learned_ok == 1)
+        fallback_consistent = int(triggered == 1 or str(final_answer) == str(pre_override_answer))
         stratum = str(l.get("stratum") or b.get("stratum") or "")
         row = {
             "example_id": key[0],
@@ -132,21 +141,23 @@ def build_eval(validation_dir: Path, out_dir: Path, plan_dir: Path | None) -> di
             "budget": key[2],
             "question": l.get("question") or b.get("question") or "",
             "stratum": stratum,
-            "gold_answer": l.get("gold_answer") or b.get("gold_answer") or "",
+            "gold_answer": gold,
             "base_selected_answer": b.get("normalized_selected_answer") or b.get("final_selected_answer") or "",
             "learned_method_selected_answer": l.get("normalized_selected_answer") or l.get("final_selected_answer") or "",
-            "runtime_pre_override_answer": l.get("base_selected_answer", ""),
+            "runtime_pre_override_answer": pre_override_answer,
             "learned_selected_answer": l.get("learned_selected_answer", ""),
-            "final_selected_answer": l.get("final_selected_answer_after_learned_override") or l.get("normalized_selected_answer") or "",
+            "final_selected_answer": final_answer,
             "base_selected_gold": base_ok,
+            "runtime_pre_override_selected_gold": pre_override_ok,
             "learned_selected_gold": learned_ok,
             "override_available": available,
             "override_triggered": triggered,
             "override_available_not_triggered": int(available == 1 and triggered == 0),
-            "improvement_vs_base": improvement,
-            "degradation_vs_base": degradation,
-            "selector_triggered_improvement_vs_base": selector_improvement,
-            "selector_triggered_degradation_vs_base": selector_degradation,
+            "unpaired_generation_improvement_vs_base": improvement,
+            "unpaired_generation_degradation_vs_base": degradation,
+            "selector_triggered_improvement": selector_improvement,
+            "selector_triggered_degradation": selector_degradation,
+            "no_override_fallback_consistent": fallback_consistent,
             "control_degradation": int(degradation and stratum == "control_correct"),
             "selector_triggered_control_degradation": int(selector_degradation and stratum == "control_correct"),
             "missing_feature_or_model_fallback": int(missing),
@@ -174,13 +185,14 @@ def build_eval(validation_dir: Path, out_dir: Path, plan_dir: Path | None) -> di
             "learned_override_selected_gold_rate": sum(_as_int(r["learned_selected_gold"]) for r in comparison) / max(1, n),
             "override_available_count": sum(_as_int(r["override_available"]) for r in comparison),
             "override_count": sum(_as_int(r["override_triggered"]) for r in comparison),
-            "improvement_count": sum(_as_int(r["improvement_vs_base"]) for r in comparison),
-            "degradation_count": sum(_as_int(r["degradation_vs_base"]) for r in comparison),
-            "selector_triggered_improvement_count": sum(_as_int(r["selector_triggered_improvement_vs_base"]) for r in comparison),
-            "selector_triggered_degradation_count": sum(_as_int(r["selector_triggered_degradation_vs_base"]) for r in comparison),
+            "unpaired_generation_improvement_count": sum(_as_int(r["unpaired_generation_improvement_vs_base"]) for r in comparison),
+            "unpaired_generation_degradation_count": sum(_as_int(r["unpaired_generation_degradation_vs_base"]) for r in comparison),
+            "selector_triggered_improvement_count": sum(_as_int(r["selector_triggered_improvement"]) for r in comparison),
+            "selector_triggered_degradation_count": sum(_as_int(r["selector_triggered_degradation"]) for r in comparison),
             "control_degradation_count": sum(_as_int(r["control_degradation"]) for r in comparison),
             "selector_triggered_control_degradation_count": sum(_as_int(r["selector_triggered_control_degradation"]) for r in comparison),
             "override_available_not_triggered_count": sum(_as_int(r["override_available_not_triggered"]) for r in comparison),
+            "no_override_fallback_mismatch_count": sum(1 for r in comparison if _as_int(r["override_triggered"]) == 0 and _as_int(r["no_override_fallback_consistent"]) == 0),
             "missing_feature_or_model_fallback_count": sum(_as_int(r["missing_feature_or_model_fallback"]) for r in comparison),
             "learned_override_margin_min": min(margins) if margins else 0.0,
             "learned_override_margin_mean": sum(margins) / max(1, len(margins)),
@@ -193,8 +205,8 @@ def build_eval(validation_dir: Path, out_dir: Path, plan_dir: Path | None) -> di
     _write_csv(out_dir / "summary.csv", summary)
     _write_csv(out_dir / "per_case_comparison.csv", comparison)
     _write_csv(out_dir / "override_cases.csv", [r for r in comparison if _as_int(r["override_triggered"]) == 1])
-    _write_csv(out_dir / "improvement_cases.csv", [r for r in comparison if _as_int(r["improvement_vs_base"]) == 1])
-    _write_csv(out_dir / "degradation_cases.csv", [r for r in comparison if _as_int(r["degradation_vs_base"]) == 1])
+    _write_csv(out_dir / "improvement_cases.csv", [r for r in comparison if _as_int(r["unpaired_generation_improvement_vs_base"]) == 1])
+    _write_csv(out_dir / "degradation_cases.csv", [r for r in comparison if _as_int(r["unpaired_generation_degradation_vs_base"]) == 1])
     _write_csv(out_dir / "control_degradation_cases.csv", [r for r in comparison if _as_int(r["control_degradation"]) == 1])
     _write_csv(out_dir / "missing_feature_cases.csv", [r for r in comparison if _as_int(r["missing_feature_or_model_fallback"]) == 1])
     _write_csv(out_dir / "available_not_triggered_cases.csv", [r for r in comparison if _as_int(r["override_available_not_triggered"]) == 1])
@@ -227,7 +239,8 @@ def main() -> None:
         f"base={summary['base_selected_gold_rate']:.3f} "
         f"learned={summary['learned_override_selected_gold_rate']:.3f} "
         f"overrides={summary['override_count']} "
-        f"degradations={summary['degradation_count']}"
+        f"unpaired_degradations={summary['unpaired_generation_degradation_count']} "
+        f"selector_degradations={summary['selector_triggered_degradation_count']}"
     )
 
 

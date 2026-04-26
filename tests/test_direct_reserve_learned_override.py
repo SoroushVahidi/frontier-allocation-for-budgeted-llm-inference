@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import random
+import pickle
+from pathlib import Path
 
 import numpy as np
 
@@ -13,6 +15,7 @@ from scripts.direct_reserve_learned_override_utils import (
     build_runtime_answer_group_candidates,
     select_learned_override,
 )
+from scripts.run_direct_reserve_learned_override_runtime_eval import build_eval
 
 
 class _IdentityVectorizer:
@@ -62,6 +65,11 @@ class _FakeGenerator:
 
 def _payload() -> dict:
     return {"vectorizer": _IdentityVectorizer(), "rf": _SupportModel()}
+
+
+def _write_payload(path: Path) -> Path:
+    path.write_bytes(pickle.dumps(_payload()))
+    return path
 
 
 def _candidates() -> list[dict]:
@@ -176,3 +184,176 @@ def test_hgb_is_not_recommended_or_allowed_for_override() -> None:
     result = select_learned_override(_candidates(), base_selected_answer="1", model_payload={"hgb": object()}, model_type="hist_gboost")
     assert result.final_answer == "1"
     assert result.metadata["learned_override_reason"] == "hgb_not_allowed"
+
+
+def _direct_reserve_config(ctrl: DirectReserveGateRerankController) -> dict:
+    return {
+        "direct_prompt_style": ctrl.direct_prompt_style,
+        "direct_prompt_styles": tuple(ctrl.direct_prompt_styles),
+        "direct_reserve_attempts_override": ctrl.direct_reserve_attempts_override,
+        "direct_token_budget": ctrl.direct_token_budget,
+        "direct_token_per_action": ctrl.direct_token_per_action,
+        "gate_top_support_threshold": ctrl.gate_top_support_threshold,
+        "gate_top2_gap_threshold": ctrl.gate_top2_gap_threshold,
+        "gate_entropy_threshold": ctrl.gate_entropy_threshold,
+        "enable_margin_gate_fallback": ctrl.enable_margin_gate_fallback,
+        "margin_gate_min_support_gap": ctrl.margin_gate_min_support_gap,
+        "margin_gate_max_entropy": ctrl.margin_gate_max_entropy,
+        "margin_gate_require_multi_prompt_style": ctrl.margin_gate_require_multi_prompt_style,
+    }
+
+
+def _base_controller(answers: list[str], max_actions: int = 3) -> DirectReserveGateRerankController:
+    return DirectReserveGateRerankController(
+        _FakeGenerator(answers),
+        SimpleBranchScorer(ScoreConfig()),
+        max_actions,
+        strict_controller_factory=lambda remaining_budget: None,
+        direct_prompt_styles=["a", "b"],
+        direct_reserve_attempts_override=max_actions,
+        method_name="direct_reserve_strong_plus_diverse_v1",
+    )
+
+
+def _learned_controller(
+    answers: list[str],
+    *,
+    model_path: str,
+    margin: float = 0.05,
+    max_actions: int = 3,
+) -> DirectReserveGateRerankController:
+    return DirectReserveGateRerankController(
+        _FakeGenerator(answers),
+        SimpleBranchScorer(ScoreConfig()),
+        max_actions,
+        strict_controller_factory=lambda remaining_budget: None,
+        direct_prompt_styles=["a", "b"],
+        direct_reserve_attempts_override=max_actions,
+        enable_learned_override=True,
+        learned_override_model_path=model_path,
+        learned_override_margin=margin,
+        method_name="direct_reserve_strong_plus_diverse_learned_override_v1",
+    )
+
+
+def test_no_model_controller_fallback_equals_base() -> None:
+    base = _base_controller(["1", "2", "2"]).run("q", "2")
+    learned = _learned_controller(["1", "2", "2"], model_path="/tmp/does-not-exist.joblib").run("q", "2")
+
+    assert learned.prediction == base.prediction
+    assert learned.metadata["learned_override_available"] is False
+    assert learned.metadata["learned_override_triggered"] is False
+    assert learned.metadata["final_selected_answer"] == learned.metadata["base_selected_answer"]
+    assert learned.metadata["final_selected_answer"] == "2"
+
+
+def test_high_threshold_no_override_equals_base(tmp_path: Path) -> None:
+    model_path = _write_payload(tmp_path / "model.joblib")
+    base = _base_controller(["1", "2", "2"]).run("q", "2")
+    learned = _learned_controller(["1", "2", "2"], model_path=str(model_path), margin=999.0).run("q", "2")
+
+    assert learned.prediction == base.prediction
+    assert learned.metadata["learned_override_available"] is True
+    assert learned.metadata["learned_override_triggered"] is False
+    assert learned.metadata["final_selected_answer"] == learned.metadata["base_selected_answer"]
+    assert learned.metadata["final_selected_answer"] == "2"
+
+
+def test_missing_feature_fallback_metadata_preserves_base_answer() -> None:
+    cands = _candidates()
+    base_answer = "1"
+    cands[0].pop("answer_group_support")
+
+    result = select_learned_override(cands, base_selected_answer=base_answer, model_payload=_payload())
+
+    assert result.final_answer == base_answer
+    assert result.metadata["learned_override_triggered"] is False
+    assert result.metadata["final_selected_answer"] == base_answer
+    assert result.metadata["learned_override_reason"] == "missing_required_features"
+    assert "answer_group_support" in result.metadata["learned_override_missing_features"]
+
+
+def test_valid_high_margin_override_metadata_is_consistent() -> None:
+    result = select_learned_override(_candidates(), base_selected_answer="1", model_payload=_payload(), margin_threshold=0.01)
+
+    assert result.final_answer == "2"
+    assert result.metadata["base_selected_answer"] == "1"
+    assert result.metadata["learned_selected_answer"] == "2"
+    assert result.metadata["final_selected_answer"] == result.metadata["learned_selected_answer"]
+    assert result.metadata["learned_override_triggered"] is True
+    assert result.metadata["learned_override_reason"] == "margin_threshold_met"
+
+
+def test_direct_reserve_plus_diverse_registration_parity_before_selector() -> None:
+    specs = build_frontier_strategies(
+        generator_factory=lambda: _FakeGenerator(["1", "2"]),
+        budget=4,
+        adaptive_min_expand_grid=[],
+        rng=random.Random(0),
+        use_openai_api=False,
+        include_broad_diversity_aggregation_methods=True,
+    )
+    base = specs["direct_reserve_strong_plus_diverse_v1"]
+    learned = specs["direct_reserve_strong_plus_diverse_learned_override_v1"]
+
+    assert _direct_reserve_config(base) == _direct_reserve_config(learned)
+    assert base.enable_learned_override is False
+    assert learned.enable_learned_override is True
+
+
+def _write_rows(path: Path, rows: list[dict]) -> None:
+    fields: list[str] = []
+    for row in rows:
+        for key in row:
+            if key not in fields:
+                fields.append(key)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as f:
+        import csv
+
+        w = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
+
+
+def test_runtime_eval_labels_unpaired_no_trigger_delta_not_selector_degradation(tmp_path: Path) -> None:
+    validation_dir = tmp_path / "validation"
+    _write_rows(
+        validation_dir / "per_case_method_results.csv",
+        [
+            {
+                "example_id": "case_1",
+                "seed": 53,
+                "budget": 4,
+                "method": "direct_reserve_strong_plus_diverse_v1",
+                "gold_answer": "2",
+                "normalized_selected_answer": "2",
+                "gold_selected": 1,
+            },
+            {
+                "example_id": "case_1",
+                "seed": 53,
+                "budget": 4,
+                "method": "direct_reserve_strong_plus_diverse_learned_override_v1",
+                "gold_answer": "2",
+                "normalized_selected_answer": "1.5",
+                "gold_selected": 0,
+                "base_selected_answer": "1.5",
+                "learned_selected_answer": "1.5",
+                "final_selected_answer_after_learned_override": "1.5",
+                "learned_override_available": 1,
+                "learned_override_triggered": 0,
+                "learned_override_margin": 0.15,
+                "learned_override_reason": "learned_matches_base",
+            },
+        ],
+    )
+    _write_rows(validation_dir / "candidate_branch_table.csv", [])
+    _write_rows(validation_dir / "answer_group_summary.csv", [])
+    _write_rows(validation_dir / "coverage_summary.csv", [{"real_api_enabled": 1}])
+
+    summary = build_eval(validation_dir=validation_dir, out_dir=tmp_path / "eval", plan_dir=None)
+
+    assert summary["unpaired_generation_degradation_count"] == 1
+    assert summary["selector_triggered_degradation_count"] == 0
+    assert summary["no_override_fallback_mismatch_count"] == 0

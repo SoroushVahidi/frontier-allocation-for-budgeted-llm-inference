@@ -178,6 +178,8 @@ terminals/
 !outputs/cohere_direct_reserve_validation_learned_override_tiny_real_*/**/*
 !outputs/direct_reserve_learned_override_runtime_eval_*/
 !outputs/direct_reserve_learned_override_runtime_eval_*/**/*
+!outputs/direct_reserve_learned_override_pairing_debug_*/
+!outputs/direct_reserve_learned_override_pairing_debug_*/**/*
 !outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/
 !outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/**/*
 !outputs/repository_cleanup_audit_*/
