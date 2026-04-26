@@ -53,6 +53,19 @@ Scan-first map for manuscript artifact usage and regeneration provenance.
 3. Verify script + doc provenance before citing numbers.
 4. Keep surface qualifier on any strict method claim.
 
+## Canonical vs non-canonical output roots
+
+- Canonical paper-facing roots:
+  - `outputs/paper_tables/`
+  - `outputs/paper_plot_data/`
+  - `outputs/paper_figures/`
+- Appendix/supporting roots:
+  - task-specific `outputs/*` packages explicitly scoped by canonical docs.
+- Exploratory/provenance-only:
+  - historical timestamped packages not promoted by canonical docs.
+- Non-review/private/local-only:
+  - local caches, private runner outputs, machine-specific temporary directories.
+
 
 ## Claim-boundary note
 

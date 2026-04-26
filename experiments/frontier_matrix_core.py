@@ -16,6 +16,7 @@ from experiments.controllers import (
     BeamController,
     BestOfNController,
     DirectReserveGateRerankController,
+    DirectReserveLearnedOverrideController,
     GlobalDiversityAggregationController,
     GreedyController,
     IntermediateTrapAwareNearTieController,
@@ -1137,29 +1138,42 @@ def build_frontier_strategies(
             gate_entropy_threshold=-1.0,
             method_name="direct_reserve_strong_v1",
         )
-        specs["direct_reserve_strong_plus_diverse_v1"] = DirectReserveGateRerankController(
-            generator_factory(),
-            scorer,
-            budget,
-            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+        direct_reserve_plus_diverse_kwargs: dict[str, Any] = {
+            "strict_controller_factory": lambda remaining_budget: GlobalDiversityAggregationController(
                 generator_factory(),
                 scorer,
                 remaining_budget,
                 method_name="direct_reserve_strong_plus_diverse_v1_inner_strict_f3",
                 **strict_f3_base_cfg,
             ),
-            direct_prompt_styles=[
+            "direct_prompt_styles": [
                 "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
                 "Then output only the final numeric answer in \\boxed{}.",
                 "Use a different decomposition than your first attempt (e.g., equation-first or table-first), "
                 "cross-check the result independently, then output only the final numeric answer in \\boxed{}.",
             ],
-            direct_reserve_attempts_override=2,
-            direct_token_budget=640,
-            gate_top_support_threshold=2.0,
-            gate_top2_gap_threshold=2.0,
-            gate_entropy_threshold=-1.0,
+            "direct_reserve_attempts_override": 2,
+            "direct_token_budget": 640,
+            "gate_top_support_threshold": 2.0,
+            "gate_top2_gap_threshold": 2.0,
+            "gate_entropy_threshold": -1.0,
+        }
+        specs["direct_reserve_strong_plus_diverse_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
             method_name="direct_reserve_strong_plus_diverse_v1",
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_strong_plus_diverse_learned_override_v1"] = DirectReserveLearnedOverrideController(
+            base_controller=DirectReserveGateRerankController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name="direct_reserve_strong_plus_diverse_v1",
+                **direct_reserve_plus_diverse_kwargs,
+            ),
+            method_name="direct_reserve_strong_plus_diverse_learned_override_v1",
         )
         specs["direct_reserve_strong_plus_diverse_learned_override_v1"] = DirectReserveGateRerankController(
             generator_factory(),

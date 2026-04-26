@@ -11,10 +11,12 @@ This file is the source-of-truth guide for interpreting repository results for N
 - `outputs/paper_facing_baseline_tables/`
 
 ### Canonical regeneration scripts
-- `python scripts/paper/run_all_neurips_paper_artifacts.py`
-- `python scripts/run_broader_strict_phased_default_decision_eval.py`
-- `python scripts/run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py`
-- `python scripts/build_paper_facing_baseline_tables.py`
+- Canonical paper package regeneration:
+  - `python scripts/paper/run_all_neurips_paper_artifacts.py`
+- Canonical supporting evidence generators (outside paper-output roots but claim-scoped by docs):
+  - `python scripts/run_broader_strict_phased_default_decision_eval.py`
+  - `python scripts/run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py`
+  - `python scripts/build_paper_facing_baseline_tables.py`
 
 ### Canonical supporting reports/docs
 - `docs/PAPER_SOURCE_OF_TRUTH.md`
@@ -24,6 +26,11 @@ This file is the source-of-truth guide for interpreting repository results for N
 
 ### Canonical definition
 An output is canonical only if it is in the promoted paper-facing directories above or explicitly referenced by the source-of-truth documents.
+
+### Method-surface contract (always preserve)
+- Manuscript-facing matched-surface representative: `strict_f3`
+- Broader operational default on a different surface: `strict_gate1_cap_k6`
+- Margin status on matched-surface slices: fragile/non-decisive unless canonical statistical evidence states otherwise.
 
 ---
 
@@ -107,3 +114,12 @@ Use these for mechanism diagnosis, not final method claims, unless revalidated a
 
 ### Explicit non-canonical item
 - A learned **answer-group reranker** is not canonical at present unless later implemented, validated, and promoted via canonical evidence paths.
+
+### Paired selector diagnostics (new)
+- Use `scripts/run_direct_reserve_paired_selector_eval.py` for interpretable learned-selector evaluation.
+- It compares selectors on the **same candidate pools** from `candidate_branch_table.csv` (no independent stochastic reruns).
+- Current paired diagnostic packages:
+  - `outputs/direct_reserve_paired_selector_eval_20260426T_REPAIRED_FIRST/`
+  - `outputs/direct_reserve_paired_selector_eval_20260426T_REPAIRED_OVERLAP_DIAGNOSTIC/`
+- Status note:
+  - `docs/DIRECT_RESERVE_PAIRED_SELECTOR_EVAL_STATUS.md`

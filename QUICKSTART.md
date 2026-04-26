@@ -14,6 +14,7 @@ Shortest reliable onboarding path.
 
 - Manuscript-facing matched-surface internal winner: `strict_f3`
 - Broader operational default on a different surface: `strict_gate1_cap_k6`
+- The `strict_f3` vs `strict_gate1_cap_k6` margin on matched-surface slices is currently fragile/non-decisive.
 
 These are valid on different decision surfaces and should not be merged.
 
@@ -46,3 +47,9 @@ Read:
 - `docs/PAPER_OPEN_GAPS_AND_RISKS.md`
 
 Rule: if a result is not promoted by canonical docs, treat it as supportive or historical.
+
+## 6) Reviewer-facing scope check
+
+Before final narrative edits, use:
+
+- `docs/REVIEWER_REPRO_AND_SCOPE_GUIDE.md`

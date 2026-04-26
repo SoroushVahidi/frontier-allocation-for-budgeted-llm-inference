@@ -7,7 +7,7 @@ from pathlib import Path
 from collections import Counter, defaultdict
 import math
 import re
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 import json
 
 import numpy as np
@@ -5621,6 +5621,133 @@ class DirectReserveGateRerankController(BaseController):
             verifications=verifications,
             avg_surviving_branches=float(frontier_result.avg_surviving_branches if frontier_result else 1.0),
             budget_exhausted=bool(actions_used >= self.max_actions),
+            metadata=metadata,
+        )
+
+
+class DirectReserveLearnedOverrideController(BaseController):
+    """Diagnostic wrapper that applies learned selection on top of base plus-diverse output.
+
+    Invariant: when override is unavailable or not triggered, final answer MUST equal base answer.
+    """
+
+    def __init__(
+        self,
+        *,
+        base_controller: DirectReserveGateRerankController,
+        method_name: str = "direct_reserve_strong_plus_diverse_learned_override_v1",
+        margin_threshold: float = 0.25,
+        selector_fn: Callable[[list[dict[str, Any]]], tuple[int | None, float, dict[str, float]]] | None = None,
+        required_feature_keys: list[str] | None = None,
+    ) -> None:
+        super().__init__(base_controller.generator, base_controller.scorer, base_controller.max_actions)
+        self.base_controller = base_controller
+        self.method_name = method_name
+        self.margin_threshold = float(margin_threshold)
+        self.selector_fn = selector_fn
+        self.required_feature_keys = list(required_feature_keys or ["answer_group_support", "branch_depth", "score"])
+
+    @staticmethod
+    def _candidate_rows_from_metadata(metadata: dict[str, Any]) -> list[dict[str, Any]]:
+        states = list(metadata.get("final_branch_states", []))
+        counts: Counter[str] = Counter(
+            str(s.get("group_key", "")).strip().lower() or "__unknown__" for s in states if str(s.get("predicted_answer", "")).strip()
+        )
+        rows: list[dict[str, Any]] = []
+        for idx, state in enumerate(states):
+            pred = str(state.get("predicted_answer", "")).strip()
+            if not pred:
+                continue
+            group_key = str(state.get("group_key", "")).strip().lower() or _normalize_answer(pred) or "__unknown__"
+            rows.append(
+                {
+                    "candidate_index": idx,
+                    "predicted_answer": pred,
+                    "group_key": group_key,
+                    "answer_group_support": float(counts.get(group_key, 0)),
+                    "branch_depth": float(state.get("branch_depth", 0) or 0),
+                    "score": float(state.get("score", 0.0) or 0.0),
+                    "selected": int(state.get("selected", 0) or 0),
+                    "source": str(state.get("source", "")),
+                }
+            )
+        return rows
+
+    def _default_selector(self, rows: list[dict[str, Any]]) -> tuple[int | None, float, dict[str, float]]:
+        if not rows:
+            return None, 0.0, {}
+        scores: dict[str, float] = {}
+        for r in rows:
+            key = str(r["candidate_index"])
+            scores[key] = 1.0 * float(r["answer_group_support"]) + 0.20 * float(r["score"]) - 0.02 * float(r["branch_depth"])
+        ordered = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
+        best_idx = int(ordered[0][0]) if ordered else None
+        margin = float(ordered[0][1] - ordered[1][1]) if len(ordered) > 1 else float(ordered[0][1] if ordered else 0.0)
+        return best_idx, margin, scores
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        base_result = self.base_controller.run(question, gold_answer)
+        base_metadata = dict(base_result.metadata or {})
+        base_answer = base_result.prediction
+
+        rows = self._candidate_rows_from_metadata(base_metadata)
+        missing_features: set[str] = set()
+        for row in rows:
+            for key in self.required_feature_keys:
+                if key not in row or row.get(key) is None:
+                    missing_features.add(key)
+
+        learned_available = bool(self.selector_fn is not None)
+        selector_reason = "selector_unavailable"
+        learned_idx: int | None = None
+        learned_margin = 0.0
+        learned_scores: dict[str, float] = {}
+        learned_selected_answer = base_answer
+        triggered = False
+
+        if missing_features:
+            selector_reason = "missing_required_features"
+        elif not rows:
+            selector_reason = "no_candidates"
+        elif learned_available:
+            learned_idx, learned_margin, learned_scores = self.selector_fn(rows)  # type: ignore[misc]
+            if learned_idx is not None and 0 <= int(learned_idx) < len(rows):
+                learned_selected_answer = str(rows[int(learned_idx)].get("predicted_answer", "")) or base_answer
+            triggerable = bool(learned_selected_answer is not None and learned_selected_answer != base_answer)
+            if triggerable and float(learned_margin) >= float(self.margin_threshold):
+                triggered = True
+                selector_reason = "margin_override"
+            else:
+                selector_reason = "below_margin_or_same_answer"
+        else:
+            selector_reason = "selector_unavailable"
+
+        final_answer = learned_selected_answer if triggered else base_answer
+        metadata = dict(base_metadata)
+        metadata.update(
+            {
+                "learned_override_available": bool(learned_available),
+                "learned_override_triggered": bool(triggered),
+                "learned_override_reason": str(selector_reason),
+                "learned_override_margin": float(learned_margin),
+                "learned_override_threshold": float(self.margin_threshold),
+                "learned_override_missing_features": sorted(missing_features),
+                "base_selected_answer": base_answer,
+                "learned_selected_answer": learned_selected_answer,
+                "final_selected_answer": final_answer,
+                "learned_selector_scores": learned_scores,
+                "learned_selector_candidate_count": int(len(rows)),
+            }
+        )
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=int(base_result.actions_used),
+            expansions=int(base_result.expansions),
+            verifications=int(base_result.verifications),
+            avg_surviving_branches=float(base_result.avg_surviving_branches),
+            budget_exhausted=bool(base_result.budget_exhausted),
             metadata=metadata,
         )
 

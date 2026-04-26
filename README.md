@@ -17,6 +17,10 @@ Build and evaluate methods that allocate limited reasoning budget more effective
   - `outputs/paper_plot_data/`
   - `outputs/paper_figures/`
 - These are the primary sources for paper claims.
+- Surface distinction for claim safety:
+  - manuscript-facing matched-surface representative: `strict_f3`
+  - broader operational default on a different surface: `strict_gate1_cap_k6`
+  - their margin on matched-surface slices is fragile/non-decisive unless explicitly supported by canonical statistical evidence.
 
 ## Reproduce canonical outputs (local, no external API required)
 ```bash
@@ -42,6 +46,7 @@ Before writing manuscript text, read:
 - `docs/SAFE_CLAIMS_FOR_NEURIPS_2026.md`
 - `docs/RESULTS_GUIDE.md`
 - `docs/PAPER_SOURCE_OF_TRUTH.md`
+- `docs/REVIEWER_REPRO_AND_SCOPE_GUIDE.md`
 
 ## Repository organization and artifact classes
 For a reviewer-safe map of canonical, diagnostic, and provenance artifacts, see:

@@ -15,6 +15,7 @@ Canonical scope:
 
 - **Manuscript-facing matched-surface internal winner:** `strict_f3`
 - **Broader operational default on a different surface:** `strict_gate1_cap_k6`
+- **Matched-surface margin status:** fragile/non-decisive unless canonical statistical evidence explicitly supports a stronger statement.
 
 See:
 - [`INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`](INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md)
@@ -31,6 +32,7 @@ See:
 7. [`REPO_MAP.md`](REPO_MAP.md)
 8. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
 9. [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
+10. [`REVIEWER_REPRO_AND_SCOPE_GUIDE.md`](REVIEWER_REPRO_AND_SCOPE_GUIDE.md)
 
 ## Canonical first commands
 

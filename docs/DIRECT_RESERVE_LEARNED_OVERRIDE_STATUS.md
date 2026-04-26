@@ -1,55 +1,34 @@
-# Direct-reserve learned override status
-
-This note describes `direct_reserve_strong_plus_diverse_learned_override_v1`. It is diagnostic-only and not a canonical manuscript-facing method.
-
-## Motivation
-
-`direct_reserve_strong_plus_diverse_v1` already creates useful answer candidates, but support-only final selection can miss a discovered correct answer. The learned override asks a narrower runtime question: when a saved RF or pairwise candidate scorer strongly prefers a different answer group, can it safely override the base selector?
-
-## Relation to plus-diverse
-
-The learned override uses the same direct-reserve plus-diverse candidate generation path and applies the scorer only at final answer-group selection. If the model is missing, features are incomplete, the learned answer is invalid, or the learned score margin is below threshold, it returns the base plus-diverse answer.
-
-## Why margin-gated is not enough
-
-The heuristic margin-gated selector is useful as a comparison, but it is brittle: on the first slice it made 9 overrides with 3 degradations and 2 control degradations. The learned RF override at threshold 0.05 made 5 overrides with 5 improvements, 0 degradations, and 0 control degradations on the same slice.
-
-## Allowed learned models
-
-Recommended diagnostic scorers are:
-
-- `random_forest`
-- `pairwise_logit`
-
-HGB is excluded from recommendations because it degraded controls in the fresh scorer validation and the runtime override rejects HGB model types.
-
-## Fresh zero-overlap evidence
-
-Fresh GSM8K validation used 20 new problem IDs with 0 overlap against prior scorer slices. Base `direct_reserve_strong_plus_diverse_v1` selected gold at 0.60. Learned RF and pairwise reranking selected gold at 0.70, with 2 improvements, 0 degradations, and 0 control degradation.
-
-## Threshold behavior
-
-The runtime default is a conservative learned-score margin threshold of `0.05`. Offline validation keeps the threshold configurable through `scripts/run_direct_reserve_learned_override_eval.py --thresholds`.
+# Direct Reserve Learned Override Status
 
 ## Runtime pairing invariant
 
-`direct_reserve_strong_plus_diverse_learned_override_v1` must be a final-selector wrapper around the same candidate pool produced by `direct_reserve_strong_plus_diverse_v1`, not a different generator. For any single candidate pool, if the learned override is disabled, unavailable, missing required features, below threshold, or otherwise not triggered, the final selected answer must equal the base plus-diverse selected answer recorded in `base_selected_answer`.
+`direct_reserve_strong_plus_diverse_learned_override_v1` is diagnostic-only and must remain a selector wrapper around `direct_reserve_strong_plus_diverse_v1`, not a separate generator.
 
-The tiny real Cohere validation exposed an evaluation pairing issue: the runner executed base plus-diverse and learned-override as separate stochastic API calls, so their candidate pools could differ even when the constructor settings matched. Its method-level 0.80 vs 0.50 comparison is therefore an unpaired generation delta, not evidence that the learned selector degraded a shared candidate pool. Future real validation should use paired candidate pools or deterministic replay before interpreting base-vs-learned differences as selector effects.
+The required invariant is:
 
-## Offline threshold sweep
+- run the exact same candidate generation path as base plus-diverse,
+- preserve base selection metadata,
+- apply learned selector only on the already generated candidate pool,
+- if override is unavailable or does not trigger, return exactly the base selected answer.
 
-Artifact path: `outputs/direct_reserve_learned_override_eval_20260426T_LEARNED_OVERRIDE_DIAGNOSTIC/`.
+Tiny real validation indicated degradations while override did not trigger. That pattern signals a likely pairing/fallback inconsistency rather than learned-selector harm. The current fix centralizes learned override as a wrapper over a base plus-diverse controller instance and enforces fallback equality metadata (`base_selected_answer`, `learned_selected_answer`, `final_selected_answer`, `learned_override_triggered`).
 
-| Slice | Selector | Selected-gold | Overrides | Improvements | Degradations | Control degradations |
-|---|---:|---:|---:|---:|---:|---:|
-| first 20260426T150000Z | base plus-diverse | 0.60 | 0 | 0 | 0 | 0 |
-| first 20260426T150000Z | RF override margin 0.05 | 0.85 | 5 | 5 | 0 | 0 |
-| first 20260426T150000Z | pairwise offline rerank | 0.85 | 7 | 5 | 0 | 0 |
-| fresh zero-overlap | base plus-diverse | 0.60 | 0 | 0 | 0 | 0 |
-| fresh zero-overlap | RF override margin 0.05 | 0.70 | 4 | 2 | 0 | 0 |
-| fresh zero-overlap | pairwise offline rerank | 0.70 | 5 | 2 | 0 | 0 |
+Future real validation should use paired candidate pools or deterministic replay for interpretation. If base and learned methods are run as separate stochastic API calls, answer differences cannot be attributed to learned override behavior alone.
 
-## Current recommendation
+## Paired selector evaluation update
 
-Keep `direct_reserve_strong_plus_diverse_learned_override_v1` opt-in and diagnostic-only. The RF threshold-0.05 override is ready for a tiny real validation under the bounded Cohere-only policy, but it should not become default or canonical without broader fresh validation across more cases, seeds, and providers.
+Paired offline selector evaluation is now implemented via `scripts/run_direct_reserve_paired_selector_eval.py`. It evaluates base/support/learned selectors on the same candidate pools from direct-reserve validation artifacts and reports threshold-swept overrides, improvements, degradations, and control degradations.
+
+See:
+
+- `docs/DIRECT_RESERVE_PAIRED_SELECTOR_EVAL_STATUS.md`
+- `outputs/direct_reserve_paired_selector_eval_20260426T_REPAIRED_FIRST/`
+- `outputs/direct_reserve_paired_selector_eval_20260426T_REPAIRED_OVERLAP_DIAGNOSTIC/`
+
+Important clarification:
+
+- Wrapper implementation is correct (same generation path, selector post-hoc, exact no-trigger fallback).
+- Evaluation quality depends on paired candidate pools **and** correct artifact labeling.
+- In this checkout, `20260426T151700Z` is overlapping with first slice and must not be treated as true fresh evidence.
+- If the true fresh package is unavailable, current paired results remain useful diagnostics but are insufficient for fresh-generalization claims.
+

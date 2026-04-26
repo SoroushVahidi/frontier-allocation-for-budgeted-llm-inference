@@ -19,6 +19,12 @@ Canonical output directories:
 - `outputs/paper_plot_data/`
 - `outputs/paper_figures/`
 
+## Method-surface contract (claim-critical)
+
+- Manuscript-facing matched-surface representative: `strict_f3`.
+- Broader operational default on a different surface: `strict_gate1_cap_k6`.
+- The `strict_f3` vs `strict_gate1_cap_k6` matched-surface margin is currently fragile/non-decisive and should not be phrased as decisive superiority.
+
 ## Claim eligibility rules
 
 A claim is paper-facing only if:
@@ -29,3 +35,7 @@ A claim is paper-facing only if:
 ## Real-model evidence rule
 
 Real-model provider runs are **supporting/diagnostic real-model audits** only. They are **not evidence of universal dominance** and are **not token/latency/cost matched unless explicitly stated**.
+
+## Non-review/private/local-only class
+
+Artifacts in local-only folders, machine-specific caches, temporary debug outputs, and private execution environments are non-review evidence. They must never be used as claim-bearing manuscript evidence unless promoted through canonical documented regeneration.

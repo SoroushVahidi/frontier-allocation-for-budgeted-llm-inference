@@ -34,6 +34,10 @@ Live list of missing pieces before submission-quality evidence closure.
 4. **Manuscript consolidation debt**
    - Surface-specific claims (`strict_gate1_cap_k6` vs `strict_f3`) must remain explicitly separated across all sections.
 
+5. **Fresh paired-selector evidence gap**
+   - In this checkout, true fresh zero-overlap package `cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION` is not present.
+   - Available `20260426T151700Z` package overlaps with first slice and must be treated as overlap diagnostic, not fresh-generalization evidence.
+
 ## Risks to avoid
 
 - Accidentally presenting supportive-only artifacts as canonical headline evidence.
