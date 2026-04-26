@@ -1,0 +1,2 @@
+n_cases_compared,n_candidate_pool_differs,n_fallback_mismatch,n_metadata_issues,reason_candidate_pool_differs,reason_fallback_not_base_answer,reason_metadata_missing,reason_answer_normalization_diff,reason_seed_or_prompt_config_diff,reason_unknown
+0,0,0,20,0,0,20,0,0,0
