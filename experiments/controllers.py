@@ -5298,6 +5298,8 @@ class DirectReserveGateRerankController(BaseController):
         *,
         strict_controller_factory: callable,
         direct_prompt_style: str = "Let's think step by step and output the final answer within \boxed{}.",
+        direct_prompt_styles: list[str] | None = None,
+        direct_reserve_attempts_override: int | None = None,
         direct_token_budget: int = 512,
         direct_token_per_action: float = 64.0,
         gate_top_support_threshold: float = 0.75,
@@ -5308,6 +5310,10 @@ class DirectReserveGateRerankController(BaseController):
         super().__init__(generator, scorer, max_actions_per_problem)
         self.strict_controller_factory = strict_controller_factory
         self.direct_prompt_style = direct_prompt_style
+        self.direct_prompt_styles = [str(s).strip() for s in (direct_prompt_styles or []) if str(s).strip()]
+        self.direct_reserve_attempts_override = (
+            None if direct_reserve_attempts_override is None else max(1, int(direct_reserve_attempts_override))
+        )
         self.direct_token_budget = max(1, int(direct_token_budget))
         self.direct_token_per_action = max(1.0, float(direct_token_per_action))
         self.gate_top_support_threshold = float(gate_top_support_threshold)
@@ -5316,6 +5322,8 @@ class DirectReserveGateRerankController(BaseController):
         self.method_name = method_name
 
     def _direct_reserve_attempts(self) -> int:
+        if self.direct_reserve_attempts_override is not None:
+            return int(self.direct_reserve_attempts_override)
         if self.max_actions <= 4:
             return 1
         if self.max_actions <= 6:
@@ -5337,7 +5345,10 @@ class DirectReserveGateRerankController(BaseController):
         branch = self.generator.init_branch(f"direct_reserve_{idx}")
         actions = 0
         trace: list[dict[str, Any]] = []
-        prompt = f"{question}\n\n{self.direct_prompt_style} Think for maximum {self.direct_token_budget} tokens."
+        prompt_style = self.direct_prompt_style
+        if self.direct_prompt_styles:
+            prompt_style = self.direct_prompt_styles[idx % len(self.direct_prompt_styles)]
+        prompt = f"{question}\n\n{prompt_style} Think for maximum {self.direct_token_budget} tokens."
         while actions < max_actions and not branch.is_done and not branch.is_pruned:
             self.generator.expand(branch, prompt, gold_answer)
             actions += 1
@@ -5444,6 +5455,35 @@ class DirectReserveGateRerankController(BaseController):
             "direct_action_trace": direct_trace,
             "frontier_metadata": (frontier_result.metadata if frontier_result else {}),
         }
+        action_trace = list(frontier_result.metadata.get("action_trace", [])) if frontier_result else []
+        final_branch_states = list(frontier_result.metadata.get("final_branch_states", [])) if frontier_result else []
+        for i, answer in enumerate(direct_answers):
+            group_key = _normalize_answer(answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": "direct_reserve",
+                    "branch_id": f"direct_reserve_{i}",
+                    "group_key": group_key,
+                    "is_terminal": 1,
+                    "selected": int(group_key == selected_group),
+                    "source": "direct_reserve",
+                }
+            )
+            final_branch_states.append(
+                {
+                    "branch_id": f"direct_reserve_{i}",
+                    "state_id": f"direct_reserve_state_{i}",
+                    "predicted_answer": "" if answer is None else str(answer),
+                    "group_key": group_key,
+                    "is_terminal": 1,
+                    "selected": int(group_key == selected_group),
+                    "source": "direct_reserve",
+                    "score": float(group_counts.get(group_key, 0)),
+                }
+            )
+        metadata["action_trace"] = action_trace
+        metadata["final_branch_states"] = final_branch_states
         return MethodResult(
             method=self.method_name,
             prediction=prediction,
