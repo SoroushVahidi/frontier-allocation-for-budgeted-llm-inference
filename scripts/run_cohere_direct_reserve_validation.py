@@ -51,6 +51,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--resume", action="store_true")
     p.add_argument("--run-real-api", action="store_true")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--include-method", action="append", default=[])
+    p.add_argument("--reuse-planned-cases", default="")
     return p.parse_args()
 
 
@@ -204,9 +206,14 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     methods = [m.strip() for m in str(args.methods).split(",") if m.strip()]
-    required_methods = ["strict_f3", "external_l1_max", "direct_reserve_strong_v1", "direct_reserve_strong_plus_diverse_v1"]
-    if methods != required_methods:
-        raise SystemExit(f"Methods must be exactly: {','.join(required_methods)}")
+    for extra in args.include_method:
+        em = str(extra).strip()
+        if em and em not in methods:
+            methods.append(em)
+    required_base = ["strict_f3", "external_l1_max", "direct_reserve_strong_v1", "direct_reserve_strong_plus_diverse_v1"]
+    for req in required_base:
+        if req not in methods:
+            raise SystemExit(f"Methods must include baseline set: {','.join(required_base)}")
 
     budgets = _parse_int_list(args.budgets)
     seeds = _parse_int_list(args.seeds)
@@ -220,14 +227,34 @@ def main() -> None:
     pool = _collect_pool(loss_paths, dataset=args.dataset)
     excluded_ids = _collect_excluded_ids(args.exclude_previous_output)
     pool_excluded = [r for r in pool if r["example_id"] not in excluded_ids]
-    selected_base, stratum_counts = _sample_cases(
-        pool_excluded if pool_excluded else pool,
-        absent_count=args.absent_count,
-        present_count=args.present_count,
-        control_count=args.control_count,
-        max_cases=args.max_cases,
-        seed=args.selection_seed,
-    )
+    selected_base: list[dict[str, Any]] = []
+    if str(args.reuse_planned_cases).strip():
+        planned_src = Path(str(args.reuse_planned_cases))
+        if not planned_src.exists():
+            raise SystemExit(f"--reuse-planned-cases not found: {planned_src}")
+        reused = _read_csv(planned_src)
+        for i, r in enumerate(reused[: args.max_cases], start=1):
+            selected_base.append(
+                {
+                    "example_id": str(r.get("example_id", "")).strip(),
+                    "dataset": str(r.get("dataset") or args.dataset).strip(),
+                    "question": str(r.get("question", "")).strip(),
+                    "gold_answer_raw": str(r.get("gold_answer_raw") or r.get("gold_answer") or "").strip(),
+                    "gold_answer": str(r.get("gold_answer") or _norm_answer(r.get("gold_answer_raw", ""), str(r.get("dataset") or args.dataset))),
+                    "stratum": str(r.get("stratum", "unknown")).strip() or "unknown",
+                    "source_path": str(planned_src),
+                }
+            )
+        stratum_counts = dict(Counter(str(r.get("stratum", "unknown")) for r in selected_base))
+    else:
+        selected_base, stratum_counts = _sample_cases(
+            pool_excluded if pool_excluded else pool,
+            absent_count=args.absent_count,
+            present_count=args.present_count,
+            control_count=args.control_count,
+            max_cases=args.max_cases,
+            seed=args.selection_seed,
+        )
     if not selected_base:
         raise SystemExit("No cases available for planning; provide loss artifacts with question and gold answers.")
 
@@ -460,6 +487,15 @@ def main() -> None:
                     "token_estimate": metadata.get("generated_tokens_estimate", "NA"),
                     "cost_estimate": metadata.get("estimated_cost", "NA"),
                     "latency_seconds": metadata.get("latency_seconds", "NA"),
+                    "margin_gate_triggered": int(bool(metadata.get("margin_gate_triggered", False))),
+                    "fallback_used": int(bool(metadata.get("fallback_used", False))),
+                    "fallback_source": metadata.get("fallback_source", "NA"),
+                    "support_margin": metadata.get("support_margin", "NA"),
+                    "num_answer_groups": metadata.get("num_answer_groups", "NA"),
+                    "prompt_style_agreement": metadata.get("prompt_style_agreement", "NA"),
+                    "selected_before_gate": metadata.get("selected_before_gate", "NA"),
+                    "selected_after_gate": metadata.get("selected_after_gate", "NA"),
+                    "gate_reason": metadata.get("gate_reason", "NA"),
                     "failure_type": failure,
                 }
             )
