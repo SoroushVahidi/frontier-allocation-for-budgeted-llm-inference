@@ -21,6 +21,11 @@ from experiments.scoring import SimpleBranchScorer
 from experiments.typed_strategy_prompts import TypedStrategyPrompt, get_typed_strategy_prompts
 from experiments.reasoning_diversity import compute_reasoning_diversity_components, reasoning_signature
 from experiments.verifiers import CandidateVerifier
+from scripts.direct_reserve_learned_override_utils import (
+    DEFAULT_MODEL_TYPE as DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL,
+    build_runtime_answer_group_candidates,
+    select_learned_override,
+)
 
 
 class BranchScorer(Protocol):
@@ -5309,6 +5314,10 @@ class DirectReserveGateRerankController(BaseController):
         margin_gate_min_support_gap: int = 1,
         margin_gate_max_entropy: float = 0.95,
         margin_gate_require_multi_prompt_style: bool = False,
+        enable_learned_override: bool = False,
+        learned_override_model_path: str = "",
+        learned_override_model_type: str = DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL,
+        learned_override_margin: float = 0.05,
         method_name: str = "strict_f3_direct_reserve_gate_rerank_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -5327,6 +5336,10 @@ class DirectReserveGateRerankController(BaseController):
         self.margin_gate_min_support_gap = max(0, int(margin_gate_min_support_gap))
         self.margin_gate_max_entropy = float(margin_gate_max_entropy)
         self.margin_gate_require_multi_prompt_style = bool(margin_gate_require_multi_prompt_style)
+        self.enable_learned_override = bool(enable_learned_override)
+        self.learned_override_model_path = str(learned_override_model_path or "")
+        self.learned_override_model_type = str(learned_override_model_type or DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL)
+        self.learned_override_margin = max(0.0, float(learned_override_margin))
         self.method_name = method_name
 
     def _direct_reserve_attempts(self) -> int:
@@ -5485,6 +5498,48 @@ class DirectReserveGateRerankController(BaseController):
         selected_group = selected_after_gate
         prediction = next((a for a in candidate_answers if (_normalize_answer(a) or "__unknown__") == selected_group), prediction)
 
+        learned_override_meta: dict[str, Any] = {
+            "learned_override_available": False,
+            "learned_override_triggered": False,
+            "learned_override_model": str(self.learned_override_model_type),
+            "learned_override_margin": 0.0,
+            "learned_override_threshold": float(self.learned_override_margin),
+            "base_selected_answer": str(selected_group),
+            "learned_selected_answer": "",
+            "final_selected_answer": str(selected_group),
+            "learned_override_reason": "disabled",
+            "learned_override_missing_features": [],
+            "candidate_feature_schema_version": "direct_reserve_candidate_scorer_dataset_v1",
+            "candidate_count": int(sum(group_counts.values())),
+            "answer_group_count": int(len(group_counts)),
+        }
+        if self.enable_learned_override:
+            normalized_candidates = [(_normalize_answer(a) or "__unknown__") for a in candidate_answers if a is not None]
+            learned_candidates = build_runtime_answer_group_candidates(
+                question=question,
+                dataset="openai/gsm8k",
+                seed=0,
+                budget=int(self.max_actions),
+                method="direct_reserve_strong_plus_diverse_v1",
+                candidate_answers=normalized_candidates,
+                selected_group=str(selected_group),
+                top2_support_gap=float(rerank_gap),
+                answer_entropy=float(rerank_entropy),
+                action_count=int(actions_used := direct_actions + (frontier_result.actions_used if frontier_result else 0)),
+                expansion_count=int(direct_actions + (frontier_result.expansions if frontier_result else 0)),
+                verification_count=int(frontier_result.verifications if frontier_result else 0),
+            )
+            learned_result = select_learned_override(
+                learned_candidates,
+                base_selected_answer=str(selected_group),
+                margin_threshold=float(self.learned_override_margin),
+                model_path=self.learned_override_model_path or None,
+                model_type=self.learned_override_model_type,
+            )
+            learned_override_meta = dict(learned_result.metadata)
+            selected_group = str(learned_result.final_answer or selected_group)
+            prediction = next((a for a in candidate_answers if (_normalize_answer(a) or "__unknown__") == selected_group), prediction)
+
         gold_group = _normalize_answer(gold_answer)
         gold_present = int(gold_group in group_counts)
         absent_from_tree = int(not gold_present)
@@ -5526,6 +5581,7 @@ class DirectReserveGateRerankController(BaseController):
             "present_not_selected": int(present_not_selected),
             "direct_action_trace": direct_trace,
             "frontier_metadata": (frontier_result.metadata if frontier_result else {}),
+            **learned_override_meta,
         }
         action_trace = list(frontier_result.metadata.get("action_trace", [])) if frontier_result else []
         final_branch_states = list(frontier_result.metadata.get("final_branch_states", [])) if frontier_result else []
