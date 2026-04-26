@@ -1161,6 +1161,37 @@ def build_frontier_strategies(
             gate_entropy_threshold=-1.0,
             method_name="direct_reserve_strong_plus_diverse_v1",
         )
+        specs["direct_reserve_strong_plus_diverse_learned_override_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="direct_reserve_strong_plus_diverse_learned_override_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            direct_prompt_styles=[
+                "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
+                "Then output only the final numeric answer in \\boxed{}.",
+                "Use a different decomposition than your first attempt (e.g., equation-first or table-first), "
+                "cross-check the result independently, then output only the final numeric answer in \\boxed{}.",
+            ],
+            direct_reserve_attempts_override=2,
+            direct_token_budget=640,
+            gate_top_support_threshold=2.0,
+            gate_top2_gap_threshold=2.0,
+            gate_entropy_threshold=-1.0,
+            enable_learned_override=True,
+            learned_override_model_path=os.getenv(
+                "DIRECT_RESERVE_LEARNED_OVERRIDE_MODEL_PATH",
+                "outputs/direct_reserve_candidate_scorer_train_20260426T150000Z/selected_model.joblib",
+            ),
+            learned_override_margin=float(os.getenv("DIRECT_RESERVE_LEARNED_OVERRIDE_MARGIN", "0.05")),
+            learned_override_model_type=os.getenv("DIRECT_RESERVE_LEARNED_OVERRIDE_MODEL_TYPE", "random_forest"),
+            method_name="direct_reserve_strong_plus_diverse_learned_override_v1",
+        )
         specs["direct_reserve_strong_plus_diverse_margin_gated_v1"] = DirectReserveGateRerankController(
             generator_factory(),
             scorer,

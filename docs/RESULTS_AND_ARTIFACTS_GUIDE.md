@@ -27,7 +27,9 @@ This guide summarizes which artifacts are manuscript-facing, diagnostic, or prov
 | `scripts/train_direct_reserve_candidate_scorer.py` | Learned scorer trainer | diagnostic_current | no | no | RF/pairwise strongest; HGB degraded. |
 | `scripts/run_direct_reserve_candidate_scorer_eval.py` | Offline selector evaluator | diagnostic_current | no | no | Evaluates selectors on saved traces. |
 | `scripts/analyze_direct_reserve_candidate_scorer_validation.py` | Cross-slice/degradation analysis | diagnostic_current | no | no | Use for learned scorer status only. |
+| `scripts/run_direct_reserve_learned_override_eval.py` | Offline threshold sweep for diagnostic learned override | diagnostic_current | no | no | RF override threshold 0.05 preserved fresh 0.70 selected-gold with zero degradation. |
 | `outputs/direct_reserve_candidate_scorer_*20260426T_FRESH_GSM8K_SCORER_VALIDATION*/` | Fresh scorer diagnostics | diagnostic_current | no | no | RF/pairwise beat base on zero-overlap GSM8K. |
+| `outputs/direct_reserve_learned_override_eval_20260426T_LEARNED_OVERRIDE_DIAGNOSTIC/` | Learned override threshold-sweep outputs | diagnostic_current | no | no | Contains summary, threshold sweep, case-level selections, and degradation audits. |
 | `outputs/real_model_ours_vs_external_validation_*/` | Real-model audits | appendix_supporting | already generated | no | Supporting only; not universal dominance evidence. |
 | Wulver/non-math audit packages | Non-math provenance | provenance_only | already generated | no | Mixed/incomplete; exclude or scrub for anonymous supplement unless improved. |
 | `batch/*.sbatch` | Historical cluster runners | provenance_only | yes | no | Contains environment-specific paths; do not use for Cursor tasks. |
@@ -39,4 +41,5 @@ This guide summarizes which artifacts are manuscript-facing, diagnostic, or prov
 - Non-math Wulver evidence is mixed/incomplete and should remain provenance/appendix-only unless rerun with domain checks.
 - HGB scorer should not be recommended because it degraded on fresh validation.
 - RF/pairwise learned scorer is the strongest current learned-scorer candidate.
+- `direct_reserve_strong_plus_diverse_learned_override_v1` is opt-in and diagnostic-only; do not use it as default or canonical evidence.
 - Do not use outputs containing API readiness, retry logs, cluster paths, or private task links in anonymous supplements without scrubbing.

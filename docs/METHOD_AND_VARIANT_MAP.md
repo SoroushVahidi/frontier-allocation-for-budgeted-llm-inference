@@ -11,6 +11,7 @@ and claim-boundary oriented.
 | strict_f3 anti-collapse weak | `strict_f3_anti_collapse_weak_v1` | Anti-collapse diagnostic/canonical-support variant | Supporting | conditional | usually | Do not promote without matching artifact evidence. |
 | direct reserve strong | `direct_reserve_strong_v1` | Direct-reserve generation baseline with strong prompt family | Diagnostic current | no | yes | Useful comparator, not paper headline method. |
 | direct reserve strong plus diverse | `direct_reserve_strong_plus_diverse_v1` | Strongest current diagnostic direct-reserve generation method | Diagnostic current | no | yes | Base selector reached 0.60 selected-gold on fresh scorer slice. |
+| direct reserve learned override | `direct_reserve_strong_plus_diverse_learned_override_v1` | Opt-in RF confidence-gated final selector over plus-diverse candidates | Diagnostic current | no | yes | Uses base plus-diverse fallback; not canonical/default. |
 | direct reserve margin gated | `direct_reserve_strong_plus_diverse_margin_gated_v1` | Margin-gated selector comparison | Diagnostic current | no | yes | Not promoted; 5-case replay showed brittleness despite fresh-slice 0.75 comparison result. |
 | learned logistic scorer | logistic candidate scorer | Candidate reranker over direct-reserve candidates | Diagnostic current | no | yes | Fresh disjoint GSM8K: 0.65 selected-gold, zero degradation vs base. |
 | learned random forest scorer | RF candidate scorer | Strong learned candidate reranker | Diagnostic current | no | yes | Fresh disjoint GSM8K: 0.70 selected-gold vs base 0.60, zero degradation. |
@@ -20,6 +21,7 @@ and claim-boundary oriented.
 ## Interpretation
 
 - `direct_reserve_strong_plus_diverse_v1` is the strongest current diagnostic generation method.
+- `direct_reserve_strong_plus_diverse_learned_override_v1` is opt-in diagnostic runtime only; it applies an RF learned selector after plus-diverse candidate generation and falls back to the base answer when unavailable or below threshold.
 - `direct_reserve_strong_plus_diverse_margin_gated_v1` remains a comparison method, not a promoted method.
 - Learned RF and pairwise scorers are the strongest learned-scorer candidates after the fresh zero-overlap GSM8K validation.
 - HGB should not be recommended unless future evidence shows no degradation.
