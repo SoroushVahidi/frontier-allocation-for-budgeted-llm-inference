@@ -1,5 +1,5 @@
 model,candidate_auc,candidate_accuracy,diverse_top1
-logistic,1.0,1.0,0.8333333333333334
-random_forest,1.0,1.0,0.8333333333333334
-hist_gboost,0.5,0.4166666666666667,0.5
-pairwise_logit,nan,nan,0.8333333333333334
+logistic,1.0,0.9166666666666666,1.0
+random_forest,1.0,1.0,1.0
+hist_gboost,0.5,0.8333333333333334,0.6666666666666666
+pairwise_logit,nan,nan,1.0

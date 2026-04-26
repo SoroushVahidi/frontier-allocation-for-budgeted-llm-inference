@@ -1,0 +1,11 @@
+case_idx,example_id,stratum
+1,openai_gsm8k_926,fresh_gsm8k_unseen
+2,openai_gsm8k_208,fresh_gsm8k_unseen
+3,openai_gsm8k_316,fresh_gsm8k_unseen
+4,openai_gsm8k_268,fresh_gsm8k_unseen
+5,openai_gsm8k_1205,fresh_gsm8k_unseen
+6,openai_gsm8k_313,fresh_gsm8k_unseen
+7,openai_gsm8k_158,fresh_gsm8k_unseen
+8,openai_gsm8k_1163,fresh_gsm8k_unseen
+9,openai_gsm8k_576,fresh_gsm8k_unseen
+10,openai_gsm8k_1082,fresh_gsm8k_unseen

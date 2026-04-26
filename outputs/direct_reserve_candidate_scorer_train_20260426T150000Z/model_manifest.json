@@ -4,11 +4,11 @@
   "n_problems": 20,
   "n_positive": 27,
   "test_group_ids": [
-    "openai_gsm8k_13|23|4",
-    "openai_gsm8k_14|23|4",
     "openai_gsm8k_15|23|4",
-    "openai_gsm8k_18|23|4",
-    "openai_gsm8k_4|23|4",
-    "openai_gsm8k_7|23|4"
+    "openai_gsm8k_16|23|4",
+    "openai_gsm8k_1|23|4",
+    "openai_gsm8k_5|23|4",
+    "openai_gsm8k_7|23|4",
+    "openai_gsm8k_8|23|4"
   ]
 }

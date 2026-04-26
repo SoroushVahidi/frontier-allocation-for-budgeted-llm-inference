@@ -1,0 +1,11 @@
+example_id,seed,budget,base_selected_answer,learned_method_final_selected_answer,learned_method_base_selected_answer_metadata,learned_method_learned_selected_answer_metadata,learned_method_final_selected_answer_metadata,learned_override_triggered,fallback_should_match_base_selected_answer,fallback_matches_base_selected_answer,base_candidate_count,learned_candidate_count,base_answer_group_count,learned_answer_group_count,base_candidate_answer_set,learned_candidate_answer_set,candidate_pool_equal,mismatch_reason,metadata_issue
+openai_gsm8k_1082,53,4,2,1.5,1.5,1.5,1.5,0,1,1,2,2,2,2,"[""1.5"", ""2""]","[""1.5"", ""2""]",1,answer_normalization_diff,
+openai_gsm8k_1163,53,4,12,12,12,12,12,0,1,1,2,2,1,1,"[""12""]","[""12""]",1,none,
+openai_gsm8k_1205,53,4,4,4,4,4,4,0,1,1,2,2,1,1,"[""4""]","[""4""]",1,none,
+openai_gsm8k_158,53,4,34,34,34,34,34,0,1,1,2,2,1,1,"[""34""]","[""34""]",1,none,
+openai_gsm8k_208,53,4,76,76,76,76,76,0,1,1,2,2,1,1,"[""76""]","[""76""]",1,none,
+openai_gsm8k_268,53,4,1375,1400,1400,1375,1400,0,1,1,2,2,2,2,"[""1375"", ""1400""]","[""1375"", ""1400""]",1,answer_normalization_diff,
+openai_gsm8k_313,53,4,120000,1171600,1171600,120000,1171600,0,1,1,2,2,1,2,"[""120000""]","[""1171600"", ""120000""]",0,candidate_pool_differs,
+openai_gsm8k_316,53,4,78,116,116,116,116,0,1,1,2,2,2,2,"[""140"", ""78""]","[""108"", ""116""]",0,candidate_pool_differs,
+openai_gsm8k_576,53,4,13824,17280,17280,15120,17280,0,1,1,2,2,2,2,"[""13440"", ""13824""]","[""11448"", ""17280""]",0,candidate_pool_differs,
+openai_gsm8k_926,53,4,1,1,1,1,1,0,1,1,2,2,1,1,"[""1""]","[""1""]",1,none,
