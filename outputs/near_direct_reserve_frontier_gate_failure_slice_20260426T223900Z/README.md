@@ -10,4 +10,6 @@
 - near-direct overrides: 1
 - helpful/harmful: 1/0
 
-This saved-trace diagnostic exactly matches the offline protected-incumbent audit rule by protecting the saved `external_l1_max` incumbent. The only helpful override remains artifact-sensitive, so a larger real-model pilot is not justified and the manuscript should not be changed.
+- direct-solved preserved/harmed: 18/3
+
+This saved-trace diagnostic exactly matches the offline protected-incumbent audit rule by protecting the saved `external_l1_max` incumbent. It cannot run the newly implemented runtime controller end-to-end without new API calls; those would be limited to the same 30 Cohere cells for `near_direct_reserve_frontier_gate_v1`. The only helpful override remains artifact-sensitive, so a larger real-model pilot is not justified and the manuscript should not be changed.

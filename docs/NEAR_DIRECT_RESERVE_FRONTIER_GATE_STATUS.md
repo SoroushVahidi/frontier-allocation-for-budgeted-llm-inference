@@ -12,7 +12,11 @@
 - Overrides: 1
 - Helpful overrides: 1
 - Harmful overrides: 0
+- Direct-solved preserved: 18
+- Direct-solved harmed: 3
 - Matches offline protected-incumbent audit rule: yes.
+- Can run runtime method end-to-end without new API calls: no.
+- Additional real calls required: To run the runtime method end-to-end on the same 30 cells, call Cohere for near_direct_reserve_frontier_gate_v1 on openai/gsm8k seeds=11,23 budgets=4,6,8 examples openai_gsm8k_0..4 with --save-branch-traces.
 - Artifact-sensitive helpful override remains: yes.
 - Larger real-model pilot justified: no.
 

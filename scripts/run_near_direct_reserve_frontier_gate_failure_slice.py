@@ -62,6 +62,8 @@ def main() -> int:
         override = _as_int(row["v2_frontier_override_triggered"])
         helpful = int(override and not _as_int(row["external_l1_max_correct"]) and correct)
         harmful = int(override and _as_int(row["external_l1_max_correct"]) and not correct)
+        preserved = int(_as_int(row["external_l1_max_correct"]) and correct)
+        harmed = int(_as_int(row["external_l1_max_correct"]) and not correct)
         out_row = {
             "example_id": row["example_id"],
             "gold_answer": row["gold_answer"],
@@ -80,6 +82,8 @@ def main() -> int:
             "frontier_override_triggered": override,
             "helpful_override": helpful,
             "harmful_override": harmful,
+            "direct_solved_preserved": preserved,
+            "direct_solved_harmed": harmed,
             "incumbent_support_guard_applied": row["v2_incumbent_support_guard_applied"],
             "override_block_reason": row["v2_override_block_reason"],
             "artifact_sensitive_helpful_case": row["artifact_sensitive_helpful_case"],
@@ -116,8 +120,16 @@ def main() -> int:
         "near_direct_total_overrides": sum(_as_int(r["frontier_override_triggered"]) for r in rows),
         "near_direct_helpful_overrides": sum(_as_int(r["helpful_override"]) for r in rows),
         "near_direct_harmful_overrides": sum(_as_int(r["harmful_override"]) for r in rows),
+        "near_direct_solved_preserved": sum(_as_int(r["direct_solved_preserved"]) for r in rows),
+        "near_direct_solved_harmed": sum(_as_int(r["direct_solved_harmed"]) for r in rows),
         "matches_offline_protected_incumbent_audit_rule": 1,
         "artifact_sensitive_helpful_case_present": 1,
+        "can_run_runtime_end_to_end_without_new_api_calls": "no",
+        "additional_real_calls_required": (
+            "To run the runtime method end-to-end on the same 30 cells, call Cohere for "
+            "near_direct_reserve_frontier_gate_v1 on openai/gsm8k seeds=11,23 budgets=4,6,8 "
+            "examples openai_gsm8k_0..4 with --save-branch-traces."
+        ),
         "larger_real_model_pilot_justified": "no",
     }
     _write_csv(out_dir / "per_case_results.csv", rows)
@@ -134,7 +146,9 @@ def main() -> int:
         f"- near-direct accuracy: {summary['near_direct_reserve_frontier_gate_v1_accuracy']:.4f}\n"
         f"- near-direct overrides: {summary['near_direct_total_overrides']}\n"
         f"- helpful/harmful: {summary['near_direct_helpful_overrides']}/{summary['near_direct_harmful_overrides']}\n\n"
+        f"- direct-solved preserved/harmed: {summary['near_direct_solved_preserved']}/{summary['near_direct_solved_harmed']}\n\n"
         "This saved-trace diagnostic exactly matches the offline protected-incumbent audit rule by protecting the saved `external_l1_max` incumbent. "
+        "It cannot run the newly implemented runtime controller end-to-end without new API calls; those would be limited to the same 30 Cohere cells for `near_direct_reserve_frontier_gate_v1`. "
         "The only helpful override remains artifact-sensitive, so a larger real-model pilot is not justified and the manuscript should not be changed.\n",
         encoding="utf-8",
     )
@@ -152,7 +166,11 @@ def main() -> int:
         f"- Overrides: {summary['near_direct_total_overrides']}\n"
         f"- Helpful overrides: {summary['near_direct_helpful_overrides']}\n"
         f"- Harmful overrides: {summary['near_direct_harmful_overrides']}\n"
+        f"- Direct-solved preserved: {summary['near_direct_solved_preserved']}\n"
+        f"- Direct-solved harmed: {summary['near_direct_solved_harmed']}\n"
         "- Matches offline protected-incumbent audit rule: yes.\n"
+        "- Can run runtime method end-to-end without new API calls: no.\n"
+        f"- Additional real calls required: {summary['additional_real_calls_required']}\n"
         "- Artifact-sensitive helpful override remains: yes.\n"
         "- Larger real-model pilot justified: no.\n\n"
         "Interpretation: the runtime-aligned near-direct variant matches the saved-trace protected-incumbent audit rule, but the sole helpful override is still artifact-sensitive. Do not edit the manuscript or promote this method.\n",
