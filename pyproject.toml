@@ -23,6 +23,9 @@ dev = [
     "pytest>=8.0",
 ]
 
+[tool.setuptools]
+packages = ["experiments"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
