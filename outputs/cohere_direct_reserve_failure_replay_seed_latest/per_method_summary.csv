@@ -1,0 +1,6 @@
+method,n_cases,gold_present_count,gold_present_rate,selected_gold_count,selected_gold_rate,present_not_selected_count,absent_from_pool_count,avg_candidate_branches
+direct_reserve_strong_plus_diverse_margin_gated_v1,12,9,0.75,9,0.75,0,3,2.0
+direct_reserve_strong_plus_diverse_v1,12,10,0.8333333333333334,9,0.75,1,2,2.0
+direct_reserve_strong_v1,12,8,0.6666666666666666,8,0.6666666666666666,0,4,1.0
+external_l1_max,12,8,0.6666666666666666,0,0.0,8,4,1.0
+strict_f3,12,10,0.8333333333333334,0,0.0,10,2,2.0833333333333335

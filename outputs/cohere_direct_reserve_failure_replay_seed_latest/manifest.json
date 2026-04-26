@@ -1,0 +1,29 @@
+{
+  "source_artifact": "outputs/cohere_direct_reserve_validation_REGENERATED_FOR_REPLAY_20260426T120000Z",
+  "created_from": "regenerated_real_api_package",
+  "copied_files": [
+    "planned_cases.csv",
+    "per_case_method_results.csv",
+    "per_method_summary.csv",
+    "per_stratum_summary.csv",
+    "loss_cases.csv",
+    "loss_cases.jsonl",
+    "difference_cases.jsonl",
+    "loss_cases_for_manual_inspection.md",
+    "difference_cases_for_manual_inspection.md",
+    "candidate_branch_table.csv",
+    "answer_group_summary.csv",
+    "missing_fields_report.csv",
+    "README.md",
+    "action_trace.jsonl",
+    "final_branch_states.jsonl",
+    "tree_decision_traces.jsonl"
+  ],
+  "trace_files_included": [
+    "action_trace.jsonl",
+    "final_branch_states.jsonl",
+    "tree_decision_traces.jsonl"
+  ],
+  "trace_files_referenced": [],
+  "notes": "Seed package copied from minimal regenerated Cohere run due missing prior package."
+}

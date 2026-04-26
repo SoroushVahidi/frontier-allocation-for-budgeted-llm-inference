@@ -1,0 +1,16 @@
+method,stratum,n_cases,gold_present_count,selected_gold_count,selected_gold_rate,control_degradation_count
+direct_reserve_strong_plus_diverse_margin_gated_v1,absent_from_tree,5,3,3,0.6,0
+direct_reserve_strong_plus_diverse_margin_gated_v1,control_correct,5,4,4,0.8,1
+direct_reserve_strong_plus_diverse_margin_gated_v1,present_not_selected,2,2,2,1.0,0
+direct_reserve_strong_plus_diverse_v1,absent_from_tree,5,4,3,0.6,0
+direct_reserve_strong_plus_diverse_v1,control_correct,5,4,4,0.8,1
+direct_reserve_strong_plus_diverse_v1,present_not_selected,2,2,2,1.0,0
+direct_reserve_strong_v1,absent_from_tree,5,4,4,0.8,0
+direct_reserve_strong_v1,control_correct,5,3,3,0.6,2
+direct_reserve_strong_v1,present_not_selected,2,1,1,0.5,0
+external_l1_max,absent_from_tree,5,3,0,0.0,0
+external_l1_max,control_correct,5,3,0,0.0,2
+external_l1_max,present_not_selected,2,2,0,0.0,0
+strict_f3,absent_from_tree,5,4,0,0.0,0
+strict_f3,control_correct,5,4,0,0.0,1
+strict_f3,present_not_selected,2,2,0,0.0,0
