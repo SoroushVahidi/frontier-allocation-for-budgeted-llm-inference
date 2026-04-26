@@ -1,0 +1,6 @@
+method,n_cases,gold_present_count,gold_present_rate,selected_gold_count,selected_gold_rate,present_not_selected_count,absent_from_pool_count,avg_candidate_branches
+direct_reserve_strong_plus_diverse_learned_override_v1,10,8,0.8,5,0.5,3,2,2.0
+direct_reserve_strong_plus_diverse_v1,10,8,0.8,8,0.8,0,2,2.0
+direct_reserve_strong_v1,10,7,0.7,7,0.7,0,3,1.0
+external_l1_max,10,6,0.6,0,0.0,6,4,1.0
+strict_f3,10,6,0.6,0,0.0,6,4,2.2
