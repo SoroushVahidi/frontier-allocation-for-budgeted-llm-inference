@@ -1161,6 +1161,34 @@ def build_frontier_strategies(
             gate_entropy_threshold=-1.0,
             method_name="direct_reserve_strong_plus_diverse_v1",
         )
+        specs["direct_reserve_strong_plus_diverse_margin_gated_v1"] = DirectReserveGateRerankController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="direct_reserve_strong_plus_diverse_margin_gated_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            direct_prompt_styles=[
+                "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
+                "Then output only the final numeric answer in \\boxed{}.",
+                "Use a different decomposition than your first attempt (e.g., equation-first or table-first), "
+                "cross-check the result independently, then output only the final numeric answer in \\boxed{}.",
+            ],
+            direct_reserve_attempts_override=2,
+            direct_token_budget=640,
+            gate_top_support_threshold=2.0,
+            gate_top2_gap_threshold=2.0,
+            gate_entropy_threshold=-1.0,
+            enable_margin_gate_fallback=True,
+            margin_gate_min_support_gap=1,
+            margin_gate_max_entropy=0.95,
+            margin_gate_require_multi_prompt_style=False,
+            method_name="direct_reserve_strong_plus_diverse_margin_gated_v1",
+        )
         specs["strict_f3_ablation_no_answer_support_aggregation_v1"] = GlobalDiversityAggregationController(
             generator_factory(),
             scorer,

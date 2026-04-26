@@ -5305,6 +5305,10 @@ class DirectReserveGateRerankController(BaseController):
         gate_top_support_threshold: float = 0.75,
         gate_top2_gap_threshold: float = 0.50,
         gate_entropy_threshold: float = 0.55,
+        enable_margin_gate_fallback: bool = False,
+        margin_gate_min_support_gap: int = 1,
+        margin_gate_max_entropy: float = 0.95,
+        margin_gate_require_multi_prompt_style: bool = False,
         method_name: str = "strict_f3_direct_reserve_gate_rerank_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -5319,6 +5323,10 @@ class DirectReserveGateRerankController(BaseController):
         self.gate_top_support_threshold = float(gate_top_support_threshold)
         self.gate_top2_gap_threshold = float(gate_top2_gap_threshold)
         self.gate_entropy_threshold = float(gate_entropy_threshold)
+        self.enable_margin_gate_fallback = bool(enable_margin_gate_fallback)
+        self.margin_gate_min_support_gap = max(0, int(margin_gate_min_support_gap))
+        self.margin_gate_max_entropy = float(margin_gate_max_entropy)
+        self.margin_gate_require_multi_prompt_style = bool(margin_gate_require_multi_prompt_style)
         self.method_name = method_name
 
     def _direct_reserve_attempts(self) -> int:
@@ -5422,6 +5430,60 @@ class DirectReserveGateRerankController(BaseController):
         rerank_top = int(support_sorted[0][1]) if support_sorted else 0
         rerank_second = int(support_sorted[1][1]) if len(support_sorted) > 1 else 0
         rerank_gap = float((rerank_top - rerank_second) / max(1, sum(group_counts.values())))
+        rerank_margin_abs = int(rerank_top - rerank_second)
+        rerank_entropy = self._entropy(dict(group_counts))
+
+        selected_before_gate = str(selected_group)
+        selected_after_gate = str(selected_group)
+        fallback_source = "none"
+        gate_reason = "not_enabled"
+        margin_gate_triggered = False
+        fallback_used = False
+        prompt_style_groups: dict[str, set[str]] = defaultdict(set)
+        for i, answer in enumerate(direct_answers):
+            g = _normalize_answer(answer) or "__unknown__"
+            prompt_style_key = (
+                self.direct_prompt_styles[i % len(self.direct_prompt_styles)]
+                if self.direct_prompt_styles
+                else self.direct_prompt_style
+            )
+            prompt_style_groups[g].add(prompt_style_key)
+        top_group_prompt_style_support = len(prompt_style_groups.get(rerank_top_group, set()))
+        prompt_style_agreement = int(top_group_prompt_style_support >= 2)
+
+        if self.enable_margin_gate_fallback and group_counts:
+            low_margin = rerank_margin_abs < self.margin_gate_min_support_gap
+            high_entropy = rerank_entropy > self.margin_gate_max_entropy
+            weak_prompt_agreement = self.margin_gate_require_multi_prompt_style and not prompt_style_agreement
+            trigger = bool(low_margin or high_entropy or weak_prompt_agreement)
+            if trigger:
+                margin_gate_triggered = True
+                reasons: list[str] = []
+                if low_margin:
+                    reasons.append("low_margin_selection")
+                if high_entropy:
+                    reasons.append("high_entropy_disagreement")
+                if weak_prompt_agreement:
+                    reasons.append("prompt_style_disagreement")
+                gate_reason = ",".join(reasons) if reasons else "gate_triggered"
+
+                direct_primary_group = _normalize_answer(direct_answers[0]) if direct_answers else None
+                direct_primary_group = direct_primary_group or "__unknown__"
+                if direct_primary_group in group_counts:
+                    selected_after_gate = direct_primary_group
+                    fallback_source = "direct_reserve_primary"
+                elif rerank_top_group in group_counts:
+                    selected_after_gate = rerank_top_group
+                    fallback_source = "support_top_group"
+                else:
+                    selected_after_gate = selected_before_gate
+                    fallback_source = "none"
+                fallback_used = bool(selected_after_gate != selected_before_gate)
+            else:
+                gate_reason = "clear_support"
+
+        selected_group = selected_after_gate
+        prediction = next((a for a in candidate_answers if (_normalize_answer(a) or "__unknown__") == selected_group), prediction)
 
         gold_group = _normalize_answer(gold_answer)
         gold_present = int(gold_group in group_counts)
@@ -5446,9 +5508,19 @@ class DirectReserveGateRerankController(BaseController):
             "remaining_budget_before_frontier": int(remaining_budget),
             "frontier_executed": bool(frontier_result is not None),
             "selected_answer_group": str(selected_group),
+            "selected_before_gate": str(selected_before_gate),
+            "selected_after_gate": str(selected_after_gate),
             "top_answer_group": str(rerank_top_group),
             "answer_group_support_counts": dict(group_counts),
             "top2_support_gap": float(rerank_gap),
+            "support_margin": int(rerank_margin_abs),
+            "answer_entropy": float(rerank_entropy),
+            "num_answer_groups": int(len(group_counts)),
+            "prompt_style_agreement": int(prompt_style_agreement),
+            "margin_gate_triggered": bool(margin_gate_triggered),
+            "fallback_used": bool(fallback_used),
+            "fallback_source": str(fallback_source),
+            "gate_reason": str(gate_reason),
             "gold_answer_present_in_candidate_pool": int(gold_present),
             "absent_from_tree": int(absent_from_tree),
             "present_not_selected": int(present_not_selected),
