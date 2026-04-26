@@ -53,6 +53,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--include-method", action="append", default=[])
     p.add_argument("--reuse-planned-cases", default="")
+    p.add_argument(
+        "--scorer-dataset-extended",
+        action="store_true",
+        help="Allow up to 30 planned rows for direct-reserve scorer data collection (still budget 4 only; diagnostic).",
+    )
     return p.parse_args()
 
 
@@ -198,8 +203,12 @@ def main() -> None:
     args = parse_args()
     if args.provider != "cohere":
         raise SystemExit("This script supports provider=cohere only.")
-    if args.max_cases > 12:
-        raise SystemExit("Refusing run: max-cases must be <= 12 for this bounded validation.")
+    max_allowed = 30 if args.scorer_dataset_extended else 12
+    if args.max_cases > max_allowed:
+        raise SystemExit(
+            f"Refusing run: max-cases must be <= {max_allowed}"
+            f" (use --scorer-dataset-extended to allow up to 30 for scorer data collection)"
+        )
 
     run_id = f"cohere_direct_reserve_validation_{args.timestamp}"
     out_dir = REPO_ROOT / "outputs" / run_id

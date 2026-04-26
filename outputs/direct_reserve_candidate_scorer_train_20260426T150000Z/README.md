@@ -1,0 +1,1 @@
+Trained logit / random forest / HGB on candidate `is_gold_candidate`. Grouped test split: test groups in model_manifest. `diverse_top1` = fraction of test cases where the highest-scoring *diverse* row is gold.

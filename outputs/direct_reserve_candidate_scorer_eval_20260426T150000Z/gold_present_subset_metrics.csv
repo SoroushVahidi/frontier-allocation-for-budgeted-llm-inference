@@ -1,0 +1,9 @@
+selector,n_cases,selected_gold_rate,note
+base_plus_diverse,20,0.6,per-case rows also in case_level; subset filter optional
+support_count,20,0.75,per-case rows also in case_level; subset filter optional
+max_gap_rule,20,0.55,per-case rows also in case_level; subset filter optional
+margin_gated_per_case,20,0.6,per-case rows also in case_level; subset filter optional
+learned_logit,20,0.85,per-case rows also in case_level; subset filter optional
+learned_rf,20,0.85,per-case rows also in case_level; subset filter optional
+learned_hgb,20,0.55,per-case rows also in case_level; subset filter optional
+pairwise_logit,20,0.85,per-case rows also in case_level; subset filter optional

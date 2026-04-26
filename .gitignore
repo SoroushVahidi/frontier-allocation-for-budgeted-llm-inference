@@ -148,3 +148,15 @@ terminals/
 !outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT/**/*
 !outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN/
 !outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN/**/*
+!outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z/
+!outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z/**/*
+!outputs/direct_reserve_learned_scorer_inventory_*/
+!outputs/direct_reserve_learned_scorer_inventory_*/**/*
+!outputs/direct_reserve_scorer_data_collection_*/
+!outputs/direct_reserve_scorer_data_collection_*/**/*
+!outputs/direct_reserve_candidate_scorer_dataset_*/
+!outputs/direct_reserve_candidate_scorer_dataset_*/**/*
+!outputs/direct_reserve_candidate_scorer_train_*/
+!outputs/direct_reserve_candidate_scorer_train_*/**/*
+!outputs/direct_reserve_candidate_scorer_eval_*/
+!outputs/direct_reserve_candidate_scorer_eval_*/**/*
