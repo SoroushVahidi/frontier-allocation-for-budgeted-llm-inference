@@ -152,7 +152,7 @@ def _load_matched_rows(source_dir: Path) -> list[dict[str, Any]]:
     for row in records:
         if row.get("provider") != "cohere" or row.get("dataset") != "openai/gsm8k":
             continue
-        if row.get("method") not in {STRICT_METHOD, EXTERNAL_METHOD}:
+        if row.get("method") not in {STRICT_METHOD, EXTERNAL_METHOD, GATE_METHOD}:
             continue
         if _bool_int(row.get("scored")) != 1:
             continue
@@ -178,6 +178,7 @@ def _load_matched_rows(source_dir: Path) -> list[dict[str, Any]]:
                 "gold_answer": strict.get("gold_answer") or external.get("gold_answer") or "",
                 "strict_row": strict,
                 "external_row": external,
+                "gate_row": methods.get(GATE_METHOD, {}),
             }
         )
     return matched
@@ -261,10 +262,13 @@ def build_diagnostic(source_dir: Path, diagnostic_dir: Path) -> tuple[list[dict[
     for cell in matched:
         strict_row = cell["strict_row"]
         external_row = cell["external_row"]
+        gate_row = cell.get("gate_row") or {}
         direct_answer = _pick_prediction(external_row)
         frontier_answer = _pick_prediction(strict_row)
         external_ok = _bool_int(external_row.get("exact_match"))
         strict_ok = _bool_int(strict_row.get("exact_match"))
+        actual_gate_available = bool(gate_row)
+        gate_meta = gate_row.get("result_metadata") if isinstance(gate_row.get("result_metadata"), dict) else {}
         strict_trace_key = (cell["example_id"], cell["seed"], cell["budget"], STRICT_METHOD)
         external_trace_key = (cell["example_id"], cell["seed"], cell["budget"], EXTERNAL_METHOD)
         trace_groups = groups_by_case.get(strict_trace_key, [])
@@ -284,23 +288,30 @@ def build_diagnostic(source_dir: Path, diagnostic_dir: Path) -> tuple[list[dict[
         else:
             margin, maturity, support_available = _support_margin(strict_row, direct_answer, frontier_answer)
 
-        override = False
-        if not frontier_answer:
-            reason = "frontier_prediction_unavailable"
-        elif direct_answer and direct_answer == frontier_answer:
-            reason = "direct_frontier_agree"
-        elif missing_support or missing_maturity or not support_available:
-            reason = "missing_support_or_maturity_metadata"
-        elif maturity < 2:
-            reason = "frontier_not_mature"
-        elif margin < 1.0:
-            reason = "insufficient_support_margin"
+        if actual_gate_available:
+            override = bool(gate_meta.get("frontier_override_triggered", False))
+            reason = str(gate_meta.get("override_reason", "actual_gate_metadata_unavailable"))
+            gate_prediction = _pick_prediction(gate_row) or str(gate_meta.get("final_answer") or "")
+            gate_ok = _bool_int(gate_row.get("exact_match"))
+            margin = float(gate_meta.get("override_margin", margin) or 0.0)
+            maturity = _bool_int(gate_meta.get("frontier_candidate_maturity", maturity))
         else:
-            override = True
-            reason = "frontier_support_margin_and_maturity_passed"
-
-        gate_prediction = frontier_answer if override else direct_answer
-        gate_ok = strict_ok if override else external_ok
+            override = False
+            if not frontier_answer:
+                reason = "frontier_prediction_unavailable"
+            elif direct_answer and direct_answer == frontier_answer:
+                reason = "direct_frontier_agree"
+            elif missing_support or missing_maturity or not support_available:
+                reason = "missing_support_or_maturity_metadata"
+            elif maturity < 2:
+                reason = "frontier_not_mature"
+            elif margin < 1.0:
+                reason = "insufficient_support_margin"
+            else:
+                override = True
+                reason = "frontier_support_margin_and_maturity_passed"
+            gate_prediction = frontier_answer if override else direct_answer
+            gate_ok = strict_ok if override else external_ok
         helpful = int(override and not external_ok and gate_ok)
         harmful = int(override and external_ok and not gate_ok)
         preserved = int(external_ok and gate_ok)

@@ -1,0 +1,6 @@
+field_group,missing_count,total_cases,impact
+support_or_maturity,0,30,conservative_no_override_default
+predictions_or_gold,0,30,correctness_loaded_from_cached_exact_match_fields
+candidate_branch_table.csv,0,,usable
+answer_group_table.csv,0,,usable
+per_case_trace_index.csv,0,,usable
