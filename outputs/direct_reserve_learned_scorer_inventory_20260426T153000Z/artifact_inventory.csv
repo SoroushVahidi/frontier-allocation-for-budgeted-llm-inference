@@ -1,0 +1,14 @@
+has_action_trace,has_answer_group_summary.csv,has_branch_states,has_candidate_branch_table.csv,has_manifest,has_per_case_method_results.csv,has_planned_cases.csv,has_reasoning_text_non_na,n_answer_group_rows,n_candidate_branch_rows,n_gold_present_problems,n_positive_gold_labels,n_unique_problems,package_path
+False,True,False,False,True,False,True,0,0,0,0,0,0,outputs/cohere_coverage_generation_ablation_TEST_COHERE_COVERAGE_DRY
+False,False,False,False,False,False,False,0,0,0,0,0,0,outputs/cohere_coverage_generation_ablation_TEST_COHERE_COVERAGE_NO_KEY
+False,False,False,False,False,False,False,0,0,0,0,0,0,outputs/cohere_direct_reserve_artifact_recovery_audit
+True,True,True,True,True,True,True,0,77,97,10,63,12,outputs/cohere_direct_reserve_failure_replay_seed_latest
+True,True,True,True,True,True,True,0,34,40,3,14,5,outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT
+True,True,True,True,True,True,True,0,25,25,0,0,5,outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN
+True,True,True,True,True,True,True,0,24,24,0,0,6,outputs/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY
+True,True,True,True,True,True,True,0,16,16,0,0,4,outputs/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_EXCL
+False,False,False,False,False,False,False,0,0,0,0,0,0,outputs/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_NO_KEY
+True,True,True,True,True,True,True,0,128,164,17,107,20,outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z
+True,True,True,True,True,True,True,0,126,164,17,100,20,outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z
+False,False,False,False,False,False,False,0,0,0,0,0,0,outputs/trace_level_learned_branch_scorer_dataset_20260425T_TRACE_DATASET_PROXY_TEST
+False,False,False,False,False,False,False,0,0,0,0,0,0,outputs/trace_level_learned_branch_scorer_dataset_20260425T_TRACE_DATASET_TEST

@@ -1,0 +1,50 @@
+{
+  "run_id": "cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z",
+  "timestamp": "direct_reserve_scorer_data_collection_20260426T151700Z",
+  "provider": "cohere",
+  "model": "command-r-plus-08-2024",
+  "dataset": "openai/gsm8k",
+  "methods": [
+    "strict_f3",
+    "external_l1_max",
+    "direct_reserve_strong_v1",
+    "direct_reserve_strong_plus_diverse_v1",
+    "direct_reserve_strong_plus_diverse_margin_gated_v1"
+  ],
+  "budgets": [
+    4
+  ],
+  "seeds": [
+    37
+  ],
+  "max_cases": 20,
+  "requested_strata": {
+    "absent_from_tree": 7,
+    "present_not_selected": 6,
+    "control_correct": 7
+  },
+  "planned_strata": {
+    "absent_from_tree": 9,
+    "present_not_selected": 2,
+    "control_correct": 9
+  },
+  "n_unique_examples": 20,
+  "excluded_ids_count": 20,
+  "loss_artifact_paths": [
+    "outputs/matched_surface_multiseed_main_comparison_20260423T203259Z/raw_case_results.csv",
+    "/workspace/outputs/bounded_real_trace_collection_20260425T_BOUNDED_COLLECTION_TEST/per_case_results.csv",
+    "/workspace/outputs/held_out_surface_generalization_claim_safety_20260424T231500Z_DRY/per_case_results.csv",
+    "/workspace/outputs/held_out_surface_generalization_claim_safety_20990101T000000Z/per_case_results.csv",
+    "/workspace/outputs/held_out_surface_generalization_claim_safety_20990101T000001Z/per_case_results.csv",
+    "/workspace/outputs/integrated_controller_component_ablation_20260422T170256Z/per_case_results.csv",
+    "/workspace/outputs/manuscript_surface_component_ablation_20260422T172218Z/per_case_results.csv",
+    "/workspace/outputs/reasoning_diversity_bonus_eval_20260425T230500Z/per_case_results.csv"
+  ],
+  "exclude_previous_output": [
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z"
+  ],
+  "run_real_api_requested": true,
+  "real_api_enabled": true,
+  "dry_run": false,
+  "emit_full_traces": true
+}
