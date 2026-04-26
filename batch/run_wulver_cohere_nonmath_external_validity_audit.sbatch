@@ -13,6 +13,7 @@ set -euo pipefail
 REPO_ROOT="/home/sv96/adaptive-reasoning-budget-allocation"
 cd "$REPO_ROOT"
 mkdir -p logs
+export PYTHONUNBUFFERED=1
 
 TIMESTAMP="20260425T_WULVER_COHERE_NONMATH_AUDIT"
 OUT_DIR="outputs/cohere_real_model_cost_normalized_validation_${TIMESTAMP}"

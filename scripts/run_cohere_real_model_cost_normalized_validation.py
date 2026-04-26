@@ -33,6 +33,8 @@ METHODS: dict[str, dict[str, Any]] = {
     "strict_f3_anti_collapse_weak_v1": {"runtime": "strict_f3_anti_collapse_weak_v1", "enable_output_repair": True},
     "strict_f2": {"runtime": STRICT_F2, "enable_output_repair": True},
     "external_l1_max": {"runtime": "external_l1_max", "enable_output_repair": True},
+    "tale": {"runtime": "external_tale_prompt_budgeting", "enable_output_repair": True},
+    "s1": {"runtime": "external_s1_budget_forcing", "enable_output_repair": True},
     "self_consistency_3": {"runtime": "self_consistency_3", "enable_output_repair": True},
 }
 
@@ -334,6 +336,12 @@ def append_jsonl(path: Path, row: dict[str, Any]) -> None:
         f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def append_progress(path: Path, row: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
 def evaluate_example(result: Any, dataset: str, gold_answer: str, final_nodes: list[dict[str, Any]], enable_output_repair: bool) -> int:
     md = result.metadata or {}
     repaired = choose_repair_answer(
@@ -440,6 +448,7 @@ def main() -> None:
     raw_dir = out_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
     per_example_path = out_dir / "per_example_records.jsonl"
+    progress_path = out_dir / "progress_heartbeat.jsonl"
 
     existing = load_existing_records(per_example_path) if (args.resume or args.summarize_only) else []
     seen = {to_case_key(r) for r in existing}
@@ -507,6 +516,22 @@ def main() -> None:
                                 if ck in seen:
                                     continue
                                 attempted += 1
+                                append_progress(
+                                    progress_path,
+                                    {
+                                        "event": "example_start",
+                                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                                        "provider": provider,
+                                        "dataset": dataset,
+                                        "seed": seed,
+                                        "budget": budget,
+                                        "method": method,
+                                        "example_id": str(ex.example_id),
+                                        "attempted_so_far": attempted,
+                                        "scored_so_far": scored,
+                                        "target_scored": target_n,
+                                    },
+                                )
                                 t0 = time.perf_counter()
                                 controller = specs[runtime]
                                 if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "reset_usage_counters"):
@@ -592,6 +617,30 @@ def main() -> None:
                                 append_jsonl(per_example_path, row)
                                 records.append(row)
                                 seen.add(ck)
+                                append_progress(
+                                    progress_path,
+                                    {
+                                        "event": "example_end",
+                                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                                        "provider": provider,
+                                        "dataset": dataset,
+                                        "seed": seed,
+                                        "budget": budget,
+                                        "method": method,
+                                        "example_id": str(ex.example_id),
+                                        "status": status,
+                                        "latency_seconds": float(round(latency, 6)),
+                                        "attempted_so_far": attempted,
+                                        "scored_so_far": scored,
+                                        "target_scored": target_n,
+                                    },
+                                )
+                                print(
+                                    f"[progress] provider={provider} dataset={dataset} seed={seed} "
+                                    f"budget={budget} method={method} attempted={attempted} "
+                                    f"scored={scored} status={status} example_id={ex.example_id}",
+                                    flush=True,
+                                )
                                 if status == "failed":
                                     append_jsonl(raw_dir / "failures.jsonl", row)
 
@@ -832,6 +881,7 @@ def main() -> None:
             "incomplete_slices.csv",
             "claim_safety_table.csv",
             "per_example_records.jsonl",
+            "progress_heartbeat.jsonl",
             "raw/failures.jsonl",
         ],
     }
