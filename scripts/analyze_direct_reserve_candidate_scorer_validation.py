@@ -168,7 +168,14 @@ def _detail(prefix: str, group_id: str, selector: str, sel: dict[str, Any] | str
     }
 
 
-def evaluate_slice(prefix: str, dataset_dir: str, train_dir: str, per_case_path: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+def _test_groups(train_dir: str) -> set[str]:
+    if not train_dir:
+        return set()
+    rows = read_csv(_path(train_dir) / "split_assignments.csv")
+    return {str(r.get("group_id", "")) for r in rows if r.get("partition") == "test"}
+
+
+def evaluate_slice(prefix: str, dataset_dir: str, train_dir: str, per_case_path: str, holdout_only: bool = False) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     rows = [
         dict(r)
         for r in read_csv(_path(dataset_dir) / "examples.csv")
@@ -180,10 +187,14 @@ def evaluate_slice(prefix: str, dataset_dir: str, train_dir: str, per_case_path:
         for r in per_rows
     }
     model = _load_model(train_dir)
+    keep_groups = _test_groups(train_dir) if holdout_only else set()
     by_group: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in rows:
         if r.get("method") == DIVERSE:
-            by_group[_gid(r)].append(r)
+            gid = _gid(r)
+            if keep_groups and gid not in keep_groups:
+                continue
+            by_group[gid].append(r)
     case_rows: list[dict[str, Any]] = []
     detail_rows: list[dict[str, Any]] = []
     for group_id, cands in sorted(by_group.items()):
@@ -304,7 +315,7 @@ def main() -> None:
         ("second_model_on_first", args.first_dataset, args.second_train, args.first_per_case),
     ]
     if args.combined_dataset and args.combined_train:
-        scenarios.append(("combined_grouped_holdout_proxy", args.combined_dataset, args.combined_train, args.second_per_case or args.first_per_case))
+        scenarios.append(("combined_grouped_holdout", args.combined_dataset, args.combined_train, args.second_per_case or args.first_per_case))
 
     cross_dir = REPO_ROOT / "outputs" / f"direct_reserve_candidate_scorer_cross_slice_eval_{args.timestamp}"
     degr_dir = REPO_ROOT / "outputs" / f"direct_reserve_candidate_scorer_degradation_analysis_{args.timestamp}"
@@ -314,7 +325,7 @@ def main() -> None:
     for name, ds, tr, pc in scenarios:
         if not ds or not tr or not pc:
             continue
-        cases, details, summary = evaluate_slice(name, ds, tr, pc)
+        cases, details, summary = evaluate_slice(name, ds, tr, pc, holdout_only=name == "combined_grouped_holdout")
         all_cases.extend(cases)
         all_detail.extend(details)
         summaries.append(summary)

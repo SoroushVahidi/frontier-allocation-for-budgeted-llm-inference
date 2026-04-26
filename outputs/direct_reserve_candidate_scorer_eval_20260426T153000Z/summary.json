@@ -1,0 +1,13 @@
+{
+  "base_rate": 0.8,
+  "selectors": {
+    "base_plus_diverse": 0.8,
+    "support_count": 0.7,
+    "max_gap_rule": 0.6,
+    "margin_gated_per_case": 0.65,
+    "learned_logit": 0.8,
+    "learned_rf": 0.8,
+    "learned_hgb": 0.6,
+    "pairwise_logit": 0.8
+  }
+}

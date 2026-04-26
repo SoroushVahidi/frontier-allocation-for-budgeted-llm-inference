@@ -166,3 +166,41 @@ def test_eval_produces_artifacts() -> None:
     )
     assert (o / "selector_comparison.csv").exists()
     assert (o / "case_level_selection.csv").exists()
+
+
+def test_validation_analysis_audit_only() -> None:
+    ds = REPO / "outputs" / "direct_reserve_candidate_scorer_dataset_20260426T150000Z" / "examples.csv"
+    tr = REPO / "outputs" / "direct_reserve_candidate_scorer_train_20260426T150000Z" / "selected_model.joblib"
+    ev = REPO / "outputs" / "direct_reserve_candidate_scorer_eval_20260426T150000Z" / "selector_comparison.csv"
+    pcase = (
+        REPO
+        / "outputs"
+        / "cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z"
+        / "per_case_method_results.csv"
+    )
+    if not ds.exists() or not tr.exists() or not ev.exists() or not pcase.exists():
+        pytest.skip("full pipeline artifacts not in workspace")
+    o = REPO / "outputs" / "direct_reserve_candidate_scorer_validation_audit_PTEST"
+    if o.exists():
+        for f in o.iterdir():
+            f.unlink()
+        o.rmdir()
+    subprocess.check_call(
+        [
+            sys.executable,
+            str(SCR / "analyze_direct_reserve_candidate_scorer_validation.py"),
+            "--timestamp",
+            "PTEST",
+            "--first-dataset",
+            "outputs/direct_reserve_candidate_scorer_dataset_20260426T150000Z",
+            "--first-train",
+            "outputs/direct_reserve_candidate_scorer_train_20260426T150000Z",
+            "--first-eval",
+            "outputs/direct_reserve_candidate_scorer_eval_20260426T150000Z",
+            "--first-per-case",
+            "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z/per_case_method_results.csv",
+            "--audit-only",
+        ],
+        cwd=REPO,
+    )
+    assert (o / "first_slice_audit.csv").exists()
