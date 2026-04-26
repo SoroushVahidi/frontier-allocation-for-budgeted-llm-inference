@@ -6076,6 +6076,188 @@ class DirectReserveFrontierGateV2Controller(DirectReserveFrontierGateController)
         )
 
 
+class NearDirectReserveFrontierGateController(BaseController):
+    """Diagnostic controller that protects an L1-style near-direct incumbent."""
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        strict_controller_factory: callable,
+        protected_token_budget: int = 512,
+        protected_token_per_action: float = 64.0,
+        protected_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        frontier_override_min_support_margin: int = 1,
+        frontier_override_min_maturity: int = 2,
+        require_frontier_multi_evidence: bool = True,
+        method_name: str = "near_direct_reserve_frontier_gate_v1",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.strict_controller_factory = strict_controller_factory
+        self.protected_token_budget = max(1, int(protected_token_budget))
+        self.protected_token_per_action = max(1.0, float(protected_token_per_action))
+        self.protected_prompt_style = str(protected_prompt_style or "").strip() or (
+            "Let's think step by step and output the final answer within \\boxed{}."
+        )
+        self.frontier_override_min_support_margin = max(1, int(frontier_override_min_support_margin))
+        self.frontier_override_min_maturity = max(1, int(frontier_override_min_maturity))
+        self.require_frontier_multi_evidence = bool(require_frontier_multi_evidence)
+        self.method_name = method_name
+
+    def _run_protected_incumbent(self, question: str, gold_answer: str, max_actions: int) -> tuple[str | None, int, list[dict[str, Any]], list[dict[str, Any]]]:
+        branch = self.generator.init_branch("near_direct_l1_max_0")
+        actions = 0
+        action_trace: list[dict[str, Any]] = []
+        budgeted_question = (
+            f"{question}\n\n{self.protected_prompt_style} "
+            f"Think for maximum {self.protected_token_budget} tokens."
+        )
+        budget_actions = max(1, int(round(self.protected_token_budget / self.protected_token_per_action)))
+        allowed_actions = min(max_actions, budget_actions)
+        while actions < allowed_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, budgeted_question, gold_answer)
+            actions += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            action_trace.append(
+                {
+                    "action": "near_direct_l1_max",
+                    "branch_id": branch.branch_id,
+                    "branch_depth": int(branch.depth),
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                }
+            )
+        final_branch_states = [
+            {
+                "branch_id": str(branch.branch_id),
+                "parent_branch_id": str(branch.parent_branch_id or ""),
+                "branch_depth": int(branch.depth),
+                "score": float(branch.score),
+                "predicted_answer": str(branch.predicted_answer or ""),
+                "is_done": bool(branch.is_done),
+                "is_pruned": bool(branch.is_pruned),
+                "steps": list(branch.steps),
+                "trace_events": list(branch.trace_events),
+                "strategy_family": "near_direct_l1_max",
+                "source": "protected_incumbent",
+                "selected": 1,
+            }
+        ]
+        return branch.predicted_answer, actions, action_trace, final_branch_states
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        protected_answer, protected_actions, protected_trace, protected_states = self._run_protected_incumbent(
+            question, gold_answer, self.max_actions
+        )
+        protected_group = _normalize_answer(str(protected_answer)) if protected_answer is not None else "__unknown__"
+        remaining_budget = max(0, self.max_actions - int(protected_actions))
+
+        frontier_result: MethodResult | None = None
+        if remaining_budget > 0:
+            frontier = self.strict_controller_factory(remaining_budget)
+            if bool(getattr(self, "emit_full_traces", False)):
+                setattr(frontier, "emit_full_traces", True)
+            frontier_result = frontier.run(question, gold_answer)
+
+        frontier_meta = dict(frontier_result.metadata or {}) if frontier_result else {}
+        frontier_answer = frontier_result.prediction if frontier_result else None
+        frontier_group = (_normalize_answer(str(frontier_answer)) if frontier_answer is not None else "__unknown__") or "__unknown__"
+        support_counts: dict[str, int] = {}
+        raw_support = frontier_meta.get("answer_group_support_counts", {})
+        if isinstance(raw_support, dict):
+            for k, v in raw_support.items():
+                try:
+                    support_counts[str(k)] = int(v)
+                except Exception:
+                    continue
+        protected_seen = int(support_counts.get(protected_group, 0)) > 0
+        frontier_support = int(support_counts.get(frontier_group, 0))
+        incumbent_support = int(support_counts.get(protected_group, 0))
+        frontier_maturity = int((frontier_result.expansions if frontier_result else 0) + (frontier_result.verifications if frontier_result else 0))
+        support_margin = float(frontier_support - incumbent_support)
+        maturity_margin = float(frontier_maturity - int(protected_actions))
+
+        frontier_families = frontier_meta.get("answer_group_strategy_family_counts", {})
+        frontier_family_count = 0
+        if isinstance(frontier_families, dict):
+            frontier_family_count = len(dict(frontier_families.get(frontier_group, {}) or {}))
+        multi_evidence = bool(frontier_support >= 2 or frontier_family_count >= 2)
+
+        override = False
+        block_reason = "reserve_default"
+        required_support_missing = bool(frontier_result is None or not support_counts)
+        if required_support_missing:
+            block_reason = "missing_support_fields"
+        elif protected_seen:
+            block_reason = "protected_incumbent_seen_in_frontier_support"
+        elif frontier_support <= 1:
+            block_reason = "single_weak_frontier_branch"
+        elif frontier_maturity < self.frontier_override_min_maturity:
+            block_reason = "frontier_not_mature"
+        elif support_margin < float(self.frontier_override_min_support_margin):
+            block_reason = "insufficient_support_margin"
+        elif self.require_frontier_multi_evidence and not multi_evidence:
+            block_reason = "insufficient_multi_branch_or_family_evidence"
+        else:
+            override = True
+            block_reason = "frontier_support_margin_override"
+
+        final_answer = frontier_answer if override else protected_answer
+        actions_used = int(protected_actions + (frontier_result.actions_used if frontier_result else 0))
+        expansions = int(protected_actions + (frontier_result.expansions if frontier_result else 0))
+        verifications = int(frontier_result.verifications if frontier_result else 0)
+        action_trace = list(frontier_meta.get("action_trace", [])) if isinstance(frontier_meta.get("action_trace", []), list) else []
+        action_trace.extend(protected_trace)
+        final_branch_states = list(frontier_meta.get("final_branch_states", [])) if isinstance(frontier_meta.get("final_branch_states", []), list) else []
+        final_branch_states.extend(protected_states)
+        combined_counts = Counter(dict(support_counts))
+        if protected_group != "__unknown__":
+            combined_counts[protected_group] += 1
+
+        metadata = {
+            "method_family": "diagnostic_near_direct_reserve_frontier_gate",
+            "diagnostic_only": True,
+            "not_canonical": True,
+            "protected_incumbent_answer": protected_answer,
+            "protected_incumbent_source_method": "external_l1_max_style_near_direct",
+            "protected_incumbent_seen_in_frontier_support": bool(protected_seen),
+            "incumbent_support_guard_applied": bool((not override) and protected_seen),
+            "frontier_override_triggered": bool(override),
+            "override_block_reason": str(block_reason if not override else "not_blocked"),
+            "override_reason": str(block_reason),
+            "frontier_candidate_answer": frontier_answer,
+            "answer_group_support_counts": dict(combined_counts),
+            "frontier_answer_group_counts": dict(support_counts),
+            "frontier_support": int(frontier_support),
+            "incumbent_support": int(incumbent_support),
+            "support_margin": float(support_margin),
+            "maturity_margin": float(maturity_margin),
+            "frontier_candidate_maturity": int(frontier_maturity),
+            "frontier_candidate_family_count": int(frontier_family_count),
+            "required_support_fields_missing": bool(required_support_missing),
+            "reserve_used": bool(not override),
+            "protected_incumbent_trace": protected_trace,
+            "frontier_metadata": dict(frontier_meta),
+            "action_trace": action_trace,
+            "final_branch_states": final_branch_states if bool(getattr(self, "emit_full_traces", False)) else [],
+        }
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=actions_used,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=float(frontier_result.avg_surviving_branches if frontier_result else 1.0),
+            budget_exhausted=bool(actions_used >= self.max_actions),
+            metadata=metadata,
+        )
+
+
 class L1LengthControlController(BaseController):
     """External baseline adapter for L1/LCPO-style length-conditioned control.
 

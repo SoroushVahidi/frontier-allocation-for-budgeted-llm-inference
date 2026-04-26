@@ -27,6 +27,7 @@ from experiments.controllers import (
     S1BudgetForcingController,
     SelectiveSelfConsistencyHybridController,
     L1LengthControlController,
+    NearDirectReserveFrontierGateController,
     TALEPromptBudgetingController,
     VerifierGuidedSearchController,
 )
@@ -1180,6 +1181,22 @@ def build_frontier_strategies(
             budget,
             method_name="direct_reserve_frontier_gate_v2",
             **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["near_direct_reserve_frontier_gate_v1"] = NearDirectReserveFrontierGateController(
+            generator_factory(),
+            scorer,
+            budget,
+            strict_controller_factory=lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="near_direct_reserve_frontier_gate_v1_inner_strict_f3",
+                **strict_f3_base_cfg,
+            ),
+            protected_token_budget=l1_max_token_budget,
+            protected_token_per_action=l1_token_per_action,
+            protected_prompt_style=l1_prompt_style,
+            method_name="near_direct_reserve_frontier_gate_v1",
         )
         specs["direct_reserve_strong_plus_diverse_learned_override_v1"] = DirectReserveLearnedOverrideController(
             base_controller=DirectReserveGateRerankController(
