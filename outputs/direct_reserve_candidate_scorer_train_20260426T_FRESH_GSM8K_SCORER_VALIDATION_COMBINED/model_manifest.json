@@ -1,0 +1,26 @@
+{
+  "diverse_only": true,
+  "n_rows": 120,
+  "n_problems": 60,
+  "n_positive": 77,
+  "test_group_ids": [
+    "openai_gsm8k_0|23|4",
+    "openai_gsm8k_1101|43|4",
+    "openai_gsm8k_11|37|4",
+    "openai_gsm8k_1235|43|4",
+    "openai_gsm8k_12|23|4",
+    "openai_gsm8k_14|23|4",
+    "openai_gsm8k_15|37|4",
+    "openai_gsm8k_16|37|4",
+    "openai_gsm8k_18|23|4",
+    "openai_gsm8k_1|37|4",
+    "openai_gsm8k_272|43|4",
+    "openai_gsm8k_4|37|4",
+    "openai_gsm8k_546|43|4",
+    "openai_gsm8k_6|37|4",
+    "openai_gsm8k_822|43|4",
+    "openai_gsm8k_844|43|4",
+    "openai_gsm8k_883|43|4",
+    "openai_gsm8k_9|37|4"
+  ]
+}

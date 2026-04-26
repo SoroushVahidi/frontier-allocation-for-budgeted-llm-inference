@@ -1,0 +1,14 @@
+{
+  "diverse_only": true,
+  "n_rows": 40,
+  "n_problems": 20,
+  "n_positive": 22,
+  "test_group_ids": [
+    "openai_gsm8k_272|43|4",
+    "openai_gsm8k_299|43|4",
+    "openai_gsm8k_659|43|4",
+    "openai_gsm8k_844|43|4",
+    "openai_gsm8k_883|43|4",
+    "openai_gsm8k_923|43|4"
+  ]
+}
