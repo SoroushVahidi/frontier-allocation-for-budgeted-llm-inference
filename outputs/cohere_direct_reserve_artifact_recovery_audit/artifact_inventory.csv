@@ -1,0 +1,11 @@
+path,exists,file_size_bytes,timestamp_inferred_from_path,real_api_or_dry_proxy,method_list,num_cases,has_loss_cases,has_difference_cases,has_full_traces,sufficient_for_failure_replay,notes
+outputs/cohere_direct_reserve_validation_20260426T_COHERE_DIRECT_RESERVE_CONFIRM,false,0,,unknown,,,false,false,false,false,
+outputs/cohere_coverage_generation_ablation_20260426T_REAL_COHERE_COVERAGE_TINY,false,0,,unknown,,,false,false,false,false,
+outputs/coverage_then_scorer_diagnostic_20260426T004641Z,false,0,20260426T004641Z,unknown,,,false,false,false,false,
+outputs/bounded_real_trace_collection_,false,0,,unknown,,,false,false,false,false,
+outputs/trace_level_learned_branch_scorer_dataset_,false,0,,unknown,,,false,false,false,false,
+outputs/cohere_direct_reserve_validation_REGENERATED_FOR_REPLAY_20260426T120000Z,true,1722586,20260426T120000Z,real_api,strict_f3|external_l1_max|direct_reserve_strong_v1|direct_reserve_strong_plus_diverse_v1|direct_reserve_strong_plus_diverse_margin_gated_v1,12,true,true,true,true,
+outputs/cohere_direct_reserve_failure_replay_seed_latest,true,1724924,,unknown,,12,true,true,true,true,
+docs/COHERE_DIRECT_RESERVE_VALIDATION_20260426T_COHERE_DIRECT_RESERVE_CONFIRM.md,true,2317,,unknown,,,false,false,false,false,
+docs/COHERE_COVERAGE_GENERATION_ABLATION_20260426T_REAL_COHERE_COVERAGE_TINY.md,true,3105,,unknown,,,false,false,false,false,
+docs/COVERAGE_THEN_SCORER_DIAGNOSTIC_20260426T004641Z.md,true,1767,20260426T004641Z.md,unknown,,,false,false,false,false,

@@ -140,3 +140,7 @@ terminals/
 !outputs/repository_claim_safety_cleanup_*/**/*
 !outputs/repository_cleanup_and_anonymization_*/
 !outputs/repository_cleanup_and_anonymization_*/**/*
+!outputs/cohere_direct_reserve_artifact_recovery_audit/
+!outputs/cohere_direct_reserve_artifact_recovery_audit/**/*
+!outputs/cohere_direct_reserve_failure_replay_seed_latest/
+!outputs/cohere_direct_reserve_failure_replay_seed_latest/**/*
