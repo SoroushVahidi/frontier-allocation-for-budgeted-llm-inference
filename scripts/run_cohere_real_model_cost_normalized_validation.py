@@ -36,6 +36,7 @@ METHODS: dict[str, dict[str, Any]] = {
     "external_l1_max": {"runtime": "external_l1_max", "enable_output_repair": True},
     "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
+    "calibrated_near_direct_frontier_gate_v1": {"runtime": "calibrated_near_direct_frontier_gate_v1", "enable_output_repair": True},
     "tale": {"runtime": "external_tale_prompt_budgeting", "enable_output_repair": True},
     "s1": {"runtime": "external_s1_budget_forcing", "enable_output_repair": True},
     "self_consistency_3": {"runtime": "self_consistency_3", "enable_output_repair": True},

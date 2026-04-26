@@ -6258,6 +6258,224 @@ class NearDirectReserveFrontierGateController(BaseController):
         )
 
 
+class CalibratedNearDirectFrontierGateController(NearDirectReserveFrontierGateController):
+    """Diagnostic calibrated gate for near-direct incumbent escalation.
+
+    This controller protects an L1-style near-direct incumbent and only escalates
+    in a middle-confidence region. It is explicitly diagnostic-only.
+    """
+
+    def __init__(
+        self,
+        *args: Any,
+        high_confidence_accept_threshold: float = 0.95,
+        low_confidence_default_threshold: float = 0.0,
+        support_margin_min: int = 1,
+        maturity_margin_min: int = 1,
+        verifier_margin_min: float = 0.0,
+        require_verifier_margin: bool = False,
+        block_artifact_sensitive_cases: bool = True,
+        method_name: str = "calibrated_near_direct_frontier_gate_v1",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, method_name=method_name, **kwargs)
+        self.high_confidence_accept_threshold = float(high_confidence_accept_threshold)
+        self.low_confidence_default_threshold = float(low_confidence_default_threshold)
+        self.calibrated_support_margin_min = max(0, int(support_margin_min))
+        self.calibrated_maturity_margin_min = int(maturity_margin_min)
+        self.verifier_margin_min = float(verifier_margin_min)
+        self.require_verifier_margin = bool(require_verifier_margin)
+        self.block_artifact_sensitive_cases = bool(block_artifact_sensitive_cases)
+
+    @staticmethod
+    def _protected_confidence_proxy(states: list[dict[str, Any]], parse_success: bool) -> float:
+        scores: list[float] = []
+        for state in states:
+            try:
+                scores.append(float(state.get("score", 0.0)))
+            except Exception:
+                continue
+        if scores:
+            return float(max(scores))
+        return 0.5 if parse_success else 0.0
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        protected_answer, protected_actions, protected_trace, protected_states = self._run_protected_incumbent(
+            question, gold_answer, self.max_actions
+        )
+        parse_success = bool(protected_answer is not None and str(protected_answer).strip())
+        direct_confidence = self._protected_confidence_proxy(protected_states, parse_success)
+        direct_risk = float(1.0 - max(0.0, min(1.0, direct_confidence)))
+        protected_group = _normalize_answer(str(protected_answer)) if protected_answer is not None else "__unknown__"
+
+        metadata_base: dict[str, Any] = {
+            "method_family": "diagnostic_calibrated_near_direct_frontier_gate",
+            "diagnostic_only": True,
+            "not_canonical": True,
+            "protected_incumbent_answer": protected_answer,
+            "protected_incumbent_source_method": "external_l1_max_style_near_direct",
+            "protected_incumbent_parse_success": bool(parse_success),
+            "direct_confidence_proxy": float(direct_confidence),
+            "direct_risk_proxy": float(direct_risk),
+            "incumbent_verifier_score": None,
+            "frontier_verifier_score": None,
+            "verifier_margin": None,
+            "verifier_margin_available": False,
+            "artifact_sensitive_case": False,
+            "clean_override_eligible": False,
+            "protected_incumbent_trace": protected_trace,
+            "action_trace": list(protected_trace),
+            "final_branch_states": protected_states if bool(getattr(self, "emit_full_traces", False)) else [],
+        }
+
+        def _reserve_result(region: str, reason: str, actions_used: int) -> MethodResult:
+            md = dict(metadata_base)
+            md.update(
+                {
+                    "gate_region": region,
+                    "escalation_triggered": False,
+                    "escalation_reason": reason,
+                    "frontier_candidate_answer": None,
+                    "protected_incumbent_seen_in_frontier_support": False,
+                    "frontier_override_triggered": False,
+                    "override_allowed": False,
+                    "override_block_reason": reason,
+                    "answer_group_support_counts": {},
+                    "frontier_support": 0,
+                    "incumbent_support": 0,
+                    "support_margin": 0.0,
+                    "maturity_margin": 0.0,
+                    "frontier_candidate_family_count": 0,
+                    "reserve_used": True,
+                    "final_answer": protected_answer,
+                }
+            )
+            return MethodResult(
+                method=self.method_name,
+                prediction=protected_answer,
+                is_correct=self._answers_match(protected_answer, gold_answer),
+                actions_used=actions_used,
+                expansions=actions_used,
+                verifications=0,
+                avg_surviving_branches=1.0,
+                budget_exhausted=bool(actions_used >= self.max_actions),
+                metadata=md,
+            )
+
+        if not parse_success:
+            return _reserve_result("low_confidence_default_reserve", "protected_incumbent_parse_failed", int(protected_actions))
+        if direct_confidence >= self.high_confidence_accept_threshold:
+            return _reserve_result("accept_high_confidence", "protected_incumbent_high_confidence", int(protected_actions))
+        if direct_confidence <= self.low_confidence_default_threshold:
+            return _reserve_result("low_confidence_default_reserve", "protected_incumbent_low_confidence", int(protected_actions))
+
+        remaining_budget = max(0, self.max_actions - int(protected_actions))
+        if remaining_budget <= 0:
+            return _reserve_result("missing_features_default_reserve", "no_budget_for_frontier", int(protected_actions))
+
+        frontier = self.strict_controller_factory(remaining_budget)
+        if bool(getattr(self, "emit_full_traces", False)):
+            setattr(frontier, "emit_full_traces", True)
+        frontier_result = frontier.run(question, gold_answer)
+        frontier_meta = dict(frontier_result.metadata or {})
+        frontier_answer = frontier_result.prediction
+        frontier_group = (_normalize_answer(str(frontier_answer)) if frontier_answer is not None else "__unknown__") or "__unknown__"
+
+        support_counts: dict[str, int] = {}
+        raw_support = frontier_meta.get("answer_group_support_counts", {})
+        if isinstance(raw_support, dict):
+            for k, v in raw_support.items():
+                try:
+                    support_counts[str(k)] = int(v)
+                except Exception:
+                    continue
+        protected_seen = int(support_counts.get(protected_group, 0)) > 0
+        frontier_support = int(support_counts.get(frontier_group, 0))
+        incumbent_support = int(support_counts.get(protected_group, 0))
+        support_margin = float(frontier_support - incumbent_support)
+        frontier_maturity = int(frontier_result.expansions + frontier_result.verifications)
+        maturity_margin = float(frontier_maturity - int(protected_actions))
+        frontier_families = frontier_meta.get("answer_group_strategy_family_counts", {})
+        frontier_family_count = 0
+        if isinstance(frontier_families, dict):
+            frontier_family_count = len(dict(frontier_families.get(frontier_group, {}) or {}))
+        independent_evidence = bool(frontier_support >= 2 or frontier_family_count >= 2)
+        verifier_margin_available = False
+        verifier_margin = None
+
+        block_reason = "not_blocked"
+        override_allowed = False
+        if not support_counts:
+            block_reason = "missing_support_fields"
+        elif protected_seen:
+            block_reason = "protected_incumbent_seen_in_frontier_support"
+        elif frontier_group == protected_group:
+            block_reason = "frontier_agrees_with_incumbent"
+        elif frontier_support < 2:
+            block_reason = "frontier_support_below_threshold"
+        elif not independent_evidence:
+            block_reason = "insufficient_independent_frontier_evidence"
+        elif support_margin < float(self.calibrated_support_margin_min):
+            block_reason = "support_margin_below_threshold"
+        elif maturity_margin < float(self.calibrated_maturity_margin_min):
+            block_reason = "maturity_margin_below_threshold"
+        elif self.require_verifier_margin and not verifier_margin_available:
+            block_reason = "verifier_margin_missing"
+        else:
+            override_allowed = True
+            block_reason = "not_blocked"
+
+        final_answer = frontier_answer if override_allowed else protected_answer
+        action_trace = list(frontier_meta.get("action_trace", [])) if isinstance(frontier_meta.get("action_trace", []), list) else []
+        action_trace.extend(protected_trace)
+        final_branch_states = list(frontier_meta.get("final_branch_states", [])) if isinstance(frontier_meta.get("final_branch_states", []), list) else []
+        final_branch_states.extend(protected_states)
+        combined_counts = Counter(dict(support_counts))
+        if protected_group != "__unknown__":
+            combined_counts[protected_group] += 1
+
+        metadata = dict(metadata_base)
+        metadata.update(
+            {
+                "gate_region": "escalate_middle_band" if override_allowed else "missing_features_default_reserve" if not support_counts else "escalate_middle_band",
+                "escalation_triggered": True,
+                "escalation_reason": "middle_band",
+                "frontier_candidate_answer": frontier_answer,
+                "protected_incumbent_seen_in_frontier_support": bool(protected_seen),
+                "frontier_override_triggered": bool(override_allowed),
+                "override_allowed": bool(override_allowed),
+                "override_block_reason": block_reason if not override_allowed else "not_blocked",
+                "answer_group_support_counts": dict(combined_counts),
+                "frontier_answer_group_counts": dict(support_counts),
+                "frontier_support": int(frontier_support),
+                "incumbent_support": int(incumbent_support),
+                "support_margin": float(support_margin),
+                "maturity_margin": float(maturity_margin),
+                "frontier_candidate_family_count": int(frontier_family_count),
+                "frontier_candidate_maturity": int(frontier_maturity),
+                "verifier_margin": verifier_margin,
+                "verifier_margin_available": bool(verifier_margin_available),
+                "clean_override_eligible": bool(override_allowed and not metadata_base["artifact_sensitive_case"]),
+                "reserve_used": bool(not override_allowed),
+                "final_answer": final_answer,
+                "frontier_metadata": dict(frontier_meta),
+                "action_trace": action_trace,
+                "final_branch_states": final_branch_states if bool(getattr(self, "emit_full_traces", False)) else [],
+            }
+        )
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=int(protected_actions + frontier_result.actions_used),
+            expansions=int(protected_actions + frontier_result.expansions),
+            verifications=int(frontier_result.verifications),
+            avg_surviving_branches=float(frontier_result.avg_surviving_branches),
+            budget_exhausted=bool((protected_actions + frontier_result.actions_used) >= self.max_actions),
+            metadata=metadata,
+        )
+
+
 class L1LengthControlController(BaseController):
     """External baseline adapter for L1/LCPO-style length-conditioned control.
 
