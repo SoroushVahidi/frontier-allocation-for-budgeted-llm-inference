@@ -144,3 +144,7 @@ terminals/
 !outputs/cohere_direct_reserve_artifact_recovery_audit/**/*
 !outputs/cohere_direct_reserve_failure_replay_seed_latest/
 !outputs/cohere_direct_reserve_failure_replay_seed_latest/**/*
+!outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT/
+!outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT/**/*
+!outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN/
+!outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN/**/*
