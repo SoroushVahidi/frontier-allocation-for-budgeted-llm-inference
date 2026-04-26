@@ -18,6 +18,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from experiments.hf_datasets import resolve_dataset_spec
 from experiments.output_layer_repair import canonicalize_answer
+from experiments.data import extract_final_answer
 
 CASE_CSV_NAMES = {
     "planned_cases.csv",
@@ -94,6 +95,8 @@ def _norm_answer(raw: Any, dataset: str) -> str:
     txt = str(raw or "").strip()
     if not txt:
         return "NA"
+    if dataset == "openai/gsm8k":
+        txt = extract_final_answer(txt)
     try:
         return str(canonicalize_answer(txt, dataset=dataset))
     except Exception:
