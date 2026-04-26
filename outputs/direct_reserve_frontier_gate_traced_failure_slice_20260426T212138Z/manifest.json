@@ -1,0 +1,17 @@
+{
+  "artifact_family": "direct_reserve_frontier_gate_traced_failure_slice_attempt",
+  "diagnostic_dir": "outputs/cohere_gsm8k_strict_f3_vs_external_l1_max_diagnostic_20260425T235500Z",
+  "diagnostic_type": "not_evaluable_missing_traced_candidate_pool",
+  "matched_examples": 30,
+  "outputs": [
+    "manifest.json",
+    "summary.csv",
+    "missing_fields_report.csv",
+    "per_case_source_coverage.csv",
+    "README.md",
+    "minimal_real_api_rerun.sh"
+  ],
+  "real_api_used": false,
+  "source_dir": "outputs/cohere_real_model_cost_normalized_validation_20260425T133000Z_COHERE_STAGE1_MIN",
+  "timestamp": "20260426T212138Z"
+}

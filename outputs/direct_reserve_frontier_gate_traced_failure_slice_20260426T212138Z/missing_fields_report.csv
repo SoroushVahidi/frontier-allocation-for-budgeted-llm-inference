@@ -1,0 +1,4 @@
+artifact,present,row_count,missing_fields,impact
+candidate_branch_table.csv,0,0,example_id;seed;budget;method;branch_id;answer_group;branch_score,required for paired_candidate_pool_diagnostic; absent in source run
+answer_group_table.csv,0,0,example_id;seed;budget;method;answer_group;support_count;maturity,required for paired_candidate_pool_diagnostic; absent in source run
+per_case_trace_index.csv,0,0,example_id;seed;budget;method;trace_path;trace_available,required for paired_candidate_pool_diagnostic; absent in source run
