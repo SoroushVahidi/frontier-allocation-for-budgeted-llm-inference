@@ -172,6 +172,12 @@ terminals/
 !outputs/direct_reserve_disjoint_case_plan_*/**/*
 !outputs/fresh_gsm8k_direct_reserve_scorer_plan_*/
 !outputs/fresh_gsm8k_direct_reserve_scorer_plan_*/**/*
+!outputs/fresh_gsm8k_learned_override_runtime_plan_*/
+!outputs/fresh_gsm8k_learned_override_runtime_plan_*/**/*
+!outputs/cohere_direct_reserve_validation_learned_override_tiny_real_*/
+!outputs/cohere_direct_reserve_validation_learned_override_tiny_real_*/**/*
+!outputs/direct_reserve_learned_override_runtime_eval_*/
+!outputs/direct_reserve_learned_override_runtime_eval_*/**/*
 !outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/
 !outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/**/*
 !outputs/repository_cleanup_audit_*/

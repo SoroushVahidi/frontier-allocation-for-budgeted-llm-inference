@@ -1,0 +1,30 @@
+{
+  "budget": 4,
+  "dataset": "openai/gsm8k",
+  "exclude_outputs": [
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION",
+    "outputs/cohere_direct_reserve_failure_replay_seed_latest",
+    "outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT",
+    "outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN"
+  ],
+  "load_report": {
+    "config": "main",
+    "dataset": "openai/gsm8k",
+    "loader": "huggingface_datasets",
+    "n_loaded": 1319,
+    "ok": true,
+    "repo_id": "openai/gsm8k",
+    "split": "test"
+  },
+  "max_cases": 10,
+  "n_excluded_problem_ids": 40,
+  "n_fresh_candidates": 1279,
+  "n_loaded_problem_ids": 1319,
+  "n_planned_problem_ids": 10,
+  "seed": 53,
+  "split": "test",
+  "status": "ok",
+  "total_overlap_count": 0
+}
