@@ -6014,6 +6014,68 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         )
 
 
+class DirectReserveFrontierGateV2Controller(DirectReserveFrontierGateController):
+    """Diagnostic v2: block overrides when frontier already contains the incumbent."""
+
+    def __init__(self, *args: Any, method_name: str = "direct_reserve_frontier_gate_v2", **kwargs: Any) -> None:
+        super().__init__(*args, method_name=method_name, **kwargs)
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        base = super().run(question, gold_answer)
+        metadata = dict(base.metadata or {})
+        incumbent_answer = metadata.get("direct_reserve_answer")
+        incumbent_group = _normalize_answer(str(incumbent_answer)) if incumbent_answer is not None else "__unknown__"
+        support_source = metadata.get("frontier_answer_group_counts")
+        if not isinstance(support_source, dict) or not support_source:
+            support_source = metadata.get("answer_group_support_counts", {})
+        incumbent_seen = False
+        if isinstance(support_source, dict):
+            incumbent_seen = int(support_source.get(incumbent_group, 0) or 0) > 0
+
+        guard_applied = bool(metadata.get("frontier_override_triggered", False) and incumbent_seen)
+        metadata["incumbent_seen_in_frontier_support"] = bool(incumbent_seen)
+        metadata["v2_incumbent_support_guard_applied"] = bool(guard_applied)
+        metadata["v2_override_block_reason"] = (
+            "incumbent_seen_in_frontier_support" if guard_applied else "not_blocked"
+        )
+        metadata["v2_diagnostic_only"] = True
+        metadata["not_canonical"] = True
+
+        if not guard_applied:
+            metadata["method_family"] = "diagnostic_direct_reserve_frontier_gate_v2"
+            return MethodResult(
+                method=self.method_name,
+                prediction=base.prediction,
+                is_correct=bool(base.is_correct),
+                actions_used=base.actions_used,
+                expansions=base.expansions,
+                verifications=base.verifications,
+                avg_surviving_branches=base.avg_surviving_branches,
+                budget_exhausted=base.budget_exhausted,
+                metadata=metadata,
+            )
+
+        final_answer = metadata.get("direct_reserve_answer")
+        metadata["v1_frontier_override_triggered"] = True
+        metadata["v1_final_answer_before_v2_guard"] = metadata.get("final_answer", base.prediction)
+        metadata["frontier_override_triggered"] = False
+        metadata["reserve_used"] = True
+        metadata["override_reason"] = "v2_blocked_incumbent_seen_in_frontier_support"
+        metadata["final_answer"] = final_answer
+        metadata["method_family"] = "diagnostic_direct_reserve_frontier_gate_v2"
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=base.actions_used,
+            expansions=base.expansions,
+            verifications=base.verifications,
+            avg_surviving_branches=base.avg_surviving_branches,
+            budget_exhausted=base.budget_exhausted,
+            metadata=metadata,
+        )
+
+
 class L1LengthControlController(BaseController):
     """External baseline adapter for L1/LCPO-style length-conditioned control.
 
