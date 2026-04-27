@@ -46,7 +46,15 @@ Before writing manuscript text, read:
 - `docs/SAFE_CLAIMS_FOR_NEURIPS_2026.md`
 - `docs/RESULTS_GUIDE.md`
 - `docs/PAPER_SOURCE_OF_TRUTH.md`
+- `docs/CLAIM_BOUNDARIES_CURRENT.md`
+- `docs/PAPER_ARTIFACTS_README.md`
 - `docs/REVIEWER_REPRO_AND_SCOPE_GUIDE.md`
+
+## Anonymous supplement
+
+- Anonymous reviewer package source: `neurips2026_anonymous_artifact/`
+- Packaging/build path: `scripts/create_anonymous_neurips_artifact.py`
+- Keep canonical paper-facing and diagnostic artifacts explicitly separated when preparing anonymous releases.
 
 ## Repository organization and artifact classes
 For a reviewer-safe map of canonical, diagnostic, and provenance artifacts, see:

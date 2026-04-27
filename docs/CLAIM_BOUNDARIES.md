@@ -5,7 +5,7 @@ Use conservative, contract-aware wording.
 ## Preferred wording
 
 - matched action-budget surface
-- matched-budget adapter baselines
+- matched-action adapters
 - near-direct external baselines under explicit contract
 - supporting/diagnostic real-model audits
 - exploratory/provenance-only

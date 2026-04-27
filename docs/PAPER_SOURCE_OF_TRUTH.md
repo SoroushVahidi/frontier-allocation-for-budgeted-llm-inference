@@ -29,7 +29,7 @@ Canonical output directories:
 
 A claim is paper-facing only if:
 - it is supported by the canonical output directories above,
-- its comparison uses an explicit matched contract (e.g., matched action-budget surface or matched-budget adapters), and
+- its comparison uses an explicit matched contract (e.g., matched maximum action-budget contract and matched-action adapters), and
 - wording matches `docs/CLAIM_BOUNDARIES.md`.
 
 ## Real-model evidence rule

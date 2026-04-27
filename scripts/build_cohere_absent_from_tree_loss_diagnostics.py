@@ -25,7 +25,12 @@ BUDGETS_DEFAULT = [4, 6, 8]
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Build Cohere absent-from-tree loss diagnostics from existing artifacts.")
+    p = argparse.ArgumentParser(
+        description=(
+            "Build Cohere absent-from-tree loss diagnostics from existing artifacts only "
+            "(no live API calls, no expensive reruns)."
+        )
+    )
     p.add_argument("--timestamp", default=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
     p.add_argument("--provider", default="cohere")
     p.add_argument("--output-root", default="outputs")

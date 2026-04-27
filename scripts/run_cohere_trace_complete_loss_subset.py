@@ -23,12 +23,18 @@ SOURCE_LOSS_PATH = (
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Focused trace-complete Cohere rerun for absent-from-tree loss subset.")
+    p = argparse.ArgumentParser(
+        description=(
+            "Focused trace-complete Cohere rerun for absent-from-tree loss subset. "
+            "Safe default: selection/prep only; use --run-live-rerun for real API execution."
+        )
+    )
     p.add_argument("--timestamp", default=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
     p.add_argument("--model", default="command-r-plus-08-2024")
     p.add_argument("--max-cases", type=int, default=30)
     p.add_argument("--selection-seed", type=int, default=27)
     p.add_argument("--source-loss-jsonl", default=str(SOURCE_LOSS_PATH))
+    p.add_argument("--run-live-rerun", action="store_true", help="Execute real Cohere rerun. If omitted, only selection/prep artifacts are written.")
     p.add_argument("--timeout-seconds", type=int, default=90)
     p.add_argument("--smoke-timeout-seconds", type=int, default=45)
     p.add_argument("--rerun-timeout-seconds", type=int, default=3600)
@@ -270,38 +276,42 @@ def main() -> None:
         f'python scripts/run_cohere_trace_complete_loss_subset.py --timestamp {ts} --model "{args.model}" --max-cases {args.max_cases}'
     )
 
-    # 1) Explicit readiness check
-    readiness_ok, failure_class, smoke = run_readiness_check(model=args.model, smoke_timeout_seconds=args.smoke_timeout_seconds)
-    if not readiness_ok:
-        write_issue_report(
-            out_dir=out_dir,
-            timestamp=ts,
-            model=args.model,
-            key_present=bool(os.getenv("COHERE_API_KEY")),
-            failure_class=failure_class,
-            error_message=str(smoke.get("error", smoke.get("status", ""))),
-            rerun_command=rerun_command,
-        )
-        doc_path = REPO_ROOT / "docs" / f"COHERE_TRACE_COMPLETE_LOSS_SUBSET_{ts}.md"
-        doc_path.write_text(
-            "\n".join(
-                [
-                    f"# COHERE_TRACE_COMPLETE_LOSS_SUBSET_{ts}",
-                    "",
-                    "- Cohere API readiness: **failed**",
-                    f"- Failure class: **{failure_class}**",
-                    f"- Recommended fix: {fix_for_failure(failure_class)}",
-                    f"- See `outputs/cohere_trace_complete_loss_subset_{ts}/cohere_api_key_issue.md`",
-                ]
+    readiness_ok = False
+    failure_class = "not_run"
+    smoke: dict[str, Any] = {"status": "not_run"}
+    if args.run_live_rerun:
+        # 1) Explicit readiness check
+        readiness_ok, failure_class, smoke = run_readiness_check(model=args.model, smoke_timeout_seconds=args.smoke_timeout_seconds)
+        if not readiness_ok:
+            write_issue_report(
+                out_dir=out_dir,
+                timestamp=ts,
+                model=args.model,
+                key_present=bool(os.getenv("COHERE_API_KEY")),
+                failure_class=failure_class,
+                error_message=str(smoke.get("error", smoke.get("status", ""))),
+                rerun_command=rerun_command,
             )
-            + "\n",
-            encoding="utf-8",
-        )
-        print(str(out_dir.relative_to(REPO_ROOT)))
-        print("cohere_api_key_present=absent" if not os.getenv("COHERE_API_KEY") else "cohere_api_key_present=present")
-        print("smoke_test_passed=no")
-        print(f"failure_class={failure_class}")
-        return
+            doc_path = REPO_ROOT / "docs" / f"COHERE_TRACE_COMPLETE_LOSS_SUBSET_{ts}.md"
+            doc_path.write_text(
+                "\n".join(
+                    [
+                        f"# COHERE_TRACE_COMPLETE_LOSS_SUBSET_{ts}",
+                        "",
+                        "- Cohere API readiness: **failed**",
+                        f"- Failure class: **{failure_class}**",
+                        f"- Recommended fix: {fix_for_failure(failure_class)}",
+                        f"- See `outputs/cohere_trace_complete_loss_subset_{ts}/cohere_api_key_issue.md`",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            print(str(out_dir.relative_to(REPO_ROOT)))
+            print("cohere_api_key_present=absent" if not os.getenv("COHERE_API_KEY") else "cohere_api_key_present=present")
+            print("smoke_test_passed=no")
+            print(f"failure_class={failure_class}")
+            return
 
     # 2) Select up to 30 loss cases
     source_rows = read_jsonl(Path(args.source_loss_jsonl))
@@ -340,6 +350,32 @@ def main() -> None:
         )
     write_jsonl(out_dir / "selected_cases.jsonl", selected_cases)
     write_csv(out_dir / "selected_cases.csv", planned_rows)
+
+    if not args.run_live_rerun:
+        (out_dir / "candidate_controller_fixes.md").write_text(
+            "# Candidate controller fixes\n\n- Live rerun not executed (safe default).\n",
+            encoding="utf-8",
+        )
+        (out_dir / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "artifact_family": "cohere_trace_complete_loss_subset",
+                    "timestamp": ts,
+                    "model": args.model,
+                    "run_live_rerun": False,
+                    "selected_cases": len(selected_cases),
+                    "note": "Selection artifacts only. Re-run with --run-live-rerun for API execution.",
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        print(str(out_dir.relative_to(REPO_ROOT)))
+        print("cohere_api_key_present=not_checked")
+        print("smoke_test_passed=not_run")
+        print(f"selected_cases={len(selected_cases)}")
+        return
 
     # 3) Live rerun through existing trace-capable runner.
     inner_ts = f"TRACE_SUBSET_{ts}"
