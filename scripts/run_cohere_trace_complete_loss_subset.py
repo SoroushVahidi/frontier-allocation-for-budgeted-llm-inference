@@ -232,6 +232,9 @@ def write_run_failure_report(
     completed_cases_count: int,
     rerun_command: str,
     recommended_fix: str,
+    subprocess_return_code: int | None = None,
+    stdout_tail: str = "",
+    stderr_tail: str = "",
 ) -> None:
     files = partial_output_files(out_dir)
     lines = [
@@ -242,6 +245,7 @@ def write_run_failure_report(
         f"- Exception type: `{exception_type}`",
         f"- Selected cases count: `{selected_cases_count}`",
         f"- Completed cases count before failure: `{completed_cases_count}`",
+        f"- Subprocess return code: `{subprocess_return_code if subprocess_return_code is not None else 'NA'}`",
         "",
         "## Partial output files written",
         *([f"- `{x}`" for x in files] if files else ["- none"]),
@@ -253,6 +257,16 @@ def write_run_failure_report(
         "",
         "## Recommended fix",
         f"- {recommended_fix}",
+        "",
+        "## Sanitized stderr tail",
+        "```text",
+        stderr_tail[-2000:] if stderr_tail else "N/A",
+        "```",
+        "",
+        "## Sanitized stdout tail",
+        "```text",
+        stdout_tail[-2000:] if stdout_tail else "N/A",
+        "```",
         "",
         "## Traceback tail",
         "```text",
@@ -564,6 +578,9 @@ def main() -> None:
                 completed_cases_count=completed_cases_from_partial(REPO_ROOT / "outputs" / f"cohere_direct_reserve_validation_{inner_ts}"),
                 rerun_command=rerun_command,
                 recommended_fix=fix_for_stage("timeout", tb),
+                subprocess_return_code=None,
+                stdout_tail=(exc.stdout or ""),
+                stderr_tail=(exc.stderr or ""),
             )
             raise SystemExit(
                 f"Trace subset rerun timed out. See outputs/cohere_trace_complete_loss_subset_{ts}/run_failure_issue.md"
@@ -587,6 +604,9 @@ def main() -> None:
                 completed_cases_count=completed_cases_from_partial(REPO_ROOT / "outputs" / f"cohere_direct_reserve_validation_{inner_ts}"),
                 rerun_command=rerun_command,
                 recommended_fix=fix_for_stage(stage, err_blob),
+                subprocess_return_code=proc.returncode,
+                stdout_tail=(proc.stdout or ""),
+                stderr_tail=(proc.stderr or ""),
             )
             raise SystemExit(
                 f"Trace subset rerun failed. See outputs/cohere_trace_complete_loss_subset_{ts}/run_failure_issue.md"
@@ -796,6 +816,9 @@ def main() -> None:
             completed_cases_count=completed_cases_from_partial(REPO_ROOT / "outputs" / f"cohere_direct_reserve_validation_TRACE_SUBSET_{ts}"),
             rerun_command=rerun_command,
             recommended_fix=fix_for_stage(stage, tb),
+            subprocess_return_code=None,
+            stdout_tail="",
+            stderr_tail="",
         )
         raise SystemExit(
             f"Trace subset run failed after readiness. See outputs/cohere_trace_complete_loss_subset_{ts}/run_failure_issue.md"
