@@ -22,6 +22,7 @@ from experiments.branching import APIBranchGenerator
 from experiments.data import normalize_answer_text
 from experiments.frontier_matrix_core import build_frontier_strategies, load_pilot_examples
 from experiments.output_layer_repair import canonicalize_answer, choose_repair_answer
+from experiments.trace_schema import build_branch_trace, write_trace_package
 
 STRICT_F3 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
 STRICT_GATE1_CAP_K6 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control"
@@ -33,6 +34,9 @@ METHODS: dict[str, dict[str, Any]] = {
     "strict_f3_anti_collapse_weak_v1": {"runtime": "strict_f3_anti_collapse_weak_v1", "enable_output_repair": True},
     "strict_f2": {"runtime": STRICT_F2, "enable_output_repair": True},
     "external_l1_max": {"runtime": "external_l1_max", "enable_output_repair": True},
+    "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
+    "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
+    "calibrated_near_direct_frontier_gate_v1": {"runtime": "calibrated_near_direct_frontier_gate_v1", "enable_output_repair": True},
     "tale": {"runtime": "external_tale_prompt_budgeting", "enable_output_repair": True},
     "s1": {"runtime": "external_s1_budget_forcing", "enable_output_repair": True},
     "self_consistency_3": {"runtime": "self_consistency_3", "enable_output_repair": True},
@@ -95,6 +99,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--resume", action="store_true")
     p.add_argument("--summarize-only", action="store_true", help="Skip new API calls and only recompute aggregate artifacts from existing records.")
     p.add_argument("--output-root", default="outputs")
+    p.add_argument("--save-branch-traces", action="store_true")
     return p.parse_args()
 
 
@@ -460,6 +465,7 @@ def main() -> None:
     }
     dataset_load_failures: dict[tuple[str, str, int], str] = {}
     runtime_missing: set[tuple[str, str, int, int, str]] = set()
+    branch_traces: list[dict[str, Any]] = []
 
     if not args.summarize_only:
         for provider in providers:
@@ -534,6 +540,8 @@ def main() -> None:
                                 )
                                 t0 = time.perf_counter()
                                 controller = specs[runtime]
+                                if args.save_branch_traces:
+                                    setattr(controller, "emit_full_traces", True)
                                 if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "reset_usage_counters"):
                                     controller.generator.base.reset_usage_counters()
                                 status = "scored"
@@ -566,6 +574,21 @@ def main() -> None:
                                             )
                                     eval_diag = evaluate_with_diagnostics(result, dataset, str(ex.answer), final_nodes, enable_repair)
                                     exact_match = int(eval_diag["exact_match"])
+                                    if args.save_branch_traces:
+                                        branch_traces.append(
+                                            build_branch_trace(
+                                                result=result,
+                                                example_id=str(ex.example_id),
+                                                dataset=dataset,
+                                                provider=provider,
+                                                model=model_by_provider[provider],
+                                                budget=budget,
+                                                seed=seed,
+                                                method=method,
+                                                question=str(ex.question),
+                                                gold_answer=str(ex.answer),
+                                            )
+                                        )
                                     scored += 1
                                     if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "snapshot_usage_counters"):
                                         usage = controller.generator.base.snapshot_usage_counters()
@@ -858,6 +881,9 @@ def main() -> None:
     ]
     claim_rows.extend(provider_answers)
     write_csv(out_dir / "claim_safety_table.csv", claim_rows)
+    trace_stats = {"n_traces": 0, "n_branches": 0, "n_answer_groups": 0}
+    if args.save_branch_traces and branch_traces:
+        trace_stats = write_trace_package(out_dir, branch_traces)
 
     manifest = {
         "artifact_family": "cohere_real_model_cost_normalized_validation",
@@ -872,6 +898,8 @@ def main() -> None:
         "max_examples": args.max_examples,
         "provider_status": provider_status,
         "pricing": {"input_cost_per_1k": args.input_cost_per_1k, "output_cost_per_1k": args.output_cost_per_1k},
+        "save_branch_traces": bool(args.save_branch_traces),
+        "branch_trace_stats": trace_stats,
         "outputs": [
             "manifest.json",
             "slice_summary.csv",
@@ -883,6 +911,10 @@ def main() -> None:
             "per_example_records.jsonl",
             "progress_heartbeat.jsonl",
             "raw/failures.jsonl",
+            "candidate_branch_table.csv",
+            "answer_group_table.csv",
+            "per_case_trace_index.csv",
+            "traces/",
         ],
     }
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

@@ -1,0 +1,31 @@
+example_id,seed,budget,failure_label,suggested_fix_category
+openai_gsm8k_0,11,4,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_0,11,6,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_0,11,8,l1_answer_present_but_not_selected,preserve near-direct answer when present in frontier support
+openai_gsm8k_0,23,4,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_0,23,6,unknown_needs_manual_review,manual trace inspection
+openai_gsm8k_0,23,8,unknown_needs_manual_review,manual trace inspection
+openai_gsm8k_1,11,4,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_1,11,6,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_1,11,8,direct_answer_should_have_been_preserved,prefer protected near-direct incumbent when traced support includes it
+openai_gsm8k_1,23,4,direct_answer_should_have_been_preserved,prefer protected near-direct incumbent when traced support includes it
+openai_gsm8k_1,23,6,artifact_sensitive_repair_case,fix answer surfacing/repair accounting before using override gains
+openai_gsm8k_1,23,8,unknown_needs_manual_review,manual trace inspection
+openai_gsm8k_2,11,4,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_2,11,6,gold_absent_from_frontier,improve frontier generation/coverage rather than selection
+openai_gsm8k_2,11,8,artifact_sensitive_repair_case,fix answer surfacing/repair accounting before using override gains
+openai_gsm8k_2,23,4,l1_answer_present_but_not_selected,preserve near-direct answer when present in frontier support
+openai_gsm8k_2,23,6,gold_present_but_misselected,improve verifier/answer-group selection
+openai_gsm8k_2,23,8,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_3,11,4,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_3,11,6,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_3,11,8,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_3,23,4,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_3,23,6,direct_answer_should_have_been_preserved,prefer protected near-direct incumbent when traced support includes it
+openai_gsm8k_3,23,8,artifact_sensitive_repair_case,fix answer surfacing/repair accounting before using override gains
+openai_gsm8k_4,11,4,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_4,11,6,unknown_needs_manual_review,manual trace inspection
+openai_gsm8k_4,11,8,unknown_needs_manual_review,manual trace inspection
+openai_gsm8k_4,23,4,insufficient_branch_diversity,require independent families before trusting frontier support
+openai_gsm8k_4,23,6,gold_absent_from_frontier,improve frontier generation/coverage rather than selection
+openai_gsm8k_4,23,8,gold_absent_from_frontier,improve frontier generation/coverage rather than selection

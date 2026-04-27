@@ -1,0 +1,62 @@
+{
+  "artifact_family": "cohere_real_model_cost_normalized_validation",
+  "timestamp": "TRACE_REPLAY_COHERE_GSM8K_STAGE1_MIN",
+  "providers": [
+    "cohere"
+  ],
+  "models": {
+    "cohere": "command-r-plus-08-2024",
+    "openai": "gpt-4o-mini"
+  },
+  "datasets": [
+    "openai/gsm8k"
+  ],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23
+  ],
+  "methods": [
+    "strict_f3",
+    "external_l1_max",
+    "direct_reserve_frontier_gate_v1"
+  ],
+  "target_scored_per_slice": 5,
+  "max_examples": 5,
+  "provider_status": {
+    "cohere": {
+      "ready": "1",
+      "reason": "ok"
+    }
+  },
+  "pricing": {
+    "input_cost_per_1k": 0.003,
+    "output_cost_per_1k": 0.015
+  },
+  "save_branch_traces": true,
+  "branch_trace_stats": {
+    "n_traces": 90,
+    "n_branches": 228,
+    "n_answer_groups": 171
+  },
+  "outputs": [
+    "manifest.json",
+    "slice_summary.csv",
+    "method_summary.csv",
+    "cost_normalized_summary.csv",
+    "pairwise_comparisons.csv",
+    "incomplete_slices.csv",
+    "claim_safety_table.csv",
+    "per_example_records.jsonl",
+    "progress_heartbeat.jsonl",
+    "raw/failures.jsonl",
+    "candidate_branch_table.csv",
+    "answer_group_table.csv",
+    "per_case_trace_index.csv",
+    "traces/"
+  ]
+}

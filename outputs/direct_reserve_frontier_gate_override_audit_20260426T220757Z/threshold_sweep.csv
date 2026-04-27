@@ -1,0 +1,12 @@
+rule_name,description,accuracy_reported_surface,accuracy_semantic_internal_answers,total_overrides,helpful_overrides_reported,harmful_overrides_reported,semantic_helpful_overrides,semantic_harmful_overrides,direct_solved_preserved_reported,direct_solved_harmed_reported,delta_vs_v1_reported,delta_vs_external_l1_max_reported,preserves_reported_helpful_override,blocks_at_least_one_reported_harmful
+v1_existing_rule,Current v1 override decisions.,0.6666666666666666,0.6666666666666666,3,1,2,1,1,19,2,-3.333333333332966e-05,-0.033333333333333326,1,0
+no_overrides,Never override; copies external_l1_max for this audit baseline.,0.7,0.6666666666666666,0,0,0,0,0,21,0,0.033299999999999996,0.0,0,1
+frontier_support_ge_2,Keep only v1 overrides with frontier_support >= 2.,0.6666666666666666,0.6666666666666666,3,1,2,1,1,19,2,-3.333333333332966e-05,-0.033333333333333326,1,0
+frontier_family_ge_2,Keep only v1 overrides with frontier_candidate_family_count >= 2.,0.6666666666666666,0.6666666666666666,3,1,2,1,1,19,2,-3.333333333332966e-05,-0.033333333333333326,1,0
+support_margin_ge_2,Keep only v1 overrides with support_margin >= 2.,0.7,0.6666666666666666,0,0,0,0,0,21,0,0.033299999999999996,0.0,0,1
+maturity_margin_ge_2,Keep only v1 overrides with maturity_margin >= 2.,0.7,0.6666666666666666,0,0,0,0,0,21,0,0.033299999999999996,0.0,0,1
+direct_agreement_le_1,Keep only v1 overrides when direct reserve attempts do not agree.,0.6666666666666666,0.6666666666666666,3,1,2,1,1,19,2,-3.333333333332966e-05,-0.033333333333333326,1,0
+frontier_support_ge_2_family_ge_2,Require both two frontier branches and two families.,0.6666666666666666,0.6666666666666666,3,1,2,1,1,19,2,-3.333333333332966e-05,-0.033333333333333326,1,0
+maturity_margin_le_0,Blocks the higher-maturity harmful case; diagnostic only.,0.7,0.6333333333333333,2,1,1,0,1,20,1,0.033299999999999996,0.0,1,1
+external_prediction_absent_from_pool,Do not override if the external_l1_max answer appears anywhere in the traced pool.,0.7333333333333333,0.6333333333333333,1,1,0,0,1,21,0,0.06663333333333332,0.033333333333333326,1,1
+v2_external_absent_multi_family,"Recommended v2: multi-branch/multi-family frontier, weak direct reserve, and external incumbent absent from traced support.",0.7333333333333333,0.6333333333333333,1,1,0,0,1,21,0,0.06663333333333332,0.033333333333333326,1,1

@@ -1,0 +1,18 @@
+{
+  "artifact_family": "direct_reserve_frontier_gate_failure_slice",
+  "diagnostic_dir": "outputs/cohere_gsm8k_strict_f3_vs_external_l1_max_diagnostic_20260425T235500Z",
+  "diagnostic_type": "diagnostic_limited_prediction_level",
+  "matched_examples": 30,
+  "outputs": [
+    "manifest.json",
+    "per_case_results.csv",
+    "summary.csv",
+    "override_audit.csv",
+    "missing_fields_report.csv",
+    "README.md"
+  ],
+  "real_api_allowed": false,
+  "real_api_used": false,
+  "source_dir": "outputs/cohere_real_model_cost_normalized_validation_20260425T133000Z_COHERE_STAGE1_MIN",
+  "timestamp": "20260426T210345Z"
+}

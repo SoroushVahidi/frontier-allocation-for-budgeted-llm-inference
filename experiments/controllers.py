@@ -5798,15 +5798,17 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         per_attempt_cap = max(1, int(round(self.direct_token_budget / self.direct_token_per_action)))
         direct_answers: list[str | None] = []
         direct_actions = 0
+        direct_trace: list[dict[str, Any]] = []
 
         for i in range(reserve_attempts):
             if direct_actions >= self.max_actions:
                 break
-            ans, used, _trace = self._run_direct_attempt(
+            ans, used, trace_rows = self._run_direct_attempt(
                 question, gold_answer, i, min(per_attempt_cap, self.max_actions - direct_actions)
             )
             direct_answers.append(ans)
             direct_actions += int(used)
+            direct_trace.extend(trace_rows)
 
         direct_counts: Counter[str] = Counter((_normalize_answer(a) or "__unknown__") for a in direct_answers if a is not None)
         sorted_counts = sorted(direct_counts.items(), key=lambda kv: kv[1], reverse=True)
@@ -5833,6 +5835,8 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         frontier_result: MethodResult | None = None
         if should_expand_frontier:
             frontier = self.strict_controller_factory(remaining_budget)
+            if bool(getattr(self, "emit_full_traces", False)):
+                setattr(frontier, "emit_full_traces", True)
             frontier_result = frontier.run(question, gold_answer)
 
         frontier_answer = frontier_result.prediction if frontier_result else None
@@ -5851,6 +5855,21 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         frontier_support = int(frontier_support_counts.get(frontier_group, 0))
         frontier_maturity = int((frontier_result.expansions if frontier_result else 0) + (frontier_result.verifications if frontier_result else 0))
         override_margin = float(frontier_support - incumbent_support)
+        frontier_meta = dict(frontier_result.metadata or {}) if frontier_result else {}
+        frontier_families = frontier_meta.get("answer_group_strategy_family_counts", {})
+        if isinstance(frontier_families, dict):
+            frontier_candidate_family_count = len(dict(frontier_families.get(frontier_group, {}) or {}))
+        else:
+            frontier_candidate_family_count = 0
+        frontier_final_states = list(frontier_meta.get("final_branch_states", [])) if isinstance(frontier_meta.get("final_branch_states", []), list) else []
+        frontier_group_states = [
+            s
+            for s in frontier_final_states
+            if (_normalize_answer(str(s.get("predicted_answer", ""))) or "__unknown__") == frontier_group
+        ]
+        frontier_depths = [int(s.get("branch_depth", 0) or 0) for s in frontier_group_states]
+        frontier_depth_max = max(frontier_depths) if frontier_depths else None
+        frontier_depth_mean = (sum(frontier_depths) / max(1, len(frontier_depths))) if frontier_depths else None
 
         # Heuristic challenger score (I_t): only positive for mature, non-incumbent challengers.
         incumbent_challenge_score = 0.0
@@ -5879,13 +5898,69 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         actions_used = int(direct_actions + (frontier_result.actions_used if frontier_result else 0))
         expansions = int(direct_actions + (frontier_result.expansions if frontier_result else 0))
         verifications = int(frontier_result.verifications if frontier_result else 0)
+        support_margin = float(frontier_support - incumbent_support)
+        maturity_margin = float(frontier_maturity - len(direct_answers))
+        action_trace = list(frontier_meta.get("action_trace", [])) if isinstance(frontier_meta.get("action_trace", []), list) else []
+        final_branch_states = list(frontier_final_states)
+        for i, answer in enumerate(direct_answers):
+            group_key = _normalize_answer(answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": "direct_reserve",
+                    "branch_id": f"direct_reserve_{i}",
+                    "group_key": group_key,
+                    "is_terminal": 1,
+                    "selected": int(group_key == (_normalize_answer(final_answer) or "__unknown__")),
+                    "source": "direct_reserve",
+                }
+            )
+            final_branch_states.append(
+                {
+                    "branch_id": f"direct_reserve_{i}",
+                    "parent_branch_id": "",
+                    "branch_depth": 1,
+                    "score": float(direct_counts.get(group_key, 0)),
+                    "predicted_answer": "" if answer is None else str(answer),
+                    "is_done": bool(answer is not None),
+                    "is_pruned": False,
+                    "steps": [],
+                    "trace_events": [r for r in direct_trace if str(r.get("branch_id")) == f"direct_reserve_{i}"],
+                    "strategy_family": "direct_reserve",
+                    "source": "direct_reserve",
+                    "selected": int(group_key == (_normalize_answer(final_answer) or "__unknown__")),
+                }
+            )
+        combined_group_counts = Counter(dict(frontier_support_counts))
+        for group, count in direct_counts.items():
+            combined_group_counts[group] += int(count)
 
         metadata = {
             "method_family": "diagnostic_direct_reserve_frontier_gate",
             "diagnostic_only": True,
             "not_canonical": True,
             "direct_reserve_answer": incumbent_answer,
+            "direct_reserve_source_method": "direct_reserve_attempts",
+            "direct_reserve_attempts": direct_trace,
+            "direct_reserve_num_attempts": int(len(direct_answers)),
+            "direct_reserve_attempts_planned": int(reserve_attempts),
+            "direct_reserve_attempts_executed": int(len(direct_answers)),
+            "direct_reserve_agreement_count": int(incumbent_support),
+            "direct_reserve_confidence_proxy": float(direct_top_support),
+            "direct_reserve_parse_success": bool(incumbent_answer is not None and str(incumbent_answer).strip()),
+            "direct_reserve_metadata": {
+                "direct_answer_group_counts": dict(direct_counts),
+                "direct_top_support": float(direct_top_support),
+                "direct_top2_support_gap": float(direct_gap),
+                "direct_answer_entropy": float(direct_entropy),
+            },
             "frontier_candidate_answer": frontier_answer,
+            "frontier_candidate_support": int(frontier_support),
+            "frontier_candidate_maturity": int(frontier_maturity),
+            "frontier_candidate_family_count": int(frontier_candidate_family_count),
+            "frontier_candidate_depth_max": frontier_depth_max,
+            "frontier_candidate_depth_mean": frontier_depth_mean,
+            "frontier_candidate_metadata": dict(frontier_meta),
             "final_answer": final_answer,
             "reserve_used": bool(reserve_used),
             "frontier_override_triggered": bool(frontier_override_triggered),
@@ -5894,12 +5969,37 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "direct_frontier_agree": bool(direct_frontier_agree),
             "incumbent_support": int(incumbent_support),
             "frontier_support": int(frontier_support),
+            "support_margin": float(support_margin),
+            "maturity_margin": float(maturity_margin),
+            "override_thresholds": {
+                "frontier_override_min_support_margin": int(self.frontier_override_min_support_margin),
+                "frontier_override_min_maturity": int(self.frontier_override_min_maturity),
+                "gate_top_support_threshold": float(self.gate_top_support_threshold),
+                "gate_top2_gap_threshold": float(self.gate_top2_gap_threshold),
+                "gate_entropy_threshold": float(self.gate_entropy_threshold),
+            },
+            "guard_decision_inputs": {
+                "incumbent_group": str(incumbent_group),
+                "frontier_group": str(frontier_group),
+                "incumbent_support": int(incumbent_support),
+                "frontier_support": int(frontier_support),
+                "frontier_maturity": int(frontier_maturity),
+                "support_margin": float(support_margin),
+                "maturity_margin": float(maturity_margin),
+                "incumbent_uncertain": bool(incumbent_uncertain),
+                "should_expand_frontier": bool(should_expand_frontier),
+            },
             "incumbent_challenge_score": float(incumbent_challenge_score),
             "remaining_budget_before_frontier": int(remaining_budget),
             "frontier_executed": bool(frontier_result is not None),
             "direct_answer_group_counts": dict(direct_counts),
             "frontier_answer_group_counts": dict(frontier_support_counts),
-            "frontier_metadata": dict(frontier_result.metadata or {}) if frontier_result else {},
+            "answer_group_support_counts": dict(combined_group_counts),
+            "answer_group_strategy_family_counts": frontier_meta.get("answer_group_strategy_family_counts", {}),
+            "answer_group_best_branch_scores": frontier_meta.get("answer_group_best_branch_scores", {}),
+            "frontier_metadata": dict(frontier_meta),
+            "action_trace": action_trace,
+            "final_branch_states": final_branch_states if bool(getattr(self, "emit_full_traces", False)) else [],
         }
         return MethodResult(
             method=self.method_name,
@@ -5910,6 +6010,468 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             verifications=verifications,
             avg_surviving_branches=float(frontier_result.avg_surviving_branches if frontier_result else 1.0),
             budget_exhausted=bool(actions_used >= self.max_actions),
+            metadata=metadata,
+        )
+
+
+class DirectReserveFrontierGateV2Controller(DirectReserveFrontierGateController):
+    """Diagnostic v2: block overrides when frontier already contains the incumbent."""
+
+    def __init__(self, *args: Any, method_name: str = "direct_reserve_frontier_gate_v2", **kwargs: Any) -> None:
+        super().__init__(*args, method_name=method_name, **kwargs)
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        base = super().run(question, gold_answer)
+        metadata = dict(base.metadata or {})
+        incumbent_answer = metadata.get("direct_reserve_answer")
+        incumbent_group = _normalize_answer(str(incumbent_answer)) if incumbent_answer is not None else "__unknown__"
+        support_source = metadata.get("frontier_answer_group_counts")
+        if not isinstance(support_source, dict) or not support_source:
+            support_source = metadata.get("answer_group_support_counts", {})
+        incumbent_seen = False
+        if isinstance(support_source, dict):
+            incumbent_seen = int(support_source.get(incumbent_group, 0) or 0) > 0
+
+        guard_applied = bool(metadata.get("frontier_override_triggered", False) and incumbent_seen)
+        metadata["incumbent_seen_in_frontier_support"] = bool(incumbent_seen)
+        metadata["v2_incumbent_support_guard_applied"] = bool(guard_applied)
+        metadata["v2_override_block_reason"] = (
+            "incumbent_seen_in_frontier_support" if guard_applied else "not_blocked"
+        )
+        metadata["v2_diagnostic_only"] = True
+        metadata["not_canonical"] = True
+
+        if not guard_applied:
+            metadata["method_family"] = "diagnostic_direct_reserve_frontier_gate_v2"
+            return MethodResult(
+                method=self.method_name,
+                prediction=base.prediction,
+                is_correct=bool(base.is_correct),
+                actions_used=base.actions_used,
+                expansions=base.expansions,
+                verifications=base.verifications,
+                avg_surviving_branches=base.avg_surviving_branches,
+                budget_exhausted=base.budget_exhausted,
+                metadata=metadata,
+            )
+
+        final_answer = metadata.get("direct_reserve_answer")
+        metadata["v1_frontier_override_triggered"] = True
+        metadata["v1_final_answer_before_v2_guard"] = metadata.get("final_answer", base.prediction)
+        metadata["frontier_override_triggered"] = False
+        metadata["reserve_used"] = True
+        metadata["override_reason"] = "v2_blocked_incumbent_seen_in_frontier_support"
+        metadata["final_answer"] = final_answer
+        metadata["method_family"] = "diagnostic_direct_reserve_frontier_gate_v2"
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=base.actions_used,
+            expansions=base.expansions,
+            verifications=base.verifications,
+            avg_surviving_branches=base.avg_surviving_branches,
+            budget_exhausted=base.budget_exhausted,
+            metadata=metadata,
+        )
+
+
+class NearDirectReserveFrontierGateController(BaseController):
+    """Diagnostic controller that protects an L1-style near-direct incumbent."""
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        strict_controller_factory: callable,
+        protected_token_budget: int = 512,
+        protected_token_per_action: float = 64.0,
+        protected_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        frontier_override_min_support_margin: int = 1,
+        frontier_override_min_maturity: int = 2,
+        require_frontier_multi_evidence: bool = True,
+        method_name: str = "near_direct_reserve_frontier_gate_v1",
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.strict_controller_factory = strict_controller_factory
+        self.protected_token_budget = max(1, int(protected_token_budget))
+        self.protected_token_per_action = max(1.0, float(protected_token_per_action))
+        self.protected_prompt_style = str(protected_prompt_style or "").strip() or (
+            "Let's think step by step and output the final answer within \\boxed{}."
+        )
+        self.frontier_override_min_support_margin = max(1, int(frontier_override_min_support_margin))
+        self.frontier_override_min_maturity = max(1, int(frontier_override_min_maturity))
+        self.require_frontier_multi_evidence = bool(require_frontier_multi_evidence)
+        self.method_name = method_name
+
+    def _run_protected_incumbent(self, question: str, gold_answer: str, max_actions: int) -> tuple[str | None, int, list[dict[str, Any]], list[dict[str, Any]]]:
+        branch = self.generator.init_branch("near_direct_l1_max_0")
+        actions = 0
+        action_trace: list[dict[str, Any]] = []
+        budgeted_question = (
+            f"{question}\n\n{self.protected_prompt_style} "
+            f"Think for maximum {self.protected_token_budget} tokens."
+        )
+        budget_actions = max(1, int(round(self.protected_token_budget / self.protected_token_per_action)))
+        allowed_actions = min(max_actions, budget_actions)
+        while actions < allowed_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, budgeted_question, gold_answer)
+            actions += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            action_trace.append(
+                {
+                    "action": "near_direct_l1_max",
+                    "branch_id": branch.branch_id,
+                    "branch_depth": int(branch.depth),
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                }
+            )
+        final_branch_states = [
+            {
+                "branch_id": str(branch.branch_id),
+                "parent_branch_id": str(branch.parent_branch_id or ""),
+                "branch_depth": int(branch.depth),
+                "score": float(branch.score),
+                "predicted_answer": str(branch.predicted_answer or ""),
+                "is_done": bool(branch.is_done),
+                "is_pruned": bool(branch.is_pruned),
+                "steps": list(branch.steps),
+                "trace_events": list(branch.trace_events),
+                "strategy_family": "near_direct_l1_max",
+                "source": "protected_incumbent",
+                "selected": 1,
+            }
+        ]
+        return branch.predicted_answer, actions, action_trace, final_branch_states
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        protected_answer, protected_actions, protected_trace, protected_states = self._run_protected_incumbent(
+            question, gold_answer, self.max_actions
+        )
+        protected_group = _normalize_answer(str(protected_answer)) if protected_answer is not None else "__unknown__"
+        remaining_budget = max(0, self.max_actions - int(protected_actions))
+
+        frontier_result: MethodResult | None = None
+        if remaining_budget > 0:
+            frontier = self.strict_controller_factory(remaining_budget)
+            if bool(getattr(self, "emit_full_traces", False)):
+                setattr(frontier, "emit_full_traces", True)
+            frontier_result = frontier.run(question, gold_answer)
+
+        frontier_meta = dict(frontier_result.metadata or {}) if frontier_result else {}
+        frontier_answer = frontier_result.prediction if frontier_result else None
+        frontier_group = (_normalize_answer(str(frontier_answer)) if frontier_answer is not None else "__unknown__") or "__unknown__"
+        support_counts: dict[str, int] = {}
+        raw_support = frontier_meta.get("answer_group_support_counts", {})
+        if isinstance(raw_support, dict):
+            for k, v in raw_support.items():
+                try:
+                    support_counts[str(k)] = int(v)
+                except Exception:
+                    continue
+        protected_seen = int(support_counts.get(protected_group, 0)) > 0
+        frontier_support = int(support_counts.get(frontier_group, 0))
+        incumbent_support = int(support_counts.get(protected_group, 0))
+        frontier_maturity = int((frontier_result.expansions if frontier_result else 0) + (frontier_result.verifications if frontier_result else 0))
+        support_margin = float(frontier_support - incumbent_support)
+        maturity_margin = float(frontier_maturity - int(protected_actions))
+
+        frontier_families = frontier_meta.get("answer_group_strategy_family_counts", {})
+        frontier_family_count = 0
+        if isinstance(frontier_families, dict):
+            frontier_family_count = len(dict(frontier_families.get(frontier_group, {}) or {}))
+        multi_evidence = bool(frontier_support >= 2 or frontier_family_count >= 2)
+
+        override = False
+        block_reason = "reserve_default"
+        required_support_missing = bool(frontier_result is None or not support_counts)
+        if required_support_missing:
+            block_reason = "missing_support_fields"
+        elif protected_seen:
+            block_reason = "protected_incumbent_seen_in_frontier_support"
+        elif frontier_support <= 1:
+            block_reason = "single_weak_frontier_branch"
+        elif frontier_maturity < self.frontier_override_min_maturity:
+            block_reason = "frontier_not_mature"
+        elif support_margin < float(self.frontier_override_min_support_margin):
+            block_reason = "insufficient_support_margin"
+        elif self.require_frontier_multi_evidence and not multi_evidence:
+            block_reason = "insufficient_multi_branch_or_family_evidence"
+        else:
+            override = True
+            block_reason = "frontier_support_margin_override"
+
+        final_answer = frontier_answer if override else protected_answer
+        actions_used = int(protected_actions + (frontier_result.actions_used if frontier_result else 0))
+        expansions = int(protected_actions + (frontier_result.expansions if frontier_result else 0))
+        verifications = int(frontier_result.verifications if frontier_result else 0)
+        action_trace = list(frontier_meta.get("action_trace", [])) if isinstance(frontier_meta.get("action_trace", []), list) else []
+        action_trace.extend(protected_trace)
+        final_branch_states = list(frontier_meta.get("final_branch_states", [])) if isinstance(frontier_meta.get("final_branch_states", []), list) else []
+        final_branch_states.extend(protected_states)
+        combined_counts = Counter(dict(support_counts))
+        if protected_group != "__unknown__":
+            combined_counts[protected_group] += 1
+
+        metadata = {
+            "method_family": "diagnostic_near_direct_reserve_frontier_gate",
+            "diagnostic_only": True,
+            "not_canonical": True,
+            "protected_incumbent_answer": protected_answer,
+            "protected_incumbent_source_method": "external_l1_max_style_near_direct",
+            "protected_incumbent_seen_in_frontier_support": bool(protected_seen),
+            "incumbent_support_guard_applied": bool((not override) and protected_seen),
+            "frontier_override_triggered": bool(override),
+            "override_block_reason": str(block_reason if not override else "not_blocked"),
+            "override_reason": str(block_reason),
+            "frontier_candidate_answer": frontier_answer,
+            "answer_group_support_counts": dict(combined_counts),
+            "frontier_answer_group_counts": dict(support_counts),
+            "frontier_support": int(frontier_support),
+            "incumbent_support": int(incumbent_support),
+            "support_margin": float(support_margin),
+            "maturity_margin": float(maturity_margin),
+            "frontier_candidate_maturity": int(frontier_maturity),
+            "frontier_candidate_family_count": int(frontier_family_count),
+            "required_support_fields_missing": bool(required_support_missing),
+            "reserve_used": bool(not override),
+            "protected_incumbent_trace": protected_trace,
+            "frontier_metadata": dict(frontier_meta),
+            "action_trace": action_trace,
+            "final_branch_states": final_branch_states if bool(getattr(self, "emit_full_traces", False)) else [],
+        }
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=actions_used,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=float(frontier_result.avg_surviving_branches if frontier_result else 1.0),
+            budget_exhausted=bool(actions_used >= self.max_actions),
+            metadata=metadata,
+        )
+
+
+class CalibratedNearDirectFrontierGateController(NearDirectReserveFrontierGateController):
+    """Diagnostic calibrated gate for near-direct incumbent escalation.
+
+    This controller protects an L1-style near-direct incumbent and only escalates
+    in a middle-confidence region. It is explicitly diagnostic-only.
+    """
+
+    def __init__(
+        self,
+        *args: Any,
+        high_confidence_accept_threshold: float = 0.95,
+        low_confidence_default_threshold: float = 0.0,
+        support_margin_min: int = 1,
+        maturity_margin_min: int = 1,
+        verifier_margin_min: float = 0.0,
+        require_verifier_margin: bool = False,
+        block_artifact_sensitive_cases: bool = True,
+        method_name: str = "calibrated_near_direct_frontier_gate_v1",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, method_name=method_name, **kwargs)
+        self.high_confidence_accept_threshold = float(high_confidence_accept_threshold)
+        self.low_confidence_default_threshold = float(low_confidence_default_threshold)
+        self.calibrated_support_margin_min = max(0, int(support_margin_min))
+        self.calibrated_maturity_margin_min = int(maturity_margin_min)
+        self.verifier_margin_min = float(verifier_margin_min)
+        self.require_verifier_margin = bool(require_verifier_margin)
+        self.block_artifact_sensitive_cases = bool(block_artifact_sensitive_cases)
+
+    @staticmethod
+    def _protected_confidence_proxy(states: list[dict[str, Any]], parse_success: bool) -> float:
+        scores: list[float] = []
+        for state in states:
+            try:
+                scores.append(float(state.get("score", 0.0)))
+            except Exception:
+                continue
+        if scores:
+            return float(max(scores))
+        return 0.5 if parse_success else 0.0
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        protected_answer, protected_actions, protected_trace, protected_states = self._run_protected_incumbent(
+            question, gold_answer, self.max_actions
+        )
+        parse_success = bool(protected_answer is not None and str(protected_answer).strip())
+        direct_confidence = self._protected_confidence_proxy(protected_states, parse_success)
+        direct_risk = float(1.0 - max(0.0, min(1.0, direct_confidence)))
+        protected_group = _normalize_answer(str(protected_answer)) if protected_answer is not None else "__unknown__"
+
+        metadata_base: dict[str, Any] = {
+            "method_family": "diagnostic_calibrated_near_direct_frontier_gate",
+            "diagnostic_only": True,
+            "not_canonical": True,
+            "protected_incumbent_answer": protected_answer,
+            "protected_incumbent_source_method": "external_l1_max_style_near_direct",
+            "protected_incumbent_parse_success": bool(parse_success),
+            "direct_confidence_proxy": float(direct_confidence),
+            "direct_risk_proxy": float(direct_risk),
+            "incumbent_verifier_score": None,
+            "frontier_verifier_score": None,
+            "verifier_margin": None,
+            "verifier_margin_available": False,
+            "artifact_sensitive_case": False,
+            "clean_override_eligible": False,
+            "protected_incumbent_trace": protected_trace,
+            "action_trace": list(protected_trace),
+            "final_branch_states": protected_states if bool(getattr(self, "emit_full_traces", False)) else [],
+        }
+
+        def _reserve_result(region: str, reason: str, actions_used: int) -> MethodResult:
+            md = dict(metadata_base)
+            md.update(
+                {
+                    "gate_region": region,
+                    "escalation_triggered": False,
+                    "escalation_reason": reason,
+                    "frontier_candidate_answer": None,
+                    "protected_incumbent_seen_in_frontier_support": False,
+                    "frontier_override_triggered": False,
+                    "override_allowed": False,
+                    "override_block_reason": reason,
+                    "answer_group_support_counts": {},
+                    "frontier_support": 0,
+                    "incumbent_support": 0,
+                    "support_margin": 0.0,
+                    "maturity_margin": 0.0,
+                    "frontier_candidate_family_count": 0,
+                    "reserve_used": True,
+                    "final_answer": protected_answer,
+                }
+            )
+            return MethodResult(
+                method=self.method_name,
+                prediction=protected_answer,
+                is_correct=self._answers_match(protected_answer, gold_answer),
+                actions_used=actions_used,
+                expansions=actions_used,
+                verifications=0,
+                avg_surviving_branches=1.0,
+                budget_exhausted=bool(actions_used >= self.max_actions),
+                metadata=md,
+            )
+
+        if not parse_success:
+            return _reserve_result("low_confidence_default_reserve", "protected_incumbent_parse_failed", int(protected_actions))
+        if direct_confidence >= self.high_confidence_accept_threshold:
+            return _reserve_result("accept_high_confidence", "protected_incumbent_high_confidence", int(protected_actions))
+        if direct_confidence <= self.low_confidence_default_threshold:
+            return _reserve_result("low_confidence_default_reserve", "protected_incumbent_low_confidence", int(protected_actions))
+
+        remaining_budget = max(0, self.max_actions - int(protected_actions))
+        if remaining_budget <= 0:
+            return _reserve_result("missing_features_default_reserve", "no_budget_for_frontier", int(protected_actions))
+
+        frontier = self.strict_controller_factory(remaining_budget)
+        if bool(getattr(self, "emit_full_traces", False)):
+            setattr(frontier, "emit_full_traces", True)
+        frontier_result = frontier.run(question, gold_answer)
+        frontier_meta = dict(frontier_result.metadata or {})
+        frontier_answer = frontier_result.prediction
+        frontier_group = (_normalize_answer(str(frontier_answer)) if frontier_answer is not None else "__unknown__") or "__unknown__"
+
+        support_counts: dict[str, int] = {}
+        raw_support = frontier_meta.get("answer_group_support_counts", {})
+        if isinstance(raw_support, dict):
+            for k, v in raw_support.items():
+                try:
+                    support_counts[str(k)] = int(v)
+                except Exception:
+                    continue
+        protected_seen = int(support_counts.get(protected_group, 0)) > 0
+        frontier_support = int(support_counts.get(frontier_group, 0))
+        incumbent_support = int(support_counts.get(protected_group, 0))
+        support_margin = float(frontier_support - incumbent_support)
+        frontier_maturity = int(frontier_result.expansions + frontier_result.verifications)
+        maturity_margin = float(frontier_maturity - int(protected_actions))
+        frontier_families = frontier_meta.get("answer_group_strategy_family_counts", {})
+        frontier_family_count = 0
+        if isinstance(frontier_families, dict):
+            frontier_family_count = len(dict(frontier_families.get(frontier_group, {}) or {}))
+        independent_evidence = bool(frontier_support >= 2 or frontier_family_count >= 2)
+        verifier_margin_available = False
+        verifier_margin = None
+
+        block_reason = "not_blocked"
+        override_allowed = False
+        if not support_counts:
+            block_reason = "missing_support_fields"
+        elif protected_seen:
+            block_reason = "protected_incumbent_seen_in_frontier_support"
+        elif frontier_group == protected_group:
+            block_reason = "frontier_agrees_with_incumbent"
+        elif frontier_support < 2:
+            block_reason = "frontier_support_below_threshold"
+        elif not independent_evidence:
+            block_reason = "insufficient_independent_frontier_evidence"
+        elif support_margin < float(self.calibrated_support_margin_min):
+            block_reason = "support_margin_below_threshold"
+        elif maturity_margin < float(self.calibrated_maturity_margin_min):
+            block_reason = "maturity_margin_below_threshold"
+        elif self.require_verifier_margin and not verifier_margin_available:
+            block_reason = "verifier_margin_missing"
+        else:
+            override_allowed = True
+            block_reason = "not_blocked"
+
+        final_answer = frontier_answer if override_allowed else protected_answer
+        action_trace = list(frontier_meta.get("action_trace", [])) if isinstance(frontier_meta.get("action_trace", []), list) else []
+        action_trace.extend(protected_trace)
+        final_branch_states = list(frontier_meta.get("final_branch_states", [])) if isinstance(frontier_meta.get("final_branch_states", []), list) else []
+        final_branch_states.extend(protected_states)
+        combined_counts = Counter(dict(support_counts))
+        if protected_group != "__unknown__":
+            combined_counts[protected_group] += 1
+
+        metadata = dict(metadata_base)
+        metadata.update(
+            {
+                "gate_region": "escalate_middle_band" if override_allowed else "missing_features_default_reserve" if not support_counts else "escalate_middle_band",
+                "escalation_triggered": True,
+                "escalation_reason": "middle_band",
+                "frontier_candidate_answer": frontier_answer,
+                "protected_incumbent_seen_in_frontier_support": bool(protected_seen),
+                "frontier_override_triggered": bool(override_allowed),
+                "override_allowed": bool(override_allowed),
+                "override_block_reason": block_reason if not override_allowed else "not_blocked",
+                "answer_group_support_counts": dict(combined_counts),
+                "frontier_answer_group_counts": dict(support_counts),
+                "frontier_support": int(frontier_support),
+                "incumbent_support": int(incumbent_support),
+                "support_margin": float(support_margin),
+                "maturity_margin": float(maturity_margin),
+                "frontier_candidate_family_count": int(frontier_family_count),
+                "frontier_candidate_maturity": int(frontier_maturity),
+                "verifier_margin": verifier_margin,
+                "verifier_margin_available": bool(verifier_margin_available),
+                "clean_override_eligible": bool(override_allowed and not metadata_base["artifact_sensitive_case"]),
+                "reserve_used": bool(not override_allowed),
+                "final_answer": final_answer,
+                "frontier_metadata": dict(frontier_meta),
+                "action_trace": action_trace,
+                "final_branch_states": final_branch_states if bool(getattr(self, "emit_full_traces", False)) else [],
+            }
+        )
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=int(protected_actions + frontier_result.actions_used),
+            expansions=int(protected_actions + frontier_result.expansions),
+            verifications=int(frontier_result.verifications),
+            avg_surviving_branches=float(frontier_result.avg_surviving_branches),
+            budget_exhausted=bool((protected_actions + frontier_result.actions_used) >= self.max_actions),
             metadata=metadata,
         )
 

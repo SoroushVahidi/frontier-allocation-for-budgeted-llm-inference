@@ -1,0 +1,34 @@
+{
+  "caveat": "The reported helpful case is an output-repair artifact: the stored frontier candidate is not gold-correct, so this rule requires another traced validation before any real-model pilot expansion.",
+  "diagnostic_only": true,
+  "not_canonical": true,
+  "rationale": "Preserves the single reported helpful v1 override while blocking both reported harmful overrides by refusing to override when the external_l1_max incumbent answer already appears in the traced candidate pool.",
+  "reported_surface_metrics": {
+    "accuracy_reported_surface": 0.7333333333333333,
+    "accuracy_semantic_internal_answers": 0.6333333333333333,
+    "blocks_at_least_one_reported_harmful": 1,
+    "delta_vs_external_l1_max_reported": 0.033333333333333326,
+    "delta_vs_v1_reported": 0.06663333333333332,
+    "description": "Recommended v2: multi-branch/multi-family frontier, weak direct reserve, and external incumbent absent from traced support.",
+    "direct_solved_harmed_reported": 0,
+    "direct_solved_preserved_reported": 21,
+    "harmful_overrides_reported": 0,
+    "helpful_overrides_reported": 1,
+    "preserves_reported_helpful_override": 1,
+    "rule_name": "v2_external_absent_multi_family",
+    "semantic_harmful_overrides": 1,
+    "semantic_helpful_overrides": 0,
+    "total_overrides": 1
+  },
+  "rule": {
+    "base": "apply as stricter filter on top of v1; never adds overrides",
+    "direct_reserve_agreement_count_max": 1,
+    "external_or_incumbent_prediction_support_required": 0,
+    "frontier_candidate_family_count_min": 2,
+    "frontier_must_disagree_with_incumbent": true,
+    "frontier_support_min": 2,
+    "support_margin_min": 1
+  },
+  "rule_name": "v2_external_absent_multi_family",
+  "variant": "direct_reserve_frontier_gate_v2"
+}

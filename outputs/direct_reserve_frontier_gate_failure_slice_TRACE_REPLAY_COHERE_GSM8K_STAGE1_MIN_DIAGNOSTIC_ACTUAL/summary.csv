@@ -1,0 +1,2 @@
+matched_examples,external_l1_max_accuracy,strict_f3_accuracy,direct_reserve_frontier_gate_v1_accuracy,paired_delta_vs_external_l1_max,paired_delta_vs_strict_f3,direct_solved_cases_preserved,direct_solved_cases_harmed,helpful_overrides,harmful_overrides,total_overrides,reserve_use_rate,override_rate,missing_support_maturity_field_count,diagnostic_type
+30,0.7,0.5666666666666667,0.6666666666666666,-0.03333333333333333,0.1,16,5,1,2,3,0.9,0.1,0,paired_candidate_pool_diagnostic
