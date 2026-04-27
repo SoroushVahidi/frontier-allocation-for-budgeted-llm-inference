@@ -1,0 +1,23 @@
+# Cobbe-Style Outcome Verifier Diagnostic
+
+Diagnostic-only local adaptation inspired by Cobbe et al. verifier selection.
+
+## Run
+```bash
+python scripts/run_cobbe_style_outcome_verifier_diagnostic.py --strict-source --required-matched-examples 30
+```
+
+## Outputs
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/candidate_solution_rows.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/verifier_feature_audit.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/branch_level_verifier_scores.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/answer_bucket_scores.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/selector_summary.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/per_case_selector_decisions.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/l1_better_subset_report.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/frontier_better_subset_report.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/both_wrong_subset_report.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/verifier_training_report.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/oracle_gap_report.csv`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/recommended_next_steps.json`
+- `outputs/cobbe_style_outcome_verifier_diagnostic_20260427T_COBBE_STYLE_STRICT30/README.md`

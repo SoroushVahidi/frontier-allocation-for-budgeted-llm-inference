@@ -58,6 +58,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--alpha-grid", default="0.0,0.1,0.25")
     p.add_argument("--beta-grid", default="0.0,0.1,0.25")
     p.add_argument("--gamma-grid", default="0.0,0.1,0.25")
+    p.add_argument("--required-matched-examples", type=int, default=None, help="Optional guardrail: fail if matched example count differs.")
+    p.add_argument(
+        "--strict-source",
+        action="store_true",
+        help="Require the requested --trace-dir/--cost-dir to be directly usable; do not silently fall back.",
+    )
     return p.parse_args()
 
 
@@ -84,7 +90,18 @@ def _norm(raw: Any, dataset: str) -> str:
         return t
 
 
-def _resolve_dir(primary: str, fallbacks: list[str], required_files: list[str]) -> Path:
+def _resolve_dir(primary: str, fallbacks: list[str], required_files: list[str], *, strict: bool = False) -> Path:
+    primary_path = (REPO_ROOT / primary).resolve()
+    if strict:
+        missing = [f for f in required_files if not (primary_path / f).exists()]
+        if not primary_path.exists() or missing:
+            raise SystemExit(
+                "Strict source check failed for "
+                f"{primary_path}: missing required files {missing}. "
+                "Re-run with --strict-source disabled only if you intentionally want fallback behavior."
+            )
+        return primary_path
+
     candidates = [primary] + fallbacks
     for c in candidates:
         p = (REPO_ROOT / c).resolve()
@@ -93,18 +110,42 @@ def _resolve_dir(primary: str, fallbacks: list[str], required_files: list[str]) 
     raise SystemExit(f"Unable to find usable directory from: {candidates}")
 
 
+def _first_existing_file(base_dir: Path, candidates: list[str]) -> Path | None:
+    for name in candidates:
+        p = base_dir / name
+        if p.exists():
+            return p
+    return None
+
+
 def _load_method_predictions(trace_dir: Path, cost_dir: Path) -> dict[CaseKey, dict[str, str]]:
     out: dict[CaseKey, dict[str, str]] = defaultdict(dict)
-    per_case = read_csv(trace_dir / "per_case_method_results.csv")
-    for r in per_case:
-        ck = CaseKey(
-            dataset=str(r.get("dataset", "openai/gsm8k")),
-            example_id=str(r.get("example_id", "")),
-            seed=as_int(r.get("seed", -1), -1),
-            budget=as_int(r.get("budget", -1), -1),
-        )
-        out[ck][str(r.get("method", ""))] = _norm(r.get("normalized_selected_answer", r.get("final_selected_answer", "")), ck.dataset)
-        out[ck]["gold_answer"] = _norm(r.get("gold_answer", ""), ck.dataset)
+    per_case_method_path = _first_existing_file(trace_dir, ["per_case_method_results.csv"])
+    if per_case_method_path is not None:
+        for r in read_csv(per_case_method_path):
+            ck = CaseKey(
+                dataset=str(r.get("dataset", "openai/gsm8k")),
+                example_id=str(r.get("example_id", "")),
+                seed=as_int(r.get("seed", -1), -1),
+                budget=as_int(r.get("budget", -1), -1),
+            )
+            out[ck][str(r.get("method", ""))] = _norm(r.get("normalized_selected_answer", r.get("final_selected_answer", "")), ck.dataset)
+            out[ck]["gold_answer"] = _norm(r.get("gold_answer", ""), ck.dataset)
+
+    # diagnostic per-case fallback (30-case traced slice format)
+    if not out:
+        per_case_results_path = _first_existing_file(trace_dir, ["per_case_results.csv"])
+        if per_case_results_path is not None:
+            for r in read_csv(per_case_results_path):
+                ck = CaseKey(
+                    dataset=str(r.get("dataset", "openai/gsm8k")),
+                    example_id=str(r.get("example_id", "")),
+                    seed=as_int(r.get("seed", -1), -1),
+                    budget=as_int(r.get("budget", -1), -1),
+                )
+                out[ck]["external_l1_max"] = _norm(r.get("external_l1_max_prediction", ""), ck.dataset)
+                out[ck]["strict_f3"] = _norm(r.get("strict_f3_prediction", ""), ck.dataset)
+                out[ck]["gold_answer"] = _norm(r.get("gold_answer", ""), ck.dataset)
 
     if out:
         return out
@@ -128,18 +169,37 @@ def _load_method_predictions(trace_dir: Path, cost_dir: Path) -> dict[CaseKey, d
     return out
 
 
-def build_answer_buckets(trace_dir: Path, method_preds: dict[CaseKey, dict[str, str]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    branch_rows = read_csv(trace_dir / "candidate_branch_table.csv")
-    ag_rows = read_csv(trace_dir / "answer_group_summary.csv")
+def build_answer_buckets(trace_dir: Path, cost_dir: Path, method_preds: dict[CaseKey, dict[str, str]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    branch_table_path = (
+        _first_existing_file(trace_dir, ["candidate_branch_table.csv"]) or _first_existing_file(cost_dir, ["candidate_branch_table.csv"])
+    )
+    if branch_table_path is None:
+        raise SystemExit("Missing candidate_branch_table.csv in both trace_dir and cost_dir")
+    answer_group_path = (
+        _first_existing_file(trace_dir, ["answer_group_summary.csv", "answer_group_table.csv"])
+        or _first_existing_file(cost_dir, ["answer_group_summary.csv", "answer_group_table.csv"])
+    )
+    if answer_group_path is None:
+        raise SystemExit("Missing answer-group table in both trace_dir and cost_dir")
+
+    branch_rows = read_csv(branch_table_path)
+    ag_rows = read_csv(answer_group_path)
     support_map: dict[tuple[CaseKey, str, str], int] = {}
     selected_group_map: dict[tuple[CaseKey, str], str] = {}
     for r in ag_rows:
         ck = CaseKey(str(r.get("dataset", "openai/gsm8k")), str(r.get("example_id", "")), as_int(r.get("seed", -1), -1), as_int(r.get("budget", -1), -1))
         method = str(r.get("method", ""))
         grp = _norm(r.get("answer_group", ""), ck.dataset)
-        support_map[(ck, method, grp)] = max(as_int(r.get("support", 0), 0), support_map.get((ck, method, grp), 0))
+        support_val = as_int(r.get("support", r.get("support_count", 0)), 0)
+        support_map[(ck, method, grp)] = max(support_val, support_map.get((ck, method, grp), 0))
         if str(r.get("is_selected_group", "")).strip().lower() in {"1", "true", "yes"}:
             selected_group_map[(ck, method)] = grp
+
+    for ck, preds in method_preds.items():
+        for method_name in ("strict_f3", "external_l1_max"):
+            key = (ck, method_name)
+            if key not in selected_group_map:
+                selected_group_map[key] = preds.get(method_name, "NA")
 
     bucket_acc: dict[tuple[CaseKey, str], dict[str, Any]] = {}
     branch_feature_rows: list[dict[str, Any]] = []
@@ -147,11 +207,14 @@ def build_answer_buckets(trace_dir: Path, method_preds: dict[CaseKey, dict[str, 
     for b in branch_rows:
         ck = CaseKey(str(b.get("dataset", "openai/gsm8k")), str(b.get("example_id", "")), as_int(b.get("seed", -1), -1), as_int(b.get("budget", -1), -1))
         method = str(b.get("method", ""))
-        norm_ans = _norm(b.get("normalized_candidate_answer", b.get("predicted_answer", "")), ck.dataset)
+        norm_ans = _norm(
+            b.get("normalized_candidate_answer", b.get("predicted_answer", b.get("parsed_answer", b.get("answer_group", "")))),
+            ck.dataset,
+        )
         key = (ck, norm_ans)
-        fam = str(b.get("branch_prompt_style", "na")) or "na"
-        depth = as_int(b.get("branch_depth", 0), 0)
-        pred_text = str(b.get("predicted_answer", ""))
+        fam = str(b.get("branch_prompt_style", b.get("family_id", "na"))) or "na"
+        depth = as_int(b.get("branch_depth", b.get("depth", 0)), 0)
+        pred_text = str(b.get("predicted_answer", b.get("parsed_answer", b.get("answer_group", ""))))
         parse_success = int(norm_ans not in {"NA", ""})
         output_repair_flag = int(_norm(pred_text, ck.dataset) != pred_text.strip()) if pred_text.strip() else 0
         l1_ans = method_preds.get(ck, {}).get("external_l1_max", "NA")
@@ -168,8 +231,8 @@ def build_answer_buckets(trace_dir: Path, method_preds: dict[CaseKey, dict[str, 
             "normalized_answer": norm_ans,
             "branch_depth": depth,
             "branch_prompt_style": fam,
-            "reasoning_length": len(str(b.get("reasoning_text", "") or "")),
-            "raw_length": len(str(b.get("raw_branch_text", "") or "")),
+            "reasoning_length": len(str(b.get("reasoning_text", b.get("metadata", "")) or "")),
+            "raw_length": len(str(b.get("raw_branch_text", b.get("metadata", "")) or "")),
             "parse_success": parse_success,
             "output_repair_flag": output_repair_flag,
             "equals_external_l1_max": int(norm_ans == l1_ans and l1_ans not in {"NA", ""}),
@@ -488,8 +551,10 @@ def evaluate_subset(decisions: list[dict[str, Any]], subset_key: str, selector: 
 
 def main() -> None:
     args = parse_args()
-    trace_dir = _resolve_dir(args.trace_dir, FALLBACK_TRACE_DIRS, ["candidate_branch_table.csv", "answer_group_summary.csv", "per_case_method_results.csv"])
-    cost_dir = _resolve_dir(args.cost_dir, FALLBACK_COST_DIRS, ["per_example_records.jsonl"])
+    trace_required = ["per_case_results.csv"] if args.strict_source else []
+    trace_dir = _resolve_dir(args.trace_dir, FALLBACK_TRACE_DIRS, trace_required, strict=args.strict_source)
+    cost_required = ["per_example_records.jsonl", "candidate_branch_table.csv", "answer_group_table.csv"] if args.strict_source else ["per_example_records.jsonl"]
+    cost_dir = _resolve_dir(args.cost_dir, FALLBACK_COST_DIRS, cost_required, strict=args.strict_source)
     casebook_dir = (REPO_ROOT / args.casebook_dir).resolve()
 
     alpha_grid = _parse_grid(args.alpha_grid)
@@ -500,7 +565,14 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     method_preds = _load_method_predictions(trace_dir, cost_dir)
-    buckets, branch_features = build_answer_buckets(trace_dir, method_preds)
+    if args.required_matched_examples is not None:
+        n_cases = len(method_preds)
+        if n_cases != int(args.required_matched_examples):
+            raise SystemExit(
+                f"Matched example guardrail failed: expected {args.required_matched_examples}, got {n_cases} "
+                f"from trace_dir={trace_dir}"
+            )
+    buckets, branch_features = build_answer_buckets(trace_dir, cost_dir, method_preds)
     train_rows = build_training_rows(buckets)
     scored_rows, fold_report = _loeo_train_predict(train_rows)
 
