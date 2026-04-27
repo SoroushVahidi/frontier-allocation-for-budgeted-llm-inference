@@ -20,6 +20,7 @@ from experiments.prm_partial_scorer import PartialBranchScorer
 from experiments.scoring import SimpleBranchScorer
 from experiments.typed_strategy_prompts import TypedStrategyPrompt, get_typed_strategy_prompts
 from experiments.reasoning_diversity import compute_reasoning_diversity_components, reasoning_signature
+from experiments.semantic_family_clustering import compute_branching_necessity_score, root_semantic_family_snapshot
 from experiments.verifiers import CandidateVerifier
 from scripts.direct_reserve_learned_override_utils import (
     DEFAULT_MODEL_TYPE as DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL,
@@ -1064,6 +1065,11 @@ class GlobalDiversityAggregationController(BaseController):
         family_rerank_diversity_weight: float = 0.4,
         family_rerank_single_family_penalty_weight: float = 0.5,
         family_rerank_dominant_family_penalty_weight: float = 0.3,
+        diagnostic_semantic_maturation: bool = False,
+        diagnostic_semantic_maturation_min_depth: int = 0,
+        diagnostic_branching_necessity_heuristic: bool = False,
+        diagnostic_protected_incumbent_release: bool = False,
+        diagnostic_log_semantic_families: bool = False,
         method_name: str = "broad_diversity_aggregation_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -1261,6 +1267,14 @@ class GlobalDiversityAggregationController(BaseController):
         self.family_rerank_single_family_penalty_weight = float(family_rerank_single_family_penalty_weight)
         self.family_rerank_dominant_family_penalty_weight = float(family_rerank_dominant_family_penalty_weight)
         self._gate_predictor = self._maybe_build_diversity_needed_predictor()
+        self.diagnostic_semantic_maturation = bool(diagnostic_semantic_maturation)
+        self.diagnostic_semantic_maturation_min_depth = max(0, int(diagnostic_semantic_maturation_min_depth))
+        self.diagnostic_branching_necessity_heuristic = bool(diagnostic_branching_necessity_heuristic)
+        self.diagnostic_protected_incumbent_release = bool(diagnostic_protected_incumbent_release)
+        self.diagnostic_log_semantic_families = bool(diagnostic_log_semantic_families)
+        self._last_diagnostic_semantic_snapshot: dict[str, Any] = {}
+        self._diagnostic_maturation_phase_active = True
+        self._diagnostic_branching_necessity_trace: list[dict[str, Any]] = []
         self.method_name = method_name
 
     @staticmethod
@@ -3213,6 +3227,9 @@ class GlobalDiversityAggregationController(BaseController):
         challenger_selection_events: list[dict[str, Any]] = []
         commit_triggered = False
         incumbent_commit_triggered = False
+        self._last_diagnostic_semantic_snapshot = {}
+        self._diagnostic_maturation_phase_active = bool(self.diagnostic_semantic_maturation)
+        self._diagnostic_branching_necessity_trace = []
         near_tie_forced_steps_used = 0
         early_preservation_forced_steps = 0
         width_depth_forced_width_steps = 0
@@ -3783,6 +3800,92 @@ class GlobalDiversityAggregationController(BaseController):
                 if distinct_families < self.case_split_direction_aware_delay_commit_until_families:
                     force_explore = True
                     case_split_direction_aware_delay_commit_blocks += 1
+            req_d = int(self.diagnostic_semantic_maturation_min_depth) if self.diagnostic_semantic_maturation else 0
+            diag_necessity = 0.0
+            diag_necessity_decision = "off"
+            maturation_released = False
+            if self.diagnostic_semantic_maturation or self.diagnostic_branching_necessity_heuristic or self.diagnostic_log_semantic_families:
+                snap0 = root_semantic_family_snapshot(
+                    question=question,
+                    branches=branches,
+                    branch_family_ids=branch_family_ids,
+                    root_family_ids=set(root_family_ids),
+                    branch_strategy_family=branch_strategy_family,
+                    min_depth=max(req_d, 0),
+                )
+                sup_vals = sorted((float(c) for c in answer_support_counts.values()), reverse=True) if answer_support_counts else []
+                t0e = float(sup_vals[0] / support_total) if sup_vals and support_total > 0 else 0.0
+                t1e = float(sup_vals[1] / support_total) if len(sup_vals) > 1 and support_total > 0 else 0.0
+                marge = float(t0e - t1e)
+                ent0 = float(self._support_entropy(answer_support_counts))
+                diag_necessity, nec_parts = compute_branching_necessity_score(
+                    question=question,
+                    semantic_family_count=int(snap0.get("semantic_family_count", 0)),
+                    family_redundancy_ratio=float(snap0.get("family_redundancy_ratio", 0.0)),
+                    top_support=float(top_support),
+                    answer_entropy=ent0,
+                    support_margin=marge,
+                )
+                rel_inc = bool(
+                    self.diagnostic_protected_incumbent_release
+                    and t0e >= 0.80
+                    and marge >= 0.10
+                )
+                maturation_released = bool(rel_inc or (actions + 1 >= self.max_actions))
+                if bool(snap0.get("maturation_satisfied", True)) or not self.diagnostic_semantic_maturation or req_d <= 0:
+                    self._diagnostic_maturation_phase_active = False
+                if self.diagnostic_semantic_maturation and req_d > 0:
+                    if not bool(snap0.get("maturation_satisfied", True)) and (not maturation_released):
+                        force_explore = True
+                if self.diagnostic_branching_necessity_heuristic:
+                    if diag_necessity < 0.32 and top_support >= 0.45:
+                        force_explore = False
+                        diag_necessity_decision = "prefer_concentration"
+                    elif diag_necessity >= 0.50 and top_support < 0.64:
+                        force_explore = True
+                        diag_necessity_decision = "favor_branching"
+                    else:
+                        diag_necessity_decision = "neutral"
+                self._last_diagnostic_semantic_snapshot = {
+                    "semantic_family_id_by_branch": {
+                        b.branch_id: next(
+                            (
+                                sk
+                                for sk, members in (snap0.get("semantic_families") or {}).items()
+                                if any(m.get("branch_id") == b.branch_id for m in members)
+                            ),
+                            "unknown",
+                        )
+                        for b in branches
+                        if not b.is_pruned
+                    },
+                    "semantic_family_count": int(snap0.get("semantic_family_count", 0)),
+                    "root_branch_count": int(snap0.get("root_branch_count", 0)),
+                    "family_redundancy_ratio": float(snap0.get("family_redundancy_ratio", 0.0)),
+                    "families_reaching_depth_ge_2": list(snap0.get("families_reaching_depth_ge_2", [])),
+                    "families_reaching_depth_ge_3": list(snap0.get("families_reaching_depth_ge_3", [])),
+                    "families_pending_maturation": list(snap0.get("families_pending_maturation", [])),
+                    "families_invalid_or_stalled": list(snap0.get("families_invalid_or_stalled", [])),
+                    "maturation_satisfied": bool(snap0.get("maturation_satisfied", True)),
+                    "maturation_released": bool(maturation_released),
+                    "maturation_phase_active": bool(self._diagnostic_maturation_phase_active),
+                    "action_index": int(actions),
+                    "branching_necessity_score": float(diag_necessity),
+                    "branching_necessity_parts": nec_parts,
+                    "branching_necessity_decision": str(diag_necessity_decision),
+                    "commit_top_support": float(top_support),
+                    "commit_support_total": int(support_total),
+                    "answer_entropy": float(ent0),
+                    "top2_support_gap": float(marge),
+                }
+                self._diagnostic_branching_necessity_trace.append(
+                    {
+                        "action": int(actions),
+                        "branching_necessity": float(diag_necessity),
+                        "decision": str(diag_necessity_decision),
+                        "maturation_satisfied": bool(snap0.get("maturation_satisfied", True)),
+                    }
+                )
             if gate_meta.get("gate_decision") == "suppress_diversity_push":
                 force_explore = False
             if force_explore:
@@ -4924,6 +5027,12 @@ class GlobalDiversityAggregationController(BaseController):
                     else []
                 ),
                 "final_prediction": prediction,
+                "diagnostic_semantic_diversity": {
+                    **dict(getattr(self, "_last_diagnostic_semantic_snapshot", {}) or {}),
+                    "maturation_phase_audit": list(getattr(self, "_diagnostic_branching_necessity_trace", []) or []),
+                    "diagnostic_namespace": "semantic_diversity_v1",
+                    "diagnostic_experimental": True,
+                },
                 **group_meta,
             },
         )
@@ -5318,6 +5427,7 @@ class DirectReserveGateRerankController(BaseController):
         learned_override_model_path: str = "",
         learned_override_model_type: str = DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL,
         learned_override_margin: float = 0.05,
+        diagnostic_challenger_resistance: bool = False,
         method_name: str = "strict_f3_direct_reserve_gate_rerank_v1",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -5340,6 +5450,7 @@ class DirectReserveGateRerankController(BaseController):
         self.learned_override_model_path = str(learned_override_model_path or "")
         self.learned_override_model_type = str(learned_override_model_type or DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL)
         self.learned_override_margin = max(0.0, float(learned_override_margin))
+        self.diagnostic_challenger_resistance = bool(diagnostic_challenger_resistance)
         self.method_name = method_name
 
     def _direct_reserve_attempts(self) -> int:
@@ -5437,6 +5548,25 @@ class DirectReserveGateRerankController(BaseController):
                 selected_group = top_group if top_group in tied_groups else tied_groups[0]
             # recover original answer text for selected group
             prediction = next((a for a in candidate_answers if (_normalize_answer(a) or "__unknown__") == selected_group), None)
+
+        dr_incumbent_replaced: bool | None = None
+        dr_replacement_reason = "not_applicable"
+        if self.diagnostic_challenger_resistance and direct_answers and group_counts and frontier_result is not None:
+            d0g = _normalize_answer(direct_answers[0]) or "__unknown__"
+            dcount = int(group_counts.get(d0g, 0))
+            best_other = 0
+            for g, c in group_counts.items():
+                if g == d0g:
+                    continue
+                best_other = max(best_other, int(c))
+            if best_other > dcount:
+                dr_incumbent_replaced = True
+                dr_replacement_reason = "challenger_answer_group_strictly_higher_support"
+            else:
+                selected_group = d0g
+                prediction = direct_answers[0]
+                dr_incumbent_replaced = False
+                dr_replacement_reason = "protected_direct_incumbent"
 
         support_sorted = sorted(group_counts.items(), key=lambda kv: kv[1], reverse=True)
         rerank_top_group = support_sorted[0][0] if support_sorted else "__unknown__"
@@ -5581,6 +5711,9 @@ class DirectReserveGateRerankController(BaseController):
             "present_not_selected": int(present_not_selected),
             "direct_action_trace": direct_trace,
             "frontier_metadata": (frontier_result.metadata if frontier_result else {}),
+            "diagnostic_challenger_resistance": bool(self.diagnostic_challenger_resistance),
+            "incumbent_replaced": dr_incumbent_replaced,
+            "incumbent_replacement_reason": str(dr_replacement_reason),
             **learned_override_meta,
         }
         action_trace = list(frontier_result.metadata.get("action_trace", [])) if frontier_result else []

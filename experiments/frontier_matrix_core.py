@@ -2003,3 +2003,14 @@ def adaptive_anti_collapse_stats(rows: list[dict[str, Any]], strategy_prefix: st
             "examples_with_trace": float(len(prune_fracs)),
         }
     return out
+
+
+def build_semantic_diversity_diagnostic_registry(
+    generator_factory: Callable[[], Any],
+    scorer: Any,
+    budget: int,
+) -> dict[str, Any]:
+    """Experimental diagnostic methods for semantic-diversity / maturation (not canonical)."""
+    from experiments.semantic_diversity_diagnostic_strategies import build_semantic_diversity_diagnostic_strategies
+
+    return build_semantic_diversity_diagnostic_strategies(generator_factory, scorer, budget)
