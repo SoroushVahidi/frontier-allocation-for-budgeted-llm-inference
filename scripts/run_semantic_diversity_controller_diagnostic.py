@@ -145,6 +145,13 @@ def _extract_semantic_row(meta: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _loss_row_has_question_and_gold(r: dict[str, Any]) -> bool:
+    """Loss JSONL sometimes omits question/gold; skip those rows for live reruns."""
+    q = str(r.get("question") or "").strip()
+    g = str(r.get("gold_answer") or r.get("gold_answer_canonical") or "").strip()
+    return len(q) >= 12 and len(g) >= 1
+
+
 def _select_live_cases(
     loss_rows: list[dict[str, Any]],
     max_cases: int,
@@ -152,7 +159,11 @@ def _select_live_cases(
 ) -> list[dict[str, Any]]:
     """Prefer internal-wrong external-correct, confirmed absent-from-tree."""
     rng = random.Random(seed)
-    pool = [r for r in loss_rows if str(r.get("internal_method_name", "")) == "strict_f3"]
+    pool = [
+        r
+        for r in loss_rows
+        if str(r.get("internal_method_name", "")) == "strict_f3" and _loss_row_has_question_and_gold(r)
+    ]
     scored: list[tuple[tuple[int, int, int], dict[str, Any]]] = []
     for r in pool:
         strict_ok = str(r.get("strict_f3_is_correct", r.get("internal_is_correct", ""))).lower() in {"1", "true", "yes"}
@@ -185,10 +196,11 @@ def _examples_for_offline(n: int, seed: int) -> list[PilotExample]:
 
 
 def _example_from_loss_row(r: dict[str, Any]) -> PilotExample:
+    ga = str(r.get("gold_answer") or r.get("gold_answer_canonical") or r.get("answer") or "").strip() or "0"
     return PilotExample(
         example_id=str(r.get("example_id", "unknown")),
-        question=str(r.get("question", "")),
-        answer=extract_final_answer(str(r.get("gold_answer", r.get("answer", "0")))),
+        question=str(r.get("question") or "").strip(),
+        answer=extract_final_answer(ga),
     )
 
 

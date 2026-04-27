@@ -6735,8 +6735,10 @@ class L1LengthControlController(BaseController):
         )
 
 
-def _normalize_answer(text: str) -> str:
-    stripped = text.strip()
+def _normalize_answer(text: str | None) -> str:
+    if text is None:
+        return ""
+    stripped = str(text).strip()
     nums = re.findall(r"[-+]?\d+(?:\.\d+)?", stripped.replace(",", ""))
     if nums:
         value = nums[-1]
