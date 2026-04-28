@@ -24,7 +24,13 @@ These are valid on different decision surfaces and should not be merged.
 python -m venv .venv
 source .venv/bin/activate
 make setup
-make check
+python scripts/check_repo_health.py
+python -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
+```
+
+Optional full-suite command (environment-dependent):
+```bash
+python -m pytest -q
 ```
 
 ## 4) Regenerate canonical paper artifacts

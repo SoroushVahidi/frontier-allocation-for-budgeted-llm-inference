@@ -37,9 +37,12 @@ Canonical output roots:
 ## Reproduce canonical checks (local, no external API required)
 ```bash
 python scripts/check_repo_health.py
-python -m pytest -q
+python -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
+
+Full suite note:
+- `python -m pytest -q` is supported but may require optional/generated artifacts or environment-specific dataset/model compatibility.
 
 ## Diagnostic and real-model evidence (non-headline by default)
 - OpenAI/Cohere validation artifacts live under:

@@ -505,6 +505,7 @@ def main() -> None:
                             include_broad_diversity_aggregation_methods=True,
                             include_external_l1_baseline=True,
                             include_external_s1_baseline=True,
+                            include_external_tale_baseline=True,
                         )
 
                         for method in methods:

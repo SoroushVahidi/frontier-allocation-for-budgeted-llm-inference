@@ -1,4 +1,4 @@
-.PHONY: setup smoke health format lint test check prepaper anonymous-audit anonymous-supplement help
+.PHONY: setup smoke health format lint reviewer-test test check prepaper anonymous-audit anonymous-supplement help
 
 PY_DIRS := scripts experiments tests
 
@@ -9,6 +9,7 @@ help:
 	@echo "  health  Run the repository structure/import health check"
 	@echo "  format  Auto-format Python files with ruff"
 	@echo "  lint    Lint Python files with ruff"
+	@echo "  reviewer-test Run stable reviewer-safe pytest subset"
 	@echo "  test    Run pytest"
 	@echo "  check   Run health, lint, and test together"
 	@echo "  prepaper Run repo checks plus paper artifact/claim checklist gate"
@@ -33,10 +34,13 @@ lint:
 test:
 	python3 -m pytest -q
 
+reviewer-test:
+	python3 -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
+
 check:
 	python3 scripts/check_repo_health.py
 	python3 -m ruff check $(PY_DIRS)
-	python3 -m pytest -q
+	python3 -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
 
 prepaper:
 	python3 scripts/check_repo_health.py

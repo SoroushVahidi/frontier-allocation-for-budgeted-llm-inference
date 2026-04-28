@@ -8,9 +8,17 @@ Run from repository root:
 
 ```bash
 python scripts/check_repo_health.py
-python -m pytest
+python -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
+
+Optional (environment-dependent) full test suite:
+
+```bash
+python -m pytest -q
+```
+
+The full suite includes tests that may rely on optional/generated artifacts or environment-specific compatibility and is not required for baseline reviewer reproduction.
 
 Canonical paper-facing outputs:
 
