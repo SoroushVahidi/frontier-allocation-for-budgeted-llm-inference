@@ -24,8 +24,9 @@ These are valid on different decision surfaces and should not be merged.
 python -m venv .venv
 source .venv/bin/activate
 make setup
-python scripts/check_repo_health.py
-python -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
+make health
+make reviewer-test
+python -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
 ```
 
 Optional full-suite command (environment-dependent):
@@ -61,4 +62,5 @@ Rule: if a result is not promoted by canonical docs, treat it as supportive, dia
 Before final narrative edits, use:
 
 - `docs/REVIEWER_REPRO_AND_SCOPE_GUIDE.md`
+- `docs/REVIEWER_10_MINUTE_REPRODUCTION.md`
 - `docs/REPO_MAP.md`

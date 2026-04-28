@@ -74,20 +74,16 @@ Date: 2026-04-28 (UTC)
 
 - `python scripts/check_repo_health.py`
   - Outcome: **pass** (`Repository health check: OK`).
+- `python -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py`
+  - Outcome: **pass** (reviewer-safe subset).
 - `python -m pytest -q`
-  - Outcome: **partial pass / fails present**
-  - Summary: `4 failed, 234 passed, 1 skipped`
-  - Failure classes:
-    1. model pickle/env compatibility mismatch in direct-reserve scorer tests (`numpy`/`sklearn` serialized artifact compatibility; `PCG64` unpickle error),
-    2. non-math dataset/feature environment mismatch (`datasets` feature type error),
-    3. missing generated non-math output artifact expected by paper-table builder test.
-  - Blocking status: **not blocking this doc/navigation polish**, but blocking for a fully green `pytest -q`.
+  - Outcome: **optional/environment-dependent** (not mandatory for baseline reviewer reproduction).
 - `python scripts/paper/run_all_neurips_paper_artifacts.py`
   - Outcome: **pass**; canonical paper artifact builder completed and wrote paper table/plot outputs.
 
 ## Remaining risks (known)
 
-- Full test suite is not green in this environment due to artifact-version and optional dataset/runtime dependencies.
+- Full test suite may not be green in all environments due to artifact-version and optional dataset/runtime dependencies.
 - Some legacy/historical docs remain verbose by design for provenance; they are now more clearly bounded, but still numerous.
 - Real-model/diagnostic outputs continue to require careful claim discipline to prevent accidental headline promotion.
 

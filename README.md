@@ -37,9 +37,13 @@ Canonical output roots:
 ## Reproduce canonical checks (local, no external API required)
 ```bash
 python scripts/check_repo_health.py
-python -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
+python -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
+
+Equivalent Make targets:
+- `make health`
+- `make reviewer-test`
 
 Full suite note:
 - `python -m pytest -q` is supported but may require optional/generated artifacts or environment-specific dataset/model compatibility.
@@ -71,6 +75,7 @@ Before writing manuscript text, read:
 - Anonymous reviewer package source: `neurips2026_anonymous_artifact/`
 - Packaging/build path: `scripts/create_anonymous_neurips_artifact.py`
 - Keep canonical paper-facing and diagnostic artifacts explicitly separated when preparing anonymous releases.
+- Fast reviewer path: `docs/REVIEWER_10_MINUTE_REPRODUCTION.md`
 
 ## Repository organization and artifact classes
 For a reviewer-safe map of canonical, diagnostic, and provenance artifacts, see:

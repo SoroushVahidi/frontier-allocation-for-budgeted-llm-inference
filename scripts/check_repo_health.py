@@ -36,6 +36,8 @@ REQUIRED_PATHS = [
     REPO_ROOT / "docs" / "PAPER_CLAIMS_AND_EVIDENCE_MAP.md",
     REPO_ROOT / "docs" / "PAPER_BASELINE_HONESTY_STATUS.md",
     REPO_ROOT / "docs" / "PAPER_OPEN_GAPS_AND_RISKS.md",
+    REPO_ROOT / "docs" / "REVIEWER_REPRO_AND_SCOPE_GUIDE.md",
+    REPO_ROOT / "docs" / "REVIEWER_10_MINUTE_REPRODUCTION.md",
     REPO_ROOT / "scripts" / "CANONICAL_START_HERE.md",
     REPO_ROOT / "scripts" / "README.md",
     REPO_ROOT / "scripts" / "paper" / "run_all_neurips_paper_artifacts.py",

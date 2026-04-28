@@ -8,9 +8,13 @@ Run from repository root:
 
 ```bash
 python scripts/check_repo_health.py
-python -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
+python -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
+
+Equivalent Make targets:
+- `make health`
+- `make reviewer-test`
 
 Optional (environment-dependent) full test suite:
 
@@ -19,6 +23,8 @@ python -m pytest -q
 ```
 
 The full suite includes tests that may rely on optional/generated artifacts or environment-specific compatibility and is not required for baseline reviewer reproduction.
+
+See also: `docs/REVIEWER_10_MINUTE_REPRODUCTION.md`.
 
 Canonical paper-facing outputs:
 

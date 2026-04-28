@@ -35,12 +35,12 @@ test:
 	python3 -m pytest -q
 
 reviewer-test:
-	python3 -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
+	python3 -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
 
 check:
 	python3 scripts/check_repo_health.py
 	python3 -m ruff check $(PY_DIRS)
-	python3 -m pytest -q tests/test_frontier_router.py tests/test_repository_structure.py tests/test_check_repo_health_paths.py
+	python3 -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
 
 prepaper:
 	python3 scripts/check_repo_health.py

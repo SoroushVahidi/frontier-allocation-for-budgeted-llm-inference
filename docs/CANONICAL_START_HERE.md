@@ -33,12 +33,15 @@ See:
 8. [`CANONICAL_INSTALL_AND_DEV.md`](CANONICAL_INSTALL_AND_DEV.md)
 9. [`../scripts/CANONICAL_START_HERE.md`](../scripts/CANONICAL_START_HERE.md)
 10. [`REVIEWER_REPRO_AND_SCOPE_GUIDE.md`](REVIEWER_REPRO_AND_SCOPE_GUIDE.md)
+11. [`REVIEWER_10_MINUTE_REPRODUCTION.md`](REVIEWER_10_MINUTE_REPRODUCTION.md)
 
 ## Canonical first commands
 
 ```bash
 make setup
-make check
+make health
+make reviewer-test
+python -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
 python ../scripts/paper/run_all_neurips_paper_artifacts.py
 ```
 
