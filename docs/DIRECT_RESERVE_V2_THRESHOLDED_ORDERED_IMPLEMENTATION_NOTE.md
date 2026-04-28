@@ -20,6 +20,7 @@ Compared with `direct_reserve_semantic_frontier_v1`, this version is cost-orient
 - Uses lower frontier challenger caps (small=1, large=2; only allows up to 3 in high-uncertainty weak-incumbent cases).
 - Uses thresholded continuation and thresholded replacement logic.
 - Logs ordering-policy metadata and route decisions for post-hoc diagnostics.
+- Applies a **pre-frontier continuation gate** so continuation threshold can block frontier expansion before challenger work is run.
 
 ## Thresholds and ordering rules used
 
@@ -31,6 +32,7 @@ Continuation proxy:
 
 - `continuation_value = quality + novelty + challenge_value - redundancy - cost (+ uncertainty bonus)`
 - all terms use label-free proxies from incumbent/frontier metadata.
+- pre-frontier proxies are computed from incumbent uncertainty/support signals before opening the challenger frontier.
 
 Ordering policy (logged as policy labels):
 
