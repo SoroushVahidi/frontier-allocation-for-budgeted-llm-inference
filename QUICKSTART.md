@@ -38,6 +38,8 @@ Output roots:
 - `outputs/paper_figures/`
 - `outputs/paper_tables/`
 
+Only these canonical roots are headline-claim eligible by default.
+
 ## 5) Before writing manuscript-facing claims
 
 Read:
@@ -46,10 +48,11 @@ Read:
 - `docs/MAIN_TABLE_EXTERNAL_BASELINE_FAIRNESS_AUDIT_20260423T205134Z.md`
 - `docs/PAPER_OPEN_GAPS_AND_RISKS.md`
 
-Rule: if a result is not promoted by canonical docs, treat it as supportive or historical.
+Rule: if a result is not promoted by canonical docs, treat it as supportive, diagnostic, or provenance-only.
 
 ## 6) Reviewer-facing scope check
 
 Before final narrative edits, use:
 
 - `docs/REVIEWER_REPRO_AND_SCOPE_GUIDE.md`
+- `docs/REPO_MAP.md`

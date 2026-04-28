@@ -20,6 +20,7 @@ Maps where to find canonical interpretation, runnable entry points, and provenan
   - Exploratory: bounded investigations and side branches.
   - Historical: provenance-preserving records.
 - `scripts/` — runnable entry points and orchestration wrappers.
+- `scripts/paper/` — canonical paper artifact builders for anonymous NeurIPS deliverables.
 - `experiments/` — reusable implementation modules used by scripts.
 - `configs/` — machine-readable contracts for datasets/baselines/runs.
 - `outputs/` — generated artifacts (not interpretation authority by itself).
@@ -27,6 +28,11 @@ Maps where to find canonical interpretation, runnable entry points, and provenan
 - `references/` — literature and citation material.
 - `external/` — external baseline integration assets.
 - `archive/` — preserved historical/provenance material.
+- `manuscript_integration/` — manuscript-side integration helpers and packaging bridges.
+- `neurips2026_anonymous_artifact/` — anonymous artifact payload staging area.
+- `batch/` — Slurm submission scripts for non-interactive cluster runs.
+- `jobs/` — job templates and generated scheduler files.
+- `logs/` — lightweight run logs and command traces.
 
 ## Manuscript-support documents
 

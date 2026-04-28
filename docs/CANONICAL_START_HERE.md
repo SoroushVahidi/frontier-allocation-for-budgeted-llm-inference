@@ -47,3 +47,4 @@ python ../scripts/paper/run_all_neurips_paper_artifacts.py
 - Canonical docs are interpretation authority.
 - Supportive/appendix artifacts remain bounded unless canonically promoted.
 - Historical materials are preserved for provenance, not current default truth.
+- Real-model and diagnostic runs are supporting evidence unless promoted by canonical decision docs.

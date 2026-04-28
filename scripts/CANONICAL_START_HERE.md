@@ -49,4 +49,5 @@ python scripts/paper/run_all_neurips_artifacts.py
 
 - Run scripts from canonical docs outward, not from arbitrary historical notes.
 - If a script produces exploratory outputs, keep interpretation scoped and non-headline unless promoted by canonical docs.
+- Keep real-model/diagnostic outputs appendix-bounded unless canonical docs explicitly promote them.
 - Keep `scripts/README.md` as the full script index; keep this file intentionally short.

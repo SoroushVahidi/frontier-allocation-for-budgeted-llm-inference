@@ -18,14 +18,16 @@ This file is the runnable-code front door for the repository.
 - Artifact-status policy: [`../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md`](../docs/ARTIFACT_STATUS_AND_PLOT_POLICY_2026_04_20.md)
 - Paper artifact map: [`../docs/PAPER_ARTIFACT_MAP.md`](../docs/PAPER_ARTIFACT_MAP.md)
 - Paper reproduction checklist: [`../docs/PAPER_REPRODUCTION_CHECKLIST.md`](../docs/PAPER_REPRODUCTION_CHECKLIST.md)
-- Historical script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
+- Historical/provenance-only script entry points: [`HISTORICAL_INDEX.md`](HISTORICAL_INDEX.md)
 
 ## Interpretation labels
 
 - **Canonical**: current strict-phased default-decision path for the NeurIPS-oriented project.
 - **Exploratory**: active side branches and narrower diagnostics, not settled default winners.
 - **Integration/prep**: dataset and baseline readiness tooling.
-- **Historical**: older-track support scripts retained only for provenance.
+- **Historical / provenance-only**: older-track support scripts retained only for traceability.
+
+When this index and canonical docs disagree, canonical docs in `docs/` take precedence.
 
 ## Most common workflows
 

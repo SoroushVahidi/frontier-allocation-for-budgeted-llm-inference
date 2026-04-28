@@ -37,7 +37,7 @@ Primary decision authority:
 - Canonical decision docs listed above.
 - Canonical paper artifact families in `PAPER_SOURCE_OF_TRUTH.md` and `outputs/README.md`.
 
-### Supportive / appendix-level
+### Supportive / appendix-level (not headline-evidence by default)
 - Conditional-risk cap promotion investigation outputs and notes.
 - Component ablations and bounded mechanism diagnostics unless explicitly promoted.
 - Adjacent baselines (appendix-only policy lanes).
@@ -52,6 +52,10 @@ Primary decision authority:
 - Unified offline claim-safety statistical audit now exists (`UNIFIED_CLAIM_SAFETY_STATISTICAL_AUDIT_20260424T200000Z.md`; outputs in `outputs/unified_claim_safety_statistical_audit_20260424T200000Z/`): strict_f3 vs strict_gate1_cap_k6 remains fragile/surface-sensitive and frontier-allocation vs `external_l1_max` remains mixed/non-dominant; preserve bounded/appendix framing for real-model claims.
 - Held-out surface generalization + claim-safety runner is now added (`scripts/run_held_out_surface_generalization_claim_safety.py`) with dry-run package (`outputs/held_out_surface_generalization_claim_safety_20260424T231500Z_DRY/`) and conservative report (`HELD_OUT_SURFACE_GENERALIZATION_CLAIM_SAFETY_20260424T231500Z_DRY.md`); this currently reinforces mixed/non-dominant framing, not SOTA/dominance framing.
 - Real-model decision package now exists (`REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md`; artifacts in `outputs/real_model_decision_package_20260425T025417Z/`): Cohere Stage-1 is unfavorable for dominance claims (`strict_f3`=0.5333 vs `external_l1_max`=0.8000; paired delta=-0.2667, bootstrap 95% CI [-0.4667, -0.0667], budget deltas b4=-0.3/b6=-0.3/b8=-0.2, seed deltas s11=-0.2/s23=-0.3333, and cost-normalized diagnostics favor `external_l1_max`); maintain appendix-only/diagnostic usage and do not use this as main-paper superiority evidence.
+
+### Historical/provenance-only notes
+- Historical status snapshots and interim decision notes are retained for traceability.
+- When in conflict with canonical decision docs, treat historical notes as provenance-only.
 
 ### Historical / provenance
 - Legacy dated status notes and superseded summaries retained for traceability.
