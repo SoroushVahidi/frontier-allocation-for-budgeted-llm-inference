@@ -1321,6 +1321,34 @@ def build_frontier_strategies(
             method_name="strict_f3_anti_collapse_weak_v1",
             **strict_f3_anti_collapse_weak_cfg,
         )
+        early_answer_diversity_maturation_cfg = dict(strict_f3_base_cfg)
+        early_answer_diversity_maturation_cfg.update(
+            {
+                "enable_early_answer_diversity_maturation_v1": True,
+                "early_answer_diversity_recent_group_window": 2,
+            }
+        )
+        specs["early_answer_diversity_maturation_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="early_answer_diversity_maturation_v1",
+            **early_answer_diversity_maturation_cfg,
+        )
+        early_answer_diversity_maturation_gated_cfg = dict(strict_f3_base_cfg)
+        early_answer_diversity_maturation_gated_cfg.update(
+            {
+                "enable_early_answer_diversity_maturation_gated_v1": True,
+                "early_answer_diversity_recent_group_window": 2,
+            }
+        )
+        specs["early_answer_diversity_maturation_gated_v1"] = GlobalDiversityAggregationController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="early_answer_diversity_maturation_gated_v1",
+            **early_answer_diversity_maturation_gated_cfg,
+        )
         specs["strict_f3_anti_collapse_default_v1"] = GlobalDiversityAggregationController(
             generator_factory(),
             scorer,

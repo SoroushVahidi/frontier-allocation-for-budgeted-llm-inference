@@ -965,6 +965,9 @@ class GlobalDiversityAggregationController(BaseController):
         early_preservation_target_alignment_min: float = 0.34,
         early_preservation_required_group_gap: float = 0.18,
         early_preservation_challenger_hold_steps: int = 1,
+        enable_early_answer_diversity_maturation_v1: bool = False,
+        enable_early_answer_diversity_maturation_gated_v1: bool = False,
+        early_answer_diversity_recent_group_window: int = 2,
         enable_anti_collapse_answer_group_refinement: bool = False,
         anti_collapse_early_window: int = 6,
         enable_conditional_anti_collapse_activation: bool = False,
@@ -1141,6 +1144,9 @@ class GlobalDiversityAggregationController(BaseController):
         self.early_preservation_target_alignment_min = float(early_preservation_target_alignment_min)
         self.early_preservation_required_group_gap = float(early_preservation_required_group_gap)
         self.early_preservation_challenger_hold_steps = max(0, int(early_preservation_challenger_hold_steps))
+        self.enable_early_answer_diversity_maturation_v1 = bool(enable_early_answer_diversity_maturation_v1)
+        self.enable_early_answer_diversity_maturation_gated_v1 = bool(enable_early_answer_diversity_maturation_gated_v1)
+        self.early_answer_diversity_recent_group_window = max(1, int(early_answer_diversity_recent_group_window))
         self.enable_anti_collapse_answer_group_refinement = bool(enable_anti_collapse_answer_group_refinement)
         self.anti_collapse_early_window = max(1, int(anti_collapse_early_window))
         self.enable_conditional_anti_collapse_activation = bool(enable_conditional_anti_collapse_activation)
@@ -1886,6 +1892,209 @@ class GlobalDiversityAggregationController(BaseController):
             "selected_branch_id": str(selected[0].branch_id),
             "selected_continuation": float(selected[2].get("continuation_value", 0.0)),
             "selected_target_alignment_score": float(selected[2].get("target_alignment_score", 0.0)),
+        }
+
+    def _group_maturity_snapshot(self, branches: list[BranchState]) -> dict[str, dict[str, int | bool]]:
+        out: dict[str, dict[str, int | bool]] = {}
+        for b in branches:
+            gk = self._normalize_answer(b.predicted_answer) or "__unknown__"
+            row = out.setdefault(
+                gk,
+                {
+                    "support_count": 0,
+                    "max_parseable_depth": 0,
+                    "has_parseable_depth_ge_2": False,
+                    "mature": False,
+                },
+            )
+            parseable = self._normalize_answer(b.predicted_answer) is not None
+            if parseable:
+                row["support_count"] = int(row["support_count"]) + 1
+                depth = int(getattr(b, "depth", len(getattr(b, "steps", []) or [])) or 0)
+                row["max_parseable_depth"] = max(int(row["max_parseable_depth"]), depth)
+            row["has_parseable_depth_ge_2"] = bool(int(row["max_parseable_depth"]) >= 2)
+            row["mature"] = bool(int(row["support_count"]) >= 2 or bool(row["has_parseable_depth_ge_2"]))
+        return out
+
+    def _pick_early_answer_diversity_maturation_branch(
+        self,
+        *,
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        branches: list[BranchState],
+        branch_family_ids: dict[str, str],
+        branch_expansions: dict[str, int],
+        actions: int,
+        early_prefix: int,
+        recent_groups: list[str],
+        recent_families: list[str],
+    ) -> tuple[BranchState | None, dict[str, Any]]:
+        if not self.enable_early_answer_diversity_maturation_v1:
+            return None, {"activated": False, "reason": "disabled"}
+        if actions >= early_prefix:
+            return None, {"activated": False, "reason": "outside_early_prefix"}
+        if len(scored) <= 1:
+            return None, {"activated": False, "reason": "no_alternative_branch"}
+        maturity = self._group_maturity_snapshot(branches)
+        parseable_present = any(
+            bool(v.get("support_count", 0)) or bool(v.get("has_parseable_depth_ge_2", False))
+            for v in maturity.values()
+        )
+        family_expansion_counts: dict[str, int] = {}
+        for bid, cnt in branch_expansions.items():
+            fam = str(branch_family_ids.get(bid) or bid)
+            family_expansion_counts[fam] = family_expansion_counts.get(fam, 0) + int(cnt)
+        recent_group_set = set(recent_groups[-self.early_answer_diversity_recent_group_window :])
+        recent_family_set = set(recent_families[-self.early_answer_diversity_recent_group_window :])
+        ranked: list[tuple[tuple[float, float, float, float, float], tuple[BranchState, float, dict[str, float | str | None]]]] = []
+        for item in scored:
+            b, _, meta = item
+            gk = str(meta.get("group_key") or "__unknown__")
+            fam = str(branch_family_ids.get(b.branch_id) or b.branch_id)
+            unresolved = 0 if bool(getattr(b, "is_done", False)) else 1
+            group_info = maturity.get(gk, {})
+            is_mature = bool(group_info.get("mature", False))
+            continuation = float(meta.get("continuation_value", 0.0))
+            fam_expands = int(family_expansion_counts.get(fam, 0))
+            depth = int(getattr(b, "depth", len(getattr(b, "steps", []) or [])) or 0)
+            if parseable_present:
+                key = (
+                    float(1 - int(is_mature)),
+                    float(1 - int(gk in recent_group_set)),
+                    float(-fam_expands),
+                    float(continuation),
+                    float(-1.0 * (sum(ord(ch) for ch in str(b.branch_id)))),
+                )
+            else:
+                key = (
+                    float(1 - int(fam in recent_family_set)),
+                    float(unresolved),
+                    float(depth),
+                    float(-fam_expands),
+                    float(continuation),
+                )
+            ranked.append((key, item))
+        ranked.sort(key=lambda x: x[0], reverse=True)
+        selected = ranked[0][1]
+        selected_branch = selected[0]
+        selected_meta = selected[2]
+        selected_group = str(selected_meta.get("group_key") or "__unknown__")
+        selected_family = str(branch_family_ids.get(selected_branch.branch_id) or selected_branch.branch_id)
+        return selected_branch, {
+            "activated": True,
+            "reason": (
+                "prefer_unmatured_answer_group_and_family_diversity"
+                if parseable_present
+                else "fallback_family_diversity_with_unresolved_depth_proxy"
+            ),
+            "parseable_groups_present": bool(parseable_present),
+            "selected_branch_id": str(selected_branch.branch_id),
+            "selected_group": selected_group,
+            "selected_group_mature": bool(maturity.get(selected_group, {}).get("mature", False)),
+            "selected_group_support_count": int(maturity.get(selected_group, {}).get("support_count", 0)),
+            "selected_family": selected_family,
+            "selected_family_expansions_pre_action": int(family_expansion_counts.get(selected_family, 0)),
+        }
+
+    def _pick_early_answer_diversity_maturation_gated_branch(
+        self,
+        *,
+        scored: list[tuple[BranchState, float, dict[str, float | str | None]]],
+        strict_branch: BranchState,
+        strict_meta: dict[str, float | str | None],
+        branches: list[BranchState],
+        branch_family_ids: dict[str, str],
+        branch_expansions: dict[str, int],
+        answer_support_counts: dict[str, int],
+        actions: int,
+        early_prefix: int,
+        recent_groups: list[str],
+        recent_families: list[str],
+    ) -> tuple[BranchState | None, dict[str, Any]]:
+        if not self.enable_early_answer_diversity_maturation_gated_v1:
+            return None, {"considered": False, "applied": False, "triggers": [], "skip_reason": "disabled"}
+        if actions >= early_prefix:
+            return None, {"considered": False, "applied": False, "triggers": [], "skip_reason": "outside_early_prefix"}
+        if len(scored) <= 1:
+            return None, {"considered": True, "applied": False, "triggers": [], "skip_reason": "no_alternative_branch"}
+        maturity = self._group_maturity_snapshot(branches)
+        top_group = max(answer_support_counts.items(), key=lambda kv: kv[1])[0] if answer_support_counts else "__unknown__"
+        top_support = int(max(answer_support_counts.values())) if answer_support_counts else 0
+        recent_family = str(recent_families[-1]) if recent_families else ""
+        recent_group = str(recent_groups[-1]) if recent_groups else ""
+        strict_group = str(strict_meta.get("group_key") or "__unknown__")
+        strict_family = str(branch_family_ids.get(strict_branch.branch_id) or strict_branch.branch_id)
+        strict_immature = not bool(maturity.get(strict_group, {}).get("mature", False))
+        strict_answer_distinct = bool(strict_group != top_group and strict_group != recent_group and strict_group != "__unknown__")
+
+        candidate_items = [
+            item
+            for item in scored
+            if str(item[0].branch_id) != str(strict_branch.branch_id)
+        ]
+        family_expansion_counts: dict[str, int] = {}
+        for bid, cnt in branch_expansions.items():
+            fam = str(branch_family_ids.get(bid) or bid)
+            family_expansion_counts[fam] = family_expansion_counts.get(fam, 0) + int(cnt)
+        alt_immature_plausible_exists = any(
+            (
+                str(item[2].get("group_key") or "__unknown__") != top_group
+                and not bool(maturity.get(str(item[2].get("group_key") or "__unknown__"), {}).get("mature", False))
+                and float(item[2].get("continuation_value", 0.0)) >= self.early_preservation_min_plausible_continuation
+            )
+            for item in candidate_items
+        )
+        admissible_alt_family_exists = any(
+            str(branch_family_ids.get(item[0].branch_id) or item[0].branch_id) != strict_family
+            for item in candidate_items
+        )
+        recent_same_family_expands = bool(len(recent_families) >= 2 and recent_families[-1] == recent_families[-2])
+        single_family_monopoly = bool(len(recent_families) >= 2 and len(set(recent_families)) == 1 and admissible_alt_family_exists)
+        triggers: list[str] = []
+        if recent_same_family_expands:
+            triggers.append("recent_same_family_expansions_ge_2")
+        if top_support >= 2 and alt_immature_plausible_exists:
+            triggers.append("top_group_support_ge_2_with_immature_plausible_alternative")
+        if single_family_monopoly:
+            triggers.append("single_family_monopoly_with_admissible_alternative")
+        if not triggers:
+            return None, {"considered": True, "applied": False, "triggers": [], "skip_reason": "no_collapse_trigger"}
+        if strict_immature and strict_answer_distinct:
+            return None, {
+                "considered": True,
+                "applied": False,
+                "triggers": triggers,
+                "skip_reason": "strict_branch_already_immature_answer_distinct",
+            }
+        ranked: list[tuple[tuple[float, float, float, float, float], tuple[BranchState, float, dict[str, float | str | None]]]] = []
+        for item in candidate_items:
+            b, _, meta = item
+            gk = str(meta.get("group_key") or "__unknown__")
+            fam = str(branch_family_ids.get(b.branch_id) or b.branch_id)
+            continuation = float(meta.get("continuation_value", 0.0))
+            is_mature = bool(maturity.get(gk, {}).get("mature", False))
+            ranked.append(
+                (
+                    (
+                        float(1 - int(is_mature)),
+                        float(1 - int(gk in {top_group, recent_group})),
+                        float(1 - int(fam == recent_family)),
+                        float(continuation),
+                        float(-1.0 * sum(ord(ch) for ch in str(b.branch_id))),
+                    ),
+                    item,
+                )
+            )
+        if not ranked:
+            return None, {"considered": True, "applied": False, "triggers": triggers, "skip_reason": "no_admissible_alternative"}
+        ranked.sort(key=lambda x: x[0], reverse=True)
+        selected = ranked[0][1]
+        return selected[0], {
+            "considered": True,
+            "applied": True,
+            "triggers": triggers,
+            "skip_reason": "",
+            "selected_branch_id": str(selected[0].branch_id),
+            "selected_group": str(selected[2].get("group_key") or "__unknown__"),
         }
 
     def _group_support_summary(
@@ -3232,6 +3441,14 @@ class GlobalDiversityAggregationController(BaseController):
         self._diagnostic_branching_necessity_trace = []
         near_tie_forced_steps_used = 0
         early_preservation_forced_steps = 0
+        early_prefix = min(3, max(1, int(self.max_actions // 2)))
+        early_maturation_actions = 0
+        early_groups_seen_order: list[str] = []
+        early_families_seen_order: list[str] = []
+        early_gated_override_considered = 0
+        early_gated_override_applied = 0
+        early_gated_override_triggers: Counter[str] = Counter()
+        early_gated_override_skipped_reasons: Counter[str] = Counter()
         width_depth_forced_width_steps = 0
         width_depth_forced_challenger_maturation_steps = 0
         uncertainty_verify_steps = 0
@@ -3432,6 +3649,56 @@ class GlobalDiversityAggregationController(BaseController):
                     early_preservation_meta = preservation_meta
             elif preservation_meta.get("activated", False):
                 early_preservation_meta = preservation_meta
+            early_maturation_meta: dict[str, Any] = {"activated": False, "reason": "disabled"}
+            maturation_branch, maturation_meta = self._pick_early_answer_diversity_maturation_branch(
+                scored=scored,
+                branches=branches,
+                branch_family_ids=branch_family_ids,
+                branch_expansions=branch_expansions,
+                actions=actions,
+                early_prefix=early_prefix,
+                recent_groups=early_groups_seen_order,
+                recent_families=early_families_seen_order,
+            )
+            if maturation_branch is not None and maturation_branch.branch_id != branch.branch_id:
+                selected = next((item for item in scored if item[0].branch_id == maturation_branch.branch_id), None)
+                if selected is not None:
+                    branch, priority, pri_meta = selected
+            if bool(maturation_meta.get("activated", False)):
+                early_maturation_meta = maturation_meta
+            gated_override_meta: dict[str, Any] = {
+                "considered": False,
+                "applied": False,
+                "triggers": [],
+                "skip_reason": "disabled",
+            }
+            gated_branch, gated_meta = self._pick_early_answer_diversity_maturation_gated_branch(
+                scored=scored,
+                strict_branch=branch,
+                strict_meta=pri_meta,
+                branches=branches,
+                branch_family_ids=branch_family_ids,
+                branch_expansions=branch_expansions,
+                answer_support_counts=answer_support_counts,
+                actions=actions,
+                early_prefix=early_prefix,
+                recent_groups=early_groups_seen_order,
+                recent_families=early_families_seen_order,
+            )
+            gated_override_meta = gated_meta
+            if bool(gated_meta.get("considered", False)):
+                early_gated_override_considered += 1
+            for trig in list(gated_meta.get("triggers", []) or []):
+                early_gated_override_triggers[str(trig)] += 1
+            skip_reason = str(gated_meta.get("skip_reason") or "")
+            if skip_reason:
+                early_gated_override_skipped_reasons[skip_reason] += 1
+            if gated_branch is not None and gated_branch.branch_id != branch.branch_id:
+                selected = next((item for item in scored if item[0].branch_id == gated_branch.branch_id), None)
+                if selected is not None:
+                    branch, priority, pri_meta = selected
+                    if bool(gated_meta.get("applied", False)):
+                        early_gated_override_applied += 1
             if (
                 self.enable_anti_collapse_answer_group_refinement
                 and bool(early_preservation_meta.get("activated", False))
@@ -4016,6 +4283,11 @@ class GlobalDiversityAggregationController(BaseController):
                 branch_expansions[branch.branch_id] = b_expanded + 1
                 sfam = str(branch_strategy_family.get(branch.branch_id, "direct_formula_family"))
                 family_expansions_by_strategy[sfam] = int(family_expansions_by_strategy.get(sfam, 0)) + 1
+                if actions <= early_prefix:
+                    if bool(early_maturation_meta.get("activated", False)):
+                        early_maturation_actions += 1
+                    early_groups_seen_order.append(str(pri_meta.get("group_key") or "__unknown__"))
+                    early_families_seen_order.append(str(sfam))
                 action_trace.append(
                     {
                         "action": "expand",
@@ -4060,6 +4332,14 @@ class GlobalDiversityAggregationController(BaseController):
                         "selected_due_to_reasoning_diversity": bool(float(pri_meta.get("selected_due_to_reasoning_diversity", 0.0)) > 0.0),
                         "early_preservation_activated": bool(early_preservation_meta.get("activated", False)),
                         "early_preservation_reason": early_preservation_meta.get("reason"),
+                        "early_answer_diversity_maturation_activated": bool(
+                            early_maturation_meta.get("activated", False)
+                        ),
+                        "early_answer_diversity_maturation_reason": str(early_maturation_meta.get("reason") or ""),
+                        "early_gated_override_considered": bool(gated_override_meta.get("considered", False)),
+                        "early_gated_override_applied": bool(gated_override_meta.get("applied", False)),
+                        "early_gated_override_triggers": list(gated_override_meta.get("triggers", []) or []),
+                        "early_gated_override_skipped_reason": str(gated_override_meta.get("skip_reason") or ""),
                         "anti_collapse_repeat_penalty": round(
                             float(anti_collapse_adjustments.get(branch.branch_id, {}).get("repeat_penalty", 0.0)), 4
                         ),
@@ -4630,6 +4910,34 @@ class GlobalDiversityAggregationController(BaseController):
                 "forced_explore_rate": float(forced_explore_steps / max(1, actions)),
                 "early_answer_group_preservation_enabled": bool(self.enable_early_answer_group_preservation),
                 "early_answer_group_preservation_forced_steps": int(early_preservation_forced_steps),
+                "early_answer_diversity_maturation_enabled": bool(self.enable_early_answer_diversity_maturation_v1),
+                "early_answer_diversity_maturation_gated_enabled": bool(
+                    self.enable_early_answer_diversity_maturation_gated_v1
+                ),
+                "early_answer_diversity_maturation_uses_gold_labels": False,
+                "early_prefix": int(early_prefix),
+                "early_maturation_actions": int(early_maturation_actions),
+                "early_gated_override_considered": int(early_gated_override_considered),
+                "early_gated_override_applied": int(early_gated_override_applied),
+                "early_gated_override_triggers": dict(early_gated_override_triggers),
+                "early_gated_override_skipped_reason": (
+                    early_gated_override_skipped_reasons.most_common(1)[0][0]
+                    if early_gated_override_skipped_reasons
+                    else ""
+                ),
+                "early_gated_override_skipped_reasons": dict(early_gated_override_skipped_reasons),
+                "unique_answer_groups_seen_early": int(len(set(early_groups_seen_order))),
+                "repeated_family_expansions_early": int(
+                    sum(
+                        1
+                        for i in range(1, len(early_families_seen_order))
+                        if early_families_seen_order[i] == early_families_seen_order[i - 1]
+                    )
+                ),
+                "mature_groups_after_prefix": int(
+                    sum(1 for v in self._group_maturity_snapshot(branches).values() if bool(v.get("mature", False)))
+                ),
+                "fallback_to_strict_f3_after_prefix": bool(actions >= early_prefix),
                 "coverage_floor_enabled": bool(self.enable_answer_group_coverage_floor),
                 "coverage_floor_forced_steps": int(coverage_floor_forced_steps),
                 "coverage_floor_forced_rate": float(coverage_floor_forced_steps / max(1, actions)),
