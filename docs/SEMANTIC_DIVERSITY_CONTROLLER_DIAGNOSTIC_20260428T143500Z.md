@@ -6,8 +6,11 @@ Experimental / diagnostic only — **not** manuscript-grade evidence unless repl
 
 ## Case volume
 
-- **Loss / selected cases evaluated (unique example_ids in manifest):** 30
-- **Per-method rows in per_case_results.csv:** 360
+- **Selected case slots (manifest `n_selected_cases`):** 30
+- **Unique example_ids (manifest `n_unique_example_ids`):** 16
+- **Duplicate/cycle fallback slots (`case_pool_n_fallback_duplicate_or_cycle_rows`):** 14
+- **Per-method rows in `per_case_results.csv`:** 360
+- **Note:** this remains a diagnostic run with duplicated-slot bias and is not manuscript-grade evidence.
 
 ## Headline comparisons
 
