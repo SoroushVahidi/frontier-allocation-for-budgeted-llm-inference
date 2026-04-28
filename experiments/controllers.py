@@ -6196,19 +6196,38 @@ class DirectReserveGateRerankControllerV2ThresholdedOrdered(DirectReserveGateRer
         planned_family_cap = 0
         families_matured_count = 0
         continuation_value = 0.0
+        continuation_value_pre_frontier = 0.0
         ordered_family_ids: list[str] = []
         if route_decision == "limited_frontier_challenge" and remaining_budget > 0:
-            frontier_opened = True
             if high_uncertainty and (not incumbent_parseable or entropy > self.gate_entropy_threshold):
                 planned_family_cap = min(3, self.frontier_challenge_cap_large + 1)
             elif high_uncertainty:
                 planned_family_cap = min(2, self.frontier_challenge_cap_large)
             else:
                 planned_family_cap = 1
-            challenge_budget = min(remaining_budget, max(1, planned_family_cap))
-            frontier = self.strict_controller_factory(challenge_budget)
-            frontier_result = frontier.run(question, gold_answer)
-            frontier_actions_used = int(frontier_result.actions_used)
+            pre_novelty_signal = 0.65 if high_uncertainty else 0.40
+            pre_challenge_signal = max(0.0, min(1.0, 1.0 - top_support))
+            pre_redundancy_signal = 1.0 - pre_challenge_signal
+            pre_cost_signal = max(0.0, min(1.0, planned_family_cap / max(1, self.max_actions)))
+            continuation_value_pre_frontier = self._continuation_value(
+                incumbent_confidence_proxy=incumbent_confidence_proxy,
+                parseable=incumbent_parseable,
+                novelty=pre_novelty_signal,
+                challenge_value=pre_challenge_signal,
+                redundancy=pre_redundancy_signal,
+                cost=pre_cost_signal,
+            )
+            if continuation_value_pre_frontier >= self.continuation_threshold:
+                frontier_opened = True
+                if continuation_value_pre_frontier < (self.continuation_threshold + 0.15):
+                    planned_family_cap = min(planned_family_cap, 1)
+                challenge_budget = min(remaining_budget, max(1, planned_family_cap))
+                frontier = self.strict_controller_factory(challenge_budget)
+                frontier_result = frontier.run(question, gold_answer)
+                frontier_actions_used = int(frontier_result.actions_used)
+            else:
+                route_decision = "stop_with_incumbent"
+                route_reason = "continuation_threshold_blocked_frontier"
 
         frontier_meta = dict(frontier_result.metadata or {}) if frontier_result is not None else {}
         f_dsem = (
@@ -6248,6 +6267,8 @@ class DirectReserveGateRerankControllerV2ThresholdedOrdered(DirectReserveGateRer
             families_matured_count = min(len(ordered_family_ids), max(1, planned_family_cap))
             if continuation_value < self.continuation_threshold:
                 families_matured_count = min(families_matured_count, 1)
+        else:
+            continuation_value = float(continuation_value_pre_frontier)
 
         incumbent_answer = incumbent_raw
         incumbent_group = incumbent_canonical
@@ -6325,6 +6346,7 @@ class DirectReserveGateRerankControllerV2ThresholdedOrdered(DirectReserveGateRer
             "commit_threshold": float(self.commit_threshold),
             "replacement_threshold": float(self.replacement_threshold),
             "continuation_value": float(continuation_value),
+            "continuation_value_pre_frontier": float(continuation_value_pre_frontier),
             "top_challenger_answer": "" if top_challenger_answer is None else str(top_challenger_answer),
             "top_challenger_support": int(challenger_support),
             "final_source": str(final_source),
