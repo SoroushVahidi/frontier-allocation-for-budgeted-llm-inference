@@ -42,6 +42,7 @@ METHODS_COMPARE = [
     "semantic_minimum_maturation_frontier_v1_d2",
     "semantic_minimum_maturation_frontier_v1_d3",
     "direct_reserve_semantic_frontier_v1",
+    "direct_reserve_semantic_frontier_v2",
     "branching_necessity_gate_v1",
     "semantic_minimum_maturation_plus_direct_reserve_v1",
 ]
@@ -52,6 +53,7 @@ METHODS_LOSS_FULL = [
     "strict_f3",
     "semantic_minimum_maturation_frontier_v1_d3",
     "direct_reserve_semantic_frontier_v1",
+    "direct_reserve_semantic_frontier_v2",
     "branching_necessity_gate_v1",
     "semantic_minimum_maturation_plus_direct_reserve_v1",
 ]
@@ -61,6 +63,7 @@ METHODS_EXPANDED_POOL = [
     "external_l1_max",
     "strict_f3",
     "direct_reserve_semantic_frontier_v1",
+    "direct_reserve_semantic_frontier_v2",
     "semantic_minimum_maturation_plus_direct_reserve_v1",
 ]
 
@@ -412,6 +415,18 @@ def _cohere_build_row(
         "branching_necessity_last": dsem.get("branching_necessity_score", "") or dsem2.get("branching_necessity_score", ""),
         "branching_necessity_decision_last": dsem.get("branching_necessity_decision", ""),
         "direct_incumbent_pool_size": meta.get("direct_reserve_attempts_executed", ""),
+        "route_decision": str(meta.get("route_decision", "")),
+        "route_reason": str(meta.get("route_reason", "")),
+        "incumbent_parseable": meta.get("incumbent_parseable", ""),
+        "incumbent_confidence_proxy": meta.get("incumbent_confidence_proxy", ""),
+        "incumbent_kept_or_replaced": str(meta.get("incumbent_kept_or_replaced", "")),
+        "frontier_opened": meta.get("frontier_opened", ""),
+        "frontier_actions_used": meta.get("frontier_actions_used", ""),
+        "direct_actions_used": meta.get("direct_actions_used", ""),
+        "challenger_count": meta.get("challenger_count", ""),
+        "top_challenger_answer": str(meta.get("top_challenger_answer", "")),
+        "top_challenger_support": meta.get("top_challenger_support", ""),
+        "final_source": str(meta.get("final_source", "")),
         "incumbent_replaced": meta.get("incumbent_replaced", ""),
         "replacement_reason": str(meta.get("incumbent_replacement_reason", "")),
         "commit_reason_regime": str(meta.get("regime_failure_category", "")),

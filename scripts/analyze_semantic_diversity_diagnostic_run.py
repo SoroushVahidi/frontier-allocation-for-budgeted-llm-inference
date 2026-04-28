@@ -20,6 +20,7 @@ FOCUS_METHODS = [
     "external_l1_max",
     "strict_f3",
     "direct_reserve_semantic_frontier_v1",
+    "direct_reserve_semantic_frontier_v2",
     "semantic_minimum_maturation_plus_direct_reserve_v1",
     "semantic_minimum_maturation_frontier_v1_d3",
     "branching_necessity_gate_v1",
@@ -27,6 +28,7 @@ FOCUS_METHODS = [
 
 NEW_METHODS = [
     "direct_reserve_semantic_frontier_v1",
+    "direct_reserve_semantic_frontier_v2",
     "semantic_minimum_maturation_plus_direct_reserve_v1",
     "semantic_minimum_maturation_frontier_v1_d3",
     "branching_necessity_gate_v1",

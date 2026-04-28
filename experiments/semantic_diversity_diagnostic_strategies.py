@@ -7,7 +7,11 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-from experiments.controllers import DirectReserveGateRerankController, GlobalDiversityAggregationController
+from experiments.controllers import (
+    DirectReserveGateRerankController,
+    DirectReserveGateRerankControllerV2,
+    GlobalDiversityAggregationController,
+)
 
 
 def strict_f3_diagnostic_base_kwargs() -> dict[str, Any]:
@@ -106,6 +110,18 @@ def build_semantic_diversity_diagnostic_strategies(
         gate_top_support_threshold=0.62,
         gate_top2_gap_threshold=0.25,
         gate_entropy_threshold=0.72,
+    )
+    specs["direct_reserve_semantic_frontier_v2"] = DirectReserveGateRerankControllerV2(
+        generator_factory(),
+        scorer,
+        budget,
+        strict_controller_factory=_strict_inner,
+        method_name="direct_reserve_semantic_frontier_v2",
+        gate_top_support_threshold=0.70,
+        gate_top2_gap_threshold=0.35,
+        gate_entropy_threshold=0.78,
+        frontier_challenge_cap_small=1,
+        frontier_challenge_cap_large=2,
     )
 
     def _strict_inner_mat(remaining: int) -> GlobalDiversityAggregationController:
