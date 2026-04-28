@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 
 from experiments.frontier_matrix_core import build_frontier_strategies, generator_factory_for_mode
+from scripts.run_early_answer_diversity_maturation_diagnostic import _resolve_runtime_key
 
 
 def _build_specs(budget: int = 6) -> dict[str, object]:
@@ -30,6 +31,9 @@ def test_early_answer_diversity_maturation_registered() -> None:
     specs = _build_specs(budget=4)
     assert "early_answer_diversity_maturation_v1" in specs
     assert "early_answer_diversity_maturation_gated_v1" in specs
+    rk, status = _resolve_runtime_key("strict_gate1_cap_k6", specs)
+    assert rk is not None
+    assert status in {"direct", "alias_resolved_from_fixed_k6_control_runtime"}
 
 
 def test_early_answer_diversity_maturation_emits_prefix_metadata() -> None:

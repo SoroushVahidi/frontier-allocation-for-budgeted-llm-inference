@@ -78,6 +78,21 @@ def _runtime_key(method: str) -> str:
     return STRICT_F3_RUNTIME if method == "strict_f3" else method
 
 
+def _resolve_runtime_key(method: str, specs: dict[str, Any]) -> tuple[str | None, str]:
+    direct = _runtime_key(method)
+    if direct in specs:
+        return direct, "direct"
+    if method == "strict_gate1_cap_k6":
+        candidates = [
+            k
+            for k in specs
+            if "hard_max_family_expansions_cap_k6_v1_fixed_k6_control" in str(k)
+        ]
+        if candidates:
+            return sorted(candidates)[0], "alias_resolved_from_fixed_k6_control_runtime"
+    return None, "missing_from_registry_for_budget"
+
+
 def _repeated_family_early_rate(trace: list[dict[str, Any]], early_prefix: int) -> float:
     early = [t for t in trace if str(t.get("action", "")) == "expand"][:early_prefix]
     if len(early) < 2:
@@ -144,9 +159,9 @@ def main() -> None:
             include_external_l1_baseline=True,
         )
         for method in methods:
-            rk = _runtime_key(method)
-            if rk not in specs:
-                excluded[method] = "missing_from_registry_for_budget"
+            rk, status = _resolve_runtime_key(method, specs)
+            if rk is None:
+                excluded[method] = status
                 continue
             controller = specs[rk]
             for ex in examples:
