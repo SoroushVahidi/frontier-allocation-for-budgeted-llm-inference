@@ -10,6 +10,7 @@ import json
 import os
 import random
 import re
+import subprocess
 import sys
 import traceback
 from collections import Counter, defaultdict
@@ -54,6 +55,21 @@ METHODS_LOSS_FULL = [
     "branching_necessity_gate_v1",
     "semantic_minimum_maturation_plus_direct_reserve_v1",
 ]
+
+# Cost-focused expanded-pool live run (user-curated; re-check with --methods to add e.g. branching_necessity_gate_v1)
+METHODS_EXPANDED_POOL = [
+    "external_l1_max",
+    "strict_f3",
+    "direct_reserve_semantic_frontier_v1",
+    "semantic_minimum_maturation_plus_direct_reserve_v1",
+]
+
+EXPANDED_INTERNAL_METHODS = {
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f3_anti_collapse_weak_v1",
+    "direct_reserve_frontier_gate_v1",
+}
 
 DEFAULT_LOSS_JSONL = (
     REPO_ROOT
@@ -115,6 +131,8 @@ def resolved_methods(methods_csv: str, *, selection_profile: str) -> list[str]:
         return [m.strip() for m in methods_csv.split(",") if m.strip()]
     if selection_profile == "loss-full":
         return list(METHODS_LOSS_FULL)
+    if selection_profile == "expanded-loss-pool":
+        return list(METHODS_EXPANDED_POOL)
     return list(METHODS_COMPARE)
 
 
@@ -290,6 +308,7 @@ def _cohere_build_row(
     meta: dict[str, Any],
     emit_full_traces: bool,
     trace_rel: str,
+    cohort_slot: int | None = None,
 ) -> dict[str, Any]:
     dsem = meta.get("diagnostic_semantic_diversity") or {}
     fmeta = (meta.get("frontier_metadata") or {}) if isinstance(meta.get("frontier_metadata"), dict) else {}
@@ -410,6 +429,10 @@ def _cohere_build_row(
         "trace_json_path": trace_rel if emit_full_traces else "",
         "action_trace_len": trace_len,
         "branch_trace_len": len(meta.get("final_branch_states") or []) if isinstance(meta.get("final_branch_states"), list) else 0,
+        "cohort_slot": cohort_slot if cohort_slot is not None else "",
+        "selection_phase": picked_row.get("_selection_phase", ""),
+        "loss_row_seed": picked_row.get("seed", ""),
+        "loss_row_budget_observed": picked_row.get("budget", ""),
     }
 
 
@@ -470,11 +493,296 @@ def _extract_semantic_row(meta: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _loss_row_question_text(r: dict[str, Any]) -> str:
+    return str(r.get("question") or r.get("problem_statement") or "").strip()
+
+
+def _loss_row_gold_text(r: dict[str, Any]) -> str:
+    return str(r.get("gold_answer") or r.get("gold_answer_canonical") or "").strip()
+
+
 def _loss_row_has_question_and_gold(r: dict[str, Any]) -> bool:
     """Loss JSONL sometimes omits question/gold; skip those rows for live reruns."""
-    q = str(r.get("question") or "").strip()
-    g = str(r.get("gold_answer") or r.get("gold_answer_canonical") or "").strip()
+    q = _loss_row_question_text(r)
+    g = _loss_row_gold_text(r)
     return len(q) >= 12 and len(g) >= 1
+
+
+def _merge_loss_jsonl_files(paths: list[Path]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Return (unique rows by (file, line), per_line metadata for pool audit)."""
+    rows: list[dict[str, Any]] = []
+    meta: list[dict[str, Any]] = []
+    for p in paths:
+        if not p.exists():
+            continue
+        for i, r in enumerate(_read_jsonl(p)):
+            rr = dict(r)
+            rp = Path(p).resolve()
+            try:
+                rr.setdefault("source_file", str(rp.relative_to(REPO_ROOT.resolve())))
+            except ValueError:
+                rr.setdefault("source_file", str(p))
+            rr.setdefault("source_line_index", i)
+            rows.append(rr)
+            meta.append({"source_file": rr.get("source_file"), "source_line_index": i})
+    return rows, meta
+
+
+def _row_external_is_any_correct(r: dict[str, Any]) -> bool:
+    """external_exact_match==1 for row baseline (typically external_l1_max)."""
+    return _safe_int(r, "external_exact_match", -1) == 1
+
+
+def _expanded_eligible_row(r: dict[str, Any]) -> bool:
+    """expanded-loss-pool: allowed internals lose vs external baseline row."""
+    if not _loss_row_has_question_and_gold(r):
+        return False
+    im = str(r.get("internal_method_name") or "").strip()
+    if im not in EXPANDED_INTERNAL_METHODS:
+        return False
+    if _safe_int(r, "internal_exact_match", -1) != 0:
+        return False
+    if _safe_int(r, "external_exact_match", -1) != 1:
+        return False
+    eb = str(r.get("external_baseline_name") or "").strip()
+    valid_ext = {
+        "external_l1_max",
+        "s1",
+        "tale",
+        "external_s1_budget_forcing",
+        "external_tale_prompt_budgeting",
+    }
+    return eb in valid_ext
+
+
+def _internal_sort_rank(name: str) -> int:
+    order = [
+        "strict_f3",
+        "strict_gate1_cap_k6",
+        "strict_f3_anti_collapse_weak_v1",
+        "direct_reserve_frontier_gate_v1",
+    ]
+    try:
+        return order.index(str(name))
+    except ValueError:
+        return len(order)
+
+
+def _absent_rank(status: str) -> int:
+    s = str(status or "").strip()
+    if s == "confirmed_absent_from_tree":
+        return 0
+    if s == "absent_from_tree_unverified":
+        return 1
+    return 2
+
+
+def _dataset_matches_gsm8k_filter(row_dataset: str, *, gsm8k_only: bool) -> bool:
+    if not gsm8k_only:
+        return True
+    ds = str(row_dataset or "").lower()
+    return "gsm8k" in ds
+
+
+def _select_live_cases_expanded_loss_pool(
+    loss_rows: list[dict[str, Any]],
+    *,
+    max_cases: int,
+    seed: int,
+    allow_duplicate_example_fallback: bool,
+    gsm8k_only: bool,
+) -> tuple[
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    dict[str, Any],
+]:
+    """Broader internal methods + iw/ec + audits + duplicate fallback."""
+    rng = random.Random(seed + 424242)
+
+    candidates_inspected = len(loss_rows)
+    rejected_empty = 0
+    rejected_ineligible = 0
+    rejected_dataset = 0
+    pool_audit: list[dict[str, Any]] = []
+
+    eligible: list[dict[str, Any]] = []
+    for r in loss_rows:
+        if not _dataset_matches_gsm8k_filter(str(r.get("dataset") or ""), gsm8k_only=gsm8k_only):
+            pool_audit.append(
+                {
+                    "example_id": r.get("example_id"),
+                    "seed": r.get("seed"),
+                    "budget_source_row": r.get("budget"),
+                    "internal_method_name": r.get("internal_method_name"),
+                    "outcome": "rejected_dataset_filter",
+                    "detail": "gsm8k_only_filter",
+                    "stratum": "",
+                    "selection_reason": "",
+                }
+            )
+            rejected_dataset += 1
+            continue
+        if not _loss_row_has_question_and_gold(r):
+            rejected_empty += 1
+            pool_audit.append(
+                {
+                    "example_id": r.get("example_id"),
+                    "seed": r.get("seed"),
+                    "budget_source_row": r.get("budget"),
+                    "internal_method_name": r.get("internal_method_name"),
+                    "outcome": "rejected_empty_question_or_gold",
+                    "detail": "",
+                    "stratum": "",
+                    "selection_reason": "",
+                }
+            )
+            continue
+        if not _expanded_eligible_row(r):
+            rejected_ineligible += 1
+            pool_audit.append(
+                {
+                    "example_id": r.get("example_id"),
+                    "seed": r.get("seed"),
+                    "budget_source_row": r.get("budget"),
+                    "internal_method_name": r.get("internal_method_name"),
+                    "outcome": "rejected_ineligible_loss_pattern",
+                    "detail": "",
+                    "stratum": "",
+                    "selection_reason": "",
+                }
+            )
+            continue
+        eligible.append(r)
+
+    def sort_key(rr: dict[str, Any]) -> tuple[int, int, int, float]:
+        ar = _absent_rank(str(rr.get("absent_from_tree_status")))
+        ir = _internal_sort_rank(str(rr.get("internal_method_name")))
+        tie = rng.random()
+        return (ar, ir, _safe_int(rr, "budget", 999), tie)
+
+    eligible_sorted = sorted(eligible, key=sort_key)
+
+    picked: list[dict[str, Any]] = []
+    seen_example_ids: set[str] = set()
+    seen_triples: set[tuple[str, str, str]] = set()
+
+    # Phase 1: at most one row per example_id (best priority first via sort interleaved by problem_type)
+    by_pt: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for rr in eligible_sorted:
+        by_pt[str(rr.get("problem_type") or "unknown")].append(rr)
+    for k in by_pt:
+        by_pt[k] = sorted(by_pt[k], key=sort_key)
+    pt_keys = sorted(by_pt.keys(), key=lambda k: k)
+    rng.shuffle(pt_keys)
+
+    def rr_take_unique(max_n: int) -> None:
+        nonlocal picked
+        idx_map = {k: 0 for k in pt_keys}
+        while len(picked) < max_n:
+            progressed = False
+            for k in pt_keys:
+                if len(picked) >= max_n:
+                    break
+                lst = by_pt[k]
+                while idx_map[k] < len(lst):
+                    cand_row = lst[idx_map[k]]
+                    idx_map[k] += 1
+                    eid = str(cand_row.get("example_id") or "").strip()
+                    if not eid or eid in seen_example_ids:
+                        continue
+                    seen_example_ids.add(eid)
+                    trip = (
+                        eid,
+                        str(cand_row.get("seed", "")),
+                        str(cand_row.get("budget", "")),
+                    )
+                    seen_triples.add(trip)
+                    cand_row = dict(cand_row)
+                    cand_row["_selection_phase"] = "unique_example_id_round_robin_problem_type"
+                    cand_row["_selection_reason"] = "first_unique_example_id_stratum_priority"
+                    picked.append(cand_row)
+                    progressed = True
+                    break
+                if len(picked) >= max_n:
+                    break
+            if not progressed:
+                break
+
+    rr_take_unique(max_cases)
+
+    # Phase 2: allow duplicate example_id with distinct (seed,budget) triple
+    if len(picked) < max_cases and allow_duplicate_example_fallback:
+        for rr in eligible_sorted:
+            if len(picked) >= max_cases:
+                break
+            trip = (
+                str(rr.get("example_id") or ""),
+                str(rr.get("seed", "")),
+                str(rr.get("budget", "")),
+            )
+            if trip in seen_triples:
+                continue
+            if not str(trip[0]).strip():
+                continue
+            seen_triples.add(trip)
+            c2 = dict(rr)
+            c2["_selection_phase"] = "duplicate_example_id_distinct_seed_or_budget"
+            c2["_selection_reason"] = "fallback_pool_not_enough_unique_ids"
+            picked.append(c2)
+
+    # Phase 3: cycle to max_cases (wrap) with explicit flag
+    if len(picked) < max_cases and allow_duplicate_example_fallback and eligible_sorted:
+        i = 0
+        while len(picked) < max_cases:
+            base = eligible_sorted[i % len(eligible_sorted)]
+            i += 1
+            c3 = dict(base)
+            c3["_selection_phase"] = "cycled_pool_row"
+            c3["_selection_reason"] = f"pool_exhausted_wrap_index={i-1}"
+            picked.append(c3)
+
+    for r in picked:
+        pool_audit.append(
+            {
+                "example_id": r.get("example_id"),
+                "seed": r.get("seed"),
+                "budget_source_row": r.get("budget"),
+                "internal_method_name": r.get("internal_method_name"),
+                "outcome": "selected",
+                "detail": str(r.get("_selection_phase", "")),
+                "stratum": str(r.get("absent_from_tree_status", "")),
+                "selection_reason": str(r.get("_selection_reason", "")),
+            }
+        )
+
+    uids = {str(r.get("example_id")) for r in picked if str(r.get("example_id") or "").strip()}
+    fb_dup = sum(
+        1
+        for r in picked
+        if "duplicate" in str(r.get("_selection_phase", "")) or "cycled" in str(r.get("_selection_phase", ""))
+    )
+    exp = {
+        "candidates_inspected": candidates_inspected,
+        "rejected_empty_question_or_gold": rejected_empty,
+        "rejected_dataset_filter": rejected_dataset,
+        "rejected_ineligible_loss_pattern": rejected_ineligible,
+        "eligible_after_filters": len(eligible),
+        "unique_example_ids_in_eligible_pool": len({str(r.get("example_id")) for r in eligible if r.get("example_id")}),
+        "selected_rows": len(picked),
+        "unique_example_ids_selected": len(uids),
+        "n_fallback_duplicate_or_cycle_rows": fb_dup,
+        "max_cases_requested": max_cases,
+        "dataset_filter_gsm8k_only": gsm8k_only,
+        "strata_note": "prioritize absent-from-tree confirmed > unverified; internal priority strict_f3 > gate > anti-collapse > dr_gate",
+    }
+
+    return picked, pool_audit, exp
+
+
+def _normalize_loss_row_for_example(r: dict[str, Any]) -> None:
+    """Ensure `question` is populated for downstream."""
+    if not str(r.get("question") or "").strip() and str(r.get("problem_statement") or "").strip():
+        r["question"] = str(r.get("problem_statement")).strip()
 
 
 def _select_live_cases(
@@ -521,10 +829,11 @@ def _examples_for_offline(n: int, seed: int) -> list[PilotExample]:
 
 
 def _example_from_loss_row(r: dict[str, Any]) -> PilotExample:
+    _normalize_loss_row_for_example(r)
     ga = str(r.get("gold_answer") or r.get("gold_answer_canonical") or r.get("answer") or "").strip() or "0"
     return PilotExample(
         example_id=str(r.get("example_id", "unknown")),
-        question=str(r.get("question") or "").strip(),
+        question=_loss_row_question_text(r),
         answer=extract_final_answer(ga),
     )
 
@@ -635,15 +944,27 @@ def _write_summaries(out_dir: Path, per_case: list[dict[str, Any]], *, mode: str
         )
     _write_csv(out_dir / "method_accuracy_summary.csv", acc_rows)
 
+    def _paired_lookup(rows: list[dict[str, Any]], r: dict[str, Any]) -> dict[str, Any] | None:
+        eid, b = r.get("example_id"), r.get("budget")
+        cs = r.get("cohort_slot")
+        for x in rows:
+            if str(x.get("budget") or "") != str(b or ""):
+                continue
+            if str(cs or "") not in {"", "None"}:
+                if str(x.get("cohort_slot") or "") == str(cs or ""):
+                    return x
+            else:
+                if str(x.get("example_id") or "") == str(eid or ""):
+                    return x
+        return None
+
     paired = []
     for r in per_case:
         if r.get("error"):
             continue
         eid, b = r.get("example_id"), r.get("budget")
-        sf = next((x for x in by_method.get("strict_f3", []) if x.get("example_id") == eid and x.get("budget") == b), None)
-        exl1 = next(
-            (x for x in by_method.get("external_l1_max", []) if x.get("example_id") == eid and x.get("budget") == b), None
-        )
+        sf = _paired_lookup(by_method.get("strict_f3", []), r)
+        exl1 = _paired_lookup(by_method.get("external_l1_max", []), r)
         if sf and r.get("method") not in {"strict_f3", "external_l1_max"}:
             paired.append(
                 {
@@ -715,11 +1036,15 @@ def run_cohere_live(
     model: str,
     budgets: list[int],
     loss_jsonl: Path,
+    extra_loss_jsonl: list[Path],
     seed: int,
     methods: list[str],
     selection_profile: str,
     emit_full_traces: bool,
     dataset_name: str,
+    run_timestamp: str,
+    allow_duplicate_example_fallback: bool,
+    loss_pool_gsm8k_only: bool,
 ) -> tuple[bool, str]:
     if max_cases > 30 and not allow_large:
         return False, "refuse: max-cases>30 without --allow-large-run"
@@ -737,28 +1062,67 @@ def run_cohere_live(
         )
         return False, f"readiness:{fclass}"
 
-    rows = _read_jsonl(loss_jsonl)
-    if selection_profile == "loss-full":
-        picked = _select_live_cases_loss_full(rows, max_cases, seed)
+    if selection_profile == "expanded-loss-pool":
+        paths_merged = [loss_jsonl] + list(extra_loss_jsonl)
+        rows, _ = _merge_loss_jsonl_files(paths_merged)
+        picked, pool_audit_rows, exp_summary = _select_live_cases_expanded_loss_pool(
+            rows,
+            max_cases=max_cases,
+            seed=seed,
+            allow_duplicate_example_fallback=allow_duplicate_example_fallback,
+            gsm8k_only=loss_pool_gsm8k_only,
+        )
+        _write_csv(
+            out_dir / "selected_case_pool_audit.csv",
+            pool_audit_rows,
+            fieldnames=[
+                "example_id",
+                "seed",
+                "budget_source_row",
+                "internal_method_name",
+                "outcome",
+                "detail",
+                "stratum",
+                "selection_reason",
+            ],
+        )
+        _write_csv(out_dir / "case_pool_expansion_audit.csv", [exp_summary])
     else:
-        picked = _select_live_cases(rows, max_cases, seed)
+        rows = _read_jsonl(loss_jsonl)
+        if selection_profile == "loss-full":
+            picked = _select_live_cases_loss_full(rows, max_cases, seed)
+        else:
+            picked = _select_live_cases(rows, max_cases, seed)
+        _write_csv(out_dir / "selected_case_pool_audit.csv", [])
+        _write_csv(
+            out_dir / "case_pool_expansion_audit.csv",
+            [{"note": f"selection_profile={selection_profile}", "loss_jsonl": str(loss_jsonl)}],
+        )
+
+    for pr in picked:
+        _normalize_loss_row_for_example(pr)
     ex_list = [_example_from_loss_row(r) for r in picked]
     _write_jsonl(out_dir / "selected_cases.jsonl", picked)
 
     per_case: list[dict[str, Any]] = []
     run_exc: str | None = None
     try:
-        for b in budgets:
-            specs = _build_specs_for_budget(
-                use_api=True,
-                model=model,
-                budget=b,
-                selection_seed=seed,
-                temperature=0.2,
-                max_output_tokens=768,
-                timeout_seconds=90,
-            )
-            for ex0, picked_row in zip(ex_list, picked, strict=True):
+        for case_index, (picked_row, ex0) in enumerate(zip(picked, ex_list, strict=True)):
+            row_seed = int(seed)
+            try:
+                row_seed = int(float(str(picked_row.get("seed", seed))))
+            except (TypeError, ValueError):
+                row_seed = int(seed)
+            for b in budgets:
+                specs = _build_specs_for_budget(
+                    use_api=True,
+                    model=model,
+                    budget=b,
+                    selection_seed=row_seed * 1009 + b * 13,
+                    temperature=0.2,
+                    max_output_tokens=768,
+                    timeout_seconds=90,
+                )
                 for m in methods:
                     key = _method_runtime_key(m)
                     ctrl = specs.get(key)
@@ -796,6 +1160,7 @@ def run_cohere_live(
                         meta=meta,
                         emit_full_traces=emit_full_traces,
                         trace_rel=trace_rel,
+                        cohort_slot=case_index,
                     )
                     row["branching_necessity_score"] = row.get("branching_necessity_last", "")
                     row["maturation_phase_len"] = row.get("maturation_phase_audit_len", "")
@@ -859,23 +1224,49 @@ def run_cohere_live(
         "- Runs beyond `--max-cases 30` require explicit approval.\n",
         encoding="utf-8",
     )
-    (out_dir / "manifest.json").write_text(
-        json.dumps(
-            {
-                "diagnostic": True,
-                "selection_profile": selection_profile,
-                "emit_full_traces": bool(emit_full_traces),
-                "methods": methods,
-                "experimental_methods": [x for x in methods if x not in ("strict_f3", "external_l1_max")],
-                "readiness": "passed",
-                "n_selected_cases": len(picked),
-                "budgets": budgets,
-            },
-            indent=2,
+    u_eid = len({str(p.get("example_id", "")).strip() for p in picked if str(p.get("example_id", "")).strip()})
+    exp_rows = _read_csv_rows(out_dir / "case_pool_expansion_audit.csv")
+    exp0: dict[str, Any] = exp_rows[0] if exp_rows else {}
+    man: dict[str, Any] = {
+        "diagnostic": True,
+        "selection_profile": selection_profile,
+        "emit_full_traces": bool(emit_full_traces),
+        "methods": methods,
+        "experimental_methods": [x for x in methods if x not in ("strict_f3", "external_l1_max")],
+        "readiness": "passed",
+        "n_selected_cases": len(picked),
+        "n_unique_example_ids": u_eid,
+        "budgets": budgets,
+        "run_timestamp": run_timestamp,
+    }
+    for k, v in exp0.items():
+        if k and not k.startswith("note"):
+            man[f"case_pool_{k}"] = v
+    (out_dir / "manifest.json").write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
+
+    try:
+        ac = subprocess.run(
+            [
+                sys.executable,
+                str(REPO_ROOT / "scripts" / "analyze_semantic_diversity_diagnostic_run.py"),
+                "--timestamp",
+                run_timestamp,
+            ],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=300,
+            check=False,
         )
-        + "\n",
-        encoding="utf-8",
-    )
+        if ac.returncode != 0:
+            (out_dir / "postprocess_analyzer_note.md").write_text(
+                f"# Postprocess analyzer (non-fatal)\n\nexit={ac.returncode}\n\n{ac.stderr[:4000]}\n",
+                encoding="utf-8",
+            )
+    except Exception as e:  # noqa: BLE001
+        (out_dir / "postprocess_analyzer_note.md").write_text(
+            f"# Postprocess analyzer skipped\n\n{str(e)[:2000]}\n", encoding="utf-8"
+        )
     return True, "ok"
 
 
@@ -1042,6 +1433,80 @@ def write_report_doc(out_dir: Path, ts: str) -> None:
     doc.write_text(_diagnostic_report_body(out_dir, ts), encoding="utf-8")
 
 
+def run_dry_selection(
+    out_dir: Path,
+    *,
+    max_cases: int,
+    seed: int,
+    selection_profile: str,
+    loss_jsonl: Path,
+    extra_loss_jsonl: list[Path],
+    allow_duplicate_example_fallback: bool,
+    loss_pool_gsm8k_only: bool,
+    methods: list[str],
+    budgets: list[int],
+    run_timestamp: str,
+) -> tuple[int, dict[str, Any]]:
+    """Selection only; no Cohere / no readiness. Writes pool audits + selected_cases + stub manifest."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    if selection_profile != "expanded-loss-pool":
+        (out_dir / "dry_run_note.md").write_text(
+            "Dry-run selection with full audits is implemented for `--selection-profile expanded-loss-pool` only.\n",
+            encoding="utf-8",
+        )
+        return 2, {"error": "unsupported_profile_for_dry_selection"}
+
+    paths_merged = [loss_jsonl] + list(extra_loss_jsonl)
+    rows, _ = _merge_loss_jsonl_files(paths_merged)
+    picked, pool_audit_rows, exp_summary = _select_live_cases_expanded_loss_pool(
+        rows,
+        max_cases=max_cases,
+        seed=seed,
+        allow_duplicate_example_fallback=allow_duplicate_example_fallback,
+        gsm8k_only=loss_pool_gsm8k_only,
+    )
+    for pr in picked:
+        _normalize_loss_row_for_example(pr)
+    _write_csv(
+        out_dir / "selected_case_pool_audit.csv",
+        pool_audit_rows,
+        fieldnames=[
+            "example_id",
+            "seed",
+            "budget_source_row",
+            "internal_method_name",
+            "outcome",
+            "detail",
+            "stratum",
+            "selection_reason",
+        ],
+    )
+    _write_csv(out_dir / "case_pool_expansion_audit.csv", [exp_summary])
+    _write_jsonl(out_dir / "selected_cases.jsonl", picked)
+    u_eid = len({str(p.get("example_id", "")).strip() for p in picked if str(p.get("example_id", "")).strip()})
+    (out_dir / "manifest.json").write_text(
+        json.dumps(
+            {
+                "dry_run_selection": True,
+                "selection_profile": selection_profile,
+                "methods": methods,
+                "budgets": budgets,
+                "n_selected_cases": len(picked),
+                "n_unique_example_ids": u_eid,
+                "run_timestamp": run_timestamp,
+                **{f"case_pool_{k}": v for k, v in exp_summary.items()},
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    print(json.dumps({"dry_selection_summary": exp_summary, "n_picked": len(picked)}, indent=2))
+    if len(picked) < 20:
+        return 3, exp_summary
+    return 0, exp_summary
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
     p.add_argument("--timestamp", default=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
@@ -1056,9 +1521,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--offline-examples", type=int, default=8)
     p.add_argument(
         "--selection-profile",
-        choices=["standard", "loss-full"],
+        choices=["standard", "loss-full", "expanded-loss-pool"],
         default="standard",
-        help="loss-full: prioritize strict_f3-wrong/external-correct + absent-from-tree (trace-complete cohort).",
+        help=(
+            "loss-full: strict_f3-centric absent-from-tree cohort. "
+            "expanded-loss-pool: merge extra loss JSONL, more internal methods, audit files, optional duplicate-ID fallback."
+        ),
     )
     p.add_argument(
         "--methods",
@@ -1074,7 +1542,29 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--dataset-name",
         default="openai/gsm8k",
-        help="Dataset label recorded in CSV rows / manifest.",
+        help="Dataset label for result rows. Comma-separated is not supported for live expanded-pool runs (GSM8K-only).",
+    )
+    p.add_argument(
+        "--extra-loss-jsonl",
+        action="append",
+        default=None,
+        help="Additional loss JSONL files merged for expanded-loss-pool (repeatable).",
+    )
+    p.add_argument(
+        "--allow-duplicate-example-fallback",
+        action="store_true",
+        help="If unique example_id count is low, allow second pass (distinct seed/budget) and cycling to fill max-cases.",
+    )
+    p.add_argument(
+        "--loss-pool-gsm8k-only",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="For expanded-loss-pool: keep only rows whose dataset field mentions gsm8k (default: true).",
+    )
+    p.add_argument(
+        "--dry-run-selection",
+        action="store_true",
+        help="cohere mode: only run case selection + pool audits; no API / no readiness check.",
     )
     return p.parse_args()
 
@@ -1082,9 +1572,27 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     ts = str(args.timestamp)
+    base_ts = ts.replace("_DRY", "")
+    extra_loss: list[Path] = [Path(p) for p in (args.extra_loss_jsonl or [])]
     out = REPO_ROOT / f"outputs/semantic_diversity_controller_diagnostic_{ts}"
     out.mkdir(parents=True, exist_ok=True)
     budgets = [int(x) for x in str(args.budgets).split(",") if x.strip()]
+
+    if (
+        args.mode == "cohere"
+        and "," in str(args.dataset_name)
+        and args.selection_profile == "expanded-loss-pool"
+        and args.run_live_cohere
+        and not args.dry_run_selection
+    ):
+        doc = REPO_ROOT / f"docs/SEMANTIC_DIVERSITY_EXPANDED_POOL_MULTIDATASET_UNSUPPORTED_{base_ts}.md"
+        doc.write_text(
+            "# Multi-dataset live run not enabled\n\n"
+            "Comma-separated `--dataset-name` is not supported for safe live scoring with expanded-loss-pool in this runner. "
+            "Keep `--dataset-name openai/gsm8k` and widen the loss JSONL inputs instead.\n",
+            encoding="utf-8",
+        )
+        return 2
 
     if args.mode == "offline":
         run_offline(out, max_examples=int(args.offline_examples), seed=int(args.selection_seed), budgets=budgets)
@@ -1104,13 +1612,44 @@ def main() -> int:
         print(f"offline_ok out_dir={out}")
         return 0
 
+    mlist = resolved_methods(str(args.methods), selection_profile=str(args.selection_profile))
+
+    if args.mode == "cohere" and args.dry_run_selection:
+        code, summ = run_dry_selection(
+            out,
+            max_cases=int(args.max_cases),
+            seed=int(args.selection_seed),
+            selection_profile=str(args.selection_profile),
+            loss_jsonl=Path(str(args.loss_jsonl)),
+            extra_loss_jsonl=extra_loss,
+            allow_duplicate_example_fallback=bool(args.allow_duplicate_example_fallback),
+            loss_pool_gsm8k_only=bool(args.loss_pool_gsm8k_only),
+            methods=mlist,
+            budgets=budgets,
+            run_timestamp=base_ts,
+        )
+        if code == 3:
+            ins = REPO_ROOT / f"docs/SEMANTIC_DIVERSITY_EXPANDED_POOL_SELECTION_INSUFFICIENT_{base_ts}.md"
+            ins.write_text(
+                f"# Expanded pool dry selection insufficient (<20 rows)\n\n"
+                f"- Timestamp token: `{base_ts}`\n"
+                f"- Selection summary: `{summ}`\n\n"
+                "**Remediation:** regenerate `loss_cases_absent_from_tree.jsonl` via "
+                "`scripts/build_cohere_absent_from_tree_loss_diagnostics.py` after broader validation CSV coverage, "
+                "or add `--extra-loss-jsonl` paths with compatible rows.\n",
+                encoding="utf-8",
+            )
+            print(f"dry_selection_insufficient doc={ins}")
+        print(f"dry_selection_exit_code={code} out_dir={out}")
+        return int(code)
+
     if args.mode == "cohere" and not args.run_live_cohere:
         (out / "cohere_api_key_issue.md").write_text(
-            "# Cohere not run\n\nPass `--run-live-cohere` to enable live Cohere execution.\n", encoding="utf-8"
+            "# Cohere not run\n\nPass `--run-live-cohere` for API execution or `--dry-run-selection` for pool selection only.\n",
+            encoding="utf-8",
         )
         return 1
 
-    mlist = resolved_methods(str(args.methods), selection_profile=str(args.selection_profile))
     ok, msg = run_cohere_live(
         out,
         max_cases=int(args.max_cases),
@@ -1118,11 +1657,15 @@ def main() -> int:
         model=str(args.model),
         budgets=budgets,
         loss_jsonl=Path(str(args.loss_jsonl)),
+        extra_loss_jsonl=extra_loss,
         seed=int(args.selection_seed),
         methods=mlist,
         selection_profile=str(args.selection_profile),
         emit_full_traces=bool(args.emit_full_traces),
         dataset_name=str(args.dataset_name),
+        run_timestamp=base_ts,
+        allow_duplicate_example_fallback=bool(args.allow_duplicate_example_fallback),
+        loss_pool_gsm8k_only=bool(args.loss_pool_gsm8k_only),
     )
     write_report_doc(out, ts)
     print(f"cohere_mode ok={ok} msg={msg} out_dir={out}")
