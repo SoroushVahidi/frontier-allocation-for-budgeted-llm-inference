@@ -6044,6 +6044,352 @@ class DirectReserveGateRerankControllerV2(DirectReserveGateRerankController):
         )
 
 
+class DirectReserveGateRerankControllerV2ThresholdedOrdered(DirectReserveGateRerankControllerV2):
+    """Diagnostic v2 variant with thresholded continuation and depth-aware ordering metadata."""
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        strict_controller_factory: callable,
+        direct_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        direct_prompt_styles: list[str] | None = None,
+        direct_reserve_attempts_override: int | None = None,
+        direct_token_budget: int = 384,
+        direct_token_per_action: float = 64.0,
+        gate_top_support_threshold: float = 0.70,
+        gate_top2_gap_threshold: float = 0.35,
+        gate_entropy_threshold: float = 0.78,
+        frontier_challenge_cap_small: int = 1,
+        frontier_challenge_cap_large: int = 2,
+        continuation_threshold: float = 0.42,
+        commit_threshold: float = 0.62,
+        replacement_threshold: float = 0.55,
+        method_name: str = "direct_reserve_semantic_frontier_v2_thresholded_ordered",
+    ) -> None:
+        super().__init__(
+            generator,
+            scorer,
+            max_actions_per_problem,
+            strict_controller_factory=strict_controller_factory,
+            direct_prompt_style=direct_prompt_style,
+            direct_prompt_styles=direct_prompt_styles,
+            direct_reserve_attempts_override=direct_reserve_attempts_override,
+            direct_token_budget=direct_token_budget,
+            direct_token_per_action=direct_token_per_action,
+            gate_top_support_threshold=gate_top_support_threshold,
+            gate_top2_gap_threshold=gate_top2_gap_threshold,
+            gate_entropy_threshold=gate_entropy_threshold,
+            frontier_challenge_cap_small=frontier_challenge_cap_small,
+            frontier_challenge_cap_large=frontier_challenge_cap_large,
+            method_name=method_name,
+        )
+        self.continuation_threshold = float(continuation_threshold)
+        self.commit_threshold = float(commit_threshold)
+        self.replacement_threshold = float(replacement_threshold)
+
+    @staticmethod
+    def _safe_float(x: Any, default: float = 0.0) -> float:
+        try:
+            return float(x)
+        except Exception:
+            return float(default)
+
+    def _continuation_value(
+        self,
+        *,
+        incumbent_confidence_proxy: float,
+        parseable: bool,
+        novelty: float,
+        challenge_value: float,
+        redundancy: float,
+        cost: float,
+    ) -> float:
+        quality = 1.0 if parseable else 0.2
+        uncertainty_bonus = max(0.0, min(1.0, 1.0 - incumbent_confidence_proxy))
+        return float(quality + novelty + challenge_value + 0.25 * uncertainty_bonus - redundancy - cost)
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        reserve_attempts = self._direct_reserve_attempts()
+        per_attempt_cap = max(1, int(round(self.direct_token_budget / self.direct_token_per_action)))
+        direct_answers: list[str | None] = []
+        direct_trace: list[dict[str, Any]] = []
+        direct_actions = 0
+
+        first_answer, first_used, first_trace = self._run_direct_attempt(
+            question, gold_answer, 0, min(per_attempt_cap, self.max_actions)
+        )
+        direct_answers.append(first_answer)
+        direct_actions += int(first_used)
+        direct_trace.extend(first_trace)
+
+        incumbent_raw = first_answer
+        incumbent_canonical = _normalize_answer(incumbent_raw) or "__unknown__"
+        incumbent_parseable = self._is_parseable_answer(incumbent_raw)
+        incumbent_non_empty = bool(str(incumbent_raw or "").strip())
+        qsig = self._question_signal(question)
+
+        remaining_budget = max(0, self.max_actions - direct_actions)
+        second_answer: str | None = None
+        if reserve_attempts > 1 and remaining_budget > 0:
+            second_answer, used2, tr2 = self._run_direct_attempt(
+                question, gold_answer, 1, min(1, per_attempt_cap, remaining_budget)
+            )
+            direct_answers.append(second_answer)
+            direct_actions += int(used2)
+            direct_trace.extend(tr2)
+            remaining_budget = max(0, self.max_actions - direct_actions)
+
+        direct_counts: Counter[str] = Counter((_normalize_answer(a) or "__unknown__") for a in direct_answers if a is not None)
+        total_direct = max(1, sum(direct_counts.values()))
+        sorted_counts = sorted(direct_counts.items(), key=lambda kv: kv[1], reverse=True)
+        top_count = int(sorted_counts[0][1]) if sorted_counts else 0
+        second_count = int(sorted_counts[1][1]) if len(sorted_counts) > 1 else 0
+        top_support = float(top_count / total_direct)
+        top2_gap = float((top_count - second_count) / total_direct)
+        entropy = self._entropy(dict(direct_counts))
+        direct_disagreement = bool(second_answer is not None and (_normalize_answer(second_answer) or "__unknown__") != incumbent_canonical)
+        incumbent_confidence_proxy = float(0.55 * top_support + 0.30 * top2_gap + 0.15 * (1.0 - entropy))
+        high_uncertainty = bool(
+            (not incumbent_parseable)
+            or (not incumbent_non_empty)
+            or direct_disagreement
+            or top_support < self.gate_top_support_threshold
+            or entropy > self.gate_entropy_threshold
+            or qsig["operation_type"] in CASE_SPLIT_LABELS
+        )
+        low_uncertainty = bool(
+            incumbent_parseable
+            and incumbent_non_empty
+            and not direct_disagreement
+            and top_support >= self.gate_top_support_threshold
+            and top2_gap >= self.gate_top2_gap_threshold
+            and entropy <= self.gate_entropy_threshold
+        )
+
+        route_decision = "stop_with_incumbent"
+        route_reason = "incumbent_parseable_low_uncertainty"
+        if low_uncertainty and incumbent_confidence_proxy >= self.commit_threshold:
+            route_decision = "stop_with_incumbent"
+            route_reason = "commit_threshold_cleared"
+        elif remaining_budget > 0 and high_uncertainty:
+            route_decision = "limited_frontier_challenge"
+            route_reason = "uncertainty_requires_challenge"
+        elif remaining_budget > 0:
+            route_decision = "one_more_direct_continuation"
+            route_reason = "moderate_uncertainty_direct_probe"
+
+        if route_decision == "one_more_direct_continuation" and remaining_budget > 0:
+            ans3, used3, tr3 = self._run_direct_attempt(
+                question, gold_answer, len(direct_answers), min(1, per_attempt_cap, remaining_budget)
+            )
+            direct_answers.append(ans3)
+            direct_actions += int(used3)
+            direct_trace.extend(tr3)
+            remaining_budget = max(0, self.max_actions - direct_actions)
+
+        frontier_result: MethodResult | None = None
+        frontier_opened = False
+        frontier_actions_used = 0
+        planned_family_cap = 0
+        families_matured_count = 0
+        continuation_value = 0.0
+        ordered_family_ids: list[str] = []
+        if route_decision == "limited_frontier_challenge" and remaining_budget > 0:
+            frontier_opened = True
+            if high_uncertainty and (not incumbent_parseable or entropy > self.gate_entropy_threshold):
+                planned_family_cap = min(3, self.frontier_challenge_cap_large + 1)
+            elif high_uncertainty:
+                planned_family_cap = min(2, self.frontier_challenge_cap_large)
+            else:
+                planned_family_cap = 1
+            challenge_budget = min(remaining_budget, max(1, planned_family_cap))
+            frontier = self.strict_controller_factory(challenge_budget)
+            frontier_result = frontier.run(question, gold_answer)
+            frontier_actions_used = int(frontier_result.actions_used)
+
+        frontier_meta = dict(frontier_result.metadata or {}) if frontier_result is not None else {}
+        f_dsem = (
+            frontier_meta.get("diagnostic_semantic_diversity")
+            if isinstance(frontier_meta.get("diagnostic_semantic_diversity"), dict)
+            else {}
+        ) or {}
+        semantic_family_count = int(f_dsem.get("semantic_family_count") or 0)
+        family_redundancy_ratio = float(f_dsem.get("family_redundancy_ratio") or 0.0)
+        sem_fams = f_dsem.get("semantic_families")
+        family_entries: list[tuple[str, float, float]] = []
+        if isinstance(sem_fams, dict):
+            for fam_id, fam_members in sem_fams.items():
+                members = fam_members if isinstance(fam_members, list) else []
+                novelty = 1.0 - min(1.0, len(members) / 4.0)
+                fam_quality = max(
+                    [self._safe_float(m.get("proxy_score"), 0.0) for m in members if isinstance(m, dict)] + [0.0]
+                )
+                family_entries.append((str(fam_id), novelty, fam_quality))
+        family_entries.sort(key=lambda x: (x[1], x[2]), reverse=True)
+        ordered_family_ids = [x[0] for x in family_entries]
+
+        parseable_signal = incumbent_parseable
+        novelty_signal = family_entries[0][1] if family_entries else 0.35
+        challenge_signal = max(0.0, min(1.0, 1.0 - top_support))
+        redundancy_signal = max(0.0, min(1.0, family_redundancy_ratio))
+        cost_signal = max(0.0, min(1.0, frontier_actions_used / max(1, self.max_actions)))
+        continuation_value = self._continuation_value(
+            incumbent_confidence_proxy=incumbent_confidence_proxy,
+            parseable=parseable_signal,
+            novelty=novelty_signal,
+            challenge_value=challenge_signal,
+            redundancy=redundancy_signal,
+            cost=cost_signal,
+        )
+        if frontier_opened:
+            families_matured_count = min(len(ordered_family_ids), max(1, planned_family_cap))
+            if continuation_value < self.continuation_threshold:
+                families_matured_count = min(families_matured_count, 1)
+
+        incumbent_answer = incumbent_raw
+        incumbent_group = incumbent_canonical
+        top_challenger_answer = frontier_result.prediction if frontier_result is not None else None
+        top_challenger_group = _normalize_answer(top_challenger_answer) or "__unknown__"
+        candidate_answers: list[str | None] = [incumbent_answer]
+        if top_challenger_answer is not None:
+            candidate_answers.append(top_challenger_answer)
+        group_counts: Counter[str] = Counter((_normalize_answer(a) or "__unknown__") for a in candidate_answers if a is not None)
+        incumbent_support = int(group_counts.get(incumbent_group, 0))
+        challenger_support = int(group_counts.get(top_challenger_group, 0))
+        challenger_parseable = self._is_parseable_answer(top_challenger_answer)
+
+        challenger_family_support = 0
+        if isinstance(sem_fams, dict) and top_challenger_group != "__unknown__":
+            for fam_members in sem_fams.values():
+                members = fam_members if isinstance(fam_members, list) else []
+                has_support = False
+                for member in members:
+                    if not isinstance(member, dict):
+                        continue
+                    feats = member.get("features", {}) if isinstance(member.get("features"), dict) else {}
+                    fam_group = _normalize_answer(str(feats.get("answer_group_bucket", "") or "")) or "__unknown__"
+                    if fam_group == top_challenger_group:
+                        has_support = True
+                        break
+                if has_support:
+                    challenger_family_support += 1
+
+        cheap_verifier_prefers_challenger = bool(
+            frontier_meta.get("learned_override_triggered")
+            and str(frontier_meta.get("final_selected_answer", "")) == str(top_challenger_group)
+        )
+        replace = False
+        replace_reason = "keep_incumbent_default"
+        if top_challenger_answer is not None:
+            if (not incumbent_parseable or not incumbent_non_empty) and challenger_parseable:
+                replace = True
+                replace_reason = "incumbent_unparseable_or_empty_challenger_parseable"
+            elif challenger_parseable and challenger_support > incumbent_support and incumbent_confidence_proxy < self.replacement_threshold:
+                replace = True
+                replace_reason = "challenger_strict_support_with_parseability"
+            elif challenger_parseable and challenger_family_support >= 2:
+                replace = True
+                replace_reason = "challenger_supported_by_two_semantic_families"
+            elif cheap_verifier_prefers_challenger:
+                replace = True
+                replace_reason = "cheap_verifier_selected_challenger"
+            else:
+                replace = False
+                replace_reason = "replacement_threshold_not_met"
+
+        final_answer = top_challenger_answer if replace and top_challenger_answer is not None else incumbent_answer
+        final_source = "challenger" if replace and top_challenger_answer is not None else "incumbent"
+        actions_used = int(direct_actions + frontier_actions_used)
+        expansions = int(direct_actions + (frontier_result.expansions if frontier_result else 0))
+        verifications = int(frontier_result.verifications if frontier_result else 0)
+        is_correct = self._answers_match(final_answer, gold_answer)
+
+        metadata = {
+            "method_family": "diagnostic_direct_reserve_semantic_frontier_v2_thresholded_ordered",
+            "diagnostic_only": True,
+            "not_canonical": True,
+            "route_decision": str(route_decision),
+            "route_reason": str(route_reason),
+            "incumbent_parseable": int(incumbent_parseable),
+            "incumbent_confidence_proxy": float(max(0.0, min(1.0, incumbent_confidence_proxy))),
+            "frontier_opened": int(frontier_opened),
+            "direct_actions_used": int(direct_actions),
+            "frontier_actions_used": int(frontier_actions_used),
+            "semantic_family_count": int(semantic_family_count),
+            "family_redundancy_ratio": float(family_redundancy_ratio),
+            "families_matured_count": int(families_matured_count),
+            "continuation_threshold": float(self.continuation_threshold),
+            "commit_threshold": float(self.commit_threshold),
+            "replacement_threshold": float(self.replacement_threshold),
+            "continuation_value": float(continuation_value),
+            "top_challenger_answer": "" if top_challenger_answer is None else str(top_challenger_answer),
+            "top_challenger_support": int(challenger_support),
+            "final_source": str(final_source),
+            "incumbent_replacement_reason": str(replace_reason),
+            "actions_used": int(actions_used),
+            "question_len_words": int(qsig["question_len_words"]),
+            "question_numeric_count": int(qsig["question_numeric_count"]),
+            "operation_type": str(qsig["operation_type"]),
+            "incumbent_non_empty": int(incumbent_non_empty),
+            "incumbent_canonical": str(incumbent_canonical),
+            "ordering_stage0": "direct_incumbent_first",
+            "ordering_layer1": "semantic_novelty_setup_diversity",
+            "ordering_layers2_3": "uncertainty_adjusted_continuation_value",
+            "ordering_after_layer3": "answer_support_then_challenger_value_then_proxy",
+            "ordered_family_ids": ordered_family_ids,
+            "planned_family_cap": int(planned_family_cap),
+            "challenge_budget": int(min(remaining_budget, max(1, planned_family_cap)) if frontier_opened else 0),
+            "frontier_metadata": frontier_meta,
+            "direct_action_trace": direct_trace,
+        }
+
+        action_trace = list(frontier_meta.get("action_trace", [])) if frontier_meta else []
+        final_branch_states = list(frontier_meta.get("final_branch_states", [])) if frontier_meta else []
+        final_group = _normalize_answer(final_answer) or "__unknown__"
+        for i, answer in enumerate(direct_answers):
+            group_key = _normalize_answer(answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": "direct_reserve_v2_thresholded_ordered",
+                    "branch_id": f"direct_reserve_v2_thresholded_ordered_{i}",
+                    "group_key": group_key,
+                    "is_terminal": 1,
+                    "selected": int(final_group == group_key),
+                    "source": "direct_reserve_v2_thresholded_ordered",
+                }
+            )
+            final_branch_states.append(
+                {
+                    "branch_id": f"direct_reserve_v2_thresholded_ordered_{i}",
+                    "state_id": f"direct_reserve_v2_thresholded_ordered_state_{i}",
+                    "predicted_answer": "" if answer is None else str(answer),
+                    "group_key": group_key,
+                    "is_terminal": 1,
+                    "selected": int(final_group == group_key),
+                    "source": "direct_reserve_v2_thresholded_ordered",
+                    "score": float(group_counts.get(group_key, 0)),
+                }
+            )
+        metadata["action_trace"] = action_trace
+        metadata["final_branch_states"] = final_branch_states
+
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=is_correct,
+            actions_used=actions_used,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=float(frontier_result.avg_surviving_branches if frontier_result else 1.0),
+            budget_exhausted=bool(actions_used >= self.max_actions),
+            metadata=metadata,
+        )
+
+
 class DirectReserveLearnedOverrideController(BaseController):
     """Diagnostic wrapper that applies learned selection on top of base plus-diverse output.
 
