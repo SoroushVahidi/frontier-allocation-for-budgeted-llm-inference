@@ -1,0 +1,23 @@
+method_id,implementation_location,registered_in_real_model_runner,runtime_id_if_registered,canonical_or_diagnostic,evidence_status,eligible_for_real_model_accuracy_comparison,reason_include_or_exclude,notes
+strict_f3,experiments/frontier_matrix_core.py,yes,STRICT_F3 long runtime,canonical (manuscript winner),implemented,yes,Included: implemented+registered+runnable,Matched-surface manuscript-facing winner per docs.
+strict_gate1_cap_k6,experiments/frontier_matrix_core.py,yes,STRICT_GATE1_CAP_K6 long runtime,operational default,implemented,yes,Included: implemented+registered+default,Broader operational strict-phased default per docs.
+strict_f2,experiments/frontier_matrix_core.py,yes,STRICT_F2 long runtime,canonical comparator,implemented,yes,Included: implemented+registered,Used as strong strict comparator.
+strict_f3_anti_collapse_weak_v1,experiments/frontier_matrix_core.py,yes,strict_f3_anti_collapse_weak_v1,diagnostic,implemented,yes,Runnable but diagnostic-only,Not run in bounded preflight to keep scope fixed.
+direct_reserve_semantic_frontier_v1,experiments/frontier_matrix_core.py,yes,direct_reserve_frontier_gate_v1,diagnostic/newer internal,implemented,yes,Runnable alias in runner,Legacy DR gate variant.
+direct_reserve_semantic_frontier_v2,experiments/frontier_matrix_core.py,yes,direct_reserve_frontier_gate_v2,diagnostic/newer internal,implemented,yes,Included: implemented+registered+runnable,Strongest internal in this preflight slice.
+direct_reserve_semantic_frontier_v2_selection_fix_v1,experiments/frontier_matrix_core.py,yes,direct_reserve_semantic_frontier_v2_selection_fix_v1,diagnostic targeted fix,implemented,yes,Included: implemented+registered+runnable,Targeted selection-fix diagnostic.
+direct_reserve_semantic_frontier_v2_thresholded_ordered,experiments/semantic_diversity_diagnostic_strategies.py,yes (added in this PR),direct_reserve_semantic_frontier_v2_thresholded_ordered,diagnostic,implemented,conditional,Registered after audit; scored=0 in live preflight,"Runtime resolved, but produced zero scored examples in this slice."
+near_direct_reserve_frontier_gate_v1,experiments/frontier_matrix_core.py,yes,near_direct_reserve_frontier_gate_v1,diagnostic,implemented,yes,Runnable but excluded from bounded method set,Not part of required minimum set.
+calibrated_near_direct_frontier_gate_v1,experiments/frontier_matrix_core.py,yes,calibrated_near_direct_frontier_gate_v1,diagnostic,implemented,yes,Runnable but excluded from bounded method set,Not part of required minimum set.
+external_l1_max,experiments/frontier_matrix_core.py,yes,external_l1_max,external baseline,implemented,yes,Included baseline,Primary strongest external baseline in request.
+external_l1_exact,experiments/frontier_matrix_core.py,no,-,external baseline,implemented,yes,Implemented but not exposed in runner METHODS,Documented exclusion for this run.
+tale,experiments/frontier_matrix_core.py,yes,external_tale_prompt_budgeting,external baseline alias,implemented,yes,Included baseline,Alias mapped to implemented runtime.
+external_tale_prompt_budgeting,experiments/frontier_matrix_core.py,no (alias only),-,external baseline runtime,implemented,yes,Implemented runtime; called via tale alias,No direct method id in runner METHODS.
+s1,experiments/frontier_matrix_core.py,yes,external_s1_budget_forcing,external baseline alias,implemented,yes,Included baseline,Alias mapped to implemented runtime.
+external_s1_budget_forcing,experiments/frontier_matrix_core.py,no (alias only),-,external baseline runtime,implemented,yes,Implemented runtime; called via s1 alias,No direct method id in runner METHODS.
+self_consistency_3,experiments/frontier_matrix_core.py,yes,self_consistency_3,external/comparator,implemented,yes,Included baseline,Used as comparator.
+self_consistency_5,experiments/frontier_matrix_core.py,no,-,external/comparator,not present in specs,no,Not implemented in current specs,No runtime key in build_frontier_strategies.
+tot_beam_matched_budget,experiments/frontier_matrix_core.py,no,-,external/comparator,implemented,yes,Implemented but not exposed in runner METHODS,Excluded from this preflight.
+verifier_guided_search,experiments/frontier_matrix_core.py,no,-,external/comparator,implemented,yes,Implemented but not exposed in runner METHODS,Excluded from this preflight.
+BEST-Route-style adapter,docs/BEST_ROUTE_* + codebase,no,-,adapter,partial/unstable,no,Not a stable runnable method id in runner/specs,Documented as not safely exposed here.
+difficulty-proxy adapter,repo docs/experiments references,no,-,adapter,not found as runnable method id,no,No concrete runnable method id for this runner,Documented exclusion.

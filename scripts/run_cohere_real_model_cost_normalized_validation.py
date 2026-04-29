@@ -20,7 +20,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from experiments.branching import APIBranchGenerator
 from experiments.data import normalize_answer_text
-from experiments.frontier_matrix_core import build_frontier_strategies, load_pilot_examples
+from experiments.frontier_matrix_core import ScoreConfig, SimpleBranchScorer, build_frontier_strategies, build_semantic_diversity_diagnostic_registry, load_pilot_examples
 from experiments.output_layer_repair import canonicalize_answer, choose_repair_answer
 from experiments.trace_schema import build_branch_trace, write_trace_package
 
@@ -37,6 +37,7 @@ METHODS: dict[str, dict[str, Any]] = {
     "direct_reserve_semantic_frontier_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "direct_reserve_semantic_frontier_v2": {"runtime": "direct_reserve_frontier_gate_v2", "enable_output_repair": True},
     "direct_reserve_semantic_frontier_v2_selection_fix_v1": {"runtime": "direct_reserve_semantic_frontier_v2_selection_fix_v1", "enable_output_repair": True},
+    "direct_reserve_semantic_frontier_v2_thresholded_ordered": {"runtime": "direct_reserve_semantic_frontier_v2_thresholded_ordered", "enable_output_repair": True},
     "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "calibrated_near_direct_frontier_gate_v1": {"runtime": "calibrated_near_direct_frontier_gate_v1", "enable_output_repair": True},
@@ -104,7 +105,69 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--output-root", default="outputs")
     p.add_argument("--save-branch-traces", action="store_true")
     p.add_argument("--emit-trace-audit", action="store_true", help="Emit compact per-case DR-v2 vs external_l1_max trace-audit CSV.")
+    p.add_argument("--validate-methods-only", action="store_true", help="Validate requested method IDs resolve to runnable strategy specs and exit without API calls.")
     return p.parse_args()
+
+
+def validate_methods_only(args: argparse.Namespace, providers: list[str], budgets: list[int], methods: list[str]) -> Path:
+    rows: list[dict[str, Any]] = []
+    for m in methods:
+        if m not in METHODS:
+            rows.append({"provider": "all", "budget": "all", "method": m, "runtime": "", "status": "unknown_method", "detail": "method missing from METHODS registry"})
+    for provider in providers:
+        for budget in budgets:
+            rng = random.Random(1000003 * 11 + 97 * budget + len("openai/gsm8k"))
+            runner_specs = build_frontier_strategies(
+                lambda: None,
+                budget,
+                [1],
+                rng,
+                use_openai_api=(provider == "openai"),
+                include_broad_diversity_aggregation_methods=True,
+                include_external_l1_baseline=True,
+                include_external_s1_baseline=True,
+                include_external_tale_baseline=True,
+            )
+            diagnostic_specs = build_semantic_diversity_diagnostic_registry(lambda: None, SimpleBranchScorer(ScoreConfig()), budget)
+            for m in methods:
+                runtime = METHODS.get(m, {}).get("runtime", "")
+                registered = m in METHODS
+                runtime_in_runner = bool(runtime and runtime in runner_specs)
+                runtime_in_diag = bool(runtime and runtime in diagnostic_specs)
+                if not registered:
+                    status = "excluded"
+                    reason = "method missing from METHODS registry"
+                elif runtime_in_runner:
+                    status = "runnable"
+                    reason = "runtime present in runner build_frontier_strategies specs"
+                elif runtime_in_diag:
+                    status = "diagnostic_only"
+                    reason = "runtime only present in semantic diversity diagnostic registry, not in runner specs"
+                else:
+                    status = "runtime_missing"
+                    reason = "runtime not found in runner specs"
+                rows.append(
+                    {
+                        "provider": provider,
+                        "budget": budget,
+                        "method_id": m,
+                        "registered_in_METHODS": "yes" if registered else "no",
+                        "runtime_id": runtime,
+                        "runtime_present_in_build_frontier_strategies": "yes" if runtime_in_runner else "no",
+                        "validation_status": status,
+                        "reason": reason,
+                    }
+                )
+    out_dir = REPO_ROOT / args.output_root / f"cohere_real_model_cost_normalized_validation_{args.timestamp}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    report_path = out_dir / "method_validation_report.csv"
+    write_csv(report_path, rows, fieldnames=["provider", "budget", "method_id", "registered_in_METHODS", "runtime_id", "runtime_present_in_build_frontier_strategies", "validation_status", "reason"])
+    bad = [r for r in rows if r["validation_status"] != "runnable"]
+    print(f"validate-methods-only report: {report_path}")
+    print(f"validated_rows={len(rows)} bad_rows={len(bad)}")
+    if bad:
+        raise SystemExit(2)
+    raise SystemExit(0)
 
 
 def parse_csv_list(text: str) -> list[str]:
@@ -440,6 +503,8 @@ def main() -> None:
     for m in methods:
         if m not in METHODS:
             raise ValueError(f"Unknown method: {m}")
+    if args.validate_methods_only:
+        validate_methods_only(args, providers, budgets, methods)
 
     model_by_provider = {
         "cohere": args.cohere_model,
