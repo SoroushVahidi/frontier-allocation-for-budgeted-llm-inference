@@ -91,3 +91,10 @@ These artifacts are useful for provenance/debugging and planning, but should not
 - Chunk system is implemented and usable.
 - Runs to date are partial/incomplete for the 100-scored-per-slice target.
 - Continue with resumable chunk execution; do not rewrite claim language until completed matched slices exist.
+
+## Codex-local chunk reliability notes
+- No Slurm/Wulver dependency for chunk planning, per-chunk execution, status, or aggregation scripts.
+- `scripts/run_cohere_chunk.py --dry-run` prints exact command line without API invocation.
+- Chunk status and aggregate scripts now tolerate missing `slice_summary.csv` and `pairwise_comparisons.csv`, emitting schema-valid CSVs.
+
+- Persistence policy: for Codex-local resumable Cohere runs, track compact ledgers under `outputs/cohere_compact_ledgers/` to survive cross-task environments; do not rely on untracked raw JSONL files alone.

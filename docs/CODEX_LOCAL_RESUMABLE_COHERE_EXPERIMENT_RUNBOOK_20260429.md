@@ -39,3 +39,35 @@ python scripts/aggregate_cohere_chunks.py --chunk-plan outputs/codex_local_chunk
 ```
 
 Resume by re-running chunk IDs with `--resume` behavior inherited from the core runner; completed examples are not duplicated.
+
+
+## 6) Dry run a chunk (no API call)
+```bash
+python scripts/run_cohere_chunk.py --chunk-plan outputs/codex_local_chunk_plan_20260429.csv --chunk-id 1 --timestamp 20260429T_CODEX_LOCAL_REAL --dry-run
+```
+
+## 7) Status/aggregation semantics
+- `planned_not_started`: no matching slice row exists yet.
+- `incomplete`: matching row exists but scored count is not exactly target.
+- `completed`: scored count exactly equals planned target for that exact `(dataset,budget,seed,method)` slice.
+- `failed`: matching row exists with zero scored and non-zero failures.
+- Pairwise availability is keyed by `(provider,dataset,seed,budget,method_a)` vs `external_l1_max`.
+- Aggregation writes valid header-only CSVs when source files are empty/missing.
+- Bootstrap CI fields in chunk aggregate are intentionally unavailable unless matched per-example differences are supplied in a future artifact.
+
+No Wulver/Slurm environment is required for this Codex-local chunk workflow.
+
+- Persistence safety: `run_cohere_chunk.py` now runs a post-chunk summarize-only rebuild over all plan dimensions, so `slice_summary.csv`/`method_summary.csv`/`pairwise_comparisons.csv` accumulate durably from `per_example_records.jsonl`.
+- If summaries ever look stale, run:
+```bash
+python scripts/run_cohere_real_model_cost_normalized_validation.py --timestamp <TS> --providers cohere --datasets <all datasets> --budgets <all budgets> --seeds <all seeds> --methods <all methods> --target-scored-per-slice 100 --summarize-only
+```
+
+
+## 8) Persist cross-session compact ledger (recommended)
+```bash
+python scripts/export_compact_cohere_ledger.py --timestamp <TS> --output-root outputs
+cp outputs/cohere_real_model_cost_normalized_validation_<TS>/compact_per_example_ledger.csv \
+   outputs/cohere_compact_ledgers/<TS>_compact_per_example_ledger.csv
+```
+`status_cohere_chunk_progress.py` and `aggregate_cohere_chunks.py` now rebuild from `compact_per_example_ledger.csv` when raw `slice_summary.csv` is missing.

@@ -38,3 +38,13 @@ Implemented and present:
 
 ## Explicit exclusion
 - `direct_reserve_semantic_frontier_v2_thresholded_ordered` remains diagnostic-only and excluded from live full comparisons unless runner support is intentionally extended later.
+
+## Codex-local hardening updates (2026-04-29)
+- Chunk progress cleanly distinguishes planned-not-started, incomplete, completed, and failed slices.
+- Finality requires exact match to planned target scored count for each `(dataset,budget,seed,method)` slice.
+- Chunk aggregation emits header-valid CSV outputs even when source pairwise/slice files are missing or empty.
+- Real-model outputs remain diagnostic/supporting unless promoted by `docs/PAPER_SOURCE_OF_TRUTH.md`.
+
+- Persistence fix (2026-04-29): chunk runner now rebuilds summaries after each chunk using a full-plan `--summarize-only` pass, preventing single-slice summary overwrite under shared timestamps.
+
+- Cross-session durability update (2026-04-29): compact ledgers are now exported and tracked for Codex-local continuation; raw `per_example_records.jsonl` may remain local/untracked.

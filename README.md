@@ -113,3 +113,8 @@ python -m pytest tests/test_family_normalized_rerank.py::test_smoke_runner_outpu
 - Do **not** claim robust/universal superiority over external baselines.
 - Do **not** present diagnostic variants as final methods unless validated and promoted.
 - Do **not** assume historical runs have complete trace coverage.
+
+### Codex-local resumable Cohere chunks (diagnostic)
+- Planner/runner/status/aggregate scripts support local resumable execution without Slurm/Wulver.
+- `scripts/run_cohere_chunk.py --dry-run` prints exact underlying command for reviewer-safe inspection.
+- Chunk status distinguishes planned/not-started vs incomplete vs completed vs failed, and final-only aggregation requires exact scored-target matches per slice.
