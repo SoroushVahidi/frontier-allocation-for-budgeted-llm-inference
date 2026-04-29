@@ -34,6 +34,8 @@ METHODS: dict[str, dict[str, Any]] = {
     "strict_f3_anti_collapse_weak_v1": {"runtime": "strict_f3_anti_collapse_weak_v1", "enable_output_repair": True},
     "strict_f2": {"runtime": STRICT_F2, "enable_output_repair": True},
     "external_l1_max": {"runtime": "external_l1_max", "enable_output_repair": True},
+    "direct_reserve_semantic_frontier_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
+    "direct_reserve_semantic_frontier_v2": {"runtime": "direct_reserve_frontier_gate_v2", "enable_output_repair": True},
     "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "calibrated_near_direct_frontier_gate_v1": {"runtime": "calibrated_near_direct_frontier_gate_v1", "enable_output_repair": True},
