@@ -148,3 +148,10 @@ python -m pytest tests/test_family_normalized_rerank.py::test_smoke_runner_outpu
 ```bash
 python scripts/status_cohere_chunk_progress.py --chunk-plan outputs/codex_local_chunk_plan_20260429_cohere_full_accuracy.csv --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX && python scripts/run_cohere_chunk.py --chunk-plan outputs/codex_local_chunk_plan_20260429_cohere_full_accuracy.csv --chunk-id <MISSING_CHUNK_ID> --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX --max-walltime-minutes 20 && python scripts/export_compact_cohere_ledger.py --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX --output-root outputs && python scripts/status_cohere_chunk_progress.py --chunk-plan outputs/codex_local_chunk_plan_20260429_cohere_full_accuracy.csv --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX && python scripts/aggregate_cohere_chunks.py --chunk-plan outputs/codex_local_chunk_plan_20260429_cohere_full_accuracy.csv --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX
 ```
+
+## Current Repository State
+- [Canonical project state and next steps](docs/CANONICAL_PROJECT_STATE_AND_NEXT_STEPS_20260429.md)
+- [Method registry canonical](docs/METHOD_REGISTRY_CANONICAL_20260429.md)
+- [Results index canonical](docs/RESULTS_INDEX_CANONICAL_20260429.md)
+- [Script registry canonical](docs/SCRIPT_REGISTRY_CANONICAL_20260429.md)
+- [Answer-grouped outcome verifier rerank v1](docs/ANSWER_GROUPED_OUTCOME_VERIFIER_RERANK_V1.md)
