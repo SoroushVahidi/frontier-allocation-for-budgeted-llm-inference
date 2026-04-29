@@ -55,6 +55,16 @@ Full suite note:
   - `outputs/real_model_ours_vs_external_validation_20260425T_WULVER_COHERE_LONG/`
 - Treat these as supporting/diagnostic evidence unless explicitly promoted by canonical decision docs.
 
+### Current validated real-model method set (diagnostic track)
+- Internal methods: `strict_f3`, `strict_gate1_cap_k6`, `strict_f2`, `direct_reserve_semantic_frontier_v2`, `direct_reserve_semantic_frontier_v2_selection_fix_v1`.
+- External baselines/comparators: `external_l1_max`, `tale`, `s1`, `self_consistency_3`.
+- `direct_reserve_semantic_frontier_v2_thresholded_ordered` is **diagnostic-only** and is excluded from live full comparisons because it is not runtime-present in the live `build_frontier_strategies(...)` runner path.
+
+For an up-to-date status map, see:
+- `docs/METHOD_STATUS_MAP.md`
+- `docs/REAL_MODEL_EXPERIMENT_STATUS.md`
+- `docs/REPOSITORY_STATUS_AND_EVIDENCE_MAP_20260429.md`
+
 ## Inspect failure diagnostics
 - Detailed loss-case analysis and deep-dive packages are documented in:
   - `docs/DETAILED_LOSS_CASE_ANALYSIS_20260425T_WULVER_COHERE_LONG_DETAIL.md`
