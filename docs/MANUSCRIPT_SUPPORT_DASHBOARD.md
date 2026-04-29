@@ -79,3 +79,6 @@ Primary decision authority:
 - For real-model wording, treat `REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md` as a hard guardrail: no claims of real-model dominance/superiority over `external_l1_max` are manuscript-safe from current Cohere Stage-1 evidence.
 - Preserve historical provenance; demote with labels instead of deleting context.
 - DR-v2 selection-fix v1 was tried because trace audit identified present-not-selected failures, but it produced no EM gain; selection remains the bottleneck and support-only reranking is insufficient.
+- Loss-corpus decision was converted into a goal-directed next experiment plan (`docs/NEXT_GOAL_DIRECTED_EXPERIMENT_PLAN_20260429T025336.md`); no claims changed.
+- Trace-complete external-loss bounded execution was run in partial mode and postprocessed (`docs/TRACE_COMPLETE_EXTERNAL_LOSS_COLLECTION_RESULTS_20260429T031437.md`); thresholds remain unmet and no claims changed.
+- External-direct-advantage audit indicates most such labels are missing-trace artifacts; see `docs/EXTERNAL_DIRECT_ADVANTAGE_AUDIT_20260429T032816.md`; no claims changed.
