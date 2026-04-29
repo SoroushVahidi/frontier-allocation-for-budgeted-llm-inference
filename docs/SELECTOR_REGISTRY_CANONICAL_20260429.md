@@ -94,13 +94,14 @@ What exists:
 - Offline/diagnostic outcome-verifier-style selector analysis over existing candidates.
 - Produces candidate solution rows, verifier/answer-bucket scores, selector summaries, and oracle-gap reports.
 
-What does not exist yet:
+What exists now vs what is still pending:
 
-- A validated live DR-v2 final-answer selector using answer-grouped outcome-verifier reranking.
+- **Implemented:** live-runnable DR-v2 wrapper selector `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1` (mock default; Cohere verifier backend via env on real runs).
+- **Still pending:** completed paired **100-case** evidence write-up and claim-safety classification for the **Cohere-backed** verifier configuration (do not equate with mock-only timestamps).
 
 Decision:
 
-- This is the first paper-backed selector direction to operationalize.
+- This remains the first paper-backed selector direction to operationalize in-code; evidence closure is tracked separately from implementation.
 
 ## 4. Listed but not yet tested selector ideas
 

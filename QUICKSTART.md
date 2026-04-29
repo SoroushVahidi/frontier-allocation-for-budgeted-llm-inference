@@ -5,10 +5,13 @@ Shortest reliable onboarding path.
 ## 1) Read first (10-minute orientation)
 
 1. `docs/CANONICAL_START_HERE.md`
-2. `docs/MANUSCRIPT_SUPPORT_DASHBOARD.md`
-3. `docs/PAPER_SOURCE_OF_TRUTH.md`
-4. `docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
-5. `docs/FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`
+2. `docs/REPO_MAP.md`
+3. `docs/OUTPUTS_ARTIFACT_INDEX.md` (canonical vs diagnostic vs provenance; OV rerank timestamps)
+4. `docs/MANUSCRIPT_SUPPORT_DASHBOARD.md`
+5. `docs/PAPER_SOURCE_OF_TRUTH.md`
+6. `docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`
+7. `docs/FINAL_EVALUATION_FAIRNESS_AND_CLAIM_BOUNDARIES_20260422T235900Z.md`
+8. `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md` (selector vs coverage sequencing)
 
 ## 2) Keep this explicit in every summary
 

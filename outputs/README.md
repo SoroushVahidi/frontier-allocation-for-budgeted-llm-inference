@@ -6,6 +6,8 @@ Always pair artifact reading with canonical docs before making claims.
 
 ## Interpretation classes
 
+See also: **`docs/OUTPUTS_ARTIFACT_INDEX.md`** (concise index + OV rerank timestamp provenance).
+
 ### Canonical (paper-facing or claim-critical)
 
 Use first for manuscript-facing statements.
@@ -18,6 +20,24 @@ Use first for manuscript-facing statements.
 - `paper_plot_data/`
 - `paper_figures/`
 - `paper_tables/`
+
+### Diagnostic API-backed validation (not headline by default)
+
+Typical pattern:
+
+- `cohere_real_model_cost_normalized_validation_<timestamp>/`
+  - `per_example_records.jsonl` — primary row-level ledger for that slice
+  - `progress_heartbeat.jsonl` — lightweight progress (optional)
+  - `manifest.json` — often emitted when a slice/summary phase completes (may appear late)
+
+**Claim discipline:** treat these as **diagnostic** unless `docs/PAPER_SOURCE_OF_TRUTH.md` (or another canonical promotion doc) explicitly upgrades a specific timestamp.
+
+**Verifier-backend provenance (DR-v2 outcome-verifier rerank):**
+
+- **`20260429T_OV_RERANK_100CASE`** — mock-backed OV verifier (backend env unset); keep as provenance; **do not** describe as a completed real Cohere verifier backend experiment.
+- **`20260429T_OV_RERANK_100CASE_COHERE_BACKEND`** — intended **Cohere-backed** verifier run (`DR_V2_OV_RERANK_VERIFIER_BACKEND=cohere`). Inspect row fields such as `result_metadata.verifier_backend`, `ov_verifier_backend_env`, and per-row verifier payloads **after** rows exist.
+
+**While a run is active:** do not delete, truncate, or hand-edit its directory; read-only inspection is fine.
 
 ### Exploratory / supportive
 

@@ -48,6 +48,16 @@ Equivalent Make targets:
 Full suite note:
 - `python -m pytest -q` is supported but may require optional/generated artifacts or environment-specific dataset/model compatibility.
 
+## Navigation (onboarding / reviewers)
+
+1. **`docs/CANONICAL_START_HERE.md`** — fastest orientation and interpretation rules.  
+2. **`docs/REPO_MAP.md`** — directory roles and manuscript-support docs.  
+3. **`docs/OUTPUTS_ARTIFACT_INDEX.md`** — canonical vs diagnostic vs provenance outputs (includes OV rerank timestamp notes).  
+4. **`docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md`** — selector vs coverage roadmap (A–D).  
+5. **Claim safety:** `docs/PAPER_SOURCE_OF_TRUTH.md`, `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`, `docs/PAPER_OPEN_GAPS_AND_RISKS.md`.
+
+**Active real-model run (informational):** Cohere cost-normalized validation timestamp **`20260429T_OV_RERANK_100CASE_COHERE_BACKEND`** — DR-v2 outcome-verifier rerank with **Cohere** verifier backend (explicit env). Do not hand-edit that output folder while the job runs; mock-only provenance is preserved under **`20260429T_OV_RERANK_100CASE`**.
+
 ## Diagnostic and real-model evidence (non-headline by default)
 - OpenAI/Cohere validation artifacts live under:
   - `outputs/real_model_ours_vs_external_validation_20260424T_OPENAI_REAL_MAIN/`
@@ -56,7 +66,7 @@ Full suite note:
 - Treat these as supporting/diagnostic evidence unless explicitly promoted by canonical decision docs.
 
 ### Current validated real-model method set (diagnostic track)
-- Internal methods: `strict_f3`, `strict_gate1_cap_k6`, `strict_f2`, `direct_reserve_semantic_frontier_v2`, `direct_reserve_semantic_frontier_v2_selection_fix_v1`.
+- Internal methods: `strict_f3`, `strict_gate1_cap_k6`, `strict_f2`, `direct_reserve_semantic_frontier_v2`, `direct_reserve_semantic_frontier_v2_selection_fix_v1`, `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1`.
 - External baselines/comparators: `external_l1_max`, `tale`, `s1`, `self_consistency_3`.
 - `direct_reserve_semantic_frontier_v2_thresholded_ordered` is **diagnostic-only** and is excluded from live full comparisons because it is not runtime-present in the live `build_frontier_strategies(...)` runner path.
 
@@ -132,6 +142,9 @@ python -m pytest tests/test_family_normalized_rerank.py::test_smoke_runner_outpu
 - **Status: partial/provenance-only**
   - Tiny 10-example checks, interrupted launches, historical Wulver/Slurm handoff notes, and launch-attempt logs.
   - Useful for provenance/debugging, not claim authority.
+- **OV rerank verifier-backend provenance**
+  - **`20260429T_OV_RERANK_100CASE`:** mock-backed (OV backend env unset); diagnostic provenance only for “real Cohere verifier” claims.
+  - **`20260429T_OV_RERANK_100CASE_COHERE_BACKEND`:** intended Cohere-backed verifier run; interpret only after scored rows + report complete (see `docs/OUTPUTS_ARTIFACT_INDEX.md`).
 - **Status: excluded/diagnostic-only methods**
   - `direct_reserve_semantic_frontier_v2_thresholded_ordered` remains diagnostic-only and is not runtime-present in live `build_frontier_strategies(...)` full-comparison path.
 

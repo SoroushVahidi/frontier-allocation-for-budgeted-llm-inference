@@ -246,7 +246,7 @@ Status:
 - Live-runnable in runtime strategy registry.
 - Uses answer-grouped reranking with per-source cap and verifier-weighted group aggregation.
 - Supports `mock` backend by default and optional Cohere backend.
-- No completed paired 100-case Cohere evidence yet in this document.
+- **Completed paired 100-case Cohere-backed verifier evidence:** pending until the `20260429T_OV_RERANK_100CASE_COHERE_BACKEND` slice is finished and reported (do not cite mock-only `20260429T_OV_RERANK_100CASE` as Cohere verifier results).
 
 Takeaway:
 

@@ -31,6 +31,8 @@ Live list of missing pieces before submission-quality evidence closure.
    - Cross-provider extension (OpenAI+Cohere) is now supported in the same runner and can emit a unified appendix package (`outputs/cross_provider_real_model_token_accounting_validation_<timestamp>/`) to reduce provider-robustness risk without changing the primary action-budget manuscript contract.
    - A small OpenAI appendix accounting run now exists (`outputs/real_model_token_accounting_validation_20260424T170000Z_SMALLAPPX_S1/`; note `docs/REAL_MODEL_TOKEN_ACCOUNTING_VALIDATION_20260424T170000Z_SMALL_APPENDIX.md`). This closes a minimal real-accounting check but remains non-headline and small-sample.
 
+   - **DR-v2 outcome-verifier rerank** (`direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1`): live-runnable with mock default and optional Cohere verifier backend. **Claim-safe paired 100-case evaluation** for the **Cohere-backed** configuration remains **open until** the designated timestamp run completes and is summarized under repo claim-safety rules. Mock-backed timestamps are provenance only for verifier-backend conclusions (`docs/OUTPUTS_ARTIFACT_INDEX.md`).
+
 4. **Manuscript consolidation debt**
    - Surface-specific claims (`strict_gate1_cap_k6` vs `strict_f3`) must remain explicitly separated across all sections.
 

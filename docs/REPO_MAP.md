@@ -56,6 +56,15 @@ Maps where to find canonical interpretation, runnable entry points, and provenan
 - `../outputs/paper_figures/`
 - `../outputs/paper_tables/`
 
+## Outputs orientation (non-authoritative index)
+
+- Folder-level classes and OV rerank timestamp provenance: [`OUTPUTS_ARTIFACT_INDEX.md`](OUTPUTS_ARTIFACT_INDEX.md)
+- Longer policy text: [`../outputs/README.md`](../outputs/README.md)
+
+## Selector vs coverage roadmap
+
+- Ordered plan (outcome verifier → PRM → pairwise → coverage-aware): [`SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md`](SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md)
+
 ## Guardrails
 
 - Keep the `strict_f3` vs `strict_gate1_cap_k6` surface distinction explicit.

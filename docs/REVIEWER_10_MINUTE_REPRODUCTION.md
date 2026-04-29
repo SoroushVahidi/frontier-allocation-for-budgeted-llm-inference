@@ -30,8 +30,10 @@ python scripts/paper/run_all_neurips_paper_artifacts.py
 ## What is intentionally not rerun
 
 - Full raw experiment recomputation.
-- Provider/API-dependent long-running jobs.
+- Provider/API-dependent long-running jobs (e.g. multi-method Cohere GSM8K validation folders under `outputs/cohere_real_model_cost_normalized_validation_*`).
 - Environment-dependent full test suite (`python -m pytest -q`) that may rely on optional/generated artifacts.
+
+Incomplete or in-flight API runs are **not** claim-bearing. For artifact classes and mock vs Cohere-backend OV rerank timestamps, see `docs/OUTPUTS_ARTIFACT_INDEX.md`.
 
 ## Interpretation discipline
 
