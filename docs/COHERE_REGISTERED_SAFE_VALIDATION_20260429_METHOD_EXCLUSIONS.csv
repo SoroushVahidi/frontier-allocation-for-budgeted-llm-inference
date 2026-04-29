@@ -1,0 +1,9 @@
+method_id,exclusion_reason
+external_l1_exact,not present in runner METHODS map
+external_tale_prompt_budgeting,not present as a selectable method id in runner METHODS map (runtime-only alias)
+external_s1_budget_forcing,not present as a selectable method id in runner METHODS map (runtime-only alias)
+self_consistency_5,not present in runner METHODS map
+tot_beam_matched_budget,not present in runner METHODS map
+verifier_guided_search,not present in runner METHODS map
+best_route_adapters,not present in runner METHODS map
+unregistered_dr_v2_variants,not present in runner METHODS map
