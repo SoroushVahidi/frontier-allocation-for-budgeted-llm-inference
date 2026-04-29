@@ -21,6 +21,12 @@ from experiments.scoring import SimpleBranchScorer
 from experiments.typed_strategy_prompts import TypedStrategyPrompt, get_typed_strategy_prompts
 from experiments.reasoning_diversity import compute_reasoning_diversity_components, reasoning_signature
 from experiments.semantic_family_clustering import compute_branching_necessity_score, root_semantic_family_snapshot
+from experiments.answer_grouped_outcome_verifier import (
+    CohereOutcomeVerifier,
+    DeterministicMockOutcomeVerifier,
+    build_candidates_from_dr_v2_metadata,
+    select_answer_group_with_outcome_verifier,
+)
 from experiments.verifiers import CandidateVerifier
 from scripts.direct_reserve_learned_override_utils import (
     DEFAULT_MODEL_TYPE as DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL,
@@ -7199,6 +7205,142 @@ class DirectReserveFrontierGateV2SelectionFixV1Controller(DirectReserveFrontierG
         metadata["selection_fix_direct_support"] = direct_support
         metadata["selection_fix_frontier_support"] = frontier_support
         metadata["method_family"] = "diagnostic_direct_reserve_frontier_gate_v2_selection_fix_v1"
+        metadata["not_canonical"] = True
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=base.actions_used,
+            expansions=base.expansions,
+            verifications=base.verifications,
+            avg_surviving_branches=base.avg_surviving_branches,
+            budget_exhausted=base.budget_exhausted,
+            metadata=metadata,
+        )
+
+
+class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserveFrontierGateV2Controller):
+    """Live-runnable DR-v2 selector using answer-grouped outcome-verifier reranking."""
+
+    def __init__(
+        self,
+        *args: Any,
+        method_name: str = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+        verifier_backend: str = "mock",
+        verifier_model: str = "command-r-plus-08-2024",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, method_name=method_name, **kwargs)
+        self.verifier_backend = str(verifier_backend).strip().lower()
+        self.verifier_model = str(verifier_model).strip() or "command-r-plus-08-2024"
+
+    def _build_verifier(self) -> Any:
+        backend = self.verifier_backend
+        if backend == "cohere":
+            return CohereOutcomeVerifier(model=self.verifier_model)
+        return DeterministicMockOutcomeVerifier()
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        base = super().run(question, gold_answer)
+        metadata = dict(base.metadata or {})
+        base_prediction = base.prediction
+        candidates = build_candidates_from_dr_v2_metadata(question, metadata)
+        if not candidates:
+            metadata["ov_rerank_applied"] = False
+            metadata["single_candidate_fallback"] = True
+            metadata["fallback_reason"] = "no_candidates"
+            return base
+
+        # Fallback only when there is no real reranking surface.
+        if len(candidates) <= 1:
+            metadata["ov_rerank_applied"] = False
+            metadata["candidate_count"] = int(len(candidates))
+            metadata["answer_group_count"] = int(len({_normalize_answer(c.final_answer) or "__unknown__" for c in candidates}))
+            metadata["selected_candidate_id"] = candidates[0].candidate_id
+            metadata["selected_normalized_answer"] = _normalize_answer(candidates[0].final_answer) or "__unknown__"
+            metadata["selected_group_score"] = 0.0
+            metadata["verifier_backend"] = self.verifier_backend
+            metadata["verifier_calls"] = 0
+            metadata["single_candidate_fallback"] = True
+            metadata["fallback_reason"] = "single_candidate_only"
+            metadata["method_family"] = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1"
+            metadata["diagnostic_only"] = False
+            metadata["not_canonical"] = True
+            return MethodResult(
+                method=self.method_name,
+                prediction=base_prediction,
+                is_correct=self._answers_match(base_prediction, gold_answer),
+                actions_used=base.actions_used,
+                expansions=base.expansions,
+                verifications=base.verifications,
+                avg_surviving_branches=base.avg_surviving_branches,
+                budget_exhausted=base.budget_exhausted,
+                metadata=metadata,
+            )
+
+        verifier = self._build_verifier()
+        decision = select_answer_group_with_outcome_verifier(candidates, verifier)
+        selected_norm = str(decision.selected_answer or "").strip().lower()
+        selected = next((c for c in candidates if c.candidate_id == decision.selected_candidate_id), None)
+        if selected is None:
+            selected = next(
+                (c for c in candidates if (_normalize_answer(c.final_answer) or "__unknown__") == (_normalize_answer(selected_norm) or "__unknown__")),
+                candidates[0],
+            )
+        final_answer = selected.final_answer if selected is not None else base_prediction
+
+        group_payload = [
+            {
+                "normalized_answer": g.normalized_answer,
+                "group_score": float(g.group_score),
+                "original_group_size": int(g.original_group_size),
+                "capped_group_size": int(g.capped_group_size),
+                "representative_candidate_id": g.representative_candidate_id,
+            }
+            for g in decision.group_scores
+        ]
+        verifier_payload = {
+            cid: {
+                "prob_correct": float(v.prob_correct),
+                "trace_final_consistent": bool(v.trace_final_consistent),
+                "answer_equivalent_if_normalized": v.answer_equivalent_if_normalized,
+                "major_error": bool(v.major_error),
+                "short_reason": str(v.short_reason),
+            }
+            for cid, v in decision.verifier_results.items()
+        }
+        candidate_payload = {
+            c.candidate_id: {
+                "candidate_score": float(decision.candidate_scores.get(c.candidate_id, 0.0)),
+                "source_id": c.source_id or c.candidate_id,
+                "normalized_answer": _normalize_answer(c.final_answer) or "__unknown__",
+            }
+            for c in candidates
+        }
+        gold_norm = _normalize_answer(gold_answer) or "__unknown__"
+        candidate_norms = {_normalize_answer(c.final_answer) or "__unknown__" for c in candidates}
+        base_norm = _normalize_answer(base_prediction) or "__unknown__"
+        final_norm = _normalize_answer(final_answer) or "__unknown__"
+        metadata["ov_rerank_applied"] = True
+        metadata["candidate_count"] = int(len(candidates))
+        metadata["answer_group_count"] = int(len({(_normalize_answer(c.final_answer) or "__unknown__") for c in candidates}))
+        metadata["selected_candidate_id"] = selected.candidate_id if selected is not None else ""
+        metadata["selected_normalized_answer"] = final_norm
+        metadata["selected_group_score"] = float(decision.selected_group_score)
+        metadata["verifier_backend"] = self.verifier_backend
+        metadata["verifier_calls"] = int(decision.verifier_calls)
+        metadata["single_candidate_fallback"] = False
+        metadata["fallback_reason"] = ""
+        metadata["ov_rerank_group_scores"] = group_payload
+        metadata["ov_rerank_candidate_scores"] = candidate_payload
+        metadata["ov_rerank_verifier_results"] = verifier_payload
+        metadata["ov_rerank_original_dr_v2_selected_answer"] = base_prediction
+        metadata["ov_rerank_gold_present_in_candidates"] = int(gold_norm in candidate_norms)
+        metadata["ov_rerank_recovered_present_not_selected"] = int(
+            (gold_norm in candidate_norms) and (base_norm != gold_norm) and (final_norm == gold_norm)
+        )
+        metadata["method_family"] = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1"
+        metadata["diagnostic_only"] = False
         metadata["not_canonical"] = True
         return MethodResult(
             method=self.method_name,

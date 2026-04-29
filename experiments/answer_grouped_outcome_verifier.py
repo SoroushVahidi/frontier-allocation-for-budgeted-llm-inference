@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 import math
+import os
 from typing import Protocol
 
 
@@ -43,6 +45,8 @@ class SelectorDecision:
     group_scores: list[AnswerGroupScore]
     verifier_results: dict[str, VerifierResult]
     candidate_scores: dict[str, float]
+    verifier_backend: str = "mock"
+    verifier_calls: int = 0
 
 
 class OutcomeVerifier(Protocol):
@@ -69,6 +73,111 @@ class DeterministicMockOutcomeVerifier:
             major_error=is_bad,
             short_reason="deterministic_mock",
         )
+
+
+class CohereOutcomeVerifier:
+    """Cohere-backed strict JSON outcome verifier with conservative fallback."""
+
+    def __init__(
+        self,
+        *,
+        model: str = "command-r-plus-08-2024",
+        api_key: str | None = None,
+        timeout_seconds: int = 45,
+        client: object | None = None,
+    ) -> None:
+        self.model = model
+        self.timeout_seconds = int(timeout_seconds)
+        self._api_key = api_key if api_key is not None else os.getenv("COHERE_API_KEY", "")
+        self._client = client
+
+    def _ensure_client(self) -> object:
+        if self._client is not None:
+            return self._client
+        if not self._api_key:
+            raise RuntimeError("COHERE_API_KEY missing for CohereOutcomeVerifier")
+        import cohere  # type: ignore
+
+        self._client = cohere.ClientV2(api_key=self._api_key, timeout=self.timeout_seconds)
+        return self._client
+
+    @staticmethod
+    def _extract_json_obj(text: str) -> dict[str, object] | None:
+        raw = str(text or "").strip()
+        if not raw:
+            return None
+        try:
+            parsed = json.loads(raw)
+            return parsed if isinstance(parsed, dict) else None
+        except Exception:
+            pass
+        start = raw.find("{")
+        end = raw.rfind("}")
+        if start >= 0 and end > start:
+            snippet = raw[start : end + 1]
+            try:
+                parsed = json.loads(snippet)
+                return parsed if isinstance(parsed, dict) else None
+            except Exception:
+                return None
+        return None
+
+    @staticmethod
+    def _coerce_verifier_result(payload: dict[str, object], *, fallback_reason: str) -> VerifierResult:
+        try:
+            p = float(payload.get("prob_correct", 0.5))
+        except Exception:
+            p = 0.5
+        p = clip_prob(p, eps=1e-3)
+        return VerifierResult(
+            prob_correct=p,
+            trace_final_consistent=bool(payload.get("trace_final_consistent", True)),
+            answer_equivalent_if_normalized=(
+                None if payload.get("answer_equivalent_if_normalized", None) is None else bool(payload.get("answer_equivalent_if_normalized"))
+            ),
+            major_error=bool(payload.get("major_error", False)),
+            short_reason=str(payload.get("short_reason", fallback_reason))[:300],
+        )
+
+    def verify(self, candidate: CandidateAnswer) -> VerifierResult:
+        system_prompt, user_prompt = build_outcome_verifier_prompt(candidate)
+        try:
+            cli = self._ensure_client()
+            response = cli.chat(  # type: ignore[attr-defined]
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                temperature=0.0,
+                max_tokens=180,
+            )
+            text = ""
+            msg = getattr(response, "message", None)
+            if msg is not None and getattr(msg, "content", None):
+                parts = getattr(msg, "content")
+                for part in parts:
+                    t = getattr(part, "text", "")
+                    if t:
+                        text += str(t)
+            payload = self._extract_json_obj(text)
+            if payload is None:
+                return VerifierResult(
+                    prob_correct=0.5,
+                    trace_final_consistent=False,
+                    answer_equivalent_if_normalized=None,
+                    major_error=False,
+                    short_reason="cohere_json_parse_failed",
+                )
+            return self._coerce_verifier_result(payload, fallback_reason="cohere_parsed")
+        except Exception as exc:  # noqa: BLE001
+            return VerifierResult(
+                prob_correct=0.5,
+                trace_final_consistent=False,
+                answer_equivalent_if_normalized=None,
+                major_error=False,
+                short_reason=f"cohere_verify_error:{type(exc).__name__}",
+            )
 
 
 def clip_prob(p: float, eps: float = 1e-4) -> float:
@@ -143,6 +252,7 @@ def select_answer_group_with_outcome_verifier(candidates: list[CandidateAnswer],
         group_scores=[g for g, _ in ranked],
         verifier_results=verifier_results,
         candidate_scores=candidate_scores,
+        verifier_calls=len(candidates),
     )
 
 
@@ -171,3 +281,58 @@ def build_outcome_verifier_prompt(candidate: CandidateAnswer) -> tuple[str, str]
         "0.50 = uncertain / insufficient evidence 0.25 = likely wrong 0.00 = clearly wrong Do not reward style or length. Verify strictly."
     )
     return system_prompt, user_prompt
+
+
+def build_candidates_from_dr_v2_metadata(question: str, metadata: dict[str, object]) -> list[CandidateAnswer]:
+    candidates: list[CandidateAnswer] = []
+    states = metadata.get("final_branch_states", [])
+    if isinstance(states, list):
+        for idx, s in enumerate(states):
+            if not isinstance(s, dict):
+                continue
+            final_answer = str(s.get("predicted_answer", "") or "").strip()
+            if not final_answer:
+                continue
+            branch_id = str(s.get("branch_id", f"state_{idx}"))
+            source = str(s.get("source", branch_id))
+            trace_parts = s.get("trace_events", [])
+            trace_text = ""
+            if isinstance(trace_parts, list):
+                frags: list[str] = []
+                for ev in trace_parts:
+                    if not isinstance(ev, dict):
+                        continue
+                    frags.append(str(ev.get("reasoning_text", "") or ev.get("response_text", "") or ""))
+                trace_text = "\n".join(x for x in frags if x).strip()
+            candidates.append(
+                CandidateAnswer(
+                    candidate_id=branch_id,
+                    problem=question,
+                    trace=trace_text,
+                    final_answer=final_answer,
+                    normalized_answer=_normalize_key(final_answer),
+                    source_id=source,
+                    source_prior=0.5,
+                    cost_norm=0.0,
+                )
+            )
+    if not candidates:
+        final_answer = str(metadata.get("final_answer", "") or "").strip()
+        if final_answer:
+            candidates.append(
+                CandidateAnswer(
+                    candidate_id="fallback_final",
+                    problem=question,
+                    trace="",
+                    final_answer=final_answer,
+                    normalized_answer=_normalize_key(final_answer),
+                    source_id="fallback",
+                    source_prior=0.5,
+                    cost_norm=0.0,
+                )
+            )
+    return candidates
+
+
+def _normalize_key(answer: str | None) -> str:
+    return str(answer or "").strip().lower()

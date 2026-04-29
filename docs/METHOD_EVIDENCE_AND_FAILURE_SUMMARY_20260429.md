@@ -239,6 +239,19 @@ Takeaway:
 
 - Exclude until it is actually implemented in the live runner path and validated as runtime-runnable.
 
+### `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1`
+
+Status:
+
+- Live-runnable in runtime strategy registry.
+- Uses answer-grouped reranking with per-source cap and verifier-weighted group aggregation.
+- Supports `mock` backend by default and optional Cohere backend.
+- No completed paired 100-case Cohere evidence yet in this document.
+
+Takeaway:
+
+- Treat as implemented-but-unproven until the required 100-case paired run is completed.
+
 ## 3. Cross-method failure-mode map
 
 | Method/family | Main loss mode vs external baselines | Evidence strength | Best next fix |

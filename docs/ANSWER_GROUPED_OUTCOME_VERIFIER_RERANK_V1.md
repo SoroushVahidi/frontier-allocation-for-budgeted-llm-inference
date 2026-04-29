@@ -3,10 +3,11 @@
 ## Implemented
 - Added `experiments/answer_grouped_outcome_verifier.py` with:
   - candidate/verifier/selection dataclasses;
-  - verifier interface + deterministic mock verifier;
+  - verifier interface + deterministic mock verifier + Cohere verifier backend (`COHERE_API_KEY`);
   - candidate scoring, answer grouping, per-source cap, and group score aggregation;
-  - tie-break logic and prompt builder.
+  - tie-break logic, strict JSON-only prompt builder, and conservative parse fallback.
 - Added focused tests in `tests/test_answer_grouped_outcome_verifier.py`.
+- Added validation test in `tests/test_method_validation_outcome_verifier_rerank.py`.
 
 ## Inspiration
 This follows Cobbe-style outcome verification ideas: verify candidate outcomes, then aggregate by normalized final answer rather than selecting a single raw trace.
@@ -17,12 +18,11 @@ This follows Cobbe-style outcome verification ideas: verify candidate outcomes, 
 - Prompt builder is strict verifier-only and excludes gold/reference answers.
 
 ## Not yet implemented
-- No live Cohere outcome-verifier backend is wired in this change.
-- No large API evaluation run is included.
+- No completed paired 100-case Cohere result is included in this file.
 
 ## Live runner registration status
-- `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1` is currently module/test-ready.
-- Full runtime registration in live strategy builders remains future integration work.
+- `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1` is live-runnable in the runtime strategy builder.
+- Default verifier backend is `mock` for safety; set `DR_V2_OV_RERANK_VERIFIER_BACKEND=cohere` for live verifier calls.
 
 ## Next validation command
 ```bash

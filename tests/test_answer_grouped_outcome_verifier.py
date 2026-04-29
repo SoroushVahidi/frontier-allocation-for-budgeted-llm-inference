@@ -2,8 +2,10 @@ import math
 
 from experiments.answer_grouped_outcome_verifier import (
     CandidateAnswer,
+    CohereOutcomeVerifier,
     DeterministicMockOutcomeVerifier,
     VerifierResult,
+    build_candidates_from_dr_v2_metadata,
     build_outcome_verifier_prompt,
     clip_prob,
     group_candidates_by_normalized_answer,
@@ -73,3 +75,66 @@ def test_mock_verifier_and_prompt_safety_and_excluded_name_not_present():
     assert "gold" not in system.lower()
     assert "reference answer" not in user.lower()
     assert "direct_reserve_semantic_frontier_v2_thresholded_ordered" not in system + user
+
+
+def test_cohere_verifier_parses_json_and_fallback():
+    class _Part:
+        def __init__(self, text):
+            self.text = text
+
+    class _Message:
+        def __init__(self, content):
+            self.content = content
+
+    class _Resp:
+        def __init__(self, text):
+            self.message = _Message([_Part(text)])
+
+    class _Client:
+        def __init__(self, text):
+            self._text = text
+
+        def chat(self, **kwargs):  # noqa: ARG002
+            return _Resp(self._text)
+
+    cand = _c("c1", "12", "12", trace="trace says 12")
+    parsed = CohereOutcomeVerifier(client=_Client('{"prob_correct": 0.91, "trace_final_consistent": true, "answer_equivalent_if_normalized": true, "major_error": false, "short_reason": "ok"}'))
+    got = parsed.verify(cand)
+    assert got.prob_correct > 0.9
+    assert got.trace_final_consistent is True
+
+    fallback = CohereOutcomeVerifier(client=_Client("not-json"))
+    got2 = fallback.verify(cand)
+    assert got2.prob_correct == 0.5
+    assert "parse" in got2.short_reason
+
+
+def test_build_candidates_from_metadata_and_grouping():
+    md = {
+        "final_branch_states": [
+            {"branch_id": "b1", "predicted_answer": "42", "source": "direct_reserve", "trace_events": [{"reasoning_text": "x"}]},
+            {"branch_id": "b2", "predicted_answer": "42", "source": "frontier", "trace_events": [{"response_text": "y"}]},
+            {"branch_id": "b3", "predicted_answer": "43", "source": "frontier", "trace_events": []},
+        ]
+    }
+    cands = build_candidates_from_dr_v2_metadata("problem", md)
+    grouped = group_candidates_by_normalized_answer(cands)
+    assert len(cands) == 3
+    assert "42" in grouped
+
+
+def test_recover_present_not_selected_with_mock_verifier():
+    cands = [
+        _c("incumbent", "12", "12", src="direct", cost=0.0, trace="bad arithmetic ends 12"),
+        _c("challenger", "13", "13", src="frontier", cost=0.0, trace="consistent derivation ends 13"),
+    ]
+
+    class V:
+        def verify(self, candidate):
+            if candidate.candidate_id == "challenger":
+                return VerifierResult(0.95, True, None, False, "good")
+            return VerifierResult(0.20, False, None, True, "bad")
+
+    decision = select_answer_group_with_outcome_verifier(cands, V())
+    assert decision.selected_answer == "13"
+    assert decision.selected_candidate_id == "challenger"

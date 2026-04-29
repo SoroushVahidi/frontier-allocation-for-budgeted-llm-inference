@@ -21,6 +21,7 @@ LIVE_COMPARISON_SET = {
     "direct_reserve_semantic_frontier_v1",
     "direct_reserve_semantic_frontier_v2",
     "direct_reserve_semantic_frontier_v2_selection_fix_v1",
+    "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
     "near_direct_reserve_frontier_gate_v1",
     "calibrated_near_direct_frontier_gate_v1",
 }

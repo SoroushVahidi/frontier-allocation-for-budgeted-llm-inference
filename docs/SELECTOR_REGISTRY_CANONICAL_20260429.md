@@ -22,7 +22,7 @@ Therefore, the highest-value selector work is focused on DR-v2 final answer sele
 | Original DR-v2 final selector | project-specific | yes | yes | yes | loses to `external_l1_max` in 100-case run; present-not-selected failures observed | do not retest unchanged |
 | DR-v2 `selection_fix_v1` | no, internal support-count heuristic | yes | yes | yes | did not improve; 0.55 vs DR-v2 0.56 and L1 0.72 | do not repeat simple support-only fix |
 | Cobbe-style outcome verifier diagnostic | yes | diagnostic only | no | diagnostic only | offline/paper-inspired diagnostic exists | use as basis for live DR-v2 selector |
-| `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1` | Cobbe-inspired | planned / being implemented | pending | not yet validated | first recommended selector implementation | implement module + mock verifier + live registration, then 100-case validation |
+| `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1` | Cobbe-inspired | yes | yes | yes (unit + method validation) | live-runnable with mock default + optional Cohere verifier backend | complete paired Cohere GSM8K budget-4 seed-11 100-case run and report recovery/regression tables |
 | PRM-style step-level verifier selector | yes: *Let's Verify Step by Step*, PRM800K | no | no | no | second recommended selector family | implement after outcome-verifier reranker unless strong reason to skip |
 | Math-Shepherd-style process verifier | yes | no | no | no | related later process-supervision direction | future comparison after PRM-style selector |
 | Self-consistency / support-count voting | paper-related/general | partially via support heuristics | partly | yes indirectly | support-only version was insufficient | only use as feature, not sole selector |
