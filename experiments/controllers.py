@@ -7171,6 +7171,48 @@ class DirectReserveFrontierGateV2Controller(DirectReserveFrontierGateController)
         )
 
 
+class DirectReserveFrontierGateV2SelectionFixV1Controller(DirectReserveFrontierGateV2Controller):
+    """Diagnostic selection-fix wrapper for DR-v2 (no proposal changes)."""
+
+    def __init__(self, *args: Any, method_name: str = "direct_reserve_semantic_frontier_v2_selection_fix_v1", **kwargs: Any) -> None:
+        super().__init__(*args, method_name=method_name, **kwargs)
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        base = super().run(question, gold_answer)
+        metadata = dict(base.metadata or {})
+        support = metadata.get("answer_group_support_counts", {})
+        direct_answer = metadata.get("direct_reserve_answer")
+        frontier_answer = metadata.get("frontier_candidate_answer")
+        direct_group = _normalize_answer(str(direct_answer)) if direct_answer is not None else "__unknown__"
+        frontier_group = _normalize_answer(str(frontier_answer)) if frontier_answer is not None else "__unknown__"
+        direct_support = int((support.get(direct_group, 0) if isinstance(support, dict) else 0) or 0)
+        frontier_support = int((support.get(frontier_group, 0) if isinstance(support, dict) else 0) or 0)
+        switch = bool(frontier_answer and frontier_group != "__unknown__" and frontier_group != direct_group and frontier_support >= direct_support + 1)
+        final_answer = frontier_answer if switch else base.prediction
+        metadata["selection_fix_considered"] = True
+        metadata["selection_fix_applied"] = bool(switch)
+        metadata["selection_fix_reason"] = (
+            "frontier_group_support_strictly_higher_than_direct" if switch else "kept_base_selection"
+        )
+        metadata["selection_fix_direct_group"] = direct_group
+        metadata["selection_fix_frontier_group"] = frontier_group
+        metadata["selection_fix_direct_support"] = direct_support
+        metadata["selection_fix_frontier_support"] = frontier_support
+        metadata["method_family"] = "diagnostic_direct_reserve_frontier_gate_v2_selection_fix_v1"
+        metadata["not_canonical"] = True
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=base.actions_used,
+            expansions=base.expansions,
+            verifications=base.verifications,
+            avg_surviving_branches=base.avg_surviving_branches,
+            budget_exhausted=base.budget_exhausted,
+            metadata=metadata,
+        )
+
+
 class NearDirectReserveFrontierGateController(BaseController):
     """Diagnostic controller that protects an L1-style near-direct incumbent."""
 

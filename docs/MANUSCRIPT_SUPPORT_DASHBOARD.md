@@ -78,3 +78,4 @@ Primary decision authority:
 - Keep the method-surface distinction explicit in docs, figures, and tables.
 - For real-model wording, treat `REAL_MODEL_DECISION_PACKAGE_20260425T025417Z.md` as a hard guardrail: no claims of real-model dominance/superiority over `external_l1_max` are manuscript-safe from current Cohere Stage-1 evidence.
 - Preserve historical provenance; demote with labels instead of deleting context.
+- DR-v2 selection-fix v1 was tried because trace audit identified present-not-selected failures, but it produced no EM gain; selection remains the bottleneck and support-only reranking is insufficient.
