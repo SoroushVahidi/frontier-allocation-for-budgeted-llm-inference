@@ -1,0 +1,14 @@
+field,value
+artifact_dir,outputs/cohere_real_model_cost_normalized_validation_20260429T_BEST_INTERNAL_VARIANTS_COHERE_PREFLIGHT
+method_id,direct_reserve_semantic_frontier_v2_thresholded_ordered
+mapped_runtime_id,direct_reserve_semantic_frontier_v2_thresholded_ordered
+in_methods_map,yes
+runtime_in_runner_specs,no
+runtime_in_diagnostic_specs,yes
+progress_rows_for_method,0
+failure_rows_for_method,0
+runtime_missing_slice,yes
+root_cause,validate-only path checked diagnostic registry but execution path uses runner specs only; runtime missing at execution
+classification,wiring/validation mismatch (diagnostic-only limitation in runner path)
+exclude_from_full_run,yes
+fix_applied,strengthened validate-methods-only classification/status
