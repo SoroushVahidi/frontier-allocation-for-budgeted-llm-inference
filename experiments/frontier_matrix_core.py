@@ -18,6 +18,7 @@ from experiments.controllers import (
     DirectReserveGateRerankController,
     DirectReserveFrontierGateController,
     DirectReserveFrontierGateV2Controller,
+    DirectReserveFrontierGateV2SelectionFixV1Controller,
     DirectReserveLearnedOverrideController,
     CalibratedNearDirectFrontierGateController,
     GlobalDiversityAggregationController,
@@ -1181,6 +1182,13 @@ def build_frontier_strategies(
             scorer,
             budget,
             method_name="direct_reserve_frontier_gate_v2",
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_semantic_frontier_v2_selection_fix_v1"] = DirectReserveFrontierGateV2SelectionFixV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_semantic_frontier_v2_selection_fix_v1",
             **direct_reserve_plus_diverse_kwargs,
         )
         specs["near_direct_reserve_frontier_gate_v1"] = NearDirectReserveFrontierGateController(

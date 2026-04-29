@@ -36,6 +36,7 @@ METHODS: dict[str, dict[str, Any]] = {
     "external_l1_max": {"runtime": "external_l1_max", "enable_output_repair": True},
     "direct_reserve_semantic_frontier_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "direct_reserve_semantic_frontier_v2": {"runtime": "direct_reserve_frontier_gate_v2", "enable_output_repair": True},
+    "direct_reserve_semantic_frontier_v2_selection_fix_v1": {"runtime": "direct_reserve_semantic_frontier_v2_selection_fix_v1", "enable_output_repair": True},
     "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "calibrated_near_direct_frontier_gate_v1": {"runtime": "calibrated_near_direct_frontier_gate_v1", "enable_output_repair": True},
@@ -102,6 +103,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--summarize-only", action="store_true", help="Skip new API calls and only recompute aggregate artifacts from existing records.")
     p.add_argument("--output-root", default="outputs")
     p.add_argument("--save-branch-traces", action="store_true")
+    p.add_argument("--emit-trace-audit", action="store_true", help="Emit compact per-case DR-v2 vs external_l1_max trace-audit CSV.")
     return p.parse_args()
 
 
@@ -131,6 +133,14 @@ def write_csv(path: Path, rows: list[dict[str, Any]], *, fieldnames: list[str] |
 
 def mean(vals: list[float]) -> float:
     return float(sum(vals) / len(vals)) if vals else 0.0
+
+
+def _is_dr_v2_method(method: str) -> bool:
+    return method.strip() == "direct_reserve_semantic_frontier_v2"
+
+
+def _is_external_l1_method(method: str) -> bool:
+    return method.strip() == "external_l1_max"
 
 
 def classify_failure(error_text: str) -> str:
@@ -837,6 +847,59 @@ def main() -> None:
             if (provider, "self_consistency_3") in by_method:
                 pairwise.extend(paired_rows(provider, best_fa, "self_consistency_3", "frontier_family_best_vs_self_consistency_3"))
     write_csv(out_dir / "pairwise_comparisons.csv", pairwise)
+    if args.emit_trace_audit:
+        scored_records = [r for r in records if int(r.get("scored", 0)) == 1]
+        by_key_method: dict[tuple[str, str, int, int, str], dict[str, dict[str, Any]]] = {}
+        for r in scored_records:
+            k = (str(r.get("provider", "cohere")), str(r.get("dataset", "")), int(r.get("seed", 0)), int(r.get("budget", 0)), str(r.get("example_id", "")))
+            by_key_method.setdefault(k, {})[str(r.get("method", ""))] = r
+        trace_rows: list[dict[str, Any]] = []
+        for (_, dataset, seed, budget, example_id), method_map in sorted(by_key_method.items()):
+            dr = method_map.get("direct_reserve_semantic_frontier_v2")
+            l1 = method_map.get("external_l1_max")
+            if not dr:
+                continue
+            md = dict(dr.get("result_metadata", {}) or {})
+            final_nodes = list(dr.get("final_nodes", []) or [])
+            candidate_answers_raw = [n.get("predicted_answer") for n in final_nodes if n.get("predicted_answer") is not None]
+            candidate_answers_norm = [n.get("predicted_answer_normalized") for n in final_nodes if n.get("predicted_answer_normalized")]
+            selected_group = str(md.get("selected_group") or md.get("final_answer_group") or "")
+            gold_group = str(dr.get("gold_answer_canonical") or "")
+            present_gold = int(bool(gold_group and gold_group in set(candidate_answers_norm)))
+            selected_gold = int(bool(gold_group and selected_group and gold_group == selected_group))
+            raw_final = dr.get("final_answer_raw")
+            norm_final = dr.get("final_answer_canonical")
+            trace_rows.append(
+                {
+                    "dataset": dataset, "example_id": example_id, "seed": seed, "budget": budget, "method": "direct_reserve_semantic_frontier_v2",
+                    "gold_answer": dr.get("gold_answer"), "raw_final_answer": raw_final, "normalized_final_answer": norm_final,
+                    "exact_match": int(dr.get("exact_match", 0)), "action_count": int(md.get("actions_used", dr.get("budget", 0)) or 0),
+                    "output_tokens": int(dr.get("output_tokens", 0)), "total_tokens": int(dr.get("total_tokens", 0)),
+                    "latency_seconds": dr.get("latency_seconds", ""), "estimated_cost": dr.get("estimated_cost_usd", ""),
+                    "dr_v2_candidate_answers_raw": json.dumps(candidate_answers_raw, ensure_ascii=False),
+                    "dr_v2_candidate_answers_normalized": json.dumps(candidate_answers_norm, ensure_ascii=False),
+                    "dr_v2_candidate_answer_groups": json.dumps(sorted(set(candidate_answers_norm)), ensure_ascii=False),
+                    "dr_v2_selected_answer_group": selected_group,
+                    "dr_v2_gold_answer_group_present": present_gold,
+                    "dr_v2_gold_answer_present_in_candidates": present_gold,
+                    "dr_v2_selected_gold_answer_group": selected_gold,
+                    "dr_v2_present_not_selected": int(bool(present_gold and not selected_gold and not int(dr.get("exact_match", 0)))),
+                    "dr_v2_absent_from_frontier": int(bool((not present_gold) and (not int(dr.get("exact_match", 0))))),
+                    "dr_v2_extraction_suspected": int(bool(raw_final and not norm_final and not int(dr.get("exact_match", 0)))),
+                    "dr_v2_commit_source": md.get("override_reason", ""),
+                    "dr_v2_frontier_actions_used": md.get("frontier_actions_used", ""),
+                    "dr_v2_direct_actions_used": md.get("direct_actions_used", ""),
+                    "dr_v2_stop_reason": md.get("route_reason", md.get("override_reason", "")),
+                    "dr_v2_trace_available": int(bool(final_nodes or md.get("action_trace"))),
+                    "external_l1_raw_answer": "" if not l1 else l1.get("final_answer_raw", ""),
+                    "external_l1_normalized_answer": "" if not l1 else l1.get("final_answer_canonical", ""),
+                    "external_l1_exact_match": "" if not l1 else int(l1.get("exact_match", 0)),
+                    "external_l1_tokens": "" if not l1 else int(l1.get("total_tokens", 0)),
+                    "external_l1_latency_seconds": "" if not l1 else l1.get("latency_seconds", ""),
+                    "external_l1_estimated_cost": "" if not l1 else l1.get("estimated_cost_usd", ""),
+                }
+            )
+        write_csv(out_dir / "trace_audit_per_case.csv", trace_rows)
 
     pmap = {(r["provider"], r["comparison"]): r for r in pairwise}
     cohere_row = pmap.get(("cohere", "strict_f3_vs_external_l1_max"), {})
