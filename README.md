@@ -118,3 +118,33 @@ python -m pytest tests/test_family_normalized_rerank.py::test_smoke_runner_outpu
 - Planner/runner/status/aggregate scripts support local resumable execution without Slurm/Wulver.
 - `scripts/run_cohere_chunk.py --dry-run` prints exact underlying command for reviewer-safe inspection.
 - Chunk status distinguishes planned/not-started vs incomplete vs completed vs failed, and final-only aggregation requires exact scored-target matches per slice.
+
+
+## Evidence hierarchy and reviewer-safe boundaries
+
+- **Status: canonical (claim-eligible)**
+  - Generator: `python scripts/paper/run_all_neurips_paper_artifacts.py`
+  - Artifact roots: `outputs/paper_tables/`, `outputs/paper_plot_data/`, `outputs/paper_figures/`
+  - Claim gate: `docs/PAPER_SOURCE_OF_TRUTH.md`.
+- **Status: diagnostic (supporting-only by default)**
+  - Real-model Cohere/OpenAI runs, Codex-local chunk runs, compact-ledger exports, and preflight checks.
+  - These are supporting diagnostics and not headline manuscript evidence unless explicitly promoted.
+- **Status: partial/provenance-only**
+  - Tiny 10-example checks, interrupted launches, historical Wulver/Slurm handoff notes, and launch-attempt logs.
+  - Useful for provenance/debugging, not claim authority.
+- **Status: excluded/diagnostic-only methods**
+  - `direct_reserve_semantic_frontier_v2_thresholded_ordered` remains diagnostic-only and is not runtime-present in live `build_frontier_strategies(...)` full-comparison path.
+
+## Cohere full-accuracy progress (current durable truth)
+
+- Durable source of truth for Codex-local continuation:
+  - `outputs/cohere_compact_ledgers/20260429T_COHERE_FULL_ACCURACY_CODEX_compact_per_example_ledger.csv`
+- Older markdown-only progress notes are historical/provisional unless their claims are backed by rows in the compact ledger.
+- Current status for the `openai/gsm8k`, budget `2`, seed `11`, 9-method matched slice: **incomplete** (compact ledger does not yet contain completed 100-example rows for all nine methods).
+- Raw `per_example_records.jsonl` under ignored run folders is not durable across sessions unless exported to compact ledger.
+
+## Next Action (single safe continuation workflow)
+
+```bash
+python scripts/status_cohere_chunk_progress.py --chunk-plan outputs/codex_local_chunk_plan_20260429_cohere_full_accuracy.csv --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX && python scripts/run_cohere_chunk.py --chunk-plan outputs/codex_local_chunk_plan_20260429_cohere_full_accuracy.csv --chunk-id <MISSING_CHUNK_ID> --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX --max-walltime-minutes 20 && python scripts/export_compact_cohere_ledger.py --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX --output-root outputs && python scripts/status_cohere_chunk_progress.py --chunk-plan outputs/codex_local_chunk_plan_20260429_cohere_full_accuracy.csv --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX && python scripts/aggregate_cohere_chunks.py --chunk-plan outputs/codex_local_chunk_plan_20260429_cohere_full_accuracy.csv --timestamp 20260429T_COHERE_FULL_ACCURACY_CODEX
+```
