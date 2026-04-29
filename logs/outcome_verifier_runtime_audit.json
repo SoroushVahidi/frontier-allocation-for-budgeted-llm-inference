@@ -1,0 +1,45 @@
+{
+  "repo_root": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation",
+  "target_file_presence": {
+    "experiments/controllers.py": true,
+    "experiments/frontier_matrix_core.py": true,
+    "scripts/run_cohere_real_model_cost_normalized_validation.py": true,
+    "experiments/answer_grouped_outcome_verifier.py": false,
+    "experiments/verifiers.py": true,
+    "experiments/scoring.py": true
+  },
+  "selector_direction": "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+  "notes": [
+    "Missing experiments/answer_grouped_outcome_verifier.py in this checkout.",
+    "Missing tests/test_answer_grouped_outcome_verifier.py in this checkout.",
+    "Selector direction not found in key registries/scripts."
+  ],
+  "direct_reserve_semantic_frontier_v2_built_where": [
+    "experiments/controllers.py"
+  ],
+  "dr_v2_controller_class": "DirectReserveFrontierGateV2Controller",
+  "runtime_alias_mapping": {
+    "validation_script_has_alias": true
+  },
+  "selection_surface": {
+    "multiple_candidate_traces_or_answers_signals_present": true,
+    "branch_traces_available": true,
+    "normalized_answers_available": true,
+    "source_or_action_ids_available": true,
+    "token_cost_latency_signals_present_somewhere": true
+  },
+  "integration_classification": "instrumentation_needed",
+  "verifier_backend_feasibility": {
+    "cohere_provider_path_present": false,
+    "verify_api_path_present": true,
+    "candidate_verifier_protocol_present": true,
+    "llm_verify_proxy_present": true,
+    "safe_cohere_outcome_verifier_backend_exists": false,
+    "reuse_candidate": "experiments.verifiers.LLMVerifyProxyVerifier",
+    "missing_for_true_outcome_verifier": [
+      "Concrete Cohere outcome verifier class (e.g., CohereOutcomeVerifier with bounded calls/timeouts).",
+      "Live wiring from selector direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1 into registry/runtime maps.",
+      "Per-candidate verifier metadata plumbing (backend, calls, fallback reason)."
+    ]
+  }
+}
