@@ -184,3 +184,6 @@ terminals/
 !outputs/direct_reserve_candidate_scorer_fresh_gsm8k_degradation_analysis_*/**/*
 !outputs/repository_cleanup_audit_*/
 !outputs/repository_cleanup_audit_*/**/*
+
+!outputs/cohere_compact_ledgers/
+!outputs/cohere_compact_ledgers/**/*

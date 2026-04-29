@@ -16,3 +16,5 @@
 ## Notes
 - “Eligible for paper headline claim” requires consistency with `docs/PAPER_SOURCE_OF_TRUTH.md` and canonical artifact outputs.
 - Real-model use alone does not promote a method to headline claim status.
+
+- Operational note: `direct_reserve_semantic_frontier_v2_thresholded_ordered` may appear in diagnostic status/aggregate files but remains excluded from live runnable full-comparison method sets.
