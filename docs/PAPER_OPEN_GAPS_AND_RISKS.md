@@ -54,3 +54,6 @@ Live list of missing pieces before submission-quality evidence closure.
 ## Blocking issues (if any)
 
 - None newly identified in this polish pass beyond known baseline breadth and broader confirmation gaps.
+
+## Baseline gap note (test-time compute literature)
+Recent literature makes token-budget allocation, training-free difficulty-proxy allocation, s1-style budget forcing, verifier/intermediate-state allocation, and routing/cascade baselines increasingly important for claim safety. This repository contains several matched-action adapters and adjacent validators, but **official/full-stack comparisons** and **token/cost-normalized dominance** remain open gaps.
