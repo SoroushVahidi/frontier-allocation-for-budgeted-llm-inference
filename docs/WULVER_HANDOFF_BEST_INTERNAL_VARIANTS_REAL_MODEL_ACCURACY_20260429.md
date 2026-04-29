@@ -1,5 +1,7 @@
 # WULVER handoff — best internal variants real-model accuracy full run
 
+> **Historical / provenance-only note (Codex environment):** this document is a Wulver/Slurm handoff artifact and is **not directly executable in the current Codex-only environment** without manual porting to local chunked execution scripts.
+
 - methods included in full run: `strict_f3, strict_gate1_cap_k6, strict_f2, direct_reserve_semantic_frontier_v2, direct_reserve_semantic_frontier_v2_selection_fix_v1, external_l1_max, tale, s1, self_consistency_3`.
 - methods excluded and why:
   - `direct_reserve_semantic_frontier_v2_thresholded_ordered`: diagnostic-only in current runner path (`validation_status=diagnostic_only`, runtime missing from runner specs).
