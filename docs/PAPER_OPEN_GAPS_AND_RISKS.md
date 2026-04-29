@@ -4,6 +4,13 @@ Live list of missing pieces before submission-quality evidence closure.
 
 ## High-priority open gaps
 
+- DR-v2 100-case Cohere validation attempt (`20260429T_COHERE_DR_V2_VS_L1_100CASE`) now has completed 100/100 slices for DR-v2 and external_l1_max, with unfavorable direction for DR-v2 (0.56 vs 0.72); completion of DR-v2-selection-fix and strict_f3 in the same timestamp remains open for full within-run comparison.
+
+- Cohere budget-4 follow-up (`20260429T_COHERE_GSM8K_B4_CLAIM_SAFETY`) now has final `strict_f3` and `external_l1_max` slices; direction remains unfavorable to `strict_f3` (`0.55` vs `0.72`, delta `-0.17`). This reduces uncertainty about whether budget-2 was an isolated low-budget artifact, but broader method completion at budget 4 remains open.
+
+- Minimal Cohere follow-up execution (`20260429T_COHERE_NEURIPS_MINIMAL_RUN1`) now has completed external baselines for `external_l1_max`, `tale`, and `s1` on `openai/gsm8k`, budget `2`, seed `11`; in this slice `strict_f3` is below `external_l1_max` (0.54 vs 0.69). Remaining gaps are completion of `self_consistency_3` and final-safe direct-reserve slices.
+
+
 1. **Broader independent confirmation breadth**
    - Current evidence is strong but still concentrated in current finalized passes.
    - Need broader independent confirmations without scope drift.

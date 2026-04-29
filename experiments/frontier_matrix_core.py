@@ -19,6 +19,7 @@ from experiments.controllers import (
     DirectReserveFrontierGateController,
     DirectReserveFrontierGateV2Controller,
     DirectReserveFrontierGateV2SelectionFixV1Controller,
+    DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller,
     DirectReserveLearnedOverrideController,
     CalibratedNearDirectFrontierGateController,
     GlobalDiversityAggregationController,
