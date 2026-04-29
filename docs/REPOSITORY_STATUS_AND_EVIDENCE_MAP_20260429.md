@@ -23,6 +23,10 @@
    - Tiny checks, interrupted runs, launch-attempt notes, Wulver/Slurm handoffs.
 4. **Excluded diagnostic-only methods**
    - `direct_reserve_semantic_frontier_v2_thresholded_ordered` is excluded from live runtime comparisons.
+5. **Mock-backed vs Cohere-backed diagnostic timestamps**
+   - Do **not** mix mock-default verifier runs with explicit Cohere verifier-backend runs when interpreting `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1`. Index: `docs/OUTPUTS_ARTIFACT_INDEX.md`.
+
+Concise outputs map: `docs/OUTPUTS_ARTIFACT_INDEX.md`. Selector/coverage sequencing: `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md`.
 
 ## Durable Cohere progress source
 - Durable Codex-local source of truth:
