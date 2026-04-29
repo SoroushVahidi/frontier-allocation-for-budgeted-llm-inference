@@ -7247,9 +7247,31 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         candidates = build_candidates_from_dr_v2_metadata(question, metadata)
         if not candidates:
             metadata["ov_rerank_applied"] = False
+            metadata["candidate_count"] = 0
+            metadata["answer_group_count"] = 0
+            metadata["selected_candidate_id"] = ""
+            metadata["selected_normalized_answer"] = _normalize_answer(base_prediction) or "__unknown__"
+            metadata["ov_rerank_selected_answer"] = base_prediction
+            metadata["selected_group_score"] = 0.0
+            metadata["verifier_backend"] = self.verifier_backend
+            metadata["verifier_calls"] = 0
             metadata["single_candidate_fallback"] = True
-            metadata["fallback_reason"] = "no_candidates"
-            return base
+            metadata["fallback_reason"] = "no_candidates_extracted"
+            metadata["ov_rerank_original_dr_v2_selected_answer"] = base_prediction
+            metadata["method_family"] = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1"
+            metadata["diagnostic_only"] = False
+            metadata["not_canonical"] = True
+            return MethodResult(
+                method=self.method_name,
+                prediction=base_prediction,
+                is_correct=self._answers_match(base_prediction, gold_answer),
+                actions_used=base.actions_used,
+                expansions=base.expansions,
+                verifications=base.verifications,
+                avg_surviving_branches=base.avg_surviving_branches,
+                budget_exhausted=base.budget_exhausted,
+                metadata=metadata,
+            )
 
         # Fallback only when there is no real reranking surface.
         if len(candidates) <= 1:
@@ -7258,11 +7280,13 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
             metadata["answer_group_count"] = int(len({_normalize_answer(c.final_answer) or "__unknown__" for c in candidates}))
             metadata["selected_candidate_id"] = candidates[0].candidate_id
             metadata["selected_normalized_answer"] = _normalize_answer(candidates[0].final_answer) or "__unknown__"
+            metadata["ov_rerank_selected_answer"] = base_prediction
             metadata["selected_group_score"] = 0.0
             metadata["verifier_backend"] = self.verifier_backend
             metadata["verifier_calls"] = 0
             metadata["single_candidate_fallback"] = True
             metadata["fallback_reason"] = "single_candidate_only"
+            metadata["ov_rerank_original_dr_v2_selected_answer"] = base_prediction
             metadata["method_family"] = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1"
             metadata["diagnostic_only"] = False
             metadata["not_canonical"] = True
@@ -7326,6 +7350,7 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         metadata["answer_group_count"] = int(len({(_normalize_answer(c.final_answer) or "__unknown__") for c in candidates}))
         metadata["selected_candidate_id"] = selected.candidate_id if selected is not None else ""
         metadata["selected_normalized_answer"] = final_norm
+        metadata["ov_rerank_selected_answer"] = final_answer
         metadata["selected_group_score"] = float(decision.selected_group_score)
         metadata["verifier_backend"] = self.verifier_backend
         metadata["verifier_calls"] = int(decision.verifier_calls)

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from scripts.report_outcome_verifier_rerank_results import (
+    DEFAULT_METHODS,
     build_report,
     compute_accuracy_table,
     compute_claim_safety,
@@ -136,3 +137,45 @@ def test_build_report_handles_missing_selector_fields(tmp_path: Path):
     summary = json.loads((artifact / "ov_rerank_summary.json").read_text(encoding="utf-8"))
     assert "selector_fields_missing" in summary
     assert summary["claim_safety"]["classification"] == "incomplete_not_claim_safe"
+
+
+def test_build_report_reads_ov_selected_answer_alias(tmp_path: Path):
+    artifact = tmp_path / "outputs" / "cohere_real_model_cost_normalized_validation_SYNTH2"
+    artifact.mkdir(parents=True, exist_ok=True)
+    (artifact / "manifest.json").write_text(
+        json.dumps(
+            {
+                "providers": ["cohere"],
+                "models": {"cohere": "command-r-plus-08-2024"},
+                "datasets": ["openai/gsm8k"],
+                "budgets": [4],
+                "seeds": [11],
+                "methods": DEFAULT_METHODS,
+                "target_scored_per_slice": 1,
+            }
+        ),
+        encoding="utf-8",
+    )
+    rows = [
+        _row("external_l1_max", "e1", 1),
+        _row("direct_reserve_semantic_frontier_v2", "e1", 0, gold_in_tree=1),
+        _row("direct_reserve_semantic_frontier_v2_selection_fix_v1", "e1", 0),
+        _row(
+            "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+            "e1",
+            1,
+            md={
+                "ov_rerank_original_dr_v2_selected_answer": "12",
+                "ov_rerank_selected_answer": "13",
+                "verifier_calls": 2,
+            },
+        ),
+    ]
+    with (artifact / "per_example_records.jsonl").open("w", encoding="utf-8") as f:
+        for r in rows:
+            f.write(json.dumps(r) + "\n")
+    rp = tmp_path / "docs" / "r.md"
+    build_report(artifact_dir=artifact, run_timestamp="SYNTH2", report_path=rp)
+    diag_csv = (artifact / "ov_rerank_selector_case_diagnostics.csv").read_text(encoding="utf-8")
+    assert "selected_answer_after_rerank" in diag_csv
+    assert "13" in diag_csv

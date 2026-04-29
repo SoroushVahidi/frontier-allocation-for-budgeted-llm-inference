@@ -284,7 +284,7 @@ def compute_selector_diagnostics(rows_by_key: dict[tuple[str, str, int, int, str
                 "budget": key[3],
                 "example_id": key[4],
                 "selected_answer_before_rerank": md.get("ov_rerank_original_dr_v2_selected_answer"),
-                "selected_answer_after_rerank": md.get("selected_normalized_answer"),
+                "selected_answer_after_rerank": md.get("ov_rerank_selected_answer", md.get("selected_normalized_answer")),
                 "gold_answer_canonical": ov.get("gold_answer_canonical"),
                 "gold_present_in_candidate_pool": md.get("ov_rerank_gold_present_in_candidates"),
                 "answer_group_count": md.get("answer_group_count"),
@@ -310,6 +310,7 @@ def compute_selector_diagnostics(rows_by_key: dict[tuple[str, str, int, int, str
 def available_selector_fields(ov_rows: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
     wanted = [
         "ov_rerank_original_dr_v2_selected_answer",
+        "ov_rerank_selected_answer",
         "selected_normalized_answer",
         "gold_answer_canonical",
         "ov_rerank_gold_present_in_candidates",

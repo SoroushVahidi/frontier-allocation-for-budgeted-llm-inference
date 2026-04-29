@@ -544,6 +544,11 @@ def main() -> None:
         "cohere": os.getenv("COHERE_API_KEY", ""),
         "openai": os.getenv("OPENAI_API_KEY", ""),
     }
+    ov_verifier_env = {
+        "DR_V2_OV_RERANK_VERIFIER_BACKEND": os.getenv("DR_V2_OV_RERANK_VERIFIER_BACKEND", ""),
+        "DR_V2_OV_RERANK_COHERE_MODEL": os.getenv("DR_V2_OV_RERANK_COHERE_MODEL", ""),
+        "COHERE_API_KEY_present": "yes" if bool(api_keys.get("cohere")) else "no",
+    }
     dataset_load_failures: dict[tuple[str, str, int], str] = {}
     runtime_missing: set[tuple[str, str, int, int, str]] = set()
     branch_traces: list[dict[str, Any]] = []
@@ -718,6 +723,9 @@ def main() -> None:
                                     "latency_seconds": float(round(latency, 6)),
                                     "estimated_cost_usd": float(cost),
                                     "timestamp": datetime.now(timezone.utc).isoformat(),
+                                    "ov_verifier_backend_env": ov_verifier_env["DR_V2_OV_RERANK_VERIFIER_BACKEND"] or "unset",
+                                    "ov_verifier_model_env": ov_verifier_env["DR_V2_OV_RERANK_COHERE_MODEL"] or "unset",
+                                    "cohere_api_key_present": ov_verifier_env["COHERE_API_KEY_present"],
                                 }
                                 append_jsonl(per_example_path, row)
                                 records.append(row)
@@ -1034,6 +1042,11 @@ def main() -> None:
         "provider_status": provider_status,
         "pricing": {"input_cost_per_1k": args.input_cost_per_1k, "output_cost_per_1k": args.output_cost_per_1k},
         "save_branch_traces": bool(args.save_branch_traces),
+        "ov_verifier_environment": {
+            "DR_V2_OV_RERANK_VERIFIER_BACKEND": ov_verifier_env["DR_V2_OV_RERANK_VERIFIER_BACKEND"] or "unset",
+            "DR_V2_OV_RERANK_COHERE_MODEL": ov_verifier_env["DR_V2_OV_RERANK_COHERE_MODEL"] or "unset",
+            "COHERE_API_KEY_present": ov_verifier_env["COHERE_API_KEY_present"],
+        },
         "branch_trace_stats": trace_stats,
         "outputs": [
             "manifest.json",

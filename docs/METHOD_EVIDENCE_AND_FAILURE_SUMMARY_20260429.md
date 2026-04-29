@@ -251,6 +251,8 @@ Status:
 Takeaway:
 
 - Treat as implemented-but-unproven until the required 100-case paired run is completed.
+- Timestamp provenance: `20260429T_OV_RERANK_100CASE` was launched without explicit OV backend env override and should be treated as mock-backed diagnostic-only.
+- Real backend run now tracked separately under `20260429T_OV_RERANK_100CASE_COHERE_BACKEND` (Cohere OV backend env explicitly set).
 
 ## 3. Cross-method failure-mode map
 

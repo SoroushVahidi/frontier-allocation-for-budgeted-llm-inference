@@ -16,6 +16,8 @@ This follows Cobbe-style outcome verification ideas: verify candidate outcomes, 
 - DR-v2-style candidate list can be re-ranked by normalized answer groups.
 - Support bonus rewards repeated independent support for same normalized answer.
 - Prompt builder is strict verifier-only and excludes gold/reference answers.
+- Controller emits explicit fallback metadata when no candidates are extracted or only one candidate exists (`fallback_reason`, `single_candidate_fallback`, `candidate_count`, `verifier_calls`).
+- Result metadata includes both normalized and raw selected-answer fields for reporting compatibility (`selected_normalized_answer`, `ov_rerank_selected_answer`, `ov_rerank_original_dr_v2_selected_answer`).
 
 ## Not yet implemented
 - No completed paired 100-case Cohere result is included in this file.

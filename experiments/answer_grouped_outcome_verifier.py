@@ -295,6 +295,18 @@ def build_candidates_from_dr_v2_metadata(question: str, metadata: dict[str, obje
                 continue
             branch_id = str(s.get("branch_id", f"state_{idx}"))
             source = str(s.get("source", branch_id))
+            state_score = s.get("score", None)
+            source_prior = 0.5
+            if state_score is not None:
+                try:
+                    source_prior = min(max(float(state_score), 0.0), 1.0)
+                except Exception:
+                    source_prior = 0.5
+            depth = s.get("branch_depth", 0)
+            try:
+                cost_norm = min(max(float(depth) / 10.0, 0.0), 1.0)
+            except Exception:
+                cost_norm = 0.0
             trace_parts = s.get("trace_events", [])
             trace_text = ""
             if isinstance(trace_parts, list):
@@ -303,6 +315,10 @@ def build_candidates_from_dr_v2_metadata(question: str, metadata: dict[str, obje
                     if not isinstance(ev, dict):
                         continue
                     frags.append(str(ev.get("reasoning_text", "") or ev.get("response_text", "") or ""))
+                steps = s.get("steps", [])
+                if isinstance(steps, list):
+                    for step in steps:
+                        frags.append(str(step))
                 trace_text = "\n".join(x for x in frags if x).strip()
             candidates.append(
                 CandidateAnswer(
@@ -312,8 +328,8 @@ def build_candidates_from_dr_v2_metadata(question: str, metadata: dict[str, obje
                     final_answer=final_answer,
                     normalized_answer=_normalize_key(final_answer),
                     source_id=source,
-                    source_prior=0.5,
-                    cost_norm=0.0,
+                    source_prior=source_prior,
+                    cost_norm=cost_norm,
                 )
             )
     if not candidates:

@@ -112,8 +112,23 @@ def test_cohere_verifier_parses_json_and_fallback():
 def test_build_candidates_from_metadata_and_grouping():
     md = {
         "final_branch_states": [
-            {"branch_id": "b1", "predicted_answer": "42", "source": "direct_reserve", "trace_events": [{"reasoning_text": "x"}]},
-            {"branch_id": "b2", "predicted_answer": "42", "source": "frontier", "trace_events": [{"response_text": "y"}]},
+            {
+                "branch_id": "b1",
+                "predicted_answer": "42",
+                "source": "direct_reserve",
+                "trace_events": [{"reasoning_text": "x"}],
+                "score": 0.8,
+                "branch_depth": 3,
+            },
+            {
+                "branch_id": "b2",
+                "predicted_answer": "42",
+                "source": "frontier",
+                "trace_events": [{"response_text": "y"}],
+                "steps": ["z"],
+                "score": 0.2,
+                "branch_depth": 1,
+            },
             {"branch_id": "b3", "predicted_answer": "43", "source": "frontier", "trace_events": []},
         ]
     }
@@ -121,6 +136,12 @@ def test_build_candidates_from_metadata_and_grouping():
     grouped = group_candidates_by_normalized_answer(cands)
     assert len(cands) == 3
     assert "42" in grouped
+    first = next(c for c in cands if c.candidate_id == "b1")
+    second = next(c for c in cands if c.candidate_id == "b2")
+    assert first.trace == "x"
+    assert second.trace == "y\nz"
+    assert first.source_prior == 0.8
+    assert first.cost_norm > second.cost_norm
 
 
 def test_recover_present_not_selected_with_mock_verifier():

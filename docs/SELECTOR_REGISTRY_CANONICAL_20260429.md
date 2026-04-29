@@ -129,9 +129,10 @@ Core idea:
 
 Implementation status:
 
-- Planned / being reimplemented after a conflicted branch.
-- Should start with a deterministic/mock verifier and prompt builder.
-- Live Cohere validation not yet done.
+- Implemented and live-runnable as `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1`.
+- Default runtime backend is deterministic/mock for safety; optional Cohere backend is available via env-configured verifier backend.
+- Emits rerank metadata (candidate/group/verifier payloads, selected answer IDs/scores, fallback reason, verifier calls/backend) for post-run diagnostics.
+- Completed 100-case paired Cohere validation is still pending; do not claim improvement until that run completes.
 
 Why it is next:
 

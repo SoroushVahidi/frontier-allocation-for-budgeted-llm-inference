@@ -21,3 +21,7 @@ Current 100-case real-model evidence does not support DR-v2 over external_l1_max
 Rationale: preserve DR-v2 candidate generation but improve final answer selection via grouped outcome verification.
 
 Current status: implemented and live-runnable with mock verifier default; canonical judgment still pending completed paired 100-case Cohere run.
+
+Run tracking note:
+- `20260429T_OV_RERANK_100CASE` is mock-backed diagnostic provenance (OV backend env unset) and is not claim-safe for real outcome-verifier-backend conclusions.
+- `20260429T_OV_RERANK_100CASE_COHERE_BACKEND` is the clean real Cohere-backend selector run (new timestamp to avoid mixing mock/cohere-backed OV rows).
