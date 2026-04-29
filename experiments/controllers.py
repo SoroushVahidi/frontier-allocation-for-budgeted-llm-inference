@@ -22,6 +22,12 @@ from experiments.typed_strategy_prompts import TypedStrategyPrompt, get_typed_st
 from experiments.reasoning_diversity import compute_reasoning_diversity_components, reasoning_signature
 from experiments.semantic_family_clustering import compute_branching_necessity_score, root_semantic_family_snapshot
 from experiments.verifiers import CandidateVerifier
+from experiments.answer_grouped_outcome_verifier import (
+    CandidateAnswer,
+    DeterministicMockOutcomeVerifier,
+    VerifierResult,
+    select_answer_group_with_outcome_verifier,
+)
 from scripts.direct_reserve_learned_override_utils import (
     DEFAULT_MODEL_TYPE as DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL,
     build_runtime_answer_group_candidates,
@@ -7211,6 +7217,51 @@ class DirectReserveFrontierGateV2SelectionFixV1Controller(DirectReserveFrontierG
             budget_exhausted=base.budget_exhausted,
             metadata=metadata,
         )
+
+
+class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserveFrontierGateV2Controller):
+    """DR-v2 candidate generation with answer-grouped outcome-verifier final reranking."""
+
+    def __init__(self, *args: Any, method_name: str = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1", **kwargs: Any) -> None:
+        super().__init__(*args, method_name=method_name, **kwargs)
+        self.emit_full_traces = True
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        base = super().run(question, gold_answer)
+        metadata = dict(base.metadata or {})
+        states = list(metadata.get("final_branch_states", []) or [])
+        if not states:
+            metadata["outcome_verifier_rerank_applied"] = False
+            metadata["outcome_verifier_rerank_reason"] = "missing_final_branch_states"
+            return MethodResult(method=self.method_name, prediction=base.prediction, is_correct=bool(base.is_correct), actions_used=base.actions_used, expansions=base.expansions, verifications=base.verifications, avg_surviving_branches=base.avg_surviving_branches, budget_exhausted=base.budget_exhausted, metadata=metadata)
+
+        candidates=[]
+        mapping={}
+        for i,st in enumerate(states):
+            ans=str(st.get("predicted_answer", "")).strip()
+            if not ans:
+                continue
+            cid=f"cand_{i}"
+            c=CandidateAnswer(candidate_id=cid,problem=question,trace=str(st.get("reasoning_text", "")),final_answer=ans,normalized_answer=_normalize_answer(ans),source_family=str(st.get("source", st.get("branch_id", cid))),cost_norm=float(i),source_prior=0.5,metadata={})
+            candidates.append(c)
+            score=float(st.get("score", 0.5) or 0.5)
+            mapping[cid]=VerifierResult(prob_correct=max(0.0,min(1.0,score)),trace_final_consistent=True,answer_equivalent_if_normalized=None,major_error=False,short_reason="heuristic_from_branch_score")
+        if not candidates:
+            metadata["outcome_verifier_rerank_applied"] = False
+            metadata["outcome_verifier_rerank_reason"] = "no_valid_candidates"
+            return MethodResult(method=self.method_name, prediction=base.prediction, is_correct=bool(base.is_correct), actions_used=base.actions_used, expansions=base.expansions, verifications=base.verifications, avg_surviving_branches=base.avg_surviving_branches, budget_exhausted=base.budget_exhausted, metadata=metadata)
+
+        decision=select_answer_group_with_outcome_verifier(candidates, DeterministicMockOutcomeVerifier(mapping))
+        pred=decision.selected_candidate.final_answer
+        metadata["outcome_verifier_rerank_applied"] = True
+        metadata["outcome_verifier_backend"] = "deterministic_mock_from_branch_score"
+        metadata["outcome_verifier_todo"] = "replace mock verifier with live model-backed verifier"
+        metadata["outcome_verifier_selected_group"] = decision.selected_group
+        metadata["outcome_verifier_selected_candidate_id"] = decision.selected_candidate.candidate_id
+        metadata["method_family"] = "diagnostic_direct_reserve_frontier_gate_v2_outcome_verifier_rerank_v1"
+        metadata["not_canonical"] = True
+        metadata["final_answer"] = pred
+        return MethodResult(method=self.method_name, prediction=pred, is_correct=self._answers_match(pred, gold_answer), actions_used=base.actions_used, expansions=base.expansions, verifications=base.verifications, avg_surviving_branches=base.avg_surviving_branches, budget_exhausted=base.budget_exhausted, metadata=metadata)
 
 
 class NearDirectReserveFrontierGateController(BaseController):
