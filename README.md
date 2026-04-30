@@ -8,12 +8,21 @@ The project is about deciding where limited inference compute should go across a
 
 The active engineering goal is to defeat `external_l1_max` honestly with completed, paired, trace-complete evidence.
 
-Current phase:
+A real paired 30-case Cohere/GSM8K trace artifact now exists:
 
-1. make real output artifacts trace-complete enough for selector-oracle analysis;
-2. measure whether the current candidate pool already contains the correct answer often enough;
-3. improve selectors/rerankers if the oracle selector ceiling is high;
-4. move to generation/frontier coverage repair if the oracle selector ceiling is low.
+```text
+outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/
+```
+
+Current evidence from that artifact:
+
+- `external_l1_max` accuracy: 0.8000
+- current DR-v2 accuracy: 0.6333
+- oracle selector ceiling over DR-v2 candidate groups: 0.8667
+- corrected selector gap: 0.2333
+- most L1>DR-v2 losses are gold-present but not selected, not pure coverage failures.
+
+Simple deployable offline selectors did not improve net accuracy. The next phase is a **conservative outcome-verifier-style override**: keep the current DR-v2 answer by default and override only when a competing candidate answer has stronger correctness evidence.
 
 Do **not** claim robust or broad superiority over `external_l1_max` unless a completed claim-safe evaluation document supports it.
 
@@ -26,6 +35,7 @@ Do **not** claim robust or broad superiority over `external_l1_max` unless a com
 | Reviewer/collaborator orientation | `docs/CANONICAL_START_HERE.md` |
 | Repository structure | `docs/REPO_MAP.md` |
 | Current selector/L1-defeat track | `docs/SELECTOR_START_HERE.md` |
+| Outcome-verifier selector roadmap | `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` |
 | Selector trace artifact usability | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` |
 | Paper evidence rules | `docs/PAPER_SOURCE_OF_TRUTH.md` |
 | Safe vs unsafe claims | `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` |
@@ -68,37 +78,32 @@ Run the canonical artifact builder:
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
 
+## Current L1-defeat focus
+
+The selector track asks:
+
+> Given the candidate answers already found by DR-v2, can a conservative verifier-style selector recover correct present-but-not-selected answers without breaking current correct answers?
+
+The next offline step is to analyze:
+
+- gold-present but DR-v2-selected-wrong cases;
+- support-only break cases;
+- evidence that separates safe overrides from unsafe overrides.
+
+See `docs/SELECTOR_START_HERE.md` and `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md`.
+
 ## Method-surface distinction
 
 Keep this distinction explicit:
 
 - manuscript-facing matched-surface representative: `strict_f3`;
 - broader operational default on a different surface: `strict_gate1_cap_k6`;
-- DR-v2 / OV / PRM rerank variants are active L1-defeat development methods, not automatically promoted paper winners.
-
-## Current selector/L1-defeat focus
-
-The selector track asks:
-
-> Given the candidate answers already found by DR-v2 / OV / PRM variants, can a better selector choose the correct final answer often enough to close the gap to `external_l1_max`?
-
-The next decisive measurement is a real selector-oracle analysis with:
-
-- gold answer,
-- selected answer,
-- correctness/exact match,
-- candidate answer groups,
-- normalized candidate answers,
-- support/source metadata,
-- optional OV/PRM scores,
-- paired comparison with `external_l1_max` when available.
-
-See `docs/SELECTOR_START_HERE.md` and `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md`.
+- DR-v2 / OV / PRM / verifier-selector variants are active L1-defeat development methods, not automatically promoted paper winners.
 
 ## What not to claim yet
 
 - Do **not** claim robust/universal superiority over external baselines.
-- Do **not** claim DR-v2, OV rerank, or PRM rerank beats `external_l1_max` without completed paired rows.
+- Do **not** claim DR-v2, OV rerank, PRM rerank, or verifier-selector variants beat `external_l1_max` without completed paired rows.
 - Do **not** treat mock-backed verifier runs as real Cohere verifier evidence.
 - Do **not** present diagnostic variants as final methods unless validated and promoted by canonical docs.
 - Do **not** assume historical runs have complete trace coverage.
