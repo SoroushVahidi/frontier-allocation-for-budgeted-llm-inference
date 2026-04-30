@@ -107,23 +107,40 @@ def _clip01(x: float) -> float:
     return min(max(float(x), 0.0), 1.0)
 
 
-def aggregate_trace_score(step_results: list[StepVerifierResult]) -> float:
+def aggregate_trace_score(step_results: list[StepVerifierResult], mode: str = "hybrid_mean_min") -> float:
     if not step_results:
         return 0.0
     c_t = [_clip01(s.validity_score) for s in step_results]
     mean_validity = sum(c_t) / len(c_t)
     min_validity = min(c_t)
+    last_validity = c_t[-1]
+    clipped = [max(v, 1e-3) for v in c_t]
+    log_prod = math.exp(sum(math.log(v) for v in clipped) / len(clipped))
     q_i = _LAMBDA_TRACE * mean_validity + (1.0 - _LAMBDA_TRACE) * min_validity
     prog_vals = [s.progress_score for s in step_results if s.progress_score is not None]
     if prog_vals:
-        mean_progress = sum(float(p) for p in prog_vals) / len(prog_vals)
-        mean_progress = _clip01(mean_progress)
-        u_i = _BETA_PROGRESS * q_i + (1.0 - _BETA_PROGRESS) * mean_progress
+        mean_progress = _clip01(sum(float(p) for p in prog_vals) / len(prog_vals))
+        hybrid = _BETA_PROGRESS * q_i + (1.0 - _BETA_PROGRESS) * mean_progress
     else:
-        u_i = q_i
-    if any(s.major_error for s in step_results):
+        hybrid = q_i
+    mode = str(mode or "hybrid_mean_min").strip().lower()
+    if mode == "min_step":
+        u_i = min_validity
+    elif mode == "mean_step":
+        u_i = mean_validity
+    elif mode == "product":
+        u_i = log_prod
+    elif mode == "last_step":
+        u_i = last_validity
+    elif mode == "hybrid_mean_min":
+        u_i = hybrid
+    elif mode == "hybrid_mean_min_major_error_cap":
+        u_i = hybrid
+    else:
+        raise ValueError(f"unknown aggregation mode: {mode}")
+    if any(s.major_error for s in step_results) and mode in {"hybrid_mean_min","hybrid_mean_min_major_error_cap","product"}:
         u_i = min(u_i, 0.25)
-    return float(u_i)
+    return float(_clip01(u_i))
 
 
 def _norm_answer_key(c: CandidateAnswer) -> str:
@@ -136,6 +153,7 @@ def select_answer_group_with_prm_step_verifier(
     *,
     verifier_backend: str = "mock",
     verifier_model: str = "command-r-plus-08-2024",
+    aggregation_mode: str = "hybrid_mean_min",
 ) -> PRMSelectorDecision:
     trace_scores: dict[str, float] = {}
     step_payload: dict[str, list[dict[str, Any]]] = {}
@@ -163,7 +181,7 @@ def select_answer_group_with_prm_step_verifier(
                 }
             )
             prefix.append(step)
-        u_i = aggregate_trace_score(step_results)
+        u_i = aggregate_trace_score(step_results, mode=aggregation_mode)
         trace_scores[c.candidate_id] = u_i
         step_payload[c.candidate_id] = frags
 

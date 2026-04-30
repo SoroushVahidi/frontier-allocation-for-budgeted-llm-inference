@@ -9,6 +9,7 @@ import math
 import re
 from typing import Any, Callable, Protocol
 import json
+import os
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -34,6 +35,7 @@ from experiments.prm_step_verifier_rerank import (
     build_prm_candidates_from_dr_v2_metadata,
     select_answer_group_with_prm_step_verifier,
 )
+from experiments.selector_error_features import build_group_feature_rows
 from experiments.verifiers import CandidateVerifier
 from scripts.direct_reserve_learned_override_utils import (
     DEFAULT_MODEL_TYPE as DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL,
@@ -7281,11 +7283,14 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         method_name: str = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
         verifier_backend: str = "mock",
         verifier_model: str = "command-r-plus-08-2024",
+        selector_candidate_cap: int | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, method_name=method_name, **kwargs)
         self.verifier_backend = str(verifier_backend).strip().lower()
         self.verifier_model = str(verifier_model).strip() or "command-r-plus-08-2024"
+        env_cap = os.getenv("FRONTIER_OV_SELECTOR_CANDIDATE_CAP", "").strip()
+        self.selector_candidate_cap = selector_candidate_cap if selector_candidate_cap is not None else (int(env_cap) if env_cap.isdigit() else 0)
 
     def _build_verifier(self) -> Any:
         backend = self.verifier_backend
@@ -7300,8 +7305,12 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         if "selector_candidate_pool" not in metadata and isinstance(metadata.get("final_branch_states"), list):
             metadata["selector_candidate_pool"] = list(metadata.get("final_branch_states", []))
         candidates, extraction_sources = build_candidates_from_metadata(question, metadata)
+        configured_candidate_cap = int(self.selector_candidate_cap) if int(self.selector_candidate_cap) > 0 else 0
+        if configured_candidate_cap > 0:
+            candidates = candidates[:configured_candidate_cap]
         if not candidates:
             metadata["ov_rerank_applied"] = False
+            metadata["selector_configured_candidate_cap"] = configured_candidate_cap
             metadata["candidate_count"] = 0
             metadata["answer_group_count"] = 0
             metadata["selected_candidate_id"] = ""
@@ -7332,7 +7341,9 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         # Fallback only when there is no real reranking surface.
         if len(candidates) <= 1:
             metadata["ov_rerank_applied"] = False
+            metadata["selector_configured_candidate_cap"] = configured_candidate_cap
             metadata["candidate_count"] = int(len(candidates))
+            metadata["candidate_count_warning"] = "candidate_count<=2 likely limits verifier best-of-N gains" if len(candidates) <= 2 else ""
             metadata["answer_group_count"] = int(len({_normalize_answer(c.final_answer) or "__unknown__" for c in candidates}))
             metadata["selected_candidate_id"] = candidates[0].candidate_id
             metadata["selected_normalized_answer"] = _normalize_answer(candidates[0].final_answer) or "__unknown__"
@@ -7406,6 +7417,7 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         base_norm = _normalize_answer(base_prediction) or "__unknown__"
         final_norm = _normalize_answer(final_answer) or "__unknown__"
         metadata["ov_rerank_applied"] = True
+        metadata["selector_configured_candidate_cap"] = configured_candidate_cap
         metadata["candidate_count"] = int(len(candidates))
         metadata["answer_group_count"] = int(len({(_normalize_answer(c.final_answer) or "__unknown__") for c in candidates}))
         metadata["selected_candidate_id"] = selected.candidate_id if selected is not None else ""
@@ -7417,6 +7429,24 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         metadata["single_candidate_fallback"] = False
         metadata["fallback_reason"] = ""
         metadata["ov_rerank_group_scores"] = group_payload
+        group_feature_inputs: list[dict[str, Any]] = []
+        for g in decision.group_scores:
+            gmembers = [c for c in candidates if (_normalize_answer(c.final_answer) or "__unknown__") == g.normalized_answer]
+            rep = next((c for c in candidates if c.candidate_id == g.representative_candidate_id), gmembers[0] if gmembers else None)
+            if rep is None:
+                continue
+            group_feature_inputs.append(
+                {
+                    "normalized_answer": g.normalized_answer,
+                    "support_count": int(g.original_group_size),
+                    "source_family": str(rep.source_id or rep.candidate_id),
+                    "ov_score": float(g.group_score),
+                    "prm_score": None,
+                    "trace": rep.trace,
+                    "final_answer": rep.final_answer,
+                }
+            )
+        metadata["selector_group_feature_rows"] = build_group_feature_rows(question, group_feature_inputs)
         metadata["ov_rerank_candidate_scores"] = candidate_payload
         metadata["ov_rerank_verifier_results"] = verifier_payload
         metadata["ov_rerank_original_dr_v2_selected_answer"] = base_prediction
@@ -7450,11 +7480,16 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
         method_name: str = "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
         verifier_backend: str = "mock",
         verifier_model: str = "command-r-plus-08-2024",
+        prm_aggregation_mode: str = "hybrid_mean_min",
+        selector_candidate_cap: int | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, method_name=method_name, **kwargs)
         self.verifier_backend = str(verifier_backend).strip().lower()
         self.verifier_model = str(verifier_model).strip() or "command-r-plus-08-2024"
+        self.prm_aggregation_mode = str(prm_aggregation_mode).strip().lower() or "hybrid_mean_min"
+        env_cap = os.getenv("FRONTIER_PRM_SELECTOR_CANDIDATE_CAP", "").strip()
+        self.selector_candidate_cap = selector_candidate_cap if selector_candidate_cap is not None else (int(env_cap) if env_cap.isdigit() else 0)
 
     def _build_step_verifier(self) -> Any:
         if self.verifier_backend == "cohere":
@@ -7468,6 +7503,9 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
         if "selector_candidate_pool" not in metadata and isinstance(metadata.get("final_branch_states"), list):
             metadata["selector_candidate_pool"] = list(metadata.get("final_branch_states", []))
         candidates, extraction_sources = build_candidates_from_metadata(question, metadata)
+        configured_candidate_cap = int(self.selector_candidate_cap) if int(self.selector_candidate_cap) > 0 else 0
+        if configured_candidate_cap > 0:
+            candidates = candidates[:configured_candidate_cap]
 
         def _emit_fallback(
             *,
@@ -7477,6 +7515,7 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
             group_count: int,
         ) -> MethodResult:
             metadata["prm_rerank_applied"] = applied
+            metadata["selector_configured_candidate_cap"] = configured_candidate_cap
             metadata["candidate_count"] = int(cand_count)
             metadata["answer_group_count"] = int(group_count)
             metadata["selected_candidate_id"] = candidates[0].candidate_id if candidates else ""
@@ -7533,6 +7572,7 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
             verifier,
             verifier_backend=self.verifier_backend,
             verifier_model=self.verifier_model,
+            aggregation_mode=self.prm_aggregation_mode,
         )
         selected = next((c for c in candidates if c.candidate_id == decision.selected_candidate_id), None)
         if selected is None:
@@ -7563,6 +7603,7 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
         ]
 
         metadata["prm_rerank_applied"] = True
+        metadata["selector_configured_candidate_cap"] = configured_candidate_cap
         metadata["candidate_count"] = int(len(candidates))
         metadata["answer_group_count"] = int(len({(_normalize_answer(c.final_answer) or "__unknown__") for c in candidates}))
         metadata["selected_candidate_id"] = selected.candidate_id if selected is not None else ""
@@ -7571,10 +7612,29 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
         metadata["selected_group_score"] = float(decision.selected_group_score)
         metadata["prm_step_verifier_backend"] = decision.verifier_backend
         metadata["prm_step_verifier_model"] = decision.verifier_model
+        metadata["prm_aggregation_mode"] = self.prm_aggregation_mode
         metadata["prm_step_verifier_calls"] = int(decision.verifier_calls)
         metadata["prm_step_scores"] = decision.step_scores
         metadata["prm_trace_scores"] = {k: float(v) for k, v in decision.trace_scores.items()}
         metadata["prm_group_scores"] = group_payload
+        group_feature_inputs = []
+        for g in decision.group_scores:
+            gmembers = [c for c in candidates if (_normalize_answer(c.final_answer) or "__unknown__") == g.normalized_answer]
+            rep = next((c for c in candidates if c.candidate_id == g.representative_candidate_id), gmembers[0] if gmembers else None)
+            if rep is None:
+                continue
+            group_feature_inputs.append(
+                {
+                    "normalized_answer": g.normalized_answer,
+                    "support_count": int(g.original_group_size),
+                    "source_family": str(rep.source_id or rep.candidate_id),
+                    "ov_score": None,
+                    "prm_score": float(g.group_score),
+                    "trace": rep.trace,
+                    "final_answer": rep.final_answer,
+                }
+            )
+        metadata["selector_group_feature_rows"] = build_group_feature_rows(question, group_feature_inputs)
         metadata["prm_original_dr_v2_selected_answer"] = base_prediction
         metadata["prm_gold_present_in_candidates"] = int(gold_norm in candidate_norms)
         metadata["prm_recovered_present_not_selected"] = int(
