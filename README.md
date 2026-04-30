@@ -8,21 +8,27 @@ The project is about deciding where limited inference compute should go across a
 
 The active engineering goal is to defeat `external_l1_max` honestly with completed, paired, trace-complete evidence.
 
-A real paired 30-case Cohere/GSM8K trace artifact now exists:
+The current working artifact is the compact selector tournament export from a focused 50-case Cohere/GSM8K run:
 
 ```text
-outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/
+outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
 ```
 
-Current evidence from that artifact:
+Associated paid real run:
 
-- `external_l1_max` accuracy: 0.8000
-- current DR-v2 accuracy: 0.6333
-- oracle selector ceiling over DR-v2 candidate groups: 0.8667
-- corrected selector gap: 0.2333
-- most L1>DR-v2 losses are gold-present but not selected, not pure coverage failures.
+```text
+outputs/cohere_real_model_cost_normalized_validation_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
+```
 
-Simple deployable offline selectors did not improve net accuracy. The next phase is a **conservative outcome-verifier-style override**: keep the current DR-v2 answer by default and override only when a competing candidate answer has stronger correctness evidence.
+Current evidence from the 50-case tournament:
+
+- `external_l1_max` accuracy: 0.72
+- current DR-v2 accuracy: 0.64
+- best deployable heuristic selector accuracy: 0.66
+- oracle selector ceiling: 0.84
+- best heuristic selectors are too noisy: 5 fixes, 4 breaks, 17 overrides, override precision 0.2941.
+
+Conclusion: DR-v2 candidate pools have substantial hidden value, but support/source/consistency heuristics are not strong enough for runtime promotion. The next serious selector is a **cached outcome-verifier selector** over existing candidate groups.
 
 Do **not** claim robust or broad superiority over `external_l1_max` unless a completed claim-safe evaluation document supports it.
 
@@ -31,6 +37,7 @@ Do **not** claim robust or broad superiority over `external_l1_max` unless a com
 | Need | Read |
 |---|---|
 | Current project state | `docs/CURRENT_PROJECT_STATUS.md` |
+| Fast selector execution policy | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` |
 | Full documentation map | `docs/DOCS_INDEX.md` |
 | Reviewer/collaborator orientation | `docs/CANONICAL_START_HERE.md` |
 | Repository structure | `docs/REPO_MAP.md` |
@@ -40,6 +47,20 @@ Do **not** claim robust or broad superiority over `external_l1_max` unless a com
 | Paper evidence rules | `docs/PAPER_SOURCE_OF_TRUTH.md` |
 | Safe vs unsafe claims | `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` |
 | Open gaps and risks | `docs/PAPER_OPEN_GAPS_AND_RISKS.md` |
+
+## API-cost rule
+
+Paid API calls are allowed only when the next call directly produces a selector result and the expected call count is known.
+
+For selector work:
+
+1. Use existing candidate pools first.
+2. Dry-run verifier-call count before paid scoring.
+3. Cache every verifier score.
+4. Do not regenerate answers just to test selectors.
+5. After any paid run, immediately export a compact selector artifact and run the selector tournament.
+
+See `docs/FAST_SELECTOR_EXECUTION_POLICY.md`.
 
 ## Canonical paper-facing artifacts
 
@@ -82,15 +103,9 @@ python scripts/paper/run_all_neurips_paper_artifacts.py
 
 The selector track asks:
 
-> Given the candidate answers already found by DR-v2, can a conservative verifier-style selector recover correct present-but-not-selected answers without breaking current correct answers?
+> Given candidate answers already found by DR-v2, can an outcome verifier estimate which candidate answer is correct more safely than support/source/consistency heuristics?
 
-The next offline step is to analyze:
-
-- gold-present but DR-v2-selected-wrong cases;
-- support-only break cases;
-- evidence that separates safe overrides from unsafe overrides.
-
-See `docs/SELECTOR_START_HERE.md` and `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md`.
+The next offline step is to implement a cached outcome-verifier selector scaffold over the 50-case compact artifact, first with dry-run call accounting and then with cached verifier scoring only if explicitly authorized.
 
 ## Method-surface distinction
 
@@ -104,7 +119,7 @@ Keep this distinction explicit:
 
 - Do **not** claim robust/universal superiority over external baselines.
 - Do **not** claim DR-v2, OV rerank, PRM rerank, or verifier-selector variants beat `external_l1_max` without completed paired rows.
-- Do **not** treat mock-backed verifier runs as real Cohere verifier evidence.
+- Do **not** treat mock-backed verifier runs as real verifier evidence.
 - Do **not** present diagnostic variants as final methods unless validated and promoted by canonical docs.
 - Do **not** assume historical runs have complete trace coverage.
 
