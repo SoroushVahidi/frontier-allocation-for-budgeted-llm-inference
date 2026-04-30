@@ -295,3 +295,35 @@ def test_prm_controller_recovery_metadata(monkeypatch):
     assert md["prm_rerank_applied"] is True
     assert md["prm_recovered_present_not_selected"] == 1
     assert res.prediction == "13"
+
+
+def test_prm_controller_candidate_cap_metadata(monkeypatch):
+    class _V:
+        def verify_step(self, problem, prefix_steps, current_step, final_answer):
+            return StepVerifierResult(0.8,0.8,False,'ok',False)
+
+    def _fake_super_run(self, question, gold_answer):
+        return MethodResult(method='direct_reserve_frontier_gate_v2',prediction='12',is_correct=False,actions_used=1,expansions=1,verifications=0,avg_surviving_branches=1.0,budget_exhausted=False,metadata={'final_branch_states':[{'branch_id':'a','predicted_answer':'12','source':'s','trace_events':[{'reasoning_text':'a'}]},{'branch_id':'b','predicted_answer':'13','source':'s','trace_events':[{'reasoning_text':'b'}]},{'branch_id':'c','predicted_answer':'14','source':'s','trace_events':[{'reasoning_text':'c'}]}]})
+
+    monkeypatch.setattr(DirectReserveFrontierGateV2Controller, 'run', _fake_super_run)
+    ctrl=DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(_DummyGenerator(),_DummyScorer(),4,strict_controller_factory=lambda remaining: None,selector_candidate_cap=2)
+    monkeypatch.setattr(ctrl,'_build_step_verifier',lambda: _V())
+    res=ctrl.run('q','13')
+    assert res.metadata['selector_configured_candidate_cap']==2
+    assert res.metadata['candidate_count']==2
+
+
+def test_prm_controller_default_cap_unchanged(monkeypatch):
+    def _fake_super_run(self, question, gold_answer):
+        return MethodResult(method='direct_reserve_frontier_gate_v2',prediction='12',is_correct=False,actions_used=1,expansions=1,verifications=0,avg_surviving_branches=1.0,budget_exhausted=False,metadata={'final_branch_states':[{'branch_id':'a','predicted_answer':'12','source':'s','trace_events':[{'reasoning_text':'a'}]},{'branch_id':'b','predicted_answer':'13','source':'s','trace_events':[{'reasoning_text':'b'}]}]})
+
+    class _V:
+        def verify_step(self, problem, prefix_steps, current_step, final_answer):
+            return StepVerifierResult(0.8,0.8,False,'ok',False)
+
+    monkeypatch.setattr(DirectReserveFrontierGateV2Controller, 'run', _fake_super_run)
+    ctrl=DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(_DummyGenerator(),_DummyScorer(),4,strict_controller_factory=lambda remaining: None)
+    monkeypatch.setattr(ctrl,'_build_step_verifier',lambda: _V())
+    res=ctrl.run('q','13')
+    assert res.metadata['selector_configured_candidate_cap']==0
+    assert res.metadata['candidate_count']==2

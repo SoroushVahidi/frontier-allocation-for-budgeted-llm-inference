@@ -1,0 +1,9 @@
+# Selector Artifact Schema Audit
+
+Artifacts found: 2
+
+CSV: outputs/selector_artifact_schema_audit_20260430T032203Z/selector_artifact_schema_audit.csv
+JSON: outputs/selector_artifact_schema_audit_20260430T032203Z/selector_artifact_schema_audit.json
+
+- outputs/cohere_real_model_cost_normalized_validation_20260425T133000Z_COHERE_STAGE1_MIN/per_example_records.jsonl => unknown_needs_manual_inspection (insufficient selector fields)
+- outputs/cohere_real_model_cost_normalized_validation_TRACE_REPLAY_COHERE_GSM8K_STAGE1_MIN/per_example_records.jsonl => usable_now (usable)
