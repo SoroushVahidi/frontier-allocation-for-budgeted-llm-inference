@@ -380,9 +380,37 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--provider", default="cohere")
     p.add_argument("--cohere-model", default="command-r-plus")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--smoke-generate", action="store_true")
+    p.add_argument("--smoke-limit", type=int, default=3)
     p.add_argument("--max-generation-calls", type=int, default=2000)
     p.add_argument("--max-annotation-calls", type=int, default=200)
     return p.parse_args()
+
+
+def resolve_cohere_model(model: str) -> str:
+    # command-r-plus alias is stale for this repository's runner; pin to known-valid model.
+    if _norm(model) == "command-r-plus":
+        return "command-r-plus-08-2024"
+    return _norm(model)
+
+
+def short_error_excerpt(stderr_text: str, stdout_text: str, limit: int = 280) -> str:
+    merged = (stderr_text or "").strip() or (stdout_text or "").strip()
+    if not merged:
+        return "no stderr/stdout captured"
+    one_line = " | ".join([x.strip() for x in merged.splitlines() if x.strip()][:3])
+    return one_line[:limit]
+
+
+def count_generated_trace_artifacts(output_root: Path) -> dict[str, int]:
+    per_example = list(output_root.rglob("per_example_records.jsonl"))
+    branch_states = list(output_root.rglob("final_branch_states.jsonl"))
+    candidate_groups = list(output_root.rglob("answer_group_summary.csv")) + list(output_root.rglob("answer_group_table.csv"))
+    return {
+        "generated_per_example_records_files": len(per_example),
+        "generated_branch_state_files": len(branch_states),
+        "generated_candidate_group_files": len(candidate_groups),
+    }
 
 
 def main() -> None:
@@ -390,6 +418,13 @@ def main() -> None:
     out_dir = Path(args.output_dir).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
     roots = sorted(set([(REPO_ROOT / r).resolve() for r in args.search_roots]))
+    effective_model = resolve_cohere_model(args.cohere_model)
+
+    budgets_for_generation = list(args.budgets)
+    seeds_for_generation = list(args.seeds)
+    if args.smoke_generate:
+        budgets_for_generation = [4]
+        seeds_for_generation = [11]
 
     artifact_dirs = _discover_artifact_dirs(roots)
     all_cases: list[dict[str, Any]] = []
@@ -404,8 +439,10 @@ def main() -> None:
     existing_count = len(all_cases)
     needed = max(0, args.target_trace_losses - existing_count)
     planned_examples = needed * 4
+    if args.smoke_generate:
+        planned_examples = min(args.smoke_limit, max(1, planned_examples))
     expected_generation_calls = min(args.max_generation_calls, planned_examples)
-    expected_annotation_calls = min(args.max_annotation_calls, args.target_trace_losses)
+    expected_annotation_calls = min(args.max_annotation_calls, args.target_trace_losses if not args.smoke_generate else args.smoke_limit)
 
     generation_plan = {
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -413,8 +450,8 @@ def main() -> None:
         "additional_trace_complete_losses_needed": needed,
         "target_trace_losses": args.target_trace_losses,
         "planned_dataset": args.dataset,
-        "planned_budgets": args.budgets,
-        "planned_seeds": args.seeds,
+        "planned_budgets": budgets_for_generation,
+        "planned_seeds": seeds_for_generation,
         "planned_internal_methods": ["direct_reserve_semantic_frontier_v2", "strict_f3"],
         "planned_external_methods": ["external_l1_max"],
         "planned_examples_to_evaluate": planned_examples,
@@ -423,14 +460,20 @@ def main() -> None:
         "cohere_generation_cache_path": str(out_dir / "cohere_generation_cache.jsonl"),
         "cohere_annotation_cache_path": str(out_dir / "cohere_annotation_cache.jsonl"),
         "output_dir": str(out_dir),
-        "model_name": args.cohere_model,
+        "model_name": effective_model,
         "safety_cap_generation_calls": args.max_generation_calls,
         "safety_cap_annotation_calls": args.max_annotation_calls,
+        "smoke_generate": bool(args.smoke_generate),
+        "smoke_limit": args.smoke_limit,
     }
     print(json.dumps(generation_plan, indent=2))
 
     generation_started = False
     generation_error = ""
+    generation_return_code: int | None = None
+    runner_cmd_path = out_dir / "generation_runner_command.txt"
+    runner_stdout_path = out_dir / "generation_runner_stdout.log"
+    runner_stderr_path = out_dir / "generation_runner_stderr.log"
     if needed > 0 and not args.dry_run and args.provider == "cohere" and os.environ.get("COHERE_API_KEY"):
         if expected_generation_calls <= args.max_generation_calls and expected_annotation_calls <= args.max_annotation_calls:
             generation_started = True
@@ -444,27 +487,40 @@ def main() -> None:
                 "--providers",
                 "cohere",
                 "--cohere-model",
-                args.cohere_model,
+                effective_model,
                 "--datasets",
                 "openai/gsm8k",
                 "--budgets",
-                ",".join(str(x) for x in args.budgets),
+                ",".join(str(x) for x in budgets_for_generation),
                 "--seeds",
-                ",".join(str(x) for x in args.seeds),
+                ",".join(str(x) for x in seeds_for_generation),
                 "--methods",
                 "direct_reserve_semantic_frontier_v2,external_l1_max",
                 "--target-scored-per-slice",
-                str(max(1, planned_examples // max(1, len(args.budgets) * len(args.seeds)))),
+                str(max(1, planned_examples // max(1, len(budgets_for_generation) * len(seeds_for_generation)))),
+                "--max-examples",
+                str(planned_examples if args.smoke_generate else 0),
                 "--output-root",
                 str(out_dir),
+                "--save-branch-traces",
+                "--emit-trace-audit",
             ]
+            runner_cmd_path.write_text(" ".join(cmd) + "\n", encoding="utf-8")
             r = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, check=False)
+            generation_return_code = r.returncode
+            runner_stdout_path.write_text(r.stdout or "", encoding="utf-8")
+            runner_stderr_path.write_text(r.stderr or "", encoding="utf-8")
             if r.returncode != 0:
-                generation_error = f"generation_runner_failed:{r.returncode}"
+                generation_error = f"generation_runner_failed:{r.returncode}::{short_error_excerpt(r.stderr, r.stdout)}"
         else:
             generation_error = "generation_plan_exceeds_safety_cap"
     elif needed > 0 and not args.dry_run:
         generation_error = "generation_not_started_missing_key_or_provider"
+
+    generated_trace_counts = count_generated_trace_artifacts(out_dir)
+    if args.smoke_generate and generation_started and not generation_error:
+        if generated_trace_counts["generated_per_example_records_files"] == 0:
+            generation_error = "smoke_generation_no_per_example_records"
 
     # Stage A scan again after possible generation run.
     if generation_started and not generation_error:
@@ -594,6 +650,12 @@ def main() -> None:
         "expected_annotation_calls": expected_annotation_calls,
         "generation_started": generation_started,
         "generation_error": generation_error,
+        "generation_runner_return_code": generation_return_code,
+        "generation_runner_command_path": str(runner_cmd_path) if runner_cmd_path.exists() else "",
+        "generation_runner_stdout_path": str(runner_stdout_path) if runner_stdout_path.exists() else "",
+        "generation_runner_stderr_path": str(runner_stderr_path) if runner_stderr_path.exists() else "",
+        "generation_model_used": effective_model,
+        **generated_trace_counts,
     }
     (out_dir / "trace_complete_loss_summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     (out_dir / "trace_complete_loss_summary.md").write_text(
@@ -621,8 +683,20 @@ def main() -> None:
                 "",
                 f"- output_dir: `{out_dir}`",
                 f"- dry_run: {args.dry_run}",
+                f"- smoke_generate: {args.smoke_generate}",
                 f"- generation_started: {generation_started}",
                 f"- generation_error: {generation_error or 'none'}",
+                f"- generation_runner_return_code: {generation_return_code}",
+                f"- generation_runner_command_path: `{runner_cmd_path if runner_cmd_path.exists() else ''}`",
+                f"- generation_runner_stdout_path: `{runner_stdout_path if runner_stdout_path.exists() else ''}`",
+                f"- generation_runner_stderr_path: `{runner_stderr_path if runner_stderr_path.exists() else ''}`",
+                f"- paired_cases_collected: {len(all_cases)}",
+                f"- trace_losses_selected: {len(selected)}",
+                f"- generated_per_example_records_files: {summary['generated_per_example_records_files']}",
+                f"- generated_branch_state_files: {summary['generated_branch_state_files']}",
+                f"- generated_candidate_group_files: {summary['generated_candidate_group_files']}",
+                f"- avg_candidate_groups: {summary['average_candidate_group_count']:.3f}",
+                f"- avg_branch_states: {summary['average_branch_count']:.3f}",
                 "- Gold labels are used only for post-hoc analysis/diagnosis and not for deployable decisions.",
             ]
         )

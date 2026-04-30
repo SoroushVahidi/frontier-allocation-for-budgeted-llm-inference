@@ -70,3 +70,15 @@ def test_pushable_columns_exclude_raw_trace_blob() -> None:
     }
     assert "raw_trace" not in pushable_columns
     assert "cohere_generation_cache" not in pushable_columns
+
+
+def test_model_alias_resolution_uses_known_valid_cohere_model() -> None:
+    assert mod.resolve_cohere_model("command-r-plus") == "command-r-plus-08-2024"
+    assert mod.resolve_cohere_model("command-r-plus-08-2024") == "command-r-plus-08-2024"
+
+
+def test_generation_error_excerpt_prefers_stderr_and_is_trimmed() -> None:
+    stderr = "line1\nline2\nline3\nline4"
+    out = mod.short_error_excerpt(stderr, "", limit=20)
+    assert "line1" in out
+    assert len(out) <= 20
