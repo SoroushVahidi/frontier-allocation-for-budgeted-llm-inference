@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/collect_external_loss_casebook.py", line 894, in <module>
+    main()
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/collect_external_loss_casebook.py", line 640, in main
+    trace_losses, final_losses, rows = _scan_artifact(art)
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/collect_external_loss_casebook.py", line 482, in _scan_artifact
+    rows, schema = _load_table_like(p)
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/collect_external_loss_casebook.py", line 138, in _load_table_like
+    return _read_csv(path), "csv"
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/collect_external_loss_casebook.py", line 88, in _read_csv
+    return list(csv.DictReader(f))
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/csv.py", line 111, in __next__
+    row = next(self.reader)
+_csv.Error: line contains NUL
