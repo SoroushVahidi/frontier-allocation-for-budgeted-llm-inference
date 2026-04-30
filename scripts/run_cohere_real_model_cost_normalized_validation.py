@@ -45,6 +45,10 @@ METHODS: dict[str, dict[str, Any]] = {
         "runtime": "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
         "enable_output_repair": True,
     },
+    "direct_reserve_semantic_frontier_v2_l1_direct_injection_v1": {
+        "runtime": "direct_reserve_semantic_frontier_v2_l1_direct_injection_v1",
+        "enable_output_repair": True,
+    },
     "direct_reserve_semantic_frontier_v2_thresholded_ordered": {"runtime": "direct_reserve_semantic_frontier_v2_thresholded_ordered", "enable_output_repair": True},
     "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},

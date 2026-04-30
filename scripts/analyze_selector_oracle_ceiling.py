@@ -92,11 +92,19 @@ def main():
     with (out_dir/'selector_oracle_ceiling.csv').open('w',newline='',encoding='utf-8') as f:
         w=csv.DictWriter(f,fieldnames=list(recs[0].keys()) if recs else ['example_id']);w.writeheader();w.writerows(recs)
     tot=max(1,len(dr_keys));
+    dr_acc=(accs.get(base_method,accs[DR])/tot) if dr_keys else None
+    ov_acc=(accs[OV]/tot) if dr_keys else None
+    prm_acc=(accs[PRM]/tot) if dr_keys else None
+    selector_gaps={
+      base_method: (gold_present/tot - dr_acc) if dr_keys and dr_acc is not None else None,
+      OV: (gold_present/tot - ov_acc) if dr_keys and ov_acc is not None and accs[OV]>0 else None,
+      PRM: (gold_present/tot - prm_acc) if dr_keys and prm_acc is not None and accs[PRM]>0 else None,
+    }
     summary={
       'total_scored_examples':len(dr_keys),'l1_accuracy':accs[L1]/tot if dr_keys else None,'dr_v2_accuracy':accs.get(base_method,accs[DR])/tot if dr_keys else None,'ov_accuracy':accs[OV]/tot if dr_keys else None,'prm_accuracy':accs[PRM]/tot if dr_keys else None,
       'candidate_count_mean':statistics.mean(ccounts) if ccounts else 0,'candidate_count_median':statistics.median(ccounts) if ccounts else 0,'candidate_count_max':max(ccounts) if ccounts else 0,
       'answer_group_count_mean':statistics.mean(gcounts) if gcounts else 0,'answer_group_count_median':statistics.median(gcounts) if gcounts else 0,'answer_group_count_max':max(gcounts) if gcounts else 0,
-      'gold_present_rate':gold_present/tot,'oracle_selector_accuracy':gold_present/tot,'selector_gap':(gold_present-accs[PRM])/tot if dr_keys else 0,
+      'gold_present_rate':gold_present/tot,'oracle_selector_accuracy':gold_present/tot,'selector_gap':selector_gaps.get(base_method),'selector_gap_by_method':selector_gaps,
       'l1_correct_ours_wrong_gold_present':l1_ours_wrong_present,'l1_correct_ours_wrong_gold_absent':l1_ours_wrong_absent,'present_not_selected_loss_count':present_not_sel,'absent_from_pool_loss_count':absent
     }
     (out_dir/'selector_oracle_ceiling_summary.json').write_text(json.dumps(summary,indent=2)+'\n',encoding='utf-8')
