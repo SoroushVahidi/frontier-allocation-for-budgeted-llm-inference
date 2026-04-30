@@ -7274,6 +7274,98 @@ class DirectReserveFrontierGateV2SelectionFixV1Controller(DirectReserveFrontierG
         )
 
 
+class DirectReserveFrontierGateV2L1DirectInjectionV1Controller(DirectReserveFrontierGateV2Controller):
+    """DR-v2 variant that injects one extra L1-style direct candidate into the selector pool."""
+
+    def __init__(
+        self,
+        *args: Any,
+        method_name: str = "direct_reserve_semantic_frontier_v2_l1_direct_injection_v1",
+        enable_injection: bool = True,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, method_name=method_name, **kwargs)
+        self.enable_injection = bool(enable_injection)
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        base = super().run(question, gold_answer)
+        metadata = dict(base.metadata or {})
+        pool = list(metadata.get("selector_candidate_pool", [])) if isinstance(metadata.get("selector_candidate_pool"), list) else []
+        injection_meta: dict[str, Any] = {
+            "enabled": bool(self.enable_injection),
+            "executed": False,
+            "source_label": "l1_direct_injection",
+            "injected_selected_answer": "",
+            "normalized_injected_answer": "",
+            "formed_new_group": False,
+            "used_as_final_answer": False,
+            "gold_match": None,
+            "incremental_actions_used": 0,
+            "incremental_expansions": 0,
+            "incremental_verifications": 0,
+        }
+
+        if not self.enable_injection:
+            metadata["l1_direct_injection"] = injection_meta
+            return MethodResult(**{**base.__dict__, "metadata": metadata})
+
+        branch = self.generator.init_branch("l1_direct_injection_0")
+        self.generator.expand(branch, question, gold_answer)
+        inj_answer = str(branch.predicted_answer or "").strip()
+        inj_norm = _normalize_answer(inj_answer) or "__unknown__"
+        existing_norms = {_normalize_answer(str(x.get("predicted_answer", "") or "")) or "__unknown__" for x in pool if isinstance(x, dict)}
+        formed_new_group = bool(inj_answer and inj_norm not in existing_norms)
+        injection_meta.update(
+            {
+                "executed": True,
+                "injected_selected_answer": inj_answer,
+                "normalized_injected_answer": inj_norm,
+                "formed_new_group": formed_new_group,
+                "gold_match": bool(inj_norm == (_normalize_answer(gold_answer) or "__unknown__")),
+                "incremental_actions_used": 1,
+                "incremental_expansions": 1,
+            }
+        )
+        if inj_answer:
+            pool.append(
+                {
+                    "candidate_id": "l1_direct_injection_0",
+                    "branch_id": "l1_direct_injection_0",
+                    "predicted_answer": inj_answer,
+                    "normalized_answer": inj_norm,
+                    "trace": "",
+                    "trace_steps": [],
+                    "reasoning_text": "",
+                    "source_id": "l1_direct_injection_0",
+                    "source_family": "l1_direct_injection",
+                    "source_prior": 0.5,
+                    "branch_score": 0.5,
+                    "cost_norm": 0.1,
+                    "actions_used": int(base.actions_used + 1),
+                    "is_original_selected": 0,
+                }
+            )
+        final_answer = inj_answer if formed_new_group and inj_answer else base.prediction
+        injection_meta["used_as_final_answer"] = bool(final_answer == inj_answer and inj_answer)
+        metadata["l1_direct_injection"] = injection_meta
+        metadata["selector_candidate_pool"] = pool
+        metadata["selector_candidate_pool_size"] = int(len(pool))
+        metadata["selector_candidate_answer_group_count"] = int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in pool}))
+        metadata["final_answer"] = final_answer
+        metadata["selected_normalized_answer"] = _normalize_answer(final_answer) or "__unknown__"
+        return MethodResult(
+            method=self.method_name,
+            prediction=final_answer,
+            is_correct=self._answers_match(final_answer, gold_answer),
+            actions_used=base.actions_used + int(injection_meta["incremental_actions_used"]),
+            expansions=base.expansions + int(injection_meta["incremental_expansions"]),
+            verifications=base.verifications,
+            avg_surviving_branches=base.avg_surviving_branches,
+            budget_exhausted=base.budget_exhausted,
+            metadata=metadata,
+        )
+
+
 class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserveFrontierGateV2Controller):
     """Live-runnable DR-v2 selector using answer-grouped outcome-verifier reranking."""
 

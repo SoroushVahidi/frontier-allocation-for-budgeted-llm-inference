@@ -20,6 +20,7 @@ from experiments.controllers import (
     DirectReserveFrontierGateV2Controller,
     DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller,
     DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller,
+    DirectReserveFrontierGateV2L1DirectInjectionV1Controller,
     DirectReserveFrontierGateV2SelectionFixV1Controller,
     DirectReserveLearnedOverrideController,
     CalibratedNearDirectFrontierGateController,
@@ -1191,6 +1192,14 @@ def build_frontier_strategies(
             scorer,
             budget,
             method_name="direct_reserve_semantic_frontier_v2_selection_fix_v1",
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_semantic_frontier_v2_l1_direct_injection_v1"] = DirectReserveFrontierGateV2L1DirectInjectionV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_semantic_frontier_v2_l1_direct_injection_v1",
+            enable_injection=os.getenv("DR_V2_ENABLE_L1_DIRECT_INJECTION", "1").strip().lower() not in {"0", "false", "off"},
             **direct_reserve_plus_diverse_kwargs,
         )
         specs["direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1"] = DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(
