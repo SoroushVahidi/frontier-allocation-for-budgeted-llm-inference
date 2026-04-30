@@ -4,7 +4,7 @@ import argparse, json, csv
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
 
-DR='direct_reserve_frontier_gate_v1'
+DR_CANDIDATES=('direct_reserve_frontier_gate_v1','direct_reserve_semantic_frontier_v2')
 L1='external_l1_max'
 
 def nrm(x: Any)->str:
@@ -19,10 +19,32 @@ def get_group_scores(md: Dict[str,Any], key: str) -> Dict[str,float]:
             except Exception: pass
     return out
 
+def _fallback_from_selector_pool(md: Dict[str, Any]) -> Tuple[Dict[str, float], Dict[str, str], str]:
+    pool = md.get('selector_candidate_pool') or []
+    support: Dict[str, float] = {}
+    selected = ''
+    for c in pool:
+        if not isinstance(c, dict):
+            continue
+        ans = nrm(c.get('normalized_answer') or c.get('predicted_answer'))
+        if not ans:
+            continue
+        support[ans] = support.get(ans, 0.0) + 1.0
+        if int(c.get('is_original_selected') or 0) == 1:
+            selected = ans
+    g_to_ans = {k: k for k in support.keys()}
+    return support, g_to_ans, selected
+
 def conservative_override_choice(row: Dict[str,Any]) -> Tuple[str, Dict[str,Any]]:
     md = row.get('result_metadata') or {}
     selected = str(md.get('post_rerank_selected_answer_group') or md.get('pre_rerank_selected_answer_group') or md.get('selected_answer_group') or '')
     support = get_group_scores(md,'raw_support_count_by_answer_group')
+    if not support:
+        support = get_group_scores(md,'answer_group_support_counts')
+    if not support:
+        support, _, pool_selected = _fallback_from_selector_pool(md)
+        if not selected and pool_selected:
+            selected = pool_selected
     fam_support = get_group_scores(md,'num_supporting_strategy_families_by_answer_group')
     proc = get_group_scores(md,'mean_process_score_by_answer_group')
     entropy = float(md.get('answer_entropy') or 0.0)
@@ -66,11 +88,13 @@ def main():
     idx={(r['example_id'],r['dataset'],r['seed'],r['budget'],r['method']):r for r in rows}
     base=[]
     for k,r in idx.items():
-        if k[-1]!=DR: continue
+        if k[-1] not in DR_CANDIDATES: continue
         kk=k[:-1]
         if (*kk,L1) in idx: base.append((kk,r,idx[(*kk,L1)]))
 
     total=len(base)
+    if total == 0:
+        raise RuntimeError(f"No paired rows found for DR methods={DR_CANDIDATES} and L1={L1}.")
     dr_ok=l1_ok=sup_ok=new_ok=oracle_ok=0
     fixes=breaks=overrides=override_correct=0
     casebook=[]
@@ -82,10 +106,20 @@ def main():
         selected=str(md.get('post_rerank_selected_answer_group') or md.get('selected_answer_group') or '')
         ag=md.get('answer_groups') or []
         support=get_group_scores(md,'raw_support_count_by_answer_group')
+        if not support:
+            support=get_group_scores(md,'answer_group_support_counts')
         sup_choice=max(support, key=lambda g:support[g]) if support else selected
 
         new_group, reason = conservative_override_choice(dr)
         g_to_ans={str(g.get('group_key')):nrm(g.get('answer_canonical') or g.get('answer')) for g in ag if isinstance(g,dict)}
+        if not g_to_ans:
+            sup2, g2a2, pool_selected = _fallback_from_selector_pool(md)
+            if not support:
+                support = sup2
+                sup_choice=max(support, key=lambda g:support[g]) if support else selected
+            g_to_ans = g2a2
+            if not selected and pool_selected:
+                selected = pool_selected
         new_ans=g_to_ans.get(new_group, dr_ans)
         sup_ans=g_to_ans.get(sup_choice, dr_ans)
         cand_answers=set(g_to_ans.values())
