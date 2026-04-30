@@ -1,0 +1,56 @@
+{
+  "created_at_utc": "2026-04-30T18:57:23.145992+00:00",
+  "loss_cases_found_total": 3022,
+  "trace_complete_loss_cases_found": 47,
+  "final_row_only_loss_cases_found": 2975,
+  "loss_cases_included": 200,
+  "combined_selected_casebook_size": 200,
+  "target_losses": 200,
+  "breakdown_by_dataset": {
+    "openai/gsm8k": 200
+  },
+  "breakdown_by_budget": {
+    "8": 91,
+    "4": 44,
+    "6": 65
+  },
+  "breakdown_by_seed": {
+    "23": 57,
+    "11": 15,
+    "53": 35,
+    "37": 57,
+    "67": 18,
+    "41": 18
+  },
+  "breakdown_by_internal_method": {
+    "strict_f3": 196,
+    "direct_reserve_semantic_frontier_v2": 4
+  },
+  "breakdown_by_best_external_method": {
+    "external_l1_max": 200
+  },
+  "gold_present_count": 33,
+  "gold_present_fraction": 0.7021276595744681,
+  "gold_absent_count": 14,
+  "gold_absent_fraction": 0.2978723404255319,
+  "oracle_selector_would_fix_count": 33,
+  "oracle_selector_would_fix_fraction": 0.7021276595744681,
+  "l1_correct_but_gold_absent_in_ours_count": 14,
+  "l1_correct_but_gold_absent_in_ours_fraction": 0.2978723404255319,
+  "external_l1_max_correct_and_ours_wrong_count": 200,
+  "other_external_correct_and_ours_wrong_count": 0,
+  "most_common_failure_modes": {
+    "selector_failures": 33,
+    "discovery_failures": 167
+  },
+  "primary_loss_regime": "discovery_failures",
+  "recommended_next_experiment": "focus on discovery/coverage repair and branch diversity",
+  "expected_cohere_calls": 200,
+  "artifacts_rejected_count": 4576,
+  "artifact_rejection_reasons": {
+    "empty_or_unreadable": 2461,
+    "no_method_rows": 1248,
+    "no_external_correct_internal_wrong_losses": 787,
+    "no_paired_internal_external_rows": 80
+  }
+}

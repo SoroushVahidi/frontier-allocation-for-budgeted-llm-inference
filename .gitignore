@@ -33,6 +33,37 @@ htmlcov/
 # Experiment outputs (tracked separately or ignored)
 outputs/*
 !outputs/.gitkeep
+
+# Allow lightweight decision artifacts under outputs/
+!outputs/*/
+!outputs/*/*/
+!outputs/*/*/*/
+!outputs/**/*summary.json
+!outputs/**/*summary.csv
+!outputs/**/*_summary.json
+!outputs/**/*_summary.csv
+!outputs/**/*_report.md
+!outputs/**/artifact_scan.csv
+!outputs/**/artifact_scan_report.md
+!outputs/**/selector_summary.csv
+!outputs/**/selector_summary.json
+!outputs/**/loss_summary.json
+!outputs/**/loss_summary.md
+!outputs/**/discovery_summary.csv
+!outputs/**/discovery_summary.json
+!outputs/**/build_summary.json
+
+# Keep large/raw artifacts ignored even when parent dirs are unignored
+outputs/**/*.jsonl
+outputs/**/*casebook*.csv
+outputs/**/*casebook*.jsonl
+outputs/**/*cache*.jsonl
+outputs/**/*cache*.json
+outputs/**/per_example_records.jsonl
+outputs/**/cohere_annotation_cache.jsonl
+outputs/**/verifier_cache.jsonl
+outputs/**/cohere_verifier_cache.jsonl
+outputs/**/logs/**
 # Formal comparative frontier audits (CSV/MD only; no secrets)
 !outputs/comparative_frontier_audit/
 !outputs/comparative_frontier_audit/**/*
