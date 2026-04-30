@@ -1,0 +1,217 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse, json, csv
+from pathlib import Path
+from typing import Dict, Any, List, Tuple
+import sys
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from scripts.selector_reconstruction import reconstruct_groups, support_only_choice, oracle_choice, support_only_with_guard_v1_choice
+from scripts.analyze_offline_selector_variants import load_cases, select
+
+DR_CANDIDATES=('direct_reserve_frontier_gate_v1','direct_reserve_semantic_frontier_v2')
+L1='external_l1_max'
+
+def nrm(x: Any)->str:
+    return str(x or '').strip().lower()
+
+def get_group_scores(md: Dict[str,Any], key: str) -> Dict[str,float]:
+    raw = md.get(key) or {}
+    out: Dict[str,float] = {}
+    if isinstance(raw, dict):
+        for k,v in raw.items():
+            try: out[str(k)] = float(v)
+            except Exception: pass
+    return out
+
+def _fallback_from_selector_pool(md: Dict[str, Any]) -> Tuple[Dict[str, float], Dict[str, str], str]:
+    pool = md.get('selector_candidate_pool') or []
+    support: Dict[str, float] = {}
+    selected = ''
+    for c in pool:
+        if not isinstance(c, dict):
+            continue
+        ans = nrm(c.get('normalized_answer') or c.get('predicted_answer'))
+        if not ans:
+            continue
+        support[ans] = support.get(ans, 0.0) + 1.0
+        if int(c.get('is_original_selected') or 0) == 1:
+            selected = ans
+    g_to_ans = {k: k for k in support.keys()}
+    return support, g_to_ans, selected
+
+def conservative_override_choice(row: Dict[str,Any]) -> Tuple[str, Dict[str,Any]]:
+    md = row.get('result_metadata') or {}
+    selected = str(md.get('post_rerank_selected_answer_group') or md.get('pre_rerank_selected_answer_group') or md.get('selected_answer_group') or '')
+    support = get_group_scores(md,'raw_support_count_by_answer_group')
+    if not support:
+        support = get_group_scores(md,'answer_group_support_counts')
+    if not support:
+        support, _, pool_selected = _fallback_from_selector_pool(md)
+        if (not selected or selected not in support) and pool_selected:
+            selected = pool_selected
+    fam_support = get_group_scores(md,'num_supporting_strategy_families_by_answer_group')
+    proc = get_group_scores(md,'mean_process_score_by_answer_group')
+    entropy = float(md.get('answer_entropy') or 0.0)
+    top_gap = float(md.get('top2_support_gap') or 0.0)
+
+    winner = selected
+    reason = {'override': False, 'selected_group': selected, 'candidate_group': selected, 'reasons': []}
+    if not selected or len(support) < 2:
+        return winner, reason
+
+    cand = max((g for g in support if g != selected), key=lambda g: (support.get(g,0), fam_support.get(g,0), proc.get(g,0)), default=selected)
+    sup_adv = support.get(cand,0)-support.get(selected,0)
+    fam_adv = fam_support.get(cand,0)-fam_support.get(selected,0)
+    proc_adv = proc.get(cand,0)-proc.get(selected,0)
+    selected_risk = int(entropy >= 0.65) + int(top_gap <= 1.0)
+    cand_clean = int(proc.get(cand,0) >= proc.get(selected,0))
+
+    # Conservative gate: large evidence margin + selected inconsistency risk + candidate not weaker in process quality.
+    if sup_adv >= 2 and fam_adv >= 1 and selected_risk >= 1 and cand_clean == 1 and proc_adv >= -0.02:
+        winner = cand
+        reason = {
+            'override': True,
+            'selected_group': selected,
+            'candidate_group': cand,
+            'reasons': [
+                f'support_advantage={sup_adv:.2f}',
+                f'family_diversity_advantage={fam_adv:.2f}',
+                f'selected_risk_score={selected_risk}',
+                f'process_advantage={proc_adv:.3f}',
+            ],
+        }
+    return winner, reason
+
+def conservative_override_choice_v2(row: Dict[str,Any]) -> Tuple[str, Dict[str,Any]]:
+    md = row.get('result_metadata') or {}
+    selected = str(md.get('post_rerank_selected_answer_group') or md.get('pre_rerank_selected_answer_group') or md.get('selected_answer_group') or '')
+    support = get_group_scores(md,'raw_support_count_by_answer_group') or get_group_scores(md,'answer_group_support_counts')
+    if not support:
+        support, _, pool_selected = _fallback_from_selector_pool(md)
+        if (not selected or selected not in support) and pool_selected:
+            selected = pool_selected
+    fam_support = get_group_scores(md,'num_supporting_strategy_families_by_answer_group')
+    if not fam_support:
+        fam_support={k:1.0 for k in support.keys()}
+    if not selected or len(support)<2:
+        return selected, {'override':False,'selected_group':selected,'candidate_group':selected,'reasons':[],'blocked_conditions':['insufficient_competition']}
+    cand=max((g for g in support if g!=selected), key=lambda g:(support.get(g,0),fam_support.get(g,0)), default=selected)
+    sup_adv=support.get(cand,0)-support.get(selected,0); fam_adv=fam_support.get(cand,0)-fam_support.get(selected,0)
+    blocked=[]
+    if sup_adv < 1: blocked.append('support_advantage_lt_1')
+    if fam_adv < 0: blocked.append('family_advantage_negative')
+    if blocked:
+        return selected, {'override':False,'selected_group':selected,'candidate_group':cand,'reasons':[],'blocked_conditions':blocked}
+    return cand, {'override':True,'selected_group':selected,'candidate_group':cand,'reasons':[f'support_advantage={sup_adv:.2f}',f'family_advantage={fam_adv:.2f}'],'blocked_conditions':[]}
+
+def support_only_with_guard_choice(current_answer: str, groups: list[dict[str, Any]]) -> tuple[str, dict[str, Any]]:
+    return support_only_with_guard_v1_choice(current_answer, groups)
+
+def main():
+    ap=argparse.ArgumentParser()
+    ap.add_argument('--artifact-dir', required=True)
+    ap.add_argument('--out-dir', required=True)
+    args=ap.parse_args()
+    ad=Path(args.artifact_dir); out=Path(args.out_dir); out.mkdir(parents=True, exist_ok=True)
+    rows=[json.loads(l) for l in (ad/'per_example_records.jsonl').read_text().splitlines() if l.strip()]
+    canonical_cases = load_cases(rows)
+    canonical_by_key={c['key']:{
+        'support_only':select('support_only',c),
+        'oracle_selector':select('oracle_selector',c),
+        'support_only_with_guard_v1':select('support_only_with_guard_v1',c),
+    } for c in canonical_cases}
+    idx={(r['example_id'],r['dataset'],r['seed'],r['budget'],r['method']):r for r in rows}
+    base=[]
+    for k,r in idx.items():
+        if k[-1] not in DR_CANDIDATES: continue
+        kk=k[:-1]
+        if (*kk,L1) in idx: base.append((kk,r,idx[(*kk,L1)]))
+
+    total=len(base)
+    if total == 0:
+        raise RuntimeError(f"No paired rows found for DR methods={DR_CANDIDATES} and L1={L1}.")
+    dr_ok=l1_ok=sup_ok=new_ok=new2_ok=guard_ok=oracle_ok=0
+    fixes=breaks=overrides=override_correct=fixes2=breaks2=overrides2=override2_correct=guard_fix=guard_break=guard_over=guard_corr=0
+    v2_preserve_support_fix=v2_avoid_support_break=0
+    casebook=[]
+    for kk,dr,l1 in base:
+        gold=nrm(dr.get('gold_answer_canonical') or dr.get('gold_answer'))
+        dr_ans=nrm(dr.get('final_answer_canonical') or dr.get('final_answer_raw'))
+        l1_ans=nrm(l1.get('final_answer_canonical') or l1.get('final_answer_raw'))
+        md=dr.get('result_metadata') or {}
+        groups = reconstruct_groups(dr)
+        selected_answer = nrm(dr.get('final_answer_canonical') or dr.get('final_answer_raw'))
+        sup_choice = canonical_by_key.get(kk,{}).get('support_only', support_only_choice(groups, selected_answer))
+
+        new_group, reason = conservative_override_choice(dr)
+        g_to_ans={g['normalized_answer']:g['normalized_answer'] for g in groups}
+        support={g['normalized_answer']:float(g.get('support_count',0)) for g in groups}
+        new_ans=g_to_ans.get(new_group, dr_ans)
+        sup_ans=sup_choice
+        cand_answers=set(g_to_ans.values())
+
+        v2_group, v2_reason = conservative_override_choice_v2(dr)
+        v2_ans=g_to_ans.get(v2_group,dr_ans)
+        choose_guard = canonical_by_key.get(kk,{}).get('support_only_with_guard_v1')
+        guard_reason={'override': choose_guard!=dr_ans, 'reasons': [], 'blocked_conditions': []}
+        if choose_guard is None:
+            choose_guard, guard_reason = support_only_with_guard_choice(dr_ans, groups)
+        guard_over += int(choose_guard!=dr_ans); guard_corr += int((choose_guard==gold) and (choose_guard!=dr_ans))
+        d_ok=(dr_ans==gold); ll_ok=(l1_ans==gold); s_ok=(sup_ans==gold); n_ok=(new_ans==gold); n2_ok=(v2_ans==gold)
+        g_ok=(choose_guard==gold)
+        o_ok=(canonical_by_key.get(kk,{}).get('oracle_selector', oracle_choice(groups,gold,dr_ans))==gold)
+        dr_ok+=d_ok; l1_ok+=ll_ok; sup_ok+=s_ok; new_ok+=n_ok; new2_ok+=n2_ok; guard_ok+=g_ok; oracle_ok+=o_ok
+        if reason['override']:
+            overrides += 1
+            override_correct += int(n_ok)
+        if (not d_ok) and n_ok: fixes+=1
+        if d_ok and (not n_ok): breaks+=1
+        if v2_reason['override']: overrides2 += 1; override2_correct += int(n2_ok)
+        if (not d_ok) and n2_ok: fixes2+=1
+        if d_ok and (not n2_ok): breaks2+=1
+        if ((not d_ok) and s_ok and n2_ok): v2_preserve_support_fix += 1
+        if (d_ok and (not s_ok) and d_ok==n2_ok): v2_avoid_support_break += 1
+        if (not d_ok) and g_ok: guard_fix += 1
+        if d_ok and (not g_ok): guard_break += 1
+
+        support_break = d_ok and (not s_ok)
+        gold_present_selected_wrong = (not d_ok) and (gold in cand_answers)
+        if gold_present_selected_wrong or support_break:
+            casebook.append({
+                'example_id':kk[0],'dataset':kk[1],'seed':kk[2],'budget':kk[3],
+                'dr_correct':d_ok,'support_only_correct':s_ok,'new_correct':n_ok,
+                'gold_present_in_candidates':gold in cand_answers,
+                'case_type':'gold_present_dr_selected_wrong' if gold_present_selected_wrong else 'support_only_break_case',
+                'decision':reason
+            })
+
+    with (out/'conservative_override_decisions.jsonl').open('w') as f:
+        for _,dr,_ in base:
+            g,reason=conservative_override_choice(dr)
+            f.write(json.dumps({'example_id':dr['example_id'],'seed':dr['seed'],'budget':dr['budget'],'selected_group':reason['selected_group'],'chosen_group':g,'override':reason['override'],'reasons':reason['reasons']})+'\n')
+
+    metrics=[
+        ['external_l1_max',l1_ok/total,l1_ok],
+        ['current_dr_v2_selector',dr_ok/total,dr_ok],
+        ['support_only',sup_ok/total,sup_ok],
+        ['conservative_outcome_verifier_override_v1',new_ok/total,new_ok],
+        ['conservative_outcome_verifier_override_v2',new2_ok/total,new2_ok],
+        ['support_only_with_guard_v1',guard_ok/total,guard_ok],
+        ['oracle_selector_ceiling_over_candidates',oracle_ok/total,oracle_ok],
+    ]
+    with (out/'accuracy_table.csv').open('w',newline='') as f:
+        w=csv.writer(f); w.writerow(['method','accuracy','correct']); w.writerows(metrics)
+    with (out/'override_metrics.json').open('w') as f:
+        json.dump({
+            'total':total,
+            'v1':{'fixes':fixes,'breaks':breaks,'net_fixes_minus_breaks':fixes-breaks,'overrides':overrides,'override_precision':(override_correct/overrides if overrides else 0.0)},
+            'v2':{'fixes':fixes2,'breaks':breaks2,'net_fixes_minus_breaks':fixes2-breaks2,'overrides':overrides2,'override_precision':(override2_correct/overrides2 if overrides2 else 0.0),'support_only_fixes_preserved':v2_preserve_support_fix,'support_only_breaks_avoided':v2_avoid_support_break}
+            ,'support_only_with_guard_v1':{'fixes':guard_fix,'breaks':guard_break,'net_fixes_minus_breaks':guard_fix-guard_break,'overrides':guard_over,'override_precision':(guard_corr/guard_over if guard_over else 0.0)}
+        },f,indent=2)
+    with (out/'focused_casebook.jsonl').open('w') as f:
+        for r in casebook: f.write(json.dumps(r)+'\n')
+
+if __name__=='__main__':
+    main()

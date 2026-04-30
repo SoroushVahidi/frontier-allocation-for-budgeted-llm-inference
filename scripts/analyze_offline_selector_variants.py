@@ -11,6 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 from experiments.selector_error_features import build_group_feature_rows
+from scripts.selector_reconstruction import support_only_with_guard_v1_choice
 
 L1='external_l1_max'; DR='direct_reserve_semantic_frontier_v2'; OV='direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1'; PRM='direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1'
 
@@ -61,6 +62,9 @@ def select(rule:str,case:dict[str,Any])->str:
     if rule=='actual_current_selector': return dr
     if rule=='oracle_selector': return gold if any(g['normalized_answer']==gold for g in gs) else dr
     if rule=='support_only': return best(gs,lambda g:(g.get('support_count',0),g['normalized_answer']))
+    if rule=='support_only_with_guard_v1':
+        chosen,_=support_only_with_guard_v1_choice(dr,gs)
+        return chosen
     if rule=='consistency_penalized': return best(gs,lambda g:g.get('support_count',0)-0.6*sum(g['consistency_flags'].values()))
     if rule=='unified_confidence_error': return best(gs,lambda g:g.get('unified_confidence_score',0)-0.2*g.get('unified_error_score',0))
     if rule=='hybrid_support_confidence_consistency': return best(gs,lambda g:0.6*g.get('support_count',0)+0.8*g.get('unified_confidence_score',0)-0.5*g.get('unified_error_score',0))
@@ -88,7 +92,7 @@ def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--artifact-dir',required=True); ap.add_argument('--output-dir',required=True); a=ap.parse_args()
     rows=[json.loads(x) for x in resolve(a.artifact_dir).read_text().splitlines() if x.strip()]
     cases=load_cases(rows)
-    rules=['actual_current_selector','support_only','consistency_penalized','unified_confidence_error','hybrid_support_confidence_consistency','source_aware_direct_reserve_prior','oracle_selector']
+    rules=['actual_current_selector','support_only','support_only_with_guard_v1','consistency_penalized','unified_confidence_error','hybrid_support_confidence_consistency','source_aware_direct_reserve_prior','oracle_selector']
     ov_avail=any(any(g.get('ov_score') is not None for g in c['groups']) for c in cases)
     prm_avail=any(any(g.get('prm_score') is not None for g in c['groups']) for c in cases)
     skipped=[]
