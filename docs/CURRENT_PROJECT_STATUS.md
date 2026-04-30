@@ -1,113 +1,82 @@
-# Current project status (canonical)
+# Current project status
 
-## Scope
+This document is the short, current orientation note for the repository. It supersedes older broad-status notes for day-to-day work, while preserving all dated documents as provenance.
 
-This is the canonical status note for the current NeurIPS-oriented project on:
-- fixed-budget adaptive test-time compute allocation,
-- cross-controller frontier allocation,
-- branch-priority / next-step allocation over active branches,
-- answer-support aggregation,
-- and controlled final-answer surfacing under exact-answer evaluation.
+## Current project identity
 
-## Core project goal
+This repository studies **frontier allocation for budgeted LLM inference** under explicit compute/action-budget contracts.
 
-Learn and evaluate policies that decide **which active branch should receive the next unit of compute**, while respecting a fixed budget, avoiding allocation collapse, and surfacing the right final answer from the explored frontier.
+The current paper-facing frame is not the old binary revise-routing story. The central question is:
 
-## Final paper goal
+> Given a fixed inference budget and multiple active reasoning/candidate paths, where should the next unit of compute go, and how should the final answer be selected from the explored frontier?
 
-The final paper should show that:
-1. budgeted test-time compute allocation is a meaningful and distinct problem,
-2. a clean frontier / controller framing is more honest than a vague “more reasoning helps” story,
-3. branch ranking / next-step allocation is the right conceptual center,
-4. early tree shape matters materially under budget,
-5. and the remaining challenges can be decomposed into tree-generation failures and output-layer failures rather than treated as one undifferentiated error class.
+## Current development goal
 
-## Current promoted method picture
+The active engineering goal is now **defeat `external_l1_max` honestly**, not by overclaiming, but by producing a trace-complete, paired, claim-safe result.
 
-The current promoted line is:
+The immediate subgoal is selector-first:
 
-> **broad diversity-aware branch allocation with answer-support aggregation, strengthened by anti-collapse answer-group-aware allocation, soft repeat-expansion control, and a deterministic output-layer repair stage.**
+> Determine whether the current candidate pool already contains the correct answer often enough that better final selection can close the gap to L1.
 
-This is still the same broad family. It is not a separate controller family.
+## Current phase
 
-## What has been built
+**Phase:** selector-oracle and candidate-pool trace diagnostics.
 
-The repo already contains:
-- a runnable frontier/controller experimentation scaffold,
-- anti-collapse controller mechanisms and audits,
-- answer-support aggregation infrastructure,
-- observability-aware tree and branch capture,
-- dataset and baseline integration/readiness tooling,
-- provenance-aware output and reporting patterns,
-- exact failure-case bundles and discovered-tree reconstructions,
-- broad comparison-bundle infrastructure with reuse-aware evaluation,
-- and a deterministic post-tree output repair module.
+Current priority order:
 
-## What has been learned
+1. Make real artifacts trace-complete enough for selector-oracle analysis.
+2. Measure `gold_present_rate`, `oracle_selector_accuracy`, and `selector_gap` on real candidate pools.
+3. If oracle ceiling is high, improve selectors/rerankers.
+4. If oracle ceiling is low, move to candidate generation / frontier coverage repair.
 
-1. The new project framing is sound and distinct from the old binary revise-routing track.
-2. Anti-collapse controller design matters for realized budget use and frontier behavior.
-3. Repeat-expansion control is meaningful, but not sufficient alone.
-4. Output-layer mismatch can be a major residual on targeted subsets where the correct answer is already in the tree.
-5. However, on the latest broad comparison surface, the strongest remaining failures are again mostly upstream tree-generation failures rather than output-layer mismatch alone.
-6. The latest integrated full method is stronger and cleaner than earlier variants, but it is **not** yet the best overall method on the latest matched broad bundle.
-7. Different comparison surfaces expose different leading competitors, so the repo must distinguish:
-   - broad matched ranking leader,
-   - and strongest direct adversary on fresh exact-loss surfaces.
+## Current known blocker
 
-## Current broad competitive picture
+The repository has datasets and many result artifacts, but the immediate blocker is narrower:
 
-The current matched full comparison bundle places:
-- `broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_v1` at **#1** overall,
-- and the latest integrated full method at **#3**.
+> Existing real outputs are not yet consistently confirmed to contain the candidate-pool schema required for selector-oracle analysis.
 
-The latest exact current-loss-set builder found the strongest direct adversary on that fresh surface to be:
-- `reasoning_beam2`.
+The next decisive measurement requires per-example rows with gold answer, selected answer, correctness, and candidate answer groups with normalized answers, support/source metadata, and optional OV/PRM scores.
 
-So the repository is now in a stronger and more measurable state, but not yet in “best overall method” territory.
+## Current safe claim boundary
 
-## Main unresolved issue
+Safe:
 
-The current main unresolved issue is now best described as:
+- The repository implements a fixed-budget frontier-allocation framework with multiple controller families, selectors, diagnostics, and canonical artifact builders.
+- The evidence hierarchy is explicit and conservative.
+- DR-v2/OV/PRM selector work is a promising development direction because some failures are present-but-not-selected.
 
-> **under fixed budget, the controller still tends to over-expand one early-favored branch family and does not yet reliably get the correct answer into the tree often enough against the strongest current competitor.**
+Not safe yet:
 
-A more precise split is:
-- some failures are **correct answer absent from our tree**,
-- some are **correct answer present but not selected**,
-- and a targeted subset was previously shown to be **output-layer mismatch** rather than missing-tree generation.
+- Do **not** claim robust or broad superiority over `external_l1_max`.
+- Do **not** claim OV/PRM rerankers defeat L1 without completed paired rows.
+- Do **not** treat mock-backed verifier results as real Cohere verifier evidence.
 
-## Current methodological interpretation
+## Current method interpretation
 
-The project should currently be interpreted as:
+- `strict_f3` remains the manuscript-facing matched-surface representative under the existing canonical paper surface.
+- `strict_gate1_cap_k6` remains a broader operational default on a different surface.
+- DR-v2 and its OV/PRM rerank variants are the active L1-defeat development family, not automatically promoted manuscript winners.
 
-> **a strong platform and paper direction whose main open problem is still next-step branch allocation and tree-shape control under budget, with output-layer correctness now treated as a separate, auditable stage rather than an invisible side effect.**
+## Current next action
 
-## Current best next implementation direction
+The next non-circular task is:
 
-- Keep branch-priority / next-step allocation as the canonical conceptual center.
-- Keep the broad diversity / aggregation family as the main serious family.
-- Preserve the integrated promoted line.
-- Prioritize repairs on the strongest current failure slices, especially where the correct answer is absent from our tree.
-- Use exact current-loss sets and current full comparison bundles together, rather than relying on only one artifact family.
-- Strengthen broad comparison evidence before stronger paper claims.
+1. Audit all `per_example_records.jsonl` artifacts under `outputs/`.
+2. Classify each artifact as usable, schema-adaptable, final-rows-only, empty/unscored, or unclear.
+3. Adapt `scripts/analyze_selector_oracle_ceiling.py` if a schema-adaptable artifact exists.
+4. If no existing artifact is usable, patch runtime metadata emission and run only a tiny trace-complete smoke test.
+5. Run selector-oracle analysis on that real trace-complete artifact.
 
-## Practical implication
+## Important documents
 
-The repo is ready for serious paper planning, collaborator onboarding, and targeted next-method work. The next phase should focus on reducing absent-from-tree failures, improving branch-family control on hard slices, and validating the latest integrated line against the current broad leader and strongest direct adversary.
+- `docs/CANONICAL_START_HERE.md` — canonical reviewer/collaborator orientation.
+- `docs/DOCS_INDEX.md` — active vs diagnostic vs historical document map.
+- `docs/SELECTOR_START_HERE.md` — current selector/L1-defeat track.
+- `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` — selector trace artifact index and usability policy.
+- `docs/PAPER_SOURCE_OF_TRUTH.md` — claim-eligible evidence rules.
+- `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` — safe vs unsafe claim map.
+- `docs/PAPER_OPEN_GAPS_AND_RISKS.md` — known open gaps.
 
-## Historical note
+## One-sentence status
 
-Many older status sections in the repository document valuable earlier phases:
-- learner-side target design,
-- pairwise ambiguity control,
-- near-tie routing,
-- and diagnostic branches such as ICC.
-
-These remain useful for provenance, but they are no longer the shortest canonical explanation of the repository’s current center.
-
-## Best concise summary
-
-A safe current summary is:
-
-> The repository now has a clear integrated promoted line, a much stronger exact-failure and comparison stack, and a cleaner distinction between tree-generation and output-layer failures. The latest integrated method is promising but not yet best overall; the main remaining bottleneck is still getting the correct answer into the tree reliably enough under fixed budget against the strongest current competitors.
+The repository is organized enough for serious paper work, but the active L1-defeat path now depends on one real trace-complete selector-oracle measurement that tells us whether selector improvements alone can beat L1 or whether frontier coverage must be repaired next.
