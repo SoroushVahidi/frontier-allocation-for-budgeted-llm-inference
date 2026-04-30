@@ -1,0 +1,8 @@
+accuracy,avg_selected_family_count,avg_selected_support,cases,cohere_calls_used,fixed,override_precision,overrides_from_current,remaining_selector_failures,selected_gold_count,selector
+0.0,1.0,0.0,33,0,0,0.0,0,33,0,current_default_selector
+0.0606,1.0,0.0606,33,0,2,0.2,10,31,2,support_family_selector
+0.0,1.0,0.0606,33,0,0,0.0,1,33,0,conservative_support_family_selector
+0.0,1.0,0.0606,33,0,0,0.0,1,33,0,risk_gated_support_family_selector
+0.0303,1.0,0.0,33,7,1,0.2,5,32,1,cohere_outcome_verifier_selector
+0.0,1.0,0.0,33,14,0,0.0,2,33,0,cohere_pairwise_verifier_selector
+1.0,1.0,0.0,33,0,33,1.0,33,0,33,oracle_selector
