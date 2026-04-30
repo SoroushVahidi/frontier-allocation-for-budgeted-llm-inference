@@ -19,6 +19,7 @@ from experiments.controllers import (
     DirectReserveFrontierGateController,
     DirectReserveFrontierGateV2Controller,
     DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller,
+    DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller,
     DirectReserveFrontierGateV2SelectionFixV1Controller,
     DirectReserveLearnedOverrideController,
     CalibratedNearDirectFrontierGateController,
@@ -1199,6 +1200,15 @@ def build_frontier_strategies(
             method_name="direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
             verifier_backend=os.getenv("DR_V2_OV_RERANK_VERIFIER_BACKEND", "mock"),
             verifier_model=os.getenv("DR_V2_OV_RERANK_COHERE_MODEL", "command-r-plus-08-2024"),
+            **direct_reserve_plus_diverse_kwargs,
+        )
+        specs["direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1"] = DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
+            verifier_backend=os.getenv("DR_V2_PRM_STEP_VERIFIER_BACKEND", "mock"),
+            verifier_model=os.getenv("DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL", "command-r-plus-08-2024"),
             **direct_reserve_plus_diverse_kwargs,
         )
         specs["near_direct_reserve_frontier_gate_v1"] = NearDirectReserveFrontierGateController(

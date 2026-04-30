@@ -41,6 +41,10 @@ METHODS: dict[str, dict[str, Any]] = {
         "runtime": "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
         "enable_output_repair": True,
     },
+    "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1": {
+        "runtime": "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
+        "enable_output_repair": True,
+    },
     "direct_reserve_semantic_frontier_v2_thresholded_ordered": {"runtime": "direct_reserve_semantic_frontier_v2_thresholded_ordered", "enable_output_repair": True},
     "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
@@ -549,6 +553,11 @@ def main() -> None:
         "DR_V2_OV_RERANK_COHERE_MODEL": os.getenv("DR_V2_OV_RERANK_COHERE_MODEL", ""),
         "COHERE_API_KEY_present": "yes" if bool(api_keys.get("cohere")) else "no",
     }
+    prm_step_verifier_env = {
+        "DR_V2_PRM_STEP_VERIFIER_BACKEND": os.getenv("DR_V2_PRM_STEP_VERIFIER_BACKEND", ""),
+        "DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL": os.getenv("DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL", ""),
+        "COHERE_API_KEY_present": "yes" if bool(api_keys.get("cohere")) else "no",
+    }
     dataset_load_failures: dict[tuple[str, str, int], str] = {}
     runtime_missing: set[tuple[str, str, int, int, str]] = set()
     branch_traces: list[dict[str, Any]] = []
@@ -725,6 +734,8 @@ def main() -> None:
                                     "timestamp": datetime.now(timezone.utc).isoformat(),
                                     "ov_verifier_backend_env": ov_verifier_env["DR_V2_OV_RERANK_VERIFIER_BACKEND"] or "unset",
                                     "ov_verifier_model_env": ov_verifier_env["DR_V2_OV_RERANK_COHERE_MODEL"] or "unset",
+                                    "prm_step_verifier_backend_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_BACKEND"] or "unset",
+                                    "prm_step_verifier_model_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL"] or "unset",
                                     "cohere_api_key_present": ov_verifier_env["COHERE_API_KEY_present"],
                                 }
                                 append_jsonl(per_example_path, row)
@@ -1046,6 +1057,11 @@ def main() -> None:
             "DR_V2_OV_RERANK_VERIFIER_BACKEND": ov_verifier_env["DR_V2_OV_RERANK_VERIFIER_BACKEND"] or "unset",
             "DR_V2_OV_RERANK_COHERE_MODEL": ov_verifier_env["DR_V2_OV_RERANK_COHERE_MODEL"] or "unset",
             "COHERE_API_KEY_present": ov_verifier_env["COHERE_API_KEY_present"],
+        },
+        "prm_step_verifier_environment": {
+            "DR_V2_PRM_STEP_VERIFIER_BACKEND": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_BACKEND"] or "unset",
+            "DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL"] or "unset",
+            "COHERE_API_KEY_present": prm_step_verifier_env["COHERE_API_KEY_present"],
         },
         "branch_trace_stats": trace_stats,
         "outputs": [

@@ -23,7 +23,7 @@ Therefore, the highest-value selector work is focused on DR-v2 final answer sele
 | DR-v2 `selection_fix_v1` | no, internal support-count heuristic | yes | yes | yes | did not improve; 0.55 vs DR-v2 0.56 and L1 0.72 | do not repeat simple support-only fix |
 | Cobbe-style outcome verifier diagnostic | yes | diagnostic only | no | diagnostic only | offline/paper-inspired diagnostic exists | use as basis for live DR-v2 selector |
 | `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1` | Cobbe-inspired | yes | yes | yes (unit + method validation) | live-runnable with mock default + optional Cohere verifier backend | complete paired Cohere GSM8K budget-4 seed-11 100-case run and report recovery/regression tables |
-| PRM-style step-level verifier selector | yes: *Let's Verify Step by Step*, PRM800K | no | no | no | second recommended selector family | implement after outcome-verifier reranker unless strong reason to skip |
+| `direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1` (PRM-style step verifier) | yes: *Let's Verify Step by Step*, PRM800K | yes | yes (mock default + method validation) | unit + `--validate-methods-only` | **implemented / live-runnable in code; default verifier backend is mock; no completed real-model evidence bundle yet** | run local validation then optional tiny smoke; **no Wulver batch until user explicitly approves** |
 | Math-Shepherd-style process verifier | yes | no | no | no | related later process-supervision direction | future comparison after PRM-style selector |
 | Self-consistency / support-count voting | paper-related/general | partially via support heuristics | partly | yes indirectly | support-only version was insufficient | only use as feature, not sole selector |
 | Bradley-Terry / tie-aware branch scorers | yes, classical ranking/tie models | yes for branch scoring | yes in branch contexts | yes in branch contexts | branch selector, not final answer-group selector | do not treat as final-answer verifier unless adapted |
@@ -171,8 +171,11 @@ Core idea:
 
 Implementation status:
 
-- Proposed only.
-- Existing PRM proxy branch-scoring infrastructure is not the same as a final-answer step-verifier selector.
+- **Implemented** as live-runnable method `direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1` (`experiments/prm_step_verifier_rerank.py`, PRM rerank controller, `build_frontier_strategies` registration, `METHODS` mapping in `scripts/run_cohere_real_model_cost_normalized_validation.py`).
+- **Default step-verifier backend is `mock`** (`DR_V2_PRM_STEP_VERIFIER_BACKEND` unset or `mock`) for safe local runs and CI-style checks.
+- **Real Cohere step verification** requires `DR_V2_PRM_STEP_VERIFIER_BACKEND=cohere` and a valid `COHERE_API_KEY` (never log the key value).
+- **Treat as “evidence-ready” only after** a completed scored real-model slice/run exists; until then, do not cite mock-only runs as Cohere verifier truth.
+- Existing PRM **branch** partial-scoring controllers remain a separate object from this **final-answer** step-verifier reranker.
 
 Why it is second:
 

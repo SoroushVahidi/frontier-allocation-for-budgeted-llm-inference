@@ -1,20 +1,27 @@
 # PRM step-verifier rerank v1 — Wulver / validation status (2026-04-29)
 
-## Verdict: **not live-runnable** (implementation pending)
+## Current verdict: **implemented (live-runnable in repository)**
 
-`direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1` is documented as a **planned** selector in registry/roadmap docs only. It is **not** wired into the live runtime or the Cohere cost-normalized validation runner.
+The method **`direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1`** is now wired end-to-end:
 
-### Evidence (repository audit)
+| Location | Status |
+|----------|--------|
+| `scripts/run_cohere_real_model_cost_normalized_validation.py` | Present in `METHODS` with runtime `direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1`. |
+| `experiments/frontier_matrix_core.py` | `specs["direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1"]` registered with env-driven verifier backend/model. |
+| `experiments/controllers.py` | `DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller` emits PRM rerank metadata. |
+| `experiments/prm_step_verifier_rerank.py` | Step segmentation, trace/group scoring, mock + Cohere verifiers. |
 
-| Location | Finding |
-|----------|---------|
-| `scripts/run_cohere_real_model_cost_normalized_validation.py` | Method **absent** from `METHODS`; `main()` raises `ValueError: Unknown method: ...` before any `--validate-methods-only` logic runs. |
-| `experiments/frontier_matrix_core.py` | No `specs["direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1"]`; PRM-related entries are **branch** partial scorers (`adaptive_prm_partial`, `verifier_guided_search_prm`, …), not this final-answer rerank ID. |
-| `experiments/controllers.py` | No controller class for this method ID. |
-| `docs/METHOD_REGISTRY_CANONICAL_20260429.md` | Row marks method as **proposed / not implemented** as live final selector. |
-| `docs/SELECTOR_REGISTRY_CANONICAL_20260429.md` | Describes PRM rerank as proposed §4.2-style direction. |
+**Historical note:** an earlier audit recorded this method as absent from `METHODS` and strategies; that state is **obsolete** once this commit is on your branch.
 
-### Local validation attempt
+## Environment variables (actual names in code)
+
+| Variable | Role |
+|----------|------|
+| `DR_V2_PRM_STEP_VERIFIER_BACKEND` | `mock` (default) or `cohere`. |
+| `DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL` | Cohere chat model when backend is `cohere` (default `command-r-plus-08-2024`). |
+| `COHERE_API_KEY` | Required only for **`cohere`** backend. **Never print or commit.** |
+
+## Local no-API validation
 
 ```bash
 python scripts/run_cohere_real_model_cost_normalized_validation.py \
@@ -30,44 +37,22 @@ python scripts/run_cohere_real_model_cost_normalized_validation.py \
   --validate-methods-only
 ```
 
-**Result:** fails immediately with `ValueError: Unknown method: direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1`.
+Expect **`validation_status=runnable`** for cohere/budget slices in `method_validation_report.csv` and process exit code **0**.
 
-### Wulver / Slurm
+## Wulver / Slurm
 
-- **No Slurm job submitted.**
-- **No batch script added** as an executable run path (would imply readiness). Use the command block in `docs/PRM_STEP_LEVEL_VERIFIER_SELECTOR_REFERENCE_20260429.md` + OV rerank implementation as a template **after** code exists.
+- **No Wulver job submitted** as part of the implementation handoff.
+- **Do not submit** a large real-model job until the user explicitly requests it after validation.
+- Suggested **future** batch command and evidence expectations: see **`docs/PRM_STEP_VERIFIER_RERANK_V1_IMPLEMENTATION_STATUS_20260429.md`**.
 
-### Suggested env vars (for future implementation)
+## Active OV rerank run (do not collide)
 
-The repository **does not** define `PRM_STEP_VERIFIER_BACKEND` or `PRM_STEP_VERIFIER_COHERE_MODEL` today — those names were illustrative. After implementation, either:
+- Preserve the existing OV rerank run / directory: **`20260429T_OV_RERANK_100CASE_COHERE_BACKEND`** — do not delete, rename, or reuse that timestamp for PRM.
 
-- reuse/adapt the OV rerank pattern (`DR_V2_OV_RERANK_VERIFIER_BACKEND`-style names scoped to PRM), or  
-- introduce `PRM_STEP_VERIFIER_BACKEND` / `PRM_STEP_VERIFIER_COHERE_MODEL` consistently in controller + runner manifest.
+## Planned PRM evidence timestamp (when you run for real)
 
-Document the **actual** names in code and in this file when implemented.
+- Example output root: `outputs/cohere_real_model_cost_normalized_validation_20260429T_PRM_STEP_RERANK_100CASE_COHERE_BACKEND/` (gitignored by default).
 
-**Never commit or print `COHERE_API_KEY`.**
+## Implementation detail pointer
 
-### Active OV rerank run (do not collide)
-
-- Existing completed/provenance timestamp: `20260429T_OV_RERANK_100CASE_COHERE_BACKEND` (and mock provenance `20260429T_OV_RERANK_100CASE`).
-- Planned PRM timestamp **when ready**: `20260429T_PRM_STEP_RERANK_100CASE_COHERE_BACKEND` (new directory: `outputs/cohere_real_model_cost_normalized_validation_20260429T_PRM_STEP_RERANK_100CASE_COHERE_BACKEND/` — **outputs remain gitignored by default**).
-
----
-
-## Implementation / registration TODO (checklist)
-
-Before any Wulver 100-case job:
-
-1. **PRM step verifier module** — Step segmentation + scoring interface (mock + optional Cohere/OpenAI backend); strict JSON or bounded fallback; no gold leakage in prompts.
-2. **Controller class** — e.g. wrap DR-v2, extract candidates, run step-level verification, aggregate by answer group (parallel to outcome-verifier rerank controller pattern).
-3. **Runtime registration** — `build_frontier_strategies(...)`: `specs["direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1"] = ...`.
-4. **Validation runner mapping** — Add entry to `METHODS` in `run_cohere_real_model_cost_normalized_validation.py` with correct `runtime` key matching registry.
-5. **Tests** — Mock verifier unit tests; grouping/scoring; `--validate-methods-only` passes with `validation_status=runnable`.
-6. **Manifest / row provenance** — Mirror OV rerank: log verifier backend env, model, key presence flag (not value), calls, parse failures, fallbacks.
-7. **Documentation** — Update `METHOD_REGISTRY_CANONICAL_20260429.md` and `SELECTOR_REGISTRY_CANONICAL_20260429.md` from “proposed” to “implemented” only when the above is true.
-8. **Then** — Local `--validate-methods-only` → optional tiny smoke → Slurm batch with new timestamp.
-
-### Post-completion reporting (when a real run exists)
-
-Use or extend the reporting pattern from `scripts/report_outcome_verifier_rerank_results.py` (or a sibling script) for paired comparisons: PRM rerank vs DR-v2, vs `selection_fix_v1`, vs `external_l1_max`, plus cost/latency and present-not-selected recovery taxonomy. **Do not claim success** until scored rows meet targets and claim-safety notes are written.
+- Full checklist, file list, and “future full run” command template: **`docs/PRM_STEP_VERIFIER_RERANK_V1_IMPLEMENTATION_STATUS_20260429.md`**.
