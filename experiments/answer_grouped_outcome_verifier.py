@@ -284,69 +284,9 @@ def build_outcome_verifier_prompt(candidate: CandidateAnswer) -> tuple[str, str]
 
 
 def build_candidates_from_dr_v2_metadata(question: str, metadata: dict[str, object]) -> list[CandidateAnswer]:
-    candidates: list[CandidateAnswer] = []
-    states = metadata.get("final_branch_states", [])
-    if isinstance(states, list):
-        for idx, s in enumerate(states):
-            if not isinstance(s, dict):
-                continue
-            final_answer = str(s.get("predicted_answer", "") or "").strip()
-            if not final_answer:
-                continue
-            branch_id = str(s.get("branch_id", f"state_{idx}"))
-            source = str(s.get("source", branch_id))
-            state_score = s.get("score", None)
-            source_prior = 0.5
-            if state_score is not None:
-                try:
-                    source_prior = min(max(float(state_score), 0.0), 1.0)
-                except Exception:
-                    source_prior = 0.5
-            depth = s.get("branch_depth", 0)
-            try:
-                cost_norm = min(max(float(depth) / 10.0, 0.0), 1.0)
-            except Exception:
-                cost_norm = 0.0
-            trace_parts = s.get("trace_events", [])
-            trace_text = ""
-            if isinstance(trace_parts, list):
-                frags: list[str] = []
-                for ev in trace_parts:
-                    if not isinstance(ev, dict):
-                        continue
-                    frags.append(str(ev.get("reasoning_text", "") or ev.get("response_text", "") or ""))
-                steps = s.get("steps", [])
-                if isinstance(steps, list):
-                    for step in steps:
-                        frags.append(str(step))
-                trace_text = "\n".join(x for x in frags if x).strip()
-            candidates.append(
-                CandidateAnswer(
-                    candidate_id=branch_id,
-                    problem=question,
-                    trace=trace_text,
-                    final_answer=final_answer,
-                    normalized_answer=_normalize_key(final_answer),
-                    source_id=source,
-                    source_prior=source_prior,
-                    cost_norm=cost_norm,
-                )
-            )
-    if not candidates:
-        final_answer = str(metadata.get("final_answer", "") or "").strip()
-        if final_answer:
-            candidates.append(
-                CandidateAnswer(
-                    candidate_id="fallback_final",
-                    problem=question,
-                    trace="",
-                    final_answer=final_answer,
-                    normalized_answer=_normalize_key(final_answer),
-                    source_id="fallback",
-                    source_prior=0.5,
-                    cost_norm=0.0,
-                )
-            )
+    from experiments.selector_candidate_extraction import build_candidates_from_metadata
+
+    candidates, _ = build_candidates_from_metadata(question, metadata)
     return candidates
 
 

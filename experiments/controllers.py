@@ -27,6 +27,7 @@ from experiments.answer_grouped_outcome_verifier import (
     build_candidates_from_dr_v2_metadata,
     select_answer_group_with_outcome_verifier,
 )
+from experiments.selector_candidate_extraction import build_candidates_from_metadata
 from experiments.prm_step_verifier_rerank import (
     CohereStepVerifier,
     DeterministicMockStepVerifier,
@@ -7041,6 +7042,48 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         combined_group_counts = Counter(dict(frontier_support_counts))
         for group, count in direct_counts.items():
             combined_group_counts[group] += int(count)
+        selector_candidate_pool: list[dict[str, Any]] = []
+        selected_group_key = _normalize_answer(final_answer) or "__unknown__"
+        for idx, s in enumerate(final_branch_states):
+            if not isinstance(s, dict):
+                continue
+            predicted_answer = str(s.get("predicted_answer", "") or "").strip()
+            if not predicted_answer:
+                continue
+            group_key = _normalize_answer(predicted_answer) or "__unknown__"
+            trace_events = s.get("trace_events", [])
+            if not isinstance(trace_events, list):
+                trace_events = []
+            trace_steps = [str(ev.get("reasoning_text", "") or ev.get("response_text", "") or "").strip() for ev in trace_events if isinstance(ev, dict)]
+            trace_steps.extend(str(x).strip() for x in (s.get("steps", []) if isinstance(s.get("steps", []), list) else []) if str(x).strip())
+            trace_text = "\n".join([t for t in trace_steps if t]).strip()
+            source_id = str(s.get("source", "") or s.get("branch_id", "") or f"candidate_{idx}")
+            try:
+                branch_score = float(s.get("score", 0.0) or 0.0)
+            except Exception:
+                branch_score = 0.0
+            try:
+                branch_depth = float(s.get("branch_depth", 0.0) or 0.0)
+            except Exception:
+                branch_depth = 0.0
+            selector_candidate_pool.append(
+                {
+                    "candidate_id": str(s.get("branch_id", "") or f"candidate_{idx}"),
+                    "branch_id": str(s.get("branch_id", "") or f"candidate_{idx}"),
+                    "predicted_answer": predicted_answer,
+                    "normalized_answer": group_key,
+                    "trace": trace_text,
+                    "trace_steps": trace_steps,
+                    "reasoning_text": trace_text,
+                    "source_id": source_id,
+                    "source_family": str(s.get("strategy_family", "") or s.get("source", "")),
+                    "source_prior": max(0.0, min(1.0, branch_score)),
+                    "branch_score": branch_score,
+                    "cost_norm": max(0.0, min(1.0, branch_depth / 10.0)),
+                    "actions_used": int(actions_used),
+                    "is_original_selected": int(group_key == selected_group_key),
+                }
+            )
 
         metadata = {
             "method_family": "diagnostic_direct_reserve_frontier_gate",
@@ -7107,6 +7150,10 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "frontier_metadata": dict(frontier_meta),
             "action_trace": action_trace,
             "final_branch_states": final_branch_states if bool(getattr(self, "emit_full_traces", False)) else [],
+            "selector_candidate_pool": selector_candidate_pool,
+            "selector_candidate_pool_size": int(len(selector_candidate_pool)),
+            "selector_candidate_answer_group_count": int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in selector_candidate_pool})),
+            "selector_candidate_pool_sources": sorted({str(x.get("source_id", "")) for x in selector_candidate_pool if str(x.get("source_id", "")).strip()}),
         }
         return MethodResult(
             method=self.method_name,
@@ -7250,7 +7297,9 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         base = super().run(question, gold_answer)
         metadata = dict(base.metadata or {})
         base_prediction = base.prediction
-        candidates = build_candidates_from_dr_v2_metadata(question, metadata)
+        if "selector_candidate_pool" not in metadata and isinstance(metadata.get("final_branch_states"), list):
+            metadata["selector_candidate_pool"] = list(metadata.get("final_branch_states", []))
+        candidates, extraction_sources = build_candidates_from_metadata(question, metadata)
         if not candidates:
             metadata["ov_rerank_applied"] = False
             metadata["candidate_count"] = 0
@@ -7264,6 +7313,7 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
             metadata["single_candidate_fallback"] = True
             metadata["fallback_reason"] = "no_candidates_extracted"
             metadata["ov_rerank_original_dr_v2_selected_answer"] = base_prediction
+            metadata["candidate_extraction_sources"] = extraction_sources
             metadata["method_family"] = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1"
             metadata["diagnostic_only"] = False
             metadata["not_canonical"] = True
@@ -7293,6 +7343,7 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
             metadata["single_candidate_fallback"] = True
             metadata["fallback_reason"] = "single_candidate_only"
             metadata["ov_rerank_original_dr_v2_selected_answer"] = base_prediction
+            metadata["candidate_extraction_sources"] = extraction_sources
             metadata["method_family"] = "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1"
             metadata["diagnostic_only"] = False
             metadata["not_canonical"] = True
@@ -7307,6 +7358,9 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
                 budget_exhausted=base.budget_exhausted,
                 metadata=metadata,
             )
+        if len(candidates) > 1 and len({_normalize_answer(c.final_answer) or "__unknown__" for c in candidates}) <= 1:
+            metadata["ov_same_answer_multi_candidate"] = True
+            metadata["ov_same_answer_multi_candidate_reason"] = "multiple_candidates_single_answer_group"
 
         verifier = self._build_verifier()
         decision = select_answer_group_with_outcome_verifier(candidates, verifier)
@@ -7366,6 +7420,7 @@ class DirectReserveFrontierGateV2OutcomeVerifierRerankV1Controller(DirectReserve
         metadata["ov_rerank_candidate_scores"] = candidate_payload
         metadata["ov_rerank_verifier_results"] = verifier_payload
         metadata["ov_rerank_original_dr_v2_selected_answer"] = base_prediction
+        metadata["candidate_extraction_sources"] = extraction_sources
         metadata["ov_rerank_gold_present_in_candidates"] = int(gold_norm in candidate_norms)
         metadata["ov_rerank_recovered_present_not_selected"] = int(
             (gold_norm in candidate_norms) and (base_norm != gold_norm) and (final_norm == gold_norm)
@@ -7410,7 +7465,9 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
         base = super().run(question, gold_answer)
         metadata = dict(base.metadata or {})
         base_prediction = base.prediction
-        candidates = build_prm_candidates_from_dr_v2_metadata(question, metadata)
+        if "selector_candidate_pool" not in metadata and isinstance(metadata.get("final_branch_states"), list):
+            metadata["selector_candidate_pool"] = list(metadata.get("final_branch_states", []))
+        candidates, extraction_sources = build_candidates_from_metadata(question, metadata)
 
         def _emit_fallback(
             *,
@@ -7442,6 +7499,8 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
                 in ({_normalize_answer(c.final_answer) or "__unknown__" for c in candidates} if candidates else set())
             )
             metadata["prm_recovered_present_not_selected"] = 0
+            metadata["candidate_extraction_sources"] = extraction_sources
+            metadata["prm_same_answer_multi_candidate"] = bool(cand_count > 1 and group_count <= 1)
             metadata["method_family"] = "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1"
             metadata["diagnostic_only"] = False
             metadata["not_canonical"] = True
@@ -7523,6 +7582,7 @@ class DirectReserveFrontierGateV2PRMStepVerifierRerankV1Controller(DirectReserve
         )
         metadata["single_candidate_fallback"] = False
         metadata["fallback_reason"] = ""
+        metadata["candidate_extraction_sources"] = extraction_sources
         metadata["method_family"] = "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1"
         metadata["diagnostic_only"] = False
         metadata["not_canonical"] = True
