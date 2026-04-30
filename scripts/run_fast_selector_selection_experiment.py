@@ -2,7 +2,7 @@
 from __future__ import annotations
 import argparse, csv, json
 from dataclasses import dataclass
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 import sys
@@ -190,7 +190,7 @@ def main() -> None:
     all_no_changes = all(int(r.get("fixes", 0)) == 0 and int(r.get("breaks", 0)) == 0 and int(r.get("overrides", 0)) == 0 for r in final_rows)
     warn_all_zero = all_zero and all_no_changes
 
-    ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     out_dir = Path(args.output_dir) if args.output_dir else Path("outputs") / f"fast_selector_selection_{ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
 

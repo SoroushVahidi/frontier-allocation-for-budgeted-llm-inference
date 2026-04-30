@@ -55,6 +55,17 @@ def main() -> None:
         and float(r.get("oracle_minus_dr", "0") or 0) > 0
         and str(r.get("reconstructed_path", "")).strip()
     ]
+    used_fallback_usable_only = False
+    if not kept_rows:
+        # Fallback: still build a large paired selector-eval artifact from all usable rows
+        # so tournament diagnostics can run even when no positive-headroom source exists.
+        kept_rows = [
+            r
+            for r in scan_rows
+            if int(float(r.get("usable", "0") or 0)) == 1
+            and str(r.get("reconstructed_path", "")).strip()
+        ]
+        used_fallback_usable_only = True
     records: list[dict[str, Any]] = []
     seen: set[tuple[str, str, int, int]] = set()
     source_count: dict[str, int] = {}
@@ -84,6 +95,7 @@ def main() -> None:
         "scan_dir": str(scan_dir),
         "output_dir": str(out_dir),
         "input_usable_positive_artifacts": len(kept_rows),
+        "used_fallback_usable_only": used_fallback_usable_only,
         "output_examples": len(records),
         "deduplicated": bool(args.deduplicate),
         "sources": source_count,

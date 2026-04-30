@@ -362,8 +362,13 @@ def main() -> None:
         c["cohere_uncached_calls"] = uncached_calls
         c["cohere_calls_within_limit"] = int(uncached_calls <= int(args.max_cohere_calls))
 
+    summary_fields: list[str] = []
+    for r in summary:
+        for k in r.keys():
+            if k not in summary_fields:
+                summary_fields.append(k)
     with (out_dir / "selector_summary.csv").open("w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=list(summary[0].keys()))
+        w = csv.DictWriter(f, fieldnames=summary_fields)
         w.writeheader()
         w.writerows(summary)
     (out_dir / "selector_summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

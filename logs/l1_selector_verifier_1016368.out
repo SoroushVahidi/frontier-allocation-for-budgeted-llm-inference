@@ -1,0 +1,31 @@
+hostname: n0094
+date: Thu Apr 30 06:24:33 PM UTC 2026
+branch: main
+commit: 61a7e07e29e02d921146b57e275960861db96c2e
+python: Python 3.10.20
+COHERE_API_KEY: present
+output_dir: outputs/l1_defeat_selector_wulver_20260430T182316Z
+== Stage A: health/test ==
+adaptive-reasoning-budget-allocation
+=====================================
+Python version: 3.10.20
+
+Repository health check: OK
+Canonical front door, artifact runners, and core import paths are intact.
+
+==================================== ERRORS ====================================
+____ ERROR collecting tests/test_cohere_cached_outcome_verifier_selector.py ____
+ImportError while importing test module '/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/test_cohere_cached_outcome_verifier_selector.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/sv96/.conda/envs/repo-env/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_cohere_cached_outcome_verifier_selector.py:1: in <module>
+    from scripts.run_cohere_cached_outcome_verifier_selector import build_verifier_prompt, run_selector, summary_for, cache_key
+scripts/run_cohere_cached_outcome_verifier_selector.py:5: in <module>
+    from datetime import datetime, UTC
+E   ImportError: cannot import name 'UTC' from 'datetime' (/home/sv96/.conda/envs/repo-env/lib/python3.10/datetime.py)
+=========================== short test summary info ============================
+ERROR tests/test_cohere_cached_outcome_verifier_selector.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.41s

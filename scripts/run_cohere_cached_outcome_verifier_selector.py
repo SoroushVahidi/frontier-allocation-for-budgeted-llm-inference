@@ -2,7 +2,7 @@
 from __future__ import annotations
 import argparse, csv, hashlib, json, os
 from dataclasses import dataclass
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 from collections import defaultdict
@@ -179,7 +179,7 @@ def main() -> None:
     cases = reconstruct_cases(rows)
     if args.limit > 0:
         cases = cases[: args.limit]
-    ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     out_dir = Path(args.output_dir) if args.output_dir else Path("outputs") / f"cohere_cached_outcome_verifier_selector_{ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
     cache_path = Path(args.cache_path) if args.cache_path else out_dir / "verifier_cache.jsonl"
