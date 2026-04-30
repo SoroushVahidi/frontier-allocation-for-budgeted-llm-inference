@@ -1,4 +1,4 @@
-.PHONY: setup smoke health format lint reviewer-test test check prepaper anonymous-audit anonymous-supplement help
+.PHONY: setup smoke health format lint reviewer-test selector-test test check prepaper anonymous-audit anonymous-supplement help
 
 PY_DIRS := scripts experiments tests
 
@@ -10,6 +10,7 @@ help:
 	@echo "  format  Auto-format Python files with ruff"
 	@echo "  lint    Lint Python files with ruff"
 	@echo "  reviewer-test Run stable reviewer-safe pytest subset"
+	@echo "  selector-test Run focused selector/L1-defeat regression subset"
 	@echo "  test    Run pytest"
 	@echo "  check   Run health, lint, and test together"
 	@echo "  prepaper Run repo checks plus paper artifact/claim checklist gate"
@@ -36,6 +37,9 @@ test:
 
 reviewer-test:
 	python3 -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
+
+selector-test:
+	python3 -m pytest -q tests/test_selector_error_features.py tests/test_selector_oracle_ceiling.py tests/test_prm_aggregation_modes.py tests/test_prm_step_verifier_rerank.py tests/test_answer_grouped_outcome_verifier.py
 
 check:
 	python3 scripts/check_repo_health.py
