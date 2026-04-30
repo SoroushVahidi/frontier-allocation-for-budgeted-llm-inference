@@ -8,6 +8,7 @@ This index separates current interpretation documents from diagnostic and histor
 |---|---|
 | `README.md` | Short repository entry point. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
+| `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | Cost-aware execution rules for selector work. |
 | `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |
 | `docs/REPO_MAP.md` | Directory roles and repository structure. |
 | `docs/PAPER_SOURCE_OF_TRUTH.md` | Claim-eligible evidence hierarchy. |
@@ -19,7 +20,8 @@ This index separates current interpretation documents from diagnostic and histor
 | Document | Role |
 |---|---|
 | `docs/SELECTOR_START_HERE.md` | Entry point for selector-first work. |
-| `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` | Current conservative outcome-verifier override roadmap. |
+| `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` | Outcome-verifier selector roadmap. |
+| `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | API-cost-control and fast selector execution policy. |
 | `docs/SELECTOR_CATALOG.md` | Selector methods and diagnostic selectors. |
 | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` | Selector trace artifact usability index. |
 | `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md` | Older ordered selector-vs-coverage roadmap; preserve as provenance. |
@@ -31,16 +33,22 @@ This index separates current interpretation documents from diagnostic and histor
 Primary selector artifact:
 
 ```text
-outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/
+outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
+```
+
+Associated paid real run:
+
+```text
+outputs/cohere_real_model_cost_normalized_validation_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
 ```
 
 Important diagnostic subfolder:
 
 ```text
-outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/diagnostics/offline_selector_variants/
+outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/diagnostics/selector_tournament/
 ```
 
-Use this artifact for offline selector and conservative outcome-verifier override work before launching new API runs.
+Use this compact artifact for offline outcome-verifier selector development before launching any new paid run.
 
 ## Current runnable/reproduction docs
 
@@ -90,3 +98,4 @@ The old `-adaptive-llm-inference` project has now been mined for transferable id
 - Do not remove outputs or dated docs unless a current cleanup document explicitly classifies them as disposable.
 - Do not rewrite historical conclusions to match current results.
 - Do not promote diagnostic artifacts to paper-facing evidence without updating the source-of-truth and claim map.
+- Do not run paid APIs before a dry-run call count and cost-aware execution plan.
