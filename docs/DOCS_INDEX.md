@@ -19,11 +19,28 @@ This index separates current interpretation documents from diagnostic and histor
 | Document | Role |
 |---|---|
 | `docs/SELECTOR_START_HERE.md` | Entry point for selector-first work. |
+| `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` | Current conservative outcome-verifier override roadmap. |
 | `docs/SELECTOR_CATALOG.md` | Selector methods and diagnostic selectors. |
-| `docs/SELECTOR_TRANSFER_FROM_ADAPTIVE_LLM_INFERENCE_20260429.md` | Transferred ideas from the older binary-routing repository. |
 | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` | Selector trace artifact usability index. |
-| `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md` | Ordered selector-vs-coverage roadmap. |
+| `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md` | Older ordered selector-vs-coverage roadmap; preserve as provenance. |
+| `docs/FINAL_ADAPTIVE_LLM_INFERENCE_TRANSFER_AUDIT_20260430T034801Z.md` | Final audit of ideas transferred from the older binary-routing repository. |
 | `docs/METHOD_REGISTRY_CANONICAL_20260429.md` | Method status and live-runnable/diagnostic distinctions. |
+
+## Current real diagnostic artifact
+
+Primary selector artifact:
+
+```text
+outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/
+```
+
+Important diagnostic subfolder:
+
+```text
+outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/diagnostics/offline_selector_variants/
+```
+
+Use this artifact for offline selector and conservative outcome-verifier override work before launching new API runs.
 
 ## Current runnable/reproduction docs
 
@@ -56,13 +73,16 @@ Examples include:
 - loss casebooks,
 - selector artifact schema audits,
 - Cohere/OpenAI run handoff notes,
-- mock-backed verifier provenance notes.
+- mock-backed verifier provenance notes,
+- offline selector/risk-predictor analyses.
 
 When using a diagnostic doc in manuscript text, first check `docs/PAPER_SOURCE_OF_TRUTH.md` and `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`.
 
 ## Historical / provenance docs
 
 Dated documents from earlier method phases should usually be preserved. If they are superseded, mark them as superseded in a current index rather than deleting them. They may still explain why a method was abandoned or why a claim is unsafe.
+
+The old `-adaptive-llm-inference` project has now been mined for transferable ideas. Do not keep returning to it unless a specific new loss pattern justifies doing so.
 
 ## Cleanup policy
 
