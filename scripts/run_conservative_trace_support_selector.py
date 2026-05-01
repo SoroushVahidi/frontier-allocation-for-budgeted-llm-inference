@@ -36,15 +36,22 @@ def main():
     breaks=sum(1 for r in casebook if r['break'])
     sel_acc=sum(1 for r in casebook if r['selector_correct'])/max(1,total)
     cur_acc=sum(1 for r in casebook if r['current_correct'])/max(1,total)
-    oracle=sum(1 for c in rows if (c.get('evaluation_only') or {}).get('oracle_selector_would_fix') or (c.get('evaluation_only') or {}).get('gold_present_in_terminal_node_finals'))
-    recoverable=sum(1 for c in rows if (c.get('evaluation_only') or {}).get('gold_present_in_terminal_node_finals'))
-    recov=sum(1 for r in casebook if r['selector_correct'] and r['gold_normalized_answer'] in r['group_features'])
-    gold_in_terminal_fail=sum(1 for r in casebook if (r['gold_normalized_answer'] in r['group_features']) and (not r['selector_correct']))
-    aggregate_only=sum(1 for c in rows if (c.get('evaluation_only') or {}).get('gold_present_in_aggregate_answer_buckets') and not (c.get('evaluation_only') or {}).get('gold_present_in_terminal_node_finals'))
+
+    def _ev(case):
+        return case.get('evaluation_only') or {}
+
+    recoverable=sum(1 for c in rows if bool(c.get('gold_in_extracted_terminal_node_finals')))
+    aggregate_only=sum(
+        1 for c in rows
+        if bool(c.get('gold_in_aggregate_answer_groups')) and not bool(c.get('gold_in_extracted_terminal_node_finals'))
+    )
+    oracle= recoverable / max(1,total)
+    recov=sum(1 for r,c in zip(casebook,rows) if bool(c.get('gold_in_extracted_terminal_node_finals')) and r['selector_correct'])
+    gold_in_terminal_fail=sum(1 for r,c in zip(casebook,rows) if bool(c.get('gold_in_extracted_terminal_node_finals')) and (not r['selector_correct']))
     summary={"timestamp":datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'),"selector_name":args.selector_name,
         "total_cases":total,"total_overrides":overrides,"fixes":fixes,"breaks":breaks,"net_fixes_minus_breaks":fixes-breaks,
         "override_precision":(fixes/max(1,overrides)),"accuracy":sel_acc,"current_incumbent_accuracy":cur_acc,
-        "oracle_ceiling_on_package":oracle/max(1,total),"recoverable_trace_terminal_cases":recoverable,
+        "oracle_ceiling_on_package":oracle,"recoverable_trace_terminal_cases":recoverable,
         "recoveries_among_gold_in_terminal_node_cases":recov,"failures_gold_present_in_terminal_nodes_not_chosen":gold_in_terminal_fail,
         "aggregate_only_cases_count":aggregate_only,"decision_reasons":reasons}
 
