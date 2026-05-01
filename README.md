@@ -2,33 +2,22 @@
 
 This repository studies **frontier allocation for budgeted LLM inference** under explicit compute/action-budget contracts.
 
-The project is about deciding where limited inference compute should go across active reasoning/candidate paths, and how the final answer should be selected from the explored frontier. It is **not** the older binary cheap-vs-revise routing story.
+The project asks how to allocate limited inference compute across active reasoning/candidate paths and how to choose the final answer from the explored frontier. It is **not** the older binary cheap-vs-revise routing story.
 
 ## Current status
 
-The active engineering goal is to defeat `external_l1_max` honestly with completed, paired, trace-complete evidence.
+The active engineering goal is to turn discovered candidate-answer headroom into a reliable final-answer selector.
 
-The current working artifact is the compact selector tournament export from a focused 50-case Cohere/GSM8K run:
+Recent selector work produced:
 
-```text
-outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
-```
+- present-not-selected selector-evidence packages;
+- a 50-case trace-recovery benchmark with reported 142 traced candidate nodes;
+- a deterministic no-API baseline, `conservative_trace_support_selector_v1`;
+- unified selector-evidence tooling.
 
-Associated paid real run:
+The key current result is a **negative baseline**: `conservative_trace_support_selector_v1` made zero overrides and recovered zero of the 46 trace-terminal recoverable cases in the 50-case recovery benchmark. This motivates an outcome-verifier selector rather than more support/source/trace-count heuristics.
 
-```text
-outputs/cohere_real_model_cost_normalized_validation_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
-```
-
-Current evidence from the 50-case tournament:
-
-- `external_l1_max` accuracy: 0.72
-- current DR-v2 accuracy: 0.64
-- best deployable heuristic selector accuracy: 0.66
-- oracle selector ceiling: 0.84
-- best heuristic selectors are too noisy: 5 fixes, 4 breaks, 17 overrides, override precision 0.2941.
-
-Conclusion: DR-v2 candidate pools have substantial hidden value, but support/source/consistency heuristics are not strong enough for runtime promotion. The next serious selector is a **cached outcome-verifier selector** over existing candidate groups.
+The key current blocker is evidence retention/schema consistency: merged unified-evidence packages currently show `new_cap100_trace_recovery` contributing zero candidate nodes even though the trace-recovery summary reports 142 traced candidates. Fix the source trace-recovery JSONL before treating unified selector evidence as canonical input for outcome-verifier experiments.
 
 Do **not** claim robust or broad superiority over `external_l1_max` unless a completed claim-safe evaluation document supports it.
 
@@ -40,9 +29,9 @@ Do **not** claim robust or broad superiority over `external_l1_max` unless a com
 | Full documentation map | `docs/DOCS_INDEX.md` |
 | Reviewer/collaborator orientation | `docs/CANONICAL_START_HERE.md` |
 | Repository structure | `docs/REPO_MAP.md` |
-| Current selector/L1-defeat track | `docs/SELECTOR_START_HERE.md` |
 | Current selector artifact front door | `docs/SELECTOR_WORK_START_HERE_20260501.md` |
 | Selector choosing checklist | `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` |
+| Selector evidence retention policy | `docs/SELECTOR_EVIDENCE_RETENTION_POLICY_20260501.md` |
 | Fast selector execution policy | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` |
 | Wulver artifact index | `docs/ARTIFACT_INDEX_20260501.md` |
 | Focused33 trace-enrichment result | `docs/FOCUSED33_TRACE_ENRICHMENT_RESULT_20260501T000906Z.md` |
@@ -55,17 +44,19 @@ Do **not** claim robust or broad superiority over `external_l1_max` unless a com
 
 ## Current selector artifacts
 
-The Wulver artifact transfer restored the current selector-focused trace artifacts:
+Important selector-evidence families:
+
+- `outputs/selector_evidence_package_*/` — present-not-selected / absent-from-tree / current-correct-risk casebooks and summaries.
+- `outputs/selector_evidence_trace_recovery_*/` — trace-recovery packages for selector cases. Verify that `candidate_trace_enriched.jsonl` actually contains candidate nodes before use.
+- `outputs/conservative_trace_support_selector_*/` — deterministic non-API selector baseline outputs.
+- `outputs/unified_selector_evidence_*/` — unified evidence packages. Current merged packages are diagnostic until the new-cap100 candidate-node retention issue is corrected.
+- `outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl` — older focused33 traced selector evidence.
+
+Historical Wulver selector artifacts also include:
 
 - `outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_trace_complete.csv` — 47 aggregate trace-complete external-loss casebook rows.
 - Focused subset from that casebook — 33 rows where `trace_available == gold_present_in_candidate_groups == oracle_selector_would_fix == 1`.
-- `outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl` — trace-enriched candidate-node artifact for those 33 rows.
 - `outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_case_trace_index.csv` — raw trace index with more traced method/example rows than the 47-row external-loss casebook.
-
-Current ceilings for the focused selector work:
-
-- aggregate casebook oracle: 33/33;
-- trace-preserved-node oracle from the enriched artifact: 8/33.
 
 Use `docs/SELECTOR_WORK_START_HERE_20260501.md`, `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md`, and `docs/ARTIFACT_INDEX_20260501.md` before running or interpreting selector experiments.
 
@@ -79,9 +70,52 @@ For selector work:
 2. Dry-run verifier-call count before paid scoring.
 3. Cache every verifier score.
 4. Do not regenerate answers just to test selectors.
-5. After any paid run, immediately export a compact selector artifact and run the selector tournament.
+5. After any paid run, immediately export a compact selector artifact and run the relevant selector evaluation.
 
 See `docs/FAST_SELECTOR_EXECUTION_POLICY.md`.
+
+## Current selector-track commands
+
+Run the focused selector regression subset:
+
+```bash
+make selector-test
+```
+
+Run reviewer-safe checks:
+
+```bash
+make health
+make reviewer-test
+```
+
+Run the conservative selector on a candidate-trace input:
+
+```bash
+STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+python scripts/run_conservative_trace_support_selector.py \
+  --input outputs/selector_evidence_trace_recovery_20260501T023200Z/candidate_trace_enriched.jsonl \
+  --output-dir outputs/conservative_trace_support_selector_${STAMP} \
+  --selector-name conservative_trace_support_selector_v1 \
+  --min-support-margin 1 \
+  --require-trace-for-override \
+  --prefer-source-diversity \
+  --no-gold-features
+```
+
+Inventory current trace artifacts:
+
+```bash
+python scripts/inventory_trace_artifacts.py \
+  --roots outputs archive logs \
+  --output-dir outputs/trace_artifact_inventory_$(date -u +%Y%m%dT%H%M%SZ)
+```
+
+Run the canonical paper artifact builder:
+
+```bash
+python scripts/paper/run_all_neurips_paper_artifacts.py
+```
 
 ## Canonical paper-facing artifacts
 
@@ -99,42 +133,13 @@ Canonical output roots:
 
 These are claim-eligible only when interpreted through `docs/PAPER_SOURCE_OF_TRUTH.md` and `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`.
 
-## Current selector-track commands
-
-Run the focused selector regression subset:
-
-```bash
-make selector-test
-```
-
-Run reviewer-safe checks:
-
-```bash
-make health
-make reviewer-test
-```
-
-Inventory current trace artifacts:
-
-```bash
-python scripts/inventory_trace_artifacts.py \
-  --roots outputs archive logs \
-  --output-dir outputs/trace_artifact_inventory_$(date -u +%Y%m%dT%H%M%SZ)
-```
-
-Run the canonical artifact builder:
-
-```bash
-python scripts/paper/run_all_neurips_paper_artifacts.py
-```
-
 ## Current L1-defeat focus
 
 The selector track asks:
 
 > Given candidate answers already found by DR-v2, can an outcome verifier estimate which candidate answer is correct more safely than support/source/consistency heuristics?
 
-The next offline step is to adapt the outcome-verifier selector to ingest the focused33 trace-enriched artifact, first with dry-run call accounting and then with cached verifier scoring only if explicitly authorized.
+The next offline step is to correct the trace-recovery JSONL retention issue, rebuild unified selector evidence, and then run an outcome-verifier selector with dry-run call accounting before any paid scoring.
 
 ## Method-surface distinction
 
@@ -151,7 +156,7 @@ Keep this distinction explicit:
 - Do **not** treat mock-backed verifier runs as real verifier evidence.
 - Do **not** present diagnostic variants as final methods unless validated and promoted by canonical docs.
 - Do **not** assume historical runs have complete trace coverage.
-- Do **not** call final-answer-only verifier runs Cobbe-style full-solution verification.
+- Do **not** treat current unified packages as fully trace-aware for new-cap100 until candidate-node retention is fixed.
 
 ## Repository organization
 
