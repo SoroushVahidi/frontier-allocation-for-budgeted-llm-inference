@@ -61,3 +61,60 @@ def test_build_unified_selector_evidence(tmp_path: Path):
     assert summary["overall"]["total_duplicates_excluded"] == 1
     assert summary["by_provenance_source"]["s1"]["input_records"] == 2
     assert summary["by_provenance_source"]["s2"]["input_records"] == 1
+
+
+def test_trace_recovery_schema_variants_and_counts(tmp_path: Path):
+    in1 = tmp_path / "trace_recovery.jsonl"
+    in2 = tmp_path / "focused.jsonl"
+    out = tmp_path / "out2"
+    # trace-recovery shaped: candidate_nodes present
+    tr_with_nodes = {
+        "case_id": "tr1", "dataset": "d", "example_id": "10", "seed": 0, "budget": 100, "our_method_name": "m",
+        "problem_statement": "p",
+        "candidate_nodes": [
+            {"candidate_id": "a", "final_answer": "1", "trace_text": "trace a"},
+            {"candidate_id": "b", "final_answer": "2", "reasoning_trace": "trace b"},
+        ],
+        "evaluation_only": {"gold_answer": "1"},
+        "verifier_input": {"problem_statement": "p", "candidates_for_verifier": [{"candidate_id": "a"}]},
+        "gold_in_aggregate_answer_groups": True, "gold_in_extracted_terminal_node_finals": True,
+    }
+    # trace-recovery shaped fallback: no candidate_nodes, reconstruct from verifier_input.candidates_for_verifier
+    tr_from_verifier = {
+        "case_id": "tr2", "dataset": "d", "example_id": "11", "seed": 0, "budget": 100, "our_method_name": "m",
+        "problem_statement": "p2",
+        "candidate_nodes": [],
+        "evaluation_only": {"gold_answer": "3"},
+        "verifier_input": {"problem_statement": "p2", "candidates_for_verifier": [{"candidate_id": "x", "final_answer": "3", "steps": ["s1", "s2"]}]},
+        "gold_in_aggregate_answer_groups": True, "gold_in_extracted_terminal_node_finals": False,
+    }
+    # focused33 shaped record
+    focused = {
+        "case_id": "f1", "dataset": "d", "example_id": "12", "seed": 0, "budget": 100, "our_method_name": "m",
+        "problem_statement": "p3",
+        "candidate_nodes": [{"candidate_id": "f", "final_answer": "4", "step_text": "st"}],
+        "evaluation_only": {"gold_answer": "4", "oracle_selector_would_fix": False},
+        "verifier_input": {"problem_statement": "p3", "candidates_for_verifier": [{"candidate_id": "f"}], "gold_answer": "SHOULD_BE_REMOVED"},
+        "gold_in_aggregate_answer_groups": True, "gold_in_extracted_terminal_node_finals": True,
+    }
+    write_jsonl(in1, [tr_with_nodes, tr_from_verifier])
+    write_jsonl(in2, [focused])
+    subprocess.check_call([
+        sys.executable, "scripts/build_unified_selector_evidence.py",
+        "--input", f"{in1}:new_cap100_trace_recovery", "--input", f"{in2}:focused33_wulver",
+        "--output-dir", str(out), "--no-gold-in-verifier-input"
+    ], cwd=Path(__file__).resolve().parents[1])
+    kept = [json.loads(x) for x in (out / "unified_candidate_trace_enriched.jsonl").read_text().splitlines() if x.strip()]
+    assert len(kept) == 3
+    tr2 = next(r for r in kept if r["case_id"] == "tr2")
+    assert len(tr2["candidate_nodes"]) == 1
+    assert tr2["has_any_candidate_trace"] is True
+    assert tr2["usable_for_trace_aware_selector"] is True
+    assert "gold_answer" not in json.dumps(tr2["verifier_input"])
+    focused_kept = next(r for r in kept if r["case_id"] == "f1")
+    assert "candidates_for_verifier" in focused_kept["verifier_input"]
+    summary = json.loads((out / "unified_selector_evidence_summary.json").read_text())
+    assert summary["overall"]["candidate_nodes"] == 4
+    assert summary["overall"]["traced_candidate_nodes"] == 4
+    assert summary["by_provenance_source"]["new_cap100_trace_recovery"]["candidate_nodes"] == 3
+    assert summary["by_provenance_source"]["new_cap100_trace_recovery"]["traced_candidate_nodes"] == 3

@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any
 
 BANNED_KEYS = {"gold_answer", "oracle_selector_answer", "oracle_selector_would_fix", "evaluation_only"}
-SUSPICIOUS_PATH_TOKENS = ("cache", "log", "secret", "api_key", ".env")
 
 
 def iter_jsonl(path: Path):
@@ -51,8 +50,32 @@ def contains_banned(obj: Any) -> bool:
     return False
 
 
+def _candidate_trace_text(c: dict[str, Any]) -> str:
+    trace = c.get("trace_text") or c.get("step_text") or c.get("reasoning_trace")
+    if trace:
+        return str(trace)
+    steps = c.get("steps")
+    if isinstance(steps, list):
+        return "\n".join(str(x) for x in steps if x is not None)
+    if isinstance(steps, str):
+        return steps
+    return ""
+
+
+def _candidate_source_list(r: dict[str, Any]) -> list[dict[str, Any]]:
+    cands = r.get("candidate_nodes")
+    if isinstance(cands, list) and cands:
+        return [c for c in cands if isinstance(c, dict)]
+    vi = r.get("verifier_input") if isinstance(r.get("verifier_input"), dict) else {}
+    for key in ("candidates_for_verifier", "candidate_nodes", "candidates"):
+        v = vi.get(key)
+        if isinstance(v, list) and v:
+            return [c for c in v if isinstance(c, dict)]
+    return []
+
+
 def normalize_record(r: dict[str, Any], src_label: str, src_path: Path, idx: int, no_gold: bool) -> dict[str, Any]:
-    cands = r.get("candidate_nodes") or []
+    cands = _candidate_source_list(r)
     norm_cands = []
     traced = 0
     for i, c in enumerate(cands):
@@ -63,14 +86,16 @@ def normalize_record(r: dict[str, Any], src_label: str, src_path: Path, idx: int
             "source_family": c.get("source_family") or c.get("source_id"),
             "final_answer": c.get("final_answer"),
             "normalized_answer": c.get("normalized_answer"),
-            "trace_text": c.get("trace_text") or c.get("step_text"),
+            "trace_text": _candidate_trace_text(c),
             "step_text": c.get("step_text"),
+            "reasoning_trace": c.get("reasoning_trace"),
+            "steps": c.get("steps"),
             "branch_depth": c.get("branch_depth"),
             "cost_proxy": c.get("cost_proxy") or c.get("cost_norm"),
             "score": c.get("score"),
             "score_prior": c.get("score_prior") or c.get("prior"),
         }
-        has_trace = bool(str(n.get("trace_text") or n.get("step_text") or "").strip())
+        has_trace = bool(str(n.get("trace_text") or n.get("step_text") or n.get("reasoning_trace") or "").strip()) or bool(n.get("steps"))
         if has_trace:
             traced += 1
         n["trace_available"] = has_trace
