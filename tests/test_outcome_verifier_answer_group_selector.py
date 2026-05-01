@@ -115,3 +115,36 @@ def test_margin_sweep_chooses_expected_margin():
     ]
     best = choose_best_margin(rows)
     assert best['margin'] == 0.1
+import subprocess, sys, tempfile, os, json
+from pathlib import Path
+
+
+def test_scoring_validate_only_writes_progress_and_no_calls(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    cp.write_text(json.dumps({'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'})+'\n')
+    out = tmp_path/'out'; cache = out/'verifier_scores.jsonl'
+    subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache),'--validate-call-plan-only'])
+    assert (out/'progress_summary.json').exists()
+    s=json.loads((out/'verifier_scoring_summary.json').read_text())
+    assert s['api_calls_made']==0
+
+
+def test_resume_skips_existing_and_max_new_calls(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    items=[{'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'},
+           {'case_id':'c1','candidate_id':'b','problem_statement':'p','final_answer':'2','normalized_answer':'2','trace_text':'t'}]
+    cp.write_text('\n'.join(json.dumps(x) for x in items)+'\n')
+    out = tmp_path/'out'; cache = out/'verifier_scores.jsonl'; out.mkdir()
+    cache.write_text(json.dumps({'case_id':'c1','candidate_id':'a','verifier_score':0.5})+'\n')
+    subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--max-new-calls','1','--cache-path',str(cache),'--allow-api'], env={**os.environ, 'COHERE_API_KEY':''})
+    s=json.loads((out/'verifier_scoring_summary.json').read_text())
+    assert s['skipped_existing_cached_scores']>=1
+
+
+def test_api_disabled_records_failure(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    cp.write_text(json.dumps({'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'})+'\n')
+    out = tmp_path/'out'; cache = out/'verifier_scores.jsonl'
+    subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache)])
+    txt=(out/'failed_or_skipped_items.jsonl').read_text()
+    assert 'api_disabled' in txt
