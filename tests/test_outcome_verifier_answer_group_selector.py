@@ -75,3 +75,43 @@ def test_unknown_empty_not_selected_as_challenger():
     items=[build_verifier_item(c,n,'c1',i) for i,n in enumerate(c['candidate_nodes'])]
     d=select_case(c,items,{('c1','a'):0.1,('c1','b'):0.9},0.15,True)
     assert d['selected_normalized_answer']=='4'
+
+from scripts.run_outcome_verifier_scoring import parse_verifier_response, build_prompt, cache_key
+
+
+def test_strict_json_parser_accepts_valid():
+    r = parse_verifier_response('{"candidate_id":"a","case_id":"c1","normalized_answer":"4","score":0.7,"verdict":"likely_correct","reason":"ok","used_trace":true,"major_error":null}')
+    assert r['score'] == 0.7
+
+
+def test_strict_json_parser_rejects_out_of_range_score():
+    try:
+        parse_verifier_response('{"candidate_id":"a","case_id":"c1","normalized_answer":"4","score":1.7,"verdict":"likely_correct","reason":"ok","used_trace":true,"major_error":null}')
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_prompt_has_no_gold_oracle_evalonly():
+    c = _case(); it = build_verifier_item(c, c['candidate_nodes'][0], 'c1', 0)
+    _, user, _ = build_prompt(it)
+    lu = user.lower()
+    assert 'gold_answer' not in lu and 'evaluation_only' not in lu and 'oracle' not in lu
+
+
+def test_cached_scores_join_by_case_candidate_and_hash_stable():
+    c = _case(); it = build_verifier_item(c, c['candidate_nodes'][0], 'c1', 0)
+    k1 = cache_key(it)
+    k2 = cache_key(dict(it))
+    assert k1 == k2
+from scripts.run_outcome_verifier_selector_margin_sweep import choose_best_margin
+
+
+def test_margin_sweep_chooses_expected_margin():
+    rows = [
+        {'margin':0.0,'net_fixes_minus_breaks':5,'breaks':1,'override_precision':0.7,'total_overrides':10},
+        {'margin':0.1,'net_fixes_minus_breaks':5,'breaks':0,'override_precision':0.6,'total_overrides':8},
+        {'margin':0.2,'net_fixes_minus_breaks':4,'breaks':0,'override_precision':0.9,'total_overrides':4},
+    ]
+    best = choose_best_margin(rows)
+    assert best['margin'] == 0.1
