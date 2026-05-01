@@ -10,104 +10,97 @@ The core question is:
 
 > Given a fixed inference budget and multiple active reasoning/candidate paths, where should the next unit of compute go, and how should the final answer be selected from the explored frontier?
 
-The active work is no longer the older binary cheap-vs-revise routing story. The current focus is final-answer selection from already-discovered candidate reasoning paths.
+The active work is no longer the older binary cheap-vs-revise routing story. The current emphasis is final-answer selection from already-discovered candidate reasoning paths, followed by discovery/coverage improvements once selector baselines are sufficiently stable.
 
 ## Current phase
 
-**Phase:** selector evidence cleanup and outcome-verifier selector preparation.
+**Phase:** selected-selector validation and literature-baseline comparison.
 
-The recent selector work established three important facts:
-
-1. There are real **present-not-selected** failures: cases where the correct answer is present in discovered candidate groups/tree evidence but the runtime selector chooses another answer.
-2. A conservative non-API selector baseline, `conservative_trace_support_selector_v1`, made zero overrides on the 50-case trace-recovered recovery benchmark, so support/source/trace-count features alone are too conservative for this setting.
-3. The unified selector-evidence package builder exists, but the merged unified packages are **not yet selector-ready for the new-cap100 subset**, because that subset currently contributes zero candidate nodes in the unified summary.
-
-## Current evidence packages
-
-### Strongest recovery benchmark
+The recovery-track selector-choosing milestone is complete. The current selected working selector is the Cohere cached outcome-verifier answer-group selector:
 
 ```text
-outputs/selector_evidence_trace_recovery_20260501T023200Z/
+outcome_verifier_answer_group_selector_v1
+scorer_mode = cached_jsonl
+min_verifier_margin = 0.0
+require_trace_for_override = true
+dedupe_verifier_items = true
+no_gold_features = true
 ```
 
-Recorded recovery metrics from the trace-recovery run:
-
-| Metric | Value |
-|---|---:|
-| input cases | 50 |
-| raw records matched | 50 |
-| cases with candidate nodes | 50 |
-| cases with at least one candidate trace | 50 |
-| cases with all candidates traced | 50 |
-| extracted candidate-node count | 142 |
-| traced candidate-node count | 142 |
-| gold present in aggregate answer buckets | 50 |
-| gold present in extracted terminal node finals | 46 |
-| selected answer present in extracted terminal node finals | 50 |
-| Cohere calls used for recovery | 0 |
-
-Important caveat: the committed `candidate_trace_enriched.jsonl` in this package has been observed to contain shell records with empty `candidate_nodes`. The summary claims 142 traced candidates, but the selector-unification path cannot currently recover those candidates from the committed package. Treat this as a source-package writing/retention issue to fix before using the package as unified selector input.
-
-### Conservative selector negative baseline
+Canonical config:
 
 ```text
-outputs/conservative_trace_support_selector_20260501T025615Z/
+configs/selected_selector_current.json
 ```
 
-Result on the 50-case recovery package:
+This selector is selected for the **recovery / selector-evidence track only**. It is not runtime-promoted.
 
-| Metric | Value |
-|---|---:|
-| total cases | 50 |
-| current incumbent accuracy | 0.0 |
-| oracle ceiling on package | 0.92 |
-| recoverable trace-terminal cases | 46 |
-| total overrides | 0 |
-| fixes | 0 |
-| gold-terminal failures not chosen | 46 |
+## Current selected-selector evidence
 
-Interpretation: `conservative_trace_support_selector_v1` is a valid deterministic no-API baseline, but it is a negative baseline. It shows that conservative support/source/trace gating does not recover the available headroom.
-
-### Unified selector evidence packages
-
-Unified packages were generated under:
+Final selector decision package:
 
 ```text
-outputs/unified_selector_evidence_*/
+outputs/final_selector_decision_20260501T175547Z/
 ```
 
-Current caveat: the latest merged unified package family still shows the `new_cap100_trace_recovery` provenance with:
+Passing selected-selector audit package:
 
 ```text
-candidate_nodes = 0
-traced_candidate_nodes = 0
-usable_for_trace_aware_selector = 0
+outputs/selected_selector_audit_20260501T181608Z/
 ```
 
-Therefore the unified package is useful as a diagnostic artifact and builder scaffold, but **not yet the canonical selector-training/evaluation input** for outcome-verifier work.
+The selected recovery-track result is:
 
-## Current blocker
+| Selector | Cases | Overrides | Fixes | Breaks | Net | Accuracy | Status |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `conservative_trace_support_selector_v1` | 47 | 0 | 0 | 0 | 0 | 0.0000 | rejected fallback |
+| outcome verifier + `trace_quality_heuristic` | 47 | 36 | 20 | 0 | +20 | 0.4255 | runner-up |
+| outcome verifier + Cohere `cached_jsonl` | 47 | 42 | 21 | 0 | +21 | 0.4468 | selected |
 
-The immediate blocker is not the outcome-verifier selector itself. It is the source evidence retention issue:
+The audit confirms that the selected config reproduces the expected metrics, uses a clean 94/94 cache join, keeps call-plan/score rows gold-free, and retains the explicit non-runtime-promotion scope boundary.
 
-> The trace-recovery summary reports 142 traced new-cap100 candidates, but the committed candidate-trace JSONL available to the unified builder contains empty candidate lists.
+## External-baseline comparison status
 
-The next useful task is to fix `scripts/recover_selector_evidence_traces.py` or regenerate the source trace-recovery package so that `candidate_trace_enriched.jsonl` actually contains the recovered `candidate_nodes` and `verifier_input.candidates_for_verifier`.
-
-## Next recommended action
-
-1. Fix/regenerate the trace-recovery package so the committed JSONL contains the 142 recovered candidate nodes.
-2. Rebuild unified selector evidence from the corrected trace-recovery package plus focused33.
-3. Confirm the unified summary shows:
+A bounded 100-case GSM8K comparison against `external_l1_max` was added under:
 
 ```text
-new_cap100_trace_recovery candidate_nodes = 142
-new_cap100_trace_recovery traced_candidate_nodes = 142
-new_cap100_trace_recovery usable_for_trace_aware_selector = 50
+outputs/best_selector_vs_external_l1_comparison_*/
 ```
 
-4. Rerun `conservative_trace_support_selector_v1` on the corrected unified package.
-5. Implement the outcome-verifier selector with a dry-run call plan before any paid API scoring.
+That run is **cache-limited**: most paired-set candidates did not have verifier scores, so the selected selector mostly fell back to original DR-v2. Treat it as diagnostic until a fully scored paired comparison is available.
+
+A fully scored pilot is the correct next step for claim-safe comparison because it must satisfy:
+
+```text
+missing_candidate_score_count = 0
+fallback_to_incumbent_due_to_missing_scores = 0
+selected_candidate_not_in_pool_count = 0
+```
+
+## Current bottleneck hypothesis
+
+For selector work, distinguish three cases:
+
+| Case type | Interpretation |
+|---|---|
+| gold present in candidate tree but not chosen | selector bottleneck |
+| gold absent from candidate tree | discovery/coverage bottleneck |
+| current answer correct but selector overrides wrongly | runtime safety / break-risk bottleneck |
+
+The selected verifier selector reduced the recovery-track selector bottleneck. The next paired experiments should determine whether remaining wrong cases are now dominated by discovery/coverage or by selector mistakes.
+
+## Literature selector baselines
+
+Because answer-quality selection is a broad research problem, the project should prefer published, defensible selector baselines rather than inventing complicated new selectors.
+
+Current/near-term selector baselines:
+
+1. Outcome-verifier / best-of-N verifier reranking — current selected family.
+2. Self-consistency majority vote — next literature baseline to implement/evaluate.
+3. Process-reward / step-verifier reranking — possible later baseline if needed.
+4. Self-verification / backward verification — possible later baseline if needed.
+
+The main project contribution should remain discovery/budget allocation, not a novel answer-quality selector.
 
 ## API-cost policy
 
@@ -119,34 +112,44 @@ For selector work:
 2. Dry-run verifier-call count before paid scoring.
 3. Cache every verifier score.
 4. Do not regenerate answers merely to test selectors.
-5. Keep verifier inputs gold/oracle-free.
+5. Keep verifier inputs gold/oracle/evaluation-only free.
+6. Immediately report score coverage and fallback counts for paired comparisons.
 
 ## Safe claim boundary
 
 Safe:
 
-- The repository contains real selector-evidence artifacts and tools for present-not-selected recovery analysis.
-- The 50-case recovery benchmark indicates substantial oracle headroom in discovered candidate sets.
-- The conservative trace-support selector is a negative baseline and motivates outcome-verifier selection.
-- The unified-evidence builder exists, but its current merged outputs expose a retention/schema problem for new-cap100 candidates.
+- The repository has an audited selected selector for the recovery selector-evidence track.
+- The selected Cohere cached verifier selector beat conservative and trace-quality selector baselines on the recovery package.
+- The 100-case external comparison script exists, but its first run is cache-limited and diagnostic.
+- The next claim-safe comparison requires full score coverage on paired candidate cases.
 
 Not safe yet:
 
-- Do not claim a current selector beats `external_l1_max` robustly.
-- Do not claim the merged unified packages are fully trace-aware for the new-cap100 subset.
-- Do not claim outcome-verifier selection works until cached verifier scores are actually evaluated.
+- Do not claim robust/universal superiority over `external_l1_max`.
+- Do not claim runtime promotion of the selected selector.
+- Do not treat cache-limited paired comparisons as real selected-selector comparisons.
+- Do not claim selector errors are solved until fully scored paired pilots quantify gold-present-but-not-selected cases.
 - Do not treat diagnostic/bug-revealing artifacts as paper-facing evidence without updating the source-of-truth docs.
+
+## Next recommended action
+
+1. Finish/merge the self-consistency majority-vote literature baseline.
+2. Compare self-consistency and the Cohere outcome-verifier selector on the same fully scored pilot cases.
+3. If the verifier selector remains best, freeze selector work for the current paper track.
+4. Move to discovery/coverage improvements if fully scored paired comparisons show most residual errors have gold absent from the candidate tree.
 
 ## Important documents
 
+- `docs/CURRENT_SELECTOR_DECISION.md` — selected selector config and caveats.
+- `docs/LITERATURE_SELECTOR_BASELINES.md` — literature-grounded selector baselines, once added.
 - `docs/DOCS_INDEX.md` — active vs diagnostic vs historical document map.
 - `docs/REPO_MAP.md` — repository structure and selector-phase reading path.
 - `docs/SELECTOR_WORK_START_HERE_20260501.md` — selector artifact orientation.
 - `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` — selector family decision checklist.
-- `docs/SELECTOR_EVIDENCE_RETENTION_POLICY_20260501.md` — what to commit from selector evidence packages.
 - `docs/FAST_SELECTOR_EXECUTION_POLICY.md` — cost-aware execution policy.
 - `docs/PAPER_SOURCE_OF_TRUTH.md` — claim-eligible evidence rules.
 
 ## One-sentence status
 
-The repository is ready for outcome-verifier selector work only after the new-cap100 trace-recovery package is corrected so its committed JSONL contains the 142 recovered candidate traces that its summary reports.
+The repository now has an audited recovery-track selected selector; the next useful work is an apples-to-apples comparison with literature selector baselines and a fully scored paired pilot against `external_l1_max`, after which effort should shift to discovery/coverage if residual errors are mostly gold-absent-from-tree.
