@@ -1,0 +1,3 @@
+budget,method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+4,external_l1_max,120,0.7083333333333334,0.2916666666666667,0.0,0.0,0.0,1.0333333333333334,1.0333333333333334,0.0
+4,strict_f3,120,0.6416666666666667,0.325,0.03333333333333333,0.0,0.0,3.183333333333333,3.183333333333333,0.0

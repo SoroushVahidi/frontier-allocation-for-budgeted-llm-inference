@@ -1,0 +1,6 @@
+variant,budget,n_cases,mean_accuracy,absent_from_tree_count,absent_from_tree_rate,present_not_selected_count,present_not_selected_rate,output_layer_mismatch_count,output_layer_mismatch_rate,avg_actions,avg_distinct_answer_groups,avg_repeated_family_concentration,avg_repeated_family_expansion_rate
+anti_collapse_conditional,4,6,0.8333333333333334,1,0.16666666666666666,0,0.0,0,0.0,4.0,1.1666666666666667,0.0,0.625
+anti_collapse_default,4,6,0.5,3,0.5,0,0.0,0,0.0,4.0,0.8333333333333334,0.0,0.5833333333333334
+anti_collapse_off,4,6,0.6666666666666666,2,0.3333333333333333,0,0.0,0,0.0,4.0,1.0,0.0,0.5833333333333334
+anti_collapse_strong,4,6,0.3333333333333333,3,0.5,1,0.16666666666666666,0,0.0,3.5,1.3333333333333333,0.0,0.5000000000000001
+anti_collapse_weak,4,6,0.6666666666666666,1,0.16666666666666666,1,0.16666666666666666,0,0.0,3.6666666666666665,1.0,0.0,0.625

@@ -1,0 +1,6 @@
+metric,value
+loss_cases_total,204
+loss_cases_with_candidate_trace_rows,35
+trace_availability_rate,0.1715686274509804
+confirmed_absent_from_tree,143
+unverified_absent_from_tree,61

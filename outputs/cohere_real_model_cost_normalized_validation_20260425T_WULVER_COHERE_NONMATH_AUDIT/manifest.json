@@ -1,0 +1,55 @@
+{
+  "artifact_family": "cohere_real_model_cost_normalized_validation",
+  "timestamp": "20260425T_WULVER_COHERE_NONMATH_AUDIT",
+  "providers": [
+    "cohere"
+  ],
+  "models": {
+    "cohere": "command-r-plus-08-2024",
+    "openai": "gpt-4o-mini"
+  },
+  "datasets": [
+    "natural_plan",
+    "gpqa_diamond"
+  ],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23
+  ],
+  "methods": [
+    "strict_f3_anti_collapse_weak_v1",
+    "strict_f3",
+    "external_l1_max",
+    "tale",
+    "s1"
+  ],
+  "target_scored_per_slice": 100,
+  "max_examples": 200,
+  "provider_status": {
+    "cohere": {
+      "ready": "1",
+      "reason": "summarize_only"
+    }
+  },
+  "pricing": {
+    "input_cost_per_1k": 0.003,
+    "output_cost_per_1k": 0.015
+  },
+  "outputs": [
+    "manifest.json",
+    "slice_summary.csv",
+    "method_summary.csv",
+    "cost_normalized_summary.csv",
+    "pairwise_comparisons.csv",
+    "incomplete_slices.csv",
+    "claim_safety_table.csv",
+    "per_example_records.jsonl",
+    "progress_heartbeat.jsonl",
+    "raw/failures.jsonl"
+  ]
+}

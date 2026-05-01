@@ -1,0 +1,6 @@
+case_idx,example_id,seed,budget,method,stratum,answer_group,support,is_gold_group,is_selected_group
+1,openai_gsm8k_76,23,4,strict_f3,absent_from_tree,na,1,0,1
+1,openai_gsm8k_76,23,4,external_l1_max,absent_from_tree,na,1,0,1
+1,openai_gsm8k_76,23,4,direct_reserve_strong_v1,absent_from_tree,na,1,0,1
+1,openai_gsm8k_76,23,4,direct_reserve_strong_plus_diverse_v1,absent_from_tree,na,1,0,1
+1,openai_gsm8k_76,23,4,direct_reserve_strong_plus_diverse_margin_gated_v1,absent_from_tree,na,1,0,1

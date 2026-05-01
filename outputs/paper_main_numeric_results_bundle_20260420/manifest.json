@@ -1,0 +1,65 @@
+{
+  "name": "paper_main_numeric_results_bundle",
+  "created_utc": "2026-04-20T16:54:49.765614+00:00",
+  "script": "scripts/run_paper_main_numeric_results_bundle.py",
+  "command": "scripts/run_paper_main_numeric_results_bundle.py --output-dir outputs/paper_main_numeric_results_bundle_20260420 --datasets openai/gsm8k,EleutherAI/hendrycks_math,HuggingFaceH4/MATH-500,Idavidrein/gpqa,Hothan/OlympiadBench,meituan-longcat/AMO-Bench --budgets 6,8,10 --seeds 42,43,44 --subset-size 24 --api-backend simulator --model gpt-4.1-mini --resume",
+  "output_dir": "outputs/paper_main_numeric_results_bundle_20260420",
+  "config": {
+    "datasets": [
+      "openai/gsm8k",
+      "EleutherAI/hendrycks_math",
+      "HuggingFaceH4/MATH-500",
+      "Idavidrein/gpqa",
+      "Hothan/OlympiadBench",
+      "meituan-longcat/AMO-Bench"
+    ],
+    "subset_size": 24,
+    "calibration_ratio": 0.5,
+    "budgets": [
+      6,
+      8,
+      10
+    ],
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "adaptive_min_expand_grid": [
+      0,
+      1,
+      2
+    ],
+    "methods": [
+      "strict_coupled_tie_aware_promoted",
+      "adaptive_budget_guarded",
+      "reasoning_beam2",
+      "self_consistency_3",
+      "reasoning_greedy",
+      "verifier_guided_search"
+    ],
+    "promoted_controller_name": "strict_coupled_tie_aware_promoted",
+    "promoted_controller_source": "adaptive_budget_guarded",
+    "api_backend": "simulator",
+    "model": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180,
+    "timeout_seconds": 60,
+    "vgs_candidates": 3,
+    "vgs_min_expansions": 1,
+    "resume": true
+  },
+  "files": {
+    "per_seed_method_metrics_csv": "outputs/paper_main_numeric_results_bundle_20260420/per_seed_method_metrics.csv",
+    "per_dataset_budget_method_metrics_csv": "outputs/paper_main_numeric_results_bundle_20260420/per_dataset_budget_method_metrics.csv",
+    "aggregate_method_summary_csv": "outputs/paper_main_numeric_results_bundle_20260420/aggregate_method_summary.csv",
+    "aggregate_dataset_summary_csv": "outputs/paper_main_numeric_results_bundle_20260420/aggregate_dataset_summary.csv",
+    "skipped_items_csv": "outputs/paper_main_numeric_results_bundle_20260420/skipped_items.csv",
+    "resume_state_json": "outputs/paper_main_numeric_results_bundle_20260420/resume_state.json"
+  },
+  "counts": {
+    "completed_blocks": 54,
+    "metric_rows_per_seed": 324,
+    "skipped_items": 0
+  }
+}

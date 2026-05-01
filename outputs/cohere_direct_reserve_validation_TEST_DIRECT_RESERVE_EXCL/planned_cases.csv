@@ -1,0 +1,5 @@
+case_idx,example_id,dataset,question,gold_answer_raw,gold_answer,seed,budget,stratum,source_path,excluded_overlap
+1,a3,openai/gsm8k,Q a3,4,4,23,4,absent_from_tree,/tmp/pytest-of-sv96/pytest-26/test_exclusion_reduces_overlap0/loss.csv,0
+2,a1,openai/gsm8k,Q a1,4,4,23,4,absent_from_tree,/tmp/pytest-of-sv96/pytest-26/test_exclusion_reduces_overlap0/loss.csv,0
+3,a2,openai/gsm8k,Q a2,4,4,23,4,absent_from_tree,/tmp/pytest-of-sv96/pytest-26/test_exclusion_reduces_overlap0/loss.csv,0
+4,p3,openai/gsm8k,Q p3,5,5,23,4,present_not_selected,/tmp/pytest-of-sv96/pytest-26/test_exclusion_reduces_overlap0/loss.csv,0

@@ -1,0 +1,38 @@
+{
+  "timestamp": "20260428T195414Z",
+  "git_commit_hash": "4e8d2f425adebc327b4c5faabfc95cd71379e448",
+  "command": "python scripts/run_cohere_real_model_cost_normalized_validation.py --timestamp 20260428T195414Z --providers cohere --cohere-model command-r-plus-08-2024 --datasets openai/gsm8k,HuggingFaceH4/MATH-500 --budgets 4,6,8 --seeds 11,23 --methods strict_f3,strict_gate1_cap_k6,strict_f3_anti_collapse_weak_v1,external_l1_max,tale,s1 --target-scored-per-slice 30 --max-examples 30 --resume",
+  "methods": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f3_anti_collapse_weak_v1",
+    "external_l1_max",
+    "tale",
+    "s1"
+  ],
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500"
+  ],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23
+  ],
+  "provider": "cohere",
+  "model": "command-r-plus-08-2024",
+  "env_key_presence": {
+    "OPENAI_API_KEY": true,
+    "COHERE_API_KEY": true,
+    "HF_TOKEN": true
+  },
+  "slurm_job_id": "1013340",
+  "start_time_utc": "2026-04-28T19:55:35Z",
+  "end_time_utc": "2026-04-28T22:36:15Z",
+  "completion_status": "success",
+  "source_output_dir": "outputs/cohere_real_model_cost_normalized_validation_20260428T195414Z"
+}

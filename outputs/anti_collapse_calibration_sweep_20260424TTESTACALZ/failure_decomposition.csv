@@ -1,0 +1,6 @@
+variant,absent_from_tree_count,absent_from_tree_rate,present_not_selected_count,present_not_selected_rate,output_layer_mismatch_count,output_layer_mismatch_rate,n_cases
+anti_collapse_off,2,0.3333333333333333,0,0.0,0,0.0,6
+anti_collapse_weak,1,0.16666666666666666,1,0.16666666666666666,0,0.0,6
+anti_collapse_default,3,0.5,0,0.0,0,0.0,6
+anti_collapse_strong,3,0.5,1,0.16666666666666666,0,0.0,6
+anti_collapse_conditional,1,0.16666666666666666,0,0.0,0,0.0,6

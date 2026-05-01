@@ -1,0 +1,5 @@
+split,example_id,model
+grouped_problem_holdout,e1,logistic_regression
+grouped_problem_holdout,e1,logistic_regression
+grouped_problem_holdout,e2,pairwise_logistic
+grouped_problem_holdout,e2,pairwise_logistic

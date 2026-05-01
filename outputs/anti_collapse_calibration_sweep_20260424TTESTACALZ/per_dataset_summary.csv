@@ -1,0 +1,16 @@
+variant,dataset,n_cases,mean_accuracy,absent_from_tree_count,absent_from_tree_rate,present_not_selected_count,present_not_selected_rate,output_layer_mismatch_count,output_layer_mismatch_rate,avg_actions,avg_distinct_answer_groups,avg_repeated_family_concentration,avg_repeated_family_expansion_rate
+anti_collapse_conditional,HuggingFaceH4/MATH-500,2,1.0,0,0.0,0,0.0,0,0.0,4.0,1.0,0.0,0.75
+anti_collapse_conditional,HuggingFaceH4/aime_2024,2,1.0,0,0.0,0,0.0,0,0.0,4.0,1.5,0.0,0.375
+anti_collapse_conditional,openai/gsm8k,2,0.5,1,0.5,0,0.0,0,0.0,4.0,1.0,0.0,0.75
+anti_collapse_default,HuggingFaceH4/MATH-500,2,0.5,1,0.5,0,0.0,0,0.0,4.0,0.5,0.0,0.75
+anti_collapse_default,HuggingFaceH4/aime_2024,2,0.5,1,0.5,0,0.0,0,0.0,4.0,1.0,0.0,0.375
+anti_collapse_default,openai/gsm8k,2,0.5,1,0.5,0,0.0,0,0.0,4.0,1.0,0.0,0.625
+anti_collapse_off,HuggingFaceH4/MATH-500,2,0.5,1,0.5,0,0.0,0,0.0,4.0,1.0,0.0,0.75
+anti_collapse_off,HuggingFaceH4/aime_2024,2,0.5,1,0.5,0,0.0,0,0.0,4.0,1.0,0.0,0.5
+anti_collapse_off,openai/gsm8k,2,1.0,0,0.0,0,0.0,0,0.0,4.0,1.0,0.0,0.5
+anti_collapse_strong,HuggingFaceH4/MATH-500,2,0.5,1,0.5,0,0.0,0,0.0,3.5,1.5,0.0,0.5416666666666666
+anti_collapse_strong,HuggingFaceH4/aime_2024,2,0.0,1,0.5,1,0.5,0,0.0,3.0,1.5,0.0,0.3333333333333333
+anti_collapse_strong,openai/gsm8k,2,0.5,1,0.5,0,0.0,0,0.0,4.0,1.0,0.0,0.625
+anti_collapse_weak,HuggingFaceH4/MATH-500,2,0.5,1,0.5,0,0.0,0,0.0,4.0,0.5,0.0,0.75
+anti_collapse_weak,HuggingFaceH4/aime_2024,2,1.0,0,0.0,0,0.0,0,0.0,4.0,1.0,0.0,0.75
+anti_collapse_weak,openai/gsm8k,2,0.5,0,0.0,1,0.5,0,0.0,3.0,1.5,0.0,0.375

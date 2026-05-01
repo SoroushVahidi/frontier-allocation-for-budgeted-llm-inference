@@ -1,0 +1,8 @@
+category,file_count,total_size_bytes,total_size_human
+cache,608,12887579,12.3MB
+loss_casebook_output,4,352146,343.9KB
+per_example_records,34,102810365,98.0MB
+raw_casebook,6,1339485,1.3MB
+selector_output,9,105640,103.2KB
+summary_or_report,3,23058,22.5KB
+unknown,114,1296505329,1.2GB

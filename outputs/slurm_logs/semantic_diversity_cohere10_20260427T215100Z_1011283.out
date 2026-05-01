@@ -1,0 +1,14 @@
+==== Semantic diversity Cohere-10 diagnostic ====
+hostname=n0111
+date_utc=2026-04-27T21:51:17Z
+job_id=1011283
+repo_root=/home/sv96/adaptive-reasoning-budget-allocation
+git_commit=699f5c4ef257d5b612ae5a21747ee35de4533792
+python=/apps/easybuild/software/Anaconda3/2023.09-0/bin/python
+Python 3.11.5
+COHERE_API_KEY: present
+Running: scripts/run_semantic_diversity_controller_diagnostic.py --timestamp 20260427T215100Z --mode cohere --run-live-cohere --max-cases 10
+COHERE_API_KEY: present
+smoke_test: success model=command-r-plus-08-2024
+smoke_tokens: {"input_tokens": 202.0, "output_tokens": 2.0}
+cohere_mode ok=False msg=post_readiness_failure out_dir=/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/semantic_diversity_controller_diagnostic_20260427T215100Z

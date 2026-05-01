@@ -1,0 +1,31 @@
+{
+  "fixed_k6_control": {
+    "trigger_counts": {},
+    "activated_cases": 0
+  },
+  "relax_on_cross_family_coverage_complete": {
+    "trigger_counts": {
+      "coverage_complete": 273
+    },
+    "activated_cases": 47
+  },
+  "relax_on_low_marginal_gain_absence_false": {
+    "trigger_counts": {
+      "no_collapse_warning_and_alternatives": 294
+    },
+    "activated_cases": 100
+  },
+  "relax_on_multi_family_maturity": {
+    "trigger_counts": {
+      "multi_family_maturity_relax": 194,
+      "multi_family_maturity_high_relax": 41
+    },
+    "activated_cases": 50
+  },
+  "relax_on_high_confidence_incumbent_but_no_challenger_gap": {
+    "trigger_counts": {
+      "incumbent_strong_but_challenger_gap_unclear": 1
+    },
+    "activated_cases": 1
+  }
+}

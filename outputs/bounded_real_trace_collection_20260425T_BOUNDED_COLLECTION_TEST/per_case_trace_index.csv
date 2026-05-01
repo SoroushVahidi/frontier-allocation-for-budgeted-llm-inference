@@ -1,0 +1,4 @@
+example_id,n_per_case_rows,n_branch_rows,n_action_rows,n_answer_group_rows
+a2,1,0,0,0
+openai_gsm8k_4,1,0,0,0
+openai_gsm8k_68,1,0,0,0

@@ -1,0 +1,274 @@
+{
+  "completed_blocks": [
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 42,
+      "budget": 6
+    },
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 42,
+      "budget": 8
+    },
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 42,
+      "budget": 10
+    },
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 43,
+      "budget": 6
+    },
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 43,
+      "budget": 8
+    },
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 43,
+      "budget": 10
+    },
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 44,
+      "budget": 6
+    },
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 44,
+      "budget": 8
+    },
+    {
+      "dataset": "EleutherAI/hendrycks_math",
+      "seed": 44,
+      "budget": 10
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 42,
+      "budget": 6
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 42,
+      "budget": 8
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 42,
+      "budget": 10
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 43,
+      "budget": 6
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 43,
+      "budget": 8
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 43,
+      "budget": 10
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 44,
+      "budget": 6
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 44,
+      "budget": 8
+    },
+    {
+      "dataset": "Hothan/OlympiadBench",
+      "seed": 44,
+      "budget": 10
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 42,
+      "budget": 6
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 42,
+      "budget": 8
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 42,
+      "budget": 10
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 43,
+      "budget": 6
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 43,
+      "budget": 8
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 43,
+      "budget": 10
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 44,
+      "budget": 6
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 44,
+      "budget": 8
+    },
+    {
+      "dataset": "HuggingFaceH4/MATH-500",
+      "seed": 44,
+      "budget": 10
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 42,
+      "budget": 6
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 42,
+      "budget": 8
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 42,
+      "budget": 10
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 43,
+      "budget": 6
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 43,
+      "budget": 8
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 43,
+      "budget": 10
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 44,
+      "budget": 6
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 44,
+      "budget": 8
+    },
+    {
+      "dataset": "Idavidrein/gpqa",
+      "seed": 44,
+      "budget": 10
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 42,
+      "budget": 6
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 42,
+      "budget": 8
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 42,
+      "budget": 10
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 43,
+      "budget": 6
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 43,
+      "budget": 8
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 43,
+      "budget": 10
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 44,
+      "budget": 6
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 44,
+      "budget": 8
+    },
+    {
+      "dataset": "meituan-longcat/AMO-Bench",
+      "seed": 44,
+      "budget": 10
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 42,
+      "budget": 6
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 42,
+      "budget": 8
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 42,
+      "budget": 10
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 43,
+      "budget": 6
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 43,
+      "budget": 8
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 43,
+      "budget": 10
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 44,
+      "budget": 6
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 44,
+      "budget": 8
+    },
+    {
+      "dataset": "openai/gsm8k",
+      "seed": 44,
+      "budget": 10
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+method,budget,n_cases,truncated_count,truncated_share,mean_planned_shallow_nodes_unexpanded
+strict_f3,4,53,53,1.0,0.0
+strict_f3,6,41,29,0.7073170731707317,0.0975609756097561
+strict_f3,8,56,35,0.625,0.08928571428571429
+strict_f3_exhaustive_depth2_probe,4,53,23,0.4339622641509434,0.18867924528301888
+strict_f3_exhaustive_depth2_probe,6,41,16,0.3902439024390244,0.07317073170731707
+strict_f3_exhaustive_depth2_probe,8,56,17,0.30357142857142855,0.14285714285714285
+strict_f3_exhaustive_depth3_probe,4,53,53,1.0,0.0
+strict_f3_exhaustive_depth3_probe,6,41,22,0.5365853658536586,0.24390243902439024
+strict_f3_exhaustive_depth3_probe,8,56,33,0.5892857142857143,0.17857142857142858

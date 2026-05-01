@@ -1,0 +1,6 @@
+order,command
+1,python scripts/check_repo_health.py
+2,python -m ruff check
+3,python -m pytest
+4,python scripts/paper/run_all_neurips_paper_artifacts.py
+5,python scripts/audit_manuscript_figure_table_consistency.py --timestamp 20260425T181643Z --out-dir outputs/offline_submission_audit_20260425T181643Z

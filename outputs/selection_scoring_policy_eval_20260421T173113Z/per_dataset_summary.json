@@ -1,0 +1,68 @@
+{
+  "HuggingFaceH4/MATH-500": {
+    "current_selection_control": {
+      "accuracy": 0.4411764705882353,
+      "present_not_selected": 3
+    },
+    "answer_group_support_only": {
+      "accuracy": 0.4117647058823529,
+      "present_not_selected": 4
+    },
+    "answer_group_support_plus_node_score": {
+      "accuracy": 0.4117647058823529,
+      "present_not_selected": 4
+    },
+    "answer_group_support_plus_calibrated_score": {
+      "accuracy": 0.4117647058823529,
+      "present_not_selected": 4
+    },
+    "answer_group_support_plus_score_plus_tiebreak_cleanup": {
+      "accuracy": 0.4117647058823529,
+      "present_not_selected": 4
+    }
+  },
+  "olympiadbench": {
+    "current_selection_control": {
+      "accuracy": 0.6363636363636364,
+      "present_not_selected": 9
+    },
+    "answer_group_support_only": {
+      "accuracy": 0.6363636363636364,
+      "present_not_selected": 9
+    },
+    "answer_group_support_plus_node_score": {
+      "accuracy": 0.6363636363636364,
+      "present_not_selected": 9
+    },
+    "answer_group_support_plus_calibrated_score": {
+      "accuracy": 0.6363636363636364,
+      "present_not_selected": 9
+    },
+    "answer_group_support_plus_score_plus_tiebreak_cleanup": {
+      "accuracy": 0.6363636363636364,
+      "present_not_selected": 9
+    }
+  },
+  "openai/gsm8k": {
+    "current_selection_control": {
+      "accuracy": 0.6060606060606061,
+      "present_not_selected": 6
+    },
+    "answer_group_support_only": {
+      "accuracy": 0.6060606060606061,
+      "present_not_selected": 6
+    },
+    "answer_group_support_plus_node_score": {
+      "accuracy": 0.6060606060606061,
+      "present_not_selected": 6
+    },
+    "answer_group_support_plus_calibrated_score": {
+      "accuracy": 0.6060606060606061,
+      "present_not_selected": 6
+    },
+    "answer_group_support_plus_score_plus_tiebreak_cleanup": {
+      "accuracy": 0.6060606060606061,
+      "present_not_selected": 6
+    }
+  }
+}

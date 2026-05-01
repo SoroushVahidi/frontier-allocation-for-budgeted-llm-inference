@@ -1,0 +1,6 @@
+budget,method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+6,external_l1_max,20,0.4,0.6,0.0,0.0,0.0,1.8,1.8,0.0
+6,self_consistency_3,20,0.15,0.75,0.05,0.05,0.05,6.0,4.0,2.0
+6,strict_f2,20,0.2,0.75,0.05,0.0,0.0,4.4,4.2,0.2
+6,strict_f3,20,0.25,0.75,0.0,0.0,0.0,3.8,3.4,0.4
+6,strict_gate1_cap_k6,20,0.3,0.7,0.0,0.0,0.0,4.35,4.1,0.25

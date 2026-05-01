@@ -1,0 +1,7 @@
+threshold,example_id,seed,budget,base_answer,learned_answer,learned_margin,gold_answer,is_improvement,is_degradation
+0.00,openai_gsm8k_12,37,4,100,70,0.004081419101229028,70,1,0
+0.00,openai_gsm8k_15,37,4,12,9,0.01023643429879742,12,0,1
+0.00,openai_gsm8k_16,37,4,75,450,0.01023643429879742,75,0,1
+0.00,openai_gsm8k_2,37,4,450,650,0.004081419101229028,450,0,1
+0.00,openai_gsm8k_3,37,4,10,13.33,0.004081419101229028,10,0,1
+0.00,openai_gsm8k_8,37,4,9,6,0.01023643429879742,9,0,1

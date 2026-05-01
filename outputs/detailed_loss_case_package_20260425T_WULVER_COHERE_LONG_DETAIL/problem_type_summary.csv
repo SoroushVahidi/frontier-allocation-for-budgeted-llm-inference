@@ -1,0 +1,6 @@
+slice,problem_type,count,share
+all,comparison,18,0.025
+all,counting_combinatorics,396,0.55
+all,multi_step_arithmetic,114,0.15833333333333333
+all,ratio_percent,132,0.18333333333333332
+all,unit_conversion,60,0.08333333333333333

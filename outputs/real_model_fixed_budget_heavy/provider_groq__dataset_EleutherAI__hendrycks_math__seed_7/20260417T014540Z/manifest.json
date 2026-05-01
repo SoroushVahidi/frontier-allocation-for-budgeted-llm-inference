@@ -1,0 +1,34 @@
+{
+  "run_id": "20260417T014540Z",
+  "created_utc": "2026-04-17T01:45:40.693958+00:00",
+  "providers": [
+    "groq"
+  ],
+  "datasets": [
+    "EleutherAI/hendrycks_math"
+  ],
+  "subset_size": 60,
+  "seed": 7,
+  "fixed_budget_max_actions": 8,
+  "max_branches": 4,
+  "thresholds": {
+    "high": 0.72,
+    "low": 0.42
+  },
+  "min_expansions_before_prune": 0,
+  "models": {
+    "openai": "gpt-4.1-mini",
+    "gemini": "gemini-2.0-flash",
+    "groq": "llama-3.1-8b-instant"
+  },
+  "learned_scorer": {
+    "requested_path": "outputs/branch_scorer_v3/models/adaptive_learned_branch_score_v4.json",
+    "resolved_path": null,
+    "status": "missing"
+  },
+  "api_key_presence": {
+    "OPENAI_API_KEY": true,
+    "GEMINI_API_KEY": true,
+    "GROQ_API_KEY": true
+  }
+}

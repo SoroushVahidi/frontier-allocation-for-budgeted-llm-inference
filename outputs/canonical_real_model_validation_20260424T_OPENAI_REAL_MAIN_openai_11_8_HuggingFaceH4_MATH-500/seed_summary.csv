@@ -1,0 +1,6 @@
+seed,method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+11,external_l1_max,20,0.7,0.3,0.0,0.0,0.0,3.5,3.5,0.0
+11,self_consistency_3,20,0.65,0.3,0.05,0.0,0.0,7.8,6.3,1.5
+11,strict_f2,20,0.7,0.3,0.0,0.0,0.0,7.7,7.25,0.45
+11,strict_f3,20,0.65,0.35,0.0,0.0,0.0,7.4,6.7,0.7
+11,strict_gate1_cap_k6,20,0.65,0.35,0.0,0.0,0.0,7.4,7.1,0.3

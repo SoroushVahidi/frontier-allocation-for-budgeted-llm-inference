@@ -1,0 +1,20 @@
+{
+  "unresolved_or_partially_resolved": [
+    {
+      "gap": "No single explicit closed-form V_t(b), A_t(b), C_t(b), R_t(b) equations in code.",
+      "evidence": "Controller implements compositional heuristics across multiple helper functions.",
+      "impact_on_manuscript": "Paper should present high-level symbolic abstraction and point to appendix operational mapping."
+    },
+    {
+      "gap": "Several configuration values are encoded in long runtime strategy names.",
+      "evidence": "Method runtime names in `METHOD_RUNTIME_MAP` include policy mode/cap semantics.",
+      "impact_on_manuscript": "Appendix should map strategy-name tokens to concrete flags and thresholds."
+    },
+    {
+      "gap": "Certain gating/anti-collapse decisions are heuristic and branch-history-dependent.",
+      "evidence": "Repeat penalties, cooldown triggers, near-tie forcing, and conditional family-cap relax modes.",
+      "impact_on_manuscript": "State clearly that implementation is deterministic but heuristic, not pure closed-form optimization."
+    }
+  ],
+  "overall_status": "partially formalized, implementation-specified"
+}

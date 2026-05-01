@@ -1,0 +1,9 @@
+split,example_id,assigned_partition
+leave_one_problem_out::e1,e1,test
+leave_one_problem_out::e1,e1,test
+leave_one_problem_out::e1,e2,train
+leave_one_problem_out::e1,e2,train
+leave_one_problem_out::e2,e1,train
+leave_one_problem_out::e2,e1,train
+leave_one_problem_out::e2,e2,test
+leave_one_problem_out::e2,e2,test

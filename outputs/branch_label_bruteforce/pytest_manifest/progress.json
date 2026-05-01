@@ -1,0 +1,12 @@
+{
+  "generator": "branch_label_bruteforce_v1",
+  "run_id": "pytest_manifest",
+  "states_planned": 2,
+  "states_completed": 2,
+  "candidate_rows": 4,
+  "pairwise_rows": 2,
+  "state_value_rows": 2,
+  "raw_rollout_rows": 32,
+  "elapsed_sec": 3.708082675933838,
+  "complete": true
+}

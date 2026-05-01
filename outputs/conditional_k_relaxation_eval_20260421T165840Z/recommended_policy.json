@@ -1,0 +1,6 @@
+{
+  "winner_overall": "relax_on_high_confidence_incumbent_but_no_challenger_gap",
+  "best_non_control_variant": "relax_on_high_confidence_incumbent_but_no_challenger_gap",
+  "best_non_control_beats_fixed_k6": true,
+  "recommendation": "promote_best_conditional_variant"
+}

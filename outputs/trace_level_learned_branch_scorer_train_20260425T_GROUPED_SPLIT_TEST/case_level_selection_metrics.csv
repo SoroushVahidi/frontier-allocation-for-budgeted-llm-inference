@@ -1,0 +1,6 @@
+split,model,provider,seed,budget,dataset,example_id,gold_present,learned_selected_answer,learned_selected_gold,current_selected_answer,current_selected_gold,support_selected_answer,support_selected_gold
+grouped_problem_holdout,logistic_regression,cohere,23,8,openai/gsm8k,e3,1,7,1,7,1,7,1
+grouped_problem_holdout,random_forest,cohere,23,8,openai/gsm8k,e3,1,7,1,7,1,7,1
+grouped_problem_holdout,gradient_boosting,cohere,23,8,openai/gsm8k,e3,1,7,1,7,1,7,1
+grouped_problem_holdout,hist_gradient_boosting,cohere,23,8,openai/gsm8k,e3,1,7,1,7,1,7,1
+grouped_problem_holdout,pairwise_logistic,cohere,23,8,openai/gsm8k,e3,1,7,1,7,1,7,1

@@ -1,0 +1,15 @@
+{
+  "model_type": "linear_regression",
+  "label_key": "v4_target_subtree_value",
+  "weights": {
+    "score": 0.9402260657023935,
+    "depth": -0.016878129675731664,
+    "stalled_steps": -0.002264975735835104,
+    "recent_delta": 0.14720543169756767,
+    "verify_count": 0.0001876634266707335,
+    "branch_age": -0.0014572407750063805,
+    "score_x_depth": 0.025328234224877965,
+    "parent_relative_score": -0.013861627809595482
+  },
+  "intercept": 0.0062838503965509385
+}

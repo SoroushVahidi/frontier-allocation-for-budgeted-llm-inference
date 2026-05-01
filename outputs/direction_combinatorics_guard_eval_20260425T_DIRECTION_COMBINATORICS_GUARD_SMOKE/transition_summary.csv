@@ -1,0 +1,4 @@
+method,transition,count,share
+strict_f3_direction_combinatorics_guard_v1,present_not_selected -> absent_from_tree,2,0.2
+external_l1_max,present_not_selected -> absent_from_tree,2,0.2
+external_l1_max,absent_from_tree -> absent_from_tree,2,0.2

@@ -1,0 +1,7 @@
+method,accuracy,solve_rate,avg_actions
+adaptive_score_plus_progress,0.5484,0.7812,8.0
+adaptive_relative_rank,0.5352,0.7732,8.0
+adaptive_learned_branch_score,0.534,0.764,8.0
+adaptive_learned_branch_score_v4,0.536,0.7656,8.0
+adaptive_learned_branch_score_v5,0.5352,0.7796,8.0
+adaptive_learned_branch_score_v6,0.5392,0.7728,8.0

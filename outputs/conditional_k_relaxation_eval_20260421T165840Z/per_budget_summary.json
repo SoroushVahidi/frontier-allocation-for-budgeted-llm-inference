@@ -1,0 +1,51 @@
+{
+  "6": {
+    "fixed_k6_control": 0.5,
+    "relax_on_cross_family_coverage_complete": 0.5,
+    "relax_on_low_marginal_gain_absence_false": 0.5,
+    "relax_on_multi_family_maturity": 1.0,
+    "relax_on_high_confidence_incumbent_but_no_challenger_gap": 1.0
+  },
+  "7": {
+    "fixed_k6_control": 0.0,
+    "relax_on_cross_family_coverage_complete": 1.0,
+    "relax_on_low_marginal_gain_absence_false": 0.0,
+    "relax_on_multi_family_maturity": 1.0,
+    "relax_on_high_confidence_incumbent_but_no_challenger_gap": 1.0
+  },
+  "8": {
+    "fixed_k6_control": 0.25,
+    "relax_on_cross_family_coverage_complete": 0.5,
+    "relax_on_low_marginal_gain_absence_false": 0.5,
+    "relax_on_multi_family_maturity": 0.75,
+    "relax_on_high_confidence_incumbent_but_no_challenger_gap": 0.75
+  },
+  "10": {
+    "fixed_k6_control": 0.3333333333333333,
+    "relax_on_cross_family_coverage_complete": 0.6666666666666666,
+    "relax_on_low_marginal_gain_absence_false": 0.6,
+    "relax_on_multi_family_maturity": 0.8666666666666667,
+    "relax_on_high_confidence_incumbent_but_no_challenger_gap": 0.6
+  },
+  "12": {
+    "fixed_k6_control": 0.9166666666666666,
+    "relax_on_cross_family_coverage_complete": 0.6666666666666666,
+    "relax_on_low_marginal_gain_absence_false": 0.5,
+    "relax_on_multi_family_maturity": 0.75,
+    "relax_on_high_confidence_incumbent_but_no_challenger_gap": 0.75
+  },
+  "14": {
+    "fixed_k6_control": 0.6,
+    "relax_on_cross_family_coverage_complete": 0.7666666666666667,
+    "relax_on_low_marginal_gain_absence_false": 0.7,
+    "relax_on_multi_family_maturity": 0.6666666666666666,
+    "relax_on_high_confidence_incumbent_but_no_challenger_gap": 0.7333333333333333
+  },
+  "16": {
+    "fixed_k6_control": 0.8333333333333334,
+    "relax_on_cross_family_coverage_complete": 0.6666666666666666,
+    "relax_on_low_marginal_gain_absence_false": 0.5277777777777778,
+    "relax_on_multi_family_maturity": 0.5277777777777778,
+    "relax_on_high_confidence_incumbent_but_no_challenger_gap": 0.75
+  }
+}

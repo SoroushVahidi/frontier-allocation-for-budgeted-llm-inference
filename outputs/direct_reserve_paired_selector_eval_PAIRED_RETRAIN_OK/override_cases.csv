@@ -1,0 +1,4 @@
+threshold,example_id,seed,budget,base_answer,learned_answer,learned_margin,gold_answer,is_improvement,is_degradation
+0.00,ex2,1,4,9,20,0.06666666666666665,20,1,0
+0.02,ex2,1,4,9,20,0.06666666666666665,20,1,0
+0.05,ex2,1,4,9,20,0.06666666666666665,20,1,0

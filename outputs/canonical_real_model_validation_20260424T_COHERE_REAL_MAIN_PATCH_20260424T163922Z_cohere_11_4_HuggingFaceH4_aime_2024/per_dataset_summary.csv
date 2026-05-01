@@ -1,0 +1,6 @@
+dataset,method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+HuggingFaceH4/aime_2024,external_l1_max,20,0.0,1.0,0.0,0.0,0.0,2.3,2.3,0.0
+HuggingFaceH4/aime_2024,self_consistency_3,20,0.0,1.0,0.0,0.0,0.0,4.0,3.45,0.55
+HuggingFaceH4/aime_2024,strict_f2,20,0.0,1.0,0.0,0.0,0.0,3.9,3.9,0.0
+HuggingFaceH4/aime_2024,strict_f3,20,0.0,1.0,0.0,0.0,0.0,4.0,4.0,0.0
+HuggingFaceH4/aime_2024,strict_gate1_cap_k6,20,0.0,1.0,0.0,0.0,0.0,4.0,4.0,0.0

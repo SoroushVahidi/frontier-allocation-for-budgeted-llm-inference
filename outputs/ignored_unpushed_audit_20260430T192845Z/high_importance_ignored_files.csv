@@ -1,0 +1,4 @@
+path,size_bytes,mtime_utc,ignore_rule,category,likely_importance,focus_match
+outputs/dataset_integration_report.json,13825,2026-04-13T21:30:16.115642+00:00,.gitignore:34:outputs/*,summary_or_report,high,0
+outputs/external_baseline_integration_report.json,9207,2026-04-13T21:35:25.513644+00:00,.gitignore:34:outputs/*,summary_or_report,high,0
+outputs/local_only_anonymity_scan_report.csv,26,2026-04-26T19:43:44.864555+00:00,.gitignore:34:outputs/*,summary_or_report,high,0

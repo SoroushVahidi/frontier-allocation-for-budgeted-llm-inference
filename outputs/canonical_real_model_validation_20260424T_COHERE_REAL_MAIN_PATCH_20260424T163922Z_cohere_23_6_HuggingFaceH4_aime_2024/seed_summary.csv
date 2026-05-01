@@ -1,0 +1,6 @@
+seed,method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+23,external_l1_max,19,0.05263157894736842,0.9473684210526315,0.0,0.0,0.0,2.789473684210526,2.789473684210526,0.0
+23,self_consistency_3,20,0.0,1.0,0.0,0.0,0.0,6.0,5.1,0.9
+23,strict_f2,20,0.0,1.0,0.0,0.0,0.0,5.8,5.65,0.15
+23,strict_f3,20,0.0,1.0,0.0,0.0,0.0,6.0,5.55,0.45
+23,strict_gate1_cap_k6,19,0.0,1.0,0.0,0.0,0.0,5.7894736842105265,5.526315789473684,0.2631578947368421

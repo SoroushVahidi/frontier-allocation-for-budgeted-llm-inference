@@ -1,0 +1,6 @@
+method,group,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+external_l1_max,external_baseline,20,0.9,0.1,0.0,0.0,0.0,2.7,2.7,0.0
+self_consistency_3,simple_baseline,20,0.9,0.1,0.0,0.0,0.0,6.0,4.75,1.25
+strict_f2,strong_neighbor,20,0.65,0.35,0.0,0.0,0.0,5.6,5.4,0.2
+strict_f3,main,20,0.65,0.35,0.0,0.0,0.0,5.6,4.7,0.9
+strict_gate1_cap_k6,strong_neighbor,20,0.7,0.3,0.0,0.0,0.0,5.8,5.55,0.25

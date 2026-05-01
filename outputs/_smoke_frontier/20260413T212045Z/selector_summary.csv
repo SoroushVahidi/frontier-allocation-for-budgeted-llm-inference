@@ -1,0 +1,2 @@
+budget,selected_strategy,selected_strategy_calib_accuracy,selected_strategy_eval_accuracy,selected_strategy_eval_avg_actions,oracle_eval_accuracy_over_strategy_frontier
+6,reasoning_greedy,1.0,0.0,1.0,1.0

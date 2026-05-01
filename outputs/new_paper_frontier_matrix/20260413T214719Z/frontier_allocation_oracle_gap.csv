@@ -1,0 +1,5 @@
+dataset,budget,selected_strategy,selected_strategy_eval_accuracy,oracle_eval_accuracy_over_strategy_frontier,oracle_gap_accuracy,selected_strategy_eval_avg_actions
+EleutherAI/hendrycks_math,6,self_consistency_3,0.6666666666666666,1.0,0.33333333333333337,6.0
+EleutherAI/hendrycks_math,8,reasoning_beam2,0.4166666666666667,1.0,0.5833333333333333,4.166666666666667
+EleutherAI/hendrycks_math,10,self_consistency_3,0.6666666666666666,1.0,0.33333333333333337,9.083333333333334
+EleutherAI/hendrycks_math,12,self_consistency_3,0.75,1.0,0.25,9.833333333333334

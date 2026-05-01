@@ -1,0 +1,5 @@
+seed,loss_cases,confirmed_absent,unverified_absent,mean_prefix_coverage,correct_region_entered_rate
+11,102,72,30,0.0,0.0
+23,78,55,23,0.0,0.0
+37,7,4,3,0.0,0.0
+53,2,2,0,0.0,0.0

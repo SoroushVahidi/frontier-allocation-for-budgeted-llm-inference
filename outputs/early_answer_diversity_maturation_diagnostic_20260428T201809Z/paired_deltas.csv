@@ -1,0 +1,5 @@
+method,baseline,matched_pairs,mean_delta,wins,losses,ties
+early_answer_diversity_maturation_v1,strict_f3,54,-0.037037037037037035,10,12,32
+early_answer_diversity_maturation_v1,external_l1_max,54,0.2037037037037037,19,8,27
+early_answer_diversity_maturation_gated_v1,strict_f3,54,-0.09259259259259259,12,17,25
+early_answer_diversity_maturation_gated_v1,external_l1_max,54,0.14814814814814814,17,9,28

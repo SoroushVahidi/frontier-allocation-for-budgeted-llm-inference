@@ -1,0 +1,36 @@
+{
+  "diagnostic": true,
+  "selection_profile": "expanded-loss-pool",
+  "emit_full_traces": true,
+  "methods": [
+    "external_l1_max",
+    "strict_f3",
+    "direct_reserve_semantic_frontier_v1",
+    "semantic_minimum_maturation_plus_direct_reserve_v1"
+  ],
+  "experimental_methods": [
+    "direct_reserve_semantic_frontier_v1",
+    "semantic_minimum_maturation_plus_direct_reserve_v1"
+  ],
+  "readiness": "passed",
+  "n_selected_cases": 30,
+  "n_unique_example_ids": 16,
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "run_timestamp": "20260428T143500Z",
+  "case_pool_candidates_inspected": "189",
+  "case_pool_rejected_empty_question_or_gold": "163",
+  "case_pool_rejected_dataset_filter": "0",
+  "case_pool_rejected_ineligible_loss_pattern": "0",
+  "case_pool_eligible_after_filters": "26",
+  "case_pool_unique_example_ids_in_eligible_pool": "16",
+  "case_pool_selected_rows": "30",
+  "case_pool_unique_example_ids_selected": "16",
+  "case_pool_n_fallback_duplicate_or_cycle_rows": "14",
+  "case_pool_max_cases_requested": "30",
+  "case_pool_dataset_filter_gsm8k_only": "True",
+  "case_pool_strata_note": "prioritize absent-from-tree confirmed > unverified; internal priority strict_f3 > gate > anti-collapse > dr_gate"
+}

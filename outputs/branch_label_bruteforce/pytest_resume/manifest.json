@@ -1,0 +1,77 @@
+{
+  "generator": "branch_label_bruteforce_v1",
+  "run_id": "pytest_resume",
+  "started_at_epoch": 1777404735.5692413,
+  "elapsed_sec": 3.2780709266662598,
+  "config": {
+    "dataset_name": "openai/gsm8k",
+    "dataset_split": null,
+    "dataset_config": null,
+    "seed": 7,
+    "max_frontier_states": 2,
+    "episodes_per_example": 1,
+    "init_branches": 4,
+    "max_branches_per_state": 5,
+    "frontier_budget": 4,
+    "min_remaining_budget": 2,
+    "max_remaining_budget": 3,
+    "state_capture_prob": 0.7,
+    "finish_prob_base": 0.16,
+    "answer_noise": 0.12,
+    "max_depth": 7,
+    "exact_mode": false,
+    "max_exact_branches": 4,
+    "max_exact_remaining_budget": 5,
+    "rollout_samples_per_candidate": 2,
+    "max_allocation_samples": 4,
+    "include_verify_actions": true,
+    "verify_prob": 0.35,
+    "allow_mock_data": true,
+    "ambiguity_near_tie_threshold": 0.02,
+    "ambiguity_medium_threshold": 0.08,
+    "ambiguity_high_threshold": 0.16,
+    "target_estimation_repeats": 1,
+    "paired_rollout_comparison": true,
+    "reliability_min_samples": 4,
+    "reliability_floor": 0.05,
+    "reliability_scale": 2.0,
+    "target_mode": "legacy_plus_value_awareness_v1"
+  },
+  "inputs": {
+    "dataset_name": "openai/gsm8k",
+    "dataset_split": null,
+    "dataset_config": null,
+    "example_count": 2,
+    "state_count": 2,
+    "resume": true
+  },
+  "outputs": {
+    "state_summaries": "outputs/branch_label_bruteforce/pytest_resume/state_summaries.jsonl",
+    "candidate_labels": "outputs/branch_label_bruteforce/pytest_resume/candidate_labels.jsonl",
+    "pairwise_labels": "outputs/branch_label_bruteforce/pytest_resume/pairwise_labels.jsonl",
+    "state_value_targets": "outputs/branch_label_bruteforce/pytest_resume/state_value_targets.jsonl",
+    "raw_rollouts": "outputs/branch_label_bruteforce/pytest_resume/raw_rollouts.jsonl",
+    "progress": "outputs/branch_label_bruteforce/pytest_resume/progress.json",
+    "report": "outputs/branch_label_bruteforce/pytest_resume/report.md"
+  },
+  "counts": {
+    "states_planned": 2,
+    "states_completed": 2,
+    "candidate_rows": 0,
+    "pairwise_rows": 0,
+    "state_value_rows": 0,
+    "raw_rollout_rows": 0,
+    "mode_counts": {
+      "exact": 0,
+      "approx": 0,
+      "degenerate": 0
+    }
+  },
+  "checksums": {
+    "state_summaries_sha256": "519611847caca5fa77523f6b2cdef2f94905ec8473dc95d91e7a25b74d092b97",
+    "candidate_labels_sha256": "c06f84490d98c374509666f0b457c73e459e43d49dcf287988175e9f54044cb7",
+    "pairwise_labels_sha256": "d841cd1bab5538227f50bf6e70fc24ed9d5c63b40ecdc9f5fcad4e6d9089523f",
+    "state_value_targets_sha256": "098386023a2f6f55cd0c36114e65c2744a63a87470de2089ea44d8e40fc447c9",
+    "raw_rollouts_sha256": "ff80a16d81f0c5f18562f6ed89903b1e585583481900798c7c29fc316fdcae3a"
+  }
+}

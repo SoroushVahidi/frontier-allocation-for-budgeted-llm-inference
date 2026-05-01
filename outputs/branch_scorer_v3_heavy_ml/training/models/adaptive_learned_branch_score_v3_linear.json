@@ -1,0 +1,15 @@
+{
+  "model_type": "linear_regression",
+  "label_key": "v3_target_progress_value",
+  "weights": {
+    "score": 0.9545907630031311,
+    "depth": -0.03621650010461895,
+    "stalled_steps": 0.01548473741437757,
+    "recent_delta": 0.23235647146916444,
+    "verify_count": 0.002854628835445566,
+    "branch_age": 0.0001069900838596722,
+    "score_x_depth": 0.13258614271232902,
+    "parent_relative_score": 0.0003691752937774462
+  },
+  "intercept": -0.04234835494307504
+}

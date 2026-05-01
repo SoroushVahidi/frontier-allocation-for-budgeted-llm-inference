@@ -1,0 +1,5 @@
+provider,dataset,provider_model,subset_size,method,status,n_examples,accuracy,avg_actions,avg_expansions,avg_verifications,avg_surviving_branches,budget_exhaustion_rate,avg_calibrated_zscore,failure_reason,error
+openai,Hothan/OlympiadBench,gpt-4.1-mini,60,adaptive_relative_rank,ok,60,0.05,1.2,0.11666666666666667,1.0833333333333333,0.5483333333333333,0.0,-0.239937,,
+openai,Hothan/OlympiadBench,gpt-4.1-mini,60,adaptive_score_plus_progress,ok,60,0.03333333333333333,1.1666666666666667,0.08333333333333333,1.0833333333333333,0.5361111111111112,0.0,-0.271142,,
+openai,Hothan/OlympiadBench,gpt-4.1-mini,60,adaptive_learned_branch_score_v4,ok,60,0.03333333333333333,1.35,0.2,1.15,0.5811111111111111,0.016666666666666666,-0.225137,,
+openai,Hothan/OlympiadBench,gpt-4.1-mini,60,best_of_n,ok,60,0.3,7.966666666666667,7.366666666666666,0.6,2.7002976190476184,0.9833333333333333,,,

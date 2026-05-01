@@ -1,0 +1,9 @@
+example_id,gold_answer,external_l1_max_prediction,external_l1_max_correct,strict_f3_prediction,strict_f3_correct,direct_reserve_frontier_gate_prediction,direct_reserve_frontier_gate_correct,reserve_used,frontier_override_triggered,direct_frontier_agree,override_reason,override_margin
+smoke_1,25,28,False,,False,28,False,True,False,False,single_weak_frontier_branch,-1.0
+smoke_2,10,10,True,10,True,10,True,True,False,False,single_weak_frontier_branch,-1.0
+smoke_3,7,7,True,4,False,7,True,True,False,False,single_weak_frontier_branch,-1.0
+smoke_4,30,32,False,30,True,32,False,True,False,False,single_weak_frontier_branch,-1.0
+smoke_5,30,30,True,30,True,31,False,True,False,False,frontier_not_run_or_budget_exhausted,-1.0
+smoke_6,62,60,False,62,True,62,True,True,False,False,single_weak_frontier_branch,-2.0
+smoke_7,12,14,False,9,False,12,True,True,False,False,single_weak_frontier_branch,-1.0
+smoke_8,72,72,True,74,False,74,False,True,False,False,single_weak_frontier_branch,-1.0

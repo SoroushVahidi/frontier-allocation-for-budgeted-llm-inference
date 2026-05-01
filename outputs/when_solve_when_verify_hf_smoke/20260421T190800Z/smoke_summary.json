@@ -1,0 +1,52 @@
+{
+  "run_id": "20260421T190800Z",
+  "generated_utc": "2026-04-21T19:08:11.818500+00:00",
+  "upstream_repo": "external/when_solve_when_verify/upstream/sc-genrm-scaling",
+  "upstream_head": "2889bce7893e6b9b71b7fd0c7ed2d2c3b94b178c",
+  "hf_models_count": 2,
+  "hf_datasets_count": 12,
+  "hf_models_sample": [
+    "sc-genrm-scaling/llama_3.1_8b_genrm_ft",
+    "sc-genrm-scaling/qwen_2.5_7b_genrm_ft"
+  ],
+  "hf_datasets_sample": [
+    "sc-genrm-scaling/genrm_gpt4o_verifs_qwen_2p5_7b_solns_math_train",
+    "sc-genrm-scaling/genrm_gpt4o_verifs_llama_3p1_8b_solns_math_train",
+    "sc-genrm-scaling/MATH128_Solutions_Llama-3.1-8B-Instruct",
+    "sc-genrm-scaling/MATH128_Solutions_Qwen-2.5-7B-Instruct",
+    "sc-genrm-scaling/MATH128_Solutions_Llama-3.3-70B-Instruct",
+    "sc-genrm-scaling/AIME25_Solutions_QwQ-32B",
+    "sc-genrm-scaling/GPQA_diamond_Solutions_Llama-3.3-70B-Instruct",
+    "sc-genrm-scaling/MATH128_verifications_GenRM-FT_Llama-3.1-8B-Instruct",
+    "sc-genrm-scaling/MATH128_verifications_GenRM-FT_Qwen-2.5-7B-Instruct",
+    "sc-genrm-scaling/GPQA_verifications_GenRM-Base_Llama-3.3-70B-Instruct",
+    "sc-genrm-scaling/AIME25_verifications_QwQ32B",
+    "sc-genrm-scaling/MATH128_verifications_Llama-3.3-70B-Instruct_GenRM-Base"
+  ],
+  "artifact_pulls": [
+    "outputs/when_solve_when_verify_hf_smoke/20260421T190800Z/downloads/compressed_Llama-3.1-8B-Instruct.tar.gz",
+    "outputs/when_solve_when_verify_hf_smoke/20260421T190800Z/downloads/compressed_MATH128_verifications_GenRM-FT_Llama-3.1-8B-Instruct.tar.gz"
+  ],
+  "minimal_schema_check": {
+    "solution_yaml": {
+      "path_in_tar": "Llama-3.1-8B-Instruct/80.yaml",
+      "keys": [
+        "gt_answer",
+        "prompt",
+        "question",
+        "samples"
+      ],
+      "num_samples": 16384,
+      "has_gt_answer": true
+    },
+    "verification_yaml": {
+      "path_in_tar": "data/problem_75/solution_24.yaml",
+      "keys": [
+        "prompt",
+        "verifications"
+      ],
+      "num_verifications": 128
+    }
+  },
+  "status": "ok"
+}

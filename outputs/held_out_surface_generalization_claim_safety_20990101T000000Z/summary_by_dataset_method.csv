@@ -1,0 +1,9 @@
+dataset,method,n,mean_accuracy
+Idavidrein/gpqa,external_l1_max,2,0.0
+Idavidrein/gpqa,l1_exact,2,0.5
+Idavidrein/gpqa,s1,2,0.5
+Idavidrein/gpqa,self_consistency_3,2,0.5
+Idavidrein/gpqa,strict_f2,2,1.0
+Idavidrein/gpqa,strict_f3,2,0.5
+Idavidrein/gpqa,strict_gate1_cap_k6,2,0.5
+Idavidrein/gpqa,tale,2,0.0

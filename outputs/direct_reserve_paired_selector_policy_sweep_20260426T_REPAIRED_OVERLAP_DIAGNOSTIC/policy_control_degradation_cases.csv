@@ -1,0 +1,13 @@
+policy,threshold,example_id,seed,budget
+margin_only,0.00,openai_gsm8k_15,37,4
+margin_plus_support,0.00,openai_gsm8k_15,37,4
+margin_plus_base_uncertain,0.00,openai_gsm8k_15,37,4
+safe_union,0.00,openai_gsm8k_15,37,4
+margin_only,0.00,openai_gsm8k_16,37,4
+margin_plus_support,0.00,openai_gsm8k_16,37,4
+margin_plus_base_uncertain,0.00,openai_gsm8k_16,37,4
+safe_union,0.00,openai_gsm8k_16,37,4
+margin_only,0.00,openai_gsm8k_8,37,4
+margin_plus_support,0.00,openai_gsm8k_8,37,4
+margin_plus_base_uncertain,0.00,openai_gsm8k_8,37,4
+safe_union,0.00,openai_gsm8k_8,37,4

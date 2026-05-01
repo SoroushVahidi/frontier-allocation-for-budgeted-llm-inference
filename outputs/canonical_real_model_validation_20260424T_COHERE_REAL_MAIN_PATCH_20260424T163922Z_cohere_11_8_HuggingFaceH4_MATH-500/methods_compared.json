@@ -1,0 +1,32 @@
+[
+  {
+    "method": "strict_f3",
+    "runtime": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1",
+    "enable_output_repair": true,
+    "group": "main"
+  },
+  {
+    "method": "strict_gate1_cap_k6",
+    "runtime": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control",
+    "enable_output_repair": true,
+    "group": "strong_neighbor"
+  },
+  {
+    "method": "strict_f2",
+    "runtime": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1",
+    "enable_output_repair": true,
+    "group": "strong_neighbor"
+  },
+  {
+    "method": "external_l1_max",
+    "runtime": "external_l1_max",
+    "enable_output_repair": true,
+    "group": "external_baseline"
+  },
+  {
+    "method": "self_consistency_3",
+    "runtime": "self_consistency_3",
+    "enable_output_repair": true,
+    "group": "simple_baseline"
+  }
+]

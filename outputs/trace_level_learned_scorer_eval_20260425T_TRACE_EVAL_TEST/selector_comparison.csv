@@ -1,0 +1,11 @@
+selector,n_cases,gold_present_cases,selected_gold_rate,accuracy_gold_present,present_not_selected_rate,seed,budget,dataset
+current_controller_selector,1,1,1.0,1.0,0.0,11,4,openai/gsm8k
+support_based_answer_group_selector,1,1,1.0,1.0,0.0,11,4,openai/gsm8k
+learned_candidate_scorer,1,1,1.0,1.0,0.0,11,4,openai/gsm8k
+learned_answer_group_scorer,1,1,1.0,1.0,0.0,11,4,openai/gsm8k
+pairwise_bt_selector,1,1,0.0,0.0,1.0,11,4,openai/gsm8k
+current_controller_selector,1,1,0.0,0.0,1.0,23,8,openai/gsm8k
+support_based_answer_group_selector,1,1,0.0,0.0,1.0,23,8,openai/gsm8k
+learned_candidate_scorer,1,1,1.0,1.0,0.0,23,8,openai/gsm8k
+learned_answer_group_scorer,1,1,1.0,1.0,0.0,23,8,openai/gsm8k
+pairwise_bt_selector,1,1,0.0,0.0,1.0,23,8,openai/gsm8k

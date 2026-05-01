@@ -1,0 +1,7 @@
+mode,dataset,budget_actions,budget_token_equivalent,our_method,baseline_method,our_accuracy,baseline_accuracy,delta_accuracy_baseline_minus_ours,our_cost,baseline_cost,delta_cost_baseline_minus_ours,baseline_budget_violation_rate
+inference_only_adapter,openai/gsm8k,4,256.0,adaptive_min_expand_1,external_l1_exact,0.4479166666666667,0.4166666666666667,-0.03125,164.0,122.0,-42.0,1.0
+inference_only_adapter,openai/gsm8k,4,256.0,adaptive_min_expand_1,external_l1_max,0.4479166666666667,0.4375,-0.010416666666666685,164.0,134.0,-30.0,0.0
+inference_only_adapter,openai/gsm8k,6,384.0,adaptive_min_expand_1,external_l1_exact,0.4375,0.4479166666666667,0.010416666666666685,216.0,147.33333333333334,-68.66666666666666,1.0
+inference_only_adapter,openai/gsm8k,6,384.0,adaptive_min_expand_1,external_l1_max,0.4375,0.46875,0.03125,216.0,126.66666666666667,-89.33333333333333,0.0
+inference_only_adapter,openai/gsm8k,8,512.0,adaptive_min_expand_1,external_l1_exact,0.3854166666666667,0.4791666666666667,0.09375,298.0,132.66666666666666,-165.33333333333334,1.0
+inference_only_adapter,openai/gsm8k,8,512.0,adaptive_min_expand_1,external_l1_max,0.3854166666666667,0.4791666666666667,0.09375,298.0,133.33333333333334,-164.66666666666666,0.0

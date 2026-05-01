@@ -1,0 +1,47 @@
+{
+  "run_id": "verify_20260421T190758Z_0_s1_mode_a",
+  "created_utc": "2026-04-21T19:08:25.229893+00:00",
+  "mode": "inference_only",
+  "dataset": "openai/gsm8k",
+  "dataset_split": "test",
+  "subset_size": 32,
+  "seeds": [
+    11,
+    23,
+    37
+  ],
+  "budget_grid_actions": [
+    4,
+    6,
+    8
+  ],
+  "budget_matching": {
+    "action_to_token_equivalent": 64.0,
+    "policy": "fixed linear conversion for matched-budget reporting"
+  },
+  "model": {
+    "use_openai_api": false,
+    "provider": "openai",
+    "name": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180
+  },
+  "s1_budget_forcing": {
+    "num_ignore_think_end": 1,
+    "min_thinking_steps": 0,
+    "wait_token": "Wait"
+  },
+  "methods": [
+    "adaptive_min_expand_1",
+    "reasoning_greedy",
+    "self_consistency_3",
+    "verifier_guided_search",
+    "external_s1_budget_forcing"
+  ],
+  "mode_b_official": {
+    "enabled": false,
+    "status": "not_requested",
+    "notes": ""
+  },
+  "guardrail": "MODE A is the primary apples-to-apples baseline (same base model family, no s1K post-training). MODE B is secondary and not apples-to-apples if it includes s1 post-training."
+}

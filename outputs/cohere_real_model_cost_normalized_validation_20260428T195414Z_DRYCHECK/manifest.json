@@ -1,0 +1,66 @@
+{
+  "artifact_family": "cohere_real_model_cost_normalized_validation",
+  "timestamp": "20260428T195414Z_DRYCHECK",
+  "providers": [
+    "cohere"
+  ],
+  "models": {
+    "cohere": "command-r-plus-08-2024",
+    "openai": "gpt-4o-mini"
+  },
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500"
+  ],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23
+  ],
+  "methods": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f3_anti_collapse_weak_v1",
+    "external_l1_max",
+    "tale",
+    "s1"
+  ],
+  "target_scored_per_slice": 30,
+  "max_examples": 30,
+  "provider_status": {
+    "cohere": {
+      "ready": "1",
+      "reason": "summarize_only"
+    }
+  },
+  "pricing": {
+    "input_cost_per_1k": 0.003,
+    "output_cost_per_1k": 0.015
+  },
+  "save_branch_traces": false,
+  "branch_trace_stats": {
+    "n_traces": 0,
+    "n_branches": 0,
+    "n_answer_groups": 0
+  },
+  "outputs": [
+    "manifest.json",
+    "slice_summary.csv",
+    "method_summary.csv",
+    "cost_normalized_summary.csv",
+    "pairwise_comparisons.csv",
+    "incomplete_slices.csv",
+    "claim_safety_table.csv",
+    "per_example_records.jsonl",
+    "progress_heartbeat.jsonl",
+    "raw/failures.jsonl",
+    "candidate_branch_table.csv",
+    "answer_group_table.csv",
+    "per_case_trace_index.csv",
+    "traces/"
+  ]
+}

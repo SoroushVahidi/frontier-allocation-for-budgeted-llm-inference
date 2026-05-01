@@ -1,0 +1,9 @@
+{
+  "examples": 5,
+  "candidate_groups": 34,
+  "uncached_cohere_calls": 23,
+  "cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/l1_defeat_selector_wulver_20260430T180856Z/cohere_verifier/verifier_cache.jsonl",
+  "model": "command-r-plus",
+  "output_directory": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/l1_defeat_selector_wulver_20260430T180856Z/cohere_verifier",
+  "estimated_cost_usd": ""
+}

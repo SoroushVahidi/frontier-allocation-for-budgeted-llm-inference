@@ -1,0 +1,11 @@
+split,model,n_train,n_test,accuracy,precision,recall,auc,top1_candidate_selection_accuracy,top2_recall,top3_recall,current_controller_selected_gold_rate,learned_selected_gold_rate,improvement_gold_present,present_not_selected_reduction,degradation_case_rate
+leave_one_problem_out::e1,logistic_regression,2,2,0.5,0.0,0.0,0.0,0.0,1.0,1.0,1.0,0.0,-1.0,-1.0,1.0
+leave_one_problem_out::e1,random_forest,2,2,0.5,0.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0
+leave_one_problem_out::e1,gradient_boosting,2,2,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0
+leave_one_problem_out::e1,hist_gradient_boosting,2,2,0.5,0.5,1.0,0.5,1.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0
+leave_one_problem_out::e1,pairwise_logistic,2,2,0.5,0.5,1.0,0.0,0.0,1.0,1.0,1.0,0.0,-1.0,-1.0,1.0
+leave_one_problem_out::e2,logistic_regression,2,2,0.5,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+leave_one_problem_out::e2,random_forest,2,2,0.5,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+leave_one_problem_out::e2,gradient_boosting,2,2,0.5,0.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0,0.0
+leave_one_problem_out::e2,hist_gradient_boosting,2,2,0.5,0.5,1.0,0.5,0.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+leave_one_problem_out::e2,pairwise_logistic,2,2,0.5,0.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0

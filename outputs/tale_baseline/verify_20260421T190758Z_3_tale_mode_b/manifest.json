@@ -1,0 +1,44 @@
+{
+  "run_id": "verify_20260421T190758Z_3_tale_mode_b",
+  "created_utc": "2026-04-21T19:09:10.016991+00:00",
+  "mode": "official_full_adapter",
+  "dataset": "openai/gsm8k",
+  "dataset_split": "test",
+  "subset_size": 32,
+  "seeds": [
+    11,
+    23,
+    37
+  ],
+  "budget_grid_actions": [
+    4,
+    6,
+    8
+  ],
+  "model": {
+    "use_openai_api": false,
+    "provider": "openai",
+    "name": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180
+  },
+  "tale_adapter": {
+    "token_budget_default": 256,
+    "token_budget_min": 64,
+    "token_budget_max": 512,
+    "token_budget_per_question_char": 0.75,
+    "token_per_action": 64.0,
+    "estimator": "char_length_linear",
+    "prompt_injection_template": "Let's think step by step and use less than {budget} tokens."
+  },
+  "budget_matching": {
+    "action_to_token_equivalent": 64.0,
+    "primary_protocol": "matched average generated-token compute across methods"
+  },
+  "mode_b_official": {
+    "enabled": true,
+    "status": "blocked",
+    "notes": "Official/full TALE mode requested, but no `official.results_path` was provided. MODE B here is strict official/full import + verification, not local TALE/TALE-PT reproduction."
+  },
+  "guardrail": "MODE A is the in-repo TALE prompt-budgeting adapter. MODE B is strict verified official/full import with explicit TALE-vs-TALE-PT variant identity and no local full reproduction claim."
+}

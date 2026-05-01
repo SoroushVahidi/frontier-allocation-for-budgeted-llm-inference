@@ -1,0 +1,5 @@
+metric,count_non_na,mean
+numeric_sign_diff,0,0.0
+numeric_scale_diff,0,0.0
+numeric_rounding_diff,0,0.0
+numeric_offset_diff_mean,0,0.0

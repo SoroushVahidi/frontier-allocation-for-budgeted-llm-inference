@@ -1,0 +1,12 @@
+{
+  "datasets": [
+    "HuggingFaceH4/aime_2024"
+  ],
+  "subset_size": 20,
+  "seeds": [
+    11
+  ],
+  "budgets": [
+    6
+  ]
+}

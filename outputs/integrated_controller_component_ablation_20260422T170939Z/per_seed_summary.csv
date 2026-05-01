@@ -1,0 +1,13 @@
+seed,variant,n_cases,accuracy,absent_from_tree,present_not_selected,output_layer_mismatch,repeated_same_family_present,gold_in_tree,avg_actions,avg_expansions,avg_verifications,avg_max_family_expansion_share,avg_longest_same_family_run,anti_collapse_trigger_count,repeat_penalty_trigger_count,low_marginal_gain_trigger_count,low_marginal_gain_block_count
+11,allocation_only_core,160,0.64375,42,15,0,123,118,5.525,5.4875,0.0375,0.0,0.0,0,0,0,0
+11,full_integrated,160,0.61875,44,17,0,138,116,6.04375,5.65625,0.3875,0.0,0.0,0,0,31,0
+11,no_answer_support,160,0.56875,48,18,4,135,112,6.075,5.65625,0.41875,0.0,0.0,0,0,39,0
+11,no_anti_collapse,160,0.56875,57,12,0,137,103,6.0375,5.96875,0.06875,0.0,0.0,0,0,0,0
+11,no_output_repair,160,0.61875,44,17,0,138,116,6.04375,5.65625,0.3875,0.0,0.0,0,0,31,0
+11,no_repeat_expansion_control,160,0.66875,42,11,0,130,118,5.85625,5.8125,0.04375,0.0,0.0,0,0,0,0
+23,allocation_only_core,160,0.58125,52,15,0,138,108,6.04375,6.0,0.04375,0.0,0.0,0,0,0,0
+23,full_integrated,160,0.6375,42,16,0,129,118,5.70625,5.3,0.40625,0.0,0.0,0,0,31,0
+23,no_answer_support,160,0.6,48,14,9,131,112,5.71875,5.33125,0.3875,0.0,0.0,0,0,34,0
+23,no_anti_collapse,160,0.6125,43,19,0,135,117,6.0375,5.9875,0.05,0.0,0.0,0,0,0,0
+23,no_output_repair,160,0.6375,42,16,0,129,118,5.70625,5.3,0.40625,0.0,0.0,0,0,31,0
+23,no_repeat_expansion_control,160,0.59375,50,15,0,128,110,5.7875,5.6875,0.1,0.0,0.0,0,0,0,0

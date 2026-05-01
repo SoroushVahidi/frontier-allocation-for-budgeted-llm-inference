@@ -1,0 +1,19 @@
+{
+  "timestamp": "20260425T_WULVER_COHERE_LONG",
+  "generated_utc": "2026-04-25T18:16:43Z",
+  "provider": "cohere",
+  "model": "command-r-plus-08-2024",
+  "dataset": "openai/gsm8k",
+  "seeds": [
+    11,
+    23
+  ],
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "matched_examples": 720,
+  "strict_f3_wrong_external_correct": 150,
+  "source_rows": "outputs/real_model_ours_vs_external_validation_20260425T_WULVER_COHERE_LONG/cohere/per_example_rows.csv"
+}

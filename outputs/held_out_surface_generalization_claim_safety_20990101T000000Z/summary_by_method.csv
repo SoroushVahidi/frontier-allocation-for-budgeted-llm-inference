@@ -1,0 +1,9 @@
+method,n,mean_accuracy,std_accuracy,datasets_covered,budgets_covered,seeds_covered
+external_l1_max,2,0.0,0.0,Idavidrein/gpqa,4,11
+l1_exact,2,0.5,0.707107,Idavidrein/gpqa,4,11
+s1,2,0.5,0.707107,Idavidrein/gpqa,4,11
+self_consistency_3,2,0.5,0.707107,Idavidrein/gpqa,4,11
+strict_f2,2,1.0,0.0,Idavidrein/gpqa,4,11
+strict_f3,2,0.5,0.707107,Idavidrein/gpqa,4,11
+strict_gate1_cap_k6,2,0.5,0.707107,Idavidrein/gpqa,4,11
+tale,2,0.0,0.0,Idavidrein/gpqa,4,11

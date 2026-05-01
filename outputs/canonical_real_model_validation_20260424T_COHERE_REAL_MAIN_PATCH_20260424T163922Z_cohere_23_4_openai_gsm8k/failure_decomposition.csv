@@ -1,0 +1,6 @@
+method,n_failures,absent_from_tree_share,present_not_selected_share,output_layer_mismatch_share
+external_l1_max,4,1.0,0.0,0.0
+self_consistency_3,11,1.0,0.0,0.0
+strict_f2,10,0.9,0.1,0.0
+strict_f3,11,0.9090909090909091,0.09090909090909091,0.0
+strict_gate1_cap_k6,10,0.8,0.2,0.0

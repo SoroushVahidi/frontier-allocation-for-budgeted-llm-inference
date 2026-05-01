@@ -1,0 +1,4 @@
+severity,category,path,line,snippet,detail
+warning,absolute_path,scripts/audit_anonymous_supplement.py,52,"re.compile(r""(/home/|/Users/|/mnt/|/scratch/|/project/|/run/user/)"", re.IGNORECASE),",Absolute local path token
+warning,absolute_path,scripts/verify_compute_optimal_tts_provenance.py,63,"help=""Enable network checks for OpenReview/project/repo cross-linkage signals."",",Absolute local path token
+warning,absolute_path,scripts/verify_compute_optimal_tts_provenance.py,149,"""Online checks were performed for OpenReview/project/repo cross-linkage, but they are treated as signals only (not authoritative author confirmation).""",Absolute local path token

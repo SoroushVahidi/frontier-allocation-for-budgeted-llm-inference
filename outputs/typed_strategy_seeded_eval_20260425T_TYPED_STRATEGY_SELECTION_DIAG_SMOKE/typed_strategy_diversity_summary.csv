@@ -1,0 +1,5 @@
+method,avg_prompt_diversity_family_count,avg_answer_diversity_group_count,collapse_rate
+strict_f3,0.0,1.1,0.9
+strict_f3_direction_combinatorics_guard_v1,0.0,1.3,0.7
+strict_f3_typed_strategy_seeded_v1,3.5,1.1,0.9
+external_l1_max,0.0,0.0,1.0

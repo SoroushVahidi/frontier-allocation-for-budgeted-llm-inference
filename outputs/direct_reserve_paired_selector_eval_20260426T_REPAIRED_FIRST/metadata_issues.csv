@@ -1,0 +1,2 @@
+issue_type,detail,model_path
+model_load_failed,"ValueError(""<class 'numpy.random._pcg64.PCG64'> is not a known BitGenerator module."")",/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/direct_reserve_candidate_scorer_train_20260426T150000Z/selected_model.joblib

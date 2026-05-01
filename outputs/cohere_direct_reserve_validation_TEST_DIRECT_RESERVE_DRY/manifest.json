@@ -1,0 +1,39 @@
+{
+  "run_id": "cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY",
+  "timestamp": "TEST_DIRECT_RESERVE_DRY",
+  "provider": "cohere",
+  "model": "command-r-plus-08-2024",
+  "dataset": "openai/gsm8k",
+  "methods": [
+    "strict_f3",
+    "external_l1_max",
+    "direct_reserve_strong_v1",
+    "direct_reserve_strong_plus_diverse_v1"
+  ],
+  "budgets": [
+    4
+  ],
+  "seeds": [
+    23
+  ],
+  "max_cases": 6,
+  "requested_strata": {
+    "absent_from_tree": 4,
+    "present_not_selected": 4,
+    "control_correct": 4
+  },
+  "planned_strata": {
+    "absent_from_tree": 4,
+    "present_not_selected": 2
+  },
+  "n_unique_examples": 6,
+  "excluded_ids_count": 0,
+  "loss_artifact_paths": [
+    "/tmp/pytest-of-sv96/pytest-26/test_dry_run_planning_and_outp0/loss.csv"
+  ],
+  "exclude_previous_output": [],
+  "run_real_api_requested": false,
+  "real_api_enabled": false,
+  "dry_run": true,
+  "emit_full_traces": false
+}

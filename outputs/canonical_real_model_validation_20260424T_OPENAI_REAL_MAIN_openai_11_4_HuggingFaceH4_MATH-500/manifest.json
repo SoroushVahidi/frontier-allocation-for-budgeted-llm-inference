@@ -1,0 +1,33 @@
+{
+  "artifact_family": "canonical_real_model_validation",
+  "timestamp": "20260424T_OPENAI_REAL_MAIN_openai_11_4_HuggingFaceH4_MATH-500",
+  "provider": "openai",
+  "model": "gpt-4.1-mini",
+  "datasets": [
+    "HuggingFaceH4/MATH-500"
+  ],
+  "subset_size": 20,
+  "seeds": [
+    11
+  ],
+  "budgets": [
+    4
+  ],
+  "files": [
+    "manifest.json",
+    "methods_compared.json",
+    "providers_and_models.json",
+    "datasets_compared.json",
+    "aggregate_summary.csv",
+    "per_dataset_summary.csv",
+    "per_budget_summary.csv",
+    "seed_summary.csv",
+    "failure_decomposition.csv",
+    "anti_collapse_diagnostics.csv",
+    "repair_impact_summary.csv",
+    "commands_assumptions_caveats.md",
+    "summary.md",
+    "per_example_rows.csv",
+    "retry_error_log.csv"
+  ]
+}

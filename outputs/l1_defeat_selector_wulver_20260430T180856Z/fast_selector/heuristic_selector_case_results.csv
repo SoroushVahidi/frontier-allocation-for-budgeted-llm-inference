@@ -1,0 +1,6 @@
+example_id,gold_answer,current_dr_v2_answer,external_l1_max_answer,oracle_selector_answer,current_dr_v2_correct,external_l1_max_correct,oracle_selector_correct,keep_dr_v2_answer,keep_dr_v2_correct,max_support_answer,max_support_correct,prefer_l1_if_present_answer,prefer_l1_if_present_correct
+openai_gsm8k_12,70,90,70,70,0,1,1,90,0,98,0,70,1
+openai_gsm8k_2,450,450,350,450,1,0,1,450,1,450,1,350,0
+openai_gsm8k_6,32,32,38,32,1,0,1,32,1,58,0,38,0
+openai_gsm8k_13,18,10,10,10,0,0,0,10,0,10,0,10,0
+openai_gsm8k_14,38,30,40,38,0,0,1,30,0,38,1,40,0

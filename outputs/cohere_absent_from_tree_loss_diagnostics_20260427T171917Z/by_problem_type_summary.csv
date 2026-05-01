@@ -1,0 +1,6 @@
+problem_type,loss_cases,confirmed_absent,unverified_absent,mean_prefix_coverage,correct_region_entered_rate
+algebraic,2,2,0,0.0,0.0
+arithmetic_other,171,119,52,0.0,0.0
+counting,8,6,2,0.0,0.0
+ratio_percent,5,3,2,0.0,0.0
+units_time_rate,3,3,0,0.0,0.0

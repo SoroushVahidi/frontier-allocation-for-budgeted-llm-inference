@@ -1,0 +1,3 @@
+case_id,example_id,dataset,seed,budget,n_candidates,n_gold_candidates,gold_present,selected_answer_group,selected_is_gold,methods_present,source_types
+openai/gsm8k|11|4|e1,e1,openai/gsm8k,11,4,2,1,1,4,1,strict_f3,trace_level_branch
+openai/gsm8k|23|8|e2,e2,openai/gsm8k,23,8,2,1,1,8,0,strict_f3,trace_level_branch

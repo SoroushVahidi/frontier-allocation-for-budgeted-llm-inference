@@ -1,0 +1,12 @@
+{
+  "datasets": [
+    "HuggingFaceH4/MATH-500"
+  ],
+  "subset_size": 20,
+  "seeds": [
+    23
+  ],
+  "budgets": [
+    4
+  ]
+}

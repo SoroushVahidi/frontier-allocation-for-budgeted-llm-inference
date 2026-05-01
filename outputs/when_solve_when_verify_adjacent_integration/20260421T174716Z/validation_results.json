@@ -1,0 +1,87 @@
+{
+  "math128": {
+    "status": "valid",
+    "verdict": "import_validated",
+    "requested_results_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/fixtures/when_solve_when_verify_import_valid",
+    "resolved_package_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/fixtures/when_solve_when_verify_import_valid",
+    "required_files": {
+      "metadata_json": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/fixtures/when_solve_when_verify_import_valid/metadata.json",
+      "results_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/fixtures/when_solve_when_verify_import_valid/results.csv"
+    },
+    "official_repo_check": {
+      "clone_url": "https://github.com/nishadsinghi/sc-genrm-scaling.git",
+      "configured_expected_local_clone_path": "external/when_solve_when_verify/upstream/sc-genrm-scaling",
+      "resolved_local_clone_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/external/when_solve_when_verify/upstream/sc-genrm-scaling",
+      "local_clone_exists": false,
+      "marker_hits": [],
+      "missing_markers": [],
+      "entrypoint_hits": {
+        "generation_any": [],
+        "verification_any": [],
+        "evaluation_any": []
+      }
+    },
+    "expected": {
+      "dataset": "math128",
+      "split": "test",
+      "required_workflow_stages": [
+        "solution_generation",
+        "verification_generation",
+        "fixed_budget_evaluation"
+      ],
+      "required_strategies": [
+        "self_consistency",
+        "genrm_best_of_n_or_genrm_weighted_sc"
+      ],
+      "comparability_scope": "adjacent_only"
+    },
+    "observed": {
+      "num_rows": 2,
+      "observed_strategy_families": [
+        "genrm_best_of_n",
+        "self_consistency"
+      ]
+    },
+    "issues": [],
+    "warnings": [
+      "local_official_clone_not_found: /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/external/when_solve_when_verify/upstream/sc-genrm-scaling"
+    ],
+    "errors": [],
+    "imported_rows": [
+      {
+        "mode": "when_solve_when_verify_adjacent_import",
+        "source": "when_solve_when_verify_import_verified",
+        "source_type": "official",
+        "dataset": "math128",
+        "dataset_split": "test",
+        "generator_model": "meta-llama/Llama-3.1-8B-Instruct",
+        "verifier_model": "none",
+        "strategy_family": "self_consistency",
+        "num_solutions": "64",
+        "num_verifications": "0",
+        "compute_budget_tokens": "65536",
+        "success_rate": "0.56",
+        "artifact_id": "sc-genrm-demo-001",
+        "commit_or_version": "demo",
+        "comparability_scope": "adjacent_only"
+      },
+      {
+        "mode": "when_solve_when_verify_adjacent_import",
+        "source": "when_solve_when_verify_import_verified",
+        "source_type": "official",
+        "dataset": "math128",
+        "dataset_split": "test",
+        "generator_model": "meta-llama/Llama-3.1-8B-Instruct",
+        "verifier_model": "sc-genrm-scaling/llama_3.1_8b_genrm_ft",
+        "strategy_family": "genrm_best_of_n",
+        "num_solutions": "32",
+        "num_verifications": "16",
+        "compute_budget_tokens": "65536",
+        "success_rate": "0.53",
+        "artifact_id": "sc-genrm-demo-001",
+        "commit_or_version": "demo",
+        "comparability_scope": "adjacent_only"
+      }
+    ]
+  }
+}

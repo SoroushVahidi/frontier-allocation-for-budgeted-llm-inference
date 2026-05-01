@@ -1,0 +1,6 @@
+slice,problem_type,count,share
+present_not_selected,comparison,2,0.03125
+present_not_selected,counting_combinatorics,34,0.53125
+present_not_selected,multi_step_arithmetic,14,0.21875
+present_not_selected,ratio_percent,9,0.140625
+present_not_selected,unit_conversion,5,0.078125

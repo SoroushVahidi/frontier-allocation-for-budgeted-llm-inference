@@ -1,0 +1,9 @@
+dataset,budget,selected_strategy,selected_strategy_calib_accuracy,selected_strategy_eval_accuracy
+openai/gsm8k,6,self_consistency_3,0.8125,0.625
+openai/gsm8k,8,self_consistency_3,0.625,0.8125
+openai/gsm8k,10,self_consistency_3,0.625,0.5625
+openai/gsm8k,12,reasoning_greedy,0.625,0.5625
+EleutherAI/hendrycks_math,6,reasoning_beam2,0.8125,0.6875
+EleutherAI/hendrycks_math,8,reasoning_beam2,0.625,0.75
+EleutherAI/hendrycks_math,10,reasoning_beam2,0.75,0.6875
+EleutherAI/hendrycks_math,12,self_consistency_3,0.8125,0.625

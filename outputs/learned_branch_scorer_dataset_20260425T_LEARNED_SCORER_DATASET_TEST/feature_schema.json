@@ -1,0 +1,41 @@
+{
+  "dataset_type": "proxy_answer_group_case_level",
+  "label_column": "label",
+  "label_definition": "1 if candidate row corresponds to a correct method-selected candidate; 0 otherwise",
+  "limitations": [
+    "This dataset is primarily proxy answer-group/case-level, not full node/branch traces.",
+    "Older artifacts often omit branch-level candidate pools and answer texts.",
+    "Features may reflect method-level outputs rather than true per-node marginal values."
+  ],
+  "feature_columns": [
+    "absent_from_tree",
+    "action_count",
+    "answer_entropy",
+    "answer_group_support_count",
+    "budget",
+    "candidate_answer_normalized",
+    "case_id",
+    "dataset",
+    "direct_chain_candidate_indicator",
+    "example_id",
+    "existing_priority_score",
+    "existing_verifier_score",
+    "expansion_count",
+    "failure_type",
+    "frontier_candidate_indicator",
+    "gold_answer_present_in_candidate_pool",
+    "group",
+    "label_semantics",
+    "method",
+    "model",
+    "present_not_selected",
+    "provider",
+    "proxy_answer_group_only",
+    "runtime_method",
+    "seed",
+    "selected_answer_group",
+    "top2_support_gap",
+    "top_answer_group",
+    "verification_count"
+  ]
+}

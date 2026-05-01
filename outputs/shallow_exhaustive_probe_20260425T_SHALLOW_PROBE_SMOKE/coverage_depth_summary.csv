@@ -1,0 +1,4 @@
+method,n_cases,mean_forced_min_depth,transition_observed_rate,mean_transition_action
+strict_f3,6,3.0,0.0,0.0
+strict_f3_exhaustive_depth2_probe,6,2.0,0.3333333333333333,3.0
+strict_f3_exhaustive_depth3_probe,6,3.0,0.0,0.0

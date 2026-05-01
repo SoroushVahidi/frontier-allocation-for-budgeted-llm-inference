@@ -1,0 +1,8 @@
+{
+  "scan_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T181201Z/artifact_scan",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T181201Z/selector_eval_artifact",
+  "input_usable_positive_artifacts": 0,
+  "output_examples": 0,
+  "deduplicated": true,
+  "sources": {}
+}

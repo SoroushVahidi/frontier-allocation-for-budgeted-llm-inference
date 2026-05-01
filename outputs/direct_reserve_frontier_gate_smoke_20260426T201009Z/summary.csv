@@ -1,0 +1,2 @@
+n_examples,reserve_used_count,frontier_override_count,direct_frontier_agreement_count,external_l1_max_accuracy,strict_f3_accuracy,direct_reserve_frontier_gate_v1_accuracy,helpful_override_count,harmful_override_count,status
+8,8,0,0,0.5,0.5,0.5,0,0,diagnostic_only

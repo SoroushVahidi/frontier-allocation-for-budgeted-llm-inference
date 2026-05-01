@@ -1,0 +1,11 @@
+provider,model,dataset,seed,budget,example_id,method,candidate_answer_normalized,selected_answer_group,gold_answer,normalized_gold_answer,was_selected_by_current_controller,answer_group_support,label,stratum,split,score,pred
+cohere,logistic_regression,openai/gsm8k,23,8,e3,strict_f3,7,7,7,7,1,2,1,control_correct,grouped_problem_holdout,0.6625838332433507,1
+cohere,logistic_regression,openai/gsm8k,23,8,e3,strict_f3,6,7,7,7,0,1,0,control_correct,grouped_problem_holdout,0.3374158677665971,0
+cohere,random_forest,openai/gsm8k,23,8,e3,strict_f3,7,7,7,7,1,2,1,control_correct,grouped_problem_holdout,0.7666666666666667,1
+cohere,random_forest,openai/gsm8k,23,8,e3,strict_f3,6,7,7,7,0,1,0,control_correct,grouped_problem_holdout,0.175,0
+cohere,gradient_boosting,openai/gsm8k,23,8,e3,strict_f3,7,7,7,7,1,2,1,control_correct,grouped_problem_holdout,0.9999780982686993,1
+cohere,gradient_boosting,openai/gsm8k,23,8,e3,strict_f3,6,7,7,7,0,1,0,control_correct,grouped_problem_holdout,2.190173130076038e-05,0
+cohere,hist_gradient_boosting,openai/gsm8k,23,8,e3,strict_f3,7,7,7,7,1,2,1,control_correct,grouped_problem_holdout,0.5,1
+cohere,hist_gradient_boosting,openai/gsm8k,23,8,e3,strict_f3,6,7,7,7,0,1,0,control_correct,grouped_problem_holdout,0.5,1
+cohere,pairwise_logistic,openai/gsm8k,23,8,e3,strict_f3,7,7,7,7,1,2,1,control_correct,grouped_problem_holdout,2.7436339366106783,1
+cohere,pairwise_logistic,openai/gsm8k,23,8,e3,strict_f3,6,7,7,7,0,1,0,control_correct,grouped_problem_holdout,1.262077745699315,1

@@ -1,0 +1,25 @@
+{
+  "generated_utc": "2026-04-21T17:53:30.845835+00:00",
+  "run_id": "20260421T175330Z",
+  "baseline_key": "when_solve_when_verify",
+  "integration_mode_selected": "stronger_import_validated_comparator_with_reproducible_artifact_contract",
+  "status": "blocked_incomplete_import",
+  "control_equivalence": "adjacent",
+  "validated_datasets": [],
+  "missing_packages_for_canonical_mix": [],
+  "canonical_mix": [
+    "math128"
+  ],
+  "minimum_required_datasets": [
+    "math128"
+  ],
+  "minimum_required_met": false,
+  "safe_claims_now": [
+    "When-To-Solve-When-To-Verify adjacent import rows are reproducibly exportable for validated datasets.",
+    "Control-space equivalence is not claimed; rows remain adjacent_only."
+  ],
+  "unsafe_claims_now": [
+    "Full upstream SC-vs-GenRM reproduction in this repository.",
+    "Frontier-allocation equivalence with strict_gate1_cap_k6 or branch-level controllers."
+  ]
+}

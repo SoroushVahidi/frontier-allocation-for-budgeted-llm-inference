@@ -1,0 +1,3 @@
+method,n_failures,absent_from_tree_share,present_not_selected_share,output_layer_mismatch_share
+external_l1_max,37,1.0,0.0,0.0
+strict_f3,47,0.8085106382978723,0.19148936170212766,0.0
