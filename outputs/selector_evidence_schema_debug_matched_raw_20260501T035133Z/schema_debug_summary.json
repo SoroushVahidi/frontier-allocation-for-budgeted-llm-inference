@@ -1,0 +1,63 @@
+{
+  "input": "outputs/selector_evidence_trace_recovery_20260501T023200Z/matched_raw_records.jsonl",
+  "max_records": 3,
+  "records": [
+    {
+      "record_index": 0,
+      "top_level_keys": [
+        "case_id",
+        "status"
+      ],
+      "verifier_input_keys": [],
+      "evaluation_only_keys": [],
+      "top_level_candidate_nodes_exists": false,
+      "top_level_candidate_nodes_len": null,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": null,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": null,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [],
+      "recommended_extraction_path": "none_found"
+    },
+    {
+      "record_index": 1,
+      "top_level_keys": [
+        "case_id",
+        "status"
+      ],
+      "verifier_input_keys": [],
+      "evaluation_only_keys": [],
+      "top_level_candidate_nodes_exists": false,
+      "top_level_candidate_nodes_len": null,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": null,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": null,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [],
+      "recommended_extraction_path": "none_found"
+    },
+    {
+      "record_index": 2,
+      "top_level_keys": [
+        "case_id",
+        "status"
+      ],
+      "verifier_input_keys": [],
+      "evaluation_only_keys": [],
+      "top_level_candidate_nodes_exists": false,
+      "top_level_candidate_nodes_len": null,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": null,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": null,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [],
+      "recommended_extraction_path": "none_found"
+    }
+  ]
+}

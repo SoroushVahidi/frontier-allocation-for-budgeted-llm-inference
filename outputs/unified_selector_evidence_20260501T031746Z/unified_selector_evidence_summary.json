@@ -1,0 +1,43 @@
+{
+  "overall": {
+    "total_input_records": 83,
+    "total_unique_records": 72,
+    "total_duplicates_excluded": 11,
+    "records": 72,
+    "candidate_nodes": 51,
+    "traced_candidate_nodes": 42,
+    "cases_with_candidate_nodes": 22,
+    "cases_with_at_least_one_candidate_trace": 22,
+    "cases_with_all_candidates_traced": 17,
+    "gold_present_in_aggregate_answer_buckets": 72,
+    "gold_present_in_extracted_terminal_node_finals": 54,
+    "selected_answer_present_in_extracted_terminal_node_finals": 20,
+    "aggregate_only_present_not_selected_cases": 5,
+    "usable_for_trace_aware_selector": 22,
+    "current_incumbent_correct_count": 0,
+    "current_incumbent_wrong_count": 50,
+    "oracle_ceiling_over_unique_records": 0.0
+  },
+  "by_provenance_source": {
+    "focused33_wulver": {
+      "input_records": 33,
+      "unique_records_kept": 22,
+      "duplicates_excluded": 11,
+      "candidate_nodes": 51,
+      "traced_candidate_nodes": 42,
+      "gold_present_in_aggregate_answer_buckets": 22,
+      "gold_present_in_extracted_terminal_node_finals": 8,
+      "usable_for_trace_aware_selector": 22
+    },
+    "new_cap100_trace_recovery": {
+      "input_records": 50,
+      "unique_records_kept": 50,
+      "duplicates_excluded": 0,
+      "candidate_nodes": 0,
+      "traced_candidate_nodes": 0,
+      "gold_present_in_aggregate_answer_buckets": 50,
+      "gold_present_in_extracted_terminal_node_finals": 46,
+      "usable_for_trace_aware_selector": 0
+    }
+  }
+}

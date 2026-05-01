@@ -285,3 +285,20 @@ outputs/selector_evidence_trace_recovery_*/**/logs/**
 outputs/selector_evidence_trace_recovery_*/**/*.log
 outputs/selector_evidence_trace_recovery_*/**/progress_heartbeat.jsonl
 outputs/selector_evidence_trace_recovery_*/**/compressed_*.tar.gz
+
+# Unified selector evidence package artifacts
+!outputs/unified_selector_evidence_*/
+!outputs/unified_selector_evidence_*/**
+!outputs/unified_selector_evidence_*/unified_candidate_trace_enriched.jsonl
+!outputs/unified_selector_evidence_*/excluded_or_duplicate_cases.jsonl
+
+# Selector evidence schema debug artifacts (sanitized only)
+!outputs/selector_evidence_schema_debug_*/
+!outputs/selector_evidence_schema_debug_*/schema_debug_report.md
+!outputs/selector_evidence_schema_debug_*/schema_debug_summary.json
+!outputs/selector_evidence_schema_debug_*/schema_debug_records_sanitized.jsonl
+!outputs/candidate_artifact_inventory_*/
+!outputs/candidate_artifact_inventory_*/candidate_artifact_inventory.json
+!outputs/candidate_artifact_inventory_*/candidate_artifact_inventory.csv
+!outputs/candidate_artifact_inventory_*/candidate_artifact_inventory_report.md
+!outputs/candidate_artifact_inventory_*/candidate_artifact_inventory_top_candidates.jsonl
