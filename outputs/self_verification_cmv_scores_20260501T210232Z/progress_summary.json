@@ -1,0 +1,11 @@
+{
+  "total_call_plan_items": 0,
+  "attempted_calls": 0,
+  "successful_scores": 0,
+  "failed_calls": 0,
+  "skipped_existing_cached_scores": 0,
+  "api_calls_made": 0,
+  "max_calls": 150,
+  "max_new_calls": 50,
+  "no_gold_oracle_evaluation_only_in_prompts": true
+}
