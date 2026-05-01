@@ -1,0 +1,8 @@
+{
+  "both_correct": 62,
+  "both_wrong": 17,
+  "discovery_absent_gold": 12,
+  "self_consistency_missed_gold_present": 5,
+  "self_consistency_fixed": 1,
+  "self_consistency_broke": 3
+}
