@@ -1,0 +1,28 @@
+{
+  "selected_method_id": null,
+  "selected_method_reason": "No complete paired 100-case real-Cohere artifact with per-case traces for selector/reranker methods was available locally.",
+  "available_candidate_methods": [
+    "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+    "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
+    "direct_reserve_semantic_frontier_v2_selection_fix_v1"
+  ],
+  "excluded_methods_with_reasons": [
+    {
+      "method_id": "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+      "reason": "artifact_missing_or_incomplete"
+    },
+    {
+      "method_id": "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
+      "reason": "artifact_missing_or_incomplete"
+    },
+    {
+      "method_id": "direct_reserve_semantic_frontier_v2_selection_fix_v1",
+      "reason": "artifact_missing_or_incomplete"
+    }
+  ],
+  "artifact_source": null,
+  "is_100case": false,
+  "is_real_cohere": false,
+  "is_full_selector_coverage": false,
+  "is_diagnostic_only": true
+}
