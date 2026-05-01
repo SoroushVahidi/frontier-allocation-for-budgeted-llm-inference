@@ -19,6 +19,7 @@ def main():
     ap.add_argument('--score-cache', required=True)
     ap.add_argument('--max-examples', type=int, default=100)
     ap.add_argument('--output-dir', required=True)
+    ap.add_argument('--require-full-coverage', action='store_true')
     args=ap.parse_args()
 
     cfg=json.load(open(args.selected_config))
@@ -125,23 +126,53 @@ def main():
     sumry['fallback_to_incumbent_due_to_missing_scores']=cases_fallback_missing
     sumry['selected_answer_differs_from_original_count']=selected_differs_from_original
     sumry['selected_candidates_not_in_pool_count']=selected_not_in_pool
+
+    fixes=sum(r['selected_selector_fixed'] for r in per)
+    breaks=sum(r['selected_selector_broke_current_correct'] for r in per)
+    sumry['fixes']=fixes
+    sumry['breaks']=breaks
+    sumry['net_fixes_minus_breaks']=fixes-breaks
+    sumry['gold_absent_from_dr_v2_tree']=sum(int(not r['gold_present_in_dr_v2_tree']) for r in per)
+    sumry['gold_present_original_not_chosen']=sum(r['original_missed_despite_gold_present'] for r in per)
+    sumry['gold_present_selected_still_not_chosen']=sum(int(r['gold_present_in_dr_v2_tree'] and not r['selected_selector_correct']) for r in per)
+    sumry['selected_fixed_gold_present_miss']=sum(r['selected_selector_fixed'] for r in per)
+    wrong=[r for r in per if not r['selected_selector_correct']]
+    wrong_n=max(1,len(wrong))
+    disc=sum(int(not r['gold_present_in_dr_v2_tree']) for r in wrong)
+    selm=sum(int(r['gold_present_in_dr_v2_tree']) for r in wrong)
+    sumry['selected_wrong_cases']=len(wrong)
+    sumry['discovery_bottleneck_wrong_cases']=disc
+    sumry['selector_bottleneck_wrong_cases']=selm
+    sumry['discovery_bottleneck_share_among_selected_wrong']=disc/wrong_n
+    sumry['selector_bottleneck_share_among_selected_wrong']=selm/wrong_n
+
     breakdown=Counter(r['failure_type'] for r in per)
 
     (out/'per_case_comparison.jsonl').write_text('\n'.join(json.dumps(r) for r in per)+'\n')
     with (out/'per_case_comparison.csv').open('w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=list(per[0].keys()) if per else []); w.writeheader(); w.writerows(per)
     (out/'missing_selector_scores.jsonl').write_text('\n'.join(json.dumps(r) for r in missing)+'\n')
+    if args.require_full_coverage and missing:
+        raise SystemExit(f'require-full-coverage set but missing selector scores remain: {len(missing)}')
     (out/'comparison_summary.json').write_text(json.dumps(sumry,indent=2))
     with (out/'comparison_summary.csv').open('w',newline='') as f:
         w=csv.writer(f); w.writerow(['metric','value']); [w.writerow([k,v]) for k,v in sumry.items()]
     (out/'discovery_vs_selection_failure_breakdown.json').write_text(json.dumps(dict(breakdown),indent=2))
     (out/'selector_application_casebook.jsonl').write_text((out/'per_case_comparison.jsonl').read_text())
     (out/'manifest.json').write_text(json.dumps({'timestamp':datetime.now(timezone.utc).isoformat(),'paired_records':args.paired_records,'selected_config':args.selected_config,'score_cache':args.score_cache,'max_examples':args.max_examples},indent=2))
-    headline='comparison inconclusive due to too few cases / missing verifier scores'
-    if len(missing)==0:
-        if sumry['selected_selector_accuracy']>sumry['external_l1_max_accuracy']: headline='selected selector beats external_l1_max on this bounded pilot'
-        elif sumry['selected_selector_accuracy']<sumry['external_l1_max_accuracy']: headline='external_l1_max remains ahead'
-        else: headline='selected selector closes gap but does not beat external_l1_max'
+    headline='pilot too small/inconclusive'
+    if len(missing)>0:
+        headline='pilot too small/inconclusive'
+    elif sumry['selected_selector_accuracy'] < sumry['original_dr_v2_accuracy']:
+        headline='selector hurts due to breaks'
+    elif sumry['selected_selector_accuracy'] >= sumry['external_l1_max_accuracy']:
+        headline='selector closes most of the gap'
+    elif sumry['selected_selector_accuracy'] > sumry['original_dr_v2_accuracy']:
+        headline='selector improves DR-v2 but external_l1_max remains ahead'
+    elif sumry['discovery_bottleneck_share_among_selected_wrong'] >= 0.6:
+        headline='discovery is now dominant bottleneck'
+    else:
+        headline='selector still dominant bottleneck'
     report=f"## Headline\n\n{headline}\n\n## Accuracy table\n\n- original DR-v2: {sumry['original_dr_v2_accuracy']:.3f}\n- DR-v2 + selected selector: {sumry['selected_selector_accuracy']:.3f}\n- external_l1_max: {sumry['external_l1_max_accuracy']:.3f}\n\n## Pairwise table\n\n- both correct: {sumry['both_correct']}\n- both wrong: {sumry['both_wrong']}\n- selected only correct: {sumry['selected_beats_external_count']}\n- external only correct: {sumry['external_beats_selected_count']}\n\n## Bottleneck table\n\n"+'\n'.join([f"- {k}: {v}" for k,v in breakdown.items()])+"\n\n## Safety caveats\n\n- bounded pilot run.\n- selected selector chosen on recovery evidence and not runtime promoted.\n- no external_l1_max defeat claim unless supported by metrics.\n- current-correct break risk may be nonzero.\n"
     (out/'comparison_report.md').write_text(report)
 

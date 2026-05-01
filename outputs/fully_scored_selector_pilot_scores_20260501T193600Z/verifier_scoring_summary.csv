@@ -1,0 +1,2 @@
+backend,model,total_call_plan_items,attempted_calls,successful_scores,failed_calls,skipped_existing_cached_scores,max_calls,api_calls_made,estimated_or_actual_cost,no_gold_oracle_evaluation_only_in_prompts,score_distribution
+cohere,command-a-03-2025,82,82,82,0,0,150,82,,True,"{'0-0.2': 19, '0.2-0.4': 0, '0.4-0.6': 0, '0.6-0.8': 0, '0.8-1.0': 63}"
