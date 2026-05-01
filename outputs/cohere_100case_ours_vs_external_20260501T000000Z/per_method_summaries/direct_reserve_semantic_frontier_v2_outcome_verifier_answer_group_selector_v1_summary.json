@@ -1,0 +1,8 @@
+{
+  "method_id": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+  "accuracy": 0.0,
+  "correct_count": 0,
+  "failed_or_skipped_count": 100,
+  "total_calls": 0,
+  "mean_calls_per_case": 0.0
+}

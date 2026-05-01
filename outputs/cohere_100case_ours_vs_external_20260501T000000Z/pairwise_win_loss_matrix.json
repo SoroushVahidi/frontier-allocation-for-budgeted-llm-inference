@@ -1,0 +1,254 @@
+[
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2",
+    "method_b": "direct_reserve_semantic_frontier_v2",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2",
+    "method_b": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2",
+    "method_b": "l1_length_control_rl",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2",
+    "method_b": "s1_simple_test_time_scaling",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2",
+    "method_b": "strict_f3",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2",
+    "method_b": "tale_token_budget_aware_reasoning",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "method_b": "direct_reserve_semantic_frontier_v2",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "method_b": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "method_b": "l1_length_control_rl",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "method_b": "s1_simple_test_time_scaling",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "method_b": "strict_f3",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "method_b": "tale_token_budget_aware_reasoning",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "l1_length_control_rl",
+    "method_b": "direct_reserve_semantic_frontier_v2",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "l1_length_control_rl",
+    "method_b": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "l1_length_control_rl",
+    "method_b": "l1_length_control_rl",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "l1_length_control_rl",
+    "method_b": "s1_simple_test_time_scaling",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "l1_length_control_rl",
+    "method_b": "strict_f3",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "l1_length_control_rl",
+    "method_b": "tale_token_budget_aware_reasoning",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "s1_simple_test_time_scaling",
+    "method_b": "direct_reserve_semantic_frontier_v2",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "s1_simple_test_time_scaling",
+    "method_b": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "s1_simple_test_time_scaling",
+    "method_b": "l1_length_control_rl",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "s1_simple_test_time_scaling",
+    "method_b": "s1_simple_test_time_scaling",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "s1_simple_test_time_scaling",
+    "method_b": "strict_f3",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "s1_simple_test_time_scaling",
+    "method_b": "tale_token_budget_aware_reasoning",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "strict_f3",
+    "method_b": "direct_reserve_semantic_frontier_v2",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "strict_f3",
+    "method_b": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "strict_f3",
+    "method_b": "l1_length_control_rl",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "strict_f3",
+    "method_b": "s1_simple_test_time_scaling",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "strict_f3",
+    "method_b": "strict_f3",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "strict_f3",
+    "method_b": "tale_token_budget_aware_reasoning",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "tale_token_budget_aware_reasoning",
+    "method_b": "direct_reserve_semantic_frontier_v2",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "tale_token_budget_aware_reasoning",
+    "method_b": "direct_reserve_semantic_frontier_v2_outcome_verifier_answer_group_selector_v1",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "tale_token_budget_aware_reasoning",
+    "method_b": "l1_length_control_rl",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "tale_token_budget_aware_reasoning",
+    "method_b": "s1_simple_test_time_scaling",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "tale_token_budget_aware_reasoning",
+    "method_b": "strict_f3",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  },
+  {
+    "method_a": "tale_token_budget_aware_reasoning",
+    "method_b": "tale_token_budget_aware_reasoning",
+    "wins": 0,
+    "losses": 0,
+    "ties": 100
+  }
+]
