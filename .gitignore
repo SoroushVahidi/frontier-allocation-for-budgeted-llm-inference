@@ -232,3 +232,19 @@ outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl
 # Focused-33 trace enrichment bundle (single canonical regeneration run ID)
 !outputs/focused33_trace_enriched_20260501T000906Z/
 !outputs/focused33_trace_enriched_20260501T000906Z/**
+
+# Wulver job bundles (explicitly committed trace-retry / selector diagnostics)
+!outputs/trace_complete_external_losses_retry_20260430T204900Z/
+!outputs/trace_complete_external_losses_retry_20260430T204900Z/**
+# Nested blobs otherwise matched by blanket output ignores
+!outputs/trace_complete_external_losses_retry_20260430T204900Z/**/per_example_records.jsonl
+!outputs/trace_complete_external_losses_retry_20260430T204900Z/**/progress_heartbeat.jsonl
+
+!outputs/l1_defeat_selector_wulver_20260430T182316Z/
+!outputs/l1_defeat_selector_wulver_20260430T182316Z/**
+!outputs/l1_defeat_selector_wulver_20260430T182316Z/**/per_example_records.jsonl
+!outputs/l1_defeat_selector_wulver_20260430T182316Z/cohere_verifier/verifier_cache.jsonl
+!outputs/l1_defeat_selector_wulver_20260430T182316Z/fast_selector/cohere_verifier_cache.jsonl
+
+# Best-methods-on-losses experiment jsonl + generation cache (broad blanket would ignore)
+!outputs/best_methods_on_external_losses_20260430T195200Z/*.jsonl

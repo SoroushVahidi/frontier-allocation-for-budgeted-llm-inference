@@ -1,0 +1,53 @@
+{
+  "created_at_utc": "2026-04-30T23:11:42.684090+00:00",
+  "existing_trace_complete_losses_found": 16,
+  "newly_generated_trace_complete_losses": 0,
+  "total_trace_complete_losses_collected": 16,
+  "selected_for_casebook": 16,
+  "target_trace_losses": 200,
+  "breakdown_by_dataset": {
+    "openai/gsm8k": 16
+  },
+  "breakdown_by_budget": {
+    "4": 16
+  },
+  "breakdown_by_seed": {
+    "23": 6,
+    "37": 5,
+    "53": 5
+  },
+  "breakdown_by_internal_method": {
+    "strict_f3": 16
+  },
+  "breakdown_by_best_external_method": {
+    "external_l1_max": 16
+  },
+  "gold_present_count": 16,
+  "gold_present_fraction": 1.0,
+  "gold_absent_count": 0,
+  "gold_absent_fraction": 0.0,
+  "oracle_would_fix_count": 16,
+  "oracle_would_fix_fraction": 1.0,
+  "l1_correct_but_ours_gold_absent_count": 0,
+  "l1_correct_but_ours_gold_absent_fraction": 0.0,
+  "most_common_failure_modes": {
+    "selector_failure": 16
+  },
+  "average_candidate_group_count": 5.125,
+  "average_branch_count": 17.3125,
+  "average_max_depth": 1.3125,
+  "primary_regime": "selector_failures",
+  "recommended_next_experiment": "focus on selector diagnostics for gold-present losses",
+  "expected_cohere_generation_calls": 736,
+  "expected_annotation_calls": 200,
+  "generation_started": true,
+  "generation_error": "",
+  "generation_runner_return_code": 0,
+  "generation_runner_command_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_retry_20260430T204900Z/generation_runner_command.txt",
+  "generation_runner_stdout_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_retry_20260430T204900Z/generation_runner_stdout.log",
+  "generation_runner_stderr_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_retry_20260430T204900Z/generation_runner_stderr.log",
+  "generation_model_used": "command-r-plus-08-2024",
+  "generated_per_example_records_files": 1,
+  "generated_branch_state_files": 0,
+  "generated_candidate_group_files": 1
+}

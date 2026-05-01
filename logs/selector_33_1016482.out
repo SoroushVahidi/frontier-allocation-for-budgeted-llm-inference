@@ -1,0 +1,40 @@
+hostname: n0122
+date: Thu Apr 30 05:24:46 PM EDT 2026
+repo_path: /mmfs1/home/sv96/adaptive-reasoning-budget-allocation
+branch: main
+commit: 71125f2aad6ec2c7b0d5a929aa8f5b9ad64ca5f4
+COHERE_API_KEY: present
+adaptive-reasoning-budget-allocation
+=====================================
+Python version: 3.11.5
+
+Repository health check: OK
+Canonical front door, artifact runners, and core import paths are intact.
+......                                                                   [100%]
+6 passed in 0.11s
+{
+  "cases": 33,
+  "cohere_model": "command-r-plus-08-2024",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/selector_on_gold_present_losses_20260430T211700Z",
+  "cohere_outcome_verifier_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/selector_on_gold_present_losses_20260430T211700Z/cohere_outcome_verifier_cache.jsonl",
+  "cohere_pairwise_verifier_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/selector_on_gold_present_losses_20260430T211700Z/cohere_pairwise_verifier_cache.jsonl",
+  "expected_outcome_calls_upper_bound": 162,
+  "expected_pairwise_calls_upper_bound": 129,
+  "expected_total_calls_upper_bound": 291
+}
+expected_cohere_calls=291
+{
+  "cases": 33,
+  "cohere_model": "command-r-plus-08-2024",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/selector_on_gold_present_losses_20260430T211700Z",
+  "cohere_outcome_verifier_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/selector_on_gold_present_losses_20260430T211700Z/cohere_outcome_verifier_cache.jsonl",
+  "cohere_pairwise_verifier_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/selector_on_gold_present_losses_20260430T211700Z/cohere_pairwise_verifier_cache.jsonl",
+  "expected_outcome_calls_upper_bound": 162,
+  "expected_pairwise_calls_upper_bound": 129,
+  "expected_total_calls_upper_bound": 291
+}
+{
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/selector_on_gold_present_losses_20260430T211700Z",
+  "selected_cases": 33,
+  "doc_path": "docs/SELECTOR_ON_GOLD_PRESENT_LOSSES_20260430T212537Z.md"
+}
