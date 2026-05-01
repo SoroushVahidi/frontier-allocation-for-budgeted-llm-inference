@@ -1,0 +1,72 @@
+[
+  {
+    "path": "outputs/fully_scored_selector_pilot50_call_plan_20260501T200500Z",
+    "pilot_case_count": null,
+    "has_pilot_cases.jsonl": false,
+    "has_merged_verifier_score_cache": false,
+    "has_full_Cohere_score_coverage": "unknown",
+    "has_external_l1_max_correctness": true,
+    "has_original_DR_v2_correctness": true,
+    "usable_for_same_pilot_comparison": false
+  },
+  {
+    "path": "outputs/fully_scored_selector_pilot50_scores_merged_20260501T201300Z",
+    "pilot_case_count": null,
+    "has_pilot_cases.jsonl": false,
+    "has_merged_verifier_score_cache": false,
+    "has_full_Cohere_score_coverage": true,
+    "has_external_l1_max_correctness": true,
+    "has_original_DR_v2_correctness": true,
+    "usable_for_same_pilot_comparison": false
+  },
+  {
+    "path": "outputs/fully_scored_selector_pilot50_margin_sweep_20260501T201500Z",
+    "pilot_case_count": 50,
+    "has_pilot_cases.jsonl": false,
+    "has_merged_verifier_score_cache": false,
+    "has_full_Cohere_score_coverage": "unknown",
+    "has_external_l1_max_correctness": true,
+    "has_original_DR_v2_correctness": true,
+    "usable_for_same_pilot_comparison": false
+  },
+  {
+    "path": "outputs/fully_scored_selector_pilot50_decision_20260501T201500Z",
+    "pilot_case_count": null,
+    "has_pilot_cases.jsonl": false,
+    "has_merged_verifier_score_cache": false,
+    "has_full_Cohere_score_coverage": "unknown",
+    "has_external_l1_max_correctness": true,
+    "has_original_DR_v2_correctness": true,
+    "usable_for_same_pilot_comparison": false
+  },
+  {
+    "path": "outputs/fully_scored_selector_pilot_call_plan_20260501T193400Z",
+    "pilot_case_count": null,
+    "has_pilot_cases.jsonl": false,
+    "has_merged_verifier_score_cache": false,
+    "has_full_Cohere_score_coverage": "unknown",
+    "has_external_l1_max_correctness": true,
+    "has_original_DR_v2_correctness": true,
+    "usable_for_same_pilot_comparison": false
+  },
+  {
+    "path": "outputs/fully_scored_selector_pilot_scores_merged_20260501T194200Z",
+    "pilot_case_count": null,
+    "has_pilot_cases.jsonl": false,
+    "has_merged_verifier_score_cache": false,
+    "has_full_Cohere_score_coverage": false,
+    "has_external_l1_max_correctness": true,
+    "has_original_DR_v2_correctness": true,
+    "usable_for_same_pilot_comparison": false
+  },
+  {
+    "path": "outputs/fully_scored_selector_pilot_comparison_20260501T195100Z",
+    "pilot_case_count": 25,
+    "has_pilot_cases.jsonl": false,
+    "has_merged_verifier_score_cache": false,
+    "has_full_Cohere_score_coverage": "unknown",
+    "has_external_l1_max_correctness": true,
+    "has_original_DR_v2_correctness": true,
+    "usable_for_same_pilot_comparison": false
+  }
+]

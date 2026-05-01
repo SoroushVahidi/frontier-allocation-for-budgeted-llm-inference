@@ -1,0 +1,17 @@
+{
+  "num_examples": 100,
+  "original_dr_v2_accuracy": 0.61,
+  "self_consistency_accuracy": 0.69,
+  "external_l1_max_accuracy": 0.76,
+  "fixes": 14,
+  "breaks": 6,
+  "net_fixes_minus_breaks": 8,
+  "overrides_vs_original": 31,
+  "both_correct": 62,
+  "both_wrong": 17,
+  "self_consistency_only_correct": 7,
+  "external_only_correct": 14,
+  "valid_answer_rate": 1.0,
+  "tie_rate": 0.15,
+  "average_vote_share": 0.7683333333333333
+}

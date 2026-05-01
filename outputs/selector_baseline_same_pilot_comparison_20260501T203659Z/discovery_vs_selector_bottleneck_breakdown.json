@@ -1,0 +1,16 @@
+{
+  "self_consistency": {
+    "wrong_cases": 21,
+    "gold_absent_from_candidate_pool": 14,
+    "gold_present_but_not_selected": 7,
+    "discovery_bottleneck_share": 0.6666666666666666,
+    "selector_bottleneck_share": 0.3333333333333333
+  },
+  "cohere": {
+    "wrong_cases": 21,
+    "gold_absent_from_candidate_pool": 14,
+    "gold_present_but_not_selected": 7,
+    "discovery_bottleneck_share": 0.6666666666666666,
+    "selector_bottleneck_share": 0.3333333333333333
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "self_vs_cohere": {
+    "both_correct": 27,
+    "both_wrong": 19,
+    "self_consistency_only_correct": 2,
+    "cohere_only_correct": 2,
+    "same_selected_answer_count": 39,
+    "different_selected_answer_count": 11
+  },
+  "self_vs_external": {
+    "both_correct": 26,
+    "both_wrong": 20,
+    "selector_only_correct": 3,
+    "external_only_correct": 1
+  },
+  "cohere_vs_external": {
+    "both_correct": 24,
+    "both_wrong": 18,
+    "selector_only_correct": 5,
+    "external_only_correct": 3
+  }
+}

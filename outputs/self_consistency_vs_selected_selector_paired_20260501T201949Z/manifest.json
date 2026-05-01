@@ -1,0 +1,4 @@
+{
+  "timestamp": "2026-05-01T20:19:51.588093+00:00",
+  "paired_records": "outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_example_records.jsonl"
+}
