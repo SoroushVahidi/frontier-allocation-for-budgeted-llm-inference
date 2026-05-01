@@ -273,3 +273,15 @@ outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl
 outputs/**/compressed_*.tar.gz
 outputs/branch_scorer_v3_heavy_ml/datasets/**/branch_scorer_v3_dataset.jsonl
 outputs/branch_scorer_v3_heavy_ml/pooled/branch_scorer_v3_dataset.jsonl
+
+
+# Curated selector trace-recovery packages.
+# These contain verifier-safe candidate traces needed for selector development.
+!outputs/selector_evidence_trace_recovery_*/
+!outputs/selector_evidence_trace_recovery_*/**
+outputs/selector_evidence_trace_recovery_*/**/*cache*.jsonl
+outputs/selector_evidence_trace_recovery_*/**/*cache*.json
+outputs/selector_evidence_trace_recovery_*/**/logs/**
+outputs/selector_evidence_trace_recovery_*/**/*.log
+outputs/selector_evidence_trace_recovery_*/**/progress_heartbeat.jsonl
+outputs/selector_evidence_trace_recovery_*/**/compressed_*.tar.gz
