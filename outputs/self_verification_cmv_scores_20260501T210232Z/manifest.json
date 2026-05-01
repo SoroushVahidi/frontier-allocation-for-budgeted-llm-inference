@@ -1,0 +1,4 @@
+{
+  "call_plan": "outputs/self_verification_cmv_call_plan_20260501T210232Z/cmv_call_plan.jsonl",
+  "cache_path": "outputs/self_verification_cmv_scores_20260501T210232Z/cmv_scores.jsonl"
+}

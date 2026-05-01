@@ -1,0 +1,11 @@
+- requested_pilot_cases: 25
+- actual_pilot_case_count: 25
+- candidate_count: 0
+- valid_candidate_answers: 0
+- invalid_candidate_answers: 0
+- numeric_conditions_total: 71
+- p_repeats: 3
+- max_conditions_per_problem: 4
+- planned_api_calls: 0
+- max_api_calls: 150
+- no_gold_oracle_evaluation_only_in_call_plan: True
