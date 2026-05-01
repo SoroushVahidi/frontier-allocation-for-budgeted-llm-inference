@@ -1,0 +1,49 @@
+[
+  {
+    "path": "outputs/cohere_real_model_cost_normalized_validation_TRACE_REPLAY_COHERE_GSM8K_STAGE1_MIN/per_example_records.jsonl",
+    "dataset": "openai/gsm8k",
+    "row_count": 90,
+    "methods": [
+      "direct_reserve_frontier_gate_v1",
+      "external_l1_max",
+      "strict_f3"
+    ],
+    "has_external": true,
+    "has_dr_v2": false,
+    "has_correctness": true,
+    "candidate_traces": true,
+    "can_apply_selected_selector_without_regen": false,
+    "usable_for_fair_comparison": false
+  },
+  {
+    "path": "outputs/cohere_real_model_cost_normalized_validation_20260425T133000Z_COHERE_STAGE1_MIN/per_example_records.jsonl",
+    "dataset": "openai/gsm8k",
+    "row_count": 156,
+    "methods": [
+      "external_l1_max",
+      "strict_f3",
+      "strict_gate1_cap_k6"
+    ],
+    "has_external": true,
+    "has_dr_v2": false,
+    "has_correctness": true,
+    "candidate_traces": false,
+    "can_apply_selected_selector_without_regen": false,
+    "usable_for_fair_comparison": false
+  },
+  {
+    "path": "outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_example_records.jsonl",
+    "dataset": "openai/gsm8k",
+    "row_count": 1440,
+    "methods": [
+      "direct_reserve_semantic_frontier_v2",
+      "external_l1_max"
+    ],
+    "has_external": true,
+    "has_dr_v2": true,
+    "has_correctness": true,
+    "candidate_traces": true,
+    "can_apply_selected_selector_without_regen": true,
+    "usable_for_fair_comparison": true
+  }
+]
