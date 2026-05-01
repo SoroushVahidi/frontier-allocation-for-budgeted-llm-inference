@@ -1,0 +1,135 @@
+{
+  "input": "outputs/selector_evidence_trace_recovery_20260501T023200Z/candidate_trace_enriched.jsonl",
+  "max_records": 3,
+  "records": [
+    {
+      "record_index": 0,
+      "top_level_keys": [
+        "all_candidates_traced",
+        "candidate_nodes",
+        "evaluation_only",
+        "gold_in_aggregate_answer_groups",
+        "gold_in_extracted_terminal_node_finals",
+        "has_any_candidate_trace",
+        "problem_statement",
+        "verifier_input"
+      ],
+      "verifier_input_keys": [
+        "candidate_nodes",
+        "problem_statement"
+      ],
+      "evaluation_only_keys": [
+        "external_correct",
+        "gold_answer",
+        "our_correct"
+      ],
+      "top_level_candidate_nodes_exists": true,
+      "top_level_candidate_nodes_len": 0,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": null,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": 0,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [
+        {
+          "path": "candidate_nodes",
+          "list_len": 0,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "verifier_input.candidate_nodes",
+          "list_len": 0,
+          "first_candidate_shape": null
+        }
+      ],
+      "recommended_extraction_path": "candidate_nodes"
+    },
+    {
+      "record_index": 1,
+      "top_level_keys": [
+        "all_candidates_traced",
+        "candidate_nodes",
+        "evaluation_only",
+        "gold_in_aggregate_answer_groups",
+        "gold_in_extracted_terminal_node_finals",
+        "has_any_candidate_trace",
+        "problem_statement",
+        "verifier_input"
+      ],
+      "verifier_input_keys": [
+        "candidate_nodes",
+        "problem_statement"
+      ],
+      "evaluation_only_keys": [
+        "external_correct",
+        "gold_answer",
+        "our_correct"
+      ],
+      "top_level_candidate_nodes_exists": true,
+      "top_level_candidate_nodes_len": 0,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": null,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": 0,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [
+        {
+          "path": "candidate_nodes",
+          "list_len": 0,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "verifier_input.candidate_nodes",
+          "list_len": 0,
+          "first_candidate_shape": null
+        }
+      ],
+      "recommended_extraction_path": "candidate_nodes"
+    },
+    {
+      "record_index": 2,
+      "top_level_keys": [
+        "all_candidates_traced",
+        "candidate_nodes",
+        "evaluation_only",
+        "gold_in_aggregate_answer_groups",
+        "gold_in_extracted_terminal_node_finals",
+        "has_any_candidate_trace",
+        "problem_statement",
+        "verifier_input"
+      ],
+      "verifier_input_keys": [
+        "candidate_nodes",
+        "problem_statement"
+      ],
+      "evaluation_only_keys": [
+        "external_correct",
+        "gold_answer",
+        "our_correct"
+      ],
+      "top_level_candidate_nodes_exists": true,
+      "top_level_candidate_nodes_len": 0,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": null,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": 0,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [
+        {
+          "path": "candidate_nodes",
+          "list_len": 0,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "verifier_input.candidate_nodes",
+          "list_len": 0,
+          "first_candidate_shape": null
+        }
+      ],
+      "recommended_extraction_path": "candidate_nodes"
+    }
+  ]
+}

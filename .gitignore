@@ -291,3 +291,9 @@ outputs/selector_evidence_trace_recovery_*/**/compressed_*.tar.gz
 !outputs/unified_selector_evidence_*/**
 !outputs/unified_selector_evidence_*/unified_candidate_trace_enriched.jsonl
 !outputs/unified_selector_evidence_*/excluded_or_duplicate_cases.jsonl
+
+# Selector evidence schema debug artifacts (sanitized only)
+!outputs/selector_evidence_schema_debug_*/
+!outputs/selector_evidence_schema_debug_*/schema_debug_report.md
+!outputs/selector_evidence_schema_debug_*/schema_debug_summary.json
+!outputs/selector_evidence_schema_debug_*/schema_debug_records_sanitized.jsonl

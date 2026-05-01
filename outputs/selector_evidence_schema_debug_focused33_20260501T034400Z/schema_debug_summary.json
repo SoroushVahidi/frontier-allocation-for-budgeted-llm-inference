@@ -1,0 +1,393 @@
+{
+  "input": "outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl",
+  "max_records": 3,
+  "records": [
+    {
+      "record_index": 0,
+      "top_level_keys": [
+        "answer_groups_agree_casebook_vs_nodes",
+        "answer_groups_canonical_from_casebook",
+        "answer_groups_canonical_from_nodes",
+        "answer_groups_reconstructed_row",
+        "budget",
+        "candidate_count_from_casebook",
+        "candidate_count_from_raw_metadata",
+        "candidate_nodes",
+        "case_id",
+        "current_answer",
+        "current_answer_present_in_nodes",
+        "dataset",
+        "enrichment_notes",
+        "evaluation_only",
+        "example_id",
+        "gold_answer_evaluation_only",
+        "gold_answer_in_casebook_aggregate_canonical_evaluation",
+        "gold_present_in_candidate_nodes_canonical_evaluation",
+        "lookup_notes",
+        "metadata_source_pool",
+        "our_method_name",
+        "problem_statement",
+        "raw_record_found",
+        "raw_record_match_confidence",
+        "raw_record_path",
+        "seed",
+        "selected_answer_group",
+        "source_artifact",
+        "source_dir_resolved",
+        "verifier_input"
+      ],
+      "verifier_input_keys": [
+        "candidates_for_verifier",
+        "problem_statement"
+      ],
+      "evaluation_only_keys": [
+        "_note",
+        "gold_answer",
+        "oracle_selector_answer"
+      ],
+      "top_level_candidate_nodes_exists": true,
+      "top_level_candidate_nodes_len": 3,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": 3,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": null,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [
+        {
+          "path": "candidate_nodes",
+          "list_len": 3,
+          "first_candidate_shape": {
+            "keys": [
+              "branch_depth",
+              "candidate_id",
+              "final_answer",
+              "hint_for_verifier_only",
+              "is_original_selected",
+              "normalized_answer",
+              "score",
+              "source_family",
+              "trace_available",
+              "trace_text"
+            ],
+            "final_answer_like_field": "final_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": "trace_text",
+            "trace_meta": {
+              "type": "str",
+              "length": 279
+            }
+          }
+        },
+        {
+          "path": "answer_groups_canonical_from_nodes",
+          "list_len": 2,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "answer_groups_reconstructed_row",
+          "list_len": 2,
+          "first_candidate_shape": {
+            "keys": [
+              "normalized_answer",
+              "selected_votes",
+              "source_families",
+              "source_family_count",
+              "support_count"
+            ],
+            "final_answer_like_field": "normalized_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": null,
+            "trace_meta": null
+          }
+        },
+        {
+          "path": "answer_groups_canonical_from_casebook",
+          "list_len": 3,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "verifier_input.candidates_for_verifier",
+          "list_len": 3,
+          "first_candidate_shape": {
+            "keys": [
+              "branch_depth",
+              "candidate_id",
+              "final_answer",
+              "normalized_answer",
+              "score",
+              "source_family",
+              "trace_text"
+            ],
+            "final_answer_like_field": "final_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": "trace_text",
+            "trace_meta": {
+              "type": "str",
+              "length": 279
+            }
+          }
+        }
+      ],
+      "recommended_extraction_path": "candidate_nodes"
+    },
+    {
+      "record_index": 1,
+      "top_level_keys": [
+        "answer_groups_agree_casebook_vs_nodes",
+        "answer_groups_canonical_from_casebook",
+        "answer_groups_canonical_from_nodes",
+        "answer_groups_reconstructed_row",
+        "budget",
+        "candidate_count_from_casebook",
+        "candidate_count_from_raw_metadata",
+        "candidate_nodes",
+        "case_id",
+        "current_answer",
+        "current_answer_present_in_nodes",
+        "dataset",
+        "enrichment_notes",
+        "evaluation_only",
+        "example_id",
+        "gold_answer_evaluation_only",
+        "gold_answer_in_casebook_aggregate_canonical_evaluation",
+        "gold_present_in_candidate_nodes_canonical_evaluation",
+        "lookup_notes",
+        "metadata_source_pool",
+        "our_method_name",
+        "problem_statement",
+        "raw_record_found",
+        "raw_record_match_confidence",
+        "raw_record_path",
+        "seed",
+        "selected_answer_group",
+        "source_artifact",
+        "source_dir_resolved",
+        "verifier_input"
+      ],
+      "verifier_input_keys": [
+        "candidates_for_verifier",
+        "problem_statement"
+      ],
+      "evaluation_only_keys": [
+        "_note",
+        "gold_answer",
+        "oracle_selector_answer"
+      ],
+      "top_level_candidate_nodes_exists": true,
+      "top_level_candidate_nodes_len": 4,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": 4,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": null,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [
+        {
+          "path": "candidate_nodes",
+          "list_len": 4,
+          "first_candidate_shape": {
+            "keys": [
+              "branch_depth",
+              "candidate_id",
+              "final_answer",
+              "hint_for_verifier_only",
+              "is_original_selected",
+              "normalized_answer",
+              "score",
+              "source_family",
+              "trace_available",
+              "trace_text"
+            ],
+            "final_answer_like_field": "final_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": "trace_text",
+            "trace_meta": {
+              "type": "str",
+              "length": 497
+            }
+          }
+        },
+        {
+          "path": "answer_groups_canonical_from_nodes",
+          "list_len": 2,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "answer_groups_reconstructed_row",
+          "list_len": 2,
+          "first_candidate_shape": {
+            "keys": [
+              "normalized_answer",
+              "selected_votes",
+              "source_families",
+              "source_family_count",
+              "support_count"
+            ],
+            "final_answer_like_field": "normalized_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": null,
+            "trace_meta": null
+          }
+        },
+        {
+          "path": "answer_groups_canonical_from_casebook",
+          "list_len": 4,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "verifier_input.candidates_for_verifier",
+          "list_len": 4,
+          "first_candidate_shape": {
+            "keys": [
+              "branch_depth",
+              "candidate_id",
+              "final_answer",
+              "normalized_answer",
+              "score",
+              "source_family",
+              "trace_text"
+            ],
+            "final_answer_like_field": "final_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": "trace_text",
+            "trace_meta": {
+              "type": "str",
+              "length": 497
+            }
+          }
+        }
+      ],
+      "recommended_extraction_path": "candidate_nodes"
+    },
+    {
+      "record_index": 2,
+      "top_level_keys": [
+        "answer_groups_agree_casebook_vs_nodes",
+        "answer_groups_canonical_from_casebook",
+        "answer_groups_canonical_from_nodes",
+        "answer_groups_reconstructed_row",
+        "budget",
+        "candidate_count_from_casebook",
+        "candidate_count_from_raw_metadata",
+        "candidate_nodes",
+        "case_id",
+        "current_answer",
+        "current_answer_present_in_nodes",
+        "dataset",
+        "enrichment_notes",
+        "evaluation_only",
+        "example_id",
+        "gold_answer_evaluation_only",
+        "gold_answer_in_casebook_aggregate_canonical_evaluation",
+        "gold_present_in_candidate_nodes_canonical_evaluation",
+        "lookup_notes",
+        "metadata_source_pool",
+        "our_method_name",
+        "problem_statement",
+        "raw_record_found",
+        "raw_record_match_confidence",
+        "raw_record_path",
+        "seed",
+        "selected_answer_group",
+        "source_artifact",
+        "source_dir_resolved",
+        "verifier_input"
+      ],
+      "verifier_input_keys": [
+        "candidates_for_verifier",
+        "problem_statement"
+      ],
+      "evaluation_only_keys": [
+        "_note",
+        "gold_answer",
+        "oracle_selector_answer"
+      ],
+      "top_level_candidate_nodes_exists": true,
+      "top_level_candidate_nodes_len": 2,
+      "top_level_candidates_len": null,
+      "vi_candidates_for_verifier_len": 2,
+      "vi_candidates_len": null,
+      "vi_candidate_nodes_len": null,
+      "raw_record_exists": false,
+      "raw_record_result_metadata_exists": false,
+      "candidate_like_paths": [
+        {
+          "path": "candidate_nodes",
+          "list_len": 2,
+          "first_candidate_shape": {
+            "keys": [
+              "branch_depth",
+              "candidate_id",
+              "final_answer",
+              "hint_for_verifier_only",
+              "is_original_selected",
+              "normalized_answer",
+              "score",
+              "source_family",
+              "trace_available",
+              "trace_text"
+            ],
+            "final_answer_like_field": "final_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": "trace_text",
+            "trace_meta": {
+              "type": "str",
+              "length": 173
+            }
+          }
+        },
+        {
+          "path": "answer_groups_canonical_from_nodes",
+          "list_len": 1,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "answer_groups_reconstructed_row",
+          "list_len": 1,
+          "first_candidate_shape": {
+            "keys": [
+              "normalized_answer",
+              "selected_votes",
+              "source_families",
+              "source_family_count",
+              "support_count"
+            ],
+            "final_answer_like_field": "normalized_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": null,
+            "trace_meta": null
+          }
+        },
+        {
+          "path": "answer_groups_canonical_from_casebook",
+          "list_len": 3,
+          "first_candidate_shape": null
+        },
+        {
+          "path": "verifier_input.candidates_for_verifier",
+          "list_len": 2,
+          "first_candidate_shape": {
+            "keys": [
+              "branch_depth",
+              "candidate_id",
+              "final_answer",
+              "normalized_answer",
+              "score",
+              "source_family",
+              "trace_text"
+            ],
+            "final_answer_like_field": "final_answer",
+            "normalized_answer_like_field": "normalized_answer",
+            "trace_like_field": "trace_text",
+            "trace_meta": {
+              "type": "str",
+              "length": 173
+            }
+          }
+        }
+      ],
+      "recommended_extraction_path": "candidate_nodes"
+    }
+  ]
+}
