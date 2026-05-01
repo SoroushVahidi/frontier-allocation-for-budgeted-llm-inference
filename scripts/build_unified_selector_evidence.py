@@ -17,6 +17,28 @@ def iter_jsonl(path: Path):
                 yield x
 
 
+def rec_key_variants(r: dict[str, Any]) -> list[tuple]:
+    out = []
+    out.append(("case_id", r.get("case_id")))
+    out.append(("example_id", r.get("example_id")))
+    out.append(("dataset_example", r.get("dataset"), r.get("example_id")))
+    out.append(("full", r.get("dataset"), r.get("example_id"), r.get("seed"), r.get("budget"), r.get("our_method_name") or r.get("method")))
+    if r.get("source_artifact_path") and r.get("example_id") is not None:
+        out.append(("artifact_example", r.get("source_artifact_path"), r.get("example_id")))
+    return [k for k in out if all(x is not None for x in k[1:])]
+
+
+def load_companion_index(parent_dir: Path) -> dict[tuple, dict[str, Any]]:
+    idx: dict[tuple, dict[str, Any]] = {}
+    p = parent_dir / "matched_raw_records.jsonl"
+    if not p.exists():
+        return idx
+    for r in iter_jsonl(p):
+        for k in rec_key_variants(r):
+            idx[k] = r
+    return idx
+
+
 def parse_input(s: str) -> tuple[Path, str]:
     if ":" in s:
         p, label = s.split(":", 1)
@@ -86,8 +108,17 @@ def extract_candidate_nodes(r: dict[str, Any]) -> list[dict[str, Any]]:
     return []
 
 
-def normalize_record(r: dict[str, Any], src_label: str, src_path: Path, idx: int, no_gold: bool) -> dict[str, Any]:
+def normalize_record(r: dict[str, Any], src_label: str, src_path: Path, idx: int, no_gold: bool, companion_idx: dict[tuple, dict[str, Any]] | None = None) -> dict[str, Any]:
     cands = extract_candidate_nodes(r)
+    recovered_from_companion = False
+    if not cands and companion_idx:
+        for k in rec_key_variants(r):
+            comp = companion_idx.get(k)
+            if comp:
+                cands = extract_candidate_nodes(comp)
+                if cands:
+                    recovered_from_companion = True
+                    break
     norm_cands = []
     traced = 0
     for i, c in enumerate(cands):
@@ -169,6 +200,7 @@ def normalize_record(r: dict[str, Any], src_label: str, src_path: Path, idx: int
         "all_candidates_traced": all_traced,
         "usable_for_trace_aware_selector": usable,
         "aggregate_only_present_not_selected": agg_only,
+        "companion_candidates_recovered": recovered_from_companion,
         "_source_path": str(src_path),
     }
     if contains_banned(o["verifier_input"]):
@@ -209,8 +241,9 @@ def main() -> int:
     for sidx, inp in enumerate(a.input):
         p, label = parse_input(inp)
         source_order[str(p)] = sidx
+        companion_idx = load_companion_index(p.parent)
         for ridx, r in enumerate(iter_jsonl(p)):
-            all_rows.append(normalize_record(r, label, p, ridx, a.no_gold_in_verifier_input))
+            all_rows.append(normalize_record(r, label, p, ridx, a.no_gold_in_verifier_input, companion_idx))
 
     buckets = defaultdict(list)
     for r in all_rows:
@@ -302,6 +335,7 @@ def main() -> int:
         "prefer_source_label": prefer,
         "no_gold_in_verifier_input": a.no_gold_in_verifier_input,
         "git_commit": subprocess.getoutput("git rev-parse HEAD"),
+        "companion_lookup_enabled": True,
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return 0

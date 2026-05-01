@@ -121,3 +121,26 @@ def test_trace_recovery_schema_variants_and_counts(tmp_path: Path):
     assert summary["by_provenance_source"]["new_cap100_trace_recovery"]["candidate_nodes"] == 3
     assert summary["by_provenance_source"]["new_cap100_trace_recovery"]["traced_candidate_nodes"] == 3
     assert summary["by_provenance_source"]["new_cap100_trace_recovery"]["usable_for_trace_aware_selector"] == 2
+
+
+def test_companion_matched_raw_recovery(tmp_path: Path):
+    src = tmp_path / "pkg"
+    src.mkdir()
+    inp = src / "candidate_trace_enriched.jsonl"
+    matched = src / "matched_raw_records.jsonl"
+    out = tmp_path / "out3"
+    shell = {
+        "case_id": "k1", "dataset": "d", "example_id": "9", "seed": 0, "budget": 100, "our_method_name": "m",
+        "problem_statement": "p", "candidate_nodes": [], "verifier_input": {"problem_statement": "p", "candidate_nodes": []},
+        "evaluation_only": {"gold_answer": "7"}, "gold_in_aggregate_answer_groups": True
+    }
+    companion = {
+        "case_id": "k1", "dataset": "d", "example_id": "9", "seed": 0, "budget": 100, "method": "m",
+        "candidate_nodes": [{"candidate_id": "c", "final_answer": "7", "trace_text": "t"}]
+    }
+    write_jsonl(inp, [shell]); write_jsonl(matched, [companion])
+    subprocess.check_call([sys.executable, "scripts/build_unified_selector_evidence.py", "--input", f"{inp}:new_cap100_trace_recovery", "--output-dir", str(out), "--no-gold-in-verifier-input"], cwd=Path(__file__).resolve().parents[1])
+    kept = [json.loads(x) for x in (out / "unified_candidate_trace_enriched.jsonl").read_text().splitlines() if x.strip()]
+    assert len(kept[0]["candidate_nodes"]) == 1
+    assert kept[0]["usable_for_trace_aware_selector"] is True
+    assert kept[0]["companion_candidates_recovered"] is True
