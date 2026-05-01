@@ -1,0 +1,8 @@
+{
+  "timestamp": "20260501T000000Z",
+  "seed": 20260501,
+  "dataset": "openai/gsm8k",
+  "split": "test",
+  "cohere_model": "command-a-03-2025",
+  "claim_boundary": "MODE-A adapter comparators on matched substrate, not official full-stack reproductions"
+}
