@@ -1,0 +1,71 @@
+Collecting cohere
+  Downloading cohere-6.1.0-py3-none-any.whl.metadata (6.8 kB)
+Collecting fastavro<2.0.0,>=1.9.4 (from cohere)
+  Downloading fastavro-1.12.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.8 kB)
+Requirement already satisfied: httpx>=0.21.2 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from cohere) (0.28.1)
+Collecting pydantic>=1.9.2 (from cohere)
+  Downloading pydantic-2.13.3-py3-none-any.whl.metadata (108 kB)
+Collecting pydantic-core<2.44.0,>=2.18.2 (from cohere)
+  Downloading pydantic_core-2.42.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+Requirement already satisfied: requests<3.0.0,>=2.0.0 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from cohere) (2.33.1)
+Collecting tokenizers<1,>=0.15 (from cohere)
+  Downloading tokenizers-0.23.1-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.8 kB)
+Collecting types-requests<3.0.0,>=2.0.0 (from cohere)
+  Downloading types_requests-2.33.0.20260408-py3-none-any.whl.metadata (2.0 kB)
+Requirement already satisfied: typing_extensions>=4.0.0 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from cohere) (4.15.0)
+Requirement already satisfied: charset_normalizer<4,>=2 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from requests<3.0.0,>=2.0.0->cohere) (3.4.7)
+Requirement already satisfied: idna<4,>=2.5 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from requests<3.0.0,>=2.0.0->cohere) (3.13)
+Requirement already satisfied: urllib3<3,>=1.26 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from requests<3.0.0,>=2.0.0->cohere) (2.6.3)
+Requirement already satisfied: certifi>=2023.5.7 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from requests<3.0.0,>=2.0.0->cohere) (2026.4.22)
+Requirement already satisfied: huggingface-hub<2.0,>=0.16.4 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from tokenizers<1,>=0.15->cohere) (1.13.0)
+Requirement already satisfied: filelock>=3.10.0 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (3.29.0)
+Requirement already satisfied: fsspec>=2023.5.0 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (2026.2.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.4.3 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (1.4.3)
+Requirement already satisfied: packaging>=20.9 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (6.0.3)
+Requirement already satisfied: tqdm>=4.42.1 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (4.67.3)
+Requirement already satisfied: typer in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (0.25.1)
+Requirement already satisfied: anyio in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from httpx>=0.21.2->cohere) (4.13.0)
+Requirement already satisfied: httpcore==1.* in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from httpx>=0.21.2->cohere) (1.0.9)
+Requirement already satisfied: h11>=0.16 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from httpcore==1.*->httpx>=0.21.2->cohere) (0.16.0)
+Collecting annotated-types>=0.6.0 (from pydantic>=1.9.2->cohere)
+  Downloading annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+INFO: pip is looking at multiple versions of pydantic to determine which version is compatible with other requirements. This could take a while.
+Collecting pydantic>=1.9.2 (from cohere)
+  Downloading pydantic-2.13.2-py3-none-any.whl.metadata (108 kB)
+  Downloading pydantic-2.13.1-py3-none-any.whl.metadata (108 kB)
+  Downloading pydantic-2.13.0-py3-none-any.whl.metadata (107 kB)
+  Downloading pydantic-2.12.5-py3-none-any.whl.metadata (90 kB)
+Collecting pydantic-core<2.44.0,>=2.18.2 (from cohere)
+  Downloading pydantic_core-2.41.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (7.3 kB)
+Collecting typing-inspection>=0.4.2 (from pydantic>=1.9.2->cohere)
+  Downloading typing_inspection-0.4.2-py3-none-any.whl.metadata (2.6 kB)
+Requirement already satisfied: click>=8.2.1 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (8.3.1)
+Requirement already satisfied: shellingham>=1.3.0 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (1.5.4)
+Requirement already satisfied: rich>=13.8.0 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (15.0.0)
+Requirement already satisfied: annotated-doc>=0.0.2 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (0.0.4)
+Requirement already satisfied: markdown-it-py>=2.2.0 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from rich>=13.8.0->typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (4.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from rich>=13.8.0->typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (2.19.2)
+Requirement already satisfied: mdurl~=0.1 in /root/.pyenv/versions/3.12.12/lib/python3.12/site-packages (from markdown-it-py>=2.2.0->rich>=13.8.0->typer->huggingface-hub<2.0,>=0.16.4->tokenizers<1,>=0.15->cohere) (0.1.2)
+Downloading cohere-6.1.0-py3-none-any.whl (350 kB)
+Downloading fastavro-1.12.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (3.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.4/3.4 MB 30.3 MB/s  0:00:00
+Downloading tokenizers-0.23.1-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 27.2 MB/s  0:00:00
+Downloading types_requests-2.33.0.20260408-py3-none-any.whl (20 kB)
+Downloading pydantic-2.12.5-py3-none-any.whl (463 kB)
+Downloading pydantic_core-2.41.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 35.7 MB/s  0:00:00
+Downloading annotated_types-0.7.0-py3-none-any.whl (13 kB)
+Downloading typing_inspection-0.4.2-py3-none-any.whl (14 kB)
+Installing collected packages: typing-inspection, types-requests, pydantic-core, fastavro, annotated-types, pydantic, tokenizers, cohere
+
+Successfully installed annotated-types-0.7.0 cohere-6.1.0 fastavro-1.12.2 pydantic-2.12.5 pydantic-core-2.41.5 tokenizers-0.23.1 types-requests-2.33.0.20260408 typing-inspection-0.4.2
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.3 -> 26.1
+[notice] To update, run: pip install --upgrade pip
+Cohere readiness check passed: tiny authenticated request succeeded.
+Generating train split:   0%|          | 0/7473 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 7473/7473 [00:00<00:00, 127411.15 examples/s]
+Generating test split:   0%|          | 0/1319 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 1319/1319 [00:00<00:00, 153593.57 examples/s]
+dry-run-call-plan written: /workspace/frontier-allocation-for-budgeted-llm-inference/outputs/cohere_real_model_cost_normalized_validation_20260501T145255Z_DRYRUN/progress_heartbeat.jsonl

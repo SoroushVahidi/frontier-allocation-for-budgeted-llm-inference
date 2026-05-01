@@ -118,6 +118,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--save-branch-traces", action="store_true")
     p.add_argument("--emit-trace-audit", action="store_true", help="Emit compact per-case DR-v2 vs external_l1_max trace-audit CSV.")
     p.add_argument("--validate-methods-only", action="store_true", help="Validate requested method IDs resolve to runnable strategy specs and exit without API calls.")
+    p.add_argument("--allowed-example-ids-file", default="", help="Optional JSONL file containing rows with example_id (and optional dataset/seed/budget/method) to hard-filter runs.")
+    p.add_argument("--dry-run-call-plan", action="store_true", help="Emit planned case count after filtering and exit without API calls.")
     return p.parse_args()
 
 
@@ -246,6 +248,21 @@ def normalize_providers(args: argparse.Namespace) -> list[str]:
     if not normed:
         raise ValueError("At least one provider is required.")
     return normed
+
+
+def load_allowed_case_filter(path_text: str) -> dict[tuple[str, int, int, str], set[str]]:
+    if not path_text:
+        return {}
+    path = Path(path_text)
+    rows = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
+    allow: dict[tuple[str, int, int, str], set[str]] = {}
+    for r in rows:
+        dataset = str(r.get("dataset", "openai/gsm8k"))
+        seed = int(r.get("seed", 11))
+        budget = int(r.get("budget", 4))
+        method = str(r.get("our_method_name", r.get("method", "direct_reserve_semantic_frontier_v2")))
+        allow.setdefault((dataset, seed, budget, method), set()).add(str(r.get("example_id")))
+    return allow
 
 
 def ensure_cohere_readiness(*, model: str, timestamp: str) -> tuple[bool, str]:
@@ -512,6 +529,7 @@ def main() -> None:
     budgets = parse_csv_ints(args.budgets)
     seeds = parse_csv_ints(args.seeds)
     methods = parse_csv_list(args.methods)
+    allowed_case_filter = load_allowed_case_filter(args.allowed_example_ids_file)
     for m in methods:
         if m not in METHODS:
             raise ValueError(f"Unknown method: {m}")
@@ -575,6 +593,10 @@ def main() -> None:
                     target_n = args.target_scored_per_slice
                     max_attempt = args.max_examples if args.max_examples > 0 else target_n
                     pool_n = max(max_attempt, target_n)
+                    if allowed_case_filter:
+                        filtered_counts = [len(v) for (d, s, _b, _m), v in allowed_case_filter.items() if d == dataset and s == seed]
+                        if filtered_counts:
+                            pool_n = max(pool_n, max(filtered_counts) * 200)
                     try:
                         examples = load_pilot_examples(dataset, subset_size=pool_n, seed=seed)
                     except Exception as exc:  # noqa: BLE001
@@ -608,6 +630,9 @@ def main() -> None:
                         )
 
                         for method in methods:
+                            method_allowed_ids = allowed_case_filter.get((dataset, seed, budget, method))
+                            if allowed_case_filter and not method_allowed_ids:
+                                continue
                             runtime = METHODS[method]["runtime"]
                             enable_repair = bool(METHODS[method]["enable_output_repair"])
                             if runtime not in specs:
@@ -615,7 +640,24 @@ def main() -> None:
                                 continue
                             attempted = 0
                             scored = 0
+                            planned_case_count = len(method_allowed_ids) if method_allowed_ids is not None else len(examples)
+                            if args.dry_run_call_plan:
+                                append_progress(
+                                    progress_path,
+                                    {
+                                        "event": "dry_run_plan",
+                                        "provider": provider,
+                                        "dataset": dataset,
+                                        "seed": seed,
+                                        "budget": budget,
+                                        "method": method,
+                                        "planned_cases": planned_case_count,
+                                    },
+                                )
+                                continue
                             for ex in examples:
+                                if method_allowed_ids is not None and str(ex.example_id) not in method_allowed_ids:
+                                    continue
                                 if attempted >= max_attempt or scored >= target_n:
                                     break
                                 ck = CaseKey(dataset=dataset, seed=seed, budget=budget, method=f"{provider}:{method}", example_id=str(ex.example_id))
@@ -771,6 +813,9 @@ def main() -> None:
                                 )
                                 if status == "failed":
                                     append_jsonl(raw_dir / "failures.jsonl", row)
+    if args.dry_run_call_plan:
+        print(f"dry-run-call-plan written: {progress_path}")
+        raise SystemExit(0)
 
     slices: dict[tuple[str, str, int, int, str], list[dict[str, Any]]] = {}
     for r in records:
