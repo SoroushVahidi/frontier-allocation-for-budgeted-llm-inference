@@ -37,12 +37,13 @@ Do **not** claim robust or broad superiority over `external_l1_max` unless a com
 | Need | Read |
 |---|---|
 | Current project state | `docs/CURRENT_PROJECT_STATUS.md` |
-| Fast selector execution policy | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` |
 | Full documentation map | `docs/DOCS_INDEX.md` |
 | Reviewer/collaborator orientation | `docs/CANONICAL_START_HERE.md` |
 | Repository structure | `docs/REPO_MAP.md` |
 | Current selector/L1-defeat track | `docs/SELECTOR_START_HERE.md` |
 | Current selector artifact front door | `docs/SELECTOR_WORK_START_HERE_20260501.md` |
+| Selector choosing checklist | `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` |
+| Fast selector execution policy | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` |
 | Wulver artifact index | `docs/ARTIFACT_INDEX_20260501.md` |
 | Focused33 trace-enrichment result | `docs/FOCUSED33_TRACE_ENRICHMENT_RESULT_20260501T000906Z.md` |
 | Cleanup policy | `docs/REPOSITORY_CLEANUP_POLICY_20260501.md` |
@@ -66,7 +67,7 @@ Current ceilings for the focused selector work:
 - aggregate casebook oracle: 33/33;
 - trace-preserved-node oracle from the enriched artifact: 8/33.
 
-Use `docs/SELECTOR_WORK_START_HERE_20260501.md` and `docs/ARTIFACT_INDEX_20260501.md` before running or interpreting selector experiments.
+Use `docs/SELECTOR_WORK_START_HERE_20260501.md`, `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md`, and `docs/ARTIFACT_INDEX_20260501.md` before running or interpreting selector experiments.
 
 ## API-cost rule
 
