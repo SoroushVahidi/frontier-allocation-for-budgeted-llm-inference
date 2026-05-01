@@ -62,20 +62,32 @@ def _candidate_trace_text(c: dict[str, Any]) -> str:
     return ""
 
 
-def _candidate_source_list(r: dict[str, Any]) -> list[dict[str, Any]]:
-    cands = r.get("candidate_nodes")
-    if isinstance(cands, list) and cands:
-        return [c for c in cands if isinstance(c, dict)]
+def extract_candidate_nodes(r: dict[str, Any]) -> list[dict[str, Any]]:
     vi = r.get("verifier_input") if isinstance(r.get("verifier_input"), dict) else {}
-    for key in ("candidates_for_verifier", "candidate_nodes", "candidates"):
-        v = vi.get(key)
-        if isinstance(v, list) and v:
-            return [c for c in v if isinstance(c, dict)]
+    metadata = r.get("metadata") if isinstance(r.get("metadata"), dict) else {}
+    raw_record = r.get("raw_record") if isinstance(r.get("raw_record"), dict) else {}
+    paths = [
+        r.get("candidate_nodes"),
+        r.get("candidates"),
+        vi.get("candidates_for_verifier"),
+        vi.get("candidates"),
+        vi.get("candidate_nodes"),
+        metadata.get("candidate_nodes"),
+        raw_record.get("candidate_nodes"),
+        (raw_record.get("result_metadata") or {}).get("candidate_nodes") if isinstance(raw_record.get("result_metadata"), dict) else None,
+        vi.get("answer_candidates"),
+        r.get("final_branch_states"),
+        r.get("answer_groups"),
+        (r.get("evaluation_only") or {}).get("candidate_nodes") if isinstance(r.get("evaluation_only"), dict) else None,
+    ]
+    for v in paths:
+        if isinstance(v, list) and v and all(isinstance(x, dict) for x in v):
+            return v
     return []
 
 
 def normalize_record(r: dict[str, Any], src_label: str, src_path: Path, idx: int, no_gold: bool) -> dict[str, Any]:
-    cands = _candidate_source_list(r)
+    cands = extract_candidate_nodes(r)
     norm_cands = []
     traced = 0
     for i, c in enumerate(cands):
@@ -89,13 +101,31 @@ def normalize_record(r: dict[str, Any], src_label: str, src_path: Path, idx: int
             "trace_text": _candidate_trace_text(c),
             "step_text": c.get("step_text"),
             "reasoning_trace": c.get("reasoning_trace"),
+            "reasoning_steps": c.get("reasoning_steps"),
             "steps": c.get("steps"),
+            "derivation": c.get("derivation"),
+            "solution_trace": c.get("solution_trace"),
             "branch_depth": c.get("branch_depth"),
             "cost_proxy": c.get("cost_proxy") or c.get("cost_norm"),
             "score": c.get("score"),
             "score_prior": c.get("score_prior") or c.get("prior"),
+            "source_metadata": c.get("source_metadata"),
+            "original_candidate": c,
         }
-        has_trace = bool(str(n.get("trace_text") or n.get("step_text") or n.get("reasoning_trace") or "").strip()) or bool(n.get("steps"))
+        oc = n.get("original_candidate") if isinstance(n.get("original_candidate"), dict) else {}
+        has_trace = any([
+            bool(str(n.get("trace_text") or "").strip()),
+            bool(str(n.get("step_text") or "").strip()),
+            bool(str(n.get("reasoning_trace") or "").strip()),
+            bool(str(n.get("reasoning_steps") or "").strip()),
+            bool(str(n.get("derivation") or "").strip()),
+            bool(str(n.get("solution_trace") or "").strip()),
+            bool(n.get("steps")),
+            bool(str(oc.get("trace_text") or "").strip()),
+            bool(str(oc.get("step_text") or "").strip()),
+            bool(str(oc.get("reasoning_trace") or "").strip()),
+            bool(oc.get("steps")),
+        ])
         if has_trace:
             traced += 1
         n["trace_available"] = has_trace
@@ -120,7 +150,13 @@ def normalize_record(r: dict[str, Any], src_label: str, src_path: Path, idx: int
         "our_method_name": r.get("our_method_name") or r.get("method"),
         "problem_statement": r.get("problem_statement") or r.get("question"),
         "candidate_nodes": norm_cands,
-        "verifier_input": scrub_verifier_input(r.get("verifier_input") or {"problem_statement": r.get("problem_statement"), "candidate_nodes": norm_cands}, no_gold),
+        "verifier_input": scrub_verifier_input({
+            "problem_statement": (r.get("verifier_input") or {}).get("problem_statement") if isinstance(r.get("verifier_input"), dict) else None or r.get("problem_statement"),
+            "candidates_for_verifier": [
+                {k: c.get(k) for k in ("candidate_id", "source_family", "final_answer", "normalized_answer", "trace_text", "step_text", "steps", "score", "score_prior")}
+                for c in norm_cands
+            ],
+        }, no_gold),
         "evaluation_only": eval_only,
         "current_answer": r.get("current_answer") or r.get("our_final_answer"),
         "selected_answer_group": r.get("selected_answer_group"),

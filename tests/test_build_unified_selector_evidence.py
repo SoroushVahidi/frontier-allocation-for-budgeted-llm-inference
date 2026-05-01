@@ -73,7 +73,7 @@ def test_trace_recovery_schema_variants_and_counts(tmp_path: Path):
         "problem_statement": "p",
         "candidate_nodes": [
             {"candidate_id": "a", "final_answer": "1", "trace_text": "trace a"},
-            {"candidate_id": "b", "final_answer": "2", "reasoning_trace": "trace b"},
+            {"candidate_id": "b", "final_answer": "2", "steps": ["s"]},
         ],
         "evaluation_only": {"gold_answer": "1"},
         "verifier_input": {"problem_statement": "p", "candidates_for_verifier": [{"candidate_id": "a"}]},
@@ -111,6 +111,8 @@ def test_trace_recovery_schema_variants_and_counts(tmp_path: Path):
     assert tr2["has_any_candidate_trace"] is True
     assert tr2["usable_for_trace_aware_selector"] is True
     assert "gold_answer" not in json.dumps(tr2["verifier_input"])
+    assert "oracle" not in json.dumps(tr2["verifier_input"]).lower()
+    assert "evaluation_only" not in json.dumps(tr2["verifier_input"])
     focused_kept = next(r for r in kept if r["case_id"] == "f1")
     assert "candidates_for_verifier" in focused_kept["verifier_input"]
     summary = json.loads((out / "unified_selector_evidence_summary.json").read_text())
@@ -118,3 +120,4 @@ def test_trace_recovery_schema_variants_and_counts(tmp_path: Path):
     assert summary["overall"]["traced_candidate_nodes"] == 4
     assert summary["by_provenance_source"]["new_cap100_trace_recovery"]["candidate_nodes"] == 3
     assert summary["by_provenance_source"]["new_cap100_trace_recovery"]["traced_candidate_nodes"] == 3
+    assert summary["by_provenance_source"]["new_cap100_trace_recovery"]["usable_for_trace_aware_selector"] == 2
