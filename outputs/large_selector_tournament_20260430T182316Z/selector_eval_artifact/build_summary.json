@@ -1,0 +1,20 @@
+{
+  "scan_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T182316Z/artifact_scan",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T182316Z/selector_eval_artifact",
+  "input_usable_positive_artifacts": 13,
+  "used_fallback_usable_only": true,
+  "output_examples": 86,
+  "deduplicated": true,
+  "sources": {
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_learned_override_tiny_real_20260426T_LEARNED_OVERRIDE_TINY_REAL": 10,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT": 5,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION": 20,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_failure_replay_seed_latest": 7,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z": 20,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY": 6,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T183000_DEBUG4": 1,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_TEST_CDR_NOKEY": 1,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T175000Z": 9,
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z": 7
+  }
+}
