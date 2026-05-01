@@ -8,9 +8,9 @@ This index separates current interpretation documents from diagnostic and histor
 |---|---|
 | `README.md` | Short repository entry point. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
-| `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | Cost-aware execution rules for selector work. |
-| `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |
 | `docs/REPO_MAP.md` | Directory roles and repository structure. |
+| `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |
+| `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | Cost-aware execution rules for selector work. |
 | `docs/PAPER_SOURCE_OF_TRUTH.md` | Claim-eligible evidence hierarchy. |
 | `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` | Safe/supportive/unsafe claim map. |
 | `docs/PAPER_OPEN_GAPS_AND_RISKS.md` | Known evidence gaps and risks. |
@@ -20,20 +20,34 @@ This index separates current interpretation documents from diagnostic and histor
 | Document | Role |
 |---|---|
 | `docs/SELECTOR_START_HERE.md` | Entry point for selector-first work. |
-| `docs/SELECTOR_WORK_START_HERE_20260501.md` | Current front door for focused33 trace-enriched selector work. |
+| `docs/SELECTOR_WORK_START_HERE_20260501.md` | Selector artifact front door; partly superseded by newer trace-recovery/unified-evidence work. |
 | `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` | Decision checklist for choosing the next selector family and promotion criteria. |
+| `docs/SELECTOR_EVIDENCE_RETENTION_POLICY_20260501.md` | What selector evidence packages should commit vs omit. |
 | `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` | Outcome-verifier selector roadmap. |
 | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | API-cost-control and fast selector execution policy. |
 | `docs/SELECTOR_CATALOG.md` | Selector methods and diagnostic selectors. |
 | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` | Selector trace artifact usability index. |
-| `docs/ARTIFACT_INDEX_20260501.md` | Current selector artifact index after Wulver transfer. |
+| `docs/ARTIFACT_INDEX_20260501.md` | Selector artifact index after Wulver transfer. |
+| `docs/FOCUSED33_TRACE_ENRICHMENT_RESULT_20260501T000906Z.md` | Historical focused33 trace-enrichment result. |
 | `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md` | Older ordered selector-vs-coverage roadmap; preserve as provenance. |
 | `docs/FINAL_ADAPTIVE_LLM_INFERENCE_TRANSFER_AUDIT_20260430T034801Z.md` | Final audit of ideas transferred from the older binary-routing repository. |
 | `docs/METHOD_REGISTRY_CANONICAL_20260429.md` | Method status and live-runnable/diagnostic distinctions. |
 
+## Current selector evidence artifacts
+
+Use these as engineering artifacts, not paper-facing claims by themselves.
+
+| Artifact family | Status |
+|---|---|
+| `outputs/selector_evidence_package_*/` | Present-not-selected / absent-from-tree / current-correct-risk casebooks. |
+| `outputs/selector_evidence_trace_recovery_20260501T023200Z/` | Reports 50 trace-recovered cases and 142 traced candidates, but the committed `candidate_trace_enriched.jsonl` has empty candidate lists. Needs source-package fix before unified use. |
+| `outputs/conservative_trace_support_selector_20260501T025615Z/` | Negative non-API baseline: 0 overrides and 0/46 recovery on the 50-case recovery benchmark. |
+| `outputs/unified_selector_evidence_*/` | Builder/scaffold and diagnostic packages. Current merged new-cap100 provenance contributes 0 candidate nodes, so not yet canonical selector input. |
+| `outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl` | Older focused33 traced selector evidence. Useful but lower gold-terminal coverage. |
+
 ## Current real diagnostic artifact
 
-Primary selector artifact:
+Older compact selector tournament artifact:
 
 ```text
 outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
@@ -51,13 +65,7 @@ Important diagnostic subfolder:
 outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/diagnostics/selector_tournament/
 ```
 
-Focused trace-enriched selector artifact:
-
-```text
-outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl
-```
-
-Use these compact/trace-enriched artifacts for offline outcome-verifier selector development before launching any new paid run.
+Use compact/trace-enriched artifacts for offline selector development before launching paid runs, but check the current status doc before treating any package as canonical.
 
 ## Current runnable/reproduction docs
 
