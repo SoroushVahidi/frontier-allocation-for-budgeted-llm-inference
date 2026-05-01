@@ -218,3 +218,17 @@ terminals/
 
 !outputs/cohere_compact_ledgers/
 !outputs/cohere_compact_ledgers/**/*
+
+# Historical external loss casebooks (MMFS / Wulver recovery; unblock selector workflows).
+# Whitelist overrides the generic outputs/**/*casebook* / outputs/**/*.jsonl ignores below.
+!outputs/external_loss_casebook_broad_20260430T185500Z/
+!outputs/external_loss_casebook_broad_20260430T185500Z/**
+!outputs/external_loss_casebook_20260430T184023Z/
+!outputs/external_loss_casebook_20260430T184023Z/**
+# Omit paid-annotation cache payloads from version control
+outputs/external_loss_casebook_broad_20260430T185500Z/cohere_annotation_cache.jsonl
+outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl
+
+# Focused-33 trace enrichment bundle (single canonical regeneration run ID)
+!outputs/focused33_trace_enriched_20260501T000906Z/
+!outputs/focused33_trace_enriched_20260501T000906Z/**
