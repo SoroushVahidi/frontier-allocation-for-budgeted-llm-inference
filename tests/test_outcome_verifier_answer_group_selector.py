@@ -148,3 +148,26 @@ def test_api_disabled_records_failure(tmp_path):
     subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache)])
     txt=(out/'failed_or_skipped_items.jsonl').read_text()
     assert 'api_disabled' in txt
+
+def test_resume_guard_requires_overwrite_or_resume(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    cp.write_text(json.dumps({'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'})+'\n')
+    out = tmp_path/'out'; out.mkdir(); cache = out/'verifier_scores.jsonl'
+    cache.write_text('{}\n')
+    p = subprocess.run([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache),'--no-resume'], capture_output=True, text=True)
+    assert p.returncode != 0
+
+
+def test_score_key_shared_between_plan_and_cache():
+    a={'case_id':'c','candidate_id':'d'}
+    from scripts.run_outcome_verifier_scoring import score_key
+    assert score_key(a)==cache_key(a)
+
+
+def test_progress_has_cumulative_cached_rows(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    cp.write_text(json.dumps({'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'})+'\n')
+    out = tmp_path/'out'; cache = out/'verifier_scores.jsonl'
+    subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache),'--validate-call-plan-only'])
+    prog=json.loads((out/'progress_summary.json').read_text())
+    assert 'cumulative_cached_rows' in prog and 'new_attempted_calls' in prog

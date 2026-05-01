@@ -61,8 +61,12 @@ def parse_verifier_response(text: str) -> dict[str, Any]:
     return obj
 
 
+def score_key(item: dict[str, Any]) -> str:
+    return hashlib.sha256((str(item.get("case_id"))+"|"+str(item.get("candidate_id"))).encode()).hexdigest()
+
+
 def cache_key(item: dict[str, Any]) -> str:
-    return hashlib.sha256((str(item.get("case_id"))+"|"+str(item.get("candidate_id"))+"|"+str(item.get("problem_statement"))+"|"+str(item.get("normalized_answer"))).encode()).hexdigest()
+    return score_key(item)
 
 
 def call_cohere(api_key: str, model: str, system: str, user: str, temperature: float, timeout_seconds: float) -> str:
@@ -103,6 +107,7 @@ def main() -> None:
     ap.add_argument("--max-retries", type=int, default=2)
     ap.add_argument("--retry-backoff-seconds", type=float, default=5)
     ap.add_argument("--no-gold-features", action="store_true")
+    ap.add_argument("--overwrite", action="store_true")
     args = ap.parse_args()
 
     t0 = time.time()
@@ -111,8 +116,17 @@ def main() -> None:
     failed_path = out / "failed_or_skipped_items.jsonl"
     progress_path = out / "progress_summary.json"
     score_out_path = out / "verifier_scores.jsonl"
-    if not score_out_path.exists(): score_out_path.write_text("", encoding="utf-8")
-    if not failed_path.exists(): failed_path.write_text("", encoding="utf-8")
+    if args.resume and cache_path.exists() and args.overwrite:
+        raise SystemExit("--resume and --overwrite cannot be used together")
+    if not args.resume and cache_path.exists() and not args.overwrite:
+        raise SystemExit("cache exists; pass --overwrite or --resume")
+    if args.overwrite:
+        cache_path.write_text("", encoding="utf-8")
+        score_out_path.write_text("", encoding="utf-8")
+        failed_path.write_text("", encoding="utf-8")
+    else:
+        if not score_out_path.exists(): score_out_path.write_text("", encoding="utf-8")
+        if not failed_path.exists(): failed_path.write_text("", encoding="utf-8")
 
     items = [json.loads(x) for x in Path(args.call_plan).read_text(encoding="utf-8").splitlines() if x.strip()]
     total = len(items)
@@ -122,14 +136,14 @@ def main() -> None:
         for line in cache_path.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 r = json.loads(line)
-                existing[(str(r.get("case_id")), str(r.get("candidate_id")))] = r
+                existing[score_key(r)] = r
 
     attempted = succeeded = failed = skipped = calls = 0
 
     def write_progress(current_index: int):
         progress = {
-            "total_items": total, "attempted": attempted, "succeeded": succeeded, "failed": failed, "skipped": skipped,
-            "current_index": current_index, "elapsed_seconds": round(time.time()-t0, 3), "backend": args.backend,
+            "total_items": total, "attempted": attempted, "new_attempted_calls": attempted, "succeeded": succeeded, "failed": failed, "skipped": skipped,
+            "current_index": current_index, "elapsed_seconds": round(time.time()-t0, 3), "backend": args.backend, "cumulative_cached_rows": len(existing),
             "model": args.model, "last_updated_timestamp": utc_stamp(),
         }
         progress_path.write_text(json.dumps(progress, indent=2) + "\n", encoding="utf-8")
@@ -145,13 +159,13 @@ def main() -> None:
             write_progress(i)
             continue
 
-        key = (str(it.get("case_id")), str(it.get("candidate_id")))
+        key = score_key(it)
         if key in existing:
             skipped += 1
             write_progress(i)
             continue
         if calls >= args.max_calls:
-            append_jsonl(failed_path, {"item": key, "error": "max_calls_reached"})
+            append_jsonl(failed_path, {"item_key": key, "error": "max_calls_reached"})
             failed += 1
             write_progress(i)
             continue
@@ -160,7 +174,7 @@ def main() -> None:
 
         attempted += 1
         if args.dry_run or not args.allow_api:
-            append_jsonl(failed_path, {"item": key, "error": "api_disabled"})
+            append_jsonl(failed_path, {"item_key": key, "error": "api_disabled"})
             failed += 1
             write_progress(i)
             continue
@@ -194,7 +208,7 @@ def main() -> None:
                     time.sleep(args.retry_backoff_seconds)
         if err is not None:
             failed += 1
-            append_jsonl(failed_path, {"item": {"case_id": key[0], "candidate_id": key[1]}, "error": err})
+            append_jsonl(failed_path, {"item_key": key, "error": err})
         write_progress(i)
 
     vals = []
