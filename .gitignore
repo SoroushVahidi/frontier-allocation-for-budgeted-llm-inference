@@ -64,6 +64,26 @@ outputs/**/cohere_annotation_cache.jsonl
 outputs/**/verifier_cache.jsonl
 outputs/**/cohere_verifier_cache.jsonl
 outputs/**/logs/**
+
+# Curated selector-evidence packages.
+# Use these prefixes for new present-not-selected / external-loss collections that need
+# committed JSONL traces, casebooks, and per-example records for selector choosing.
+# Caches, logs, and compressed blobs remain ignored by later rules unless explicitly reviewed.
+!outputs/selector_evidence_package_*/
+!outputs/selector_evidence_package_*/**
+!outputs/selector_loss_case_collection_*/
+!outputs/selector_loss_case_collection_*/**
+!outputs/external_loss_selector_case_collection_*/
+!outputs/external_loss_selector_case_collection_*/**
+outputs/selector_evidence_package_*/**/*cache*.jsonl
+outputs/selector_evidence_package_*/**/*cache*.json
+outputs/selector_evidence_package_*/**/logs/**
+outputs/selector_loss_case_collection_*/**/*cache*.jsonl
+outputs/selector_loss_case_collection_*/**/*cache*.json
+outputs/selector_loss_case_collection_*/**/logs/**
+outputs/external_loss_selector_case_collection_*/**/*cache*.jsonl
+outputs/external_loss_selector_case_collection_*/**/*cache*.json
+outputs/external_loss_selector_case_collection_*/**/logs/**
 # Formal comparative frontier audits (CSV/MD only; no secrets)
 !outputs/comparative_frontier_audit/
 !outputs/comparative_frontier_audit/**/*
