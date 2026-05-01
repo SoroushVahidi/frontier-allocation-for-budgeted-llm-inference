@@ -1,0 +1,9 @@
+{
+  "timestamp": "20260501T145826Z",
+  "casebook": "outputs/selector_evidence_package_20260501T014547Z/present_not_selected_casebook.jsonl",
+  "source_root": "outputs/cohere_real_model_cost_normalized_validation_20260501T145700Z_COHERE_SELECTOR_EVIDENCE_REGEN50",
+  "max_cases": 50,
+  "allow_cohere": false,
+  "cohere_calls_made": 0,
+  "git_commit": "dbd4d9722940714b53191deb294ac03f38dc966a"
+}
