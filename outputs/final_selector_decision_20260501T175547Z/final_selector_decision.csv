@@ -1,0 +1,6 @@
+key,value
+selector_name,outcome_verifier_answer_group_selector_v1
+scorer_mode,cached_jsonl
+min_verifier_margin,0.0
+cohere_calls,94
+status,chosen for recovery selector track; requires current-correct risk validation before runtime promotion.

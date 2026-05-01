@@ -1,0 +1,16 @@
+# Inventory
+- conservative: `outputs/conservative_trace_support_selector_unified_20260501T145910Z/selector_summary.json`
+- conservative: `outputs/conservative_trace_support_selector_20260501T025054Z/selector_summary.json`
+- conservative: `outputs/conservative_trace_support_selector_20260501T025615Z/selector_summary.json`
+- trace_quality: `outputs/outcome_verifier_answer_group_selector_trace_quality_20260501T152451Z/selector_summary.json`
+- cohere_selector: `outputs/outcome_verifier_answer_group_selector_real_cohere_final_20260501T175325Z/selector_summary.json`
+- cohere_selector: `outputs/outcome_verifier_answer_group_selector_real_cohere_partial_20260501T170635Z/selector_summary.json`
+- cohere_selector: `outputs/outcome_verifier_answer_group_selector_real_cohere_final_20260501T175325Z/selector_summary.json`
+- margin_sweep: `outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/margin_sweep_summary.json`
+- margin_sweep: `outputs/outcome_verifier_selector_margin_sweep_cohere_partial_20260501T170658Z/margin_sweep_summary.json`
+- margin_sweep: `outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/margin_sweep_summary.json`
+- selector_snapshot: `outputs/selector_decision_snapshot_20260501T1708SNAP/selector_decision_snapshot.md`
+- selector_snapshot: `outputs/selector_decision_snapshot_20260501T1708SNAP/selector_decision_snapshot.csv`
+- selector_snapshot: `outputs/selector_decision_snapshot_20260501T1708SNAP/selector_decision_snapshot.json`
+- current_correct_risk: `outputs/selector_evidence_package_20260501T014547Z/current_correct_risk_casebook.jsonl`
+- current_correct_risk: `outputs/selector_evidence_package_20260501T014001Z/current_correct_risk_casebook.jsonl`
