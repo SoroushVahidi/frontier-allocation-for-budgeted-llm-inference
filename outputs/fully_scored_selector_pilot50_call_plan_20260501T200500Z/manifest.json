@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-05-01T19:58:41.991359+00:00",
+  "paired_records": "outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_example_records.jsonl",
+  "existing_caches": [
+    "outputs/outcome_verifier_scores_cohere_smoke10_20260501T162328Z/verifier_scores.jsonl",
+    "outputs/fully_scored_selector_pilot_scores_20260501T193600Z/verifier_scores.jsonl"
+  ],
+  "selected_config": {
+    "selector_name": "outcome_verifier_answer_group_selector_v1",
+    "scorer_mode": "cached_jsonl",
+    "min_verifier_margin": 0.0,
+    "require_trace_for_override": true,
+    "dedupe_verifier_items": true,
+    "no_gold_features": true,
+    "selected_based_on": "Cohere cached verifier beat trace-quality on net fixes with zero breaks.",
+    "evidence_package": "outputs/unified_selector_evidence_20260501T145906Z",
+    "decision_package": "outputs/final_selector_decision_20260501T175547Z",
+    "status": "chosen for recovery selector track; requires current-correct risk validation before runtime promotion.",
+    "caveats": [
+      "Current-correct risk cannot be fully validated from committed artifacts in this branch."
+    ],
+    "selected_selector_output_dir": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z",
+    "selected_selector_casebook_path": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_casebook.jsonl",
+    "selected_selector_summary_path": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_summary.json",
+    "score_cache_path": "outputs/outcome_verifier_scores_cohere_smoke10_20260501T162328Z/verifier_scores.jsonl",
+    "selected_margin": 0.0
+  }
+}

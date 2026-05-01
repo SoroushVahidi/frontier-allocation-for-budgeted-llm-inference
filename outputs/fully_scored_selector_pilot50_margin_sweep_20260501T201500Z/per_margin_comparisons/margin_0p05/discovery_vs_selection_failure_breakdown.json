@@ -1,0 +1,8 @@
+{
+  "both_correct": 18,
+  "selector_fixed": 10,
+  "both_wrong": 19,
+  "external_only_correct": 1,
+  "selector_broke": 1,
+  "selected_only_correct": 1
+}

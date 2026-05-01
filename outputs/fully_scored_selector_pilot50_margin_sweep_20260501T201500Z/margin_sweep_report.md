@@ -1,0 +1,7 @@
+- margin 0.00: acc=0.580, breaks=1, net=9
+- margin 0.05: acc=0.580, breaks=1, net=9
+- margin 0.10: acc=0.580, breaks=1, net=9
+- margin 0.15: acc=0.580, breaks=1, net=9
+- margin 0.20: acc=0.580, breaks=1, net=9
+- margin 0.30: acc=0.580, breaks=1, net=9
+- margin 0.40: acc=0.580, breaks=1, net=9

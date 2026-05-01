@@ -1,0 +1,13 @@
+{
+  "requested_pilot_cases": 50,
+  "actual_pilot_case_count": 50,
+  "pilot_case_count": 50,
+  "candidate_nodes": 177,
+  "total_scoring_items_before_dedupe": 177,
+  "total_scoring_items_after_dedupe": 177,
+  "existing_cached_scores_reused": 88,
+  "missing_scores_to_call": 89,
+  "max_new_calls_cap": 250,
+  "selected_selector_config": "configs/selected_selector_current.json",
+  "no_gold_oracle_evaluation_only_in_call_plan": true
+}
