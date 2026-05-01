@@ -1,0 +1,15 @@
+# Casebook linkage audit
+
+Repro casebook: `outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_casebook.jsonl`
+
+- `outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_casebook.jsonl` mismatches=1 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p00/selector_casebook.jsonl` mismatches=1 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_answer_group_selector_trace_quality_20260501T152451Z/selector_casebook.jsonl` mismatches=7 total=47 margin=None scorer=trace_quality_heuristic
+- `outputs/outcome_verifier_answer_group_selector_real_cohere_final_20260501T175325Z/selector_casebook.jsonl` mismatches=9 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p05/selector_casebook.jsonl` mismatches=9 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p10/selector_casebook.jsonl` mismatches=9 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p15/selector_casebook.jsonl` mismatches=9 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p20/selector_casebook.jsonl` mismatches=9 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p30/selector_casebook.jsonl` mismatches=9 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_answer_group_selector_real_cohere_partial_20260501T170635Z/selector_casebook.jsonl` mismatches=11 total=47 margin=None scorer=cached_jsonl
+- `outputs/outcome_verifier_answer_group_selector_20260501T152447Z/selector_casebook.jsonl` mismatches=17 total=47 margin=None scorer=dry_run_call_plan

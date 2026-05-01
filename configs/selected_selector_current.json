@@ -11,5 +11,10 @@
   "status": "chosen for recovery selector track; requires current-correct risk validation before runtime promotion.",
   "caveats": [
     "Current-correct risk cannot be fully validated from committed artifacts in this branch."
-  ]
+  ],
+  "selected_selector_output_dir": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z",
+  "selected_selector_casebook_path": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_casebook.jsonl",
+  "selected_selector_summary_path": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_summary.json",
+  "score_cache_path": "outputs/outcome_verifier_scores_cohere_smoke10_20260501T162328Z/verifier_scores.jsonl",
+  "selected_margin": 0.0
 }
