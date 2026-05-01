@@ -1,0 +1,5 @@
+scope,records,candidate_nodes,traced_candidate_nodes,cases_with_candidate_nodes,cases_with_at_least_one_candidate_trace,current_incumbent_correct_count,current_incumbent_wrong_count,gold_present_in_extracted_terminal_node_finals,usable_for_trace_aware_selector
+overall,47,101,92,47,47,0,47,29,47
+recovery,47,101,92,47,47,0,47,29,47
+current_correct_risk,0,0,0,0,0,0,0,0,0
+mixed_other,0,0,0,0,0,0,0,0,0

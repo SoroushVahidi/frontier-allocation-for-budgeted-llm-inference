@@ -1,0 +1,14 @@
+{
+  "total_cases": 47,
+  "total_candidate_nodes": 101,
+  "traced_candidate_nodes": 92,
+  "candidate_scoring_items_before_dedupe": 101,
+  "candidate_scoring_items_after_dedupe": 94,
+  "cases_with_incumbent_candidate_group": 5,
+  "cases_without_incumbent_candidate_group": 42,
+  "cases_with_at_least_one_challenger_group": 47,
+  "estimated_api_calls_if_enabled": 94,
+  "scorer_mode": "trace_quality_heuristic",
+  "api_backend": null,
+  "allow_api": false
+}

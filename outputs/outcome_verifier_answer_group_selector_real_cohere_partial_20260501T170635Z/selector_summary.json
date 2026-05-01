@@ -1,0 +1,36 @@
+{
+  "timestamp": "20260501T170636Z",
+  "selector_name": "outcome_verifier_answer_group_selector_v1",
+  "total_cases": 47,
+  "total_overrides": 30,
+  "fixes": 16,
+  "breaks": 0,
+  "net_fixes_minus_breaks": 16,
+  "override_precision": 0.5333333333333333,
+  "accuracy": 0.3404255319148936,
+  "current_incumbent_accuracy": 0.0,
+  "oracle_ceiling_on_package": 0.6170212765957447,
+  "recoverable_trace_terminal_cases": 29,
+  "recoveries_among_gold_in_terminal_node_cases": 16,
+  "failures_gold_present_in_terminal_nodes_not_chosen": 13,
+  "aggregate_only_cases_count": 18,
+  "by_provenance_metrics": {
+    "new_cap100_trace_recovery": {
+      "count": 25,
+      "selector_correct": 16,
+      "accuracy": 0.64
+    },
+    "focused33_wulver": {
+      "count": 22,
+      "selector_correct": 0,
+      "accuracy": 0.0
+    }
+  },
+  "decision_reasons": {
+    "incumbent_missing_chose_best_scored_group": 25,
+    "override_verifier_margin_met": 5,
+    "blocked_insufficient_verifier_margin": 3,
+    "kept_incumbent_no_challenger_score": 10,
+    "kept_incumbent_default": 4
+  }
+}

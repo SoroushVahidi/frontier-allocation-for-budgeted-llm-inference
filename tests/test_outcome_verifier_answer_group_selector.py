@@ -75,3 +75,99 @@ def test_unknown_empty_not_selected_as_challenger():
     items=[build_verifier_item(c,n,'c1',i) for i,n in enumerate(c['candidate_nodes'])]
     d=select_case(c,items,{('c1','a'):0.1,('c1','b'):0.9},0.15,True)
     assert d['selected_normalized_answer']=='4'
+
+from scripts.run_outcome_verifier_scoring import parse_verifier_response, build_prompt, cache_key
+
+
+def test_strict_json_parser_accepts_valid():
+    r = parse_verifier_response('{"candidate_id":"a","case_id":"c1","normalized_answer":"4","score":0.7,"verdict":"likely_correct","reason":"ok","used_trace":true,"major_error":null}')
+    assert r['score'] == 0.7
+
+
+def test_strict_json_parser_rejects_out_of_range_score():
+    try:
+        parse_verifier_response('{"candidate_id":"a","case_id":"c1","normalized_answer":"4","score":1.7,"verdict":"likely_correct","reason":"ok","used_trace":true,"major_error":null}')
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_prompt_has_no_gold_oracle_evalonly():
+    c = _case(); it = build_verifier_item(c, c['candidate_nodes'][0], 'c1', 0)
+    _, user, _ = build_prompt(it)
+    lu = user.lower()
+    assert 'gold_answer' not in lu and 'evaluation_only' not in lu and 'oracle' not in lu
+
+
+def test_cached_scores_join_by_case_candidate_and_hash_stable():
+    c = _case(); it = build_verifier_item(c, c['candidate_nodes'][0], 'c1', 0)
+    k1 = cache_key(it)
+    k2 = cache_key(dict(it))
+    assert k1 == k2
+from scripts.run_outcome_verifier_selector_margin_sweep import choose_best_margin
+
+
+def test_margin_sweep_chooses_expected_margin():
+    rows = [
+        {'margin':0.0,'net_fixes_minus_breaks':5,'breaks':1,'override_precision':0.7,'total_overrides':10},
+        {'margin':0.1,'net_fixes_minus_breaks':5,'breaks':0,'override_precision':0.6,'total_overrides':8},
+        {'margin':0.2,'net_fixes_minus_breaks':4,'breaks':0,'override_precision':0.9,'total_overrides':4},
+    ]
+    best = choose_best_margin(rows)
+    assert best['margin'] == 0.1
+import subprocess, sys, tempfile, os, json
+from pathlib import Path
+
+
+def test_scoring_validate_only_writes_progress_and_no_calls(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    cp.write_text(json.dumps({'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'})+'\n')
+    out = tmp_path/'out'; cache = out/'verifier_scores.jsonl'
+    subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache),'--validate-call-plan-only'])
+    assert (out/'progress_summary.json').exists()
+    s=json.loads((out/'verifier_scoring_summary.json').read_text())
+    assert s['api_calls_made']==0
+
+
+def test_resume_skips_existing_and_max_new_calls(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    items=[{'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'},
+           {'case_id':'c1','candidate_id':'b','problem_statement':'p','final_answer':'2','normalized_answer':'2','trace_text':'t'}]
+    cp.write_text('\n'.join(json.dumps(x) for x in items)+'\n')
+    out = tmp_path/'out'; cache = out/'verifier_scores.jsonl'; out.mkdir()
+    cache.write_text(json.dumps({'case_id':'c1','candidate_id':'a','verifier_score':0.5})+'\n')
+    subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--max-new-calls','1','--cache-path',str(cache),'--allow-api'], env={**os.environ, 'COHERE_API_KEY':''})
+    s=json.loads((out/'verifier_scoring_summary.json').read_text())
+    assert s['skipped_existing_cached_scores']>=1
+
+
+def test_api_disabled_records_failure(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    cp.write_text(json.dumps({'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'})+'\n')
+    out = tmp_path/'out'; cache = out/'verifier_scores.jsonl'
+    subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache)])
+    txt=(out/'failed_or_skipped_items.jsonl').read_text()
+    assert 'api_disabled' in txt
+
+def test_resume_guard_requires_overwrite_or_resume(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    cp.write_text(json.dumps({'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'})+'\n')
+    out = tmp_path/'out'; out.mkdir(); cache = out/'verifier_scores.jsonl'
+    cache.write_text('{}\n')
+    p = subprocess.run([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache),'--no-resume'], capture_output=True, text=True)
+    assert p.returncode != 0
+
+
+def test_score_key_shared_between_plan_and_cache():
+    a={'case_id':'c','candidate_id':'d'}
+    from scripts.run_outcome_verifier_scoring import score_key
+    assert score_key(a)==cache_key(a)
+
+
+def test_progress_has_cumulative_cached_rows(tmp_path):
+    cp = tmp_path/'cp.jsonl'
+    cp.write_text(json.dumps({'case_id':'c1','candidate_id':'a','problem_statement':'p','final_answer':'1','normalized_answer':'1','trace_text':'t'})+'\n')
+    out = tmp_path/'out'; cache = out/'verifier_scores.jsonl'
+    subprocess.check_call([sys.executable,'scripts/run_outcome_verifier_scoring.py','--call-plan',str(cp),'--output-dir',str(out),'--backend','cohere','--max-calls','5','--cache-path',str(cache),'--validate-call-plan-only'])
+    prog=json.loads((out/'progress_summary.json').read_text())
+    assert 'cumulative_cached_rows' in prog and 'new_attempted_calls' in prog

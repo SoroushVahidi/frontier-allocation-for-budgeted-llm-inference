@@ -1,0 +1,20 @@
+[
+  {
+    "path": "outputs/selector_evidence_package_20260501T014001Z/current_correct_risk_casebook.jsonl",
+    "rows": 0,
+    "candidate_nodes_present": false,
+    "verifier_input_present": false,
+    "gold_eval_separated": true,
+    "usable_directly_for_selector": false,
+    "conversion_needed": "needs candidate_nodes enrichment"
+  },
+  {
+    "path": "outputs/selector_evidence_package_20260501T014547Z/current_correct_risk_casebook.jsonl",
+    "rows": 0,
+    "candidate_nodes_present": false,
+    "verifier_input_present": false,
+    "gold_eval_separated": true,
+    "usable_directly_for_selector": false,
+    "conversion_needed": "needs candidate_nodes enrichment"
+  }
+]

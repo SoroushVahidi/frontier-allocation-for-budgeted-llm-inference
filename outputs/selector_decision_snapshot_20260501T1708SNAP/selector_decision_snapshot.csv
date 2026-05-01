@@ -1,0 +1,5 @@
+selector,score_coverage,total_cases,overrides,fixes,breaks,net_fixes_minus_breaks,override_precision,accuracy,recoveries_among_gold_terminal,failures_gold_present_not_chosen
+conservative_trace_support_selector_v1,n/a,47,0,0,0,0,0.0,0.0,0,29
+ov_trace_quality_heuristic_margin_0.15,heuristic(no api),47,36,20,0,20,0.5555555555555556,0.425531914893617,20,9
+ov_cohere_cached_partial_margin_0.15,60/94,47,30,16,0,16,0.5333333333333333,0.3404255319148936,16,13
+ov_cohere_cached_partial_best_margin_0.00,60/94,47,33,18,0,18,0.5454545454545454,0.3829787234042553,18,11

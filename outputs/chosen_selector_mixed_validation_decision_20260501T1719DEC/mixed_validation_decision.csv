@@ -1,0 +1,5 @@
+scope,total_cases,current_incumbent_correct_cases,current_incumbent_wrong_cases,overrides,fixes,breaks,net_fixes_minus_breaks,override_precision,break_rate_on_current_correct_cases,recovery_rate_on_recoverable_wrong_cases,accuracy,oracle_ceiling,failures_gold_present_not_chosen
+overall,47,0,47,47,21,0,21,0.44680851063829785,0.0,0.44680851063829785,0.44680851063829785,1.0,26
+recovery,47,0,47,47,21,0,21,0.44680851063829785,0.0,0.44680851063829785,0.44680851063829785,1.0,26
+current_correct_risk,0,0,0,0,0,0,0,0.0,0.0,0.0,0.0,0.0,0
+mixed_other,0,0,0,0,0,0,0,0.0,0.0,0.0,0.0,0.0,0
