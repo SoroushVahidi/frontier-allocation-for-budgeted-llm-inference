@@ -1,0 +1,39 @@
+{
+  "control_present_not_selected_cases": 18,
+  "recovery_by_policy": {
+    "current_selection_control": {
+      "recovered_count": 0,
+      "recovered_rate_over_control_present_not_selected": 0.0,
+      "recovered_gold_group_type_distribution": {}
+    },
+    "answer_group_support_only": {
+      "recovered_count": 0,
+      "recovered_rate_over_control_present_not_selected": 0.0,
+      "recovered_gold_group_type_distribution": {}
+    },
+    "answer_group_support_plus_node_score": {
+      "recovered_count": 0,
+      "recovered_rate_over_control_present_not_selected": 0.0,
+      "recovered_gold_group_type_distribution": {}
+    },
+    "answer_group_support_plus_calibrated_score": {
+      "recovered_count": 0,
+      "recovered_rate_over_control_present_not_selected": 0.0,
+      "recovered_gold_group_type_distribution": {}
+    },
+    "answer_group_support_plus_score_plus_tiebreak_cleanup": {
+      "recovered_count": 0,
+      "recovered_rate_over_control_present_not_selected": 0.0,
+      "recovered_gold_group_type_distribution": {}
+    }
+  },
+  "recovery_mechanism_counts": {
+    "support_aggregation": 0,
+    "support_plus_node_score": 0,
+    "calibration_or_normalization": 0,
+    "tiebreak_or_surfacing_cleanup": 0
+  },
+  "gold_group_type_distribution_in_control_present_not_selected": {
+    "singleton": 18
+  }
+}

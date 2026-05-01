@@ -1,0 +1,32 @@
+{
+  "feature_columns": [
+    "f_action_count",
+    "f_answer_entropy",
+    "f_answer_group_rank",
+    "f_answer_group_support",
+    "f_branch_depth",
+    "f_diverse_gold_in_pool",
+    "f_extraction_ok",
+    "f_match_direct_reserve_strong_plus_diverse_v1_final",
+    "f_match_direct_reserve_strong_v1_final",
+    "f_match_external_l1_max_final",
+    "f_match_strict_f3_final",
+    "f_n_methods_sharing_norm_answer",
+    "f_problem_gold_present",
+    "f_problem_present_not_selected",
+    "f_prompt__NA",
+    "f_prompt__direct_formula_family",
+    "f_prompt__direct_reserve",
+    "f_prompt__explicit_case_split_family",
+    "f_selected_by_method",
+    "f_src__trace_level_branch",
+    "f_strat__absent_from_tree",
+    "f_strat__control_correct",
+    "f_strat__present_not_selected",
+    "f_top2_support_gap",
+    "m__direct_reserve_strong_plus_diverse_v1",
+    "m__direct_reserve_strong_v1",
+    "m__external_l1_max",
+    "m__strict_f3"
+  ]
+}

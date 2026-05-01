@@ -1,0 +1,5 @@
+provider,dataset,provider_model,subset_size,method,status,n_examples,accuracy,avg_actions,avg_expansions,avg_verifications,avg_surviving_branches,budget_exhaustion_rate,avg_calibrated_zscore,failure_reason,error
+openai,Idavidrein/gpqa,gpt-4.1-mini,60,adaptive_relative_rank,ok,60,0.05,1.7666666666666666,0.4,1.3666666666666667,0.6733333333333333,0.03333333333333333,-0.362417,,
+openai,Idavidrein/gpqa,gpt-4.1-mini,60,adaptive_score_plus_progress,ok,60,0.05,1.75,0.3,1.45,0.648095238095238,0.016666666666666666,-0.331872,,
+openai,Idavidrein/gpqa,gpt-4.1-mini,60,adaptive_learned_branch_score_v4,ok,60,0.06666666666666667,1.6666666666666667,0.31666666666666665,1.35,0.6444047619047618,0.016666666666666666,-0.373636,,
+openai,Idavidrein/gpqa,gpt-4.1-mini,60,best_of_n,ok,60,0.2,7.683333333333334,6.4,1.2833333333333334,2.2330158730158725,0.8333333333333334,,,

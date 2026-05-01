@@ -1,0 +1,13 @@
+budget,split,strategy,n_examples,accuracy,avg_actions,avg_expansions,avg_verifications,budget_exhaustion_rate
+6,calibration,reasoning_greedy,2,1.0,1.5,1.5,0.0,0.0
+6,calibration,self_consistency_3,2,0.5,6.0,5.0,1.0,1.0
+6,calibration,reasoning_beam2,2,0.5,4.5,4.5,0.0,0.0
+6,calibration,adaptive_min_expand_1,2,0.5,6.0,4.0,2.0,0.5
+6,calibration,verifier_guided_search,2,0.0,6.0,3.0,3.0,1.0
+6,calibration,program_of_thought,2,0.0,2.0,1.0,0.0,0.0
+6,eval,reasoning_greedy,2,0.0,1.0,1.0,0.0,0.0
+6,eval,self_consistency_3,2,1.0,6.0,3.5,2.5,1.0
+6,eval,reasoning_beam2,2,0.0,4.0,4.0,0.0,0.0
+6,eval,adaptive_min_expand_1,2,0.5,3.5,2.0,1.5,0.5
+6,eval,verifier_guided_search,2,0.0,6.0,3.0,3.0,1.0
+6,eval,program_of_thought,2,0.0,2.0,1.0,0.0,0.0

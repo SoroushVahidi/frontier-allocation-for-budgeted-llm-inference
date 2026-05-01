@@ -1,0 +1,11 @@
+selector,n_cases,gold_present_cases,selected_gold_rate,accuracy_gold_present,present_not_selected_rate,stratum
+current_controller_selector,1,1,1.0,1.0,0.0,correct
+support_based_answer_group_selector,1,1,1.0,1.0,0.0,correct
+learned_candidate_scorer,1,1,1.0,1.0,0.0,correct
+learned_answer_group_scorer,1,1,1.0,1.0,0.0,correct
+pairwise_bt_selector,1,1,0.0,0.0,1.0,correct
+current_controller_selector,1,1,0.0,0.0,1.0,present_not_selected
+support_based_answer_group_selector,1,1,0.0,0.0,1.0,present_not_selected
+learned_candidate_scorer,1,1,1.0,1.0,0.0,present_not_selected
+learned_answer_group_scorer,1,1,1.0,1.0,0.0,present_not_selected
+pairwise_bt_selector,1,1,0.0,0.0,1.0,present_not_selected

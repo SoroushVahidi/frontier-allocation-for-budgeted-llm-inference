@@ -1,0 +1,4 @@
+method,n_cases,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,avg_actions_used,avg_expansions,avg_verifications,budget_truncation_rate,first_appearance_after_forced_depth2_count,first_appearance_after_forced_depth2_share,first_appearance_after_forced_depth3_count,first_appearance_after_forced_depth3_share
+strict_f3,6,0.0,0.16666666666666666,0.0,0.8333333333333334,3.8333333333333335,3.8333333333333335,0.0,1.0,0,0.0,0,0.0
+strict_f3_exhaustive_depth2_probe,6,0.0,0.5,0.0,0.5,3.6666666666666665,3.6666666666666665,0.0,0.6666666666666666,0,0.0,0,0.0
+strict_f3_exhaustive_depth3_probe,6,0.0,0.16666666666666666,0.0,0.8333333333333334,4.0,4.0,0.0,1.0,0,0.0,0,0.0

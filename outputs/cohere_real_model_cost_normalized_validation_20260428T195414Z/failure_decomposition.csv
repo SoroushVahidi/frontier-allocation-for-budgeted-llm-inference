@@ -1,0 +1,23 @@
+provider,method,failure_tag,count
+cohere,external_l1_max,API/runtime failure,4
+cohere,external_l1_max,correct,192
+cohere,external_l1_max,correct answer absent from explored tree,161
+cohere,external_l1_max,parse/extraction failure,3
+cohere,s1,correct,184
+cohere,s1,correct answer absent from explored tree,161
+cohere,s1,parse/extraction failure,15
+cohere,strict_f3,correct,162
+cohere,strict_f3,correct answer absent from explored tree,159
+cohere,strict_f3,correct answer present but not selected,22
+cohere,strict_f3,parse/extraction failure,17
+cohere,strict_f3_anti_collapse_weak_v1,correct,151
+cohere,strict_f3_anti_collapse_weak_v1,correct answer absent from explored tree,157
+cohere,strict_f3_anti_collapse_weak_v1,correct answer present but not selected,33
+cohere,strict_f3_anti_collapse_weak_v1,parse/extraction failure,19
+cohere,strict_gate1_cap_k6,correct,146
+cohere,strict_gate1_cap_k6,correct answer absent from explored tree,164
+cohere,strict_gate1_cap_k6,correct answer present but not selected,37
+cohere,strict_gate1_cap_k6,parse/extraction failure,13
+cohere,tale,correct,178
+cohere,tale,correct answer absent from explored tree,174
+cohere,tale,parse/extraction failure,8

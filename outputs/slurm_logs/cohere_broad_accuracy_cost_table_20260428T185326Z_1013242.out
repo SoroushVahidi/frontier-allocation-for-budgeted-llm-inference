@@ -1,0 +1,16 @@
+==== Cohere broad accuracy/cost table run ====
+hostname=n0052
+date_utc=2026-04-28T18:54:37Z
+job_id=1013242
+repo_root=/home/sv96/adaptive-reasoning-budget-allocation
+git_commit=5e481b9485678d8da37e8da33fc1059f0249f93b
+python=/apps/easybuild/software/Anaconda3/2023.09-0/bin/python
+Python 3.11.5
+COHERE_API_KEY: present
+COHERE_API_KEY: present
+smoke_test: success model=command-r-plus-08-2024
+smoke_tokens: {"input_tokens": 202.0, "output_tokens": 2.0}
+cohere_mode ok=True msg=ok out_dir=/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/semantic_diversity_controller_diagnostic_20260428T185326Z
+runner_exit_code=0
+outputs_dir=/home/sv96/adaptive-reasoning-budget-allocation/outputs/semantic_diversity_controller_diagnostic_20260428T185326Z
+report_doc=/home/sv96/adaptive-reasoning-budget-allocation/docs/SEMANTIC_DIVERSITY_CONTROLLER_DIAGNOSTIC_20260428T185326Z.md

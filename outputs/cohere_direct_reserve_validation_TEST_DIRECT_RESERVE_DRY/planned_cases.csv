@@ -1,0 +1,7 @@
+case_idx,example_id,dataset,question,gold_answer_raw,gold_answer,seed,budget,stratum,source_path,excluded_overlap
+1,a1,openai/gsm8k,Q a1,4,4,23,4,absent_from_tree,/tmp/pytest-of-sv96/pytest-26/test_dry_run_planning_and_outp0/loss.csv,0
+2,a3,openai/gsm8k,Q a3,4,4,23,4,absent_from_tree,/tmp/pytest-of-sv96/pytest-26/test_dry_run_planning_and_outp0/loss.csv,0
+3,a0,openai/gsm8k,Q a0,4,4,23,4,absent_from_tree,/tmp/pytest-of-sv96/pytest-26/test_dry_run_planning_and_outp0/loss.csv,0
+4,a2,openai/gsm8k,Q a2,4,4,23,4,absent_from_tree,/tmp/pytest-of-sv96/pytest-26/test_dry_run_planning_and_outp0/loss.csv,0
+5,p0,openai/gsm8k,Q p0,5,5,23,4,present_not_selected,/tmp/pytest-of-sv96/pytest-26/test_dry_run_planning_and_outp0/loss.csv,0
+6,p3,openai/gsm8k,Q p3,5,5,23,4,present_not_selected,/tmp/pytest-of-sv96/pytest-26/test_dry_run_planning_and_outp0/loss.csv,0

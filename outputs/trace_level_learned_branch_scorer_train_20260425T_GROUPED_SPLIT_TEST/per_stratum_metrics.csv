@@ -1,0 +1,6 @@
+split,model,stratum,n_rows,n_cases,top1_candidate_selection_accuracy,top2_recall,top3_recall,learned_selected_gold_rate,current_controller_selected_gold_rate,present_not_selected_reduction,degradation_case_rate
+grouped_problem_holdout,logistic_regression,control_correct,2,1,1.0,1.0,1.0,1.0,1.0,0.0,0.0
+grouped_problem_holdout,random_forest,control_correct,2,1,1.0,1.0,1.0,1.0,1.0,0.0,0.0
+grouped_problem_holdout,gradient_boosting,control_correct,2,1,1.0,1.0,1.0,1.0,1.0,0.0,0.0
+grouped_problem_holdout,hist_gradient_boosting,control_correct,2,1,1.0,1.0,1.0,1.0,1.0,0.0,0.0
+grouped_problem_holdout,pairwise_logistic,control_correct,2,1,1.0,1.0,1.0,1.0,1.0,0.0,0.0

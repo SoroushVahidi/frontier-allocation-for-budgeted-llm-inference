@@ -1,0 +1,43 @@
+{
+  "requested_model_path": "/tmp/pytest-of-sv96/pytest-26/test_model_load_failure_retrai0/bad_model.joblib",
+  "allow_retrain_on_load_failure": true,
+  "training_dataset": "/tmp/pytest-of-sv96/pytest-26/test_model_load_failure_retrai0/examples.csv",
+  "model_kind": "rf",
+  "random_seed": 7,
+  "runtime_env": {
+    "python": "3.11.5",
+    "numpy": "1.26.4",
+    "sklearn": "1.3.0",
+    "joblib": "1.2.0",
+    "platform": "Linux-5.14.0-503.11.1.el9_5.x86_64-x86_64-with-glibc2.34"
+  },
+  "model_load_status": "retrained_fallback",
+  "model_load_error": "UnpicklingError(\"invalid load key, 'n'.\")",
+  "n_training_rows": 4,
+  "n_case_groups": 2,
+  "feature_columns": [
+    "f_action_count",
+    "f_answer_entropy",
+    "f_answer_group_rank",
+    "f_answer_group_support",
+    "f_branch_depth",
+    "f_diverse_gold_in_pool",
+    "f_extraction_ok",
+    "f_match_direct_reserve_strong_plus_diverse_v1_final",
+    "f_match_direct_reserve_strong_v1_final",
+    "f_match_external_l1_max_final",
+    "f_match_strict_f3_final",
+    "f_n_methods_sharing_norm_answer",
+    "f_problem_gold_present",
+    "f_problem_present_not_selected",
+    "f_prompt__direct_reserve",
+    "f_selected_by_method",
+    "f_src__candidate_branch_tab",
+    "f_strat__absent_from_tree",
+    "f_strat__control_correct",
+    "f_top2_support_gap",
+    "m__direct_reserve_strong_plus_diverse_v1"
+  ],
+  "model_used_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/direct_reserve_paired_selector_eval_PAIRED_RETRAIN_OK/retrained_model.joblib",
+  "model_type": "random_forest"
+}

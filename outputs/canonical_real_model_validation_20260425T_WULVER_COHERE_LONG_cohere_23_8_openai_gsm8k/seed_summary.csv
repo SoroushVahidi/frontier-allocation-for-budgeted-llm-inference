@@ -1,0 +1,3 @@
+seed,method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+23,external_l1_max,120,0.7333333333333333,0.26666666666666666,0.0,0.0,0.0,1.05,1.05,0.0
+23,strict_f3,120,0.6,0.275,0.125,0.0,0.0,2.933333333333333,2.8333333333333335,0.1

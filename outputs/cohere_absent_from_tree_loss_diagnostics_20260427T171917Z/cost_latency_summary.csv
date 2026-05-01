@@ -1,0 +1,4 @@
+internal_method,loss_cases,mean_internal_tokens,mean_external_tokens,mean_internal_cost,mean_external_cost,mean_internal_latency,mean_external_latency,internal_more_costly_rate
+direct_reserve_frontier_gate_v1,10,0.0,2.2,0.0,0.0,0.0,0.0,0.0
+strict_f3,156,0.0,0.14102564102564102,0.0,0.0,0.0,0.0,0.0
+strict_gate1_cap_k6,23,0.0,0.43478260869565216,0.0,0.0,0.0,0.0,0.0

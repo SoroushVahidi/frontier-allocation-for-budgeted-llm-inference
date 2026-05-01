@@ -1,0 +1,11 @@
+provider,dataset,seed,budget,example_id,method,is_correct,gold_present,absent_from_tree,present_not_selected,selected_candidate_method,selected_score,selected_support
+cohere,openai/gsm8k,11,4,e1,strict_f3,0,1,0,1,strict_f3,0.11100081141985971,1
+cohere,openai/gsm8k,11,4,e1,external_l1_max,1,1,0,0,external_l1_max,0.9740638046089172,1
+cohere,openai/gsm8k,11,4,e1,support_rerank_proxy,0,1,0,1,strict_f3,0.11100081141985971,1
+cohere,openai/gsm8k,11,4,e1,learned_branch_scorer_v1,0,1,0,1,strict_gate1_cap_k6,0.9914786775693157,1
+cohere,openai/gsm8k,11,4,e1,learned_on_direct_reserve_proxy,1,1,0,0,external_l1_max,0.9740638046089172,1
+cohere,openai/gsm8k,23,8,e2,strict_f3,0,1,0,1,strict_f3,0.0015963999400751203,1
+cohere,openai/gsm8k,23,8,e2,external_l1_max,0,1,0,1,external_l1_max,0.9998429821919902,1
+cohere,openai/gsm8k,23,8,e2,support_rerank_proxy,0,1,0,1,strict_f3,0.0015963999400751203,1
+cohere,openai/gsm8k,23,8,e2,learned_branch_scorer_v1,0,1,0,1,external_l1_max,0.9998429821919902,1
+cohere,openai/gsm8k,23,8,e2,learned_on_direct_reserve_proxy,0,1,0,1,external_l1_max,0.9998429821919902,1

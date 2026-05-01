@@ -1,0 +1,15 @@
+{
+  "model_type": "logistic",
+  "label_key": "v2_label_gain",
+  "weights": {
+    "score": 3.772607237125859,
+    "depth": 0.19375788445905187,
+    "stalled_steps": 0.3321399509155399,
+    "recent_delta": 6.252889372188689,
+    "verify_count": -0.20109442099467364,
+    "branch_age": -0.18760324915336227,
+    "score_x_depth": 2.9998062645795653,
+    "parent_relative_score": 20.400565179359415
+  },
+  "intercept": -1.1617952527343327
+}

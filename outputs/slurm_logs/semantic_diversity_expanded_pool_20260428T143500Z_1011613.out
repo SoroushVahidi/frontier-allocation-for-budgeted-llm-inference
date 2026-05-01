@@ -1,0 +1,17 @@
+==== Semantic diversity expanded-loss-pool Cohere diagnostic ====
+hostname=n0111
+date_utc=2026-04-28T00:26:56Z
+job_id=1011613
+repo_root=/home/sv96/adaptive-reasoning-budget-allocation
+git_commit=fcb1d3cb741e1bf2386a518918d5eced63380ed7
+python=/apps/easybuild/software/Anaconda3/2023.09-0/bin/python
+Python 3.11.5
+COHERE_API_KEY: present
+Running expanded-loss-pool (max 30 case slots, 4 methods, budgets 4,6,8, allow duplicate-id fallback)
+COHERE_API_KEY: present
+smoke_test: success model=command-r-plus-08-2024
+smoke_tokens: {"input_tokens": 202.0, "output_tokens": 2.0}
+cohere_mode ok=True msg=ok out_dir=/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/semantic_diversity_controller_diagnostic_20260428T143500Z
+runner_exit_code=0
+outputs_dir=/home/sv96/adaptive-reasoning-budget-allocation/outputs/semantic_diversity_controller_diagnostic_20260428T143500Z
+report_doc=/home/sv96/adaptive-reasoning-budget-allocation/docs/SEMANTIC_DIVERSITY_CONTROLLER_DIAGNOSTIC_20260428T143500Z.md

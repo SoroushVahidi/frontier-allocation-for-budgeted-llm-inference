@@ -1,0 +1,22 @@
+{
+  "relax_on_cross_family_coverage_complete": {
+    "unchanged": 55,
+    "worsened": 21,
+    "improved": 24
+  },
+  "relax_on_low_marginal_gain_absence_false": {
+    "worsened": 33,
+    "unchanged": 42,
+    "improved": 25
+  },
+  "relax_on_multi_family_maturity": {
+    "unchanged": 49,
+    "worsened": 25,
+    "improved": 26
+  },
+  "relax_on_high_confidence_incumbent_but_no_challenger_gap": {
+    "unchanged": 55,
+    "worsened": 19,
+    "improved": 26
+  }
+}

@@ -1,0 +1,6 @@
+model,mean_accuracy,mean_auc,mean_top1_candidate_selection_accuracy,mean_top2_recall,mean_top3_recall,mean_improvement_gold_present,mean_present_not_selected_reduction,mean_degradation_case_rate
+logistic_regression,0.5,0.25,0.0,0.5,1.0,0.0,0.0,0.0
+random_forest,0.3333333333333333,0.5,0.0,1.0,1.0,0.0,0.0,0.0
+gradient_boosting,0.5,0.5,0.0,1.0,1.0,0.0,0.0,0.0
+hist_gradient_boosting,0.6666666666666666,0.5,0.0,0.5,1.0,0.0,0.0,0.0
+pairwise_logistic,0.5,0.25,0.0,0.5,1.0,0.0,0.0,0.0

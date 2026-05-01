@@ -1,0 +1,11 @@
+probe_method,transition,count,share_over_150
+strict_f3_exhaustive_depth2_probe,absent_from_tree -> correct,0,0.0
+strict_f3_exhaustive_depth2_probe,absent_from_tree -> present_not_selected,0,0.0
+strict_f3_exhaustive_depth2_probe,absent_from_tree -> absent_from_tree,40,0.26666666666666666
+strict_f3_exhaustive_depth2_probe,present_not_selected -> correct,0,0.0
+strict_f3_exhaustive_depth2_probe,present_not_selected -> still_present_not_selected,0,0.0
+strict_f3_exhaustive_depth3_probe,absent_from_tree -> correct,0,0.0
+strict_f3_exhaustive_depth3_probe,absent_from_tree -> present_not_selected,0,0.0
+strict_f3_exhaustive_depth3_probe,absent_from_tree -> absent_from_tree,39,0.26
+strict_f3_exhaustive_depth3_probe,present_not_selected -> correct,0,0.0
+strict_f3_exhaustive_depth3_probe,present_not_selected -> still_present_not_selected,0,0.0

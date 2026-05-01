@@ -1,0 +1,2 @@
+best_method,best_accuracy,strict_f3_accuracy,external_l1_max_accuracy,best_minus_strict_f3,best_minus_external_l1_max,best_avg_actions,strict_f3_avg_actions,external_l1_max_avg_actions,recommendation,larger_run_recommended,manuscript_change_recommended
+direct_reserve_semantic_frontier_v1,0.744444,0.477778,0.722222,0.266667,0.022222,4.6444,2.9444,1.0444,best_new_beats_strict_f3_on_aggregate,yes_only_top_methods,no_diagnostic_only

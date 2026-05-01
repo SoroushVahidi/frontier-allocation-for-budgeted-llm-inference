@@ -1,0 +1,224 @@
+{
+  "model_type": "decision_tree_regressor",
+  "label_key": "v3_target_progress_value",
+  "tree": {
+    "feature": "score",
+    "threshold": 0.5054456293582916,
+    "left": {
+      "feature": "score",
+      "threshold": 0.3778192549943924,
+      "left": {
+        "feature": "score",
+        "threshold": 0.3118762820959091,
+        "left": {
+          "feature": "score",
+          "threshold": 0.2769829034805298,
+          "left": {
+            "feature": "score",
+            "threshold": 0.222881518304348,
+            "left": {
+              "value": 0.15394670967249288
+            },
+            "right": {
+              "value": 0.21163195143559732
+            }
+          },
+          "right": {
+            "feature": "score_x_depth",
+            "threshold": 0.2898218184709549,
+            "left": {
+              "value": 0.2390794391535611
+            },
+            "right": {
+              "value": 0.2663581901477842
+            }
+          }
+        },
+        "right": {
+          "feature": "score_x_depth",
+          "threshold": 0.34119755029678345,
+          "left": {
+            "feature": "score",
+            "threshold": 0.3491964638233185,
+            "left": {
+              "value": 0.27660505965848564
+            },
+            "right": {
+              "value": 0.30396191131462547
+            }
+          },
+          "right": {
+            "feature": "score",
+            "threshold": 0.3564837872982025,
+            "left": {
+              "value": 0.315901471752795
+            },
+            "right": {
+              "value": 0.33991738969992763
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": "score",
+        "threshold": 0.43914301693439484,
+        "left": {
+          "feature": "score_x_depth",
+          "threshold": 0.40518710017204285,
+          "left": {
+            "feature": "score",
+            "threshold": 0.41499970853328705,
+            "left": {
+              "value": 0.34142496854881854
+            },
+            "right": {
+              "value": 0.36413743440177687
+            }
+          },
+          "right": {
+            "feature": "score_x_depth",
+            "threshold": 0.8222092390060425,
+            "left": {
+              "value": 0.3907050786023802
+            },
+            "right": {
+              "value": 0.4182655353301517
+            }
+          }
+        },
+        "right": {
+          "feature": "score_x_depth",
+          "threshold": 0.46854427456855774,
+          "left": {
+            "feature": "score",
+            "threshold": 0.4815409332513809,
+            "left": {
+              "value": 0.4038497401824256
+            },
+            "right": {
+              "value": 0.42846735424700694
+            }
+          },
+          "right": {
+            "feature": "score_x_depth",
+            "threshold": 0.9535841345787048,
+            "left": {
+              "value": 0.46168282862978166
+            },
+            "right": {
+              "value": 0.5000724788751388
+            }
+          }
+        }
+      }
+    },
+    "right": {
+      "feature": "score",
+      "threshold": 0.6351547837257385,
+      "left": {
+        "feature": "score_x_depth",
+        "threshold": 0.5710422098636627,
+        "left": {
+          "feature": "score",
+          "threshold": 0.5502368807792664,
+          "left": {
+            "feature": "score_x_depth",
+            "threshold": 0.5062887966632843,
+            "left": {
+              "value": 0.4614680772044299
+            },
+            "right": {
+              "value": 0.5061905244731802
+            }
+          },
+          "right": {
+            "feature": "score",
+            "threshold": 0.5981532335281372,
+            "left": {
+              "value": 0.5113192340852938
+            },
+            "right": {
+              "value": 0.5457786557162904
+            }
+          }
+        },
+        "right": {
+          "feature": "score_x_depth",
+          "threshold": 1.1622308492660522,
+          "left": {
+            "feature": "score",
+            "threshold": 0.6034727990627289,
+            "left": {
+              "value": 0.5668557704835699
+            },
+            "right": {
+              "value": 0.6053228144911704
+            }
+          },
+          "right": {
+            "feature": "score",
+            "threshold": 0.5597729086875916,
+            "left": {
+              "value": 0.5736587193619276
+            },
+            "right": {
+              "value": 0.649925249684215
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": "score_x_depth",
+        "threshold": 0.7055317759513855,
+        "left": {
+          "feature": "score",
+          "threshold": 0.6795253455638885,
+          "left": {
+            "feature": "score_x_depth",
+            "threshold": 0.6351834535598755,
+            "left": {
+              "value": 0.584475067326387
+            },
+            "right": {
+              "value": 0.6490065754935945
+            }
+          },
+          "right": {
+            "feature": "depth",
+            "threshold": 0.5,
+            "left": {
+              "value": 0.640393743079324
+            },
+            "right": {
+              "value": 0.6880980835047343
+            }
+          }
+        },
+        "right": {
+          "feature": "score",
+          "threshold": 0.7807701826095581,
+          "left": {
+            "feature": "score_x_depth",
+            "threshold": 1.4272392988204956,
+            "left": {
+              "value": 0.7351785222555107
+            },
+            "right": {
+              "value": 0.8140393980113536
+            }
+          },
+          "right": {
+            "feature": "score_x_depth",
+            "threshold": 1.6253394484519958,
+            "left": {
+              "value": 0.8413616540283614
+            },
+            "right": {
+              "value": 0.9810290659140826
+            }
+          }
+        }
+      }
+    }
+  }
+}

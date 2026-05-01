@@ -1,0 +1,8 @@
+{
+  "providers": [
+    {
+      "provider": "cohere",
+      "model": "command-r-plus-08-2024"
+    }
+  ]
+}

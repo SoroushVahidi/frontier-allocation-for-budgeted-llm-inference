@@ -1,0 +1,51 @@
+{
+  "run_id": "20260421T190800Z",
+  "generated_utc": "2026-04-21T19:08:01.321534+00:00",
+  "hf_token_present": true,
+  "hf_user": "SoroushVahidi",
+  "checks": {
+    "sc-genrm-scaling/llama_3.1_8b_genrm_ft": {
+      "ok": true,
+      "error": ""
+    },
+    "sc-genrm-scaling/qwen_2.5_7b_genrm_ft": {
+      "ok": true,
+      "error": ""
+    },
+    "sc-genrm-scaling/MATH128_Solutions_Llama-3.1-8B-Instruct": {
+      "ok": true,
+      "error": ""
+    },
+    "sc-genrm-scaling/MATH128_verifications_GenRM-FT_Llama-3.1-8B-Instruct": {
+      "ok": true,
+      "error": ""
+    }
+  },
+  "mode_b_results_paths": {
+    "s1_mode_b_results_path": "",
+    "tale_mode_b_results_path": "",
+    "l1_mode_b_results_path": ""
+  },
+  "checklist": [
+    {
+      "item": "HF token available to job environment",
+      "status": "done",
+      "next_action": "Set HF_TOKEN in job env if blocked."
+    },
+    {
+      "item": "when_solve_when_verify official HF artifacts accessible",
+      "status": "done",
+      "next_action": "Check permissions/network if blocked."
+    },
+    {
+      "item": "s1/TALE/L1 MODE B official result packages configured",
+      "status": "blocked",
+      "next_action": "Provide validated official MODE B package paths for s1/TALE/L1."
+    },
+    {
+      "item": "OpenAI API key required for exact GPT-4o synthetic verification reproduction",
+      "status": "blocked_optional",
+      "next_action": "Provide OPENAI_API_KEY only if exact upstream data-generation path is required."
+    }
+  ]
+}

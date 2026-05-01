@@ -1,0 +1,5 @@
+dataset,budget,selected_strategy,selected_strategy_calib_accuracy,selected_strategy_eval_accuracy
+EleutherAI/hendrycks_math,6,self_consistency_3,0.75,0.6666666666666666
+EleutherAI/hendrycks_math,8,reasoning_beam2,0.9166666666666666,0.4166666666666667
+EleutherAI/hendrycks_math,10,self_consistency_3,0.9166666666666666,0.6666666666666666
+EleutherAI/hendrycks_math,12,self_consistency_3,0.8333333333333334,0.75

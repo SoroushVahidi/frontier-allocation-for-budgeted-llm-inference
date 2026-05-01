@@ -1,0 +1,4 @@
+mode,dataset,dataset_split,budget_actions,budget_token_equivalent,our_method,baseline_method,our_accuracy,s1_accuracy,delta_accuracy_s1_minus_ours,our_cost,s1_cost,delta_cost_s1_minus_ours
+full_or_official,openai/gsm8k,test,4,256.0,adaptive_min_expand_1,external_s1_budget_forcing,0.3229166666666667,0.5208333333333334,0.19791666666666669,174.66666666666666,203.33333333333334,28.666666666666686
+full_or_official,openai/gsm8k,test,6,384.0,adaptive_min_expand_1,external_s1_budget_forcing,0.3854166666666667,0.4270833333333333,0.04166666666666663,210.66666666666666,230.0,19.333333333333343
+full_or_official,openai/gsm8k,test,8,512.0,adaptive_min_expand_1,external_s1_budget_forcing,0.4166666666666667,0.53125,0.11458333333333331,295.3333333333333,224.66666666666666,-70.66666666666666

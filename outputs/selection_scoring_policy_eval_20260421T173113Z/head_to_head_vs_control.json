@@ -1,0 +1,18 @@
+{
+  "answer_group_support_only": {
+    "unchanged": 99,
+    "worsened": 1
+  },
+  "answer_group_support_plus_node_score": {
+    "unchanged": 99,
+    "worsened": 1
+  },
+  "answer_group_support_plus_calibrated_score": {
+    "unchanged": 99,
+    "worsened": 1
+  },
+  "answer_group_support_plus_score_plus_tiebreak_cleanup": {
+    "unchanged": 99,
+    "worsened": 1
+  }
+}

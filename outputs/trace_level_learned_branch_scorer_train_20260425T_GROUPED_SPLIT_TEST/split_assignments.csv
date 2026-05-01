@@ -1,0 +1,11 @@
+split,example_id,assigned_partition
+grouped_problem_holdout,e1,train
+grouped_problem_holdout,e1,train
+grouped_problem_holdout,e2,train
+grouped_problem_holdout,e2,train
+grouped_problem_holdout,e3,test
+grouped_problem_holdout,e3,test
+grouped_problem_holdout,e4,train
+grouped_problem_holdout,e4,train
+grouped_problem_holdout,e5,dev
+grouped_problem_holdout,e5,dev

@@ -1,0 +1,190 @@
+mode,example_id,budget,method,is_correct,prediction,actions_used,expansions,verifications,budget_exhausted,semantic_family_count,family_redundancy_ratio,branching_necessity_last,incumbent_replaced,replacement_reason
+cohere,openai_gsm8k_12,4,external_l1_max,1,70,1,1,0,0,,,,,
+cohere,openai_gsm8k_12,4,strict_f3,0,58,3,3,0,0,,,,,
+cohere,openai_gsm8k_12,4,semantic_minimum_maturation_frontier_v1_d2,0,62,3,3,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,4,semantic_minimum_maturation_frontier_v1_d3,0,62,3,3,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,4,direct_reserve_semantic_frontier_v1,1,70,4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_12,4,branching_necessity_gate_v1,0,58,3,3,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,4,semantic_minimum_maturation_plus_direct_reserve_v1,1,70,4,4,0,1,2,0.0,0.8534999999999999,False,protected_direct_incumbent
+cohere,openai_gsm8k_6,4,external_l1_max,0,$58,1,1,0,0,,,,,
+cohere,openai_gsm8k_6,4,strict_f3,0,30.5,4,4,0,0,,,,,
+cohere,openai_gsm8k_6,4,semantic_minimum_maturation_frontier_v1_d2,0,18.5,4,4,0,0,3,,1.0,,
+cohere,openai_gsm8k_6,4,semantic_minimum_maturation_frontier_v1_d3,1,$32,4,4,0,0,3,,1.0,,
+cohere,openai_gsm8k_6,4,direct_reserve_semantic_frontier_v1,0,33,4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_6,4,branching_necessity_gate_v1,0,28.5,4,4,0,0,3,,1.0,,
+cohere,openai_gsm8k_6,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,33.5,4,4,0,1,3,0.0,1.0,False,protected_direct_incumbent
+cohere,openai_gsm8k_158,4,external_l1_max,1,$34,1,1,0,0,,,,,
+cohere,openai_gsm8k_158,4,strict_f3,1,$34,3,3,0,0,,,,,
+cohere,openai_gsm8k_158,4,semantic_minimum_maturation_frontier_v1_d2,0,$33,3,3,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,4,semantic_minimum_maturation_frontier_v1_d3,0,36,3,3,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,4,direct_reserve_semantic_frontier_v1,1,34,4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_158,4,branching_necessity_gate_v1,1,34,3,3,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,4,semantic_minimum_maturation_plus_direct_reserve_v1,1,34,4,4,0,1,2,0.0,0.8779999999999999,False,protected_direct_incumbent
+cohere,openai_gsm8k_17,4,external_l1_max,1,10 inches,1,1,0,0,,,,,
+cohere,openai_gsm8k_17,4,strict_f3,1,10 inches,3,3,0,0,,,,,
+cohere,openai_gsm8k_17,4,semantic_minimum_maturation_frontier_v1_d2,1,10,3,3,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,4,semantic_minimum_maturation_frontier_v1_d3,1,10,3,3,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,4,direct_reserve_semantic_frontier_v1,0,13,4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_17,4,branching_necessity_gate_v1,1,10,3,3,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,13,4,4,0,1,2,0.0,0.8945,False,protected_direct_incumbent
+cohere,openai_gsm8k_3,4,external_l1_max,1,10 miles per hour,2,2,0,0,,,,,
+cohere,openai_gsm8k_3,4,strict_f3,0,13.5 miles per hour,4,4,0,0,,,,,
+cohere,openai_gsm8k_3,4,semantic_minimum_maturation_frontier_v1_d2,1,10,4,4,0,0,3,,0.996,,
+cohere,openai_gsm8k_3,4,semantic_minimum_maturation_frontier_v1_d3,0,20 / 6 = 3.33 miles per hour,4,4,0,0,3,,0.996,,
+cohere,openai_gsm8k_3,4,direct_reserve_semantic_frontier_v1,1,boxed{10 miles per hour},4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_3,4,branching_necessity_gate_v1,1,10,4,4,0,0,3,,0.996,,
+cohere,openai_gsm8k_3,4,semantic_minimum_maturation_plus_direct_reserve_v1,1,10 miles per hour,4,4,0,1,2,0.0,0.846,False,protected_direct_incumbent
+cohere,openai_gsm8k_5,4,external_l1_max,1,280,1,1,0,0,,,,,
+cohere,openai_gsm8k_5,4,strict_f3,0,100,3,3,0,0,,,,,
+cohere,openai_gsm8k_5,4,semantic_minimum_maturation_frontier_v1_d2,0,210,3,3,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,4,semantic_minimum_maturation_frontier_v1_d3,1,280,3,3,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,4,direct_reserve_semantic_frontier_v1,0,Boxed{260},4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_5,4,branching_necessity_gate_v1,0,100,3,3,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,300,4,4,0,1,2,0.0,1.0,False,protected_direct_incumbent
+cohere,openai_gsm8k_576,4,external_l1_max,1,11232,1,1,0,0,,,,,
+cohere,openai_gsm8k_576,4,strict_f3,0,10368,4,4,0,0,,,,,
+cohere,openai_gsm8k_576,4,semantic_minimum_maturation_frontier_v1_d2,0,15840,3,3,0,0,2,,1.0,,
+cohere,openai_gsm8k_576,4,semantic_minimum_maturation_frontier_v1_d3,0,13680,3,3,0,0,2,,1.0,,
+cohere,openai_gsm8k_576,4,direct_reserve_semantic_frontier_v1,1,11232,4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_576,4,branching_necessity_gate_v1,0,12456,3,3,0,0,2,,1.0,,
+cohere,openai_gsm8k_576,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,8812.8,4,4,0,1,2,0.0,1.0,False,protected_direct_incumbent
+cohere,openai_gsm8k_1,4,external_l1_max,1,$106,1,1,0,0,,,,,
+cohere,openai_gsm8k_1,4,strict_f3,0,$106.12,3,3,0,0,,,,,
+cohere,openai_gsm8k_1,4,semantic_minimum_maturation_frontier_v1_d2,0,106.12,3,3,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,4,semantic_minimum_maturation_frontier_v1_d3,1,106,3,3,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,4,direct_reserve_semantic_frontier_v1,0,106.12,4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_1,4,branching_necessity_gate_v1,1,106,3,3,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,106.12,4,4,0,1,2,0.0,0.8325,False,protected_direct_incumbent
+cohere,openai_gsm8k_7,4,external_l1_max,1,140 - 80 = oxed{60},1,1,0,0,,,,,
+cohere,openai_gsm8k_7,4,strict_f3,1,$60 left.,3,3,0,0,,,,,
+cohere,openai_gsm8k_7,4,semantic_minimum_maturation_frontier_v1_d2,1,$60 left.,3,3,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,4,semantic_minimum_maturation_frontier_v1_d3,1,60,3,3,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,4,direct_reserve_semantic_frontier_v1,1,60,4,4,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_7,4,branching_necessity_gate_v1,0,100 - 30 * 2 - 20 = 20,3,3,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,4,semantic_minimum_maturation_plus_direct_reserve_v1,1,boxed{60},4,4,0,1,2,0.0,0.825,False,protected_direct_incumbent
+cohere,openai_gsm8k_12,6,external_l1_max,1,70,1,1,0,0,,,,,
+cohere,openai_gsm8k_12,6,strict_f3,0,98,2,2,0,0,,,,,
+cohere,openai_gsm8k_12,6,semantic_minimum_maturation_frontier_v1_d2,0,98,2,2,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,6,semantic_minimum_maturation_frontier_v1_d3,0,58,2,2,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,6,direct_reserve_semantic_frontier_v1,0,Boxed{102},5,5,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_12,6,branching_necessity_gate_v1,0,62,2,2,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,6,semantic_minimum_maturation_plus_direct_reserve_v1,1,70,5,5,0,0,2,0.0,0.8534999999999999,False,protected_direct_incumbent
+cohere,openai_gsm8k_6,6,external_l1_max,0,$21.5,1,1,0,0,,,,,
+cohere,openai_gsm8k_6,6,strict_f3,0,48.5,6,5,1,0,,,,,
+cohere,openai_gsm8k_6,6,semantic_minimum_maturation_frontier_v1_d2,0,35.5,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_6,6,semantic_minimum_maturation_frontier_v1_d3,0,$42.00,6,5,1,0,4,,1.0,,
+cohere,openai_gsm8k_6,6,direct_reserve_semantic_frontier_v1,0,31,5,5,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_6,6,branching_necessity_gate_v1,0,29.5,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_6,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,31,6,6,0,1,3,0.0,1.0,False,protected_direct_incumbent
+cohere,openai_gsm8k_158,6,external_l1_max,1,$34,1,1,0,0,,,,,
+cohere,openai_gsm8k_158,6,strict_f3,0,$33,2,2,0,0,,,,,
+cohere,openai_gsm8k_158,6,semantic_minimum_maturation_frontier_v1_d2,1,$34,2,2,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,6,semantic_minimum_maturation_frontier_v1_d3,0,$33,2,2,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,6,direct_reserve_semantic_frontier_v1,1,34,5,5,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_158,6,branching_necessity_gate_v1,0,$33,2,2,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,6,semantic_minimum_maturation_plus_direct_reserve_v1,1,34,5,5,0,0,2,0.0,0.8779999999999999,False,protected_direct_incumbent
+cohere,openai_gsm8k_17,6,external_l1_max,1,10 inches,1,1,0,0,,,,,
+cohere,openai_gsm8k_17,6,strict_f3,1,10,2,2,0,0,,,,,
+cohere,openai_gsm8k_17,6,semantic_minimum_maturation_frontier_v1_d2,1,10,2,2,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,6,semantic_minimum_maturation_frontier_v1_d3,1,10,2,2,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,6,direct_reserve_semantic_frontier_v1,1,boxed{10 inches},5,5,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_17,6,branching_necessity_gate_v1,1,10 inches,2,2,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,boxed{13},5,5,0,0,2,0.0,0.8945,False,protected_direct_incumbent
+cohere,openai_gsm8k_3,6,external_l1_max,1,20 miles / 2 hours = 10 miles per hour,1,1,0,0,,,,,
+cohere,openai_gsm8k_3,6,strict_f3,1,10 miles per hour,6,5,1,0,,,,,
+cohere,openai_gsm8k_3,6,semantic_minimum_maturation_frontier_v1_d2,1,10,6,5,1,0,4,,1.0,,
+cohere,openai_gsm8k_3,6,semantic_minimum_maturation_frontier_v1_d3,1,10 miles per hour,6,4,2,0,3,0.25,0.946,,
+cohere,openai_gsm8k_3,6,direct_reserve_semantic_frontier_v1,1,boxed{10 miles per hour},6,6,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_3,6,branching_necessity_gate_v1,1,10 miles per hour,4,4,0,0,3,,0.996,,
+cohere,openai_gsm8k_3,6,semantic_minimum_maturation_plus_direct_reserve_v1,1,10 miles per hour,5,5,0,0,2,0.0,0.846,False,protected_direct_incumbent
+cohere,openai_gsm8k_5,6,external_l1_max,1,280,1,1,0,0,,,,,
+cohere,openai_gsm8k_5,6,strict_f3,0,210,2,2,0,0,,,,,
+cohere,openai_gsm8k_5,6,semantic_minimum_maturation_frontier_v1_d2,0,210,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,6,semantic_minimum_maturation_frontier_v1_d3,0,210,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,6,direct_reserve_semantic_frontier_v1,1,boxed{280},6,6,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_5,6,branching_necessity_gate_v1,1,280,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,6,semantic_minimum_maturation_plus_direct_reserve_v1,1,280,5,5,0,0,2,0.0,1.0,True,challenger_answer_group_strictly_higher_support
+cohere,openai_gsm8k_576,6,external_l1_max,1,11232,1,1,0,0,,,,,
+cohere,openai_gsm8k_576,6,strict_f3,0,1248,2,2,0,0,,,,,
+cohere,openai_gsm8k_576,6,semantic_minimum_maturation_frontier_v1_d2,0,15120,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_576,6,semantic_minimum_maturation_frontier_v1_d3,0,11664,5,5,0,0,3,,1.0,,
+cohere,openai_gsm8k_576,6,direct_reserve_semantic_frontier_v1,1,11232,5,5,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_576,6,branching_necessity_gate_v1,0,16368,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_576,6,semantic_minimum_maturation_plus_direct_reserve_v1,1,11232,5,5,0,0,2,0.0,1.0,False,protected_direct_incumbent
+cohere,openai_gsm8k_1,6,external_l1_max,1,$106,1,1,0,0,,,,,
+cohere,openai_gsm8k_1,6,strict_f3,0,106.12,2,2,0,0,,,,,
+cohere,openai_gsm8k_1,6,semantic_minimum_maturation_frontier_v1_d2,0,106.12,2,2,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,6,semantic_minimum_maturation_frontier_v1_d3,0,106.12,2,2,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,6,direct_reserve_semantic_frontier_v1,0,106.12,5,5,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_1,6,branching_necessity_gate_v1,0,106.12,2,2,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,boxed{106.12},5,5,0,0,2,0.0,0.8325,False,protected_direct_incumbent
+cohere,openai_gsm8k_7,6,external_l1_max,1,140 - 80 = oxed{60},1,1,0,0,,,,,
+cohere,openai_gsm8k_7,6,strict_f3,1,60,2,2,0,0,,,,,
+cohere,openai_gsm8k_7,6,semantic_minimum_maturation_frontier_v1_d2,1,$60,2,2,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,6,semantic_minimum_maturation_frontier_v1_d3,1,140 - 80 = 60,2,2,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,6,direct_reserve_semantic_frontier_v1,1,140 - 80 = 60,5,5,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_7,6,branching_necessity_gate_v1,1,60,2,2,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,6,semantic_minimum_maturation_plus_direct_reserve_v1,1,boxed{60},5,5,0,0,2,0.0,0.825,False,protected_direct_incumbent
+cohere,openai_gsm8k_12,8,external_l1_max,1,70,1,1,0,0,,,,,
+cohere,openai_gsm8k_12,8,strict_f3,0,62,2,2,0,0,,,,,
+cohere,openai_gsm8k_12,8,semantic_minimum_maturation_frontier_v1_d2,0,98,2,2,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,8,semantic_minimum_maturation_frontier_v1_d3,0,62,2,2,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,8,direct_reserve_semantic_frontier_v1,1,70,4,4,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_12,8,branching_necessity_gate_v1,0,98,2,2,0,0,2,,0.8534999999999999,,
+cohere,openai_gsm8k_12,8,semantic_minimum_maturation_plus_direct_reserve_v1,1,boxed{70},4,4,0,0,2,0.0,0.8534999999999999,False,protected_direct_incumbent
+cohere,openai_gsm8k_6,8,external_l1_max,0,33.5,1,1,0,0,,,,,
+cohere,openai_gsm8k_6,8,strict_f3,0,28.0,8,7,1,0,,,,,
+cohere,openai_gsm8k_6,8,semantic_minimum_maturation_frontier_v1_d2,0,35.5,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_6,8,semantic_minimum_maturation_frontier_v1_d3,0,38.5,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_6,8,direct_reserve_semantic_frontier_v1,0,58,8,8,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_6,8,branching_necessity_gate_v1,0,$35.5,6,6,0,0,3,,1.0,,
+cohere,openai_gsm8k_6,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,33.5,8,8,0,1,3,0.0,1.0,False,protected_direct_incumbent
+cohere,openai_gsm8k_158,8,external_l1_max,1,$34,1,1,0,0,,,,,
+cohere,openai_gsm8k_158,8,strict_f3,1,$34,2,2,0,0,,,,,
+cohere,openai_gsm8k_158,8,semantic_minimum_maturation_frontier_v1_d2,1,34,2,2,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,8,semantic_minimum_maturation_frontier_v1_d3,0,$33,2,2,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,8,direct_reserve_semantic_frontier_v1,1,34,4,4,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_158,8,branching_necessity_gate_v1,1,$34,2,2,0,0,2,,0.8779999999999999,,
+cohere,openai_gsm8k_158,8,semantic_minimum_maturation_plus_direct_reserve_v1,1,34,4,4,0,0,2,0.0,0.8779999999999999,False,protected_direct_incumbent
+cohere,openai_gsm8k_17,8,external_l1_max,1,10,1,1,0,0,,,,,
+cohere,openai_gsm8k_17,8,strict_f3,0,14,2,2,0,0,,,,,
+cohere,openai_gsm8k_17,8,semantic_minimum_maturation_frontier_v1_d2,0,14,2,2,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,8,semantic_minimum_maturation_frontier_v1_d3,1,10 inches,2,2,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,8,direct_reserve_semantic_frontier_v1,1,10 inches,4,4,0,0,,,,True,challenger_answer_group_strictly_higher_support
+cohere,openai_gsm8k_17,8,branching_necessity_gate_v1,1,10,2,2,0,0,2,,0.8945,,
+cohere,openai_gsm8k_17,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,13,4,4,0,0,2,0.0,0.8945,False,protected_direct_incumbent
+cohere,openai_gsm8k_3,8,external_l1_max,1,10 miles per hour,1,1,0,0,,,,,
+cohere,openai_gsm8k_3,8,strict_f3,1,10,8,6,2,0,,,,,
+cohere,openai_gsm8k_3,8,semantic_minimum_maturation_frontier_v1_d2,1,20 miles / 2 hours = 10 miles per hour,2,2,0,0,2,,0.846,,
+cohere,openai_gsm8k_3,8,semantic_minimum_maturation_frontier_v1_d3,1,20 miles / 2 hours = 10 miles per hour,2,2,0,0,2,,0.846,,
+cohere,openai_gsm8k_3,8,direct_reserve_semantic_frontier_v1,1,boxed{10 miles per hour},8,8,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_3,8,branching_necessity_gate_v1,1,10,8,8,0,0,4,,1.0,,
+cohere,openai_gsm8k_3,8,semantic_minimum_maturation_plus_direct_reserve_v1,1,10 miles per hour,8,6,2,1,3,0.25,0.946,True,challenger_answer_group_strictly_higher_support
+cohere,openai_gsm8k_5,8,external_l1_max,0,100,1,1,0,0,,,,,
+cohere,openai_gsm8k_5,8,strict_f3,0,210,2,2,0,0,,,,,
+cohere,openai_gsm8k_5,8,semantic_minimum_maturation_frontier_v1_d2,0,100,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,8,semantic_minimum_maturation_frontier_v1_d3,0,210,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,8,direct_reserve_semantic_frontier_v1,1,"Then, 3/5 of the remaining 700 students left through exit B, which is 3/5 * 700 = 420 students. This leaves 700 - 420 = 280 students.",4,4,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_5,8,branching_necessity_gate_v1,0,210,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_5,8,semantic_minimum_maturation_plus_direct_reserve_v1,1,"Then, 3/5 of the remaining 700 students left through exit B, which is 3/5 * 700 = 420 students. This leaves 700 - 420 = 280 students who went out through exit C.",4,4,0,0,2,0.0,1.0,False,protected_direct_incumbent
+cohere,openai_gsm8k_576,8,external_l1_max,1,11232,1,1,0,0,,,,,
+cohere,openai_gsm8k_576,8,strict_f3,0,13680,2,2,0,0,,,,,
+cohere,openai_gsm8k_576,8,semantic_minimum_maturation_frontier_v1_d2,0,17280,2,2,0,0,2,,1.0,,
+cohere,openai_gsm8k_576,8,semantic_minimum_maturation_frontier_v1_d3,0,16512,8,8,0,0,4,,1.0,,
+cohere,openai_gsm8k_576,8,direct_reserve_semantic_frontier_v1,1,11232,8,8,0,1,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_576,8,branching_necessity_gate_v1,0,15840,7,7,0,0,3,,1.0,,
+cohere,openai_gsm8k_576,8,semantic_minimum_maturation_plus_direct_reserve_v1,1,11232,4,4,0,0,2,0.0,1.0,False,protected_direct_incumbent
+cohere,openai_gsm8k_1,8,external_l1_max,0,106.12,1,1,0,0,,,,,
+cohere,openai_gsm8k_1,8,strict_f3,1,106,2,2,0,0,,,,,
+cohere,openai_gsm8k_1,8,semantic_minimum_maturation_frontier_v1_d2,0,106.08,2,2,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,8,semantic_minimum_maturation_frontier_v1_d3,0,106.12,2,2,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,8,direct_reserve_semantic_frontier_v1,0,106.12,4,4,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_1,8,branching_necessity_gate_v1,0,106.12,2,2,0,0,2,,0.8325,,
+cohere,openai_gsm8k_1,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,106.12,4,4,0,0,2,0.0,0.8325,True,challenger_answer_group_strictly_higher_support
+cohere,openai_gsm8k_7,8,external_l1_max,1,140 - 80 = oxed{60},1,1,0,0,,,,,
+cohere,openai_gsm8k_7,8,strict_f3,1,60,2,2,0,0,,,,,
+cohere,openai_gsm8k_7,8,semantic_minimum_maturation_frontier_v1_d2,0,100 - 2 * 30 - 20 = 20,2,2,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,8,semantic_minimum_maturation_frontier_v1_d3,1,$60 left.,2,2,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,8,direct_reserve_semantic_frontier_v1,1,60,4,4,0,0,,,,False,protected_direct_incumbent
+cohere,openai_gsm8k_7,8,branching_necessity_gate_v1,0,100 - 30 * 2 - 20 = 20,2,2,0,0,2,,0.825,,
+cohere,openai_gsm8k_7,8,semantic_minimum_maturation_plus_direct_reserve_v1,1,60,4,4,0,0,2,0.0,0.825,False,protected_direct_incumbent

@@ -1,0 +1,3 @@
+dataset,seed,budget,example_id,delta_vs_strict_f3,delta_vs_external_l1_max
+openai/gsm8k,11,4,e1,0,-1
+openai/gsm8k,23,8,e2,0,0

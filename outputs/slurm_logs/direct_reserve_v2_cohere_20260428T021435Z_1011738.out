@@ -1,0 +1,11 @@
+==== Direct reserve v2 Cohere diagnostic ====
+hostname=n0111
+date_utc=2026-04-28T02:15:00Z
+job_id=1011738
+repo_root=/home/sv96/adaptive-reasoning-budget-allocation
+git_commit=a775fb0f752b7dc20dd309bceb640ae9b811c08e
+python=/apps/easybuild/software/Anaconda3/2023.09-0/bin/python
+Python 3.11.5
+COHERE_API_KEY: present
+COHERE_API_KEY: present
+cohere_mode ok=False msg=readiness:network_or_timeout out_dir=/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/semantic_diversity_controller_diagnostic_20260428T021435Z

@@ -1,0 +1,56 @@
+{
+  "math128": {
+    "status": "invalid",
+    "verdict": "blocked_incomplete_import",
+    "requested_results_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/fixtures/when_solve_when_verify_import_valid",
+    "resolved_package_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/fixtures/when_solve_when_verify_import_valid",
+    "required_files": {
+      "metadata_json": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/fixtures/when_solve_when_verify_import_valid/metadata.json",
+      "results_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/tests/fixtures/when_solve_when_verify_import_valid/results.csv"
+    },
+    "official_repo_check": {
+      "clone_url": "https://github.com/nishadsinghi/sc-genrm-scaling.git",
+      "configured_expected_local_clone_path": "external/when_solve_when_verify/upstream/sc-genrm-scaling",
+      "resolved_local_clone_path": "external/when_solve_when_verify/upstream/sc-genrm-scaling",
+      "local_clone_exists": true,
+      "marker_hits": [
+        "README.md"
+      ],
+      "missing_markers": [],
+      "entrypoint_hits": {
+        "generation_any": [],
+        "verification_any": [],
+        "evaluation_any": []
+      }
+    },
+    "expected": {
+      "dataset": "math128",
+      "split": "test",
+      "required_workflow_stages": [
+        "solution_generation",
+        "verification_generation",
+        "fixed_budget_evaluation"
+      ],
+      "required_strategies": [
+        "self_consistency",
+        "genrm_best_of_n_or_genrm_weighted_sc"
+      ],
+      "comparability_scope": "adjacent_only"
+    },
+    "observed": {
+      "num_rows": 2,
+      "observed_strategy_families": [
+        "genrm_best_of_n",
+        "self_consistency"
+      ]
+    },
+    "issues": [
+      "incomplete_local_official_clone_missing_evaluation_entrypoint",
+      "incomplete_local_official_clone_missing_generation_entrypoint",
+      "incomplete_local_official_clone_missing_verification_entrypoint"
+    ],
+    "warnings": [],
+    "errors": [],
+    "imported_rows": []
+  }
+}

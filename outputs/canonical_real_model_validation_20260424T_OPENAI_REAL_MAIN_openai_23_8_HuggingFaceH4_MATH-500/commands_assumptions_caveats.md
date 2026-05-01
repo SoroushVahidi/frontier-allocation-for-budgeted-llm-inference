@@ -1,0 +1,11 @@
+# Commands / assumptions / caveats
+
+## Command
+- python scripts/run_canonical_real_model_validation.py --timestamp 20260424T_OPENAI_REAL_MAIN_openai_23_8_HuggingFaceH4_MATH-500
+
+## Assumptions + caveats
+- Canonical bounded real-model validation using APIBranchGenerator.
+- Provider/model: openai/gpt-4.1-mini.
+- Evaluation correctness uses choose_repair_answer + canonicalize_answer as manuscript-facing contract.
+- Failure decomposition categories: absent_from_tree, present_not_selected, output_layer_mismatch.
+- Errors are logged in retry_error_log.csv and excluded from accuracy denominators.

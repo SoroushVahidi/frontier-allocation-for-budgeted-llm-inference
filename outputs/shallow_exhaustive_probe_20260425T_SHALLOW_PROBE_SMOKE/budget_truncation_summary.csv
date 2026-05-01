@@ -1,0 +1,10 @@
+method,budget,n_cases,truncated_count,truncated_share,mean_planned_shallow_nodes_unexpanded
+strict_f3,4,6,6,1.0,0.0
+strict_f3,6,0,0,0.0,0.0
+strict_f3,8,0,0,0.0,0.0
+strict_f3_exhaustive_depth2_probe,4,6,4,0.6666666666666666,0.0
+strict_f3_exhaustive_depth2_probe,6,0,0,0.0,0.0
+strict_f3_exhaustive_depth2_probe,8,0,0,0.0,0.0
+strict_f3_exhaustive_depth3_probe,4,6,6,1.0,0.0
+strict_f3_exhaustive_depth3_probe,6,0,0,0.0,0.0
+strict_f3_exhaustive_depth3_probe,8,0,0,0.0,0.0

@@ -1,0 +1,6 @@
+threshold,n_cases,base_selected_gold_rate,learned_selected_gold_rate,support_count_selected_gold_rate,margin_gated_selected_gold_rate,override_count,improvement_count,degradation_count,control_degradation_count,gold_present_rate,present_not_selected_fix_count,missing_model_or_feature_count
+0.00,2,0.5,0.5,0.5,0.5,0,0,0,0,1.0,0,0
+0.02,2,0.5,0.5,0.5,0.5,0,0,0,0,1.0,0,0
+0.05,2,0.5,0.5,0.5,0.5,0,0,0,0,1.0,0,0
+0.10,2,0.5,0.5,0.5,0.5,0,0,0,0,1.0,0,0
+0.20,2,0.5,0.5,0.5,0.5,0,0,0,0,1.0,0,0

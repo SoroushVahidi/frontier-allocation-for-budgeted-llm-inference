@@ -1,0 +1,6 @@
+provider,model,method,n_evaluated_examples,datasets_covered,budgets_covered,seeds_covered,accuracy,absent_from_tree_rate,output_layer_mismatch_rate,mean_actions,mean_expansions
+openai,gpt-4.1-mini,external_l1_max,360,HuggingFaceH4/MATH-500|HuggingFaceH4/aime_2024|openai/gsm8k,4|6|8,11|23,0.5416666666666666,0.4583333333333333,0.0,3.7777777777777777,3.7777777777777777
+openai,gpt-4.1-mini,self_consistency_3,360,HuggingFaceH4/MATH-500|HuggingFaceH4/aime_2024|openai/gsm8k,4|6|8,11|23,0.5305555555555556,0.46111111111111114,0.0,5.966666666666667,5.191666666666666
+openai,gpt-4.1-mini,strict_f2,360,HuggingFaceH4/MATH-500|HuggingFaceH4/aime_2024|openai/gsm8k,4|6|8,11|23,0.37222222222222223,0.6277777777777778,0.0,5.816666666666666,5.719444444444444
+openai,gpt-4.1-mini,strict_f3,360,HuggingFaceH4/MATH-500|HuggingFaceH4/aime_2024|openai/gsm8k,4|6|8,11|23,0.48333333333333334,0.5166666666666667,0.0,5.794444444444444,5.4
+openai,gpt-4.1-mini,strict_gate1_cap_k6,359,HuggingFaceH4/MATH-500|HuggingFaceH4/aime_2024|openai/gsm8k,4|6|8,11|23,0.3593314763231198,0.637883008356546,0.0,5.827298050139276,5.7075208913649025

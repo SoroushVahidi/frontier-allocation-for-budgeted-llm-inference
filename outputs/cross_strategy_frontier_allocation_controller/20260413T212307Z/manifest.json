@@ -1,0 +1,23 @@
+{
+  "run_id": "20260413T212307Z",
+  "created_utc": "2026-04-13T21:23:07.802551+00:00",
+  "dataset": "openai/gsm8k",
+  "subset_size": 8,
+  "seed": 29,
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "calibration_ratio": 0.5,
+  "n_calibration_examples": 4,
+  "n_eval_examples": 4,
+  "adaptive_min_expand_grid": [
+    1
+  ],
+  "use_openai_api": false,
+  "openai_model": "gpt-4.1-mini",
+  "openai_api_key_present": false,
+  "vgs_candidates": 3,
+  "vgs_min_expansions": 1
+}

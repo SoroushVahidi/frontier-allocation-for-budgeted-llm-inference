@@ -1,0 +1,47 @@
+{
+  "episodes": 2500,
+  "budget": 8,
+  "n_init_branches": 5,
+  "results": {
+    "adaptive_score_plus_progress": {
+      "accuracy": 0.5768,
+      "solve_rate": 0.8796,
+      "avg_actions": 8.0
+    },
+    "adaptive_relative_rank": {
+      "accuracy": 0.588,
+      "solve_rate": 0.8608,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score": {
+      "accuracy": 0.5924,
+      "solve_rate": 0.8812,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v4": {
+      "accuracy": 0.5728,
+      "solve_rate": 0.8692,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v5": {
+      "accuracy": 0.578,
+      "solve_rate": 0.8724,
+      "avg_actions": 8.0
+    },
+    "adaptive_learned_branch_score_v6": {
+      "accuracy": 0.5712,
+      "solve_rate": 0.8652,
+      "avg_actions": 8.0
+    }
+  },
+  "v4_margin_over_relative_rank": -0.015199999999999991,
+  "v4_beats_relative_rank": false,
+  "v5_margin_over_relative_rank": -0.010000000000000009,
+  "v5_beats_relative_rank": false,
+  "v5_margin_over_v4": 0.005199999999999982,
+  "v5_beats_v4": true,
+  "v6_margin_over_relative_rank": -0.016799999999999926,
+  "v6_beats_relative_rank": false,
+  "v6_margin_over_v5": -0.006799999999999917,
+  "v6_beats_v5": false
+}

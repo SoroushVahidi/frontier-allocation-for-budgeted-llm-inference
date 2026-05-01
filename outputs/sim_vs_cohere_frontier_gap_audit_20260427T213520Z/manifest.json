@@ -1,0 +1,29 @@
+{
+  "artifact_family": "sim_vs_cohere_frontier_gap_audit",
+  "timestamp": "20260427T213520Z",
+  "sources": {
+    "simulation": "outputs/matched_surface_multiseed_main_comparison_20260423T235900Z",
+    "real_cohere": "outputs/real_model_ours_vs_external_validation_20260425T_WULVER_COHERE_LONG",
+    "cohere_trace": "outputs/cohere_direct_reserve_failure_replay_seed_latest"
+  },
+  "counts": {
+    "overlap_cases": 120,
+    "real_loss_cases_analyzed": 156,
+    "taxonomy": {
+      "trace_unavailable": 153,
+      "bad_seeding": 1,
+      "bad_selection_or_repair": 2
+    }
+  },
+  "files": [
+    "overlap_case_index.csv",
+    "per_slice_comparison.csv",
+    "real_cohere_loss_taxonomy.csv",
+    "semantic_family_summary.csv",
+    "frontier_coverage_gap_summary.csv",
+    "simulation_substrate_advantage_summary.csv",
+    "missing_data_report.md",
+    "candidate_algorithm_implications.md",
+    "manifest.json"
+  ]
+}

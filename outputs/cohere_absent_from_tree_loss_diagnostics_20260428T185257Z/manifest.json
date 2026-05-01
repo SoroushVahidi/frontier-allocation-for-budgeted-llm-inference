@@ -1,0 +1,73 @@
+{
+  "artifact_family": "cohere_absent_from_tree_loss_diagnostics",
+  "timestamp": "20260428T185257Z",
+  "provider": "cohere",
+  "source_files": [
+    "outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_TEST_CDR_NOKEY/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_TEST_CDR_NOKEY/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_EXCL/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_EXCL/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T175000Z/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T175000Z/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T180000Z/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T180000Z/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T183000_DEBUG4/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T183000_DEBUG4/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION/per_case_method_results.csv",
+    "outputs/cohere_direct_reserve_validation_learned_override_tiny_real_20260426T_LEARNED_OVERRIDE_TINY_REAL/candidate_branch_table.csv",
+    "outputs/cohere_direct_reserve_validation_learned_override_tiny_real_20260426T_LEARNED_OVERRIDE_TINY_REAL/per_case_method_results.csv",
+    "outputs/real_model_ours_vs_external_validation_20260424T002900Z/cohere/per_example_rows.csv",
+    "outputs/real_model_ours_vs_external_validation_20260424T_COHERE_REAL_MAIN/cohere/per_example_rows.csv",
+    "outputs/real_model_ours_vs_external_validation_20260425T_WULVER_COHERE_LONG/cohere/per_example_rows.csv"
+  ],
+  "internal_methods_requested": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f3_anti_collapse_weak_v1",
+    "direct_reserve_frontier_gate_v1"
+  ],
+  "external_methods_requested": [
+    "external_l1_max",
+    "s1",
+    "tale"
+  ],
+  "datasets_requested": [
+    "openai/gsm8k",
+    "natural_plan",
+    "gpqa_diamond"
+  ],
+  "budgets_requested": [
+    4,
+    6,
+    8
+  ],
+  "matched_comparisons": 953,
+  "internal_wrong_external_correct": 204,
+  "confirmed_absent_from_tree": 143,
+  "unverified_absent_from_tree": 61,
+  "files": [
+    "loss_cases_absent_from_tree.jsonl",
+    "loss_cases_absent_from_tree.csv",
+    "path_proximity_summary.csv",
+    "by_budget_summary.csv",
+    "by_seed_summary.csv",
+    "by_dataset_summary.csv",
+    "by_problem_type_summary.csv",
+    "cost_latency_summary.csv",
+    "trace_availability_summary.csv",
+    "candidate_fix_recommendations.md",
+    "missing_data_request.md",
+    "manifest.json"
+  ]
+}

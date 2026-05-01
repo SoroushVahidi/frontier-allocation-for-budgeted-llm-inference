@@ -1,0 +1,6 @@
+{
+  "selected_model": "gradient_boosting",
+  "selected_split": "leave_one_problem_out::e2",
+  "selection_basis": "max improvement on gold-present cases, then top1, then accuracy",
+  "diagnostic_only": true
+}

@@ -1,0 +1,7 @@
+method,n,accuracy,avg_actions
+external_l1_max,27,0.6666666666666666,1.0
+strict_f3,27,0.3333333333333333,3.259259259259259
+semantic_minimum_maturation_frontier_v1_d3,27,0.3333333333333333,2.8518518518518516
+direct_reserve_semantic_frontier_v1,27,0.7407407407407407,4.555555555555555
+branching_necessity_gate_v1,27,0.4074074074074074,3.111111111111111
+semantic_minimum_maturation_plus_direct_reserve_v1,27,0.5555555555555556,4.666666666666667

@@ -1,0 +1,16 @@
+mode,dataset,dataset_split,budget_actions,budget_token_equivalent,method,num_seeds,mean_accuracy,std_accuracy,mean_avg_actions,mean_avg_generated_tokens,mean_avg_predicted_token_budget,mean_avg_token_cost_equivalent,mean_budget_adherence_rate,mean_budget_violation_rate,mean_budget_exhaustion_rate
+prompt_budgeting_inference_only,openai/gsm8k,test,4,256.0,adaptive_min_expand_1,3,0.3854166666666667,0.03897559777889522,2.3958333333333335,153.33333333333334,256.0,153.33333333333334,1.0,0.0,0.3125
+prompt_budgeting_inference_only,openai/gsm8k,test,4,256.0,external_tale_prompt_budgeting,3,0.4270833333333333,0.01473139127471974,2.125,0.9479166666666666,414.5625,136.0,1.0,0.0,0.052083333333333336
+prompt_budgeting_inference_only,openai/gsm8k,test,4,256.0,reasoning_greedy,3,0.4270833333333333,0.06421264586426018,2.09375,134.0,256.0,134.0,1.0,0.0,0.0625
+prompt_budgeting_inference_only,openai/gsm8k,test,4,256.0,self_consistency_3,3,0.2916666666666667,0.06421264586426018,4.0,256.0,256.0,256.0,1.0,0.0,1.0
+prompt_budgeting_inference_only,openai/gsm8k,test,4,256.0,verifier_guided_search,3,0.28125,0.0,4.0,256.0,256.0,256.0,1.0,0.0,1.0
+prompt_budgeting_inference_only,openai/gsm8k,test,6,384.0,adaptive_min_expand_1,3,0.3229166666666667,0.05311478659992484,3.6145833333333335,231.33333333333334,384.0,231.33333333333334,1.0,0.0,0.3125
+prompt_budgeting_inference_only,openai/gsm8k,test,6,384.0,external_tale_prompt_budgeting,3,0.53125,0.07654655446197431,2.0520833333333335,1.0,414.5625,131.33333333333334,1.0,0.0,0.0
+prompt_budgeting_inference_only,openai/gsm8k,test,6,384.0,reasoning_greedy,3,0.59375,0.02551551815399144,2.1354166666666665,136.66666666666666,384.0,136.66666666666666,1.0,0.0,0.0
+prompt_budgeting_inference_only,openai/gsm8k,test,6,384.0,self_consistency_3,3,0.4583333333333333,0.01473139127471974,6.0,384.0,384.0,384.0,1.0,0.0,1.0
+prompt_budgeting_inference_only,openai/gsm8k,test,6,384.0,verifier_guided_search,3,0.3645833333333333,0.13093546968725556,6.0,384.0,384.0,384.0,1.0,0.0,1.0
+prompt_budgeting_inference_only,openai/gsm8k,test,8,512.0,adaptive_min_expand_1,3,0.375,0.05103103630798288,4.416666666666667,282.6666666666667,512.0,282.6666666666667,1.0,0.0,0.3125
+prompt_budgeting_inference_only,openai/gsm8k,test,8,512.0,external_tale_prompt_budgeting,3,0.5729166666666666,0.06421264586426018,1.9583333333333333,1.0,414.5625,125.33333333333333,1.0,0.0,0.0
+prompt_budgeting_inference_only,openai/gsm8k,test,8,512.0,reasoning_greedy,3,0.5208333333333334,0.06421264586426018,2.125,136.0,512.0,136.0,1.0,0.0,0.0
+prompt_budgeting_inference_only,openai/gsm8k,test,8,512.0,self_consistency_3,3,0.65625,0.1767766952966369,7.6875,492.0,512.0,492.0,1.0,0.0,0.7916666666666666
+prompt_budgeting_inference_only,openai/gsm8k,test,8,512.0,verifier_guided_search,3,0.3333333333333333,0.06421264586426018,6.0,384.0,512.0,384.0,1.0,0.0,0.0

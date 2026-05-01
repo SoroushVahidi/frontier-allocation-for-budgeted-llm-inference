@@ -1,0 +1,13 @@
+example_id,dataset,seed,budget,method,is_correct,final_answer_canonical
+openai_gsm8k_12,openai/gsm8k,23,4,external_l1_max,1,70
+openai_gsm8k_12,openai/gsm8k,23,4,strict_f3,0,62
+openai_gsm8k_12,openai/gsm8k,23,4,direct_reserve_route_refine_v1,0,30
+openai_gsm8k_3,openai/gsm8k,23,4,external_l1_max,1,10
+openai_gsm8k_3,openai/gsm8k,23,4,strict_f3,0,20
+openai_gsm8k_3,openai/gsm8k,23,4,direct_reserve_route_refine_v1,1,10
+openai_gsm8k_5,openai/gsm8k,23,4,external_l1_max,1,280
+openai_gsm8k_5,openai/gsm8k,23,4,strict_f3,0,260
+openai_gsm8k_5,openai/gsm8k,23,4,direct_reserve_route_refine_v1,0,210
+openai_gsm8k_6,openai/gsm8k,23,4,external_l1_max,1,32
+openai_gsm8k_6,openai/gsm8k,23,4,strict_f3,0,33.5
+openai_gsm8k_6,openai/gsm8k,23,4,direct_reserve_route_refine_v1,0,50

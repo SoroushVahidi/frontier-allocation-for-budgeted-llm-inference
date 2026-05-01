@@ -1,0 +1,7 @@
+provider,method,n_scored,accuracy,avg_actions,avg_input_tokens,avg_output_tokens,avg_total_tokens,avg_latency_seconds,avg_estimated_cost_usd,accuracy_per_1k_tokens,accuracy_per_estimated_dollar
+cohere,external_l1_max,356,0.539326,0.0,502.92,127.36,630.28,3.7079,0.0034192,0.00240362,0.44307454
+cohere,s1,360,0.511111,0.0,1038.99,154.38,1193.37,4.2836,0.00543267,0.0011897,0.26133631
+cohere,strict_f3,360,0.45,0.0,1034.53,192.79,1227.33,5.1745,0.00599552,0.00101847,0.20848912
+cohere,strict_f3_anti_collapse_weak_v1,360,0.419444,0.0,1019.92,191.8,1211.72,5.1964,0.00593676,0.00096155,0.19625583
+cohere,strict_gate1_cap_k6,360,0.405556,0.0,1012.7,194.07,1206.78,5.1463,0.00594922,0.00093352,0.18935966
+cohere,tale,360,0.494444,0.0,529.31,108.68,637.99,2.857,0.00321814,0.00215278,0.42678568

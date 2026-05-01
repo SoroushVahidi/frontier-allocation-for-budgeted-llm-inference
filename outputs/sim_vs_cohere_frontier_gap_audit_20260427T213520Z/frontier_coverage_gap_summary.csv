@@ -1,0 +1,8 @@
+metric,value
+overlap_case_count,120
+real_loss_cases_analyzed,156
+taxonomy_bad_seeding,1
+taxonomy_bad_maturation,0
+taxonomy_bad_allocation,0
+taxonomy_bad_selection_or_repair,2
+taxonomy_trace_unavailable,153

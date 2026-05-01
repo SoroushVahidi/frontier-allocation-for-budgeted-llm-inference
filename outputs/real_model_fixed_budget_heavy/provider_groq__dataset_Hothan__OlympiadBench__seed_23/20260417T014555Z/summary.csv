@@ -1,0 +1,5 @@
+provider,dataset,provider_model,subset_size,method,status,n_examples,accuracy,avg_actions,avg_expansions,avg_verifications,avg_surviving_branches,budget_exhaustion_rate,avg_calibrated_zscore,failure_reason,error
+groq,Hothan/OlympiadBench,llama-3.1-8b-instant,60,adaptive_relative_rank,method_failed,,,,,,,,,http_error_other,RuntimeError: Groq API HTTPError 403: error code: 1010
+groq,Hothan/OlympiadBench,llama-3.1-8b-instant,60,adaptive_score_plus_progress,method_failed,,,,,,,,,http_error_other,RuntimeError: Groq API HTTPError 403: error code: 1010
+groq,Hothan/OlympiadBench,llama-3.1-8b-instant,60,adaptive_learned_branch_score_v4,method_failed,,,,,,,,,http_error_other,RuntimeError: Groq API HTTPError 403: error code: 1010
+groq,Hothan/OlympiadBench,llama-3.1-8b-instant,60,best_of_n,method_failed,,,,,,,,,http_error_other,RuntimeError: Groq API HTTPError 403: error code: 1010

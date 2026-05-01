@@ -1,0 +1,11 @@
+split,model,provider,seed,budget,dataset,example_id,gold_present,learned_selected_answer,learned_selected_gold,current_selected_answer,current_selected_gold,support_selected_answer,support_selected_gold
+leave_one_problem_out::e1,logistic_regression,cohere,11,4,openai/gsm8k,e1,1,method::strict_gate1_cap_k6,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e1,random_forest,cohere,11,4,openai/gsm8k,e1,1,method::strict_gate1_cap_k6,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e1,gradient_boosting,cohere,11,4,openai/gsm8k,e1,1,method::strict_gate1_cap_k6,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e1,hist_gradient_boosting,cohere,11,4,openai/gsm8k,e1,1,method::strict_f3,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e1,pairwise_logistic,cohere,11,4,openai/gsm8k,e1,1,method::strict_gate1_cap_k6,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e2,logistic_regression,cohere,23,8,openai/gsm8k,e2,1,method::external_l1_max,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e2,random_forest,cohere,23,8,openai/gsm8k,e2,1,method::external_l1_max,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e2,gradient_boosting,cohere,23,8,openai/gsm8k,e2,1,method::external_l1_max,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e2,hist_gradient_boosting,cohere,23,8,openai/gsm8k,e2,1,method::strict_f3,0,method::strict_f3,0,method::strict_f3,0
+leave_one_problem_out::e2,pairwise_logistic,cohere,23,8,openai/gsm8k,e2,1,method::external_l1_max,0,method::strict_f3,0,method::strict_f3,0

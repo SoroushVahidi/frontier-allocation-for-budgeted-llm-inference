@@ -1,0 +1,16 @@
+mode,dataset,dataset_split,budget_actions,budget_token_equivalent,method,num_seeds,mean_accuracy,std_accuracy,mean_avg_actions,mean_avg_token_cost_equivalent,mean_budget_exhaustion_rate,mean_budget_violation_rate
+inference_only,openai/gsm8k,test,4,256.0,adaptive_min_expand_1,3,0.3229166666666667,0.03897559777889522,2.7291666666666665,174.66666666666666,0.3541666666666667,0.0
+inference_only,openai/gsm8k,test,4,256.0,external_s1_budget_forcing,3,0.5208333333333334,0.06421264586426018,3.1770833333333335,203.33333333333334,0.09375,0.0
+inference_only,openai/gsm8k,test,4,256.0,reasoning_greedy,3,0.5625,0.10206207261596575,1.84375,118.0,0.020833333333333332,0.0
+inference_only,openai/gsm8k,test,4,256.0,self_consistency_3,3,0.3854166666666667,0.05892556509887896,4.0,256.0,1.0,0.0
+inference_only,openai/gsm8k,test,4,256.0,verifier_guided_search,3,0.21875,0.08838834764831845,4.0,256.0,1.0,0.0
+inference_only,openai/gsm8k,test,6,384.0,adaptive_min_expand_1,3,0.3854166666666667,0.05311478659992484,3.2916666666666665,210.66666666666666,0.22916666666666666,0.0
+inference_only,openai/gsm8k,test,6,384.0,external_s1_budget_forcing,3,0.4270833333333333,0.02946278254943948,3.59375,230.0,0.010416666666666666,0.0
+inference_only,openai/gsm8k,test,6,384.0,reasoning_greedy,3,0.5833333333333334,0.1405285162836671,2.0520833333333335,131.33333333333334,0.0,0.0
+inference_only,openai/gsm8k,test,6,384.0,self_consistency_3,3,0.5,0.06750771560841522,6.0,384.0,1.0,0.0
+inference_only,openai/gsm8k,test,6,384.0,verifier_guided_search,3,0.3125,0.06750771560841522,6.0,384.0,1.0,0.0
+inference_only,openai/gsm8k,test,8,512.0,adaptive_min_expand_1,3,0.4166666666666667,0.07795119555779044,4.614583333333333,295.3333333333333,0.3020833333333333,0.0
+inference_only,openai/gsm8k,test,8,512.0,external_s1_budget_forcing,3,0.53125,0.0,3.5104166666666665,224.66666666666666,0.0,0.0
+inference_only,openai/gsm8k,test,8,512.0,reasoning_greedy,3,0.4583333333333333,0.05311478659992484,2.0729166666666665,132.66666666666666,0.0,0.0
+inference_only,openai/gsm8k,test,8,512.0,self_consistency_3,3,0.6666666666666666,0.03897559777889522,7.666666666666667,490.6666666666667,0.7395833333333334,0.0
+inference_only,openai/gsm8k,test,8,512.0,verifier_guided_search,3,0.17708333333333334,0.05311478659992484,6.0,384.0,0.0,0.0

@@ -1,0 +1,28 @@
+{
+  "dominance_note": "OpenAI evidence should not be used to claim broad dominance over external_l1_max unless per-dataset/per-budget reruns produce materially different outcomes.",
+  "frontier_methods": [
+    "strict_f2",
+    "strict_f3",
+    "strict_gate1_cap_k6"
+  ],
+  "n_total_evaluated_rows": 1799,
+  "questions": {
+    "A_strict_f3_dominates_strict_gate1_cap_k6": {
+      "answer": "yes",
+      "strict_f3_accuracy": 0.48333333333333334,
+      "strict_gate1_cap_k6_accuracy": 0.3593314763231198
+    },
+    "B_frontier_allocation_dominates_external_l1_max": {
+      "answer": "no",
+      "external_l1_max_accuracy": 0.5416666666666666,
+      "frontier_accuracy": 0.40500463392029656,
+      "strict_f3_cell_win_rate_vs_external_l1_max": 0.2777777777777778
+    },
+    "C_frontier_competitive_not_dominant": {
+      "answer": "yes"
+    },
+    "D_recommended_disposition": {
+      "answer": "appendix-only"
+    }
+  }
+}

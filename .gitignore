@@ -248,3 +248,8 @@ outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl
 
 # Best-methods-on-losses experiment jsonl + generation cache (broad blanket would ignore)
 !outputs/best_methods_on_external_losses_20260430T195200Z/*.jsonl
+
+# Local-only blobs over GitHub 100MB hard limit (HF download caches; pooled branch-scorer datasets)
+outputs/**/compressed_*.tar.gz
+outputs/branch_scorer_v3_heavy_ml/datasets/**/branch_scorer_v3_dataset.jsonl
+outputs/branch_scorer_v3_heavy_ml/pooled/branch_scorer_v3_dataset.jsonl

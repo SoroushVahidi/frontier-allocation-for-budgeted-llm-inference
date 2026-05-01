@@ -1,0 +1,13 @@
+example_id,dataset,provider,model,budget,seed,method,answer_group,support_count,maturity,family_count,depth_max,depth_mean,best_branch_score,branch_ids,family_counts,metadata
+openai_gsm8k_0,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,11,2,2,1,1,1.0,0.7999999999999999,"[""div_0"", ""direct_reserve_1""]","{""direct_formula_family"": 1}",{}
+openai_gsm8k_0,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,16,1,1,0,1,1.0,1.0,"[""direct_reserve_0""]",{},{}
+openai_gsm8k_0,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,__unknown__,1,1,0,0,0.0,0.5,"[""div_1""]",{},{}
+openai_gsm8k_1,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,106,2,2,1,1,1.0,0.7999999999999999,"[""div_0"", ""direct_reserve_0""]","{""direct_formula_family"": 1}",{}
+openai_gsm8k_1,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,106.12,1,1,0,1,1.0,1.0,"[""direct_reserve_1""]",{},{}
+openai_gsm8k_1,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,__unknown__,1,1,0,0,0.0,0.5,"[""div_1""]",{},{}
+openai_gsm8k_2,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,350,1,1,1,1,1.0,0.7999999999999999,"[""div_0""]","{""direct_formula_family"": 1}",{}
+openai_gsm8k_2,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,450,2,2,0,1,1.0,2.0,"[""direct_reserve_0"", ""direct_reserve_1""]",{},{}
+openai_gsm8k_2,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,direct_reserve_semantic_frontier_v2,__unknown__,1,1,0,0,0.0,0.5,"[""div_1""]",{},{}
+openai_gsm8k_0,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,external_l1_max,11,1,1,0,1,1.0,0.7,"[""l1_max_0""]",{},{}
+openai_gsm8k_1,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,external_l1_max,$106,1,1,0,1,1.0,0.7,"[""l1_max_0""]",{},{}
+openai_gsm8k_2,openai/gsm8k,cohere,command-r-plus-08-2024,4,11,external_l1_max,450,1,1,0,1,1.0,0.7,"[""l1_max_0""]",{},{}

@@ -1,0 +1,166 @@
+severity,category,path,line,snippet,detail
+blocking,api_key_name,archive/historical_scripts/run_heavy_real_routing_eval.sh,14,"if [[ -z ""${HF_TOKEN:-}"" && -z ""${HUGGINGFACE_HUB_TOKEN:-}"" ]]; then",Secret environment variable token
+blocking,api_key_name,archive/historical_scripts/run_heavy_real_routing_eval.sh,15,"echo ""Missing HF token env (HF_TOKEN or HUGGINGFACE_HUB_TOKEN).""",Secret environment variable token
+blocking,api_key_name,archive/historical_scripts/run_heavy_real_routing_eval.sh,18,"if [[ -z ""${OPENAI_API_KEY:-}"" ]]; then",Secret environment variable token
+blocking,api_key_name,archive/historical_scripts/run_heavy_real_routing_eval.sh,19,"echo ""Missing OPENAI_API_KEY.""",Secret environment variable token
+blocking,api_key_name,archive/historical_scripts/run_heavy_real_routing_eval.sh,22,"if [[ -z ""${GEMINI_API_KEY:-}"" ]]; then",Secret environment variable token
+blocking,api_key_name,archive/historical_scripts/run_heavy_real_routing_eval.sh,23,"echo ""Missing GEMINI_API_KEY.""",Secret environment variable token
+blocking,api_key_name,docs/COHERE_BOUNDED_HARD_CASE_ADJUDICATION_PASS_2026_04_17.md,15,- `COHERE_API_KEY` presence in environment: present.,Secret environment variable token
+blocking,api_key_name,docs/COHERE_BOUNDED_HARD_CASE_ADJUDICATION_PASS_2026_04_17.md,96,co=cohere.ClientV2(api_key=os.environ['COHERE_API_KEY']),Secret environment variable token
+blocking,api_key_name,docs/COHERE_PRODUCTION_KEY_RUNTIME_VERIFICATION_2026_04_17.md,6,- Runtime key path inspected: `os.environ['COHERE_API_KEY'] (same path used by scripts/cohere_adjudicate_hard_pairs.py)`.,Secret environment variable token
+blocking,api_key_name,docs/DATASET_ADDITION_HF_TOKEN_FOLLOWUP_STATUS_2026_04_19.md,1,# HF_TOKEN follow-up status: HLE + LiveCodeBench (2026-04-19),Secret environment variable token
+blocking,api_key_name,docs/DATASET_ADDITION_HF_TOKEN_FOLLOWUP_STATUS_2026_04_19.md,5,"> With `HF_TOKEN` available, can the remaining partial/missing integrations be completed?",Secret environment variable token
+blocking,api_key_name,docs/DATASET_ADDITION_HF_TOKEN_FOLLOWUP_STATUS_2026_04_19.md,9,- `HF_TOKEN` is present and was used for access checks.,Secret environment variable token
+blocking,api_key_name,docs/DATASET_ADDITION_HF_TOKEN_FOLLOWUP_STATUS_2026_04_19.md,23,"- `HF_TOKEN` was used, but LiveCodeBench access was already public.",Secret environment variable token
+blocking,api_key_name,docs/REAL_MODEL_OURS_VS_EXTERNAL_VALIDATION_README.md,23,- Checks `OPENAI_API_KEY` / `COHERE_API_KEY` presence (boolean only; never writes key values).,Secret environment variable token
+blocking,api_key_name,docs/cross_controller_frontier.md,62,**Small OpenAI-backed pilot (requires `OPENAI_API_KEY`):**,Secret environment variable token
+blocking,api_key_name,docs/datasets_access.md,28,"- use `HF_TOKEN` / `HUGGINGFACE_HUB_TOKEN` from environment, or run `huggingface-cli login` (required for gated datasets)",Secret environment variable token
+blocking,api_key_name,docs/datasets_access.md,49,"- presence/absence of `HF_TOKEN` and `HUGGINGFACE_HUB_TOKEN` (never token values),",Secret environment variable token
+blocking,api_key_name,docs/hle_integration_report_2026_04_19.json,29,"""HF_TOKEN"": true,",Secret environment variable token
+blocking,api_key_name,docs/hle_integration_report_2026_04_19.json,56,"""HF_TOKEN"": true,",Secret environment variable token
+blocking,api_key_name,docs/hle_integration_report_2026_04_19.json,83,"""HF_TOKEN"": true,",Secret environment variable token
+blocking,api_key_name,docs/hle_integration_report_2026_04_19.json,110,"""HF_TOKEN"": true,",Secret environment variable token
+blocking,api_key_name,docs/hle_integration_report_2026_04_19.json,137,"""HF_TOKEN"": true,",Secret environment variable token
+blocking,api_key_name,experiments/comparative_frontier_audit_real_model_note.md,17,"Alternatives: `--api-backend groq` (needs `GROQ_API_KEY`), `--api-backend gemini` (needs `GOOGLE_API_KEY` or `GEMINI_API_KEY`). `--use-openai-api` is a shortcut for `--api-backend openai`.",Secret environment variable token
+blocking,api_key_name,experiments/comparative_frontier_audit_wulver_note.md,24,1. Repo-root **`.env`** with the key for your chosen backend (`OPENAI_API_KEY` for default `openai`; `GROQ_API_KEY` or `GOOGLE_API_KEY` / `GEMINI_API_KEY` if you switch backend).,Secret environment variable token
+blocking,api_key_name,experiments/external_reasoning_datasets.py,376,"for env_name in (""HF_TOKEN"", ""HUGGINGFACE_HUB_TOKEN""):",Secret environment variable token
+blocking,api_key_name,experiments/frontier_matrix_core.py,39,"return os.getenv(""OPENAI_API_KEY"")",Secret environment variable token
+blocking,api_key_name,experiments/frontier_matrix_core.py,41,"return os.getenv(""COHERE_API_KEY"")",Secret environment variable token
+blocking,api_key_name,experiments/frontier_matrix_core.py,45,"return os.getenv(""GOOGLE_API_KEY"") or os.getenv(""GEMINI_API_KEY"")",Secret environment variable token
+blocking,api_key_name,experiments/hf_datasets.py,447,"for env_name in (""HF_TOKEN"", ""HUGGINGFACE_HUB_TOKEN""):",Secret environment variable token
+blocking,api_key_name,experiments/hf_datasets.py,457,"""HF_TOKEN"": bool(os.getenv(""HF_TOKEN"")),",Secret environment variable token
+blocking,api_key_name,experiments/hf_datasets.py,523,"token_present = token_flags[""HF_TOKEN""] or token_flags[""HUGGINGFACE_HUB_TOKEN""]",Secret environment variable token
+blocking,api_key_name,experiments/pilot_gsm8k.md,32,"- If `OPENAI_API_KEY` is set and `model.use_openai_api=true`, run uses OpenAI API-backed branch expansion/verification.",Secret environment variable token
+blocking,api_key_name,jobs/RUN_COHERE_REAL_MAIN.md,1,Submit from the terminal/session where `COHERE_API_KEY` is set:,Secret environment variable token
+blocking,api_key_name,jobs/audit_openai_real_model_main_run.sbatch,40,"echo ""OPENAI_API_KEY set: $( [[ -n ""${OPENAI_API_KEY:-}"" ]] && echo true || echo false )""",Secret environment variable token
+blocking,api_key_name,jobs/build_operational_controller_specification_20260424T164500Z.sbatch,33,"echo ""OPENAI_API_KEY present: $( [[ -n ""${OPENAI_API_KEY:-}"" ]] && echo true || echo false )""",Secret environment variable token
+blocking,api_key_name,jobs/build_operational_controller_specification_20260424T164500Z.sbatch,34,"echo ""COHERE_API_KEY present: $( [[ -n ""${COHERE_API_KEY:-}"" ]] && echo true || echo false )""",Secret environment variable token
+blocking,api_key_name,jobs/cohere_real_model_main_20260424.sbatch,31,"echo ""OPENAI_API_KEY present: $( [[ -n ""${OPENAI_API_KEY:-}"" ]] && echo true || echo false )""",Secret environment variable token
+blocking,api_key_name,jobs/cohere_real_model_main_20260424.sbatch,32,"echo ""COHERE_API_KEY present: $( [[ -n ""${COHERE_API_KEY:-}"" ]] && echo true || echo false )""",Secret environment variable token
+blocking,api_key_name,jobs/cohere_real_model_main_20260424.sbatch,34,"if [[ -z ""${COHERE_API_KEY:-}"" ]]; then",Secret environment variable token
+blocking,api_key_name,jobs/cohere_real_model_main_20260424.sbatch,36,"echo ""Error: MissingAPIKey COHERE_API_KEY is not set""",Secret environment variable token
+blocking,api_key_name,jobs/cohere_real_model_main_20260424.sbatch,49,"key = os.getenv(""COHERE_API_KEY"")",Secret environment variable token
+blocking,api_key_name,jobs/cohere_real_model_main_20260424.sbatch,73,"client = cohere.ClientV2(api_key=os.environ[""COHERE_API_KEY""])",Secret environment variable token
+blocking,api_key_name,jobs/openai_real_model_main_20260424.sbatch,48,"echo ""OPENAI_API_KEY set: $( [[ -n ""${OPENAI_API_KEY:-}"" ]] && echo true || echo false )""",Secret environment variable token
+blocking,api_key_name,jobs/openai_real_model_main_20260424.sbatch,58,"key = os.getenv(""OPENAI_API_KEY"")",Secret environment variable token
+blocking,api_key_name,jobs/openai_real_model_main_20260424.sbatch,74,"client = OpenAI(api_key=os.getenv(""OPENAI_API_KEY""))",Secret environment variable token
+blocking,api_key_name,jobs/run_missing_cohere_real_model_main_slices_20260424T163922Z.sbatch,24,"echo ""COHERE_API_KEY present: $( [[ -n ""${COHERE_API_KEY:-}"" ]] && echo true || echo false )""",Secret environment variable token
+blocking,api_key_name,jobs/run_missing_cohere_real_model_main_slices_20260424T163922Z.sbatch,25,"if [[ -z ""${COHERE_API_KEY:-}"" ]]; then echo ""Missing COHERE_API_KEY""; exit 1; fi",Secret environment variable token
+blocking,api_key_name,jobs/run_missing_openai_real_model_main_slices_20260424T163922Z.sbatch,24,"echo ""OPENAI_API_KEY present: $( [[ -n ""${OPENAI_API_KEY:-}"" ]] && echo true || echo false )""",Secret environment variable token
+blocking,api_key_name,jobs/run_missing_openai_real_model_main_slices_20260424T163922Z.sbatch,25,"if [[ -z ""${OPENAI_API_KEY:-}"" ]]; then echo ""Missing OPENAI_API_KEY""; exit 1; fi",Secret environment variable token
+blocking,api_key_name,logs/slurm/cohere-real-main-missing-982679.out,1,COHERE_API_KEY present: true,Secret environment variable token
+blocking,author_name,scripts/audit_anonymous_supplement.py,57,"(""author_name"", ""blocking"", ""Author-identifying token"", re.compile(r""\b(Soroush|Vahidi|SoroushVahidi)\b"", re.IGNORECASE)),",Author-identifying token
+blocking,institution,scripts/audit_anonymous_supplement.py,58,"(""institution"", ""blocking"", ""Institution-identifying token"", re.compile(r""\b(NJIT|New Jersey Institute of Technology)\b"", re.IGNORECASE)),",Institution-identifying token
+blocking,api_key_name,scripts/audit_anonymous_supplement.py,64,"re.compile(r""\b(OPENAI_API_KEY|COHERE_API_KEY|HF_TOKEN|GEMINI_API_KEY)\b""),",Secret environment variable token
+blocking,author_name,scripts/audit_anonymous_supplement.py,77,"re.compile(r""github\.com/(Soroush|SoroushVahidi)"", re.IGNORECASE),",Author-identifying token
+blocking,author_name,scripts/build_anonymous_neurips_supplement.py,82,"re.compile(r""\b(Soroush|Vahidi|SoroushVahidi|NJIT|New Jersey Institute of Technology)\b"", re.IGNORECASE),",Author-identifying token
+blocking,institution,scripts/build_anonymous_neurips_supplement.py,82,"re.compile(r""\b(Soroush|Vahidi|SoroushVahidi|NJIT|New Jersey Institute of Technology)\b"", re.IGNORECASE),",Institution-identifying token
+blocking,api_key_name,scripts/build_anonymous_neurips_supplement.py,84,"re.compile(r""\b(OPENAI_API_KEY|COHERE_API_KEY|HF_TOKEN|GEMINI_API_KEY)\b""),",Secret environment variable token
+blocking,author_name,scripts/build_anonymous_neurips_supplement.py,87,"re.compile(r""github\.com/(Soroush|SoroushVahidi)"", re.IGNORECASE),",Author-identifying token
+blocking,api_key_name,scripts/build_hf_access_gap_audit.py,27,"token_present = bool(os.getenv(""HF_TOKEN""))",Secret environment variable token
+blocking,api_key_name,scripts/build_hf_access_gap_audit.py,76,"""next_action"": ""Set HF_TOKEN in job env if blocked."",",Secret environment variable token
+blocking,api_key_name,scripts/build_hf_access_gap_audit.py,91,"""next_action"": ""Provide OPENAI_API_KEY only if exact upstream data-generation path is required."",",Secret environment variable token
+blocking,api_key_name,scripts/cohere_adjudicate_hard_pairs.py,141,"api_key = os.environ.get(""COHERE_API_KEY"", """")",Secret environment variable token
+blocking,api_key_name,scripts/cohere_adjudicate_hard_pairs.py,143,"raise RuntimeError(""COHERE_API_KEY is missing"")",Secret environment variable token
+blocking,api_key_name,scripts/generate_dataset_integration_report.py,104,"""manual_steps"": ""huggingface-cli login or HF_TOKEN; accept dataset terms on the Hub."",",Secret environment variable token
+blocking,api_key_name,scripts/run_cohere_rerank_branch_allocation_experiment.py,205,"api_key = os.environ.get(""COHERE_API_KEY"", """")",Secret environment variable token
+blocking,api_key_name,scripts/run_cohere_rerank_branch_allocation_experiment.py,207,"raise RuntimeError(""COHERE_API_KEY missing"")",Secret environment variable token
+blocking,api_key_name,scripts/run_comparative_frontier_audit.py,609,"""openai"": bool(os.getenv(""OPENAI_API_KEY"")),",Secret environment variable token
+blocking,api_key_name,scripts/run_comparative_frontier_audit.py,611,"""gemini_or_google"": bool(os.getenv(""GOOGLE_API_KEY"") or os.getenv(""GEMINI_API_KEY"")),",Secret environment variable token
+blocking,api_key_name,scripts/run_cross_strategy_frontier_allocation.py,108,"""openai_api_key_present"": bool(os.getenv(""OPENAI_API_KEY"")),",Secret environment variable token
+blocking,api_key_name,scripts/run_new_paper_external_warmstart_branch_scorer.py,412,"api_key = bool(os.getenv(""OPENAI_API_KEY""))",Secret environment variable token
+blocking,api_key_name,scripts/run_new_paper_external_warmstart_branch_scorer.py,414,"return {""attempted"": False, ""reason"": ""OPENAI_API_KEY not available in environment""}",Secret environment variable token
+blocking,api_key_name,scripts/run_new_paper_frontier_matrix.py,279,"""- **OpenAI mode** (`--use-openai-api`): real generations; requires `OPENAI_API_KEY` and is rate/cost limited."",",Secret environment variable token
+blocking,api_key_name,scripts/run_new_paper_frontier_matrix.py,360,"""openai_api_key_present"": bool(os.getenv(""OPENAI_API_KEY"")),",Secret environment variable token
+blocking,api_key_name,scripts/run_pilot_gsm8k.py,94,"api_key = os.getenv(""OPENAI_API_KEY"")",Secret environment variable token
+blocking,api_key_name,scripts/run_real_model_fixed_budget_pilot.py,71,"return os.getenv(""OPENAI_API_KEY"")",Secret environment variable token
+blocking,api_key_name,scripts/run_real_model_fixed_budget_pilot.py,73,"return os.getenv(""GEMINI_API_KEY"")",Secret environment variable token
+blocking,api_key_name,scripts/run_real_model_fixed_budget_pilot.py,394,"""OPENAI_API_KEY"": bool(os.getenv(""OPENAI_API_KEY"")),",Secret environment variable token
+blocking,api_key_name,scripts/run_real_model_fixed_budget_pilot.py,395,"""GEMINI_API_KEY"": bool(os.getenv(""GEMINI_API_KEY"")),",Secret environment variable token
+blocking,api_key_name,scripts/run_real_model_ours_vs_external_validation.py,123,"return bool(os.getenv(""OPENAI_API_KEY""))",Secret environment variable token
+blocking,api_key_name,scripts/run_real_model_ours_vs_external_validation.py,125,"return bool(os.getenv(""COHERE_API_KEY""))",Secret environment variable token
+blocking,api_key_name,scripts/run_worst_real_failure_casebook_with_reasoning.py,118,"""openai"": ""OPENAI_API_KEY"",",Secret environment variable token
+blocking,api_key_name,scripts/run_worst_real_failure_casebook_with_reasoning.py,120,"""gemini"": ""GEMINI_API_KEY"",",Secret environment variable token
+blocking,api_key_name,scripts/run_worst_real_failure_casebook_with_reasoning.py,122,"api_key = os.getenv(provider_key_map.get(provider, ""OPENAI_API_KEY""))",Secret environment variable token
+blocking,api_key_name,scripts/verify_cohere_runtime_key_and_limits.py,114,"env_key = os.environ.get(""COHERE_API_KEY"", """")",Secret environment variable token
+blocking,api_key_name,scripts/verify_cohere_runtime_key_and_limits.py,124,"""runtime_path_used"": ""os.environ['COHERE_API_KEY'] (same path used by scripts/cohere_adjudicate_hard_pairs.py)"",",Secret environment variable token
+blocking,api_key_name,scripts/verify_cohere_runtime_key_and_limits.py,128,"else ""Unable to infer caching because COHERE_API_KEY is missing""",Secret environment variable token
+blocking,api_key_name,scripts/verify_cohere_runtime_key_and_limits.py,165,"""error_message"": ""COHERE_API_KEY is missing"",",Secret environment variable token
+blocking,api_key_name,scripts/verify_cohere_runtime_key_and_limits.py,179,"""details"": ""COHERE_API_KEY missing in runtime environment"",",Secret environment variable token
+blocking,api_key_name,scripts/verify_cohere_runtime_key_and_limits.py,182,"env_key = os.environ[""COHERE_API_KEY""]",Secret environment variable token
+blocking,api_key_name,scripts/verify_hf_dataset_access.py,151,"f""- HF_TOKEN: {'present' if token_env_presence['HF_TOKEN'] else 'absent'}"",",Secret environment variable token
+blocking,api_key_name,scripts/wulver_comparative_frontier_audit.sh,42,"openai)  [[ -n ""${OPENAI_API_KEY:-}"" ]] && _key_ok=1 ;;",Secret environment variable token
+blocking,api_key_name,scripts/wulver_comparative_frontier_audit.sh,44,"gemini)  [[ -n ""${GOOGLE_API_KEY:-}${GEMINI_API_KEY:-}"" ]] && _key_ok=1 ;;",Secret environment variable token
+blocking,api_key_name,scripts/wulver_comparative_frontier_audit.sh,48,"echo ""ERROR: No API key found for backend '${API_BACKEND}' after sourcing .env (check OPENAI_API_KEY / GROQ_API_KEY / GOOGLE_API_KEY)."" >&2",Secret environment variable token
+blocking,api_key_name,scripts/wulver_comparative_frontier_audit.sh,81,"""openai"": bool(os.environ.get(""OPENAI_API_KEY"")),",Secret environment variable token
+blocking,api_key_name,scripts/wulver_comparative_frontier_audit.sh,83,"""gemini_or_google"": bool(os.environ.get(""GOOGLE_API_KEY"") or os.environ.get(""GEMINI_API_KEY"")),",Secret environment variable token
+warning,forbidden_path,archive/README.md,0,archive,Forbidden/deanonymizing path token present
+warning,forbidden_path,archive/historical_scripts/run_final_manuscript_eval.sh,0,archive,Forbidden/deanonymizing path token present
+warning,forbidden_path,archive/historical_scripts/run_heavy_real_routing_eval.sh,0,archive,Forbidden/deanonymizing path token present
+warning,absolute_path,docs/l1_baseline_integration.md,7,From the official L1 paper/project/repository:,Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/environment.yml,274,prefix: /pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/.conda/envs/llmonk2,Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/llama70b_gpqa.yaml,1,"samples_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/gpqa_diamond_64/Llama-3.3-70B-Instruct_2K_tokens""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/llama70b_gpqa.yaml,2,"verifications_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/verifications/gpqa_diamond_64/Llama-3.3-70B-Instruct_2K_tokens/ver_model--Llama-3.3-70B-Instruct__max_tokens--4096""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/llama70b_math128.yaml,1,"samples_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/math128/Llama-3.3-70B-Instruct""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/llama70b_math128.yaml,2,"verifications_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/verifications/math128/Llama-3.3-70B-Instruct/ver_model--Llama-3.3-70B-Instruct__max_tokens--4096""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/llama8b_math128.yaml,1,"samples_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/math128/Llama-3.1-8B-Instruct""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/llama8b_math128.yaml,2,"verifications_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/verifications/math128/Llama3.1_8B_Instruct/ver_model--llama3.1-8b_train_gpt_4o_verifications_e3_lr5e-7-31389-merged""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/qwen7b_math128.yaml,1,"samples_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/math128/Qwen2.5-7B-Instruct""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/qwen7b_math128.yaml,2,"verifications_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/verifications/math128/Qwen2.5-7B-Instruct/ver_model--qwen_2.5_7b_verifier_train_gpt_4o_lr5e-7__max_tokens--4096""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/qwq32b_aime25.yaml,1,"samples_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/aime25/QwQ-32B_32K_tokens""",Absolute local path token
+warning,absolute_path,external/when_solve_when_verify/upstream/sc-genrm-scaling/llmonk/evaluate/configs/qwq32b_aime25.yaml,2,"verifications_dir: ""/pfss/mlde/workspaces/mlde_wsp_Rohrbach/users/ns94feza/large_language_monkeys/llmonk/outputs/verifications/aime25/QwQ-32B_32K_tokens/ver_model--QwQ-32B__max_tokens--32768_ZERO_SHOT""",Absolute local path token
+warning,forbidden_path,jobs/README.md,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/RUN_COHERE_REAL_MAIN.md,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/audit_openai_real_model_main_run.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/branch_scorer_v3_final_eval.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/branch_scorer_v3_heavy_ml.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/build_operational_controller_specification_20260424T164500Z.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/cohere_real_model_main_20260424.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/comparative_frontier_audit_wulver.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/heavy_real_routing_eval.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/multi_action_allocation_pass.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/openai_real_model_main_20260424.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/oracle_label_pilot_hpc.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/paper_main_numeric_results_bundle_wulver.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/run_missing_cohere_real_model_main_slices_20260424T163922Z.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/run_missing_openai_real_model_main_slices_20260424T163922Z.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/wulver_hf_access_gap_audit.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/wulver_hf_adjacent_baseline_refresh.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/wulver_when_solve_verify_hf_import_pipeline.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,jobs/wulver_when_solve_verify_hf_smoke.sbatch,0,jobs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/openai_real_model_main_run_audit_982232.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/openai_real_model_main_run_audit_982232.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_final_eval-935482.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_final_eval-935482.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_heavy_ml-914308.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_heavy_ml-914308.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_heavy_ml-935401.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_heavy_ml-935401.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_heavy_ml-935481.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_heavy_ml-935481.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_heavy_ml-937459.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/branch_scorer_v3_heavy_ml-937459.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/cohere-real-main-missing-982679.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/cohere-real-main-missing-982679.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/cohere_real_main_979423.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/cohere_real_main_979423.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/heavy_real_routing_eval-914297.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/heavy_real_routing_eval-914297.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/hf_adj_refresh-963315.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/hf_adj_refresh-963315.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/hf_adjacent_suite-963281.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/hf_adjacent_suite-963281.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/hf_gap_audit-963316.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/hf_gap_audit-963316.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/openai_real_main_979302.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/openai_real_main_979302.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/paper_main_numeric_bundle-961552.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/paper_main_numeric_bundle-961552.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/wsv_hf_import-963314.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/wsv_hf_import-963314.out,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/wsv_hf_smoke-963313.err,0,logs,Forbidden/deanonymizing path token present
+warning,forbidden_path,logs/slurm/wsv_hf_smoke-963313.out,0,logs,Forbidden/deanonymizing path token present
+warning,absolute_path,scripts/audit_anonymous_supplement.py,83,"re.compile(r""(/home/|/Users/|/mnt/|/scratch/|/project/|/run/user/)"", re.IGNORECASE),",Absolute local path token
+warning,absolute_path,scripts/build_anonymous_neurips_supplement.py,88,"re.compile(r""(/home/|/Users/|/mnt/|/scratch/|/project/|/run/user/)"", re.IGNORECASE),",Absolute local path token
+warning,absolute_path,scripts/verify_compute_optimal_tts_provenance.py,63,"help=""Enable network checks for OpenReview/project/repo cross-linkage signals."",",Absolute local path token
+warning,absolute_path,scripts/verify_compute_optimal_tts_provenance.py,149,"""Online checks were performed for OpenReview/project/repo cross-linkage, but they are treated as signals only (not authoritative author confirmation).""",Absolute local path token

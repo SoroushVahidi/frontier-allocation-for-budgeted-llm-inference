@@ -1,0 +1,147 @@
+{
+  "answer_groups": {
+    "answer_group_best_branch_score": {
+      "$400 + $150 = $550": 0.7
+    },
+    "answer_group_branch_ids": {
+      "$400 + $150 = $550": [
+        "l1_max_0"
+      ]
+    },
+    "answer_group_depth_stats": {
+      "$400 + $150 = $550": {
+        "depth_max": 1,
+        "depth_mean": 1.0
+      }
+    },
+    "answer_group_family_counts": {},
+    "answer_group_maturity": {
+      "$400 + $150 = $550": 1
+    },
+    "answer_group_support_counts": {}
+  },
+  "branches": [
+    {
+      "A": null,
+      "C": null,
+      "I": null,
+      "R": null,
+      "V": null,
+      "answer_group": "$400 + $150 = $550",
+      "branch_id": "l1_max_0",
+      "branch_score": 0.7,
+      "depth": 1,
+      "family_id": "",
+      "is_expanded": true,
+      "is_resolved": true,
+      "is_selected": true,
+      "metadata": {
+        "source": "",
+        "trace_event_count": 1
+      },
+      "parent_id": "",
+      "parsed_answer": "$400 + $150 = $550",
+      "text_hash": "b74a4e30cff2b3ef"
+    }
+  ],
+  "direct_reserve": {
+    "direct_reserve_agreement_count": 0,
+    "direct_reserve_answer": null,
+    "direct_reserve_attempts": [],
+    "direct_reserve_confidence_proxy": null,
+    "direct_reserve_correct": null,
+    "direct_reserve_metadata": {},
+    "direct_reserve_num_attempts": 0,
+    "direct_reserve_parse_success": false,
+    "direct_reserve_source_method": "direct_reserve"
+  },
+  "frontier_candidate": {
+    "frontier_candidate_answer": "$400 + $150 = $550",
+    "frontier_candidate_correct": false,
+    "frontier_candidate_depth_max": 1,
+    "frontier_candidate_depth_mean": 1.0,
+    "frontier_candidate_family_count": 0,
+    "frontier_candidate_maturity": 1,
+    "frontier_candidate_metadata": {},
+    "frontier_candidate_support": 1
+  },
+  "override_gating": {
+    "direct_frontier_agree": null,
+    "frontier_override_triggered": null,
+    "frontier_support": 1,
+    "guard_decision_inputs": {},
+    "incumbent_support": null,
+    "maturity_margin": null,
+    "override_margin": null,
+    "override_reason": null,
+    "override_thresholds": {},
+    "reserve_used": null,
+    "support_margin": null
+  },
+  "raw_metadata": {
+    "action_trace": [
+      {
+        "action": "expand",
+        "branch_depth": 1,
+        "branch_id": "l1_max_0",
+        "extracted_answer": "$400 + $150 = $550",
+        "parent_branch_id": null,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nA marketing company pays its employees on a commission-based salary system. If you sell goods worth $1000, you earn a 30% commission. Sales over $1000 get you an additional 10% commission. Calculate the amount of money Antonella earned if she sold goods worth $2500.\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "reasoning_text": "Antonella sold goods worth $2500, which is $1500 over the $1000 threshold. She earns a 30% commission on the first $1000, and an additional 10% on the remaining $1500. This can be calculated as follows:",
+        "response_text": "{\n    \"action\": \"final\",\n    \"step\": \"Antonella sold goods worth $2500, which is $1500 over the $1000 threshold. She earns a 30% commission on the first $1000, and an additional 10% on the remaining $1500. This can be calculated as follows:\",\n    \"answer\": \"$400 + $150 = $550\",\n    \"confidence\": 1.0\n}"
+      }
+    ],
+    "budget_actions_equivalent": 8,
+    "budget_error_tokens": 507.0,
+    "external_baseline_family": "l1_lcpo_length_control",
+    "final_branch_states": [
+      {
+        "branch_depth": 1,
+        "branch_id": "l1_max_0",
+        "is_done": true,
+        "is_pruned": false,
+        "parent_branch_id": "",
+        "predicted_answer": "$400 + $150 = $550",
+        "score": 0.7,
+        "steps": [
+          "Antonella sold goods worth $2500, which is $1500 over the $1000 threshold. She earns a 30% commission on the first $1000, and an additional 10% on the remaining $1500. This can be calculated as follows:"
+        ],
+        "trace_events": [
+          {
+            "action": "expand",
+            "branch_depth": 1,
+            "extracted_answer": "$400 + $150 = $550",
+            "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nA marketing company pays its employees on a commission-based salary system. If you sell goods worth $1000, you earn a 30% commission. Sales over $1000 get you an additional 10% commission. Calculate the amount of money Antonella earned if she sold goods worth $2500.\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+            "reasoning_text": "Antonella sold goods worth $2500, which is $1500 over the $1000 threshold. She earns a 30% commission on the first $1000, and an additional 10% on the remaining $1500. This can be calculated as follows:",
+            "response_text": "{\n    \"action\": \"final\",\n    \"step\": \"Antonella sold goods worth $2500, which is $1500 over the $1000 threshold. She earns a 30% commission on the first $1000, and an additional 10% on the remaining $1500. This can be calculated as follows:\",\n    \"answer\": \"$400 + $150 = $550\",\n    \"confidence\": 1.0\n}"
+          }
+        ]
+      }
+    ],
+    "final_score": 0.7999999999999999,
+    "generated_tokens_estimate": 5,
+    "l1_control_mode": "max",
+    "prompt_style": "Let's think step by step and output the final answer within \\boxed{}.",
+    "token_budget_instruction": 512,
+    "token_budget_violation": false,
+    "token_per_action": 64.0
+  },
+  "schema_version": "branch_trace_v1",
+  "top_level": {
+    "actions_used": 1,
+    "budget": 4,
+    "dataset": "openai/gsm8k",
+    "example_id": "openai_gsm8k_2",
+    "expansions": 1,
+    "final_answer": "$400 + $150 = $550",
+    "final_correct": false,
+    "gold_answer": "450",
+    "method": "external_l1_max",
+    "model": "command-r-plus-08-2024",
+    "provider": "cohere",
+    "question_hash": "141e8e1139f640b5",
+    "seed": 11,
+    "trace_available": true,
+    "verifications": 0
+  }
+}

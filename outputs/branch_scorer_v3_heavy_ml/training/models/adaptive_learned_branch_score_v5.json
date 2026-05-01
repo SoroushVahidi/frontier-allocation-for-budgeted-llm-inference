@@ -1,0 +1,23 @@
+{
+  "model_type": "linear_regression",
+  "label_key": "v5_target_budgeted_subtree_value",
+  "weights": {
+    "remaining_budget": 0.0028858312285569795,
+    "score": 2.57137278900346,
+    "prev_score": 14799734754.714954,
+    "depth": 1243697404.4636424,
+    "prev_depth": 1927674329.0603564,
+    "curr_future_value_est": -199431886192.39447,
+    "prev_future_value_est": 199431886192.55826,
+    "curr_distance_to_terminal_est": 12284380253.69328,
+    "prev_distance_to_terminal_est": -5236887512.53178,
+    "value_delta": 199431886192.5642,
+    "distance_delta": -12284380252.948204,
+    "current_action_expand": -1243697404.1339877,
+    "current_action_verify": 0.25718177362547523,
+    "previous_action_expand": -0.0034577667926846134,
+    "previous_action_verify": 2466622459.142749,
+    "parent_relative_score": -0.0201873779296875
+  },
+  "intercept": -33827965157.649235
+}

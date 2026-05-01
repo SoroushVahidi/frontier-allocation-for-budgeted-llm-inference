@@ -1,0 +1,25 @@
+evidence_layer,dataset,budget,method_a,method_b,comparison_rule,n_paired,accuracy_a,accuracy_b,mean_difference,bootstrap_ci_low,bootstrap_ci_high,permutation_p_value,win_count,tie_count,loss_count,interpretation
+held_out_surface,Idavidrein/gpqa,4,strict_f3,strict_gate1_cap_k6,required,2,0.5,0.5,0.0,0.0,0.0,1.0,0,2,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,4,strict_f3,external_l1_max,required,2,0.5,0.0,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,4,strict_gate1_cap_k6,external_l1_max,required,2,0.5,0.0,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,4,strict_f3,self_consistency_3,required,2,0.5,0.5,0.0,-1.0,1.0,1.0,1,0,1,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,4,strict_f2,external_l1_max,required_best_frontier,2,1.0,0.0,1.0,1.0,1.0,0.5,2,0,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,4,strict_f2,l1_exact,family_if_available,2,1.0,0.5,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,all,strict_f3,strict_gate1_cap_k6,required,2,0.5,0.5,0.0,0.0,0.0,1.0,0,2,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,all,strict_f3,external_l1_max,required,2,0.5,0.0,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,all,strict_gate1_cap_k6,external_l1_max,required,2,0.5,0.0,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,all,strict_f3,self_consistency_3,required,2,0.5,0.5,0.0,-1.0,1.0,1.0,1,0,1,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,all,strict_f2,external_l1_max,required_best_frontier,2,1.0,0.0,1.0,1.0,1.0,0.5,2,0,0,difference fragile / not statistically decisive
+held_out_surface,Idavidrein/gpqa,all,strict_f2,l1_exact,family_if_available,2,1.0,0.5,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,overall,4,strict_f3,strict_gate1_cap_k6,required,2,0.5,0.5,0.0,0.0,0.0,1.0,0,2,0,difference fragile / not statistically decisive
+held_out_surface,overall,4,strict_f3,external_l1_max,required,2,0.5,0.0,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,overall,4,strict_gate1_cap_k6,external_l1_max,required,2,0.5,0.0,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,overall,4,strict_f3,self_consistency_3,required,2,0.5,0.5,0.0,-1.0,1.0,1.0,1,0,1,difference fragile / not statistically decisive
+held_out_surface,overall,4,strict_f2,external_l1_max,required_best_frontier,2,1.0,0.0,1.0,1.0,1.0,0.5,2,0,0,difference fragile / not statistically decisive
+held_out_surface,overall,4,strict_f2,l1_exact,family_if_available,2,1.0,0.5,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,overall,all,strict_f3,strict_gate1_cap_k6,required,2,0.5,0.5,0.0,0.0,0.0,1.0,0,2,0,difference fragile / not statistically decisive
+held_out_surface,overall,all,strict_f3,external_l1_max,required,2,0.5,0.0,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,overall,all,strict_gate1_cap_k6,external_l1_max,required,2,0.5,0.0,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive
+held_out_surface,overall,all,strict_f3,self_consistency_3,required,2,0.5,0.5,0.0,-1.0,1.0,1.0,1,0,1,difference fragile / not statistically decisive
+held_out_surface,overall,all,strict_f2,external_l1_max,required_best_frontier,2,1.0,0.0,1.0,1.0,1.0,0.5,2,0,0,difference fragile / not statistically decisive
+held_out_surface,overall,all,strict_f2,l1_exact,family_if_available,2,1.0,0.5,0.5,0.0,1.0,1.0,1,1,0,difference fragile / not statistically decisive

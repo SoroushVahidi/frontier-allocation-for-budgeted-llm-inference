@@ -1,0 +1,2 @@
+issue_type,detail,model_path
+model_load_failed,"UnpicklingError(""invalid load key, 'n'."")",/tmp/pytest-of-sv96/pytest-26/test_model_load_failure_retrai0/bad_model.joblib

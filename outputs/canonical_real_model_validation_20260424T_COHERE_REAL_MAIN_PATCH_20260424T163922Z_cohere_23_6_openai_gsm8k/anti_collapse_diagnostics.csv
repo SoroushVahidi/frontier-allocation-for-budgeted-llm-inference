@@ -1,0 +1,6 @@
+method,n,repeat_event_rate,repeat_count_mean,repeat_rate_mean,max_consecutive_same_family_mean,max_family_expansion_share_mean
+external_l1_max,20,0.0,0.0,0.0,0.0,0.0
+self_consistency_3,20,0.0,0.0,0.0,0.0,0.0
+strict_f2,20,0.3,0.95,0.17833333333333334,0.0,0.0
+strict_f3,20,0.35,1.05,0.2125,0.0,0.0
+strict_gate1_cap_k6,20,0.3,0.8,0.14166666666666666,0.0,0.0

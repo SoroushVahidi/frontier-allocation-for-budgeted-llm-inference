@@ -1,0 +1,6 @@
+{
+  "selected_model": "logistic_regression",
+  "selected_split": "leave_one_problem_out::e1",
+  "selection_basis": "max improvement on gold-present cases, then top1, then accuracy",
+  "diagnostic_only": true
+}

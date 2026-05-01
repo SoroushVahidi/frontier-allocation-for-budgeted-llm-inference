@@ -1,0 +1,4 @@
+method,n_cases,mean_forced_min_depth,transition_observed_rate,mean_transition_action
+strict_f3,150,3.0,0.18666666666666668,3.7142857142857144
+strict_f3_exhaustive_depth2_probe,150,2.0,0.5666666666666667,3.447058823529412
+strict_f3_exhaustive_depth3_probe,150,3.0,0.21333333333333335,3.6875

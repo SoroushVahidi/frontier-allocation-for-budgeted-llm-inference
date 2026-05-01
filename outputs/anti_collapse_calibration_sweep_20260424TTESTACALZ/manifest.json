@@ -1,0 +1,59 @@
+{
+  "artifact_family": "anti_collapse_calibration_sweep",
+  "timestamp": "20260424TTESTACALZ",
+  "surface": {
+    "canonical_surface_id": "canonical_full_method_ranking_20260421T212948Z",
+    "datasets": [
+      "openai/gsm8k",
+      "HuggingFaceH4/MATH-500",
+      "HuggingFaceH4/aime_2024"
+    ],
+    "budgets": [
+      4
+    ],
+    "seeds": [
+      11
+    ],
+    "subset_size": 2
+  },
+  "variants": [
+    {
+      "variant": "anti_collapse_off",
+      "runtime_method": "strict_f3_ablation_no_anti_collapse_v1",
+      "enable_output_repair": true
+    },
+    {
+      "variant": "anti_collapse_weak",
+      "runtime_method": "strict_f3_anti_collapse_weak_v1",
+      "enable_output_repair": true
+    },
+    {
+      "variant": "anti_collapse_default",
+      "runtime_method": "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1",
+      "enable_output_repair": true
+    },
+    {
+      "variant": "anti_collapse_strong",
+      "runtime_method": "strict_f3_anti_collapse_strong_v1",
+      "enable_output_repair": true
+    },
+    {
+      "variant": "anti_collapse_conditional",
+      "runtime_method": "strict_f3_anti_collapse_conditional_v1",
+      "enable_output_repair": true
+    }
+  ],
+  "classification": "Default anti-collapse appears overactive/miscalibrated on this surface. Weak anti-collapse is favored here, off also beats default, strong is approximately near-default, and conditional underperforms default.",
+  "output_dir": "outputs/anti_collapse_calibration_sweep_20260424TTESTACALZ",
+  "files": [
+    "manifest.json",
+    "per_case_outcomes.csv",
+    "calibration_summary.csv",
+    "per_budget_summary.csv",
+    "per_dataset_summary.csv",
+    "per_seed_summary.csv",
+    "failure_decomposition.csv",
+    "mechanism_diagnostics.csv",
+    "summary.md"
+  ]
+}

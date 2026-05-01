@@ -1,0 +1,26 @@
+{
+  "artifact_family": "cohere_trace_complete_loss_subset",
+  "timestamp": "20260427T180000Z",
+  "model": "command-r-plus-08-2024",
+  "cohere_api_key_present": true,
+  "smoke_test_passed": true,
+  "inner_run_id": "cohere_direct_reserve_validation_TRACE_SUBSET_20260427T180000Z",
+  "selected_cases": 4,
+  "rerun_cases": 4,
+  "completed_trace_cases": 4,
+  "method_mapping_notes": {
+    "direct_reserve_frontier_gate_v1": "executed as direct_reserve_strong_plus_diverse_margin_gated_v1"
+  },
+  "files": [
+    "selected_cases.jsonl",
+    "per_example_trace_records.jsonl",
+    "branch_traces.jsonl",
+    "step_traces.jsonl",
+    "path_proximity_metrics.csv",
+    "branch_abandonment_audit.csv",
+    "commit_timing_audit.csv",
+    "token_cost_latency_summary.csv",
+    "candidate_controller_fixes.md",
+    "manifest.json"
+  ]
+}

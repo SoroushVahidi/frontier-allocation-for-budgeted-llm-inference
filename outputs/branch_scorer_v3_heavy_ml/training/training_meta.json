@@ -1,0 +1,15 @@
+{
+  "train_rows": 439334,
+  "test_rows": 111090,
+  "models_written": [
+    "adaptive_learned_branch_score",
+    "adaptive_learned_branch_score_v1",
+    "adaptive_learned_branch_score_v2",
+    "adaptive_learned_branch_score_v3",
+    "adaptive_learned_branch_score_v3_linear",
+    "adaptive_learned_branch_score_v4",
+    "adaptive_learned_branch_score_v4_linear",
+    "adaptive_learned_branch_score_v5",
+    "adaptive_learned_branch_score_v6"
+  ]
+}

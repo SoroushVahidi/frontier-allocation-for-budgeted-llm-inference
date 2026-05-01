@@ -1,0 +1,9 @@
+method,example_id,answer_groups_by_strategy_family
+strict_f3,openai_gsm8k_1,{}
+strict_f3_direction_combinatorics_guard_v1,openai_gsm8k_1,{}
+strict_f3_typed_strategy_seeded_v1,openai_gsm8k_1,"{""direct_formula_family"": [], ""explicit_case_split_family"": [], ""enumeration_or_decomposition_family"": [], ""small_example_pattern_family"": [""0""], ""sanity_check_verifier_family"": []}"
+external_l1_max,openai_gsm8k_1,{}
+strict_f3,openai_gsm8k_101,{}
+strict_f3_direction_combinatorics_guard_v1,openai_gsm8k_101,{}
+strict_f3_typed_strategy_seeded_v1,openai_gsm8k_101,"{""direct_formula_family"": [], ""explicit_case_split_family"": [], ""enumeration_or_decomposition_family"": [], ""small_example_pattern_family"": [""7""], ""sanity_check_verifier_family"": []}"
+external_l1_max,openai_gsm8k_101,{}

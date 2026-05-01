@@ -1,0 +1,7 @@
+provider,method,mean_accuracy,accuracy_per_1k_tokens,accuracy_per_estimated_dollar,total_tokens,estimated_total_cost_usd
+cohere,external_l1_max,0.0,0.0,0.0,0.0,0.0
+cohere,s1,0.0,0.0,0.0,0.0,0.0
+cohere,strict_f3,0.0,0.0,0.0,0.0,0.0
+cohere,strict_f3_anti_collapse_weak_v1,0.0,0.0,0.0,0.0,0.0
+cohere,strict_gate1_cap_k6,0.0,0.0,0.0,0.0,0.0
+cohere,tale,0.0,0.0,0.0,0.0,0.0

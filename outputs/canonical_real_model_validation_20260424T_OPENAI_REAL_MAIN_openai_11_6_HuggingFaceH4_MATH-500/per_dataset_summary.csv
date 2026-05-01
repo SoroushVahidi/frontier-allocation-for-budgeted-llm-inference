@@ -1,0 +1,6 @@
+dataset,method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+HuggingFaceH4/MATH-500,external_l1_max,20,0.7,0.3,0.0,0.0,0.0,2.95,2.95,0.0
+HuggingFaceH4/MATH-500,self_consistency_3,20,0.55,0.4,0.05,0.0,0.0,6.0,4.9,1.1
+HuggingFaceH4/MATH-500,strict_f2,20,0.55,0.45,0.0,0.0,0.0,5.6,5.3,0.3
+HuggingFaceH4/MATH-500,strict_f3,20,0.6,0.4,0.0,0.0,0.0,5.2,4.55,0.65
+HuggingFaceH4/MATH-500,strict_gate1_cap_k6,20,0.55,0.45,0.0,0.0,0.0,5.8,5.45,0.35

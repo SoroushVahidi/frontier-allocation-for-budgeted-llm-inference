@@ -1,0 +1,7 @@
+variant,avg_max_family_expansion_share,avg_longest_same_family_run,anti_collapse_trigger_rate,repeat_penalty_trigger_rate,low_marginal_gain_trigger_rate
+allocation_only_core,0.0,0.0,0.0,0.0,0.0
+full_integrated,0.0,0.0,0.0,0.0,0.19375
+no_answer_support,0.0,0.0,0.0,0.0,0.228125
+no_anti_collapse,0.0,0.0,0.0,0.0,0.0
+no_output_repair,0.0,0.0,0.0,0.0,0.19375
+no_repeat_expansion_control,0.0,0.0,0.0,0.0,0.0

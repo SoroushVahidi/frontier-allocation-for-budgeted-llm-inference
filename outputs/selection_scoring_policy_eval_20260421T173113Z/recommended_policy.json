@@ -1,0 +1,7 @@
+{
+  "best_variant_overall": "current_selection_control",
+  "best_variant_for_present_not_selected_recovery": "current_selection_control",
+  "beats_control_overall": false,
+  "beats_control_on_present_not_selected_recovery": false,
+  "recommended_policy": "current_selection_control"
+}

@@ -1,0 +1,2 @@
+dataset,budget,seed,winner_method,winner_family,top_accuracy,second_method,second_accuracy,margin,notes
+Idavidrein/gpqa,4,11,strict_f2,frontier,1.0,l1_exact,0.5,0.5,

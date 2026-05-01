@@ -1,0 +1,10 @@
+{
+  "pooled_from_seeds": [
+    7,
+    19,
+    23
+  ],
+  "rows": 550424,
+  "train_rows": 439334,
+  "test_rows": 111090
+}

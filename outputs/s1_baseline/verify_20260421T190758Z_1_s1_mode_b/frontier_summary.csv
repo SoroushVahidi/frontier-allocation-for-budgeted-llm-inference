@@ -1,0 +1,6 @@
+method,mode,dataset,dataset_split,budget_actions,budget_token_equivalent,num_seeds,mean_accuracy,std_accuracy,mean_avg_actions,mean_avg_token_cost_equivalent,mean_budget_exhaustion_rate,mean_budget_violation_rate
+adaptive_min_expand_1,full_or_official,openai/gsm8k,test,4,256.0,3,0.3229166666666667,0.03897559777889522,2.7291666666666665,174.66666666666666,0.3541666666666667,0.0
+adaptive_min_expand_1,full_or_official,openai/gsm8k,test,6,384.0,3,0.3854166666666667,0.05311478659992484,3.2916666666666665,210.66666666666666,0.22916666666666666,0.0
+adaptive_min_expand_1,full_or_official,openai/gsm8k,test,8,512.0,3,0.4166666666666667,0.07795119555779044,4.614583333333333,295.3333333333333,0.3020833333333333,0.0
+external_s1_budget_forcing,full_or_official,openai/gsm8k,test,4,256.0,3,0.5208333333333334,0.06421264586426018,3.1770833333333335,203.33333333333334,0.09375,0.0
+external_s1_budget_forcing,full_or_official,openai/gsm8k,test,8,512.0,3,0.53125,0.0,3.5104166666666665,224.66666666666666,0.0,0.0

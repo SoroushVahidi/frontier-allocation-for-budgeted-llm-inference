@@ -1,0 +1,6 @@
+category,count
+bad_seeding_absent_answer_group,38
+correct_answer_group_present_but_underweighted,9
+not_applicable_or_correct,43
+trace_sparse_or_truncated,30
+unknown_unclassified,330

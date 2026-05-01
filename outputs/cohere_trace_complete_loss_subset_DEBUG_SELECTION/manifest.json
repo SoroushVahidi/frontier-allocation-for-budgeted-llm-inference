@@ -1,0 +1,8 @@
+{
+  "artifact_family": "cohere_trace_complete_loss_subset",
+  "timestamp": "DEBUG_SELECTION",
+  "model": "command-r-plus-08-2024",
+  "run_live_rerun": false,
+  "selected_cases": 4,
+  "note": "Selection artifacts only. Re-run with --run-live-rerun for API execution."
+}

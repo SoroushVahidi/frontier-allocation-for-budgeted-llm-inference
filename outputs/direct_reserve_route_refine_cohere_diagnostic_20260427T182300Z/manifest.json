@@ -1,0 +1,20 @@
+{
+  "artifact_family": "direct_reserve_route_refine_cohere_diagnostic",
+  "timestamp": "20260427T182300Z",
+  "provider": "cohere",
+  "model": "command-r-plus-08-2024",
+  "method": "direct_reserve_route_refine_v1",
+  "cohere_api_key_present": true,
+  "smoke_test_passed": true,
+  "selected_cases": 4,
+  "completed_trace_cases": 0,
+  "files": [
+    "paired_summary.csv",
+    "per_case_decisions.jsonl",
+    "route_decision_summary.csv",
+    "token_cost_latency_summary.csv",
+    "failure_mode_summary.csv",
+    "candidate_next_changes.md",
+    "manifest.json"
+  ]
+}

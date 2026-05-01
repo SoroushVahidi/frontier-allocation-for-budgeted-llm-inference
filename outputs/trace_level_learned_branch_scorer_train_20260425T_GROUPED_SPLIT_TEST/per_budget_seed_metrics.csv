@@ -1,0 +1,6 @@
+split,model,budget,seed,n_rows,top1_candidate_selection_accuracy,learned_selected_gold_rate,current_controller_selected_gold_rate
+grouped_problem_holdout,gradient_boosting,8,23,2,1.0,1.0,1.0
+grouped_problem_holdout,hist_gradient_boosting,8,23,2,1.0,1.0,1.0
+grouped_problem_holdout,logistic_regression,8,23,2,1.0,1.0,1.0
+grouped_problem_holdout,pairwise_logistic,8,23,2,1.0,1.0,1.0
+grouped_problem_holdout,random_forest,8,23,2,1.0,1.0,1.0

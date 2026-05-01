@@ -1,0 +1,74 @@
+{
+  "seeds": [
+    3,
+    7,
+    11,
+    19,
+    23
+  ],
+  "budgets": [
+    8,
+    10,
+    12
+  ],
+  "init_branches": [
+    3,
+    5,
+    7
+  ],
+  "episodes_per_setting": 1200,
+  "methods": [
+    "adaptive_relative_rank",
+    "adaptive_score_plus_progress",
+    "adaptive_learned_branch_score",
+    "adaptive_learned_branch_score_v4",
+    "adaptive_learned_branch_score_v5",
+    "adaptive_learned_branch_score_v6"
+  ],
+  "method_accuracy_stats": {
+    "adaptive_relative_rank": {
+      "mean_accuracy": 0.5767777777777778,
+      "std_accuracy": 0.031031942921471767
+    },
+    "adaptive_score_plus_progress": {
+      "mean_accuracy": 0.5732962962962963,
+      "std_accuracy": 0.03472997938041513
+    },
+    "adaptive_learned_branch_score": {
+      "mean_accuracy": 0.5753518518518519,
+      "std_accuracy": 0.033634972654359836
+    },
+    "adaptive_learned_branch_score_v4": {
+      "mean_accuracy": 0.5771481481481482,
+      "std_accuracy": 0.03531930577981645
+    },
+    "adaptive_learned_branch_score_v5": {
+      "mean_accuracy": 0.575,
+      "std_accuracy": 0.0369530065266417
+    },
+    "adaptive_learned_branch_score_v6": {
+      "mean_accuracy": 0.577037037037037,
+      "std_accuracy": 0.031230206351411046
+    }
+  },
+  "v6_margin_vs_relative_rank_mean": 0.00025925925925925536,
+  "v6_margin_vs_relative_rank_std": 0.019444303350458107,
+  "v6_win_rate_vs_relative_rank": 0.5111111111111111,
+  "v6_win_count_vs_relative_rank": 23,
+  "v6_margin_vs_v5_mean": 0.0020370370370370347,
+  "v6_margin_vs_v5_std": 0.020286950402979474,
+  "trial_count": 45,
+  "best_setting_for_v6_margin_vs_relative_rank": {
+    "seed": 7,
+    "budget": 12,
+    "init_branches": 3,
+    "margin": 0.04499999999999993
+  },
+  "worst_setting_for_v6_margin_vs_relative_rank": {
+    "seed": 3,
+    "budget": 8,
+    "init_branches": 3,
+    "margin": -0.033333333333333326
+  },
+  "v6_robustly_beats_relative_rank": false
+}

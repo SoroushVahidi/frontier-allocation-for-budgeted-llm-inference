@@ -1,0 +1,17 @@
+==== Semantic diversity Cohere loss-full trace-complete diagnostic ====
+hostname=n0111
+date_utc=2026-04-27T23:49:29Z
+job_id=1011561
+repo_root=/home/sv96/adaptive-reasoning-budget-allocation
+git_commit=254cd66e318d9cffdef1a96609bdd79bc711b0a8
+python=/apps/easybuild/software/Anaconda3/2023.09-0/bin/python
+Python 3.11.5
+COHERE_API_KEY: present
+Running trace-complete loss subset (max 30 cases, budgets 4,6,8; selection-profile loss-full)
+COHERE_API_KEY: present
+smoke_test: success model=command-r-plus-08-2024
+smoke_tokens: {"input_tokens": 202.0, "output_tokens": 2.0}
+cohere_mode ok=True msg=ok out_dir=/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/semantic_diversity_controller_diagnostic_20260427T232800Z
+runner_exit_code=0
+outputs_dir=/home/sv96/adaptive-reasoning-budget-allocation/outputs/semantic_diversity_controller_diagnostic_20260427T232800Z
+report_doc=/home/sv96/adaptive-reasoning-budget-allocation/docs/SEMANTIC_DIVERSITY_CONTROLLER_DIAGNOSTIC_20260427T232800Z.md

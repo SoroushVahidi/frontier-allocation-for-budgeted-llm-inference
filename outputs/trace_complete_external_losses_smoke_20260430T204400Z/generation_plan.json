@@ -1,0 +1,31 @@
+{
+  "created_at_utc": "2026-04-30T20:42:50.868116+00:00",
+  "existing_trace_complete_losses_found": 0,
+  "additional_trace_complete_losses_needed": 200,
+  "target_trace_losses": 200,
+  "planned_dataset": "gsm8k",
+  "planned_budgets": [
+    4
+  ],
+  "planned_seeds": [
+    11
+  ],
+  "planned_internal_methods": [
+    "direct_reserve_semantic_frontier_v2",
+    "strict_f3"
+  ],
+  "planned_external_methods": [
+    "external_l1_max"
+  ],
+  "planned_examples_to_evaluate": 3,
+  "expected_cohere_generation_calls": 3,
+  "expected_cohere_diagnostic_annotation_calls": 3,
+  "cohere_generation_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_smoke_20260430T204400Z/cohere_generation_cache.jsonl",
+  "cohere_annotation_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_smoke_20260430T204400Z/cohere_annotation_cache.jsonl",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_smoke_20260430T204400Z",
+  "model_name": "command-r-plus-08-2024",
+  "safety_cap_generation_calls": 2000,
+  "safety_cap_annotation_calls": 200,
+  "smoke_generate": true,
+  "smoke_limit": 3
+}

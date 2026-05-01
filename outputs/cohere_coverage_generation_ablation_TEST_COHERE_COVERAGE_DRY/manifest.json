@@ -1,0 +1,26 @@
+{
+  "run_id": "cohere_coverage_generation_ablation_TEST_COHERE_COVERAGE_DRY",
+  "timestamp": "TEST_COHERE_COVERAGE_DRY",
+  "provider": "cohere",
+  "model": "command-r-plus-08-2024",
+  "methods": [
+    "strict_f3",
+    "external_l1_max",
+    "direct_reserve_strong_v1",
+    "direct_reserve_strong_plus_diverse_v1"
+  ],
+  "budgets": [
+    4
+  ],
+  "seeds": [
+    11
+  ],
+  "planned_cases_file": "/tmp/pytest-of-sv96/pytest-26/test_dry_run_outputs_and_no_re0/planned_cases.csv",
+  "n_base_cases": 1,
+  "n_runs": 4,
+  "run_real_api_requested": false,
+  "real_api_enabled": false,
+  "dry_run": true,
+  "resume": false,
+  "emit_full_traces": false
+}

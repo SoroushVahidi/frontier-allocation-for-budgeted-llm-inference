@@ -1,0 +1,9 @@
+check,status,detail
+required_table::table1_benchmark_method_summary.csv,pass,outputs/paper_tables/table1_benchmark_method_summary.csv
+required_table::table1_benchmark_method_summary.tex,pass,outputs/paper_tables/table1_benchmark_method_summary.tex
+required_table::table5_failure_decomposition.csv,pass,outputs/paper_tables/table5_failure_decomposition.csv
+required_table::table5_failure_decomposition.tex,pass,outputs/paper_tables/table5_failure_decomposition.tex
+required_figure::figure2_main_frontier.pdf,pass,outputs/paper_figures/figure2_main_frontier.pdf
+required_figure::figure3_failure_decomposition.pdf,pass,outputs/paper_figures/figure3_failure_decomposition.pdf
+table1_nonempty,pass,rows=1 source=outputs/paper_tables/table1_benchmark_method_summary.csv
+figure3_methods_match_appendix_failure_table_methods,warning,"figure3_methods=[] appendix_methods=['strict_f2', 'strict_f3', 'strict_gate1_cap_k6']"

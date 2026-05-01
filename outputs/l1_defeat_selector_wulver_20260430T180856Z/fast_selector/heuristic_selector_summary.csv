@@ -1,0 +1,7 @@
+method,accuracy,n_examples
+current_dr_v2,0.4,5
+external_l1_max,0.2,5
+oracle_selector,0.8,5
+heuristic_keep_dr_v2,0.4,5
+heuristic_max_support,0.4,5
+heuristic_prefer_l1_if_present,0.2,5

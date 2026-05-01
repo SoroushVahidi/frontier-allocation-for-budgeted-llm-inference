@@ -1,0 +1,3 @@
+dataset,method,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+openai/gsm8k,external_l1_max,120,0.7166666666666667,0.2833333333333333,0.0,0.0,0.0,1.0333333333333334,1.0333333333333334,0.0
+openai/gsm8k,strict_f3,120,0.6,0.325,0.075,0.0,0.0,2.7333333333333334,2.566666666666667,0.16666666666666666

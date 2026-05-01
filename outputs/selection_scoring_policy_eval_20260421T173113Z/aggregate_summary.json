@@ -1,0 +1,76 @@
+{
+  "current_selection_control": {
+    "n_cases": 100,
+    "overall_accuracy": 0.56,
+    "absent_from_tree": 26,
+    "present_not_selected": 18,
+    "recovered_present_not_selected_cases": 0,
+    "accuracy_when_gold_in_tree": 0.7567567567567568,
+    "head_to_head_vs_control": {
+      "unchanged": 100
+    },
+    "avg_actions": 9.49,
+    "avg_expansions": 8.75,
+    "avg_verifications": 0.74
+  },
+  "answer_group_support_only": {
+    "n_cases": 100,
+    "overall_accuracy": 0.55,
+    "absent_from_tree": 26,
+    "present_not_selected": 19,
+    "recovered_present_not_selected_cases": 0,
+    "accuracy_when_gold_in_tree": 0.7432432432432432,
+    "head_to_head_vs_control": {
+      "unchanged": 99,
+      "worsened": 1
+    },
+    "avg_actions": 9.49,
+    "avg_expansions": 8.75,
+    "avg_verifications": 0.74
+  },
+  "answer_group_support_plus_node_score": {
+    "n_cases": 100,
+    "overall_accuracy": 0.55,
+    "absent_from_tree": 26,
+    "present_not_selected": 19,
+    "recovered_present_not_selected_cases": 0,
+    "accuracy_when_gold_in_tree": 0.7432432432432432,
+    "head_to_head_vs_control": {
+      "unchanged": 99,
+      "worsened": 1
+    },
+    "avg_actions": 9.49,
+    "avg_expansions": 8.75,
+    "avg_verifications": 0.74
+  },
+  "answer_group_support_plus_calibrated_score": {
+    "n_cases": 100,
+    "overall_accuracy": 0.55,
+    "absent_from_tree": 26,
+    "present_not_selected": 19,
+    "recovered_present_not_selected_cases": 0,
+    "accuracy_when_gold_in_tree": 0.7432432432432432,
+    "head_to_head_vs_control": {
+      "unchanged": 99,
+      "worsened": 1
+    },
+    "avg_actions": 9.49,
+    "avg_expansions": 8.75,
+    "avg_verifications": 0.74
+  },
+  "answer_group_support_plus_score_plus_tiebreak_cleanup": {
+    "n_cases": 100,
+    "overall_accuracy": 0.55,
+    "absent_from_tree": 26,
+    "present_not_selected": 19,
+    "recovered_present_not_selected_cases": 0,
+    "accuracy_when_gold_in_tree": 0.7432432432432432,
+    "head_to_head_vs_control": {
+      "unchanged": 99,
+      "worsened": 1
+    },
+    "avg_actions": 9.49,
+    "avg_expansions": 8.75,
+    "avg_verifications": 0.74
+  }
+}

@@ -1,0 +1,5 @@
+example_id,seed,budget,path_bucket,source_stratum,correct_region_entered_proxy
+openai_gsm8k_12,23,4,immediate_miss,confirmed_absent_from_tree,0
+openai_gsm8k_3,23,4,immediate_miss,confirmed_absent_from_tree,0
+openai_gsm8k_5,23,4,immediate_miss,confirmed_absent_from_tree,0
+openai_gsm8k_6,23,4,immediate_miss,confirmed_absent_from_tree,0

@@ -1,0 +1,5 @@
+provider,dataset,provider_model,subset_size,method,status,n_examples,accuracy,avg_actions,avg_expansions,avg_verifications,avg_surviving_branches,budget_exhaustion_rate,avg_calibrated_zscore,failure_reason,error
+openai,EleutherAI/hendrycks_math,gpt-4.1-mini,60,adaptive_relative_rank,ok,60,0.13333333333333333,2.216666666666667,0.7333333333333333,1.4833333333333334,0.7761111111111112,0.016666666666666666,-0.397587,,
+openai,EleutherAI/hendrycks_math,gpt-4.1-mini,60,adaptive_score_plus_progress,ok,60,0.08333333333333333,1.7666666666666666,0.5,1.2666666666666666,0.6861111111111111,0.016666666666666666,-0.511154,,
+openai,EleutherAI/hendrycks_math,gpt-4.1-mini,60,adaptive_learned_branch_score_v4,ok,60,0.13333333333333333,2.033333333333333,0.6166666666666667,1.4166666666666667,0.7491666666666668,0.05,-0.434029,,
+openai,EleutherAI/hendrycks_math,gpt-4.1-mini,60,best_of_n,ok,60,0.7833333333333333,7.883333333333334,6.383333333333334,1.5,2.189702380952382,0.9333333333333333,,,

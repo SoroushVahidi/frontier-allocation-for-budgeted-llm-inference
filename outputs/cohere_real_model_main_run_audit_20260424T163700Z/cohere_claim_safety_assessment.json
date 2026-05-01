@@ -1,0 +1,21 @@
+{
+  "n_total_evaluated_rows": 359,
+  "questions": {
+    "A_strict_f3_dominates_strict_gate1_cap_k6": {
+      "answer": "yes",
+      "strict_f3_accuracy": 0.5833333333333334,
+      "strict_gate1_cap_k6_accuracy": 0.56
+    },
+    "B_frontier_allocation_dominates_external_l1_max": {
+      "answer": "no",
+      "external_l1_max_accuracy": 0.7432432432432432,
+      "frontier_accuracy": 0.5714285714285714
+    },
+    "C_frontier_competitive_not_dominant": {
+      "answer": "yes"
+    },
+    "D_recommended_disposition": {
+      "answer": "appendix-only"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+method,stratum,n_cases,gold_present_count,selected_gold_count,selected_gold_rate,control_degradation_count
+direct_reserve_strong_plus_diverse_margin_gated_v1,immediate_miss,24,18,12,0.5,0
+direct_reserve_strong_plus_diverse_v1,immediate_miss,24,19,14,0.5833333333333334,0
+direct_reserve_strong_v1,immediate_miss,24,9,9,0.375,0
+external_l1_max,immediate_miss,24,18,0,0.0,0
+strict_f3,immediate_miss,24,10,0,0.0,0
+strict_f3_anti_collapse_weak_v1,immediate_miss,24,12,0,0.0,0

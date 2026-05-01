@@ -1,0 +1,10 @@
+{
+  "source_dataset_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/direct_reserve_candidate_scorer_dataset_20260426T150000Z/examples.csv",
+  "models": [
+    "pair_logit",
+    "pair_vectorizer",
+    "rf",
+    "vectorizer"
+  ],
+  "note": "fallback retrain due model load compatibility in current environment"
+}

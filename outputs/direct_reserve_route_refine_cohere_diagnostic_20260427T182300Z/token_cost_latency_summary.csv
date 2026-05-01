@@ -1,0 +1,4 @@
+method,n_rows,mean_token_estimate,mean_estimated_cost_usd,mean_latency_seconds
+direct_reserve_route_refine_v1,4,1.0,0.0,7.17066075
+external_l1_max,4,0.0,0.0,0.0
+strict_f3,4,0.0,0.0,0.0

@@ -1,0 +1,17 @@
+dataset,method,n_cases,mean_accuracy,avg_actions,avg_expansions,avg_verifications,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate
+Idavidrein/gpqa,external_l1_max,24,0.4166666666666667,2.0,2.0,0.0,0.5833333333333334,0.0,0.0
+Idavidrein/gpqa,external_s1_budget_forcing,24,0.3333333333333333,3.3333333333333335,3.3333333333333335,0.0,0.6666666666666666,0.0,0.0
+Idavidrein/gpqa,external_tale_prompt_budgeting,24,0.4583333333333333,1.875,1.875,0.0,0.5416666666666666,0.0,0.0
+Idavidrein/gpqa,self_consistency_3,24,0.5833333333333334,5.0,3.5,1.5,0.375,0.041666666666666664,0.0
+Idavidrein/gpqa,self_consistency_5,24,0.6666666666666666,5.0,3.875,1.125,0.25,0.08333333333333333,0.0
+Idavidrein/gpqa,strict_f3,24,0.6666666666666666,4.333333333333333,4.041666666666667,0.2916666666666667,0.3333333333333333,0.0,0.0
+Idavidrein/gpqa,strict_f3_anti_collapse_weak_v1,24,0.5833333333333334,4.5,4.5,0.0,0.3333333333333333,0.08333333333333333,0.0
+Idavidrein/gpqa,strict_gate1_cap_k6,24,0.625,4.583333333333333,4.333333333333333,0.25,0.375,0.0,0.0
+google-deepmind/natural-plan,external_l1_max,16,0.5625,2.125,2.125,0.0,0.4375,0.0,0.0
+google-deepmind/natural-plan,external_s1_budget_forcing,16,0.625,3.5625,3.5625,0.0,0.375,0.0,0.0
+google-deepmind/natural-plan,external_tale_prompt_budgeting,16,0.5625,2.25,2.25,0.0,0.4375,0.0,0.0
+google-deepmind/natural-plan,self_consistency_3,16,0.4375,5.0,3.5,1.5,0.4375,0.125,0.0
+google-deepmind/natural-plan,self_consistency_5,16,0.625,5.0,4.0625,0.9375,0.375,0.0,0.0
+google-deepmind/natural-plan,strict_f3,16,0.6875,3.875,3.5625,0.3125,0.3125,0.0,0.0
+google-deepmind/natural-plan,strict_f3_anti_collapse_weak_v1,16,0.6875,4.5625,4.5625,0.0,0.1875,0.125,0.0
+google-deepmind/natural-plan,strict_gate1_cap_k6,16,0.5625,4.25,4.1875,0.0625,0.375,0.0625,0.0

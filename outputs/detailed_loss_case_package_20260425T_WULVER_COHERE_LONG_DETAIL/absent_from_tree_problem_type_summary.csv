@@ -1,0 +1,6 @@
+slice,problem_type,count,share
+absent_from_tree,comparison,6,0.02608695652173913
+absent_from_tree,counting_combinatorics,143,0.6217391304347826
+absent_from_tree,multi_step_arithmetic,28,0.12173913043478261
+absent_from_tree,ratio_percent,36,0.1565217391304348
+absent_from_tree,unit_conversion,17,0.07391304347826087

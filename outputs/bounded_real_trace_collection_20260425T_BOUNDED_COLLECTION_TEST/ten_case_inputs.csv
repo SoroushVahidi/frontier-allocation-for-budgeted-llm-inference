@@ -1,0 +1,4 @@
+case_idx,example_id,seed,budget,dataset,question,gold_answer_raw,gold_answer
+1,openai_gsm8k_68,11,4,openai/gsm8k,"There are twice as many boys as girls at Dr. Wertz's school. If there are 60 girls and 5 students to every teacher, how many teachers are there?",36,36
+2,a2,11,4,openai/gsm8k,q2,6,6
+3,openai_gsm8k_4,11,4,openai/gsm8k,"Jennifer's dog has 8 puppies, 3 of which have spots. Brandon's dog has 12 puppies, 4 of which have spots. What percentage of all the puppies have spots?",35,35

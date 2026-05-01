@@ -1,0 +1,49 @@
+{
+  "run_id": "verify_20260421T190758Z_5_l1_mode_b",
+  "created_utc": "2026-04-21T19:09:40.669474+00:00",
+  "mode": "official_full_adapter",
+  "dataset": "openai/gsm8k",
+  "subset_size": 32,
+  "seeds": [
+    11,
+    23,
+    37
+  ],
+  "budget_grid_actions": [
+    4,
+    6,
+    8
+  ],
+  "budget_matching": {
+    "action_to_token_equivalent": 64.0,
+    "policy": "fixed linear conversion for matched-budget reporting"
+  },
+  "model": {
+    "use_openai_api": false,
+    "provider": "openai",
+    "name": "gpt-4.1-mini",
+    "temperature": 0.2,
+    "max_output_tokens": 180
+  },
+  "l1_adapter": {
+    "exact_token_budget": 512,
+    "max_token_budget": 512,
+    "token_per_action": 64.0,
+    "prompt_style": "Let's think step by step and output the final answer within \\boxed{}.",
+    "variants": [
+      "external_l1_exact",
+      "external_l1_max"
+    ]
+  },
+  "methods": [
+    "adaptive_min_expand_1",
+    "external_l1_exact",
+    "external_l1_max"
+  ],
+  "mode_b_official": {
+    "enabled": true,
+    "status": "blocked",
+    "notes": "Official mode requested, but this repo does not reproduce L1 RL training automatically. Provide `official.results_path` with exported official run metrics to complete MODE B reporting."
+  },
+  "guardrail": "MODE A is inference-only L1-style conditioning on unchanged base model family. MODE B is secondary and not apples-to-apples if it includes RL-trained L1 checkpoints."
+}

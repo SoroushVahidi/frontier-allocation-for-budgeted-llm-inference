@@ -1,0 +1,138 @@
+# Ignored/Unpushed Artifact Audit
+
+- generated_at_utc: 2026-04-30T19:20:52.363830+00:00
+- head: `5d9347d2cd4c5ec0d4bf91ae7c41f95ef9917323`
+- origin_main: `5d9347d2cd4c5ec0d4bf91ae7c41f95ef9917323`
+- head_equals_origin_main: `True`
+- ignored_file_count: `778`
+- total_ignored_size: `1.3GB`
+
+## Counts By Category
+
+- cache: 585 files, 12.1MB
+- loss_casebook_output: 4 files, 343.9KB
+- per_example_records: 8 files, 97.8MB
+- raw_casebook: 8 files, 1.3MB
+- selector_output: 9 files, 103.2KB
+- summary_or_report: 50 files, 454.9KB
+- unknown: 114 files, 1.2GB
+
+## Focus Directory Snapshot
+
+- outputs/external_loss_casebook_20260430T184023Z/: 4 ignored files
+- outputs/external_loss_casebook_broad_20260430T185500Z/: 8 ignored files
+- outputs/large_selector_tournament_20260430T182316Z/: 18 ignored files
+- outputs/l1_defeat_selector_wulver_20260430T182316Z/: 7 ignored files
+- logs/loss_casebook_200_1016382.: 0 ignored files
+- logs/loss_casebook_broad_: 0 ignored files
+
+## Explicit `git check-ignore -v` Checks
+
+- `outputs/external_loss_casebook_broad_20260430T185500Z/loss_summary.json` -> `TRACKABLE (no ignore match)`
+- `outputs/external_loss_casebook_broad_20260430T185500Z/loss_summary.md` -> `TRACKABLE (no ignore match)`
+- `outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_combined_200.csv` -> `.gitignore:58:outputs/**/*casebook*.csv	outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_combined_200.csv`
+- `outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_combined_200.jsonl` -> `.gitignore:59:outputs/**/*casebook*.jsonl	outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_combined_200.jsonl`
+- `outputs/external_loss_casebook_broad_20260430T185500Z/cohere_annotation_cache.jsonl` -> `.gitignore:63:outputs/**/cohere_annotation_cache.jsonl	outputs/external_loss_casebook_broad_20260430T185500Z/cohere_annotation_cache.jsonl`
+- `outputs/large_selector_tournament_20260430T182316Z/selector_tournament/selector_summary.csv` -> `TRACKABLE (no ignore match)`
+- `outputs/large_selector_tournament_20260430T182316Z/selector_tournament/selector_summary.json` -> `TRACKABLE (no ignore match)`
+
+## High-Importance Ignored Files
+
+- `outputs/dataset_integration_report.json` (13.5KB)
+- `outputs/external_baseline_integration_report.json` (9.0KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_failure_replay_seed_latest_per_example_records.jsonl` (10.5KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT_per_example_records.jsonl` (4.3KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN_per_example_records.jsonl` (4.3KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_CDR_NOKEY_per_example_records.jsonl` (986.0B)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY_per_example_records.jsonl` (3.7KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_EXCL_per_example_records.jsonl` (2.5KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T175000Z_per_example_records.jsonl` (19.2KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T180000Z_per_example_records.jsonl` (3.7KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T183000_DEBUG4_per_example_records.jsonl` (3.7KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z_per_example_records.jsonl` (17.8KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z_per_example_records.jsonl` (17.8KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION_per_example_records.jsonl` (18.8KB)
+- `outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_learned_override_tiny_real_20260426T_LEARNED_OVERRIDE_TINY_REAL_per_example_records.jsonl` (9.3KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_failure_replay_seed_latest_per_example_records.jsonl` (10.5KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT_per_example_records.jsonl` (4.3KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN_per_example_records.jsonl` (4.3KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_CDR_NOKEY_per_example_records.jsonl` (986.0B)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY_per_example_records.jsonl` (3.7KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_EXCL_per_example_records.jsonl` (2.5KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T175000Z_per_example_records.jsonl` (19.2KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T180000Z_per_example_records.jsonl` (3.7KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T183000_DEBUG4_per_example_records.jsonl` (3.7KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z_per_example_records.jsonl` (17.8KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z_per_example_records.jsonl` (17.8KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION_per_example_records.jsonl` (18.8KB)
+- `outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_learned_override_tiny_real_20260426T_LEARNED_OVERRIDE_TINY_REAL_per_example_records.jsonl` (9.3KB)
+- `outputs/local_only_anonymity_scan_report.csv` (26.0B)
+- `scripts/__pycache__/generate_best_route_status_report.cpython-311.pyc` (5.6KB)
+- `scripts/__pycache__/generate_cascade_routing_status_report.cpython-311.pyc` (5.1KB)
+- `scripts/__pycache__/generate_compute_optimal_tts_blocker_report.cpython-311.pyc` (7.3KB)
+- `scripts/__pycache__/generate_dataset_expansion_report.cpython-311.pyc` (12.6KB)
+- `scripts/__pycache__/generate_dataset_experiment_readiness_report.cpython-311.pyc` (10.1KB)
+- `scripts/__pycache__/generate_dataset_integration_report.cpython-311.pyc` (14.7KB)
+- `scripts/__pycache__/generate_external_baseline_completeness_report.cpython-311.pyc` (15.6KB)
+- `scripts/__pycache__/generate_external_baseline_integration_report.cpython-311.pyc` (9.8KB)
+- `scripts/__pycache__/generate_external_reasoning_dataset_integration_report.cpython-311.pyc` (10.1KB)
+- `scripts/__pycache__/generate_hle_integration_report.cpython-311.pyc` (6.7KB)
+- `scripts/__pycache__/generate_lets_verify_step_by_step_status_report.cpython-311.pyc` (5.3KB)
+- `scripts/__pycache__/generate_mob_status_report.cpython-311.pyc` (4.9KB)
+- `scripts/__pycache__/generate_openr_status_report.cpython-311.pyc` (4.9KB)
+- `scripts/__pycache__/generate_rest_mcts_status_report.cpython-311.pyc` (4.9KB)
+- `scripts/__pycache__/generate_s1_mode_b_import_report.cpython-311.pyc` (5.3KB)
+- `scripts/__pycache__/generate_tale_mode_b_import_report.cpython-311.pyc` (5.3KB)
+- `scripts/__pycache__/generate_tree_plv_status_report.cpython-311.pyc` (5.3KB)
+- `scripts/__pycache__/generate_when_solve_when_verify_status_report.cpython-311.pyc` (6.0KB)
+- `scripts/__pycache__/report_outcome_verifier_rerank_results.cpython-311.pyc` (39.1KB)
+- `scripts/paper/__pycache__/plot_figure7_per_dataset_summary.cpython-311.pyc` (5.3KB)
+- `tests/__pycache__/test_report_outcome_verifier_rerank_results.cpython-311-pytest-7.4.0.pyc` (15.1KB)
+
+## Recommended Keep Ignored
+
+- `*.jsonl` raw casebooks/per-example traces/caches
+- verifier/cohere cache files
+- large logs and bulky raw artifacts
+
+## Recommended Consider Tracking
+
+- lightweight summary/report artifacts currently ignored
+- focus run summaries if they support paper/repo decisions
+
+## `docs/` Untracked/Unpushed Check
+
+- untracked_docs_count: `0`
+- none
+
+## Optional `git add -f` Commands (not executed)
+
+git add -f "outputs/dataset_integration_report.json"
+git add -f "outputs/external_baseline_integration_report.json"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_failure_replay_seed_latest_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_CDR_NOKEY_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_EXCL_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T175000Z_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T180000Z_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T183000_DEBUG4_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T181201Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_learned_override_tiny_real_20260426T_LEARNED_OVERRIDE_TINY_REAL_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_failure_replay_seed_latest_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_NEXT_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TARGETED_REPLAY_20260426T_RERUN_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_CDR_NOKEY_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_DRY_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TEST_DIRECT_RESERVE_EXCL_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T175000Z_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T180000Z_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_TRACE_SUBSET_20260427T183000_DEBUG4_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T150000Z_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T151700Z_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_direct_reserve_scorer_data_collection_20260426T_FRESH_GSM8K_SCORER_VALIDATION_per_example_records.jsonl"
+git add -f "outputs/large_selector_tournament_20260430T182316Z/artifact_scan/reconstructed_artifacts/cohere_direct_reserve_validation_learned_override_tiny_real_20260426T_LEARNED_OVERRIDE_TINY_REAL_per_example_records.jsonl"
+git add -f "outputs/local_only_anonymity_scan_report.csv"

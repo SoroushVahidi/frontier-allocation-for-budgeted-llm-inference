@@ -1,0 +1,9 @@
+{
+  "best_heuristic_selector": "heuristic_keep_dr_v2",
+  "best_heuristic_accuracy": 0.4,
+  "delta_vs_dr_v2": 0.0,
+  "delta_vs_external_l1_max": 0.2,
+  "fixes": 0,
+  "breaks": 0,
+  "net_fixes_minus_breaks": 0
+}

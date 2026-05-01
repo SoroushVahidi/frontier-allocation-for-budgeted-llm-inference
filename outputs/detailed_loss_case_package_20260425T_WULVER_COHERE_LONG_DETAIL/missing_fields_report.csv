@@ -1,0 +1,15 @@
+field,missing_count,note
+answer_entropy,720,NA because unavailable in per_example_rows or richer source
+answer_group_support_counts,720,NA because unavailable in per_example_rows or richer source
+branch_score,720,NA because unavailable in per_example_rows or richer source
+commit_margin,720,NA because unavailable in per_example_rows or richer source
+external_final_answer,720,NA because unavailable in per_example_rows or richer source
+external_l1_max_final_answer,720,NA because unavailable in per_example_rows or richer source
+external_l1_max_final_answer_raw,720,NA because unavailable in per_example_rows or richer source
+our_final_answer,720,NA because unavailable in per_example_rows or richer source
+priority_score,720,NA because unavailable in per_example_rows or richer source
+selected_answer_group,720,NA because unavailable in per_example_rows or richer source
+strict_f3_final_answer,720,NA because unavailable in per_example_rows or richer source
+strict_f3_final_answer_raw,720,NA because unavailable in per_example_rows or richer source
+top2_support_gap,720,NA because unavailable in per_example_rows or richer source
+top_answer_group,720,NA because unavailable in per_example_rows or richer source

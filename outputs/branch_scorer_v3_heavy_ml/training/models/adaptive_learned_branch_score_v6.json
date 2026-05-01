@@ -1,0 +1,23 @@
+{
+  "model_type": "logistic",
+  "label_key": "v6_label_prefers_over_median",
+  "weights": {
+    "remaining_budget": 0.033370197410863674,
+    "score": -0.08157890894505325,
+    "prev_score": -0.553369692021149,
+    "depth": -0.014549371399690994,
+    "prev_depth": 0.02748375434366648,
+    "score_delta": 0.4717907830762869,
+    "depth_delta": -0.04203312574344721,
+    "recent_delta": 0.6209843920679585,
+    "verify_count": -0.12882230627851438,
+    "stalled_steps": -0.06458725258325533,
+    "branch_age": 0.03567104338037708,
+    "current_action_expand": -0.04203312574344721,
+    "current_action_verify": 0.049388056311792,
+    "previous_action_expand": -0.025041091749542353,
+    "previous_action_verify": 0.10661456508903962,
+    "parent_relative_score": 13.334443551714166
+  },
+  "intercept": 0.00481087634262003
+}

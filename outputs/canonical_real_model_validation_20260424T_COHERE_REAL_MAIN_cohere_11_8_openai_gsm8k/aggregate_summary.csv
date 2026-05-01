@@ -1,0 +1,6 @@
+method,group,n,accuracy,absent_from_tree_rate,present_not_selected_rate,output_layer_mismatch_rate,rescue_applied_rate,avg_actions,avg_expansions,avg_verifications
+external_l1_max,external_baseline,20,0.75,0.25,0.0,0.0,0.0,1.0,1.0,0.0
+self_consistency_3,simple_baseline,19,0.6842105263157895,0.3157894736842105,0.0,0.0,0.10526315789473684,6.421052631578948,3.6315789473684212,2.789473684210526
+strict_f2,strong_neighbor,18,0.6666666666666666,0.3333333333333333,0.0,0.0,0.0,3.0,2.8333333333333335,0.16666666666666666
+strict_f3,main,20,0.6,0.15,0.25,0.0,0.0,2.6,2.45,0.15
+strict_gate1_cap_k6,strong_neighbor,20,0.55,0.3,0.15,0.0,0.0,3.0,2.9,0.1

@@ -1,0 +1,4 @@
+threshold,example_id,seed,budget
+0.00,ex2,1,4
+0.02,ex2,1,4
+0.05,ex2,1,4

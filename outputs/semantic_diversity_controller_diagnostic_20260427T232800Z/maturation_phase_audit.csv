@@ -1,0 +1,163 @@
+example_id,budget,method,maturation_phase_audit_len,maturation_phase_audit_json
+openai_gsm8k_3,4,external_l1_max,0,[]
+openai_gsm8k_3,4,strict_f3,0,[]
+openai_gsm8k_3,4,semantic_minimum_maturation_frontier_v1_d3,4,"[{""action"": 0, ""branching_necessity"": 0.9259999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": false}, {""action"": 2, ""branching_necessity"": 0.996, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 3, ""branching_necessity"": 0.996, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_3,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_3,4,branching_necessity_gate_v1,4,"[{""action"": 0, ""branching_necessity"": 0.9259999999999999, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.996, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 3, ""branching_necessity"": 0.996, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_3,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_576,4,external_l1_max,0,[]
+openai_gsm8k_576,4,strict_f3,0,[]
+openai_gsm8k_576,4,semantic_minimum_maturation_frontier_v1_d3,3,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_576,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_576,4,branching_necessity_gate_v1,3,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_576,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_5,4,external_l1_max,0,[]
+openai_gsm8k_5,4,strict_f3,0,[]
+openai_gsm8k_5,4,semantic_minimum_maturation_frontier_v1_d3,3,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_5,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_5,4,branching_necessity_gate_v1,3,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_5,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_6,4,external_l1_max,0,[]
+openai_gsm8k_6,4,strict_f3,0,[]
+openai_gsm8k_6,4,semantic_minimum_maturation_frontier_v1_d3,3,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_6,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_6,4,branching_necessity_gate_v1,4,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 3, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_6,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_12,4,external_l1_max,0,[]
+openai_gsm8k_12,4,strict_f3,0,[]
+openai_gsm8k_12,4,semantic_minimum_maturation_frontier_v1_d3,3,"[{""action"": 0, ""branching_necessity"": 0.9335, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8534999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.8534999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_12,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_12,4,branching_necessity_gate_v1,3,"[{""action"": 0, ""branching_necessity"": 0.9335, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8534999999999999, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.8534999999999999, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_12,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_17,4,external_l1_max,0,[]
+openai_gsm8k_17,4,strict_f3,0,[]
+openai_gsm8k_17,4,semantic_minimum_maturation_frontier_v1_d3,3,"[{""action"": 0, ""branching_necessity"": 0.9744999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8945, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.8945, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_17,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_17,4,branching_necessity_gate_v1,3,"[{""action"": 0, ""branching_necessity"": 0.9744999999999999, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8945, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.8945, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_17,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_158,4,external_l1_max,0,[]
+openai_gsm8k_158,4,strict_f3,0,[]
+openai_gsm8k_158,4,semantic_minimum_maturation_frontier_v1_d3,3,"[{""action"": 0, ""branching_necessity"": 0.958, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8779999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.8779999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_158,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_158,4,branching_necessity_gate_v1,3,"[{""action"": 0, ""branching_necessity"": 0.958, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8779999999999999, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.8779999999999999, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_158,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_1,4,external_l1_max,0,[]
+openai_gsm8k_1,4,strict_f3,0,[]
+openai_gsm8k_1,4,semantic_minimum_maturation_frontier_v1_d3,3,"[{""action"": 0, ""branching_necessity"": 0.9125, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8325, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.8325, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_1,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_1,4,branching_necessity_gate_v1,3,"[{""action"": 0, ""branching_necessity"": 0.9125, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8325, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.8325, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_1,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_7,4,external_l1_max,0,[]
+openai_gsm8k_7,4,strict_f3,0,[]
+openai_gsm8k_7,4,semantic_minimum_maturation_frontier_v1_d3,3,"[{""action"": 0, ""branching_necessity"": 0.905, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.825, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.825, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_7,4,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_7,4,branching_necessity_gate_v1,3,"[{""action"": 0, ""branching_necessity"": 0.905, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.825, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.825, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_7,4,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_3,6,external_l1_max,0,[]
+openai_gsm8k_3,6,strict_f3,0,[]
+openai_gsm8k_3,6,semantic_minimum_maturation_frontier_v1_d3,6,"[{""action"": 0, ""branching_necessity"": 0.9259999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.846, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.996, ""decision"": ""off"", ""maturation_satisfied"": false}, {""action"": 3, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 4, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 5, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_3,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_3,6,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.9259999999999999, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.846, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_3,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_576,6,external_l1_max,0,[]
+openai_gsm8k_576,6,strict_f3,0,[]
+openai_gsm8k_576,6,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_576,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_576,6,branching_necessity_gate_v1,6,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 3, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 4, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 5, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}]"
+openai_gsm8k_576,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_5,6,external_l1_max,0,[]
+openai_gsm8k_5,6,strict_f3,0,[]
+openai_gsm8k_5,6,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_5,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_5,6,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_5,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_6,6,external_l1_max,0,[]
+openai_gsm8k_6,6,strict_f3,0,[]
+openai_gsm8k_6,6,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_6,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_6,6,branching_necessity_gate_v1,6,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 3, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 4, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 5, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_6,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_12,6,external_l1_max,0,[]
+openai_gsm8k_12,6,strict_f3,0,[]
+openai_gsm8k_12,6,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.9335, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8534999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_12,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_12,6,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.9335, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8534999999999999, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_12,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_17,6,external_l1_max,0,[]
+openai_gsm8k_17,6,strict_f3,0,[]
+openai_gsm8k_17,6,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.9744999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8945, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_17,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_17,6,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.9744999999999999, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8945, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_17,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_158,6,external_l1_max,0,[]
+openai_gsm8k_158,6,strict_f3,0,[]
+openai_gsm8k_158,6,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.958, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8779999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_158,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_158,6,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.958, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8779999999999999, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_158,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_1,6,external_l1_max,0,[]
+openai_gsm8k_1,6,strict_f3,0,[]
+openai_gsm8k_1,6,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.9125, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8325, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_1,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_1,6,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.9125, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8325, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_1,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_7,6,external_l1_max,0,[]
+openai_gsm8k_7,6,strict_f3,0,[]
+openai_gsm8k_7,6,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.905, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.825, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_7,6,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_7,6,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.905, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.825, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_7,6,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_3,8,external_l1_max,0,[]
+openai_gsm8k_3,8,strict_f3,0,[]
+openai_gsm8k_3,8,semantic_minimum_maturation_frontier_v1_d3,8,"[{""action"": 0, ""branching_necessity"": 0.9259999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.846, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.996, ""decision"": ""off"", ""maturation_satisfied"": false}, {""action"": 3, ""branching_necessity"": 0.946, ""decision"": ""off"", ""maturation_satisfied"": false}, {""action"": 4, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 5, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 6, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 7, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_3,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_3,8,branching_necessity_gate_v1,7,"[{""action"": 0, ""branching_necessity"": 0.9259999999999999, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 0.996, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 3, ""branching_necessity"": 0.996, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 4, ""branching_necessity"": 0.996, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 5, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 6, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}]"
+openai_gsm8k_3,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_576,8,external_l1_max,0,[]
+openai_gsm8k_576,8,strict_f3,0,[]
+openai_gsm8k_576,8,semantic_minimum_maturation_frontier_v1_d3,5,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": false}, {""action"": 3, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 4, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_576,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_576,8,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_576,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_5,8,external_l1_max,0,[]
+openai_gsm8k_5,8,strict_f3,0,[]
+openai_gsm8k_5,8,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_5,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_5,8,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_5,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_6,8,external_l1_max,0,[]
+openai_gsm8k_6,8,strict_f3,0,[]
+openai_gsm8k_6,8,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_6,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_6,8,branching_necessity_gate_v1,8,"[{""action"": 0, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 2, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 3, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 4, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 5, ""branching_necessity"": 1.0, ""decision"": ""neutral"", ""maturation_satisfied"": true}, {""action"": 6, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 7, ""branching_necessity"": 1.0, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}]"
+openai_gsm8k_6,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_12,8,external_l1_max,0,[]
+openai_gsm8k_12,8,strict_f3,0,[]
+openai_gsm8k_12,8,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.9335, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8534999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_12,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_12,8,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.9335, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8534999999999999, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_12,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_17,8,external_l1_max,0,[]
+openai_gsm8k_17,8,strict_f3,0,[]
+openai_gsm8k_17,8,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.9744999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8945, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_17,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_17,8,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.9744999999999999, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8945, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_17,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_158,8,external_l1_max,0,[]
+openai_gsm8k_158,8,strict_f3,0,[]
+openai_gsm8k_158,8,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.958, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8779999999999999, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_158,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_158,8,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.958, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8779999999999999, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_158,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_1,8,external_l1_max,0,[]
+openai_gsm8k_1,8,strict_f3,0,[]
+openai_gsm8k_1,8,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.9125, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8325, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_1,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_1,8,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.9125, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.8325, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_1,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]
+openai_gsm8k_7,8,external_l1_max,0,[]
+openai_gsm8k_7,8,strict_f3,0,[]
+openai_gsm8k_7,8,semantic_minimum_maturation_frontier_v1_d3,2,"[{""action"": 0, ""branching_necessity"": 0.905, ""decision"": ""off"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.825, ""decision"": ""off"", ""maturation_satisfied"": true}]"
+openai_gsm8k_7,8,direct_reserve_semantic_frontier_v1,0,[]
+openai_gsm8k_7,8,branching_necessity_gate_v1,2,"[{""action"": 0, ""branching_necessity"": 0.905, ""decision"": ""favor_branching"", ""maturation_satisfied"": true}, {""action"": 1, ""branching_necessity"": 0.825, ""decision"": ""neutral"", ""maturation_satisfied"": true}]"
+openai_gsm8k_7,8,semantic_minimum_maturation_plus_direct_reserve_v1,0,[]

@@ -1,0 +1,25 @@
+{
+  "status": "experimental_provenance_only",
+  "v1_accuracy_delta_vs_strict_f3": -0.05555555555555547,
+  "gated_accuracy_delta_vs_strict_f3": -0.09259259259259256,
+  "gated_absent_from_tree_delta_vs_strict_f3": 0.0,
+  "gated_accuracy_delta_vs_external_l1_max": 0.14814814814814814,
+  "losses_vs_strict_f3_pairs": 17,
+  "wins_vs_strict_f3_pairs": 12,
+  "ties_vs_strict_f3_pairs": 25,
+  "dominant_failure_pattern": "diversity_or_override_changes_without_correctness_gain",
+  "override_applied_rate": 0.37037037037037035,
+  "override_harm_rate_when_applied": 0.35,
+  "repeated_family_reduction_corr_with_accuracy_delta": 0.01184521129570863,
+  "diversity_gain_corr_with_accuracy_delta": 0.08489969149650617,
+  "delta_vs_strict_f3_by_budget": {
+    "4": 0.0,
+    "6": -0.16666666666666666,
+    "8": -0.1111111111111111
+  },
+  "strict_gate1_cap_k6_status": "excluded",
+  "strict_gate1_cap_k6_reason": "missing_from_registry_for_budget",
+  "strict_gate1_cap_k6_interpretation": "still_excluded_under_current_registry_config",
+  "final_recommendation": "discard_algorithmic_line_keep_provenance_only",
+  "revisit_condition": "only_if_real_model_traces_show_repeated_family_collapse_with_recoverable_alternatives"
+}

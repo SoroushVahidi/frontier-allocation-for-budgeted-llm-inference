@@ -1,0 +1,31 @@
+{
+  "budgets": [
+    4,
+    6,
+    8
+  ],
+  "contract_name": "canonical manuscript-facing matched surface rerun",
+  "datasets": [
+    "openai/gsm8k",
+    "HuggingFaceH4/MATH-500",
+    "HuggingFaceH4/aime_2024"
+  ],
+  "methods": [
+    "strict_f3",
+    "strict_gate1_cap_k6",
+    "strict_f2",
+    "external_s1_budget_forcing",
+    "external_tale_prompt_budgeting",
+    "external_l1_exact",
+    "external_l1_max"
+  ],
+  "notes": "Expanded-seed independent rerun on same manuscript-facing matched contract class; includes fair near-direct externals present in canonical runner.",
+  "seeds": [
+    11,
+    23,
+    37,
+    47,
+    59
+  ],
+  "subset_size_per_dataset_seed": 20
+}

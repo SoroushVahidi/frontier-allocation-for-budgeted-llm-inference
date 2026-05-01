@@ -1,0 +1,60 @@
+{
+  "episodes": 6000,
+  "budget": 14,
+  "feature_names": [
+    "score",
+    "depth",
+    "stalled_steps",
+    "recent_delta",
+    "verify_count",
+    "branch_age",
+    "score_x_depth",
+    "parent_relative_score"
+  ],
+  "v5_feature_names": [
+    "remaining_budget",
+    "score",
+    "prev_score",
+    "depth",
+    "prev_depth",
+    "curr_future_value_est",
+    "prev_future_value_est",
+    "curr_distance_to_terminal_est",
+    "prev_distance_to_terminal_est",
+    "value_delta",
+    "distance_delta",
+    "current_action_expand",
+    "current_action_verify",
+    "previous_action_expand",
+    "previous_action_verify",
+    "parent_relative_score"
+  ],
+  "v6_feature_names": [
+    "remaining_budget",
+    "score",
+    "prev_score",
+    "depth",
+    "prev_depth",
+    "score_delta",
+    "depth_delta",
+    "recent_delta",
+    "verify_count",
+    "stalled_steps",
+    "branch_age",
+    "current_action_expand",
+    "current_action_verify",
+    "previous_action_expand",
+    "previous_action_verify",
+    "parent_relative_score"
+  ],
+  "n_init_branches": 5,
+  "rows": 184019,
+  "train_rows": 147250,
+  "test_rows": 36769,
+  "target_definitions": {
+    "v3_target_progress_value": "continuation-value proxy from expected immediate gain + confidence - depth penalty",
+    "v4_target_subtree_value": "mean downstream utility from future snapshots of the same branch within an episode, utility=0.7*future_score+0.3*final_branch_correct",
+    "v5_target_budgeted_subtree_value": "v4 subtree value scaled by min(1, remaining_budget / curr_distance_to_terminal_est)",
+    "v6_target_pairwise_groupwise": "decision-time competitive target from logged future outcomes: budget-aware utility blended into pairwise win-rate and groupwise softmax preference"
+  }
+}

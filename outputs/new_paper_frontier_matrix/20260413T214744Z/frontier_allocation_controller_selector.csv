@@ -1,0 +1,9 @@
+dataset,budget,selected_strategy,selected_strategy_calib_accuracy,selected_strategy_eval_accuracy
+openai/gsm8k,6,self_consistency_3,0.7916666666666666,0.5416666666666666
+openai/gsm8k,8,self_consistency_3,0.5833333333333334,0.625
+openai/gsm8k,10,reasoning_beam2,0.75,0.7916666666666666
+openai/gsm8k,12,reasoning_greedy,0.6666666666666666,0.625
+EleutherAI/hendrycks_math,6,reasoning_beam2,0.7916666666666666,0.625
+EleutherAI/hendrycks_math,8,self_consistency_3,0.7083333333333334,0.6666666666666666
+EleutherAI/hendrycks_math,10,reasoning_beam2,0.7083333333333334,0.625
+EleutherAI/hendrycks_math,12,verifier_guided_search,0.5833333333333334,0.5833333333333334

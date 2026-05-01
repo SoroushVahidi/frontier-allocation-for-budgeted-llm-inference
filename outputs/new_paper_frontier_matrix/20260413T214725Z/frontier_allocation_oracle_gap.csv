@@ -1,0 +1,9 @@
+dataset,budget,selected_strategy,selected_strategy_eval_accuracy,oracle_eval_accuracy_over_strategy_frontier,oracle_gap_accuracy,selected_strategy_eval_avg_actions
+openai/gsm8k,6,self_consistency_3,0.625,1.0,0.375,6.0
+openai/gsm8k,8,self_consistency_3,0.8125,1.0,0.1875,7.875
+openai/gsm8k,10,self_consistency_3,0.5625,0.9375,0.375,8.625
+openai/gsm8k,12,reasoning_greedy,0.5625,1.0,0.4375,2.25
+EleutherAI/hendrycks_math,6,reasoning_beam2,0.6875,1.0,0.3125,3.4375
+EleutherAI/hendrycks_math,8,reasoning_beam2,0.75,0.9375,0.1875,3.6875
+EleutherAI/hendrycks_math,10,reasoning_beam2,0.6875,1.0,0.3125,4.625
+EleutherAI/hendrycks_math,12,self_consistency_3,0.625,1.0,0.375,9.1875

@@ -1,0 +1,100 @@
+{
+  "manifest": {
+    "run_id": "20260417T014524Z",
+    "created_utc": "2026-04-17T01:45:24.858694+00:00",
+    "providers": [
+      "gemini"
+    ],
+    "datasets": [
+      "Idavidrein/gpqa"
+    ],
+    "subset_size": 60,
+    "seed": 23,
+    "fixed_budget_max_actions": 8,
+    "max_branches": 4,
+    "thresholds": {
+      "high": 0.72,
+      "low": 0.42
+    },
+    "min_expansions_before_prune": 0,
+    "models": {
+      "openai": "gpt-4.1-mini",
+      "gemini": "gemini-2.0-flash",
+      "groq": "llama-3.1-8b-instant"
+    },
+    "learned_scorer": {
+      "requested_path": "outputs/branch_scorer_v3/models/adaptive_learned_branch_score_v4.json",
+      "resolved_path": null,
+      "status": "missing"
+    },
+    "api_key_presence": {
+      "OPENAI_API_KEY": true,
+      "GEMINI_API_KEY": true,
+      "GROQ_API_KEY": true
+    }
+  },
+  "calibration_stats": {},
+  "summary": [
+    {
+      "provider": "gemini",
+      "dataset": "Idavidrein/gpqa",
+      "provider_model": "gemini-2.0-flash",
+      "subset_size": 60,
+      "key_present": true,
+      "method": "adaptive_relative_rank",
+      "status": "method_failed",
+      "error": "RuntimeError: Gemini API HTTPError 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_con",
+      "failure_reason": "quota_or_rate_limit",
+      "method_notes": {
+        "scorer": "RelativeRankBranchScorer"
+      }
+    },
+    {
+      "provider": "gemini",
+      "dataset": "Idavidrein/gpqa",
+      "provider_model": "gemini-2.0-flash",
+      "subset_size": 60,
+      "key_present": true,
+      "method": "adaptive_score_plus_progress",
+      "status": "method_failed",
+      "error": "RuntimeError: Gemini API HTTPError 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\\n* Quota exceeded for metric: generativelanguage.googleapis.com/gen",
+      "failure_reason": "quota_or_rate_limit",
+      "method_notes": {
+        "scorer": "ScorePlusProgressBranchScorer"
+      }
+    },
+    {
+      "provider": "gemini",
+      "dataset": "Idavidrein/gpqa",
+      "provider_model": "gemini-2.0-flash",
+      "subset_size": 60,
+      "key_present": true,
+      "method": "adaptive_learned_branch_score_v4",
+      "status": "method_failed",
+      "error": "RuntimeError: Gemini API HTTPError 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_con",
+      "failure_reason": "quota_or_rate_limit",
+      "method_notes": {
+        "requested_path": "outputs/branch_scorer_v3/models/adaptive_learned_branch_score_v4.json",
+        "resolved_path": null,
+        "status": "missing",
+        "fallback_used": true,
+        "fallback_reason": "learned scorer file missing; used SimpleBranchScorer"
+      }
+    },
+    {
+      "provider": "gemini",
+      "dataset": "Idavidrein/gpqa",
+      "provider_model": "gemini-2.0-flash",
+      "subset_size": 60,
+      "key_present": true,
+      "method": "best_of_n",
+      "status": "method_failed",
+      "error": "RuntimeError: Gemini API HTTPError 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_con",
+      "failure_reason": "quota_or_rate_limit",
+      "method_notes": {
+        "n_candidates": 3
+      }
+    }
+  ],
+  "rows": []
+}

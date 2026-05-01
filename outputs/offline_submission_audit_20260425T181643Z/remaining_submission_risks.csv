@@ -1,0 +1,4 @@
+check,status,detail
+reviewer_doc_exists,pass,docs/PAPER_REPRODUCTION_CHECKLIST.md
+appendix_repro_doc_exists,pass,docs/ANONYMOUS_SUPPLEMENT_PREPARATION.md
+appendix_d_command_consistency,warning,checked overlap on core artifact regeneration command references
