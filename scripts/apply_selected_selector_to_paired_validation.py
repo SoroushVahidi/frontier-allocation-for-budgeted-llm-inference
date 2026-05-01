@@ -39,6 +39,12 @@ def main():
 
     out=Path(args.output_dir); out.mkdir(parents=True, exist_ok=True)
     per=[]; missing=[]
+    candidates_missing_total=0
+    cases_with_any_scored=0
+    cases_fallback_missing=0
+    selector_overrides=0
+    selected_differs_from_original=0
+    selected_not_in_pool=0
     for ds,eid,seed,budget in selected_keys:
         dr=bykey[(ds,eid,seed,budget)]['direct_reserve_semantic_frontier_v2']
         ex=bykey[(ds,eid,seed,budget)]['external_l1_max']
@@ -46,30 +52,46 @@ def main():
         pool=md.get('selector_candidate_pool') or []
         case_id=f"{ds}::{eid}::{seed}::{budget}"
         best=None; best_sc=-1e9
+        scored_in_case=0
         for c in pool:
             cid=c.get('candidate_id')
             sc=scores.get((case_id,cid))
             if sc is None:
                 missing.append({'case_id':case_id,'candidate_id':cid,'normalized_answer':c.get('normalized_answer'),'trace':c.get('trace','')[:500]})
+                candidates_missing_total += 1
                 continue
+            scored_in_case += 1
             if (sc>best_sc) and (c.get('trace') or not cfg.get('require_trace_for_override',False)):
                 best_sc=sc; best=c
+        if scored_in_case>0:
+            cases_with_any_scored += 1
         orig_ans=canon(dr.get('selected_answer_canonical') or dr.get('final_answer_canonical'))
         sel_ans=canon(best.get('normalized_answer') if best else orig_ans)
+        if best is None and len(pool)>0 and scored_in_case < len(pool):
+            cases_fallback_missing += 1
         gold=canon(dr.get('gold_answer_canonical'))
         orig_ok=int(canon(dr.get('exact_match'))=='1' or orig_ans==gold)
         sel_ok=int(sel_ans==gold)
         ext_ok=int(canon(ex.get('exact_match'))=='1' or canon(ex.get('selected_answer_canonical') or ex.get('final_answer_canonical'))==gold)
         gold_in=int(any(canon(c.get('normalized_answer'))==gold for c in pool))
+        pool_ids={canon(c.get('candidate_id')) for c in pool}
+        selected_candidate_id=canon(best.get('candidate_id')) if best else ''
+        if best is not None and selected_candidate_id and selected_candidate_id not in pool_ids:
+            selected_not_in_pool += 1
         row={
             'dataset':ds,'example_id':eid,'seed':seed,'budget':budget,'problem_statement':dr.get('question'),
             'gold_answer':gold,'external_l1_max_answer':canon(ex.get('selected_answer_canonical') or ex.get('final_answer_canonical')),
             'external_l1_max_correct':ext_ok,'original_dr_v2_answer':orig_ans,'original_dr_v2_correct':orig_ok,
             'selected_selector_answer':sel_ans,'selected_selector_correct':sel_ok,'gold_present_in_dr_v2_tree':gold_in,
+            'selected_candidate_id': selected_candidate_id, 'selected_candidate_in_pool': int((not selected_candidate_id) or (selected_candidate_id in pool_ids)),
             'original_missed_despite_gold_present':int(gold_in and not orig_ok),'selected_selector_fixed':int((not orig_ok) and sel_ok),
             'selected_selector_broke_current_correct':int(orig_ok and not sel_ok),
             'external_correct_selected_wrong':int(ext_ok and not sel_ok), 'selected_correct_external_wrong':int(sel_ok and not ext_ok)
         }
+        if sel_ans != orig_ans:
+            selected_differs_from_original += 1
+        if best is not None and sel_ans != orig_ans:
+            selector_overrides += 1
         if row['selected_selector_fixed']: ft='selector_fixed'
         elif row['selected_selector_broke_current_correct']: ft='selector_broke'
         elif sel_ok and ext_ok: ft='both_correct'
@@ -97,6 +119,12 @@ def main():
     sumry['original_correct_cases']=sum(r['original_dr_v2_correct'] for r in per)
     sumry['selected_breaks_among_original_correct']=sum(r['selected_selector_broke_current_correct'] for r in per)
     sumry['break_rate']=sumry['selected_breaks_among_original_correct']/max(1,sumry['original_correct_cases'])
+    sumry['cases_with_scored_candidate_groups']=cases_with_any_scored
+    sumry['candidates_missing_verifier_scores']=candidates_missing_total
+    sumry['actual_selector_overrides']=selector_overrides
+    sumry['fallback_to_incumbent_due_to_missing_scores']=cases_fallback_missing
+    sumry['selected_answer_differs_from_original_count']=selected_differs_from_original
+    sumry['selected_candidates_not_in_pool_count']=selected_not_in_pool
     breakdown=Counter(r['failure_type'] for r in per)
 
     (out/'per_case_comparison.jsonl').write_text('\n'.join(json.dumps(r) for r in per)+'\n')

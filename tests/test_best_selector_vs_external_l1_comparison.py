@@ -15,6 +15,9 @@ def test_comparison_outputs_and_no_gold_leakage():
         subprocess.check_call([sys.executable,'scripts/apply_selected_selector_to_paired_validation.py','--paired-records',str(paired),'--selected-config',str(cfg),'--score-cache',str(scores),'--output-dir',str(out)])
         s=json.loads((out/'comparison_summary.json').read_text())
         assert s['selected_selector_accuracy']==1.0
+        assert s['cases_with_scored_candidate_groups']==1
+        assert s['actual_selector_overrides']==1
+        assert s['selected_candidates_not_in_pool_count']==0
         per=[json.loads(x) for x in (out/'per_case_comparison.jsonl').read_text().splitlines() if x.strip()]
         assert per[0]['selected_selector_fixed']==1
         assert 'gold' not in (out/'manifest.json').read_text().lower()

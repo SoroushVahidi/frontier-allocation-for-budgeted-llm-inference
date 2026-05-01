@@ -1,0 +1,21 @@
+{
+  "num_examples": 100,
+  "original_dr_v2_accuracy": 0.57,
+  "selected_selector_accuracy": 0.57,
+  "external_l1_max_accuracy": 0.68,
+  "delta_selected_vs_original": 0.0,
+  "delta_selected_vs_external": -0.1100000000000001,
+  "selected_beats_external_count": 5,
+  "external_beats_selected_count": 16,
+  "both_correct": 52,
+  "both_wrong": 27,
+  "original_correct_cases": 57,
+  "selected_breaks_among_original_correct": 0,
+  "break_rate": 0.0,
+  "cases_with_scored_candidate_groups": 7,
+  "candidates_missing_verifier_scores": 348,
+  "actual_selector_overrides": 2,
+  "fallback_to_incumbent_due_to_missing_scores": 93,
+  "selected_answer_differs_from_original_count": 2,
+  "selected_candidates_not_in_pool_count": 0
+}
