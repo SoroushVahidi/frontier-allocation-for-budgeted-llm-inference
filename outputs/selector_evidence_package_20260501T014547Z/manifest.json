@@ -1,0 +1,22 @@
+{
+  "command": "scripts/collect_selector_evidence_present_not_selected.py --roots outputs/external_loss_casebook_20260501T021500Z outputs archive logs --output-dir outputs/selector_evidence_package_20260501T014547Z --include-current-correct-risk-cases",
+  "timestamp": "20260501T021512Z",
+  "roots_scanned": [
+    "outputs/external_loss_casebook_20260501T021500Z",
+    "outputs",
+    "archive",
+    "logs"
+  ],
+  "method_filters": {
+    "our": "(dr[-_ ]?v2|direct_reserve_semantic_frontier_v2)",
+    "external": "external_l1_max"
+  },
+  "no_paid_api": true,
+  "source_artifacts_used": [
+    "outputs/external_loss_casebook_20260501T021500Z/loss_casebook_trace_complete.csv",
+    "outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_trace_complete.csv",
+    "outputs/external_loss_casebook_20260501T021500Z/loss_casebook_trace_complete.csv",
+    "outputs/external_loss_casebook_20260430T184023Z/loss_casebook_200.csv"
+  ],
+  "git_commit": "abd57c62236747535ed3ff8b14081ade076ed8e4"
+}

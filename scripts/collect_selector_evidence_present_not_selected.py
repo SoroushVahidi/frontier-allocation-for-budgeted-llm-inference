@@ -63,7 +63,8 @@ def main()->int:
         used.append(str(p))
         with p.open() as f:
             for r in csv.DictReader(f):
-                our=r.get('our_method_name','');ext=r.get('external_method_name','')
+                our=r.get('our_method_name','')
+                ext=r.get('external_method_name','') or r.get('best_external_method_name','')
                 if re.search(a.our_method_regex,our,re.I) and re.search(a.external_method_regex,ext,re.I):
                     pair_rows.append((r,p))
     per_example=find_files(roots,{'per_example_records.jsonl'})
@@ -84,7 +85,7 @@ def main()->int:
         gold_agg=gold in gset if gold else False
         if gold_agg: counts['gold present in aggregate answer buckets']+=1
         our_correct=str(r.get('our_correct','0')) in ('1','true','True')
-        ext_correct=str(r.get('external_correct','0')) in ('1','true','True')
+        ext_correct=str(r.get('external_correct',r.get('external_l1_max_correct',r.get('best_external_correct','0')))) in ('1','true','True')
         if (not our_correct) and ext_correct:
             counts['our-wrong / external-correct rows']+=1
         md={}
