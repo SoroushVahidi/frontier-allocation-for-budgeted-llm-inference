@@ -1,0 +1,17 @@
+{
+  "generated_at_utc": "2026-05-01T00:09:06.513820+00:00",
+  "casebook_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_broad_20260430T185500Z",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/focused33_trace_enriched_20260501T000906Z",
+  "focused_input_rows": 33,
+  "raw_records_found": 33,
+  "cases_with_candidate_nodes_positive": 33,
+  "cases_with_at_least_one_candidate_trace": 33,
+  "cases_with_all_candidate_traces": 28,
+  "total_candidate_nodes_extracted": 73,
+  "total_candidate_nodes_with_trace_text": 64,
+  "cases_gold_canonical_in_extracted_node_finals": 8,
+  "cases_gold_canonical_in_casebook_candidates_aggregate": 33,
+  "cases_casebook_answer_groups_disagree_with_nodes": 32,
+  "missing_source_paths_when_raw_record_missing": [],
+  "fraction_nodes_with_trace": 0.8767
+}
