@@ -144,3 +144,16 @@ def test_companion_matched_raw_recovery(tmp_path: Path):
     assert len(kept[0]["candidate_nodes"]) == 1
     assert kept[0]["usable_for_trace_aware_selector"] is True
     assert kept[0]["companion_candidates_recovered"] is True
+
+
+def test_inventory_script_detects_candidates_and_sanitizes(tmp_path: Path):
+    root = tmp_path / "r"; root.mkdir()
+    f = root / "x.jsonl"
+    write_jsonl(f, [{"case_id": "1", "candidate_nodes": [{"final_answer": "10", "trace_text": "abc"}], "gold_answer": "10"}])
+    out = tmp_path / "inv"
+    subprocess.check_call([sys.executable, "scripts/inventory_candidate_bearing_artifacts.py", "--roots", str(root), "--output-dir", str(out)], cwd=Path(__file__).resolve().parents[1])
+    inv = json.loads((out / "candidate_artifact_inventory.json").read_text())
+    row = next(r for r in inv["files"] if r.get("path", "").endswith("x.jsonl"))
+    assert row["likely_candidate_bearing"] is True
+    top = [json.loads(x) for x in (out / "candidate_artifact_inventory_top_candidates.jsonl").read_text().splitlines() if x.strip()]
+    assert "[REDACTED]" in json.dumps(top)

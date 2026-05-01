@@ -297,3 +297,8 @@ outputs/selector_evidence_trace_recovery_*/**/compressed_*.tar.gz
 !outputs/selector_evidence_schema_debug_*/schema_debug_report.md
 !outputs/selector_evidence_schema_debug_*/schema_debug_summary.json
 !outputs/selector_evidence_schema_debug_*/schema_debug_records_sanitized.jsonl
+!outputs/candidate_artifact_inventory_*/
+!outputs/candidate_artifact_inventory_*/candidate_artifact_inventory.json
+!outputs/candidate_artifact_inventory_*/candidate_artifact_inventory.csv
+!outputs/candidate_artifact_inventory_*/candidate_artifact_inventory_report.md
+!outputs/candidate_artifact_inventory_*/candidate_artifact_inventory_top_candidates.jsonl

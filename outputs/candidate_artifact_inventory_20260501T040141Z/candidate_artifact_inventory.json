@@ -1,0 +1,1279 @@
+{
+  "roots": [
+    "outputs/selector_evidence_trace_recovery_20260501T023200Z",
+    "outputs/selector_evidence_package_20260501T014547Z",
+    "outputs/cohere_real_model_cost_normalized_validation_20260501T014620Z_COHERE_SELECTOR_EVIDENCE_CAP100",
+    "outputs/focused33_trace_enriched_20260501T000906Z"
+  ],
+  "files": [
+    {
+      "path": "outputs/selector_evidence_trace_recovery_20260501T023200Z/candidate_trace_enriched.jsonl",
+      "exists": true,
+      "size": 39610,
+      "sampled_records": 20,
+      "top_level_keys_seen": [
+        "all_candidates_traced",
+        "candidate_nodes",
+        "evaluation_only",
+        "external_correct",
+        "gold_answer",
+        "gold_in_aggregate_answer_groups",
+        "gold_in_extracted_terminal_node_finals",
+        "has_any_candidate_trace",
+        "our_correct",
+        "problem_statement",
+        "verifier_input"
+      ],
+      "candidate_like_paths": [
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ]
+      ],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": true,
+      "safe_for_unified_selector_evidence": true
+    },
+    {
+      "path": "outputs/selector_evidence_trace_recovery_20260501T023200Z/trace_recovery_summary.json",
+      "exists": true,
+      "size": 952,
+      "sampled_records": 1,
+      "top_level_keys_seen": [
+        "Cohere calls made",
+        "Cohere used?",
+        "cases requiring Cohere regeneration",
+        "cases still aggregate-only",
+        "cases usable for trace-aware outcome-verifier selection",
+        "cases with all candidates traced",
+        "cases with at least one candidate trace",
+        "cases with candidate nodes",
+        "extracted candidate-node count",
+        "gold present in aggregate answer buckets",
+        "gold present in extracted terminal node finals",
+        "input casebook path",
+        "input cases",
+        "no secrets/no caches committed confirmation",
+        "raw records matched",
+        "raw records missing",
+        "selected answer present in extracted terminal node finals",
+        "source root path",
+        "traced candidate-node count"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_trace_recovery_20260501T023200Z/missing_raw_records.jsonl",
+      "exists": true,
+      "size": 0,
+      "sampled_records": 0,
+      "top_level_keys_seen": [],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_trace_recovery_20260501T023200Z/trace_recovery_summary.csv",
+      "exists": true,
+      "size": 861,
+      "sampled_records": 19,
+      "top_level_keys_seen": [
+        "metric",
+        "value"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_trace_recovery_20260501T023200Z/matched_raw_records.jsonl",
+      "exists": true,
+      "size": 3400,
+      "sampled_records": 20,
+      "top_level_keys_seen": [
+        "case_id",
+        "status"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [
+        "case_id"
+      ],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_trace_recovery_20260501T023200Z/missing_trace_records.jsonl",
+      "exists": true,
+      "size": 0,
+      "sampled_records": 0,
+      "top_level_keys_seen": [],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_trace_recovery_20260501T023200Z/manifest.json",
+      "exists": true,
+      "size": 393,
+      "sampled_records": 1,
+      "top_level_keys_seen": [
+        "allow_cohere",
+        "casebook",
+        "cohere_calls_made",
+        "git_commit",
+        "max_cases",
+        "source_root",
+        "timestamp"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/candidate_trace_enriched.jsonl",
+      "exists": true,
+      "size": 39656,
+      "sampled_records": 20,
+      "top_level_keys_seen": [
+        "all_candidates_traced",
+        "candidate_nodes",
+        "evaluation_only",
+        "external_correct",
+        "gold_answer",
+        "gold_in_aggregate_answer_groups",
+        "gold_in_extracted_terminal_node_finals",
+        "has_any_candidate_trace",
+        "our_correct",
+        "problem_statement",
+        "verifier_input"
+      ],
+      "candidate_like_paths": [
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "verifier_input.candidate_nodes",
+          0
+        ]
+      ],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": true,
+      "safe_for_unified_selector_evidence": true
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/selector_evidence_summary.json",
+      "exists": true,
+      "size": 611,
+      "sampled_records": 1,
+      "top_level_keys_seen": [
+        "absent-from-tree rows",
+        "cases with all extracted candidates traced",
+        "cases with at least one candidate trace",
+        "cases with candidate nodes",
+        "current-correct cases available for break-risk testing",
+        "extracted candidate-node count",
+        "gold present in aggregate answer buckets",
+        "gold present in extracted terminal node finals",
+        "our-wrong / external-correct rows",
+        "present-not-selected aggregate rows",
+        "rows matched to raw records",
+        "total paired rows scanned",
+        "trace-complete external-loss rows",
+        "traced candidate-node count"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/absent_from_tree_casebook.jsonl",
+      "exists": true,
+      "size": 0,
+      "sampled_records": 0,
+      "top_level_keys_seen": [],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/missing_artifacts.csv",
+      "exists": true,
+      "size": 17,
+      "sampled_records": 0,
+      "top_level_keys_seen": [],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/current_correct_risk_casebook.jsonl",
+      "exists": true,
+      "size": 0,
+      "sampled_records": 0,
+      "top_level_keys_seen": [],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/selector_evidence_summary.csv",
+      "exists": true,
+      "size": 553,
+      "sampled_records": 14,
+      "top_level_keys_seen": [
+        "metric",
+        "value"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/present_not_selected_casebook.csv",
+      "exists": true,
+      "size": 82734,
+      "sampled_records": 20,
+      "top_level_keys_seen": [
+        "all_available_external_methods",
+        "all_candidate_answer_groups",
+        "all_candidates_traced",
+        "answer_entropy",
+        "arithmetic_or_calculation_error",
+        "artifact_trace_incomplete",
+        "best_external_answer",
+        "best_external_correct",
+        "best_external_method_name",
+        "branch_count",
+        "branch_family_count",
+        "budget",
+        "budget_exhausted_or_early_commit",
+        "candidate_count",
+        "candidate_group_count",
+        "case_id",
+        "cohere_confidence",
+        "cohere_primary_failure_mode",
+        "cohere_selector_vs_discovery_guess",
+        "cohere_suggested_intervention",
+        "cohere_why_external_succeeded",
+        "cohere_why_ours_failed",
+        "commit_step",
+        "dataset",
+        "depth_by_answer_group",
+        "discovery_failure_gold_absent",
+        "estimated_missing_actions_to_gold_if_available",
+        "estimated_missing_depth_to_gold_if_available",
+        "evaluation_only",
+        "example_id",
+        "external_found_but_ours_gold_absent",
+        "external_l1_max_answer",
+        "external_l1_max_correct",
+        "external_l1_unique_success",
+        "first_action_index_by_answer_group",
+        "gold_answer",
+        "gold_answer_group_if_present",
+        "gold_answer_support_if_present",
+        "gold_first_action_index_if_present",
+        "gold_first_depth_if_present",
+        "gold_in_extracted_terminal_node_finals",
+        "gold_present_in_candidate_groups",
+        "gold_present_in_tree",
+        "has_any_candidate_trace",
+        "insufficient_root_diversity",
+        "l1_correct_but_gold_absent_in_ours",
+        "max_depth",
+        "mean_depth",
+        "oracle_selector_answer",
+        "oracle_selector_correct",
+        "oracle_selector_would_fix",
+        "our_correct",
+        "our_final_answer",
+        "our_method_name",
+        "premature_commitment",
+        "problem_statement",
+        "rank_of_gold_answer_group_if_present",
+        "repeated_same_answer_expansion_count",
+        "repeated_same_family_expansion_count",
+        "repeated_same_family_overexpansion",
+        "seed",
+        "selected_answer_group",
+        "selected_answer_support",
+        "selected_vs_gold_answer_distance",
+        "selected_vs_gold_numeric_error_if_parseable",
+        "selector_failure_gold_present",
+        "single_answer_collapse",
+        "source_artifact",
+        "source_artifact_path",
+        "source_family_by_answer_group",
+        "source_family_count",
+        "support_count_by_answer_group",
+        "support_gap_selected_minus_gold_if_present",
+        "top1_support",
+        "top2_support",
+        "top2_support_gap",
+        "total_actions",
+        "total_expansions",
+        "trace_available",
+        "unknown"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [
+        "budget",
+        "case_id",
+        "dataset",
+        "example_id",
+        "our_method_name",
+        "seed",
+        "source_artifact_path"
+      ],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/present_not_selected_casebook.jsonl",
+      "exists": true,
+      "size": 203260,
+      "sampled_records": 20,
+      "top_level_keys_seen": [
+        "all_available_external_methods",
+        "all_candidate_answer_groups",
+        "all_candidates_traced",
+        "answer_entropy",
+        "arithmetic_or_calculation_error",
+        "artifact_trace_incomplete",
+        "best_external_answer",
+        "best_external_correct",
+        "best_external_method_name",
+        "branch_count",
+        "branch_family_count",
+        "budget",
+        "budget_exhausted_or_early_commit",
+        "candidate_count",
+        "candidate_group_count",
+        "candidate_nodes",
+        "case_id",
+        "cohere_confidence",
+        "cohere_primary_failure_mode",
+        "cohere_selector_vs_discovery_guess",
+        "cohere_suggested_intervention",
+        "cohere_why_external_succeeded",
+        "cohere_why_ours_failed",
+        "commit_step",
+        "dataset",
+        "depth_by_answer_group",
+        "discovery_failure_gold_absent",
+        "estimated_missing_actions_to_gold_if_available",
+        "estimated_missing_depth_to_gold_if_available",
+        "evaluation_only",
+        "example_id",
+        "external_found_but_ours_gold_absent",
+        "external_l1_max_answer",
+        "external_l1_max_correct",
+        "external_l1_unique_success",
+        "first_action_index_by_answer_group",
+        "gold_answer",
+        "gold_answer_group_if_present",
+        "gold_answer_support_if_present",
+        "gold_first_action_index_if_present",
+        "gold_first_depth_if_present",
+        "gold_in_extracted_terminal_node_finals",
+        "gold_present_in_candidate_groups",
+        "gold_present_in_tree",
+        "has_any_candidate_trace",
+        "insufficient_root_diversity",
+        "l1_correct_but_gold_absent_in_ours",
+        "max_depth",
+        "mean_depth",
+        "oracle_selector_answer",
+        "oracle_selector_correct",
+        "oracle_selector_would_fix",
+        "our_correct",
+        "our_final_answer",
+        "our_method_name",
+        "premature_commitment",
+        "problem_statement",
+        "rank_of_gold_answer_group_if_present",
+        "repeated_same_answer_expansion_count",
+        "repeated_same_family_expansion_count",
+        "repeated_same_family_overexpansion",
+        "seed",
+        "selected_answer_group",
+        "selected_answer_support",
+        "selected_vs_gold_answer_distance",
+        "selected_vs_gold_numeric_error_if_parseable",
+        "selector_failure_gold_present",
+        "single_answer_collapse",
+        "source_artifact",
+        "source_artifact_path",
+        "source_family_by_answer_group",
+        "source_family_count",
+        "support_count_by_answer_group",
+        "support_gap_selected_minus_gold_if_present",
+        "top1_support",
+        "top2_support",
+        "top2_support_gap",
+        "total_actions",
+        "total_expansions",
+        "trace_available"
+      ],
+      "candidate_like_paths": [
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ],
+        [
+          "candidate_nodes",
+          0
+        ]
+      ],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [
+        "budget",
+        "case_id",
+        "dataset",
+        "example_id",
+        "our_method_name",
+        "seed",
+        "source_artifact_path"
+      ],
+      "likely_candidate_bearing": true,
+      "safe_for_unified_selector_evidence": true
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/missing_artifacts.json",
+      "exists": true,
+      "size": 2,
+      "sampled_records": 0,
+      "top_level_keys_seen": [],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/selector_evidence_package_20260501T014547Z/manifest.json",
+      "exists": true,
+      "size": 998,
+      "sampled_records": 1,
+      "top_level_keys_seen": [
+        "command",
+        "external",
+        "git_commit",
+        "method_filters",
+        "no_paid_api",
+        "our",
+        "roots_scanned",
+        "source_artifacts_used",
+        "timestamp"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/cohere_real_model_cost_normalized_validation_20260501T014620Z_COHERE_SELECTOR_EVIDENCE_CAP100",
+      "exists": false
+    },
+    {
+      "path": "outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.csv",
+      "exists": true,
+      "size": 118093,
+      "sampled_records": 20,
+      "top_level_keys_seen": [
+        "answer_groups_agree_casebook_vs_nodes",
+        "answer_groups_canonical_from_casebook",
+        "answer_groups_canonical_from_nodes",
+        "budget",
+        "candidate_count_from_casebook",
+        "candidate_count_from_raw_metadata",
+        "candidate_nodes_json",
+        "case_id",
+        "current_answer",
+        "current_answer_present_in_nodes",
+        "dataset",
+        "enrichment_notes",
+        "evaluation_only_json",
+        "example_id",
+        "gold_answer_evaluation_only",
+        "gold_answer_in_casebook_aggregate_canonical_evaluation",
+        "gold_present_in_candidate_nodes_canonical_evaluation",
+        "lookup_notes",
+        "metadata_source_pool",
+        "our_method_name",
+        "problem_statement",
+        "raw_record_found",
+        "raw_record_match_confidence",
+        "raw_record_path",
+        "seed",
+        "selected_answer_group",
+        "source_artifact",
+        "source_dir_resolved",
+        "verifier_candidates_json"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [
+        "budget",
+        "case_id",
+        "dataset",
+        "example_id",
+        "our_method_name",
+        "seed"
+      ],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    },
+    {
+      "path": "outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl",
+      "exists": true,
+      "size": 145706,
+      "sampled_records": 20,
+      "top_level_keys_seen": [
+        "_note",
+        "answer_groups_agree_casebook_vs_nodes",
+        "answer_groups_canonical_from_casebook",
+        "answer_groups_canonical_from_nodes",
+        "answer_groups_reconstructed_row",
+        "branch_depth",
+        "budget",
+        "candidate_count_from_casebook",
+        "candidate_count_from_raw_metadata",
+        "candidate_id",
+        "candidate_nodes",
+        "candidates_for_verifier",
+        "case_id",
+        "current_answer",
+        "current_answer_present_in_nodes",
+        "dataset",
+        "enrichment_notes",
+        "evaluation_only",
+        "example_id",
+        "final_answer",
+        "gold_answer",
+        "gold_answer_evaluation_only",
+        "gold_answer_in_casebook_aggregate_canonical_evaluation",
+        "gold_present_in_candidate_nodes_canonical_evaluation",
+        "hint_for_verifier_only",
+        "is_original_selected",
+        "lookup_notes",
+        "metadata_source_pool",
+        "normalized_answer",
+        "oracle_selector_answer",
+        "our_method_name",
+        "problem_statement",
+        "raw_record_found",
+        "raw_record_match_confidence",
+        "raw_record_path",
+        "score",
+        "seed",
+        "selected_answer_group",
+        "selected_votes",
+        "source_artifact",
+        "source_dir_resolved",
+        "source_families",
+        "source_family",
+        "source_family_count",
+        "support_count",
+        "trace_available",
+        "trace_text",
+        "verifier_input"
+      ],
+      "candidate_like_paths": [
+        [
+          "candidate_nodes",
+          3
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          2
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          3
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          3
+        ],
+        [
+          "candidate_nodes",
+          4
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          2
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          4
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          4
+        ],
+        [
+          "candidate_nodes",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          1
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          1
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          3
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          2
+        ],
+        [
+          "candidate_nodes",
+          3
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          1
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          1
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          9
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          3
+        ],
+        [
+          "candidate_nodes",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          1
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          1
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          8
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          2
+        ],
+        [
+          "candidate_nodes",
+          3
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          1
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          1
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          7
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          3
+        ],
+        [
+          "candidate_nodes",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          2
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          4
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          2
+        ],
+        [
+          "candidate_nodes",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          1
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          1
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          4
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          2
+        ],
+        [
+          "candidate_nodes",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          2
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          3
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          2
+        ],
+        [
+          "candidate_nodes",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_nodes",
+          2
+        ],
+        [
+          "answer_groups_reconstructed_row",
+          2
+        ],
+        [
+          "answer_groups_canonical_from_casebook",
+          8
+        ],
+        [
+          "verifier_input.candidates_for_verifier",
+          2
+        ]
+      ],
+      "total_sampled_candidate_objects": 126,
+      "trace_like_fields": [
+        "trace_text"
+      ],
+      "final_answer_like_fields": [
+        "final_answer",
+        "normalized_answer"
+      ],
+      "join_keys": [
+        "budget",
+        "case_id",
+        "dataset",
+        "example_id",
+        "our_method_name",
+        "seed"
+      ],
+      "likely_candidate_bearing": true,
+      "safe_for_unified_selector_evidence": true
+    },
+    {
+      "path": "outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enrichment_summary.json",
+      "exists": true,
+      "size": 859,
+      "sampled_records": 1,
+      "top_level_keys_seen": [
+        "casebook_dir",
+        "cases_casebook_answer_groups_disagree_with_nodes",
+        "cases_gold_canonical_in_casebook_candidates_aggregate",
+        "cases_gold_canonical_in_extracted_node_finals",
+        "cases_with_all_candidate_traces",
+        "cases_with_at_least_one_candidate_trace",
+        "cases_with_candidate_nodes_positive",
+        "focused_input_rows",
+        "fraction_nodes_with_trace",
+        "generated_at_utc",
+        "missing_source_paths_when_raw_record_missing",
+        "output_dir",
+        "raw_records_found",
+        "total_candidate_nodes_extracted",
+        "total_candidate_nodes_with_trace_text"
+      ],
+      "candidate_like_paths": [],
+      "total_sampled_candidate_objects": 0,
+      "trace_like_fields": [],
+      "final_answer_like_fields": [],
+      "join_keys": [],
+      "likely_candidate_bearing": false,
+      "safe_for_unified_selector_evidence": false
+    }
+  ],
+  "conclusion": "no_candidate_artifact_found_for_new_cap100_in_scanned_roots"
+}
