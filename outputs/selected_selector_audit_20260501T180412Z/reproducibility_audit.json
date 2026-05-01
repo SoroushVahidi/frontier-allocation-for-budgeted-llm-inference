@@ -1,0 +1,18 @@
+{
+  "expected": {
+    "total_cases": 47,
+    "total_overrides": 42,
+    "fixes": 21,
+    "breaks": 0,
+    "net_fixes_minus_breaks": 21,
+    "accuracy": 0.44680851063829785
+  },
+  "actual": {
+    "total_cases": 47,
+    "total_overrides": 42,
+    "fixes": 21,
+    "breaks": 0,
+    "net_fixes_minus_breaks": 21,
+    "accuracy": 0.44680851063829785
+  }
+}

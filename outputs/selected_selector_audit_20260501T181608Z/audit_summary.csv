@@ -1,0 +1,21 @@
+section,key,value
+root,audit_passed,true
+reproducibility,matches_expected_metrics,true
+reproducibility,expected,"{""total_cases"": 47, ""total_overrides"": 42, ""fixes"": 21, ""breaks"": 0, ""net_fixes_minus_breaks"": 21, ""accuracy"": 0.44680851063829785}"
+reproducibility,actual,"{""total_cases"": 47, ""total_overrides"": 42, ""fixes"": 21, ""breaks"": 0, ""net_fixes_minus_breaks"": 21, ""accuracy"": 0.44680851063829785}"
+leakage,sanitized_decisions_identical,true
+leakage,diff_cases,0
+leakage,banned_key_scan,"{""input_records_banned_hits"": 166, ""call_plan_banned_hits"": 0, ""score_rows_banned_hits"": 0}"
+cache_join,cache_rows,94
+cache_join,unique_cache_keys,94
+cache_join,duplicate_cache_keys,0
+cache_join,call_plan_items,94
+cache_join,missing_call_plan_scores,0
+cache_join,unused_cache_rows,0
+override_validity,overrides,41
+override_validity,missing_trace_overrides,0
+evaluation_correctness,fixes,21
+evaluation_correctness,breaks,0
+prompt_hygiene,call_plan_has_banned,false
+prompt_hygiene,score_rows_has_banned,false
+scope_audit,doc_mentions_not_runtime_promoted_or_gap,true

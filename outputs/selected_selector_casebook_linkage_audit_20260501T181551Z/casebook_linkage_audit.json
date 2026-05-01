@@ -1,0 +1,126 @@
+{
+  "repro_casebook": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_casebook.jsonl",
+  "rows": [
+    {
+      "path": "outputs/outcome_verifier_answer_group_selector_20260501T152447Z/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 17,
+      "margin": null,
+      "scorer_mode": "dry_run_call_plan",
+      "score_cache_path": null,
+      "fixes": 13,
+      "breaks": 0,
+      "accuracy": 0.2765957446808511
+    },
+    {
+      "path": "outputs/outcome_verifier_answer_group_selector_real_cohere_final_20260501T175325Z/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 9,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 17,
+      "breaks": 0,
+      "accuracy": 0.3617021276595745
+    },
+    {
+      "path": "outputs/outcome_verifier_answer_group_selector_real_cohere_partial_20260501T170635Z/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 11,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 16,
+      "breaks": 0,
+      "accuracy": 0.3404255319148936
+    },
+    {
+      "path": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 1,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 21,
+      "breaks": 0,
+      "accuracy": 0.44680851063829785
+    },
+    {
+      "path": "outputs/outcome_verifier_answer_group_selector_trace_quality_20260501T152451Z/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 7,
+      "margin": null,
+      "scorer_mode": "trace_quality_heuristic",
+      "score_cache_path": null,
+      "fixes": 20,
+      "breaks": 0,
+      "accuracy": 0.425531914893617
+    },
+    {
+      "path": "outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p00/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 1,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 21,
+      "breaks": 0,
+      "accuracy": 0.44680851063829785
+    },
+    {
+      "path": "outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p05/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 9,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 17,
+      "breaks": 0,
+      "accuracy": 0.3617021276595745
+    },
+    {
+      "path": "outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p10/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 9,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 17,
+      "breaks": 0,
+      "accuracy": 0.3617021276595745
+    },
+    {
+      "path": "outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p15/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 9,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 17,
+      "breaks": 0,
+      "accuracy": 0.3617021276595745
+    },
+    {
+      "path": "outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p20/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 9,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 17,
+      "breaks": 0,
+      "accuracy": 0.3617021276595745
+    },
+    {
+      "path": "outputs/outcome_verifier_selector_margin_sweep_cohere_final_20260501T175329Z/per_margin_casebooks/margin_0p30/selector_casebook.jsonl",
+      "total_cases": 47,
+      "mismatches_vs_repro": 9,
+      "margin": null,
+      "scorer_mode": "cached_jsonl",
+      "score_cache_path": null,
+      "fixes": 17,
+      "breaks": 0,
+      "accuracy": 0.3617021276595745
+    }
+  ]
+}
