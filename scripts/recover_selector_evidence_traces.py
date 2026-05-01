@@ -51,8 +51,26 @@ def match_record(rows:list[dict[str,Any]], r:dict[str,Any])->dict[str,Any]|None:
 
 def main()->int:
     a=parse_args(); out=Path(a.output_dir); out.mkdir(parents=True,exist_ok=True)
+    source_root = Path(a.source_root)
+    per_path = source_root/'per_example_records.jsonl'
+    if not source_root.exists() or not per_path.exists():
+        missing_reason = 'missing_source_root' if not source_root.exists() else 'missing_per_example_records'
+        s={
+          'input casebook path':a.casebook,'source root path':a.source_root,
+          'missing_source_reason':missing_reason,
+          'missing_source_detail':f"required artifact not found: {per_path}",
+          'Cohere used?':'yes' if a.allow_cohere else 'no','Cohere calls made':0,
+        }
+        (out/'trace_recovery_summary.json').write_text(json.dumps(s,indent=2),encoding='utf-8')
+        for nm in ('candidate_trace_enriched.jsonl','matched_raw_records.jsonl','missing_raw_records.jsonl','missing_trace_records.jsonl'):
+            (out/nm).write_text('',encoding='utf-8')
+        (out/'trace_recovery_report.md').write_text(
+            f"# Trace Recovery Report\n\nStatus: missing source artifact ({missing_reason}).\n",
+            encoding='utf-8',
+        )
+        return 2
     cases=[json.loads(x) for x in Path(a.casebook).read_text().splitlines() if x.strip()][:a.max_cases]
-    per=list(iter_jsonl(Path(a.source_root)/'per_example_records.jsonl') or [])
+    per=list(iter_jsonl(per_path) or [])
 
     matched=[]; missing=[]; missing_trace=[]; enriched=[]
     s={
@@ -97,13 +115,18 @@ def main()->int:
         if not nodes: s['cases still aggregate-only']+=1
         if nodes and traced>0: s['cases usable for trace-aware outcome-verifier selection']+=1
         if nodes and traced==0: missing_trace.append({'case_id':r.get('case_id'),'reason':'candidate_nodes_without_trace'})
+        usable = bool(nodes) and traced>0
         enriched.append({
           'case_id':r.get('case_id'),'dataset':dataset,'example_id':r.get('example_id'),'seed':r.get('seed'),'budget':r.get('budget'),
+          'our_method_name':r.get('our_method_name'),
           'problem_statement':r.get('problem_statement') or rec.get('question',''),'candidate_nodes':nodes,
+          'selected_answer_group':r.get('selected_answer_group'),'our_final_answer':r.get('our_final_answer'),
           'verifier_input':{'problem_statement':r.get('problem_statement') or rec.get('question',''),'candidates_for_verifier':[{k:v for k,v in n.items() if k in {'candidate_id','source_family','final_answer','normalized_answer','trace_text','cost_proxy'}} for n in nodes]},
           'evaluation_only':{'gold_answer':r.get('gold_answer',''),'oracle_selector_answer':r.get('oracle_selector_answer',''),'gold_answer_group_if_present':r.get('gold_answer_group_if_present',''),'oracle_selector_would_fix':r.get('oracle_selector_would_fix','')},
           'gold_in_aggregate_answer_groups':gold_agg,'gold_in_extracted_terminal_node_finals':gold_node,
-          'selected_answer_in_extracted_terminal_node_finals':sel_node,'has_any_candidate_trace':traced>0,'all_candidates_traced':bool(nodes) and traced==len(nodes)
+          'selected_answer_in_extracted_terminal_node_finals':sel_node,'has_any_candidate_trace':traced>0,
+          'all_candidates_traced':bool(nodes) and traced==len(nodes),
+          'usable_for_trace_aware_selector': usable
         })
 
     (out/'candidate_trace_enriched.jsonl').write_text('\n'.join(json.dumps(x) for x in enriched)+'\n',encoding='utf-8')
