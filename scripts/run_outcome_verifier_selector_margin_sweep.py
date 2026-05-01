@@ -4,8 +4,11 @@ import argparse, csv, json, subprocess, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-def run_margin(input_path: str, score_cache: str, margin: float, out_dir: Path) -> dict:
-    cmd = [sys.executable, 'scripts/run_outcome_verifier_answer_group_selector.py', '--input', input_path, '--output-dir', str(out_dir), '--selector-name', 'outcome_verifier_answer_group_selector_v1', '--scorer-mode', 'cached_jsonl', '--score-cache', score_cache, '--min-verifier-margin', str(margin), '--require-trace-for-override', '--dedupe-verifier-items', '--no-gold-features']
+def run_margin(input_path: str, score_cache: str, margin: float, out_dir: Path, selector_name: str, require_trace: bool, dedupe: bool, no_gold: bool) -> dict:
+    cmd = [sys.executable, 'scripts/run_outcome_verifier_answer_group_selector.py', '--input', input_path, '--output-dir', str(out_dir), '--selector-name', selector_name, '--scorer-mode', 'cached_jsonl', '--score-cache', score_cache, '--min-verifier-margin', str(margin)]
+    if require_trace: cmd.append('--require-trace-for-override')
+    if dedupe: cmd.append('--dedupe-verifier-items')
+    if no_gold: cmd.append('--no-gold-features')
     subprocess.check_call(cmd)
     return json.loads((out_dir / 'selector_summary.json').read_text(encoding='utf-8'))
 
@@ -21,15 +24,19 @@ def main() -> None:
     ap.add_argument('--input', required=True)
     ap.add_argument('--score-cache', required=True)
     ap.add_argument('--output-dir', required=True)
-    ap.add_argument('--margins', default='0,0.05,0.10,0.15,0.20,0.30')
+    ap.add_argument('--margins', nargs='+', default=['0.00','0.05','0.10','0.15','0.20','0.30'])
+    ap.add_argument('--selector-name', default='outcome_verifier_answer_group_selector_v1')
+    ap.add_argument('--require-trace-for-override', action='store_true')
+    ap.add_argument('--dedupe-verifier-items', action='store_true')
+    ap.add_argument('--no-gold-features', action='store_true')
     args = ap.parse_args()
 
     out = Path(args.output_dir); out.mkdir(parents=True, exist_ok=True)
     per = out / 'per_margin_casebooks'; per.mkdir(parents=True, exist_ok=True)
     rows = []
-    for m in [float(x) for x in args.margins.split(',')]:
+    for m in [float(x) for x in args.margins]:
         m_dir = per / f'margin_{m:.2f}'.replace('.', 'p')
-        s = run_margin(args.input, args.score_cache, m, m_dir)
+        s = run_margin(args.input, args.score_cache, m, m_dir, args.selector_name, args.require_trace_for_override, args.dedupe_verifier_items, args.no_gold_features)
         s['margin'] = m
         rows.append(s)
 
