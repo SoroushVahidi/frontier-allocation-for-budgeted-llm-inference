@@ -8,6 +8,7 @@ This index separates current interpretation documents from diagnostic and histor
 |---|---|
 | `README.md` | Short repository entry point. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
+| `docs/REPO_ORGANIZATION_GUIDE_20260501.md` | Clean navigation, artifact classification, and safe cleanup rules. |
 | `docs/REPO_MAP.md` | Directory roles and repository structure. |
 | `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |
 | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | Cost-aware execution rules for selector work. |
@@ -19,18 +20,19 @@ This index separates current interpretation documents from diagnostic and histor
 
 | Document | Role |
 |---|---|
+| `docs/CURRENT_SELECTOR_DECISION.md` | Canonical selected verifier selector and caveats. |
+| `configs/selected_selector_current.json` | Machine-readable selected-selector config. |
+| `docs/LITERATURE_SELECTOR_BASELINES.md` | Literature selector baselines, including self-consistency majority vote. |
 | `docs/SELECTOR_START_HERE.md` | Entry point for selector-first work. |
-| `docs/SELECTOR_WORK_START_HERE_20260501.md` | Selector artifact front door; partly superseded by newer trace-recovery/unified-evidence work. |
-| `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` | Decision checklist for choosing the next selector family and promotion criteria. |
+| `docs/SELECTOR_WORK_START_HERE_20260501.md` | Selector artifact front door; useful for selector-evidence provenance. |
+| `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` | Decision checklist for choosing selector families and promotion criteria. |
 | `docs/SELECTOR_EVIDENCE_RETENTION_POLICY_20260501.md` | What selector evidence packages should commit vs omit. |
 | `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` | Outcome-verifier selector roadmap. |
 | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | API-cost-control and fast selector execution policy. |
 | `docs/SELECTOR_CATALOG.md` | Selector methods and diagnostic selectors. |
 | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` | Selector trace artifact usability index. |
 | `docs/ARTIFACT_INDEX_20260501.md` | Selector artifact index after Wulver transfer. |
-| `docs/FOCUSED33_TRACE_ENRICHMENT_RESULT_20260501T000906Z.md` | Historical focused33 trace-enrichment result. |
 | `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md` | Older ordered selector-vs-coverage roadmap; preserve as provenance. |
-| `docs/FINAL_ADAPTIVE_LLM_INFERENCE_TRANSFER_AUDIT_20260430T034801Z.md` | Final audit of ideas transferred from the older binary-routing repository. |
 | `docs/METHOD_REGISTRY_CANONICAL_20260429.md` | Method status and live-runnable/diagnostic distinctions. |
 
 ## Current selector evidence artifacts
@@ -39,10 +41,17 @@ Use these as engineering artifacts, not paper-facing claims by themselves.
 
 | Artifact family | Status |
 |---|---|
-| `outputs/selector_evidence_package_*/` | Present-not-selected / absent-from-tree / current-correct-risk casebooks. |
-| `outputs/selector_evidence_trace_recovery_20260501T023200Z/` | Reports 50 trace-recovered cases and 142 traced candidates, but the committed `candidate_trace_enriched.jsonl` has empty candidate lists. Needs source-package fix before unified use. |
-| `outputs/conservative_trace_support_selector_20260501T025615Z/` | Negative non-API baseline: 0 overrides and 0/46 recovery on the 50-case recovery benchmark. |
-| `outputs/unified_selector_evidence_*/` | Builder/scaffold and diagnostic packages. Current merged new-cap100 provenance contributes 0 candidate nodes, so not yet canonical selector input. |
+| `outputs/unified_selector_evidence_20260501T145906Z/` | Corrected unified selector-evidence package used for the final recovery-track selected-selector decision. |
+| `outputs/outcome_verifier_answer_group_selector_20260501T152447Z/` | Dry-run outcome-verifier call plan and call-plan summary. |
+| `outputs/outcome_verifier_scores_cohere_smoke10_20260501T162328Z/` | Completed Cohere verifier score cache for the recovery selector-evidence call plan. |
+| `outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/` | Regenerated selected-selector output matching `configs/selected_selector_current.json`. |
+| `outputs/selected_selector_audit_20260501T181608Z/` | Passing selected-selector audit package. |
+| `outputs/final_selector_decision_20260501T175547Z/` | Canonical recovery-track final selector decision package. |
+| `outputs/best_selector_vs_external_l1_comparison_*/` | Bounded external-baseline comparison artifacts; cache-limited selected-verifier comparisons are diagnostic until full score coverage is recorded. |
+| `outputs/self_consistency_*` | Self-consistency majority-vote baseline outputs; use only as matched-slice literature-baseline evidence. |
+| `outputs/selector_evidence_package_*/` | Present-not-selected / absent-from-tree / current-correct-risk casebooks; provenance and selector-development input. |
+| `outputs/selector_evidence_trace_recovery_*` | Trace-recovery packages; verify candidate lists and manifests before using as selector input. |
+| `outputs/conservative_trace_support_selector_*` | Conservative non-API baseline outputs; useful as negative/safety provenance. |
 | `outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl` | Older focused33 traced selector evidence. Useful but lower gold-terminal coverage. |
 
 ## Current real diagnostic artifact

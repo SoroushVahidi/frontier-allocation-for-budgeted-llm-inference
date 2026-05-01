@@ -6,9 +6,9 @@ The project asks how to allocate limited inference compute across active reasoni
 
 ## Current status
 
-The selector-choosing milestone is now closed for the current recovery/selector-evidence track.
+The repository is in a **selector-validation and baseline-comparison phase**.
 
-The current selected working selector is:
+The recovery-track selector-choosing milestone is closed. The current selected working selector is:
 
 ```text
 outcome_verifier_answer_group_selector_v1
@@ -37,7 +37,7 @@ A selected-selector audit passed after correcting a stale selector-casebook poin
 
 Important scope boundary: this is a **working selector for the recovery/selector-evidence phase**, not a runtime promotion and not an `external_l1_max` defeat claim.
 
-## Current external-baseline status
+## Current external-baseline and literature-baseline status
 
 A cache-limited 100-case GSM8K comparison against `external_l1_max` exists in:
 
@@ -45,17 +45,21 @@ A cache-limited 100-case GSM8K comparison against `external_l1_max` exists in:
 outputs/best_selector_vs_external_l1_comparison_*/
 ```
 
-That run is diagnostic rather than definitive, because most paired-set candidates did not have verifier scores and therefore the selector mostly fell back to the original DR-v2 answer. The next claim-safe step is a **fully scored paired pilot** or larger fully scored comparison where missing selector scores are zero.
+That run is diagnostic rather than definitive, because most paired-set candidates did not have verifier scores and therefore the selected verifier selector mostly fell back to the original DR-v2 answer. The next claim-safe verifier-selector comparison is a **fully scored paired pilot** or larger fully scored comparison where missing selector scores are zero.
+
+A literature-faithful self-consistency majority-vote baseline has also been added. It is useful as a no-API selector baseline over the same existing candidate pools, but it is not a new method contribution and should be compared on the same paired slices as the verifier selector.
 
 ## Start here
 
 | Need | Read |
 |---|---|
 | Current project state | `docs/CURRENT_PROJECT_STATUS.md` |
+| Clean navigation / organization guide | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` |
 | Current selector decision | `docs/CURRENT_SELECTOR_DECISION.md` |
 | Full documentation map | `docs/DOCS_INDEX.md` |
 | Reviewer/collaborator orientation | `docs/CANONICAL_START_HERE.md` |
 | Repository structure | `docs/REPO_MAP.md` |
+| Literature selector baselines | `docs/LITERATURE_SELECTOR_BASELINES.md` |
 | Selector artifact front door | `docs/SELECTOR_WORK_START_HERE_20260501.md` |
 | Selector choosing checklist | `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` |
 | Fast selector execution policy | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` |
@@ -74,6 +78,7 @@ Important selector-evidence families:
 - `outputs/selected_selector_audit_20260501T181608Z/` — passing selected-selector audit package.
 - `outputs/final_selector_decision_20260501T175547Z/` — canonical final selector decision package.
 - `outputs/best_selector_vs_external_l1_comparison_*/` — bounded external-baseline comparison artifacts; treat cache-limited comparisons as diagnostic unless full score coverage is recorded.
+- `outputs/self_consistency_*` — self-consistency baseline outputs; treat as literature-baseline evidence and compare only with matching data slices.
 
 Historical selector artifacts and earlier negative baselines remain useful for provenance, but should not override `configs/selected_selector_current.json` and `docs/CURRENT_SELECTOR_DECISION.md`.
 
@@ -129,6 +134,12 @@ Run the external-baseline comparison script on an existing paired source:
 python scripts/apply_selected_selector_to_paired_validation.py --help
 ```
 
+Run the self-consistency literature baseline:
+
+```bash
+python scripts/run_self_consistency_majority_selector.py --help
+```
+
 Run the canonical paper artifact builder:
 
 ```bash
@@ -142,7 +153,7 @@ The immediate engineering priority is **not another recovery-selector choice**. 
 Next useful experiments:
 
 1. Run a fully scored paired pilot/comparison against `external_l1_max` with zero missing selector scores.
-2. Add literature-grounded selector baselines, starting with self-consistency majority vote, to confirm the selected verifier-reranker is competitive with published selector families.
+2. Compare self-consistency and the Cohere outcome-verifier selector on the same paired slice.
 3. If fully scored comparisons show selector errors are no longer dominant, move effort to discovery/coverage: getting gold answers into the candidate tree.
 
 ## Canonical paper-facing artifacts
@@ -191,7 +202,7 @@ Important directories:
 - `neurips2026_anonymous_artifact/` — anonymous artifact staging area.
 - `batch/` and `jobs/` — cluster/scheduler scripts.
 
-See `docs/REPO_MAP.md` for the detailed map.
+See `docs/REPO_MAP.md` for the detailed map and `docs/REPO_ORGANIZATION_GUIDE_20260501.md` for cleanup/organization rules.
 
 ## Artifact safety
 
