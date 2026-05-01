@@ -107,3 +107,5 @@ Do not loosen `.gitignore` globally for all `outputs/**/*.jsonl` or all casebook
 ## Claim boundary
 
 A selector-evidence package is diagnostic unless promoted by canonical docs. It can justify choosing the next selector family, but it does not by itself justify a broad claim that we beat `external_l1_max`.
+
+- Added artifacts-only collector script `scripts/collect_selector_evidence_present_not_selected.py` and synthetic regression test `tests/test_collect_selector_evidence_present_not_selected.py` to produce selector-evidence packages without paid API calls.
