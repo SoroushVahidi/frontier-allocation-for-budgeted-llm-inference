@@ -1,152 +1,152 @@
 # Current project status
 
-This document is the short, current orientation note for the repository. It supersedes older broad-status notes for day-to-day work, while preserving dated documents as provenance.
+This document is the short, current orientation note for day-to-day work. It supersedes older broad-status notes for navigation purposes, while dated documents remain provenance.
 
-## Current project identity
+## Project identity
 
 This repository studies **frontier allocation for budgeted LLM inference** under explicit compute/action-budget contracts.
 
-The current paper-facing frame is not the old binary revise-routing story. The central question is:
+The core question is:
 
 > Given a fixed inference budget and multiple active reasoning/candidate paths, where should the next unit of compute go, and how should the final answer be selected from the explored frontier?
 
-The older `-adaptive-llm-inference` project is treated as prior internal background and diagnostic inspiration, not as the runtime center of this project.
-
-## Current development goal
-
-The active engineering goal is to defeat `external_l1_max` honestly with completed, paired, trace-complete evidence.
-
-The current subgoal is to convert candidate-pool headroom into a deployable final-answer selector. Heuristic selectors have now been tested on a real 50-case compact tournament artifact and are not strong enough for runtime promotion.
-
-## Current active artifact
-
-Primary current real run:
-
-```text
-outputs/cohere_real_model_cost_normalized_validation_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
-```
-
-Portable compact selector artifact:
-
-```text
-outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
-```
-
-Tournament diagnostics:
-
-```text
-outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/diagnostics/selector_tournament/
-```
-
-## Current evidence snapshot
-
-On the paired 50-example Cohere GSM8K budget-4 seed-11 slice:
-
-| Method / diagnostic | Accuracy |
-|---|---:|
-| `external_l1_max` | 0.72 |
-| current DR-v2 | 0.64 |
-| best deployable heuristic selector | 0.66 |
-| oracle selector ceiling | 0.84 |
-
-Best deployable heuristic selector behavior:
-
-| Quantity | Value |
-|---|---:|
-| fixes | 5 |
-| breaks | 4 |
-| net fixes-minus-breaks | +1 |
-| overrides | 17 |
-| override precision | 0.2941 |
-
-Interpretation:
-
-- DR-v2 candidate pools contain substantial hidden value: oracle selection reaches 0.84.
-- Existing support/source/consistency heuristics recover only a small fraction of that value.
-- Current heuristic selectors are too noisy and should **not** be promoted to runtime.
-- The next selector must estimate candidate correctness more directly.
+The active work is no longer the older binary cheap-vs-revise routing story. The current focus is final-answer selection from already-discovered candidate reasoning paths.
 
 ## Current phase
 
-**Phase:** cached outcome-verifier selector test.
+**Phase:** selector evidence cleanup and outcome-verifier selector preparation.
 
-The next method should be framed as:
+The recent selector work established three important facts:
+
+1. There are real **present-not-selected** failures: cases where the correct answer is present in discovered candidate groups/tree evidence but the runtime selector chooses another answer.
+2. A conservative non-API selector baseline, `conservative_trace_support_selector_v1`, made zero overrides on the 50-case trace-recovered recovery benchmark, so support/source/trace-count features alone are too conservative for this setting.
+3. The unified selector-evidence package builder exists, but the merged unified packages are **not yet selector-ready for the new-cap100 subset**, because that subset currently contributes zero candidate nodes in the unified summary.
+
+## Current evidence packages
+
+### Strongest recovery benchmark
 
 ```text
-score(question, candidate answer, optional reasoning trace)
-  -> estimated probability that the candidate answer is correct
+outputs/selector_evidence_trace_recovery_20260501T023200Z/
 ```
 
-Then select the highest-scoring candidate, preferably with a margin that avoids breaking current correct answers.
+Recorded recovery metrics from the trace-recovery run:
 
-## Execution policy from now on
+| Metric | Value |
+|---|---:|
+| input cases | 50 |
+| raw records matched | 50 |
+| cases with candidate nodes | 50 |
+| cases with at least one candidate trace | 50 |
+| cases with all candidates traced | 50 |
+| extracted candidate-node count | 142 |
+| traced candidate-node count | 142 |
+| gold present in aggregate answer buckets | 50 |
+| gold present in extracted terminal node finals | 46 |
+| selected answer present in extracted terminal node finals | 50 |
+| Cohere calls used for recovery | 0 |
 
-We are using paid APIs. Avoid unnecessary cost.
+Important caveat: the committed `candidate_trace_enriched.jsonl` in this package has been observed to contain shell records with empty `candidate_nodes`. The summary claims 142 traced candidates, but the selector-unification path cannot currently recover those candidates from the committed package. Treat this as a source-package writing/retention issue to fix before using the package as unified selector input.
 
-Rules:
+### Conservative selector negative baseline
 
-1. Do not run paid generation unless the exact method, dataset, budget, seed, and expected call count are known.
-2. For selector work, use existing candidate pools whenever possible.
+```text
+outputs/conservative_trace_support_selector_20260501T025615Z/
+```
+
+Result on the 50-case recovery package:
+
+| Metric | Value |
+|---|---:|
+| total cases | 50 |
+| current incumbent accuracy | 0.0 |
+| oracle ceiling on package | 0.92 |
+| recoverable trace-terminal cases | 46 |
+| total overrides | 0 |
+| fixes | 0 |
+| gold-terminal failures not chosen | 46 |
+
+Interpretation: `conservative_trace_support_selector_v1` is a valid deterministic no-API baseline, but it is a negative baseline. It shows that conservative support/source/trace gating does not recover the available headroom.
+
+### Unified selector evidence packages
+
+Unified packages were generated under:
+
+```text
+outputs/unified_selector_evidence_*/
+```
+
+Current caveat: the latest merged unified package family still shows the `new_cap100_trace_recovery` provenance with:
+
+```text
+candidate_nodes = 0
+traced_candidate_nodes = 0
+usable_for_trace_aware_selector = 0
+```
+
+Therefore the unified package is useful as a diagnostic artifact and builder scaffold, but **not yet the canonical selector-training/evaluation input** for outcome-verifier work.
+
+## Current blocker
+
+The immediate blocker is not the outcome-verifier selector itself. It is the source evidence retention issue:
+
+> The trace-recovery summary reports 142 traced new-cap100 candidates, but the committed candidate-trace JSONL available to the unified builder contains empty candidate lists.
+
+The next useful task is to fix `scripts/recover_selector_evidence_traces.py` or regenerate the source trace-recovery package so that `candidate_trace_enriched.jsonl` actually contains the recovered `candidate_nodes` and `verifier_input.candidates_for_verifier`.
+
+## Next recommended action
+
+1. Fix/regenerate the trace-recovery package so the committed JSONL contains the 142 recovered candidate nodes.
+2. Rebuild unified selector evidence from the corrected trace-recovery package plus focused33.
+3. Confirm the unified summary shows:
+
+```text
+new_cap100_trace_recovery candidate_nodes = 142
+new_cap100_trace_recovery traced_candidate_nodes = 142
+new_cap100_trace_recovery usable_for_trace_aware_selector = 50
+```
+
+4. Rerun `conservative_trace_support_selector_v1` on the corrected unified package.
+5. Implement the outcome-verifier selector with a dry-run call plan before any paid API scoring.
+
+## API-cost policy
+
+Paid APIs are allowed only when the exact method, dataset, budget, seed, and expected call count are known.
+
+For selector work:
+
+1. Use existing candidate pools first.
+2. Dry-run verifier-call count before paid scoring.
 3. Cache every verifier score.
-4. Before any paid verifier run, produce a dry-run count of required verifier calls and estimated cost.
-5. Do not run more repository archaeology or broad diagnostics unless it directly enables a selector result.
-6. After any paid run, immediately export a compact portable artifact and run the selector tournament.
+4. Do not regenerate answers merely to test selectors.
+5. Keep verifier inputs gold/oracle-free.
 
-## Current known blocker
-
-The blocker is no longer artifact portability or lack of selector tournament infrastructure. The blocker is:
-
-> Heuristic selectors cannot reliably distinguish safe overrides from unsafe overrides.
-
-The next useful selector is an outcome-verifier-style candidate correctness estimator, not another support-only variant.
-
-## Current safe claim boundary
+## Safe claim boundary
 
 Safe:
 
-- The repository implements fixed-budget frontier-allocation diagnostics with portable selector-tournament artifacts.
-- A real 50-case paired diagnostic shows substantial oracle-selector headroom over DR-v2 candidate pools.
-- Simple deployable heuristic selectors are insufficient: they recover too little headroom and make too many unsafe overrides.
-- These findings motivate outcome-verifier-based final-answer selection.
+- The repository contains real selector-evidence artifacts and tools for present-not-selected recovery analysis.
+- The 50-case recovery benchmark indicates substantial oracle headroom in discovered candidate sets.
+- The conservative trace-support selector is a negative baseline and motivates outcome-verifier selection.
+- The unified-evidence builder exists, but its current merged outputs expose a retention/schema problem for new-cap100 candidates.
 
 Not safe yet:
 
-- Do **not** claim DR-v2 or any current selector beats `external_l1_max` robustly.
-- Do **not** claim heuristic selectors solve final-answer commitment.
-- Do **not** claim an outcome-verifier selector works before cached verifier scores are actually evaluated.
-- Do **not** promote a selector to runtime without a focused offline result and then a paid validation.
-
-## Current method interpretation
-
-- `strict_f3` remains the manuscript-facing matched-surface representative under the older canonical paper surface.
-- `strict_gate1_cap_k6` remains a broader operational default on a different surface.
-- DR-v2 and its selector/rerank variants are the active L1-defeat development family.
-- The immediate method target is a cached outcome-verifier selector over DR-v2 candidate answer groups.
-
-## Current next action
-
-The next non-circular task is:
-
-1. Use the 50-case compact selector artifact.
-2. Implement a cached outcome-verifier selector scaffold.
-3. Dry-run and report verifier-call count before any paid verifier scoring.
-4. Score only existing candidate groups, not regenerate answers.
-5. Compare verifier selector against current DR-v2, best heuristic, L1, and oracle.
-6. Promote to runtime only if the verifier selector gives a meaningful net gain.
+- Do not claim a current selector beats `external_l1_max` robustly.
+- Do not claim the merged unified packages are fully trace-aware for the new-cap100 subset.
+- Do not claim outcome-verifier selection works until cached verifier scores are actually evaluated.
+- Do not treat diagnostic/bug-revealing artifacts as paper-facing evidence without updating the source-of-truth docs.
 
 ## Important documents
 
-- `docs/CANONICAL_START_HERE.md` — canonical reviewer/collaborator orientation.
 - `docs/DOCS_INDEX.md` — active vs diagnostic vs historical document map.
-- `docs/SELECTOR_START_HERE.md` — current selector/L1-defeat track.
-- `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` — current verifier-selector roadmap.
-- `docs/FAST_SELECTOR_EXECUTION_POLICY.md` — cost-aware execution policy for selector work.
-- `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` — selector trace artifact index and usability policy.
-- `docs/FINAL_ADAPTIVE_LLM_INFERENCE_TRANSFER_AUDIT_20260430T034801Z.md` — final transfer audit from the old project.
+- `docs/REPO_MAP.md` — repository structure and selector-phase reading path.
+- `docs/SELECTOR_WORK_START_HERE_20260501.md` — selector artifact orientation.
+- `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` — selector family decision checklist.
+- `docs/SELECTOR_EVIDENCE_RETENTION_POLICY_20260501.md` — what to commit from selector evidence packages.
+- `docs/FAST_SELECTOR_EXECUTION_POLICY.md` — cost-aware execution policy.
 - `docs/PAPER_SOURCE_OF_TRUTH.md` — claim-eligible evidence rules.
-- `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` — safe vs unsafe claim map.
-- `docs/PAPER_OPEN_GAPS_AND_RISKS.md` — known open gaps.
 
 ## One-sentence status
 
-The repository now has a reliable 50-case selector tournament showing that DR-v2 has large oracle headroom but heuristic selectors are too weak; the next step is a cached outcome-verifier selector over existing candidate groups, with strict API-cost control.
+The repository is ready for outcome-verifier selector work only after the new-cap100 trace-recovery package is corrected so its committed JSONL contains the 142 recovered candidate traces that its summary reports.
