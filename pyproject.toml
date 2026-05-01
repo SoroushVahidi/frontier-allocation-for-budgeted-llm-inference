@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "adaptive-reasoning-budget-allocation"
+name = "frontier-allocation-budgeted-llm-inference"
 version = "0.1.0"
-description = "Research code for adaptive test-time compute allocation for LLM reasoning."
+description = "Research code for frontier allocation and final-answer selection under budgeted LLM inference."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
