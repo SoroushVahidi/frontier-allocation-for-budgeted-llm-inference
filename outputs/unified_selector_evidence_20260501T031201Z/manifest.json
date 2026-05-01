@@ -1,0 +1,20 @@
+{
+  "timestamp": "20260501T031202Z",
+  "inputs": [
+    "outputs/selector_evidence_trace_recovery_20260501T023200Z/candidate_trace_enriched.jsonl:new_cap100_trace_recovery",
+    "outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl:focused33_wulver"
+  ],
+  "output_dir": "outputs/unified_selector_evidence_20260501T031201Z",
+  "dedup_key": [
+    "dataset",
+    "example_id",
+    "seed",
+    "budget",
+    "our_method_name"
+  ],
+  "prefer_source_label": [
+    "new_cap100_trace_recovery"
+  ],
+  "no_gold_in_verifier_input": true,
+  "git_commit": "539b6806c8ed75c288b9d5281d105e3a71060ca5"
+}
