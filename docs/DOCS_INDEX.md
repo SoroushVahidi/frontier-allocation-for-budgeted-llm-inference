@@ -20,10 +20,13 @@ This index separates current interpretation documents from diagnostic and histor
 | Document | Role |
 |---|---|
 | `docs/SELECTOR_START_HERE.md` | Entry point for selector-first work. |
+| `docs/SELECTOR_WORK_START_HERE_20260501.md` | Current front door for focused33 trace-enriched selector work. |
+| `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` | Decision checklist for choosing the next selector family and promotion criteria. |
 | `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` | Outcome-verifier selector roadmap. |
 | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | API-cost-control and fast selector execution policy. |
 | `docs/SELECTOR_CATALOG.md` | Selector methods and diagnostic selectors. |
 | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` | Selector trace artifact usability index. |
+| `docs/ARTIFACT_INDEX_20260501.md` | Current selector artifact index after Wulver transfer. |
 | `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md` | Older ordered selector-vs-coverage roadmap; preserve as provenance. |
 | `docs/FINAL_ADAPTIVE_LLM_INFERENCE_TRANSFER_AUDIT_20260430T034801Z.md` | Final audit of ideas transferred from the older binary-routing repository. |
 | `docs/METHOD_REGISTRY_CANONICAL_20260429.md` | Method status and live-runnable/diagnostic distinctions. |
@@ -48,7 +51,13 @@ Important diagnostic subfolder:
 outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/diagnostics/selector_tournament/
 ```
 
-Use this compact artifact for offline outcome-verifier selector development before launching any new paid run.
+Focused trace-enriched selector artifact:
+
+```text
+outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl
+```
+
+Use these compact/trace-enriched artifacts for offline outcome-verifier selector development before launching any new paid run.
 
 ## Current runnable/reproduction docs
 
