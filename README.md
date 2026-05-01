@@ -2,42 +2,63 @@
 
 This repository studies **frontier allocation for budgeted LLM inference** under explicit compute/action-budget contracts.
 
-The project asks how to allocate limited inference compute across active reasoning/candidate paths and how to choose the final answer from the explored frontier. It is **not** the older binary cheap-vs-revise routing story.
+The project asks how to allocate limited inference compute across active reasoning/candidate paths and how to select the final answer from the explored frontier. It is **not** the older binary cheap-vs-revise routing story.
 
 ## Current status
 
-The active engineering goal is to turn discovered candidate-answer headroom into a reliable final-answer selector.
+The selector-choosing milestone is now closed for the current recovery/selector-evidence track.
 
-Recent selector work produced:
+The current selected working selector is:
 
-- present-not-selected selector-evidence packages;
-- a 50-case trace-recovery benchmark with reported 142 traced candidate nodes;
-- a deterministic no-API baseline, `conservative_trace_support_selector_v1`;
-- unified selector-evidence tooling.
+```text
+outcome_verifier_answer_group_selector_v1
+scorer_mode = cached_jsonl
+min_verifier_margin = 0.0
+require_trace_for_override = true
+dedupe_verifier_items = true
+no_gold_features = true
+```
 
-The key current result is a **negative baseline**: `conservative_trace_support_selector_v1` made zero overrides and recovered zero of the 46 trace-terminal recoverable cases in the 50-case recovery benchmark. This motivates an outcome-verifier selector rather than more support/source/trace-count heuristics.
+Canonical selector config:
 
-The key current blocker is evidence retention/schema consistency: merged unified-evidence packages currently show `new_cap100_trace_recovery` contributing zero candidate nodes even though the trace-recovery summary reports 142 traced candidates. Fix the source trace-recovery JSONL before treating unified selector evidence as canonical input for outcome-verifier experiments.
+```text
+configs/selected_selector_current.json
+```
 
-Do **not** claim robust or broad superiority over `external_l1_max` unless a completed claim-safe evaluation document supports it.
+The selector was chosen because it produced the best audited result on the recovery selector-evidence package:
+
+| Selector | Cases | Overrides | Fixes | Breaks | Net | Accuracy | Status |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `conservative_trace_support_selector_v1` | 47 | 0 | 0 | 0 | 0 | 0.0000 | rejected fallback |
+| outcome verifier + `trace_quality_heuristic` | 47 | 36 | 20 | 0 | +20 | 0.4255 | runner-up |
+| outcome verifier + Cohere `cached_jsonl` | 47 | 42 | 21 | 0 | +21 | 0.4468 | selected |
+
+A selected-selector audit passed after correcting a stale selector-casebook pointer. The latest audit confirms reproducibility, cache joining, leakage checks, prompt hygiene, and scope wording for the recovery-track decision.
+
+Important scope boundary: this is a **working selector for the recovery/selector-evidence phase**, not a runtime promotion and not an `external_l1_max` defeat claim.
+
+## Current external-baseline status
+
+A cache-limited 100-case GSM8K comparison against `external_l1_max` exists in:
+
+```text
+outputs/best_selector_vs_external_l1_comparison_*/
+```
+
+That run is diagnostic rather than definitive, because most paired-set candidates did not have verifier scores and therefore the selector mostly fell back to the original DR-v2 answer. The next claim-safe step is a **fully scored paired pilot** or larger fully scored comparison where missing selector scores are zero.
 
 ## Start here
 
 | Need | Read |
 |---|---|
 | Current project state | `docs/CURRENT_PROJECT_STATUS.md` |
+| Current selector decision | `docs/CURRENT_SELECTOR_DECISION.md` |
 | Full documentation map | `docs/DOCS_INDEX.md` |
 | Reviewer/collaborator orientation | `docs/CANONICAL_START_HERE.md` |
 | Repository structure | `docs/REPO_MAP.md` |
-| Current selector artifact front door | `docs/SELECTOR_WORK_START_HERE_20260501.md` |
+| Selector artifact front door | `docs/SELECTOR_WORK_START_HERE_20260501.md` |
 | Selector choosing checklist | `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` |
-| Selector evidence retention policy | `docs/SELECTOR_EVIDENCE_RETENTION_POLICY_20260501.md` |
 | Fast selector execution policy | `docs/FAST_SELECTOR_EXECUTION_POLICY.md` |
-| Wulver artifact index | `docs/ARTIFACT_INDEX_20260501.md` |
-| Focused33 trace-enrichment result | `docs/FOCUSED33_TRACE_ENRICHMENT_RESULT_20260501T000906Z.md` |
-| Cleanup policy | `docs/REPOSITORY_CLEANUP_POLICY_20260501.md` |
-| Outcome-verifier selector roadmap | `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` |
-| Selector trace artifact usability | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` |
 | Paper evidence rules | `docs/PAPER_SOURCE_OF_TRUTH.md` |
 | Safe vs unsafe claims | `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` |
 | Open gaps and risks | `docs/PAPER_OPEN_GAPS_AND_RISKS.md` |
@@ -46,23 +67,19 @@ Do **not** claim robust or broad superiority over `external_l1_max` unless a com
 
 Important selector-evidence families:
 
-- `outputs/selector_evidence_package_*/` — present-not-selected / absent-from-tree / current-correct-risk casebooks and summaries.
-- `outputs/selector_evidence_trace_recovery_*/` — trace-recovery packages for selector cases. Verify that `candidate_trace_enriched.jsonl` actually contains candidate nodes before use.
-- `outputs/conservative_trace_support_selector_*/` — deterministic non-API selector baseline outputs.
-- `outputs/unified_selector_evidence_*/` — unified evidence packages. Current merged packages are diagnostic until the new-cap100 candidate-node retention issue is corrected.
-- `outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl` — older focused33 traced selector evidence.
+- `outputs/unified_selector_evidence_20260501T145906Z/` — corrected unified selector-evidence package used for the final recovery-track selector decision.
+- `outputs/outcome_verifier_answer_group_selector_20260501T152447Z/` — dry-run verifier call plan and call-plan summary.
+- `outputs/outcome_verifier_scores_cohere_smoke10_20260501T162328Z/` — completed Cohere verifier score cache for the recovery selector-evidence call plan.
+- `outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/` — regenerated selected-selector output matching the selected config.
+- `outputs/selected_selector_audit_20260501T181608Z/` — passing selected-selector audit package.
+- `outputs/final_selector_decision_20260501T175547Z/` — canonical final selector decision package.
+- `outputs/best_selector_vs_external_l1_comparison_*/` — bounded external-baseline comparison artifacts; treat cache-limited comparisons as diagnostic unless full score coverage is recorded.
 
-Historical Wulver selector artifacts also include:
-
-- `outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_trace_complete.csv` — 47 aggregate trace-complete external-loss casebook rows.
-- Focused subset from that casebook — 33 rows where `trace_available == gold_present_in_candidate_groups == oracle_selector_would_fix == 1`.
-- `outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_case_trace_index.csv` — raw trace index with more traced method/example rows than the 47-row external-loss casebook.
-
-Use `docs/SELECTOR_WORK_START_HERE_20260501.md`, `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md`, and `docs/ARTIFACT_INDEX_20260501.md` before running or interpreting selector experiments.
+Historical selector artifacts and earlier negative baselines remain useful for provenance, but should not override `configs/selected_selector_current.json` and `docs/CURRENT_SELECTOR_DECISION.md`.
 
 ## API-cost rule
 
-Paid API calls are allowed only when the next call directly produces a selector result and the expected call count is known.
+Paid API calls are allowed only when the next call directly produces a selector or comparison result and the expected call count is known.
 
 For selector work:
 
@@ -70,13 +87,14 @@ For selector work:
 2. Dry-run verifier-call count before paid scoring.
 3. Cache every verifier score.
 4. Do not regenerate answers just to test selectors.
-5. After any paid run, immediately export a compact selector artifact and run the relevant selector evaluation.
+5. Keep verifier inputs gold/oracle/evaluation-only free.
+6. After paid scoring, immediately run the paired evaluation and export compact artifacts.
 
 See `docs/FAST_SELECTOR_EXECUTION_POLICY.md`.
 
-## Current selector-track commands
+## Current commands
 
-Run the focused selector regression subset:
+Run focused selector tests:
 
 ```bash
 make selector-test
@@ -89,26 +107,26 @@ make health
 make reviewer-test
 ```
 
-Run the conservative selector on a candidate-trace input:
+Run the selected outcome-verifier selector on the recovery evidence with the cached scores:
 
 ```bash
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
-python scripts/run_conservative_trace_support_selector.py \
-  --input outputs/selector_evidence_trace_recovery_20260501T023200Z/candidate_trace_enriched.jsonl \
-  --output-dir outputs/conservative_trace_support_selector_${STAMP} \
-  --selector-name conservative_trace_support_selector_v1 \
-  --min-support-margin 1 \
+python scripts/run_outcome_verifier_answer_group_selector.py \
+  --input outputs/unified_selector_evidence_20260501T145906Z/unified_candidate_trace_enriched.jsonl \
+  --output-dir outputs/outcome_verifier_answer_group_selector_selected_${STAMP} \
+  --selector-name outcome_verifier_answer_group_selector_v1 \
+  --scorer-mode cached_jsonl \
+  --score-cache outputs/outcome_verifier_scores_cohere_smoke10_20260501T162328Z/verifier_scores.jsonl \
+  --min-verifier-margin 0.0 \
   --require-trace-for-override \
-  --prefer-source-diversity \
+  --dedupe-verifier-items \
   --no-gold-features
 ```
 
-Inventory current trace artifacts:
+Run the external-baseline comparison script on an existing paired source:
 
 ```bash
-python scripts/inventory_trace_artifacts.py \
-  --roots outputs archive logs \
-  --output-dir outputs/trace_artifact_inventory_$(date -u +%Y%m%dT%H%M%SZ)
+python scripts/apply_selected_selector_to_paired_validation.py --help
 ```
 
 Run the canonical paper artifact builder:
@@ -116,6 +134,16 @@ Run the canonical paper artifact builder:
 ```bash
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
+
+## What to do next
+
+The immediate engineering priority is **not another recovery-selector choice**. The current selector is selected and audited for the recovery track.
+
+Next useful experiments:
+
+1. Run a fully scored paired pilot/comparison against `external_l1_max` with zero missing selector scores.
+2. Add literature-grounded selector baselines, starting with self-consistency majority vote, to confirm the selected verifier-reranker is competitive with published selector families.
+3. If fully scored comparisons show selector errors are no longer dominant, move effort to discovery/coverage: getting gold answers into the candidate tree.
 
 ## Canonical paper-facing artifacts
 
@@ -133,14 +161,6 @@ Canonical output roots:
 
 These are claim-eligible only when interpreted through `docs/PAPER_SOURCE_OF_TRUTH.md` and `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`.
 
-## Current L1-defeat focus
-
-The selector track asks:
-
-> Given candidate answers already found by DR-v2, can an outcome verifier estimate which candidate answer is correct more safely than support/source/consistency heuristics?
-
-The next offline step is to correct the trace-recovery JSONL retention issue, rebuild unified selector evidence, and then run an outcome-verifier selector with dry-run call accounting before any paid scoring.
-
 ## Method-surface distinction
 
 Keep this distinction explicit:
@@ -152,11 +172,11 @@ Keep this distinction explicit:
 ## What not to claim yet
 
 - Do **not** claim robust/universal superiority over external baselines.
-- Do **not** claim DR-v2, OV rerank, PRM rerank, or verifier-selector variants beat `external_l1_max` without completed paired rows.
+- Do **not** claim the selected selector is runtime-promoted.
+- Do **not** present cache-limited comparisons as fully scored selector comparisons.
 - Do **not** treat mock-backed verifier runs as real verifier evidence.
 - Do **not** present diagnostic variants as final methods unless validated and promoted by canonical docs.
-- Do **not** assume historical runs have complete trace coverage.
-- Do **not** treat current unified packages as fully trace-aware for new-cap100 until candidate-node retention is fixed.
+- Do **not** assume historical runs have complete trace or score coverage.
 
 ## Repository organization
 
@@ -175,4 +195,4 @@ See `docs/REPO_MAP.md` for the detailed map.
 
 ## Artifact safety
 
-Timestamped real-model outputs are evidence/provenance. Do not delete, overwrite, or repurpose them casually. Prefer indexing and labeling over deletion. Use `docs/ARTIFACT_INDEX_20260501.md`, `docs/OUTPUTS_ARTIFACT_INDEX.md`, and `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` when interpreting output folders.
+Timestamped real-model outputs are evidence/provenance. Do not delete, overwrite, or repurpose them casually. Prefer indexing and labeling over deletion. Use the relevant docs and manifests when interpreting output folders.
