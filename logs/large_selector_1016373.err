@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_large_selector_tournament.py", line 420, in <module>
+    main()
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_large_selector_tournament.py", line 368, in main
+    w.writerows(summary)
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/csv.py", line 157, in writerows
+    return self.writer.writerows(map(self._dict_to_list, rowdicts))
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/csv.py", line 149, in _dict_to_list
+    raise ValueError("dict contains fields not in fieldnames: "
+ValueError: dict contains fields not in fieldnames: 'cohere_uncached_calls', 'cohere_calls_within_limit'

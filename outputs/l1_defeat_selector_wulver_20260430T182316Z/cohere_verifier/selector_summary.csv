@@ -1,0 +1,6 @@
+selector,accuracy,delta_vs_current_dr_v2,delta_vs_external_l1_max,fixes,breaks,net_fixes_minus_breaks,overrides,override_precision,remaining_selector_failures,remaining_coverage_failures
+current_dr_v2,0.0,0.0,0.0,0,0,0,0,0.0,0,0
+support_only,0.0,0.0,0.0,0,0,0,0,0.0,0,0
+cohere_outcome_verifier_selector_v1,0.0,0.0,0.0,0,0,0,0,0.0,0,0
+external_l1_max,0.0,0.0,0.0,0,0,0,0,0.0,0,0
+oracle_selector,0.0,0.0,0.0,0,0,0,0,0.0,0,0

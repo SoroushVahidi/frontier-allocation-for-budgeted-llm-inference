@@ -9,7 +9,7 @@ This track studies how to choose the final answer from candidate answer groups t
 The current selector problem should be framed as **answer correctness estimation**:
 
 ```text
-score(problem, candidate answer, optional reasoning trace, source/support/error features)
+score(question, candidate answer, optional reasoning trace)
   -> estimated probability that the candidate answer is correct
 ```
 
@@ -17,7 +17,44 @@ A selector should choose among candidate groups using this score while avoiding 
 
 ## Current question
 
-> Given the candidate answers already found by DR-v2, can a conservative verifier-style selector recover present-but-not-selected correct answers without breaking current correct answers?
+> Given candidate answers already found by DR-v2, can an outcome-verifier selector recover hidden correct answers more safely than support/source/consistency heuristics?
+
+## Current active artifact
+
+Use the compact 50-case artifact for selector development:
+
+```text
+outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
+```
+
+Associated real run:
+
+```text
+outputs/cohere_real_model_cost_normalized_validation_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
+```
+
+## Current key metrics
+
+| Method / diagnostic | Accuracy |
+|---|---:|
+| `external_l1_max` | 0.72 |
+| current DR-v2 | 0.64 |
+| best deployable heuristic selector | 0.66 |
+| oracle selector ceiling | 0.84 |
+
+Best heuristic selector behavior:
+
+| Metric | Value |
+|---|---:|
+| fixes | 5 |
+| breaks | 4 |
+| net fixes-minus-breaks | +1 |
+| overrides | 17 |
+| override precision | 0.2941 |
+
+## Current lesson
+
+The candidate pool has substantial hidden value, but heuristic selectors are too noisy. The next serious selector is an outcome-verifier selector, not another support-only variant.
 
 ## Key distinction
 
@@ -29,69 +66,29 @@ Coverage work answers:
 
 > Did we fail because the correct answer never appeared in the explored candidate pool?
 
-The current real 30-case artifact indicates that most L1>DR-v2 losses are selector/commit failures rather than pure coverage failures, so selector calibration remains the primary next step.
-
-## Current real artifact
-
-Primary current artifact:
-
-```text
-outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/
-```
-
-Current key metrics:
-
-| Quantity | Value |
-|---|---:|
-| `external_l1_max` accuracy | 0.8000 |
-| current DR-v2 accuracy | 0.6333 |
-| oracle selector ceiling | 0.8667 |
-| corrected selector gap | 0.2333 |
-| L1-correct / DR-v2-wrong cases | 7 |
-| gold-present among those losses | 5 |
-| gold-absent among those losses | 2 |
-
-## Current lesson
-
-Simple deployable selectors were tested offline on the 30-case artifact and did not improve net accuracy. Support-only recovered some failures but broke a comparable number of currently correct cases.
-
-Therefore the next selector should be a conservative override, not another broad support heuristic.
-
-## Current required analysis
-
-The next decisive offline analysis should focus on two subsets:
-
-1. `recoverable_present_not_selected`:
-   - current DR-v2 wrong;
-   - gold present in candidate pool;
-   - oracle selector would fix the case.
-
-2. `support_only_break`:
-   - current DR-v2 correct;
-   - support-only changes the selected answer;
-   - the changed answer is wrong.
-
-The goal is to identify evidence that separates safe overrides from unsafe overrides.
+The current 50-case tournament shows selector headroom remains large, but support/source/consistency heuristics do not recover it reliably.
 
 ## Active scripts and modules
 
 | Path | Purpose |
 |---|---|
+| `scripts/run_selector_tournament.py` | Canonical offline selector tournament over compact artifacts. |
+| `scripts/export_selector_tournament_compact.py` | Exports portable compact selector artifacts from paid runs. |
 | `scripts/analyze_selector_oracle_ceiling.py` | Offline selector-oracle ceiling analysis over trace artifacts. |
-| `scripts/analyze_offline_selector_variants.py` | Offline selector-rule comparison over real candidate pools. |
+| `scripts/analyze_offline_selector_variants.py` | Older offline selector-rule comparison over real candidate pools. |
 | `scripts/analyze_gold_absent_coverage_failures.py` | Coverage-failure diagnostics when available. |
 | `scripts/analyze_l1_loss_predictors_from_traces.py` | Risk/coverage predictor diagnostics from trace artifacts. |
+| `scripts/selector_reconstruction.py` | Canonical reconstruction helpers for candidate groups. |
 | `experiments/selector_error_features.py` | Candidate-level sanity, consistency, confidence/error features. |
 | `experiments/selector_candidate_extraction.py` | Candidate extraction / normalization support. |
-| `experiments/prm_step_verifier_rerank.py` | PRM-style step verifier reranking logic. |
-| `experiments/answer_grouped_outcome_verifier.py` | Outcome-verifier answer-group reranking logic. |
 
 ## Active docs
 
 | Path | Purpose |
 |---|---|
 | `docs/CURRENT_PROJECT_STATUS.md` | Current project status and next action. |
-| `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` | Current verifier-selector roadmap. |
+| `docs/FAST_SELECTOR_EXECUTION_POLICY.md` | Cost-aware execution rules for selector experiments. |
+| `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` | Verifier-selector roadmap. |
 | `docs/SELECTOR_CATALOG.md` | Selector inventory and deployable/diagnostic/oracle distinctions. |
 | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` | Trace artifact schema/usability index. |
 | `docs/FINAL_ADAPTIVE_LLM_INFERENCE_TRANSFER_AUDIT_20260430T034801Z.md` | Final audit of old-project ideas. |
@@ -99,18 +96,20 @@ The goal is to identify evidence that separates safe overrides from unsafe overr
 
 ## Current decision rule
 
-- If a conservative verifier-style selector improves offline on the real 30-case artifact, implement it as a runtime method and run a 50-case paired trace-complete validation.
-- If it does not improve, manually inspect the unresolved present-not-selected cases and design a narrower verifier/override condition.
-- If future diagnostics show gold is often absent, return to candidate generation / coverage repair.
+- Do not promote any current heuristic selector.
+- Test a cached outcome-verifier selector on the compact 50-case artifact.
+- Before any paid verifier call, report call count and expected cost.
+- Cache every verifier score.
+- If the verifier selector gives meaningful net gain, then consider a focused runtime validation.
 
 ## What not to do
 
-- Do not run new API experiments before an offline selector shows positive net gain.
-- Do not add many new selector variants at once.
+- Do not run paid API calls before dry-run accounting.
+- Do not regenerate candidate answers for selector testing.
+- Do not add more support-only selector variants before testing the outcome-verifier selector.
 - Do not use gold answer or oracle labels inside deployable rules.
-- Do not claim OV/PRM/verifier selectors beat L1 without completed paired rows.
-- Do not treat oracle selector as deployable; it is diagnostic only.
-- Do not treat mock-backed verifier outputs as real verifier evidence.
+- Do not claim verifier selectors beat L1 without completed paired evidence.
+- Do not leave paid artifacts unexported.
 
 ## Focused test command
 
@@ -120,4 +119,4 @@ Use:
 make selector-test
 ```
 
-This runs the current selector-focused regression subset without broad or API-backed experiments.
+This runs the selector-focused regression subset without broad or API-backed experiments.

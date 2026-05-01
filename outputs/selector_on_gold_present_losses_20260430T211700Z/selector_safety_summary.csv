@@ -1,0 +1,8 @@
+break_rate,breaks,fixes_on_33,net_fixes_minus_safety_breaks,safety_set_size,selector
+0.0,0,0,0,0,current_default_selector
+0.0,0,2,2,0,support_family_selector
+0.0,0,0,0,0,conservative_support_family_selector
+0.0,0,0,0,0,risk_gated_support_family_selector
+0.0,0,1,1,0,cohere_outcome_verifier_selector
+0.0,0,0,0,0,cohere_pairwise_verifier_selector
+0.0,0,33,33,0,oracle_selector

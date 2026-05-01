@@ -1,0 +1,51 @@
+hostname: n0103
+date: Thu Apr 30 06:43:09 PM UTC 2026
+repo_path: /mmfs1/home/sv96/adaptive-reasoning-budget-allocation
+branch: main
+commit: 0487905e1ff6fff50f55a4854842b7fc511597c9
+COHERE_API_KEY: present
+adaptive-reasoning-budget-allocation
+=====================================
+Python version: 3.10.20
+
+Repository health check: OK
+Canonical front door, artifact runners, and core import paths are intact.
+......                                                                   [100%]
+6 passed in 0.12s
+{
+  "selected_cases": 27,
+  "expected_cohere_calls": 27,
+  "cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl",
+  "model": "command-r-plus",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z"
+}
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/loss_casebook_200.csv
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/loss_casebook_200.jsonl
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/loss_summary.json
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/loss_summary.md
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_plan.jsonl
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/artifact_scan.csv
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/artifact_scan_report.md
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/docs/EXTERNAL_BASELINE_LOSS_CASEBOOK_200_20260430T184023Z.md
+dry_run_loss_count=27
+dry_run_expected_calls=27
+dry_run_cache_path=outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl
+dry_run_model=command-r-plus
+dry_run_output_dir=outputs/external_loss_casebook_20260430T184023Z
+{
+  "selected_cases": 27,
+  "expected_cohere_calls": 27,
+  "cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl",
+  "model": "command-r-plus",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z"
+}
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/loss_casebook_200.csv
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/loss_casebook_200.jsonl
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/loss_summary.json
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/loss_summary.md
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_plan.jsonl
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/cohere_annotation_cache.jsonl
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/artifact_scan.csv
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_20260430T184023Z/artifact_scan_report.md
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/docs/EXTERNAL_BASELINE_LOSS_CASEBOOK_200_20260430T184023Z.md

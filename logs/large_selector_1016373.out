@@ -1,0 +1,29 @@
+hostname: n0103
+date: Thu Apr 30 06:25:47 PM UTC 2026
+repo_path: /mmfs1/home/sv96/adaptive-reasoning-budget-allocation
+branch: main
+commit: 61a7e07e29e02d921146b57e275960861db96c2e
+COHERE_API_KEY: present
+adaptive-reasoning-budget-allocation
+=====================================
+Python version: 3.10.20
+
+Repository health check: OK
+Canonical front door, artifact runners, and core import paths are intact.
+...                                                                      [100%]
+3 passed in 0.36s
+.......                                                                  [100%]
+7 passed in 0.04s
+...                                                                      [100%]
+3 passed in 0.05s
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T182316Z/artifact_scan/artifact_scan.csv
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T182316Z/artifact_scan/artifact_scan_report.md
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T182316Z/selector_eval_artifact/per_example_records.jsonl
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T182316Z/selector_eval_artifact/build_summary.json
+{
+  "examples": 86,
+  "uncached_calls": 86,
+  "cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T182316Z/selector_tournament/cohere_verifier_cache.jsonl",
+  "cohere_model": "command-r-plus",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/large_selector_tournament_20260430T182316Z/selector_tournament"
+}

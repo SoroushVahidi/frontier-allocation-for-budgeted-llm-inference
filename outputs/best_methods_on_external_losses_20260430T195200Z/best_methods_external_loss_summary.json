@@ -1,0 +1,59 @@
+{
+  "selected_case_count": 88,
+  "trace_complete_selected": 22,
+  "final_row_only_selected": 66,
+  "expected_cohere_calls_for_missing_outputs": 313,
+  "method_accuracy": {
+    "direct_reserve_semantic_frontier_v2": {
+      "cases": 88,
+      "accuracy": 0.0
+    },
+    "external_l1_max": {
+      "cases": 88,
+      "accuracy": 0.1932
+    },
+    "strict_f3": {
+      "cases": 88,
+      "accuracy": 0.0
+    },
+    "strict_gate1_cap_k6": {
+      "cases": 88,
+      "accuracy": 0.0
+    }
+  },
+  "delta_default_vs_external_l1_max": -0.1932,
+  "selector_recoverable_count": 22,
+  "discovery_failure_count": 66,
+  "oracle_selector_ceiling_trace": 1.0,
+  "avg_candidate_group_count_trace": 2.2386,
+  "avg_branch_count_trace": 7.1364,
+  "avg_max_depth_trace": 0.5568,
+  "breakdown_by_budget": {
+    "8": 38,
+    "4": 19,
+    "6": 31
+  },
+  "breakdown_by_seed": {
+    "23": 28,
+    "11": 11,
+    "53": 15,
+    "37": 22,
+    "67": 6,
+    "41": 6
+  },
+  "breakdown_by_dataset": {
+    "openai/gsm8k": 88
+  },
+  "provider": "cohere",
+  "cohere_model": "command-r-plus",
+  "cohere_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/best_methods_on_external_losses_20260430T195200Z/cohere_generation_cache.jsonl",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/best_methods_on_external_losses_20260430T195200Z",
+  "selected_casebook_files": [
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_trace_complete.csv",
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_final_rows_only.csv"
+  ],
+  "selected_stats": {
+    "trace_complete_selected": 22,
+    "final_row_only_selected": 66
+  }
+}

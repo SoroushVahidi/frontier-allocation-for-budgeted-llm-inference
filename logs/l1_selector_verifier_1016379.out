@@ -1,0 +1,52 @@
+hostname: n0094
+date: Thu Apr 30 06:30:27 PM UTC 2026
+branch: main
+commit: 61a7e07e29e02d921146b57e275960861db96c2e
+python: Python 3.10.20
+COHERE_API_KEY: present
+output_dir: outputs/l1_defeat_selector_wulver_20260430T182316Z
+== Stage A: health/test ==
+adaptive-reasoning-budget-allocation
+=====================================
+Python version: 3.10.20
+
+Repository health check: OK
+Canonical front door, artifact runners, and core import paths are intact.
+......                                                                   [100%]
+6 passed in 0.31s
+== Stage B: artifact scan ==
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/l1_defeat_selector_wulver_20260430T182316Z/artifact_scan.csv
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/l1_defeat_selector_wulver_20260430T182316Z/artifact_scan_report.md
+Reconstructed best artifact: /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/l1_defeat_selector_wulver_20260430T182316Z/best_selector_artifact/per_example_records.jsonl
+== Stage C: reconstruct best artifact ==
+== Stage D: heuristic selector benchmark ==
+{
+  "examples": 5,
+  "uncached_calls": 34,
+  "cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/l1_defeat_selector_wulver_20260430T182316Z/fast_selector/cohere_verifier_cache.jsonl",
+  "cohere_model": "command-r-plus",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/l1_defeat_selector_wulver_20260430T182316Z/fast_selector"
+}
+Wrote /mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/l1_defeat_selector_wulver_20260430T182316Z/fast_selector/selector_summary.csv
+== Stage E: Cohere verifier dry run ==
+{
+  "examples": 0,
+  "candidate_groups": 0,
+  "uncached_cohere_calls": 0,
+  "cache_path": "outputs/l1_defeat_selector_wulver_20260430T182316Z/cohere_verifier/verifier_cache.jsonl",
+  "model": "command-r-plus-08-2024",
+  "output_dir": "outputs/l1_defeat_selector_wulver_20260430T182316Z/cohere_verifier",
+  "estimated_cost": "cost estimate unavailable"
+}
+== Stage F: Cohere verifier actual run ==
+{
+  "examples": 0,
+  "candidate_groups": 0,
+  "uncached_cohere_calls": 0,
+  "cache_path": "outputs/l1_defeat_selector_wulver_20260430T182316Z/cohere_verifier/verifier_cache.jsonl",
+  "model": "command-r-plus-08-2024",
+  "output_dir": "outputs/l1_defeat_selector_wulver_20260430T182316Z/cohere_verifier",
+  "estimated_cost": "cost estimate unavailable"
+}
+outputs/l1_defeat_selector_wulver_20260430T182316Z/cohere_verifier
+Completed full pipeline.

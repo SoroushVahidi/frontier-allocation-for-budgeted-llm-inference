@@ -1,0 +1,5 @@
+selector,accuracy,delta_vs_current_dr_v2_selector,delta_vs_external_l1_max,fixes,breaks,net_fixes_minus_breaks,overrides,override_precision,gold_present_dr_v2_failures_fixed,selector_failures_remaining,coverage_failures_remaining,oracle_gap_remaining,beats_external_l1_max,cohere_uncached_calls,cohere_calls_within_limit
+current_dr_v2_selector,0.6511627906976745,0.0,0.023255813953488413,0,0,0,0,,0,30,30,0,1,,
+support_family_selector,0.6511627906976745,0.0,0.023255813953488413,0,0,0,0,,0,30,30,0,1,,
+cohere_outcome_verifier_selector,0.6511627906976745,0.0,0.023255813953488413,0,0,0,0,,0,30,30,0,1,86,1
+oracle_selector,0.6511627906976745,0.0,0.023255813953488413,0,0,0,0,,0,30,30,0,1,,

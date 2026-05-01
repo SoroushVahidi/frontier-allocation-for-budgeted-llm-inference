@@ -1,0 +1,4 @@
+accuracy,delta_vs_l1,l1_accuracy,method
+0.0,-0.1932,0.1932,direct_reserve_semantic_frontier_v2
+0.0,-0.1932,0.1932,strict_f3
+0.0,-0.1932,0.1932,strict_gate1_cap_k6

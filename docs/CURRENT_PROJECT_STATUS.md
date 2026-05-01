@@ -10,113 +10,129 @@ The current paper-facing frame is not the old binary revise-routing story. The c
 
 > Given a fixed inference budget and multiple active reasoning/candidate paths, where should the next unit of compute go, and how should the final answer be selected from the explored frontier?
 
-The older `-adaptive-llm-inference` project is now treated as prior internal background and diagnostic inspiration, not as the runtime center of this project. Its useful ideas have been absorbed as headroom/oracle analysis, cost-aware framing, answer-error features, and risk diagnostics.
+The older `-adaptive-llm-inference` project is treated as prior internal background and diagnostic inspiration, not as the runtime center of this project.
 
 ## Current development goal
 
 The active engineering goal is to defeat `external_l1_max` honestly with completed, paired, trace-complete evidence.
 
-The current subgoal is no longer basic trace-schema validation. We now have a usable real paired 30-case trace artifact and need to convert the observed selector headroom into a deployable selector improvement.
+The current subgoal is to convert candidate-pool headroom into a deployable final-answer selector. Heuristic selectors have now been tested on a real 50-case compact tournament artifact and are not strong enough for runtime promotion.
 
-## Current key artifact
+## Current active artifact
 
-Primary current diagnostic artifact:
+Primary current real run:
 
 ```text
-outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/
+outputs/cohere_real_model_cost_normalized_validation_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
 ```
 
-Important diagnostics under this artifact:
+Portable compact selector artifact:
 
 ```text
-outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/diagnostics/
-outputs/cohere_real_model_cost_normalized_validation_20260430T_TRACE_COMPLETE_30CASE_COHERE/diagnostics/offline_selector_variants/
+outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/
+```
+
+Tournament diagnostics:
+
+```text
+outputs/selector_tournament_compact_export_20260430T_SELECTOR_TOURNAMENT_50CASE_COHERE/diagnostics/selector_tournament/
 ```
 
 ## Current evidence snapshot
 
-On the paired 30-example Cohere GSM8K budget-4 seed-11 slice:
+On the paired 50-example Cohere GSM8K budget-4 seed-11 slice:
+
+| Method / diagnostic | Accuracy |
+|---|---:|
+| `external_l1_max` | 0.72 |
+| current DR-v2 | 0.64 |
+| best deployable heuristic selector | 0.66 |
+| oracle selector ceiling | 0.84 |
+
+Best deployable heuristic selector behavior:
 
 | Quantity | Value |
 |---|---:|
-| `external_l1_max` accuracy | 0.8000 |
-| current DR-v2 accuracy | 0.6333 |
-| oracle selector ceiling over DR-v2 candidate pool | 0.8667 |
-| corrected selector gap over DR-v2 | 0.2333 |
-| L1-correct / DR-v2-wrong cases | 7 |
-| gold-present among those losses | 5 |
-| gold-absent among those losses | 2 |
-| candidate_count mean/median/max | 2 / 2 / 2 |
-| answer_group_count mean/median/max | 1.6 / 2 / 2 |
+| fixes | 5 |
+| breaks | 4 |
+| net fixes-minus-breaks | +1 |
+| overrides | 17 |
+| override precision | 0.2941 |
 
 Interpretation:
 
-- The candidate pool has meaningful hidden headroom.
-- Most L1>DR-v2 losses on this slice are **present-but-not-selected**, not pure coverage failures.
-- Simple deployable offline selectors did **not** produce a net gain: support-only fixed some failures but broke a comparable number of currently correct cases.
-- Therefore the next selector should be a **conservative outcome-verifier / correctness-estimator override**, not another broad support heuristic.
+- DR-v2 candidate pools contain substantial hidden value: oracle selection reaches 0.84.
+- Existing support/source/consistency heuristics recover only a small fraction of that value.
+- Current heuristic selectors are too noisy and should **not** be promoted to runtime.
+- The next selector must estimate candidate correctness more directly.
 
 ## Current phase
 
-**Phase:** conservative answer-verifier selector design.
+**Phase:** cached outcome-verifier selector test.
 
-Current priority order:
+The next method should be framed as:
 
-1. Analyze the 5 gold-present-but-not-selected cases and the support-only break cases.
-2. Build a narrow override rule that keeps current DR-v2 by default.
-3. Override only when a candidate answer has stronger correctness evidence than the current selected answer.
-4. Test the rule offline on the real 30-case artifact.
-5. If it shows positive net gain without breaking many current-correct cases, implement it as a runtime method.
-6. Then run a 50-case paired trace-complete validation.
+```text
+score(question, candidate answer, optional reasoning trace)
+  -> estimated probability that the candidate answer is correct
+```
+
+Then select the highest-scoring candidate, preferably with a margin that avoids breaking current correct answers.
+
+## Execution policy from now on
+
+We are using paid APIs. Avoid unnecessary cost.
+
+Rules:
+
+1. Do not run paid generation unless the exact method, dataset, budget, seed, and expected call count are known.
+2. For selector work, use existing candidate pools whenever possible.
+3. Cache every verifier score.
+4. Before any paid verifier run, produce a dry-run count of required verifier calls and estimated cost.
+5. Do not run more repository archaeology or broad diagnostics unless it directly enables a selector result.
+6. After any paid run, immediately export a compact portable artifact and run the selector tournament.
 
 ## Current known blocker
 
-The blocker is no longer lack of trace-complete artifact support. The blocker is:
+The blocker is no longer artifact portability or lack of selector tournament infrastructure. The blocker is:
 
-> Simple support/confidence/consistency selectors do not distinguish safe overrides from unsafe overrides well enough.
+> Heuristic selectors cannot reliably distinguish safe overrides from unsafe overrides.
 
-The next method must estimate candidate correctness more directly:
-
-```text
-score(problem, candidate answer, optional reasoning trace, source/support/error features)
-  -> estimated probability candidate is correct
-```
-
-This is an outcome-verifier framing. PRM/process-verifier work remains useful later, but the immediate deployable target is an outcome-level conservative override.
+The next useful selector is an outcome-verifier-style candidate correctness estimator, not another support-only variant.
 
 ## Current safe claim boundary
 
 Safe:
 
-- The repository implements a fixed-budget frontier-allocation framework with trace-complete selector and coverage diagnostics.
-- A real 30-case paired diagnostic shows oracle-selector headroom over DR-v2 candidate pools.
-- The current evidence supports selector/commit-rule work as the primary next direction, with coverage repair secondary.
+- The repository implements fixed-budget frontier-allocation diagnostics with portable selector-tournament artifacts.
+- A real 50-case paired diagnostic shows substantial oracle-selector headroom over DR-v2 candidate pools.
+- Simple deployable heuristic selectors are insufficient: they recover too little headroom and make too many unsafe overrides.
+- These findings motivate outcome-verifier-based final-answer selection.
 
 Not safe yet:
 
-- Do **not** claim robust or broad superiority over `external_l1_max`.
-- Do **not** claim DR-v2/OV/PRM variants defeat L1 without completed paired rows.
-- Do **not** promote a selector to runtime until it improves offline on real trace artifacts and passes focused tests.
-- Do **not** treat mock-backed verifier results as real verifier evidence.
+- Do **not** claim DR-v2 or any current selector beats `external_l1_max` robustly.
+- Do **not** claim heuristic selectors solve final-answer commitment.
+- Do **not** claim an outcome-verifier selector works before cached verifier scores are actually evaluated.
+- Do **not** promote a selector to runtime without a focused offline result and then a paid validation.
 
 ## Current method interpretation
 
 - `strict_f3` remains the manuscript-facing matched-surface representative under the older canonical paper surface.
 - `strict_gate1_cap_k6` remains a broader operational default on a different surface.
 - DR-v2 and its selector/rerank variants are the active L1-defeat development family.
-- The immediate method target is a conservative outcome-verifier-style selector/override for DR-v2 candidate groups.
+- The immediate method target is a cached outcome-verifier selector over DR-v2 candidate answer groups.
 
 ## Current next action
 
 The next non-circular task is:
 
-1. Build a focused casebook for:
-   - gold-present but DR-v2-selected-wrong cases;
-   - support-only break cases.
-2. Derive exactly one conservative override rule.
-3. Test it offline on the existing 30-case real artifact.
-4. Add small focused tests for any implemented logic.
-5. Promote to runtime only if it gives positive net gain offline.
+1. Use the 50-case compact selector artifact.
+2. Implement a cached outcome-verifier selector scaffold.
+3. Dry-run and report verifier-call count before any paid verifier scoring.
+4. Score only existing candidate groups, not regenerate answers.
+5. Compare verifier selector against current DR-v2, best heuristic, L1, and oracle.
+6. Promote to runtime only if the verifier selector gives a meaningful net gain.
 
 ## Important documents
 
@@ -124,6 +140,7 @@ The next non-circular task is:
 - `docs/DOCS_INDEX.md` — active vs diagnostic vs historical document map.
 - `docs/SELECTOR_START_HERE.md` — current selector/L1-defeat track.
 - `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` — current verifier-selector roadmap.
+- `docs/FAST_SELECTOR_EXECUTION_POLICY.md` — cost-aware execution policy for selector work.
 - `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` — selector trace artifact index and usability policy.
 - `docs/FINAL_ADAPTIVE_LLM_INFERENCE_TRANSFER_AUDIT_20260430T034801Z.md` — final transfer audit from the old project.
 - `docs/PAPER_SOURCE_OF_TRUTH.md` — claim-eligible evidence rules.
@@ -132,4 +149,4 @@ The next non-circular task is:
 
 ## One-sentence status
 
-The repository now has real paired evidence that DR-v2 often finds the correct answer but fails to commit to it; the next step is a conservative outcome-verifier override that recovers present-not-selected cases without breaking current correct answers.
+The repository now has a reliable 50-case selector tournament showing that DR-v2 has large oracle headroom but heuristic selectors are too weak; the next step is a cached outcome-verifier selector over existing candidate groups, with strict API-cost control.

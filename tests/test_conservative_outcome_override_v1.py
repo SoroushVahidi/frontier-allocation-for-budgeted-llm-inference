@@ -1,5 +1,7 @@
 from scripts.run_conservative_outcome_verifier_override_v1 import conservative_override_choice
 from scripts.run_conservative_outcome_verifier_override_v1 import DR_CANDIDATES
+from scripts.run_conservative_outcome_verifier_override_v1 import conservative_override_choice_v2
+from scripts.run_conservative_outcome_verifier_override_v1 import support_only_with_guard_choice
 
 def _row(selected='a',support=None,fam=None,proc=None,entropy=0.7,gap=1.0):
     return {'result_metadata':{
@@ -41,3 +43,40 @@ def test_selector_pool_fallback_support_works():
     chosen, reason = conservative_override_choice(row)
     assert chosen in {'10','12'}
     assert isinstance(reason, dict)
+
+def test_v2_overrides_on_strong_support():
+    row=_row(support={'a':1,'b':2},fam={'a':1,'b':1})
+    chosen, reason = conservative_override_choice_v2(row)
+    assert chosen=='b' and reason['override'] is True
+
+def test_v2_blocks_weak_support_and_logs_blockers():
+    row=_row(support={'a':2,'b':2},fam={'a':1,'b':1})
+    chosen, reason = conservative_override_choice_v2(row)
+    assert chosen=='a' and reason['override'] is False
+    assert reason['blocked_conditions']
+
+def test_v2_does_not_use_gold():
+    row=_row(support={'a':1,'b':2}); row['gold_answer']='b'
+    _, reason = conservative_override_choice_v2(row)
+    assert 'gold' not in str(reason).lower()
+
+def test_v1_behavior_unchanged_strict():
+    chosen,_=conservative_override_choice(_row(support={'a':1,'b':2},fam={'a':1,'b':1}))
+    assert chosen=='a'
+
+def test_support_only_with_guard_follows_support_when_clear():
+    groups=[{'normalized_answer':'a','support_count':1,'source_family_count':1,'consistency_flags':{}},{'normalized_answer':'b','support_count':2,'source_family_count':2,'consistency_flags':{}}]
+    chosen,reason=support_only_with_guard_choice('a',groups)
+    assert chosen=='b' and reason['override'] is True
+
+def test_support_only_with_guard_blocks_on_error_flag():
+    groups=[{'normalized_answer':'a','support_count':1,'source_family_count':1,'consistency_flags':{}},{'normalized_answer':'b','support_count':2,'source_family_count':2,'consistency_flags':{'bad':1}}]
+    chosen,reason=support_only_with_guard_choice('a',groups)
+    assert chosen=='a' and reason['blocked_conditions']
+
+def test_support_only_with_guard_no_label_leakage():
+    groups=[{'normalized_answer':'a','support_count':1,'source_family_count':1,'consistency_flags':{},'gold':'b','correct':0,'l1':'b','oracle':'b'},
+            {'normalized_answer':'b','support_count':2,'source_family_count':2,'consistency_flags':{},'gold':'b','correct':1,'l1':'b','oracle':'b'}]
+    chosen,reason=support_only_with_guard_choice('a',groups)
+    assert chosen=='b'
+    assert 'gold' not in str(reason).lower()

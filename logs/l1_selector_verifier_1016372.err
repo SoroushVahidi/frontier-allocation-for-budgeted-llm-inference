@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_fast_selector_selection_experiment.py", line 234, in <module>
+    main()
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_fast_selector_selection_experiment.py", line 163, in main
+    selected = pick_artifact(checks)
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_fast_selector_selection_experiment.py", line 134, in pick_artifact
+    raise RuntimeError("No usable selector artifact found. Run with --list-artifacts to inspect rejection reasons.")
+RuntimeError: No usable selector artifact found. Run with --list-artifacts to inspect rejection reasons.

@@ -1,0 +1,5 @@
+accuracy,cases,method
+0.0,88,direct_reserve_semantic_frontier_v2
+0.1932,88,external_l1_max
+0.0,88,strict_f3
+0.0,88,strict_gate1_cap_k6

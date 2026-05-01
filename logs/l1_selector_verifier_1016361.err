@@ -1,0 +1,49 @@
+/var/spool/slurmd/job1016361/slurm_script: line 35: rg: command not found
+Exception ignored in: <_io.TextIOWrapper name='<stdout>' mode='w' encoding='utf-8'>
+BrokenPipeError: [Errno 32] Broken pipe
+
+
+==> WARNING: A newer version of conda exists. <==
+  current version: 23.7.4
+  latest version: 26.3.2
+
+Please update conda by running
+
+    $ conda update -n base -c defaults conda
+
+Or to minimize the number of packages updated during conda update use
+
+     conda install conda=26.3.2
+
+
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_cached_outcome_verifier_selector.py", line 92, in cohere_verify
+    with urllib.request.urlopen(req, timeout=90) as resp:
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/home/sv96/.conda/envs/repo-env/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_cached_outcome_verifier_selector.py", line 351, in <module>
+    main()
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_cached_outcome_verifier_selector.py", line 221, in main
+    dr_score_row, _ = score_candidate(
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_cached_outcome_verifier_selector.py", line 130, in score_candidate
+    score = verifier_fn(prompt)
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_cached_outcome_verifier_selector.py", line 207, in _verifier_fn
+    return cohere_verify(api_key=api_key, model=args.model, prompt=prompt)
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_cached_outcome_verifier_selector.py", line 95, in cohere_verify
+    raise RuntimeError(f"Cohere HTTP error: {e.code}") from e
+RuntimeError: Cohere HTTP error: 404

@@ -1,0 +1,157 @@
+{
+  "selected_case_count": 33,
+  "expected_33": 33,
+  "actual_case_count": 33,
+  "count_match_expected_33": 1,
+  "selectors": [
+    {
+      "selector": "current_default_selector",
+      "cases": 33,
+      "accuracy": 0.0,
+      "fixed": 0,
+      "remaining_selector_failures": 33,
+      "selected_gold_count": 0,
+      "overrides_from_current": 0,
+      "override_precision": 0.0,
+      "avg_selected_support": 0.0,
+      "avg_selected_family_count": 1.0,
+      "cohere_calls_used": 0
+    },
+    {
+      "selector": "support_family_selector",
+      "cases": 33,
+      "accuracy": 0.0606,
+      "fixed": 2,
+      "remaining_selector_failures": 31,
+      "selected_gold_count": 2,
+      "overrides_from_current": 10,
+      "override_precision": 0.2,
+      "avg_selected_support": 0.0606,
+      "avg_selected_family_count": 1.0,
+      "cohere_calls_used": 0
+    },
+    {
+      "selector": "conservative_support_family_selector",
+      "cases": 33,
+      "accuracy": 0.0,
+      "fixed": 0,
+      "remaining_selector_failures": 33,
+      "selected_gold_count": 0,
+      "overrides_from_current": 1,
+      "override_precision": 0.0,
+      "avg_selected_support": 0.0606,
+      "avg_selected_family_count": 1.0,
+      "cohere_calls_used": 0
+    },
+    {
+      "selector": "risk_gated_support_family_selector",
+      "cases": 33,
+      "accuracy": 0.0,
+      "fixed": 0,
+      "remaining_selector_failures": 33,
+      "selected_gold_count": 0,
+      "overrides_from_current": 1,
+      "override_precision": 0.0,
+      "avg_selected_support": 0.0606,
+      "avg_selected_family_count": 1.0,
+      "cohere_calls_used": 0
+    },
+    {
+      "selector": "cohere_outcome_verifier_selector",
+      "cases": 33,
+      "accuracy": 0.0303,
+      "fixed": 1,
+      "remaining_selector_failures": 32,
+      "selected_gold_count": 1,
+      "overrides_from_current": 5,
+      "override_precision": 0.2,
+      "avg_selected_support": 0.0,
+      "avg_selected_family_count": 1.0,
+      "cohere_calls_used": 7
+    },
+    {
+      "selector": "cohere_pairwise_verifier_selector",
+      "cases": 33,
+      "accuracy": 0.0,
+      "fixed": 0,
+      "remaining_selector_failures": 33,
+      "selected_gold_count": 0,
+      "overrides_from_current": 2,
+      "override_precision": 0.0,
+      "avg_selected_support": 0.0,
+      "avg_selected_family_count": 1.0,
+      "cohere_calls_used": 14
+    },
+    {
+      "selector": "oracle_selector",
+      "cases": 33,
+      "accuracy": 1.0,
+      "fixed": 33,
+      "remaining_selector_failures": 0,
+      "selected_gold_count": 33,
+      "overrides_from_current": 33,
+      "override_precision": 1.0,
+      "avg_selected_support": 0.0,
+      "avg_selected_family_count": 1.0,
+      "cohere_calls_used": 0
+    }
+  ],
+  "safety": [
+    {
+      "selector": "current_default_selector",
+      "safety_set_size": 0,
+      "breaks": 0,
+      "break_rate": 0.0,
+      "fixes_on_33": 0,
+      "net_fixes_minus_safety_breaks": 0
+    },
+    {
+      "selector": "support_family_selector",
+      "safety_set_size": 0,
+      "breaks": 0,
+      "break_rate": 0.0,
+      "fixes_on_33": 2,
+      "net_fixes_minus_safety_breaks": 2
+    },
+    {
+      "selector": "conservative_support_family_selector",
+      "safety_set_size": 0,
+      "breaks": 0,
+      "break_rate": 0.0,
+      "fixes_on_33": 0,
+      "net_fixes_minus_safety_breaks": 0
+    },
+    {
+      "selector": "risk_gated_support_family_selector",
+      "safety_set_size": 0,
+      "breaks": 0,
+      "break_rate": 0.0,
+      "fixes_on_33": 0,
+      "net_fixes_minus_safety_breaks": 0
+    },
+    {
+      "selector": "cohere_outcome_verifier_selector",
+      "safety_set_size": 0,
+      "breaks": 0,
+      "break_rate": 0.0,
+      "fixes_on_33": 1,
+      "net_fixes_minus_safety_breaks": 1
+    },
+    {
+      "selector": "cohere_pairwise_verifier_selector",
+      "safety_set_size": 0,
+      "breaks": 0,
+      "break_rate": 0.0,
+      "fixes_on_33": 0,
+      "net_fixes_minus_safety_breaks": 0
+    },
+    {
+      "selector": "oracle_selector",
+      "safety_set_size": 0,
+      "breaks": 0,
+      "break_rate": 0.0,
+      "fixes_on_33": 33,
+      "net_fixes_minus_safety_breaks": 33
+    }
+  ]
+}
