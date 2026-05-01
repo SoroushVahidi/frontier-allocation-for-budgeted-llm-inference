@@ -1,0 +1,9 @@
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_27::11::4", "note": "selector-output path does not match selected config run"}
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_0::11::4", "note": "selector-output path does not match selected config run"}
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_91::11::4", "note": "selector-output path does not match selected config run"}
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_2::23::8", "note": "selector-output path does not match selected config run"}
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_17::37::4", "note": "selector-output path does not match selected config run"}
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_158::37::4", "note": "selector-output path does not match selected config run"}
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_5::23::4", "note": "selector-output path does not match selected config run"}
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_158::23::4", "note": "selector-output path does not match selected config run"}
+{"type": "repro_case_mismatch", "case_id": "openai/gsm8k::openai_gsm8k_12::23::4", "note": "selector-output path does not match selected config run"}
