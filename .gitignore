@@ -302,3 +302,24 @@ outputs/selector_evidence_trace_recovery_*/**/compressed_*.tar.gz
 !outputs/candidate_artifact_inventory_*/candidate_artifact_inventory.csv
 !outputs/candidate_artifact_inventory_*/candidate_artifact_inventory_report.md
 !outputs/candidate_artifact_inventory_*/candidate_artifact_inventory_top_candidates.jsonl
+
+# Curated outcome-verifier selector artifacts.
+!outputs/outcome_verifier_answer_group_selector_*/
+!outputs/outcome_verifier_answer_group_selector_*/manifest.json
+!outputs/outcome_verifier_answer_group_selector_*/selector_report.md
+!outputs/outcome_verifier_answer_group_selector_*/selector_summary.csv
+!outputs/outcome_verifier_answer_group_selector_*/selector_summary.json
+!outputs/outcome_verifier_answer_group_selector_*/selector_casebook.csv
+!outputs/outcome_verifier_answer_group_selector_*/selector_casebook.jsonl
+!outputs/outcome_verifier_answer_group_selector_*/verifier_call_plan_summary.json
+!outputs/outcome_verifier_answer_group_selector_*/verifier_call_plan.jsonl
+!outputs/outcome_verifier_answer_group_selector_*/verifier_scores.jsonl
+!outputs/outcome_verifier_answer_group_selector_*/missing_or_unscored_candidates.jsonl
+
+# Keep unsafe clutter ignored inside outcome-verifier selector dirs.
+outputs/outcome_verifier_answer_group_selector_*/**/*cache*.jsonl
+outputs/outcome_verifier_answer_group_selector_*/**/*cache*.json
+outputs/outcome_verifier_answer_group_selector_*/**/*.log
+outputs/outcome_verifier_answer_group_selector_*/**/logs/**
+outputs/outcome_verifier_answer_group_selector_*/**/progress_heartbeat.jsonl
+outputs/outcome_verifier_answer_group_selector_*/**/compressed_*.tar.gz
