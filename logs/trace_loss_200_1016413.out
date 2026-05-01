@@ -1,0 +1,108 @@
+hostname: n0108
+date: Thu Apr 30 07:47:29 PM UTC 2026
+repo_path: /mmfs1/home/sv96/adaptive-reasoning-budget-allocation
+branch: main
+commit: f7d921e6b57534bcada94f8ca958af178b98b8cd
+COHERE_API_KEY: present
+adaptive-reasoning-budget-allocation
+=====================================
+Python version: 3.10.20
+
+Repository health check: OK
+Canonical front door, artifact runners, and core import paths are intact.
+......                                                                   [100%]
+6 passed in 0.25s
+{
+  "created_at_utc": "2026-04-30T19:48:12.954943+00:00",
+  "existing_trace_complete_losses_found": 16,
+  "additional_trace_complete_losses_needed": 184,
+  "target_trace_losses": 200,
+  "planned_dataset": "gsm8k",
+  "planned_budgets": [
+    4,
+    6,
+    8
+  ],
+  "planned_seeds": [
+    11,
+    23,
+    37,
+    41,
+    53,
+    67
+  ],
+  "planned_internal_methods": [
+    "direct_reserve_semantic_frontier_v2",
+    "strict_f3"
+  ],
+  "planned_external_methods": [
+    "external_l1_max"
+  ],
+  "planned_examples_to_evaluate": 736,
+  "expected_cohere_generation_calls": 736,
+  "expected_cohere_diagnostic_annotation_calls": 200,
+  "cohere_generation_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_20260430T194200Z/cohere_generation_cache.jsonl",
+  "cohere_annotation_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_20260430T194200Z/cohere_annotation_cache.jsonl",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_20260430T194200Z",
+  "model_name": "command-r-plus",
+  "safety_cap_generation_calls": 2000,
+  "safety_cap_annotation_calls": 200
+}
+{
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_20260430T194200Z",
+  "selected_trace_complete_cases": 16,
+  "existing_trace_complete_found": 16
+}
+dry_run_existing_trace_complete=16
+dry_run_additional_needed=184
+dry_run_expected_generation_calls=736
+dry_run_expected_annotation_calls=200
+dry_run_model=command-r-plus
+dry_run_output_dir=outputs/trace_complete_external_losses_20260430T194200Z
+dry_run_generation_cache_path=outputs/trace_complete_external_losses_20260430T194200Z/cohere_generation_cache.jsonl
+dry_run_annotation_cache_path=outputs/trace_complete_external_losses_20260430T194200Z/cohere_annotation_cache.jsonl
+dry_run_dataset=gsm8k
+dry_run_budgets=4,6,8
+dry_run_seeds=11,23,37,41,53,67
+dry_run_methods=direct_reserve_semantic_frontier_v2,strict_f3,external_l1_max
+{
+  "created_at_utc": "2026-04-30T19:48:14.633410+00:00",
+  "existing_trace_complete_losses_found": 16,
+  "additional_trace_complete_losses_needed": 184,
+  "target_trace_losses": 200,
+  "planned_dataset": "gsm8k",
+  "planned_budgets": [
+    4,
+    6,
+    8
+  ],
+  "planned_seeds": [
+    11,
+    23,
+    37,
+    41,
+    53,
+    67
+  ],
+  "planned_internal_methods": [
+    "direct_reserve_semantic_frontier_v2",
+    "strict_f3"
+  ],
+  "planned_external_methods": [
+    "external_l1_max"
+  ],
+  "planned_examples_to_evaluate": 736,
+  "expected_cohere_generation_calls": 736,
+  "expected_cohere_diagnostic_annotation_calls": 200,
+  "cohere_generation_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_20260430T194200Z/cohere_generation_cache.jsonl",
+  "cohere_annotation_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_20260430T194200Z/cohere_annotation_cache.jsonl",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_20260430T194200Z",
+  "model_name": "command-r-plus",
+  "safety_cap_generation_calls": 2000,
+  "safety_cap_annotation_calls": 200
+}
+{
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_20260430T194200Z",
+  "selected_trace_complete_cases": 16,
+  "existing_trace_complete_found": 16
+}

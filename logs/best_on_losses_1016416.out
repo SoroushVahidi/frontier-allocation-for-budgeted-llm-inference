@@ -1,0 +1,44 @@
+hostname=n0108
+date=2026-04-30T19:56:41Z
+repo_path=/mmfs1/home/sv96/adaptive-reasoning-budget-allocation
+branch=main
+commit=c30d2f0308a428c347c1f6af85aed0bf783dc849
+COHERE_API_KEY_present=1
+adaptive-reasoning-budget-allocation
+=====================================
+Python version: 3.11.5
+
+Repository health check: OK
+Canonical front door, artifact runners, and core import paths are intact.
+....                                                                     [100%]
+4 passed in 0.02s
+{
+  "expected_cohere_calls": 313,
+  "provider": "cohere",
+  "model": "command-r-plus",
+  "cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/best_methods_on_external_losses_20260430T195200Z/cohere_generation_cache.jsonl",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/best_methods_on_external_losses_20260430T195200Z",
+  "case_count": 88
+}
+expected_cohere_calls=313
+{
+  "expected_cohere_calls": 313,
+  "provider": "cohere",
+  "model": "command-r-plus",
+  "cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/best_methods_on_external_losses_20260430T195200Z/cohere_generation_cache.jsonl",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/best_methods_on_external_losses_20260430T195200Z",
+  "case_count": 88
+}
+{
+  "pushable_outputs": [
+    "artifact_scan_report.md",
+    "best_methods_external_loss_results.csv",
+    "best_methods_external_loss_summary.json",
+    "best_methods_external_loss_summary.md",
+    "l1_comparison_table.csv",
+    "method_accuracy_table.csv",
+    "selected_100_cases_public_summary.csv",
+    "trace_diagnosis_summary.csv"
+  ],
+  "doc_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/docs/BEST_METHODS_ON_EXTERNAL_LOSS_CASES_100_20260430T195659Z.md"
+}

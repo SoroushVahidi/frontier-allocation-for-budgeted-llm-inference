@@ -1,0 +1,10 @@
+{
+  "cases": 33,
+  "cohere_model": "command-r-plus-08-2024",
+  "output_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cobbe_style_outcome_verifier_focused33_recovered_artifact_20260501T000358Z",
+  "cohere_outcome_verifier_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cobbe_style_outcome_verifier_focused33_recovered_artifact_20260501T000358Z/cohere_outcome_verifier_cache.jsonl",
+  "cohere_pairwise_verifier_cache_path": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cobbe_style_outcome_verifier_focused33_recovered_artifact_20260501T000358Z/cohere_pairwise_verifier_cache.jsonl",
+  "expected_outcome_calls_upper_bound": 162,
+  "expected_pairwise_calls_upper_bound": 129,
+  "expected_total_calls_upper_bound": 291
+}
