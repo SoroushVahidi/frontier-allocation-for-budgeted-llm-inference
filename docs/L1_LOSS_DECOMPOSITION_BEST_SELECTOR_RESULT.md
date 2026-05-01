@@ -1,23 +1,17 @@
 # L1 Loss Decomposition vs Best Selector/Reranker (Cohere)
 
-Status date: 2026-05-01.
+Run: `20260501T023500Z` (real Cohere calls, paired cases: 1).
 
-## Direct answers
-1. **Selected method compared to L1:** no method could be selected for final paired analysis because no complete local 100-case paired real-Cohere artifact with required per-case trace evidence was available.
-2. **100-case real Cohere or diagnostic-only?** Diagnostic/blocker-only.
-3. **How many cases did selected method lose to L1?** Not computable from real paired execution in this environment.
-4. **Gold absent from tree losses?** Not computable.
-5. **Gold present but not selected losses?** Not computable.
-6. **Parse/canonicalization failures?** Not computable.
-7. **Selector-score/cache-limited failures?** Not computable.
-8. **Unknown because traces/candidates missing?** Not computable.
-9. **Main bottleneck suggestion?** Cannot conclude from blocked run; this remains unresolved pending real Cohere execution.
-10. **Safe for manuscript use?** No. This is blocker evidence only.
+1. **Selected method compared to L1:** `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1`.
+2. **100-case real Cohere or diagnostic-only?** Diagnostic-only (1 paired case, not 100).
+3. **How many cases did selected method lose to L1?** 0.
+4. **Among those losses, how many had gold absent from the tree?** 0.
+5. **How many had gold present but not selected?** 0.
+6. **How many were parse/canonicalization failures?** 0.
+7. **How many were selector-score/cache-limited?** 0.
+8. **How many were unknown because traces/candidates were missing?** 0.
+9. **Main bottleneck suggestion?** No conclusion from this 1-case slice.
+10. **Safe for manuscript use?** No; this is diagnostic only.
 
-## Safe conclusion wording
+Safe wording:
 - “This is diagnostic unless the run is completed, real-Cohere, paired, and full-coverage.”
-- “No model-performance conclusion can be drawn because Cohere execution did not run.”
-
-## How to rerun after environment fix
-Run the command written in:
-- `outputs/l1_loss_decomposition_best_selector_<STAMP>/cohere_readiness_failure_report.json`

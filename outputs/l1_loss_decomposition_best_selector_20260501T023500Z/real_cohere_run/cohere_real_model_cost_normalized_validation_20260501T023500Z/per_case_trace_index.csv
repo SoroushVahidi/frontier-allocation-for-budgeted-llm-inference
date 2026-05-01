@@ -1,0 +1,4 @@
+example_id,dataset,provider,model,budget,seed,method,trace_path,trace_available,n_branches,n_answer_groups
+openai_gsm8k_0,openai/gsm8k,cohere,command-a-03-2025,4,20260501,external_l1_max,traces/openai_gsm8k_0_external_l1_max.json,True,1,1
+openai_gsm8k_0,openai/gsm8k,cohere,command-a-03-2025,4,20260501,direct_reserve_semantic_frontier_v2,traces/openai_gsm8k_0_direct_reserve_semantic_frontier_v2.json,True,2,1
+openai_gsm8k_0,openai/gsm8k,cohere,command-a-03-2025,4,20260501,direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1,traces/openai_gsm8k_0_direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1.json,True,2,1

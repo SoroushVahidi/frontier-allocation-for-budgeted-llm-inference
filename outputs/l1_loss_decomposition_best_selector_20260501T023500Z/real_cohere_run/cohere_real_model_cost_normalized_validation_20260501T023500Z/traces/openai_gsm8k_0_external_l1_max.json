@@ -1,0 +1,166 @@
+{
+  "answer_groups": {
+    "answer_group_best_branch_score": {
+      "53": 0.8200000000000001
+    },
+    "answer_group_branch_ids": {
+      "53": [
+        "l1_max_0"
+      ]
+    },
+    "answer_group_depth_stats": {
+      "53": {
+        "depth_max": 2,
+        "depth_mean": 2.0
+      }
+    },
+    "answer_group_family_counts": {},
+    "answer_group_maturity": {
+      "53": 1
+    },
+    "answer_group_support_counts": {}
+  },
+  "branches": [
+    {
+      "A": null,
+      "C": null,
+      "I": null,
+      "R": null,
+      "V": null,
+      "answer_group": "53",
+      "branch_id": "l1_max_0",
+      "branch_score": 0.8200000000000001,
+      "depth": 2,
+      "family_id": "",
+      "is_expanded": true,
+      "is_resolved": true,
+      "is_selected": true,
+      "metadata": {
+        "source": "",
+        "trace_event_count": 2
+      },
+      "parent_id": "",
+      "parsed_answer": "53",
+      "text_hash": "2a2d24e4edbca58f"
+    }
+  ],
+  "direct_reserve": {
+    "direct_reserve_agreement_count": 0,
+    "direct_reserve_answer": null,
+    "direct_reserve_attempts": [],
+    "direct_reserve_confidence_proxy": null,
+    "direct_reserve_correct": null,
+    "direct_reserve_metadata": {},
+    "direct_reserve_num_attempts": 0,
+    "direct_reserve_parse_success": false,
+    "direct_reserve_source_method": "direct_reserve"
+  },
+  "frontier_candidate": {
+    "frontier_candidate_answer": "53",
+    "frontier_candidate_correct": true,
+    "frontier_candidate_depth_max": 2,
+    "frontier_candidate_depth_mean": 2.0,
+    "frontier_candidate_family_count": 0,
+    "frontier_candidate_maturity": 1,
+    "frontier_candidate_metadata": {},
+    "frontier_candidate_support": 1
+  },
+  "override_gating": {
+    "direct_frontier_agree": null,
+    "frontier_override_triggered": null,
+    "frontier_support": 1,
+    "guard_decision_inputs": {},
+    "incumbent_support": null,
+    "maturity_margin": null,
+    "override_margin": null,
+    "override_reason": null,
+    "override_thresholds": {},
+    "reserve_used": null,
+    "support_margin": null
+  },
+  "raw_metadata": {
+    "action_trace": [
+      {
+        "action": "expand",
+        "branch_depth": 1,
+        "branch_id": "l1_max_0",
+        "extracted_answer": "",
+        "parent_branch_id": null,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}"
+      },
+      {
+        "action": "expand",
+        "branch_depth": 2,
+        "branch_id": "l1_max_0",
+        "extracted_answer": "53",
+        "parent_branch_id": null,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"Add the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.\",\n  \"answer\": \"53\",\n  \"confidence\": 1.0\n}"
+      }
+    ],
+    "budget_actions_equivalent": 8,
+    "budget_error_tokens": 511.0,
+    "external_baseline_family": "l1_lcpo_length_control",
+    "final_branch_states": [
+      {
+        "branch_depth": 2,
+        "branch_id": "l1_max_0",
+        "is_done": true,
+        "is_pruned": false,
+        "parent_branch_id": "",
+        "predicted_answer": "53",
+        "score": 0.8200000000000001,
+        "steps": [
+          "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.",
+          "Add the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes."
+        ],
+        "trace_events": [
+          {
+            "action": "expand",
+            "branch_depth": 1,
+            "extracted_answer": null,
+            "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+            "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.",
+            "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}"
+          },
+          {
+            "action": "expand",
+            "branch_depth": 2,
+            "extracted_answer": "53",
+            "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\n",
+            "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+            "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"Add the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.\",\n  \"answer\": \"53\",\n  \"confidence\": 1.0\n}"
+          }
+        ]
+      }
+    ],
+    "final_score": 0.9,
+    "generated_tokens_estimate": 1,
+    "l1_control_mode": "max",
+    "prompt_style": "Let's think step by step and output the final answer within \\boxed{}.",
+    "token_budget_instruction": 512,
+    "token_budget_violation": false,
+    "token_per_action": 64.0
+  },
+  "schema_version": "branch_trace_v1",
+  "top_level": {
+    "actions_used": 2,
+    "budget": 4,
+    "dataset": "openai/gsm8k",
+    "example_id": "openai_gsm8k_0",
+    "expansions": 2,
+    "final_answer": "53",
+    "final_correct": true,
+    "gold_answer": "53",
+    "method": "external_l1_max",
+    "model": "command-a-03-2025",
+    "provider": "cohere",
+    "question_hash": "4260fb67c1fa89b7",
+    "seed": 20260501,
+    "trace_available": true,
+    "verifications": 0
+  }
+}

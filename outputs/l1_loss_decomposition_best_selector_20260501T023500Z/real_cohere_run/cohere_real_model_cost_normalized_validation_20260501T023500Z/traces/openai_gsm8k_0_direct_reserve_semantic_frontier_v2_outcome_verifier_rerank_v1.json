@@ -1,0 +1,498 @@
+{
+  "answer_groups": {
+    "answer_group_best_branch_score": {
+      "53": 2.0
+    },
+    "answer_group_branch_ids": {
+      "53": [
+        "direct_reserve_0",
+        "direct_reserve_1"
+      ]
+    },
+    "answer_group_depth_stats": {
+      "53": {
+        "depth_max": 1,
+        "depth_mean": 1.0
+      }
+    },
+    "answer_group_family_counts": {},
+    "answer_group_maturity": {
+      "53": 2
+    },
+    "answer_group_support_counts": {
+      "53": 2
+    }
+  },
+  "branches": [
+    {
+      "A": null,
+      "C": null,
+      "I": null,
+      "R": null,
+      "V": null,
+      "answer_group": "53",
+      "branch_id": "direct_reserve_0",
+      "branch_score": 2.0,
+      "depth": 1,
+      "family_id": "direct_reserve",
+      "is_expanded": true,
+      "is_resolved": true,
+      "is_selected": true,
+      "metadata": {
+        "source": "direct_reserve",
+        "trace_event_count": 2
+      },
+      "parent_id": "",
+      "parsed_answer": "53",
+      "text_hash": "2a2d24e4edbca58f"
+    },
+    {
+      "A": null,
+      "C": null,
+      "I": null,
+      "R": null,
+      "V": null,
+      "answer_group": "53",
+      "branch_id": "direct_reserve_1",
+      "branch_score": 2.0,
+      "depth": 1,
+      "family_id": "direct_reserve",
+      "is_expanded": true,
+      "is_resolved": true,
+      "is_selected": true,
+      "metadata": {
+        "source": "direct_reserve",
+        "trace_event_count": 2
+      },
+      "parent_id": "",
+      "parsed_answer": "53",
+      "text_hash": "4140e0f6cedeb748"
+    }
+  ],
+  "direct_reserve": {
+    "direct_reserve_agreement_count": 2,
+    "direct_reserve_answer": "53",
+    "direct_reserve_attempts": [
+      {
+        "action": "expand",
+        "branch_id": "direct_reserve_0",
+        "extracted_answer": "",
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nSolve this completely with a full, careful chain of reasoning and arithmetic checks. Then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}"
+      },
+      {
+        "action": "expand",
+        "branch_id": "direct_reserve_0",
+        "extracted_answer": "53",
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nSolve this completely with a full, careful chain of reasoning and arithmetic checks. Then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n- First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"Add the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.\",\n  \"answer\": 53,\n  \"confidence\": 1.0\n}"
+      },
+      {
+        "action": "expand",
+        "branch_id": "direct_reserve_1",
+        "extracted_answer": "",
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nUse a different decomposition than your first attempt (e.g., equation-first or table-first), cross-check the result independently, then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\",\n  \"answer\": \"\",\n  \"confidence\": 0.9\n}"
+      },
+      {
+        "action": "expand",
+        "branch_id": "direct_reserve_1",
+        "extracted_answer": "53",
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nUse a different decomposition than your first attempt (e.g., equation-first or table-first), cross-check the result independently, then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n- First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"Add the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.\",\n  \"answer\": 53,\n  \"confidence\": 1\n}"
+      }
+    ],
+    "direct_reserve_confidence_proxy": 1.0,
+    "direct_reserve_correct": true,
+    "direct_reserve_metadata": {
+      "direct_answer_entropy": 0.0,
+      "direct_answer_group_counts": {
+        "53": 2
+      },
+      "direct_top2_support_gap": 1.0,
+      "direct_top_support": 1.0
+    },
+    "direct_reserve_num_attempts": 2,
+    "direct_reserve_parse_success": true,
+    "direct_reserve_source_method": "direct_reserve_attempts"
+  },
+  "frontier_candidate": {
+    "frontier_candidate_answer": null,
+    "frontier_candidate_correct": null,
+    "frontier_candidate_depth_max": null,
+    "frontier_candidate_depth_mean": null,
+    "frontier_candidate_family_count": 0,
+    "frontier_candidate_maturity": 0,
+    "frontier_candidate_metadata": {},
+    "frontier_candidate_support": 0
+  },
+  "override_gating": {
+    "direct_frontier_agree": false,
+    "frontier_override_triggered": false,
+    "frontier_support": 0,
+    "guard_decision_inputs": {
+      "frontier_group": "__unknown__",
+      "frontier_maturity": 0,
+      "frontier_support": 0,
+      "incumbent_group": "53",
+      "incumbent_support": 2,
+      "incumbent_uncertain": true,
+      "maturity_margin": -2.0,
+      "should_expand_frontier": false,
+      "support_margin": -2.0
+    },
+    "incumbent_support": 2,
+    "maturity_margin": -2.0,
+    "override_margin": -2.0,
+    "override_reason": "frontier_not_run_or_budget_exhausted",
+    "override_thresholds": {
+      "frontier_override_min_maturity": 2,
+      "frontier_override_min_support_margin": 1,
+      "gate_entropy_threshold": -1.0,
+      "gate_top2_gap_threshold": 2.0,
+      "gate_top_support_threshold": 2.0
+    },
+    "reserve_used": true,
+    "support_margin": -2.0
+  },
+  "raw_metadata": {
+    "action_trace": [
+      {
+        "action": "direct_reserve",
+        "branch_id": "direct_reserve_0",
+        "group_key": "53",
+        "is_terminal": 1,
+        "selected": 1,
+        "source": "direct_reserve",
+        "step": 0
+      },
+      {
+        "action": "direct_reserve",
+        "branch_id": "direct_reserve_1",
+        "group_key": "53",
+        "is_terminal": 1,
+        "selected": 1,
+        "source": "direct_reserve",
+        "step": 1
+      }
+    ],
+    "answer_group_best_branch_scores": {},
+    "answer_group_count": 1,
+    "answer_group_strategy_family_counts": {},
+    "answer_group_support_counts": {
+      "53": 2
+    },
+    "candidate_count": 2,
+    "candidate_extraction_sources": [
+      "selector_candidate_pool"
+    ],
+    "diagnostic_only": false,
+    "direct_answer_group_counts": {
+      "53": 2
+    },
+    "direct_frontier_agree": false,
+    "direct_reserve_agreement_count": 2,
+    "direct_reserve_answer": "53",
+    "direct_reserve_attempts": [
+      {
+        "action": "expand",
+        "branch_id": "direct_reserve_0",
+        "extracted_answer": "",
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nSolve this completely with a full, careful chain of reasoning and arithmetic checks. Then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}"
+      },
+      {
+        "action": "expand",
+        "branch_id": "direct_reserve_0",
+        "extracted_answer": "53",
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nSolve this completely with a full, careful chain of reasoning and arithmetic checks. Then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n- First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"Add the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.\",\n  \"answer\": 53,\n  \"confidence\": 1.0\n}"
+      },
+      {
+        "action": "expand",
+        "branch_id": "direct_reserve_1",
+        "extracted_answer": "",
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nUse a different decomposition than your first attempt (e.g., equation-first or table-first), cross-check the result independently, then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\",\n  \"answer\": \"\",\n  \"confidence\": 0.9\n}"
+      },
+      {
+        "action": "expand",
+        "branch_id": "direct_reserve_1",
+        "extracted_answer": "53",
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nUse a different decomposition than your first attempt (e.g., equation-first or table-first), cross-check the result independently, then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n- First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\n",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"Add the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.\",\n  \"answer\": 53,\n  \"confidence\": 1\n}"
+      }
+    ],
+    "direct_reserve_attempts_executed": 2,
+    "direct_reserve_attempts_planned": 2,
+    "direct_reserve_confidence_proxy": 1.0,
+    "direct_reserve_metadata": {
+      "direct_answer_entropy": 0.0,
+      "direct_answer_group_counts": {
+        "53": 2
+      },
+      "direct_top2_support_gap": 1.0,
+      "direct_top_support": 1.0
+    },
+    "direct_reserve_num_attempts": 2,
+    "direct_reserve_parse_success": true,
+    "direct_reserve_source_method": "direct_reserve_attempts",
+    "fallback_reason": "",
+    "final_answer": "53",
+    "final_branch_states": [
+      {
+        "branch_depth": 1,
+        "branch_id": "direct_reserve_0",
+        "is_done": true,
+        "is_pruned": false,
+        "parent_branch_id": "",
+        "predicted_answer": "53",
+        "score": 2.0,
+        "selected": 1,
+        "source": "direct_reserve",
+        "steps": [],
+        "strategy_family": "direct_reserve",
+        "trace_events": [
+          {
+            "action": "expand",
+            "branch_id": "direct_reserve_0",
+            "extracted_answer": "",
+            "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nSolve this completely with a full, careful chain of reasoning and arithmetic checks. Then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+            "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.",
+            "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}"
+          },
+          {
+            "action": "expand",
+            "branch_id": "direct_reserve_0",
+            "extracted_answer": "53",
+            "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nSolve this completely with a full, careful chain of reasoning and arithmetic checks. Then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n- First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\n",
+            "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+            "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"Add the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.\",\n  \"answer\": 53,\n  \"confidence\": 1.0\n}"
+          }
+        ]
+      },
+      {
+        "branch_depth": 1,
+        "branch_id": "direct_reserve_1",
+        "is_done": true,
+        "is_pruned": false,
+        "parent_branch_id": "",
+        "predicted_answer": "53",
+        "score": 2.0,
+        "selected": 1,
+        "source": "direct_reserve",
+        "steps": [],
+        "strategy_family": "direct_reserve",
+        "trace_events": [
+          {
+            "action": "expand",
+            "branch_id": "direct_reserve_1",
+            "extracted_answer": "",
+            "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nUse a different decomposition than your first attempt (e.g., equation-first or table-first), cross-check the result independently, then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+            "reasoning_text": "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.",
+            "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\",\n  \"answer\": \"\",\n  \"confidence\": 0.9\n}"
+          },
+          {
+            "action": "expand",
+            "branch_id": "direct_reserve_1",
+            "extracted_answer": "53",
+            "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nSarah\u2019s basketball games are 4 quarters that are each 12 minutes long. In the last quarter, there was a tie so the game was extended for five minutes. How long did the entire game last?\n\nUse a different decomposition than your first attempt (e.g., equation-first or table-first), cross-check the result independently, then output only the final numeric answer in \\boxed{}. Think for maximum 640 tokens.\n\nCurrent partial reasoning:\n- First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\n",
+            "reasoning_text": "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+            "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"Add the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.\",\n  \"answer\": 53,\n  \"confidence\": 1\n}"
+          }
+        ]
+      }
+    ],
+    "frontier_answer_group_counts": {},
+    "frontier_candidate_answer": null,
+    "frontier_candidate_depth_max": null,
+    "frontier_candidate_depth_mean": null,
+    "frontier_candidate_family_count": 0,
+    "frontier_candidate_maturity": 0,
+    "frontier_candidate_metadata": {},
+    "frontier_candidate_support": 0,
+    "frontier_executed": false,
+    "frontier_metadata": {},
+    "frontier_override_triggered": false,
+    "frontier_support": 0,
+    "guard_decision_inputs": {
+      "frontier_group": "__unknown__",
+      "frontier_maturity": 0,
+      "frontier_support": 0,
+      "incumbent_group": "53",
+      "incumbent_support": 2,
+      "incumbent_uncertain": true,
+      "maturity_margin": -2.0,
+      "should_expand_frontier": false,
+      "support_margin": -2.0
+    },
+    "incumbent_challenge_score": 0.0,
+    "incumbent_seen_in_frontier_support": true,
+    "incumbent_support": 2,
+    "maturity_margin": -2.0,
+    "method_family": "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+    "not_canonical": true,
+    "ov_rerank_applied": true,
+    "ov_rerank_candidate_scores": {
+      "direct_reserve_0": {
+        "candidate_score": 11.501874962136533,
+        "normalized_answer": "53",
+        "source_id": "direct_reserve"
+      },
+      "direct_reserve_1": {
+        "candidate_score": 11.501874962136533,
+        "normalized_answer": "53",
+        "source_id": "direct_reserve"
+      }
+    },
+    "ov_rerank_gold_present_in_candidates": 1,
+    "ov_rerank_group_scores": [
+      {
+        "capped_group_size": 1,
+        "group_score": 11.886389263170372,
+        "normalized_answer": "53",
+        "original_group_size": 2,
+        "representative_candidate_id": "direct_reserve_0"
+      }
+    ],
+    "ov_rerank_original_dr_v2_selected_answer": "53",
+    "ov_rerank_recovered_present_not_selected": 0,
+    "ov_rerank_selected_answer": "53",
+    "ov_rerank_verifier_results": {
+      "direct_reserve_0": {
+        "answer_equivalent_if_normalized": null,
+        "major_error": false,
+        "prob_correct": 0.999,
+        "short_reason": "The candidate's reasoning correctly calculates the total duration of the game by adding the time for the 4 quarters and the extension, and the final answer matches the calculation.",
+        "trace_final_consistent": true
+      },
+      "direct_reserve_1": {
+        "answer_equivalent_if_normalized": null,
+        "major_error": false,
+        "prob_correct": 0.999,
+        "short_reason": "The candidate correctly calculated the total duration of the 4 quarters and added the extra 5 minutes for the tie, resulting in a consistent and accurate final answer.",
+        "trace_final_consistent": true
+      }
+    },
+    "ov_same_answer_multi_candidate": true,
+    "ov_same_answer_multi_candidate_reason": "multiple_candidates_single_answer_group",
+    "override_margin": -2.0,
+    "override_reason": "frontier_not_run_or_budget_exhausted",
+    "override_thresholds": {
+      "frontier_override_min_maturity": 2,
+      "frontier_override_min_support_margin": 1,
+      "gate_entropy_threshold": -1.0,
+      "gate_top2_gap_threshold": 2.0,
+      "gate_top_support_threshold": 2.0
+    },
+    "remaining_budget_before_frontier": 0,
+    "reserve_used": true,
+    "selected_candidate_id": "direct_reserve_0",
+    "selected_group_score": 11.886389263170372,
+    "selected_normalized_answer": "53",
+    "selector_candidate_answer_group_count": 1,
+    "selector_candidate_pool": [
+      {
+        "actions_used": 4,
+        "branch_id": "direct_reserve_0",
+        "branch_score": 2.0,
+        "candidate_id": "direct_reserve_0",
+        "cost_norm": 0.1,
+        "is_original_selected": 1,
+        "normalized_answer": "53",
+        "predicted_answer": "53",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nFirst, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "source_family": "direct_reserve",
+        "source_id": "direct_reserve",
+        "source_prior": 1.0,
+        "trace": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nFirst, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "trace_steps": [
+          "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.",
+          "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes."
+        ]
+      },
+      {
+        "actions_used": 4,
+        "branch_id": "direct_reserve_1",
+        "branch_score": 2.0,
+        "candidate_id": "direct_reserve_1",
+        "cost_norm": 0.1,
+        "is_original_selected": 1,
+        "normalized_answer": "53",
+        "predicted_answer": "53",
+        "reasoning_text": "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\nFirst, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "source_family": "direct_reserve",
+        "source_id": "direct_reserve",
+        "source_prior": 1.0,
+        "trace": "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\nFirst, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "trace_steps": [
+          "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.",
+          "First, calculate the total duration of the 4 quarters: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the additional 5 minutes from the tie to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes."
+        ]
+      }
+    ],
+    "selector_candidate_pool_size": 2,
+    "selector_candidate_pool_sources": [
+      "direct_reserve"
+    ],
+    "selector_configured_candidate_cap": 0,
+    "selector_group_feature_rows": [
+      {
+        "consistency_flags": {
+          "categorical_numeric_mismatch": false,
+          "how_much_more_echo_original_price": false,
+          "intermediate_echo_risk": false,
+          "last_equation_disagrees_with_final": false,
+          "negative_impossible": false,
+          "non_integer_count": false,
+          "numeric_type_mismatch": false,
+          "rate_vs_total_conflict": false,
+          "remaining_total_conflict": false
+        },
+        "final_answer": "53",
+        "hybrid_selector_score": 0.9166666666666667,
+        "normalized_answer": "53",
+        "ov_score": 11.886389263170372,
+        "prm_score": null,
+        "source_family": "direct_reserve",
+        "support_count": 2,
+        "trace": "First, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nFirst, calculate the total duration of the 4 quarters without the extension: 4 quarters * 12 minutes/quarter = 48 minutes.\nAdd the extension time to the total duration of the 4 quarters: 48 minutes + 5 minutes = 53 minutes.",
+        "unified_confidence_score": 0.9166666666666667,
+        "unified_error_score": 0.0
+      }
+    ],
+    "single_candidate_fallback": false,
+    "support_margin": -2.0,
+    "v2_diagnostic_only": true,
+    "v2_incumbent_support_guard_applied": false,
+    "v2_override_block_reason": "not_blocked",
+    "verifier_backend": "cohere",
+    "verifier_calls": 2
+  },
+  "schema_version": "branch_trace_v1",
+  "top_level": {
+    "actions_used": 4,
+    "budget": 4,
+    "dataset": "openai/gsm8k",
+    "example_id": "openai_gsm8k_0",
+    "expansions": 4,
+    "final_answer": "53",
+    "final_correct": true,
+    "gold_answer": "53",
+    "method": "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+    "model": "command-a-03-2025",
+    "provider": "cohere",
+    "question_hash": "4260fb67c1fa89b7",
+    "seed": 20260501,
+    "trace_available": true,
+    "verifications": 0
+  }
+}

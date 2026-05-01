@@ -31,6 +31,9 @@ def parse_args():
  return p.parse_args()
 
 def wj(p,obj): p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(obj,indent=2)+"\n")
+def wjsonl(p,rows):
+ p.parent.mkdir(parents=True,exist_ok=True)
+ p.write_text("\n".join(json.dumps(r) for r in rows)+("\n" if rows else ""))
 def wcsv(path,rows):
  path.parent.mkdir(parents=True,exist_ok=True)
  if not rows: path.write_text(""); return
@@ -75,6 +78,9 @@ def attempt_real_run(args,out,method):
  run_dir=out/'real_cohere_run'
  os.environ['DR_V2_OV_RERANK_VERIFIER_BACKEND']='cohere'
  os.environ['DR_V2_OV_RERANK_COHERE_MODEL']=args.cohere_model
+ approx_calls=args.target_scored*3
+ if approx_calls>args.max_calls:
+  raise RuntimeError(f"max-calls exceeded by plan: approx_calls={approx_calls} > max_calls={args.max_calls}")
  cmd=[sys.executable,'scripts/run_cohere_real_model_cost_normalized_validation.py','--timestamp',args.timestamp,'--providers','cohere','--cohere-model',args.cohere_model,'--datasets',args.dataset,'--budgets',str(args.budget),'--seeds',str(args.seed),'--methods',f'external_l1_max,direct_reserve_semantic_frontier_v2,{method}','--target-scored-per-slice',str(args.target_scored),'--max-examples',str(args.target_scored),'--save-branch-traces','--emit-trace-audit','--output-root',str(run_dir)]
  if args.resume: cmd.append('--resume')
  p=subprocess.run(cmd,capture_output=True,text=True)
@@ -91,7 +97,11 @@ def main():
  for m in SELECTOR_CANDIDATES:
   if not args.allow_api:
    write_blocker(out,args,'incomplete_artifacts','allow-api not set; cannot generate missing artifacts'); raise SystemExit(2)
-  proc,cmd,adir=attempt_real_run(args,out,m)
+  try:
+   proc,cmd,adir=attempt_real_run(args,out,m)
+  except RuntimeError as e:
+   write_blocker(out,args,'incomplete_artifacts',str(e),run_cmd='')
+   raise SystemExit(2)
   if proc.returncode!=0:
    fail.append({'method_id':m,'reason':'real_runner_failed','stderr':proc.stderr[-300:]}); continue
   rs=load_records(adir/'per_example_records.jsonl')
@@ -118,7 +128,7 @@ def main():
   pool=md.get('selector_candidate_pool') if isinstance(md.get('selector_candidate_pool'),list) else []
   ans=[str((c or {}).get('normalized_answer','')).strip() for c in pool if str((c or {}).get('normalized_answer','')).strip()]
   rows.append({'case_id':cid,'dataset':args.dataset,'split':args.split,'seed':args.seed,'budget':args.budget,'question':l1.get('question',''),'l1_correct':l1c,'l1_normalized_answer':l1.get('final_answer_canonical',''),'drv2_correct':bool(drv2.get('exact_match')),'drv2_normalized_answer':drv2.get('final_answer_canonical',''),'selected_method_id':selected,'selected_method_correct':sc,'selected_method_normalized_answer':sel.get('final_answer_canonical',''),'outcome_bucket':ob,'loss_decomposition_for_l1_correct_ours_wrong':loss,'gold_in_candidate_tree':sel.get('gold_in_tree',None),'candidate_count':len(pool),'unique_answer_count':len(set(ans)),'selected_candidate_id':'','selected_candidate_rank':'','selected_answer_support_count':'','selector_applied':None,'selector_override':md.get('frontier_override_triggered',None),'selector_score_coverage_status':'full' if md.get('missing_selector_score_count',0)==0 else 'missing','missing_selector_score_count':md.get('missing_selector_score_count',0),'fallback_to_incumbent':md.get('fallback_to_incumbent',None),'failure_reason':sel.get('failure_tag',''),'evidence_fields_available':bool(pool)})
- wj(out/'per_case_l1_loss_decomposition.jsonl',"\n".join(json.dumps(r) for r in rows))
+ wjsonl(out/'per_case_l1_loss_decomposition.jsonl',rows)
  wcsv(out/'per_case_l1_loss_decomposition.csv',rows)
  tot=len(rows); l1cw=sum(r['outcome_bucket']=='l1_correct_ours_wrong' for r in rows)
  counts={k:sum(r['loss_decomposition_for_l1_correct_ours_wrong']==k for r in rows) for k in LOSS_TYPES}

@@ -1,0 +1,20 @@
+{
+  "selected_method_id": "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+  "selected_method_reason": "first runnable selector candidate with required paired records",
+  "available_candidate_methods": [
+    "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+    "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
+    "direct_reserve_semantic_frontier_v2_selection_fix_v1"
+  ],
+  "excluded_methods_with_reasons": [],
+  "artifact_source": "outputs/l1_loss_decomposition_best_selector_20260501T023500Z/real_cohere_run/cohere_real_model_cost_normalized_validation_20260501T023500Z",
+  "real_cohere_run_dir": "outputs/l1_loss_decomposition_best_selector_20260501T023500Z/real_cohere_run",
+  "is_100case": false,
+  "actual_paired_case_count": 1,
+  "is_real_cohere": true,
+  "verifier_backend": "cohere",
+  "verifier_model": "command-a-03-2025",
+  "mock_backend_detected": false,
+  "is_full_selector_coverage": true,
+  "is_diagnostic_only": true
+}

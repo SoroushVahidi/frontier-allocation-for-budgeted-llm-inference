@@ -15,7 +15,7 @@ def test_trace_missing_not_gold_absent():
 
 def test_selector_missing_score_classifies():
     l1={'exact_match':True}; s={'exact_match':False,'result_metadata':{'selector_candidate_pool':[{}],'missing_selector_score_count':1},'gold_answer_canonical':''}
-    assert classify_loss(l1,s)=='selector_missing_score_or_cache_limited' or True
+    assert classify_loss(l1,s)=='selector_missing_score_or_cache_limited'
 
 def test_summary_placeholder():
     blob=json.dumps({'x':1})
