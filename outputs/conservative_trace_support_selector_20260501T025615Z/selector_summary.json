@@ -1,0 +1,20 @@
+{
+  "timestamp": "20260501T025616Z",
+  "selector_name": "conservative_trace_support_selector_v1",
+  "total_cases": 50,
+  "total_overrides": 0,
+  "fixes": 0,
+  "breaks": 0,
+  "net_fixes_minus_breaks": 0,
+  "override_precision": 0.0,
+  "accuracy": 0.0,
+  "current_incumbent_accuracy": 0.0,
+  "oracle_ceiling_on_package": 0.92,
+  "recoverable_trace_terminal_cases": 46,
+  "recoveries_among_gold_in_terminal_node_cases": 0,
+  "failures_gold_present_in_terminal_nodes_not_chosen": 46,
+  "aggregate_only_cases_count": 4,
+  "decision_reasons": {
+    "kept_incumbent_default": 50
+  }
+}
