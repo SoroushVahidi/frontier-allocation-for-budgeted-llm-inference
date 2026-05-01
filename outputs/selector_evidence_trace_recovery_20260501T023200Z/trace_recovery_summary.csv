@@ -1,0 +1,20 @@
+metric,value
+input casebook path,outputs/selector_evidence_package_20260501T014547Z/present_not_selected_casebook.jsonl
+source root path,outputs/cohere_real_model_cost_normalized_validation_20260501T014620Z_COHERE_SELECTOR_EVIDENCE_CAP100
+input cases,50
+raw records matched,50
+raw records missing,0
+cases with candidate nodes,50
+cases with at least one candidate trace,50
+cases with all candidates traced,50
+extracted candidate-node count,142
+traced candidate-node count,142
+gold present in aggregate answer buckets,50
+gold present in extracted terminal node finals,46
+selected answer present in extracted terminal node finals,50
+cases still aggregate-only,0
+cases usable for trace-aware outcome-verifier selection,50
+cases requiring Cohere regeneration,0
+Cohere used?,no
+Cohere calls made,0
+no secrets/no caches committed confirmation,true

@@ -1,0 +1,16 @@
+{
+  "total paired rows scanned": 0,
+  "our-wrong / external-correct rows": 0,
+  "trace-complete external-loss rows": 0,
+  "present-not-selected aggregate rows": 0,
+  "absent-from-tree rows": 0,
+  "rows matched to raw records": 0,
+  "cases with candidate nodes": 0,
+  "cases with at least one candidate trace": 0,
+  "cases with all extracted candidates traced": 0,
+  "extracted candidate-node count": 0,
+  "traced candidate-node count": 0,
+  "gold present in aggregate answer buckets": 0,
+  "gold present in extracted terminal node finals": 0,
+  "current-correct cases available for break-risk testing": 0
+}
