@@ -4,8 +4,10 @@ import argparse, csv, json, subprocess, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-def run_margin(input_path: str, score_cache: str, margin: float, out_dir: Path, selector_name: str, require_trace: bool, dedupe: bool, no_gold: bool) -> dict:
-    cmd = [sys.executable, 'scripts/run_outcome_verifier_answer_group_selector.py', '--input', input_path, '--output-dir', str(out_dir), '--selector-name', selector_name, '--scorer-mode', 'cached_jsonl', '--score-cache', score_cache, '--min-verifier-margin', str(margin)]
+def run_margin(input_path: str, score_cache: str|None, scorer_mode: str, margin: float, out_dir: Path, selector_name: str, require_trace: bool, dedupe: bool, no_gold: bool) -> dict:
+    cmd = [sys.executable, 'scripts/run_outcome_verifier_answer_group_selector.py', '--input', input_path, '--output-dir', str(out_dir), '--selector-name', selector_name, '--scorer-mode', scorer_mode, '--min-verifier-margin', str(margin)]
+    if scorer_mode=='cached_jsonl' and score_cache:
+        cmd += ['--score-cache', score_cache]
     if require_trace: cmd.append('--require-trace-for-override')
     if dedupe: cmd.append('--dedupe-verifier-items')
     if no_gold: cmd.append('--no-gold-features')
@@ -22,7 +24,8 @@ def choose_best_margin(rows: list[dict]) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument('--input', required=True)
-    ap.add_argument('--score-cache', required=True)
+    ap.add_argument('--score-cache')
+    ap.add_argument('--scorer-mode', default='cached_jsonl', choices=['cached_jsonl','trace_quality_heuristic'])
     ap.add_argument('--output-dir', required=True)
     ap.add_argument('--margins', nargs='+', default=['0.00','0.05','0.10','0.15','0.20','0.30'])
     ap.add_argument('--selector-name', default='outcome_verifier_answer_group_selector_v1')
@@ -36,7 +39,7 @@ def main() -> None:
     rows = []
     for m in [float(x) for x in args.margins]:
         m_dir = per / f'margin_{m:.2f}'.replace('.', 'p')
-        s = run_margin(args.input, args.score_cache, m, m_dir, args.selector_name, args.require_trace_for_override, args.dedupe_verifier_items, args.no_gold_features)
+        s = run_margin(args.input, args.score_cache, args.scorer_mode, m, m_dir, args.selector_name, args.require_trace_for_override, args.dedupe_verifier_items, args.no_gold_features)
         s['margin'] = m
         rows.append(s)
 
