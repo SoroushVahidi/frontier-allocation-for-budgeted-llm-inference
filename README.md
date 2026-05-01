@@ -42,11 +42,31 @@ Do **not** claim robust or broad superiority over `external_l1_max` unless a com
 | Reviewer/collaborator orientation | `docs/CANONICAL_START_HERE.md` |
 | Repository structure | `docs/REPO_MAP.md` |
 | Current selector/L1-defeat track | `docs/SELECTOR_START_HERE.md` |
+| Current selector artifact front door | `docs/SELECTOR_WORK_START_HERE_20260501.md` |
+| Wulver artifact index | `docs/ARTIFACT_INDEX_20260501.md` |
+| Focused33 trace-enrichment result | `docs/FOCUSED33_TRACE_ENRICHMENT_RESULT_20260501T000906Z.md` |
+| Cleanup policy | `docs/REPOSITORY_CLEANUP_POLICY_20260501.md` |
 | Outcome-verifier selector roadmap | `docs/OUTCOME_VERIFIER_SELECTOR_ROADMAP.md` |
 | Selector trace artifact usability | `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` |
 | Paper evidence rules | `docs/PAPER_SOURCE_OF_TRUTH.md` |
 | Safe vs unsafe claims | `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md` |
 | Open gaps and risks | `docs/PAPER_OPEN_GAPS_AND_RISKS.md` |
+
+## Current selector artifacts
+
+The Wulver artifact transfer restored the current selector-focused trace artifacts:
+
+- `outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_trace_complete.csv` — 47 aggregate trace-complete external-loss casebook rows.
+- Focused subset from that casebook — 33 rows where `trace_available == gold_present_in_candidate_groups == oracle_selector_would_fix == 1`.
+- `outputs/focused33_trace_enriched_20260501T000906Z/focused33_trace_enriched.jsonl` — trace-enriched candidate-node artifact for those 33 rows.
+- `outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_case_trace_index.csv` — raw trace index with more traced method/example rows than the 47-row external-loss casebook.
+
+Current ceilings for the focused selector work:
+
+- aggregate casebook oracle: 33/33;
+- trace-preserved-node oracle from the enriched artifact: 8/33.
+
+Use `docs/SELECTOR_WORK_START_HERE_20260501.md` and `docs/ARTIFACT_INDEX_20260501.md` before running or interpreting selector experiments.
 
 ## API-cost rule
 
@@ -93,6 +113,14 @@ make health
 make reviewer-test
 ```
 
+Inventory current trace artifacts:
+
+```bash
+python scripts/inventory_trace_artifacts.py \
+  --roots outputs archive logs \
+  --output-dir outputs/trace_artifact_inventory_$(date -u +%Y%m%dT%H%M%SZ)
+```
+
 Run the canonical artifact builder:
 
 ```bash
@@ -105,7 +133,7 @@ The selector track asks:
 
 > Given candidate answers already found by DR-v2, can an outcome verifier estimate which candidate answer is correct more safely than support/source/consistency heuristics?
 
-The next offline step is to implement a cached outcome-verifier selector scaffold over the 50-case compact artifact, first with dry-run call accounting and then with cached verifier scoring only if explicitly authorized.
+The next offline step is to adapt the outcome-verifier selector to ingest the focused33 trace-enriched artifact, first with dry-run call accounting and then with cached verifier scoring only if explicitly authorized.
 
 ## Method-surface distinction
 
@@ -122,6 +150,7 @@ Keep this distinction explicit:
 - Do **not** treat mock-backed verifier runs as real verifier evidence.
 - Do **not** present diagnostic variants as final methods unless validated and promoted by canonical docs.
 - Do **not** assume historical runs have complete trace coverage.
+- Do **not** call final-answer-only verifier runs Cobbe-style full-solution verification.
 
 ## Repository organization
 
@@ -140,4 +169,4 @@ See `docs/REPO_MAP.md` for the detailed map.
 
 ## Artifact safety
 
-Timestamped real-model outputs are evidence/provenance. Do not delete, overwrite, or repurpose them casually. Prefer indexing and labeling over deletion. Use `docs/OUTPUTS_ARTIFACT_INDEX.md` and `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` when interpreting output folders.
+Timestamped real-model outputs are evidence/provenance. Do not delete, overwrite, or repurpose them casually. Prefer indexing and labeling over deletion. Use `docs/ARTIFACT_INDEX_20260501.md`, `docs/OUTPUTS_ARTIFACT_INDEX.md`, and `docs/OUTPUTS_SELECTOR_TRACE_INDEX.md` when interpreting output folders.
