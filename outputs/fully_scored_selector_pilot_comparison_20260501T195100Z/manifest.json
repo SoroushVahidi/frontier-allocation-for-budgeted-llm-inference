@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-05-01T19:51:09.558093+00:00",
+  "paired_records": "outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_example_records.jsonl",
+  "selected_config": "configs/selected_selector_current.json",
+  "score_cache": "outputs/fully_scored_selector_pilot_scores_merged_20260501T194200Z/verifier_scores_merged.jsonl",
+  "max_examples": 25
+}

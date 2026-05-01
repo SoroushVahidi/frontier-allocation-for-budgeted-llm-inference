@@ -1,0 +1,5 @@
+- recommended_margin: 0.0
+- margin_0p0_best: True
+- selected_vs_external_delta_at_best: 0.039999999999999925
+- residual_bottleneck: discovery_side
+- keep_config_unchanged: True

@@ -1,0 +1,14 @@
+{
+  "total_items": 89,
+  "attempted": 39,
+  "new_attempted_calls": 39,
+  "succeeded": 39,
+  "failed": 0,
+  "skipped": 50,
+  "current_index": 88,
+  "elapsed_seconds": 127.426,
+  "backend": "cohere",
+  "cumulative_cached_rows": 89,
+  "model": "command-a-03-2025",
+  "last_updated_timestamp": "20260501T200325Z"
+}

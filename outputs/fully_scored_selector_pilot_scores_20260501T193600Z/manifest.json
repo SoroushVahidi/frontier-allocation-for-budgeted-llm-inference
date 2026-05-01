@@ -1,0 +1,4 @@
+{
+  "call_plan": "outputs/fully_scored_selector_pilot_call_plan_20260501T193400Z/missing_verifier_call_plan.jsonl",
+  "cache_path": "outputs/fully_scored_selector_pilot_scores_20260501T193600Z/verifier_scores.jsonl"
+}

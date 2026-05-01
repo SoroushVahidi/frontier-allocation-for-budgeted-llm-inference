@@ -1,0 +1,7 @@
+{
+  "input_rows": 265,
+  "merged_rows": 265,
+  "duplicates_removed": 0,
+  "missing_call_plan_items_after_merge": 0,
+  "no_gold_oracle_evaluation_only_correct_answer_in_scores": true
+}

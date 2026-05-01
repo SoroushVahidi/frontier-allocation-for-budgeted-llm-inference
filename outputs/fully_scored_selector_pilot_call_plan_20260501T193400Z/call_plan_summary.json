@@ -1,0 +1,11 @@
+{
+  "pilot_case_count": 25,
+  "candidate_nodes": 88,
+  "total_scoring_items_before_dedupe": 88,
+  "total_scoring_items_after_dedupe": 88,
+  "existing_cached_scores_reused": 6,
+  "missing_scores_to_call": 82,
+  "max_new_calls_cap": 150,
+  "selected_selector_config": "configs/selected_selector_current.json",
+  "gold_oracle_evaluation_only_free_confirmation": true
+}
