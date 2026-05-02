@@ -4,6 +4,12 @@ This ledger separates **claim-eligible evidence**, **diagnostic evidence**, and 
 
 It is meant to prevent future work from mistaking dry-run packages, blocked runs, or one-case diagnostics for final evidence.
 
+For unanswered scientific questions and required follow-up runs, use:
+
+```text
+docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md
+```
+
 ## One-line status
 
 The repository has a strong audited recovery-track selector result, a usable self-consistency literature baseline, a CMV literature-baseline scaffold, and new Cohere/L1-loss-decomposition tooling. It does **not** yet have a clean 100-case real-Cohere result showing our best selected method beating `external_l1_max`, nor a clean 100-case L1-loss decomposition for the best selector/reranker.
@@ -75,7 +81,7 @@ The exact statistic the project still needs is **not complete**:
 
 > For our best selected DR-v2 selector/reranker versus `external_l1_max`, among L1-correct/ours-wrong cases, how many are gold-absent-from-tree versus gold-present-but-not-selected?
 
-The latest known real diagnostic output has only one paired case and therefore cannot answer the scientific bottleneck question.
+The latest known real diagnostic output has only one paired case and therefore cannot answer the scientific bottleneck question. This is tracked as `EXP-L1-DECOMP-100` in `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md`.
 
 ## Main-table external baselines
 
@@ -89,7 +95,13 @@ Claim boundary: these are **MODE-A adapter comparators on a matched substrate, n
 
 ## Current best next action
 
-Do not add another selector baseline. The most useful next action is one of:
+Do not add another selector baseline. Follow the open-experiments backlog:
+
+```text
+docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md
+```
+
+The highest-priority experiment is `EXP-L1-DECOMP-100`:
 
 1. Complete the L1-loss decomposition run at the largest feasible paired case count under a clear call cap, preferably 100 paired cases.
 2. If full selector/reranker coverage is too expensive, run a smaller clearly marked diagnostic and report the exact cap/coverage blocker.
