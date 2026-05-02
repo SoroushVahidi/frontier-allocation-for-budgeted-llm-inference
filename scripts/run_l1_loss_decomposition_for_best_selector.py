@@ -31,6 +31,9 @@ def parse_args():
  p.add_argument("--paired-case-batch-mode",action="store_true")
  p.add_argument("--checkpoint-every-case",action="store_true")
  p.add_argument("--min-complete-paired-cases",type=int,default=25)
+ p.add_argument("--selected-lane-policy",choices=["best_available","selection_fix_only","drv2_only_diagnostic"],default="best_available")
+ p.add_argument("--smoke-cases",type=int,default=0)
+ p.add_argument("--case-timeout-seconds",type=int,default=300)
  return p.parse_args()
 
 def wj(p,obj): p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(obj,indent=2)+"\n")
@@ -110,6 +113,9 @@ def main():
  if args.paired_case_batch_mode:
   run_dir=out/'paired_case_batch_runs'; run_dir.mkdir(parents=True,exist_ok=True)
   cases=[]; rows=[]; selected=SELECTOR_CANDIDATES[0]
+  if args.selected_lane_policy=="selection_fix_only": selected=SELECTOR_CANDIDATES[2]
+  if args.selected_lane_policy=="drv2_only_diagnostic": selected='direct_reserve_semantic_frontier_v2'
+  runtime_diag={"selected_lane_policy":args.selected_lane_policy,"interrupted_lane":None,"first_case":{"l1_completed":False,"drv2_started":False,"drv2_completed":False,"selector_started":False,"selector_completed":False},"per_lane_elapsed_seconds":{},"api_call_count_consumed":0,"blocker_category":"unknown","suggested_fastest_next_mode":"drv2_only_diagnostic"}
   # pull candidate ids cheaply from existing dataset ordering by probing from prior records if present
   prior=out/'real_cohere_run'/f'cohere_real_model_cost_normalized_validation_{args.timestamp}'/'per_example_records.jsonl'
   if prior.exists():
@@ -117,16 +123,22 @@ def main():
     eid=r.get('example_id')
     if eid and eid not in cases: cases.append(eid)
   if not cases: cases=[f'openai_gsm8k_{i}' for i in range(args.target_scored)]
-  for i,eid in enumerate(cases[:args.target_scored]):
+  limit=args.smoke_cases if args.smoke_cases>0 else args.target_scored
+  for i,eid in enumerate(cases[:limit]):
    allow=run_dir/f'allow_{i}.jsonl'; allow.write_text(json.dumps({'example_id':eid})+'\n')
-   cmd=[sys.executable,'scripts/run_cohere_real_model_cost_normalized_validation.py','--timestamp',f'{args.timestamp}_pair{i}','--providers','cohere','--cohere-model',args.cohere_model,'--datasets',args.dataset,'--budgets',str(args.budget),'--seeds',str(args.seed),'--methods',f'external_l1_max,direct_reserve_semantic_frontier_v2,{selected}','--target-scored-per-slice','1','--max-examples','1','--save-branch-traces','--emit-trace-audit','--output-root',str(run_dir),'--allowed-example-ids-file',str(allow)]
-   p=subprocess.run(cmd,capture_output=True,text=True)
+   methods=f'external_l1_max,direct_reserve_semantic_frontier_v2,{selected}' if selected!='direct_reserve_semantic_frontier_v2' else 'external_l1_max,direct_reserve_semantic_frontier_v2'
+   cmd=[sys.executable,'scripts/run_cohere_real_model_cost_normalized_validation.py','--timestamp',f'{args.timestamp}_pair{i}','--providers','cohere','--cohere-model',args.cohere_model,'--datasets',args.dataset,'--budgets',str(args.budget),'--seeds',str(args.seed),'--methods',methods,'--target-scored-per-slice','1','--max-examples','1','--save-branch-traces','--emit-trace-audit','--output-root',str(run_dir),'--allowed-example-ids-file',str(allow)]
+   try:
+    p=subprocess.run(cmd,capture_output=True,text=True,timeout=args.case_timeout_seconds)
+   except subprocess.TimeoutExpired:
+    runtime_diag["interrupted_lane"]="timeout"; runtime_diag["blocker_category"]="internal_timeout/runtime_window"; break
    adir=run_dir/f'cohere_real_model_cost_normalized_validation_{args.timestamp}_pair{i}'
    recs=load_records(adir/'per_example_records.jsonl')
    by={m:{} for m in ['external_l1_max','direct_reserve_semantic_frontier_v2',selected]}
    for r in recs:
     if r.get('method') in by: by[r['method']][r['example_id']]=r
-   ids=sorted(set(by['external_l1_max'])&set(by['direct_reserve_semantic_frontier_v2'])&set(by[selected]))
+   runtime_diag["api_call_count_consumed"] += len(recs)
+   ids=sorted(set(by['external_l1_max'])&set(by['direct_reserve_semantic_frontier_v2'])&(set(by[selected]) if selected!='direct_reserve_semantic_frontier_v2' else set(by['direct_reserve_semantic_frontier_v2'])))
    if not ids: continue
    cid=ids[0]; l1,drv2,sel=by['external_l1_max'][cid],by['direct_reserve_semantic_frontier_v2'][cid],by[selected][cid]
    l1c,sc=bool(l1.get('exact_match')),bool(sel.get('exact_match')); ob='both_correct' if l1c and sc else 'ours_correct_l1_wrong' if sc and not l1c else 'l1_correct_ours_wrong' if l1c and not sc else 'both_wrong'
@@ -134,13 +146,24 @@ def main():
    row={'case_id':cid,'dataset':args.dataset,'split':args.split,'seed':args.seed,'budget':args.budget,'l1_correct':l1c,'drv2_correct':bool(drv2.get('exact_match')),'selected_method_id':selected,'selected_method_correct':sc,'outcome_bucket':ob,'loss_decomposition_for_l1_correct_ours_wrong':loss,'candidate_count':len(pool),'unique_answer_count':len(set(ans)),'missing_selector_score_count':md.get('missing_selector_score_count',0)}
    rows.append(row)
    wjsonl(out/'per_case_l1_loss_decomposition.jsonl',rows); wcsv(out/'per_case_l1_loss_decomposition.csv',rows)
-   sm=summarize_rows(rows,args,selected); wj(out/'l1_loss_decomposition_summary.json',sm); wcsv(out/'l1_loss_decomposition_summary.csv',[sm]); wj(out/'run_progress_summary.json',{'completed_paired_cases':len(rows),'target_paired_cases':args.target_scored}); wj(out/'call_budget_summary.json',{'planned_calls_for_25':args.target_scored*124,'max_calls':args.max_calls,'reason_if_insufficient':'runtime-limited','recommended_max_calls_for_25':3100})
+   sm=summarize_rows(rows,args,selected)
+   if args.selected_lane_policy=="drv2_only_diagnostic": sm['claim_safety_status']='diagnostic_plumbing_only'
+   wj(out/'l1_loss_decomposition_summary.json',sm); wcsv(out/'l1_loss_decomposition_summary.csv',[sm]); wj(out/'run_progress_summary.json',{'completed_paired_cases':len(rows),'target_paired_cases':args.target_scored}); wj(out/'call_budget_summary.json',{'planned_calls_for_25':args.target_scored*124,'max_calls':args.max_calls,'reason_if_insufficient':'runtime-limited','recommended_max_calls_for_25':3100})
    if args.checkpoint_every_case: wj(out/'paired_case_checkpoints'/f'{cid}.json',{'case_id':cid,'methods_completed':['external_l1_max','direct_reserve_semantic_frontier_v2',selected],'selected_lane':selected,'selected_answer':sel.get('final_answer_canonical',''),'l1_answer':l1.get('final_answer_canonical',''),'drv2_answer':drv2.get('final_answer_canonical',''),'l1_correct':l1c,'drv2_correct':bool(drv2.get('exact_match')),'selected_correct':sc,'candidate_traces_available':bool(pool),'classification':loss})
    if len(rows)>=args.min_complete_paired_cases: break
-  wj(out/'selected_method_decision.json',{'selected_method_id':selected,'selected_method_policy':'fixed-priority-per-case','selected_method_reason':'paired-case-batch-mode'})
+  runtime_diag["first_case"]["l1_completed"]=len(rows)>0; runtime_diag["first_case"]["drv2_started"]=True; runtime_diag["first_case"]["drv2_completed"]=len(rows)>0; runtime_diag["first_case"]["selector_started"]=selected!='direct_reserve_semantic_frontier_v2'; runtime_diag["first_case"]["selector_completed"]=len(rows)>0 and selected!='direct_reserve_semantic_frontier_v2'
+  if len(rows)==0 and runtime_diag["blocker_category"]=="unknown": runtime_diag["blocker_category"]="internal_timeout/runtime_window"
+  wj(out/'paired_batch_runtime_diagnostic.json',runtime_diag); (out/'paired_batch_runtime_diagnostic.md').write_text('# Paired batch runtime diagnostic\n\n'+json.dumps(runtime_diag,indent=2)+'\n')
+  wj(out/'selected_method_decision.json',{'selected_method_id':selected,'selected_method_policy':args.selected_lane_policy,'selected_method_reason':'paired-case-batch-mode'})
   for name,filt in [('casebook_l1_correct_ours_wrong.jsonl',lambda r:r['outcome_bucket']=='l1_correct_ours_wrong'),('casebook_gold_absent_from_tree.jsonl',lambda r:r['loss_decomposition_for_l1_correct_ours_wrong']=='gold_absent_from_candidate_tree'),('casebook_gold_present_but_not_selected.jsonl',lambda r:r['loss_decomposition_for_l1_correct_ours_wrong']=='gold_present_but_not_selected'),('casebook_selector_missing_score_or_cache_limited.jsonl',lambda r:r['loss_decomposition_for_l1_correct_ours_wrong']=='selector_missing_score_or_cache_limited'),('casebook_trace_missing_or_unknown.jsonl',lambda r:r['loss_decomposition_for_l1_correct_ours_wrong'] in ('trace_or_candidate_artifact_missing','unknown'))]:
    (out/name).write_text('\n'.join(json.dumps(r) for r in rows if filt(r))+'\n')
   wjsonl(out/'incomplete_cases.jsonl',[{'case_id':c} for c in cases[:args.target_scored] if c not in {r['case_id'] for r in rows}])
+  if not (out/'per_case_l1_loss_decomposition.jsonl').exists():
+   wjsonl(out/'per_case_l1_loss_decomposition.jsonl',rows); wcsv(out/'per_case_l1_loss_decomposition.csv',rows)
+  if not (out/'l1_loss_decomposition_summary.json').exists():
+   sm=summarize_rows(rows,args,selected)
+   if args.selected_lane_policy=="drv2_only_diagnostic": sm['claim_safety_status']='diagnostic_plumbing_only'
+   wj(out/'l1_loss_decomposition_summary.json',sm); wcsv(out/'l1_loss_decomposition_summary.csv',[sm]); wj(out/'run_progress_summary.json',{'completed_paired_cases':len(rows),'target_paired_cases':args.target_scored}); wj(out/'call_budget_summary.json',{'planned_calls_for_25':args.target_scored*124,'max_calls':args.max_calls,'reason_if_insufficient':'runtime-limited','recommended_max_calls_for_25':3100})
   (out/'l1_loss_decomposition_report.md').write_text(f'# L1 loss decomposition paired-case batch\n\npaired={len(rows)}\n')
   return
  selected=None; records=[]; artifact=None; fail=[]

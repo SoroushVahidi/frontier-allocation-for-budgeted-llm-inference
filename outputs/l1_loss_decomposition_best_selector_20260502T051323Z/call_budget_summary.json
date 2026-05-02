@@ -1,0 +1,6 @@
+{
+  "planned_calls_for_25": 12400,
+  "max_calls": 200,
+  "reason_if_insufficient": "runtime-limited",
+  "recommended_max_calls_for_25": 3100
+}
