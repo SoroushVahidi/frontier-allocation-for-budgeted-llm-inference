@@ -1,0 +1,17 @@
+# Paired batch runtime diagnostic
+
+{
+  "selected_lane_policy": "drv2_only_diagnostic",
+  "interrupted_lane": null,
+  "first_case": {
+    "l1_completed": false,
+    "drv2_started": true,
+    "drv2_completed": false,
+    "selector_started": false,
+    "selector_completed": false
+  },
+  "per_lane_elapsed_seconds": {},
+  "api_call_count_consumed": 0,
+  "blocker_category": "internal_timeout/runtime_window",
+  "suggested_fastest_next_mode": "drv2_only_diagnostic"
+}

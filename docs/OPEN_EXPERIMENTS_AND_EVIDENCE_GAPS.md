@@ -1,7 +1,7 @@
 # Open Experiments and Evidence Gaps
 
 ## EXP-L1-DECOMP-100
-- Method-wise salvage root cause: missing lanes (only L1 records).
-- best_available paired-batch attempt: `outputs/l1_loss_decomposition_best_selector_20260502T045453Z/` (no triple completed).
-- drv2-only smoke attempt: `outputs/l1_loss_decomposition_best_selector_20260502T051323Z/` (0 paired; plumbing blocked by runtime window).
-- Status: open.
+- 128-record method-wise partial had only L1 lane (0 paired).
+- Paired smoke (`20260502T051323Z`) also ended with 0 paired rows.
+- Lane-smoke (`20260502T052744Z`) added lane-level diagnostics/checkpoint path, but still no paired row.
+- Status: open; needs longer runtime/background execution.

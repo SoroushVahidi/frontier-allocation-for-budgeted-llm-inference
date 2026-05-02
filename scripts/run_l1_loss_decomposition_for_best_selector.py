@@ -34,6 +34,10 @@ def parse_args():
  p.add_argument("--selected-lane-policy",choices=["best_available","selection_fix_only","drv2_only_diagnostic"],default="best_available")
  p.add_argument("--smoke-cases",type=int,default=0)
  p.add_argument("--case-timeout-seconds",type=int,default=300)
+ p.add_argument("--rerun-failed-lanes",action="store_true")
+ p.add_argument("--max-lanes-per-run",type=int,default=0)
+ p.add_argument("--lane-smoke-method",choices=["external_l1_max","direct_reserve_semantic_frontier_v2","selection_fix"],default="")
+ p.add_argument("--lane-smoke-cases",type=int,default=1)
  return p.parse_args()
 
 def wj(p,obj): p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(obj,indent=2)+"\n")
@@ -106,6 +110,18 @@ def summarize_rows(rows,args,selected):
  summary['bottleneck_conclusion']='inconclusive_due_to_small_n' if tot<25 else ('inconclusive_due_to_missing_traces' if counts['trace_or_candidate_artifact_missing']>0 else 'mixed')
  return summary
 
+def lane_ckpt(out,case_id,method_id,status,started_at="",finished_at="",elapsed=None,rec=None,error_class="",sanitized_error=""):
+ rec=rec or {}
+ d=out/'paired_case_checkpoints'/case_id
+ payload={"case_id":case_id,"method_id":method_id,"normalized_method_id":method_id,"lane_status":status,"started_at":started_at,"finished_at":finished_at,"elapsed_seconds":elapsed,"answer_raw":rec.get('final_answer_raw',''),"normalized_answer":rec.get('final_answer_canonical',''),"correct":rec.get('exact_match'),"candidate_traces_metadata":(rec.get('result_metadata') or {}),"error_class":error_class,"sanitized_error":sanitized_error,"backend":"cohere","model":rec.get('model',''),"mock_backend_detected":'mock' in json.dumps(rec.get('result_metadata') or {}).lower()}
+ wj(d/f'{method_id}.json',payload)
+ statuses={}
+ for fp in d.glob('*.json'):
+  if fp.name=='lane_status.json': continue
+  try: statuses[fp.stem]=json.loads(fp.read_text()).get('lane_status')
+  except Exception: pass
+ wj(d/'lane_status.json',{"case_id":case_id,"lane_statuses":statuses})
+
 def main():
  args=parse_args(); out=Path(args.output_dir) if args.output_dir else REPO_ROOT/'outputs'/f'l1_loss_decomposition_best_selector_{args.timestamp}'; out.mkdir(parents=True,exist_ok=True)
  wj(out/'cohere_readiness_summary.json',{"cohere_api_key_present":bool(os.getenv("COHERE_API_KEY")),"hf_token_present":bool(os.getenv("HF_TOKEN")),"provider":args.provider,"requested_model":args.cohere_model})
@@ -125,8 +141,13 @@ def main():
   if not cases: cases=[f'openai_gsm8k_{i}' for i in range(args.target_scored)]
   limit=args.smoke_cases if args.smoke_cases>0 else args.target_scored
   for i,eid in enumerate(cases[:limit]):
+   if args.max_lanes_per_run and i>=args.max_lanes_per_run: break
    allow=run_dir/f'allow_{i}.jsonl'; allow.write_text(json.dumps({'example_id':eid})+'\n')
-   methods=f'external_l1_max,direct_reserve_semantic_frontier_v2,{selected}' if selected!='direct_reserve_semantic_frontier_v2' else 'external_l1_max,direct_reserve_semantic_frontier_v2'
+   if args.lane_smoke_method:
+    lane_map={"external_l1_max":"external_l1_max","direct_reserve_semantic_frontier_v2":"direct_reserve_semantic_frontier_v2","selection_fix":"direct_reserve_semantic_frontier_v2_selection_fix_v1"}
+    methods=lane_map[args.lane_smoke_method]
+   else:
+    methods=f'external_l1_max,direct_reserve_semantic_frontier_v2,{selected}' if selected!='direct_reserve_semantic_frontier_v2' else 'external_l1_max,direct_reserve_semantic_frontier_v2'
    cmd=[sys.executable,'scripts/run_cohere_real_model_cost_normalized_validation.py','--timestamp',f'{args.timestamp}_pair{i}','--providers','cohere','--cohere-model',args.cohere_model,'--datasets',args.dataset,'--budgets',str(args.budget),'--seeds',str(args.seed),'--methods',methods,'--target-scored-per-slice','1','--max-examples','1','--save-branch-traces','--emit-trace-audit','--output-root',str(run_dir),'--allowed-example-ids-file',str(allow)]
    try:
     p=subprocess.run(cmd,capture_output=True,text=True,timeout=args.case_timeout_seconds)
@@ -134,9 +155,19 @@ def main():
     runtime_diag["interrupted_lane"]="timeout"; runtime_diag["blocker_category"]="internal_timeout/runtime_window"; break
    adir=run_dir/f'cohere_real_model_cost_normalized_validation_{args.timestamp}_pair{i}'
    recs=load_records(adir/'per_example_records.jsonl')
+   case_ckpt=out/'paired_case_checkpoints'/eid/'lane_status.json'
+   if args.resume and case_ckpt.exists():
+    st=json.loads(case_ckpt.read_text()).get('lane_statuses',{})
+    if st.get('external_l1_max')=='complete' and st.get('direct_reserve_semantic_frontier_v2')=='complete' and (selected=='direct_reserve_semantic_frontier_v2' or st.get(selected)=='complete'):
+     continue
    by={m:{} for m in ['external_l1_max','direct_reserve_semantic_frontier_v2',selected]}
    for r in recs:
     if r.get('method') in by: by[r['method']][r['example_id']]=r
+   for mth in ['external_l1_max','direct_reserve_semantic_frontier_v2'] + ([] if selected=='direct_reserve_semantic_frontier_v2' else [selected]):
+    if by.get(mth,{}):
+     rr=list(by[mth].values())[0]; lane_ckpt(out,eid,mth,'complete',rec=rr)
+    elif args.rerun_failed_lanes:
+     lane_ckpt(out,eid,mth,'failed',error_class='missing_lane_record',sanitized_error='lane missing in returned records')
    runtime_diag["api_call_count_consumed"] += len(recs)
    ids=sorted(set(by['external_l1_max'])&set(by['direct_reserve_semantic_frontier_v2'])&(set(by[selected]) if selected!='direct_reserve_semantic_frontier_v2' else set(by['direct_reserve_semantic_frontier_v2'])))
    if not ids: continue
@@ -148,6 +179,7 @@ def main():
    wjsonl(out/'per_case_l1_loss_decomposition.jsonl',rows); wcsv(out/'per_case_l1_loss_decomposition.csv',rows)
    sm=summarize_rows(rows,args,selected)
    if args.selected_lane_policy=="drv2_only_diagnostic": sm['claim_safety_status']='diagnostic_plumbing_only'
+   if args.lane_smoke_method: sm['claim_safety_status']='diagnostic_lane_only'
    wj(out/'l1_loss_decomposition_summary.json',sm); wcsv(out/'l1_loss_decomposition_summary.csv',[sm]); wj(out/'run_progress_summary.json',{'completed_paired_cases':len(rows),'target_paired_cases':args.target_scored}); wj(out/'call_budget_summary.json',{'planned_calls_for_25':args.target_scored*124,'max_calls':args.max_calls,'reason_if_insufficient':'runtime-limited','recommended_max_calls_for_25':3100})
    if args.checkpoint_every_case: wj(out/'paired_case_checkpoints'/f'{cid}.json',{'case_id':cid,'methods_completed':['external_l1_max','direct_reserve_semantic_frontier_v2',selected],'selected_lane':selected,'selected_answer':sel.get('final_answer_canonical',''),'l1_answer':l1.get('final_answer_canonical',''),'drv2_answer':drv2.get('final_answer_canonical',''),'l1_correct':l1c,'drv2_correct':bool(drv2.get('exact_match')),'selected_correct':sc,'candidate_traces_available':bool(pool),'classification':loss})
    if len(rows)>=args.min_complete_paired_cases: break
@@ -163,6 +195,7 @@ def main():
   if not (out/'l1_loss_decomposition_summary.json').exists():
    sm=summarize_rows(rows,args,selected)
    if args.selected_lane_policy=="drv2_only_diagnostic": sm['claim_safety_status']='diagnostic_plumbing_only'
+   if args.lane_smoke_method: sm['claim_safety_status']='diagnostic_lane_only'
    wj(out/'l1_loss_decomposition_summary.json',sm); wcsv(out/'l1_loss_decomposition_summary.csv',[sm]); wj(out/'run_progress_summary.json',{'completed_paired_cases':len(rows),'target_paired_cases':args.target_scored}); wj(out/'call_budget_summary.json',{'planned_calls_for_25':args.target_scored*124,'max_calls':args.max_calls,'reason_if_insufficient':'runtime-limited','recommended_max_calls_for_25':3100})
   (out/'l1_loss_decomposition_report.md').write_text(f'# L1 loss decomposition paired-case batch\n\npaired={len(rows)}\n')
   return

@@ -1,15 +1,13 @@
 # L1 Loss Decomposition — Local status
 
-- Method-wise partial run `20260502T040119Z` had 128 records, only `external_l1_max`, and 0 paired cases.
-- Paired-case batch mode exists.
-- Prior best_available paired-batch attempt (`20260502T045453Z`) did not finish one triple in the interactive window.
-- New smoke policies implemented: `drv2_only_diagnostic`, `selection_fix_only`, `best_available`.
+- Method-wise run `20260502T040119Z` produced 128 records with only L1 lane, so paired cases were 0.
+- Paired-case batch mode was added, but fastest paired smoke still yielded 0 paired rows (`20260502T051323Z`).
+- Lane-level checkpoint/resume plumbing was added to preserve lane progress across short sessions.
 
-## Smoke result (latest)
-- Stamp: `20260502T051323Z`
-- Policy: `drv2_only_diagnostic`
-- Paired rows completed: 0
-- Claim safety: `diagnostic_plumbing_only`
-- Interpretation: plumbing attempt still blocked by runtime window before first complete case.
+## Latest lane-smoke (L1-only)
+- Stamp: `20260502T052744Z`
+- Policy: lane-only `external_l1_max`
+- Result: no completed paired decomposition row; runtime diagnostics/summaries emitted.
+- Claim safety: `diagnostic_lane_only` / `incomplete_not_evidence` for scientific claim purposes.
 
-EXP-L1-DECOMP-100 remains open until 100 best_available paired cases complete.
+EXP-L1-DECOMP-100 remains open. Full result needs longer-lived runner (cloud/background/Wulver-like environment).
