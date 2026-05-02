@@ -1,0 +1,17 @@
+Audit bundle created: 2026-05-02T22:08:57Z
+
+date -u +%Y%m%dT%H%M%SZ
+
+sacct --starttime 2026-05-02 -n --format=JobID,JobName,State,ExitCode,Elapsed,Start,End,Submit,WorkDir%140 | grep -E 'adaptive-reasoning-budget-allocation'
+
+sacct --starttime 2026-04-25 -n --format=JobID,JobName,State,ExitCode,Elapsed,End,WorkDir%110 | grep mmfs1/home/sv96/adaptive-reasoning-budget-allocation | grep -v '.bat+' | grep -v '.ext+' | tail -25
+
+sacct -j 1016416,1016461,1016482,1017716,1017718,1018203,1018219,1018248,1018285,1018287 -X -n --parsable2 --format=JobID,JobName,State,ExitCode,Elapsed,Start,End,Submit
+
+squeue -j 1018203
+sacct -j 1018203 -X -n --format=State,Elapsed,ExitCode,End
+
+ls -la logs/slurm/*1018219* logs/slurm/*1018248* logs/slurm/gold_absent_path_gap_* logs/slurm/main3_vs_best3_100_1018203* 2>/dev/null
+wc -c logs/trace_loss_retry_1016461.err logs/best_on_losses_1016416.err logs/selector_33_1016482.err logs/slurm/main3_vs_best3_100_1018203.err 2>/dev/null
+
+find outputs -name batch_submission_info.json | sort

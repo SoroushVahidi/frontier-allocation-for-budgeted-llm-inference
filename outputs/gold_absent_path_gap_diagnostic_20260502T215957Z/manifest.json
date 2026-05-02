@@ -1,0 +1,12 @@
+{
+  "artifacts": {
+    "gold_absent_case_list_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/gold_absent_case_list.csv",
+    "path_gap_summary_json": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/path_gap_summary.json",
+    "per_case_path_gap_diagnostic_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/per_case_path_gap_diagnostic.csv"
+  },
+  "claim_boundary": "All path-gap metrics are proxy diagnostics, not observed gold paths in-tree.",
+  "git_commit_sha": "49ade0e6157496ad595c4ea4a27c3b477aa8bda3",
+  "purpose": "Gold-absent path-gap proxy diagnostic for 88-case external-loss follow-up.",
+  "repo_root": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation",
+  "timestamp_utc": "2026-05-02T22:00:04Z"
+}

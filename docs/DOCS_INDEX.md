@@ -13,6 +13,7 @@ This index separates current interpretation documents from diagnostic and histor
 | `docs/ARTIFACT_STATUS_TABLE.md` | Classifies major `outputs/` artifact families. |
 | `scripts/CURRENT_RUNBOOK.md` | Minimal operational runbook (health, selector rerun, Slurm pointers). |
 | `docs/REPOSITORY_HYGIENE_AUDIT_20260502.md` | Navigation cleanup audit; no provenance deleted. |
+| `docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md` | Last-10 Slurm job audit + pointers to bounded summaries (score completion **1018248**, path-gap diagnostic **1018287** vs **1018285**, **1018203** running at audit freeze). Bundle: `outputs/last_10_wulver_jobs_audit_20260502T220857Z/`. |
 | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` | Clean navigation, artifact classification, and safe cleanup rules. |
 | `docs/REPO_MAP.md` | Directory roles and repository structure. |
 | `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |

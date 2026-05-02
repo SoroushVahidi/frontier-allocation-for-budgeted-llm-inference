@@ -4,7 +4,7 @@ This document is the short, current orientation note for day-to-day work. It sup
 
 ## Current navigation (2026-05-02 cleanup)
 
-For a **short** entry point and claim guardrails, read [`../START_HERE_CURRENT.md`](../START_HERE_CURRENT.md). Method IDs: [`METHOD_STATUS_TABLE.md`](METHOD_STATUS_TABLE.md). Major `outputs/` folders: [`ARTIFACT_STATUS_TABLE.md`](ARTIFACT_STATUS_TABLE.md). Commands: [`../scripts/CURRENT_RUNBOOK.md`](../scripts/CURRENT_RUNBOOK.md). Audit log: [`REPOSITORY_HYGIENE_AUDIT_20260502.md`](REPOSITORY_HYGIENE_AUDIT_20260502.md).
+For a **short** entry point and claim guardrails, read [`../START_HERE_CURRENT.md`](../START_HERE_CURRENT.md). Method IDs: [`METHOD_STATUS_TABLE.md`](METHOD_STATUS_TABLE.md). Major `outputs/` folders: [`ARTIFACT_STATUS_TABLE.md`](ARTIFACT_STATUS_TABLE.md). Commands: [`../scripts/CURRENT_RUNBOOK.md`](../scripts/CURRENT_RUNBOOK.md). Audit log: [`REPOSITORY_HYGIENE_AUDIT_20260502.md`](REPOSITORY_HYGIENE_AUDIT_20260502.md). **Recent Wulver diagnostics / last-10 job audit:** [`LAST_10_WULVER_JOBS_AUDIT_20260502.md`](LAST_10_WULVER_JOBS_AUDIT_20260502.md) (`outputs/last_10_wulver_jobs_audit_20260502T220857Z/artifact_summary.md`).
 
 ## Project identity
 

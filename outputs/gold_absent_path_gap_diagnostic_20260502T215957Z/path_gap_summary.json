@@ -1,0 +1,33 @@
+{
+  "actual_paid_api_calls": 0,
+  "cases_with_both_internal_and_external_trace": 62,
+  "cases_with_estimated_missing_actions": 62,
+  "cases_with_estimated_missing_depth": 62,
+  "cases_with_external_success_trace": 62,
+  "cases_with_internal_trace": 66,
+  "caveat": "All path-gap metrics are proxy diagnostics, not observed gold paths in-tree.",
+  "count_early_pruning_failure": 0,
+  "count_estimate_unavailable": 4,
+  "count_insufficient_branch_diversity": 0,
+  "count_insufficient_depth": 7,
+  "count_premature_commit": 15,
+  "count_repeated_same_family_overexpansion": 0,
+  "count_root_seeding_failure": 66,
+  "count_trace_missing_or_unclassifiable": 0,
+  "discovery_jsonl": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+  "expected_paid_api_calls": 0,
+  "gold_absent_cases": 66,
+  "internal_method": "direct_reserve_semantic_frontier_v2",
+  "max_estimated_missing_actions": "0.0",
+  "max_estimated_missing_depth": "1.0",
+  "mean_estimated_missing_actions": "0.0",
+  "mean_estimated_missing_depth": "0.11290322580645161",
+  "median_estimated_missing_actions": "0.0",
+  "median_estimated_missing_depth": "0.0",
+  "merged_jsonl_paths": [
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_example_records.jsonl"
+  ],
+  "timestamp_utc": "2026-05-02T22:00:04Z",
+  "total_88_cases": 88
+}

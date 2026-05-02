@@ -66,6 +66,9 @@ Current selector caveat: the selected Cohere cached outcome-verifier selector is
   - `outputs/selector_evidence_package_*/` — present-not-selected/absent/current-correct-risk casebooks.
   - `outputs/selector_evidence_trace_recovery_*/` — trace-recovery packages; verify candidate lists and manifests before use.
   - `outputs/candidate_artifact_inventory_*/` and `outputs/selector_evidence_schema_debug_*/` — diagnostic inventory/schema reports.
+  - `outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/` — **1018248**: fully verifier-scored selector rerun on **88** external-loss cases (paired with **`docs/FULL_SCORE_COMPLETION_88_EXTERNAL_LOSSES_20260502.md`**).
+  - `outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/` — **1018287**: preferred gold-absent **path-gap proxy** diagnostic (**supersedes `...215820Z/`**, **1018285**).
+  - `outputs/last_10_wulver_jobs_audit_20260502T220857Z/` — machine-readable appendix for **`docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md`**.
 - `tests/` — lightweight correctness/regression checks.
 - `references/` — literature and citation material.
 - `external/` — external baseline integration assets.

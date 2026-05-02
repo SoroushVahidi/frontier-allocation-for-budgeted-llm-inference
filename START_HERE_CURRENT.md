@@ -36,7 +36,13 @@ Related: **`external_l1_exact`** — literature-style L1 “exact target length�
 
 ## Current bottleneck (88 external-loss subset)
 
-On the **selected 88-case external-loss slice** (`outputs/best_methods_on_external_losses_20260430T195200Z/`, summarized in `docs/BEST_METHODS_ON_EXTERNAL_LOSS_CASES_100_20260430T195659Z.md`), **discovery/coverage failure dominates** over selector recoverability (order-of-magnitude: most cases **gold absent from tree** vs a smaller **selector-recoverable** set). Full-pipeline selector diagnostics on that slice (e.g. `outputs/full_pipeline_best_selector_on_88_external_losses_20260502T210610Z/`) must be read **with** verifier score-coverage notes; a score-completion track exists to remove missing-score fallbacks (`docs/FULL_SCORE_COMPLETION_88_EXTERNAL_LOSSES_20260502.md`).
+On the **selected 88-case external-loss slice** (`outputs/best_methods_on_external_losses_20260430T195200Z/`, summarized in `docs/BEST_METHODS_ON_EXTERNAL_LOSS_CASES_100_20260430T195659Z.md`), **discovery/coverage failure dominates** over selector recoverability (order-of-magnitude: **~66 gold-absent** vs **~22 selector-recoverable** on that slice definition). Job **1018248** completed a **zero-missing-score**, **zero-fallback** verifier merge and selector rerun on those 88 cases; **`comparison_vs_previous_run.json` reports no correctness changes** versus the cache-limited pre-merge run (**1018219**) — bottleneck evidence still points **away from verifier-score gaps**.
+
+**Latest Wulver job audit:** `docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md` plus `outputs/last_10_wulver_jobs_audit_20260502T220857Z/` (CSV/JSON and `artifact_summary.md`). **Preferred gold-absent path-gap proxy bundle:** `outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/` (**1018287**; supersedes the looser heuristic in **`...215820Z/`**, **1018285**).
+
+**Incomplete at audit:** job **1018203** (`main3-vs-best3-100`) was **still running** when the audit was frozen — verify completion before quoting final comparison metrics (`outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/`).
+
+Details and score-completion runbook links: `docs/FULL_SCORE_COMPLETION_88_EXTERNAL_LOSSES_20260502.md`.
 
 ## Safe claims (short list)
 

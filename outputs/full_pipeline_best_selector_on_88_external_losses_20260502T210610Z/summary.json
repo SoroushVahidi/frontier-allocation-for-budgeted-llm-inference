@@ -1,0 +1,23 @@
+{
+  "accuracy_on_88": 0.2159090909090909,
+  "api_call_count": 0,
+  "cache_hit_count": 0,
+  "correct_count": 19,
+  "discovery_failure_count": 66,
+  "evaluated_cases": 88,
+  "fallback_due_to_missing_score_count": 81,
+  "fix_rate_on_88": 0.2159090909090909,
+  "fixed_previous_loss_count": 19,
+  "gold_absent_count": 66,
+  "gold_present_but_not_selected_count": 22,
+  "missing_score_count": 134,
+  "selected_candidate_not_in_pool_count": 0,
+  "selector_recoverable_count": 22,
+  "skipped_cases": 0,
+  "skipped_or_unusable_cases": [],
+  "still_loss_rate_on_88": 0.7840909090909091,
+  "still_lost_count": 69,
+  "timestamp_utc": "2026-05-02T21:30:42Z",
+  "total_cases": 88,
+  "wrong_count": 69
+}

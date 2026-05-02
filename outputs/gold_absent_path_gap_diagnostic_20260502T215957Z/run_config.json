@@ -1,0 +1,17 @@
+{
+  "allow_paid_diag": false,
+  "discovery_jsonl": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+  "dry_run": false,
+  "input_cases": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/best_methods_on_external_losses_20260430T195200Z/selected_100_cases.csv",
+  "max_cases": 0,
+  "merged_jsonl_paths": [
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z/per_example_records.jsonl"
+  ],
+  "model": "",
+  "previous_run_dir": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z",
+  "provider": "",
+  "trace_roots": [
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/trace_complete_external_losses_retry_20260430T204900Z/cohere_real_model_cost_normalized_validation_20260430T204900Z"
+  ]
+}
