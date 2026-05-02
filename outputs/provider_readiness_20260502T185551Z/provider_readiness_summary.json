@@ -1,0 +1,32 @@
+{
+  "cohere": {
+    "env_var_checked": [
+      "COHERE_API_KEY"
+    ],
+    "key_present": true,
+    "model_requested": "command-a-03-2025",
+    "readiness_status": "passed",
+    "sanitized_error": "",
+    "sdk_import_after_install": true,
+    "sdk_import_initial": true,
+    "sdk_install_attempted": false
+  },
+  "git_commit_sha": "672367237a35bb7560a20d16243695016a5ea688",
+  "huggingface": {
+    "env_var_checked": [
+      "HF_TOKEN",
+      "HUGGINGFACE_HUB_TOKEN"
+    ],
+    "hf_token_present": true,
+    "huggingface_hub_token_present": false,
+    "readiness_status": "passed",
+    "sanitized_error": "",
+    "sdk_import_after_install": true,
+    "sdk_import_initial": true,
+    "sdk_install_attempted": false
+  },
+  "no_secret_values_written": true,
+  "python_executable": "/apps/easybuild/software/Anaconda3/2023.09-0/bin/python",
+  "python_version": "3.11.5 (main, Sep 11 2023, 13:54:46) [GCC 11.2.0]",
+  "timestamp_utc": "2026-05-02T18:55:55Z"
+}
