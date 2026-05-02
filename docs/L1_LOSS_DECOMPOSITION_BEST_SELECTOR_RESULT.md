@@ -1,17 +1,17 @@
-# L1 Loss Decomposition vs Best Selector/Reranker (Cohere)
+# L1 Loss Decomposition (Best Selector) — Local Cohere Run
 
-Run: `20260501T023500Z` (real Cohere calls, paired cases: 1).
+Run timestamp: `20260502T041814Z`.
 
-1. **Selected method compared to L1:** `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1`.
-2. **100-case real Cohere or diagnostic-only?** Diagnostic-only (1 paired case, not 100).
-3. **How many cases did selected method lose to L1?** 0.
-4. **Among those losses, how many had gold absent from the tree?** 0.
-5. **How many had gold present but not selected?** 0.
-6. **How many were parse/canonicalization failures?** 0.
-7. **How many were selector-score/cache-limited?** 0.
-8. **How many were unknown because traces/candidates were missing?** 0.
-9. **Main bottleneck suggestion?** No conclusion from this 1-case slice.
-10. **Safe for manuscript use?** No; this is diagnostic only.
+This run used real Cohere in the Codex environment (no Wulver/Slurm), but did not complete a full paired decomposition package. A real generation attempt was made and partial artifacts were produced under:
 
-Safe wording:
-- “This is diagnostic unless the run is completed, real-Cohere, paired, and full-coverage.”
+`outputs/l1_loss_decomposition_best_selector_20260502T041814Z/`
+
+## Direct answers
+1. Selected method compared to L1: not finalized (run incomplete).
+2. Result type: **blocked/incomplete** for manuscript evidence.
+3. Paired cases completed: not finalized.
+4-9. Loss decomposition counts: not available from incomplete run.
+10. Bottleneck conclusion: `incomplete_not_evidence`.
+11. Manuscript safe: **No**.
+
+Safe conclusion: On this paired Cohere slice, the loss decomposition is not yet complete; this is diagnostic/incomplete and not manuscript-ready.

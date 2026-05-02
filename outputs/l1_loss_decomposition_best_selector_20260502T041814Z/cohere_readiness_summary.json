@@ -1,0 +1,6 @@
+{
+  "cohere_api_key_present": true,
+  "hf_token_present": true,
+  "provider": "cohere",
+  "requested_model": "command-a-03-2025"
+}
