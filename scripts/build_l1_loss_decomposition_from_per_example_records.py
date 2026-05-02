@@ -9,6 +9,14 @@ LANES=[
  "direct_reserve_semantic_frontier_v2_selection_fix_v1",
 ]
 LOSS_TYPES=["gold_absent_from_candidate_tree","gold_present_but_not_selected","parse_or_canonicalization_failure","selector_missing_score_or_cache_limited","candidate_generation_failed_or_empty","trace_or_candidate_artifact_missing","unknown"]
+METHOD_ALIASES={
+ 'l1_length_control_rl':'external_l1_max',
+ 'dr_v2':'direct_reserve_semantic_frontier_v2',
+ 'direct_reserve_semantic_frontier_v2_ov_rerank':'direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1',
+ 'ov_rerank_v1':'direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1',
+ 'prm_rerank_v1':'direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1',
+ 'selection_fix_v1':'direct_reserve_semantic_frontier_v2_selection_fix_v1',
+}
 
 def parse_args():
  p=argparse.ArgumentParser()
@@ -63,7 +71,8 @@ def main():
  rec=[json.loads(l) for l in Path(a.input).read_text().splitlines() if l.strip()]
  by={}
  for r in rec:
-  eid=r.get('example_id'); m=r.get('method')
+  eid=r.get('case_id') or r.get('example_id') or r.get('question_id') or r.get('index') or r.get('dataset_row_index') or r.get('question_hash')
+  m=METHOD_ALIASES.get(r.get('method'),r.get('method'))
   if not eid or not m: continue
   by.setdefault(eid,{})[m]=r
  complete_base={eid:m for eid,m in by.items() if 'external_l1_max' in m and 'direct_reserve_semantic_frontier_v2' in m}
