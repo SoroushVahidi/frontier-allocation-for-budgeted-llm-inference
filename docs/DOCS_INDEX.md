@@ -8,6 +8,7 @@ This index separates current interpretation documents from diagnostic and histor
 |---|---|
 | `README.md` | Short repository entry point. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
+| `docs/CURRENT_EVIDENCE_LEDGER_20260501.md` | Current claim-eligible vs diagnostic/scaffold/non-evidence ledger. |
 | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` | Clean navigation, artifact classification, and safe cleanup rules. |
 | `docs/REPO_MAP.md` | Directory roles and repository structure. |
 | `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |
@@ -22,7 +23,10 @@ This index separates current interpretation documents from diagnostic and histor
 |---|---|
 | `docs/CURRENT_SELECTOR_DECISION.md` | Canonical selected verifier selector and caveats. |
 | `configs/selected_selector_current.json` | Machine-readable selected-selector config. |
-| `docs/LITERATURE_SELECTOR_BASELINES.md` | Literature selector baselines, including self-consistency majority vote. |
+| `docs/LITERATURE_SELECTOR_BASELINES.md` | Literature selector baselines, including self-consistency and CMV. |
+| `docs/L1_LOSS_DECOMPOSITION_BEST_SELECTOR_RESULT.md` | Current status of best-selector-vs-L1 loss decomposition. |
+| `docs/COHERE_100CASE_OURS_VS_EXTERNAL_BASELINES_PLAN.md` | Plan/scaffold for 100-case Cohere ours-vs-main-table-external comparison. |
+| `docs/COHERE_100CASE_OURS_VS_EXTERNAL_BASELINES_RESULT.md` | Result framing for the Cohere scaffold; do not treat zero-call packages as evidence. |
 | `docs/SELECTOR_START_HERE.md` | Entry point for selector-first work. |
 | `docs/SELECTOR_WORK_START_HERE_20260501.md` | Selector artifact front door; useful for selector-evidence provenance. |
 | `docs/SELECTOR_CHOOSING_PLAYBOOK_20260501.md` | Decision checklist for choosing selector families and promotion criteria. |
@@ -37,7 +41,7 @@ This index separates current interpretation documents from diagnostic and histor
 
 ## Current selector evidence artifacts
 
-Use these as engineering artifacts, not paper-facing claims by themselves.
+Use these as engineering artifacts, not paper-facing claims by themselves. For final classification, check `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`.
 
 | Artifact family | Status |
 |---|---|
@@ -49,6 +53,9 @@ Use these as engineering artifacts, not paper-facing claims by themselves.
 | `outputs/final_selector_decision_20260501T175547Z/` | Canonical recovery-track final selector decision package. |
 | `outputs/best_selector_vs_external_l1_comparison_*/` | Bounded external-baseline comparison artifacts; cache-limited selected-verifier comparisons are diagnostic until full score coverage is recorded. |
 | `outputs/self_consistency_*` | Self-consistency majority-vote baseline outputs; use only as matched-slice literature-baseline evidence. |
+| `outputs/self_verification_cmv_*` | CMV/self-verification tooling and pilot outputs; not performance evidence unless full CMV coverage exists. |
+| `outputs/l1_loss_decomposition_best_selector_*` | L1-loss-decomposition wrapper outputs; only larger paired real-Cohere runs answer the bottleneck question. |
+| `outputs/cohere_100case_ours_vs_external_20260501T000000Z/` | Cohere comparison scaffold/dry-run with zero actual calls; non-evidence. |
 | `outputs/selector_evidence_package_*/` | Present-not-selected / absent-from-tree / current-correct-risk casebooks; provenance and selector-development input. |
 | `outputs/selector_evidence_trace_recovery_*` | Trace-recovery packages; verify candidate lists and manifests before using as selector input. |
 | `outputs/conservative_trace_support_selector_*` | Conservative non-API baseline outputs; useful as negative/safety provenance. |
@@ -108,9 +115,11 @@ Examples include:
 - selector artifact schema audits,
 - Cohere/OpenAI run handoff notes,
 - mock-backed verifier provenance notes,
-- offline selector/risk-predictor analyses.
+- offline selector/risk-predictor analyses,
+- dry-run/scaffold comparison packages,
+- one-case smoke diagnostics.
 
-When using a diagnostic doc in manuscript text, first check `docs/PAPER_SOURCE_OF_TRUTH.md` and `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`.
+When using a diagnostic doc in manuscript text, first check `docs/PAPER_SOURCE_OF_TRUTH.md`, `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`, and `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`.
 
 ## Historical / provenance docs
 
@@ -125,3 +134,4 @@ The old `-adaptive-llm-inference` project has now been mined for transferable id
 - Do not rewrite historical conclusions to match current results.
 - Do not promote diagnostic artifacts to paper-facing evidence without updating the source-of-truth and claim map.
 - Do not run paid APIs before a dry-run call count and cost-aware execution plan.
+- Do not cite scaffold/dry-run output packages as performance evidence.
