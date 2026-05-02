@@ -118,6 +118,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--save-branch-traces", action="store_true")
     p.add_argument("--emit-trace-audit", action="store_true", help="Emit compact per-case DR-v2 vs external_l1_max trace-audit CSV.")
     p.add_argument("--validate-methods-only", action="store_true", help="Validate requested method IDs resolve to runnable strategy specs and exit without API calls.")
+    p.add_argument(
+        "--max-total-api-calls",
+        type=int,
+        default=0,
+        help="Stop after recording examples once cumulative generator api_calls reaches this cap (0=unlimited). Counts resumed rows when --resume.",
+    )
     return p.parse_args()
 
 
@@ -490,6 +496,10 @@ def evaluate_with_diagnostics(
     }
 
 
+class ApiCallBudgetExceeded(Exception):
+    """Stopping execution because --max-total-api-calls was reached."""
+
+
 def bootstrap_paired_ci(diffs: list[float], n_boot: int = 1000, seed: int = 7) -> tuple[float, float]:
     if not diffs:
         return (0.0, 0.0)
@@ -547,6 +557,7 @@ def main() -> None:
     existing = load_existing_records(per_example_path) if (args.resume or args.summarize_only) else []
     seen = {to_case_key(r) for r in existing}
     records = list(existing)
+    global_api_calls_used = sum(int(r.get("api_calls", 0) or 0) for r in existing) if existing else 0
 
     api_keys = {
         "cohere": os.getenv("COHERE_API_KEY", ""),
@@ -567,210 +578,231 @@ def main() -> None:
     branch_traces: list[dict[str, Any]] = []
 
     if not args.summarize_only:
-        for provider in providers:
-            if provider_status[provider]["ready"] != "1":
-                continue
-            for dataset in datasets:
-                for seed in seeds:
-                    target_n = args.target_scored_per_slice
-                    max_attempt = args.max_examples if args.max_examples > 0 else target_n
-                    pool_n = max(max_attempt, target_n)
-                    try:
-                        examples = load_pilot_examples(dataset, subset_size=pool_n, seed=seed)
-                    except Exception as exc:  # noqa: BLE001
-                        dataset_load_failures[(provider, dataset, seed)] = f"{type(exc).__name__}: {str(exc)[:500]}"
-                        continue
-                    for budget in budgets:
-                        rng = random.Random(1000003 * seed + 97 * budget + len(dataset))
+        try:
+            for provider in providers:
+                if provider_status[provider]["ready"] != "1":
+                    continue
+                for dataset in datasets:
+                    for seed in seeds:
+                        target_n = args.target_scored_per_slice
+                        max_attempt = args.max_examples if args.max_examples > 0 else target_n
+                        pool_n = max(max_attempt, target_n)
+                        try:
+                            examples = load_pilot_examples(dataset, subset_size=pool_n, seed=seed)
+                        except Exception as exc:  # noqa: BLE001
+                            dataset_load_failures[(provider, dataset, seed)] = f"{type(exc).__name__}: {str(exc)[:500]}"
+                            continue
+                        for budget in budgets:
+                            rng = random.Random(1000003 * seed + 97 * budget + len(dataset))
 
-                        def factory() -> Any:
-                            return ObservedGenerator(
-                                APIBranchGenerator(
-                                    provider=provider,
-                                    api_key=api_keys[provider],
-                                    model=model_by_provider[provider],
-                                    temperature=args.temperature,
-                                    max_tokens=args.max_output_tokens,
-                                    timeout_seconds=args.timeout_seconds,
+                            def factory() -> Any:
+                                return ObservedGenerator(
+                                    APIBranchGenerator(
+                                        provider=provider,
+                                        api_key=api_keys[provider],
+                                        model=model_by_provider[provider],
+                                        temperature=args.temperature,
+                                        max_tokens=args.max_output_tokens,
+                                        timeout_seconds=args.timeout_seconds,
+                                    )
                                 )
+
+                            specs = build_frontier_strategies(
+                                factory,
+                                budget,
+                                [1],
+                                rng,
+                                use_openai_api=(provider == "openai"),
+                                include_broad_diversity_aggregation_methods=True,
+                                include_external_l1_baseline=True,
+                                include_external_s1_baseline=True,
+                                include_external_tale_baseline=True,
                             )
 
-                        specs = build_frontier_strategies(
-                            factory,
-                            budget,
-                            [1],
-                            rng,
-                            use_openai_api=(provider == "openai"),
-                            include_broad_diversity_aggregation_methods=True,
-                            include_external_l1_baseline=True,
-                            include_external_s1_baseline=True,
-                            include_external_tale_baseline=True,
-                        )
-
-                        for method in methods:
-                            runtime = METHODS[method]["runtime"]
-                            enable_repair = bool(METHODS[method]["enable_output_repair"])
-                            if runtime not in specs:
-                                runtime_missing.add((provider, dataset, seed, budget, method))
-                                continue
-                            attempted = 0
-                            scored = 0
-                            for ex in examples:
-                                if attempted >= max_attempt or scored >= target_n:
-                                    break
-                                ck = CaseKey(dataset=dataset, seed=seed, budget=budget, method=f"{provider}:{method}", example_id=str(ex.example_id))
-                                if ck in seen:
+                            for method in methods:
+                                runtime = METHODS[method]["runtime"]
+                                enable_repair = bool(METHODS[method]["enable_output_repair"])
+                                if runtime not in specs:
+                                    runtime_missing.add((provider, dataset, seed, budget, method))
                                     continue
-                                attempted += 1
-                                append_progress(
-                                    progress_path,
-                                    {
-                                        "event": "example_start",
-                                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                                        "provider": provider,
-                                        "dataset": dataset,
-                                        "seed": seed,
-                                        "budget": budget,
-                                        "method": method,
-                                        "example_id": str(ex.example_id),
-                                        "attempted_so_far": attempted,
-                                        "scored_so_far": scored,
-                                        "target_scored": target_n,
-                                    },
-                                )
-                                t0 = time.perf_counter()
-                                controller = specs[runtime]
-                                if args.save_branch_traces:
-                                    setattr(controller, "emit_full_traces", True)
-                                if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "reset_usage_counters"):
-                                    controller.generator.base.reset_usage_counters()
-                                status = "scored"
-                                err_text = ""
-                                retry_attempts = 0
-                                in_tok = 0
-                                out_tok = 0
-                                total_tok = 0
-                                exact_match = 0
-                                eval_diag: dict[str, Any] = {}
-                                result_metadata: dict[str, Any] = {}
-                                final_nodes: list[dict[str, Any]] = []
-                                try:
-                                    result = controller.run(ex.question, ex.answer)
-                                    latency = time.perf_counter() - t0
-                                    obs = controller.generator
-                                    result_metadata = dict(getattr(result, "metadata", {}) or {})
-                                    if hasattr(obs, "registry"):
-                                        for _, b in sorted(obs.registry.items(), key=lambda kv: kv[0]):
-                                            reasoning_text = "\n".join(str(x) for x in getattr(b, "steps", [])) if getattr(b, "steps", None) else ""
-                                            pred = b.predicted_answer
-                                            pred_norm = normalize_answer_text(str(pred) if pred is not None else None).get("normalized_answer")
-                                            final_nodes.append(
-                                                {
-                                                    "branch_id": b.branch_id,
-                                                    "reasoning_text": reasoning_text,
-                                                    "predicted_answer": pred,
-                                                    "predicted_answer_normalized": pred_norm,
-                                                }
-                                            )
-                                    eval_diag = evaluate_with_diagnostics(result, dataset, str(ex.answer), final_nodes, enable_repair)
-                                    exact_match = int(eval_diag["exact_match"])
+                                attempted = 0
+                                scored = 0
+                                for ex in examples:
+                                    if attempted >= max_attempt or scored >= target_n:
+                                        break
+                                    ck = CaseKey(dataset=dataset, seed=seed, budget=budget, method=f"{provider}:{method}", example_id=str(ex.example_id))
+                                    if ck in seen:
+                                        continue
+                                    attempted += 1
+                                    append_progress(
+                                        progress_path,
+                                        {
+                                            "event": "example_start",
+                                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                                            "provider": provider,
+                                            "dataset": dataset,
+                                            "seed": seed,
+                                            "budget": budget,
+                                            "method": method,
+                                            "example_id": str(ex.example_id),
+                                            "attempted_so_far": attempted,
+                                            "scored_so_far": scored,
+                                            "target_scored": target_n,
+                                        },
+                                    )
+                                    t0 = time.perf_counter()
+                                    controller = specs[runtime]
                                     if args.save_branch_traces:
-                                        branch_traces.append(
-                                            build_branch_trace(
-                                                result=result,
-                                                example_id=str(ex.example_id),
-                                                dataset=dataset,
-                                                provider=provider,
-                                                model=model_by_provider[provider],
-                                                budget=budget,
-                                                seed=seed,
-                                                method=method,
-                                                question=str(ex.question),
-                                                gold_answer=str(ex.answer),
+                                        setattr(controller, "emit_full_traces", True)
+                                    if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "reset_usage_counters"):
+                                        controller.generator.base.reset_usage_counters()
+                                    status = "scored"
+                                    err_text = ""
+                                    retry_attempts = 0
+                                    in_tok = 0
+                                    out_tok = 0
+                                    total_tok = 0
+                                    api_calls_this = 0
+                                    exact_match = 0
+                                    eval_diag: dict[str, Any] = {}
+                                    result_metadata: dict[str, Any] = {}
+                                    final_nodes: list[dict[str, Any]] = []
+                                    try:
+                                        result = controller.run(ex.question, ex.answer)
+                                        latency = time.perf_counter() - t0
+                                        obs = controller.generator
+                                        result_metadata = dict(getattr(result, "metadata", {}) or {})
+                                        if hasattr(obs, "registry"):
+                                            for _, b in sorted(obs.registry.items(), key=lambda kv: kv[0]):
+                                                reasoning_text = "\n".join(str(x) for x in getattr(b, "steps", [])) if getattr(b, "steps", None) else ""
+                                                pred = b.predicted_answer
+                                                pred_norm = normalize_answer_text(str(pred) if pred is not None else None).get("normalized_answer")
+                                                final_nodes.append(
+                                                    {
+                                                        "branch_id": b.branch_id,
+                                                        "reasoning_text": reasoning_text,
+                                                        "predicted_answer": pred,
+                                                        "predicted_answer_normalized": pred_norm,
+                                                    }
+                                                )
+                                        eval_diag = evaluate_with_diagnostics(result, dataset, str(ex.answer), final_nodes, enable_repair)
+                                        exact_match = int(eval_diag["exact_match"])
+                                        if args.save_branch_traces:
+                                            branch_traces.append(
+                                                build_branch_trace(
+                                                    result=result,
+                                                    example_id=str(ex.example_id),
+                                                    dataset=dataset,
+                                                    provider=provider,
+                                                    model=model_by_provider[provider],
+                                                    budget=budget,
+                                                    seed=seed,
+                                                    method=method,
+                                                    question=str(ex.question),
+                                                    gold_answer=str(ex.answer),
+                                                )
                                             )
-                                        )
-                                    scored += 1
-                                    if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "snapshot_usage_counters"):
-                                        usage = controller.generator.base.snapshot_usage_counters()
-                                        in_tok = int(usage.get("input_tokens", 0))
-                                        out_tok = int(usage.get("output_tokens", 0))
-                                        total_tok = int(usage.get("total_tokens", in_tok + out_tok))
-                                        retry_attempts = int(usage.get("retry_attempts", 0))
-                                except Exception as exc:  # noqa: BLE001
-                                    latency = time.perf_counter() - t0
-                                    status = "failed"
-                                    err_text = f"{type(exc).__name__}: {str(exc)[:800]}"
+                                        scored += 1
+                                        if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "snapshot_usage_counters"):
+                                            usage = controller.generator.base.snapshot_usage_counters()
+                                            in_tok = int(usage.get("input_tokens", 0))
+                                            out_tok = int(usage.get("output_tokens", 0))
+                                            total_tok = int(usage.get("total_tokens", in_tok + out_tok))
+                                            retry_attempts = int(usage.get("retry_attempts", 0))
+                                            api_calls_this = int(usage.get("api_calls", 0))
+                                    except Exception as exc:  # noqa: BLE001
+                                        latency = time.perf_counter() - t0
+                                        status = "failed"
+                                        err_text = f"{type(exc).__name__}: {str(exc)[:800]}"
+                                        if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "snapshot_usage_counters"):
+                                            usage = controller.generator.base.snapshot_usage_counters()
+                                            in_tok = int(usage.get("input_tokens", 0))
+                                            out_tok = int(usage.get("output_tokens", 0))
+                                            total_tok = int(usage.get("total_tokens", in_tok + out_tok))
+                                            retry_attempts = int(usage.get("retry_attempts", 0))
+                                            api_calls_this = int(usage.get("api_calls", 0))
 
-                                cost = (in_tok / 1000.0) * args.input_cost_per_1k + (out_tok / 1000.0) * args.output_cost_per_1k
-                                row = {
-                                    "provider": provider,
-                                    "model": model_by_provider[provider],
-                                    "dataset": dataset,
-                                    "seed": seed,
-                                    "budget": budget,
-                                    "method": method,
-                                    "example_id": str(ex.example_id),
-                                    "status": status,
-                                    "error": err_text,
-                                    "exact_match": int(exact_match),
-                                    "question": str(ex.question),
-                                    "gold_answer": str(ex.answer),
-                                    "gold_answer_canonical": eval_diag.get("gold_answer_canonical"),
-                                    "final_answer_raw": eval_diag.get("surfaced_final_answer_raw"),
-                                    "final_answer_canonical": eval_diag.get("surfaced_final_answer_canonical"),
-                                    "selected_answer_raw": eval_diag.get("chosen_final_node_answer_raw"),
-                                    "selected_answer_canonical": eval_diag.get("chosen_final_node_answer_canonical"),
-                                    "gold_in_tree": int(eval_diag.get("gold_in_tree", 0)),
-                                    "parse_extraction_failure": int(eval_diag.get("parse_extraction_failure", 0)),
-                                    "failure_tag": (eval_diag.get("failure_tag") if status == "scored" else "API/runtime failure"),
-                                    "result_metadata": result_metadata if status == "scored" else {},
-                                    "final_nodes": final_nodes if status == "scored" else [],
-                                    "attempted": 1,
-                                    "scored": int(status == "scored"),
-                                    "failed": int(status == "failed"),
-                                    "skipped": 0,
-                                    "retry_attempts": int(retry_attempts),
-                                    "input_tokens": int(in_tok),
-                                    "output_tokens": int(out_tok),
-                                    "total_tokens": int(total_tok),
-                                    "latency_seconds": float(round(latency, 6)),
-                                    "estimated_cost_usd": float(cost),
-                                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                                    "ov_verifier_backend_env": ov_verifier_env["DR_V2_OV_RERANK_VERIFIER_BACKEND"] or "unset",
-                                    "ov_verifier_model_env": ov_verifier_env["DR_V2_OV_RERANK_COHERE_MODEL"] or "unset",
-                                    "prm_step_verifier_backend_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_BACKEND"] or "unset",
-                                    "prm_step_verifier_model_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL"] or "unset",
-                                    "cohere_api_key_present": ov_verifier_env["COHERE_API_KEY_present"],
-                                }
-                                append_jsonl(per_example_path, row)
-                                records.append(row)
-                                seen.add(ck)
-                                append_progress(
-                                    progress_path,
-                                    {
-                                        "event": "example_end",
-                                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                                    cost = (in_tok / 1000.0) * args.input_cost_per_1k + (out_tok / 1000.0) * args.output_cost_per_1k
+                                    row = {
                                         "provider": provider,
+                                        "model": model_by_provider[provider],
                                         "dataset": dataset,
                                         "seed": seed,
                                         "budget": budget,
                                         "method": method,
                                         "example_id": str(ex.example_id),
                                         "status": status,
+                                        "error": err_text,
+                                        "exact_match": int(exact_match),
+                                        "question": str(ex.question),
+                                        "gold_answer": str(ex.answer),
+                                        "gold_answer_canonical": eval_diag.get("gold_answer_canonical"),
+                                        "final_answer_raw": eval_diag.get("surfaced_final_answer_raw"),
+                                        "final_answer_canonical": eval_diag.get("surfaced_final_answer_canonical"),
+                                        "selected_answer_raw": eval_diag.get("chosen_final_node_answer_raw"),
+                                        "selected_answer_canonical": eval_diag.get("chosen_final_node_answer_canonical"),
+                                        "gold_in_tree": int(eval_diag.get("gold_in_tree", 0)),
+                                        "parse_extraction_failure": int(eval_diag.get("parse_extraction_failure", 0)),
+                                        "failure_tag": (eval_diag.get("failure_tag") if status == "scored" else "API/runtime failure"),
+                                        "result_metadata": result_metadata if status == "scored" else {},
+                                        "final_nodes": final_nodes if status == "scored" else [],
+                                        "attempted": 1,
+                                        "scored": int(status == "scored"),
+                                        "failed": int(status == "failed"),
+                                        "skipped": 0,
+                                        "retry_attempts": int(retry_attempts),
+                                        "input_tokens": int(in_tok),
+                                        "output_tokens": int(out_tok),
+                                        "total_tokens": int(total_tok),
                                         "latency_seconds": float(round(latency, 6)),
-                                        "attempted_so_far": attempted,
-                                        "scored_so_far": scored,
-                                        "target_scored": target_n,
-                                    },
-                                )
-                                print(
-                                    f"[progress] provider={provider} dataset={dataset} seed={seed} "
-                                    f"budget={budget} method={method} attempted={attempted} "
-                                    f"scored={scored} status={status} example_id={ex.example_id}",
-                                    flush=True,
-                                )
-                                if status == "failed":
-                                    append_jsonl(raw_dir / "failures.jsonl", row)
+                                        "estimated_cost_usd": float(cost),
+                                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                                        "ov_verifier_backend_env": ov_verifier_env["DR_V2_OV_RERANK_VERIFIER_BACKEND"] or "unset",
+                                        "ov_verifier_model_env": ov_verifier_env["DR_V2_OV_RERANK_COHERE_MODEL"] or "unset",
+                                        "prm_step_verifier_backend_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_BACKEND"] or "unset",
+                                        "prm_step_verifier_model_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL"] or "unset",
+                                        "cohere_api_key_present": ov_verifier_env["COHERE_API_KEY_present"],
+                                        "api_calls": int(api_calls_this),
+                                    }
+                                    append_jsonl(per_example_path, row)
+                                    records.append(row)
+                                    seen.add(ck)
+                                    append_progress(
+                                        progress_path,
+                                        {
+                                            "event": "example_end",
+                                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                                            "provider": provider,
+                                            "dataset": dataset,
+                                            "seed": seed,
+                                            "budget": budget,
+                                            "method": method,
+                                            "example_id": str(ex.example_id),
+                                            "status": status,
+                                            "latency_seconds": float(round(latency, 6)),
+                                            "attempted_so_far": attempted,
+                                            "scored_so_far": scored,
+                                            "target_scored": target_n,
+                                        },
+                                    )
+                                    print(
+                                        f"[progress] provider={provider} dataset={dataset} seed={seed} "
+                                        f"budget={budget} method={method} attempted={attempted} "
+                                        f"scored={scored} status={status} example_id={ex.example_id}",
+                                        flush=True,
+                                    )
+                                    if status == "failed":
+                                        append_jsonl(raw_dir / "failures.jsonl", row)
+
+                                    global_api_calls_used += int(api_calls_this)
+                                    if args.max_total_api_calls > 0 and global_api_calls_used >= args.max_total_api_calls:
+                                        print(
+                                            f"[budget] max-total-api-calls reached ({global_api_calls_used}>={args.max_total_api_calls}); stopping with partial records",
+                                            flush=True,
+                                        )
+                                        raise ApiCallBudgetExceeded
+        except ApiCallBudgetExceeded:
+            pass
 
     slices: dict[tuple[str, str, int, int, str], list[dict[str, Any]]] = {}
     for r in records:
@@ -1046,6 +1078,8 @@ def main() -> None:
     manifest = {
         "artifact_family": "cohere_real_model_cost_normalized_validation",
         "timestamp": args.timestamp,
+        "max_total_api_calls": int(args.max_total_api_calls),
+        "total_api_calls_recorded": int(global_api_calls_used),
         "providers": providers,
         "models": model_by_provider,
         "datasets": datasets,
