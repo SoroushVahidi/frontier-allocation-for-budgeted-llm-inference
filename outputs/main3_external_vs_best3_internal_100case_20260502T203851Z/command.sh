@@ -1,0 +1,1 @@
+/apps/easybuild/software/Anaconda3/2023.09-0/bin/python scripts/run_cohere_real_model_cost_normalized_validation.py --timestamp 20260502T203851Z --providers cohere --cohere-model command-a-03-2025 --datasets openai/gsm8k --budgets 6 --seeds 20260501 --methods strict_f3,strict_gate1_cap_k6,strict_f2,external_l1_max,tale,s1 --target-scored-per-slice 100 --max-examples 100 --resume
