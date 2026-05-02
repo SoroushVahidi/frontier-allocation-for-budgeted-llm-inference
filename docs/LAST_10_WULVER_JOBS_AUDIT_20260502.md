@@ -38,7 +38,7 @@ grep -R "Submitted batch job\|sbatch\|job_id\|10182" outputs logs docs 2>/dev/nu
 
 1. **“Last 10” definition:** Primary Slurm allocations (`sacct … -X`) with `WorkDir` exactly `/mmfs1/home/sv96/adaptive-reasoning-budget-allocation`, ordered by **`Submit`** time (newest first). This yields **seven** Slurm completions on **2026-05-02** plus three earlier jobs (2026-05-01 and 2026-04-30) to reach **10** distinct job IDs. Array/batch step rows (e.g. `*.bat+`) were excluded from the pool used to pick the window.
 2. **Job ↔ artifact linkage:** When `outputs/**/batch_submission_info.json` or `run_env.log` names a `submitted_job_id` / `slurm_job_id`, that mapping is treated as authoritative. For **1017716** and **1017718**, no matching job id was found under `outputs/` in this checkout; logs under `logs/slurm/` named by job id were also absent — purpose is inferred **only from `sacct` `JobName`** (`l1-loss-dec-best-sel`).
-3. **Freshness:** **1018203** was still **`RUNNING`** at audit time (**~1 h 30 min** elapsed on node `n0006`). Metrics for that job are therefore **partial / provisional** (`run_env.log` + live `logs/slurm/main3_vs_best3_100_1018203.out`).
+3. **Freshness:** **1018203** was still **`RUNNING`** during the frozen **May 02 22:08Z** sweep. A subsequent artifact audit (`docs/UNCOMMITTED_RECENT_ARTIFACTS_AUDIT_20260502.md`) confirmed finalized **`summary.json`** metadata (`timestamp_utc` **`2026-05-02T22:36:41Z`**), superseding provisional live-log reads.
 4. **`sacct` retention:** Older jobs outside Slurm accounting windows would not appear; this audit only reflects what **`sacct`** returned during the audit run.
 5. **Path-gap metrics:** `path_gap_summary.json` explicitly states proxy / diagnostic caveats — not claim-safe as “observed gold path” evidence.
 
@@ -50,7 +50,7 @@ grep -R "Submitted batch job\|sbatch\|job_id\|10182" outputs logs docs 2>/dev/nu
 | 1018285 | gapdiag-88-abs            | COMPLETED | 0:0      | 00:00:06 | 2026-05-02T17:58:20 | 2026-05-02T17:58:29 | `outputs/gold_absent_path_gap_diagnostic_20260502T215820Z/` |
 | 1018248 | scorefill-88-losses       | COMPLETED | 0:0      | 00:15:20 | 2026-05-02T17:38:34 | 2026-05-02T17:53:55 | Score completion + selector rerun dirs (see §4) |
 | 1018219 | fullpipe-88-losses        | COMPLETED | 0:0      | 00:24:31 | 2026-05-02T17:06:10 | 2026-05-02T17:30:42 | `outputs/full_pipeline_best_selector_on_88_external_losses_20260502T210610Z/` |
-| 1018203 | main3-vs-best3-100       | RUNNING   | —        | ~01:30+  | 2026-05-02T16:38:50 | Unknown             | `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/` (in progress) |
+| 1018203 | main3-vs-best3-100       | COMPLETED | 0:0      | ~2h+     | 2026-05-02T16:38:50 | 2026-05-02T22:36:41Z (final `summary.json` stamp) | `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/` (**final** — see addendum) |
 | 1017718 | l1-loss-dec-best-sel      | COMPLETED | 0:0      | 00:37:30 | 2026-05-01T20:46:38 | 2026-05-01T21:24:09 | Output dir not linked from `outputs/` by job id in this tree |
 | 1017716 | l1-loss-dec-best-sel      | FAILED    | 1:0      | 00:02:00 | 2026-05-01T20:39:22 | 2026-05-01T20:41:23 | Same as above; failed early |
 | 1016482 | selector_33               | COMPLETED | 0:0      | 00:00:51 | 2026-04-30T17:24:45 | 2026-04-30T17:25:37 | `outputs/selector_on_gold_present_losses_20260430T211700Z/` |
@@ -60,12 +60,12 @@ grep -R "Submitted batch job\|sbatch\|job_id\|10182" outputs logs docs 2>/dev/nu
 ### Failed / pending
 
 - **1017716:** **FAILED**, `ExitCode 1:0` — rapid failure (~2 min); no Slurm `%j` logs matching this id found under `logs/slurm/`.
-- **1018203:** **RUNNING** at audit (`squeue ST=R`) — outcome and final `summary.json` **pending**.
+- **1018203:** **Previously RUNNING at audit freeze — now COMPLETED** per finalized `outputs/...203851Z/summary.json`; raw Slurm logs remain local-only (**see repo audit doc for GitHub gap pre-commit**).
 - **All other eight:** **COMPLETED** with **`0:0`** exit codes in `sacct -X`.
 
 ### Successful completed jobs
 
-1018287, 1018285, 1018248, 1018219, 1017718, 1016482, 1016461, 1016416.
+1018287, 1018285, 1018248, 1018219, **1018203 (post-freeze artifact confirmation)**, 1017718, 1016482, 1016461, 1016416.
 
 ## Per-job detail
 
@@ -108,13 +108,13 @@ grep -R "Submitted batch job\|sbatch\|job_id\|10182" outputs logs docs 2>/dev/nu
 - **Key metrics** (`summary.json`): same **19 / 69** split on 88 cases; **`missing_score_count=134`** (paired with **`fallback_due_to_missing_score_count=81`** in this pre–score-fill run), `api_call_count=0` (cache-only scoring path as recorded).
 - **Claim-safety:** **`summary_report.md`** states subset evaluation and evaluation-only gold — **claim-safe only with those constraints**.
 
-### 1018203 — main3 external vs best3 internal (100 cases / method, in progress)
+### 1018203 — main3 external vs best3 internal (100 cases / method, completed)
 
 - **Batch script:** `batch/run_main3_external_vs_best3_internal_100case_wulver.sbatch`
-- **Logs:** `logs/slurm/main3_vs_best3_100_1018203.{out,err}` (stderr **empty** at audit)
-- **Output dir (from `run_env.log`):** `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/`
-- **Observed progress:** Runner stage underway (Cohere `gsm8k`, budget **6**, multiple external/internal methods); **final `summary.json` already present from an earlier checkpoint** lists `status: ok` but **best_* accuracies 0.0** — treat as **intermediate until job finishes** (downstream aggregation may overwrite).
-- **Claim-safety:** **Pending — do not quote final headline metrics until COMPLETED.**
+- **Logs:** `logs/slurm/main3_vs_best3_100_1018203.{out,err}` (**local-only**, not committed by policy)
+- **Output dir:** `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/`
+- **Final persisted metrics (`summary.json`, UTC `timestamp_utc` **`2026-05-02T22:36:41Z`):** **`external_l1_max` accuracy 0.92**, **`strict_gate1_cap_k6`** best internal headline **0.57**, Δ ≈ **−0.35** — **narrow 100-case GSM8K slice** (**seed `20260501`, budget `6`). **Not universal.**
+- **Claim-safety:** **Diagnostic comparative slice only** unless promoted via paper map + zero-missing verifier story elsewhere.
 
 ### 1017718 / 1017716 — `l1-loss-dec-best-sel` (L1 loss decomposition / best-selector pair batch)
 
@@ -151,11 +151,11 @@ grep -R "Submitted batch job\|sbatch\|job_id\|10182" outputs logs docs 2>/dev/nu
 - **88-loss pipeline:** `outputs/full_pipeline_best_selector_on_88_external_losses_20260502T210610Z/summary.json`, `summary_report.md`, `manifest.json`, `run_config.json`
 - **Score fill + rerun:** `outputs/full_score_completion_88_external_losses_20260502T213834Z/score_merge_report.{json,md}`, `outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/comparison_vs_previous_run.json`
 - **Path gap:** `outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/path_gap_summary.json`, `path_gap_report.md` (preferred **8287**)
-- **Long benchmark (when done):** `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/summary.json` (verify after **1018203** COMPLETED)
+- **1018203 bounded benchmark:** `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/summary.json` (**COMPLETED** — commit curated summaries per `UNCOMMITTED_RECENT_ARTIFACTS_AUDIT_20260502`)
 
 ## Interpretation (what the recent jobs show together)
 
-The **most recent slab of work on 2026-05-02** is a coherent chain: (**1018219**) run the discovery + cached-selector evaluation on the **same 88 external-loss IDs** surfaced from the **April 30** baseline (**1016416**) and trace lineage (**1016461**); (**1018248**) prove the missing verifier scores were **mergeable** and **eliminated fallbacks**, without changing correctness counts on that slice (**comparison_vs_previous_run**); (**8285 → 8287**) iterate **gold-absent path-gap proxy classification**, chiefly tightening **`count_premature_commit`** from **66 → 15** while keeping explicit **non–claim-safe** caveat text. Separately (**1018203**), a **100×100** external-vs-internal GSM8k comparison was **still running**, so its headline numerical story is **not final** yet.
+The **most recent slab of work on 2026-05-02** is a coherent chain: (**1018219**) run the discovery + cached-selector evaluation on the **same 88 external-loss IDs** surfaced from the **April 30** baseline (**1016416**) and trace lineage (**1016461**); (**1018248**) prove the missing verifier scores were **mergeable** and **eliminated fallbacks**, without changing correctness counts on that slice (**comparison_vs_previous_run**); (**8285 → 8287**) iterate **gold-absent path-gap proxy classification**, chiefly tightening **`count_premature_commit`** from **66 → 15** while keeping explicit **non–claim-safe** caveat text. Separately (**1018203**), the **narrow 100×100 GSM8K external-vs-internal** comparison **completed**, persisting capped headline metrics distinguishing **`external_l1_max`** vs best recorded internal representative (**still subset-scoped**, see `summary.json` + manifests).
 
 ## Claim-safety caveats
 
@@ -163,3 +163,20 @@ The **most recent slab of work on 2026-05-02** is a coherent chain: (**1018219**
 2. **88-loss runs:** Repeatedly flagged as **subset / evaluation-only gold** in `summary_report.md` — do not extrapolate to full-test or external-baseline dominance without separate runs.
 3. **Selector score merge:** **`api_error_count=5`** on score completion — investigate `completed_verifier_scores.jsonl` / logs if asserting **zero verifier noise** beyond JSON summaries.
 4. **Missing linkage for L1 decomposition jobs (**1017716/1017718**):** **Do not cite** unpublished paths/metrics tied to those IDs until stdout/stderr or `outputs/` reference is recovered.
+
+---
+
+## Addendum — post-freeze jobs & Git hygiene (20260502 audit)
+
+This addendum extends the frozen “last 10” window with **Slurm `sacct` linkage** discovered during `docs/UNCOMMITTED_RECENT_ARTIFACTS_AUDIT_20260502.md`:
+
+### 1018304 — strategy-seeded semantic diversity frontier (`66` gold-absent diagnostic)
+
+- **Stdout / stderr (`local-only`):** `logs/slurm/strategy_seeded_discovery_66_gold_absent_1018304.{out,err}`
+- **Primary bundle:** `outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/`
+- **Headline JSON already tracked in Git:** `discovery_summary.json` reports **`new_method`** = `strategy_seeded_semantic_diversity_frontier_v1`, **`baseline_gold_present_count`** = **49**, **`new_gold_present_count`** = **42**, **`paid_api_call_count_total`** = **0** (recorded semantics).
+- **Claim-safety:** **Diagnostic pilot — not a final scientific conclusion.** Baseline parity / implementation QA still open; rerun + formal audit recommended before external narrative.
+
+### Repo ↔ cluster sync note
+
+Prior table rows for **1018203** referenced **RUNNING** state; **`summary.json`** now encodes **`status:"ok"`**. Small summary artifacts were initially **uncommitted** — see audit doc + **`outputs/uncommitted_recent_artifacts_audit_20260502T225551Z/`** CSV bundle for enumerations.

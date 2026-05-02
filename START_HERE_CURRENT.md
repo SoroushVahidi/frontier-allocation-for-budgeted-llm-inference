@@ -32,6 +32,7 @@ Related: **`external_l1_exact`** — literature-style L1 “exact target length�
 ## Current status vs `external_l1_max`
 
 - Real-model and cost-normalized bundles under `outputs/cohere_real_model_cost_normalized_validation_*` are **diagnostic** unless a promotion doc says otherwise (`docs/PAPER_SOURCE_OF_TRUTH.md`).
+- **1018203 bounded main3-vs-best3 rerun** (`outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/`): artifacts report **`external_l1_max` = 0.92**, curated best internal **`strict_gate1_cap_k6` = 0.57**, gap **≈ −0.35**, **narrow 100-case GSM8K** (seed **`20260501`**, budget **6**). **Subset-only** headline — reinforces internal-vs-external **`external_l1_max` lag** narrative without universality claim.
 - Bounded selector-vs-`external_l1_max` comparisons exist (e.g. `outputs/best_selector_vs_external_l1_comparison_*/`) but **cache-limited** verifier coverage has forced fallbacks—treat as **diagnostic**, not headline defeat evidence, until missing score and fallback counts are zero.
 
 ## Current bottleneck (88 external-loss subset)
@@ -40,7 +41,9 @@ On the **selected 88-case external-loss slice** (`outputs/best_methods_on_extern
 
 **Latest Wulver job audit:** `docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md` plus `outputs/last_10_wulver_jobs_audit_20260502T220857Z/` (CSV/JSON and `artifact_summary.md`). **Preferred gold-absent path-gap proxy bundle:** `outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/` (**1018287**; supersedes the looser heuristic in **`...215820Z/`**, **1018285**).
 
-**Incomplete at audit:** job **1018203** (`main3-vs-best3-100`) was **still running** when the audit was frozen — verify completion before quoting final comparison metrics (`outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/`).
+**Post-audit update:** **`summary.json`** for **1018203** finalized (`status:"ok"`); **`1018304`** strategy-seeded **66-case** diagnostic bundle summarizes a **semantic-diversity-frontier pilot** — interpret only with manifests + caveat that **baseline alignment / implementation QA** remains open.
+
+Canonical audit tying untracked vs ignored artifacts: **`docs/UNCOMMITTED_RECENT_ARTIFACTS_AUDIT_20260502.md`**.
 
 Details and score-completion runbook links: `docs/FULL_SCORE_COMPLETION_88_EXTERNAL_LOSSES_20260502.md`.
 

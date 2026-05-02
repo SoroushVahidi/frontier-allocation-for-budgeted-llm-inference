@@ -1,0 +1,121 @@
+# Commands used — uncommitted recent artifacts audit
+# Repo: /home/sv96/adaptive-reasoning-budget-allocation
+# Approx bundle mint: 2026-05-02T22:55:51Z UTC
+
+git branch --show-current
+git rev-parse HEAD
+git status -sb
+git log --oneline -8 --decorate
+
+git status --short docs scripts experiments batch outputs logs/slurm
+
+git status --short --ignored \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z \
+outputs/full_score_completion_88_external_losses_20260502T213834Z \
+outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z \
+outputs/gold_absent_path_gap_diagnostic_20260502T215957Z \
+outputs/last_10_wulver_jobs_audit_20260502T220857Z \
+logs/slurm \
+batch scripts experiments docs
+
+find outputs/main3_external_vs_best3_internal_100case_20260502T203851Z outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z outputs/gold_absent_path_gap_diagnostic_20260502T215957Z outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z -maxdepth 1 -type f -printf "%s %p\n" 2>/dev/null | sort -nr
+
+for d in \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z \
+outputs/full_score_completion_88_external_losses_20260502T213834Z \
+outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z \
+outputs/gold_absent_path_gap_diagnostic_20260502T215957Z \
+outputs/last_10_wulver_jobs_audit_20260502T220857Z
+do
+  echo "=== $d ==="
+  git ls-files "$d"
+  git status --short --ignored "$d"
+done
+
+git check-ignore -v \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/summary.json \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/summary.csv \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/comparison_report.md \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/comparison_table.csv \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/method_level_metrics.csv \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/per_case_results.jsonl \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/manifest.json \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/README.md \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/run_env.log \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/runner_stdout_stderr.log \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/discovery_summary.json \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/discovery_summary.csv \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/summary_report.md \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/comparison_vs_dr_v2.json \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/comparison_vs_dr_v2.md \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/per_case_discovery_results.jsonl \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/per_case_discovery_results.csv \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/manifest.json \
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/run_config.json \
+logs/slurm/main3_vs_best3_100_1018203.out \
+logs/slurm/strategy_seeded_discovery_66_gold_absent_1018304.out
+
+for f in outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/summary.json outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/manifest.json outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/command.sh logs/slurm/main3_vs_best3_100_1018203.out; do git check-ignore -q "$f" && echo IGNORED:$f || echo NOT_IGNORED:$f; done
+
+grep -R -n -i "api_key\|authorization\|bearer\|password\|credential\|secret\|token" \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/summary.json \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/summary.csv \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/comparison_report.md \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/comparison_table.csv \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/method_level_metrics.csv \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/manifest.json \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/README.md \
+outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/command.sh
+
+# Bundle CSV regeneration (Python in audit shell):
+
+python3 <<'SCRIPT'
+import csv, subprocess, os
+bundle="outputs/uncommitted_recent_artifacts_audit_20260502T225551Z"
+patterns=["outputs/main3_external_vs_best3_internal_100case_20260502T203851Z",
+ "outputs/cohere_real_model_cost_normalized_validation_20260502T222126Z",
+ "outputs/cohere_real_model_cost_normalized_validation_20260502T224859Z","logs/slurm"]
+cmd=["git","ls-files","--others","--exclude-standard","--"]+patterns
+out=subprocess.check_output(cmd,text=True).splitlines()
+os.makedirs(bundle,exist_ok=True)
+with open(os.path.join(bundle,"untracked_files.csv"),"w",newline="") as f:
+ w=csv.writer(f); w.writerow(["path","bytes"])
+ for p in sorted(out):
+  try: b=os.path.getsize(p)
+  except OSError: b=""
+  w.writerow([p,b])
+
+dirs_ign="""outputs/main3_external_vs_best3_internal_100case_20260502T203851Z
+outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z
+outputs/full_score_completion_88_external_losses_20260502T213834Z
+outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z
+outputs/gold_absent_path_gap_diagnostic_20260502T215957Z
+outputs/cohere_real_model_cost_normalized_validation_FINCHK_20260502T225251Z""".strip().split()
+paths_raw=subprocess.check_output(["git","status","--ignored","--short"]+dirs_ign,text=True).splitlines()
+ignored=[]
+for line in paths_raw:
+ if line.startswith("!!"):
+  p=line[3:].strip(); ignored.append(p.rstrip('/'))
+finchk="outputs/cohere_real_model_cost_normalized_validation_FINCHK_20260502T225251Z"
+for root,_,files in os.walk(finchk):
+ for fi in files: ignored.append(os.path.join(root,fi))
+seen=set(); uniq=[]
+for p in ignored:
+ if p not in seen: seen.add(p); uniq.append(p)
+rows=[]
+for p in sorted(uniq):
+ r=subprocess.run(["git","check-ignore","-v",p],capture_output=True,text=True)
+ rule=r.stdout.strip() if r.returncode==0 else ""
+ rows.append([p,rule])
+with open(os.path.join(bundle,"ignored_files.csv"),"w",newline="") as f:
+ w=csv.writer(f); w.writerow(["path","git_check_ignore_v"]); w.writerows(rows)
+
+inspect_dirs=[ "outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z","outputs/full_score_completion_88_external_losses_20260502T213834Z","outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z","outputs/gold_absent_path_gap_diagnostic_20260502T215957Z","outputs/last_10_wulver_jobs_audit_20260502T220857Z","outputs/strategy_seeded_discovery_final_check_20260502T225251Z","outputs/strategy_seeded_discovery_final_check_TESTPREFLIGHT_20260502T224848Z"]
+rows=[]
+for d in inspect_dirs:
+ for p in subprocess.check_output(["git","ls-files",d],text=True).splitlines(): rows.append([p,d])
+with open(os.path.join(bundle,"tracked_recent_files.csv"),"w",newline="") as f:
+ w=csv.writer(f); w.writerow(["path","inspected_directory"]); w.writerows(rows)
+SCRIPT

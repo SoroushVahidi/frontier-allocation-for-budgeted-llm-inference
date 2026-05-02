@@ -1,0 +1,7 @@
+method,family,n_total_rows,n_scored,n_failed_or_skipped,accuracy,mean_total_tokens_per_scored_example,mean_latency_seconds_per_scored_example,rank_by_accuracy
+external_l1_max,external,100,100,0,0.92,3007.95,17.941728960000006,1
+tale,external,100,100,0,0.92,2884.94,6.57693119,2
+s1,external,100,100,0,0.91,3642.35,10.5579757,3
+strict_gate1_cap_k6,internal,100,100,0,0.57,4221.75,11.566780230000004,4
+strict_f2,internal,100,100,0,0.56,4154.13,14.443647860000006,5
+strict_f3,internal,100,100,0,0.22,4251.28,9.348493589999999,6
