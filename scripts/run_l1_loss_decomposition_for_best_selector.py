@@ -353,7 +353,7 @@ def main() -> None:
         attempts_log.append(
             {
                 "candidate": cand,
-                "validation_dir": str(val_dir.relative_to(REPO_ROOT)),
+                "validation_dir": str(val_dir.resolve().relative_to(REPO_ROOT.resolve())),
                 "complete_l1": complete_l1,
                 "complete_drv2": complete_drv2,
                 "complete_selector": complete_sel,
@@ -374,7 +374,7 @@ def main() -> None:
             "selected_method": chosen_method,
             "fallback_order": FALLBACK_ORDER,
             "attempts": attempts_log,
-            "validation_output_dir": str(chosen_dir.relative_to(REPO_ROOT)) if chosen_dir else None,
+            "validation_output_dir": str(chosen_dir.resolve().relative_to(REPO_ROOT.resolve())) if chosen_dir else None,
         },
     )
 
