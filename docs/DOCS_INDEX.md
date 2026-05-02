@@ -9,6 +9,7 @@ This index separates current interpretation documents from diagnostic and histor
 | `README.md` | Short repository entry point. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
 | `docs/CURRENT_EVIDENCE_LEDGER_20260501.md` | Current claim-eligible vs diagnostic/scaffold/non-evidence ledger. |
+| `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md` | Living backlog of unanswered scientific questions and required runs. |
 | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` | Clean navigation, artifact classification, and safe cleanup rules. |
 | `docs/REPO_MAP.md` | Directory roles and repository structure. |
 | `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |
@@ -25,6 +26,7 @@ This index separates current interpretation documents from diagnostic and histor
 | `configs/selected_selector_current.json` | Machine-readable selected-selector config. |
 | `docs/LITERATURE_SELECTOR_BASELINES.md` | Literature selector baselines, including self-consistency and CMV. |
 | `docs/L1_LOSS_DECOMPOSITION_BEST_SELECTOR_RESULT.md` | Current status of best-selector-vs-L1 loss decomposition. |
+| `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md` | Canonical backlog for remaining L1, selector, closeness, and Cohere-comparison experiments. |
 | `docs/COHERE_100CASE_OURS_VS_EXTERNAL_BASELINES_PLAN.md` | Plan/scaffold for 100-case Cohere ours-vs-main-table-external comparison. |
 | `docs/COHERE_100CASE_OURS_VS_EXTERNAL_BASELINES_RESULT.md` | Result framing for the Cohere scaffold; do not treat zero-call packages as evidence. |
 | `docs/SELECTOR_START_HERE.md` | Entry point for selector-first work. |
@@ -41,7 +43,7 @@ This index separates current interpretation documents from diagnostic and histor
 
 ## Current selector evidence artifacts
 
-Use these as engineering artifacts, not paper-facing claims by themselves. For final classification, check `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`.
+Use these as engineering artifacts, not paper-facing claims by themselves. For final classification, check `docs/CURRENT_EVIDENCE_LEDGER_20260501.md` and update `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md` when a run changes an open question.
 
 | Artifact family | Status |
 |---|---|
@@ -119,7 +121,7 @@ Examples include:
 - dry-run/scaffold comparison packages,
 - one-case smoke diagnostics.
 
-When using a diagnostic doc in manuscript text, first check `docs/PAPER_SOURCE_OF_TRUTH.md`, `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`, and `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`.
+When using a diagnostic doc in manuscript text, first check `docs/PAPER_SOURCE_OF_TRUTH.md`, `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`, `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`, and `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md`.
 
 ## Historical / provenance docs
 
@@ -135,3 +137,4 @@ The old `-adaptive-llm-inference` project has now been mined for transferable id
 - Do not promote diagnostic artifacts to paper-facing evidence without updating the source-of-truth and claim map.
 - Do not run paid APIs before a dry-run call count and cost-aware execution plan.
 - Do not cite scaffold/dry-run output packages as performance evidence.
+- Do not leave unanswered scientific questions implicit; add or update them in `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md`.
