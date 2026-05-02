@@ -1,0 +1,11 @@
+{
+  "selected_method_id": "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+  "selected_method_reason": "highest-priority complete non-mock lane",
+  "priority_order": [
+    "direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1",
+    "direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1",
+    "direct_reserve_semantic_frontier_v2_selection_fix_v1"
+  ],
+  "total_complete_base_cases": 0,
+  "total_paired_cases": 0
+}
