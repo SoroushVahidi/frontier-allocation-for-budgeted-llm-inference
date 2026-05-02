@@ -24,6 +24,8 @@ Conservative classification of **important method and selector names** appearing
 | `trace_quality_heuristic` | Verifier **scorer mode** (heuristic, not Cohere) | diagnostic | yes (as `--scorer-mode`) | no | Runner-up vs cached Cohere on recovery package | Cheap offline comparison; ablations | Not the selected production scorer for recovery track | `scripts/run_outcome_verifier_answer_group_selector.py` |
 | `conservative_trace_support_selector_v1` | Non-API conservative selector | diagnostic | yes | no | Rejected fallback on recovery package (0 net fixes) | Negative baseline / safety | Do not present as competitive selector | `outputs/conservative_trace_support_selector_*`, tests |
 | `self_consistency_majority_selector` | Literature majority-vote selector | active (baseline) | yes | limited | Implemented for matched-slice comparison | No-API baseline over **existing pools** | Not a new method contribution; compare only matched paired slices | `docs/LITERATURE_SELECTOR_BASELINES.md`, `scripts/run_self_consistency_majority_selector.py` |
+| `strategy_seeded_semantic_diversity_frontier_v1` | Strategy-seeded semantic diversity frontier (**pilot**) | diagnostic | yes | no | **`1018304`**: Δ gold presence **`49 → 42`** vs cached DR-v2 on intentional **66** gold-absent slice (`discovery_summary.json`) | Controlled pilot comparing discovery diversity scaffolding | **Not** final rejection—**baseline alignment / implementation QA incomplete** (`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`) | `outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/`, `batch/run_strategy_seeded_discovery_on_66_gold_absent_wulver.sbatch` |
+| `direct_reserve_strategy_seeded_semantic_frontier_v2_final` | DR‑v2‑backbone **strategy‑seeded** fair-check controller (**v2 final**) | active (engineering) | yes | unknown / no | Implemented + smoke-tested; audited cohort artefacts under **`outputs/strategy_seeded_discovery_final_check_*`** (subset tracked) — **still diagnostic until alignment closure** | Next-step engineering target after **`v1` pilot caveat** resolver | Requires parity audit reruns—not headline paper ID by itself | `experiments/direct_reserve_strategy_seeded_semantic_frontier_v2_final.py`, `scripts/run_strategy_seeded_discovery_final_check.py`, `batch/run_strategy_seeded_discovery_final_check_wulver.sbatch` |
 
 ## Important distinctions (read twice)
 
@@ -33,7 +35,7 @@ Conservative classification of **important method and selector names** appearing
 
 ## Recent Wulver diagnostic provenance (2026-05-02)
 
-Slurm bookkeeping for **88-loss** verifier merge (**1018248**) and preferred **gold-absent path-gap** proxy diagnostic (**1018287**) is summarized in **`docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md`** (`outputs/last_10_wulver_jobs_audit_20260502T220857Z/` bundle). Interpret path-gap CSV/JSON strictly as proxy diagnostics (`caveat` field).
+Slurm bookkeeping for **88-loss** verifier merge (**1018248**) and preferred **gold-absent path-gap** proxy diagnostic (**1018287**) is summarized in **`docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md`** (`outputs/last_10_wulver_jobs_audit_20260502T220857Z/` bundle). Interpret path-gap CSV/JSON strictly as proxy diagnostics (`caveat` field). Bounded **`external_l1_max` headline gap** on **main3-vs-best3 100‑case GSM8K harness** summarized in **`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`**.
 
 ## PRM / process-rerank naming
 

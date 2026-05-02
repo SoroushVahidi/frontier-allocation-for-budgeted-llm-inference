@@ -9,11 +9,16 @@ This index separates current interpretation documents from diagnostic and histor
 | `README.md` | Short repository entry point. |
 | `START_HERE_CURRENT.md` | Short current front door: baselines, selector scope, safe/unsafe claims, commands. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
+| `docs/CURRENT_EXTERNAL_BASELINE_GAP.md` | Single-page headline vs **`external_l1_max`** (**1018203** bounded harness). |
+| `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md` | Index of superseded/cache-limited/negative pilots without deleting provenance. |
+| `docs/DISCOVERY_FAILURE_TAXONOMY.md` | Discovery vs selector bottleneck vocabulary (+ path-gap proxy warning). |
+| `docs/OUTPUT_RETENTION_POLICY_CURRENT.md` | Practical commit vs `.gitignore` / local-only **`outputs/`** policy. |
+| `docs/LOCAL_ONLY_CLEANUP_CANDIDATES_20260502.md` | Workspace cleanup **ideas only** — no scripted deletion here. |
 | `docs/METHOD_STATUS_TABLE.md` | Classifies important method/selector IDs (canonical vs diagnostic vs external). |
 | `docs/ARTIFACT_STATUS_TABLE.md` | Classifies major `outputs/` artifact families. |
 | `scripts/CURRENT_RUNBOOK.md` | Minimal operational runbook (health, selector rerun, Slurm pointers). |
 | `docs/REPOSITORY_HYGIENE_AUDIT_20260502.md` | Navigation cleanup audit; no provenance deleted. |
-| `docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md` | Last-10 Slurm job audit + pointers to bounded summaries (score completion **1018248**, path-gap diagnostic **1018287** vs **1018285**, **1018203** running at audit freeze). Bundle: `outputs/last_10_wulver_jobs_audit_20260502T220857Z/`. |
+| `docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md` | Last-10 Slurm audit + bounded summaries + **post-freeze addenda** (e.g., **1018203** completion, **1018304**). Bundle: `outputs/last_10_wulver_jobs_audit_20260502T220857Z/`. |
 | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` | Clean navigation, artifact classification, and safe cleanup rules. |
 | `docs/REPO_MAP.md` | Directory roles and repository structure. |
 | `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |

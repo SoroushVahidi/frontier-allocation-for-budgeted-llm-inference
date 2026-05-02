@@ -6,9 +6,11 @@ This document is the short, current orientation note for day-to-day work. It sup
 
 For a **short** entry point and claim guardrails, read [`../START_HERE_CURRENT.md`](../START_HERE_CURRENT.md). Method IDs: [`METHOD_STATUS_TABLE.md`](METHOD_STATUS_TABLE.md). Major `outputs/` folders: [`ARTIFACT_STATUS_TABLE.md`](ARTIFACT_STATUS_TABLE.md). Commands: [`../scripts/CURRENT_RUNBOOK.md`](../scripts/CURRENT_RUNBOOK.md). Audit log: [`REPOSITORY_HYGIENE_AUDIT_20260502.md`](REPOSITORY_HYGIENE_AUDIT_20260502.md). **Recent Wulver diagnostics / last-10 job audit:** [`LAST_10_WULVER_JOBS_AUDIT_20260502.md`](LAST_10_WULVER_JOBS_AUDIT_20260502.md) (`outputs/last_10_wulver_jobs_audit_20260502T220857Z/artifact_summary.md`).
 
+Interpretation aides: **`external_l1_max` gap** → [`CURRENT_EXTERNAL_BASELINE_GAP.md`](CURRENT_EXTERNAL_BASELINE_GAP.md). **Negative / superseded indexing** → [`FAILED_AND_NEGATIVE_RESULTS_INDEX.md`](FAILED_AND_NEGATIVE_RESULTS_INDEX.md). **Discovery vocabulary** → [`DISCOVERY_FAILURE_TAXONOMY.md`](DISCOVERY_FAILURE_TAXONOMY.md). **Git retention** → [`OUTPUT_RETENTION_POLICY_CURRENT.md`](OUTPUT_RETENTION_POLICY_CURRENT.md). **Workspace-only cleanup brainstorming** → [`LOCAL_ONLY_CLEANUP_CANDIDATES_20260502.md`](LOCAL_ONLY_CLEANUP_CANDIDATES_20260502.md).
+
 ## Bounded external-loss diagnostics (2026-05-02)
 
-Slurm job **1018248** completed a **zero-missing** verifier score fill and selected-selector rerun on the **88** paired external-loss slice (`outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/`). Result: **19** correct, **69** still lost, `missing_score_count = 0`, `fallback_due_to_missing_score_count = 0`. Decomposition: **66** discovery / gold-absent vs **22** selector-recoverable (gold present in the candidate pool but not chosen). **Claim-safety:** selected diagnostic slice only; not a broad superiority claim over `external_l1_max`.
+Slurm job **1018248** completed a **zero-missing** verifier score fill and selected-selector rerun on the **88** paired external-loss slice (`outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/`). **`summary.json`:** `evaluated_cases = 88`, `correct_count = 19`, `still_lost_count` / `wrong_count = 69`, `missing_score_count = 0`, `fallback_due_to_missing_score_count = 0`, `selected_candidate_not_in_pool_count = 0`, `discovery_failure_count` / `gold_absent_count = 66`, `gold_present_but_not_selected_count = selector_recoverable_count = 22`. **`comparison_vs_previous_run.json`** reports **no correctness flips versus 1018219** after score merge. **Claim-safety:** intentional external-loss subset only—not broad superiority over **`external_l1_max`** or runtime promotion claims.
 
 Slurm **1018287** produced the **preferred** gold-absent path-gap diagnostic with a tightened premature-commit heuristic (`outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/`; supersedes `...215820Z` / **1018285**).
 
@@ -153,6 +155,7 @@ Safe:
 - The selected Cohere cached verifier selector beat conservative and trace-quality selector baselines on the recovery package.
 - The self-consistency majority-vote literature baseline exists for matched-slice comparison.
 - The 100-case external comparison script exists, but its first selected-verifier run is cache-limited and diagnostic.
+- Narrow **1018203 main3-vs-best3** harness persists **`external_l1_max` ≫ best listed internal headline** (**see [`CURRENT_EXTERNAL_BASELINE_GAP.md`](CURRENT_EXTERNAL_BASELINE_GAP.md)**) without universality wording.
 - The next claim-safe comparison requires full score coverage on paired candidate cases.
 
 Not safe yet:
@@ -173,6 +176,10 @@ Not safe yet:
 
 ## Important documents
 
+- `docs/CURRENT_EXTERNAL_BASELINE_GAP.md` — headline vs **`external_l1_max`** (**1018203**) with exact slice contract.
+- `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md` — cache-limited, superseded, and pilot regressions retained but bounded.
+- `docs/DISCOVERY_FAILURE_TAXONOMY.md` — discovery vs selector decomposition vocabulary (**path-gap proxy warning** included).
+- `docs/OUTPUT_RETENTION_POLICY_CURRENT.md` — **`outputs/`** commit vs `.gitignore` norms.
 - `docs/REPO_ORGANIZATION_GUIDE_20260501.md` — clean navigation and cleanup rules.
 - `docs/CURRENT_SELECTOR_DECISION.md` — selected selector config and caveats.
 - `docs/LITERATURE_SELECTOR_BASELINES.md` — literature-grounded selector baselines.

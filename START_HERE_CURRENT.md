@@ -2,6 +2,8 @@
 
 Short orientation for humans and agents. Historical and timestamped material stays in place; this file only points to **current** interpretation.
 
+**Focused notes:** [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) · [`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`](docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md) · [`docs/DISCOVERY_FAILURE_TAXONOMY.md`](docs/DISCOVERY_FAILURE_TAXONOMY.md) · [`docs/OUTPUT_RETENTION_POLICY_CURRENT.md`](docs/OUTPUT_RETENTION_POLICY_CURRENT.md) · [`docs/LOCAL_ONLY_CLEANUP_CANDIDATES_20260502.md`](docs/LOCAL_ONLY_CLEANUP_CANDIDATES_20260502.md)
+
 ## Current project question
 
 Under explicit inference budgets, how should compute be allocated across reasoning paths, and how should the **final answer** be chosen from the explored frontier? The active emphasis is **selection from existing candidate pools** and **selector baselines**, with discovery/coverage work driven by evidence—not the older binary cheap-vs-revise routing story.
@@ -37,7 +39,7 @@ Related: **`external_l1_exact`** — literature-style L1 “exact target length�
 
 ## Current bottleneck (88 external-loss subset)
 
-On the **selected 88-case external-loss slice** (`outputs/best_methods_on_external_losses_20260430T195200Z/`, summarized in `docs/BEST_METHODS_ON_EXTERNAL_LOSS_CASES_100_20260430T195659Z.md`), **discovery/coverage failure dominates** over selector recoverability (order-of-magnitude: **~66 gold-absent** vs **~22 selector-recoverable** on that slice definition). Job **1018248** completed a **zero-missing-score**, **zero-fallback** verifier merge and selector rerun on those 88 cases; **`comparison_vs_previous_run.json` reports no correctness changes** versus the cache-limited pre-merge run (**1018219**) — bottleneck evidence still points **away from verifier-score gaps**.
+On the **selected 88-case external-loss slice**, **discovery/coverage failure dominates**. After **1018248**, fully scored **`outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/summary.json`** reports `discovery_failure_count` / `gold_absent_count` = **66**; `gold_present_but_not_selected_count` = **`selector_recoverable_count`** = **22**; `missing_score_count` = **0**; `fallback_due_to_missing_score_count` = **0**; yet `still_lost_count` = **69** / `correct_count` = **19** (subset contract only). Pre-fill **1018219** cache gaps are superseded—see **`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`**.
 
 **Latest Wulver job audit:** `docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md` plus `outputs/last_10_wulver_jobs_audit_20260502T220857Z/` (CSV/JSON and `artifact_summary.md`). **Preferred gold-absent path-gap proxy bundle:** `outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/` (**1018287**; supersedes the looser heuristic in **`...215820Z/`**, **1018285**).
 
@@ -72,6 +74,10 @@ Details and score-completion runbook links: `docs/FULL_SCORE_COMPLETION_88_EXTER
 | 5 | `docs/METHOD_STATUS_TABLE.md` |
 | 6 | `docs/ARTIFACT_STATUS_TABLE.md` |
 | 7 | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` |
+| 8 | `docs/CURRENT_EXTERNAL_BASELINE_GAP.md` |
+| 9 | `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md` |
+| 10 | `docs/DISCOVERY_FAILURE_TAXONOMY.md` |
+| 11 | `docs/OUTPUT_RETENTION_POLICY_CURRENT.md` |
 
 ## Commands — health and reviewer-safe checks
 

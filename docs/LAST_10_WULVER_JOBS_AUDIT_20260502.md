@@ -151,7 +151,7 @@ grep -R "Submitted batch job\|sbatch\|job_id\|10182" outputs logs docs 2>/dev/nu
 - **88-loss pipeline:** `outputs/full_pipeline_best_selector_on_88_external_losses_20260502T210610Z/summary.json`, `summary_report.md`, `manifest.json`, `run_config.json`
 - **Score fill + rerun:** `outputs/full_score_completion_88_external_losses_20260502T213834Z/score_merge_report.{json,md}`, `outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/comparison_vs_previous_run.json`
 - **Path gap:** `outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/path_gap_summary.json`, `path_gap_report.md` (preferred **8287**)
-- **1018203 bounded benchmark:** `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/summary.json` (**COMPLETED** — commit curated summaries per `UNCOMMITTED_RECENT_ARTIFACTS_AUDIT_20260502`)
+- **1018203 bounded benchmark:** `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/` — summarized artefacts + sidecars now tracked in Git — narrative hub **`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`**, audit breadcrumbs **`docs/UNCOMMITTED_RECENT_ARTIFACTS_AUDIT_20260502.md`**
 
 ## Interpretation (what the recent jobs show together)
 
@@ -179,4 +179,10 @@ This addendum extends the frozen “last 10” window with **Slurm `sacct` linka
 
 ### Repo ↔ cluster sync note
 
-Prior table rows for **1018203** referenced **RUNNING** state; **`summary.json`** now encodes **`status:"ok"`**. Small summary artifacts were initially **uncommitted** — see audit doc + **`outputs/uncommitted_recent_artifacts_audit_20260502T225551Z/`** CSV bundle for enumerations.
+Prior table rows for **1018203** referenced **RUNNING** state; **`summary.json`** now encodes **`status:"ok"`** (**`external_l1_max ≈ 0.92`** vs **`strict_gate1_cap_k6 ≈ 0.57`**, Δ ≈ **`−0.35`**, narrow GSM8k slice—**not universal** — canonical wording **`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`**).
+
+### Canonical external-gap wording
+
+Use **`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`** (not Slurm transcripts) when explaining **bounded internal-vs-comparator lag** versus **`external_l1_max`**.
+
+Initial Git hygiene snapshots (CSV enumerations): **`outputs/uncommitted_recent_artifacts_audit_20260502T225551Z/`**.

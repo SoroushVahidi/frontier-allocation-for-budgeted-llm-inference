@@ -55,15 +55,18 @@ Use only on **existing** candidate pools; compare on **matched** paired slices w
 python scripts/apply_selected_selector_to_paired_validation.py --help
 ```
 
-## External-loss 88-case diagnostics (Wulver)
+## External-loss 88-case diagnostics + related cluster jobs (Wulver)
 
-Read `docs/FULL_SCORE_COMPLETION_88_EXTERNAL_LOSSES_20260502.md` before any paid scoring.
+Read `docs/FULL_SCORE_COMPLETION_88_EXTERNAL_LOSSES_20260502.md` before any paid scoring. **Do not submit casually:** verify partition/QoS/workspace env per cluster policy (`docs/FAST_SELECTOR_EXECUTION_POLICY.md`).
 
 | Batch file | Purpose |
 |------------|---------|
-| `batch/run_full_pipeline_best_selector_on_88_external_losses_wulver.sbatch` | Full pipeline + selector on 88-case slice |
-| `batch/run_full_score_completion_on_88_external_losses_wulver.sbatch` | Complete missing verifier scores + rerun selector (bounded calls) |
-| `batch/run_main3_external_vs_best3_internal_100case_wulver.sbatch` | 100-case main external vs internal comparison wrapper |
+| `batch/run_full_pipeline_best_selector_on_88_external_losses_wulver.sbatch` | Full pipeline + selector on **88** external-loss slice (**1018219-era** artefacts may show missing verifier scores vs **1018248**) |
+| `batch/run_full_score_completion_on_88_external_losses_wulver.sbatch` | **Score completion merge + selector rerun** (bounded calls; **`1018248`**) |
+| `batch/run_main3_external_vs_best3_internal_100case_wulver.sbatch` | **1018203‑class** GSM8k main external-vs-internal (**100**/method harness) |
+| `batch/run_strategy_seeded_discovery_on_66_gold_absent_wulver.sbatch` | Strategy-seeded discovery pilot on curated **66** gold-absent slice (**`1018304`**) |
+| `batch/run_strategy_seeded_discovery_final_check_wulver.sbatch` | Fair-check / alignment audit cohort for **`direct_reserve_strategy_seeded_semantic_frontier_v2_final`** |
+| `batch/run_gold_absent_path_gap_diagnostic_wulver.sbatch` | Preferred **gold-absent path-gap proxy** exporter (**1018287** bundle family) |
 
 Submit (example):
 
@@ -83,7 +86,7 @@ sbatch batch/run_full_score_completion_on_88_external_losses_wulver.sbatch
 
 ## What not to run casually
 
-- Full **`outputs/` regeneration** or large **`cohere_real_model_cost_normalized_validation`** sweeps without an explicit experiment plan and API bound.
+- Full **`outputs/` regeneration**, **main3-vs-best3** long harnesses, or large **`cohere_real_model_cost_normalized_validation`** sweeps without an explicit experiment plan + API/token budget (**includes `run_main3_external_vs_best3_internal_100case_wulver.sbatch`**).
 - **Paper artifact** regeneration (`scripts/paper/run_all_neurips_paper_artifacts.py`) when you only need selector health checks.
 - **Historical** scripts in `scripts/HISTORICAL_INDEX.md` unless reproducing provenance.
 

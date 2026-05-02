@@ -42,6 +42,8 @@ Bundles such as `outputs/cohere_real_model_cost_normalized_validation_<timestamp
 
 **Mock-backed vs verifier-backend provenance:** Some selectors support a mock verifier default (e.g. DR-v2 outcome-verifier rerank). Treat timestamps where the verifier backend env was **unset** as **mock-backed diagnostic provenance** only. A separate timestamp with `DR_V2_OV_RERANK_VERIFIER_BACKEND=cohere` is required before claiming a **real Cohere outcome-verifier** backend experiment. See `docs/OUTPUTS_ARTIFACT_INDEX.md`.
 
+**Headline GSM8k external comparator slice (engineering diagnostic, not dominance):** The repo tracks a finalized **narrow 100-case / six-method** **`openai/gsm8k`** harness (**Slurm 1018203**) distinguishing **`external_l1_max`** from best listed internal **`strict_gate1_cap_k6`** — see **`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`**.
+
 ## Non-review/private/local-only class
 
 Artifacts in local-only folders, machine-specific caches, temporary debug outputs, and private execution environments are non-review evidence. They must never be used as claim-bearing manuscript evidence unless promoted through canonical documented regeneration.

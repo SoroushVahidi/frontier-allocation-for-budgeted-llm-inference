@@ -6,11 +6,27 @@ Maps where to find canonical interpretation, runnable entry points, selector art
 
 ## Current navigation (fast path)
 
+- `../README.md` — short interpretation link hub (**start here hierarchy** echoed below)
 - `../START_HERE_CURRENT.md`
+- `CURRENT_PROJECT_STATUS.md`
+- `CURRENT_EXTERNAL_BASELINE_GAP.md`
+- `FAILED_AND_NEGATIVE_RESULTS_INDEX.md`
+- `DISCOVERY_FAILURE_TAXONOMY.md`
+- `OUTPUT_RETENTION_POLICY_CURRENT.md`
 - `METHOD_STATUS_TABLE.md`
 - `ARTIFACT_STATUS_TABLE.md`
 - `../scripts/CURRENT_RUNBOOK.md`
 - `REPOSITORY_HYGIENE_AUDIT_20260502.md`
+
+## Recommended interpretation hierarchy
+
+1. `../START_HERE_CURRENT.md` — minimally sufficient guardrails
+2. `CURRENT_PROJECT_STATUS.md` — engineering + research synthesis
+3. `CURRENT_EXTERNAL_BASELINE_GAP.md` — bounded **`external_l1_max`** comparison narrative
+4. `FAILED_AND_NEGATIVE_RESULTS_INDEX.md` + `DISCOVERY_FAILURE_TAXONOMY.md` — non-headline pilots & vocabulary
+5. `ARTIFACT_STATUS_TABLE.md` — interpret `outputs/` trees before citing numbers
+
+Retention / cleanup philosophy: **`OUTPUT_RETENTION_POLICY_CURRENT.md`** and **`LOCAL_ONLY_CLEANUP_CANDIDATES_20260502.md`** (brainstorm-only).
 
 ## Canonical onboarding path
 
