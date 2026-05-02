@@ -4,23 +4,23 @@
 
 | Field | Value |
 |---|---|
-| status | `submitted_to_wulver` |
+| status | `completed_wulver` |
 | cluster | Wulver (Slurm) |
 | job_id | `1017718` |
+| ended (UTC) | `2026-05-01T21:24:09` (Slurm `sacct`; wall ~37m30s) |
 | output_dir | `outputs/l1_loss_decomposition_best_selector_20260502T004638Z` |
 | max_calls (generator cap) | `12400` (targets ~100 paired triples per estimator) |
-| scientific conclusion | _pending — long-running job_ |
+| scientific conclusion | 100 paired cases; L1 accuracy **0.76**, selected **0.67**, Δ **−0.09**; bottleneck **discovery_coverage_dominant** (see `l1_loss_decomposition_report.md` in output dir) |
 
 ### Latest Slurm log
 
 - Stdout: `logs/slurm/l1_loss_decomposition_best_selector_1017718.out`
 - Stderr: `logs/slurm/l1_loss_decomposition_best_selector_1017718.err`
 
-Continue monitoring:
+Verify job accounting:
 
 ```bash
-squeue -j 1017718
-tail -f logs/slurm/l1_loss_decomposition_best_selector_1017718.out
+sacct -j 1017718 --format=JobID,State,ExitCode,End,Elapsed
 ```
 
 ### Fixes applied before resubmit

@@ -1,0 +1,8 @@
+{
+  "planned_calls_per_paired_case_estimate": 124,
+  "planned_calls_for_100": 12400,
+  "allowed_max_calls": 12400,
+  "maximum_feasible_paired_cases": 100,
+  "recommended_max_calls_for_full_100": 12400,
+  "budget_note": "Estimates are conservative; measured api_calls live in validation manifest."
+}

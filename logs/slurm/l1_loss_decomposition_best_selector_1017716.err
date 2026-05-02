@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_l1_loss_decomposition_for_best_selector.py", line 619, in <module>
+    main()
+  File "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_l1_loss_decomposition_for_best_selector.py", line 614, in main
+    progress["final_output_dir"] = str(out_root.relative_to(REPO_ROOT))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/apps/easybuild/software/Anaconda3/2023.09-0/lib/python3.11/pathlib.py", line 730, in relative_to
+    raise ValueError("{!r} is not in the subpath of {!r}"
+ValueError: 'outputs/l1_loss_decomposition_best_selector_20260501T120000Z' is not in the subpath of '/mmfs1/home/sv96/adaptive-reasoning-budget-allocation' OR one path is relative and the other is absolute.

@@ -1,0 +1,7 @@
+{
+  "stage": "completed",
+  "timestamp_utc": "2026-05-02T00:46:44.867464+00:00",
+  "target_scored_effective": 100,
+  "cap_limited": false,
+  "final_output_dir": "outputs/l1_loss_decomposition_best_selector_20260502T004638Z"
+}

@@ -1,0 +1,4 @@
+provider,method,mean_accuracy,accuracy_per_1k_tokens,accuracy_per_estimated_dollar,total_tokens,estimated_total_cost_usd
+cohere,direct_reserve_semantic_frontier_v2,0.69,0.0020132935732167763,0.5024488922094204,342722.0,1.3732740000000008
+cohere,direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1,0.67,0.001963341196465986,0.48956960985686326,341255.0,1.3685489999999993
+cohere,external_l1_max,0.76,0.002670667983259129,0.6595487471611199,284573.0,1.152303

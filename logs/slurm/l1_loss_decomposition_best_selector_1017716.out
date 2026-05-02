@@ -1,0 +1,23 @@
+==== L1 loss decomposition (best DR-v2 selector) ====
+n0111
+Sat May  2 12:39:24 AM UTC 2026
+working_directory=/mmfs1/home/sv96/adaptive-reasoning-budget-allocation
+git_commit_sha=5a7d2e0923c6fc8d41eee2bd20d6cd556f53e7b5
+Python 3.11.5
+COHERE_API_KEY_present=true
+HF_TOKEN_present=true
+command=python scripts/run_l1_loss_decomposition_for_best_selector.py --timestamp 20260501T120000Z --provider cohere --dataset openai/gsm8k --split test --seed 20260501 --budget 4 --target-scored 100 --cohere-model command-a-03-2025 --allow-api --max-calls 600 --output-dir outputs/l1_loss_decomposition_best_selector_20260501T120000Z --resume
+Cohere readiness check passed: tiny authenticated request succeeded.
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=external_l1_max attempted=1 scored=1 status=scored example_id=openai_gsm8k_0
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=external_l1_max attempted=2 scored=2 status=scored example_id=openai_gsm8k_1
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=external_l1_max attempted=3 scored=3 status=scored example_id=openai_gsm8k_2
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=external_l1_max attempted=4 scored=4 status=scored example_id=openai_gsm8k_3
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=direct_reserve_semantic_frontier_v2 attempted=1 scored=1 status=scored example_id=openai_gsm8k_0
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=direct_reserve_semantic_frontier_v2 attempted=2 scored=2 status=scored example_id=openai_gsm8k_1
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=direct_reserve_semantic_frontier_v2 attempted=3 scored=3 status=scored example_id=openai_gsm8k_2
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=direct_reserve_semantic_frontier_v2 attempted=4 scored=4 status=scored example_id=openai_gsm8k_3
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1 attempted=1 scored=1 status=scored example_id=openai_gsm8k_0
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1 attempted=2 scored=2 status=scored example_id=openai_gsm8k_1
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1 attempted=3 scored=3 status=scored example_id=openai_gsm8k_2
+[progress] provider=cohere dataset=openai/gsm8k seed=20260501 budget=4 method=direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1 attempted=4 scored=4 status=scored example_id=openai_gsm8k_3
+Cohere readiness check passed: tiny authenticated request succeeded.
