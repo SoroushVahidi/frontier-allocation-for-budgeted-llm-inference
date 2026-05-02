@@ -37,7 +37,7 @@ A selected-selector audit passed after correcting a stale selector-casebook poin
 
 Important scope boundary: this is a **working selector for the recovery/selector-evidence phase**, not a runtime promotion and not an `external_l1_max` defeat claim.
 
-## Current evidence ledger
+## Current evidence and open experiments
 
 Before using any output folder as evidence, read:
 
@@ -45,7 +45,13 @@ Before using any output folder as evidence, read:
 docs/CURRENT_EVIDENCE_LEDGER_20260501.md
 ```
 
-The ledger classifies recent artifacts as claim-eligible, diagnostic, scaffold/tooling, blocked/non-evidence, or historical provenance.
+Before launching or requesting another experiment, read and update:
+
+```text
+docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md
+```
+
+The evidence ledger classifies recent artifacts as claim-eligible, diagnostic, scaffold/tooling, blocked/non-evidence, or historical provenance. The open-experiments ledger records unanswered scientific questions, required scripts, blockers, and success criteria.
 
 Current bottom line:
 
@@ -76,6 +82,7 @@ A literature-faithful self-verification / condition-mask-verification scaffold h
 |---|---|
 | Current project state | `docs/CURRENT_PROJECT_STATUS.md` |
 | Current evidence ledger | `docs/CURRENT_EVIDENCE_LEDGER_20260501.md` |
+| Open experiments / evidence gaps | `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md` |
 | Clean navigation / organization guide | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` |
 | Current selector decision | `docs/CURRENT_SELECTOR_DECISION.md` |
 | Full documentation map | `docs/DOCS_INDEX.md` |
@@ -105,7 +112,7 @@ Important selector-evidence families:
 - `outputs/self_verification_cmv_*` — CMV/self-verification baseline tooling and pilot outputs; do not treat as performance evidence unless full CMV coverage exists.
 - `outputs/l1_loss_decomposition_best_selector_*` — L1-loss decomposition tooling outputs; only larger paired real-Cohere runs answer the bottleneck question.
 
-Historical selector artifacts and earlier negative baselines remain useful for provenance, but should not override `configs/selected_selector_current.json`, `docs/CURRENT_SELECTOR_DECISION.md`, or `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`.
+Historical selector artifacts and earlier negative baselines remain useful for provenance, but should not override `configs/selected_selector_current.json`, `docs/CURRENT_SELECTOR_DECISION.md`, `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`, or `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md`.
 
 ## API-cost rule
 
@@ -120,6 +127,7 @@ For selector and L1-loss-decomposition work:
 5. Keep verifier inputs gold/oracle/evaluation-only free.
 6. After paid scoring, immediately run the paired evaluation and export compact artifacts.
 7. If a run is blocked or cap-limited, label it diagnostic/non-evidence rather than writing fake accuracy rows.
+8. Update `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md` whenever an experiment starts, finishes, fails, or is deprioritized.
 
 See `docs/FAST_SELECTOR_EXECUTION_POLICY.md`.
 
@@ -182,12 +190,13 @@ python scripts/paper/run_all_neurips_paper_artifacts.py
 
 The immediate engineering priority is **not another recovery-selector choice**. The current selector is selected and audited for the recovery track.
 
-Next useful experiments:
+Next useful experiments are tracked in `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md`. The current top priority is:
 
-1. Complete a paired L1-loss-decomposition run at the largest feasible real-Cohere case count, preferably 100 paired cases.
-2. Run a fully scored paired selector comparison against `external_l1_max` with zero missing selector scores.
-3. Compare self-consistency and the Cohere outcome-verifier selector on the same paired cases.
-4. If fully scored comparisons show selector errors are no longer dominant, move effort to discovery/coverage: getting gold answers into the candidate tree.
+```text
+EXP-L1-DECOMP-100
+```
+
+which asks whether, after applying the best selector/reranker, remaining losses to `external_l1_max` are mostly gold-absent-from-tree or gold-present-but-not-selected.
 
 ## Canonical paper-facing artifacts
 
@@ -203,7 +212,7 @@ Canonical output roots:
 - `outputs/paper_plot_data/`
 - `outputs/paper_figures/`
 
-These are claim-eligible only when interpreted through `docs/PAPER_SOURCE_OF_TRUTH.md`, `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`, and `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`.
+These are claim-eligible only when interpreted through `docs/PAPER_SOURCE_OF_TRUTH.md`, `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`, `docs/CURRENT_EVIDENCE_LEDGER_20260501.md`, and `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md`.
 
 ## Method-surface distinction
 
