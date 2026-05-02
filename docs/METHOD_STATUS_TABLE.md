@@ -31,6 +31,10 @@ Conservative classification of **important method and selector names** appearing
 2. **`external_l1_max`** is the **baseline to beat** in much of the real-model narrative; repository docs **forbid** careless dominance claims (`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`).
 3. **`direct_reserve_semantic_frontier_v2`** is a **central active internal generator family**, but **current evidence does not establish broad superiority over `external_l1_max`**.
 
+## Recent Wulver diagnostic provenance (2026-05-02)
+
+Slurm bookkeeping for **88-loss** verifier merge (**1018248**) and preferred **gold-absent path-gap** proxy diagnostic (**1018287**) is summarized in **`docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md`** (`outputs/last_10_wulver_jobs_audit_20260502T220857Z/` bundle). Interpret path-gap CSV/JSON strictly as proxy diagnostics (`caveat` field).
+
 ## PRM / process-rerank naming
 
 - **Live final-answer PRM rerank row:** `direct_reserve_semantic_frontier_v2_prm_step_verifier_rerank_v1`.
