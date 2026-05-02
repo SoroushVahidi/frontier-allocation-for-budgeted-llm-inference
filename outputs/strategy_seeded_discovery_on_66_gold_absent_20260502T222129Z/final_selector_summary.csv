@@ -1,0 +1,2 @@
+phase_b_status,total_cases,correct_count,wrong_count,final_accuracy_on_66,newly_fixed_count_vs_baseline,newly_broken_count_vs_baseline,missing_score_count,fallback_due_to_missing_score_count,selected_candidate_not_in_pool_count,verifier_scores_added_count,expected_verifier_api_calls,actual_verifier_api_calls,note
+skipped_discovery_only_eval,66,,,,,,66,0,,0,0,0,Run outcome-verifier selector with bounded plan in a follow-up job if needed.

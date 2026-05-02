@@ -1,0 +1,9 @@
+{
+  "previous_output_dir": "outputs/full_pipeline_best_selector_on_88_external_losses_20260502T210610Z",
+  "run_name": "full_score_completed_best_selector_on_88_external_losses",
+  "run_type": "B",
+  "score_completion_output_dir": "outputs/full_score_completion_88_external_losses_20260502T213834Z",
+  "selected_config_path": "configs/selected_selector_current.json",
+  "selected_full_internal_method": "direct_reserve_semantic_frontier_v2",
+  "selected_selector": "outcome_verifier_answer_group_selector_v1"
+}

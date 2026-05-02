@@ -1,0 +1,12 @@
+{
+  "baseline_method": "direct_reserve_semantic_frontier_v2",
+  "cases_total": 66,
+  "delta_gold_present_in_candidate_groups": -7,
+  "delta_gold_present_in_tree": -7,
+  "discovery_recovered_count": 1,
+  "interpretation": "Positive delta_gold_present_in_candidate_groups is the primary success signal for this pilot; subset-only; proxy semantic gate. external_l1_max counts are reference-only from cached JSONL, not a broad superiority claim.",
+  "new_method": "strategy_seeded_semantic_diversity_frontier_v1",
+  "reference_external_gold_present_in_candidate_groups_count": 0,
+  "reference_external_gold_present_in_tree_count": 0,
+  "reference_external_method": "external_l1_max"
+}

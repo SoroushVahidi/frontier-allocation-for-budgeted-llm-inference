@@ -1,0 +1,73 @@
+{
+  "artifact_family": "cohere_real_model_cost_normalized_validation",
+  "timestamp": "20260502T222129Z_SSDFV1",
+  "providers": [
+    "cohere"
+  ],
+  "models": {
+    "cohere": "command-r-plus-08-2024",
+    "openai": "gpt-4o-mini"
+  },
+  "datasets": [
+    "openai/gsm8k"
+  ],
+  "budgets": [
+    6,
+    8
+  ],
+  "seeds": [
+    11,
+    23,
+    37,
+    41,
+    53,
+    67
+  ],
+  "methods": [
+    "strategy_seeded_semantic_diversity_frontier_v1"
+  ],
+  "target_scored_per_slice": 128,
+  "max_examples": 128,
+  "provider_status": {
+    "cohere": {
+      "ready": "1",
+      "reason": "ok"
+    }
+  },
+  "pricing": {
+    "input_cost_per_1k": 0.003,
+    "output_cost_per_1k": 0.015
+  },
+  "save_branch_traces": false,
+  "ov_verifier_environment": {
+    "DR_V2_OV_RERANK_VERIFIER_BACKEND": "unset",
+    "DR_V2_OV_RERANK_COHERE_MODEL": "unset",
+    "COHERE_API_KEY_present": "yes"
+  },
+  "prm_step_verifier_environment": {
+    "DR_V2_PRM_STEP_VERIFIER_BACKEND": "unset",
+    "DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL": "unset",
+    "COHERE_API_KEY_present": "yes"
+  },
+  "branch_trace_stats": {
+    "n_traces": 0,
+    "n_branches": 0,
+    "n_answer_groups": 0
+  },
+  "outputs": [
+    "manifest.json",
+    "slice_summary.csv",
+    "method_summary.csv",
+    "cost_normalized_summary.csv",
+    "pairwise_comparisons.csv",
+    "incomplete_slices.csv",
+    "claim_safety_table.csv",
+    "per_example_records.jsonl",
+    "progress_heartbeat.jsonl",
+    "raw/failures.jsonl",
+    "candidate_branch_table.csv",
+    "answer_group_table.csv",
+    "per_case_trace_index.csv",
+    "traces/"
+  ]
+}

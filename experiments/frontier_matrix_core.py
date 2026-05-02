@@ -40,6 +40,9 @@ from experiments.prm_partial_scorer import HeuristicPRMPartialScorer
 from experiments.data import PilotExample, extract_final_answer
 from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
 from experiments.scoring import LearnedBTBranchScorer, ScoreConfig, SimpleBranchScorer
+from experiments.direct_reserve_strategy_seeded_semantic_frontier_v2_final import (
+    DirectReserveStrategySeededSemanticFrontierV2FinalController,
+)
 from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     ROOT_STRATEGY_FAMILY_SPECS,
     StrategySeededSemanticDiversityFrontierV1Controller,
@@ -1215,6 +1218,44 @@ def build_frontier_strategies(
             method_name="strategy_seeded_semantic_diversity_frontier_v1",
             strategy_seed_max_actions=1,
             **strategy_seeded_outer_kwargs,
+        )
+        strict_f3_v2_final_inner_cfg: dict[str, Any] = dict(strict_f3_base_cfg)
+        strict_f3_v2_final_inner_cfg.update(
+            {
+                "duplicate_penalty": 0.17,
+                "repeat_expand_family_penalty_weight": 0.15,
+            }
+        )
+        v2_final_outer_kwargs: dict[str, Any] = {
+            "strict_controller_factory": lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="direct_reserve_strategy_seeded_semantic_frontier_v2_final_inner",
+                **strict_f3_v2_final_inner_cfg,
+                diagnostic_semantic_maturation=True,
+                diagnostic_semantic_maturation_min_depth=2,
+                diagnostic_log_semantic_families=True,
+            ),
+            "direct_prompt_style": (
+                "Solve this completely with a full, careful chain of reasoning and arithmetic checks. "
+                "Then output only the final numeric answer in \\boxed{}."
+            ),
+            "direct_prompt_styles": [],
+            "direct_token_budget": 640,
+            "gate_top_support_threshold": 2.0,
+            "gate_top2_gap_threshold": 2.0,
+            "gate_entropy_threshold": -1.0,
+            "frontier_override_min_maturity": 3,
+        }
+        specs["direct_reserve_strategy_seeded_semantic_frontier_v2_final"] = DirectReserveStrategySeededSemanticFrontierV2FinalController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_strategy_seeded_semantic_frontier_v2_final",
+            strategy_seed_min_actions=2,
+            min_actions_reserved_for_frontier=1,
+            **v2_final_outer_kwargs,
         )
         specs["direct_reserve_semantic_frontier_v2_selection_fix_v1"] = DirectReserveFrontierGateV2SelectionFixV1Controller(
             generator_factory(),

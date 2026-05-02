@@ -1,0 +1,8 @@
+{
+  "submitted_job_id": "1018219",
+  "batch_script": "batch/run_full_pipeline_best_selector_on_88_external_losses_wulver.sbatch",
+  "output_dir": "outputs/full_pipeline_best_selector_on_88_external_losses_20260502T210610Z",
+  "discovery_output_dir": "outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY",
+  "stdout_log": "logs/slurm/full_pipeline_best_selector_on_88_external_losses_1018219.out",
+  "stderr_log": "logs/slurm/full_pipeline_best_selector_on_88_external_losses_1018219.err"
+}

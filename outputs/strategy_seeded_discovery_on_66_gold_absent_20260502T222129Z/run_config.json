@@ -1,0 +1,30 @@
+{
+  "allowed_example_ids_strategy_seeded_jsonl": "outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/allowed_example_ids_strategy_seeded.jsonl",
+  "baseline_discovery_jsonl": "outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+  "cohere_model": "command-r-plus-08-2024",
+  "discovery_script_invoked": "strategy_seeded_semantic_diversity_frontier_v1",
+  "expected_case_rows": 66,
+  "exploration_hyperparameters": {
+    "allow_early_commit_if_verifier_confident": false,
+    "direct_reserve_enabled": true,
+    "frontier_override_min_maturity": 3,
+    "inner_diagnostic_semantic_maturation_min_depth": 2,
+    "min_strategy_families_before_commit_proxy": 3,
+    "semantic_gate_is_proxy": true,
+    "strategy_seed_max_actions_per_root": 1
+  },
+  "path_gap_csv": "outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/per_case_path_gap_diagnostic.csv",
+  "sum_budget": 466,
+  "uniq_budget_list": [
+    6,
+    8
+  ],
+  "uniq_seed_list": [
+    11,
+    23,
+    37,
+    41,
+    53,
+    67
+  ]
+}

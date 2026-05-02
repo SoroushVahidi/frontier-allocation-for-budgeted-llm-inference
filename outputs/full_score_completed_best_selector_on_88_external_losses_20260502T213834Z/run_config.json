@@ -1,0 +1,25 @@
+{
+  "expected_api_calls": 134,
+  "selector_config_snapshot": {
+    "caveats": [
+      "Current-correct risk cannot be fully validated from committed artifacts in this branch."
+    ],
+    "decision_package": "outputs/final_selector_decision_20260501T175547Z",
+    "dedupe_verifier_items": true,
+    "evidence_package": "outputs/unified_selector_evidence_20260501T145906Z",
+    "min_verifier_margin": 0.0,
+    "no_gold_features": true,
+    "require_trace_for_override": true,
+    "score_cache_path": "outputs/outcome_verifier_scores_cohere_smoke10_20260501T162328Z/verifier_scores.jsonl",
+    "scorer_mode": "cached_jsonl",
+    "selected_based_on": "Cohere cached verifier beat trace-quality on net fixes with zero breaks.",
+    "selected_margin": 0.0,
+    "selected_selector_casebook_path": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_casebook.jsonl",
+    "selected_selector_output_dir": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z",
+    "selected_selector_summary_path": "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_summary.json",
+    "selector_name": "outcome_verifier_answer_group_selector_v1",
+    "status": "chosen for recovery selector track; requires current-correct risk validation before runtime promotion."
+  },
+  "verifier_backend": "cohere",
+  "verifier_model": "command-a-03-2025"
+}

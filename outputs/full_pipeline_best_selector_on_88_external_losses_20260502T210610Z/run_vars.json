@@ -1,0 +1,7 @@
+{
+  "DATASETS": "openai/gsm8k",
+  "SEEDS": "11,23,37,41,53,67",
+  "BUDGETS": "4,6,8",
+  "EXPECTED_CASES": 88,
+  "EXPECTED_MAX_API_CALLS_BOUND": 88
+}

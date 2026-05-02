@@ -1,0 +1,16 @@
+{
+  "actual_verifier_api_calls": 0,
+  "correct_count": "",
+  "expected_verifier_api_calls": 0,
+  "fallback_due_to_missing_score_count": 0,
+  "final_accuracy_on_66": "",
+  "missing_score_count": 66,
+  "newly_broken_count_vs_baseline": "",
+  "newly_fixed_count_vs_baseline": "",
+  "note": "Run outcome-verifier selector with bounded plan in a follow-up job if needed.",
+  "phase_b_status": "skipped_discovery_only_eval",
+  "selected_candidate_not_in_pool_count": "",
+  "total_cases": 66,
+  "verifier_scores_added_count": 0,
+  "wrong_count": ""
+}

@@ -1,0 +1,2 @@
+provider,method,n_slices,total_scored_examples,mean_accuracy_across_slices,mean_total_tokens_per_scored_example,mean_latency_seconds_per_scored_example,estimated_total_cost_usd
+cohere,strategy_seeded_semantic_diversity_frontier_v1,12,66,0.4934313371813372,2327.7727272727275,11.584904690446129,0.736755

@@ -1,0 +1,43 @@
+{
+  "baseline_method": "direct_reserve_semantic_frontier_v2",
+  "claim_boundary": "Selected gold-absent / gold-not-in-groups diagnostic subset; gold used only post-hoc (no dominance vs external_l1_max).",
+  "filtered_case_count": 66,
+  "method_new": "strategy_seeded_semantic_diversity_frontier_v1",
+  "reference_external": "external_l1_max",
+  "strategy_root_specs": [
+    {
+      "id": "direct_arithmetic",
+      "prompt_digest": "Solve directly using arithmetic: keep quantities explicit and check each intermediate computation. Then output only the final numeric answer in \\boxed{}."
+    },
+    {
+      "id": "algebra_equation",
+      "prompt_digest": "Set up algebraic equations representing the quantities in the word problem before you compute final numbers; solve symbolically-first where helpful. Output only the final numeric answer in \\boxed{}."
+    },
+    {
+      "id": "quantity_table_units",
+      "prompt_digest": "Build a compact table listing each quantity with units row-by-row, then reconcile subtotals. Output only the final numeric answer in \\boxed{}."
+    },
+    {
+      "id": "constraint_decomposition",
+      "prompt_digest": "Decompose into explicit numeric constraints/equations and satisfy them stepwise in a dependency order (no skipping intermediate unknowns when needed). Output only the final numeric answer in \\boxed{}."
+    },
+    {
+      "id": "backward_check_or_inverse_reasoning",
+      "prompt_digest": "Use backward chaining or sanity checks: test candidate totals against partial constraints before locking an answer (still derive the answer honestly from the narrative). Output only the final numeric answer in \\boxed{}."
+    }
+  ],
+  "sum_budget_cases": 466,
+  "timestamp_utc": "20260502T222129Z",
+  "unique_budgets": [
+    6,
+    8
+  ],
+  "unique_seeds": [
+    11,
+    23,
+    37,
+    41,
+    53,
+    67
+  ]
+}

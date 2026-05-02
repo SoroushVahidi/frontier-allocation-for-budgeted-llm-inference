@@ -61,6 +61,10 @@ METHODS: dict[str, dict[str, Any]] = {
         "runtime": "strategy_seeded_semantic_diversity_frontier_v1",
         "enable_output_repair": True,
     },
+    "direct_reserve_strategy_seeded_semantic_frontier_v2_final": {
+        "runtime": "direct_reserve_strategy_seeded_semantic_frontier_v2_final",
+        "enable_output_repair": True,
+    },
 }
 
 DEFAULT_PROVIDERS = "cohere"

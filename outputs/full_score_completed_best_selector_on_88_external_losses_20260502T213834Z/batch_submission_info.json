@@ -1,0 +1,8 @@
+{
+  "submitted_job_id": "1018248",
+  "batch_script": "batch/run_full_score_completion_on_88_external_losses_wulver.sbatch",
+  "score_completion_output_dir": "outputs/full_score_completion_88_external_losses_20260502T213834Z",
+  "final_rerun_output_dir": "outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z",
+  "stdout_log": "logs/slurm/full_score_completion_88_external_losses_1018248.out",
+  "stderr_log": "logs/slurm/full_score_completion_88_external_losses_1018248.err"
+}

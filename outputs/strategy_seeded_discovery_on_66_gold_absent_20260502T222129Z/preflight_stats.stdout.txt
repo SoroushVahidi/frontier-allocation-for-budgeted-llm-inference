@@ -1,0 +1,11 @@
+{
+  "preflight": true,
+  "case_count": 66,
+  "expect": 66,
+  "sum_budget_ceiling_hint": 466,
+  "budgets": [
+    6,
+    8
+  ],
+  "seeds_count": 6
+}

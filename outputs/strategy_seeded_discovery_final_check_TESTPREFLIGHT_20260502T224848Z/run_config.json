@@ -1,0 +1,15 @@
+{
+  "audit_only": false,
+  "baseline_jsonl": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+  "ceil_generations": 8000,
+  "cohere_timestamp": "",
+  "output_root": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs",
+  "path_gap_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/per_case_path_gap_diagnostic.csv",
+  "preflight_only": true,
+  "previous_v1_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/per_case_discovery_results.csv",
+  "selected_100_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/best_methods_on_external_losses_20260430T195200Z/selected_100_cases.csv",
+  "selector_per_case_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/per_case_results.csv",
+  "skip_cohere": false,
+  "still_lost_csv": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/still_lost_cases.csv",
+  "timestamp": "TESTPREFLIGHT_20260502T224848Z"
+}

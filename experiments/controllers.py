@@ -6903,6 +6903,17 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         self.frontier_override_min_maturity = max(1, int(frontier_override_min_maturity))
         self.method_name = method_name
 
+    def _stop_additional_direct_reserve_after_attempt(
+        self,
+        *,
+        attempt_index: int,
+        question: str,
+        direct_answers: list[str | None],
+        last_attempt_trace_rows: list[dict[str, Any]] | None = None,
+    ) -> bool:
+        """Hook for subclasses to skip remaining root strategy seeds (e.g. when direct pool is already stable)."""
+        return False
+
     def run(self, question: str, gold_answer: str) -> MethodResult:
         reserve_attempts = self._direct_reserve_attempts()
         per_attempt_cap = max(1, int(round(self.direct_token_budget / self.direct_token_per_action)))
@@ -6919,6 +6930,13 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             direct_answers.append(ans)
             direct_actions += int(used)
             direct_trace.extend(trace_rows)
+            if self._stop_additional_direct_reserve_after_attempt(
+                attempt_index=i,
+                question=question,
+                direct_answers=list(direct_answers),
+                last_attempt_trace_rows=trace_rows,
+            ):
+                break
 
         direct_counts: Counter[str] = Counter((_normalize_answer(a) or "__unknown__") for a in direct_answers if a is not None)
         sorted_counts = sorted(direct_counts.items(), key=lambda kv: kv[1], reverse=True)

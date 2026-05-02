@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/apps/easybuild/software/Anaconda3/2023.09-0/bin/python",
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/scripts/run_cohere_real_model_cost_normalized_validation.py",
+    "--timestamp",
+    "FINCHK_20260502T225251Z",
+    "--methods",
+    "direct_reserve_strategy_seeded_semantic_frontier_v2_final",
+    "--providers",
+    "cohere",
+    "--datasets",
+    "openai/gsm8k",
+    "--budgets",
+    "6,8",
+    "--seeds",
+    "11,23,37,41,53,67",
+    "--target-scored-per-slice",
+    "120",
+    "--max-examples",
+    "120",
+    "--allowed-example-ids-file",
+    "/home/sv96/adaptive-reasoning-budget-allocation/outputs/strategy_seeded_discovery_final_check_20260502T225251Z/allowed_cases_v2_final.jsonl",
+    "--output-root",
+    "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs"
+  ]
+}

@@ -1,0 +1,5 @@
+case_id,reason
+openai/gsm8k::openai_gsm8k_576::53::8,no_external_record_for_matching_key
+openai/gsm8k::openai_gsm8k_158::53::8,no_external_record_for_matching_key
+openai/gsm8k::openai_gsm8k_576::53::6,no_external_record_for_matching_key
+openai/gsm8k::openai_gsm8k_158::53::6,no_external_record_for_matching_key

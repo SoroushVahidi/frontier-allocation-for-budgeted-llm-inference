@@ -1,0 +1,15 @@
+dataset,example_id,seed,budget,gold_answer
+openai/gsm8k,openai_gsm8k_9,11,6,12
+openai/gsm8k,openai_gsm8k_18,23,6,16
+openai/gsm8k,openai_gsm8k_2,23,6,159
+openai/gsm8k,openai_gsm8k_1,37,6,2
+openai/gsm8k,openai_gsm8k_2,37,6,450
+openai/gsm8k,openai_gsm8k_1,41,6,75
+openai/gsm8k,openai_gsm8k_1,53,6,70
+openai/gsm8k,openai_gsm8k_158,53,6,34
+openai/gsm8k,openai_gsm8k_19,53,6,224000
+openai/gsm8k,openai_gsm8k_6,11,8,32
+openai/gsm8k,openai_gsm8k_17,23,8,73
+openai/gsm8k,openai_gsm8k_4,23,8,68
+openai/gsm8k,openai_gsm8k_5,23,8,280
+openai/gsm8k,openai_gsm8k_158,53,8,34

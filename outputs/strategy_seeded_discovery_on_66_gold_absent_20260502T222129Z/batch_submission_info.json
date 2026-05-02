@@ -1,0 +1,18 @@
+{
+  "case_slop": 3,
+  "expected_budget_sum_generation_ceiling": 466,
+  "expected_cases": 66,
+  "max_sum_budget_guard": 620,
+  "orchestration_script": "scripts/run_strategy_seeded_discovery_on_66_gold_absent.py",
+  "output_dir": "outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z",
+  "paths": {
+    "baseline_jsonl": "outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+    "path_gap_csv": "outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/per_case_path_gap_diagnostic.csv",
+    "selected_100_csv": "outputs/best_methods_on_external_losses_20260430T195200Z/selected_100_cases.csv",
+    "still_lost_csv": "outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/still_lost_cases.csv"
+  },
+  "run_stamp": "20260502T222129Z",
+  "submitted_job_id": "1018304",
+  "submitted_via": "batch/run_strategy_seeded_discovery_on_66_gold_absent_wulver.sbatch",
+  "validation_subdirectory": "outputs/strategy_seeded_discovery_on_66_gold_absent_20260502T222129Z/cohere_real_model_cost_normalized_validation_20260502T222129Z_SSDFV1"
+}

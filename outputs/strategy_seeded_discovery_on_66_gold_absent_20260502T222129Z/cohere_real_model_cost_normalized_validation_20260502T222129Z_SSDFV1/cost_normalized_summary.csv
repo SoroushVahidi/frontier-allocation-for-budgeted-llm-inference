@@ -1,0 +1,2 @@
+provider,method,mean_accuracy,accuracy_per_1k_tokens,accuracy_per_estimated_dollar,total_tokens,estimated_total_cost_usd
+cohere,strategy_seeded_semantic_diversity_frontier_v1,0.4934313371813372,0.003211753576258598,0.6697359871074335,153633.0,0.736755

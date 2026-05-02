@@ -1,0 +1,12 @@
+{
+  "case_count": 66,
+  "case_count_slop": 3,
+  "estimated_generation_completion_calls_ceiling_cases_times_budget": 466,
+  "expect_case_count": 66,
+  "sum_budget_ceiling_hint": 466,
+  "uniq_budget_list": [
+    6,
+    8
+  ],
+  "uniq_seed_count": 6
+}

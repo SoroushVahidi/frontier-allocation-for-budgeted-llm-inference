@@ -1,0 +1,8 @@
+{
+  "discovery_jsonl": "outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+  "job_id": "1018287",
+  "note": "Populate job_id after sbatch from cluster environment.",
+  "output_dir": "outputs/gold_absent_path_gap_diagnostic_20260502T215957Z",
+  "previous_run_dir": "outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z",
+  "submitted_via": "batch/run_gold_absent_path_gap_diagnostic_wulver.sbatch"
+}
