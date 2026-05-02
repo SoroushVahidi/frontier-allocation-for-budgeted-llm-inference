@@ -1,0 +1,6 @@
+# Salvaged L1 loss decomposition
+
+selected_method=direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1
+paired_cases=0
+incomplete_cases=76
+claim_safety_status=incomplete_not_evidence

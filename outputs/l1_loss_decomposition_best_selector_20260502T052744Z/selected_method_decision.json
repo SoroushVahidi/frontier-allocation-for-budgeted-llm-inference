@@ -1,0 +1,5 @@
+{
+  "selected_method_id": "direct_reserve_semantic_frontier_v2",
+  "selected_method_policy": "drv2_only_diagnostic",
+  "selected_method_reason": "paired-case-batch-mode"
+}

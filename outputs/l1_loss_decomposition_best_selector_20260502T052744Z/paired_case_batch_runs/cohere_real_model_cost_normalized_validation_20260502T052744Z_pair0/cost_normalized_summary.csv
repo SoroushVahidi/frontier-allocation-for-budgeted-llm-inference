@@ -1,0 +1,2 @@
+provider,method,mean_accuracy,accuracy_per_1k_tokens,accuracy_per_estimated_dollar,total_tokens,estimated_total_cost_usd
+cohere,external_l1_max,0.0,0.0,0.0,0.0,0.0

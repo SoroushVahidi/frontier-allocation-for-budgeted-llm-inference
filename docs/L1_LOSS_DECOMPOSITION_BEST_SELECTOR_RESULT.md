@@ -1,17 +1,13 @@
-# L1 Loss Decomposition vs Best Selector/Reranker (Cohere)
+# L1 Loss Decomposition — Local status
 
-Run: `20260501T023500Z` (real Cohere calls, paired cases: 1).
+- Method-wise run `20260502T040119Z` produced 128 records with only L1 lane, so paired cases were 0.
+- Paired-case batch mode was added, but fastest paired smoke still yielded 0 paired rows (`20260502T051323Z`).
+- Lane-level checkpoint/resume plumbing was added to preserve lane progress across short sessions.
 
-1. **Selected method compared to L1:** `direct_reserve_semantic_frontier_v2_outcome_verifier_rerank_v1`.
-2. **100-case real Cohere or diagnostic-only?** Diagnostic-only (1 paired case, not 100).
-3. **How many cases did selected method lose to L1?** 0.
-4. **Among those losses, how many had gold absent from the tree?** 0.
-5. **How many had gold present but not selected?** 0.
-6. **How many were parse/canonicalization failures?** 0.
-7. **How many were selector-score/cache-limited?** 0.
-8. **How many were unknown because traces/candidates were missing?** 0.
-9. **Main bottleneck suggestion?** No conclusion from this 1-case slice.
-10. **Safe for manuscript use?** No; this is diagnostic only.
+## Latest lane-smoke (L1-only)
+- Stamp: `20260502T052744Z`
+- Policy: lane-only `external_l1_max`
+- Result: no completed paired decomposition row; runtime diagnostics/summaries emitted.
+- Claim safety: `diagnostic_lane_only` / `incomplete_not_evidence` for scientific claim purposes.
 
-Safe wording:
-- “This is diagnostic unless the run is completed, real-Cohere, paired, and full-coverage.”
+EXP-L1-DECOMP-100 remains open. Full result needs longer-lived runner (cloud/background/Wulver-like environment).
