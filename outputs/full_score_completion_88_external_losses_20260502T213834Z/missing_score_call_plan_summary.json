@@ -1,0 +1,18 @@
+{
+  "expected_api_calls": 134,
+  "fallback_case_count_previous": 81,
+  "input_source_paths": {
+    "base_score_cache": "/mmfs1/home/sv96/adaptive-reasoning-budget-allocation/outputs/outcome_verifier_scores_cohere_smoke10_20260501T162328Z/verifier_scores.jsonl",
+    "discovery_records_jsonl": "outputs/cohere_real_model_cost_normalized_validation_20260502T210610Z_DISCOVERY/per_example_records.jsonl",
+    "selected_cases_csv": "outputs/best_methods_on_external_losses_20260430T195200Z/selected_100_cases.csv"
+  },
+  "items_missing_required_fields": 0,
+  "previous_fallback_due_to_missing_score_count": 81,
+  "previous_missing_score_count": 81,
+  "previous_output_dir": "outputs/full_pipeline_best_selector_on_88_external_losses_20260502T210610Z",
+  "scorer_backend": "cohere",
+  "scorer_model": "command-a-03-2025",
+  "timestamp_utc": "2026-05-02T21:38:42Z",
+  "total_missing_items_to_score": 134,
+  "unique_case_count": 81
+}

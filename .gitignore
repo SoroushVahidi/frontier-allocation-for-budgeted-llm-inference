@@ -55,6 +55,9 @@ outputs/*
 
 # Keep large/raw artifacts ignored even when parent dirs are unignored
 outputs/**/*.jsonl
+# 88-case verifier score-completion diagnostic (Slurm 1018248): bounded plan + monitor only
+!outputs/full_score_completion_88_external_losses_20260502T213834Z/missing_score_call_plan.jsonl
+!outputs/full_score_completion_88_external_losses_20260502T213834Z/monitor_log.jsonl
 outputs/**/*casebook*.csv
 outputs/**/*casebook*.jsonl
 outputs/**/*cache*.jsonl
