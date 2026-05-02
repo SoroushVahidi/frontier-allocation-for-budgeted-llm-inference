@@ -41,6 +41,12 @@ For current evidence classification, read:
 docs/CURRENT_EVIDENCE_LEDGER_20260501.md
 ```
 
+For unanswered scientific questions and required next experiments, read and update:
+
+```text
+docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md
+```
+
 ## Current selected-selector evidence
 
 Final selector decision package:
@@ -138,6 +144,22 @@ For selector work, distinguish three cases:
 
 The selected verifier selector reduced the recovery-track selector bottleneck. The next paired experiments should determine whether remaining wrong cases are now dominated by discovery/coverage, selection mistakes, or missing instrumentation.
 
+## Open experiments and evidence gaps
+
+Canonical backlog:
+
+```text
+docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md
+```
+
+Highest-priority row:
+
+```text
+EXP-L1-DECOMP-100
+```
+
+This experiment must produce the absent-vs-present decomposition for best selector/reranker vs `external_l1_max`. Until that row is complete, do not treat the bottleneck question as answered.
+
 ## Current selector baselines
 
 Because answer-quality selection is a broad research problem, the project should prefer published, defensible selector baselines rather than inventing complicated new selectors.
@@ -164,6 +186,7 @@ For selector and L1-loss-decomposition work:
 5. Keep verifier inputs gold/oracle/evaluation-only free.
 6. Immediately report score coverage and fallback counts for paired comparisons.
 7. If a run is blocked or cap-limited, label it diagnostic/non-evidence rather than writing fake accuracy rows.
+8. Update `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md` when experiments start, finish, fail, or are deprioritized.
 
 ## Safe claim boundary
 
@@ -188,15 +211,19 @@ Not safe yet:
 
 ## Next recommended action
 
-1. Complete a paired L1-loss-decomposition run at the largest feasible real-Cohere case count, preferably 100 paired cases.
+Follow `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md`.
+
+Current top priority:
+
+1. Complete `EXP-L1-DECOMP-100` at the largest feasible real-Cohere case count, preferably 100 paired cases.
 2. Use that decomposition to decide whether the dominant remaining bottleneck is gold absent from the tree, gold present but not selected, or missing traces/instrumentation.
-3. Run a fully scored paired selector comparison against `external_l1_max` with zero missing selector scores.
-4. Compare self-consistency and the Cohere outcome-verifier selector on the same paired cases.
-5. If selector errors are no longer dominant, move effort to discovery/coverage.
+3. Run `EXP-ABSENT-CLOSENESS` on the completed decomposition artifact to see whether gold-absent losses are near misses or far/off-trajectory failures.
+4. Only then decide whether to invest in discovery/coverage or more selector work.
 
 ## Important documents
 
 - `docs/CURRENT_EVIDENCE_LEDGER_20260501.md` — current evidence vs diagnostic/scaffold ledger.
+- `docs/OPEN_EXPERIMENTS_AND_EVIDENCE_GAPS.md` — canonical backlog of unanswered scientific questions and required runs.
 - `docs/REPO_ORGANIZATION_GUIDE_20260501.md` — clean navigation and cleanup rules.
 - `docs/CURRENT_SELECTOR_DECISION.md` — selected selector config and caveats.
 - `docs/LITERATURE_SELECTOR_BASELINES.md` — literature-grounded selector baselines.
