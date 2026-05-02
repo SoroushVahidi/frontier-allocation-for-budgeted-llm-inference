@@ -4,17 +4,26 @@
 
 Maps where to find canonical interpretation, runnable entry points, selector artifacts, and provenance material.
 
+## Current navigation (fast path)
+
+- `../START_HERE_CURRENT.md`
+- `METHOD_STATUS_TABLE.md`
+- `ARTIFACT_STATUS_TABLE.md`
+- `../scripts/CURRENT_RUNBOOK.md`
+- `REPOSITORY_HYGIENE_AUDIT_20260502.md`
+
 ## Canonical onboarding path
 
 1. `../README.md`
-2. `CURRENT_PROJECT_STATUS.md`
-3. `REPO_ORGANIZATION_GUIDE_20260501.md`
-4. `DOCS_INDEX.md`
-5. `CANONICAL_START_HERE.md`
-6. `REPO_MAP.md`
-7. `PAPER_SOURCE_OF_TRUTH.md`
-8. `../scripts/CANONICAL_START_HERE.md`
-9. `CANONICAL_INSTALL_AND_DEV.md`
+2. `../START_HERE_CURRENT.md`
+3. `CURRENT_PROJECT_STATUS.md`
+4. `REPO_ORGANIZATION_GUIDE_20260501.md`
+5. `DOCS_INDEX.md`
+6. `CANONICAL_START_HERE.md`
+7. `REPO_MAP.md`
+8. `PAPER_SOURCE_OF_TRUTH.md`
+9. `../scripts/CANONICAL_START_HERE.md`
+10. `CANONICAL_INSTALL_AND_DEV.md`
 
 ## Selector-phase path
 

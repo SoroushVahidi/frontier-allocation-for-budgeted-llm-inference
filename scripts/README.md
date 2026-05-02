@@ -6,6 +6,8 @@ This file is the runnable-code front door for the repository.
 
 ## Read this first
 
+- **Current short runbook:** [`CURRENT_RUNBOOK.md`](CURRENT_RUNBOOK.md) — health checks, selector rerun, Slurm batch pointers.
+- **Current front door:** [`../START_HERE_CURRENT.md`](../START_HERE_CURRENT.md)
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
 - Canonical internal method decision package: [`../docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`](../docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md)
 - One-minute disambiguation note: [`../docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md`](../docs/MANUSCRIPT_METHOD_VS_OPERATIONAL_DEFAULT.md)

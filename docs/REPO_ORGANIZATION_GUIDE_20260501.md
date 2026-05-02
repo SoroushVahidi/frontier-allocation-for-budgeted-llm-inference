@@ -11,11 +11,13 @@ It is intentionally conservative: it organizes interpretation and navigation wit
 Read in this order for normal work:
 
 1. `README.md`
-2. `docs/CURRENT_PROJECT_STATUS.md`
-3. `docs/DOCS_INDEX.md`
-4. `docs/REPO_MAP.md`
-5. `docs/PAPER_SOURCE_OF_TRUTH.md`
-6. `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
+2. `START_HERE_CURRENT.md` (short current front door; added 2026-05-02)
+3. `docs/CURRENT_PROJECT_STATUS.md`
+4. `docs/METHOD_STATUS_TABLE.md` and `docs/ARTIFACT_STATUS_TABLE.md` (classification pass; added 2026-05-02)
+5. `docs/DOCS_INDEX.md`
+6. `docs/REPO_MAP.md`
+7. `docs/PAPER_SOURCE_OF_TRUTH.md`
+8. `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
 
 For selector work, then read:
 
@@ -30,7 +32,8 @@ For reproducibility / reviewer work, then read:
 1. `docs/CANONICAL_INSTALL_AND_DEV.md`
 2. `docs/REVIEWER_10_MINUTE_REPRODUCTION.md`
 3. `scripts/CANONICAL_START_HERE.md`
-4. `scripts/README.md`
+4. `scripts/CURRENT_RUNBOOK.md` (minimal commands; added 2026-05-02)
+5. `scripts/README.md`
 
 ## Current canonical interpretation layer
 
@@ -39,6 +42,10 @@ The following files should be treated as the active interpretation layer:
 | File | Role |
 |---|---|
 | `README.md` | Short front door and current state. |
+| `START_HERE_CURRENT.md` | Ultra-short current front door and claim guardrails. |
+| `docs/METHOD_STATUS_TABLE.md` | Method/selector ID classification. |
+| `docs/ARTIFACT_STATUS_TABLE.md` | Major `outputs/` family classification. |
+| `scripts/CURRENT_RUNBOOK.md` | Minimal operational commands. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Day-to-day current status and next action. |
 | `docs/DOCS_INDEX.md` | Current/documentation/provenance classification. |
 | `docs/REPO_MAP.md` | Directory and artifact map. |

@@ -4,6 +4,14 @@ This repository studies **frontier allocation for budgeted LLM inference** under
 
 The project asks how to allocate limited inference compute across active reasoning/candidate paths and how to select the final answer from the explored frontier. It is **not** the older binary cheap-vs-revise routing story.
 
+## Current navigation (fast path)
+
+- **Start here:** [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) — short current front door (claims, baselines, bottlenecks, commands).
+- **Method names:** [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) — canonical vs diagnostic vs external baselines.
+- **Output folders:** [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) — what major `outputs/` trees mean.
+- **Operational commands:** [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md) — health checks, selector rerun, Slurm pointers.
+- **Hygiene audit (2026-05-02):** [`docs/REPOSITORY_HYGIENE_AUDIT_20260502.md`](docs/REPOSITORY_HYGIENE_AUDIT_20260502.md) — what changed; no provenance deleted.
+
 ## Current status
 
 The repository is in a **selector-validation and baseline-comparison phase**.
@@ -53,7 +61,11 @@ A literature-faithful self-consistency majority-vote baseline has also been adde
 
 | Need | Read |
 |---|---|
+| Current front door (short) | `START_HERE_CURRENT.md` |
 | Current project state | `docs/CURRENT_PROJECT_STATUS.md` |
+| Method classification | `docs/METHOD_STATUS_TABLE.md` |
+| Artifact / `outputs/` classification | `docs/ARTIFACT_STATUS_TABLE.md` |
+| Current command runbook | `scripts/CURRENT_RUNBOOK.md` |
 | Clean navigation / organization guide | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` |
 | Current selector decision | `docs/CURRENT_SELECTOR_DECISION.md` |
 | Full documentation map | `docs/DOCS_INDEX.md` |

@@ -7,7 +7,12 @@ This index separates current interpretation documents from diagnostic and histor
 | Document | Role |
 |---|---|
 | `README.md` | Short repository entry point. |
+| `START_HERE_CURRENT.md` | Short current front door: baselines, selector scope, safe/unsafe claims, commands. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
+| `docs/METHOD_STATUS_TABLE.md` | Classifies important method/selector IDs (canonical vs diagnostic vs external). |
+| `docs/ARTIFACT_STATUS_TABLE.md` | Classifies major `outputs/` artifact families. |
+| `scripts/CURRENT_RUNBOOK.md` | Minimal operational runbook (health, selector rerun, Slurm pointers). |
+| `docs/REPOSITORY_HYGIENE_AUDIT_20260502.md` | Navigation cleanup audit; no provenance deleted. |
 | `docs/REPO_ORGANIZATION_GUIDE_20260501.md` | Clean navigation, artifact classification, and safe cleanup rules. |
 | `docs/REPO_MAP.md` | Directory roles and repository structure. |
 | `docs/CANONICAL_START_HERE.md` | Reviewer/collaborator canonical orientation. |
