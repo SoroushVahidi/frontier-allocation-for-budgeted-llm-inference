@@ -56,6 +56,11 @@ METHODS: dict[str, dict[str, Any]] = {
     "tale": {"runtime": "external_tale_prompt_budgeting", "enable_output_repair": True},
     "s1": {"runtime": "external_s1_budget_forcing", "enable_output_repair": True},
     "self_consistency_3": {"runtime": "self_consistency_3", "enable_output_repair": True},
+    # Explicit root strategy seeding + semantic maturation frontier (diagnostic; see docs in experiment module).
+    "strategy_seeded_semantic_diversity_frontier_v1": {
+        "runtime": "strategy_seeded_semantic_diversity_frontier_v1",
+        "enable_output_repair": True,
+    },
 }
 
 DEFAULT_PROVIDERS = "cohere"

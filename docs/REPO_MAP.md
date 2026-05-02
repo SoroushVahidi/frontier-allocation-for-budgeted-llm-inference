@@ -76,6 +76,8 @@ Current selector caveat: the selected Cohere cached outcome-verifier selector is
 - `manuscript_integration/` — manuscript-side integration helpers and packaging bridges.
 - `neurips2026_anonymous_artifact/` — anonymous artifact payload staging area.
 - `batch/` — Slurm submission scripts for non-interactive cluster runs.
+  - `run_gold_absent_path_gap_diagnostic_wulver.sbatch` — preferred gold-absent path-gap diagnostic (pairs with `scripts/diagnose_gold_absent_path_gap.py`).
+  - `run_strategy_seeded_discovery_on_66_gold_absent_wulver.sbatch` — strategy-seeded discovery pilot on the 66-case gold-absent slice (pairs with `scripts/run_strategy_seeded_discovery_on_66_gold_absent.py`).
 - `jobs/` — job templates and generated scheduler files.
 - `logs/` — lightweight run logs and command traces.
 

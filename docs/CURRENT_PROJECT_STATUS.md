@@ -6,6 +6,14 @@ This document is the short, current orientation note for day-to-day work. It sup
 
 For a **short** entry point and claim guardrails, read [`../START_HERE_CURRENT.md`](../START_HERE_CURRENT.md). Method IDs: [`METHOD_STATUS_TABLE.md`](METHOD_STATUS_TABLE.md). Major `outputs/` folders: [`ARTIFACT_STATUS_TABLE.md`](ARTIFACT_STATUS_TABLE.md). Commands: [`../scripts/CURRENT_RUNBOOK.md`](../scripts/CURRENT_RUNBOOK.md). Audit log: [`REPOSITORY_HYGIENE_AUDIT_20260502.md`](REPOSITORY_HYGIENE_AUDIT_20260502.md). **Recent Wulver diagnostics / last-10 job audit:** [`LAST_10_WULVER_JOBS_AUDIT_20260502.md`](LAST_10_WULVER_JOBS_AUDIT_20260502.md) (`outputs/last_10_wulver_jobs_audit_20260502T220857Z/artifact_summary.md`).
 
+## Bounded external-loss diagnostics (2026-05-02)
+
+Slurm job **1018248** completed a **zero-missing** verifier score fill and selected-selector rerun on the **88** paired external-loss slice (`outputs/full_score_completed_best_selector_on_88_external_losses_20260502T213834Z/`). Result: **19** correct, **69** still lost, `missing_score_count = 0`, `fallback_due_to_missing_score_count = 0`. Decomposition: **66** discovery / gold-absent vs **22** selector-recoverable (gold present in the candidate pool but not chosen). **Claim-safety:** selected diagnostic slice only; not a broad superiority claim over `external_l1_max`.
+
+Slurm **1018287** produced the **preferred** gold-absent path-gap diagnostic with a tightened premature-commit heuristic (`outputs/gold_absent_path_gap_diagnostic_20260502T215957Z/`; supersedes `...215820Z` / **1018285**). Do **not** treat incomplete **1018203** runs as final if they are still running or unfinalized.
+
+Code and batch entry points: `scripts/diagnose_gold_absent_path_gap.py`, `experiments/gold_absent_path_gap.py`, `batch/run_gold_absent_path_gap_diagnostic_wulver.sbatch`, `batch/run_strategy_seeded_discovery_on_66_gold_absent_wulver.sbatch`, `scripts/run_strategy_seeded_discovery_on_66_gold_absent.py`.
+
 ## Project identity
 
 This repository studies **frontier allocation for budgeted LLM inference** under explicit compute/action-budget contracts.

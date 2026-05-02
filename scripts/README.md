@@ -7,6 +7,8 @@ This file is the runnable-code front door for the repository.
 ## Read this first
 
 - **Current short runbook:** [`CURRENT_RUNBOOK.md`](CURRENT_RUNBOOK.md) — health checks, selector rerun, Slurm batch pointers.
+- **Last-10 Wulver jobs audit (doc):** [`../docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md`](../docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md)
+- **Method / artifact tables:** [`../docs/METHOD_STATUS_TABLE.md`](../docs/METHOD_STATUS_TABLE.md), [`../docs/ARTIFACT_STATUS_TABLE.md`](../docs/ARTIFACT_STATUS_TABLE.md)
 - **Current front door:** [`../START_HERE_CURRENT.md`](../START_HERE_CURRENT.md)
 - Current repository interpretation: [`../docs/CANONICAL_START_HERE.md`](../docs/CANONICAL_START_HERE.md)
 - Canonical internal method decision package: [`../docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md`](../docs/INTERNAL_METHOD_FINAL_DECISION_PACKAGE_2026_04_22.md)
@@ -91,6 +93,13 @@ When this index and canonical docs disagree, canonical docs in `docs/` take prec
 | `run_manuscript_surface_component_ablation.py` | Manuscript-facing strict_f3 component ablation on canonical matched surface |
 | `package_strict_f3_component_ablation_paper_surface.py` | Non-rerun paper-facing packaging for existing strict_f3 manuscript-surface ablation artifacts |
 | `run_paper_method_decision_bundle_strict_gate1_cap_k6_vs_strict_f3.py` | Focused manuscript decision bundle comparing strict_gate1_cap_k6 vs strict_f3 with fair near-direct externals |
+
+## External-loss and gold-absent diagnostics (2026-05-02)
+
+| Script | Role |
+|---|---|
+| `diagnose_gold_absent_path_gap.py` | Path-gap / gold-absent proxy diagnostic (writes bounded reports under `outputs/`). |
+| `run_strategy_seeded_discovery_on_66_gold_absent.py` | Strategy-seeded discovery pilot vs cached DR-v2 on the **66**-case gold-absent slice; Slurm: `../batch/run_strategy_seeded_discovery_on_66_gold_absent_wulver.sbatch`. |
 
 ## Exploratory or adjacent controlled workflows
 

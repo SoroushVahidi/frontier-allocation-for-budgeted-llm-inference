@@ -11,6 +11,7 @@ The project asks how to allocate limited inference compute across active reasoni
 - **Output folders:** [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) — what major `outputs/` trees mean.
 - **Operational commands:** [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md) — health checks, selector rerun, Slurm pointers.
 - **Hygiene audit (2026-05-02):** [`docs/REPOSITORY_HYGIENE_AUDIT_20260502.md`](docs/REPOSITORY_HYGIENE_AUDIT_20260502.md) — what changed; no provenance deleted.
+- **Last-10 Wulver jobs audit:** [`docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md`](docs/LAST_10_WULVER_JOBS_AUDIT_20260502.md) — bounded pointers (e.g. **1018248**, **1018287**); machine-readable appendix under `outputs/last_10_wulver_jobs_audit_20260502T220857Z/`.
 
 ## Current status
 

@@ -40,6 +40,11 @@ from experiments.prm_partial_scorer import HeuristicPRMPartialScorer
 from experiments.data import PilotExample, extract_final_answer
 from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
 from experiments.scoring import LearnedBTBranchScorer, ScoreConfig, SimpleBranchScorer
+from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
+    ROOT_STRATEGY_FAMILY_SPECS,
+    StrategySeededSemanticDiversityFrontierV1Controller,
+    build_strategy_prompt_styles_semantic_frontier_v1,
+)
 from experiments.verifiers import LLMVerifyProxyVerifier, SimulatedScorerVerifier
 
 
@@ -1186,6 +1191,30 @@ def build_frontier_strategies(
             budget,
             method_name="direct_reserve_frontier_gate_v2",
             **direct_reserve_plus_diverse_kwargs,
+        )
+        strategy_seeded_outer_kwargs = {
+            **direct_reserve_plus_diverse_kwargs,
+            "strict_controller_factory": lambda remaining_budget: GlobalDiversityAggregationController(
+                generator_factory(),
+                scorer,
+                remaining_budget,
+                method_name="strategy_seeded_semantic_diversity_frontier_v1_inner_maturation",
+                **strict_f3_base_cfg,
+                diagnostic_semantic_maturation=True,
+                diagnostic_semantic_maturation_min_depth=2,
+                diagnostic_log_semantic_families=True,
+            ),
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1(),
+            "direct_reserve_attempts_override": len(ROOT_STRATEGY_FAMILY_SPECS),
+            "frontier_override_min_maturity": 3,
+        }
+        specs["strategy_seeded_semantic_diversity_frontier_v1"] = StrategySeededSemanticDiversityFrontierV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="strategy_seeded_semantic_diversity_frontier_v1",
+            strategy_seed_max_actions=1,
+            **strategy_seeded_outer_kwargs,
         )
         specs["direct_reserve_semantic_frontier_v2_selection_fix_v1"] = DirectReserveFrontierGateV2SelectionFixV1Controller(
             generator_factory(),
