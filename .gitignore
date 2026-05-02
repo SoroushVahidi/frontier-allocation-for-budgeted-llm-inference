@@ -103,6 +103,10 @@ outputs/external_loss_selector_case_collection_*/**/logs/**
 !outputs/data_consolidation_20260418/
 !outputs/data_consolidation_20260418/**/*
 
+# Cluster Slurm transcripts and host monitors (local provenance only)
+# Policy: docs/OUTPUT_RETENTION_POLICY_CURRENT.md — do not version raw %j stdout/stderr.
+logs/slurm/
+
 # Local dataset clones (e.g. google-deepmind/natural-plan); keep out of git
 external_datasets/
 
