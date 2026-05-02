@@ -54,6 +54,10 @@ squeue -j 1017716
 tail -f logs/slurm/l1_loss_decomposition_best_selector_1017716.out
 ```
 
+### Post-run note (job 1017716)
+
+The batch stdout reached selector scoring for four paired instances, but the Python wrapper exited with an error while writing the final `run_progress_summary.json` (`pathlib.Path.relative_to` mixed absolute/relative roots). That bug is fixed on branch `feat/l1-loss-decomposition-wulver-run` by resolving output paths; **resubmit** after pulling that branch so artifacts finish cleanly.
+
 ---
 
 _No secrets are recorded in this document._
