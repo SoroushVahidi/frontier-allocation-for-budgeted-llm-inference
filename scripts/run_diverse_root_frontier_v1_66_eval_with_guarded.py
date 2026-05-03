@@ -150,6 +150,22 @@ def get_example_question(
     return f"[{dataset_name}] {example_id}"
 
 
+def get_effective_gold_hint_for_eval(
+    case_gold_hint: str,
+    example_id: str,
+    dataset_name: str,
+    example_cache: dict[str, PilotExample],
+) -> tuple[str, str]:
+    """Return evaluation gold hint and source; never used for controller decisions."""
+    if str(case_gold_hint or "").strip():
+        return str(case_gold_hint), "case_list"
+    if dataset_name == "openai/gsm8k":
+        ex = example_cache.get(example_id)
+        if ex and str(ex.answer or "").strip():
+            return str(ex.answer), "dataset_backfill"
+    return "", "missing"
+
+
 def get_case_key(case: dict[str, str]) -> str:
     """Extract unique case key."""
     return (
@@ -200,7 +216,7 @@ def main() -> None:
         include_broad_diversity_aggregation_methods=True,
     )
 
-    # Get the three methods
+    # Get the methods
     baseline_method = "direct_reserve_strategy_seeded_semantic_frontier_v2_final"
     v1_method = "direct_reserve_diverse_root_frontier_v1"
     guarded_method = "direct_reserve_diverse_root_frontier_v1_guarded"
@@ -230,6 +246,7 @@ def main() -> None:
     guarded_recovered = []
     v1_regressed = []
     guarded_regressed = []
+    gold_hint_source_counts: Counter[str] = Counter()
 
     for i, case in enumerate(cases):
         case_id = get_case_key(case)
@@ -238,9 +255,16 @@ def main() -> None:
         dataset_name = case.get("dataset", "openai/gsm8k")
         example_id = case.get("example_id", "")
         gold_answer_hint = case.get("gold_answer_canonical_hint", "")
+        effective_gold_hint, gold_hint_source = get_effective_gold_hint_for_eval(
+            gold_answer_hint,
+            example_id,
+            dataset_name,
+            example_cache,
+        )
+        gold_hint_source_counts[gold_hint_source] += 1
 
         question_text = get_example_question(example_id, dataset_name, example_cache)
-        gold_norm = _normalize_answer_for_comparison(gold_answer_hint)
+        gold_norm = _normalize_answer_for_comparison(effective_gold_hint)
 
         # Baseline
         try:
@@ -311,7 +335,6 @@ def main() -> None:
             else "regressed" if (not guarded_gold_present and baseline_gold_present)
             else "no_change"
         )
-
         per_case_results.append(
             {
                 "case_id": case_id,
@@ -320,6 +343,8 @@ def main() -> None:
                 "seed": case.get("seed", ""),
                 "budget": case.get("budget", ""),
                 "gold_answer": gold_answer_hint,
+                "effective_gold_answer_for_eval": effective_gold_hint,
+                "gold_hint_source": gold_hint_source,
                 "baseline_gold_present": "yes" if baseline_gold_present else "no",
                 "v1_gold_present": "yes" if v1_gold_present else "no",
                 "guarded_gold_present": "yes" if guarded_gold_present else "no",
@@ -354,6 +379,7 @@ def main() -> None:
         "guarded_delta_gold_present": guarded_gold_count - baseline_gold_count,
         "guarded_newly_recovered_count": len(guarded_recovered),
         "guarded_newly_regressed_count": len(guarded_regressed),
+        "gold_hint_source_counts": dict(gold_hint_source_counts),
     }
 
     # Write outputs
