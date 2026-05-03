@@ -8,6 +8,7 @@ Studies **how to allocate a fixed inference budget** across reasoning branches a
 
 | Order | Doc | Role |
 |------:|-----|------|
+| 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | Shortest reviewer-facing reproduction and claim-scope guide |
 | 1 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Shortest safe front door: baselines, scope, bottleneck, commands |
 | 2 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
 | 3 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Latest narrow harness vs **`external_l1_max`** (**1018203**) |
