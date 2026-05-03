@@ -59,7 +59,8 @@ def resolve_api_key_for_provider(provider: str) -> str | None:
     if p == "openai":
         return os.getenv("OPENAI_API_KEY")
     if p == "cohere":
-        return os.getenv("COHERE_API_KEY")
+        # Prefer COHERE_API_KEY; CO_API_KEY is accepted only as a compatibility fallback (some shells/docs).
+        return os.getenv("COHERE_API_KEY") or os.getenv("CO_API_KEY")
     if p == "groq":
         return os.getenv("GROQ_API_KEY")
     if p == "gemini":

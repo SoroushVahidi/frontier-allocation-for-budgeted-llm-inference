@@ -7,7 +7,7 @@ Compares three methods:
 3. Guarded: direct_reserve_diverse_root_frontier_v1_guarded (falls back when baseline has strong support)
 
 Primary metric: gold_present_in_candidate_groups.
-No API calls; uses simulator mode.
+Default: simulator mode (no API). Optional ``--real-generation`` enables a capped Cohere pilot path.
 """
 
 from __future__ import annotations
@@ -27,9 +27,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from experiments.branching import configure_logical_api_call_budget, logical_api_call_budget_snapshot
 from experiments.frontier_matrix_core import (
     build_frontier_strategies,
     generator_factory_for_mode,
+    resolve_api_key_for_provider,
 )
 from experiments.data import NUMBER_PATTERN, PilotExample, extract_final_answer
 from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
@@ -65,7 +67,83 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Also write candidate_diagnostics.csv per case/method for gold/candidate/trace inspection.",
     )
+    p.add_argument(
+        "--real-generation",
+        action="store_true",
+        help="Use API-backed branch generation (Cohere pilot only). Requires COHERE_API_KEY and --max-total-api-calls.",
+    )
+    p.add_argument(
+        "--api-provider",
+        default="cohere",
+        help="API provider for --real-generation (only cohere is supported here).",
+    )
+    p.add_argument(
+        "--cohere-model",
+        default="command-a-03-2025",
+        help="Cohere chat model id passed to APIBranchGenerator.",
+    )
+    p.add_argument(
+        "--max-total-api-calls",
+        type=int,
+        default=0,
+        help="Global logical API call cap (each expand/verify chat invocation counts once). Required >0 with --real-generation.",
+    )
+    p.add_argument(
+        "--generation-dry-run",
+        action="store_true",
+        help="Print provider readiness and planned workload; no Hugging Face load, no evaluation, no API calls.",
+    )
     return p.parse_args()
+
+
+def _cohere_key_env_flags() -> tuple[bool, bool]:
+    """Return (COHERE_API_KEY present, CO_API_KEY present) without reading secret values."""
+    return bool(os.getenv("COHERE_API_KEY")), bool(os.getenv("CO_API_KEY"))
+
+
+def _validate_real_generation_args(args: argparse.Namespace) -> None:
+    if args.api_provider.strip().lower() != "cohere":
+        raise SystemExit(
+            "Only --api-provider cohere is supported for --real-generation in this evaluator."
+        )
+    if args.max_total_api_calls <= 0:
+        raise SystemExit("--real-generation requires --max-total-api-calls N with N > 0.")
+    if not resolve_api_key_for_provider("cohere"):
+        raise SystemExit(
+            "Cohere API key missing for --real-generation. "
+            "Set COHERE_API_KEY (preferred) or CO_API_KEY in the process environment."
+        )
+
+
+def _print_generation_dry_run_report(
+    args: argparse.Namespace, *, planned_cases: int, total_rows_in_case_csv: int
+) -> None:
+    co_primary, co_alias = _cohere_key_env_flags()
+    print("=" * 72)
+    print("GENERATION DRY RUN (no Hugging Face load, no evaluation, no API calls)")
+    print("=" * 72)
+    print(f"  --real-generation would be: {bool(args.real_generation)}")
+    print(f"  --api-provider: {args.api_provider}")
+    print(f"  --cohere-model: {args.cohere_model}")
+    print(f"  --max-output-tokens: {args.max_output_tokens}")
+    print(f"  --timeout-seconds: {args.timeout_seconds}")
+    print(f"  --temperature: {args.temperature}")
+    print(f"  --max-total-api-calls (configured): {args.max_total_api_calls}")
+    print(f"  Rows in case CSV: {total_rows_in_case_csv}")
+    print(f"  Planned cases after --limit: {planned_cases}")
+    print(f"  Methods per case: 3 (baseline, v1, guarded)")
+    print("  COHERE_API_KEY present:", co_primary)
+    print("  CO_API_KEY present (fallback alias):", co_alias)
+    print(f"  resolve_api_key_for_provider('cohere') usable: {bool(resolve_api_key_for_provider('cohere'))}")
+    print("-" * 72)
+    print(
+        "Logical API calls are bounded by --max-total-api-calls when real generation runs "
+        "(each generator chat invoke consumes one slot before network I/O)."
+    )
+    print(
+        "Per-case call counts are strategy-dependent; the cap aborts with RuntimeError if exceeded mid-run."
+    )
+    print("=" * 72)
 
 
 def read_csv(path: Path | str) -> list[dict[str, str]]:
@@ -446,14 +524,26 @@ def main() -> None:
     args = parse_args()
     rng = random.Random(args.seed)
 
-    # Load cases
+    configure_logical_api_call_budget(None)
+
     case_list_path = REPO_ROOT / args.case_list if not Path(args.case_list).is_absolute() else Path(args.case_list)
-    cases = load_case_list(str(case_list_path))
+    all_cases = load_case_list(str(case_list_path))
+    total_rows_in_case_csv = len(all_cases)
+    cases = all_cases[: args.limit] if args.limit > 0 else all_cases
+    planned_cases = len(cases)
 
-    if args.limit > 0:
-        cases = cases[:args.limit]
+    if args.generation_dry_run:
+        _print_generation_dry_run_report(
+            args, planned_cases=planned_cases, total_rows_in_case_csv=total_rows_in_case_csv
+        )
+        return
 
-    print(f"Loaded {len(cases)} cases from {case_list_path}")
+    if args.real_generation:
+        _validate_real_generation_args(args)
+
+    configure_logical_api_call_budget(args.max_total_api_calls if args.real_generation else None)
+
+    print(f"Loaded {planned_cases} cases from {case_list_path}")
 
     print("Loading GSM8K examples...", end=" ", flush=True)
     example_cache, raw_gsm8k_answer_by_id = _load_gsm8k_example_and_raw_answer_caches()
@@ -464,14 +554,21 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Output directory: {output_dir}")
 
-    # Build strategies
+    use_api = bool(args.real_generation)
+    if use_api:
+        print(
+            f"Real generation: provider={args.api_provider} model={args.cohere_model} "
+            f"logical_api_cap={args.max_total_api_calls}"
+        )
+
     gen_factory_fn = generator_factory_for_mode(
-        use_openai_api=False,
+        use_openai_api=use_api,
         rng=rng,
-        openai_model="gpt-4.1-mini",
+        openai_model=args.cohere_model if use_api else "gpt-4.1-mini",
         temperature=args.temperature,
         max_output_tokens=args.max_output_tokens,
         timeout_seconds=args.timeout_seconds,
+        api_provider=args.api_provider if use_api else None,
     )
 
     strategies = build_frontier_strategies(
@@ -479,7 +576,7 @@ def main() -> None:
         budget=args.budget,
         adaptive_min_expand_grid=[1],
         rng=rng,
-        use_openai_api=False,
+        use_openai_api=use_api,
         include_broad_diversity_aggregation_methods=True,
     )
 
@@ -665,6 +762,10 @@ def main() -> None:
         "guarded_newly_recovered_count": len(guarded_recovered),
         "guarded_newly_regressed_count": len(guarded_regressed),
         "gold_hint_source_counts": dict(gold_hint_source_counts),
+        "generation_mode": "cohere_api" if use_api else "simulator",
+        "real_generation": use_api,
+        "cohere_model": args.cohere_model if use_api else None,
+        "logical_api_call_budget": logical_api_call_budget_snapshot(),
     }
 
     # Write outputs

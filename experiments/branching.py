@@ -12,6 +12,39 @@ from urllib import error, request
 
 from experiments.code_sandbox import run_restricted_python
 
+_LOGICAL_API_CALL_BUDGET: int | None = None
+_LOGICAL_API_CALLS_CONSUMED: int = 0
+
+
+def configure_logical_api_call_budget(max_calls: int | None) -> None:
+    """Enable a global cap on logical API calls from ``APIBranchGenerator``.
+
+    Each entry into ``APIBranchGenerator._call_api`` consumes one slot before any network I/O.
+    Retries inside a single logical call do not consume extra slots.
+
+    Pass ``None`` or non-positive values to disable (default). Safe for simulator-only runs.
+    """
+    global _LOGICAL_API_CALL_BUDGET, _LOGICAL_API_CALLS_CONSUMED
+    _LOGICAL_API_CALL_BUDGET = max_calls if max_calls is not None and max_calls > 0 else None
+    _LOGICAL_API_CALLS_CONSUMED = 0
+
+
+def logical_api_call_budget_snapshot() -> dict[str, int | None]:
+    return {"budget": _LOGICAL_API_CALL_BUDGET, "consumed": _LOGICAL_API_CALLS_CONSUMED}
+
+
+def _consume_logical_api_call_budget() -> None:
+    global _LOGICAL_API_CALLS_CONSUMED
+    if _LOGICAL_API_CALL_BUDGET is None:
+        return
+    if _LOGICAL_API_CALLS_CONSUMED >= _LOGICAL_API_CALL_BUDGET:
+        raise RuntimeError(
+            "Global logical API call cap reached "
+            f"({_LOGICAL_API_CALLS_CONSUMED} >= {_LOGICAL_API_CALL_BUDGET}). "
+            "Increase --max-total-api-calls or reduce workload."
+        )
+    _LOGICAL_API_CALLS_CONSUMED += 1
+
 
 @dataclass
 class BranchState:
@@ -309,6 +342,7 @@ class APIBranchGenerator:
         return BranchActionResult("prune", score_before, branch.score, branch.is_done)
 
     def _call_api(self, payload: dict, prompt: str) -> str:
+        _consume_logical_api_call_budget()
         if self.provider == "gemini":
             return self._call_gemini_api(prompt)
         if self.provider == "cohere":
