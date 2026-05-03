@@ -17,7 +17,7 @@ import csv
 import json
 import random
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -29,10 +29,14 @@ if str(REPO_ROOT) not in sys.path:
 from experiments.frontier_matrix_core import (
     build_frontier_strategies,
     generator_factory_for_mode,
-    load_pilot_examples,
 )
-from experiments.data import PilotExample, extract_final_answer
+from experiments.data import NUMBER_PATTERN, PilotExample, extract_final_answer
+from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
 from experiments.selector_candidate_extraction import build_candidates_from_metadata
+
+BASELINE_METHOD = "direct_reserve_strategy_seeded_semantic_frontier_v2_final"
+V1_METHOD = "direct_reserve_diverse_root_frontier_v1"
+GUARDED_METHOD = "direct_reserve_diverse_root_frontier_v1_guarded"
 
 
 def parse_args() -> argparse.Namespace:
@@ -51,6 +55,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-output-tokens", type=int, default=180)
     p.add_argument("--timeout-seconds", type=int, default=45)
     p.add_argument("--output-root", default="outputs")
+    p.add_argument(
+        "--diagnostic-candidates",
+        action="store_true",
+        help="Also write candidate_diagnostics.csv per case/method for gold/candidate/trace inspection.",
+    )
     return p.parse_args()
 
 
@@ -63,16 +72,26 @@ def read_csv(path: Path | str) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
-def write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str] | None = None) -> None:
+def write_csv(
+    path: Path,
+    rows: list[dict[str, Any]],
+    fieldnames: list[str] | None = None,
+    *,
+    quoting: int = csv.QUOTE_MINIMAL,
+) -> None:
     """Write CSV file."""
     path.parent.mkdir(parents=True, exist_ok=True)
     if not rows:
         with path.open("w", encoding="utf-8", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=fieldnames or ["empty"])
+            w = csv.DictWriter(f, fieldnames=fieldnames or ["empty"], quoting=quoting)
             w.writeheader()
         return
     with path.open("w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=fieldnames or list(rows[0].keys()))
+        w = csv.DictWriter(
+            f,
+            fieldnames=fieldnames or list(rows[0].keys()),
+            quoting=quoting,
+        )
         w.writeheader()
         w.writerows(rows)
 
@@ -119,6 +138,153 @@ def _is_gold_in_candidates(candidates: list[dict[str, Any]], gold_norm: str) -> 
     return False
 
 
+def _primary_numeric_scalar(text: str | None) -> float | None:
+    """Parse a primary numeric score from GSM8K/MATH-like answer text (extract_final_answer path)."""
+    if text is None or not str(text).strip():
+        return None
+    ext = extract_final_answer(str(text).strip())
+    nums = NUMBER_PATTERN.findall(ext.replace(",", ""))
+    if nums:
+        try:
+            return float(nums[-1].replace(",", ""))
+        except ValueError:
+            pass
+    try:
+        return float(str(ext).replace(",", "").strip())
+    except ValueError:
+        return None
+
+
+def _gold_near_candidate_within_numeric_delta(
+    gold_text: str, candidates: list[Any], *, delta: float = 2.0
+) -> bool:
+    gold_val = _primary_numeric_scalar(gold_text)
+    if gold_val is None:
+        return False
+    for cand in candidates:
+        for fragment in (
+            cand.final_answer,
+            getattr(cand, "normalized_answer", None) or "",
+        ):
+            cval = _primary_numeric_scalar(str(fragment))
+            if cval is not None and abs(cval - gold_val) <= delta:
+                return True
+    return False
+
+
+def _semicolon_join(values: list[str]) -> str:
+    escaped = []
+    for v in values:
+        s = str(v).replace("\\", "\\\\").replace(";", "\\;")
+        escaped.append(s)
+    return "; ".join(escaped)
+
+
+def _eval_one_method(
+    controller: Any,
+    question_text: str,
+    gold_answer_hint_controller: str,
+    gold_norm_for_eval: str,
+) -> dict[str, Any]:
+    """Run one controller once; mirrors prior try/except + candidate wiring."""
+    extraction_sources: list[str] = []
+    candidates = []
+    result = None
+    err = ""
+    try:
+        result = controller.run(question_text, gold_answer_hint_controller or "")
+        if result and result.metadata:
+            got, extraction_sources_raw = build_candidates_from_metadata(question_text, result.metadata)
+            candidates = list(got)
+            extraction_sources = list(extraction_sources_raw)
+    except Exception as exc:
+        err = f"{type(exc).__name__}: {exc}"
+    gold_present = _is_gold_in_candidates(
+        [{"normalized_answer": c.normalized_answer} for c in candidates],
+        gold_norm_for_eval,
+    )
+    return {
+        "gold_present": gold_present,
+        "candidates": candidates,
+        "result": result,
+        "error": err,
+        "extraction_sources": extraction_sources,
+    }
+
+
+def diagnostic_row_from_eval(
+    *,
+    case_id: str,
+    method: str,
+    example_id: str,
+    seed: str,
+    budget: str,
+    gold_hint_source: str,
+    raw_gold_hint_case_list: str,
+    raw_gsm8k_answer_if_backfilled: str,
+    effective_gold_for_eval: str,
+    normalized_gold_for_eval: str,
+    bundle: dict[str, Any],
+) -> dict[str, Any]:
+    """CSV row describing gold/candidates/predictions using the existing eval normalization path."""
+    candidates: list[Any] = bundle["candidates"]
+    result = bundle["result"]
+    err = str(bundle["error"]).strip()
+    extraction_sources = bundle["extraction_sources"]
+
+    cand_norm_strings = [_normalize_answer_for_comparison(c.normalized_answer or "") for c in candidates]
+    distinct_nonempty = {n for n in cand_norm_strings if n.strip()}
+
+    prediction = getattr(result, "prediction", None) if result else None
+    prediction_s = str(prediction) if prediction is not None else ""
+    normalization_pred_basis = prediction_s.strip()
+    normalized_prediction = (
+        _normalize_answer_for_comparison(extract_final_answer(normalization_pred_basis))
+        if normalization_pred_basis
+        else ""
+    )
+
+    near_ok = False
+    if effective_gold_for_eval:
+        near_ok = _gold_near_candidate_within_numeric_delta(str(effective_gold_for_eval), candidates, delta=2.0)
+
+    notes: list[str] = []
+    if err:
+        notes.append(err)
+    if not result:
+        notes.append("no_method_result_after_exception_or_return")
+    else:
+        md = getattr(result, "metadata", None)
+        if md is None:
+            notes.append("metadata_none_candidate_extraction_blocked")
+        elif not candidates:
+            md_keys = ",".join(sorted(str(k) for k in md.keys()))
+            src = ",".join(extraction_sources) if extraction_sources else ""
+            notes.append(f"zero_candidates_extracted;metadata_keys={md_keys};reported_sources={src}")
+
+    return {
+        "case_id": case_id,
+        "method": method,
+        "example_id": example_id,
+        "seed": seed,
+        "budget": budget,
+        "gold_hint_source": gold_hint_source,
+        "raw_gold_hint_case_list": raw_gold_hint_case_list,
+        "raw_gsm8k_answer_if_backfilled": raw_gsm8k_answer_if_backfilled,
+        "effective_gold_for_eval": effective_gold_for_eval,
+        "normalized_gold": normalized_gold_for_eval,
+        "prediction_final_answer": prediction_s,
+        "normalized_prediction": normalized_prediction,
+        "candidate_normalized_answers": _semicolon_join(cand_norm_strings),
+        "candidate_raw_answers": _semicolon_join([str(c.final_answer) for c in candidates]),
+        "candidate_count": len(candidates),
+        "distinct_normalized_candidate_count": len(distinct_nonempty),
+        "exact_gold_match_found": "yes" if bundle["gold_present"] else "no",
+        "near_numeric_match_abs_le_2": "yes" if near_ok else "no",
+        "notes": "|".join(notes) if notes else "",
+    }
+
+
 def load_case_list(case_list_path: str) -> list[dict[str, Any]]:
     """Load and parse case list CSV."""
     rows = read_csv(case_list_path)
@@ -127,10 +293,29 @@ def load_case_list(case_list_path: str) -> list[dict[str, Any]]:
     return rows
 
 
-def _load_gsm8k_examples_by_id() -> dict[str, PilotExample]:
-    """Load all GSM8K examples and index by example_id."""
-    examples = load_pilot_examples("openai/gsm8k", subset_size=1000, seed=42)
-    return {ex.example_id: ex for ex in examples}
+def _load_gsm8k_example_and_raw_answer_caches(
+    subset_size: int = 1000, seed: int = 42
+) -> tuple[dict[str, PilotExample], dict[str, str]]:
+    """Same HF slice as the prior evaluator; adds raw GSM8K `answer` strings for diagnostics."""
+    spec = resolve_dataset_spec("openai/gsm8k")
+    rows = sample_hf_examples(
+        dataset_name="openai/gsm8k",
+        pilot_size=subset_size,
+        seed=seed,
+        split=spec.default_split,
+        config_name=spec.default_config,
+    )
+    examples: dict[str, PilotExample] = {}
+    raw_by_id: dict[str, str] = {}
+    for r in rows:
+        eid = r["example_id"]
+        raw_by_id[eid] = str(r.get("answer", "") or "")
+        examples[eid] = PilotExample(
+            example_id=eid,
+            question=r["question"],
+            answer=extract_final_answer(r["answer"]),
+        )
+    return examples, raw_by_id
 
 
 def get_example_question(
@@ -187,9 +372,8 @@ def main() -> None:
 
     print(f"Loaded {len(cases)} cases from {case_list_path}")
 
-    # Load GSM8K examples indexed by example_id
     print("Loading GSM8K examples...", end=" ", flush=True)
-    example_cache = _load_gsm8k_examples_by_id()
+    example_cache, raw_gsm8k_answer_by_id = _load_gsm8k_example_and_raw_answer_caches()
     print(f"Done ({len(example_cache)} examples)")
 
     # Create output directory
@@ -216,25 +400,20 @@ def main() -> None:
         include_broad_diversity_aggregation_methods=True,
     )
 
-    # Get the methods
-    baseline_method = "direct_reserve_strategy_seeded_semantic_frontier_v2_final"
-    v1_method = "direct_reserve_diverse_root_frontier_v1"
-    guarded_method = "direct_reserve_diverse_root_frontier_v1_guarded"
-
-    baseline_ctrl = strategies.get(baseline_method)
-    v1_ctrl = strategies.get(v1_method)
-    guarded_ctrl = strategies.get(guarded_method)
+    baseline_ctrl = strategies.get(BASELINE_METHOD)
+    v1_ctrl = strategies.get(V1_METHOD)
+    guarded_ctrl = strategies.get(GUARDED_METHOD)
 
     if not baseline_ctrl:
-        raise SystemExit(f"Strategy {baseline_method} not found")
+        raise SystemExit(f"Strategy {BASELINE_METHOD} not found")
     if not v1_ctrl:
-        raise SystemExit(f"Strategy {v1_method} not found")
+        raise SystemExit(f"Strategy {V1_METHOD} not found")
     if not guarded_ctrl:
-        raise SystemExit(f"Strategy {guarded_method} not found")
+        raise SystemExit(f"Strategy {GUARDED_METHOD} not found")
 
-    print(f"Using baseline: {baseline_method}")
-    print(f"Using v1: {v1_method}")
-    print(f"Using guarded: {guarded_method}")
+    print(f"Using baseline: {BASELINE_METHOD}")
+    print(f"Using v1: {V1_METHOD}")
+    print(f"Using guarded: {GUARDED_METHOD}")
 
     # Run evaluation
     per_case_results = []
@@ -247,6 +426,7 @@ def main() -> None:
     v1_regressed = []
     guarded_regressed = []
     gold_hint_source_counts: Counter[str] = Counter()
+    diagnostic_rows: list[dict[str, Any]] = []
 
     for i, case in enumerate(cases):
         case_id = get_case_key(case)
@@ -266,44 +446,48 @@ def main() -> None:
         question_text = get_example_question(example_id, dataset_name, example_cache)
         gold_norm = _normalize_answer_for_comparison(effective_gold_hint)
 
-        # Baseline
-        try:
-            baseline_result = baseline_ctrl.run(question_text, gold_answer_hint or "")
-            candidates = []
-            if baseline_result.metadata:
-                candidates = build_candidates_from_metadata(question_text, baseline_result.metadata)[0]
-            baseline_gold_present = _is_gold_in_candidates(
-                [{"normalized_answer": c.normalized_answer} for c in candidates], gold_norm
-            )
-        except Exception as e:
-            print(f"baseline error: {e}", end=" ")
-            baseline_gold_present = False
+        gold_for_ctrl = gold_answer_hint or ""
 
-        # V1
-        try:
-            v1_result = v1_ctrl.run(question_text, gold_answer_hint or "")
-            candidates = []
-            if v1_result.metadata:
-                candidates = build_candidates_from_metadata(question_text, v1_result.metadata)[0]
-            v1_gold_present = _is_gold_in_candidates(
-                [{"normalized_answer": c.normalized_answer} for c in candidates], gold_norm
-            )
-        except Exception as e:
-            print(f"v1 error: {e}", end=" ")
-            v1_gold_present = False
+        baseline_b = _eval_one_method(baseline_ctrl, question_text, gold_for_ctrl, gold_norm)
+        if baseline_b["error"]:
+            print(f"baseline error: {baseline_b['error']}", end=" ")
+        baseline_gold_present = baseline_b["gold_present"]
 
-        # Guarded
-        try:
-            guarded_result = guarded_ctrl.run(question_text, gold_answer_hint or "")
-            candidates = []
-            if guarded_result.metadata:
-                candidates = build_candidates_from_metadata(question_text, guarded_result.metadata)[0]
-            guarded_gold_present = _is_gold_in_candidates(
-                [{"normalized_answer": c.normalized_answer} for c in candidates], gold_norm
+        v1_b = _eval_one_method(v1_ctrl, question_text, gold_for_ctrl, gold_norm)
+        if v1_b["error"]:
+            print(f"v1 error: {v1_b['error']}", end=" ")
+        v1_gold_present = v1_b["gold_present"]
+
+        guarded_b = _eval_one_method(guarded_ctrl, question_text, gold_for_ctrl, gold_norm)
+        if guarded_b["error"]:
+            print(f"guarded error: {guarded_b['error']}", end=" ")
+        guarded_gold_present = guarded_b["gold_present"]
+
+        raw_gsm8k_backfill = ""
+        if gold_hint_source == "dataset_backfill":
+            raw_gsm8k_backfill = raw_gsm8k_answer_by_id.get(example_id, "")
+
+        common_diag = dict(
+            case_id=case_id,
+            example_id=example_id,
+            seed=str(case.get("seed", "")),
+            budget=str(case.get("budget", "")),
+            gold_hint_source=gold_hint_source,
+            raw_gold_hint_case_list=gold_answer_hint,
+            raw_gsm8k_answer_if_backfilled=raw_gsm8k_backfill,
+            effective_gold_for_eval=effective_gold_hint,
+            normalized_gold_for_eval=gold_norm,
+        )
+        if args.diagnostic_candidates:
+            diagnostic_rows.append(
+                diagnostic_row_from_eval(**common_diag, method="baseline", bundle=baseline_b)
             )
-        except Exception as e:
-            print(f"guarded error: {e}", end=" ")
-            guarded_gold_present = False
+            diagnostic_rows.append(
+                diagnostic_row_from_eval(**common_diag, method="v1", bundle=v1_b)
+            )
+            diagnostic_rows.append(
+                diagnostic_row_from_eval(**common_diag, method="guarded", bundle=guarded_b)
+            )
 
         # Count hits
         if baseline_gold_present:
@@ -364,16 +548,16 @@ def main() -> None:
     summary = {
         "timestamp": args.timestamp,
         "total_cases": total_cases,
-        "baseline_method": baseline_method,
+        "baseline_method": BASELINE_METHOD,
         "baseline_gold_present_count": baseline_gold_count,
         "baseline_recovery_rate": baseline_rate,
-        "v1_method": v1_method,
+        "v1_method": V1_METHOD,
         "v1_gold_present_count": v1_gold_count,
         "v1_recovery_rate": v1_rate,
         "v1_delta_gold_present": v1_gold_count - baseline_gold_count,
         "v1_newly_recovered_count": len(v1_recovered),
         "v1_newly_regressed_count": len(v1_regressed),
-        "guarded_method": guarded_method,
+        "guarded_method": GUARDED_METHOD,
         "guarded_gold_present_count": guarded_gold_count,
         "guarded_recovery_rate": guarded_rate,
         "guarded_delta_gold_present": guarded_gold_count - baseline_gold_count,
@@ -385,6 +569,34 @@ def main() -> None:
     # Write outputs
     write_csv(output_dir / "per_case_results.csv", per_case_results)
     write_json(output_dir / "summary.json", summary)
+    diag_fieldnames = [
+        "case_id",
+        "method",
+        "example_id",
+        "seed",
+        "budget",
+        "gold_hint_source",
+        "raw_gold_hint_case_list",
+        "raw_gsm8k_answer_if_backfilled",
+        "effective_gold_for_eval",
+        "normalized_gold",
+        "prediction_final_answer",
+        "normalized_prediction",
+        "candidate_normalized_answers",
+        "candidate_raw_answers",
+        "candidate_count",
+        "distinct_normalized_candidate_count",
+        "exact_gold_match_found",
+        "near_numeric_match_abs_le_2",
+        "notes",
+    ]
+    if args.diagnostic_candidates:
+        write_csv(
+            output_dir / "candidate_diagnostics.csv",
+            diagnostic_rows,
+            diag_fieldnames,
+            quoting=csv.QUOTE_NONNUMERIC,
+        )
 
     # Write recovery/regression lists
     with (output_dir / "v1_recovered_case_ids.txt").open("w", encoding="utf-8") as f:
@@ -405,10 +617,10 @@ def main() -> None:
     print("SUMMARY")
     print("=" * 80)
     print(f"Total cases: {total_cases}")
-    print(f"\nBaseline ({baseline_method}): {baseline_gold_count}/{total_cases} ({baseline_rate:.2%})")
-    print(f"V1 ({v1_method}): {v1_gold_count}/{total_cases} ({v1_rate:.2%})")
+    print(f"\nBaseline ({BASELINE_METHOD}): {baseline_gold_count}/{total_cases} ({baseline_rate:.2%})")
+    print(f"V1 ({V1_METHOD}): {v1_gold_count}/{total_cases} ({v1_rate:.2%})")
     print(f"  Delta: {v1_gold_count - baseline_gold_count:+d} | Recovered: {len(v1_recovered)} | Regressed: {len(v1_regressed)}")
-    print(f"Guarded ({guarded_method}): {guarded_gold_count}/{total_cases} ({guarded_rate:.2%})")
+    print(f"Guarded ({GUARDED_METHOD}): {guarded_gold_count}/{total_cases} ({guarded_rate:.2%})")
     print(f"  Delta: {guarded_gold_count - baseline_gold_count:+d} | Recovered: {len(guarded_recovered)} | Regressed: {len(guarded_regressed)}")
     print("=" * 80)
     print(f"Output saved to: {output_dir}")
