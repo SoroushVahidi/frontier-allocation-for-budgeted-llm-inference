@@ -36,7 +36,7 @@ test:
 	python3 -m pytest -q
 
 reviewer-test:
-	python3 -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
+	python3 -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py tests/test_reviewer_repro_guardrails.py
 
 selector-test:
 	python3 -m pytest -q tests/test_selector_error_features.py tests/test_selector_oracle_ceiling.py tests/test_prm_aggregation_modes.py tests/test_prm_step_verifier_rerank.py tests/test_answer_grouped_outcome_verifier.py
@@ -44,7 +44,7 @@ selector-test:
 check:
 	python3 scripts/check_repo_health.py
 	python3 -m ruff check $(PY_DIRS)
-	python3 -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py
+	python3 -m pytest -q tests/test_frontier_router.py tests/test_check_repo_health_paths.py tests/test_reviewer_repro_guardrails.py
 
 prepaper:
 	python3 scripts/check_repo_health.py
