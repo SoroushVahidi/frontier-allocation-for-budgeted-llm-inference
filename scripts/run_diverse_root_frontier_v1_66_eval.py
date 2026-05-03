@@ -151,7 +151,7 @@ def main() -> None:
     print(f"Output directory: {output_dir}")
 
     # Build strategies
-    gen_factory = generator_factory_for_mode(
+    gen_factory_fn = generator_factory_for_mode(
         use_openai_api=False,
         rng=rng,
         openai_model="gpt-4.1-mini",
@@ -159,6 +159,7 @@ def main() -> None:
         max_output_tokens=args.max_output_tokens,
         timeout_seconds=args.timeout_seconds,
     )
+    gen_factory = gen_factory_fn()  # Instantiate the generator factory
 
     strategies = build_frontier_strategies(
         generator_factory=gen_factory,
