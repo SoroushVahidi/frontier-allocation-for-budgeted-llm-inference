@@ -13,9 +13,14 @@ import re
 from collections import Counter
 from typing import Any
 
-from experiments.controllers import DirectReserveFrontierGateV2Controller
+from experiments.controllers import (
+    DirectReserveFrontierGateV2Controller,
+    GlobalDiversityAggregationController,
+    MethodResult,
+)
 
 METHOD_STRATEGY_SEEDED_SEMANTIC_DIVERSITY_FRONTIER_V1 = "strategy_seeded_semantic_diversity_frontier_v1"
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1 = "direct_reserve_diverse_root_frontier_v1"
 
 # Canonical root strategy identifiers (orthogonal to MECHANICAL answer-group churn).
 ROOT_STRATEGY_FAMILY_SPECS: list[tuple[str, str]] = [
@@ -106,6 +111,12 @@ class StrategySeededSemanticDiversityFrontierV1Controller(DirectReserveFrontierG
         method_name: str = METHOD_STRATEGY_SEEDED_SEMANTIC_DIVERSITY_FRONTIER_V1,
         **kwargs: Any,
     ) -> None:
+        if "strict_controller_factory" not in kwargs:
+            kwargs["strict_controller_factory"] = lambda remaining_budget: GlobalDiversityAggregationController(
+                generator,
+                scorer,
+                int(remaining_budget),
+            )
         super().__init__(generator, scorer, max_actions_per_problem, method_name=method_name, **kwargs)
         self.strategy_seed_max_actions = max(1, int(strategy_seed_max_actions))
 
@@ -117,3 +128,126 @@ class StrategySeededSemanticDiversityFrontierV1Controller(DirectReserveFrontierG
             row["root_strategy_family"] = fam_id
             row["strategy_family"] = fam_id
         return ans, used, trace
+
+
+class DirectReserveDiverseRootFrontierV1Controller(DirectReserveFrontierGateV2Controller):
+    """Direct reserve with diverse root strategies frontier (v1).
+
+    Variant that ensures diverse root decomposition approaches are explored
+    at the direct-reserve stage before frontier aggregation.
+    """
+
+    def __init__(
+        self,
+        generator: Any,
+        scorer: Any,
+        max_actions_per_problem: int,
+        *,
+        strategy_seed_max_actions: int = 1,
+        method_name: str = METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1,
+        **kwargs: Any,
+    ) -> None:
+        if "strict_controller_factory" not in kwargs:
+            kwargs["strict_controller_factory"] = lambda remaining_budget: GlobalDiversityAggregationController(
+                generator,
+                scorer,
+                int(remaining_budget),
+            )
+        super().__init__(generator, scorer, max_actions_per_problem, method_name=method_name, **kwargs)
+        self.strategy_seed_max_actions = max(1, int(strategy_seed_max_actions))
+
+    def _run_direct_attempt(self, question: str, gold_answer: str, idx: int, max_actions: int) -> tuple[str | None, int, list[dict]]:
+        capped = min(int(max_actions), int(self.strategy_seed_max_actions))
+        fam_id = ROOT_STRATEGY_FAMILY_SPECS[idx % len(ROOT_STRATEGY_FAMILY_SPECS)][0]
+        ans, used, trace = super()._run_direct_attempt(question, gold_answer, idx, capped)
+        for row in trace:
+            row["root_strategy_family"] = fam_id
+            row["strategy_family"] = fam_id
+        return ans, used, trace
+
+
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED = "direct_reserve_diverse_root_frontier_v1_guarded"
+
+
+class DirectReserveDiverseRootFrontierV1GuardedController(DirectReserveDiverseRootFrontierV1Controller):
+    """Guarded variant of diverse root frontier v1.
+
+    Extends v1 with a guard: falls back to the baseline (v2_final style) answer
+    when the baseline has strong frontier support (i.e., multiple answer groups in candidates).
+
+    Decision logic is gold-agnostic: only checks frontier evidence strength, never gold.
+    This reduces regressions while preserving recoveries from v1.
+    """
+
+    def __init__(
+        self,
+        generator: Any,
+        scorer: Any,
+        max_actions_per_problem: int,
+        *,
+        strategy_seed_max_actions: int = 1,
+        method_name: str = METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            generator,
+            scorer,
+            max_actions_per_problem,
+            strategy_seed_max_actions=strategy_seed_max_actions,
+            method_name=method_name,
+            **kwargs,
+        )
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        """Run v1, then apply fallback guard based on frontier support."""
+        result = super().run(question, gold_answer)
+        metadata = dict(result.metadata or {})
+
+        support_source = metadata.get("frontier_answer_group_counts")
+        if not isinstance(support_source, dict) or not support_source:
+            support_source = metadata.get("answer_group_support_counts", {})
+
+        if not isinstance(support_source, dict):
+            support_source = {}
+
+        support_count = len([k for k, v in support_source.items() if int(v or 0) > 0])
+        has_strong_frontier_support = support_count > 1
+
+        direct_reserve_answer = metadata.get("direct_reserve_answer")
+
+        guard_applied = has_strong_frontier_support and direct_reserve_answer is not None
+
+        metadata["guarded_frontier_support_count"] = support_count
+        metadata["guarded_has_strong_support"] = has_strong_frontier_support
+        metadata["guarded_direct_reserve_answer"] = direct_reserve_answer
+        metadata["guarded_override_blocked"] = guard_applied
+        metadata["guarded_override_reason"] = (
+            "strong_frontier_support_with_direct_answer" if guard_applied else "no_override"
+        )
+
+        if not guard_applied:
+            metadata["guarded_action"] = "accept_v1_override"
+            return MethodResult(
+                method=self.method_name,
+                prediction=result.prediction,
+                is_correct=result.is_correct,
+                actions_used=result.actions_used,
+                expansions=result.expansions,
+                verifications=result.verifications,
+                avg_surviving_branches=result.avg_surviving_branches,
+                budget_exhausted=result.budget_exhausted,
+                metadata=metadata,
+            )
+
+        metadata["guarded_action"] = "fallback_to_direct_reserve"
+        return MethodResult(
+            method=self.method_name,
+            prediction=direct_reserve_answer,
+            is_correct=self._answers_match(direct_reserve_answer, gold_answer),
+            actions_used=result.actions_used,
+            expansions=result.expansions,
+            verifications=result.verifications,
+            avg_surviving_branches=result.avg_surviving_branches,
+            budget_exhausted=result.budget_exhausted,
+            metadata=metadata,
+        )

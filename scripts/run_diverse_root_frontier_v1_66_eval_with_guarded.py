@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Minimal evaluation of direct_reserve_diverse_root_frontier_v1 on 66 gold-absent cases.
+"""Evaluation of diverse_root_frontier_v1 variants on 66 gold-absent cases.
 
-Compares baseline direct_reserve_strategy_seeded_semantic_frontier_v2_final vs new direct_reserve_diverse_root_frontier_v1
-on the same case list. Primary metric: gold_present_in_candidate_groups.
+Compares three methods:
+1. Baseline: direct_reserve_strategy_seeded_semantic_frontier_v2_final
+2. V1: direct_reserve_diverse_root_frontier_v1
+3. Guarded: direct_reserve_diverse_root_frontier_v1_guarded (falls back when baseline has strong support)
 
+Primary metric: gold_present_in_candidate_groups.
 No API calls; uses simulator mode.
 """
 
@@ -34,7 +37,7 @@ from experiments.selector_candidate_extraction import build_candidates_from_meta
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        description="Evaluate direct_reserve_diverse_root_frontier_v1 vs direct_reserve_strategy_seeded_semantic_frontier_v2_final on 66 gold-absent cases."
+        description="Evaluate diverse_root_frontier_v1 variants on 66 gold-absent cases."
     )
     p.add_argument(
         "--case-list",
@@ -100,7 +103,6 @@ def _normalize_answer_for_comparison(ans: str | None) -> str:
     if not ans:
         return ""
     s = str(ans).strip().lower()
-    # Remove common math notation
     for ch in "[](){}":
         s = s.replace(ch, "")
     return s.strip()
@@ -175,7 +177,7 @@ def main() -> None:
     print(f"Done ({len(example_cache)} examples)")
 
     # Create output directory
-    output_dir = REPO_ROOT / args.output_root / f"diverse_root_frontier_v1_66_eval_{args.timestamp}"
+    output_dir = REPO_ROOT / args.output_root / f"diverse_root_frontier_v1_guarded_66_eval_{args.timestamp}"
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Output directory: {output_dir}")
 
@@ -198,45 +200,51 @@ def main() -> None:
         include_broad_diversity_aggregation_methods=True,
     )
 
-    # Filter to only the two strategies we care about
+    # Get the three methods
     baseline_method = "direct_reserve_strategy_seeded_semantic_frontier_v2_final"
-    new_method = "direct_reserve_diverse_root_frontier_v1"
+    v1_method = "direct_reserve_diverse_root_frontier_v1"
+    guarded_method = "direct_reserve_diverse_root_frontier_v1_guarded"
 
     baseline_ctrl = strategies.get(baseline_method)
-    new_ctrl = strategies.get(new_method)
+    v1_ctrl = strategies.get(v1_method)
+    guarded_ctrl = strategies.get(guarded_method)
 
     if not baseline_ctrl:
-        raise SystemExit(f"Strategy {baseline_method} not found in build_frontier_strategies")
-    if not new_ctrl:
-        raise SystemExit(f"Strategy {new_method} not found in build_frontier_strategies")
+        raise SystemExit(f"Strategy {baseline_method} not found")
+    if not v1_ctrl:
+        raise SystemExit(f"Strategy {v1_method} not found")
+    if not guarded_ctrl:
+        raise SystemExit(f"Strategy {guarded_method} not found")
 
     print(f"Using baseline: {baseline_method}")
-    print(f"Using new: {new_method}")
+    print(f"Using v1: {v1_method}")
+    print(f"Using guarded: {guarded_method}")
 
     # Run evaluation
     per_case_results = []
-    newly_recovered = []
     baseline_gold_count = 0
-    new_gold_count = 0
+    v1_gold_count = 0
+    guarded_gold_count = 0
+
+    v1_recovered = []
+    guarded_recovered = []
+    v1_regressed = []
+    guarded_regressed = []
 
     for i, case in enumerate(cases):
         case_id = get_case_key(case)
-        print(f"[{i+1}/{len(cases)}] Evaluating {case_id}...", end=" ", flush=True)
+        print(f"[{i+1}/{len(cases)}] {case_id}...", end=" ", flush=True)
 
         dataset_name = case.get("dataset", "openai/gsm8k")
         example_id = case.get("example_id", "")
         gold_answer_hint = case.get("gold_answer_canonical_hint", "")
 
-        # Get the actual question text (not just the example_id)
         question_text = get_example_question(example_id, dataset_name, example_cache)
-
-        # Normalize gold answer
         gold_norm = _normalize_answer_for_comparison(gold_answer_hint)
 
-        # Try to run both strategies with actual question text
+        # Baseline
         try:
             baseline_result = baseline_ctrl.run(question_text, gold_answer_hint or "")
-            # Extract candidates from metadata
             candidates = []
             if baseline_result.metadata:
                 candidates = build_candidates_from_metadata(question_text, baseline_result.metadata)[0]
@@ -246,30 +254,63 @@ def main() -> None:
         except Exception as e:
             print(f"baseline error: {e}", end=" ")
             baseline_gold_present = False
-            baseline_result = None
 
+        # V1
         try:
-            new_result = new_ctrl.run(question_text, gold_answer_hint or "")
-            # Extract candidates from metadata
+            v1_result = v1_ctrl.run(question_text, gold_answer_hint or "")
             candidates = []
-            if new_result.metadata:
-                candidates = build_candidates_from_metadata(question_text, new_result.metadata)[0]
-            new_gold_present = _is_gold_in_candidates(
+            if v1_result.metadata:
+                candidates = build_candidates_from_metadata(question_text, v1_result.metadata)[0]
+            v1_gold_present = _is_gold_in_candidates(
                 [{"normalized_answer": c.normalized_answer} for c in candidates], gold_norm
             )
         except Exception as e:
-            print(f"new error: {e}", end=" ")
-            new_gold_present = False
-            new_result = None
+            print(f"v1 error: {e}", end=" ")
+            v1_gold_present = False
 
+        # Guarded
+        try:
+            guarded_result = guarded_ctrl.run(question_text, gold_answer_hint or "")
+            candidates = []
+            if guarded_result.metadata:
+                candidates = build_candidates_from_metadata(question_text, guarded_result.metadata)[0]
+            guarded_gold_present = _is_gold_in_candidates(
+                [{"normalized_answer": c.normalized_answer} for c in candidates], gold_norm
+            )
+        except Exception as e:
+            print(f"guarded error: {e}", end=" ")
+            guarded_gold_present = False
+
+        # Count hits
         if baseline_gold_present:
             baseline_gold_count += 1
-        if new_gold_present:
-            new_gold_count += 1
-            if not baseline_gold_present:
-                newly_recovered.append(case_id)
+        if v1_gold_present:
+            v1_gold_count += 1
+        if guarded_gold_present:
+            guarded_gold_count += 1
 
-        recovery_status = "recovered" if (new_gold_present and not baseline_gold_present) else "no_change"
+        # Track recovery/regression
+        if v1_gold_present and not baseline_gold_present:
+            v1_recovered.append(case_id)
+        elif not v1_gold_present and baseline_gold_present:
+            v1_regressed.append(case_id)
+
+        if guarded_gold_present and not baseline_gold_present:
+            guarded_recovered.append(case_id)
+        elif not guarded_gold_present and baseline_gold_present:
+            guarded_regressed.append(case_id)
+
+        # Determine statuses
+        v1_status = (
+            "recovered" if (v1_gold_present and not baseline_gold_present)
+            else "regressed" if (not v1_gold_present and baseline_gold_present)
+            else "no_change"
+        )
+        guarded_status = (
+            "recovered" if (guarded_gold_present and not baseline_gold_present)
+            else "regressed" if (not guarded_gold_present and baseline_gold_present)
+            else "no_change"
+        )
 
         per_case_results.append(
             {
@@ -280,75 +321,57 @@ def main() -> None:
                 "budget": case.get("budget", ""),
                 "gold_answer": gold_answer_hint,
                 "baseline_gold_present": "yes" if baseline_gold_present else "no",
-                "new_gold_present": "yes" if new_gold_present else "no",
-                "baseline_actions": baseline_result.actions_used if baseline_result else 0,
-                "new_actions": new_result.actions_used if new_result else 0,
-                "recovery_status": recovery_status,
+                "v1_gold_present": "yes" if v1_gold_present else "no",
+                "guarded_gold_present": "yes" if guarded_gold_present else "no",
+                "v1_status": v1_status,
+                "guarded_status": guarded_status,
             }
         )
 
-        print(f"baseline={baseline_gold_present} new={new_gold_present}")
+        print(f"B={baseline_gold_present} V1={v1_gold_present} G={guarded_gold_present}")
 
     # Calculate summary metrics
     total_cases = len(cases)
-    baseline_recovery_rate = baseline_gold_count / total_cases if total_cases > 0 else 0.0
-    new_recovery_rate = new_gold_count / total_cases if total_cases > 0 else 0.0
-    newly_recovered_count = len(newly_recovered)
+    baseline_rate = baseline_gold_count / total_cases if total_cases > 0 else 0.0
+    v1_rate = v1_gold_count / total_cases if total_cases > 0 else 0.0
+    guarded_rate = guarded_gold_count / total_cases if total_cases > 0 else 0.0
 
     summary = {
         "timestamp": args.timestamp,
         "total_cases": total_cases,
         "baseline_method": baseline_method,
-        "new_method": new_method,
         "baseline_gold_present_count": baseline_gold_count,
-        "baseline_recovery_rate": baseline_recovery_rate,
-        "new_gold_present_count": new_gold_count,
-        "new_recovery_rate": new_recovery_rate,
-        "delta_gold_present": new_gold_count - baseline_gold_count,
-        "newly_recovered_count": newly_recovered_count,
-        "improvement": "yes" if new_gold_count > baseline_gold_count else "no",
+        "baseline_recovery_rate": baseline_rate,
+        "v1_method": v1_method,
+        "v1_gold_present_count": v1_gold_count,
+        "v1_recovery_rate": v1_rate,
+        "v1_delta_gold_present": v1_gold_count - baseline_gold_count,
+        "v1_newly_recovered_count": len(v1_recovered),
+        "v1_newly_regressed_count": len(v1_regressed),
+        "guarded_method": guarded_method,
+        "guarded_gold_present_count": guarded_gold_count,
+        "guarded_recovery_rate": guarded_rate,
+        "guarded_delta_gold_present": guarded_gold_count - baseline_gold_count,
+        "guarded_newly_recovered_count": len(guarded_recovered),
+        "guarded_newly_regressed_count": len(guarded_regressed),
     }
 
     # Write outputs
     write_csv(output_dir / "per_case_results.csv", per_case_results)
     write_json(output_dir / "summary.json", summary)
 
-    # Write summary.csv
-    summary_csv = [
-        {
-            "metric": "total_cases",
-            "value": total_cases,
-        },
-        {
-            "metric": "baseline_gold_present_count",
-            "value": baseline_gold_count,
-        },
-        {
-            "metric": "baseline_recovery_rate",
-            "value": f"{baseline_recovery_rate:.4f}",
-        },
-        {
-            "metric": "new_gold_present_count",
-            "value": new_gold_count,
-        },
-        {
-            "metric": "new_recovery_rate",
-            "value": f"{new_recovery_rate:.4f}",
-        },
-        {
-            "metric": "delta_gold_present",
-            "value": new_gold_count - baseline_gold_count,
-        },
-        {
-            "metric": "newly_recovered_count",
-            "value": newly_recovered_count,
-        },
-    ]
-    write_csv(output_dir / "summary.csv", summary_csv)
-
-    # Write newly recovered case IDs
-    with (output_dir / "newly_recovered_case_ids.txt").open("w", encoding="utf-8") as f:
-        for case_id in newly_recovered:
+    # Write recovery/regression lists
+    with (output_dir / "v1_recovered_case_ids.txt").open("w", encoding="utf-8") as f:
+        for case_id in v1_recovered:
+            f.write(f"{case_id}\n")
+    with (output_dir / "v1_regressed_case_ids.txt").open("w", encoding="utf-8") as f:
+        for case_id in v1_regressed:
+            f.write(f"{case_id}\n")
+    with (output_dir / "guarded_recovered_case_ids.txt").open("w", encoding="utf-8") as f:
+        for case_id in guarded_recovered:
+            f.write(f"{case_id}\n")
+    with (output_dir / "guarded_regressed_case_ids.txt").open("w", encoding="utf-8") as f:
+        for case_id in guarded_regressed:
             f.write(f"{case_id}\n")
 
     # Print summary
@@ -356,10 +379,11 @@ def main() -> None:
     print("SUMMARY")
     print("=" * 80)
     print(f"Total cases: {total_cases}")
-    print(f"Baseline ({baseline_method}): {baseline_gold_count}/{total_cases} ({baseline_recovery_rate:.2%})")
-    print(f"New ({new_method}): {new_gold_count}/{total_cases} ({new_recovery_rate:.2%})")
-    print(f"Delta: {new_gold_count - baseline_gold_count:+d}")
-    print(f"Newly recovered: {newly_recovered_count}")
+    print(f"\nBaseline ({baseline_method}): {baseline_gold_count}/{total_cases} ({baseline_rate:.2%})")
+    print(f"V1 ({v1_method}): {v1_gold_count}/{total_cases} ({v1_rate:.2%})")
+    print(f"  Delta: {v1_gold_count - baseline_gold_count:+d} | Recovered: {len(v1_recovered)} | Regressed: {len(v1_regressed)}")
+    print(f"Guarded ({guarded_method}): {guarded_gold_count}/{total_cases} ({guarded_rate:.2%})")
+    print(f"  Delta: {guarded_gold_count - baseline_gold_count:+d} | Recovered: {len(guarded_recovered)} | Regressed: {len(guarded_regressed)}")
     print("=" * 80)
     print(f"Output saved to: {output_dir}")
 
