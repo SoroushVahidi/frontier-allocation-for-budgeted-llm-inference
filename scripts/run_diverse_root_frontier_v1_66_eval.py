@@ -151,15 +151,14 @@ def main() -> None:
     print(f"Output directory: {output_dir}")
 
     # Build strategies
-    def gen_factory():
-        return generator_factory_for_mode(
-            use_openai_api=False,
-            rng=rng,
-            openai_model="gpt-4.1-mini",
-            temperature=args.temperature,
-            max_output_tokens=args.max_output_tokens,
-            timeout_seconds=args.timeout_seconds,
-        )
+    gen_factory = generator_factory_for_mode(
+        use_openai_api=False,
+        rng=rng,
+        openai_model="gpt-4.1-mini",
+        temperature=args.temperature,
+        max_output_tokens=args.max_output_tokens,
+        timeout_seconds=args.timeout_seconds,
+    )
 
     strategies = build_frontier_strategies(
         generator_factory=gen_factory,
