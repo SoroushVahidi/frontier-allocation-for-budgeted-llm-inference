@@ -65,6 +65,12 @@ def dedupe_key(item: dict[str, Any]) -> str:
     return f"{item.get('case_id')}|{p}|{item.get('normalized_answer')}|{t}"
 
 
+def stable_score_seed(item: dict[str, Any]) -> int:
+    key = f"{item.get('case_id', '')}|{item.get('candidate_id', '')}"
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    return int(digest[:16], 16)
+
+
 @dataclass
 class GroupScore:
     normalized_answer: str
@@ -83,7 +89,7 @@ def score_item(item: dict[str, Any], mode: str, score_map: dict[tuple[str, str],
     if mode == "constant":
         return 0.5
     if mode == "mock_oracle_disabled_random_safe":
-        rnd = random.Random(hash((item["case_id"], item["candidate_id"])) & 0xFFFFFFFF)
+        rnd = random.Random(stable_score_seed(item))
         return rnd.random()
     if mode == "trace_quality_heuristic":
         trace = item.get("trace_text", "")
@@ -93,7 +99,7 @@ def score_item(item: dict[str, Any], mode: str, score_map: dict[tuple[str, str],
             return None
         return score_map.get((item["case_id"], item["candidate_id"]))
     if mode == "api":
-        return None
+        raise ValueError("score_item does not perform live API scoring; use scripts/run_outcome_verifier_scoring.py to create a cached_jsonl score cache")
     raise ValueError(f"unknown scorer mode: {mode}")
 
 
