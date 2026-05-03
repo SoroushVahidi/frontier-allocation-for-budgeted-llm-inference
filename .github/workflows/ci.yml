@@ -1,0 +1,35 @@
+name: reviewer-safe-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  reviewer-safe-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Install package and development dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[dev]
+
+      - name: Repository health check
+        run: make health
+
+      - name: Reviewer-safe tests
+        run: make reviewer-test
+
+      - name: Selector regression tests
+        run: make selector-test
