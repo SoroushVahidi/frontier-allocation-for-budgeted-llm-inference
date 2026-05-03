@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import random
 import sys
 from collections import Counter
@@ -32,7 +33,11 @@ from experiments.frontier_matrix_core import (
 )
 from experiments.data import NUMBER_PATTERN, PilotExample, extract_final_answer
 from experiments.hf_datasets import resolve_dataset_spec, sample_hf_examples
-from experiments.selector_candidate_extraction import build_candidates_from_metadata
+from experiments.selector_candidate_extraction import (
+    CandidateExtractionDiagnostics,
+    build_candidates_from_metadata,
+    build_candidates_from_metadata_diagnostic,
+)
 
 BASELINE_METHOD = "direct_reserve_strategy_seeded_semantic_frontier_v2_final"
 V1_METHOD = "direct_reserve_diverse_root_frontier_v1"
@@ -155,21 +160,49 @@ def _primary_numeric_scalar(text: str | None) -> float | None:
         return None
 
 
-def _gold_near_candidate_within_numeric_delta(
-    gold_text: str, candidates: list[Any], *, delta: float = 2.0
-) -> bool:
+def _min_abs_numeric_delta_vs_candidates(gold_text: str, candidates: list[Any]) -> float | None:
     gold_val = _primary_numeric_scalar(gold_text)
     if gold_val is None:
-        return False
+        return None
+    best: float | None = None
     for cand in candidates:
         for fragment in (
             cand.final_answer,
             getattr(cand, "normalized_answer", None) or "",
         ):
             cval = _primary_numeric_scalar(str(fragment))
-            if cval is not None and abs(cval - gold_val) <= delta:
-                return True
-    return False
+            if cval is None:
+                continue
+            d = abs(cval - gold_val)
+            if best is None or d < best:
+                best = d
+    return best
+
+
+def _near_numeric_match_label(min_diff: float | None, threshold: float) -> str:
+    if min_diff is None:
+        return "na"
+    return "yes" if min_diff <= threshold else "no"
+
+
+def _substring_match_flags(gold_eff: str, candidates: list[Any]) -> tuple[str, str]:
+    """Diagnostic yes/no: gold substring of candidate raw answer; candidate substring of gold."""
+    g = str(gold_eff).strip().casefold()
+    if not g:
+        return "no", "no"
+    cand_has_gold = "no"
+    gold_has_cand = "no"
+    for cand in candidates:
+        r = str(cand.final_answer).strip().casefold()
+        if not r:
+            continue
+        if g in r:
+            cand_has_gold = "yes"
+        if r in g:
+            gold_has_cand = "yes"
+        if cand_has_gold == "yes" and gold_has_cand == "yes":
+            break
+    return cand_has_gold, gold_has_cand
 
 
 def _semicolon_join(values: list[str]) -> str:
@@ -185,18 +218,28 @@ def _eval_one_method(
     question_text: str,
     gold_answer_hint_controller: str,
     gold_norm_for_eval: str,
+    *,
+    want_extraction_diag: bool = False,
 ) -> dict[str, Any]:
     """Run one controller once; mirrors prior try/except + candidate wiring."""
     extraction_sources: list[str] = []
+    extraction_diag: CandidateExtractionDiagnostics | None = None
     candidates = []
     result = None
     err = ""
     try:
         result = controller.run(question_text, gold_answer_hint_controller or "")
         if result and result.metadata:
-            got, extraction_sources_raw = build_candidates_from_metadata(question_text, result.metadata)
-            candidates = list(got)
-            extraction_sources = list(extraction_sources_raw)
+            if want_extraction_diag:
+                got, extraction_sources_raw, extraction_diag = build_candidates_from_metadata_diagnostic(
+                    question_text, result.metadata
+                )
+                candidates = list(got)
+                extraction_sources = list(extraction_sources_raw)
+            else:
+                got, extraction_sources_raw = build_candidates_from_metadata(question_text, result.metadata)
+                candidates = list(got)
+                extraction_sources = list(extraction_sources_raw)
     except Exception as exc:
         err = f"{type(exc).__name__}: {exc}"
     gold_present = _is_gold_in_candidates(
@@ -209,6 +252,7 @@ def _eval_one_method(
         "result": result,
         "error": err,
         "extraction_sources": extraction_sources,
+        "extraction_diag": extraction_diag,
     }
 
 
@@ -231,8 +275,10 @@ def diagnostic_row_from_eval(
     result = bundle["result"]
     err = str(bundle["error"]).strip()
     extraction_sources = bundle["extraction_sources"]
+    ext_diag: CandidateExtractionDiagnostics | None = bundle.get("extraction_diag")
 
     cand_norm_strings = [_normalize_answer_for_comparison(c.normalized_answer or "") for c in candidates]
+    extractor_norm_strings = [str(c.normalized_answer or "") for c in candidates]
     distinct_nonempty = {n for n in cand_norm_strings if n.strip()}
 
     prediction = getattr(result, "prediction", None) if result else None
@@ -244,9 +290,21 @@ def diagnostic_row_from_eval(
         else ""
     )
 
-    near_ok = False
-    if effective_gold_for_eval:
-        near_ok = _gold_near_candidate_within_numeric_delta(str(effective_gold_for_eval), candidates, delta=2.0)
+    min_abs_diff = _min_abs_numeric_delta_vs_candidates(str(effective_gold_for_eval), candidates)
+    near_min_str = "" if min_abs_diff is None else f"{min_abs_diff:.8g}"
+    near_le1 = _near_numeric_match_label(min_abs_diff, 1.0)
+    near_le2 = _near_numeric_match_label(min_abs_diff, 2.0)
+    cand_sub_gold, gold_sub_cand = _substring_match_flags(str(effective_gold_for_eval), candidates)
+
+    exact_hit = bundle["gold_present"]
+    normalization_artifact_suspected = "no"
+    if not exact_hit:
+        if (
+            near_le2 == "yes"
+            or cand_sub_gold == "yes"
+            or gold_sub_cand == "yes"
+        ):
+            normalization_artifact_suspected = "yes"
 
     notes: list[str] = []
     if err:
@@ -262,6 +320,10 @@ def diagnostic_row_from_eval(
             src = ",".join(extraction_sources) if extraction_sources else ""
             notes.append(f"zero_candidates_extracted;metadata_keys={md_keys};reported_sources={src}")
 
+    src_join = ",".join(extraction_sources)
+    ext_meta_keys = ext_diag.metadata_keys_present if ext_diag else ""
+    ext_skip_counts = ext_diag.extraction_skip_counts if ext_diag else ""
+
     return {
         "case_id": case_id,
         "method": method,
@@ -276,11 +338,21 @@ def diagnostic_row_from_eval(
         "prediction_final_answer": prediction_s,
         "normalized_prediction": normalized_prediction,
         "candidate_normalized_answers": _semicolon_join(cand_norm_strings),
+        "candidate_extractor_normalized_answers": _semicolon_join(extractor_norm_strings),
         "candidate_raw_answers": _semicolon_join([str(c.final_answer) for c in candidates]),
         "candidate_count": len(candidates),
         "distinct_normalized_candidate_count": len(distinct_nonempty),
+        "extraction_sources_used": src_join,
+        "extraction_metadata_keys_present": ext_meta_keys,
+        "extraction_skip_counts": ext_skip_counts,
         "exact_gold_match_found": "yes" if bundle["gold_present"] else "no",
-        "near_numeric_match_abs_le_2": "yes" if near_ok else "no",
+        "near_numeric_abs_diff_min": near_min_str,
+        "near_numeric_match_le_1": near_le1,
+        "near_numeric_match_le_2": near_le2,
+        "near_numeric_match_abs_le_2": near_le2,
+        "candidate_has_gold_as_substring": cand_sub_gold,
+        "gold_has_candidate_as_substring": gold_sub_cand,
+        "normalization_artifact_suspected": normalization_artifact_suspected,
         "notes": "|".join(notes) if notes else "",
     }
 
@@ -298,13 +370,24 @@ def _load_gsm8k_example_and_raw_answer_caches(
 ) -> tuple[dict[str, PilotExample], dict[str, str]]:
     """Same HF slice as the prior evaluator; adds raw GSM8K `answer` strings for diagnostics."""
     spec = resolve_dataset_spec("openai/gsm8k")
-    rows = sample_hf_examples(
-        dataset_name="openai/gsm8k",
-        pilot_size=subset_size,
-        seed=seed,
-        split=spec.default_split,
-        config_name=spec.default_config,
-    )
+    hf_ok = bool(os.getenv("HF_TOKEN"))
+    hub_ok = bool(os.getenv("HUGGINGFACE_HUB_TOKEN"))
+    try:
+        rows = sample_hf_examples(
+            dataset_name="openai/gsm8k",
+            pilot_size=subset_size,
+            seed=seed,
+            split=spec.default_split,
+            config_name=spec.default_config,
+        )
+    except Exception as exc:
+        raise SystemExit(
+            "Hugging Face dataset download/load failed for openai/gsm8k "
+            "(required for GSM8K questions and evaluation-only gold backfill). "
+            f"HF_TOKEN_present={hf_ok} HUGGINGFACE_HUB_TOKEN_present={hub_ok}. "
+            f"Evaluator command-path: _load_gsm8k_example_and_raw_answer_caches -> sample_hf_examples. "
+            f"Error: {type(exc).__name__}: {exc}"
+        ) from exc
     examples: dict[str, PilotExample] = {}
     raw_by_id: dict[str, str] = {}
     for r in rows:
@@ -448,17 +531,35 @@ def main() -> None:
 
         gold_for_ctrl = gold_answer_hint or ""
 
-        baseline_b = _eval_one_method(baseline_ctrl, question_text, gold_for_ctrl, gold_norm)
+        baseline_b = _eval_one_method(
+            baseline_ctrl,
+            question_text,
+            gold_for_ctrl,
+            gold_norm,
+            want_extraction_diag=args.diagnostic_candidates,
+        )
         if baseline_b["error"]:
             print(f"baseline error: {baseline_b['error']}", end=" ")
         baseline_gold_present = baseline_b["gold_present"]
 
-        v1_b = _eval_one_method(v1_ctrl, question_text, gold_for_ctrl, gold_norm)
+        v1_b = _eval_one_method(
+            v1_ctrl,
+            question_text,
+            gold_for_ctrl,
+            gold_norm,
+            want_extraction_diag=args.diagnostic_candidates,
+        )
         if v1_b["error"]:
             print(f"v1 error: {v1_b['error']}", end=" ")
         v1_gold_present = v1_b["gold_present"]
 
-        guarded_b = _eval_one_method(guarded_ctrl, question_text, gold_for_ctrl, gold_norm)
+        guarded_b = _eval_one_method(
+            guarded_ctrl,
+            question_text,
+            gold_for_ctrl,
+            gold_norm,
+            want_extraction_diag=args.diagnostic_candidates,
+        )
         if guarded_b["error"]:
             print(f"guarded error: {guarded_b['error']}", end=" ")
         guarded_gold_present = guarded_b["gold_present"]
@@ -583,11 +684,21 @@ def main() -> None:
         "prediction_final_answer",
         "normalized_prediction",
         "candidate_normalized_answers",
+        "candidate_extractor_normalized_answers",
         "candidate_raw_answers",
         "candidate_count",
         "distinct_normalized_candidate_count",
+        "extraction_sources_used",
+        "extraction_metadata_keys_present",
+        "extraction_skip_counts",
         "exact_gold_match_found",
+        "near_numeric_abs_diff_min",
+        "near_numeric_match_le_1",
+        "near_numeric_match_le_2",
         "near_numeric_match_abs_le_2",
+        "candidate_has_gold_as_substring",
+        "gold_has_candidate_as_substring",
+        "normalization_artifact_suspected",
         "notes",
     ]
     if args.diagnostic_candidates:

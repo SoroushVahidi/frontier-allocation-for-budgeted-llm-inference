@@ -1,4 +1,7 @@
-from experiments.selector_candidate_extraction import build_candidates_from_metadata
+from experiments.selector_candidate_extraction import (
+    build_candidates_from_metadata,
+    build_candidates_from_metadata_diagnostic,
+)
 
 
 def test_extract_from_final_branch_states():
@@ -19,3 +22,24 @@ def test_dedup_only_truly_identical():
     md={"selector_candidate_pool":[{"candidate_id":"c1","final_answer":"9","trace":"t","source_id":"s"},{"candidate_id":"c1","final_answer":"9","trace":"t","source_id":"s"},{"candidate_id":"c1","final_answer":"9","trace":"t2","source_id":"s"}]}
     c,_=build_candidates_from_metadata("q",md)
     assert len(c)==2
+
+
+def test_diagnostic_matches_plain_and_counts_skips():
+    md = {
+        "final_branch_states": [
+            {"branch_id": "b0", "predicted_answer": ""},
+            {"branch_id": "b1", "predicted_answer": "42"},
+        ]
+    }
+    plain_c, plain_u = build_candidates_from_metadata("q", md)
+    dc, du, diag = build_candidates_from_metadata_diagnostic("q", md)
+    assert plain_c == dc and plain_u == du
+    assert "empty_answer_field=1" in diag.extraction_skip_counts
+    assert "final_branch_states" in diag.metadata_keys_present
+
+
+def test_diagnostic_rows_not_list_increment_skip():
+    md = {"final_branch_states": "not_a_list"}
+    c, u, diag = build_candidates_from_metadata_diagnostic("q", md)
+    assert not c and not u
+    assert "final_branch_states:rows_not_list=1" in diag.extraction_skip_counts
