@@ -3,3 +3,8 @@
 # Developer tooling
 ruff>=0.4
 pytest>=8.0
+
+# Optional paid/API verifier backend dependencies live in pyproject extras:
+#   python -m pip install -e .[api]
+# or, for development plus API scoring:
+#   python -m pip install -e .[dev,api]

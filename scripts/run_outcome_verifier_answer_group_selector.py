@@ -10,20 +10,26 @@ if str(REPO_ROOT) not in sys.path:
 from experiments.outcome_verifier_answer_group_selector import build_verifier_item, dedupe_key, evaluate_case, score_item, select_case, has_trace
 
 def main():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(
+        description=(
+            "Build/evaluate an outcome-verifier answer-group selector from dry-run, heuristic, "
+            "or cached verifier scores. Live paid/API scoring is intentionally handled by "
+            "scripts/run_outcome_verifier_scoring.py so selector evaluation cannot silently make API calls."
+        )
+    )
     ap.add_argument('--input', required=True)
     ap.add_argument('--output-dir', required=True)
     ap.add_argument('--selector-name', default='outcome_verifier_answer_group_selector_v1')
-    ap.add_argument('--scorer-mode', required=True, choices=['dry_run_call_plan','trace_quality_heuristic','cached_jsonl','api'])
+    ap.add_argument('--scorer-mode', required=True, choices=['dry_run_call_plan','trace_quality_heuristic','cached_jsonl'])
     ap.add_argument('--score-cache')
     ap.add_argument('--min-verifier-margin', type=float, default=0.15)
     ap.add_argument('--require-trace-for-override', action='store_true')
     ap.add_argument('--dedupe-verifier-items', action='store_true')
-    ap.add_argument('--allow-api', action='store_true')
-    ap.add_argument('--api-backend', choices=['cohere','openai','anthropic','gemini'])
-    ap.add_argument('--max-api-calls', type=int)
     ap.add_argument('--no-gold-features', action='store_true')
     args = ap.parse_args()
+
+    if args.scorer_mode == 'cached_jsonl' and not args.score_cache:
+        raise SystemExit('cached_jsonl scorer mode requires --score-cache. Use scripts/run_outcome_verifier_scoring.py to create paid/API score caches.')
 
     rows=[json.loads(x) for x in Path(args.input).read_text(encoding='utf-8').splitlines() if x.strip()]
     out=Path(args.output_dir); out.mkdir(parents=True, exist_ok=True)
@@ -53,9 +59,6 @@ def main():
             items=list(uniq.values())
         case_items[case_id]=items
         plan.extend(items)
-
-    if args.scorer_mode=='api' and not args.allow_api:
-        raise SystemExit('api scorer mode requires --allow-api')
 
     score_out=[]; missing=[]; casebook=[]; reasons=defaultdict(int)
     for ci,case in enumerate(rows):
@@ -91,9 +94,9 @@ def main():
     byprov={k:{**v,'accuracy':v['selector_correct']/max(1,v['count'])} for k,v in byprov.items()}
 
     summary={'timestamp':datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'),'selector_name':args.selector_name,'total_cases':total,'total_overrides':overrides,'fixes':fixes,'breaks':breaks,'net_fixes_minus_breaks':fixes-breaks,'override_precision':(fixes/max(1,overrides)),'accuracy':sel_acc,'current_incumbent_accuracy':cur_acc,'oracle_ceiling_on_package':recoverable/max(1,total),'recoverable_trace_terminal_cases':recoverable,'recoveries_among_gold_in_terminal_node_cases':recov,'failures_gold_present_in_terminal_nodes_not_chosen':fail,'aggregate_only_cases_count':aggregate_only,'by_provenance_metrics':byprov,'decision_reasons':dict(reasons)}
-    cps={'total_cases':len(rows),'total_candidate_nodes':total_nodes,'traced_candidate_nodes':traced_nodes,'candidate_scoring_items_before_dedupe':before,'candidate_scoring_items_after_dedupe':len(plan),'cases_with_incumbent_candidate_group':with_inc,'cases_without_incumbent_candidate_group':without_inc,'cases_with_at_least_one_challenger_group':with_ch,'estimated_api_calls_if_enabled':len(plan),'scorer_mode':args.scorer_mode,'api_backend':args.api_backend,'allow_api':args.allow_api}
+    cps={'total_cases':len(rows),'total_candidate_nodes':total_nodes,'traced_candidate_nodes':traced_nodes,'candidate_scoring_items_before_dedupe':before,'candidate_scoring_items_after_dedupe':len(plan),'cases_with_incumbent_candidate_group':with_inc,'cases_without_incumbent_candidate_group':without_inc,'cases_with_at_least_one_challenger_group':with_ch,'estimated_api_calls_if_scored_externally':len(plan),'scorer_mode':args.scorer_mode,'live_api_scoring_supported':False,'api_scoring_entry_point':'scripts/run_outcome_verifier_scoring.py'}
 
-    (out/'manifest.json').write_text(json.dumps({'input':args.input,'selector_name':args.selector_name,'scorer_mode':args.scorer_mode},indent=2)+"\n")
+    (out/'manifest.json').write_text(json.dumps({'input':args.input,'selector_name':args.selector_name,'scorer_mode':args.scorer_mode,'api_scoring_entry_point':'scripts/run_outcome_verifier_scoring.py'},indent=2)+"\n")
     (out/'verifier_call_plan.jsonl').write_text("\n".join(json.dumps(x) for x in plan)+"\n",encoding='utf-8')
     (out/'verifier_call_plan_summary.json').write_text(json.dumps(cps,indent=2)+"\n")
     (out/'selector_summary.json').write_text(json.dumps(summary,indent=2)+"\n")
@@ -102,7 +105,7 @@ def main():
         for r in casebook: f.write(json.dumps(r)+"\n")
     with (out/'selector_casebook.csv').open('w',newline='',encoding='utf-8') as f:
         w=csv.DictWriter(f,fieldnames=list(casebook[0].keys()) if casebook else ['case_index']); w.writeheader(); w.writerows(casebook)
-    (out/'selector_report.md').write_text(f"# Outcome verifier answer-group selector report\n\n- scorer_mode: `{args.scorer_mode}`\n- allow_api: `{args.allow_api}`\n")
+    (out/'selector_report.md').write_text(f"# Outcome verifier answer-group selector report\n\n- scorer_mode: `{args.scorer_mode}`\n- live_api_scoring_supported: `False`\n- API scoring entry point: `scripts/run_outcome_verifier_scoring.py`\n")
     if score_out: (out/'verifier_scores.jsonl').write_text("\n".join(json.dumps(x) for x in score_out)+"\n")
     if missing: (out/'missing_or_unscored_candidates.jsonl').write_text("\n".join(json.dumps(x) for x in missing)+"\n")
     print(out)
