@@ -1,0 +1,2 @@
+timestamp,cases_evaluated,baseline_exact_accuracy,v1_exact_accuracy,guarded_exact_accuracy,baseline_gold_present_rate,v1_gold_present_rate,guarded_gold_present_rate
+HELDOUT_100_DR_MAIN,100,0.49,0.53,0.56,0.6,0.71,0.74
