@@ -45,6 +45,8 @@ from experiments.direct_reserve_strategy_seeded_semantic_frontier_v2_final impor
 )
 from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     ROOT_STRATEGY_FAMILY_SPECS,
+    DirectReserveDiverseRootFrontierV1Controller,
+    DirectReserveDiverseRootFrontierV1GuardedController,
     StrategySeededSemanticDiversityFrontierV1Controller,
     build_strategy_prompt_styles_semantic_frontier_v1,
 )
@@ -57,7 +59,8 @@ def resolve_api_key_for_provider(provider: str) -> str | None:
     if p == "openai":
         return os.getenv("OPENAI_API_KEY")
     if p == "cohere":
-        return os.getenv("COHERE_API_KEY")
+        # Prefer COHERE_API_KEY; CO_API_KEY is accepted only as a compatibility fallback (some shells/docs).
+        return os.getenv("COHERE_API_KEY") or os.getenv("CO_API_KEY")
     if p == "groq":
         return os.getenv("GROQ_API_KEY")
     if p == "gemini":
@@ -1256,6 +1259,22 @@ def build_frontier_strategies(
             strategy_seed_min_actions=2,
             min_actions_reserved_for_frontier=1,
             **v2_final_outer_kwargs,
+        )
+        specs["direct_reserve_diverse_root_frontier_v1"] = DirectReserveDiverseRootFrontierV1Controller(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_diverse_root_frontier_v1",
+            strategy_seed_max_actions=1,
+            **strategy_seeded_outer_kwargs,
+        )
+        specs["direct_reserve_diverse_root_frontier_v1_guarded"] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_diverse_root_frontier_v1_guarded",
+            strategy_seed_max_actions=1,
+            **strategy_seeded_outer_kwargs,
         )
         specs["direct_reserve_semantic_frontier_v2_selection_fix_v1"] = DirectReserveFrontierGateV2SelectionFixV1Controller(
             generator_factory(),
