@@ -11,6 +11,7 @@ Safe current claims:
 - The repository has an audited recovery-track outcome-verifier selector configuration.
 - The selected verifier selector is a recovery/selector-evidence track choice only.
 - `external_l1_max` is the strong external comparator to beat in current real-model comparisons.
+- Recent diagnostics suggest discovery/coverage is a major residual bottleneck when gold answers are absent from candidate pools.
 - Timestamped `outputs/` folders are provenance; use canonical docs and manifests before citing numbers.
 
 Unsafe without a new canonical promotion:
@@ -18,6 +19,9 @@ Unsafe without a new canonical promotion:
 - Broad or universal superiority over `external_l1_max`.
 - Runtime promotion of the selected outcome-verifier selector.
 - Headline conclusions from cache-limited verifier runs, mock-backed verifier runs, or selected external-loss subsets.
+- Causal gold-path conclusions from path-gap proxy diagnostics.
+
+For the compact claim checklist, see `docs/CLAIMS.md`.
 
 ## Minimal setup
 
@@ -66,13 +70,14 @@ Canonical output roots:
 
 ## Required reading before writing or reviewing claims
 
-1. `START_HERE_CURRENT.md`
-2. `docs/PAPER_SOURCE_OF_TRUTH.md`
-3. `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
-4. `docs/CURRENT_PROJECT_STATUS.md`
-5. `docs/CURRENT_EXTERNAL_BASELINE_GAP.md`
-6. `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`
-7. `docs/ARTIFACT_STATUS_TABLE.md`
+1. `docs/CLAIMS.md`
+2. `START_HERE_CURRENT.md`
+3. `docs/PAPER_SOURCE_OF_TRUTH.md`
+4. `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
+5. `docs/CURRENT_PROJECT_STATUS.md`
+6. `docs/CURRENT_EXTERNAL_BASELINE_GAP.md`
+7. `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`
+8. `docs/ARTIFACT_STATUS_TABLE.md`
 
 ## Selector/API separation
 

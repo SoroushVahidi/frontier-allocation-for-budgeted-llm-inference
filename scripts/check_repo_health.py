@@ -20,6 +20,8 @@ if str(REPO_ROOT) not in sys.path:
 
 REQUIRED_PATHS = [
     REPO_ROOT / "README.md",
+    REPO_ROOT / "REVIEWER_FIRST.md",
+    REPO_ROOT / "START_HERE_CURRENT.md",
     REPO_ROOT / "QUICKSTART.md",
     REPO_ROOT / "CONTRIBUTING.md",
     REPO_ROOT / "TODO.md",
@@ -27,11 +29,14 @@ REQUIRED_PATHS = [
     REPO_ROOT / "requirements.txt",
     REPO_ROOT / "requirements-dev.txt",
     REPO_ROOT / "Makefile",
+    REPO_ROOT / "docs" / "CLAIMS.md",
     REPO_ROOT / "docs" / "CANONICAL_START_HERE.md",
     REPO_ROOT / "docs" / "MANUSCRIPT_SUPPORT_DASHBOARD.md",
     REPO_ROOT / "docs" / "CANONICAL_EXPERIMENT_STACK.md",
     REPO_ROOT / "docs" / "REPO_MAP.md",
     REPO_ROOT / "docs" / "CANONICAL_INSTALL_AND_DEV.md",
+    REPO_ROOT / "docs" / "CURRENT_PROJECT_STATUS.md",
+    REPO_ROOT / "docs" / "CURRENT_EXTERNAL_BASELINE_GAP.md",
     REPO_ROOT / "docs" / "PAPER_SOURCE_OF_TRUTH.md",
     REPO_ROOT / "docs" / "PAPER_CLAIMS_AND_EVIDENCE_MAP.md",
     REPO_ROOT / "docs" / "PAPER_BASELINE_HONESTY_STATUS.md",
@@ -39,6 +44,7 @@ REQUIRED_PATHS = [
     REPO_ROOT / "docs" / "REVIEWER_REPRO_AND_SCOPE_GUIDE.md",
     REPO_ROOT / "docs" / "REVIEWER_10_MINUTE_REPRODUCTION.md",
     REPO_ROOT / "scripts" / "CANONICAL_START_HERE.md",
+    REPO_ROOT / "scripts" / "CURRENT_RUNBOOK.md",
     REPO_ROOT / "scripts" / "README.md",
     REPO_ROOT / "scripts" / "paper" / "run_all_neurips_paper_artifacts.py",
     REPO_ROOT / "scripts" / "paper" / "run_all_neurips_artifacts.py",
@@ -56,8 +62,8 @@ REQUIRED_IMPORTS = [
 
 
 def main() -> int:
-    print("adaptive-reasoning-budget-allocation")
-    print("=====================================")
+    print("frontier-allocation-for-budgeted-llm-inference")
+    print("================================================")
     print(f"Python version: {sys.version.split()[0]}")
     print()
 
@@ -86,7 +92,7 @@ def main() -> int:
         return 1
 
     print("Repository health check: OK")
-    print("Canonical front door, artifact runners, and core import paths are intact.")
+    print("Canonical front door, claim guide, artifact runners, and core import paths are intact.")
     return 0
 
 

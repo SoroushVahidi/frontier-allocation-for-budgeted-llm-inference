@@ -1,28 +1,27 @@
 # Frontier Allocation for Budgeted LLM Inference
 
-Studies **how to allocate a fixed inference budget** across reasoning branches and **how to pick a final answer** from an explored frontier under explicit contracts. Active work emphasizes **selection from existing candidate pools** and **discovery/coverage diagnostics** — not legacy binary cheap-vs‑revise routing.
+Studies **how to allocate a fixed inference budget** across reasoning branches and **how to pick a final answer** from an explored frontier under explicit contracts. Active work emphasizes **selection from existing candidate pools** and **discovery/coverage diagnostics** — not legacy binary cheap-vs-revise routing.
 
 ---
 
-## Interpretation hierarchy (start here)
+## Fast path
 
-| Order | Doc | Role |
-|------:|-----|------|
-| 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | Shortest reviewer-facing reproduction and claim-scope guide |
-| 1 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Shortest safe front door: baselines, scope, bottleneck, commands |
-| 2 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
-| 3 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Latest narrow harness vs **`external_l1_max`** (**1018203**) |
-| 4 | [`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`](docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md) | Negative / superseded / cache‑limited indexing |
-| 5 | [`docs/DISCOVERY_FAILURE_TAXONOMY.md`](docs/DISCOVERY_FAILURE_TAXONOMY.md) | Discovery vs selector decomposition vocabulary |
-| 6 | [`docs/OUTPUT_RETENTION_POLICY_CURRENT.md`](docs/OUTPUT_RETENTION_POLICY_CURRENT.md) | What belongs in Git vs local-only |
-
-**Structured indexes:** [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) · [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) · [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md) · [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md)
+| Order | Doc | Purpose |
+|------:|-----|---------|
+| 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | Minimal reviewer setup, checks, and reproduction path |
+| 1 | [`docs/CLAIMS.md`](docs/CLAIMS.md) | Short claim-scope guide: safe claims, unsafe claims, evidence posture |
+| 2 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Current project status, baselines, bottleneck, and next commands |
+| 3 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
+| 4 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Latest bounded diagnostics vs **`external_l1_max`** |
+| 5 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
 
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 
+**Structured indexes:** [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) · [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) · [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) · [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md)
+
 ---
 
-## Selected selector — recovery track only (`external_l1_max`‑agnostic)
+## Current evidence posture
 
 The audited working selector is **`outcome_verifier_answer_group_selector_v1`** with **`scorer_mode = cached_jsonl`**. Machine config:
 
@@ -30,13 +29,15 @@ The audited working selector is **`outcome_verifier_answer_group_selector_v1`** 
 configs/selected_selector_current.json
 ```
 
-Human narrative + comparator tables → **`docs/CURRENT_SELECTOR_DECISION.md`**.
+Human narrative + comparator tables → [`docs/CURRENT_SELECTOR_DECISION.md`](docs/CURRENT_SELECTOR_DECISION.md).
 
-**Hard boundary:** **not runtime‑promoted** and **not** an **`external_l1_max`** defeat claim.
+**Hard boundary:** this selector is selected for the **recovery / selector-evidence track only**. It is **not runtime-promoted** and is **not** an **`external_l1_max`** defeat claim.
+
+The current external-baseline story is diagnostic: `external_l1_max` remains the strong comparator to beat, while recent loss-slice diagnostics indicate that **discovery/coverage** is often the dominant bottleneck.
 
 ---
 
-## Health / reviewer commands
+## Reviewer-safe commands
 
 ```bash
 make health
@@ -44,17 +45,17 @@ make reviewer-test
 make selector-test
 ```
 
-Full operational patterns (recovery rerun, cluster batch names, pitfalls) → **[`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md)**.
-
 Paper artifact regeneration:
 
 ```bash
 python scripts/paper/run_all_neurips_paper_artifacts.py
 ```
 
+Full operational patterns, cluster batch names, reruns, and pitfalls → [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md).
+
 ---
 
-## Recent Wulver / audit breadcrumbs
+## Recent audit breadcrumbs
 
 | Doc | Contents |
 |-----|----------|
@@ -66,25 +67,25 @@ python scripts/paper/run_all_neurips_paper_artifacts.py
 
 ## What never to invent without canonical promotion
 
-| Don’t claim | Why |
-|-------------|-----|
-| Broad superiority over **`external_l1_max`** | Requires matched surfaces + **`PAPER_*`** uplift |
-| Runtime promotion of verifier selector | Recovery-track evidence scope only |
-| Path-gap proxies as causal gold‑path counts | Diagnostics carry explicit caveat fields |
-| Slurm summaries without reading **`manifest.json`** contract | **`outputs/`** are provenance—not solo authority |
+| Do not claim | Why |
+|--------------|-----|
+| Broad superiority over **`external_l1_max`** | Requires matched surfaces + canonical paper-source uplift |
+| Runtime promotion of verifier selector | Current evidence is recovery-track only |
+| Path-gap proxies as causal gold-path counts | Diagnostics carry explicit caveat fields |
+| Slurm summaries without reading **`manifest.json`** | **`outputs/`** are provenance, not standalone authority |
 
-Timestamped **`outputs/`** folders stay put—**prefer indexing**, not deletion (**[`docs/REPO_MAP.md`](docs/REPO_MAP.md)** · **[`docs/REPO_ORGANIZATION_GUIDE_20260501.md`](docs/REPO_ORGANIZATION_GUIDE_20260501.md)**).
+Timestamped **`outputs/`** folders stay put. Prefer indexing, classification, and canonical interpretation over deletion.
 
 ---
 
 ## API cost
 
-Paid APIs only under explicit manifests + **`docs/FAST_SELECTOR_EXECUTION_POLICY.md`**.
+Paid APIs only under explicit manifests and [`docs/FAST_SELECTOR_EXECUTION_POLICY.md`](docs/FAST_SELECTOR_EXECUTION_POLICY.md).
 
 ---
 
 ## Repo layout sketch
 
-**`experiments/`** · **`scripts/`** · **`configs/`** · **`outputs/`** · **`tests/`** · **`batch/`** · **`docs/`** interpretation layer
+`experiments/` · `scripts/` · `configs/` · `outputs/` · `tests/` · `batch/` · `docs/`
 
-Full tree → **`docs/REPO_MAP.md`**.
+Full tree → [`docs/REPO_MAP.md`](docs/REPO_MAP.md).
