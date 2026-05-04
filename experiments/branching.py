@@ -11,6 +11,32 @@ from typing import Any, Optional
 from urllib import error, request
 
 from experiments.code_sandbox import run_restricted_python
+from experiments.data import extract_final_answer
+
+_JSON_FENCE_FULL = re.compile(
+    r"^\s*```(?:json|JSON)?\s*\r?\n?(.*)\r?\n?```\s*$",
+    re.DOTALL,
+)
+_JSON_FENCE_EMBED = re.compile(r"```(?:json|JSON)?\s*\r?\n(.*?)```", re.DOTALL)
+_FINAL_ANS_PHRASE_RE = re.compile(
+    r"(?i)(?:final\s+answer|the\s+answer\s+is|answer\s+is)\s*[:=]?\s*([-+]?\d[\d,]*(?:\.\d+)?)",
+)
+_EXPAND_ANSWER_KEYS: tuple[str, ...] = (
+    "answer",
+    "final_answer",
+    "numeric_answer",
+    "solution_answer",
+    "candidate_answer",
+    "result",
+)
+_VERIFY_ANSWER_KEYS: tuple[str, ...] = (
+    "candidate_answer",
+    "final_answer",
+    "answer",
+    "numeric_answer",
+    "solution_answer",
+    "result",
+)
 
 _LOGICAL_API_CALL_BUDGET: int | None = None
 _LOGICAL_API_CALLS_CONSUMED: int = 0
@@ -273,11 +299,16 @@ class APIBranchGenerator:
         self.last_response_text = text
         self.last_action_type = "expand"
         data = self._safe_json(text)
+        merged = self._merge_wrapped_json_dicts(data)
 
-        action = str(data.get("action", "continue")).strip().lower()
-        step = str(data.get("step", ""))[:500]
-        answer = str(data.get("answer", "")).strip()
-        confidence = self._clip01(self._to_float(data.get("confidence", branch.score)))
+        action = str(merged.get("action", "continue") or "continue").strip().lower()
+        step = str(merged.get("step", "") or merged.get("rationale_short", "") or "").strip()
+        if len(step) > 500:
+            step = step[:500]
+        answer = self._first_nonempty_answer_for_keys(merged, _EXPAND_ANSWER_KEYS)
+        if not answer:
+            answer = self._expand_answer_fallback_raw_text(text)
+        confidence = self._clip01(self._to_float(merged.get("confidence", branch.score)))
 
         if step:
             branch.steps.append(step)
@@ -317,8 +348,11 @@ class APIBranchGenerator:
         self.last_response_text = text
         self.last_action_type = "verify"
         data = self._safe_json(text)
-        confidence = self._clip01(self._to_float(data.get("confidence", branch.score)))
-        maybe_answer = str(data.get("candidate_answer", "")).strip()
+        merged = self._merge_wrapped_json_dicts(data)
+        confidence = self._clip01(self._to_float(merged.get("confidence", branch.score)))
+        maybe_answer = self._first_nonempty_answer_for_keys(merged, _VERIFY_ANSWER_KEYS)
+        if not maybe_answer:
+            maybe_answer = self._verify_answer_fallback_raw_text(text)
 
         branch.score = 0.5 * branch.score + 0.5 * confidence
         if maybe_answer and branch.predicted_answer is None:
@@ -560,16 +594,136 @@ class APIBranchGenerator:
         raise RuntimeError("Gemini API returned no text output.")
 
     @staticmethod
+    def _strip_json_markdown_fence(text: str) -> str:
+        t = str(text or "").strip()
+        m = _JSON_FENCE_FULL.match(t)
+        if m:
+            return m.group(1).strip()
+        emb = _JSON_FENCE_EMBED.search(t)
+        if emb:
+            return emb.group(1).strip()
+        return t
+
+    @staticmethod
+    def _extract_first_json_object(text: str) -> str | None:
+        """Return the first balanced {...} slice, respecting quoted strings."""
+        start = text.find("{")
+        if start < 0:
+            return None
+        depth = 0
+        in_str = False
+        esc = False
+        quote = ""
+        i = start
+        while i < len(text):
+            c = text[i]
+            if in_str:
+                if esc:
+                    esc = False
+                elif c == "\\":
+                    esc = True
+                elif c == quote:
+                    in_str = False
+                i += 1
+                continue
+            if c in "\"'":
+                in_str = True
+                quote = c
+                i += 1
+                continue
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[start : i + 1]
+            i += 1
+        return None
+
+    @staticmethod
+    def _merge_wrapped_json_dicts(data: dict[str, Any]) -> dict[str, Any]:
+        """Flatten one level of common wrapper keys (``response``, ``result``, …)."""
+        if not isinstance(data, dict):
+            return {}
+        merged: dict[str, Any] = dict(data)
+        for wrap_key in ("response", "output", "message", "parsed", "result"):
+            inner = data.get(wrap_key)
+            if isinstance(inner, dict):
+                for k, v in inner.items():
+                    if k not in merged or merged.get(k) in (None, "", [], {}):
+                        merged[k] = v
+            elif wrap_key == "result" and isinstance(inner, str) and inner.strip():
+                if not APIBranchGenerator._first_nonempty_answer_for_keys(
+                    merged, _EXPAND_ANSWER_KEYS
+                ):
+                    merged.setdefault("answer", inner.strip())
+        return merged
+
+    @staticmethod
+    def _stringify_scalar_answer_value(v: object) -> str:
+        if v is None or isinstance(v, (dict, list)):
+            return ""
+        if isinstance(v, bool):
+            return ""
+        if isinstance(v, (int, float)):
+            if isinstance(v, float) and v.is_integer():
+                return str(int(v))
+            return str(v)
+        s = str(v).strip()
+        return s
+
+    @staticmethod
+    def _first_nonempty_answer_for_keys(merged: dict[str, Any], keys: tuple[str, ...]) -> str:
+        for k in keys:
+            s = APIBranchGenerator._stringify_scalar_answer_value(merged.get(k))
+            if s:
+                return s
+        return ""
+
+    @staticmethod
+    def _expand_answer_fallback_raw_text(raw_text: str) -> str:
+        t = str(raw_text or "").strip()
+        if not t:
+            return ""
+        m = _FINAL_ANS_PHRASE_RE.search(t)
+        if m:
+            return m.group(1).replace(",", "")
+        if "\\boxed" in t:
+            ext = extract_final_answer(t)
+            return ext.strip() if ext else ""
+        if "####" in t:
+            ext = extract_final_answer(t)
+            return ext.strip() if ext else ""
+        return ""
+
+    @staticmethod
+    def _verify_answer_fallback_raw_text(raw_text: str) -> str:
+        return APIBranchGenerator._expand_answer_fallback_raw_text(raw_text)
+
+    @staticmethod
     def _safe_json(text: str) -> dict:
+        if not text or not str(text).strip():
+            return {}
+        t = APIBranchGenerator._strip_json_markdown_fence(str(text))
         try:
-            return json.loads(text)
+            obj = json.loads(t)
+            return obj if isinstance(obj, dict) else {}
         except json.JSONDecodeError:
-            match = re.search(r"\{.*\}", text, flags=re.DOTALL)
-            if match:
-                try:
-                    return json.loads(match.group(0))
-                except json.JSONDecodeError:
-                    pass
+            pass
+        balanced = APIBranchGenerator._extract_first_json_object(t)
+        if balanced:
+            try:
+                obj = json.loads(balanced)
+                return obj if isinstance(obj, dict) else {}
+            except json.JSONDecodeError:
+                pass
+        match = re.search(r"\{.*\}", t, flags=re.DOTALL)
+        if match:
+            try:
+                obj = json.loads(match.group(0))
+                return obj if isinstance(obj, dict) else {}
+            except json.JSONDecodeError:
+                pass
         return {}
 
     @staticmethod
