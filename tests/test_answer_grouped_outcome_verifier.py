@@ -1,3 +1,28 @@
+"""
+Compatibility test module.
+
+Some runbooks refer to `tests/test_answer_grouped_outcome_verifier.py`; keep a small focused
+smoke test here so those commands remain stable.
+"""
+
+from experiments.outcome_verifier_answer_group_selector import build_verifier_item, select_case
+
+
+def test_selector_override_margin_smoke():
+    case = {
+        "case_id": "c1",
+        "problem_statement": "2+2?",
+        "selected_normalized_answer": "4",
+        "candidate_nodes": [
+            {"candidate_id": "a", "final_answer": "4", "normalized_answer": "4", "trace_text": "t"},
+            {"candidate_id": "b", "final_answer": "5", "normalized_answer": "5", "trace_text": "t"},
+        ],
+        "evaluation_only": {"gold_answer": "4"},
+    }
+    items = [build_verifier_item(case, n, "c1", i) for i, n in enumerate(case["candidate_nodes"])]
+    d = select_case(case, items, {("c1", "a"): 0.1, ("c1", "b"): 0.9}, min_verifier_margin=0.15, require_trace_for_override=False)
+    assert d["selected_normalized_answer"] == "5"
+
 import math
 
 from experiments.answer_grouped_outcome_verifier import (
