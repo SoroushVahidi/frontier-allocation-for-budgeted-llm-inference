@@ -43,3 +43,36 @@ def test_diagnostic_rows_not_list_increment_skip():
     c, u, diag = build_candidates_from_metadata_diagnostic("q", md)
     assert not c and not u
     assert "final_branch_states:rows_not_list=1" in diag.extraction_skip_counts
+
+
+def test_extract_from_direct_reserve_attempts_response_text_boxed():
+    md = {
+        "direct_reserve_attempts": [
+            {
+                "branch_id": "dr0",
+                "response_text": r"Some reasoning \boxed{106} done.",
+            }
+        ]
+    }
+    c, src = build_candidates_from_metadata("q", md)
+    assert len(c) == 1
+    assert c[0].final_answer == "106"
+    assert c[0].source_id == "direct_reserve_attempts_response_text"
+    assert "direct_reserve_attempts_response_text" in src
+
+
+def test_extract_from_final_branch_states_trace_when_predicted_empty():
+    md = {
+        "final_branch_states": [
+            {
+                "branch_id": "b0",
+                "predicted_answer": "",
+                "trace_events": [{"response_text": "The answer is 99"}],
+            }
+        ]
+    }
+    c, src = build_candidates_from_metadata("q", md)
+    assert len(c) == 1
+    assert c[0].final_answer == "99"
+    assert "branch_state_trace_response_text:final_branch_states" in c[0].source_id
+    assert any("branch_state_trace_response_text" in s for s in src)
