@@ -47,8 +47,19 @@ from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     ROOT_STRATEGY_FAMILY_SPECS,
     DirectReserveDiverseRootFrontierV1Controller,
     DirectReserveDiverseRootFrontierV1GuardedController,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID,
+    build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4_numeric_leaf,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2,
     StrategySeededSemanticDiversityFrontierV1Controller,
     build_strategy_prompt_styles_semantic_frontier_v1,
+    build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4,
+    build_strategy_prompt_styles_semantic_frontier_v1_guarded_k2_frontier2,
+    build_strategy_prompt_styles_semantic_frontier_v1_guarded_k3,
 )
 from experiments.verifiers import LLMVerifyProxyVerifier, SimulatedScorerVerifier
 
@@ -95,12 +106,17 @@ def generator_factory_for_mode(
     max_output_tokens: int,
     timeout_seconds: int,
     api_provider: str | None = None,
+    *,
+    expand_prompt_variant: str | None = None,
 ) -> Callable[[], Any]:
     if use_openai_api:
         provider = (api_provider or "openai").strip().lower()
         key = resolve_api_key_for_provider(provider)
 
         def factory() -> APIBranchGenerator:
+            kwargs: dict[str, Any] = {}
+            if expand_prompt_variant:
+                kwargs["expand_prompt_variant"] = expand_prompt_variant
             return APIBranchGenerator(
                 provider=provider,
                 api_key=key,
@@ -108,6 +124,7 @@ def generator_factory_for_mode(
                 temperature=temperature,
                 max_tokens=max_output_tokens,
                 timeout_seconds=timeout_seconds,
+                **kwargs,
             )
 
         return factory
@@ -116,6 +133,92 @@ def generator_factory_for_mode(
         return SimulatedBranchGenerator(rng=rng, max_depth=7, finish_prob_base=0.16, answer_noise=0.12)
 
     return factory
+
+
+def estimate_guarded_k3_diverse_root_dr_cost(
+    *,
+    budget: int,
+    root_attempts: int = 3,
+    strategy_seed_max_actions: int = 2,
+) -> dict[str, Any]:
+    """Offline upper-bound for direct-reserve expand calls before strict frontier (no API).
+
+    Each root family may use up to ``strategy_seed_max_actions`` logical ``expand`` calls;
+    the outer budget caps total actions before the strict frontier controller runs.
+    """
+    b = max(1, int(budget))
+    r = max(1, int(root_attempts))
+    s = max(1, int(strategy_seed_max_actions))
+    worst_dr = min(b, r * s)
+    remaining = max(0, b - worst_dr)
+    return {
+        "budget": b,
+        "direct_reserve_attempts_override": r,
+        "strategy_seed_max_actions": s,
+        "max_direct_reserve_expand_calls_worst_case": worst_dr,
+        "min_budget_remaining_after_worst_case_dr": remaining,
+        "frontier_can_run_after_worst_case_dr": remaining > 0,
+        "note": "If some roots finish in one expand, remaining_budget_before_frontier can be > 0 and the strict frontier may run.",
+    }
+
+
+def estimate_guarded_k2_frontier2_diverse_root_dr_cost(
+    *,
+    budget: int,
+    root_attempts: int = 2,
+    strategy_seed_max_actions: int = 2,
+    direct_reserve_phase_max_actions: int | None = None,
+    min_reserved_for_frontier: int = 2,
+) -> dict[str, Any]:
+    """Offline bounds for guarded_k2_frontier2 (hard DR-phase cap; no API)."""
+    b = max(1, int(budget))
+    r = max(1, int(root_attempts))
+    s = max(1, int(strategy_seed_max_actions))
+    cap = max(1, int(budget) - int(min_reserved_for_frontier)) if direct_reserve_phase_max_actions is None else max(1, int(direct_reserve_phase_max_actions))
+    cap = min(cap, b)
+    worst_dr = min(cap, r * s, b)
+    remaining = max(0, b - worst_dr)
+    res = max(0, int(min_reserved_for_frontier))
+    return {
+        "budget": b,
+        "direct_reserve_attempts_override": r,
+        "strategy_seed_max_actions": s,
+        "direct_reserve_phase_max_actions": cap,
+        "max_direct_reserve_expand_calls_worst_case": worst_dr,
+        "min_budget_remaining_after_worst_case_dr": remaining,
+        "frontier_budget_guaranteed_at_least": remaining >= res,
+        "frontier_can_run_after_worst_case_dr": remaining > 0,
+    }
+
+
+def estimate_guarded_k1_frontier4_diverse_root_dr_cost(
+    *,
+    budget: int,
+    root_attempts: int = 1,
+    strategy_seed_max_actions: int = 2,
+    direct_reserve_phase_max_actions: int | None = None,
+    min_reserved_for_frontier: int = 4,
+) -> dict[str, Any]:
+    """Offline bounds for guarded_k1_frontier4 (hard DR-phase cap; no API)."""
+    b = max(1, int(budget))
+    r = max(1, int(root_attempts))
+    s = max(1, int(strategy_seed_max_actions))
+    cap_default = max(1, int(budget) - int(min_reserved_for_frontier))
+    cap = cap_default if direct_reserve_phase_max_actions is None else max(1, int(direct_reserve_phase_max_actions))
+    cap = min(cap, b)
+    worst_dr = min(cap, r * s, b)
+    remaining = max(0, b - worst_dr)
+    res = max(0, int(min_reserved_for_frontier))
+    return {
+        "budget": b,
+        "direct_reserve_attempts_override": r,
+        "strategy_seed_max_actions": s,
+        "direct_reserve_phase_max_actions": cap,
+        "max_direct_reserve_expand_calls_worst_case": worst_dr,
+        "min_budget_remaining_after_worst_case_dr": remaining,
+        "frontier_budget_guaranteed_at_least": remaining >= res,
+        "frontier_can_run_after_worst_case_dr": remaining > 0,
+    }
 
 
 def build_frontier_strategies(
@@ -153,8 +256,10 @@ def build_frontier_strategies(
     l1_max_token_budget: int = 512,
     l1_token_per_action: float = 64.0,
     l1_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+    generator_factory_numeric_leaf: Callable[[], Any] | None = None,
 ) -> dict[str, Any]:
     scorer = SimpleBranchScorer(ScoreConfig())
+    gen_nl_factory = generator_factory_numeric_leaf if generator_factory_numeric_leaf is not None else generator_factory
     prm_scorer = HeuristicPRMPartialScorer()
     specs: dict[str, Any] = {
         "reasoning_greedy": GreedyController(generator_factory(), scorer, budget),
@@ -1265,7 +1370,8 @@ def build_frontier_strategies(
             scorer,
             budget,
             method_name="direct_reserve_diverse_root_frontier_v1",
-            strategy_seed_max_actions=1,
+            # Two expands per root strategy give Cohere room to emit action=final + answer after an initial continue.
+            strategy_seed_max_actions=2,
             **strategy_seeded_outer_kwargs,
         )
         specs["direct_reserve_diverse_root_frontier_v1_guarded"] = DirectReserveDiverseRootFrontierV1GuardedController(
@@ -1273,8 +1379,120 @@ def build_frontier_strategies(
             scorer,
             budget,
             method_name="direct_reserve_diverse_root_frontier_v1_guarded",
-            strategy_seed_max_actions=1,
+            strategy_seed_max_actions=2,
             **strategy_seeded_outer_kwargs,
+        )
+        strategy_seeded_outer_kwargs_k3: dict[str, Any] = {
+            **strategy_seeded_outer_kwargs,
+            "direct_reserve_attempts_override": 3,
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1_guarded_k3(),
+        }
+        specs["direct_reserve_diverse_root_frontier_v1_guarded_k3"] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name="direct_reserve_diverse_root_frontier_v1_guarded_k3",
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k3,
+        )
+        strategy_seeded_outer_kwargs_k2_frontier2: dict[str, Any] = {
+            **strategy_seeded_outer_kwargs,
+            "direct_reserve_attempts_override": 2,
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1_guarded_k2_frontier2(),
+            "direct_reserve_phase_max_actions": max(1, int(budget) - 2),
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k2_frontier2,
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4: dict[str, Any] = {
+            **strategy_seeded_outer_kwargs,
+            "direct_reserve_attempts_override": 1,
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4(),
+            "direct_reserve_phase_max_actions": max(1, int(budget) - 4),
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k1_frontier4,
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_tb = {
+            **strategy_seeded_outer_kwargs_k1_frontier4,
+            "enable_frontier_max_support_tiebreak": True,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            )
+        )
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_nl = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "direct_prompt_styles": build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4_numeric_leaf(),
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                gen_nl_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_nl,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_unit_track = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_unit_track_seed": True,
+            "unit_track_seed_budget_actions": 1,
+            "unit_track_selection_policy": "weak_frontier_or_supported_agreement",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_unit_track,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_direct_hybrid_seed": True,
+            "direct_hybrid_seed_budget_actions": 1,
+            "direct_hybrid_seed_source": "l1_style_max_budget_prompt",
+            "direct_hybrid_selection_policy": "defer_frontier_mass_weak_then_seed_incumbent",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid,
+            )
         )
         specs["direct_reserve_semantic_frontier_v2_selection_fix_v1"] = DirectReserveFrontierGateV2SelectionFixV1Controller(
             generator_factory(),

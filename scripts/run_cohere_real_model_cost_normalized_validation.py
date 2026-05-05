@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import csv
 import json
 import os
@@ -18,10 +19,18 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from experiments.branching import APIBranchGenerator
+from experiments.branching import APIBranchGenerator, configure_logical_api_call_budget
 from experiments.data import normalize_answer_text
 from experiments.frontier_matrix_core import ScoreConfig, SimpleBranchScorer, build_frontier_strategies, build_semantic_diversity_diagnostic_registry, load_pilot_examples
-from experiments.output_layer_repair import canonicalize_answer, choose_repair_answer
+from experiments.output_layer_repair import (
+    apply_controller_committed_surfacing_for_evaluation,
+    apply_finalization_guard_surfacing,
+    augment_final_nodes_with_metadata_frontier,
+    canonicalize_answer,
+    choose_repair_answer,
+    gold_in_tree_from_nodes,
+    resolve_selected_group_hint_from_metadata,
+)
 from experiments.trace_schema import build_branch_trace, write_trace_package
 
 STRICT_F3 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
@@ -50,6 +59,41 @@ METHODS: dict[str, dict[str, Any]] = {
         "enable_output_repair": True,
     },
     "direct_reserve_semantic_frontier_v2_thresholded_ordered": {"runtime": "direct_reserve_semantic_frontier_v2_thresholded_ordered", "enable_output_repair": True},
+    "direct_reserve_diverse_root_frontier_v1": {"runtime": "direct_reserve_diverse_root_frontier_v1", "enable_output_repair": True},
+    "direct_reserve_diverse_root_frontier_v1_guarded": {"runtime": "direct_reserve_diverse_root_frontier_v1_guarded", "enable_output_repair": True},
+    "direct_reserve_diverse_root_frontier_v1_guarded_k3": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k3",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k2_frontier2": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k2_frontier2",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard",
+        "enable_output_repair": True,
+        "enable_finalization_guard": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_numeric_leaf": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_numeric_leaf",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_unit_track": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_unit_track",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_hybrid": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_hybrid",
+        "enable_output_repair": True,
+    },
     "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "calibrated_near_direct_frontier_gate_v1": {"runtime": "calibrated_near_direct_frontier_gate_v1", "enable_output_repair": True},
@@ -129,6 +173,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--validate-methods-only", action="store_true", help="Validate requested method IDs resolve to runnable strategy specs and exit without API calls.")
     p.add_argument("--allowed-example-ids-file", default="", help="Optional JSONL file containing rows with example_id (and optional dataset/seed/budget/method) to hard-filter runs.")
     p.add_argument("--dry-run-call-plan", action="store_true", help="Emit planned case count after filtering and exit without API calls.")
+    p.add_argument(
+        "--max-total-api-calls",
+        type=int,
+        default=0,
+        help="Optional global cap on logical APIBranchGenerator calls (0=unlimited). Enforced across the whole run.",
+    )
     return p.parse_args()
 
 
@@ -460,13 +510,26 @@ def append_progress(path: Path, row: dict[str, Any]) -> None:
         f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def evaluate_example(result: Any, dataset: str, gold_answer: str, final_nodes: list[dict[str, Any]], enable_output_repair: bool) -> int:
+def evaluate_example(
+    result: Any,
+    dataset: str,
+    gold_answer: str,
+    final_nodes: list[dict[str, Any]],
+    enable_output_repair: bool,
+    *,
+    enable_finalization_guard: bool = False,
+) -> int:
     md = result.metadata or {}
+    hint = resolve_selected_group_hint_from_metadata(md, dataset=dataset) or md.get("selected_group")
     repaired = choose_repair_answer(
         final_nodes=final_nodes,
-        selected_group_hint=md.get("selected_group"),
+        selected_group_hint=hint,
         dataset=dataset,
         enable_rescue=bool(enable_output_repair),
+    )
+    repaired = apply_controller_committed_surfacing_for_evaluation(md, repaired, dataset=dataset)
+    repaired, _fg = apply_finalization_guard_surfacing(
+        md, repaired, final_nodes=final_nodes, dataset=dataset, enabled=bool(enable_finalization_guard)
     )
     surfaced_can = canonicalize_answer(repaired.get("surfaced_final_answer_raw"), dataset=dataset)
     gold_can = canonicalize_answer(gold_answer, dataset=dataset)
@@ -479,19 +542,26 @@ def evaluate_with_diagnostics(
     gold_answer: str,
     final_nodes: list[dict[str, Any]],
     enable_output_repair: bool,
+    *,
+    enable_finalization_guard: bool = False,
 ) -> dict[str, Any]:
     md = result.metadata or {}
+    hint = resolve_selected_group_hint_from_metadata(md, dataset=dataset) or md.get("selected_group")
     repaired = choose_repair_answer(
         final_nodes=final_nodes,
-        selected_group_hint=md.get("selected_group"),
+        selected_group_hint=hint,
         dataset=dataset,
         enable_rescue=bool(enable_output_repair),
+    )
+    repaired = apply_controller_committed_surfacing_for_evaluation(md, repaired, dataset=dataset)
+    repaired, fg_sidecar = apply_finalization_guard_surfacing(
+        md, repaired, final_nodes=final_nodes, dataset=dataset, enabled=bool(enable_finalization_guard)
     )
     surfaced_raw = repaired.get("surfaced_final_answer_raw")
     surfaced_can = canonicalize_answer(surfaced_raw, dataset=dataset)
     gold_can = canonicalize_answer(gold_answer, dataset=dataset)
     exact_match = int(bool(surfaced_can == gold_can and surfaced_can is not None))
-    gold_in_tree = int(any(n.get("predicted_answer_normalized") == gold_can for n in final_nodes))
+    gold_in_tree = int(gold_in_tree_from_nodes(final_nodes, gold_answer, dataset=dataset) == 1)
     parse_failure = int(not exact_match and surfaced_can is None)
     if exact_match:
         failure_tag = "correct"
@@ -503,7 +573,7 @@ def evaluate_with_diagnostics(
         failure_tag = "correct answer present but not selected"
     else:
         failure_tag = "unknown"
-    return {
+    out = {
         "exact_match": exact_match,
         "gold_answer_canonical": gold_can,
         "surfaced_final_answer_raw": surfaced_raw,
@@ -513,7 +583,12 @@ def evaluate_with_diagnostics(
         "gold_in_tree": gold_in_tree,
         "parse_extraction_failure": parse_failure,
         "failure_tag": failure_tag,
+        "final_answer_source": repaired.get("final_answer_source"),
+        "repair_answer_raw": repaired.get("repair_answer_raw"),
+        "controller_final_answer_raw": repaired.get("controller_final_answer_raw"),
     }
+    out.update(fg_sidecar)
+    return out
 
 
 def bootstrap_paired_ci(diffs: list[float], n_boot: int = 1000, seed: int = 7) -> tuple[float, float]:
@@ -593,6 +668,12 @@ def main() -> None:
     runtime_missing: set[tuple[str, str, int, int, str]] = set()
     branch_traces: list[dict[str, Any]] = []
 
+    if int(getattr(args, "max_total_api_calls", 0) or 0) > 0:
+        configure_logical_api_call_budget(int(args.max_total_api_calls))
+        atexit.register(lambda: configure_logical_api_call_budget(None))
+    else:
+        configure_logical_api_call_budget(None)
+
     if not args.summarize_only:
         for provider in providers:
             if provider_status[provider]["ready"] != "1":
@@ -605,7 +686,20 @@ def main() -> None:
                     if allowed_case_filter:
                         filtered_counts = [len(v) for (d, s, _b, _m), v in allowed_case_filter.items() if d == dataset and s == seed]
                         if filtered_counts:
-                            pool_n = max(pool_n, max(filtered_counts) * 200)
+                            # GSM8K test split is ~1319 rows; small multipliers can drop tail IDs from the shuffled pool.
+                            pool_n = max(pool_n, max(filtered_counts) * 400)
+                        # Pilot example_ids are sample-local indices (`..._{idx}` in sample_hf_examples); an ID like
+                        # `openai_gsm8k_800` requires subset_size > 800 regardless of allowlist row count.
+                        max_suffix = 0
+                        for (d, s, _b, _m), ids in allowed_case_filter.items():
+                            if d != dataset or s != seed:
+                                continue
+                            for eid in ids:
+                                tail = str(eid).rsplit("_", 1)[-1]
+                                if tail.isdigit():
+                                    max_suffix = max(max_suffix, int(tail))
+                        if max_suffix > 0:
+                            pool_n = max(pool_n, max_suffix + 1)
                     try:
                         examples = load_pilot_examples(dataset, subset_size=pool_n, seed=seed)
                     except Exception as exc:  # noqa: BLE001
@@ -623,6 +717,20 @@ def main() -> None:
                                     temperature=args.temperature,
                                     max_tokens=args.max_output_tokens,
                                     timeout_seconds=args.timeout_seconds,
+                                    expand_prompt_variant="default",
+                                )
+                            )
+
+                        def factory_numeric_leaf() -> Any:
+                            return ObservedGenerator(
+                                APIBranchGenerator(
+                                    provider=provider,
+                                    api_key=api_keys[provider],
+                                    model=model_by_provider[provider],
+                                    temperature=args.temperature,
+                                    max_tokens=args.max_output_tokens,
+                                    timeout_seconds=args.timeout_seconds,
+                                    expand_prompt_variant="numeric_leaf",
                                 )
                             )
 
@@ -636,6 +744,7 @@ def main() -> None:
                             include_external_l1_baseline=True,
                             include_external_s1_baseline=True,
                             include_external_tale_baseline=True,
+                            generator_factory_numeric_leaf=factory_numeric_leaf,
                         )
 
                         for method in methods:
@@ -644,6 +753,7 @@ def main() -> None:
                                 continue
                             runtime = METHODS[method]["runtime"]
                             enable_repair = bool(METHODS[method]["enable_output_repair"])
+                            enable_finalguard = bool(METHODS[method].get("enable_finalization_guard", False))
                             if runtime not in specs:
                                 runtime_missing.add((provider, dataset, seed, budget, method))
                                 continue
@@ -701,10 +811,12 @@ def main() -> None:
                                 in_tok = 0
                                 out_tok = 0
                                 total_tok = 0
+                                logical_api_calls_local = 0
                                 exact_match = 0
                                 eval_diag: dict[str, Any] = {}
                                 result_metadata: dict[str, Any] = {}
                                 final_nodes: list[dict[str, Any]] = []
+                                merged_nodes: list[dict[str, Any]] = []
                                 try:
                                     result = controller.run(ex.question, ex.answer)
                                     latency = time.perf_counter() - t0
@@ -715,16 +827,52 @@ def main() -> None:
                                             reasoning_text = "\n".join(str(x) for x in getattr(b, "steps", [])) if getattr(b, "steps", None) else ""
                                             pred = b.predicted_answer
                                             pred_norm = normalize_answer_text(str(pred) if pred is not None else None).get("normalized_answer")
+                                            evs = getattr(b, "trace_events", None) or []
+                                            expand_sources = [
+                                                str(ev.get("expand_answer_extraction_source") or "")
+                                                for ev in evs
+                                                if isinstance(ev, dict) and ev.get("action") == "expand"
+                                            ]
+                                            verify_sources = [
+                                                str(ev.get("verify_answer_extraction_source") or "")
+                                                for ev in evs
+                                                if isinstance(ev, dict) and ev.get("action") == "verify"
+                                            ]
+                                            nl_status: Any = None
+                                            nl_value: Any = None
+                                            nl_src: Any = None
+                                            for ev in reversed(evs):
+                                                if isinstance(ev, dict) and ev.get("action") == "expand":
+                                                    nl_status = ev.get("numeric_leaf_status")
+                                                    nl_value = ev.get("numeric_leaf_value")
+                                                    nl_src = ev.get("numeric_leaf_source")
+                                                    break
                                             final_nodes.append(
                                                 {
                                                     "branch_id": b.branch_id,
                                                     "reasoning_text": reasoning_text,
                                                     "predicted_answer": pred,
                                                     "predicted_answer_normalized": pred_norm,
+                                                    "expand_answer_extraction_sources": expand_sources,
+                                                    "verify_answer_extraction_sources": verify_sources,
+                                                    "numeric_leaf_status": nl_status,
+                                                    "numeric_leaf_value": nl_value,
+                                                    "numeric_leaf_source": nl_src,
                                                 }
                                             )
-                                    eval_diag = evaluate_with_diagnostics(result, dataset, str(ex.answer), final_nodes, enable_repair)
+                                    merged_nodes = augment_final_nodes_with_metadata_frontier(final_nodes, result_metadata)
+                                    eval_diag = evaluate_with_diagnostics(
+                                        result,
+                                        dataset,
+                                        str(ex.answer),
+                                        merged_nodes,
+                                        enable_repair,
+                                        enable_finalization_guard=enable_finalguard,
+                                    )
                                     exact_match = int(eval_diag["exact_match"])
+                                    for _gk, _gv in eval_diag.items():
+                                        if str(_gk).startswith("finalguard_"):
+                                            result_metadata[_gk] = _gv
                                     if args.save_branch_traces:
                                         branch_traces.append(
                                             build_branch_trace(
@@ -747,6 +895,7 @@ def main() -> None:
                                         out_tok = int(usage.get("output_tokens", 0))
                                         total_tok = int(usage.get("total_tokens", in_tok + out_tok))
                                         retry_attempts = int(usage.get("retry_attempts", 0))
+                                        logical_api_calls_local = int(usage.get("api_calls", 0))
                                 except Exception as exc:  # noqa: BLE001
                                     latency = time.perf_counter() - t0
                                     status = "failed"
@@ -774,13 +923,17 @@ def main() -> None:
                                     "gold_in_tree": int(eval_diag.get("gold_in_tree", 0)),
                                     "parse_extraction_failure": int(eval_diag.get("parse_extraction_failure", 0)),
                                     "failure_tag": (eval_diag.get("failure_tag") if status == "scored" else "API/runtime failure"),
+                                    "final_answer_source": eval_diag.get("final_answer_source"),
+                                    "repair_answer_raw": eval_diag.get("repair_answer_raw"),
+                                    "controller_final_answer_raw": eval_diag.get("controller_final_answer_raw"),
                                     "result_metadata": result_metadata if status == "scored" else {},
-                                    "final_nodes": final_nodes if status == "scored" else [],
+                                    "final_nodes": merged_nodes if status == "scored" else [],
                                     "attempted": 1,
                                     "scored": int(status == "scored"),
                                     "failed": int(status == "failed"),
                                     "skipped": 0,
                                     "retry_attempts": int(retry_attempts),
+                                    "cohere_logical_api_calls": int(logical_api_calls_local),
                                     "input_tokens": int(in_tok),
                                     "output_tokens": int(out_tok),
                                     "total_tokens": int(total_tok),
@@ -1122,6 +1275,7 @@ def main() -> None:
             "COHERE_API_KEY_present": prm_step_verifier_env["COHERE_API_KEY_present"],
         },
         "branch_trace_stats": trace_stats,
+        "max_total_api_calls": int(getattr(args, "max_total_api_calls", 0) or 0),
         "outputs": [
             "manifest.json",
             "slice_summary.csv",
