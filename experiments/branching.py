@@ -11,7 +11,7 @@ from typing import Any, Optional
 from urllib import error, request
 
 from experiments.code_sandbox import run_restricted_python
-from experiments.data import extract_final_answer
+from experiments.data import ANSWER_PATTERN, extract_final_answer
 
 _JSON_FENCE_FULL = re.compile(
     r"^\s*```(?:json|JSON)?\s*\r?\n?(.*)\r?\n?```\s*$",
@@ -21,6 +21,27 @@ _JSON_FENCE_EMBED = re.compile(r"```(?:json|JSON)?\s*\r?\n(.*?)```", re.DOTALL)
 _FINAL_ANS_PHRASE_RE = re.compile(
     r"(?i)(?:final\s+answer|the\s+answer\s+is|answer\s+is)\s*[:=]?\s*([-+]?\d[\d,]*(?:\.\d+)?)",
 )
+_REASONING_NUMERIC_MINING_HINT = re.compile(
+    r"(?i)\b(therefore|hence|in conclusion|overall|finally|total\s+is|answer\s+is|result\s+is)\b",
+)
+_NUMERIC_LEAF_LABEL_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"(?i)provisional\s+answer\s*:\s*([-+]?\d[\d,]*(?:\.\d+)?)"), "provisional_answer"),
+    (re.compile(r"(?i)numeric\s+leaf\s*:\s*([-+]?\d[\d,]*(?:\.\d+)?)"), "numeric_leaf"),
+    (re.compile(r"(?i)computed\s+value\s*:\s*([-+]?\d[\d,]*(?:\.\d+)?)"), "computed_value"),
+    (re.compile(r"(?i)therefore\s+the\s+answer\s+is\s*:\s*([-+]?\d[\d,]*(?:\.\d+)?)"), "therefore_answer"),
+]
+
+
+def extract_labeled_numeric_leaf_from_step(step_text: str) -> tuple[str, str]:
+    """Gold-free: extract a numeric leaf only from explicit labels (no loose last-number mining)."""
+    if not step_text or not str(step_text).strip():
+        return "", ""
+    t = str(step_text)
+    for pat, tag in _NUMERIC_LEAF_LABEL_PATTERNS:
+        m = pat.search(t)
+        if m:
+            return m.group(1).replace(",", ""), f"labeled_step_{tag}"
+    return "", ""
 _EXPAND_ANSWER_KEYS: tuple[str, ...] = (
     "answer",
     "final_answer",
@@ -28,6 +49,13 @@ _EXPAND_ANSWER_KEYS: tuple[str, ...] = (
     "solution_answer",
     "candidate_answer",
     "result",
+)
+_EXPAND_REASONING_TEXT_KEYS: tuple[str, ...] = (
+    "step",
+    "rationale_short",
+    "reasoning",
+    "chain_of_thought",
+    "thought",
 )
 _VERIFY_ANSWER_KEYS: tuple[str, ...] = (
     "candidate_answer",
@@ -237,6 +265,8 @@ class APIBranchGenerator:
         timeout_seconds: int = 45,
         base_url: str | None = None,
         provider: str = "openai",
+        *,
+        expand_prompt_variant: str = "default",
     ) -> None:
         self.provider = provider.strip().lower()
         self.api_key = api_key
@@ -261,6 +291,9 @@ class APIBranchGenerator:
         self.last_prompt_text: str = ""
         self.last_response_text: str = ""
         self.last_action_type: str = ""
+        self.last_expand_answer_extraction_source: str = ""
+        self.last_verify_answer_extraction_source: str = ""
+        self.expand_prompt_variant = str(expand_prompt_variant or "default").strip().lower()
 
     def reset_usage_counters(self) -> None:
         self.total_input_tokens = 0
@@ -305,9 +338,8 @@ class APIBranchGenerator:
         step = str(merged.get("step", "") or merged.get("rationale_short", "") or "").strip()
         if len(step) > 500:
             step = step[:500]
-        answer = self._first_nonempty_answer_for_keys(merged, _EXPAND_ANSWER_KEYS)
-        if not answer:
-            answer = self._expand_answer_fallback_raw_text(text)
+        answer, extraction_source = self._resolve_expand_answer(text, merged, expand_prompt_variant=self.expand_prompt_variant)
+        self.last_expand_answer_extraction_source = extraction_source
         confidence = self._clip01(self._to_float(merged.get("confidence", branch.score)))
 
         if step:
@@ -319,17 +351,38 @@ class APIBranchGenerator:
 
         if action == "final" or answer:
             branch.is_done = True
-            branch.predicted_answer = answer or self._extract_last_number(step)
-        branch.trace_events.append(
-            {
-                "action": "expand",
-                "prompt_text": prompt,
-                "response_text": text,
-                "reasoning_text": "\n".join(branch.steps),
-                "extracted_answer": branch.predicted_answer,
-                "branch_depth": branch.depth,
-            }
-        )
+            tail = self._extract_last_number(step) if step else ""
+            digit_tail = tail if (tail and re.search(r"\d", str(tail))) else ""
+            merged_pred = answer or digit_tail
+            branch.predicted_answer = merged_pred if merged_pred else None
+        trace_evt: dict[str, Any] = {
+            "action": "expand",
+            "prompt_text": prompt,
+            "response_text": text,
+            "reasoning_text": "\n".join(branch.steps),
+            "extracted_answer": branch.predicted_answer,
+            "branch_depth": branch.depth,
+            "expand_answer_extraction_source": extraction_source,
+        }
+        # Optional unit-track contract fields (no-op for non unit-track prompts).
+        trace_evt["entity_ledger"] = merged.get("entity_ledger") if isinstance(merged.get("entity_ledger"), list) else []
+        trace_evt["target_entity"] = str(merged.get("target_entity") or "").strip()
+        trace_evt["target_unit"] = str(merged.get("target_unit") or "").strip()
+        trace_evt["unit_consistency_status"] = str(merged.get("unit_consistency_status") or "").strip()
+        trace_evt["unit_consistency_notes"] = str(merged.get("unit_consistency_notes") or "").strip()
+        trace_evt["unit_tracked_answer"] = self._stringify_scalar_answer_value(merged.get("unit_tracked_answer"))
+        if self.expand_prompt_variant == "numeric_leaf":
+            nls = str(merged.get("numeric_leaf_status") or "").strip().lower()
+            nlv = self._stringify_scalar_answer_value(merged.get("numeric_leaf_value"))
+            nl_src = "model_json"
+            if not nlv and step:
+                lv, ltag = extract_labeled_numeric_leaf_from_step(step)
+                if lv:
+                    nlv, nl_src = lv, ltag
+            trace_evt["numeric_leaf_status"] = nls or None
+            trace_evt["numeric_leaf_value"] = nlv or None
+            trace_evt["numeric_leaf_source"] = nl_src
+        branch.trace_events.append(trace_evt)
 
         return BranchActionResult("expand", score_before, branch.score, branch.is_done)
 
@@ -350,9 +403,8 @@ class APIBranchGenerator:
         data = self._safe_json(text)
         merged = self._merge_wrapped_json_dicts(data)
         confidence = self._clip01(self._to_float(merged.get("confidence", branch.score)))
-        maybe_answer = self._first_nonempty_answer_for_keys(merged, _VERIFY_ANSWER_KEYS)
-        if not maybe_answer:
-            maybe_answer = self._verify_answer_fallback_raw_text(text)
+        maybe_answer, verify_extraction_source = self._resolve_verify_answer(text, merged)
+        self.last_verify_answer_extraction_source = verify_extraction_source
 
         branch.score = 0.5 * branch.score + 0.5 * confidence
         if maybe_answer and branch.predicted_answer is None:
@@ -365,6 +417,7 @@ class APIBranchGenerator:
                 "reasoning_text": "\n".join(branch.steps),
                 "extracted_answer": branch.predicted_answer,
                 "branch_depth": branch.depth,
+                "verify_answer_extraction_source": verify_extraction_source,
             }
         )
         return BranchActionResult("verify", score_before, branch.score, branch.is_done)
@@ -670,6 +723,8 @@ class APIBranchGenerator:
                 return str(int(v))
             return str(v)
         s = str(v).strip()
+        if s.lower() in {"null", "none", "n/a", ""}:
+            return ""
         return s
 
     @staticmethod
@@ -682,23 +737,126 @@ class APIBranchGenerator:
 
     @staticmethod
     def _expand_answer_fallback_raw_text(raw_text: str) -> str:
+        """Legacy name: delegates to plain-text fallback (phrase / boxed / #### / prose)."""
+        return APIBranchGenerator._plain_text_answer_fallback(raw_text)
+
+    @staticmethod
+    def _verify_answer_fallback_raw_text(raw_text: str) -> str:
+        return APIBranchGenerator._plain_text_answer_fallback(raw_text)
+
+    @staticmethod
+    def _plain_text_answer_fallback(raw_text: str) -> str:
+        """Extract a final numeric answer from non-JSON or malformed model text (no gold)."""
         t = str(raw_text or "").strip()
         if not t:
             return ""
         m = _FINAL_ANS_PHRASE_RE.search(t)
         if m:
             return m.group(1).replace(",", "")
-        if "\\boxed" in t:
+        if "\\boxed" in t or "####" in t:
             ext = extract_final_answer(t)
             return ext.strip() if ext else ""
-        if "####" in t:
-            ext = extract_final_answer(t)
-            return ext.strip() if ext else ""
-        return ""
+        stripped = t.lstrip()
+        rs = stripped.rstrip()
+        if stripped.startswith("{") and rs.endswith("}"):
+            # Likely JSON object: avoid last-number heuristics on the whole blob (e.g. confidence 0.9).
+            return ""
+        if stripped.startswith("{") and not rs.endswith("}"):
+            # Truncated / invalid JSON-looking prefix: do not mine spurious numbers from the fragment.
+            return ""
+        ext = extract_final_answer(t)
+        return ext.strip() if ext else ""
 
     @staticmethod
-    def _verify_answer_fallback_raw_text(raw_text: str) -> str:
-        return APIBranchGenerator._expand_answer_fallback_raw_text(raw_text)
+    def _reasoning_blob_from_merged(merged: dict[str, Any], keys: tuple[str, ...]) -> str:
+        parts: list[str] = []
+        for key in keys:
+            v = merged.get(key)
+            if isinstance(v, str) and v.strip():
+                parts.append(v.strip())
+        return "\n".join(parts)
+
+    @classmethod
+    def _resolve_expand_answer(
+        cls,
+        raw_text: str,
+        merged: dict[str, Any],
+        *,
+        expand_prompt_variant: str = "default",
+    ) -> tuple[str, str]:
+        """Return (answer, extraction_source_tag) for expand() (gold-free)."""
+        for k in _EXPAND_ANSWER_KEYS:
+            s = cls._stringify_scalar_answer_value(merged.get(k))
+            if s:
+                tag = "api_json_final_answer" if k == "final_answer" else "api_json_answer"
+                return s, tag
+        action_l = str(merged.get("action", "") or "").strip().lower()
+        if expand_prompt_variant == "numeric_leaf":
+            nlv = cls._stringify_scalar_answer_value(merged.get("numeric_leaf_value"))
+            nls = str(merged.get("numeric_leaf_status") or "").strip().lower()
+            if action_l == "final" and nlv:
+                if nls == "final" or nls == "":
+                    return nlv, "api_json_numeric_leaf_final"
+        blob = cls._reasoning_blob_from_merged(merged, _EXPAND_REASONING_TEXT_KEYS)
+        if expand_prompt_variant == "numeric_leaf" and blob and action_l != "continue":
+            lbl, lsrc = extract_labeled_numeric_leaf_from_step(blob)
+            if lbl:
+                return lbl, lsrc
+        if blob:
+            if expand_prompt_variant == "numeric_leaf":
+                structured_answer_signal = bool(
+                    ANSWER_PATTERN.search(blob)
+                    or ("\\boxed" in blob)
+                    or ("####" in blob)
+                    or (action_l == "final")
+                )
+            else:
+                structured_answer_signal = bool(
+                    ANSWER_PATTERN.search(blob)
+                    or ("\\boxed" in blob)
+                    or ("####" in blob)
+                    or (action_l == "final")
+                    or _REASONING_NUMERIC_MINING_HINT.search(blob)
+                )
+            if structured_answer_signal:
+                ext = extract_final_answer(blob).strip()
+                if ext and re.search(r"\d", ext):
+                    return ext, "api_json_reasoning_fallback"
+                if expand_prompt_variant != "numeric_leaf":
+                    ln = cls._extract_last_number(blob)
+                    if ln and re.search(r"\d", str(ln)):
+                        return str(ln), "api_json_reasoning_fallback"
+        fb = cls._plain_text_answer_fallback(raw_text)
+        if fb:
+            return fb, "api_plain_text_fallback"
+        return "", "api_parse_failed_no_answer"
+
+    @classmethod
+    def _resolve_verify_answer(cls, raw_text: str, merged: dict[str, Any]) -> tuple[str, str]:
+        for k in _VERIFY_ANSWER_KEYS:
+            s = cls._stringify_scalar_answer_value(merged.get(k))
+            if s:
+                tag = "api_json_final_answer" if k == "final_answer" else "api_json_answer"
+                return s, tag
+        blob = cls._reasoning_blob_from_merged(merged, ("rationale_short", "step", "reasoning"))
+        if blob:
+            structured_answer_signal = bool(
+                ANSWER_PATTERN.search(blob)
+                or ("\\boxed" in blob)
+                or ("####" in blob)
+                or _REASONING_NUMERIC_MINING_HINT.search(blob)
+            )
+            if structured_answer_signal:
+                ext = extract_final_answer(blob).strip()
+                if ext and re.search(r"\d", ext):
+                    return ext, "api_json_reasoning_fallback"
+                ln = cls._extract_last_number(blob)
+                if ln and re.search(r"\d", str(ln)):
+                    return str(ln), "api_json_reasoning_fallback"
+        fb = cls._plain_text_answer_fallback(raw_text)
+        if fb:
+            return fb, "api_plain_text_fallback"
+        return "", "api_parse_failed_no_answer"
 
     @staticmethod
     def _safe_json(text: str) -> dict:
@@ -707,21 +865,39 @@ class APIBranchGenerator:
         t = APIBranchGenerator._strip_json_markdown_fence(str(text))
         try:
             obj = json.loads(t)
-            return obj if isinstance(obj, dict) else {}
+            if isinstance(obj, dict):
+                return obj
+            if isinstance(obj, list):
+                for item in obj:
+                    if isinstance(item, dict):
+                        return item
+            return {}
         except json.JSONDecodeError:
             pass
         balanced = APIBranchGenerator._extract_first_json_object(t)
         if balanced:
             try:
                 obj = json.loads(balanced)
-                return obj if isinstance(obj, dict) else {}
+                if isinstance(obj, dict):
+                    return obj
+                if isinstance(obj, list):
+                    for item in obj:
+                        if isinstance(item, dict):
+                            return item
+                return {}
             except json.JSONDecodeError:
                 pass
         match = re.search(r"\{.*\}", t, flags=re.DOTALL)
         if match:
             try:
                 obj = json.loads(match.group(0))
-                return obj if isinstance(obj, dict) else {}
+                if isinstance(obj, dict):
+                    return obj
+                if isinstance(obj, list):
+                    for item in obj:
+                        if isinstance(item, dict):
+                            return item
+                return {}
             except json.JSONDecodeError:
                 pass
         return {}
@@ -744,8 +920,27 @@ class APIBranchGenerator:
 
     def _expand_prompt(self, question: str, branch: BranchState) -> str:
         prior = "\n".join(f"- {s}" for s in branch.steps[-3:]) or "(none)"
+        if self.expand_prompt_variant == "numeric_leaf":
+            return (
+                "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer.\n"
+                "Every step must surface numeric progress: include EITHER a clearly labeled provisional/intermediate number "
+                "OR a compact equation with its computed numeric result.\n"
+                "If you can already determine the final numeric result from the question and prior reasoning, use action='final', "
+                "put that number in answer, set numeric_leaf_status to 'final', and set numeric_leaf_value to the same number.\n"
+                "Return strict JSON with keys: action, step, answer, confidence, numeric_leaf_status, numeric_leaf_value.\n"
+                "- action: 'continue' or 'final'.\n"
+                "- answer: empty unless action is 'final'; when final, answer must be non-empty.\n"
+                "- confidence: 0..1.\n"
+                "- numeric_leaf_status: one of 'final' | 'provisional' | 'equation_progress' | 'none'.\n"
+                "- numeric_leaf_value: string or null. If action is 'continue', answer may be empty but numeric_leaf_value should "
+                "carry the best numeric progress (provisional total, equation rhs, etc.) unless no numeric progress exists.\n"
+                "If numeric_leaf_status is 'final', numeric_leaf_value should match answer.\n\n"
+                f"Question:\n{question}\n\n"
+                f"Current partial reasoning:\n{prior}\n"
+            )
         return (
             "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. "
+            "If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). "
             "Return strict JSON with keys: action, step, answer, confidence. "
             "action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\n"
             f"Question:\n{question}\n\n"

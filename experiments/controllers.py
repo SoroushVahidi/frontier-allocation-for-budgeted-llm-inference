@@ -15,6 +15,14 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 
 from experiments.branching import BranchState
+from experiments.data import extract_final_answer
+from experiments.direct_hybrid_selection import resolve_direct_hybrid_seed_overlay
+from experiments.frontier_max_support_tiebreak import (
+    build_merged_support_histogram_for_tiebreak,
+    normalize_answer_group_key,
+    pick_answer_text_for_normalized_group,
+    resolve_frontier_bias_max_support_tiebreak,
+)
 from experiments.objective_function_stack import compute_process_quality, compute_target_completion
 from experiments.problem_type_utils import classify_problem_type
 from experiments.prm_partial_scorer import PartialBranchScorer
@@ -6882,6 +6890,17 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         gate_entropy_threshold: float = 0.55,
         frontier_override_min_support_margin: int = 1,
         frontier_override_min_maturity: int = 2,
+        direct_reserve_phase_max_actions: int | None = None,
+        enable_frontier_max_support_tiebreak: bool = False,
+        enable_unit_track_seed: bool = False,
+        unit_track_seed_budget_actions: int = 0,
+        unit_track_selection_policy: str = "",
+        enable_direct_hybrid_seed: bool = False,
+        direct_hybrid_seed_budget_actions: int = 0,
+        direct_hybrid_seed_source: str = "",
+        direct_hybrid_selection_policy: str = "",
+        direct_hybrid_l1_token_budget: int | None = None,
+        direct_hybrid_l1_prompt_style: str = "",
         method_name: str = "direct_reserve_frontier_gate_v1",
     ) -> None:
         super().__init__(
@@ -6901,7 +6920,32 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         )
         self.frontier_override_min_support_margin = max(1, int(frontier_override_min_support_margin))
         self.frontier_override_min_maturity = max(1, int(frontier_override_min_maturity))
+        self.direct_reserve_phase_max_actions = (
+            None if direct_reserve_phase_max_actions is None else max(1, int(direct_reserve_phase_max_actions))
+        )
+        self.enable_frontier_max_support_tiebreak = bool(enable_frontier_max_support_tiebreak)
+        self.enable_unit_track_seed = bool(enable_unit_track_seed)
+        self.unit_track_seed_budget_actions = max(0, int(unit_track_seed_budget_actions))
+        self.unit_track_selection_policy = str(unit_track_selection_policy or "").strip() or (
+            "weak_frontier_or_supported_agreement"
+        )
+        self.enable_direct_hybrid_seed = bool(enable_direct_hybrid_seed)
+        self.direct_hybrid_seed_budget_actions = max(0, int(direct_hybrid_seed_budget_actions))
+        self.direct_hybrid_seed_source = str(direct_hybrid_seed_source or "").strip() or "l1_style_max_budget_prompt"
+        self.direct_hybrid_selection_policy = str(direct_hybrid_selection_policy or "").strip() or (
+            "defer_frontier_mass_weak_then_seed_incumbent"
+        )
+        self.direct_hybrid_l1_token_budget = direct_hybrid_l1_token_budget
+        self.direct_hybrid_l1_prompt_style = str(direct_hybrid_l1_prompt_style or "").strip()
         self.method_name = method_name
+
+    def _compose_direct_hybrid_l1_question(self, question: str) -> str:
+        tb = self.direct_hybrid_l1_token_budget
+        if tb is None:
+            tb = self.direct_token_budget
+        tb_i = max(1, int(tb))
+        ps = self.direct_hybrid_l1_prompt_style or self.direct_prompt_style
+        return f"{question}\n\n{ps} Think for maximum {tb_i} tokens."
 
     def _stop_additional_direct_reserve_after_attempt(
         self,
@@ -6914,6 +6958,125 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         """Hook for subclasses to skip remaining root strategy seeds (e.g. when direct pool is already stable)."""
         return False
 
+    @staticmethod
+    def _unit_track_status(raw: Any) -> str:
+        s = str(raw or "").strip().lower()
+        if s in {"consistent", "strong"}:
+            return "consistent"
+        if s in {"incomplete", "partial", "weak"}:
+            return "incomplete"
+        if s in {"inconsistent"}:
+            return "inconsistent"
+        return "unknown"
+
+    @staticmethod
+    def _unit_track_parseable_numeric(answer: str | None) -> bool:
+        if answer is None:
+            return False
+        s = str(answer).strip().replace(",", "")
+        if not s:
+            return False
+        try:
+            float(s)
+            return True
+        except Exception:
+            return False
+
+    def _compose_unit_track_question(self, question: str) -> str:
+        return (
+            f"{question}\n\n"
+            "Solve with unit/entity tracking. Return strict JSON with keys: "
+            "action, step, answer, confidence, entity_ledger, target_entity, target_unit, "
+            "unit_consistency_status, unit_consistency_notes, unit_tracked_answer.\n"
+            "- action: continue|final\n"
+            "- entity_ledger: list of rows with entity/quantity/unit text\n"
+            "- unit_consistency_status: consistent|incomplete|inconsistent|unknown\n"
+            "- unit_tracked_answer: numeric answer string when available\n"
+            "If final answer is known, set action='final' and answer to the final numeric answer."
+        )
+
+    def _run_unit_track_seed_attempt(self, question: str, gold_answer: str, max_actions: int) -> tuple[str | None, int, dict[str, Any], list[dict[str, Any]]]:
+        branch = self.generator.init_branch("unit_track_seed_0")
+        actions = 0
+        trace: list[dict[str, Any]] = []
+        prompt = self._compose_unit_track_question(question)
+        while actions < max_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, prompt, gold_answer)
+            actions += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            trace.append(
+                {
+                    "action": "expand",
+                    "branch_id": branch.branch_id,
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                    "source_metadata": "unit_track_seed",
+                }
+            )
+        unit_answer = branch.predicted_answer
+        if (unit_answer is None or not str(unit_answer).strip()) and trace:
+            mined = extract_final_answer(str(trace[-1].get("reasoning_text") or ""))
+            if mined is not None and str(mined).strip():
+                unit_answer = str(mined).strip()
+        latest = branch.trace_events[-1] if branch.trace_events else {}
+        entity_ledger = latest.get("entity_ledger")
+        if not isinstance(entity_ledger, list):
+            entity_ledger = []
+        target_entity = str(latest.get("target_entity") or "").strip()
+        target_unit = str(latest.get("target_unit") or "").strip()
+        status = self._unit_track_status(latest.get("unit_consistency_status"))
+        unit_tracked_answer = str(latest.get("unit_tracked_answer") or unit_answer or "").strip()
+        parseable = self._unit_track_parseable_numeric(unit_tracked_answer)
+        ledger_present = int(bool(entity_ledger))
+        ledger_complete = int(
+            sum(
+                1
+                for row in entity_ledger
+                if isinstance(row, dict) and str(row.get("entity") or "").strip() and str(row.get("unit") or "").strip()
+            )
+            >= 2
+        )
+        target_entity_present = int(bool(target_entity))
+        target_unit_present = int(bool(target_unit))
+        unit_tracked_answer_present = int(bool(unit_tracked_answer))
+        status_ok = int(status in {"consistent", "incomplete", "unknown"})
+        weak_fallback_like = int(unit_tracked_answer in {"", "__unknown__", "unknown", "none"})
+        score = (
+            0.20 * ledger_present
+            + 0.20 * ledger_complete
+            + 0.15 * target_entity_present
+            + 0.15 * target_unit_present
+            + 0.20 * int(parseable)
+            + 0.10 * status_ok
+        )
+        strong = bool(
+            parseable
+            and unit_tracked_answer_present
+            and status != "inconsistent"
+            and (target_unit_present or target_entity_present or ledger_complete)
+            and not weak_fallback_like
+            and score >= 0.55
+        )
+        unit_meta = {
+            "entity_ledger": entity_ledger,
+            "target_entity": target_entity,
+            "target_unit": target_unit,
+            "unit_consistency_status": status,
+            "unit_consistency_notes": str(latest.get("unit_consistency_notes") or ""),
+            "unit_tracked_answer": unit_tracked_answer,
+            "entity_ledger_present": int(ledger_present),
+            "target_entity_present": int(target_entity_present),
+            "target_unit_present": int(target_unit_present),
+            "unit_tracked_answer_present": int(unit_tracked_answer_present),
+            "unit_track_score": float(score),
+            "unit_track_quality_bucket": "strong" if strong else ("weak" if score < 0.35 else "partial"),
+            "unit_track_candidate_is_strong": int(strong),
+            "unit_tracked_answer_parseable_numeric": int(parseable),
+        }
+        return (str(unit_answer).strip() if unit_answer is not None and str(unit_answer).strip() else None, actions, unit_meta, trace)
+
     def run(self, question: str, gold_answer: str) -> MethodResult:
         reserve_attempts = self._direct_reserve_attempts()
         per_attempt_cap = max(1, int(round(self.direct_token_budget / self.direct_token_per_action)))
@@ -6924,9 +7087,15 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         for i in range(reserve_attempts):
             if direct_actions >= self.max_actions:
                 break
-            ans, used, trace_rows = self._run_direct_attempt(
-                question, gold_answer, i, min(per_attempt_cap, self.max_actions - direct_actions)
-            )
+            attempt_budget = min(per_attempt_cap, self.max_actions - direct_actions)
+            if self.direct_reserve_phase_max_actions is not None:
+                attempt_budget = min(
+                    attempt_budget,
+                    max(0, int(self.direct_reserve_phase_max_actions) - int(direct_actions)),
+                )
+            if attempt_budget <= 0:
+                break
+            ans, used, trace_rows = self._run_direct_attempt(question, gold_answer, i, attempt_budget)
             direct_answers.append(ans)
             direct_actions += int(used)
             direct_trace.extend(trace_rows)
@@ -6958,6 +7127,119 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             or direct_gap < self.gate_top2_gap_threshold
             or direct_entropy > self.gate_entropy_threshold
         )
+        frontier_budget_before_unit_track = int(remaining_budget)
+
+        unit_track_answer: str | None = None
+        unit_track_trace_events: list[dict[str, Any]] = []
+        unit_track_meta: dict[str, Any] = {
+            "unit_track_enabled": bool(getattr(self, "enable_unit_track_seed", False)),
+            "unit_track_budget_cost_planned": int(getattr(self, "unit_track_seed_budget_actions", 0) or 0),
+            "unit_track_budget_cost_observed": 0,
+            "frontier_budget_after_unit_track": int(remaining_budget),
+            "unit_track_selection_policy": str(getattr(self, "unit_track_selection_policy", "") or ""),
+            "entity_ledger": [],
+            "target_entity": "",
+            "target_unit": "",
+            "unit_consistency_status": "unknown",
+            "unit_consistency_notes": "",
+            "unit_tracked_answer": "",
+            "entity_ledger_present": 0,
+            "target_entity_present": 0,
+            "target_unit_present": 0,
+            "unit_tracked_answer_present": 0,
+            "unit_tracked_answer_parseable_numeric": 0,
+            "unit_track_score": 0.0,
+            "unit_track_quality_bucket": "unknown",
+            "unit_track_candidate_is_strong": 0,
+        }
+        ut_plan = int(getattr(self, "unit_track_seed_budget_actions", 0) or 0)
+        if (
+            bool(getattr(self, "enable_unit_track_seed", False))
+            and ut_plan > 0
+            and incumbent_uncertain
+            and remaining_budget > 0
+        ):
+            ut_budget = min(ut_plan, remaining_budget)
+            ans_ut, used_ut, meta_ut, trace_ut = self._run_unit_track_seed_attempt(question, gold_answer, ut_budget)
+            unit_track_answer = ans_ut
+            unit_track_trace_events = list(trace_ut)
+            unit_track_meta.update(meta_ut)
+            unit_track_meta["unit_track_budget_cost_observed"] = int(used_ut)
+            remaining_budget = max(0, remaining_budget - int(used_ut))
+            unit_track_meta["frontier_budget_after_unit_track"] = int(remaining_budget)
+
+        hybrid_seed_answer: str | None = None
+        hybrid_seed_reasoning_text = ""
+        hybrid_seed_trace_events: list[dict[str, Any]] = []
+        direct_hybrid_overlay_meta: dict[str, Any] = {}
+        direct_hybrid_execution_meta: dict[str, Any] = {
+            "enable_direct_hybrid_seed": bool(getattr(self, "enable_direct_hybrid_seed", False)),
+            "executed": False,
+            "planned_direct_hybrid_seed_budget_actions": int(getattr(self, "direct_hybrid_seed_budget_actions", 0) or 0),
+            "direct_hybrid_seed_source": str(getattr(self, "direct_hybrid_seed_source", "") or ""),
+            "direct_hybrid_selection_policy": str(getattr(self, "direct_hybrid_selection_policy", "") or ""),
+            "remaining_budget_before_hybrid_seed": int(remaining_budget),
+            "incumbent_uncertain_at_gate": bool(incumbent_uncertain),
+        }
+        seed_plan = int(getattr(self, "direct_hybrid_seed_budget_actions", 0) or 0)
+        if (
+            bool(getattr(self, "enable_direct_hybrid_seed", False))
+            and seed_plan > 0
+            and direct_actions + seed_plan <= self.max_actions
+        ):
+            rem0 = int(remaining_budget)
+            run_seed = False
+            if incumbent_uncertain:
+                run_seed = rem0 > seed_plan
+            else:
+                run_seed = rem0 >= seed_plan
+            if run_seed:
+                branch = self.generator.init_branch("direct_hybrid_seed_0")
+                prompt_h = self._compose_direct_hybrid_l1_question(question)
+                used_here = 0
+                while (
+                    used_here < seed_plan
+                    and direct_actions + used_here < self.max_actions
+                    and not branch.is_done
+                    and not branch.is_pruned
+                ):
+                    self.generator.expand(branch, prompt_h, gold_answer)
+                    used_here += 1
+                    latest = branch.trace_events[-1] if branch.trace_events else {}
+                    hybrid_seed_trace_events.append(
+                        {
+                            "action": "expand",
+                            "branch_id": branch.branch_id,
+                            "prompt_text": str(latest.get("prompt_text", "")),
+                            "response_text": str(latest.get("response_text", "")),
+                            "reasoning_text": str(latest.get("reasoning_text", "")),
+                            "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                            "source_metadata": "direct_hybrid_seed",
+                        }
+                    )
+                direct_actions += used_here
+                pa = branch.predicted_answer
+                hybrid_seed_answer = str(pa).strip() if pa is not None and str(pa).strip() else None
+                if hybrid_seed_answer is None and hybrid_seed_trace_events:
+                    rt = str(hybrid_seed_trace_events[-1].get("reasoning_text") or "")
+                    mined = extract_final_answer(rt)
+                    if mined is not None and str(mined).strip():
+                        hybrid_seed_answer = str(mined).strip()
+                hybrid_seed_reasoning_text = "\n".join(
+                    str(x.get("reasoning_text") or "").strip()
+                    for x in hybrid_seed_trace_events
+                    if str(x.get("reasoning_text") or "").strip()
+                ).strip()
+                direct_hybrid_execution_meta.update(
+                    {
+                        "executed": True,
+                        "direct_hybrid_seed_budget_cost_observed": int(used_here),
+                        "hybrid_seed_branch_done": bool(branch.is_done),
+                        "hybrid_seed_branch_pruned": bool(branch.is_pruned),
+                    }
+                )
+
+        remaining_budget = max(0, remaining_budget)
         should_expand_frontier = bool(remaining_budget > 0 and incumbent_uncertain)
 
         frontier_result: MethodResult | None = None
@@ -6980,6 +7262,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                         frontier_support_counts[str(k)] = int(v)
                     except Exception:
                         continue
+        combined_group_counts_base = Counter(dict(frontier_support_counts))
+        for _g, _c in direct_counts.items():
+            combined_group_counts_base[_g] += int(_c)
         frontier_support = int(frontier_support_counts.get(frontier_group, 0))
         frontier_maturity = int((frontier_result.expansions if frontier_result else 0) + (frontier_result.verifications if frontier_result else 0))
         override_margin = float(frontier_support - incumbent_support)
@@ -7023,12 +7308,211 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         final_answer = frontier_answer if frontier_override_triggered else incumbent_answer
         reserve_used = bool(not frontier_override_triggered)
 
-        actions_used = int(direct_actions + (frontier_result.actions_used if frontier_result else 0))
-        expansions = int(direct_actions + (frontier_result.expansions if frontier_result else 0))
+        tiebreak_meta: dict[str, Any] = {
+            "frontier_tiebreak_enabled": bool(getattr(self, "enable_frontier_max_support_tiebreak", False)),
+            "frontier_tiebreak_triggered": False,
+            "frontier_tiebreak_selected_group": "",
+            "frontier_tiebreak_previous_group": "",
+            "frontier_tiebreak_reason": "disabled",
+        }
+        if bool(getattr(self, "enable_frontier_max_support_tiebreak", False)):
+            prev_g = _normalize_answer(final_answer) if final_answer is not None else ""
+            if not prev_g:
+                prev_g = "__unknown__"
+            tiebreak_meta["frontier_tiebreak_previous_group"] = str(prev_g)
+            merged_hist = build_merged_support_histogram_for_tiebreak(
+                dict(combined_group_counts_base),
+                final_answer=final_answer,
+                direct_trace=direct_trace,
+            )
+            chosen_g, t_inner = resolve_frontier_bias_max_support_tiebreak(
+                merged_hist,
+                dict(frontier_support_counts),
+                dict(direct_counts),
+                previous_group_key=str(prev_g),
+            )
+            tiebreak_meta.update(t_inner)
+            if chosen_g is not None:
+                picked_ans = pick_answer_text_for_normalized_group(
+                    chosen_g,
+                    direct_answers=direct_answers,
+                    incumbent_answer=incumbent_answer,
+                    frontier_answer=frontier_answer,
+                    frontier_metadata=frontier_meta,
+                    selector_candidate_pool=None,
+                )
+                if picked_ans is not None:
+                    final_answer = picked_ans
+                else:
+                    tiebreak_meta["frontier_tiebreak_triggered"] = False
+                    tiebreak_meta["frontier_tiebreak_selected_group"] = ""
+                    tiebreak_meta["frontier_tiebreak_reason"] = str(
+                        tiebreak_meta.get("frontier_tiebreak_reason") or "tiebreak"
+                    ) + "_answer_lookup_failed"
+
+        if bool(getattr(self, "enable_direct_hybrid_seed", False)):
+            final_answer, direct_hybrid_overlay_meta = resolve_direct_hybrid_seed_overlay(
+                baseline_final_answer=final_answer,
+                hybrid_seed_answer=hybrid_seed_answer,
+                frontier_override_triggered=bool(frontier_override_triggered),
+                tiebreak_triggered=bool(tiebreak_meta.get("frontier_tiebreak_triggered")),
+                frontier_support_counts=dict(frontier_support_counts),
+            )
+
+        unit_track_overlay_meta: dict[str, Any] = {
+            "unit_track_overlay_applied": False,
+            "unit_track_overlay_reason": "not_applicable",
+            "unit_track_overlay_previous_answer": final_answer,
+            # Gold-free deterministic selection gate (auditable via metadata).
+            "unit_track_gate_enabled": bool(getattr(self, "enable_unit_track_seed", False)),
+            "unit_track_gate_triggered": False,
+            "unit_track_gate_reason": "not_applicable",
+            "unit_track_gate_previous_answer": final_answer,
+            "unit_track_gate_selected_answer": None,
+            "unit_track_gate_blocked_reason": "none",
+            "unit_track_gate_candidate_strength": float(unit_track_meta.get("unit_track_score", 0.0) or 0.0),
+            "unit_track_gate_frontier_conflict": False,
+        }
+        if bool(getattr(self, "enable_unit_track_seed", False)) and unit_track_answer is not None:
+            unit_group = _normalize_answer(unit_track_answer) or "__unknown__"
+            final_group = _normalize_answer(final_answer) or "__unknown__"
+            frontier_weak = bool(frontier_result is None or frontier_support <= 1)
+            group_support = int(combined_group_counts_base.get(unit_group, 0))
+            agrees_supported = bool(group_support >= 1)
+            final_is_weak_fallback = bool(final_group in {"__unknown__", "", "0", "1"})
+            strong_unit = bool(int(unit_track_meta.get("unit_track_candidate_is_strong", 0)) == 1)
+            status = str(unit_track_meta.get("unit_consistency_status") or "unknown")
+            # Deterministic gate (conservative).
+            # Rule summary (gold-free):
+            # - Promote only with strong/numeric unit-track candidate.
+            # - Require ledger completeness signals + parseable numeric.
+            # - Promote only when current surface answer is weak (or frontier group counts missing).
+            # - Block when frontier/tiebreak has strong support for a different answer.
+            promote = False
+            blocked_reason = "unknown"
+
+            # (2) Ledger + targeting presence.
+            entity_ledger_present = bool(int(unit_track_meta.get("entity_ledger_present", 0) or 0) == 1)
+            target_entity_present = bool(int(unit_track_meta.get("target_entity_present", 0) or 0) == 1)
+            target_unit_present = bool(int(unit_track_meta.get("target_unit_present", 0) or 0) == 1)
+            ledger_present_enough = entity_ledger_present and target_entity_present and target_unit_present
+
+            # (3) Numeric candidate parsing.
+            parseable_numeric = bool(int(unit_track_meta.get("unit_tracked_answer_parseable_numeric", 0) or 0) == 1)
+            # Some callers may not populate the parseable flag in traces; keep robust fallback.
+            if not parseable_numeric:
+                cand = str(unit_track_answer or "").strip().replace(",", "")
+                if cand:
+                    try:
+                        float(cand)
+                        parseable_numeric = True
+                    except Exception:
+                        parseable_numeric = False
+
+            # (4) Consistency gate.
+            status_ok = status in {"consistent", "unknown"}
+
+            # (5) Current surface weakness proxy (controller-stage).
+            frontier_counts_missing = not bool(frontier_support_counts)
+            current_surface_is_weak = bool(final_is_weak_fallback or frontier_counts_missing or frontier_weak)
+
+            # (6) Frontier/tiebreak conflict.
+            answer_support_counts = dict(combined_group_counts_base)
+            unit_support = int(answer_support_counts.get(unit_group, 0) or 0)
+            other_strong_exists = any(int(c or 0) >= 2 for g, c in answer_support_counts.items() if str(g).strip() and str(g) != unit_group)
+            competing_strong_without_unit_support = bool(other_strong_exists and unit_support == 0)
+
+            frontier_tiebreak_triggered = bool(tiebreak_meta.get("frontier_tiebreak_triggered", False))
+            tiebreak_sel = str(tiebreak_meta.get("frontier_tiebreak_selected_group") or "").strip()
+            tiebreak_group = _normalize_answer(tiebreak_sel) if tiebreak_sel else "__unknown__"
+            tiebreak_conflict = bool(
+                frontier_tiebreak_triggered
+                and tiebreak_group not in {"", "__unknown__"}
+                and str(tiebreak_group) != str(unit_group)
+            )
+
+            frontier_conflict = bool(competing_strong_without_unit_support or tiebreak_conflict)
+
+            if not strong_unit:
+                blocked_reason = "blocked_non_strong_unit_candidate"
+            elif status == "inconsistent":
+                blocked_reason = "blocked_inconsistent_unit_ledger"
+            elif status == "incomplete":
+                blocked_reason = "blocked_incomplete_unit_ledger"
+            elif not ledger_present_enough:
+                blocked_reason = "blocked_unit_ledger_missing_or_incomplete"
+            elif not parseable_numeric:
+                blocked_reason = "blocked_unit_candidate_non_numeric"
+            elif not status_ok:
+                blocked_reason = "blocked_unit_inconsistent_or_unknown"
+            elif not current_surface_is_weak:
+                blocked_reason = "blocked_current_surface_not_weak"
+            elif frontier_conflict:
+                blocked_reason = "blocked_frontier_tiebreak_conflict"
+            else:
+                promote = True
+                blocked_reason = "none"
+
+            unit_track_overlay_meta["unit_track_gate_frontier_conflict"] = bool(frontier_conflict)
+            unit_track_overlay_meta["unit_track_gate_blocked_reason"] = blocked_reason
+            unit_track_overlay_meta["unit_track_gate_previous_answer"] = final_answer
+
+            if promote:
+                final_answer = unit_track_answer
+                unit_track_overlay_meta["unit_track_overlay_applied"] = True
+                unit_track_overlay_meta["unit_track_overlay_reason"] = "unit_track_gate_promote_conservative"
+                unit_track_overlay_meta["unit_track_gate_triggered"] = True
+                unit_track_overlay_meta["unit_track_gate_reason"] = "all_conditions_met"
+                unit_track_overlay_meta["unit_track_gate_selected_answer"] = unit_track_answer
+            else:
+                unit_track_overlay_meta["unit_track_overlay_reason"] = blocked_reason
+
+        actions_used = int(direct_actions + int(unit_track_meta.get("unit_track_budget_cost_observed", 0)) + (frontier_result.actions_used if frontier_result else 0))
+        expansions = int(direct_actions + int(unit_track_meta.get("unit_track_budget_cost_observed", 0) + (frontier_result.expansions if frontier_result else 0)))
         verifications = int(frontier_result.verifications if frontier_result else 0)
         support_margin = float(frontier_support - incumbent_support)
         maturity_margin = float(frontier_maturity - len(direct_answers))
         action_trace = list(frontier_meta.get("action_trace", [])) if isinstance(frontier_meta.get("action_trace", []), list) else []
+        hs_group_sel = normalize_answer_group_key(str(hybrid_seed_answer or "")) or "__unknown__"
+        final_g_sel = _normalize_answer(final_answer) or "__unknown__"
+        for ev in hybrid_seed_trace_events:
+            if not isinstance(ev, dict):
+                continue
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": str(ev.get("action") or "expand"),
+                    "branch_id": str(ev.get("branch_id") or "direct_hybrid_seed_0"),
+                    "group_key": hs_group_sel,
+                    "is_terminal": 0,
+                    "selected": int(hs_group_sel == final_g_sel),
+                    "source": "direct_hybrid_seed",
+                    "prompt_text": str(ev.get("prompt_text") or ""),
+                    "response_text": str(ev.get("response_text") or ""),
+                    "reasoning_text": str(ev.get("reasoning_text") or ""),
+                    "extracted_answer": str(ev.get("extracted_answer") or ""),
+                }
+            )
+        for ev in unit_track_trace_events:
+            if not isinstance(ev, dict):
+                continue
+            ut_group_sel = normalize_answer_group_key(str(unit_track_answer or "")) or "__unknown__"
+            final_g_sel = _normalize_answer(final_answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": str(ev.get("action") or "expand"),
+                    "branch_id": str(ev.get("branch_id") or "unit_track_seed_0"),
+                    "group_key": ut_group_sel,
+                    "is_terminal": 0,
+                    "selected": int(ut_group_sel == final_g_sel),
+                    "source": "unit_track_seed",
+                    "prompt_text": str(ev.get("prompt_text") or ""),
+                    "response_text": str(ev.get("response_text") or ""),
+                    "reasoning_text": str(ev.get("reasoning_text") or ""),
+                    "extracted_answer": str(ev.get("extracted_answer") or ""),
+                }
+            )
         final_branch_states = list(frontier_final_states)
         for i, answer in enumerate(direct_answers):
             group_key = _normalize_answer(answer) or "__unknown__"
@@ -7059,24 +7543,76 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "selected": int(group_key == (_normalize_answer(final_answer) or "__unknown__")),
                 }
             )
-        combined_group_counts = Counter(dict(frontier_support_counts))
-        for group, count in direct_counts.items():
-            combined_group_counts[group] += int(count)
+        if direct_hybrid_execution_meta.get("executed"):
+            hs_pred = str(hybrid_seed_answer or "").strip()
+            hs_group = _normalize_answer(hs_pred) if hs_pred else "__unknown__"
+            final_g = _normalize_answer(final_answer) or "__unknown__"
+            final_branch_states.append(
+                {
+                    "branch_id": "direct_hybrid_seed_0",
+                    "parent_branch_id": "",
+                    "branch_depth": 1,
+                    "score": 1.0,
+                    "predicted_answer": hs_pred,
+                    "is_done": bool(hs_pred),
+                    "is_pruned": False,
+                    "steps": [],
+                    "trace_events": list(hybrid_seed_trace_events),
+                    "strategy_family": "direct_hybrid_seed",
+                    "source": "direct_hybrid_seed",
+                    "source_metadata": "direct_hybrid_seed",
+                    "selected": int(hs_group == final_g),
+                }
+            )
+        if int(unit_track_meta.get("unit_track_budget_cost_observed", 0) or 0) > 0:
+            ut_pred = str(unit_track_answer or "").strip()
+            ut_group = _normalize_answer(ut_pred) if ut_pred else "__unknown__"
+            final_g = _normalize_answer(final_answer) or "__unknown__"
+            final_branch_states.append(
+                {
+                    "branch_id": "unit_track_seed_0",
+                    "parent_branch_id": "",
+                    "branch_depth": 1,
+                    "score": float(unit_track_meta.get("unit_track_score", 0.0) or 0.0),
+                    "predicted_answer": ut_pred,
+                    "is_done": bool(ut_pred),
+                    "is_pruned": False,
+                    "steps": [],
+                    "trace_events": list(unit_track_trace_events),
+                    "strategy_family": "unit_track_seed",
+                    "source": "unit_track_seed",
+                    "source_metadata": "unit_track_seed",
+                    "selected": int(ut_group == final_g),
+                }
+            )
+        combined_group_counts = Counter(combined_group_counts_base)
         selector_candidate_pool: list[dict[str, Any]] = []
         selected_group_key = _normalize_answer(final_answer) or "__unknown__"
         for idx, s in enumerate(final_branch_states):
             if not isinstance(s, dict):
                 continue
             predicted_answer = str(s.get("predicted_answer", "") or "").strip()
-            if not predicted_answer:
-                continue
-            group_key = _normalize_answer(predicted_answer) or "__unknown__"
             trace_events = s.get("trace_events", [])
             if not isinstance(trace_events, list):
                 trace_events = []
+            if not predicted_answer:
+                for ev in trace_events:
+                    if not isinstance(ev, dict):
+                        continue
+                    ea = str(ev.get("extracted_answer") or "").strip()
+                    if ea:
+                        predicted_answer = ea
+                        break
             trace_steps = [str(ev.get("reasoning_text", "") or ev.get("response_text", "") or "").strip() for ev in trace_events if isinstance(ev, dict)]
             trace_steps.extend(str(x).strip() for x in (s.get("steps", []) if isinstance(s.get("steps", []), list) else []) if str(x).strip())
             trace_text = "\n".join([t for t in trace_steps if t]).strip()
+            if not predicted_answer and trace_text:
+                mined = str(extract_final_answer(trace_text) or "").strip()
+                if mined:
+                    predicted_answer = mined
+            if not predicted_answer:
+                continue
+            group_key = _normalize_answer(predicted_answer) or "__unknown__"
             source_id = str(s.get("source", "") or s.get("branch_id", "") or f"candidate_{idx}")
             try:
                 branch_score = float(s.get("score", 0.0) or 0.0)
@@ -7102,6 +7638,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "cost_norm": max(0.0, min(1.0, branch_depth / 10.0)),
                     "actions_used": int(actions_used),
                     "is_original_selected": int(group_key == selected_group_key),
+                    "source_metadata": str(s.get("source_metadata") or "").strip(),
                 }
             )
 
@@ -7123,6 +7660,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                 "direct_top_support": float(direct_top_support),
                 "direct_top2_support_gap": float(direct_gap),
                 "direct_answer_entropy": float(direct_entropy),
+                "direct_reserve_phase_max_actions": self.direct_reserve_phase_max_actions,
             },
             "frontier_candidate_answer": frontier_answer,
             "frontier_candidate_support": int(frontier_support),
@@ -7161,6 +7699,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             },
             "incumbent_challenge_score": float(incumbent_challenge_score),
             "remaining_budget_before_frontier": int(remaining_budget),
+            "frontier_budget_before_unit_track": int(frontier_budget_before_unit_track),
             "frontier_executed": bool(frontier_result is not None),
             "direct_answer_group_counts": dict(direct_counts),
             "frontier_answer_group_counts": dict(frontier_support_counts),
@@ -7174,7 +7713,36 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "selector_candidate_pool_size": int(len(selector_candidate_pool)),
             "selector_candidate_answer_group_count": int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in selector_candidate_pool})),
             "selector_candidate_pool_sources": sorted({str(x.get("source_id", "")) for x in selector_candidate_pool if str(x.get("source_id", "")).strip()}),
+            "selected_group": str(
+                (_normalize_answer(final_answer) if final_answer is not None else None)
+                or (str(incumbent_group) if incumbent_group else "")
+                or "__unknown__"
+            ),
+            "enable_direct_hybrid_seed": bool(getattr(self, "enable_direct_hybrid_seed", False)),
+            "direct_hybrid_seed_budget_cost": int(getattr(self, "direct_hybrid_seed_budget_actions", 0) or 0),
+            "direct_hybrid_seed_source": str(getattr(self, "direct_hybrid_seed_source", "") or ""),
+            "direct_hybrid_selection_policy": str(getattr(self, "direct_hybrid_selection_policy", "") or ""),
+            "direct_hybrid_seed_answer": hybrid_seed_answer,
+            "direct_hybrid_seed_reasoning_text": hybrid_seed_reasoning_text,
+            "direct_hybrid_seed_support": (
+                normalize_answer_group_key(str(hybrid_seed_answer))
+                if hybrid_seed_answer is not None and str(hybrid_seed_answer).strip()
+                else ""
+            ),
+            "direct_hybrid_seed_execution": dict(direct_hybrid_execution_meta),
+            "direct_hybrid_overlay": dict(direct_hybrid_overlay_meta),
+            **tiebreak_meta,
         }
+        if bool(getattr(self, "enable_unit_track_seed", False)):
+            metadata["unit_track_answer"] = unit_track_answer
+            metadata["unit_track_execution"] = dict(unit_track_meta)
+            metadata["unit_track_overlay"] = dict(unit_track_overlay_meta)
+            metadata["unit_track_enabled"] = bool(unit_track_meta.get("unit_track_enabled", False))
+            metadata["unit_track_budget_cost_planned"] = int(unit_track_meta.get("unit_track_budget_cost_planned", 0))
+            metadata["unit_track_budget_cost_observed"] = int(unit_track_meta.get("unit_track_budget_cost_observed", 0))
+            metadata["frontier_budget_after_unit_track"] = int(
+                unit_track_meta.get("frontier_budget_after_unit_track", remaining_budget)
+            )
         return MethodResult(
             method=self.method_name,
             prediction=final_answer,

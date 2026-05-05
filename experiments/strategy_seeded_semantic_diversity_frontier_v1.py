@@ -79,6 +79,16 @@ def build_strategy_prompt_styles_semantic_frontier_v1() -> list[str]:
     return [suffix for (_, suffix) in ROOT_STRATEGY_FAMILY_SPECS]
 
 
+_GUARDED_K3_FINAL_NUDGE = (
+    " If you already have the final numeric result, respond with action='final' and put it in the answer field."
+)
+
+
+def build_strategy_prompt_styles_semantic_frontier_v1_guarded_k3() -> list[str]:
+    """Root prompts for guarded K=3 live variant: same families as v1, plus a compact final-answer nudge."""
+    return [suffix + _GUARDED_K3_FINAL_NUDGE for (_, suffix) in ROOT_STRATEGY_FAMILY_SPECS]
+
+
 def infer_semantic_family_proxy(*, reasoning_text: str, root_strategy_family: str) -> str:
     """Cheap deterministic buckets; overlaps possible — prioritize first match after root fallback."""
     t = str(reasoning_text or "")
@@ -167,6 +177,49 @@ class DirectReserveDiverseRootFrontierV1Controller(DirectReserveFrontierGateV2Co
 
 
 METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED = "direct_reserve_diverse_root_frontier_v1_guarded"
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K3 = "direct_reserve_diverse_root_frontier_v1_guarded_k3"
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2 = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k2_frontier2"
+)
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4 = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4"
+)
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak"
+)
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard"
+)
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_numeric_leaf"
+)
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_unit_track"
+)
+# K1 tiebreak + optional L1-style hybrid seed (extra expand before frontier when gate-unstable).
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_hybrid"
+)
+
+_NUMERIC_LEAF_DR_APPEND = (
+    " Emit numeric_leaf_status and numeric_leaf_value in branch JSON on each expand (see expand prompt); "
+    "label provisional totals explicitly before advancing."
+)
+
+
+def build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4_numeric_leaf() -> list[str]:
+    """K1 frontier4 + numeric-leaf contract nudge (full JSON schema is in APIBranchGenerator expand prompt)."""
+    return [s + _NUMERIC_LEAF_DR_APPEND for s in build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4()]
+
+
+def build_strategy_prompt_styles_semantic_frontier_v1_guarded_k2_frontier2() -> list[str]:
+    """K=2 + reserved frontier budget: reuse K3 nudged family prompts (only first two roots run)."""
+    return build_strategy_prompt_styles_semantic_frontier_v1_guarded_k3()
+
+
+def build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4() -> list[str]:
+    """K=1 + four-action frontier reserve: first K3 nudged family prompt only."""
+    return build_strategy_prompt_styles_semantic_frontier_v1_guarded_k3()[:1]
 
 
 class DirectReserveDiverseRootFrontierV1GuardedController(DirectReserveDiverseRootFrontierV1Controller):

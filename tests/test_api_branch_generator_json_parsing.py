@@ -6,7 +6,11 @@ from unittest.mock import patch
 
 import pytest
 
-from experiments.branching import APIBranchGenerator, BranchState
+from experiments.branching import (
+    APIBranchGenerator,
+    BranchState,
+    extract_labeled_numeric_leaf_from_step,
+)
 
 
 @pytest.fixture
@@ -116,6 +120,175 @@ def test_expand_invalid_json_prefers_phrase_over_random_numbers_in_prose() -> No
         b = gen.init_branch("b0")
         gen.expand(b, "Q", "")
     assert b.predicted_answer == "3"
+    assert b.trace_events[-1].get("expand_answer_extraction_source") == "api_plain_text_fallback"
+
+
+def test_safe_json_top_level_list_first_dict() -> None:
+    raw = '[{"action": "final", "answer": "9", "step": "", "confidence": 1}]'
+    d = APIBranchGenerator._safe_json(raw)
+    assert d.get("answer") == "9"
+
+
+def test_resolve_expand_answer_from_final_answer_key() -> None:
+    raw = '{"action": "final", "answer": "", "step": "", "confidence": 1, "final_answer": "44"}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == "44"
+    assert tag == "api_json_final_answer"
+
+
+def test_resolve_expand_answer_reasoning_step_boxed_continue() -> None:
+    raw = r'{"action": "continue", "answer": "", "step": "Thus \\boxed{88}.", "confidence": 0.5}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == "88"
+    assert tag == "api_json_reasoning_fallback"
+
+
+def test_resolve_expand_answer_reasoning_numeric_without_boxed() -> None:
+    raw = '{"action": "continue", "answer": "", "step": "The total is 62.", "confidence": 0.5}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == "62"
+    assert tag == "api_json_reasoning_fallback"
+
+
+def test_resolve_expand_skips_ambiguous_continue_step_without_finality_hint() -> None:
+    raw = (
+        '{"action": "continue", "answer": "", "step": "4 quarters * 12 minutes per quarter = 48 minutes.", '
+        '"confidence": 0.5}'
+    )
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == ""
+    assert tag == "api_parse_failed_no_answer"
+
+
+def test_resolve_expand_answer_parse_failed_records_tag() -> None:
+    raw = '{"broken json'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == ""
+    assert tag == "api_parse_failed_no_answer"
+
+
+def test_expand_skips_json_null_string_answer() -> None:
+    raw = '{"action": "final", "answer": "null", "step": "", "confidence": 0.9}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == ""
+    assert tag == "api_parse_failed_no_answer"
+
+
+def test_verify_trace_has_extraction_source(api_gen: APIBranchGenerator) -> None:
+    raw = '{"confidence": 0.8, "rationale_short": "Hence \\\\boxed{15}"}'
+    with patch.object(APIBranchGenerator, "_call_api", return_value=raw):
+        b = api_gen.init_branch("b0")
+        api_gen.verify(b, "Q")
+    assert b.predicted_answer == "15"
+    assert b.trace_events[-1].get("verify_answer_extraction_source") == "api_json_reasoning_fallback"
+
+
+def test_resolve_expand_numeric_leaf_prefers_explicit_answer_over_numeric_leaf_value() -> None:
+    raw = (
+        '{"action":"final","answer":"42","numeric_leaf_value":"99","numeric_leaf_status":"final",'
+        '"step":"","confidence":1}'
+    )
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged, expand_prompt_variant="numeric_leaf")
+    assert ans == "42"
+    assert tag == "api_json_answer"
+
+
+def test_resolve_expand_numeric_leaf_final_uses_leaf_when_answer_missing() -> None:
+    raw = (
+        '{"action":"final","answer":"","numeric_leaf_value":"77","numeric_leaf_status":"final",'
+        '"step":"","confidence":1}'
+    )
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged, expand_prompt_variant="numeric_leaf")
+    assert ans == "77"
+    assert tag == "api_json_numeric_leaf_final"
+
+
+def test_resolve_expand_numeric_leaf_continue_does_not_commit_leaf_as_answer() -> None:
+    raw = (
+        '{"action":"continue","answer":"","numeric_leaf_value":"10","numeric_leaf_status":"equation_progress",'
+        '"step":"next step","confidence":0.6}'
+    )
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged, expand_prompt_variant="numeric_leaf")
+    assert ans == ""
+    assert tag == "api_parse_failed_no_answer"
+
+
+def test_resolve_numeric_leaf_skips_loose_last_number_in_step_prose() -> None:
+    raw = '{"action":"continue","answer":"","step":"Values 5, 9, and 12 mentioned.","confidence":0.5}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged, expand_prompt_variant="numeric_leaf")
+    assert ans == ""
+    assert tag == "api_parse_failed_no_answer"
+
+
+def test_extract_labeled_numeric_leaf_from_step() -> None:
+    v, tag = extract_labeled_numeric_leaf_from_step("Provisional answer: 88 units.")
+    assert v == "88"
+    assert "provisional_answer" in tag
+
+
+def test_extract_labeled_numeric_leaf_rejects_unlabeled_prose() -> None:
+    v, tag = extract_labeled_numeric_leaf_from_step("The numbers are 3 and 4.")
+    assert v == ""
+    assert tag == ""
+
+
+def test_expand_numeric_leaf_trace_records_leaf_metadata() -> None:
+    gen = APIBranchGenerator(
+        api_key="dummy-not-used",
+        model="m",
+        temperature=0.1,
+        max_tokens=128,
+        timeout_seconds=5,
+        provider="openai",
+        expand_prompt_variant="numeric_leaf",
+    )
+    raw = (
+        '{"action":"continue","answer":"","step":"provisional answer: 15","numeric_leaf_value":"15",'
+        '"numeric_leaf_status":"provisional","confidence":0.7}'
+    )
+    with patch.object(APIBranchGenerator, "_call_api", return_value=raw):
+        b = gen.init_branch("b0")
+        gen.expand(b, "Q", "")
+    ev = b.trace_events[-1]
+    assert ev.get("numeric_leaf_status") == "provisional"
+    assert ev.get("numeric_leaf_value") == "15"
+
+
+def test_expand_trace_records_unit_track_json_fields() -> None:
+    gen = APIBranchGenerator(
+        api_key="dummy-not-used",
+        model="m",
+        temperature=0.1,
+        max_tokens=128,
+        timeout_seconds=5,
+        provider="openai",
+    )
+    raw = (
+        '{"action":"final","answer":"24","confidence":0.8,"step":"done",'
+        '"entity_ledger":[{"entity":"box","quantity_raw":"3","unit":"boxes"}],'
+        '"target_entity":"items","target_unit":"items",'
+        '"unit_consistency_status":"consistent","unit_consistency_notes":"ok",'
+        '"unit_tracked_answer":"24"}'
+    )
+    with patch.object(APIBranchGenerator, "_call_api", return_value=raw):
+        b = gen.init_branch("b0")
+        gen.expand(b, "Q", "")
+    ev = b.trace_events[-1]
+    assert isinstance(ev.get("entity_ledger"), list)
+    assert ev.get("target_entity") == "items"
+    assert ev.get("target_unit") == "items"
+    assert ev.get("unit_consistency_status") == "consistent"
+    assert ev.get("unit_tracked_answer") == "24"
 
 
 def test_simulated_branch_generator_unchanged() -> None:
