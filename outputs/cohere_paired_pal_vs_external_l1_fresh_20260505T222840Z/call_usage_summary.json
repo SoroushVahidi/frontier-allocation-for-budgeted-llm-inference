@@ -1,0 +1,9 @@
+{
+  "total_logical_calls_row_sum": 250,
+  "logical_api_budget_cap_consumed_estimate": 360,
+  "calls_by_method_row_sum_all_rows": {
+    "external_l1_max": 125,
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": 125
+  },
+  "rows_n": 108
+}
