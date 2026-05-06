@@ -1,0 +1,5 @@
+example_id,external_exact,pal_exact,pal_gold_absent,pal_discovery3,pal_present_not_selected,pal_code_present,pal_parse_ok,pal_safety_ok,pal_exec_ok,pal_overlay_triggered,retry_enabled,final_answer_source,pal_retry_skipped_reason
+e_both,1,1,0,0,0,1,1,1,1,0,0,controller_metadata_final_answer,
+e_ext_only,1,0,1,0,0,1,1,1,1,0,0,controller_metadata_final_answer,
+e_pal_only,0,1,0,0,0,1,1,1,1,0,0,repair_layer,
+e_both_wrong,0,0,1,1,0,0,1,1,0,0,0,controller_metadata_final_answer,
