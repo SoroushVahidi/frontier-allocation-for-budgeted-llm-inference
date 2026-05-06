@@ -53,6 +53,292 @@ def _to_text(v: Any) -> str | None:
     return s if s else None
 
 
+# Histogram mass from non-PAL peers at or above these thresholds blocks PAL takeover.
+PAL_STRONG_OVERLAY_PEER_SUPPORT_CONFLICT_MIN = 3
+PAL_STRONG_OVERLAY_TIEBREAK_PEER_SUPPORT_CONFLICT_MIN = 2
+
+
+def _max_histogram_support_excluding_normalized_group(
+    combined_group_counts: dict[str, Any], *, normalized_group_key: str
+) -> tuple[int, str | None]:
+    """Largest integer count among keys whose normalized key differs from ``normalized_group``."""
+    best = 0
+    best_raw: str | None = None
+    if not isinstance(combined_group_counts, dict):
+        return 0, None
+    for k, v in combined_group_counts.items():
+        ks_raw = str(k).strip()
+        if not ks_raw or ks_raw == "__unknown__":
+            continue
+        kn = normalize_answer_group_key(ks_raw)
+        if not kn or kn == "__unknown__" or kn == normalized_group_key:
+            continue
+        try:
+            c = int(v or 0)
+        except Exception:
+            c = 0
+        if c > best:
+            best, best_raw = c, ks_raw
+    return best, best_raw
+
+
+def _support_for_normalized_histogram_key(combined_group_counts: dict[str, Any], normalized_group_key: str) -> int:
+    """Sum counts for histogram keys compatible with normalized ``normalized_group_key``."""
+    total = 0
+    if not isinstance(combined_group_counts, dict):
+        return 0
+    for k, v in combined_group_counts.items():
+        ks_raw = str(k).strip()
+        if not ks_raw:
+            continue
+        if normalize_answer_group_key(ks_raw) != normalized_group_key:
+            continue
+        try:
+            total += int(v or 0)
+        except Exception:
+            continue
+    return total
+
+
+def _tiebreak_histogram_support(combined_group_counts: dict[str, Any], tiebreak_selected_raw: str | None) -> int:
+    if not tiebreak_selected_raw:
+        return 0
+    tb = normalize_answer_group_key(str(tiebreak_selected_raw).strip())
+    if not tb or tb == "__unknown__":
+        return 0
+    return _support_for_normalized_histogram_key(combined_group_counts, tb)
+
+
+def decide_pal_strong_overlay_promotion(
+    *,
+    combined_group_counts_base: dict[str, Any],
+    pal_answer_raw: str | None,
+    incumbent_final_answer_raw: str | None,
+    frontier_weak: bool,
+    tiebreak_triggered: bool,
+    tiebreak_selected_group_raw: str | None,
+    strong_pal: bool,
+    pal_score: float,
+    peer_conflict_min_support: int = PAL_STRONG_OVERLAY_PEER_SUPPORT_CONFLICT_MIN,
+    tiebreak_conflict_min_support: int = PAL_STRONG_OVERLAY_TIEBREAK_PEER_SUPPORT_CONFLICT_MIN,
+) -> tuple[bool, str, dict[str, Any]]:
+    """Gold-free PAL takeover decision shared by live controller overlays and residual integration replay.
+
+    Return ``(promote, reason, diagnostics)``.
+    ``reason`` is either a promotion tag or a blocking tag matching ``PALOverlayReason`` wording.
+    """
+    pal_raw = _to_text(pal_answer_raw) or ""
+    pal_g = normalize_answer_group_key(pal_raw)
+    if not pal_g or pal_g == "__unknown__":
+        return False, "blocked_missing_pal_group", {}
+
+    diag: dict[str, Any] = {
+        "pal_normalized_group_key": pal_g,
+        "peer_conflict_min_support": int(peer_conflict_min_support),
+        "tiebreak_conflict_min_support": int(tiebreak_conflict_min_support),
+    }
+
+    combined = combined_group_counts_base if isinstance(combined_group_counts_base, dict) else {}
+    group_support = _support_for_normalized_histogram_key(combined, pal_g)
+    diag["pal_histogram_support_sum"] = int(group_support)
+
+    max_peer, peer_g = _max_histogram_support_excluding_normalized_group(combined, normalized_group_key=pal_g)
+    diag["max_non_pal_histogram_support"], diag["max_non_pal_histogram_group_raw"] = max_peer, peer_g
+
+    frontier_conflict = bool(max_peer >= int(peer_conflict_min_support) and int(group_support) == 0)
+
+    tb_sup = _tiebreak_histogram_support(combined, tiebreak_selected_group_raw)
+    diag["tiebreak_selected_group_histogram_support"] = int(tb_sup)
+    if bool(tiebreak_triggered):
+        tb_g = normalize_answer_group_key(str(tiebreak_selected_group_raw or "").strip())
+        if tb_g not in {"", "__unknown__"} and tb_g != pal_g:
+            if tb_sup >= int(tiebreak_conflict_min_support):
+                frontier_conflict = True
+                diag["tiebreak_conflict_escalated"] = True
+
+    diag["pal_frontier_conflict"] = bool(frontier_conflict)
+    incumbent_raw = _to_text(incumbent_final_answer_raw) or ""
+    final_g = normalize_answer_group_key(incumbent_raw) if incumbent_raw else ""
+    agrees_supported = bool(group_support >= 1)
+    final_is_weak_fallback = bool(final_g in {"", "__unknown__", "0", "1"})
+
+    if not strong_pal:
+        return False, "blocked_non_strong_pal_candidate", diag
+    if frontier_conflict:
+        return False, "blocked_frontier_tiebreak_conflict", diag
+    if agrees_supported:
+        return True, "agrees_with_supported_group", diag
+    if frontier_weak and final_is_weak_fallback:
+        return True, "replace_weak_fallback_under_weak_frontier", diag
+    if frontier_weak and float(pal_score) >= 0.75:
+        return True, "weak_frontier_plus_high_pal_score", diag
+
+    displaces = (
+        not agrees_supported
+        and final_g != pal_g
+        and not frontier_conflict
+    )
+    if displaces:
+        return True, "pal_strong_executable_displaces_non_histogram_supported_commit", diag
+
+    return False, "blocked_policy_conditions_not_met", diag
+
+
+def _extract_flat_pal_execution(metadata: dict[str, Any]) -> dict[str, Any]:
+    """Normalize controller ``pal_execution`` dict for integration logic."""
+    md = metadata or {}
+    px = md.get("pal_execution")
+    if isinstance(px, dict):
+        return px
+    return {}
+
+
+def apply_pal_residual_strong_integration_fix(
+    metadata: dict[str, Any],
+    repaired: dict[str, Any],
+    *,
+    dataset: str,
+    enabled: bool,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Optional evaluator-time integration: align surfaced answer with strong executed PAL after commit.
+
+    Gold-free: relies only on ``metadata`` parity fields captured at runtime plus ``repaired``
+    surfaced controller commit. Mirrors :func:`decide_pal_strong_overlay_promotion` for offline bundles
+    collected before controller overlay tweaks shipped.
+    """
+    sidecar: dict[str, Any] = {
+        "pal_integration_fix_triggered": False,
+        "pal_integration_fix_reason": "",
+        "pal_integration_previous_answer": None,
+        "pal_integration_selected_answer": None,
+        "pal_integration_blocked_reason": "",
+        "pal_integration_conflict_answer": None,
+        "pal_integration_frontier_conflict": False,
+    }
+    out = dict(repaired)
+    if not enabled:
+        sidecar["pal_integration_fix_reason"] = "disabled"
+        return out, sidecar
+
+    md = dict(metadata or {})
+    if md.get("external_baseline_family"):
+        sidecar["pal_integration_fix_reason"] = "skipped_external_baseline_family"
+        return out, sidecar
+
+    pal_px = _extract_flat_pal_execution(md)
+    pal_already = md.get("pal_overlay") if isinstance(md.get("pal_overlay"), dict) else {}
+    if isinstance(pal_already, dict) and bool(pal_already.get("pal_overlay_applied")):
+        sidecar["pal_integration_fix_reason"] = "skipped_pal_overlay_already_applied"
+        return out, sidecar
+
+    strong_pal = int(pal_px.get("pal_candidate_is_strong", 0) or 0) == 1
+    exec_ok = int(pal_px.get("pal_exec_ok", 0) or 0) == 1
+    parse_ok = int(pal_px.get("pal_parse_ok", 0) or 0) == 1
+    safety_ok = int(pal_px.get("pal_safety_ok", 0) or 0) == 1
+
+    if not strong_pal or not exec_ok or not parse_ok or not safety_ok:
+        sidecar["pal_integration_blocked_reason"] = (
+            "blocked_pal_gate_not_exec_or_not_strong" if enabled else ""
+        )
+        sidecar["pal_integration_fix_reason"] = "skipped_pal_integration_gates_failed"
+        return out, sidecar
+
+    exec_res = pal_px.get("pal_execution_result")
+    ans_raw = _to_text(pal_px.get("pal_candidate_answer"))
+    if ans_raw is None and isinstance(exec_res, dict):
+        ans_raw = _to_text(exec_res.get("pal_answer_normalized") or exec_res.get("pal_answer_raw"))
+    if ans_raw is None:
+        sidecar["pal_integration_fix_reason"] = "skipped_missing_pal_candidate_answer"
+        return out, sidecar
+
+    combined = md.get("answer_group_support_counts")
+    frontier_support = md.get("frontier_support")
+    try:
+        fs_int = int(frontier_support or 0)
+    except Exception:
+        fs_int = 0
+    frontier_result_is_none = md.get("frontier_result") is None
+    frontier_weak = bool(frontier_result_is_none or fs_int <= 1)
+
+    pal_score_s = pal_px.get("pal_score")
+    try:
+        pal_score = float(pal_score_s or 0.0)
+    except Exception:
+        pal_score = 0.0
+
+    incumbent_commit = _to_text(md.get("final_answer"))
+
+    promote, sel_reason, diag = decide_pal_strong_overlay_promotion(
+        combined_group_counts_base=dict(combined) if isinstance(combined, dict) else {},
+        pal_answer_raw=ans_raw,
+        incumbent_final_answer_raw=incumbent_commit,
+        frontier_weak=frontier_weak,
+        tiebreak_triggered=bool(md.get("frontier_tiebreak_triggered")),
+        tiebreak_selected_group_raw=str(md.get("frontier_tiebreak_selected_group") or "").strip(),
+        strong_pal=True,
+        pal_score=pal_score,
+    )
+
+    pal_can_before = canonicalize_answer(ans_raw, dataset=dataset)
+    surf_raw = _to_text(out.get("surfaced_final_answer_raw"))
+    surf_can = canonicalize_answer(surf_raw, dataset=dataset) if surf_raw else None
+
+    sidecar.update(
+        {
+            "pal_integration_frontier_conflict": bool(diag.get("pal_frontier_conflict")),
+            "pal_integration_conflict_answer": diag.get("max_non_pal_histogram_group_raw"),
+        }
+    )
+
+    if not promote:
+        sidecar["pal_integration_blocked_reason"] = str(sel_reason or "")
+        sidecar["pal_integration_fix_reason"] = (
+            sel_reason if str(sel_reason).startswith("blocked") else "not_promoted_other"
+        )
+        return out, sidecar
+
+    if surf_can == pal_can_before and _to_text(out.get("surfaced_final_answer_raw")) == ans_raw:
+        sidecar["pal_integration_fix_reason"] = "skipped_already_surfaced_pal_exact"
+        return out, sidecar
+
+    merged_counts: dict[str, Any] | None = None
+    if isinstance(combined, dict):
+        merged_counts = dict(combined)
+
+    ans_can_merge = canonicalize_answer(ans_raw, dataset=dataset)
+    if merged_counts is not None and ans_can_merge is not None:
+        bumped = False
+        for k in list(merged_counts.keys()):
+            if normalize_answer_group_key(str(k)) == normalize_answer_group_key(str(ans_can_merge)):
+                try:
+                    merged_counts[k] = int(merged_counts[k] or 0) + 1
+                    bumped = True
+                    break
+                except Exception:
+                    continue
+        if not bumped:
+            merged_counts[str(ans_can_merge)] = int(merged_counts.get(str(ans_can_merge), 0) or 0) + 1
+        sidecar["pal_integration_merged_answer_group_support_counts"] = merged_counts
+
+    prev_surf = surf_raw or incumbent_commit or ""
+    out["surfaced_final_answer_raw"] = ans_raw
+    out["surfaced_final_answer_canonical"] = canonicalize_answer(ans_raw, dataset=dataset)
+    out["chosen_final_node_answer_raw"] = ans_raw
+    out["chosen_final_node_answer_canonical"] = canonicalize_answer(ans_raw, dataset=dataset)
+    out["final_answer_source"] = "pal_residual_strong_integration_fix"
+    out["repair_answer_raw"] = out.get("repair_answer_raw")
+    sidecar.update(
+        {
+            "pal_integration_fix_triggered": True,
+            "pal_integration_fix_reason": str(sel_reason),
+            "pal_integration_previous_answer": prev_surf,
+            "pal_integration_selected_answer": ans_raw,
+            "pal_integration_blocked_reason": "",
+        }
+    )
+    return out, sidecar
+
+
 def effective_answer_raw_from_node(node: dict[str, Any], *, dataset: str) -> str | None:
     """Gold-free: best-effort answer string from a runner ``final_nodes`` row (API-free).
 
@@ -87,23 +373,42 @@ def augment_final_nodes_with_metadata_frontier(
 
     Sources (in order): ``selector_candidate_pool`` rows, then ``frontier_metadata.action_trace``
     expand events. Does not remove or rewrite existing registry rows.
+
+    Selector pool rows patch existing ``branch_id`` nodes in place when a more authoritative PAL
+    candidate is present while preserving merged diverse-root/direct-hybrid pool semantics via the
+    ``direct_hybrid_seed`` sentinel.
     """
     out: list[dict[str, Any]] = list(final_nodes)
     pool_rows = metadata.get("selector_candidate_pool") or []
     has_direct_hybrid = any(
         isinstance(r, dict) and str(r.get("source_metadata") or "").strip() == "direct_hybrid_seed" for r in pool_rows
     )
-    if not bool(metadata.get("frontier_executed")) and not has_direct_hybrid:
-        return out
     existing: set[str] = {str(n.get("branch_id") or "") for n in out if n.get("branch_id")}
+    existing_idx: dict[str, int] = {
+        str(n.get("branch_id") or ""): i for i, n in enumerate(out) if isinstance(n, dict) and str(n.get("branch_id") or "")
+    }
 
     for row in pool_rows:
         if not isinstance(row, dict):
             continue
         bid = str(row.get("branch_id") or row.get("candidate_id") or "").strip()
-        if not bid or bid in existing:
+        if not bid:
+            continue
+        if bid in existing:
+            idx = existing_idx.get(bid)
+            pred = row.get("predicted_answer")
+            trace = str(row.get("reasoning_text") or row.get("trace") or "")
+            sm = str(row.get("source_metadata") or "").strip()
+            if idx is not None and isinstance(out[idx], dict):
+                if pred is not None and str(pred).strip():
+                    out[idx]["predicted_answer"] = pred
+                if trace and not str(out[idx].get("reasoning_text") or "").strip():
+                    out[idx]["reasoning_text"] = trace
+                if sm:
+                    out[idx]["source_metadata"] = sm
             continue
         existing.add(bid)
+        existing_idx[bid] = len(out)
         pred = row.get("predicted_answer")
         trace = str(row.get("reasoning_text") or row.get("trace") or "")
         sm = str(row.get("source_metadata") or "").strip()
@@ -119,6 +424,9 @@ def augment_final_nodes_with_metadata_frontier(
                 "source_metadata": sm if sm else "selector_candidate_pool",
             }
         )
+
+    if not bool(metadata.get("frontier_executed")) and not has_direct_hybrid:
+        return out
 
     fm = metadata.get("frontier_metadata") or {}
     at = fm.get("action_trace") or []

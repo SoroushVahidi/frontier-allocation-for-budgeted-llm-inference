@@ -371,6 +371,13 @@ class APIBranchGenerator:
         trace_evt["unit_consistency_status"] = str(merged.get("unit_consistency_status") or "").strip()
         trace_evt["unit_consistency_notes"] = str(merged.get("unit_consistency_notes") or "").strip()
         trace_evt["unit_tracked_answer"] = self._stringify_scalar_answer_value(merged.get("unit_tracked_answer"))
+        # Optional PAL/code-first contract fields (no-op for non-PAL prompts).
+        trace_evt["pal_code"] = str(merged.get("code") or "").strip()
+        trace_evt["pal_json_answer"] = self._stringify_scalar_answer_value(merged.get("answer"))
+        try:
+            trace_evt["pal_confidence"] = float(merged.get("confidence", 0.0) or 0.0)
+        except Exception:
+            trace_evt["pal_confidence"] = 0.0
         if self.expand_prompt_variant == "numeric_leaf":
             nls = str(merged.get("numeric_leaf_status") or "").strip().lower()
             nlv = self._stringify_scalar_answer_value(merged.get("numeric_leaf_value"))
