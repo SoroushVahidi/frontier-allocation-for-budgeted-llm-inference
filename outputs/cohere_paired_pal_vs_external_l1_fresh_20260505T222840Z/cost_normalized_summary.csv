@@ -1,0 +1,3 @@
+provider,method,mean_accuracy,accuracy_per_1k_tokens,accuracy_per_estimated_dollar,total_tokens,estimated_total_cost_usd
+cohere,direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal,0.9302325581395349,0.008191334837398931,1.9997389340821554,113563.0,0.465177
+cohere,external_l1_max,0.8409090909090909,0.007673928553651131,1.9598869410084625,109580.0,0.42906
