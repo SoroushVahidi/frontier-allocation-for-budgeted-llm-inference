@@ -1445,6 +1445,9 @@ def build_frontier_strategies(
             "enable_pal_branch": True,
             "pal_budget_actions": 1,
             "pal_selection_policy": "weak_frontier_or_supported_agreement",
+            "enable_pal_empty_code_retry": True,
+            "pal_empty_code_retry_budget_actions": 1,
+            "pal_empty_code_retry_policy": "empty_code_only",
         }
         specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL] = (
             DirectReserveDiverseRootFrontierV1GuardedController(

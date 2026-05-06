@@ -6903,6 +6903,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         enable_pal_branch: bool = False,
         pal_budget_actions: int = 0,
         pal_selection_policy: str = "",
+        enable_pal_empty_code_retry: bool = False,
+        pal_empty_code_retry_budget_actions: int = 1,
+        pal_empty_code_retry_policy: str = "empty_code_only",
         enable_unit_track_seed: bool = False,
         unit_track_seed_budget_actions: int = 0,
         unit_track_selection_policy: str = "",
@@ -6950,6 +6953,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         self.pal_selection_policy = str(pal_selection_policy or "").strip() or (
             "weak_frontier_or_supported_agreement"
         )
+        self.enable_pal_empty_code_retry = bool(enable_pal_empty_code_retry)
+        self.pal_empty_code_retry_budget_actions = max(0, int(pal_empty_code_retry_budget_actions))
+        self.pal_empty_code_retry_policy = str(pal_empty_code_retry_policy or "").strip() or "empty_code_only"
         self.enable_unit_track_seed = bool(enable_unit_track_seed)
         self.unit_track_seed_budget_actions = max(0, int(unit_track_seed_budget_actions))
         self.unit_track_selection_policy = str(unit_track_selection_policy or "").strip() or (
@@ -7052,6 +7058,32 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "7) answer field should mirror computed final answer when known."
         )
 
+    def _compose_pal_empty_code_retry_question(self, question: str) -> str:
+        return (
+            f"{question}\n\n"
+            "Your previous response did not provide executable Python code.\n"
+            "Return JSON only with keys: action, code, answer, confidence.\n"
+            "Rules:\n"
+            "1) action must be 'final'.\n"
+            "2) code must be non-empty executable Python arithmetic only.\n"
+            "3) code must assign final numeric result to variable `answer`.\n"
+            "4) last line must be exactly print(answer).\n"
+            "5) no prose in code.\n"
+            "6) no imports, no input, no files, no network, no eval/exec/open.\n"
+            "7) if uncertain, still write executable arithmetic code.\n"
+            "8) answer field should mirror computed final answer when known."
+        )
+
+    @staticmethod
+    def _pal_candidate_is_non_executable(meta: dict[str, Any]) -> bool:
+        if not bool(str(meta.get("pal_code") or "").strip()):
+            return True
+        return (
+            int(meta.get("pal_parse_ok", 0) or 0) == 0
+            or int(meta.get("pal_safety_ok", 0) or 0) == 0
+            or int(meta.get("pal_exec_ok", 0) or 0) == 0
+        )
+
     def _run_pal_seed_attempt(
         self, question: str, gold_answer: str, max_actions: int
     ) -> tuple[str | None, int, dict[str, Any], list[dict[str, Any]]]:
@@ -7072,6 +7104,85 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "reasoning_text": str(latest.get("reasoning_text", "")),
                     "extracted_answer": str(latest.get("extracted_answer", "") or ""),
                     "source_metadata": "pal_seed",
+                }
+            )
+        latest = branch.trace_events[-1] if branch.trace_events else {}
+        code = str(latest.get("pal_code") or "").strip()
+        pal_json_answer = str(latest.get("pal_json_answer") or "").strip()
+        try:
+            pal_conf = max(0.0, min(1.0, float(latest.get("pal_confidence", 0.0) or 0.0)))
+        except Exception:
+            pal_conf = 0.0
+        exec_result = execute_pal_code(code)
+        pal_answer = str(exec_result.pal_answer_normalized or "").strip()
+        if not pal_answer:
+            pal_answer = str(exec_result.pal_answer_raw or "").strip()
+        parseable = self._unit_track_parseable_numeric(pal_answer)
+        weak_fallback_like = int(pal_answer in {"", "__unknown__", "unknown", "none", "0", "1"})
+        strong = bool(
+            exec_result.pal_parse_ok
+            and exec_result.pal_safety_ok
+            and exec_result.pal_exec_ok
+            and parseable
+            and not weak_fallback_like
+        )
+        score = (
+            0.20 * int(exec_result.pal_parse_ok)
+            + 0.20 * int(exec_result.pal_safety_ok)
+            + 0.25 * int(exec_result.pal_exec_ok)
+            + 0.25 * int(parseable)
+            + 0.10 * int(pal_conf >= 0.5)
+        )
+        meta = {
+            "pal_code": code,
+            "pal_json_answer": pal_json_answer,
+            "pal_confidence": float(pal_conf),
+            "pal_execution_result": {
+                "pal_parse_ok": bool(exec_result.pal_parse_ok),
+                "pal_safety_ok": bool(exec_result.pal_safety_ok),
+                "pal_exec_ok": bool(exec_result.pal_exec_ok),
+                "pal_stdout": str(exec_result.pal_stdout or ""),
+                "pal_answer_raw": str(exec_result.pal_answer_raw or ""),
+                "pal_answer_normalized": str(exec_result.pal_answer_normalized or ""),
+                "pal_error_type": str(exec_result.pal_error_type or ""),
+                "pal_error_message_sanitized": str(exec_result.pal_error_message_sanitized or ""),
+            },
+            "pal_candidate_answer": pal_answer,
+            "pal_parse_ok": int(exec_result.pal_parse_ok),
+            "pal_safety_ok": int(exec_result.pal_safety_ok),
+            "pal_exec_ok": int(exec_result.pal_exec_ok),
+            "pal_answer_parseable": int(parseable),
+            "pal_score": float(score),
+            "pal_quality_bucket": "strong" if strong else ("weak" if score < 0.4 else "partial"),
+            "pal_candidate_is_strong": int(strong),
+        }
+        return (
+            pal_answer if pal_answer else None,
+            actions,
+            meta,
+            trace,
+        )
+
+    def _run_pal_empty_code_retry_attempt(
+        self, question: str, gold_answer: str, max_actions: int
+    ) -> tuple[str | None, int, dict[str, Any], list[dict[str, Any]]]:
+        branch = self.generator.init_branch("pal_empty_code_retry_0")
+        actions = 0
+        trace: list[dict[str, Any]] = []
+        prompt = self._compose_pal_empty_code_retry_question(question)
+        while actions < max_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, prompt, gold_answer)
+            actions += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            trace.append(
+                {
+                    "action": "expand",
+                    "branch_id": branch.branch_id,
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                    "source_metadata": "pal_empty_code_retry",
                 }
             )
         latest = branch.trace_events[-1] if branch.trace_events else {}
@@ -7608,12 +7719,16 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
 
         frontier_budget_before_pal = int(remaining_budget)
         pal_answer: str | None = None
+        pal_seed_answer: str | None = None
+        pal_retry_answer: str | None = None
         pal_trace_events: list[dict[str, Any]] = []
+        pal_retry_trace_events: list[dict[str, Any]] = []
         pal_meta: dict[str, Any] = {
             "pal_enabled": bool(getattr(self, "enable_pal_branch", False)),
             "pal_budget_cost_planned": int(getattr(self, "pal_budget_actions", 0) or 0),
             "pal_budget_cost_observed": 0,
             "pal_seed_ran": 0,
+            "pal_selected_candidate_source": "none",
             "frontier_budget_after_pal": int(remaining_budget),
             "pal_selection_policy": str(getattr(self, "pal_selection_policy", "") or ""),
             "pal_code": "",
@@ -7628,6 +7743,19 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "pal_score": 0.0,
             "pal_quality_bucket": "unknown",
             "pal_candidate_is_strong": 0,
+            "pal_empty_code_retry_enabled": bool(getattr(self, "enable_pal_empty_code_retry", False)),
+            "pal_empty_code_retry_budget_cost_planned": int(
+                getattr(self, "pal_empty_code_retry_budget_actions", 0) or 0
+            ),
+            "pal_empty_code_retry_budget_cost_observed": 0,
+            "frontier_budget_before_pal_retry": int(remaining_budget),
+            "frontier_budget_after_pal_retry": int(remaining_budget),
+            "pal_empty_code_retry_ran": 0,
+            "pal_empty_code_retry_reason": "",
+            "pal_empty_code_retry_skipped_reason": "",
+            "pal_empty_code_retry_policy": str(getattr(self, "pal_empty_code_retry_policy", "") or ""),
+            "pal_empty_code_retry_execution": {},
+            "pal_seed_execution": {},
         }
         pal_plan = int(getattr(self, "pal_budget_actions", 0) or 0)
         if (
@@ -7640,13 +7768,65 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             ans_pal, used_pal, meta_pal, trace_pal = self._run_pal_seed_attempt(
                 question, gold_answer, pal_budget
             )
+            pal_seed_answer = ans_pal
             pal_answer = ans_pal
             pal_trace_events = list(trace_pal)
             pal_meta.update(meta_pal)
+            pal_meta["pal_seed_execution"] = dict(meta_pal)
             pal_meta["pal_budget_cost_observed"] = int(used_pal)
             pal_meta["pal_seed_ran"] = int(used_pal > 0)
             remaining_budget = max(0, remaining_budget - int(used_pal))
             pal_meta["frontier_budget_after_pal"] = int(remaining_budget)
+            pal_meta["frontier_budget_before_pal_retry"] = int(remaining_budget)
+            pal_meta["frontier_budget_after_pal_retry"] = int(remaining_budget)
+
+            retry_enabled = bool(getattr(self, "enable_pal_empty_code_retry", False))
+            retry_plan = int(getattr(self, "pal_empty_code_retry_budget_actions", 0) or 0)
+            retry_policy = str(getattr(self, "pal_empty_code_retry_policy", "") or "").strip() or "empty_code_only"
+            retry_trigger = self._pal_candidate_is_non_executable(pal_meta)
+            if not retry_enabled:
+                pal_meta["pal_empty_code_retry_skipped_reason"] = "retry_disabled"
+            elif retry_policy != "empty_code_only":
+                pal_meta["pal_empty_code_retry_skipped_reason"] = "unsupported_retry_policy"
+            elif int(pal_meta.get("pal_seed_ran", 0) or 0) == 0:
+                pal_meta["pal_empty_code_retry_skipped_reason"] = "pal_seed_not_ran"
+            elif not retry_trigger:
+                pal_meta["pal_empty_code_retry_skipped_reason"] = "seed_code_present_and_executable"
+            elif retry_plan <= 0:
+                pal_meta["pal_empty_code_retry_skipped_reason"] = "retry_budget_zero"
+            elif remaining_budget < retry_plan:
+                pal_meta["pal_empty_code_retry_skipped_reason"] = "insufficient_frontier_budget_for_retry"
+            else:
+                retry_budget = min(retry_plan, remaining_budget)
+                ans_retry, used_retry, meta_retry, trace_retry = self._run_pal_empty_code_retry_attempt(
+                    question, gold_answer, retry_budget
+                )
+                pal_retry_answer = ans_retry
+                pal_retry_trace_events = list(trace_retry)
+                pal_meta["pal_empty_code_retry_execution"] = dict(meta_retry)
+                pal_meta["pal_empty_code_retry_budget_cost_observed"] = int(used_retry)
+                pal_meta["pal_empty_code_retry_ran"] = int(used_retry > 0)
+                pal_meta["pal_empty_code_retry_reason"] = "seed_empty_or_non_executable"
+                remaining_budget = max(0, remaining_budget - int(used_retry))
+                pal_meta["frontier_budget_after_pal_retry"] = int(remaining_budget)
+                # Choose promoted PAL candidate source for overlay checks; do not bypass existing conflict logic.
+                seed_strong = int(pal_meta.get("pal_candidate_is_strong", 0) or 0) == 1
+                retry_strong = int(meta_retry.get("pal_candidate_is_strong", 0) or 0) == 1
+                if pal_retry_answer is not None:
+                    if retry_strong and (not seed_strong or float(meta_retry.get("pal_score", 0.0) or 0.0) >= float(pal_meta.get("pal_score", 0.0) or 0.0)):
+                        pal_answer = pal_retry_answer
+                        pal_meta.update(meta_retry)
+                        pal_meta["pal_selected_candidate_source"] = "pal_empty_code_retry"
+                    elif pal_seed_answer is None:
+                        pal_answer = pal_retry_answer
+                        pal_meta.update(meta_retry)
+                        pal_meta["pal_selected_candidate_source"] = "pal_empty_code_retry"
+                    else:
+                        pal_meta["pal_selected_candidate_source"] = "pal_seed"
+                else:
+                    pal_meta["pal_selected_candidate_source"] = "pal_seed" if pal_seed_answer is not None else "none"
+            if not pal_meta.get("pal_selected_candidate_source"):
+                pal_meta["pal_selected_candidate_source"] = "pal_seed" if pal_seed_answer is not None else "none"
 
         frontier_budget_before_unit_track = int(remaining_budget)
 
@@ -8178,6 +8358,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             + int(decomp_eq_meta.get("decomp_eq_budget_cost_observed", 0))
             + int(opcheck_meta.get("opcheck_budget_cost_observed", 0))
             + int(pal_meta.get("pal_budget_cost_observed", 0))
+            + int(pal_meta.get("pal_empty_code_retry_budget_cost_observed", 0))
             + int(unit_track_meta.get("unit_track_budget_cost_observed", 0))
             + (frontier_result.actions_used if frontier_result else 0)
         )
@@ -8186,6 +8367,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             + int(decomp_eq_meta.get("decomp_eq_budget_cost_observed", 0))
             + int(opcheck_meta.get("opcheck_budget_cost_observed", 0))
             + int(pal_meta.get("pal_budget_cost_observed", 0))
+            + int(pal_meta.get("pal_empty_code_retry_budget_cost_observed", 0))
             + int(unit_track_meta.get("unit_track_budget_cost_observed", 0))
             + (frontier_result.expansions if frontier_result else 0)
         )
@@ -8227,6 +8409,26 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "is_terminal": 0,
                     "selected": int(pal_group_sel == final_g_sel),
                     "source": "pal_seed",
+                    "prompt_text": str(ev.get("prompt_text") or ""),
+                    "response_text": str(ev.get("response_text") or ""),
+                    "reasoning_text": str(ev.get("reasoning_text") or ""),
+                    "extracted_answer": str(ev.get("extracted_answer") or ""),
+                }
+            )
+        for ev in pal_retry_trace_events:
+            if not isinstance(ev, dict):
+                continue
+            pal_retry_group_sel = normalize_answer_group_key(str(pal_retry_answer or "")) or "__unknown__"
+            final_g_sel = _normalize_answer(final_answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": str(ev.get("action") or "expand"),
+                    "branch_id": str(ev.get("branch_id") or "pal_empty_code_retry_0"),
+                    "group_key": pal_retry_group_sel,
+                    "is_terminal": 0,
+                    "selected": int(pal_retry_group_sel == final_g_sel),
+                    "source": "pal_empty_code_retry",
                     "prompt_text": str(ev.get("prompt_text") or ""),
                     "response_text": str(ev.get("response_text") or ""),
                     "reasoning_text": str(ev.get("reasoning_text") or ""),
@@ -8345,7 +8547,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                 }
             )
         if int(pal_meta.get("pal_budget_cost_observed", 0) or 0) > 0:
-            pal_pred = str(pal_answer or "").strip()
+            pal_pred = str(pal_seed_answer or "").strip()
             pal_group = _normalize_answer(pal_pred) if pal_pred else "__unknown__"
             final_g = _normalize_answer(final_answer) or "__unknown__"
             final_branch_states.append(
@@ -8353,7 +8555,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "branch_id": "pal_seed_0",
                     "parent_branch_id": "",
                     "branch_depth": 1,
-                    "score": float(pal_meta.get("pal_score", 0.0) or 0.0),
+                    "score": float((pal_meta.get("pal_seed_execution") or {}).get("pal_score", pal_meta.get("pal_score", 0.0)) or 0.0),
                     "predicted_answer": pal_pred,
                     "is_done": bool(pal_pred),
                     "is_pruned": False,
@@ -8363,6 +8565,30 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "source": "pal_seed",
                     "source_metadata": "pal_seed",
                     "selected": int(pal_group == final_g),
+                }
+            )
+        if int(pal_meta.get("pal_empty_code_retry_budget_cost_observed", 0) or 0) > 0:
+            pal_retry_pred = str(pal_retry_answer or "").strip()
+            pal_retry_group = _normalize_answer(pal_retry_pred) if pal_retry_pred else "__unknown__"
+            final_g = _normalize_answer(final_answer) or "__unknown__"
+            retry_score = 0.0
+            if isinstance(pal_meta.get("pal_empty_code_retry_execution"), dict):
+                retry_score = float((pal_meta.get("pal_empty_code_retry_execution") or {}).get("pal_score", 0.0) or 0.0)
+            final_branch_states.append(
+                {
+                    "branch_id": "pal_empty_code_retry_0",
+                    "parent_branch_id": "",
+                    "branch_depth": 1,
+                    "score": retry_score,
+                    "predicted_answer": pal_retry_pred,
+                    "is_done": bool(pal_retry_pred),
+                    "is_pruned": False,
+                    "steps": [],
+                    "trace_events": list(pal_retry_trace_events),
+                    "strategy_family": "pal_empty_code_retry",
+                    "source": "pal_empty_code_retry",
+                    "source_metadata": "pal_empty_code_retry",
+                    "selected": int(pal_retry_group == final_g),
                 }
             )
         if int(opcheck_meta.get("opcheck_budget_cost_observed", 0) or 0) > 0:
