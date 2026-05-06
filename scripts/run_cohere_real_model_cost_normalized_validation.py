@@ -25,6 +25,7 @@ from experiments.frontier_matrix_core import ScoreConfig, SimpleBranchScorer, bu
 from experiments.output_layer_repair import (
     apply_controller_committed_surfacing_for_evaluation,
     apply_finalization_guard_surfacing,
+    apply_pal_residual_strong_integration_fix,
     augment_final_nodes_with_metadata_frontier,
     canonicalize_answer,
     choose_repair_answer,
@@ -75,6 +76,10 @@ METHODS: dict[str, dict[str, Any]] = {
     },
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak": {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
         "enable_output_repair": True,
     },
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard": {
@@ -178,6 +183,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=0,
         help="Optional global cap on logical APIBranchGenerator calls (0=unlimited). Enforced across the whole run.",
+    )
+    p.add_argument(
+        "--pal-residual-strong-integration-fix",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Apply evaluator-time PAL residual strong-integration replay on *_tiebreak_pal-method rows.",
     )
     return p.parse_args()
 
@@ -518,6 +529,7 @@ def evaluate_example(
     enable_output_repair: bool,
     *,
     enable_finalization_guard: bool = False,
+    enable_pal_residual_strong_integration_fix: bool = False,
 ) -> int:
     md = result.metadata or {}
     hint = resolve_selected_group_hint_from_metadata(md, dataset=dataset) or md.get("selected_group")
@@ -528,6 +540,12 @@ def evaluate_example(
         enable_rescue=bool(enable_output_repair),
     )
     repaired = apply_controller_committed_surfacing_for_evaluation(md, repaired, dataset=dataset)
+    repaired, _pal_integration = apply_pal_residual_strong_integration_fix(
+        md,
+        repaired,
+        dataset=dataset,
+        enabled=bool(enable_pal_residual_strong_integration_fix),
+    )
     repaired, _fg = apply_finalization_guard_surfacing(
         md, repaired, final_nodes=final_nodes, dataset=dataset, enabled=bool(enable_finalization_guard)
     )
@@ -544,6 +562,7 @@ def evaluate_with_diagnostics(
     enable_output_repair: bool,
     *,
     enable_finalization_guard: bool = False,
+    enable_pal_residual_strong_integration_fix: bool = False,
 ) -> dict[str, Any]:
     md = result.metadata or {}
     hint = resolve_selected_group_hint_from_metadata(md, dataset=dataset) or md.get("selected_group")
@@ -554,6 +573,12 @@ def evaluate_with_diagnostics(
         enable_rescue=bool(enable_output_repair),
     )
     repaired = apply_controller_committed_surfacing_for_evaluation(md, repaired, dataset=dataset)
+    repaired, pal_integration_sidecar = apply_pal_residual_strong_integration_fix(
+        md,
+        repaired,
+        dataset=dataset,
+        enabled=bool(enable_pal_residual_strong_integration_fix),
+    )
     repaired, fg_sidecar = apply_finalization_guard_surfacing(
         md, repaired, final_nodes=final_nodes, dataset=dataset, enabled=bool(enable_finalization_guard)
     )
@@ -586,6 +611,7 @@ def evaluate_with_diagnostics(
         "final_answer_source": repaired.get("final_answer_source"),
         "repair_answer_raw": repaired.get("repair_answer_raw"),
         "controller_final_answer_raw": repaired.get("controller_final_answer_raw"),
+        "pal_integration": dict(pal_integration_sidecar),
     }
     out.update(fg_sidecar)
     return out
@@ -861,6 +887,10 @@ def main() -> None:
                                                 }
                                             )
                                     merged_nodes = augment_final_nodes_with_metadata_frontier(final_nodes, result_metadata)
+                                    pal_residual = bool(
+                                        getattr(args, "pal_residual_strong_integration_fix", False)
+                                        and ("tiebreak_pal" in str(method))
+                                    )
                                     eval_diag = evaluate_with_diagnostics(
                                         result,
                                         dataset,
@@ -868,11 +898,14 @@ def main() -> None:
                                         merged_nodes,
                                         enable_repair,
                                         enable_finalization_guard=enable_finalguard,
+                                        enable_pal_residual_strong_integration_fix=pal_residual,
                                     )
                                     exact_match = int(eval_diag["exact_match"])
                                     for _gk, _gv in eval_diag.items():
                                         if str(_gk).startswith("finalguard_"):
                                             result_metadata[_gk] = _gv
+                                    if isinstance(eval_diag.get("pal_integration"), dict):
+                                        result_metadata["pal_integration_evaluator"] = dict(eval_diag["pal_integration"])
                                     if args.save_branch_traces:
                                         branch_traces.append(
                                             build_branch_trace(

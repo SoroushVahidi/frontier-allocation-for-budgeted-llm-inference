@@ -17,12 +17,14 @@ from sklearn.linear_model import LogisticRegression
 from experiments.branching import BranchState
 from experiments.data import extract_final_answer
 from experiments.direct_hybrid_selection import resolve_direct_hybrid_seed_overlay
+from experiments.pal_executor import execute_pal_code
 from experiments.frontier_max_support_tiebreak import (
     build_merged_support_histogram_for_tiebreak,
     normalize_answer_group_key,
     pick_answer_text_for_normalized_group,
     resolve_frontier_bias_max_support_tiebreak,
 )
+from experiments.output_layer_repair import decide_pal_strong_overlay_promotion
 from experiments.objective_function_stack import compute_process_quality, compute_target_completion
 from experiments.problem_type_utils import classify_problem_type
 from experiments.prm_partial_scorer import PartialBranchScorer
@@ -6892,6 +6894,15 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         frontier_override_min_maturity: int = 2,
         direct_reserve_phase_max_actions: int | None = None,
         enable_frontier_max_support_tiebreak: bool = False,
+        enable_decomp_eq_branch: bool = False,
+        decomp_eq_budget_actions: int = 0,
+        decomp_eq_selection_policy: str = "",
+        enable_opcheck_branch: bool = False,
+        opcheck_budget_actions: int = 0,
+        opcheck_selection_policy: str = "",
+        enable_pal_branch: bool = False,
+        pal_budget_actions: int = 0,
+        pal_selection_policy: str = "",
         enable_unit_track_seed: bool = False,
         unit_track_seed_budget_actions: int = 0,
         unit_track_selection_policy: str = "",
@@ -6924,6 +6935,21 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             None if direct_reserve_phase_max_actions is None else max(1, int(direct_reserve_phase_max_actions))
         )
         self.enable_frontier_max_support_tiebreak = bool(enable_frontier_max_support_tiebreak)
+        self.enable_decomp_eq_branch = bool(enable_decomp_eq_branch)
+        self.decomp_eq_budget_actions = max(0, int(decomp_eq_budget_actions))
+        self.decomp_eq_selection_policy = str(decomp_eq_selection_policy or "").strip() or (
+            "weak_frontier_or_supported_agreement"
+        )
+        self.enable_opcheck_branch = bool(enable_opcheck_branch)
+        self.opcheck_budget_actions = max(0, int(opcheck_budget_actions))
+        self.opcheck_selection_policy = str(opcheck_selection_policy or "").strip() or (
+            "weak_frontier_or_supported_agreement"
+        )
+        self.enable_pal_branch = bool(enable_pal_branch)
+        self.pal_budget_actions = max(0, int(pal_budget_actions))
+        self.pal_selection_policy = str(pal_selection_policy or "").strip() or (
+            "weak_frontier_or_supported_agreement"
+        )
         self.enable_unit_track_seed = bool(enable_unit_track_seed)
         self.unit_track_seed_budget_actions = max(0, int(unit_track_seed_budget_actions))
         self.unit_track_selection_policy = str(unit_track_selection_policy or "").strip() or (
@@ -6981,6 +7007,363 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             return True
         except Exception:
             return False
+
+    @staticmethod
+    def _opcheck_status(raw: Any) -> str:
+        s = str(raw or "").strip().lower()
+        if s in {"strong", "good", "complete"}:
+            return "complete"
+        if s in {"partial", "weak", "incomplete"}:
+            return "partial"
+        if s in {"inconsistent", "mismatch"}:
+            return "inconsistent"
+        return "unknown"
+
+    def _compose_opcheck_question(self, question: str) -> str:
+        return (
+            f"{question}\n\n"
+            "Solve with operation-check discipline. Return strict JSON with keys: "
+            "action, target, given_numbers, operation_plan, interim_values, final_equation, "
+            "final_answer, final_answer_is_target, answer, confidence.\n"
+            "- action: continue|final\n"
+            "- target: short phrase for what is asked\n"
+            "- given_numbers: non-empty list of strings with number + meaning\n"
+            "- operation_plan: non-empty list of short steps with operation + why\n"
+            "- interim_values: list of strings; each value must be marked as NOT final\n"
+            "- final_equation: equation string used to compute final_answer\n"
+            "- final_answer: numeric answer string\n"
+            "- final_answer_is_target: true only if final_answer answers target\n"
+            "- answer: mirror of final_answer when available\n"
+            "Rules: never output interim/subtotal/rate as final_answer; final_equation must compute final_answer; "
+            "if unsure, still provide best final_answer but set final_answer_is_target=false."
+        )
+
+    def _compose_pal_question(self, question: str) -> str:
+        return (
+            f"{question}\n\n"
+            "Solve using short executable Python arithmetic. Return strict JSON with keys: action, code, answer, confidence.\n"
+            "Rules:\n"
+            "1) action must be 'final'.\n"
+            "2) code must be pure arithmetic Python (no imports, no input, no file/network/system access).\n"
+            "3) Do not use eval/exec/open/subprocess/os/sys.\n"
+            "4) Assign final numeric result to variable named answer.\n"
+            "5) Last line must be print(answer).\n"
+            "6) Only print final answer, not interim values.\n"
+            "7) answer field should mirror computed final answer when known."
+        )
+
+    def _run_pal_seed_attempt(
+        self, question: str, gold_answer: str, max_actions: int
+    ) -> tuple[str | None, int, dict[str, Any], list[dict[str, Any]]]:
+        branch = self.generator.init_branch("pal_seed_0")
+        actions = 0
+        trace: list[dict[str, Any]] = []
+        prompt = self._compose_pal_question(question)
+        while actions < max_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, prompt, gold_answer)
+            actions += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            trace.append(
+                {
+                    "action": "expand",
+                    "branch_id": branch.branch_id,
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                    "source_metadata": "pal_seed",
+                }
+            )
+        latest = branch.trace_events[-1] if branch.trace_events else {}
+        code = str(latest.get("pal_code") or "").strip()
+        pal_json_answer = str(latest.get("pal_json_answer") or "").strip()
+        try:
+            pal_conf = max(0.0, min(1.0, float(latest.get("pal_confidence", 0.0) or 0.0)))
+        except Exception:
+            pal_conf = 0.0
+        exec_result = execute_pal_code(code)
+        pal_answer = str(exec_result.pal_answer_normalized or "").strip()
+        if not pal_answer:
+            pal_answer = str(exec_result.pal_answer_raw or "").strip()
+        parseable = self._unit_track_parseable_numeric(pal_answer)
+        weak_fallback_like = int(pal_answer in {"", "__unknown__", "unknown", "none", "0", "1"})
+        strong = bool(
+            exec_result.pal_parse_ok
+            and exec_result.pal_safety_ok
+            and exec_result.pal_exec_ok
+            and parseable
+            and not weak_fallback_like
+        )
+        score = (
+            0.20 * int(exec_result.pal_parse_ok)
+            + 0.20 * int(exec_result.pal_safety_ok)
+            + 0.25 * int(exec_result.pal_exec_ok)
+            + 0.25 * int(parseable)
+            + 0.10 * int(pal_conf >= 0.5)
+        )
+        meta = {
+            "pal_code": code,
+            "pal_json_answer": pal_json_answer,
+            "pal_confidence": float(pal_conf),
+            "pal_execution_result": {
+                "pal_parse_ok": bool(exec_result.pal_parse_ok),
+                "pal_safety_ok": bool(exec_result.pal_safety_ok),
+                "pal_exec_ok": bool(exec_result.pal_exec_ok),
+                "pal_stdout": str(exec_result.pal_stdout or ""),
+                "pal_answer_raw": str(exec_result.pal_answer_raw or ""),
+                "pal_answer_normalized": str(exec_result.pal_answer_normalized or ""),
+                "pal_error_type": str(exec_result.pal_error_type or ""),
+                "pal_error_message_sanitized": str(exec_result.pal_error_message_sanitized or ""),
+            },
+            "pal_candidate_answer": pal_answer,
+            "pal_parse_ok": int(exec_result.pal_parse_ok),
+            "pal_safety_ok": int(exec_result.pal_safety_ok),
+            "pal_exec_ok": int(exec_result.pal_exec_ok),
+            "pal_answer_parseable": int(parseable),
+            "pal_score": float(score),
+            "pal_quality_bucket": "strong" if strong else ("weak" if score < 0.4 else "partial"),
+            "pal_candidate_is_strong": int(strong),
+        }
+        return (
+            pal_answer if pal_answer else None,
+            actions,
+            meta,
+            trace,
+        )
+
+    def _run_opcheck_seed_attempt(
+        self, question: str, gold_answer: str, max_actions: int
+    ) -> tuple[str | None, int, dict[str, Any], list[dict[str, Any]]]:
+        branch = self.generator.init_branch("opcheck_seed_0")
+        actions = 0
+        trace: list[dict[str, Any]] = []
+        prompt = self._compose_opcheck_question(question)
+        while actions < max_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, prompt, gold_answer)
+            actions += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            trace.append(
+                {
+                    "action": "expand",
+                    "branch_id": branch.branch_id,
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                    "source_metadata": "opcheck_seed",
+                }
+            )
+        op_answer = branch.predicted_answer
+        latest = branch.trace_events[-1] if branch.trace_events else {}
+        target = str(latest.get("opcheck_target") or latest.get("target") or "").strip()
+        given_numbers = latest.get("opcheck_given_numbers")
+        if not isinstance(given_numbers, list):
+            given_numbers = []
+        operation_plan = latest.get("opcheck_operation_plan")
+        if not isinstance(operation_plan, list):
+            operation_plan = []
+        interim_values = latest.get("opcheck_interim_values")
+        if not isinstance(interim_values, list):
+            interim_values = []
+        final_equation = str(latest.get("opcheck_final_equation") or latest.get("final_equation") or "").strip()
+        final_answer = str(latest.get("opcheck_final_answer") or latest.get("final_answer") or op_answer or "").strip()
+        final_answer_is_target = bool(latest.get("opcheck_final_answer_is_target") is True or latest.get("final_answer_is_target") is True)
+        op_conf = latest.get("opcheck_confidence", latest.get("confidence", 0.0))
+        try:
+            confidence = max(0.0, min(1.0, float(op_conf or 0.0)))
+        except Exception:
+            confidence = 0.0
+
+        parseable = self._unit_track_parseable_numeric(final_answer)
+        target_present = int(bool(target))
+        given_numbers_present = int(bool(given_numbers))
+        operation_plan_present = int(bool(operation_plan))
+        final_equation_present = int(bool(final_equation))
+        final_answer_present = int(bool(final_answer))
+        interim_set = {str(v).strip().replace(",", "") for v in interim_values if str(v).strip()}
+        final_norm = str(final_answer).strip().replace(",", "")
+        interim_conflict = int(bool(final_norm and final_norm in interim_set))
+        weak_fallback_like = int(final_answer in {"", "__unknown__", "unknown", "none", "0", "1"})
+
+        score = (
+            0.15 * target_present
+            + 0.20 * given_numbers_present
+            + 0.20 * operation_plan_present
+            + 0.15 * final_equation_present
+            + 0.20 * int(parseable)
+            + 0.10 * int(final_answer_is_target)
+        )
+        strong = bool(
+            parseable
+            and target_present
+            and given_numbers_present
+            and operation_plan_present
+            and final_equation_present
+            and final_answer_is_target
+            and not interim_conflict
+            and not weak_fallback_like
+            and score >= 0.60
+        )
+        status = self._opcheck_status("complete" if strong else ("partial" if score >= 0.30 else "unknown"))
+        meta = {
+            "opcheck_target": target,
+            "opcheck_given_numbers": given_numbers,
+            "opcheck_operation_plan": operation_plan,
+            "opcheck_interim_values": interim_values,
+            "opcheck_final_equation": final_equation,
+            "opcheck_final_answer": final_answer,
+            "opcheck_final_answer_is_target": int(final_answer_is_target),
+            "opcheck_confidence": float(confidence),
+            "opcheck_status": status,
+            "target_present": int(target_present),
+            "given_numbers_present": int(given_numbers_present),
+            "operation_plan_present": int(operation_plan_present),
+            "final_equation_present": int(final_equation_present),
+            "opcheck_final_answer_present": int(final_answer_present),
+            "opcheck_final_answer_parseable": int(parseable),
+            "opcheck_final_answer_matches_interim": int(interim_conflict),
+            "opcheck_score": float(score),
+            "opcheck_quality_bucket": "strong" if strong else ("weak" if score < 0.35 else "partial"),
+            "opcheck_candidate_is_strong": int(strong),
+        }
+        return (
+            str(op_answer).strip() if op_answer is not None and str(op_answer).strip() else None,
+            actions,
+            meta,
+            trace,
+        )
+
+    @staticmethod
+    def _decomp_eq_status(raw: Any) -> str:
+        s = str(raw or "").strip().lower()
+        if s in {"complete", "strong"}:
+            return "complete"
+        if s in {"partial", "incomplete", "weak"}:
+            return "partial"
+        if s in {"inconsistent"}:
+            return "inconsistent"
+        return "unknown"
+
+    def _compose_decomp_eq_question(self, question: str) -> str:
+        return (
+            f"{question}\n\n"
+            "Solve with decomposition and equations. Return strict JSON with keys: "
+            "action, step, answer, confidence, known_quantities, target_quantity, subproblems, "
+            "equations, operations, decomp_eq_final_answer, decomp_eq_self_check, decomp_eq_status.\n"
+            "- action: continue|final\n"
+            "- known_quantities: list of objects {symbol,value,unit_or_entity}\n"
+            "- target_quantity: object {symbol,unit_or_entity}\n"
+            "- subproblems: ordered list of decomposition steps\n"
+            "- equations: list of equation strings\n"
+            "- operations: list of operation tags used\n"
+            "- decomp_eq_final_answer: numeric answer string when available\n"
+            "- decomp_eq_self_check: concise check that final answer matches target quantity\n"
+            "- decomp_eq_status: complete|partial|inconsistent|unknown\n"
+            "If final answer is known, set action='final' and answer to the final numeric answer."
+        )
+
+    def _run_decomp_eq_seed_attempt(
+        self, question: str, gold_answer: str, max_actions: int
+    ) -> tuple[str | None, int, dict[str, Any], list[dict[str, Any]]]:
+        branch = self.generator.init_branch("decomp_eq_seed_0")
+        actions = 0
+        trace: list[dict[str, Any]] = []
+        prompt = self._compose_decomp_eq_question(question)
+        while actions < max_actions and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, prompt, gold_answer)
+            actions += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            trace.append(
+                {
+                    "action": "expand",
+                    "branch_id": branch.branch_id,
+                    "prompt_text": str(latest.get("prompt_text", "")),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                    "source_metadata": "decomp_eq_seed",
+                }
+            )
+        decomp_answer = branch.predicted_answer
+        if (decomp_answer is None or not str(decomp_answer).strip()) and trace:
+            mined = extract_final_answer(str(trace[-1].get("reasoning_text") or ""))
+            if mined is not None and str(mined).strip():
+                decomp_answer = str(mined).strip()
+        latest = branch.trace_events[-1] if branch.trace_events else {}
+        known_quantities = latest.get("known_quantities")
+        if not isinstance(known_quantities, list):
+            known_quantities = []
+        target_quantity = latest.get("target_quantity")
+        if not isinstance(target_quantity, dict):
+            target_quantity = {}
+        subproblems = latest.get("subproblems")
+        if not isinstance(subproblems, list):
+            subproblems = []
+        equations = latest.get("equations")
+        if not isinstance(equations, list):
+            equations = []
+        operations = latest.get("operations")
+        if not isinstance(operations, list):
+            operations = []
+        final_answer = str(latest.get("decomp_eq_final_answer") or decomp_answer or "").strip()
+        self_check = str(latest.get("decomp_eq_self_check") or "").strip()
+        status = self._decomp_eq_status(latest.get("decomp_eq_status"))
+        parseable = self._unit_track_parseable_numeric(final_answer)
+        known_quantities_present = int(bool(known_quantities))
+        target_quantity_present = int(
+            bool(str(target_quantity.get("symbol") or "").strip() or str(target_quantity.get("unit_or_entity") or "").strip())
+        )
+        subproblems_present = int(bool(subproblems))
+        equations_present = int(bool(equations))
+        operations_present = int(bool(operations))
+        final_answer_present = int(bool(final_answer))
+        self_check_present = int(bool(self_check))
+        weak_fallback_like = int(final_answer in {"", "__unknown__", "unknown", "none", "0", "1"})
+        status_ok = int(status in {"complete", "partial", "unknown"})
+        score = (
+            0.15 * known_quantities_present
+            + 0.20 * target_quantity_present
+            + 0.20 * subproblems_present
+            + 0.15 * equations_present
+            + 0.10 * operations_present
+            + 0.15 * int(parseable)
+            + 0.05 * self_check_present
+        )
+        strong = bool(
+            parseable
+            and target_quantity_present
+            and (subproblems_present or equations_present)
+            and status != "inconsistent"
+            and not weak_fallback_like
+            and score >= 0.55
+        )
+        decomp_meta = {
+            "known_quantities": known_quantities,
+            "target_quantity": target_quantity,
+            "subproblems": subproblems,
+            "equations": equations,
+            "operations": operations,
+            "decomp_eq_final_answer": final_answer,
+            "decomp_eq_self_check": self_check,
+            "decomp_eq_status": status,
+            "known_quantities_present": int(known_quantities_present),
+            "target_quantity_present": int(target_quantity_present),
+            "subproblems_present": int(subproblems_present),
+            "equations_present": int(equations_present),
+            "operations_present": int(operations_present),
+            "decomp_eq_final_answer_present": int(final_answer_present),
+            "self_check_present": int(self_check_present),
+            "decomp_eq_final_answer_parseable": int(parseable),
+            "decomp_eq_score": float(score),
+            "decomp_eq_quality_bucket": "strong" if strong else ("weak" if score < 0.35 else "partial"),
+            "decomp_eq_candidate_is_strong": int(strong),
+        }
+        return (
+            str(decomp_answer).strip() if decomp_answer is not None and str(decomp_answer).strip() else None,
+            actions,
+            decomp_meta,
+            trace,
+        )
 
     def _compose_unit_track_question(self, question: str) -> str:
         return (
@@ -7127,6 +7510,144 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             or direct_gap < self.gate_top2_gap_threshold
             or direct_entropy > self.gate_entropy_threshold
         )
+        frontier_budget_before_decomp_eq = int(remaining_budget)
+        decomp_eq_answer: str | None = None
+        decomp_eq_trace_events: list[dict[str, Any]] = []
+        decomp_eq_meta: dict[str, Any] = {
+            "decomp_eq_enabled": bool(getattr(self, "enable_decomp_eq_branch", False)),
+            "decomp_eq_budget_cost_planned": int(getattr(self, "decomp_eq_budget_actions", 0) or 0),
+            "decomp_eq_budget_cost_observed": 0,
+            "frontier_budget_after_decomp_eq": int(remaining_budget),
+            "decomp_eq_selection_policy": str(getattr(self, "decomp_eq_selection_policy", "") or ""),
+            "known_quantities": [],
+            "target_quantity": {},
+            "subproblems": [],
+            "equations": [],
+            "operations": [],
+            "decomp_eq_final_answer": "",
+            "decomp_eq_self_check": "",
+            "decomp_eq_status": "unknown",
+            "known_quantities_present": 0,
+            "target_quantity_present": 0,
+            "subproblems_present": 0,
+            "equations_present": 0,
+            "operations_present": 0,
+            "decomp_eq_final_answer_present": 0,
+            "self_check_present": 0,
+            "decomp_eq_final_answer_parseable": 0,
+            "decomp_eq_score": 0.0,
+            "decomp_eq_quality_bucket": "unknown",
+            "decomp_eq_candidate_is_strong": 0,
+        }
+        decomp_plan = int(getattr(self, "decomp_eq_budget_actions", 0) or 0)
+        if (
+            bool(getattr(self, "enable_decomp_eq_branch", False))
+            and decomp_plan > 0
+            and incumbent_uncertain
+            and remaining_budget > 0
+        ):
+            decomp_budget = min(decomp_plan, remaining_budget)
+            ans_decomp, used_decomp, meta_decomp, trace_decomp = self._run_decomp_eq_seed_attempt(
+                question, gold_answer, decomp_budget
+            )
+            decomp_eq_answer = ans_decomp
+            decomp_eq_trace_events = list(trace_decomp)
+            decomp_eq_meta.update(meta_decomp)
+            decomp_eq_meta["decomp_eq_budget_cost_observed"] = int(used_decomp)
+            remaining_budget = max(0, remaining_budget - int(used_decomp))
+            decomp_eq_meta["frontier_budget_after_decomp_eq"] = int(remaining_budget)
+
+        frontier_budget_before_opcheck = int(remaining_budget)
+        opcheck_answer: str | None = None
+        opcheck_trace_events: list[dict[str, Any]] = []
+        opcheck_meta: dict[str, Any] = {
+            "opcheck_enabled": bool(getattr(self, "enable_opcheck_branch", False)),
+            "opcheck_budget_cost_planned": int(getattr(self, "opcheck_budget_actions", 0) or 0),
+            "opcheck_budget_cost_observed": 0,
+            "opcheck_seed_ran": 0,
+            "frontier_budget_after_opcheck": int(remaining_budget),
+            "opcheck_selection_policy": str(getattr(self, "opcheck_selection_policy", "") or ""),
+            "opcheck_target": "",
+            "opcheck_given_numbers": [],
+            "opcheck_operation_plan": [],
+            "opcheck_interim_values": [],
+            "opcheck_final_equation": "",
+            "opcheck_final_answer": "",
+            "opcheck_final_answer_is_target": 0,
+            "opcheck_confidence": 0.0,
+            "opcheck_status": "unknown",
+            "target_present": 0,
+            "given_numbers_present": 0,
+            "operation_plan_present": 0,
+            "final_equation_present": 0,
+            "opcheck_final_answer_present": 0,
+            "opcheck_final_answer_parseable": 0,
+            "opcheck_final_answer_matches_interim": 0,
+            "opcheck_score": 0.0,
+            "opcheck_quality_bucket": "unknown",
+            "opcheck_candidate_is_strong": 0,
+        }
+        op_plan = int(getattr(self, "opcheck_budget_actions", 0) or 0)
+        if (
+            bool(getattr(self, "enable_opcheck_branch", False))
+            and op_plan > 0
+            and incumbent_uncertain
+            and remaining_budget > 0
+        ):
+            op_budget = min(op_plan, remaining_budget)
+            ans_op, used_op, meta_op, trace_op = self._run_opcheck_seed_attempt(
+                question, gold_answer, op_budget
+            )
+            opcheck_answer = ans_op
+            opcheck_trace_events = list(trace_op)
+            opcheck_meta.update(meta_op)
+            opcheck_meta["opcheck_budget_cost_observed"] = int(used_op)
+            opcheck_meta["opcheck_seed_ran"] = int(used_op > 0)
+            remaining_budget = max(0, remaining_budget - int(used_op))
+            opcheck_meta["frontier_budget_after_opcheck"] = int(remaining_budget)
+
+        frontier_budget_before_pal = int(remaining_budget)
+        pal_answer: str | None = None
+        pal_trace_events: list[dict[str, Any]] = []
+        pal_meta: dict[str, Any] = {
+            "pal_enabled": bool(getattr(self, "enable_pal_branch", False)),
+            "pal_budget_cost_planned": int(getattr(self, "pal_budget_actions", 0) or 0),
+            "pal_budget_cost_observed": 0,
+            "pal_seed_ran": 0,
+            "frontier_budget_after_pal": int(remaining_budget),
+            "pal_selection_policy": str(getattr(self, "pal_selection_policy", "") or ""),
+            "pal_code": "",
+            "pal_json_answer": "",
+            "pal_confidence": 0.0,
+            "pal_execution_result": {},
+            "pal_candidate_answer": "",
+            "pal_parse_ok": 0,
+            "pal_safety_ok": 0,
+            "pal_exec_ok": 0,
+            "pal_answer_parseable": 0,
+            "pal_score": 0.0,
+            "pal_quality_bucket": "unknown",
+            "pal_candidate_is_strong": 0,
+        }
+        pal_plan = int(getattr(self, "pal_budget_actions", 0) or 0)
+        if (
+            bool(getattr(self, "enable_pal_branch", False))
+            and pal_plan > 0
+            and incumbent_uncertain
+            and remaining_budget > 0
+        ):
+            pal_budget = min(pal_plan, remaining_budget)
+            ans_pal, used_pal, meta_pal, trace_pal = self._run_pal_seed_attempt(
+                question, gold_answer, pal_budget
+            )
+            pal_answer = ans_pal
+            pal_trace_events = list(trace_pal)
+            pal_meta.update(meta_pal)
+            pal_meta["pal_budget_cost_observed"] = int(used_pal)
+            pal_meta["pal_seed_ran"] = int(used_pal > 0)
+            remaining_budget = max(0, remaining_budget - int(used_pal))
+            pal_meta["frontier_budget_after_pal"] = int(remaining_budget)
+
         frontier_budget_before_unit_track = int(remaining_budget)
 
         unit_track_answer: str | None = None
@@ -7218,6 +7739,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                         }
                     )
                 direct_actions += used_here
+                remaining_budget = max(0, remaining_budget - int(used_here))
                 pa = branch.predicted_answer
                 hybrid_seed_answer = str(pa).strip() if pa is not None and str(pa).strip() else None
                 if hybrid_seed_answer is None and hybrid_seed_trace_events:
@@ -7234,6 +7756,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     {
                         "executed": True,
                         "direct_hybrid_seed_budget_cost_observed": int(used_here),
+                        "remaining_budget_after_hybrid_seed": int(remaining_budget),
                         "hybrid_seed_branch_done": bool(branch.is_done),
                         "hybrid_seed_branch_pruned": bool(branch.is_pruned),
                     }
@@ -7359,6 +7882,189 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                 frontier_support_counts=dict(frontier_support_counts),
             )
 
+        opcheck_overlay_meta: dict[str, Any] = {
+            "opcheck_overlay_applied": False,
+            "opcheck_overlay_reason": "not_applicable",
+            "opcheck_overlay_previous_answer": final_answer,
+            "opcheck_selection_reason": "not_applicable",
+            "opcheck_selection_block_reason": "none",
+            "opcheck_frontier_conflict": False,
+        }
+        if bool(getattr(self, "enable_opcheck_branch", False)) and opcheck_answer is not None:
+            op_group = _normalize_answer(opcheck_answer) or "__unknown__"
+            final_group = _normalize_answer(final_answer) or "__unknown__"
+            frontier_weak = bool(frontier_result is None or frontier_support <= 1)
+            group_support = int(combined_group_counts_base.get(op_group, 0))
+            agrees_supported = bool(group_support >= 1)
+            final_is_weak_fallback = bool(final_group in {"__unknown__", "", "0", "1"})
+            strong_op = bool(int(opcheck_meta.get("opcheck_candidate_is_strong", 0)) == 1)
+            parseable = bool(int(opcheck_meta.get("opcheck_final_answer_parseable", 0) or 0) == 1)
+            target_present = bool(int(opcheck_meta.get("target_present", 0) or 0) == 1)
+            given_present = bool(int(opcheck_meta.get("given_numbers_present", 0) or 0) == 1)
+            plan_present = bool(int(opcheck_meta.get("operation_plan_present", 0) or 0) == 1)
+            equation_present = bool(int(opcheck_meta.get("final_equation_present", 0) or 0) == 1)
+            target_ok = bool(int(opcheck_meta.get("opcheck_final_answer_is_target", 0) or 0) == 1)
+            interim_conflict = bool(int(opcheck_meta.get("opcheck_final_answer_matches_interim", 0) or 0) == 1)
+            other_strong_exists = any(
+                int(c or 0) >= 2 for g, c in combined_group_counts_base.items() if str(g).strip() and str(g) != op_group
+            )
+            frontier_conflict = bool(other_strong_exists and group_support == 0)
+            tiebreak_sel = str(tiebreak_meta.get("frontier_tiebreak_selected_group") or "").strip()
+            tiebreak_group = _normalize_answer(tiebreak_sel) if tiebreak_sel else "__unknown__"
+            if bool(tiebreak_meta.get("frontier_tiebreak_triggered")) and tiebreak_group not in {"", "__unknown__"} and tiebreak_group != op_group:
+                frontier_conflict = True
+            promote = False
+            block_reason = "unknown"
+            selection_reason = "blocked"
+            if not strong_op:
+                block_reason = "blocked_non_strong_opcheck_candidate"
+            elif not parseable:
+                block_reason = "blocked_opcheck_answer_not_parseable"
+            elif not target_present:
+                block_reason = "blocked_opcheck_target_missing"
+            elif not given_present:
+                block_reason = "blocked_opcheck_given_numbers_missing"
+            elif not plan_present:
+                block_reason = "blocked_opcheck_operation_plan_missing"
+            elif not equation_present:
+                block_reason = "blocked_opcheck_final_equation_missing"
+            elif not target_ok:
+                block_reason = "blocked_opcheck_answer_not_target"
+            elif interim_conflict:
+                block_reason = "blocked_opcheck_answer_is_interim_value"
+            elif frontier_conflict:
+                block_reason = "blocked_frontier_tiebreak_conflict"
+            elif agrees_supported:
+                promote = True
+                selection_reason = "agrees_with_supported_group"
+            elif frontier_weak and final_is_weak_fallback:
+                promote = True
+                selection_reason = "replace_weak_fallback_under_weak_frontier"
+            elif frontier_weak and float(opcheck_meta.get("opcheck_score", 0.0) or 0.0) >= 0.72:
+                promote = True
+                selection_reason = "weak_frontier_plus_high_opcheck_score"
+            else:
+                block_reason = "blocked_policy_conditions_not_met"
+            opcheck_overlay_meta["opcheck_frontier_conflict"] = bool(frontier_conflict)
+            if promote:
+                final_answer = opcheck_answer
+                opcheck_overlay_meta["opcheck_overlay_applied"] = True
+                opcheck_overlay_meta["opcheck_overlay_reason"] = "opcheck_promoted"
+                opcheck_overlay_meta["opcheck_selection_reason"] = selection_reason
+            else:
+                opcheck_overlay_meta["opcheck_overlay_reason"] = block_reason
+                opcheck_overlay_meta["opcheck_selection_block_reason"] = block_reason
+
+        decomp_eq_overlay_meta: dict[str, Any] = {
+            "decomp_eq_overlay_applied": False,
+            "decomp_eq_overlay_reason": "not_applicable",
+            "decomp_eq_overlay_previous_answer": final_answer,
+            "decomp_eq_selection_reason": "not_applicable",
+            "decomp_eq_selection_block_reason": "none",
+            "decomp_eq_frontier_conflict": False,
+            "decomp_eq_nondup_bonus_applied": 0,
+        }
+        if bool(getattr(self, "enable_decomp_eq_branch", False)) and decomp_eq_answer is not None:
+            decomp_group = _normalize_answer(decomp_eq_answer) or "__unknown__"
+            final_group = _normalize_answer(final_answer) or "__unknown__"
+            frontier_weak = bool(frontier_result is None or frontier_support <= 1)
+            group_support = int(combined_group_counts_base.get(decomp_group, 0))
+            agrees_supported = bool(group_support >= 1)
+            final_is_weak_fallback = bool(final_group in {"__unknown__", "", "0", "1"})
+            strong_decomp = bool(int(decomp_eq_meta.get("decomp_eq_candidate_is_strong", 0)) == 1)
+            status = str(decomp_eq_meta.get("decomp_eq_status") or "unknown")
+            parseable = bool(int(decomp_eq_meta.get("decomp_eq_final_answer_parseable", 0) or 0) == 1)
+            target_present = bool(int(decomp_eq_meta.get("target_quantity_present", 0) or 0) == 1)
+            has_structure = bool(
+                int(decomp_eq_meta.get("subproblems_present", 0) or 0) == 1
+                or int(decomp_eq_meta.get("equations_present", 0) or 0) == 1
+            )
+            other_strong_exists = any(
+                int(c or 0) >= 2 for g, c in combined_group_counts_base.items() if str(g).strip() and str(g) != decomp_group
+            )
+            frontier_conflict = bool(other_strong_exists and group_support == 0)
+            tiebreak_sel = str(tiebreak_meta.get("frontier_tiebreak_selected_group") or "").strip()
+            tiebreak_group = _normalize_answer(tiebreak_sel) if tiebreak_sel else "__unknown__"
+            if bool(tiebreak_meta.get("frontier_tiebreak_triggered")) and tiebreak_group not in {"", "__unknown__"} and tiebreak_group != decomp_group:
+                frontier_conflict = True
+            promote = False
+            block_reason = "unknown"
+            selection_reason = "blocked"
+            nondup_bonus = int(decomp_group not in combined_group_counts_base and decomp_group not in {"", "__unknown__"})
+            if not strong_decomp:
+                block_reason = "blocked_non_strong_decomp_eq_candidate"
+            elif status == "inconsistent":
+                block_reason = "blocked_inconsistent_decomp_eq_status"
+            elif not parseable:
+                block_reason = "blocked_decomp_eq_answer_not_parseable"
+            elif not target_present:
+                block_reason = "blocked_target_quantity_missing"
+            elif not has_structure:
+                block_reason = "blocked_decomposition_and_equations_missing"
+            elif frontier_conflict:
+                block_reason = "blocked_frontier_tiebreak_conflict"
+            elif agrees_supported:
+                promote = True
+                selection_reason = "agrees_with_supported_group"
+            elif frontier_weak and final_is_weak_fallback:
+                promote = True
+                selection_reason = "replace_weak_fallback_under_weak_frontier"
+            elif frontier_weak and float(decomp_eq_meta.get("decomp_eq_score", 0.0) or 0.0) >= 0.72:
+                promote = True
+                selection_reason = "weak_frontier_plus_high_decomp_eq_score"
+            else:
+                block_reason = "blocked_policy_conditions_not_met"
+            decomp_eq_overlay_meta["decomp_eq_frontier_conflict"] = bool(frontier_conflict)
+            decomp_eq_overlay_meta["decomp_eq_nondup_bonus_applied"] = int(nondup_bonus)
+            if promote:
+                final_answer = decomp_eq_answer
+                decomp_eq_overlay_meta["decomp_eq_overlay_applied"] = True
+                decomp_eq_overlay_meta["decomp_eq_overlay_reason"] = "decomp_eq_promoted"
+                decomp_eq_overlay_meta["decomp_eq_selection_reason"] = selection_reason
+            else:
+                decomp_eq_overlay_meta["decomp_eq_overlay_reason"] = block_reason
+                decomp_eq_overlay_meta["decomp_eq_selection_block_reason"] = block_reason
+
+        pal_overlay_meta: dict[str, Any] = {
+            "pal_overlay_applied": False,
+            "pal_overlay_reason": "not_applicable",
+            "pal_overlay_previous_answer": final_answer,
+            "pal_selection_reason": "not_applicable",
+            "pal_selection_block_reason": "none",
+            "pal_frontier_conflict": False,
+        }
+        if bool(getattr(self, "enable_pal_branch", False)) and pal_answer is not None:
+            strong_pal = bool(int(pal_meta.get("pal_candidate_is_strong", 0)) == 1)
+            frontier_weak = bool(frontier_result is None or frontier_support <= 1)
+            promote_overlay, overlay_detail, overlay_diag = decide_pal_strong_overlay_promotion(
+                combined_group_counts_base=dict(combined_group_counts_base),
+                pal_answer_raw=str(pal_answer),
+                incumbent_final_answer_raw=str(final_answer),
+                frontier_weak=bool(frontier_weak),
+                tiebreak_triggered=bool(tiebreak_meta.get("frontier_tiebreak_triggered")),
+                tiebreak_selected_group_raw=str(tiebreak_meta.get("frontier_tiebreak_selected_group") or "").strip(),
+                strong_pal=strong_pal,
+                pal_score=float(pal_meta.get("pal_score", 0.0) or 0.0),
+            )
+            pal_overlay_meta["pal_frontier_conflict"] = bool(overlay_diag.get("pal_frontier_conflict"))
+            pal_overlay_meta["pal_frontier_max_peer_histogram_support"] = overlay_diag.get(
+                "max_non_pal_histogram_support"
+            )
+            pal_overlay_meta["pal_frontier_max_peer_histogram_group_raw"] = overlay_diag.get(
+                "max_non_pal_histogram_group_raw"
+            )
+            pal_overlay_meta["tiebreak_histogram_support_at_selection"] = overlay_diag.get(
+                "tiebreak_selected_group_histogram_support"
+            )
+            if promote_overlay:
+                final_answer = pal_answer
+                pal_overlay_meta["pal_overlay_applied"] = True
+                pal_overlay_meta["pal_overlay_reason"] = "pal_promoted"
+                pal_overlay_meta["pal_selection_reason"] = str(overlay_detail)
+            else:
+                pal_overlay_meta["pal_overlay_reason"] = str(overlay_detail)
+                pal_overlay_meta["pal_selection_block_reason"] = str(overlay_detail)
+
         unit_track_overlay_meta: dict[str, Any] = {
             "unit_track_overlay_applied": False,
             "unit_track_overlay_reason": "not_applicable",
@@ -7467,8 +8173,22 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             else:
                 unit_track_overlay_meta["unit_track_overlay_reason"] = blocked_reason
 
-        actions_used = int(direct_actions + int(unit_track_meta.get("unit_track_budget_cost_observed", 0)) + (frontier_result.actions_used if frontier_result else 0))
-        expansions = int(direct_actions + int(unit_track_meta.get("unit_track_budget_cost_observed", 0) + (frontier_result.expansions if frontier_result else 0)))
+        actions_used = int(
+            direct_actions
+            + int(decomp_eq_meta.get("decomp_eq_budget_cost_observed", 0))
+            + int(opcheck_meta.get("opcheck_budget_cost_observed", 0))
+            + int(pal_meta.get("pal_budget_cost_observed", 0))
+            + int(unit_track_meta.get("unit_track_budget_cost_observed", 0))
+            + (frontier_result.actions_used if frontier_result else 0)
+        )
+        expansions = int(
+            direct_actions
+            + int(decomp_eq_meta.get("decomp_eq_budget_cost_observed", 0))
+            + int(opcheck_meta.get("opcheck_budget_cost_observed", 0))
+            + int(pal_meta.get("pal_budget_cost_observed", 0))
+            + int(unit_track_meta.get("unit_track_budget_cost_observed", 0))
+            + (frontier_result.expansions if frontier_result else 0)
+        )
         verifications = int(frontier_result.verifications if frontier_result else 0)
         support_margin = float(frontier_support - incumbent_support)
         maturity_margin = float(frontier_maturity - len(direct_answers))
@@ -7487,6 +8207,66 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "is_terminal": 0,
                     "selected": int(hs_group_sel == final_g_sel),
                     "source": "direct_hybrid_seed",
+                    "prompt_text": str(ev.get("prompt_text") or ""),
+                    "response_text": str(ev.get("response_text") or ""),
+                    "reasoning_text": str(ev.get("reasoning_text") or ""),
+                    "extracted_answer": str(ev.get("extracted_answer") or ""),
+                }
+            )
+        for ev in pal_trace_events:
+            if not isinstance(ev, dict):
+                continue
+            pal_group_sel = normalize_answer_group_key(str(pal_answer or "")) or "__unknown__"
+            final_g_sel = _normalize_answer(final_answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": str(ev.get("action") or "expand"),
+                    "branch_id": str(ev.get("branch_id") or "pal_seed_0"),
+                    "group_key": pal_group_sel,
+                    "is_terminal": 0,
+                    "selected": int(pal_group_sel == final_g_sel),
+                    "source": "pal_seed",
+                    "prompt_text": str(ev.get("prompt_text") or ""),
+                    "response_text": str(ev.get("response_text") or ""),
+                    "reasoning_text": str(ev.get("reasoning_text") or ""),
+                    "extracted_answer": str(ev.get("extracted_answer") or ""),
+                }
+            )
+        for ev in opcheck_trace_events:
+            if not isinstance(ev, dict):
+                continue
+            op_group_sel = normalize_answer_group_key(str(opcheck_answer or "")) or "__unknown__"
+            final_g_sel = _normalize_answer(final_answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": str(ev.get("action") or "expand"),
+                    "branch_id": str(ev.get("branch_id") or "opcheck_seed_0"),
+                    "group_key": op_group_sel,
+                    "is_terminal": 0,
+                    "selected": int(op_group_sel == final_g_sel),
+                    "source": "opcheck_seed",
+                    "prompt_text": str(ev.get("prompt_text") or ""),
+                    "response_text": str(ev.get("response_text") or ""),
+                    "reasoning_text": str(ev.get("reasoning_text") or ""),
+                    "extracted_answer": str(ev.get("extracted_answer") or ""),
+                }
+            )
+        for ev in decomp_eq_trace_events:
+            if not isinstance(ev, dict):
+                continue
+            de_group_sel = normalize_answer_group_key(str(decomp_eq_answer or "")) or "__unknown__"
+            final_g_sel = _normalize_answer(final_answer) or "__unknown__"
+            action_trace.append(
+                {
+                    "step": len(action_trace),
+                    "action": str(ev.get("action") or "expand"),
+                    "branch_id": str(ev.get("branch_id") or "decomp_eq_seed_0"),
+                    "group_key": de_group_sel,
+                    "is_terminal": 0,
+                    "selected": int(de_group_sel == final_g_sel),
+                    "source": "decomp_eq_seed",
                     "prompt_text": str(ev.get("prompt_text") or ""),
                     "response_text": str(ev.get("response_text") or ""),
                     "reasoning_text": str(ev.get("reasoning_text") or ""),
@@ -7562,6 +8342,69 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "source": "direct_hybrid_seed",
                     "source_metadata": "direct_hybrid_seed",
                     "selected": int(hs_group == final_g),
+                }
+            )
+        if int(pal_meta.get("pal_budget_cost_observed", 0) or 0) > 0:
+            pal_pred = str(pal_answer or "").strip()
+            pal_group = _normalize_answer(pal_pred) if pal_pred else "__unknown__"
+            final_g = _normalize_answer(final_answer) or "__unknown__"
+            final_branch_states.append(
+                {
+                    "branch_id": "pal_seed_0",
+                    "parent_branch_id": "",
+                    "branch_depth": 1,
+                    "score": float(pal_meta.get("pal_score", 0.0) or 0.0),
+                    "predicted_answer": pal_pred,
+                    "is_done": bool(pal_pred),
+                    "is_pruned": False,
+                    "steps": [],
+                    "trace_events": list(pal_trace_events),
+                    "strategy_family": "pal_seed",
+                    "source": "pal_seed",
+                    "source_metadata": "pal_seed",
+                    "selected": int(pal_group == final_g),
+                }
+            )
+        if int(opcheck_meta.get("opcheck_budget_cost_observed", 0) or 0) > 0:
+            op_pred = str(opcheck_answer or "").strip()
+            op_group = _normalize_answer(op_pred) if op_pred else "__unknown__"
+            final_g = _normalize_answer(final_answer) or "__unknown__"
+            final_branch_states.append(
+                {
+                    "branch_id": "opcheck_seed_0",
+                    "parent_branch_id": "",
+                    "branch_depth": 1,
+                    "score": float(opcheck_meta.get("opcheck_score", 0.0) or 0.0),
+                    "predicted_answer": op_pred,
+                    "is_done": bool(op_pred),
+                    "is_pruned": False,
+                    "steps": [],
+                    "trace_events": list(opcheck_trace_events),
+                    "strategy_family": "opcheck_seed",
+                    "source": "opcheck_seed",
+                    "source_metadata": "opcheck_seed",
+                    "selected": int(op_group == final_g),
+                }
+            )
+        if int(decomp_eq_meta.get("decomp_eq_budget_cost_observed", 0) or 0) > 0:
+            de_pred = str(decomp_eq_answer or "").strip()
+            de_group = _normalize_answer(de_pred) if de_pred else "__unknown__"
+            final_g = _normalize_answer(final_answer) or "__unknown__"
+            final_branch_states.append(
+                {
+                    "branch_id": "decomp_eq_seed_0",
+                    "parent_branch_id": "",
+                    "branch_depth": 1,
+                    "score": float(decomp_eq_meta.get("decomp_eq_score", 0.0) or 0.0),
+                    "predicted_answer": de_pred,
+                    "is_done": bool(de_pred),
+                    "is_pruned": False,
+                    "steps": [],
+                    "trace_events": list(decomp_eq_trace_events),
+                    "strategy_family": "decomp_eq_seed",
+                    "source": "decomp_eq_seed",
+                    "source_metadata": "decomp_eq_seed",
+                    "selected": int(de_group == final_g),
                 }
             )
         if int(unit_track_meta.get("unit_track_budget_cost_observed", 0) or 0) > 0:
@@ -7699,6 +8542,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             },
             "incumbent_challenge_score": float(incumbent_challenge_score),
             "remaining_budget_before_frontier": int(remaining_budget),
+            "frontier_budget_before_decomp_eq": int(frontier_budget_before_decomp_eq),
+            "frontier_budget_before_opcheck": int(frontier_budget_before_opcheck),
+            "frontier_budget_before_pal": int(frontier_budget_before_pal),
             "frontier_budget_before_unit_track": int(frontier_budget_before_unit_track),
             "frontier_executed": bool(frontier_result is not None),
             "direct_answer_group_counts": dict(direct_counts),
@@ -7733,6 +8579,38 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "direct_hybrid_overlay": dict(direct_hybrid_overlay_meta),
             **tiebreak_meta,
         }
+        if bool(getattr(self, "enable_pal_branch", False)):
+            metadata["pal_answer"] = pal_answer
+            metadata["pal_execution"] = dict(pal_meta)
+            metadata["pal_overlay"] = dict(pal_overlay_meta)
+            metadata["pal_enabled"] = bool(pal_meta.get("pal_enabled", False))
+            metadata["pal_seed_ran"] = int(pal_meta.get("pal_seed_ran", 0))
+            metadata["pal_budget_cost_planned"] = int(pal_meta.get("pal_budget_cost_planned", 0))
+            metadata["pal_budget_cost_observed"] = int(pal_meta.get("pal_budget_cost_observed", 0))
+            metadata["frontier_budget_after_pal"] = int(
+                pal_meta.get("frontier_budget_after_pal", frontier_budget_before_opcheck)
+            )
+        if bool(getattr(self, "enable_opcheck_branch", False)):
+            metadata["opcheck_answer"] = opcheck_answer
+            metadata["opcheck_execution"] = dict(opcheck_meta)
+            metadata["opcheck_overlay"] = dict(opcheck_overlay_meta)
+            metadata["opcheck_enabled"] = bool(opcheck_meta.get("opcheck_enabled", False))
+            metadata["opcheck_seed_ran"] = int(opcheck_meta.get("opcheck_seed_ran", 0))
+            metadata["opcheck_budget_cost_planned"] = int(opcheck_meta.get("opcheck_budget_cost_planned", 0))
+            metadata["opcheck_budget_cost_observed"] = int(opcheck_meta.get("opcheck_budget_cost_observed", 0))
+            metadata["frontier_budget_after_opcheck"] = int(
+                opcheck_meta.get("frontier_budget_after_opcheck", frontier_budget_before_unit_track)
+            )
+        if bool(getattr(self, "enable_decomp_eq_branch", False)):
+            metadata["decomp_eq_answer"] = decomp_eq_answer
+            metadata["decomp_eq_execution"] = dict(decomp_eq_meta)
+            metadata["decomp_eq_overlay"] = dict(decomp_eq_overlay_meta)
+            metadata["decomp_eq_enabled"] = bool(decomp_eq_meta.get("decomp_eq_enabled", False))
+            metadata["decomp_eq_budget_cost_planned"] = int(decomp_eq_meta.get("decomp_eq_budget_cost_planned", 0))
+            metadata["decomp_eq_budget_cost_observed"] = int(decomp_eq_meta.get("decomp_eq_budget_cost_observed", 0))
+            metadata["frontier_budget_after_decomp_eq"] = int(
+                decomp_eq_meta.get("frontier_budget_after_decomp_eq", frontier_budget_before_unit_track)
+            )
         if bool(getattr(self, "enable_unit_track_seed", False)):
             metadata["unit_track_answer"] = unit_track_answer
             metadata["unit_track_execution"] = dict(unit_track_meta)

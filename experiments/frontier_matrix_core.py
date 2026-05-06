@@ -49,9 +49,12 @@ from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     DirectReserveDiverseRootFrontierV1GuardedController,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DECOMP_EQ,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_OPCHECK,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID,
     build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4_numeric_leaf,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2,
@@ -1437,6 +1440,22 @@ def build_frontier_strategies(
                 **strategy_seeded_outer_kwargs_k1_frontier4_tb,
             )
         )
+        strategy_seeded_outer_kwargs_k1_frontier4_pal = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_pal_branch": True,
+            "pal_budget_actions": 1,
+            "pal_selection_policy": "weak_frontier_or_supported_agreement",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_pal,
+            )
+        )
         specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD] = (
             DirectReserveDiverseRootFrontierV1GuardedController(
                 generator_factory(),
@@ -1475,6 +1494,38 @@ def build_frontier_strategies(
                 method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
                 strategy_seed_max_actions=2,
                 **strategy_seeded_outer_kwargs_k1_frontier4_unit_track,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_decomp_eq = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_decomp_eq_branch": True,
+            "decomp_eq_budget_actions": 1,
+            "decomp_eq_selection_policy": "weak_frontier_or_supported_agreement",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DECOMP_EQ] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DECOMP_EQ,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_decomp_eq,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_opcheck = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_tb,
+            "enable_opcheck_branch": True,
+            "opcheck_budget_actions": 1,
+            "opcheck_selection_policy": "weak_frontier_or_supported_agreement",
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_OPCHECK] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_OPCHECK,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_opcheck,
             )
         )
         strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid = {
