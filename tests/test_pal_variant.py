@@ -79,6 +79,8 @@ def test_build_frontier_includes_pal_variant() -> None:
     ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
     assert getattr(ctrl, "enable_pal_branch", False) is True
     assert int(getattr(ctrl, "pal_budget_actions", 0)) == 1
+    assert getattr(ctrl, "enable_pal_empty_code_retry", False) is True
+    assert int(getattr(ctrl, "pal_empty_code_retry_budget_actions", 0)) == 1
 
 
 def test_pal_metadata_fields_present() -> None:
@@ -154,6 +156,185 @@ def test_failed_or_unsafe_pal_is_not_promoted() -> None:
     assert ov.get("pal_overlay_applied") is False
 
 
+def test_pal_empty_code_retry_does_not_run_when_seed_has_executable_code() -> None:
+    specs = _build_specs(30)
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
+    ex = load_pilot_examples("openai/gsm8k", 4, 11)[0]
+    ctrl.max_actions = 3
+    ctrl._run_direct_attempt = lambda _q, _g, _i, _b: (None, 1, [])  # type: ignore[method-assign]
+    ctrl._run_pal_seed_attempt = lambda _q, _g, _b: ("24", 1, _strong_pal_meta("24"), [])  # type: ignore[method-assign]
+    ctrl._run_pal_empty_code_retry_attempt = lambda _q, _g, _b: ("999", 1, _strong_pal_meta("999"), [])  # type: ignore[method-assign]
+    ctrl.strict_controller_factory = lambda _remaining: type(  # type: ignore[assignment]
+        "_WeakFrontier", (), {"run": lambda self, _q, _g: MethodResult("weak", None, False, 0, 0, 0, 1.0, False, {"answer_group_support_counts": {}})}
+    )()
+    md = (ctrl.run(ex.question, ex.answer).metadata or {})
+    px = md.get("pal_execution") or {}
+    assert int(px.get("pal_empty_code_retry_ran", 0) or 0) == 0
+    assert str(px.get("pal_empty_code_retry_skipped_reason", "")) == "seed_code_present_and_executable"
+
+
+def test_pal_empty_code_retry_runs_when_seed_has_no_code_and_budget_allows() -> None:
+    specs = _build_specs(31)
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
+    ex = load_pilot_examples("openai/gsm8k", 4, 11)[0]
+    ctrl.max_actions = 4
+    ctrl._run_direct_attempt = lambda _q, _g, _i, _b: (None, 1, [])  # type: ignore[method-assign]
+    no_code = dict(_strong_pal_meta("1"))
+    no_code.update(
+        {
+            "pal_code": "",
+            "pal_parse_ok": 0,
+            "pal_safety_ok": 0,
+            "pal_exec_ok": 0,
+            "pal_candidate_is_strong": 0,
+            "pal_execution_result": {
+                "pal_parse_ok": False,
+                "pal_safety_ok": False,
+                "pal_exec_ok": False,
+                "pal_stdout": "",
+                "pal_answer_raw": "",
+                "pal_answer_normalized": "",
+                "pal_error_type": "ValueError",
+                "pal_error_message_sanitized": "empty_code",
+            },
+        }
+    )
+    ctrl._run_pal_seed_attempt = lambda _q, _g, _b: (None, 1, no_code, [])  # type: ignore[method-assign]
+    ctrl._run_pal_empty_code_retry_attempt = lambda _q, _g, _b: ("24", 1, _strong_pal_meta("24"), [])  # type: ignore[method-assign]
+    ctrl.strict_controller_factory = lambda _remaining: type(  # type: ignore[assignment]
+        "_WeakFrontier", (), {"run": lambda self, _q, _g: MethodResult("weak", None, False, 0, 0, 0, 1.0, False, {"answer_group_support_counts": {}})}
+    )()
+    md = (ctrl.run(ex.question, ex.answer).metadata or {})
+    px = md.get("pal_execution") or {}
+    assert int(px.get("pal_empty_code_retry_ran", 0) or 0) == 1
+    assert int(px.get("pal_empty_code_retry_budget_cost_observed", 0) or 0) == 1
+    assert str(px.get("pal_selected_candidate_source", "")) == "pal_empty_code_retry"
+
+
+def test_pal_empty_code_retry_skips_when_budget_insufficient() -> None:
+    specs = _build_specs(32)
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
+    ex = load_pilot_examples("openai/gsm8k", 4, 11)[0]
+    ctrl.max_actions = 2
+    ctrl.pal_empty_code_retry_budget_actions = 2
+    ctrl._run_direct_attempt = lambda _q, _g, _i, _b: (None, 1, [])  # type: ignore[method-assign]
+    no_code = dict(_strong_pal_meta("1"))
+    no_code.update({"pal_code": "", "pal_parse_ok": 0, "pal_safety_ok": 0, "pal_exec_ok": 0, "pal_candidate_is_strong": 0})
+    ctrl._run_pal_seed_attempt = lambda _q, _g, _b: (None, 1, no_code, [])  # type: ignore[method-assign]
+    ctrl.strict_controller_factory = lambda _remaining: type(  # type: ignore[assignment]
+        "_WeakFrontier", (), {"run": lambda self, _q, _g: MethodResult("weak", None, False, 0, 0, 0, 1.0, False, {"answer_group_support_counts": {}})}
+    )()
+    md = (ctrl.run(ex.question, ex.answer).metadata or {})
+    px = md.get("pal_execution") or {}
+    assert int(px.get("pal_empty_code_retry_ran", 0) or 0) == 0
+    assert str(px.get("pal_empty_code_retry_skipped_reason", "")) == "insufficient_frontier_budget_for_retry"
+
+
+def test_pal_empty_code_retry_consumes_frontier_budget_slot() -> None:
+    specs = _build_specs(33)
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
+    ex = load_pilot_examples("openai/gsm8k", 4, 11)[0]
+    ctrl.max_actions = 4
+    ctrl._run_direct_attempt = lambda _q, _g, _i, _b: (None, 1, [])  # type: ignore[method-assign]
+    no_code = dict(_strong_pal_meta("1"))
+    no_code.update({"pal_code": "", "pal_parse_ok": 0, "pal_safety_ok": 0, "pal_exec_ok": 0, "pal_candidate_is_strong": 0})
+    ctrl._run_pal_seed_attempt = lambda _q, _g, _b: (None, 1, no_code, [])  # type: ignore[method-assign]
+    ctrl._run_pal_empty_code_retry_attempt = lambda _q, _g, _b: ("24", 1, _strong_pal_meta("24"), [])  # type: ignore[method-assign]
+    ctrl.strict_controller_factory = lambda _remaining: type(  # type: ignore[assignment]
+        "_WeakFrontier", (), {"run": lambda self, _q, _g: MethodResult("weak", None, False, 0, 0, 0, 1.0, False, {"answer_group_support_counts": {}})}
+    )()
+    md = (ctrl.run(ex.question, ex.answer).metadata or {})
+    px = md.get("pal_execution") or {}
+    assert int(md.get("frontier_budget_before_pal", -1)) == 3
+    assert int(px.get("frontier_budget_before_pal_retry", -1)) == 2
+    assert int(px.get("frontier_budget_after_pal_retry", -1)) == 1
+
+
+def test_retry_successful_candidate_enters_pool_and_final_nodes() -> None:
+    specs = _build_specs(34)
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
+    ex = load_pilot_examples("openai/gsm8k", 4, 11)[0]
+    ctrl.max_actions = 4
+    ctrl._run_direct_attempt = lambda _q, _g, _i, _b: (None, 1, [])  # type: ignore[method-assign]
+    no_code = dict(_strong_pal_meta("1"))
+    no_code.update({"pal_code": "", "pal_parse_ok": 0, "pal_safety_ok": 0, "pal_exec_ok": 0, "pal_candidate_is_strong": 0})
+    ctrl._run_pal_seed_attempt = lambda _q, _g, _b: (None, 1, no_code, [])  # type: ignore[method-assign]
+    ctrl._run_pal_empty_code_retry_attempt = lambda _q, _g, _b: ("24", 1, _strong_pal_meta("24"), [{"action": "expand", "branch_id": "pal_empty_code_retry_0", "source_metadata": "pal_empty_code_retry"}])  # type: ignore[method-assign]
+    ctrl.strict_controller_factory = lambda _remaining: type(  # type: ignore[assignment]
+        "_WeakFrontier", (), {"run": lambda self, _q, _g: MethodResult("weak", None, False, 0, 0, 0, 1.0, False, {"answer_group_support_counts": {}})}
+    )()
+    md = (ctrl.run(ex.question, ex.answer).metadata or {})
+    pool = md.get("selector_candidate_pool") or []
+    trace = md.get("action_trace") or []
+    assert any(str(x.get("source_metadata", "")) == "pal_empty_code_retry" for x in pool)
+    assert any(str(x.get("branch_id", "")) == "pal_empty_code_retry_0" for x in trace)
+
+
+def test_retry_candidate_can_replace_weak_fallback_under_existing_overlay() -> None:
+    specs = _build_specs(35)
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
+    ex = load_pilot_examples("openai/gsm8k", 4, 11)[0]
+    ctrl.max_actions = 4
+    ctrl._run_direct_attempt = lambda _q, _g, _i, _b: (None, 1, [])  # type: ignore[method-assign]
+    no_code = dict(_strong_pal_meta("1"))
+    no_code.update({"pal_code": "", "pal_parse_ok": 0, "pal_safety_ok": 0, "pal_exec_ok": 0, "pal_candidate_is_strong": 0})
+    ctrl._run_pal_seed_attempt = lambda _q, _g, _b: (None, 1, no_code, [])  # type: ignore[method-assign]
+    ctrl._run_pal_empty_code_retry_attempt = lambda _q, _g, _b: ("24", 1, _strong_pal_meta("24"), [])  # type: ignore[method-assign]
+    ctrl.strict_controller_factory = lambda _remaining: type(  # type: ignore[assignment]
+        "_WeakFrontier", (), {"run": lambda self, _q, _g: MethodResult("weak", None, False, 0, 0, 0, 1.0, False, {"answer_group_support_counts": {}})}
+    )()
+    md = (ctrl.run(ex.question, ex.answer).metadata or {})
+    ov = md.get("pal_overlay") or {}
+    assert ov.get("pal_overlay_applied") is True
+    assert str((md.get("pal_execution") or {}).get("pal_selected_candidate_source", "")) == "pal_empty_code_retry"
+
+
+def test_retry_candidate_blocked_by_strong_contradictory_support() -> None:
+    specs = _build_specs(36)
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
+    ex = load_pilot_examples("openai/gsm8k", 4, 11)[0]
+    ctrl.max_actions = 4
+    ctrl._run_direct_attempt = lambda _q, _g, _i, _b: (None, 1, [])  # type: ignore[method-assign]
+    no_code = dict(_strong_pal_meta("1"))
+    no_code.update({"pal_code": "", "pal_parse_ok": 0, "pal_safety_ok": 0, "pal_exec_ok": 0, "pal_candidate_is_strong": 0})
+    ctrl._run_pal_seed_attempt = lambda _q, _g, _b: (None, 1, no_code, [])  # type: ignore[method-assign]
+    ctrl._run_pal_empty_code_retry_attempt = lambda _q, _g, _b: ("5", 1, _strong_pal_meta("5"), [])  # type: ignore[method-assign]
+    ctrl.strict_controller_factory = lambda _remaining: type(  # type: ignore[assignment]
+        "_StrongFrontier",
+        (),
+        {"run": lambda self, _q, _g: MethodResult("strong", "9", False, 1, 1, 1, 1.0, False, {"answer_group_support_counts": {"9": 3}})},
+    )()
+    md = (ctrl.run(ex.question, ex.answer).metadata or {})
+    ov = md.get("pal_overlay") or {}
+    assert ov.get("pal_overlay_applied") is False
+    assert "conflict" in str(ov.get("pal_overlay_reason", ""))
+
+
+def test_pal_empty_code_retry_metadata_recorded() -> None:
+    specs = _build_specs(37)
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
+    ex = load_pilot_examples("openai/gsm8k", 4, 11)[0]
+    ctrl.max_actions = 4
+    ctrl._run_direct_attempt = lambda _q, _g, _i, _b: (None, 1, [])  # type: ignore[method-assign]
+    no_code = dict(_strong_pal_meta("1"))
+    no_code.update({"pal_code": "", "pal_parse_ok": 0, "pal_safety_ok": 0, "pal_exec_ok": 0, "pal_candidate_is_strong": 0})
+    ctrl._run_pal_seed_attempt = lambda _q, _g, _b: (None, 1, no_code, [])  # type: ignore[method-assign]
+    ctrl._run_pal_empty_code_retry_attempt = lambda _q, _g, _b: ("24", 1, _strong_pal_meta("24"), [])  # type: ignore[method-assign]
+    ctrl.strict_controller_factory = lambda _remaining: type(  # type: ignore[assignment]
+        "_WeakFrontier", (), {"run": lambda self, _q, _g: MethodResult("weak", None, False, 0, 0, 0, 1.0, False, {"answer_group_support_counts": {}})}
+    )()
+    md = (ctrl.run(ex.question, ex.answer).metadata or {})
+    px = md.get("pal_execution") or {}
+    assert "pal_empty_code_retry_enabled" in px
+    assert "pal_empty_code_retry_budget_cost_planned" in px
+    assert "pal_empty_code_retry_budget_cost_observed" in px
+    assert "frontier_budget_before_pal_retry" in px
+    assert "frontier_budget_after_pal_retry" in px
+    assert "pal_empty_code_retry_ran" in px
+    assert "pal_empty_code_retry_reason" in px
+    assert "pal_empty_code_retry_skipped_reason" in px
+
+
 def test_pal_scoring_and_selection_are_gold_free_contract() -> None:
     specs = _build_specs(7)
     ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL]
@@ -174,6 +355,7 @@ def test_baseline_k1_tiebreak_unchanged_without_pal_fields() -> None:
     md = result.metadata or {}
     assert "pal_execution" not in md
     assert "pal_overlay" not in md
+    assert "pal_empty_code_retry" not in md
 
 
 def test_baseline_k1_tiebreak_has_no_optional_seed_metadata() -> None:

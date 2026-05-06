@@ -59,6 +59,14 @@ def test_captures_print_answer() -> None:
     assert r.pal_answer_normalized == "8"
 
 
+def test_allows_safe_int_float_conversion() -> None:
+    r = execute_pal_code("x=float('6.0')\nanswer=int(x)\nprint(answer)")
+    assert r.pal_parse_ok is True
+    assert r.pal_safety_ok is True
+    assert r.pal_exec_ok is True
+    assert r.pal_answer_normalized == "6"
+
+
 def test_sanitizes_error_messages() -> None:
     r = execute_pal_code("answer=1/0\nprint(answer)")
     assert r.pal_exec_ok is False

@@ -57,6 +57,25 @@ def test_augment_final_nodes_adds_pal_candidate_without_frontier_executed() -> N
     assert any(n.get("source_metadata") == "pal_seed" for n in out)
 
 
+def test_augment_final_nodes_adds_pal_empty_code_retry_candidate_without_frontier_executed() -> None:
+    registry = [{"branch_id": "direct_reserve_0", "predicted_answer": "1", "reasoning_text": "", "score": 0.5}]
+    md = {
+        "frontier_executed": False,
+        "selector_candidate_pool": [
+            {
+                "branch_id": "pal_empty_code_retry_0",
+                "predicted_answer": "200",
+                "reasoning_text": "answer=200",
+                "source_metadata": "pal_empty_code_retry",
+                "branch_score": 0.95,
+            }
+        ],
+    }
+    out = augment_final_nodes_with_metadata_frontier(registry, md)
+    assert any(n.get("branch_id") == "pal_empty_code_retry_0" for n in out)
+    assert any(n.get("source_metadata") == "pal_empty_code_retry" for n in out)
+
+
 def test_augment_final_nodes_updates_existing_pal_branch_with_executed_answer() -> None:
     registry = [
         {"branch_id": "pal_seed_0", "predicted_answer": "180", "reasoning_text": "", "score": 0.3},

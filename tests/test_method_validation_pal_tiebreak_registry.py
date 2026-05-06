@@ -50,3 +50,5 @@ def test_build_frontier_strategies_enables_real_pal_on_tiebreak_pal_controller()
     ctl = specs["direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"]
     assert getattr(ctl, "enable_pal_branch", False) is True
     assert int(getattr(ctl, "pal_budget_actions", 0)) >= 1
+    assert getattr(ctl, "enable_pal_empty_code_retry", False) is True
+    assert int(getattr(ctl, "pal_empty_code_retry_budget_actions", 0)) == 1

@@ -25,6 +25,8 @@ _ALLOWED_BUILTINS: dict[str, Any] = {
     "abs": abs,
     "min": min,
     "max": max,
+    "int": int,
+    "float": float,
 }
 
 _ALLOWED_BINOPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv, ast.Mod, ast.Pow)
