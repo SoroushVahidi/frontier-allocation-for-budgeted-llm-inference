@@ -1,0 +1,24 @@
+{
+  "anchor_cases_total": 12,
+  "trigger_count": 12,
+  "frozen_count": 0,
+  "added_candidate_count": 10,
+  "duplicate_skip_count": 2,
+  "override_allowed_count": 0,
+  "incumbent_exact_count": 4,
+  "conservative_exact_count": 3,
+  "improved_cases_count": 2,
+  "worsened_cases_count": 3,
+  "regressions_on_prev_correct_count": 3,
+  "trigger_rate": 1.0,
+  "incumbent_exact_rate": 0.3333333333333333,
+  "conservative_exact_rate": 0.25,
+  "keep_criteria": {
+    "trigger_rate_lte_0_40": false,
+    "worsened_cases_eq_0": false,
+    "improved_cases_gte_1": true,
+    "non_duplicate_adds_gt_0": true,
+    "regressions_on_prev_correct_eq_0": false
+  },
+  "keep_criteria_passed": false
+}

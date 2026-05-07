@@ -1,0 +1,13 @@
+example_id,incumbent_prediction,conservative_prediction,incumbent_exact,conservative_exact,conservative_rate_ratio_gate_triggered,conservative_rate_ratio_gate_frozen,conservative_rate_ratio_gate_added_candidates,conservative_rate_ratio_gate_skipped_duplicate,conservative_rate_ratio_gate_override_allowed,conservative_rate_ratio_gate_reason,conservative_rate_ratio_gate_override_block_reason,conservative_rate_ratio_gate_question_bucket
+openai_gsm8k_1025,23,21,1,0,1,0,1,0,0,triggered_added_candidate,blocked_strong_incumbent_score,qnum_6p
+openai_gsm8k_1027,3,1,0,0,1,0,1,0,0,triggered_added_candidate,blocked_missing_corroboration,qnum_6p
+openai_gsm8k_778,7400,7400,1,1,1,0,0,1,0,duplicate_normalized_group,not_applicable,qnum_4_5
+openai_gsm8k_780,1,-2,1,0,1,0,1,0,0,triggered_added_candidate,blocked_strong_incumbent_score,qnum_4_5
+openai_gsm8k_812,71,,0,0,1,0,1,0,0,triggered_added_candidate,blocked_missing_corroboration,qnum_6p
+openai_gsm8k_814,,,0,0,1,0,1,0,0,triggered_added_candidate,blocked_missing_corroboration,qnum_4_5
+openai_gsm8k_819,65,68,0,1,1,0,1,0,0,triggered_added_candidate,blocked_strong_incumbent_score,qnum_6p
+openai_gsm8k_929,,18,0,1,1,0,1,0,0,triggered_added_candidate,blocked_strong_incumbent_score,qnum_4_5
+openai_gsm8k_934,128,,0,0,1,0,1,0,0,triggered_added_candidate,blocked_missing_corroboration,qnum_4_5
+openai_gsm8k_944,99,97,0,0,1,0,1,0,0,triggered_added_candidate,blocked_strong_incumbent_score,qnum_4_5
+openai_gsm8k_953,25,22,0,0,1,0,0,1,0,duplicate_normalized_group,not_applicable,qnum_6p
+openai_gsm8k_979,3,4,1,0,1,0,1,0,0,triggered_added_candidate,blocked_strong_incumbent_score,qnum_4_5
