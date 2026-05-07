@@ -1,0 +1,3 @@
+example_id,question,gold_answer,external_final_answer,external_exact,pal_final_answer,pal_exact
+ex1,If a car drives 120 miles in 3 hours what is miles per hour?,40,40,1,39,0
+ex2,Jane has 3 apples and buys 2 more. How many apples?,5,4,0,4,0

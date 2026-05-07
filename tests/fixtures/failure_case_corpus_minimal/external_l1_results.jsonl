@@ -1,0 +1,2 @@
+{"example_id":"ex1","final_answer_raw":"40","result_metadata":{"action_trace":[{"extracted_answer":"40"}],"selector_candidate_pool":[{"predicted_answer":"40","source_family":"l1_max"}]}}
+{"example_id":"ex2","final_answer_raw":"4","result_metadata":{"action_trace":[{"extracted_answer":"4"}],"selector_candidate_pool":[{"predicted_answer":"4","source_family":"l1_max"}]}}

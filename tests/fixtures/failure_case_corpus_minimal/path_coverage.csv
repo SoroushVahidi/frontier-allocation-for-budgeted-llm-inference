@@ -1,0 +1,3 @@
+example_id,gold_in_selector_pool,gold_in_trace_candidates,gold_in_execution_output,gold_absent_everywhere_detectable
+ex1,0,0,0,1
+ex2,0,0,0,1
