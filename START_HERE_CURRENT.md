@@ -1,161 +1,92 @@
-# Start here — current front door (2026-05-05)
+# Start here — current front door (2026-05-07)
 
-Short orientation for humans and agents. Historical and timestamped material stays in place; this file points to **current** interpretation and safe next actions.
+Short orientation for humans and agents. Historical timestamped material stays in place; **navigation truth** for frontier-iteration-2 is below.
 
-**Focused notes:** [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) · [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) · [`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`](docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md) · [`docs/DISCOVERY_FAILURE_TAXONOMY.md`](docs/DISCOVERY_FAILURE_TAXONOMY.md) · [`docs/OUTPUT_RETENTION_POLICY_CURRENT.md`](docs/OUTPUT_RETENTION_POLICY_CURRENT.md) · [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md)
+## Read this first
 
-## Current project question
+| Priority | Document |
+|---------:|----------|
+| **1** | **[`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`](docs/CURRENT_RESEARCH_HANDOFF_20260507.md)** — purpose, PAL+retry headline results, failure mining, Track A/B bottlenecks, no-go rules |
+| **2** | [`docs/CURRENT_ARTIFACTS_INDEX_20260507.md`](docs/CURRENT_ARTIFACTS_INDEX_20260507.md) — canonical vs local-heavy `outputs/` |
+| **3** | [`docs/CLAIMS.md`](docs/CLAIMS.md) — safe vs unsafe claims |
+| **4** | [`docs/CURRENT_METHOD_STATUS_20260507.md`](docs/CURRENT_METHOD_STATUS_20260507.md) — method IDs and roles |
 
-Under explicit inference budgets, how should compute be allocated across reasoning paths, and how should the **final answer** be chosen from the explored frontier? The active emphasis remains two-track:
+### Curated artifact summaries (evidence trails)
 
-1. **discovery/coverage:** getting the correct answer into the explored candidate pool;
-2. **selection/replay:** choosing among existing candidate groups without gold leakage.
+| Artifact | Path |
+|----------|------|
+| 300-case paired analysis | [`outputs/pal_retry_300case_analysis_20260506/report.md`](outputs/pal_retry_300case_analysis_20260506/report.md) |
+| Failure-pattern mining (latest collect bundle; **local until committed**) | `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/failure_pattern_mining_report.md` |
+| Present-not-selected replay (same bundle) | `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_report.md` |
+| Discovery / TRCE checklist | [`outputs/failure_case_corpus_20260507/selected_discovery_hypothesis_checklist.md`](outputs/failure_case_corpus_20260507/selected_discovery_hypothesis_checklist.md) |
 
-Do not revert to the older binary cheap-vs-revise routing story.
+### Paste-ready session starter
 
-## Current best external baseline
+[`docs/NEW_CHAT_STARTER_PROMPT_20260507.md`](docs/NEW_CHAT_STARTER_PROMPT_20260507.md)
 
-**`external_l1_max`** is the primary strong external comparator on real-model GSM8K-style slices referenced throughout the repo. Do **not** claim broad defeat of this baseline without a fully scored, matched contract and canonical doc promotion.
+---
 
-Related: **`external_l1_exact`** is a literature-style L1 exact-target-length variant; it appears in fairness/manuscript comparisons, but it is not a substitute for `external_l1_max` as the headline comparator.
+## Do **not** start here for “current best method”
 
-## Current active internal line
+- **`strict_f3`** / **`strict_gate1_cap_k6`**-only harnesses and docs describe **historical strict-phase** surfaces—not the headline **PAL+retry** real-model line.
+- Old **`START_HERE`** bullets that only cite **`k1_frontier4_frontier_tiebreak`** without **`_pal`** are **incomplete** for May 2026; use the method ID in **`CURRENT_RESEARCH_HANDOFF`**.
 
-Current best small live line from recent debugging:
+---
 
-```text
-direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak
-```
+## One-line project question
 
-Key same-case 10-case diagnostic:
+Under explicit inference budgets, **where should the next unit of compute go**, and **how should the final answer be chosen** from the explored frontier—with discovery/coverage and selection/commitment treated separately?
 
-```text
-outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/
-```
+---
 
-Headline:
-
-| Method | Exact |
-|---|---:|
-| cached `external_l1_max` | 8/10 = 80% |
-| live `k1_frontier4_frontier_tiebreak` | 6/10 = 60% |
-| gap | 20 percentage points |
-
-This is the best current small-slice progress signal. It is **not** a broad claim of defeating `external_l1_max`.
-
-## Current method/tooling context
-
-| PR / line | Status | What changed |
-|----|--------|--------------|
-| #351 | merged | Adds `direct_reserve_diverse_root_frontier_v1`, `direct_reserve_diverse_root_frontier_v1_guarded`, guarded held-out GSM8K eval, API JSON parsing hardening, and candidate diagnostics. |
-| #353 | merged | Adds cached verifier selector replay tooling and tests. No default runtime selector promotion. |
-| `k1_frontier4_frontier_tiebreak` | active diagnostic line | Fixes much of the selection/commit issue after surfacing repairs. |
-| `finalguard` | parked | No offline gain on the key 10-case artifact. |
-| `numeric_leaf` | parked for now | Mechanical fields populated, but 118/800 stayed wrong. |
-
-For details, read [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md).
-
-## Old-reference methods versus current target
-
-| Method | Current role |
-|--------|--------------|
-| `strict_f3` | Manuscript-facing matched-surface representative and old real-model reference anchor. Not the current best-method target for new L1-gap experiments. |
-| `strict_gate1_cap_k6` | Broader operational strict-phased default on a distinct surface; useful reference, not the current diverse-root target. |
-| `strict_f2` | Internal comparator/reference only. |
-| `direct_reserve_diverse_root_frontier_v1_guarded` | Merged guarded base; superseded by k1/tiebreak variants for active live debugging. |
-
-## Known script trap
-
-The script below is intentionally old-scope:
+## Current best internal method (engineering line)
 
 ```text
-scripts/run_cohere_gsm8k_strict_f3_vs_external_l1_max_diagnostic.py
+direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal
 ```
 
-It is hardwired around `strict_f3`, `external_l1_max`, and optionally `strict_gate1_cap_k6`. Do **not** use it as the decisive current-best comparison.
+Shorthand: **PAL + retry / guarded PAL**.
 
-Before any paid run, read [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md).
+---
 
-## Current selected selector (recovery track only)
+## Current external comparators
 
-**`outcome_verifier_answer_group_selector_v1`** with Cohere **`cached_jsonl`** scores remains selected for the recovery / selector-evidence track only. It is not automatically runtime-promoted and is not an `external_l1_max` defeat claim.
+- **`external_l1_max`** — primary headline baseline.
+- **`external_tale_prompt_budgeting`**, **`external_s1_budget_forcing`** — additional 4-way externals.
+- **`external_l1_exact`** — fairness/diagnostic length contract — **not** the main headline comparator.
 
-Canonical config:
+---
 
-```text
-configs/selected_selector_current.json
-```
+## Empirical snapshot (see handoff for nuance)
 
-Human-readable decision: [`docs/CURRENT_SELECTOR_DECISION.md`](docs/CURRENT_SELECTOR_DECISION.md).
+- **300-case paired:** PAL+retry **252/300** vs `external_l1_max` **244/300** — **directional** paired gap, **not** statistically decisive.
+- **30-case 4-way pilot:** PAL trails each external on that small slice — **not** a universal ranking.
+- **247-ID collection:** PAL competitive as one fixed method; **34** external-only losses motivate failure mining.
 
-## Current bottleneck interpretation
+---
 
-The bottleneck moved over time:
+## Bottleneck today
 
-1. **Adapter / surfacing bugs**: fixed enough to measure live methods.
-2. **Frontier budget starvation**: k1/frontier split improved this.
-3. **Selection / commit**: frontier tiebreak helped substantially.
-4. **Current remaining problem**: reasoning-path quality / gold-absent cases, especially where `external_l1_max` solves directly but the frontier tree does not expose the gold answer.
+1. **Track B:** **present-not-selected** / commitment / overlay / histogram / surfacing (priority for newest preferred external-win failures).  
+2. **Track A / TRCE:** gold-absent structured discovery (still important; smaller share of newest preferred mining).
 
-Working interpretation:
+---
 
-```text
-If gold is absent from the candidate pool, no selector can recover it.
-If gold is present, the frontier tiebreak is currently the best simple commit rule on the small slice.
-Next useful work should improve candidate generation / direct-seed strength before another selector-only patch.
-```
-
-## Safe claims
-
-- The 10-case `k1_frontier4_frontier_tiebreak` diagnostic improved the internal method from 3/10 to 6/10 against a cached 8/10 `external_l1_max` comparator.
-- Audited recovery-track verifier selector evidence exists, but it is not runtime-promotion evidence.
-- `external_l1_max` remains the baseline to beat on real-model comparisons.
-- Timestamped `outputs/` folders are provenance; interpretation requires manifests, summaries, and docs.
-
-## Unsafe claims
-
-- Robust or universal superiority over `external_l1_max`.
-- Treating `strict_f3` reruns as current-best diverse-root results.
-- Treating finalguard or numeric-leaf variants as successful accuracy improvements; they did not improve the target artifacts.
-- Runtime promotion of verifier selector from replay/recovery evidence alone.
-- Headline conclusions from cache-limited verifier runs, mock verifier backends, or selected external-loss slices.
-
-## Read next
-
-| Order | File |
-|------:|------|
-| 1 | `docs/CURRENT_APPROACHES_STATUS_20260505.md` |
-| 2 | `docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md` |
-| 3 | `docs/CURRENT_PROJECT_STATUS.md` |
-| 4 | `docs/CURRENT_EXTERNAL_BASELINE_GAP.md` |
-| 5 | `docs/PAPER_SOURCE_OF_TRUTH.md` |
-| 6 | `docs/CURRENT_SELECTOR_DECISION.md` |
-| 7 | `docs/METHOD_STATUS_TABLE.md` |
-| 8 | `docs/ARTIFACT_STATUS_TABLE.md` |
-| 9 | `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md` |
-| 10 | `docs/DISCOVERY_FAILURE_TAXONOMY.md` |
-| 11 | `docs/OUTPUT_RETENTION_POLICY_CURRENT.md` |
-
-## Reviewer-safe checks
+## Tests / fixtures worth running locally (no API)
 
 ```bash
-make health
-make reviewer-test
-make selector-test
+PYTHONPATH=. .venv/bin/python -m pytest -q tests/test_build_failure_case_corpus.py
+PYTHONPATH=. .venv/bin/python -m pytest -q tests/test_present_not_selected_replay_fixtures.py
 ```
 
-Paper artifact regeneration:
+---
 
-```bash
-python scripts/paper/run_all_neurips_paper_artifacts.py
-```
+## Older indexes (reference)
 
-## Next experiment pattern
+[`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) · [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) · [`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`](docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md) · [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md)
 
-The next paid/API experiment should start with a **no-API dry-run**. It must state the exact method ID, case set, model, budget, output directory, reusable completed outputs, and new Cohere call count. Paid calls require explicit approval.
+---
 
-Current recommended next research direction is not another finalguard/numeric-leaf broad rerun. Prefer a stronger direct seed / direct+frontier hybrid or a loss-case dataset focused on examples where cached `external_l1_max` is correct and k1/tiebreak is wrong.
+## Provenance
 
-## Provenance warning
-
-Timestamped directories under `outputs/` are scientific provenance. Do not delete or reinterpret numeric folders without reading their manifests, summary JSON/MD, and docs classification. Older runs may be mock-backed, cache-limited, old-method-only, or superseded.
+Timestamped directories under `outputs/` are scientific provenance—do not delete or reinterpret numerics without manifests.

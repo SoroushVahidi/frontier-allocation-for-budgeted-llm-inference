@@ -1,5 +1,7 @@
 # Current project status
 
+> **See first:** [`CURRENT_RESEARCH_HANDOFF_20260507.md`](CURRENT_RESEARCH_HANDOFF_20260507.md) for May 2026 PAL+retry vs external baseline evidence and failure-mining bottlenecks. This file retains detailed historical checkpoints (early May 2026 and earlier).
+
 This document is the short, current orientation note for day-to-day work. It supersedes older broad-status notes for navigation purposes, while dated documents remain provenance.
 
 ## Current navigation (2026-05-02 cleanup)

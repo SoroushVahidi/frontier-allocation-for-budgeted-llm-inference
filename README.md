@@ -16,31 +16,38 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 | Order | Doc | Purpose |
 |------:|-----|---------|
 | 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | Minimal reviewer setup, checks, and reproduction path |
-| 1 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Current front door: merged state, current target method, external baseline, and next experiment pattern |
-| 2 | [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) | Latest method-by-method status: tested, parked, active, and next hopeful lines |
-| 3 | [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md) | Guardrails to avoid old-method/API-waste mistakes |
-| 4 | [`docs/CLAIMS.md`](docs/CLAIMS.md) | Short claim-scope guide: safe claims, unsafe claims, evidence posture |
-| 5 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
-| 6 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Latest bounded diagnostics vs **`external_l1_max`** |
-| 7 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
+| 1 | [`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`](docs/CURRENT_RESEARCH_HANDOFF_20260507.md) | **Frontier iteration 2 — read this first:** PAL+retry vs externals, failure mining, Track B/A bottlenecks |
+| 2 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Short entry pointer + curated artifact links |
+| 3 | [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) | Method-by-method status (May 2025 snapshot; cross-check with handoff doc) |
+| 4 | [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md) | Guardrails to avoid old-method/API-waste mistakes |
+| 5 | [`docs/CLAIMS.md`](docs/CLAIMS.md) | Short claim-scope guide: safe claims, unsafe claims, evidence posture |
+| 6 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
+| 7 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Latest bounded diagnostics vs **`external_l1_max`** |
+| 8 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
 
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 
-**Structured indexes:** [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) · [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) · [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) · [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md)
+**Structured indexes:** [`docs/CURRENT_METHOD_STATUS_20260507.md`](docs/CURRENT_METHOD_STATUS_20260507.md) · [`docs/CURRENT_ARTIFACTS_INDEX_20260507.md`](docs/CURRENT_ARTIFACTS_INDEX_20260507.md) · [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) · [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) · [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) · [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md)
 
 ---
 
 ## Current method target for new external-baseline diagnostics
 
-`external_l1_max` remains the strong external comparator. Recent real-model diagnostics show a large gap for older strict methods, but those diagnostics do **not** test the newly merged diverse-root guarded stack.
+`external_l1_max` remains the strong external comparator.
 
-For any fresh fair comparison against `external_l1_max`, the current active internal line is:
+For **frontier iteration 2** real-model diagnostics, the active engineered internal line is **PAL + retry / guarded PAL**:
+
+```text
+direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal
+```
+
+The tie-break stack **without** PAL integration remains a useful reference but is **not** the headline PAL line:
 
 ```text
 direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak
 ```
 
-This is a live diagnostic/development method, not a paper-promoted default. The merged guarded base remains:
+The merged guarded base remains:
 
 ```text
 direct_reserve_diverse_root_frontier_v1_guarded
@@ -60,13 +67,9 @@ strict_f2
 
 ## Current evidence posture
 
-The current best small same-case live diagnostic is:
+Read **`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`** for the **300-case paired PAL+retry vs `external_l1_max`** headline and **failure-mining** status (May 2026).
 
-```text
-outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/
-```
-
-It reports cached `external_l1_max` at **8/10** and live `k1_frontier4_frontier_tiebreak` at **6/10** on the same 10 cases. This is progress, but not a broad claim of external-baseline defeat.
+Older **10-case cached-vs-live** folders (e.g. `outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/`) remain **historical small-slice diagnostics** for the non-PAL tie-break line—not a substitute for the PAL+retry bundles.
 
 The audited working selector **`outcome_verifier_answer_group_selector_v1`** with **`scorer_mode = cached_jsonl`** remains selected for the **recovery / selector-evidence track only**. Machine config:
 

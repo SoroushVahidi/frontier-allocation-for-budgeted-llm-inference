@@ -36,10 +36,11 @@ Current research emphasis should therefore remain:
 
 Read these before writing paper text or reviewer responses:
 
-1. `REVIEWER_FIRST.md`
-2. `START_HERE_CURRENT.md`
-3. `docs/PAPER_SOURCE_OF_TRUTH.md`
-4. `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
-5. `docs/CURRENT_EXTERNAL_BASELINE_GAP.md`
-6. `docs/CURRENT_PROJECT_STATUS.md`
-7. `docs/ARTIFACT_STATUS_TABLE.md`
+1. `docs/CURRENT_RESEARCH_HANDOFF_20260507.md`
+2. `REVIEWER_FIRST.md`
+3. `START_HERE_CURRENT.md`
+4. `docs/PAPER_SOURCE_OF_TRUTH.md`
+5. `docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`
+6. `docs/CURRENT_EXTERNAL_BASELINE_GAP.md`
+7. `docs/CURRENT_PROJECT_STATUS.md`
+8. `docs/ARTIFACT_STATUS_TABLE.md`

@@ -1,13 +1,16 @@
 # Research Next Frontier Handoff (2026-05-07)
 
+> **Navigation note (2026-05-07):** For the consolidated frontier-iteration-2 story (PAL+retry vs externals, failure corpora, Track B/A priorities), read **`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`** first. This file remains a concise snapshot from an earlier handoff pass and may omit newer mining counts.
+
 ## A) Repository State
-- Current branch: `research-next-frontier-iteration-2`
-- Latest commit hash: `5aa56f3`
-- Branch sync: aligned with `origin/research-next-frontier-iteration-2` at handoff time.
-- Working tree warning: many local untracked `docs/` and `outputs/` artifacts exist; do not blindly run `git add .`.
+
+- **Live branch / sync / working tree:** use **`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`** (updated with the current polish pass). This file does not track moving git metadata.
+- **Branch name (historical):** `research-next-frontier-iteration-2`.
+- **Working tree:** large local `docs/` and `outputs/` artifacts may exist; do not blindly run `git add .`.
 
 ## B) Latest Best Algorithm
 - Best algorithm so far: **PAL+retry / guarded PAL variant**.
+- **Canonical method ID:** `direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal` (full timing / naming context: **`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`**).
 - Short description: program-aided reasoning path with empty-code retry support and guarded frontier/discovery logic in the diverse-root stack.
 
 ## C) Latest Best Comparison to External Baseline
