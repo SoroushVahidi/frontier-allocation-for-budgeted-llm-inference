@@ -109,6 +109,245 @@ def _tiebreak_histogram_support(combined_group_counts: dict[str, Any], tiebreak_
     return _support_for_normalized_histogram_key(combined_group_counts, tb)
 
 
+def _histogram_counts_by_normalized_group(combined_group_counts: dict[str, Any]) -> dict[str, int]:
+    """Merge raw histogram keys onto normalized answer-group keys (same bucketing as tie-break)."""
+    out: dict[str, int] = {}
+    if not isinstance(combined_group_counts, dict):
+        return out
+    for k, v in combined_group_counts.items():
+        ks_raw = str(k).strip()
+        if not ks_raw or ks_raw == "__unknown__":
+            continue
+        kn = normalize_answer_group_key(ks_raw)
+        if not kn or kn == "__unknown__":
+            continue
+        try:
+            c = int(v or 0)
+        except Exception:
+            c = 0
+        out[kn] = out.get(kn, 0) + c
+    return out
+
+
+def _uniform_full_multigroup_tie(counts_by_norm: dict[str, int], *, min_groups: int = 3) -> bool:
+    """True when every normalized bucket has the same positive mass and there are at least ``min_groups`` buckets.
+
+    Detects maximal ambiguity (e.g. 3+ answers each with identical support) without picking a global argmax.
+    """
+    if len(counts_by_norm) < min_groups:
+        return False
+    vals = list(counts_by_norm.values())
+    if not vals:
+        return False
+    first = vals[0]
+    if first <= 0:
+        return False
+    for x in vals[1:]:
+        if x != first:
+            return False
+    return True
+
+
+def decide_track_b_overlay_commitment_gate(
+    *,
+    combined_group_counts_base: dict[str, Any],
+    tiebreak_meta: dict[str, Any],
+    pal_execution_flat: dict[str, Any],
+    overlay_tiebreak_summary: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Narrow gold-free commitment gate for Track B (overlay / tie-break vs PAL stdout).
+
+    Pure function: no API, no filesystem, no mutation of inputs. Decides whether to
+    replace the surfaced PAL executable channel with the tie-break / overlay-consistent
+    numeric when **narrow structural preconditions** hold.
+
+    This is **not** global histogram maximum-support selection, not DR-finalization, and not PAL-exec-only priority.
+
+    Returns a structured dict:
+      - ``should_override``: whether caller should replace ``final_answer``
+      - ``recommended_answer``: literal answer text when inferable without gold (else ``None``)
+      - ``recommended_normalized_group``: normalized bucket key for ``pick_answer_text_for_normalized_group``
+      - ``recommended_source``: short tag for telemetry
+      - ``reason``: primary outcome tag
+      - ``signals_used``: list of signal keys consulted
+      - ``abstain_reason``: non-empty when ``should_override`` is False
+    """
+    signals_used: list[str] = []
+    abstain_reason = ""
+
+    def _out(
+        *,
+        should_override: bool,
+        recommended_answer: str | None,
+        recommended_normalized_group: str | None,
+        recommended_source: str,
+        reason: str,
+        abstain: str | None,
+    ) -> dict[str, Any]:
+        return {
+            "should_override": bool(should_override),
+            "recommended_answer": recommended_answer,
+            "recommended_normalized_group": recommended_normalized_group,
+            "recommended_source": str(recommended_source),
+            "reason": str(reason),
+            "signals_used": list(signals_used),
+            "abstain_reason": abstain or "",
+        }
+
+    if not isinstance(tiebreak_meta, dict):
+        return _out(
+            should_override=False,
+            recommended_answer=None,
+            recommended_normalized_group=None,
+            recommended_source="none",
+            reason="abstain_invalid_tiebreak_meta",
+            abstain="invalid_tiebreak_meta",
+        )
+
+    if not bool(tiebreak_meta.get("frontier_tiebreak_triggered")):
+        signals_used.append("frontier_tiebreak_triggered=false")
+        return _out(
+            should_override=False,
+            recommended_answer=None,
+            recommended_normalized_group=None,
+            recommended_source="none",
+            reason="abstain_no_tiebreak",
+            abstain="tiebreak_not_triggered",
+        )
+
+    tb_raw = _to_text(tiebreak_meta.get("frontier_tiebreak_selected_group"))
+    if not tb_raw:
+        signals_used.append("missing_frontier_tiebreak_selected_group")
+        return _out(
+            should_override=False,
+            recommended_answer=None,
+            recommended_normalized_group=None,
+            recommended_source="none",
+            reason="abstain_missing_tiebreak_group",
+            abstain="missing_tiebreak_selected_group",
+        )
+
+    tb_n = normalize_answer_group_key(str(tb_raw).strip())
+    signals_used.append("frontier_tiebreak_selected_group")
+    if not tb_n or tb_n == "__unknown__":
+        return _out(
+            should_override=False,
+            recommended_answer=None,
+            recommended_normalized_group=None,
+            recommended_source="none",
+            reason="abstain_bad_normalized_tiebreak_group",
+            abstain="tiebreak_group_normalizes_empty",
+        )
+
+    px = pal_execution_flat if isinstance(pal_execution_flat, dict) else {}
+    pal_out = _to_text(px.get("pal_candidate_answer"))
+    pal_out_n = normalize_answer_group_key(str(pal_out).strip()) if pal_out else ""
+    signals_used.append("pal_candidate_answer")
+    pal_json_raw = _to_text(px.get("pal_json_answer"))
+    pal_json_n = normalize_answer_group_key(str(pal_json_raw).strip()) if pal_json_raw else ""
+    if pal_json_raw:
+        signals_used.append("pal_json_answer")
+
+    sup_tb = _support_for_normalized_histogram_key(
+        combined_group_counts_base if isinstance(combined_group_counts_base, dict) else {},
+        tb_n,
+    )
+    signals_used.append("histogram_support_for_tiebreak_group")
+
+    if sup_tb < 1:
+        abstain_reason = "insufficient_histogram_support_for_tiebreak_group"
+        return _out(
+            should_override=False,
+            recommended_answer=None,
+            recommended_normalized_group=tb_n,
+            recommended_source="none",
+            reason="abstain_low_support",
+            abstain=abstain_reason,
+        )
+
+    if not pal_out_n or pal_out_n == "__unknown__":
+        abstain_reason = "missing_or_unknown_pal_executable_stdout_group"
+        return _out(
+            should_override=False,
+            recommended_answer=None,
+            recommended_normalized_group=tb_n,
+            recommended_source="none",
+            reason="abstain_missing_pal_stdout_group",
+            abstain=abstain_reason,
+        )
+
+    if pal_out_n == tb_n:
+        abstain_reason = "pal_stdout_already_matches_tiebreak_group"
+        return _out(
+            should_override=False,
+            recommended_answer=None,
+            recommended_normalized_group=tb_n,
+            recommended_source="none",
+            reason="abstain_stdout_aligned",
+            abstain=abstain_reason,
+        )
+
+    # --- Overlay-summary alignment (compact replay snapshots; no gold) ---
+    if isinstance(overlay_tiebreak_summary, dict):
+        op_prev = _to_text(overlay_tiebreak_summary.get("pal_overlay_previous_answer"))
+        if op_prev:
+            signals_used.append("overlay_pal_overlay_previous_answer")
+            op_n = normalize_answer_group_key(str(op_prev).strip())
+            if op_n and op_n != "__unknown__" and op_n == tb_n:
+                combined_norm = _histogram_counts_by_normalized_group(
+                    combined_group_counts_base if isinstance(combined_group_counts_base, dict) else {}
+                )
+                uniform_high_ambiguity = _uniform_full_multigroup_tie(combined_norm, min_groups=3)
+                sup_pal_stdout = _support_for_normalized_histogram_key(
+                    combined_group_counts_base if isinstance(combined_group_counts_base, dict) else {},
+                    pal_out_n,
+                )
+                signals_used.append("histogram_uniform_multigroup_tie")
+                signals_used.append("pal_stdout_histogram_mass")
+                # Triple (or more) full ties among peers + executable stdout off the merged histogram
+                # are too ambiguous for overlay-only commitment (offline replay showed systematic harm).
+                # Keep overlay when PAL stdout still lands on an on-manifold peer (competitive branch mass).
+                if uniform_high_ambiguity and sup_pal_stdout < 1:
+                    return _out(
+                        should_override=False,
+                        recommended_answer=None,
+                        recommended_normalized_group=tb_n,
+                        recommended_source="none",
+                        reason="abstain_overlay_ambiguous_multipeer_tie_stdout_off_histogram",
+                        abstain="uniform_multigroup_tie_and_pal_stdout_off_manifold",
+                    )
+                return _out(
+                    should_override=True,
+                    recommended_answer=str(op_prev).strip(),
+                    recommended_normalized_group=tb_n,
+                    recommended_source="overlay_prior_matches_tiebreak",
+                    reason="override_overlay_prior_matches_tiebreak_conflicts_with_pal_stdout",
+                    abstain=None,
+                )
+
+    # --- PAL JSON aligns with tie-break selection but executable stdout differs ---
+    if pal_json_n and pal_json_n != "__unknown__" and pal_json_n == tb_n and pal_out_n != tb_n:
+        signals_used.append("pal_json_aligns_with_tiebreak")
+        return _out(
+            should_override=True,
+            recommended_answer=None,
+            recommended_normalized_group=tb_n,
+            recommended_source="pal_json_agrees_with_tiebreak",
+            reason="override_pal_json_matches_tiebreak_conflicts_with_stdout",
+            abstain=None,
+        )
+
+    abstain_reason = "no_track_b_alignment_channel_met"
+    return _out(
+        should_override=False,
+        recommended_answer=None,
+        recommended_normalized_group=tb_n,
+        recommended_source="none",
+        reason="abstain_no_alignment",
+        abstain=abstain_reason,
+    )
+
+
 def decide_pal_strong_overlay_promotion(
     *,
     combined_group_counts_base: dict[str, Any],
@@ -229,6 +468,12 @@ def apply_pal_residual_strong_integration_fix(
     pal_already = md.get("pal_overlay") if isinstance(md.get("pal_overlay"), dict) else {}
     if isinstance(pal_already, dict) and bool(pal_already.get("pal_overlay_applied")):
         sidecar["pal_integration_fix_reason"] = "skipped_pal_overlay_already_applied"
+        return out, sidecar
+
+    # Track B gate already committed metadata["final_answer"]; do not re-run PAL promotion at evaluator time.
+    if isinstance(pal_already, dict) and bool(pal_already.get("track_b_gate_override_applied")):
+        sidecar["pal_integration_fix_reason"] = "skipped_track_b_gate_override_applied"
+        sidecar["pal_integration_skipped_reason"] = "track_b_gate_override_applied"
         return out, sidecar
 
     strong_pal = int(pal_px.get("pal_candidate_is_strong", 0) or 0) == 1

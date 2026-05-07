@@ -50,6 +50,7 @@ from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_TRACK_B_COMMITMENT_V1,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
@@ -1457,6 +1458,20 @@ def build_frontier_strategies(
                 method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL,
                 strategy_seed_max_actions=2,
                 **strategy_seeded_outer_kwargs_k1_frontier4_pal,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_pal_track_b = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal,
+            "enable_track_b_overlay_commitment_gate": True,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_TRACK_B_COMMITMENT_V1] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_TRACK_B_COMMITMENT_V1,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_pal_track_b,
             )
         )
         specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD] = (

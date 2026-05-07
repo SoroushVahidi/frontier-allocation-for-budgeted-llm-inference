@@ -24,7 +24,7 @@ from experiments.frontier_max_support_tiebreak import (
     pick_answer_text_for_normalized_group,
     resolve_frontier_bias_max_support_tiebreak,
 )
-from experiments.output_layer_repair import decide_pal_strong_overlay_promotion
+from experiments.output_layer_repair import decide_pal_strong_overlay_promotion, decide_track_b_overlay_commitment_gate
 from experiments.objective_function_stack import compute_process_quality, compute_target_completion
 from experiments.problem_type_utils import classify_problem_type
 from experiments.prm_partial_scorer import PartialBranchScorer
@@ -6915,6 +6915,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         direct_hybrid_selection_policy: str = "",
         direct_hybrid_l1_token_budget: int | None = None,
         direct_hybrid_l1_prompt_style: str = "",
+        enable_track_b_overlay_commitment_gate: bool = False,
         method_name: str = "direct_reserve_frontier_gate_v1",
     ) -> None:
         super().__init__(
@@ -6969,6 +6970,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         )
         self.direct_hybrid_l1_token_budget = direct_hybrid_l1_token_budget
         self.direct_hybrid_l1_prompt_style = str(direct_hybrid_l1_prompt_style or "").strip()
+        self.enable_track_b_overlay_commitment_gate = bool(enable_track_b_overlay_commitment_gate)
         self.method_name = method_name
 
     def _compose_direct_hybrid_l1_question(self, question: str) -> str:
@@ -8212,38 +8214,89 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "pal_selection_reason": "not_applicable",
             "pal_selection_block_reason": "none",
             "pal_frontier_conflict": False,
+            "track_b_gate_evaluated": False,
+            "track_b_gate_decision": {},
+            "track_b_gate_override_applied": False,
         }
         if bool(getattr(self, "enable_pal_branch", False)) and pal_answer is not None:
             strong_pal = bool(int(pal_meta.get("pal_candidate_is_strong", 0)) == 1)
             frontier_weak = bool(frontier_result is None or frontier_support <= 1)
-            promote_overlay, overlay_detail, overlay_diag = decide_pal_strong_overlay_promotion(
-                combined_group_counts_base=dict(combined_group_counts_base),
-                pal_answer_raw=str(pal_answer),
-                incumbent_final_answer_raw=str(final_answer),
-                frontier_weak=bool(frontier_weak),
-                tiebreak_triggered=bool(tiebreak_meta.get("frontier_tiebreak_triggered")),
-                tiebreak_selected_group_raw=str(tiebreak_meta.get("frontier_tiebreak_selected_group") or "").strip(),
-                strong_pal=strong_pal,
-                pal_score=float(pal_meta.get("pal_score", 0.0) or 0.0),
-            )
-            pal_overlay_meta["pal_frontier_conflict"] = bool(overlay_diag.get("pal_frontier_conflict"))
-            pal_overlay_meta["pal_frontier_max_peer_histogram_support"] = overlay_diag.get(
-                "max_non_pal_histogram_support"
-            )
-            pal_overlay_meta["pal_frontier_max_peer_histogram_group_raw"] = overlay_diag.get(
-                "max_non_pal_histogram_group_raw"
-            )
-            pal_overlay_meta["tiebreak_histogram_support_at_selection"] = overlay_diag.get(
-                "tiebreak_selected_group_histogram_support"
-            )
-            if promote_overlay:
-                final_answer = pal_answer
-                pal_overlay_meta["pal_overlay_applied"] = True
-                pal_overlay_meta["pal_overlay_reason"] = "pal_promoted"
-                pal_overlay_meta["pal_selection_reason"] = str(overlay_detail)
+            skip_pal_strong_overlay = False
+            exec_px = pal_meta.get("pal_execution_result")
+            pal_flat: dict[str, Any] = {
+                "pal_candidate_answer": str(pal_meta.get("pal_candidate_answer") or "").strip(),
+                "pal_json_answer": str(pal_meta.get("pal_json_answer") or "").strip(),
+            }
+            if isinstance(exec_px, dict):
+                if not pal_flat["pal_candidate_answer"]:
+                    pal_flat["pal_candidate_answer"] = str(
+                        exec_px.get("pal_answer_normalized") or exec_px.get("pal_answer_raw") or ""
+                    ).strip()
+
+            if bool(getattr(self, "enable_track_b_overlay_commitment_gate", False)):
+                pal_overlay_meta["track_b_gate_evaluated"] = True
+                ov_tb_summary: dict[str, Any] | None = None
+                fa_pre_pal = final_answer
+                if fa_pre_pal is not None and str(fa_pre_pal).strip():
+                    ov_tb_summary = {"pal_overlay_previous_answer": str(fa_pre_pal).strip()}
+                tb_gate_out = decide_track_b_overlay_commitment_gate(
+                    combined_group_counts_base=dict(combined_group_counts_base),
+                    tiebreak_meta=dict(tiebreak_meta),
+                    pal_execution_flat=dict(pal_flat),
+                    overlay_tiebreak_summary=ov_tb_summary,
+                )
+                pal_overlay_meta["track_b_gate_decision"] = dict(tb_gate_out)
+                if bool(tb_gate_out.get("should_override")):
+                    ov_ans = tb_gate_out.get("recommended_answer")
+                    if not ov_ans:
+                        rg = tb_gate_out.get("recommended_normalized_group")
+                        if isinstance(rg, str) and rg.strip():
+                            ov_ans = pick_answer_text_for_normalized_group(
+                                str(rg).strip(),
+                                direct_answers=direct_answers,
+                                incumbent_answer=incumbent_answer,
+                                frontier_answer=frontier_answer,
+                                frontier_metadata=frontier_meta,
+                                selector_candidate_pool=None,
+                            )
+                    if ov_ans:
+                        final_answer = str(ov_ans).strip()
+                        pal_overlay_meta["track_b_gate_override_applied"] = True
+                        skip_pal_strong_overlay = True
+                        pal_overlay_meta["pal_overlay_previous_answer"] = final_answer
+
+            if skip_pal_strong_overlay:
+                pal_overlay_meta["pal_overlay_reason"] = "track_b_gate_supersedes_pal_strong_overlay"
+                pal_overlay_meta["pal_selection_block_reason"] = "skipped_after_track_b_commitment_gate"
             else:
-                pal_overlay_meta["pal_overlay_reason"] = str(overlay_detail)
-                pal_overlay_meta["pal_selection_block_reason"] = str(overlay_detail)
+                promote_overlay, overlay_detail, overlay_diag = decide_pal_strong_overlay_promotion(
+                    combined_group_counts_base=dict(combined_group_counts_base),
+                    pal_answer_raw=str(pal_answer),
+                    incumbent_final_answer_raw=str(final_answer),
+                    frontier_weak=bool(frontier_weak),
+                    tiebreak_triggered=bool(tiebreak_meta.get("frontier_tiebreak_triggered")),
+                    tiebreak_selected_group_raw=str(tiebreak_meta.get("frontier_tiebreak_selected_group") or "").strip(),
+                    strong_pal=strong_pal,
+                    pal_score=float(pal_meta.get("pal_score", 0.0) or 0.0),
+                )
+                pal_overlay_meta["pal_frontier_conflict"] = bool(overlay_diag.get("pal_frontier_conflict"))
+                pal_overlay_meta["pal_frontier_max_peer_histogram_support"] = overlay_diag.get(
+                    "max_non_pal_histogram_support"
+                )
+                pal_overlay_meta["pal_frontier_max_peer_histogram_group_raw"] = overlay_diag.get(
+                    "max_non_pal_histogram_group_raw"
+                )
+                pal_overlay_meta["tiebreak_histogram_support_at_selection"] = overlay_diag.get(
+                    "tiebreak_selected_group_histogram_support"
+                )
+                if promote_overlay:
+                    final_answer = pal_answer
+                    pal_overlay_meta["pal_overlay_applied"] = True
+                    pal_overlay_meta["pal_overlay_reason"] = "pal_promoted"
+                    pal_overlay_meta["pal_selection_reason"] = str(overlay_detail)
+                else:
+                    pal_overlay_meta["pal_overlay_reason"] = str(overlay_detail)
+                    pal_overlay_meta["pal_selection_block_reason"] = str(overlay_detail)
 
         unit_track_overlay_meta: dict[str, Any] = {
             "unit_track_overlay_applied": False,
