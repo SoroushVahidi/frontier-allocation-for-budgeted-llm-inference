@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "case_id": "openai_gsm8k_1085",
+  "question": "Greg puts clean sheets on 4 twin beds and 1 king size bed every week.  His laundry machine will only allow him to wash 2 twin sets of sheets at a time and 1 king set of sheets at a time.  How many loads of laundry does he do in a year?",
+  "gold_answer": "156",
+  "current_pal_answer": "260",
+  "current_pal_correct": false,
+  "external_correctness": {
+    "external_l1_max": {
+      "answer": "156",
+      "correct": true
+    },
+    "external_tale_prompt_budgeting": {
+      "answer": "156",
+      "correct": true
+    },
+    "external_s1_budget_forcing": {
+      "answer": "156",
+      "correct": true
+    }
+  },
+  "mechanism_label": "gold_in_pool_but_missing_from_answer_group_histogram",
+  "failure_stage": "histogram_grouping_gap",
+  "replay_feasibility": "replay_ready",
+  "ambiguous_gold_presence": "",
+  "current_selected_source": "controller_metadata_final_answer",
+  "direct_reserve_answer": "260",
+  "overlay_tiebreak_summary": {
+    "pal_overlay_applied": false,
+    "pal_overlay_previous_answer": "260",
+    "frontier_tiebreak_triggered": false,
+    "selected_group_meta": "260",
+    "notes": "Answer-group histogram single-buckets 260; gold 156 appears in pool with low branch_score."
+  },
+  "answer_group_histogram": {
+    "260": 1
+  },
+  "direct_answer_group_counts": {
+    "260": 1
+  },
+  "selector_candidate_pool_summary": [
+    {
+      "normalized_answer": "260",
+      "source_family": "direct_reserve",
+      "branch_score": 1.0,
+      "is_original_selected": 1
+    },
+    {
+      "normalized_answer": "156",
+      "source_family": "pal_seed",
+      "branch_score": 0.1,
+      "is_original_selected": 0
+    },
+    {
+      "normalized_answer": "260",
+      "source_family": "pal_empty_code_retry",
+      "branch_score": 0.1,
+      "is_original_selected": 1
+    }
+  ],
+  "pal_execution_summary": {
+    "pal_candidate_answer": "",
+    "pal_json_answer": "156",
+    "pal_candidate_is_strong": 0,
+    "pal_exec_ok": 0,
+    "pal_stdout_normalized": "",
+    "pal_selection_policy": "weak_frontier_or_supported_agreement"
+  },
+  "retry_summary": {
+    "pal_empty_code_retry_ran": true,
+    "pal_empty_code_retry_reason": "seed_empty_or_non_executable"
+  },
+  "expected_counterfactual_notes": "Offline: max_support/Hybrid yield 260; overlay NA (false). Need bucket repair so 156 enters histogram.",
+  "guardrail_or_target_role": "target_diagnostic_anchor",
+  "source_artifact_paths": {
+    "replay_report_md": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_report.md",
+    "replay_table_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_table.csv",
+    "policy_summary_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/counterfactual_policy_summary.csv",
+    "selected_failure_cases_jsonl": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/selected_failure_cases.jsonl",
+    "all_casebook_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+    "per_example_records_jsonl": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/cohere_real_model_cost_normalized_validation_20260507T161935Z/per_example_records.jsonl"
+  }
+}

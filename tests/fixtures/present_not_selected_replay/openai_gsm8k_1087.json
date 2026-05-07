@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "case_id": "openai_gsm8k_1087",
+  "question": "Michael is racing his horse and notices that for every mile the horse runs, he eats 1/2 a bail of hay. A bail of hay costs $3. If his horse runs for 30 minutes at 32MPH, and Michael has six 5 dollar bills, how much change does he have after he buys the hay?",
+  "gold_answer": "6",
+  "current_pal_answer": "-66",
+  "current_pal_correct": false,
+  "external_correctness": {
+    "external_l1_max": {
+      "answer": "6",
+      "correct": true
+    },
+    "external_tale_prompt_budgeting": {
+      "answer": "6",
+      "correct": true
+    },
+    "external_s1_budget_forcing": {
+      "answer": "16",
+      "correct": false
+    }
+  },
+  "mechanism_label": "overlay_previous_equals_gold_but_surface_used_bad_pal_stdout",
+  "failure_stage": "overlay_vs_pal_stdout_surface",
+  "replay_feasibility": "replay_ready",
+  "ambiguous_gold_presence": "gold_in_tree_flag_but_not_in_normalized_selector_pool",
+  "current_selected_source": "controller_metadata_final_answer",
+  "direct_reserve_answer": "12",
+  "overlay_tiebreak_summary": {
+    "pal_overlay_applied": true,
+    "pal_overlay_previous_answer": "6",
+    "frontier_tiebreak_triggered": true,
+    "frontier_tiebreak_selected_group": "6",
+    "selected_group_meta": "-66",
+    "notes": "Executable PAL stdout -66 surfaced; overlay/tiebreak metadata align with gold bucket 6."
+  },
+  "answer_group_histogram": {
+    "6": 1,
+    "12": 1
+  },
+  "direct_answer_group_counts": {
+    "12": 1
+  },
+  "selector_candidate_pool_summary": [
+    {
+      "normalized_answer": "12",
+      "source_family": "direct_reserve",
+      "branch_score": 1.0,
+      "is_original_selected": 0
+    },
+    {
+      "normalized_answer": "-66",
+      "source_family": "pal_seed",
+      "branch_score": 1.0,
+      "is_original_selected": 1
+    }
+  ],
+  "pal_execution_summary": {
+    "pal_candidate_answer": "-66",
+    "pal_json_answer": "12",
+    "pal_candidate_is_strong": 1,
+    "pal_exec_ok": 1,
+    "pal_stdout_normalized": "-66",
+    "pal_selection_policy": "weak_frontier_or_supported_agreement"
+  },
+  "retry_summary": {
+    "pal_empty_code_retry_ran": false
+  },
+  "expected_counterfactual_notes": "Offline: max_support and overlay_previous yield 6 (gold); PAL executable channel outputs wrong stdout. Design focus: commitment between overlay/tiebreak metadata and final surface—not PAL-exec priority.",
+  "guardrail_or_target_role": "target_diagnostic_anchor",
+  "source_artifact_paths": {
+    "replay_report_md": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_report.md",
+    "replay_table_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_table.csv",
+    "policy_summary_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/counterfactual_policy_summary.csv",
+    "selected_failure_cases_jsonl": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/selected_failure_cases.jsonl",
+    "all_casebook_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+    "per_example_records_jsonl": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/cohere_real_model_cost_normalized_validation_20260507T161935Z/per_example_records.jsonl"
+  }
+}

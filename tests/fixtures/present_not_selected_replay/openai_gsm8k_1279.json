@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "case_id": "openai_gsm8k_1279",
+  "question": "Sue lives in a fun neighborhood.  One weekend, the neighbors decided to play a prank on Sue.  On Friday morning, the neighbors placed 18 pink plastic flamingos out on Sue's front yard.  On Saturday morning, the neighbors took back one third of the flamingos, painted them white, and put these newly painted white flamingos back out on Sue's front yard.  Then, on Sunday morning, they added another 18 pink plastic flamingos to the collection. At noon on Sunday, how many more pink plastic flamingos w",
+  "gold_answer": "24",
+  "current_pal_answer": "30",
+  "current_pal_correct": false,
+  "external_correctness": {
+    "external_l1_max": {
+      "answer": "24",
+      "correct": true
+    },
+    "external_tale_prompt_budgeting": {
+      "answer": "24",
+      "correct": true
+    },
+    "external_s1_budget_forcing": {
+      "answer": "30",
+      "correct": false
+    }
+  },
+  "mechanism_label": "overlay_previous_equals_gold_but_surface_used_bad_pal_stdout",
+  "failure_stage": "triple_tie_branch_score",
+  "replay_feasibility": "replay_ready",
+  "ambiguous_gold_presence": "gold_in_tree_flag_but_not_in_normalized_selector_pool",
+  "current_selected_source": "controller_metadata_final_answer",
+  "direct_reserve_answer": "12",
+  "overlay_tiebreak_summary": {
+    "pal_overlay_applied": true,
+    "pal_overlay_previous_answer": "24",
+    "frontier_tiebreak_triggered": true,
+    "frontier_tiebreak_selected_group": "24",
+    "selected_group_meta": "30",
+    "notes": "Triple tie among histogram groups; surfaced 30 vs overlay prior 24 (gold)."
+  },
+  "answer_group_histogram": {
+    "24": 1,
+    "30": 1,
+    "12": 1
+  },
+  "direct_answer_group_counts": {
+    "12": 1
+  },
+  "selector_candidate_pool_summary": [
+    {
+      "normalized_answer": "12",
+      "source_family": "direct_reserve",
+      "branch_score": 1.0,
+      "is_original_selected": 0
+    },
+    {
+      "normalized_answer": "30",
+      "source_family": "pal_seed",
+      "branch_score": 1.0,
+      "is_original_selected": 1
+    }
+  ],
+  "pal_execution_summary": {
+    "pal_candidate_answer": "30",
+    "pal_json_answer": "34",
+    "pal_candidate_is_strong": 1,
+    "pal_exec_ok": 1,
+    "pal_stdout_normalized": "30",
+    "pal_selection_policy": "weak_frontier_or_supported_agreement"
+  },
+  "retry_summary": {
+    "pal_empty_code_retry_ran": false
+  },
+  "expected_counterfactual_notes": "Offline: max_support picks 30; overlay_previous picks 24 (gold). Shows overlay rollback aligns with gold offline but overlay-like rules regress on band—must be gated.",
+  "guardrail_or_target_role": "target_diagnostic_anchor",
+  "source_artifact_paths": {
+    "replay_report_md": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_report.md",
+    "replay_table_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_table.csv",
+    "policy_summary_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/counterfactual_policy_summary.csv",
+    "selected_failure_cases_jsonl": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/selected_failure_cases.jsonl",
+    "all_casebook_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+    "per_example_records_jsonl": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/cohere_real_model_cost_normalized_validation_20260507T161935Z/per_example_records.jsonl"
+  }
+}

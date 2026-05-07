@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "case_id": "openai_gsm8k_1095",
+  "question": "Mark is making a quadruple batch of brownies. The normal recipe calls for 3 cups of flour and 1 cup milk. If flour is sold in 2-cup bags and milk is sold in 2-cup bottles, how many more bags of flour than bottles of milk does Mark have to buy?",
+  "gold_answer": "4",
+  "current_pal_answer": "2",
+  "current_pal_correct": false,
+  "external_correctness": {
+    "external_l1_max": {
+      "answer": "4",
+      "correct": true
+    },
+    "external_tale_prompt_budgeting": {
+      "answer": "2",
+      "correct": false
+    },
+    "external_s1_budget_forcing": {
+      "answer": "4",
+      "correct": true
+    }
+  },
+  "mechanism_label": "frontier_tiebreak_selected_peer_not_gold_while_gold_in_pool",
+  "failure_stage": "frontier_tiebreak_vs_pool",
+  "replay_feasibility": "replay_ready",
+  "ambiguous_gold_presence": "",
+  "current_selected_source": "controller_metadata_final_answer",
+  "direct_reserve_answer": "7",
+  "overlay_tiebreak_summary": {
+    "pal_overlay_applied": false,
+    "pal_overlay_previous_answer": "2",
+    "frontier_tiebreak_triggered": true,
+    "frontier_tiebreak_selected_group": "2",
+    "selected_group_meta": "2",
+    "notes": "Histogram keys 2 vs 7 omit bucket for gold 4 despite pool entries for 4."
+  },
+  "answer_group_histogram": {
+    "2": 1,
+    "7": 1
+  },
+  "direct_answer_group_counts": {
+    "7": 1
+  },
+  "selector_candidate_pool_summary": [
+    {
+      "normalized_answer": "7",
+      "source_family": "direct_reserve",
+      "branch_score": 1.0,
+      "is_original_selected": 0
+    },
+    {
+      "normalized_answer": "4",
+      "source_family": "pal_seed",
+      "branch_score": 0.1,
+      "is_original_selected": 0
+    },
+    {
+      "normalized_answer": "4",
+      "source_family": "pal_empty_code_retry",
+      "branch_score": 0.1,
+      "is_original_selected": 0
+    }
+  ],
+  "pal_execution_summary": {
+    "pal_candidate_answer": "",
+    "pal_json_answer": "4",
+    "pal_candidate_is_strong": 0,
+    "pal_exec_ok": 0,
+    "pal_stdout_normalized": "",
+    "pal_selection_policy": "weak_frontier_or_supported_agreement"
+  },
+  "retry_summary": {
+    "pal_empty_code_retry_ran": true,
+    "pal_empty_code_retry_reason": "seed_empty_or_non_executable"
+  },
+  "expected_counterfactual_notes": "Offline: max_support picks 2; DR/pool_max_branch pick 7; none hit gold 4—grouping gap.",
+  "guardrail_or_target_role": "target_diagnostic_anchor",
+  "source_artifact_paths": {
+    "replay_report_md": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_report.md",
+    "replay_table_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_table.csv",
+    "policy_summary_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/counterfactual_policy_summary.csv",
+    "selected_failure_cases_jsonl": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/selected_failure_cases.jsonl",
+    "all_casebook_csv": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+    "per_example_records_jsonl": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/cohere_real_model_cost_normalized_validation_20260507T161935Z/per_example_records.jsonl"
+  }
+}
