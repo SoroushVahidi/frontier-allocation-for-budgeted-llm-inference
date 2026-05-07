@@ -17,7 +17,7 @@ from sklearn.linear_model import LogisticRegression
 from experiments.branching import BranchState
 from experiments.data import extract_final_answer
 from experiments.direct_hybrid_selection import resolve_direct_hybrid_seed_overlay
-from experiments.pal_executor import execute_pal_code
+from experiments.pal_executor import execute_pal_code, extract_pal_stdout_numeric_candidate
 from experiments.frontier_max_support_tiebreak import (
     build_merged_support_histogram_for_tiebreak,
     normalize_answer_group_key,
@@ -8711,6 +8711,13 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                 }
             )
 
+        selector_candidate_pool = merge_pal_execution_into_selector_candidate_pool(
+            selector_candidate_pool,
+            pal_meta,
+            actions_used=int(actions_used),
+            selected_group_key=str(selected_group_key),
+        )
+
         metadata = {
             "method_family": "diagnostic_direct_reserve_frontier_gate",
             "diagnostic_only": True,
@@ -9978,3 +9985,98 @@ def _normalize_answer(text: str | None) -> str:
             value = value[:-2]
         return value
     return stripped.lower()
+
+
+PAL_EXECUTION_SELECTOR_POOL_SOURCE_ID = "pal_execution"
+
+
+def _numeric_answer_token_parseable(s: str | None) -> bool:
+    """Gold-free permissive numeric check for selector-pool admission (distinct from PAL 'strong')."""
+    if s is None:
+        return False
+    t = str(s).strip().replace(",", "")
+    if not t:
+        return False
+    try:
+        float(t)
+        return True
+    except ValueError:
+        return False
+
+
+def merge_pal_execution_into_selector_candidate_pool(
+    selector_candidate_pool: list[dict[str, Any]],
+    pal_meta: dict[str, Any],
+    *,
+    actions_used: int,
+    selected_group_key: str,
+) -> list[dict[str, Any]]:
+    """Attach PAL interpreter outputs as explicit pool rows for offline gold-absent diagnostics (gold-free).
+
+    Merges ``pal_answer_normalized``, ``pal_answer_raw``, and stdout-derived numeric when parseable,
+    deduped by controller ``_normalize_answer`` group vs existing ``predicted_answer`` rows.
+    """
+    pool = list(selector_candidate_pool)
+    if int(pal_meta.get("pal_budget_cost_observed", 0) or 0) <= 0:
+        return pool
+
+    er = pal_meta.get("pal_execution_result")
+    if not isinstance(er, dict):
+        er = {}
+
+    ordered: list[tuple[str, str]] = []
+    n = str(er.get("pal_answer_normalized") or "").strip()
+    r = str(er.get("pal_answer_raw") or "").strip()
+    st = extract_pal_stdout_numeric_candidate(str(er.get("pal_stdout") or ""))
+    for val, provenance in ((n, "pal_answer_normalized"), (r, "pal_answer_raw"), (st, "pal_stdout_numeric")):
+        if not val or not _numeric_answer_token_parseable(val):
+            continue
+        ordered.append((val, provenance))
+
+    seen_groups: set[str] = set()
+    for row in pool:
+        if not isinstance(row, dict):
+            continue
+        pa = row.get("predicted_answer")
+        if pa is None or not str(pa).strip():
+            continue
+        g = _normalize_answer(str(pa).strip()) or "__unknown__"
+        if g not in {"", "__unknown__"}:
+            seen_groups.add(g)
+
+    pal_score = 0.0
+    try:
+        pal_score = float(pal_meta.get("pal_score", 0.0) or 0.0)
+    except (TypeError, ValueError):
+        pal_score = 0.0
+
+    added = 0
+    for val, provenance in ordered:
+        g = _normalize_answer(val) or "__unknown__"
+        if g in {"", "__unknown__"}:
+            continue
+        if g in seen_groups:
+            continue
+        seen_groups.add(g)
+        bid = f"pal_execution__{added}"
+        added += 1
+        pool.append(
+            {
+                "candidate_id": bid,
+                "branch_id": bid,
+                "predicted_answer": val,
+                "normalized_answer": g,
+                "trace": "",
+                "trace_steps": [],
+                "reasoning_text": "",
+                "source_id": PAL_EXECUTION_SELECTOR_POOL_SOURCE_ID,
+                "source_family": PAL_EXECUTION_SELECTOR_POOL_SOURCE_ID,
+                "source_prior": max(0.0, min(1.0, pal_score)),
+                "branch_score": float(pal_score),
+                "cost_norm": 0.0,
+                "actions_used": int(actions_used),
+                "is_original_selected": int(g == selected_group_key),
+                "source_metadata": f"{PAL_EXECUTION_SELECTOR_POOL_SOURCE_ID}:{provenance}",
+            }
+        )
+    return pool
