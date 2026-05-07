@@ -1,0 +1,13 @@
+example_id,prediction_changed_any,exact_worsened_any,incumbent_was_correct,added_candidate_count_any,duplicate_skip_any,triggered_any,conservative_frozen,conservative_override_allowed,conservative_override_block_reason,gold_present_pool_delta_broad,buckets,broad_reason,conservative_reason,broad_question_bucket,conservative_question_bucket,casebook_external_exact,casebook_pal_exact
+openai_gsm8k_1025,1,1,1,2,0,1,0,0,blocked_strong_incumbent_score,0,added_candidate_flip_wrong|override_blocked_but_selection_changed|previously_correct_regressed,triggered_added_candidate,triggered_added_candidate,qnum_6p,qnum_6p,0,0
+openai_gsm8k_1027,1,0,0,2,0,1,0,0,blocked_missing_corroboration,0,override_blocked_but_selection_changed,triggered_added_candidate,triggered_added_candidate,qnum_6p,qnum_6p,1,0
+openai_gsm8k_778,0,0,1,1,1,1,0,0,not_applicable,0,,triggered_added_candidate,duplicate_normalized_group,qnum_4_5,qnum_4_5,0,0
+openai_gsm8k_780,1,1,1,2,0,1,0,0,blocked_strong_incumbent_score,0,added_candidate_flip_wrong|override_blocked_but_selection_changed|previously_correct_regressed,triggered_added_candidate,triggered_added_candidate,qnum_4_5,qnum_4_5,0,0
+openai_gsm8k_812,1,0,0,2,0,1,0,0,blocked_missing_corroboration,0,override_blocked_but_selection_changed,triggered_added_candidate,triggered_added_candidate,qnum_6p,qnum_6p,0,0
+openai_gsm8k_814,1,0,0,2,0,1,0,0,blocked_missing_corroboration,0,,triggered_added_candidate,triggered_added_candidate,qnum_4_5,qnum_4_5,1,0
+openai_gsm8k_819,1,0,0,2,0,1,0,0,blocked_strong_incumbent_score,1,override_blocked_but_selection_changed,triggered_added_candidate,triggered_added_candidate,qnum_6p,qnum_6p,0,0
+openai_gsm8k_929,1,0,0,1,1,1,0,0,blocked_strong_incumbent_score,1,duplicate_skip_flip|override_blocked_but_selection_changed,duplicate_normalized_group,triggered_added_candidate,qnum_4_5,qnum_4_5,0,0
+openai_gsm8k_934,1,0,0,2,0,1,0,0,blocked_missing_corroboration,0,override_blocked_but_selection_changed,triggered_added_candidate,triggered_added_candidate,qnum_4_5,qnum_4_5,0,0
+openai_gsm8k_944,1,0,0,2,0,1,0,0,blocked_strong_incumbent_score,0,override_blocked_but_selection_changed,triggered_added_candidate,triggered_added_candidate,qnum_4_5,qnum_4_5,0,0
+openai_gsm8k_953,1,0,0,1,1,1,0,0,not_applicable,-1,duplicate_skip_flip|override_blocked_but_selection_changed,triggered_added_candidate,duplicate_normalized_group,qnum_6p,qnum_6p,0,0
+openai_gsm8k_979,1,1,1,2,0,1,0,0,blocked_strong_incumbent_score,0,added_candidate_flip_wrong|override_blocked_but_selection_changed|previously_correct_regressed,triggered_added_candidate,triggered_added_candidate,qnum_4_5,qnum_4_5,0,0

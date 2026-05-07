@@ -1,0 +1,4 @@
+example_id,incumbent_prediction,new_prediction,incumbent_exact,new_exact,incumbent_gold_present_pool,new_gold_present_pool,rate_ratio_gate_triggered,rate_ratio_gate_added_candidates,rate_ratio_gate_skipped_duplicate,rate_ratio_gate_reason,rate_ratio_gate_question_bucket
+ex1,23,21,1,0,1,1,1,1,0,triggered_added_candidate,qnum_6p
+ex2,65,68,0,1,0,1,1,1,0,triggered_added_candidate,qnum_4_5
+ex3,7400,7400,1,1,1,1,1,0,1,duplicate_normalized_group,qnum_4_5
