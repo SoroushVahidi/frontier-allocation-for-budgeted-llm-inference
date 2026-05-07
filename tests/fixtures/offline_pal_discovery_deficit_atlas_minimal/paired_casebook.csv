@@ -1,0 +1,4 @@
+example_id,question,gold_answer,external_exact,pal_exact
+e1,Tom has 2 apples and buys 3 more. How many total apples now?,5,1,0
+e2,A rate problem: 60 miles in 2 hours. What is miles per hour?,30,1,0
+e3,A class has 40 students and 25 are girls. What percent are girls?,62.5,0,0

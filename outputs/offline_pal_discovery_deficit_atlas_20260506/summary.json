@@ -1,0 +1,171 @@
+{
+  "focus_rows": 48,
+  "meta": {
+    "api_calls": "none",
+    "casebook_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv",
+    "output_dir": "/home/soroush/research-next-wt/outputs/offline_pal_discovery_deficit_atlas_20260506",
+    "pal_results_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/pal_results.jsonl"
+  },
+  "operation_counts": {
+    "difference": 4,
+    "none": 6,
+    "percent": 1,
+    "product": 6,
+    "rate_ratio": 21,
+    "temporal_change": 5,
+    "total_sum": 5
+  },
+  "quantity_bucket_counts": {
+    "qnum_0_1": 6,
+    "qnum_2_3": 16,
+    "qnum_4_5": 14,
+    "qnum_6p": 12
+  },
+  "stage_counts": {
+    "gold_absent_all_detectable": 36,
+    "gold_in_direct_attempts": 2,
+    "gold_in_trace_but_not_pool": 10
+  },
+  "top_archetypes": [
+    {
+      "count": 6,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_6p",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 5,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_4_5",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 2,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "temporal_change",
+      "quantity_bucket": "qnum_6p",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 2,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "temporal_change",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 2,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "none",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 2,
+      "diversity_bucket": "div_low",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_4_5",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 2,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "product",
+      "quantity_bucket": "qnum_0_1",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "product",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "total_sum",
+      "quantity_bucket": "qnum_4_5",
+      "stage": "gold_in_trace_but_not_pool"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_0_1",
+      "stage": "gold_in_trace_but_not_pool"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_in_trace_but_not_pool"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_low",
+      "operation_hint": "none",
+      "quantity_bucket": "qnum_0_1",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_high",
+      "operation_hint": "product",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "none",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_in_trace_but_not_pool"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "difference",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_high",
+      "operation_hint": "none",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_high",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_6p",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_low",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "total_sum",
+      "quantity_bucket": "qnum_6p",
+      "stage": "gold_in_direct_attempts"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_mid",
+      "operation_hint": "total_sum",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    }
+  ]
+}
