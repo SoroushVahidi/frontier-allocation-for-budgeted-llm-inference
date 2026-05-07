@@ -1,83 +1,107 @@
 # Research Next Frontier Handoff (2026-05-07)
 
-## A) Current Branch / PR State
-- Branch: `research-next-frontier-iteration-2`
-- Latest local commit at handoff creation: `e1c326d` (`analysis: audit previous failure recovery`)
-- Sync status before push: branch was ahead of `origin/research-next-frontier-iteration-2` by 1 commit.
-- Note: many unrelated local `docs/` and `outputs/` artifacts exist; do not blindly `git add .`.
+## A) Repository State
+- Current branch: `research-next-frontier-iteration-2`
+- Latest commit hash: `5aa56f3`
+- Branch sync: aligned with `origin/research-next-frontier-iteration-2` at handoff time.
+- Working tree warning: many local untracked `docs/` and `outputs/` artifacts exist; do not blindly run `git add .`.
 
-## B) Main Merged Achievements
-- Diverse-root frontier V1 and guarded method integrated.
-- Held-out 100-case GSM8K evaluation completed.
-- Cohere API safety and call-cap controls implemented and used.
-- Cohere parsing/extraction robustness fixes implemented.
-- Capped Cohere PAL vs external L1 pilot completed.
-- Offline PAL retry 300-case analysis completed.
-- Offline failure mining, path-coverage counterfactual, and discovery-deficit atlas completed.
-- Offline selector-sensitivity analysis completed.
+## B) Latest Best Algorithm
+- Best algorithm so far: **PAL+retry / guarded PAL variant**.
+- Short description: program-aided reasoning path with empty-code retry support and guarded frontier/discovery logic in the diverse-root stack.
 
-## C) Best Current Performance Evidence
-- 300 paired run evidence:
-  - External: `244/300 = 81.33%`
+## C) Latest Best Comparison to External Baseline
+- Cohere paired GSM8K run on 300 cases:
+  - external L1: `244/300 = 81.33%`
   - PAL+retry: `252/300 = 84.00%`
-  - Delta (PAL - external): `+2.67 pp`
+  - PAL − external: `+8` cases, `+2.67 pp`
   - McNemar `p ≈ 0.322`
-  - Bootstrap CI crosses zero
-- Interpretation: directionally positive but not statistically decisive.
+  - bootstrap paired-diff 95% CI crosses zero, approximately `[-2.00 pp, +7.33 pp]`
+- Interpretation: directionally better, not statistically decisive.
 
 ## D) Previous Failure Recovery Audit
-- Total previous failure/loss cases: `48`
-- Corrected now: `7`
-- Still failing: `41`
-- Missing in current outputs: `0`
-- By bucket:
-  - `external_only`: `1` corrected / `20` failing
-  - `both_wrong`: `6` corrected / `21` failing
-  - `gold_absent_everywhere_detectable`: `7` corrected / `27` failing
-  - `rate_ratio anchors`: `7` corrected / `5` failing
-  - `previously-correct-regressed anchors`: `1` corrected / `4` failing
-- Caveat: based on latest available local artifacts, not a fresh rerun of latest committed code.
+- total previous failure/loss cases: `48`
+- corrected now: `7`
+- still failing: `41`
+- missing/no current output: `0`
+- external_only: `1` corrected / `20` still failing
+- both_wrong: `6` corrected / `21` still failing
+- gold_absent_everywhere_detectable: `7` corrected / `27` still failing
+- rate_ratio anchors: `7` corrected / `5` still failing
+- previously-correct-regressed anchors: `1` corrected / `4` still failing
+- Caveat: based on latest available artifacts, not a fresh rerun of latest committed code unless explicitly verified.
 
-## E) What Failed / Should Not Be Repeated Blindly
-- Broad rate/ratio gate: gold presence improved slightly but exact accuracy worsened.
-- Conservative rate/ratio gate: even with `override_allowed=0`, exact still worsened.
-- Selector-isolated exploration logging: even with `selector_visible=0`, exact worsened because the extra step consumed action/search budget.
-- Poolfix experiment: added `0` candidates and did not shrink dominant failure mode.
-- Practical conclusion: avoid blind selector-visible candidate injection and avoid budget-consuming perturbations without targeted evidence.
+## E) What We Learned / Bottleneck
+- Dominant remaining bottleneck: upstream candidate-generation/path coverage.
+- Many failures are `gold_absent_everywhere_detectable`.
+- Selector/pool/overlay perturbations can regress previously correct cases.
+- Adding candidates can improve apparent coverage while hurting final exact accuracy.
 
-## F) Current Bottleneck
-- Upstream candidate generation / path coverage remains the bottleneck.
-- A large share of failures remain `gold_absent_everywhere_detectable`.
-- Selector/pool/overlay perturbations can regress previously correct incumbents.
+## F) Failed or Reverted Directions
+- PAL execution-pool merge / poolfix:
+  - added `0` candidates
+  - did not reduce dominant failure mode
+- Broad rate/ratio gate:
+  - triggered broadly
+  - slight coverage movement but exact worsened
+- Conservative rate/ratio gate:
+  - `override_allowed=0` but exact still worsened
+  - lesson: selector-visible pool perturbation can still change outcomes
+- Selector-isolated exploration logging:
+  - `selector_visible=0` but exact still worsened because logging consumed action/search budget
+  - lesson: metadata-only logging must not consume normal search budget
 
-## G) Best Next Research Direction
-- Build a larger failure/loss-case corpus including:
-  - problem statement
-  - gold
-  - our answer
-  - external answer
-  - correctness
-  - our discovery tree/trace
-  - external discovery tree (if available)
-  - candidate pools
-  - PAL execution
-  - retry
-  - overlay/tiebreak metadata
-  - structured features
-- Mine patterns first, then design method changes.
-- If external trees are unavailable, record that explicitly in artifacts and reports.
+## G) Current No-Go Rules
+- Do not blindly inject candidates into selector-visible pool.
+- Do not consume search/action budget purely for exploration logging.
+- Do not implement another method before inspecting a larger failure corpus.
+- Do not claim robust superiority over external baseline yet.
 
 ## H) API Policy Going Forward
-- Default offline-first analysis.
+- Default offline/local first.
 - API/reruns allowed when needed for real progress.
-- Cohere first for API runs.
-- Hard call caps required.
+- Use Cohere first for paid generation.
+- Enforce hard call caps.
 - Start with small pilots before larger runs.
-- Never print credentials/tokens.
-- If non-HF/non-Cohere API/token is required, stop and ask.
-- Report estimated and actual logical calls for each run.
+- Do not print credentials/tokens.
+- Expected tokens: `HF_TOKEN` / `HUGGINGFACE_HUB_TOKEN` and `COHERE_API_KEY` / `CO_API_KEY`.
+- If non-HF/non-Cohere token/API is required, stop and ask.
+- Always report estimated and actual logical calls.
 
-## I) Recommended First Task For New Chat
-- If missing: implement/build `scripts/build_failure_case_corpus.py`.
-- If present: run/inspect it first and decide whether a fresh capped Cohere rerun is needed.
-- Do not start new method implementation until the failure corpus is inspected.
+## I) Recommended Next Step
+- Main next step: build and inspect a larger failure/loss-case corpus before any new method implementation.
+- Include cases where:
+  - PAL/current method is wrong
+  - external baseline is correct and PAL is wrong
+  - `gold_absent_everywhere_detectable` is true
+  - both methods are wrong but PAL has useful failure metadata
+  - case appeared in failed gate/logging validation anchors
+- Per case, store:
+  - `example_id` / `case_id`
+  - problem statement
+  - gold answer
+  - PAL answer/correctness
+  - external answer/correctness
+  - outcome bucket
+  - PAL candidate pool
+  - external candidate pool if available
+  - PAL discovery trace/tree fields
+  - external discovery tree if available
+  - PAL execution metadata
+  - retry metadata
+  - overlay/tiebreak metadata
+  - feature tags: operation hints, numeric quantity count, question length bucket, candidate diversity, gold presence flags, source-family counts, failure-stage labels
+- Proposed script: `scripts/build_failure_case_corpus.py`
+- Proposed output: `outputs/failure_case_corpus_20260507/` with:
+  - `failure_cases.jsonl`
+  - `failure_cases.csv`
+  - `feature_summary.json`
+  - `pattern_seed_report.md`
+  - `case_index.md`
+
+## J) Open Question for Next Chat
+- Are external baseline discovery trees/traces available for the target comparison run?
+- If yes: use exact file/field paths.
+- If no: explicitly record `external_tree_available=false` and do not invent traces.
+- For the current 300-case paired artifact, external `action_trace` exists in `outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.jsonl`; however, external `final_branch_states`/`branch_states` are not present there.
+- A fresh capped Cohere rerun should be considered only after corpus findings identify a concrete rerun hypothesis.
