@@ -1,0 +1,3 @@
+{"example_id":"e1","result_metadata":{"selector_candidate_pool":[{"predicted_answer":"8"}],"pal_execution":{"pal_execution_result":{"pal_answer_normalized":"8"}}}}
+{"example_id":"e2","result_metadata":{"selector_candidate_pool":[{"predicted_answer":"9"}],"action_trace":[{"extracted_answer":"5"}],"pal_execution":{"pal_execution_result":{"pal_answer_normalized":"9"}}}}
+{"example_id":"e3","result_metadata":{"selector_candidate_pool":[{"predicted_answer":"11"}],"action_trace":[{"extracted_answer":"12"}],"pal_execution":{"pal_execution_result":{"pal_answer_normalized":"11"}}}}

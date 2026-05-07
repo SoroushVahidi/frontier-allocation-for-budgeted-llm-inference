@@ -1,0 +1,4 @@
+example_id,gold_answer,external_exact,pal_exact,pal_overlay_triggered
+e1,8,1,0,1
+e2,5,0,0,1
+e3,7,0,0,0
