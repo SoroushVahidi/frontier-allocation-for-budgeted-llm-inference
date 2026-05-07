@@ -1,0 +1,49 @@
+{
+  "breakdown_by_bucket": {
+    "both_wrong": {
+      "corrected_now": 6,
+      "still_failing": 21
+    },
+    "external_only": {
+      "corrected_now": 1,
+      "still_failing": 20
+    },
+    "gold_absent_everywhere_detectable": {
+      "corrected_now": 7,
+      "still_failing": 27
+    },
+    "previously_correct_regressed_validation_anchors": {
+      "corrected_now": 1,
+      "still_failing": 4
+    },
+    "rate_ratio_anchors": {
+      "corrected_now": 7,
+      "still_failing": 5
+    }
+  },
+  "bucket_sizes": {
+    "both_wrong": 27,
+    "external_only": 21,
+    "gold_absent_everywhere_detectable": 34,
+    "previously_correct_regressed_validation_anchors": 5,
+    "rate_ratio_anchors": 12
+  },
+  "counts": {
+    "corrected_now": 7,
+    "missing_current_output": 0,
+    "still_failing": 41,
+    "total_unique_previous_failure_loss_cases": 48
+  },
+  "latest_current_output_artifacts_used": {
+    "fallback_for_non_anchor_ids": "outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv",
+    "note": "No fresh rerun after latest local code state; this audit uses latest available local artifacts.",
+    "preferred_for_anchor_ids": "outputs/offline_selector_isolated_exploration_log_anchor_validation_20260507/per_case.csv"
+  },
+  "previous_failure_loss_corpus_definition": {
+    "both_wrong": "external_exact=0 and pal_exact=0 from paired_casebook.csv",
+    "external_only": "external_exact=1 and pal_exact=0 from paired_casebook.csv",
+    "gold_absent_everywhere_detectable": "gold_absent_everywhere_detectable=1 from coverage_table.csv",
+    "previously_correct_regressed_validation_anchors": "incumbent_exact=1 and variant_exact=0 in any gate anchor per_case.csv",
+    "rate_ratio_anchors": "union of example_id in broad/conservative/isolated gate anchor per_case.csv"
+  }
+}
