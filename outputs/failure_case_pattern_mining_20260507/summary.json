@@ -1,0 +1,208 @@
+{
+  "candidate_diversity_summary": {
+    "count": 41,
+    "mean": 2.048780487804878,
+    "median": 2.0
+  },
+  "counts_by_failure_stage": {
+    "gold_absent_everywhere_detectable": 27,
+    "gold_in_selector_pool": 4,
+    "gold_in_trace_candidates": 10
+  },
+  "counts_by_outcome_bucket": {
+    "both_wrong": 21,
+    "external_only": 20
+  },
+  "gold_presence_summary": {
+    "gold_in_pool_count": 4,
+    "gold_not_in_pool_count": 37
+  },
+  "operation_by_outcome": [
+    {
+      "count": 10,
+      "operation_hint": "rate_ratio",
+      "outcome_bucket": "both_wrong"
+    },
+    {
+      "count": 7,
+      "operation_hint": "temporal_change",
+      "outcome_bucket": "both_wrong"
+    },
+    {
+      "count": 7,
+      "operation_hint": "temporal_change",
+      "outcome_bucket": "external_only"
+    },
+    {
+      "count": 5,
+      "operation_hint": "difference",
+      "outcome_bucket": "both_wrong"
+    },
+    {
+      "count": 5,
+      "operation_hint": "difference",
+      "outcome_bucket": "external_only"
+    },
+    {
+      "count": 5,
+      "operation_hint": "none",
+      "outcome_bucket": "external_only"
+    },
+    {
+      "count": 5,
+      "operation_hint": "product",
+      "outcome_bucket": "both_wrong"
+    },
+    {
+      "count": 5,
+      "operation_hint": "total_sum",
+      "outcome_bucket": "external_only"
+    },
+    {
+      "count": 4,
+      "operation_hint": "rate_ratio",
+      "outcome_bucket": "external_only"
+    },
+    {
+      "count": 3,
+      "operation_hint": "product",
+      "outcome_bucket": "external_only"
+    },
+    {
+      "count": 2,
+      "operation_hint": "percent",
+      "outcome_bucket": "both_wrong"
+    },
+    {
+      "count": 1,
+      "operation_hint": "division_share",
+      "outcome_bucket": "both_wrong"
+    },
+    {
+      "count": 1,
+      "operation_hint": "none",
+      "outcome_bucket": "both_wrong"
+    },
+    {
+      "count": 1,
+      "operation_hint": "total_sum",
+      "outcome_bucket": "both_wrong"
+    }
+  ],
+  "single_next_hypothesis": "For high-frequency rate_ratio/temporal_change cases where stage is gold_absent_everywhere_detectable, improve upstream candidate-generation to produce gold-equivalent numeric leaves before selector/overlay.",
+  "still_failing_cases_mined": 41,
+  "top_anchor_case_ids": [
+    "openai_gsm8k_812",
+    "openai_gsm8k_953",
+    "openai_gsm8k_814",
+    "openai_gsm8k_979",
+    "openai_gsm8k_1069",
+    "openai_gsm8k_878",
+    "openai_gsm8k_1003",
+    "openai_gsm8k_1006",
+    "openai_gsm8k_1021",
+    "openai_gsm8k_1029",
+    "openai_gsm8k_1035",
+    "openai_gsm8k_773",
+    "openai_gsm8k_781",
+    "openai_gsm8k_794",
+    "openai_gsm8k_829"
+  ],
+  "top_archetypes": [
+    {
+      "count": 4,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_6p"
+    },
+    {
+      "count": 3,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "temporal_change",
+      "quantity_bucket": "qnum_6p"
+    },
+    {
+      "count": 3,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "product",
+      "quantity_bucket": "qnum_2_3"
+    },
+    {
+      "count": 3,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "temporal_change",
+      "quantity_bucket": "qnum_2_3"
+    },
+    {
+      "count": 3,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_4_5"
+    },
+    {
+      "count": 3,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "temporal_change",
+      "quantity_bucket": "qnum_4_5"
+    },
+    {
+      "count": 3,
+      "failure_stage": "gold_in_trace_candidates",
+      "operation_hint": "difference",
+      "quantity_bucket": "qnum_2_3"
+    },
+    {
+      "count": 3,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "none",
+      "quantity_bucket": "qnum_2_3"
+    },
+    {
+      "count": 3,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "product",
+      "quantity_bucket": "qnum_0_1"
+    },
+    {
+      "count": 2,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "total_sum",
+      "quantity_bucket": "qnum_4_5"
+    },
+    {
+      "count": 2,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "temporal_change",
+      "quantity_bucket": "qnum_0_1"
+    },
+    {
+      "count": 2,
+      "failure_stage": "gold_absent_everywhere_detectable",
+      "operation_hint": "difference",
+      "quantity_bucket": "qnum_4_5"
+    },
+    {
+      "count": 1,
+      "failure_stage": "gold_in_selector_pool",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_4_5"
+    },
+    {
+      "count": 1,
+      "failure_stage": "gold_in_selector_pool",
+      "operation_hint": "percent",
+      "quantity_bucket": "qnum_4_5"
+    },
+    {
+      "count": 1,
+      "failure_stage": "gold_in_selector_pool",
+      "operation_hint": "temporal_change",
+      "quantity_bucket": "qnum_4_5"
+    }
+  ],
+  "trace_availability": {
+    "both_trace_available_count": 41,
+    "external_trace_available_count": 41,
+    "pal_trace_available_count": 41
+  }
+}
