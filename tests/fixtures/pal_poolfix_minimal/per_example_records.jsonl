@@ -1,0 +1,2 @@
+{"method": "external_l1_max", "example_id": "e_ext", "result_metadata": {}}
+{"method": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal", "example_id": "e_pal", "final_answer_raw": "8", "cohere_logical_api_calls": 2, "result_metadata": {"selector_candidate_pool": [{"branch_id": "direct_reserve_0", "predicted_answer": "9", "source_id": "direct_reserve"}], "pal_execution": {"pal_budget_cost_observed": 1, "pal_score": 0.5, "pal_execution_result": {"pal_stdout": "8\n", "pal_answer_raw": "", "pal_answer_normalized": "8"}}}}
