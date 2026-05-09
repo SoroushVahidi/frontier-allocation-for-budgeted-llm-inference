@@ -29,6 +29,7 @@ from experiments.controllers import (
     IntermediateTrapAwareNearTieController,
     TreeOfThoughtMatchedBudgetController,
     ProgramOfThoughtController,
+    SelfConsistencyFairController,
     S1BudgetForcingController,
     SelectiveSelfConsistencyHybridController,
     L1LengthControlController,
@@ -51,6 +52,10 @@ from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_TRACK_B_COMMITMENT_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_TARGETED_RETRY_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_ADAPTIVE_ROUTER_V3_FINAL_TARGET_VERIFIER_V1,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_PRODUCTION_EQUIV_V1,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
@@ -435,6 +440,26 @@ def build_frontier_strategies(
         budget,
         method_name="program_of_thought",
     )
+    specs["external_self_consistency_4_fair_v1"] = SelfConsistencyFairController(
+        generator_factory(),
+        scorer,
+        budget,
+        n_samples=4,
+        method_name="external_self_consistency_4_fair_v1",
+    )
+    specs["external_self_consistency_6_fair_v1"] = SelfConsistencyFairController(
+        generator_factory(),
+        scorer,
+        budget,
+        n_samples=6,
+        method_name="external_self_consistency_6_fair_v1",
+    )
+    specs["external_pal_pot_fair_v1"] = ProgramOfThoughtController(
+        generator_factory(),
+        scorer,
+        budget,
+        method_name="external_pal_pot_fair_v1",
+    )
     if include_external_s1_baseline:
         specs["external_s1_budget_forcing"] = S1BudgetForcingController(
             generator_factory(),
@@ -443,6 +468,21 @@ def build_frontier_strategies(
             num_ignore_think_end=s1_num_ignore_think_end,
             min_thinking_steps=s1_min_thinking_steps,
             method_name="external_s1_budget_forcing",
+        )
+        specs["external_s1_budget_forcing_faithful_v1"] = S1BudgetForcingController(
+            generator_factory(),
+            scorer,
+            budget,
+            num_ignore_think_end=s1_num_ignore_think_end,
+            min_thinking_steps=s1_min_thinking_steps,
+            wait_token="Wait",
+            max_forced_continuations=s1_num_ignore_think_end,
+            faithful_mode=True,
+            deviations_from_official=(
+                "Action-budget proxy and branch-level done-boundary detection differ "
+                "from official token-level serving stack."
+            ),
+            method_name="external_s1_budget_forcing_faithful_v1",
         )
     if include_external_tale_baseline:
         specs["external_tale_prompt_budgeting"] = TALEPromptBudgetingController(
@@ -455,6 +495,24 @@ def build_frontier_strategies(
             token_budget_per_question_char=tale_token_budget_per_question_char,
             token_per_action=tale_token_per_action,
             method_name="external_tale_prompt_budgeting",
+        )
+        specs["external_tale_ep_prompt_budgeting_faithful_v1"] = TALEPromptBudgetingController(
+            generator_factory(),
+            scorer,
+            budget,
+            token_budget_default=tale_token_budget_default,
+            token_budget_min=tale_token_budget_min,
+            token_budget_max=tale_token_budget_max,
+            token_budget_per_question_char=tale_token_budget_per_question_char,
+            token_per_action=tale_token_per_action,
+            prompt_template="Let's think step by step and use less than {budget} tokens.",
+            budget_estimator_type="char_length_linear",
+            faithful_mode=True,
+            tale_variant="EP",
+            deviations_from_official=(
+                "TALE-EP-only adapter; TALE-PT path not reproduced in this runtime."
+            ),
+            method_name="external_tale_ep_prompt_budgeting_faithful_v1",
         )
     if include_external_l1_baseline:
         specs["external_l1_exact"] = L1LengthControlController(
@@ -476,6 +534,21 @@ def build_frontier_strategies(
             token_per_action=l1_token_per_action,
             prompt_style=l1_prompt_style,
             method_name="external_l1_max",
+        )
+        specs["external_l1_max_fair_v1"] = L1LengthControlController(
+            generator_factory(),
+            scorer,
+            budget,
+            control_mode="max",
+            token_budget=l1_max_token_budget,
+            token_per_action=l1_token_per_action,
+            prompt_style=l1_prompt_style,
+            fair_mode=True,
+            not_official_external_method=True,
+            deviations_from_official=(
+                "Transparent in-repo fair length-control baseline; not official L1 RL reproduction."
+            ),
+            method_name="external_l1_max_fair_v1",
         )
     if include_external_zhai_cpo_baseline:
         specs["external_zhai_cpo_mode_a"] = AdaptiveController(
@@ -1473,6 +1546,65 @@ def build_frontier_strategies(
                 strategy_seed_max_actions=2,
                 **strategy_seeded_outer_kwargs_k1_frontier4_pal_track_b,
             )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_pal_structural = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal,
+            "enable_structural_commitment_v1": True,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_pal_structural,
+            )
+        )
+        # Scaffold-only integration registration for structural_commit_v1 + targeted_retry_v1.
+        # In this step targeted retry is allowlisted/no-API replay plumbing only (no live retry calls here).
+        specs[
+            METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_TARGETED_RETRY_V1
+        ] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_TARGETED_RETRY_V1,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal_structural,
+        )
+        # Production-equivalence bridge alias: runtime wiring remains scaffold-first.
+        specs[
+            METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_ADAPTIVE_ROUTER_V3_FINAL_TARGET_VERIFIER_V1
+        ] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_ADAPTIVE_ROUTER_V3_FINAL_TARGET_VERIFIER_V1,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal_structural,
+        )
+        specs[
+            METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_PRODUCTION_EQUIV_V1
+        ] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL_STRUCTURAL_COMMIT_V1_PRODUCTION_EQUIV_V1,
+            strategy_seed_max_actions=2,
+            enable_production_equiv_v1_runtime_hook=True,
+            production_equiv_targeted_retry_max_extra_calls=1,
+            production_equiv_allowed_targeted_retry_scaffolds=(
+                "quantity_ledger_v2_1",
+                "rate_table_v1",
+                "before_after_state_v1",
+                "target_difference_v1",
+                "final_target_extraction_repair",
+                "l1_style_concise_decomposition",
+            ),
+            production_equiv_enable_percent_base_denominator=False,
+            production_equiv_enable_discovery3_candidate_diversity_selection_v1=False,
+            **strategy_seeded_outer_kwargs_k1_frontier4_pal_structural,
         )
         specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD] = (
             DirectReserveDiverseRootFrontierV1GuardedController(
