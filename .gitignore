@@ -330,3 +330,4 @@ outputs/outcome_verifier_answer_group_selector_*/**/*.log
 outputs/outcome_verifier_answer_group_selector_*/**/logs/**
 outputs/outcome_verifier_answer_group_selector_*/**/progress_heartbeat.jsonl
 outputs/outcome_verifier_answer_group_selector_*/**/compressed_*.tar.gz
+.aider*
