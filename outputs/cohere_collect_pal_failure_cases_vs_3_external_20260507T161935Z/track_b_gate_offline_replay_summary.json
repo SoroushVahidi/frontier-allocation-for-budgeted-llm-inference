@@ -1,0 +1,188 @@
+{
+  "bundle": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+  "fixture_anchor_subset": [
+    {
+      "baseline_correct": 0,
+      "case_id": "openai_gsm8k_1083",
+      "cohort": "target_present_not_selected",
+      "counterfactual_matches_gold": "",
+      "gate_abstain_reason": "tiebreak_not_triggered",
+      "gate_reason": "abstain_no_tiebreak",
+      "gate_should_override": 0,
+      "gold_normalized": "55",
+      "metadata_missing": 0,
+      "outcome_tag": "unchanged_still_wrong",
+      "recommended_answer": null,
+      "recommended_normalized_group": null,
+      "recommended_source": "none"
+    },
+    {
+      "baseline_correct": 0,
+      "case_id": "openai_gsm8k_1085",
+      "cohort": "target_present_not_selected",
+      "counterfactual_matches_gold": "",
+      "gate_abstain_reason": "tiebreak_not_triggered",
+      "gate_reason": "abstain_no_tiebreak",
+      "gate_should_override": 0,
+      "gold_normalized": "156",
+      "metadata_missing": 0,
+      "outcome_tag": "unchanged_still_wrong",
+      "recommended_answer": null,
+      "recommended_normalized_group": null,
+      "recommended_source": "none"
+    },
+    {
+      "baseline_correct": 0,
+      "case_id": "openai_gsm8k_1087",
+      "cohort": "target_present_not_selected",
+      "counterfactual_matches_gold": 1,
+      "gate_abstain_reason": "",
+      "gate_reason": "override_overlay_prior_matches_tiebreak_conflicts_with_pal_stdout",
+      "gate_should_override": 1,
+      "gold_normalized": "6",
+      "metadata_missing": 0,
+      "outcome_tag": "fixed_by_override",
+      "recommended_answer": "6",
+      "recommended_normalized_group": "6",
+      "recommended_source": "overlay_prior_matches_tiebreak"
+    },
+    {
+      "baseline_correct": 0,
+      "case_id": "openai_gsm8k_1095",
+      "cohort": "target_present_not_selected",
+      "counterfactual_matches_gold": "",
+      "gate_abstain_reason": "missing_or_unknown_pal_executable_stdout_group",
+      "gate_reason": "abstain_missing_pal_stdout_group",
+      "gate_should_override": 0,
+      "gold_normalized": "4",
+      "metadata_missing": 0,
+      "outcome_tag": "unchanged_still_wrong",
+      "recommended_answer": null,
+      "recommended_normalized_group": "2",
+      "recommended_source": "none"
+    },
+    {
+      "baseline_correct": 0,
+      "case_id": "openai_gsm8k_1124",
+      "cohort": "target_present_not_selected",
+      "counterfactual_matches_gold": "",
+      "gate_abstain_reason": "pal_stdout_already_matches_tiebreak_group",
+      "gate_reason": "abstain_stdout_aligned",
+      "gate_should_override": 0,
+      "gold_normalized": "45",
+      "metadata_missing": 0,
+      "outcome_tag": "unchanged_still_wrong",
+      "recommended_answer": null,
+      "recommended_normalized_group": "25",
+      "recommended_source": "none"
+    },
+    {
+      "baseline_correct": 0,
+      "case_id": "openai_gsm8k_1279",
+      "cohort": "target_present_not_selected",
+      "counterfactual_matches_gold": 1,
+      "gate_abstain_reason": "",
+      "gate_reason": "override_overlay_prior_matches_tiebreak_conflicts_with_pal_stdout",
+      "gate_should_override": 1,
+      "gold_normalized": "24",
+      "metadata_missing": 0,
+      "outcome_tag": "fixed_by_override",
+      "recommended_answer": "24",
+      "recommended_normalized_group": "24",
+      "recommended_source": "overlay_prior_matches_tiebreak"
+    }
+  ],
+  "gate_function": "decide_track_b_overlay_commitment_gate",
+  "guardrail_metadata_missing_case_ids": [
+    "openai_gsm8k_1126",
+    "openai_gsm8k_1270"
+  ],
+  "guardrails_all": {
+    "abstain_count": 188,
+    "abstain_reasons_top": {
+      "insufficient_histogram_support_for_tiebreak_group": 23,
+      "pal_stdout_already_matches_tiebreak_group": 32,
+      "tiebreak_not_triggered": 133
+    },
+    "fixed_by_override": 0,
+    "gate_override_count": 0,
+    "metadata_missing_count": 2,
+    "reasons_top": {
+      "abstain_low_support": 23,
+      "abstain_no_tiebreak": 133,
+      "abstain_stdout_aligned": 32
+    },
+    "rows": 188,
+    "unchanged_still_wrong": 0,
+    "worsened_or_failed_override": 0,
+    "would_flip_correct_to_wrong": 0
+  },
+  "guardrails_both_correct": {
+    "abstain_count": 183,
+    "abstain_reasons_top": {
+      "insufficient_histogram_support_for_tiebreak_group": 23,
+      "pal_stdout_already_matches_tiebreak_group": 28,
+      "tiebreak_not_triggered": 132
+    },
+    "fixed_by_override": 0,
+    "gate_override_count": 0,
+    "metadata_missing_count": 2,
+    "reasons_top": {
+      "abstain_low_support": 23,
+      "abstain_no_tiebreak": 132,
+      "abstain_stdout_aligned": 28
+    },
+    "rows": 183,
+    "unchanged_still_wrong": 0,
+    "worsened_or_failed_override": 0,
+    "would_flip_correct_to_wrong": 0
+  },
+  "guardrails_pal_only": {
+    "abstain_count": 5,
+    "abstain_reasons_top": {
+      "pal_stdout_already_matches_tiebreak_group": 4,
+      "tiebreak_not_triggered": 1
+    },
+    "fixed_by_override": 0,
+    "gate_override_count": 0,
+    "metadata_missing_count": 0,
+    "reasons_top": {
+      "abstain_no_tiebreak": 1,
+      "abstain_stdout_aligned": 4
+    },
+    "rows": 5,
+    "unchanged_still_wrong": 0,
+    "worsened_or_failed_override": 0,
+    "would_flip_correct_to_wrong": 0
+  },
+  "pal_method": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+  "targets": {
+    "abstain_count": 20,
+    "abstain_reasons_top": {
+      "missing_or_unknown_pal_executable_stdout_group": 1,
+      "pal_stdout_already_matches_tiebreak_group": 1,
+      "tiebreak_not_triggered": 15,
+      "uniform_multigroup_tie_and_pal_stdout_off_manifold": 3
+    },
+    "fixed_by_override": 3,
+    "gate_override_count": 3,
+    "metadata_missing_count": 0,
+    "reasons_top": {
+      "abstain_missing_pal_stdout_group": 1,
+      "abstain_no_tiebreak": 15,
+      "abstain_overlay_ambiguous_multipeer_tie_stdout_off_histogram": 3,
+      "abstain_stdout_aligned": 1,
+      "override_overlay_prior_matches_tiebreak_conflicts_with_pal_stdout": 3
+    },
+    "rows": 23,
+    "unchanged_still_wrong": 20,
+    "worsened_or_failed_override": 0,
+    "would_flip_correct_to_wrong": 0
+  },
+  "targets_fixed_case_ids": [
+    "openai_gsm8k_1087",
+    "openai_gsm8k_1279",
+    "openai_gsm8k_1290"
+  ],
+  "targets_worsened_case_ids": []
+}
