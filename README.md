@@ -16,7 +16,7 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 | Order | Doc | Purpose |
 |------:|-----|---------|
 | 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | Minimal reviewer setup, checks, and reproduction path |
-| 1 | [`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`](docs/CURRENT_RESEARCH_HANDOFF_20260507.md) | **Frontier iteration 2 — read this first:** PAL+retry vs externals, failure mining, Track B/A bottlenecks |
+| 1 | [`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`](docs/CURRENT_RESEARCH_HANDOFF_20260507.md) | **Frontier iteration 2 — read this first:** PAL+retry vs externals, failure mining, **pushed Track B caveat**, **local** validator/mining/target-staged scaffold status |
 | 2 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Short entry pointer + curated artifact links |
 | 3 | [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) | Method-by-method status (May 2025 snapshot; cross-check with handoff doc) |
 | 4 | [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md) | Guardrails to avoid old-method/API-waste mistakes |

@@ -45,12 +45,19 @@ Snapshot of **runtime-relevant** method IDs vs **historical** IDs. For registry 
 
 ---
 
-## Next candidate (pre-implementation)
+## Track B (pushed in `bc693b8`)
+
+| Name | ID | Status |
+|------|-----|--------|
+| **Track B commitment (opt-in)** | `direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_track_b_commitment_v1` | **Merged** behind opt-in method ID; evaluator honors override for scored finals. **Causal benefit unproven**—treat as **experimental**, not a closed win. |
+
+## Next candidates (post-`bc693b8`)
 
 | Track | Hypothesis | Status |
 |-------|------------|--------|
-| **Track B** | Commitment / overlay / histogram / surfacing consistency | Design contract + fixtures drafted; **no** merged runtime change yet |
-| **Track A / TRCE** | Gold-absent structured discovery | Parallel literature-backed direction |
+| **Target-staged PAL retry** | Explicit target/units/subgoals before PAL code (schema-mining motivated) | **Local scaffold** only—manifest unarmed; needs review + optional `data/` vendoring |
+| **Structural validator / static audit** | PAL/trace shape telemetry | **Local** eval scripts—**not** a runtime policy until recalibrated |
+| **Track A / TRCE** | Gold-absent structured discovery | Parallel direction; smaller share of newest preferred failures |
 
 ---
 

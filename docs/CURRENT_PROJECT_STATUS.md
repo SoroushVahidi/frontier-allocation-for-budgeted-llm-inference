@@ -4,6 +4,10 @@
 
 This document is the short, current orientation note for day-to-day work. It supersedes older broad-status notes for navigation purposes, while dated documents remain provenance.
 
+## Matched-50 external suite snapshot (2026-05-08)
+
+On the **same 50 GSM8K case IDs** (`outputs/external_full_suite_matched50_comparison_20260508T222631Z/`): **`production_equiv_v1` = 36/50**; **`external_pal_pot_fair_v1` = 40/50** (strongest individual external on this slice); **`external_self_consistency_6_fair_v1` = 36/50** (tie with production_equiv). **Claim hygiene:** do **not** say production_equiv “beats all individual external baselines.” Safer wording: it beats L1/SC4/S1/TALE-EP, ties SC6, and trails PAL/PoT. Free-form retry and schema-grounded retry v1 are **negative-result lines**, not promoted methods. **Next research:** grow a larger PAL-vs-production disagreement / PAL-only failure bank (multi-batch targeted loop) before designing PAL-hybrid selection.
+
 ## Current navigation (2026-05-02 cleanup)
 
 For a **short** entry point and claim guardrails, read [`../START_HERE_CURRENT.md`](../START_HERE_CURRENT.md). Method IDs: [`METHOD_STATUS_TABLE.md`](METHOD_STATUS_TABLE.md). Major `outputs/` folders: [`ARTIFACT_STATUS_TABLE.md`](ARTIFACT_STATUS_TABLE.md). Commands: [`../scripts/CURRENT_RUNBOOK.md`](../scripts/CURRENT_RUNBOOK.md). Audit log: [`REPOSITORY_HYGIENE_AUDIT_20260502.md`](REPOSITORY_HYGIENE_AUDIT_20260502.md). **Recent Wulver diagnostics / last-10 job audit:** [`LAST_10_WULVER_JOBS_AUDIT_20260502.md`](LAST_10_WULVER_JOBS_AUDIT_20260502.md) (`outputs/last_10_wulver_jobs_audit_20260502T220857Z/artifact_summary.md`).

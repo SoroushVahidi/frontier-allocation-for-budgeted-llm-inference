@@ -73,6 +73,15 @@ Short index of **negative results** and **offline-unsafe** counterfactuals so th
 
 ---
 
+## 8. GSM8K structural “validator score” / static-audit triggers as runtime policy
+
+- **Tried (local):** `experiments/gsm8k_structural_validate.py`, scaled PAL-code audit, Track A discovery diagnostics.  
+- **Evidence:** universal score almost **flat** stratified by gold; PN-comparable slice **no** clean gold-vs-wrong gap; scaled triggers **missed** implementation bands (e.g. no signal met ≥20% gold_absent with ≤5% guardrail FP at chosen definitions).  
+- **Why it failed (as ranker):** signal is **telemetry**, not a safe commitment or retry gate.  
+- **No-go:** wire structural score or raw audit triggers into **runtime** selection, reranking, or auto-retry without a new calibrated contract + replay proof.
+
+---
+
 ### Cross-reference
 
 - Offline replay tables: `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/counterfactual_policy_summary.csv` (local bundle).  

@@ -2,14 +2,21 @@
 
 Short orientation for humans and agents. Historical timestamped material stays in place; **navigation truth** for frontier-iteration-2 is below.
 
+## Latest local-only work (after pushed `bc693b8`)
+
+Not on `origin` until you selectively commit: **GSM8K/PAL structural validator** + eval scripts (telemetry only—not a runtime ranker), **gold-absent schema mining** outputs + script, **target-staged PAL retry** unarmed pilot scaffold (manifest + prompts + tests). See handoff **§ “Latest local work after bc693b8.”** **`~480` untracked paths** are mostly under `outputs/`—do **not** bulk-commit.
+
+---
+
 ## Read this first
 
 | Priority | Document |
 |---------:|----------|
-| **1** | **[`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`](docs/CURRENT_RESEARCH_HANDOFF_20260507.md)** — purpose, PAL+retry headline results, failure mining, Track A/B bottlenecks, no-go rules |
+| **1** | **[`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`](docs/CURRENT_RESEARCH_HANDOFF_20260507.md)** — purpose, PAL+retry headline results, failure mining, Track A/B bottlenecks, **pushed Track B caveat**, local validator/mining/pilot status, no-go rules |
 | **2** | [`docs/CURRENT_ARTIFACTS_INDEX_20260507.md`](docs/CURRENT_ARTIFACTS_INDEX_20260507.md) — canonical vs local-heavy `outputs/` |
 | **3** | [`docs/CLAIMS.md`](docs/CLAIMS.md) — safe vs unsafe claims |
 | **4** | [`docs/CURRENT_METHOD_STATUS_20260507.md`](docs/CURRENT_METHOD_STATUS_20260507.md) — method IDs and roles |
+| **5** | [`docs/references/external_baselines_references.md`](docs/references/external_baselines_references.md) — external methods/papers reference ledger |
 
 ### Curated artifact summaries (evidence trails)
 
@@ -59,6 +66,7 @@ Shorthand: **PAL + retry / guarded PAL**.
 
 ## Empirical snapshot (see handoff for nuance)
 
+- **Matched-50 external suite (2026-05-08, same case IDs):** `production_equiv_v1` **36/50**; **`external_pal_pot_fair_v1` (PAL/PoT fair) 40/50** — currently the strongest *individual* external baseline on that slice; **`external_self_consistency_6_fair_v1` 36/50** (ties production_equiv). **Unsafe claim:** “beats all individual external baselines.” **Safe framing:** production_equiv beats L1/SC4/S1/TALE-EP, ties SC6, trails PAL/PoT on matched 50. Free-form retry and schema-grounded retry v1 are **negative diagnostics**, not integrated shippable methods. **Next:** expand a PAL-vs-production disagreement / PAL-only failure bank before a PAL-aware hybrid selector.
 - **300-case paired:** PAL+retry **252/300** vs `external_l1_max` **244/300** — **directional** paired gap, **not** statistically decisive.
 - **30-case 4-way pilot:** PAL trails each external on that small slice — **not** a universal ranking.
 - **247-ID collection:** PAL competitive as one fixed method; **34** external-only losses motivate failure mining.
@@ -77,6 +85,12 @@ Shorthand: **PAL + retry / guarded PAL**.
 ```bash
 PYTHONPATH=. .venv/bin/python -m pytest -q tests/test_build_failure_case_corpus.py
 PYTHONPATH=. .venv/bin/python -m pytest -q tests/test_present_not_selected_replay_fixtures.py
+# Local-only modules (after bc693b8; paths must exist in worktree):
+PYTHONPATH=. .venv/bin/python -m pytest -q \
+  tests/test_gsm8k_structural_validate.py \
+  tests/test_gsm8k_structural_validator_eval.py \
+  tests/test_target_staged_pal_pilot_manifest.py \
+  tests/test_target_staged_pal_pilot_runner.py
 ```
 
 ---

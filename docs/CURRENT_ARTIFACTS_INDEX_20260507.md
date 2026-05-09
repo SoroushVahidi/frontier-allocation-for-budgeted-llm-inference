@@ -84,6 +84,38 @@ Many **`outputs/cohere_real_model_cost_normalized_validation_*`** folders exist 
 
 ---
 
+## 7. `outputs/gsm8k_structural_validator_eval_20260507/` (local)
+
+| Field | Value |
+|-------|--------|
+| **Tracked** | **No** (typical worktree). |
+| **Purpose** | Batch / stratified evaluation of **`experiments/gsm8k_structural_validate.py`** signals. |
+| **Headline** | Structural score **not** useful as Track B ranker; triggers weak at chosen thresholds. |
+| **Safe to commit** | Small **`summary*.md` / `*.json`** only if curated; **exclude** large CSV/JSONL exports. |
+
+---
+
+## 8. `outputs/gold_absent_external_success_schema_mining_20260507/` (local)
+
+| Field | Value |
+|-------|--------|
+| **Tracked** | **No** (typical worktree). |
+| **Purpose** | Schema + failure-mode tags for gold-absent / external-correct inspection; feeds **11-case** target-staged pilot IDs. |
+| **Headline** | Dominant schema: **`multi_step_chain`**; see handoff §F. |
+| **Safe to commit** | **`schema_mining_cases.csv`** (or a trimmed copy under `data/`) + **one** short `README`/`report.md`; **exclude** duplicated heavy tables. |
+
+---
+
+## 9. Target-staged PAL retry pilot paths (local code)
+
+| Field | Value |
+|-------|--------|
+| **Tracked** | **No** until committed (`manifests/…json`, `prompts/target_staged_pal_retry/user_template_*.md`, `experiments/target_staged_pal_*`, tests). |
+| **Purpose** | Unarmed 11-case Cohere pilot scaffold (dual gate: CLI `--execute-api` + `api_execution_enabled`). |
+| **Heavy** | None in code; **depends on** CSV/problem text path (today often under §8). |
+
+---
+
 ## Reading order for artifacts
 
 1. **`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`** (narrative).  

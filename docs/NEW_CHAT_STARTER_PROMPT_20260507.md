@@ -27,13 +27,20 @@ Empirical headline (300-case paired): PAL+retry 252/300 vs external_l1_max 244/3
 
 247-ID 4-way collection (see failure_collection_summary.json in latest collect bundle): PAL competitive vs single-method externals; outcome tables include **34** external-only (PAL wrong, ≥1 external correct) on complete rows—see **CURRENT_RESEARCH_HANDOFF**.
 
+Pushed HEAD note (bc693b8):
+- Track B opt-in method exists: direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_track_b_commitment_v1 (+ evaluator fix for scored finals). Causal win NOT established; 30-case A/B was inconclusive / drift-heavy. No larger live run until cached/interleaved design.
+
+Local-only after bc693b8 (untracked until committed):
+- GSM8K/PAL structural validator + offline eval scripts: useful TELEMETRY; do NOT use structural_score as runtime ranker/retry trigger (stratified signal ~flat; static-audit triggers missed thresholds).
+- Gold-absent schema mining: multi_step_chain dominant; next experiment = target + units + staged subgoals before PAL (target-staged pilot scaffold is UNARMED; api_execution_enabled false).
+
 Current bottleneck:
-- Track B: present-not-selected / commitment / overlay / histogram / surfacing consistency is PRIORITY for external-win failures.
-- Track A/TRCE: gold-absent discovery still important but not majority of newest preferred external-win mining.
+- Track B: present-not-selected / commitment / overlay / histogram / surfacing — still the priority mechanism class for external-win failures, even though the opt-in gate is now code-complete.
+- Track A/TRCE: gold-absent discovery still important but smaller share of newest preferred external-win mining vs present-not-selected.
 
 Next implementation candidate:
-- Track B design contract (overlay/commitment consistency) — MUST pass offline fixtures + guardrail replay BEFORE code changes.
-- Implementation is NOT done yet.
+- Primary: review/commit target-staged PAL retry scaffold + vendored small case table; bounded live pilot ONLY with dual gate (--execute-api + manifest flag) and caps.
+- Track B: larger proof only with pre-registered cached/interleaved harness—not ad-hoc batch spend.
 
 No-go rules:
 - Do NOT claim statistical superiority over external_l1_max from current evidence.
