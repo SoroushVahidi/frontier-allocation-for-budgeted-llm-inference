@@ -1,0 +1,5 @@
+path,file_type,size_bytes,category,recommendation,reason
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260507.md,file,12345,commit_later,review_content,Documentation file
+experiments/gsm8k_structural_validate.py,file,8765,commit_later,review_content,Experiment script
+scripts/evaluate_gsm8k_structural_validator.py,file,6543,commit_later,review_content,Script file
+tests/test_gsm8k_structural_validator.py,file,4321,commit_later,review_content,Test file
