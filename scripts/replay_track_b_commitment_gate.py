@@ -467,10 +467,41 @@ def main() -> None:
         default=REPO_ROOT / BUNDLE,
         help="Directory containing replay CSV + all_results.jsonl + all_casebook.csv",
     )
+    ap.add_argument(
+        "--structural-commit-v1",
+        action="store_true",
+        help="Run structural commitment v1 replay (separate output directory).",
+    )
+    ap.add_argument(
+        "--structural-commit-v1-output",
+        type=Path,
+        default=None,
+        help="Override output directory for --structural-commit-v1 (default: outputs/structural_commit_v1_replay_<utc>).",
+    )
     args = ap.parse_args()
-    data = run_replay(args.bundle_dir.resolve())
-    write_outputs(args.bundle_dir.resolve(), data)
-    print(f"Wrote replay artifacts under {args.bundle_dir.resolve()}")
+    bundle = args.bundle_dir.resolve()
+    if args.structural_commit_v1:
+        import importlib.util
+
+        mod_path = Path(__file__).resolve().parent / "replay_structural_commit_v1.py"
+        spec = importlib.util.spec_from_file_location("replay_structural_commit_v1", mod_path)
+        if spec is None or spec.loader is None:
+            raise RuntimeError("Cannot load replay_structural_commit_v1.py")
+        sc = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sc)
+        out = args.structural_commit_v1_output
+        if out is None:
+            from datetime import datetime, timezone
+
+            ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            out = REPO_ROOT / "outputs" / f"structural_commit_v1_replay_{ts}"
+        data = sc.run_replay(bundle_dir=bundle, diagnosis_csv=sc.DEFAULT_DIAGNOSIS.resolve())
+        sc.write_out(out.resolve(), data)
+        print(f"Structural commit v1 replay wrote {out.resolve()}")
+        return
+    data = run_replay(bundle)
+    write_outputs(bundle, data)
+    print(f"Wrote replay artifacts under {bundle}")
 
 
 if __name__ == "__main__":

@@ -50,6 +50,7 @@ def test_gate_signature_has_no_gold_parameters() -> None:
 def test_direct_reserve_frontier_gate_controller_track_b_defaults_disabled() -> None:
     sig = inspect.signature(DirectReserveFrontierGateController.__init__)
     assert sig.parameters["enable_track_b_overlay_commitment_gate"].default is False
+    assert sig.parameters["enable_structural_commitment_v1"].default is False
 
 
 def test_fixture_1087_overlay_positive_override() -> None:
