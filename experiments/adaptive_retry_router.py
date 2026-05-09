@@ -133,3 +133,38 @@ def choose_adaptive_retry_scaffold_v3(
     if len(candidates) >= 3 and features["adaptive_retry_risk_score"] < config.high_risk_targeted_threshold:
         return "abstain", "unknown", held_back
     return "targeted_retry", candidates[0], held_back
+
+
+def should_trigger_discovery3_diversity_retry(
+    problem_text: str,
+    router_features: dict[str, Any],
+    verifier_features: dict[str, Any],
+    discovery3_metadata: dict[str, Any] | None = None,
+) -> bool:
+    """Deterministic gold-free trigger for discovery3 candidate-diversity retry.
+
+    Percent-base only risk is intentionally held back by default to avoid broad behavior drift.
+    """
+    t = (problem_text or "").lower()
+    md = discovery3_metadata or {}
+    target_type = str(md.get("target_quantity_type") or "").strip().lower()
+    allowed_target = {"entity_value", "rate", "ratio_part", "difference"}
+    target_ok = (not target_type) or (target_type in allowed_target)
+
+    state_risk = bool(verifier_features.get("state_update_risk")) or bool(router_features.get("state_change_cue"))
+    ratio_risk = bool(verifier_features.get("ratio_partition_risk")) or bool(router_features.get("ratio_cue"))
+    unknown_high_disagreement = bool(md.get("high_disagreement")) and str(md.get("reasoning_family_guess", "unknown")) == "unknown"
+    no_confident_candidate = bool(md.get("no_confident_candidate"))
+    percent_only = bool(verifier_features.get("percent_base_denominator_risk")) and not (state_risk or ratio_risk)
+
+    if percent_only:
+        return False
+    if not target_ok:
+        return False
+    if state_risk or ratio_risk:
+        return True
+    if unknown_high_disagreement or no_confident_candidate:
+        return True
+    if any(x in t for x in ("after", "then", "before", "remaining")) and router_features.get("adaptive_retry_risk_score", 0) >= 2:
+        return True
+    return False

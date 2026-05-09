@@ -9,7 +9,13 @@ from pathlib import Path
 import pytest
 
 from experiments.targeted_discovery_retry import (
+    build_concise_decomposition_retry_prompt,
+    build_final_target_guarded_retry_prompt,
+    build_final_target_extraction_repair_prompt,
     build_prompt,
+    build_rate_table_retry_prompt,
+    build_structural_commit_challenge_retry_prompt,
+    build_tale_style_decomposition_prompt,
     choose_scaffold,
     dry_run_eligible,
     validate_prompt_no_gold,
@@ -87,6 +93,39 @@ def test_manifest_no_api_if_dry_run_dir_exists() -> None:
     assert manifest.get("no_api_calls") is True
 
 
+def test_stage3_patch_prompt_builders_exist_and_constraints() -> None:
+    p1 = build_final_target_extraction_repair_prompt("A jar has 12 marbles. 5 are removed. How many remain?")
+    p2 = build_tale_style_decomposition_prompt("A bag has 12 marbles. 5 are removed. How many remain?")
+    for p in (p1, p2):
+        low = p.lower()
+        assert "final answer" in low
+        assert "exactly once" in low
+        assert "gold" not in low
+        assert "external prediction" not in low
+    assert "restat" in p1.lower() and "target" in p1.lower()
+    assert "subquestion" in p2.lower() and "target_check" in p2.lower()
+
+
+def test_retry_parsefix_prompt_builders_enforce_final_answer_contract() -> None:
+    question = "A store has 12 apples and sells 5. How many remain?"
+    prompts = [
+        build_final_target_guarded_retry_prompt(question),
+        build_structural_commit_challenge_retry_prompt(question),
+        build_rate_table_retry_prompt(question),
+        build_concise_decomposition_retry_prompt(question),
+    ]
+    for p in prompts:
+        assert "FINAL_ANSWER: <number>" in p
+        low = p.lower()
+        assert "do not put units or words after the number" in low
+        assert "do not give multiple final answers" in low
+        assert "if the answer is a fraction or decimal" in low
+        assert "if you are unsure, still output one best numeric answer" in low
+        assert "gold" not in low
+        assert "prior patch" not in low
+        assert "best_core4" not in low
+
+
 def test_dry_run_artifacts_integrity() -> None:
     out_dirs = sorted(REPO.glob("outputs/targeted_discovery_retry_v1_dry_run_*"))
     if not out_dirs:
@@ -105,3 +144,22 @@ def test_dry_run_artifacts_integrity() -> None:
             assert gold not in body
             assert validate_prompt_no_gold(body, gold)
         assert "boxed" in body.lower()
+
+
+def test_retry_parsefix_dry_run_prompts_contain_final_answer_literal() -> None:
+    out_dirs = sorted(REPO.glob("outputs/production_equiv_v1_retry_prompt_parsefix_dry_run_*"))
+    if not out_dirs:
+        pytest.skip("retry parsefix dry-run dir not generated yet")
+    out = out_dirs[-1]
+    manifest = json.loads((out / "retry_parsefix_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["no_api_calls"] is True
+    assert manifest["planned_calls"] <= 10
+    assert manifest["no_gold_in_prompts_verified"] is True
+    assert manifest["no_prediction_leakage_verified"] is True
+    rows = list(csv.DictReader((out / "retry_parsefix_call_plan.csv").open(encoding="utf-8")))
+    assert rows
+    for r in rows:
+        p = REPO / r["prompt_path"]
+        assert p.exists()
+        txt = p.read_text(encoding="utf-8")
+        assert "FINAL_ANSWER: <number>" in txt

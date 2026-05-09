@@ -348,6 +348,156 @@ def decide_track_b_overlay_commitment_gate(
     )
 
 
+def decide_structural_commitment_v1(
+    *,
+    combined_group_counts_base: dict[str, Any],
+    tiebreak_meta: dict[str, Any],
+    pal_execution_flat: dict[str, Any],
+    overlay_tiebreak_summary: dict[str, Any] | None = None,
+    direct_reserve_answer_raw: str | None = None,
+) -> dict[str, Any]:
+    """Conservative structural commitment (v1) extending Track B without gold.
+
+    Runs :func:`decide_track_b_overlay_commitment_gate` first. If it overrides, returns that
+    decision with ``commitment_policy_layer=\"track_b\"``.
+
+    Otherwise applies **narrow** offline-validated extensions:
+
+    - **Rule A (overlay, no frontier tie-break):** when tie-break did not fire, overlay prior
+      disagrees with executable stdout, **PAL JSON or normalized DR matches the overlay bucket**,
+      and the merged histogram has **at least two supported peers** and overlay mass is not beaten by
+      a competing normalized bucket — allow override to overlay text. Uniform ≥3-way ties with stdout
+      off-manifold still abstain (Track B-style).
+    - **Rule B (DR realign, histogram tie only):** when Track B abstained because PAL stdout
+      already matched the tie-break bucket, but direct-reserve final differs and shares **exact**
+      histogram mass with the tie-break bucket — prefer the direct-reserve answer (trusted DR leaf).
+
+    Abstains on uniform multigroup ambiguity (mirrors Track B) and when metadata is incomplete.
+    """
+    tb = decide_track_b_overlay_commitment_gate(
+        combined_group_counts_base=combined_group_counts_base,
+        tiebreak_meta=tiebreak_meta,
+        pal_execution_flat=pal_execution_flat,
+        overlay_tiebreak_summary=overlay_tiebreak_summary,
+    )
+    out = dict(tb)
+    out["commitment_policy_layer"] = "track_b" if tb.get("should_override") else "none"
+    if tb.get("should_override"):
+        return out
+
+    if not isinstance(tiebreak_meta, dict):
+        return out
+
+    combined = combined_group_counts_base if isinstance(combined_group_counts_base, dict) else {}
+    px = pal_execution_flat if isinstance(pal_execution_flat, dict) else {}
+    pal_out = _to_text(px.get("pal_candidate_answer"))
+    if not pal_out and isinstance(px.get("pal_execution_result"), dict):
+        er = px.get("pal_execution_result")
+        if isinstance(er, dict):
+            pal_out = _to_text(er.get("pal_answer_normalized") or er.get("pal_answer_raw"))
+    pal_out_n = normalize_answer_group_key(str(pal_out).strip()) if pal_out else ""
+
+    ov = overlay_tiebreak_summary if isinstance(overlay_tiebreak_summary, dict) else {}
+    op_prev = _to_text(ov.get("pal_overlay_previous_answer"))
+
+    pal_json_raw = _to_text(px.get("pal_json_answer"))
+    pal_json_n = normalize_answer_group_key(str(pal_json_raw).strip()) if pal_json_raw else ""
+    dr_gate = _to_text(direct_reserve_answer_raw)
+    dr_n_gate = normalize_answer_group_key(str(dr_gate).strip()) if dr_gate else ""
+
+    # ----- Rule A: overlay prior vs executable stdout (no tie-break) -----
+    if (
+        not bool(tiebreak_meta.get("frontier_tiebreak_triggered"))
+        and op_prev
+        and pal_out_n
+        and pal_out_n != "__unknown__"
+    ):
+        op_n = normalize_answer_group_key(str(op_prev).strip())
+        if op_n and op_n != "__unknown__" and op_n != pal_out_n:
+            combined_norm_pre = _histogram_counts_by_normalized_group(combined)
+            if sum(1 for c in combined_norm_pre.values() if int(c) > 0) < 2:
+                pass
+            else:
+                trusted_overlay = (
+                    (pal_json_n and pal_json_n != "__unknown__" and pal_json_n == op_n)
+                    or (dr_n_gate and dr_n_gate != "__unknown__" and dr_n_gate == op_n)
+                )
+                if trusted_overlay:
+                    sup_op = _support_for_normalized_histogram_key(combined, op_n)
+                    if sup_op >= 1:
+                        max_peer, _peer_raw = _max_histogram_support_excluding_normalized_group(
+                            combined, normalized_group_key=op_n
+                        )
+                        if sup_op >= int(max_peer):
+                            combined_norm = _histogram_counts_by_normalized_group(combined)
+                            uniform_high_ambiguity = _uniform_full_multigroup_tie(combined_norm, min_groups=3)
+                            sup_pal_stdout = _support_for_normalized_histogram_key(combined, pal_out_n)
+                            if uniform_high_ambiguity and sup_pal_stdout < 1:
+                                out.update(
+                                    {
+                                        "should_override": False,
+                                        "commitment_policy_layer": "none",
+                                        "reason": "abstain_structural_A_uniform_multigroup_tie_stdout_off_histogram",
+                                        "abstain_reason": "structural_v1_rule_a_ambiguous_uniform_tie",
+                                        "recommended_answer": None,
+                                        "recommended_normalized_group": None,
+                                        "recommended_source": "none",
+                                    }
+                                )
+                                return out
+                            out.update(
+                                {
+                                    "should_override": True,
+                                    "recommended_answer": str(op_prev).strip(),
+                                    "recommended_normalized_group": op_n,
+                                    "recommended_source": "structural_v1_overlay_no_tiebreak",
+                                    "reason": "override_structural_v1_overlay_prior_vs_executable_stdout",
+                                    "abstain_reason": "",
+                                    "commitment_policy_layer": "structural_overlay_no_tiebreak",
+                                }
+                            )
+                            sigs = list(tb.get("signals_used") or [])
+                            sigs.append("structural_rule_A_overlay_no_tiebreak")
+                            sigs.append("structural_rule_A_trusted_overlay_backing")
+                            out["signals_used"] = sigs
+                            return out
+
+    # ----- Rule B: equal-support DR realignment (stdout aligned with tie-break) -----
+    if (
+        bool(tiebreak_meta.get("frontier_tiebreak_triggered"))
+        and tb.get("abstain_reason") == "pal_stdout_already_matches_tiebreak_group"
+        and pal_out_n
+        and pal_out_n != "__unknown__"
+    ):
+        tb_raw = _to_text(tiebreak_meta.get("frontier_tiebreak_selected_group"))
+        tb_n = normalize_answer_group_key(str(tb_raw).strip()) if tb_raw else ""
+        if tb_n and pal_out_n == tb_n:
+            dr_raw = _to_text(direct_reserve_answer_raw)
+            if dr_raw:
+                dr_n = normalize_answer_group_key(str(dr_raw).strip())
+                if dr_n and dr_n != "__unknown__" and dr_n != tb_n:
+                    sup_tb = _support_for_normalized_histogram_key(combined, tb_n)
+                    sup_dr = _support_for_normalized_histogram_key(combined, dr_n)
+                    if sup_dr >= 1 and sup_tb == sup_dr:
+                        out.update(
+                            {
+                                "should_override": True,
+                                "recommended_answer": str(dr_raw).strip(),
+                                "recommended_normalized_group": dr_n,
+                                "recommended_source": "structural_v1_frontier_realign_dr_equal_support",
+                                "reason": "override_structural_v1_dr_realign_equal_histogram_to_tiebreak_peer",
+                                "abstain_reason": "",
+                                "commitment_policy_layer": "structural_frontier_realign_dr",
+                            }
+                        )
+                        sigs = list(tb.get("signals_used") or [])
+                        sigs.append("structural_rule_B_dr_equal_support_realign")
+                        out["signals_used"] = sigs
+                        return out
+
+    return out
+
+
 def decide_pal_strong_overlay_promotion(
     *,
     combined_group_counts_base: dict[str, Any],

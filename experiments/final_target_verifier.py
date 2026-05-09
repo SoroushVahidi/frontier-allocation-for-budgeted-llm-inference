@@ -93,3 +93,67 @@ def final_target_verifier_features(
         "dropped_lowest_average_risk": dropped_lowest_avg_risk,
         "sign_direction_cue": sign_direction_cue,
     }
+
+
+def _target_type_from_problem(problem_text: str, verifier_features: dict[str, Any]) -> str:
+    if verifier_features.get("asks_difference"):
+        return "difference"
+    if verifier_features.get("asks_remaining"):
+        return "remaining"
+    if verifier_features.get("asks_ratio_part"):
+        return "ratio_part"
+    if verifier_features.get("asks_average_target"):
+        return "average"
+    if verifier_features.get("asks_total"):
+        return "total"
+    t = _norm(problem_text)
+    if any(x in t for x in ("per ", "mph", "rate")):
+        return "rate"
+    return "entity_value"
+
+
+def select_with_final_target_verifier_v1(
+    candidate_answers: list[dict[str, Any]],
+    problem_text: str,
+    verifier_features: dict[str, Any],
+    metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Deterministic gold-free candidate selector with final-target semantics bias."""
+    md = metadata if metadata is not None else {}
+    md["discovery3_selection_policy_applied"] = True
+    target_type = _target_type_from_problem(problem_text, verifier_features)
+    md["discovery3_target_quantity_type"] = target_type
+
+    if not candidate_answers:
+        md["discovery3_selection_reason"] = "no_candidates"
+        return {"selected_answer": "", "selected_source": "none", "selection_reason": "no_candidates", "target_quantity_type": target_type}
+
+    # score: explicit target match > confidence > deterministic source tie-break
+    src_rank = {"retry_candidate": 4, "our_candidate": 3, "baseline_candidate": 2, "pal_candidate": 1}
+    scored: list[tuple[tuple[int, float, int, str], dict[str, Any]]] = []
+    for c in candidate_answers:
+        ans = str(c.get("answer") or "").strip()
+        if not ans:
+            continue
+        cand_type = str(c.get("target_quantity_type") or "").strip()
+        target_match = int(cand_type == target_type) if cand_type else 0
+        conf = float(c.get("confidence") or 0.0)
+        sr = src_rank.get(str(c.get("source") or ""), 0)
+        key = (target_match, conf, sr, ans)
+        scored.append((key, c))
+    if not scored:
+        md["discovery3_selection_reason"] = "all_candidates_empty"
+        return {"selected_answer": "", "selected_source": "none", "selection_reason": "all_candidates_empty", "target_quantity_type": target_type}
+
+    scored.sort(reverse=True, key=lambda x: x[0])
+    best = scored[0][1]
+    sel_ans = str(best.get("answer") or "").strip()
+    sel_src = str(best.get("source") or "unknown")
+    reason = "target_compatible_candidate_preferred" if scored[0][0][0] == 1 else "fallback_highest_confidence"
+    md["discovery3_selection_reason"] = reason
+    return {
+        "selected_answer": sel_ans,
+        "selected_source": sel_src,
+        "selection_reason": reason,
+        "target_quantity_type": target_type,
+    }

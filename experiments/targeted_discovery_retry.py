@@ -300,6 +300,283 @@ def build_prompt(problem_text: str, scaffold: str, *, prompt_version: str = "v1"
     return body + shared_footer
 
 
+def build_final_target_extraction_repair_prompt(problem_text: str) -> str:
+    """Stage-3 micro-patch prompt: explicit final-target extraction and minimal equations."""
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve the math word problem with strict final-target extraction.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Instructions:\n"
+        "- Restate exactly what final quantity is asked.\n"
+        "- Classify target type as one of: total, difference, remaining, rate, ratio part, or specific entity value.\n"
+        "- Use only minimal equations needed to compute that target.\n"
+        "- Verify the computed value matches the asked target (not an intermediate value).\n"
+        "- Provide the final answer exactly once.\n\n"
+        "Output format:\n"
+        "- target_type: <one short phrase>\n"
+        "- equations: <minimal equations>\n"
+        "- final_answer: <single numeric answer>\n"
+    )
+
+
+def build_tale_style_decomposition_prompt(problem_text: str) -> str:
+    """Stage-3 micro-patch prompt: concise TALE-style decomposition with target check."""
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve the math word problem using concise named subquestions.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Instructions:\n"
+        "- Decompose into short subquestions (Q1, Q2, ...).\n"
+        "- Solve subquestions sequentially with compact arithmetic.\n"
+        "- Verify the final computed value answers the exact requested target.\n"
+        "- Provide the final answer exactly once.\n\n"
+        "Output format:\n"
+        "- decomposition: <Q1..Qn>\n"
+        "- work: <concise steps>\n"
+        "- target_check: <one line>\n"
+        "- final_answer: <single numeric answer>\n"
+    )
+
+
+def build_discovery3_candidate_diversity_prompt(
+    problem_text: str,
+    target_quantity_type: str | None = None,
+    family_hint: str | None = None,
+) -> str:
+    """Gold-free, prediction-free decomposition prompt for discovery3 retries."""
+    text = embed_problem_for_prompt(problem_text)
+    target = (target_quantity_type or "unknown").strip() or "unknown"
+    fam = (family_hint or "unknown").strip() or "unknown"
+    return (
+        "Solve this GSM8K-style problem independently.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Discovery3 scaffold:\n"
+        f"- target_quantity_type_hint: {target}\n"
+        f"- family_hint: {fam}\n"
+        "- First identify the exact requested final quantity.\n"
+        "- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).\n"
+        "- Compute independently from the problem text only.\n"
+        "- Verify units and target alignment before finalizing.\n"
+        "- Output exactly one final-answer line at the end in this exact format:\n"
+        "  FINAL_ANSWER: <number>\n"
+        "- Do not put units or words after the number on the FINAL_ANSWER line.\n"
+        "- Do not give multiple final answers.\n"
+        "- If the answer is a fraction or decimal, put only that value.\n"
+    )
+
+
+def _retry_prompt_output_contract() -> str:
+    return (
+        "- Output exactly one final-answer line at the end in this exact format:\n"
+        "  FINAL_ANSWER: <number>\n"
+        "- Do not put units or words after the number on FINAL_ANSWER line.\n"
+        "- Do not give multiple final answers.\n"
+        "- If the answer is a fraction or decimal, put only that value.\n"
+        "- If you are unsure, still output one best numeric answer on FINAL_ANSWER line.\n"
+    )
+
+
+def build_final_target_guarded_retry_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this math word problem independently.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Instructions:\n"
+        "- Identify the exact requested final quantity before doing arithmetic.\n"
+        "- Use concise equations only.\n"
+        "- Verify the computed value answers the requested final quantity, not an intermediate value.\n"
+        f"{_retry_prompt_output_contract()}"
+    )
+
+
+def build_structural_commit_challenge_retry_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this math word problem independently.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Instructions:\n"
+        "- Identify the exact requested final quantity.\n"
+        "- Solve with concise equations.\n"
+        "- Challenge your own result with one short consistency check before finalizing.\n"
+        f"{_retry_prompt_output_contract()}"
+    )
+
+
+def build_rate_table_retry_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this math word problem independently using a compact rate table when relevant.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Instructions:\n"
+        "- Identify the requested final quantity.\n"
+        "- If rates/ratios are involved, organize values in a compact rate table.\n"
+        "- Use concise equations and compute only the requested quantity.\n"
+        f"{_retry_prompt_output_contract()}"
+    )
+
+
+def build_concise_decomposition_retry_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this math word problem independently with concise decomposition.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Instructions:\n"
+        "- Identify the final requested quantity.\n"
+        "- Use 2-4 concise equation steps.\n"
+        "- Ensure the final value corresponds to the requested quantity.\n"
+        f"{_retry_prompt_output_contract()}"
+    )
+
+
+def _schema_grounded_output_contract() -> str:
+    return (
+        "Your entire response must be only the block below.\n"
+        "Do not explain outside the block.\n"
+        "Copy these exact labels.\n"
+        "Output format (required):\n"
+        "SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, "
+        "ratio_equation_schema, target_difference_schema, average_total_count_schema>\n"
+        "TARGET_QUANTITY: <short phrase>\n"
+        "GIVEN_QUANTITIES:\n"
+        "- <name>: <value or expression>\n"
+        "EQUATIONS:\n"
+        "- <equation>\n"
+        "COMPUTATION:\n"
+        "- <step>\n"
+        "FINAL_ANSWER: <number>\n"
+        "Rules:\n"
+        "- Do not put units or words after FINAL_ANSWER number.\n"
+        "- Do not give multiple final answers.\n"
+        "- If uncertain, still output one best numeric FINAL_ANSWER.\n"
+        "\n"
+        "Template:\n"
+        "SCHEMA_TYPE:\n"
+        "TARGET_QUANTITY:\n"
+        "GIVEN_QUANTITIES:\n"
+        "-\n"
+        "EQUATIONS:\n"
+        "-\n"
+        "COMPUTATION:\n"
+        "-\n"
+        "FINAL_ANSWER:\n"
+    )
+
+
+def build_schema_grounded_quantity_ledger_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this GSM8K-style problem independently using a quantity-ledger schema.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Use a ledger over given quantities, then compute the requested target.\n"
+        f"{_schema_grounded_output_contract()}"
+    )
+
+
+def build_schema_grounded_rate_table_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this GSM8K-style problem independently using a rate-table schema.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Represent relevant rates and quantities first, then compute the target.\n"
+        f"{_schema_grounded_output_contract()}"
+    )
+
+
+def build_schema_grounded_state_transition_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this GSM8K-style problem independently using before/after state transitions.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Track state updates in order and compute the requested final target.\n"
+        f"{_schema_grounded_output_contract()}"
+    )
+
+
+def build_schema_grounded_ratio_equation_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this GSM8K-style problem independently using a ratio-equation schema.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Translate ratio statements to equations and solve for the requested quantity.\n"
+        f"{_schema_grounded_output_contract()}"
+    )
+
+
+def build_schema_grounded_target_difference_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this GSM8K-style problem independently using a target-difference schema.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Identify compared quantities and compute exactly the asked difference/target.\n"
+        f"{_schema_grounded_output_contract()}"
+    )
+
+
+def build_schema_grounded_average_total_count_prompt(problem_text: str) -> str:
+    text = embed_problem_for_prompt(problem_text)
+    return (
+        "Solve this GSM8K-style problem independently using an average-total-count schema.\n\n"
+        "Problem:\n"
+        f"{text}\n\n"
+        "Convert between average, total, and count explicitly, then solve the asked target.\n"
+        f"{_schema_grounded_output_contract()}"
+    )
+
+
+@dataclass(frozen=True)
+class Discovery3CandidateDiversitySelectionConfigV1:
+    enable_discovery3_candidate_diversity_selection_v1: bool = False
+    discovery3_max_extra_calls: int = 1
+    enable_percent_base_denominator: bool = False
+
+
+def build_discovery3_candidate_diversity_selection_config_v1(
+    *,
+    enable_discovery3_candidate_diversity_selection_v1: bool = False,
+    discovery3_max_extra_calls: int = 1,
+    enable_percent_base_denominator: bool = False,
+) -> Discovery3CandidateDiversitySelectionConfigV1:
+    return Discovery3CandidateDiversitySelectionConfigV1(
+        enable_discovery3_candidate_diversity_selection_v1=bool(enable_discovery3_candidate_diversity_selection_v1),
+        discovery3_max_extra_calls=max(0, int(discovery3_max_extra_calls)),
+        enable_percent_base_denominator=bool(enable_percent_base_denominator),
+    )
+
+
+def build_discovery3_patch_metadata(
+    *,
+    patch_enabled: bool,
+    retry_triggered: bool,
+    selected_scaffold: str,
+    selection_policy_applied: bool,
+    selection_reason: str,
+    extra_calls_planned: int,
+    extra_calls_used: int = 0,
+) -> dict[str, str | int | bool]:
+    """Canonical metadata fields for the discovery3 opt-in patch."""
+    return {
+        "discovery3_patch_enabled": bool(patch_enabled),
+        "discovery3_diversity_retry_triggered": bool(retry_triggered),
+        "discovery3_selected_scaffold": str(selected_scaffold),
+        "discovery3_selection_policy_applied": bool(selection_policy_applied),
+        "discovery3_selection_reason": str(selection_reason),
+        "discovery3_extra_calls_planned": int(extra_calls_planned),
+        "discovery3_extra_calls_used": int(extra_calls_used),
+    }
+
+
 def validate_prompt_no_gold(prompt: str, gold_answer: str | None) -> bool:
     """True if the prompt does not contain the gold string and has no obvious answer leaks."""
     g = str(gold_answer or "").strip()
@@ -386,6 +663,30 @@ class TargetedDiscoveryRetryIntegrationConfigV1:
     targeted_retry_no_api_mode: bool = True
 
 
+@dataclass(frozen=True)
+class ProductionEquivalenceStage3Config:
+    method_alias: str = (
+        "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_"
+        "structural_commit_v1_production_equiv_v1"
+    )
+    enable_structural_commit_v1: bool = True
+    enable_adaptive_retry_router_v3: bool = True
+    enable_final_target_verifier_v1: bool = True
+    enable_targeted_retry: bool = True
+    targeted_retry_max_extra_calls: int = 1
+    targeted_retry_allowed_scaffolds: tuple[str, ...] = (
+        "quantity_ledger_v2_1",
+        "rate_table_v1",
+        "before_after_state_v1",
+        "target_difference_v1",
+        "final_target_extraction_repair",
+        "l1_style_concise_decomposition",
+    )
+    enable_percent_base_denominator: bool = False
+    no_api_mode: bool = True
+    enable_discovery3_candidate_diversity_selection_v1: bool = False
+
+
 def build_targeted_discovery_retry_integration_config_v1(
     *,
     enable_targeted_discovery_retry_v1: bool = False,
@@ -397,4 +698,17 @@ def build_targeted_discovery_retry_integration_config_v1(
         enable_targeted_discovery_retry_v1=bool(enable_targeted_discovery_retry_v1),
         targeted_retry_allowlist_case_ids=allow,
         targeted_retry_no_api_mode=bool(targeted_retry_no_api_mode),
+    )
+
+
+def build_production_equivalence_stage3_config(
+    *,
+    enable_percent_base_denominator: bool = False,
+    targeted_retry_max_extra_calls: int = 1,
+    no_api_mode: bool = True,
+) -> ProductionEquivalenceStage3Config:
+    return ProductionEquivalenceStage3Config(
+        enable_percent_base_denominator=bool(enable_percent_base_denominator),
+        targeted_retry_max_extra_calls=max(0, int(targeted_retry_max_extra_calls)),
+        no_api_mode=bool(no_api_mode),
     )
