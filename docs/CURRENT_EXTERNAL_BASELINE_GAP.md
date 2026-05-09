@@ -6,6 +6,17 @@ Related: **`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`**, **`docs/DISCOVERY_FAIL
 
 ---
 
+## May 2026 frontier-iteration update
+
+This page still records the older narrow main3-vs-external gap below. For the current PAL+retry line, use `START_HERE_CURRENT.md`, `docs/CURRENT_RESEARCH_HANDOFF_20260507.md`, and `docs/MIGRATION_TRANSFER_INDEX_20260509.md`.
+
+Current claim-safe PAL+retry evidence:
+
+- `outputs/pal_retry_300case_analysis_20260506/`: PAL+retry `252/300` vs `external_l1_max` `244/300`; directionally positive / competitive, but not statistically decisive.
+- `outputs/external_full_suite_matched50_comparison_20260508T222631Z/`: `production_equiv_v1` `36/50`, `external_pal_pot_fair_v1` `40/50`, and `external_self_consistency_6_fair_v1` `36/50`; do not claim production-equivalent beats every individual external baseline.
+
+---
+
 ## Latest bounded main harness — Slurm **1018203**
 
 **Primary bundle:** `outputs/main3_external_vs_best3_internal_100case_20260502T203851Z/` (`summary.json`, `comparison_table.csv`, `manifest.json`; sidecars `command.sh`, `monitor_log.txt`).

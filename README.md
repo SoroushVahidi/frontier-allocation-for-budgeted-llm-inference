@@ -24,6 +24,8 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 | 6 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
 | 7 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Latest bounded diagnostics vs **`external_l1_max`** |
 | 8 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
+| 9 | [`docs/MIGRATION_TRANSFER_INDEX_20260509.md`](docs/MIGRATION_TRANSFER_INDEX_20260509.md) | Migration checklist for local work that must be committed, archived, or excluded |
+| 10 | [`docs/FAILURE_CASE_AND_API_ARTIFACT_INVENTORY_20260509.md`](docs/FAILURE_CASE_AND_API_ARTIFACT_INVENTORY_20260509.md) | Failure-case and API-expensive artifact inventory |
 
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 
@@ -68,6 +70,8 @@ strict_f2
 ## Current evidence posture
 
 Read **`docs/CURRENT_RESEARCH_HANDOFF_20260507.md`** for the **300-case paired PAL+retry vs `external_l1_max`** headline and **failure-mining** status (May 2026).
+
+Migration note: before leaving this machine, review [`docs/MIGRATION_TRANSFER_INDEX_20260509.md`](docs/MIGRATION_TRANSFER_INDEX_20260509.md). Several important May 2026 outputs are local-only and should either be selectively committed as curated summaries or archived outside Git.
 
 Older **10-case cached-vs-live** folders (e.g. `outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/`) remain **historical small-slice diagnostics** for the non-PAL tie-break line—not a substitute for the PAL+retry bundles.
 

@@ -4,7 +4,7 @@ Short orientation for humans and agents. Historical timestamped material stays i
 
 ## Latest local-only work (after pushed `bc693b8`)
 
-Not on `origin` until you selectively commit: **GSM8K/PAL structural validator** + eval scripts (telemetry only—not a runtime ranker), **gold-absent schema mining** outputs + script, **target-staged PAL retry** unarmed pilot scaffold (manifest + prompts + tests). See handoff **§ “Latest local work after bc693b8.”** **`~480` untracked paths** are mostly under `outputs/`—do **not** bulk-commit.
+Not on `origin` until you selectively commit: **GSM8K/PAL structural validator** + eval scripts (telemetry only—not a runtime ranker), **gold-absent schema mining** outputs + script, **target-staged PAL retry** unarmed pilot scaffold (manifest + prompts + tests), plus newer matched-50 / PAL-vs-production local artifacts from the frontier-iteration audit. See handoff **§ “Latest local work after bc693b8”** and the migration indexes below. Many local untracked paths were present during the migration audit; treat that count as volatile and re-check with `git status` before staging. Do **not** bulk-commit.
 
 ---
 
@@ -17,6 +17,8 @@ Not on `origin` until you selectively commit: **GSM8K/PAL structural validator**
 | **3** | [`docs/CLAIMS.md`](docs/CLAIMS.md) — safe vs unsafe claims |
 | **4** | [`docs/CURRENT_METHOD_STATUS_20260507.md`](docs/CURRENT_METHOD_STATUS_20260507.md) — method IDs and roles |
 | **5** | [`docs/references/external_baselines_references.md`](docs/references/external_baselines_references.md) — external methods/papers reference ledger |
+| **6** | [`docs/MIGRATION_TRANSFER_INDEX_20260509.md`](docs/MIGRATION_TRANSFER_INDEX_20260509.md) — what must be committed, archived, or excluded before machine migration |
+| **7** | [`docs/FAILURE_CASE_AND_API_ARTIFACT_INVENTORY_20260509.md`](docs/FAILURE_CASE_AND_API_ARTIFACT_INVENTORY_20260509.md) — failure-case and API-expensive artifact inventory |
 
 ### Curated artifact summaries (evidence trails)
 
@@ -26,6 +28,7 @@ Not on `origin` until you selectively commit: **GSM8K/PAL structural validator**
 | Failure-pattern mining (latest collect bundle; **local until committed**) | `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/failure_pattern_mining_report.md` |
 | Present-not-selected replay (same bundle) | `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_report.md` |
 | Discovery / TRCE checklist | [`outputs/failure_case_corpus_20260507/selected_discovery_hypothesis_checklist.md`](outputs/failure_case_corpus_20260507/selected_discovery_hypothesis_checklist.md) |
+| Matched-50 frontier-iteration external suite comparison (**local artifact; not a blanket superiority proof over `external_l1_max`**) | `outputs/external_full_suite_matched50_comparison_20260508T222631Z/external_full_suite_summary.json` |
 
 ### Paste-ready session starter
 
