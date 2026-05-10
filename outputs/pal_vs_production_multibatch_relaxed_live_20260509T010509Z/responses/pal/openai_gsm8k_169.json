@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "120",
+  "parsed_answer": "120",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "weekday_miles = 20\nweekend_miles = 10\ntotal_weekday_miles = weekday_miles * 5\ntotal_weekend_miles = weekend_miles * 2\ntotal_weekly_miles = total_weekday_miles + total_weekend_miles\nprint(total_weekly_miles)",
+      "stdout": "120\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "120",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "120",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

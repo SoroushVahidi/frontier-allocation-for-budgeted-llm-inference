@@ -1,0 +1,21 @@
+{
+  "stage_name": "stage2",
+  "case_count": 100,
+  "actual_new_cohere_calls": 0,
+  "external_l1_correct_count": 85,
+  "baseline_pal_correct_count": 84,
+  "integrated_correct_count": 84,
+  "integrated_minus_external_l1": -1,
+  "integrated_minus_baseline_pal": 0,
+  "paired_external_l1_only": 9,
+  "paired_integrated_only": 8,
+  "both_correct": 76,
+  "both_wrong": 7,
+  "mcnemar_inputs": {
+    "external_correct_integrated_wrong": 9,
+    "integrated_correct_external_wrong": 8
+  },
+  "api_errors": [],
+  "parsing_ambiguities": 0,
+  "no_api_calls": true
+}

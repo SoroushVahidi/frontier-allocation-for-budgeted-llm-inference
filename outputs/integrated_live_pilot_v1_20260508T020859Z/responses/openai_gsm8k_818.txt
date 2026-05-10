@@ -1,0 +1,19 @@
+**Initial State:**
+- Total loaves produced per day: 60
+
+**Changes in Chronological Order:**
+
+1. **Morning Sales:**
+   - Two-thirds of the loaves are sold in the morning.
+   - Loaves sold in the morning: \(\frac{2}{3} \times 60 = 40\)
+   - Loaves remaining after morning: \(60 - 40 = 20\)
+
+2. **Afternoon and Evening Sales:**
+   - Half of the remaining loaves are sold equally in the afternoon and evening.
+   - Loaves sold in the afternoon: \(\frac{1}{2} \times 20 = 10\)
+
+**Final Queried Quantity:**
+- Number of loaves sold in the afternoon.
+
+**Final Answer:**
+\(\boxed{10}\)

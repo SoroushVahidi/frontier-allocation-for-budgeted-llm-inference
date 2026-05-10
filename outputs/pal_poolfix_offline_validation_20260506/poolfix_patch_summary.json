@@ -1,0 +1,9 @@
+{
+  "added_source_label_counts": {},
+  "candidates_added": 0,
+  "input_dir": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+  "output_dir": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+  "pal_rows_changed": 0,
+  "pal_rows_seen": 300,
+  "total_rows": 600
+}

@@ -1,0 +1,14 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+Every day Charisma meditates for １５ minutes when she first wakes up and again before she goes to sleep.  ５ days a week she practices １ hour of yoga.  in ４ weeks, how much time has she spent on meditation/yoga practice?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: entity_value
+- family_hint: state_update
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this format:
+  final_answer / FINAL_ANSWER: <single numeric value>

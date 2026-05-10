@@ -1,0 +1,8 @@
+**Target:** Calculate the number of hay bales left in the field after 6 hours.
+
+1. Bales made per hour: \(5\)
+2. Bales picked up per hour: \(3\)
+3. Net bales added per hour: \(5 - 3 = 2\)
+4. Total bales added in 6 hours: \(2 \times 6 = 12\)
+
+\boxed{12}

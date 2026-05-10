@@ -1,0 +1,10 @@
+**Target:** Calculate Sylvie's annual salary after 3 more years of service.
+
+1. Initial salary: \( S_0 = 600 \)
+2. Annual increase: \( 10\% \) of \( S_0 \)
+3. Salary after 3 more years: \( S = S_0 \times (1 + 0.10)^3 \)
+4. \( S = 600 \times (1.10)^3 \)
+
+\[
+\boxed{798.60}
+\]

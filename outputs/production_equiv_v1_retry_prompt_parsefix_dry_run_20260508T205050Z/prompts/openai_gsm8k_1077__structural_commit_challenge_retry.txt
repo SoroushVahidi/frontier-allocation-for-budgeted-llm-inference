@@ -1,0 +1,15 @@
+Solve this math word problem independently.
+
+Problem:
+It rained ２ inches on Monday and is expected to rain １ more inch than twice of Monday’s total on Tuesday. How many inches of rain will there be on Tuesday?
+
+Instructions:
+- Identify the exact requested final quantity.
+- Solve with concise equations.
+- Challenge your own result with one short consistency check before finalizing.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.
+- If you are unsure, still output one best numeric answer on FINAL_ANSWER line.

@@ -1,0 +1,29 @@
+{
+  "total_union_rows_written": 48,
+  "total_gold_absent_cases": 37,
+  "mechanism_unknown_union_rows": 11,
+  "cases_with_problem_text": 48,
+  "rate_ratio": 7,
+  "temporal_change": 5,
+  "difference_comparison": 4,
+  "multi_step_total": 2,
+  "unit_conversion": 0,
+  "counting_combinatorics": 1,
+  "average": 2,
+  "money_budget": 9,
+  "geometry": 0,
+  "unknown": 7,
+  "recommended_rate_table": 7,
+  "recommended_before_after_state": 5,
+  "recommended_target_difference": 4,
+  "recommended_quantity_ledger": 14,
+  "recommended_least_to_most": 0,
+  "recommended_PAL_program_first": 0,
+  "recommended_direct_restatement": 0,
+  "recommended_unknown_scaffold": 7,
+  "source_union_csv": "outputs/latest_pal_external_loss_bank_20260508T004000Z/latest_pal_external_loss_union_by_case.csv",
+  "notes": {
+    "bank_mechanism_json_still_reports_36": "Union+bank both show 37 rows with gold_absent_discovery=yes; mechanism_counts.json in loss bank may round/dedupe dual-tagged rows.",
+    "unknown_union": "11 low-ID GSM8K-style case_ids tagged for minimal-slice reproduction; not auto-classified as discovery."
+  }
+}

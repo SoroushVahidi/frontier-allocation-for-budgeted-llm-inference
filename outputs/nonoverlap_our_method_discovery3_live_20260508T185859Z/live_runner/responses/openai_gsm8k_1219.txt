@@ -1,0 +1,9 @@
+**Target:** Calculate the new credit card balance after returns and purchases.
+
+1. Initial charge: $85.00
+2. Return: $85.00 - $15.00 = $70.00
+3. Frying pan: $20.00 * 0.80 = $16.00
+4. Towels: $30.00 * 0.90 = $27.00
+5. New balance: $70.00 + $16.00 + $27.00 = $113.00
+
+**Final answer:** $\boxed{113.00}$

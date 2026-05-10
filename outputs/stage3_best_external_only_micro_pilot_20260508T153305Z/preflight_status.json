@@ -1,0 +1,29 @@
+{
+  "cohere_api_key_set": true,
+  "planned_cohere_calls": 6,
+  "max_cohere_calls": 6,
+  "planned_calls_ok": true,
+  "exactly_3_unique_case_ids": true,
+  "all_prompt_files_exist": true,
+  "no_ascii_gold_answer_in_prompts": false,
+  "no_external_prediction_in_prompts": false,
+  "no_duplicate_prompt_variants": true,
+  "preflight_ok": false,
+  "gold_leak_hits": [
+    [
+      "openai_gsm8k_1198",
+      "final_target_extraction_repair"
+    ],
+    [
+      "openai_gsm8k_1198",
+      "tale_style_decomposition"
+    ]
+  ],
+  "external_prediction_leak_hits": [
+    [
+      "openai_gsm8k_1198",
+      "final_target_extraction_repair",
+      "integrated_prediction"
+    ]
+  ]
+}

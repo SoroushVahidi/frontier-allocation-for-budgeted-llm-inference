@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_cars = 20\nautomatic_cars = 12\nmanual_cars = 4\nsemi_automatic_cars = total_cars - automatic_cars - manual_cars\npercentage_semi_automatic = (semi_automatic_cars / total_cars) * 100\nprint(percentage_semi_automatic)",
+    "stdout": "20.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "20.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "20.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

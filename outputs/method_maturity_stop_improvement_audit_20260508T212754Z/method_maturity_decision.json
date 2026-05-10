@@ -1,0 +1,17 @@
+{
+  "production_equiv_beats_individual_fair_core4": true,
+  "production_equiv_beats_best_core4": false,
+  "production_equiv_beats_prior_patch_focused": false,
+  "free_form_retry_viable": false,
+  "schema_grounded_retry_viable": false,
+  "actionable_pattern_remaining": true,
+  "actionable_pattern_explanation": "families ['ratio_equation', 'before_after_state'] recur but both free-form and schema-grounded retries failed format/parse tests; further prompt-patch work is unlikely to be safe/efficient right now.",
+  "recommendation": "stop_prompt_patch_improvement_for_now",
+  "recommended_next_actions": [
+    "complete external baseline evidence for SC6/PAL if feasible",
+    "create paper-ready ablation/comparison tables",
+    "run larger robustness/245 only after baseline suite is clear",
+    "preserve failed retry/schema attempts as negative diagnostics"
+  ],
+  "no_api_calls": true
+}

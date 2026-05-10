@@ -1,0 +1,9 @@
+**Target:** Determine how many candies Dale still needs to sell.
+
+1. Initial candies: 100  
+2. Sold: 150  
+3. Ordered more: 100  
+4. Total candies: 100 + 100 = 200  
+5. Remaining to sell: 200 - 150 = 50  
+
+\boxed{50}

@@ -1,0 +1,30 @@
+**Final Target Quantity:** Total money Pat will spend at the store.
+
+**Quantity Ledger:**
+
+1. **Total length of flower bed:** 111 feet (one-time)
+2. **Space required per plant:** 1.5 feet (one-time)
+3. **Width of each flower:** 12 inches = 1 foot (one-time)
+4. **Total space required for each plant (including spacing):** 1.5 feet (one-time)
+5. **Number of plants that can fit in the flower bed:** 
+   \[
+   \frac{111 \text{ feet}}{1.5 \text{ feet/plant}} = 74 \text{ plants}
+   \]
+   (total across the whole horizon)
+6. **Number of plants Pat already owns:** 17 (one-time)
+7. **Number of plants Pat needs to buy:** 
+   \[
+   74 - 17 = 57 \text{ plants}
+   \]
+   (one-time)
+8. **Cost per plant:** $6 (one-time)
+9. **Total cost:** 
+   \[
+   57 \text{ plants} \times 6 \text{ dollars/plant} = 342 \text{ dollars}
+   \]
+   (one-time)
+
+**Final Answer:**
+\[
+\boxed{342}
+\]

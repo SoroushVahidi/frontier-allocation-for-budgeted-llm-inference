@@ -1,0 +1,7 @@
+**Target:** Calculate the number of sweet pieces each friend receives.
+
+1. Total pieces: \( 15 \times 60 = 900 \)
+2. Pieces given away: \( 900 - (2 \times 60) = 780 \)
+3. Pieces per friend: \( \frac{780}{10} = 78 \)
+
+\boxed{78}

@@ -1,0 +1,23 @@
+{
+  "timestamp_note": "post-PR-359 merge planning",
+  "current_best_method": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+  "evidence_so_far": {
+    "targeted_pal_28_case_corrected_replayed": "21/28 after integration fix",
+    "capped_paired_pilot": "PAL 40/43 vs external_l1_max 36/43"
+  },
+  "claim_boundary": "promising but still small/capped; not sufficient for broad performance claims",
+  "next_recommended_api_experiment": "larger paired PAL vs external_l1_max validation on fresh GSM8K IDs",
+  "suggested_call_cap": {
+    "recommended_default": 1000,
+    "higher_option_if_user_approves": 1500,
+    "basis": "prior capped usage and incomplete pairing risk"
+  },
+  "primary_risks": [
+    "cap saturation before full pairing",
+    "partial pairing / uneven slice coverage",
+    "repeated cases across runs",
+    "metric consistency drift between raw and corrected accounting"
+  ],
+  "gating_requirement": "run no-API preflight (method validation, allowlist/fresh-ID checks, cap estimate) before any live API batch",
+  "api_status": "paused until explicit user approval"
+}

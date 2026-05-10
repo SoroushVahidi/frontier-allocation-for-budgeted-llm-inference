@@ -1,0 +1,65 @@
+{
+  "report_output_path": "/home/soroush/research-next-wt/outputs/pal_retry_consolidated_report_20260506",
+  "generated_at_utc": "2026-05-06T18:11:58.346520+00:00",
+  "api_calls_made_for_this_report": 0,
+  "headline_results": {
+    "paired_100case": {
+      "external_l1_max_exact": "75/100",
+      "pal_exact": "80/100",
+      "pal_minus_external_pp": 5,
+      "discordants": {
+        "pal_only": 10,
+        "external_only": 5
+      },
+      "p_value": 0.3018,
+      "bootstrap_95ci_pp": [
+        -2,
+        13
+      ],
+      "conclusion": "PAL is competitive and directionally better, but not statistically decisive on this 100-case sample."
+    },
+    "external_only_31": {
+      "count": 31,
+      "categories": {
+        "L1_P1_code_absent": 14,
+        "L1_P9_external_trace_advantage_unknown": 10,
+        "L1_P5_correct_candidate_not_selected": 4,
+        "L1_P2_unsafe_code": 1,
+        "L1_P3_exec_failed": 1,
+        "L1_P4_exec_succeeded_wrong": 1
+      },
+      "dominant_actionable_bottleneck": "code-absence in PAL output/executable payload"
+    },
+    "retry_patch": {
+      "retry_eligible_from_31": "16/31",
+      "retry_eligible_L1_P1": "14/14",
+      "smoke_5": {
+        "retry_ran": "4/5",
+        "fixes": 3,
+        "breaks": 0,
+        "exact": "3/5"
+      },
+      "followup_11": {
+        "retry_ran": "4/11",
+        "fixes": 3,
+        "breaks": 0,
+        "exact": 0.273
+      },
+      "aggregate_16": {
+        "evaluated": 16,
+        "fixes": 6,
+        "breaks": 0,
+        "net": 6,
+        "retry_exec_ok_rate": 0.375
+      },
+      "conclusion": "Keep retry-on-empty-code: beneficial but still brittle."
+    }
+  },
+  "claim_boundaries": [
+    "No claim that PAL+retry beats external_l1_max globally yet.",
+    "The 100-case paired result is promising but statistically non-decisive.",
+    "Retry evidence is targeted to retry-eligible external-only/code-absence losses, not an unbiased global estimate."
+  ],
+  "recommended_next_step": "Stop new API for now and prepare a clean PR/report for the retry patch (including no-API tests and 16-case live retry evidence). After merge/review, run a new paired PAL+retry vs external_l1_max validation.",
+  "api_should_remain_paused": true
+}

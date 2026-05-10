@@ -1,0 +1,15 @@
+**Initial State:**  
+Week 1: Height = 3 inches.
+
+**Operation 1 (Week 2):**  
+Doubled in height.  
+Height after Week 2 = 3 × 2 = 6 inches.
+
+**Operation 2 (Week 3):**  
+Grew another 4 inches.  
+Height after Week 3 = 6 + 4 = 10 inches.
+
+**Final Target:**  
+Height of the beanstalk after 3 weeks.
+
+\boxed{10}

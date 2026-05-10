@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "940",
+  "parsed_answer": "940",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "may_expenditure = 500\n\n# Calculate June expenditure\njune_expenditure = may_expenditure - 60\n\n# Calculate total expenditure\ntotal_expenditure = may_expenditure + june_expenditure\n\nprint(total_expenditure)",
+      "stdout": "940\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "940",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "940",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

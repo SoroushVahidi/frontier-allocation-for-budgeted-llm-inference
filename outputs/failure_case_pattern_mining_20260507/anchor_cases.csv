@@ -1,0 +1,16 @@
+example_id,score,outcome_bucket,failure_stage,operation_hints,quantity_bucket,anchor_regression,pal_trace_available,external_trace_available,both_traces_available
+openai_gsm8k_812,14.00,both_wrong,gold_absent_everywhere_detectable,rate_ratio|temporal_change,qnum_6p,1,1,1,1
+openai_gsm8k_953,14.00,both_wrong,gold_absent_everywhere_detectable,rate_ratio,qnum_6p,1,1,1,1
+openai_gsm8k_814,13.00,external_only,gold_absent_everywhere_detectable,rate_ratio|temporal_change,qnum_4_5,1,1,1,1
+openai_gsm8k_979,13.00,both_wrong,gold_absent_everywhere_detectable,rate_ratio,qnum_4_5,1,1,1,1
+openai_gsm8k_1069,12.00,both_wrong,gold_absent_everywhere_detectable,rate_ratio,qnum_6p,0,1,1,1
+openai_gsm8k_878,12.00,both_wrong,gold_absent_everywhere_detectable,rate_ratio,qnum_6p,0,1,1,1
+openai_gsm8k_1003,11.00,external_only,gold_absent_everywhere_detectable,product|temporal_change,qnum_0_1,0,1,1,1
+openai_gsm8k_1006,11.00,external_only,gold_absent_everywhere_detectable,rate_ratio|total_sum,qnum_4_5,0,1,1,1
+openai_gsm8k_1021,11.00,both_wrong,gold_absent_everywhere_detectable,difference|temporal_change,qnum_4_5,0,1,1,1
+openai_gsm8k_1029,11.00,external_only,gold_absent_everywhere_detectable,temporal_change,qnum_2_3,0,1,1,1
+openai_gsm8k_1035,11.00,both_wrong,gold_absent_everywhere_detectable,percent|difference|temporal_change,qnum_4_5,0,1,1,1
+openai_gsm8k_773,11.00,external_only,gold_absent_everywhere_detectable,temporal_change,qnum_6p,0,1,1,1
+openai_gsm8k_781,11.00,both_wrong,gold_absent_everywhere_detectable,product,qnum_2_3,0,1,1,1
+openai_gsm8k_794,11.00,both_wrong,gold_absent_everywhere_detectable,temporal_change,qnum_2_3,0,1,1,1
+openai_gsm8k_829,11.00,external_only,gold_absent_everywhere_detectable,none,qnum_2_3,0,1,1,1

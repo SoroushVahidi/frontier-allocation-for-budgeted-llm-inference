@@ -1,0 +1,26 @@
+**Target Quantity:** Cost per pair of contacts.
+
+**Money Ledger:**
+
+1. **Cost per box (original):** $100.00 (one-time, per box)
+2. **Discount (10% off):** $10.00 off per box (one-time, per box)
+3. **Cost per box (discounted):** $90.00 (one-time, per box)
+4. **Total cost for 2 boxes:** $180.00 (one-time, total)
+5. **Number of contacts in 2 boxes:** 180 contacts (total)
+6. **Number of pairs in 180 contacts:** 90 pairs (total)
+
+**Recurrence Classification:**
+
+- The discount is a one-time reduction per box.
+- The total cost is a one-time payment for 2 boxes.
+- The number of contacts and pairs is a total across the whole horizon.
+
+**Calculation:**
+
+Cost per pair = Total cost for 2 boxes / Number of pairs
+= $180.00 / 90
+= $2.00
+
+**Final Answer:**
+
+\boxed{2.00}

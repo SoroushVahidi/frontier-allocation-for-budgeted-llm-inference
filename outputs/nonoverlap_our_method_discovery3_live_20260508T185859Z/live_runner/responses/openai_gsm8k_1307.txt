@@ -1,0 +1,7 @@
+**Target:** Calculate total glasses of water John drinks in a week.
+
+1. Weekday water intake: \( 4 \text{ glasses/day} \times 5 \text{ days} = 20 \text{ glasses} \)
+2. Weekend water intake: \( 3 \text{ glasses/day} \times 2 \text{ days} = 6 \text{ glasses} \)
+3. Total weekly water intake: \( 20 + 6 = 26 \text{ glasses} \)
+
+\boxed{26}

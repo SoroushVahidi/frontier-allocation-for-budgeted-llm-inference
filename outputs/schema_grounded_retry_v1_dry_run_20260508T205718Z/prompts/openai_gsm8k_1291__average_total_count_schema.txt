@@ -1,0 +1,20 @@
+Solve this GSM8K-style problem independently using an average-total-count schema.
+
+Problem:
+A custodian has to clean a school with ８０ classrooms. They have ５ days to get it done. It takes them １５ minutes per classroom. If they work an ８ hour day, what percentage of their day, on average, is spent cleaning classrooms?
+
+Convert between average, total, and count explicitly, then solve the asked target.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.

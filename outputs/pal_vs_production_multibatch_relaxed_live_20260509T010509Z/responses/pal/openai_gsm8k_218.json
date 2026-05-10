@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "45.0",
+  "parsed_answer": "45",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "h_age = 21\nz_age = 2 * h_age\na_age = 3 * h_age\n# Calculate ages in 3 years\nh_future = h_age + 3\nz_future = z_age + 3\na_future = a_age + 3\n# Calculate average age\naverage = (h_future + z_future + a_future) / 3\nprint(average)",
+      "stdout": "45.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "45.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "45.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

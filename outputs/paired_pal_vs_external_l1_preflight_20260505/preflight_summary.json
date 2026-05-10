@@ -1,0 +1,50 @@
+{
+  "workspace": {
+    "path": "/home/soroush/research-next-wt",
+    "branch_hint": "research-next-frontier-iteration"
+  },
+  "deterministic_pool": {
+    "dataset": "openai/gsm8k",
+    "subset_size_requested": 2048,
+    "subset_size_effective_after_hf_length_clamp": 1319,
+    "shuffle_seed": 20260501,
+    "matches_helper": "experiments.frontier_matrix_core.load_pilot_examples + targeted committed-output exclusions"
+  },
+  "exclusions": {
+    "distinct_excluded_example_ids": 111,
+    "sources_included": [
+      "collect_excluded_ids() targets + globs",
+      "PR357 paired_summary selected_fresh_example_ids",
+      "all outputs/**/selected_cases.csv",
+      "all outputs/**/allowed_example_ids.jsonl"
+    ],
+    "missing_from_repo_vs_allowlist_script_dirs": [
+      "outputs/cohere_pal_quality_15case_20260505T213437Z",
+      "outputs/cohere_pal_stratified_quality_15case_20260505T214725Z",
+      "outputs/pal_consolidated_28case_report_20260505",
+      "outputs/cohere_l1_loss_casebook_cache_expansion_20260505T183346Z",
+      "outputs/cohere_l1_loss_casebook_50_losses_20260505T142227Z"
+    ],
+    "note_missing_dirs": "Those dirs are absent in this worktree; exclusions from them are not applied unless synced."
+  },
+  "fresh_availability": {
+    "fresh_examples_available_in_deterministic_pool": 1208,
+    "deterministic_pool_rows_loaded": 1319
+  },
+  "method_registry_preflight": {
+    "command": "scripts/run_cohere_real_model_cost_normalized_validation.py --validate-methods-only ...",
+    "cohere_real_model_cost_normalized_validation_registry_contains_pal_suffix": false,
+    "registry_validation_result": "FAILED",
+    "error_observed": "ValueError: Unknown method: direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+    "nearest_registered_internal_method": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak"
+  },
+  "outputs_written": {
+    "preflight_summary.json": "/home/soroush/research-next-wt/outputs/paired_pal_vs_external_l1_preflight_20260505/preflight_summary.json",
+    "cache_inventory.csv": "/home/soroush/research-next-wt/outputs/paired_pal_vs_external_l1_preflight_20260505/cache_inventory.csv",
+    "excluded_cases.csv": "/home/soroush/research-next-wt/outputs/paired_pal_vs_external_l1_preflight_20260505/excluded_cases.csv",
+    "fresh_candidate_cases.csv": "/home/soroush/research-next-wt/outputs/paired_pal_vs_external_l1_preflight_20260505/fresh_candidate_cases.csv",
+    "planned_case_batches.csv": "/home/soroush/research-next-wt/outputs/paired_pal_vs_external_l1_preflight_20260505/planned_case_batches.csv",
+    "call_budget_estimates.json": "/home/soroush/research-next-wt/outputs/paired_pal_vs_external_l1_preflight_20260505/call_budget_estimates.json",
+    "recommendation.md": "/home/soroush/research-next-wt/outputs/paired_pal_vs_external_l1_preflight_20260505/recommendation.md"
+  }
+}

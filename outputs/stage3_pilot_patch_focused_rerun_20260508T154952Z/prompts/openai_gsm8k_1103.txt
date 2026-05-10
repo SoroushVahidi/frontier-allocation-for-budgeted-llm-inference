@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+A farmer is baling hay in their field. Each hour the farmer makes ５ bales. At the same time, a truck is picking the hay bales up. Each hour the truck picks up ３ bales of hay. If the farmer and the truck driver put in a ６ hour day, how many bales of hay are left in the field?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

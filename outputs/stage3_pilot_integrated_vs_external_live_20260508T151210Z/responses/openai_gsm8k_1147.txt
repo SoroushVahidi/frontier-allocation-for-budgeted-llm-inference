@@ -1,0 +1,9 @@
+**Target:** Calculate total time spent on meditation and yoga in 4 weeks.
+
+1. Daily meditation: \(2 \times 15 = 30\) minutes.
+2. Weekly meditation: \(30 \times 7 = 210\) minutes.
+3. Weekly yoga: \(5 \times 60 = 300\) minutes.
+4. Total weekly time: \(210 + 300 = 510\) minutes.
+5. Total time in 4 weeks: \(510 \times 4 = 2040\) minutes.
+
+\boxed{2040}

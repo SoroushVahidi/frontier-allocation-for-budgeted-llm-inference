@@ -1,0 +1,17 @@
+{
+
+"Let x be the number of days after Monday until the chalk is recycled.": "",
+
+"Chalk used on Monday = 45% of 5 inches = 0.45 * 5 = 2.25 inches.": "",
+
+"Remaining chalk after Monday = 5 - 2.25 = 2.75 inches.": "",
+
+"Daily usage after Monday = 20% of remaining chalk = 0.2 * remaining chalk.": "",
+
+"We need to find x such that the remaining chalk is less than 2 inches.": "",
+
+"2.75 * (1 - 0.2)^x < 2": "",
+
+"Solving for x using trial and error or logarithms, we get x = 4.": ""
+
+}

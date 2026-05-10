@@ -1,0 +1,24 @@
+**Quantity Ledger:**
+
+1. **$20,000** (dollars) - Tim's monthly salary.  
+2. **5%** (unitless) - Percentage raise on his salary.  
+3. **0.5** (unitless) - Fraction of a month's salary for the bonus.  
+4. **12** (unitless) - Number of months in a year.  
+
+**Target:** Total money Tim will make in a year (dollars).
+
+**Plan:**
+1. Calculate the new monthly salary after the 5% raise.  
+2. Calculate the bonus amount.  
+3. Compute the total annual income by adding the new monthly salary (multiplied by 12) and the bonus.  
+
+**Execution:**
+1. **New monthly salary:**  
+   \( 20,000 \times (1 + 0.05) = 20,000 \times 1.05 = 21,000 \) dollars.  
+2. **Bonus:**  
+   \( 20,000 \times 0.5 = 10,000 \) dollars.  
+3. **Total annual income:**  
+   \( (21,000 \times 12) + 10,000 = 252,000 + 10,000 = 262,000 \) dollars.  
+
+**Final Answer:**
+\boxed{262000}

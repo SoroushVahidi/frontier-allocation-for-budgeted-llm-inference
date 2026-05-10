@@ -1,0 +1,29 @@
+**Target Quantity:** The regular price of popcorn.
+
+**Money Ledger:**
+
+1. **Super Ticket Cost (STC):** $20  
+2. **Extra for Popcorn and Soda (EPS):** $1  
+3. **Movie Ticket Cost (MTC):** $12  
+4. **Soda Cost (SC):** $3  
+5. **Total Saved (TS):** $2  
+6. **Regular Price of Popcorn (RPP):** Unknown  
+
+**Reasoning:**
+
+- If you buy the super ticket, the total cost is \( STC + EPS = 20 + 1 = 21 \) dollars.  
+- If you buy the movie ticket and popcorn/soda at regular price, the total cost is \( MTC + RPP + SC \).  
+- You saved $2 by not buying the super ticket, so:  
+  \[
+  MTC + RPP + SC = 21 - TS = 21 - 2 = 19
+  \]  
+- Substitute known values:  
+  \[
+  12 + RPP + 3 = 19
+  \]  
+- Solve for \( RPP \):  
+  \[
+  RPP = 19 - 12 - 3 = 4
+  \]  
+
+**Final Answer:** \(\boxed{4}\)

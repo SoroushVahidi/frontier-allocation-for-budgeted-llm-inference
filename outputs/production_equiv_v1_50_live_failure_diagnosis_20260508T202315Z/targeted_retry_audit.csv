@@ -1,0 +1,12 @@
+case_id,planned_retry_from_dry_run,live_retry_triggered,scaffold,extra_calls_used,retry_answer_parsed,retry_committed,rejection_reason,exact_after_retry,notes
+openai_gsm8k_1095,yes,yes,final_target_extraction_repair,0,,no,no_budget_for_extra_retry_call,1,triggered_not_committed
+openai_gsm8k_1121,yes,yes,final_target_extraction_repair,0,,no,no_budget_for_extra_retry_call,0,triggered_not_committed
+openai_gsm8k_1125,yes,yes,final_target_extraction_repair,0,,no,no_budget_for_extra_retry_call,1,triggered_not_committed
+openai_gsm8k_1166,yes,yes,rate_table_v1,0,,no,no_budget_for_extra_retry_call,1,triggered_not_committed
+openai_gsm8k_1187,yes,yes,final_target_extraction_repair,0,,no,no_budget_for_extra_retry_call,1,triggered_not_committed
+openai_gsm8k_1094,yes,no,,0,,no,exception,0,planned_not_triggered
+openai_gsm8k_1103,yes,no,,0,,no,exception,0,planned_not_triggered
+openai_gsm8k_1112,yes,no,,0,,no,exception,0,planned_not_triggered
+openai_gsm8k_1115,yes,no,,0,,no,exception,0,planned_not_triggered
+openai_gsm8k_1137,yes,no,,0,,no,exception,0,planned_not_triggered
+openai_gsm8k_1072,yes,no,,0,,no,exception,0,planned_not_triggered

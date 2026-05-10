@@ -1,0 +1,12 @@
+**Final quantity asked:** How many dollars were withheld from Sally’s wage?
+
+Initial bank balance: $200  
+Current bank balance: $420  
+Weekly wage: $300  
+
+Net deposit into account: $420 - $200 = $220  
+Withheld amount: $300 - $220 = $80  
+
+**Verification:** The withheld amount is the difference between the expected wage and the actual deposit.  
+
+\boxed{80}

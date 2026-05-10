@@ -1,0 +1,20 @@
+{
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "max_total_cohere_calls": 5,
+  "selected_case_ids": [
+    "openai_gsm8k_1077",
+    "openai_gsm8k_1080",
+    "openai_gsm8k_1081",
+    "openai_gsm8k_1091",
+    "openai_gsm8k_1096"
+  ],
+  "selected_schemas": {
+    "openai_gsm8k_1077": "ratio_equation_schema",
+    "openai_gsm8k_1080": "quantity_ledger_schema",
+    "openai_gsm8k_1081": "before_after_state_schema",
+    "openai_gsm8k_1091": "quantity_ledger_schema",
+    "openai_gsm8k_1096": "quantity_ledger_schema"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "decision": "stop_improvement_and_reframe_claims",
+  "reason": "PAL advantage families are sparse/heuristic-only (no family >=3); heterogeneous arithmetic wins"
+}

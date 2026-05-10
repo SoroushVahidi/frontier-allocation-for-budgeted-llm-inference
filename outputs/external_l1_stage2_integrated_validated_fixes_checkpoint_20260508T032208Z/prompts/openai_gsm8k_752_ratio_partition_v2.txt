@@ -1,0 +1,16 @@
+Solve this ratio partition problem using concise decomposition.
+
+Problem:
+A class of ２００ students is split into ３ groups such that ２ of them are equal in number and the last one (which is the smallest) is １０ less than each of the other groups. How many students are in this (smallest) group?
+
+Instructions:
+- Restate the asked target (which part, difference, or percentage).
+- Convert wording (twice/half/as many) into ratio parts.
+- Use one compact equation to solve part values.
+- Compute only the requested target quantity.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

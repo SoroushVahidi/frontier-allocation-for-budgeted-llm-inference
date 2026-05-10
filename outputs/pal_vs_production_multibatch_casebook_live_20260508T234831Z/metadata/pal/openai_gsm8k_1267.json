@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_toys = 62\nblocks = 31\nstuffed_animals = 8\nstacking_rings = 9\n\nbouncy_balls = total_toys - (blocks + stuffed_animals + stacking_rings)\nprint(bouncy_balls)",
+    "stdout": "14\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "14",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "14",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

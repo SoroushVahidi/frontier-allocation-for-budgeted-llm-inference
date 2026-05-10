@@ -1,0 +1,2 @@
+surface_source,count,correct_count,wrong_count,targeted_retry_triggered_count,targeted_retry_committed_count,parsing_failures,notes
+structural_commit,50,36,14,11,0,1,"all finals surfaced via structural commit; consistent with retry_committed_count=0, no surfacing bug evidence in metadata"

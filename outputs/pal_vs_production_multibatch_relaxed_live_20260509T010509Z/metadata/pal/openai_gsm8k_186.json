@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_straw = 160\nstraw_per_rat = 6\nstraw_per_hamster = 5\nstraw_for_rabbits = 20\n\n# Calculate straw used by hamsters and rabbits\nstraw_hamsters = 10 * straw_per_hamster\nstraw_used_by_others = straw_hamsters + straw_for_rabbits\n\n# Calculate straw used by rats\nstraw_rats = total_straw - straw_used_by_others\n\n# Calculate total number of rats\ntotal_rats = straw_rats // straw_per_rat\n\n# Calculate rats per cage\nrats_per_cage = total_rats // 3\n\nprint(rats_per_cage)",
+    "stdout": "5\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "5",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "5",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

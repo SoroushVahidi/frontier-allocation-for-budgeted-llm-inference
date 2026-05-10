@@ -1,0 +1,12 @@
+family,count,evidence_source,actionable_now yes/no,proposed_mechanism_tested,result,next_action
+unknown_or_mixed,93,inferred_failure_family,no,none/unclear,not_tested_or_inconclusive,use_only_for qualitative analysis / no new patches
+parse_failure,68,selection_failure_type,no,parser_conservative_fallback_v2,fallback_v2_no_gains,use_only_for qualitative analysis / no new patches
+final_target_mismatch,9,selection_failure_type,partial,free_form_retry + commit,failed_parse_and_improvement,"at most, small-scale analysis; avoid new prompts until more evidence"
+present_not_selected,5,selection_failure_type,partial,free_form_retry + commit,failed_parse_and_improvement,"at most, small-scale analysis; avoid new prompts until more evidence"
+gold_absent_discovery,1,selection_failure_type,no,none/unclear,not_tested_or_inconclusive,use_only_for qualitative analysis / no new patches
+ratio_equation,5,inferred_failure_family,yes,schema_grounded_retry_v1,failed_format_contract,document_as_open_family_without_safe_retry_mechanism
+before_after_state,5,inferred_failure_family,yes,schema_grounded_retry_v1,failed_format_contract,document_as_open_family_without_safe_retry_mechanism
+rate_table,3,inferred_failure_family,no,schema_grounded_retry_v1,failed_format_contract,use_only_for qualitative analysis / no new patches
+quantity_ledger,2,inferred_failure_family,no,schema_grounded_retry_v1,failed_format_contract,use_only_for qualitative analysis / no new patches
+target_difference,2,inferred_failure_family,no,schema_grounded_retry_v1,failed_format_contract,use_only_for qualitative analysis / no new patches
+average_total_count,2,inferred_failure_family,no,schema_grounded_retry_v1,failed_format_contract,use_only_for qualitative analysis / no new patches

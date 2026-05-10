@@ -1,0 +1,7 @@
+**Target:** Calculate days for Alfie to fly half the Earth's circumference.
+
+1. Half circumference: \( \frac{40,000}{2} = 20,000 \) km  
+2. Daily distance: 400 km  
+3. Days required: \( \frac{20,000}{400} = 50 \)
+
+\boxed{50}

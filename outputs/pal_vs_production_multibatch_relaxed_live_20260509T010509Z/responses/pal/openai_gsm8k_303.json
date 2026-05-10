@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "1300",
+  "parsed_answer": "1300",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "books_sold_current_year = 45\nbooks_sold_first_year = 2 * books_sold_current_year\nbooks_sold_total = 250 - 50\nbooks_sold_second_year = books_sold_total - books_sold_first_year - books_sold_current_year\ntotal_earned_second_year = books_sold_second_year * 20\nprint(total_earned_second_year)",
+      "stdout": "1300\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "1300",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "1300",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

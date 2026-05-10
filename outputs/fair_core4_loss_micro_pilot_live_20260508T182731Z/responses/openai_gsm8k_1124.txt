@@ -1,0 +1,15 @@
+To solve this problem, we need to determine how long it will take Emily to peel and cook 90 shrimp. We'll break this down into sub-questions.
+
+1. **How long does it take Emily to peel 90 shrimp?**  
+   Emily peels 6 shrimp per minute.  
+   Time to peel 90 shrimp = Total shrimp / Shrimp per minute = 90 / 6 = 15 minutes.
+
+2. **How long does it take Emily to saute 90 shrimp?**  
+   Emily sautes 30 shrimp in 10 minutes.  
+   Time to saute 90 shrimp = (Total shrimp / Shrimp per batch) * Time per batch = (90 / 30) * 10 = 3 * 10 = 30 minutes.
+
+3. **Can peeling and sauteing be done sequentially or simultaneously?**  
+   Since peeling and sauteing are separate tasks and cannot be done at the same time, we add the times together.  
+   Total time = Time to peel + Time to saute = 15 + 30 = 45 minutes.
+
+FINAL_ANSWER: 45

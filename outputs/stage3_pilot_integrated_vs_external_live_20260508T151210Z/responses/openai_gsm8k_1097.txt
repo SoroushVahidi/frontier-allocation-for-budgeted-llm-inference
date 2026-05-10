@@ -1,0 +1,8 @@
+**Target:** Total time Jack is gone from home.
+
+1. Time to museum: \( t_1 = \frac{150 \text{ miles}}{75 \text{ mph}} = 2 \text{ hours} \)
+2. Time at museum: \( t_2 = 6 \text{ hours} \)
+3. Return time: \( t_3 = 2 \text{ hours} \)
+4. Total time: \( T = t_1 + t_2 + t_3 = 2 + 6 + 2 = 10 \text{ hours} \)
+
+\boxed{10}

@@ -1,0 +1,30 @@
+Let's break down the problem step by step.
+
+1. **Joanne's Apples:**
+   - Tallest trees: 30 apples
+   - Shortest trees: \( \frac{30}{2} = 15 \) apples
+   - Average trees: Let this be \( x \) apples
+
+   Total apples Joanne gathered: \( 30 + 15 + x = 45 + x \)
+
+2. **Sister's Apples:**
+   - Tallest trees: \( 2 \times 30 = 60 \) apples
+   - Shortest trees: \( 3 \times 15 = 45 \) apples
+   - Average trees: 0 apples
+
+   Total apples sister gathered: \( 60 + 45 = 105 \)
+
+3. **Combined Total:**
+   \[
+   (45 + x) + 105 = 500
+   \]
+   Simplify:
+   \[
+   150 + x = 500
+   \]
+   Solve for \( x \):
+   \[
+   x = 500 - 150 = 350
+   \]
+
+FINAL_ANSWER: 350

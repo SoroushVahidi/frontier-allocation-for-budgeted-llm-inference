@@ -1,0 +1,17 @@
+**Quantity Ledger:**
+
+1. **Original Price**: $20 (USD, cost of a bag of marbles)  
+2. **Increase Rate**: 20% (unitless, percentage increase every 2 months)  
+3. **Time Period**: 36 months (time, duration of price increase)  
+4. **Target**: Final Price (USD, cost after 36 months)  
+
+**Plan:**  
+1. Determine the number of 2-month periods in 36 months: \( \frac{36}{2} = 18 \) periods.  
+2. Calculate the increase factor per period: \( 1 + 0.20 = 1.20 \).  
+3. Apply the increase factor over 18 periods: \( 20 \times (1.20)^{18} \).  
+
+**Execution:**  
+\[ 20 \times (1.20)^{18} \approx 20 \times 38.63 \approx 772.60 \]  
+
+**Final Answer:**  
+\boxed{772.60}

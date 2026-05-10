@@ -1,0 +1,8 @@
+**Target:** Calculate the current number of guests in the hotel.
+
+1. Initial guests: \( G_0 = 100 \)
+2. Guests after checkouts: \( G_1 = G_0 - 24 - 15 = 61 \)
+3. Guests after afternoon check-ins: \( G_2 = G_1 + 2 \times 15 = 61 + 30 = 91 \)
+4. Guests after dinner check-ins: \( G_3 = G_2 + 7 = 91 + 7 = 98 \)
+
+\boxed{98}

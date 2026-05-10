@@ -1,0 +1,11 @@
+**Target:** Find the number of 30-minute episodes Frankie watched on Wednesday.
+
+Let \( x \) be the number of 30-minute episodes watched on Wednesday.
+
+Total TV time:  
+\[ 1 + 1 + 0.5x + 1.5 + 2 = 7 \]  
+\[ 5.5 + 0.5x = 7 \]  
+\[ 0.5x = 1.5 \]  
+\[ x = 3 \]
+
+\boxed{3}

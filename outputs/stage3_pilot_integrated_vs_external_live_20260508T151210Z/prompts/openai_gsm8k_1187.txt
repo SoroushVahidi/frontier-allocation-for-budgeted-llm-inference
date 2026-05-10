@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Arnold, Madeline, Camden, and Sarah painted ５６ easter eggs. Arnold and Madeline painted the same number of eggs. Camden and Sarah painted a total of ３０ eggs, but Camden painted １２ more than Sarah. How many more eggs did Camden paint than Arnold?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

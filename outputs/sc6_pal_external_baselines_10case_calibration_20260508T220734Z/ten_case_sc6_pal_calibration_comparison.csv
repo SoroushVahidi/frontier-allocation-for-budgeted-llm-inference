@@ -1,0 +1,8 @@
+comparator,production_equiv_correct_10case,comparator_correct_10case,delta_10case,both_correct_10case,production_equiv_only_10case,comparator_only_10case,both_wrong_10case,mcnemar_b,mcnemar_c,parsing_failure_caveat
+external_l1_max_fair_v1,9,8,1,7,2,1,0,1,2,
+external_self_consistency_4_fair_v1,9,9,0,9,0,0,1,0,0,
+external_self_consistency_6_fair_v1,9,9,0,9,0,0,1,0,0,calibration_run; comparator_parse_failures_10case=0
+external_pal_pot_fair_v1,9,10,-1,9,0,1,0,1,0,calibration_run; comparator_parse_failures_10case=0
+external_s1_budget_forcing_faithful_v1,9,9,0,8,1,1,0,1,1,
+external_tale_ep_prompt_budgeting_faithful_v1,9,10,-1,9,0,1,0,1,0,
+best_core4_oracle,9,10,-1,9,0,1,0,1,0,

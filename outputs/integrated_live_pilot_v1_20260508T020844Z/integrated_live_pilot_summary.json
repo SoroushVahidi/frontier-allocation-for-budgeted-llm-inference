@@ -1,0 +1,26 @@
+{
+  "total_selected_cases": 15,
+  "actual_cohere_calls": 0,
+  "targeted_retry_exact": 0,
+  "targeted_retry_total": 12,
+  "structural_commit_fixed": 3,
+  "structural_commit_total": 3,
+  "combined_exact_or_fixed": 3,
+  "combined_total": 15,
+  "api_errors": [
+    "openai_gsm8k_1006: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1027: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1029: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1003: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1099: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_906: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1166: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_818: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1019: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1187: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1045: ModuleNotFoundError: No module named 'cohere'",
+    "openai_gsm8k_1155: ModuleNotFoundError: No module named 'cohere'"
+  ],
+  "parsing_ambiguities": 0,
+  "no_gold_leakage": true
+}

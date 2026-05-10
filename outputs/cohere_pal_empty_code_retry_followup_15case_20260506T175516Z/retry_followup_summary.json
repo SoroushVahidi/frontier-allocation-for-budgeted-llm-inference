@@ -1,0 +1,52 @@
+{
+  "selected_cases": [
+    "openai_gsm8k_36",
+    "openai_gsm8k_61",
+    "openai_gsm8k_95",
+    "openai_gsm8k_127",
+    "openai_gsm8k_347",
+    "openai_gsm8k_354",
+    "openai_gsm8k_362",
+    "openai_gsm8k_374",
+    "openai_gsm8k_391",
+    "openai_gsm8k_411",
+    "openai_gsm8k_433"
+  ],
+  "selected_count": 11,
+  "requested_target_count": 15,
+  "remaining_after_exclusions": 11,
+  "cases_scored": 11,
+  "cases_failed": 0,
+  "cohere_logical_calls_used": 37,
+  "cohere_logical_calls_cap": 240,
+  "retry_ran_count": 4,
+  "retry_ran_rate": 0.36363636363636365,
+  "retry_skipped_count": 7,
+  "retry_skipped_reasons": {
+    "seed_code_present_and_executable": 7
+  },
+  "first_attempt_code_present_rate": 0.0,
+  "retry_code_present_rate": 1.0,
+  "retry_parse_ok_rate": 1.0,
+  "retry_safety_ok_rate": 0.5,
+  "retry_exec_ok_rate": 0.25,
+  "retry_candidate_strong_count": 1,
+  "retry_candidate_strong_rate": 0.25,
+  "exact_accuracy": 0.2727272727272727,
+  "fixes_vs_prior_pal": 3,
+  "breaks_vs_prior_pal": 0,
+  "budget_correctness": {
+    "retry_budget_observed_where_retry_ran": true,
+    "frontier_budget_decremented": true,
+    "total_cap_respected": true
+  },
+  "aggregate_with_previous_5case_smoke": {
+    "total_retry_evaluated_cases": 16,
+    "total_fixes": 6,
+    "total_breaks": 0,
+    "net": 6,
+    "total_retry_exec_ok_rate": 0.375
+  },
+  "keep_retry_on_empty_code": "yes",
+  "recommended_next_step": "E. stop and write up"
+}

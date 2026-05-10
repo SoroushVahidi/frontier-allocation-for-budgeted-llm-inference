@@ -1,0 +1,14 @@
+Solve this GSM8K-style math problem independently. Do not use any external references.
+
+Problem:
+Every day Charisma meditates for 15 minutes when she first wakes up and again before she goes to sleep.  5 days a week she practices 1 hour of yoga.  in 4 weeks, how much time has she spent on meditation/yoga practice?
+
+Scaffold: state_transition_consistency
+- Track state updates step-by-step in chronological order (before -> after).
+- Recompute final state once to check consistency.
+
+Requirements:
+- Identify the exact final quantity requested before computing.
+- Show concise reasoning/equations only as needed.
+- End with exactly one final-answer line in this format: FINAL_ANSWER: <number>
+- Do not include alternative final answers.

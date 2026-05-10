@@ -1,0 +1,5 @@
+plan_id,method,planned_rows,expected_logical_calls_per_case,expected_total_calls_method
+A_10case_calibration,external_self_consistency_6_fair_v1,10,6,60
+A_10case_calibration,external_pal_pot_fair_v1,10,1,10
+B_full_50,external_self_consistency_6_fair_v1,50,6,300
+B_full_50,external_pal_pot_fair_v1,50,1,50

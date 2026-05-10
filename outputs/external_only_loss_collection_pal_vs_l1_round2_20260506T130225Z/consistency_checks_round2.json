@@ -1,0 +1,8 @@
+{
+  "external_only_count_matches_summary": true,
+  "external_only_flags_consistent": true,
+  "pair_outcome_counts_match_summary": true,
+  "failed_count_matches_file": true,
+  "call_cap_le_1500": true,
+  "selected_cases_excluded_from_prior_known_sets": true
+}

@@ -1,0 +1,9 @@
+**Target:** Find the number of paintings Kim has.
+
+1. Let \( K \) be the number of paintings Kim has.
+2. Shelley has \( K + 8 \) paintings.
+3. Samantha has \( (K + 8) - 12 = 27 \).
+4. Simplify: \( K - 4 = 27 \).
+5. Solve: \( K = 31 \).
+
+\boxed{31}

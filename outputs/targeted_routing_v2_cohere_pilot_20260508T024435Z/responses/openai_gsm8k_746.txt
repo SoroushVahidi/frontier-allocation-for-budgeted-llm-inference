@@ -1,0 +1,16 @@
+To solve this problem, we need to determine how many bottles of water John drinks while solving an extreme Sudoku puzzle.
+
+1. **Initial State:**
+   - John drinks 1 bottle of water every 30 minutes.
+   - A normal Sudoku puzzle takes 45 minutes.
+   - An extreme Sudoku takes 4 times as long as a normal Sudoku.
+
+2. **Calculate the time for an extreme Sudoku:**
+   \[ 45 \text{ minutes} \times 4 = 180 \text{ minutes} \]
+
+3. **Determine the number of bottles John drinks in 180 minutes:**
+   - Since John drinks 1 bottle every 30 minutes, we divide the total time by 30:
+   \[ \frac{180 \text{ minutes}}{30 \text{ minutes/bottle}} = 6 \text{ bottles} \]
+
+**Final Answer:**
+\boxed{6}

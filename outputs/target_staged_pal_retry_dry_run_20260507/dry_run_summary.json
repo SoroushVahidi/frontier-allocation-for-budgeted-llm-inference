@@ -1,0 +1,15 @@
+{
+  "manifest_path": "/home/soroush/research-next-wt/manifests/target_staged_pal_retry_primary_11_20260507.json",
+  "out_dir": "/home/soroush/research-next-wt/outputs/target_staged_pal_retry_dry_run_20260507",
+  "api_execution_enabled": false,
+  "primary_case_count": 11,
+  "per_case_budget": 6,
+  "soft_logical_call_cap": 80,
+  "hard_logical_call_cap": 120,
+  "prompts_materialized": 11,
+  "all_section_instruction_headers_ok": true,
+  "metadata_not_in_prompts_ok": true,
+  "variant_b_leakage_checks_passed": true,
+  "no_external_api_called": true,
+  "dry_run_module": "experiments.target_staged_pal_pilot_dry_run"
+}

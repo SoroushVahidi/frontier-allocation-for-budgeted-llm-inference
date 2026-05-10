@@ -1,0 +1,12 @@
+{
+  "cohere_api_key_set": true,
+  "planned_calls_ok": true,
+  "case_count_ok": true,
+  "all_validated_fix_prompts_exist": true,
+  "no_ascii_gold_in_prompts": true,
+  "no_external_l1_prediction_in_prompts": true,
+  "no_duplicate_case_ids": true,
+  "external_l1_reusable_path_exists": true,
+  "gold_leak_case_ids": [],
+  "external_prediction_leak_case_ids": []
+}

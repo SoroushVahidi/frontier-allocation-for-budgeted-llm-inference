@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "red_striped_fish = 66 * (1/3)\nremaining_fish = 66 - red_striped_fish\nblue_striped_fish = remaining_fish * (5/11)\ntotal_striped_fish = red_striped_fish + blue_striped_fish\nprint(int(total_striped_fish))",
+    "stdout": "42\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "42",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "42",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

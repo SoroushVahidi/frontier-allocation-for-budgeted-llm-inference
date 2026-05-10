@@ -1,0 +1,28 @@
+{
+  "readiness_dir": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z",
+  "case_file": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
+  "case_count": 50,
+  "cohere_api_key_set": true,
+  "planned_new_cohere_calls": 50,
+  "planned_calls_ok": true,
+  "reuse_external_outputs": true,
+  "baselines": [
+    "external_l1_max",
+    "external_tale",
+    "external_s1",
+    "best_external"
+  ],
+  "external_outputs_complete": true,
+  "external_missing_entries": [],
+  "no_ascii_gold_in_prompts": true,
+  "gold_leak_case_ids": [],
+  "no_external_prediction_in_prompts": true,
+  "external_prediction_leak_case_ids": [],
+  "no_duplicate_case_ids": true,
+  "duplicate_case_ids": [],
+  "live_execution_supported": true,
+  "execute_live": true,
+  "execute_live_required_for_api_calls": true,
+  "would_call_cohere": true,
+  "preflight_ok": true
+}

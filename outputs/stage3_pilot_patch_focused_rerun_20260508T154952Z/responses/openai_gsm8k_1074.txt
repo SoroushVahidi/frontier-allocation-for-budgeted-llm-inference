@@ -1,0 +1,8 @@
+**Target:** Calculate Janet's daily earnings from selling duck eggs.
+
+1. Total eggs laid per day: 16
+2. Eggs used daily: 3 (breakfast) + 4 (muffins) = 7
+3. Eggs sold daily: 16 - 7 = 9
+4. Daily earnings: 9 eggs * $2/egg = 18
+
+\boxed{18}

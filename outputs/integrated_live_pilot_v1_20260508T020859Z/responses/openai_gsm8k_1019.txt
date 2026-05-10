@@ -1,0 +1,40 @@
+**Entities/Quantities:**
+- Let \( B \) be the number of blue jelly beans.
+- Let \( R \) be the number of red jelly beans.
+- Let \( G \) be the number of green jelly beans.
+
+**Problem Asks For:**
+How many more green jelly beans does the jar contain than red jelly beans? (i.e., \( G - R \))
+
+**Reasoning:**
+1. From the problem, we know:
+   - \( R = 0.99B \) (1% fewer red jelly beans than blue)
+   - \( G = 1.01B \) (1% more green jelly beans than blue)
+2. The total number of jelly beans is 4500:
+   \[
+   R + B + G = 4500
+   \]
+3. Substitute \( R \) and \( G \) in terms of \( B \):
+   \[
+   0.99B + B + 1.01B = 4500
+   \]
+   \[
+   3B = 4500
+   \]
+   \[
+   B = 1500
+   \]
+4. Calculate \( R \) and \( G \):
+   \[
+   R = 0.99 \times 1500 = 1485
+   \]
+   \[
+   G = 1.01 \times 1500 = 1515
+   \]
+5. Find the difference \( G - R \):
+   \[
+   G - R = 1515 - 1485 = 30
+   \]
+
+**Final Answer:**
+\boxed{30}

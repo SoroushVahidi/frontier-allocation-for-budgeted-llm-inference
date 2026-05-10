@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "50.0",
+  "parsed_answer": "50",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "meat_cost = 7.00\ncheese_cost = 3.00\npeople = 20\nserving_size = 4\nsandwiches_needed = people // serving_size\nmeat_needed = sandwiches_needed\ncheese_needed = sandwiches_needed\ntotal_cost = (meat_needed * meat_cost) + (cheese_needed * cheese_cost)\nprint(total_cost)",
+      "stdout": "50.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "50.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "50.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

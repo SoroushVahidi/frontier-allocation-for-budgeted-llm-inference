@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "",
+  "parsed_answer": "",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": false,
+      "python_code": "import math\n\n# Convert miles to feet\nsteve_distance = 3 * 5280\ntim_distance = 2 * 5280\n\n# Calculate time in minutes\nsteve_time = steve_distance / 440\ntim_time = tim_distance / 264\n\n# Calculate the difference in time\ndifference = abs(steve_time - tim_time)\n\n# Print the difference rounded to the nearest whole number\nprint(math.ceil(difference))",
+      "stdout": "",
+      "stderr": "",
+      "exception": "ImportError: __import__ not found",
+      "prediction": null,
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "parsing_failure",
+  "error_message": "",
+  "logical_calls": 1
+}

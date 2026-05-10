@@ -1,0 +1,8 @@
+fixability_path,count
+retry-on-empty-code,11
+collecting more evidence,7
+PAL selection/integration patch,4
+adding retry-on-empty-code,3
+collect more evidence,3
+executor allowlist/sandbox patch,2
+PAL prompt tightening,1

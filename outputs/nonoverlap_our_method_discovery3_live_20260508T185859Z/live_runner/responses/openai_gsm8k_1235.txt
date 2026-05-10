@@ -1,0 +1,8 @@
+**Target:** Determine how many days before the deadline Mike will finish reading the book.
+
+1. Total pages to read: \( P = 200 \)
+2. Pages read per day: \( r = 10 \)
+3. Days to complete reading: \( d = \frac{P}{r} = \frac{200}{10} = 20 \)
+4. Days before deadline: \( 30 - d = 30 - 20 = 10 \)
+
+\boxed{10}

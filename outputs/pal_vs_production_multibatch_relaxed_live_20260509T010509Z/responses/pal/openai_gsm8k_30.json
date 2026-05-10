@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "109.0",
+  "parsed_answer": "109",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_ratio = 7 + 11\nage_per_ratio = 162 / total_ratio\nallens_age = 11 * age_per_ratio\nallens_age_in_10_years = allens_age + 10\nprint(allens_age_in_10_years)",
+      "stdout": "109.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "109.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "109.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

@@ -1,0 +1,39 @@
+{
+  "workspace": "/home/soroush/research-next-wt",
+  "git_short_status_head": [
+    "M experiments/branching.py",
+    "M experiments/controllers.py",
+    "M experiments/frontier_matrix_core.py",
+    "M experiments/output_layer_repair.py",
+    "M experiments/strategy_seeded_semantic_diversity_frontier_v1.py",
+    "M scripts/run_cohere_real_model_cost_normalized_validation.py",
+    "?? experiments/pal_executor.py",
+    "?? scripts/materialize_pal_smoke_summary.py",
+    "?? tests/test_*.py (multiple)",
+    "?? outputs/** (many; do not commit)"
+  ],
+  "diff_stat": "6 files changed, 1291 insertions(+), 5 deletions(-)",
+  "controllers_py_lines_total": 9752,
+  "validation_prior": {
+    "pytest": "82 passed (full required suite, prior run)",
+    "validate_methods_only": "validated_rows=2 bad_rows=0 (prior run)"
+  },
+  "spot_check_this_review": {
+    "tests": [
+      "tests/test_pal_variant.py::test_baseline_k1_tiebreak_unchanged_without_pal_fields",
+      "tests/test_pal_variant.py::test_external_l1_max_still_registered"
+    ],
+    "result": "2 passed"
+  },
+  "secrets_scan_git_diff": "no matches for basic credential patterns",
+  "pal_sandbox_ok": true,
+  "controllers_scoped_only_to_pal": false,
+  "opcheck_decomp_eq_included": {
+    "in_controllers_py": true,
+    "defaults_enabled_for_plain_k1_tiebreak": false,
+    "matrix_specs_added": true,
+    "rationale": "test_pal_variant imports constants and asserts metadata; aligns with paired-checkout matrix parity"
+  },
+  "recommended_open_pr": "yes_after_human_review_controllers_diff",
+  "api_run_blocked_until_merge": "policy-dependent: code-wise branch is runnable without merge; merge gating is organizational"
+}

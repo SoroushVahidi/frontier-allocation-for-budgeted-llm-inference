@@ -1,0 +1,17 @@
+{
+  "cohere_api_key_set": true,
+  "candidate_pool_size": 135,
+  "pool_eligible_loaded": 135,
+  "all_problem_text": true,
+  "all_gold": true,
+  "no_duplicate_ids": true,
+  "estimated_first_batch_calls_upper_bound": 150,
+  "first_batch_within_200": true,
+  "method_alias_resolves": true,
+  "pal_method_resolves": true,
+  "output_writable": true,
+  "planned_max_actual_calls": 900,
+  "pool_size_ok": true,
+  "critical_failures": [],
+  "abort_before_api": false
+}

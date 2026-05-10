@@ -1,0 +1,20 @@
+Solve this GSM8K-style problem independently using a target-difference schema.
+
+Problem:
+Kim has started his own housekeeping business and is calculating how much profit he will make from his clients. He already has ３ clients, but is talking to another ５ potential clients and feels confident enough to include them in his calculations. Each client’s home will need ２ bottles of bleach and a pack of cloths to clean. Bottles of bleach will cost $２ each and packs of cloths will cost $５ each. These are his only expenses. He calculates that his total income each week will be $９２. Profit is the difference between total income and total expenses, so how much profit, in dollars, will Lucas  …<truncated １５ chars>
+
+Identify compared quantities and compute exactly the asked difference/target.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.

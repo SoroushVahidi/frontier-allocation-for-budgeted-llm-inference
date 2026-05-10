@@ -1,0 +1,13 @@
+# discovery3 parsefix 5-case live recheck
+- case_count: 5
+- actual_cohere_calls: 5
+- final_answer_line_found_count: 2
+- parsing_failures: 3
+- exact_count: 0
+- improved_over_original_count: 0
+- exact_by_scaffold: {'leave_unmodified': 0, 'final_target_extraction_repair': 0, 'ratio_unit_equation': 0, 'state_transition_consistency': 0}
+- parsing_failure_by_scaffold: {'leave_unmodified': 1, 'final_target_extraction_repair': 0, 'ratio_unit_equation': 1, 'state_transition_consistency': 1}
+- Parsefix behavior: strict FINAL_ANSWER contract checked first; fallback alias parse used only when strict line absent.
+- Contract outcome: parser compatibility improved materially if final-answer line present in responses.
+- Recommendation: rerun all 15 if parsing failures are near-zero; otherwise consider narrow parser fallback extension.
+- Caveat: this is a 5-case diagnostic sample, not a quality checkpoint.

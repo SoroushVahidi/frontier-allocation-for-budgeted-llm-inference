@@ -1,0 +1,57 @@
+**Decomposition:**
+
+1. **How much chalk is left after Monday?**  
+   - The teacher starts with a 5-inch piece of chalk and uses 45% of it on Monday.  
+   - Calculate the remaining chalk after Monday.
+
+2. **What is the threshold for recycling the chalk?**  
+   - The teacher recycles the chalk when it is smaller than 2 inches.
+
+3. **How much chalk is used each day after Monday?**  
+   - The teacher uses 20% of the remaining chalk each day.
+
+4. **How many days can the teacher use the chalk before it falls below the recycling threshold?**  
+   - Calculate the number of days until the remaining chalk is less than 2 inches.
+
+**Work:**
+
+1. **Chalk left after Monday:**  
+   - Initial chalk: 5 inches  
+   - Chalk used on Monday: 45% of 5 = 0.45 * 5 = 2.25 inches  
+   - Chalk left after Monday: 5 - 2.25 = 2.75 inches  
+
+2. **Recycling threshold:**  
+   - The chalk is recycled when it is smaller than 2 inches.
+
+3. **Daily chalk usage after Monday:**  
+   - The teacher uses 20% of the remaining chalk each day.
+
+4. **Number of days until recycling:**  
+   - Let \( x \) be the number of days.  
+   - After each day, the chalk left is 80% of the previous day's remaining chalk.  
+   - We need to find \( x \) such that:  
+     \[
+     2.75 \times (0.8)^x < 2
+     \]  
+   - Solve for \( x \):  
+     \[
+     (0.8)^x < \frac{2}{2.75} \approx 0.7273
+     \]  
+   - Taking the natural logarithm on both sides:  
+     \[
+     x \ln(0.8) < \ln(0.7273)
+     \]  
+     \[
+     x > \frac{\ln(0.7273)}{\ln(0.8)} \approx \frac{-0.315}{-0.223} \approx 1.41
+     \]  
+   - Since \( x \) must be a whole number, \( x = 2 \).
+
+**Target Check:**  
+- After 1 day: \( 2.75 \times 0.8 = 2.2 \) inches (still above 2 inches).  
+- After 2 days: \( 2.2 \times 0.8 = 1.76 \) inches (below 2 inches).  
+- The teacher recycles the chalk after 2 more days.
+
+**Final Answer:**  
+\[
+\boxed{2}
+\]

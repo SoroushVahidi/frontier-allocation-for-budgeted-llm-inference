@@ -1,0 +1,29 @@
+{
+  "paired_cases_completed": 150,
+  "external_l1_max_exact_count": 125,
+  "pal_exact_count": 132,
+  "external_correct_pal_wrong_count": 11,
+  "pal_correct_external_wrong_count": 18,
+  "both_correct_count": 114,
+  "both_wrong_count": 7,
+  "calls_used_row_sum": 885,
+  "cap_consumed_estimate": 885,
+  "calls_cap": 1500,
+  "failed_or_skipped_count": 0,
+  "stop_reason": "A_target_reached",
+  "yield_rate_external_only_losses": 0.07333333333333333,
+  "cumulative_external_only_losses_after_merge_with_prior20": 31,
+  "cumulative_reached_30": true,
+  "top_precise_patterns_in_new_losses": [
+    {
+      "pattern": "code omitted final executable snippet/answer payload",
+      "count": 11
+    }
+  ],
+  "enough_for_pattern_mining": true,
+  "recommended_next_step": "A_no_api_cumulative_pattern_audit",
+  "methods": [
+    "external_l1_max",
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
+  ]
+}

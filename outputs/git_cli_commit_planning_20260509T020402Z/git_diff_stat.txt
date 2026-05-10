@@ -1,0 +1,22 @@
+ README.md                                          |   2 +-
+ START_HERE_CURRENT.md                              |  16 +-
+ docs/CLAIMS.md                                     |   3 +
+ docs/CURRENT_ARTIFACTS_INDEX_20260507.md           |  32 ++
+ docs/CURRENT_METHOD_STATUS_20260507.md             |  13 +-
+ docs/CURRENT_PROJECT_STATUS.md                     |   4 +
+ docs/CURRENT_RESEARCH_HANDOFF_20260507.md          | 201 +++++-------
+ docs/FAILED_DIRECTIONS_20260507.md                 |   9 +
+ docs/NEW_CHAT_STARTER_PROMPT_20260507.md           |  15 +-
+ experiments/adaptive_retry_router.py               |  35 +++
+ experiments/controllers.py                         | 341 ++++++++++++++++++++-
+ experiments/data.py                                | 138 +++++++++
+ experiments/final_target_verifier.py               |  64 ++++
+ experiments/frontier_matrix_core.py                | 132 ++++++++
+ experiments/output_layer_repair.py                 | 150 +++++++++
+ ...rategy_seeded_semantic_diversity_frontier_v1.py |  12 +
+ experiments/targeted_discovery_retry.py            | 314 +++++++++++++++++++
+ scripts/replay_track_b_commitment_gate.py          |  37 ++-
+ ...cohere_real_model_cost_normalized_validation.py |  28 ++
+ tests/test_targeted_discovery_retry_v1.py          |  58 ++++
+ tests/test_track_b_overlay_commitment_gate.py      |   1 +
+ 21 files changed, 1464 insertions(+), 141 deletions(-)

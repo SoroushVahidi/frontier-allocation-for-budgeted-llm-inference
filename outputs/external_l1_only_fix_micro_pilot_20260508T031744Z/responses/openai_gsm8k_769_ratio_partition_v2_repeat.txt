@@ -1,0 +1,11 @@
+**Target:** Percentage of the watermelon each adult gets.
+
+**Ratio Conversion:**  
+Let each kid's slice be \( x \). Each adult's slice is \( 2x \).  
+Total parts: \( 2x \times 2 + x \times 4 = 4x + 4x = 8x \).
+
+**Compact Equation:**  
+Adult's share percentage: \( \frac{2x}{8x} \times 100\% = 25\% \).
+
+**Final Answer:**  
+\boxed{25}

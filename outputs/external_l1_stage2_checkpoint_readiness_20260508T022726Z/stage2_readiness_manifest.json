@@ -1,0 +1,31 @@
+{
+  "no_api_calls": true,
+  "case_count": 100,
+  "method_name": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1",
+  "baseline": "external_l1_max",
+  "external_l1_reused": true,
+  "external_l1_source_path": "outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/external_l1_results.csv",
+  "baseline_pal_source_path": "outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/pal_results.csv",
+  "stage1_source_path": "outputs/external_l1_stage1_integrated_checkpoint_20260508T021923Z",
+  "estimated_new_cohere_calls": 2,
+  "max_recommended_calls": 50,
+  "targeted_retry_expected_cases": 2,
+  "structural_commit_expected_cases": 0,
+  "abort_conditions": [
+    "COHERE_API_KEY missing at live time",
+    "planned calls exceed cap",
+    "missing external baseline artifacts",
+    "missing targeted prompt files",
+    "gold leakage in prompt"
+  ],
+  "scoring_plan": [
+    "paired exact vs external_l1_max on same 100 IDs",
+    "delta vs baseline PAL",
+    "paired disagreement breakdown"
+  ],
+  "statistical_tests_plan": [
+    "paired accuracy delta",
+    "McNemar on discordant pairs",
+    "bootstrap CI for paired delta if practical"
+  ]
+}

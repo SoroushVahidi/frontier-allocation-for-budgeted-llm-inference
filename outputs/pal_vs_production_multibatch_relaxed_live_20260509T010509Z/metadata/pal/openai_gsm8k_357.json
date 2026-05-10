@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "budget = 90\nmini_golf_cost = 5\ngo_kart_cost = 10\narcade_tokens = 5\n\n# Cost per person\nperson_cost = mini_golf_cost + 2 * go_kart_cost + arcade_tokens\n\n# Maximum number of friends\nmax_friends = (budget - person_cost) // person_cost\n\nprint(max_friends)",
+    "stdout": "2\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "2",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "2",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

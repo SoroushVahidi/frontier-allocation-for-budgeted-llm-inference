@@ -1,0 +1,12 @@
+**Target Quantity:** Cost per pair of contacts.
+
+**Money Ledger:**
+
+1. **Original Price per Box:** $100.00  
+2. **Discount per Box (10% of $100.00):** $10.00  
+3. **Discounted Price per Box:** $100.00 - $10.00 = $90.00  
+4. **Total Cost for 2 Boxes:** 2 × $90.00 = $180.00  
+5. **Total Number of Contacts in 2 Boxes:** 2 × 90 = 180  
+6. **Cost per Pair of Contacts:** $180.00 ÷ 180 = $1.00  
+
+**Final Answer:** \boxed{1.00}

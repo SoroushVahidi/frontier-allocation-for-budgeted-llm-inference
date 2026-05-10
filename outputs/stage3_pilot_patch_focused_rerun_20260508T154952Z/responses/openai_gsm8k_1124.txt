@@ -1,0 +1,7 @@
+**Target:** Find total time to peel and cook 90 shrimp.
+
+1. Peeling time: \( t_p = \frac{90}{6} = 15 \) minutes  
+2. Cooking time: \( t_c = 10 \) minutes (since 30 shrimp take 10 minutes, 90 shrimp take 30 minutes, but this is not needed as the rate is constant)  
+3. Total time: \( t = t_p + t_c = 15 + 10 = 25 \) minutes  
+
+\boxed{25}

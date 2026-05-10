@@ -1,0 +1,34 @@
+{
+  "prediction": "170.0",
+  "parsed_answer": "170",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_land = 80\n\n# First sale\nland_sold_1 = total_land / 2\nprice_1 = 50\n\n# Second sale\nremaining_land = total_land - land_sold_1\nland_sold_2 = remaining_land / 4\nprice_2 = 30\n\n# Third sale\nremaining_land_after_second_sale = remaining_land - land_sold_2\nprice_per_meter = 3\nprice_3 = remaining_land_after_second_sale * price_per_meter\n\n# Total earnings\ntotal_earnings = price_1 + price_2 + price_3\nprint(total_earnings)",
+      "stdout": "170.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "170.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "170.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

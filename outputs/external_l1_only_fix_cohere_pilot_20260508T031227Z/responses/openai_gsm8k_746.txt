@@ -1,0 +1,9 @@
+**Final quantity asked:** Total number of bottles of water John drinks.
+
+1. Time for extreme sudoku: \( 45 \times 4 = 180 \) minutes.
+2. Bottles per minute: \( \frac{1}{30} \) (since 1 bottle every 30 minutes).
+3. Total bottles: \( 180 \times \frac{1}{30} = 6 \).
+
+**Verification:** The calculation directly matches the target quantity.
+
+\boxed{6}

@@ -1,0 +1,11 @@
+Abraham initially owns 80 square meters of land.
+
+1. He sold half of the land (80 / 2 = 40 square meters) for $50.
+2. Remaining land: 80 - 40 = 40 square meters.
+3. He sold another 1/4 of his original land (80 / 4 = 20 square meters) for $30.
+4. Remaining land: 40 - 20 = 20 square meters.
+5. He sold the remaining 20 square meters for $3 per square meter: 20 * 3 = $60.
+
+Total earnings: $50 + $30 + $60 = $140.
+
+FINAL_ANSWER: 140

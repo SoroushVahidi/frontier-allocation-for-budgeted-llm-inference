@@ -1,0 +1,14 @@
+**Target:** Find the minimum temperature of the second bottle.
+
+Let $x$ be the temperature of the second bottle.
+
+After mixing, the temperature is:
+\[ \frac{4(33) + 1(x)}{4 + 1} \geq 40 \]
+
+Simplify and solve for $x$:
+\[ \frac{132 + x}{5} \geq 40 \]
+\[ 132 + x \geq 200 \]
+\[ x \geq 68 \]
+
+**Final answer:**
+\boxed{68}

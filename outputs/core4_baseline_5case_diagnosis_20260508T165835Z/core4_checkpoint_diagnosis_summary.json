@@ -1,0 +1,28 @@
+{
+  "source_checkpoint_dir": "outputs/main_table_core4_baselines_5case_checkpoint_20260508T165155Z",
+  "actual_calls": 67,
+  "calls_per_case": 13.4,
+  "exact_by_method": {
+    "external_l1_max_fair_v1": 3,
+    "external_self_consistency_4_fair_v1": 5,
+    "external_s1_budget_forcing_faithful_v1": 4,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 4
+  },
+  "parsing_failures_by_method": {
+    "external_l1_max_fair_v1": 0,
+    "external_self_consistency_4_fair_v1": 0,
+    "external_s1_budget_forcing_faithful_v1": 1,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 0
+  },
+  "s1_failed_case_id": "openai_gsm8k_1083",
+  "s1_failure_type": "forced-continuation artifact",
+  "recommended_fix": "Record final raw model text (or last expansion response) in checkpoint response artifacts for S1, then add conservative fallback extraction only when an explicit final-answer phrase is present.",
+  "should_patch_parser_before_10case": false,
+  "recommended_next_checkpoint": "run_10case_two_5case_slices",
+  "recommended_cap_for_10case": 200,
+  "caveats": [
+    "Current response artifact does not preserve raw model text for failed S1 case; parser-only miss cannot be proven.",
+    "Single failure in 5 cases suggests low but non-zero termination/parsing fragility.",
+    "Call usage (13.4/case) implies 10-case single run is near/above 150 depending case mix."
+  ]
+}

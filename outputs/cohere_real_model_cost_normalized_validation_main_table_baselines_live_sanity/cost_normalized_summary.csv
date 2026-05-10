@@ -1,0 +1,7 @@
+provider,method,mean_accuracy,accuracy_per_1k_tokens,accuracy_per_estimated_dollar,total_tokens,estimated_total_cost_usd
+cohere,external_l1_max_fair_v1,0.0,0.0,0.0,0.0,0.0
+cohere,external_pal_pot_fair_v1,0.0,0.0,0.0,0.0,0.0
+cohere,external_s1_budget_forcing_faithful_v1,0.0,0.0,0.0,0.0,0.0
+cohere,external_self_consistency_4_fair_v1,0.0,0.0,0.0,0.0,0.0
+cohere,external_self_consistency_6_fair_v1,0.0,0.0,0.0,0.0,0.0
+cohere,external_tale_ep_prompt_budgeting_faithful_v1,0.0,0.0,0.0,0.0,0.0

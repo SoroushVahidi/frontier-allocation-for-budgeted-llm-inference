@@ -1,0 +1,34 @@
+Solve this GSM8K-style problem independently using a ratio-equation schema.
+
+Problem:
+Fishio posted her selfie on Instagram. She received ２０００ likes on the photo after １ week. Three weeks later, the number of likes was ７０ times as many as the initial number of likes. If she received ２００００ more new likes recently, how many Instagram likes are there?
+
+Translate ratio statements to equations and solve for the requested quantity.
+Your entire response must be only the block below.
+Do not explain outside the block.
+Copy these exact labels.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.
+
+Template:
+SCHEMA_TYPE:
+TARGET_QUANTITY:
+GIVEN_QUANTITIES:
+-
+EQUATIONS:
+-
+COMPUTATION:
+-
+FINAL_ANSWER:

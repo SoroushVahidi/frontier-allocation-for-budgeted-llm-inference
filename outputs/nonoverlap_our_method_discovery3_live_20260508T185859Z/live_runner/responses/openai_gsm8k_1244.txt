@@ -1,0 +1,7 @@
+**Target:** Calculate the number of weeks a 42 kg bag of rice lasts for 5 people consuming 0.2 kg per meal twice daily.
+
+1. Daily consumption: \( 5 \times 0.2 \times 2 = 2 \) kg  
+2. Weekly consumption: \( 2 \times 7 = 14 \) kg  
+3. Weeks bag lasts: \( \frac{42}{14} = 3 \)  
+
+\boxed{3}

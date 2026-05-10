@@ -1,0 +1,19 @@
+case_id,scaffold,best_prompt_version,ever_exact,ever_improved,best_parsed_final_answer,gold_answer,current_pal_prediction,pilots_seen,latest_status,recommended_integration_action,should_include_in_remaining_pilot,reason
+openai_gsm8k_1003,rate_table,v1,true,true,20,20,3,v1;v2,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1006,quantity_ledger,quantity_ledger_v2_1,true,true,25,25,1,v2;v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1019,target_difference,v1,true,true,30,30,44.77611940298539,v1;v2,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1027,quantity_ledger,quantity_ledger_v2_1,true,true,2,2,1,v2;v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1029,quantity_ledger,quantity_ledger_v2_1,true,true,70000,70000,195000,v2;v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1045,quantity_ledger,quantity_ledger_v2_1,true,true,4,4,12,v2;v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1099,rate_table,v1,true,true,2450,2450,4900,v1;v2,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1155,quantity_ledger,quantity_ledger_v2_1,true,true,342,342,81.66666666666667,v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1166,before_after_state,v1,true,true,50,50,25,v2,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_1187,target_difference,v1,true,true,8,8,4,v2,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_720,quantity_ledger,quantity_ledger_v2_1,true,true,106,106,106.12080000000002,v1;v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_750,quantity_ledger,quantity_ledger_v2_1,true,true,92,92,532.4666656177045,v1;v2;v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_814,quantity_ledger,quantity_ledger_v2_1,true,true,16,16,-20,v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_818,before_after_state,v1,true,true,10,10,5,v1;v2,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_841,quantity_ledger,quantity_ledger_v2_1,true,true,262500,262500,262000,v1;v2;v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_864,before_after_state,v1,true,true,24,24,48,v1;v2,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_906,rate_table,v1,true,true,16,16,12,v1;v2;v21,solved,integrate_targeted_retry,no,solved by at least one pilot
+openai_gsm8k_970,target_difference,v1,true,true,15,15,11,v1;v2,solved,integrate_targeted_retry,no,solved by at least one pilot

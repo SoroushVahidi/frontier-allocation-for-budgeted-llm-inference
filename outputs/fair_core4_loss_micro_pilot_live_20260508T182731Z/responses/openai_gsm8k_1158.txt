@@ -1,0 +1,14 @@
+**Target Variable:** The total amount of money raised by all four girls.
+
+**Reasoning:**
+
+1. Alexandra raises $430.
+2. Kim raises $320 more than Alexandra: $430 + $320 = $750.
+3. Sarah raises $300.
+4. Maryam raises $400 more than Sarah: $300 + $400 = $700.
+
+Total amount raised = Alexandra's + Kim's + Sarah's + Maryam's
+= $430 + $750 + $300 + $700
+= $2180
+
+FINAL_ANSWER: 2180

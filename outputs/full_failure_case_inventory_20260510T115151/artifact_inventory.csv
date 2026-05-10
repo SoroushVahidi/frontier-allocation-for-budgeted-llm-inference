@@ -1,0 +1,17 @@
+path,repo,method,case_count,wrong_case_count,full_count,partial_count,id_only_count,top_family
+/home/soroush/frontier-allocation-for-budgeted-llm-inference/docs/project_handoff_20260510/canonical_failure_bank.csv,/home/soroush/frontier-allocation-for-budgeted-llm-inference,latest,81,81,11,3,67,cap_hit_incomplete
+/home/soroush/frontier-allocation-for-budgeted-llm-inference/docs/project_handoff_20260510/full_failure_cases.csv,/home/soroush/frontier-allocation-for-budgeted-llm-inference,latest,42,28,28,0,0,final_target_mismatch
+/home/soroush/frontier-allocation-for-budgeted-llm-inference/docs/project_handoff_20260510/target_audit_diagnostic_cases.csv,/home/soroush/frontier-allocation-for-budgeted-llm-inference,latest,18,0,0,0,0,none
+/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/relaxed_pal_vs_prod_casebook_new.csv,/home/soroush/research-next-wt,latest,150,0,0,0,0,none
+/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/cumulative_pal_vs_prod_casebook.csv,/home/soroush/research-next-wt,latest,75,0,0,0,0,none
+/home/soroush/research-next-wt/outputs/pal_vs_production_equiv_casebook_live_20260508T223635Z/pal_vs_prod_casebook.csv,/home/soroush/research-next-wt,latest,30,2,1,1,0,arithmetic_execution
+/home/soroush/research-next-wt/outputs/production_equiv_v1_retry_commit_loss_audit_20260508T204005Z/production_equiv_loss_bank_detailed.csv,/home/soroush/research-next-wt,latest,14,14,0,14,0,unknown
+/home/soroush/research-next-wt/outputs/structural_commit_v1_replay_20260508T120000Z/structural_commit_v1_replay_cases.csv,/home/soroush/research-next-wt,latest,212,212,0,0,212,unknown
+/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/selected_failure_cases.csv,/home/soroush/research-next-wt,latest,45,0,0,0,0,none
+/home/soroush/research-next-wt/outputs/latest_pal_external_loss_bank_20260508T004000Z/latest_pal_external_loss_bank.csv,/home/soroush/research-next-wt,latest,71,0,0,0,0,none
+/home/soroush/research-next-wt/outputs/local_latest_method_failure_inventory_20260509T205100Z/latest_method_failures.csv,/home/soroush/research-next-wt,latest,49,49,28,1,20,cap_hit_incomplete
+/home/soroush/research-next-wt/outputs/failure_case_corpus_k1_frontier_tiebreak_10case_20260507T041532Z/failure_cases.csv,/home/soroush/research-next-wt,latest,4,0,0,0,0,none
+/home/soroush/research-next-wt/outputs/failure_case_corpus_20260507/failure_cases.csv,/home/soroush/research-next-wt,latest,48,0,0,0,0,none
+/home/soroush/research-next-wt/outputs/failure_case_corpus_external_losses_88case_mixed_legacy_20260507T041547Z/failure_cases.csv,/home/soroush/research-next-wt,latest,88,0,0,0,0,none
+/home/soroush/research-next-wt/docs/project_handoff_20260510/canonical_failure_bank.csv,/home/soroush/research-next-wt,latest,81,81,11,3,67,cap_hit_incomplete
+/home/soroush/research-next-wt/docs/project_handoff_20260510/full_failure_cases.csv,/home/soroush/research-next-wt,latest,42,28,28,0,0,final_target_mismatch

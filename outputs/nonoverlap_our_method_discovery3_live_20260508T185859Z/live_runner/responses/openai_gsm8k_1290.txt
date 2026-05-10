@@ -1,0 +1,8 @@
+**Target:** Calculate the lawyer's contribution.
+
+1. Total collected from neighbors and online fund: $500 + $1500 = $2000.
+2. Friend's contribution: $200.
+3. Total contributions (excluding lawyer): $2000 + $200 = $2200.
+4. Lawyer's contribution: 3 × $2200 = $6600.
+
+**Final Answer:** $\boxed{6600}$

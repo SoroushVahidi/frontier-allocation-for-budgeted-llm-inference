@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "31",
+  "parsed_answer": "31",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "sandwich_slices = 2 * 7\nbreakfast_slices = 3 * (2 + 1)\ntotal_slices = sandwich_slices + breakfast_slices + 8\nprint(total_slices)",
+      "stdout": "31\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "31",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "31",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

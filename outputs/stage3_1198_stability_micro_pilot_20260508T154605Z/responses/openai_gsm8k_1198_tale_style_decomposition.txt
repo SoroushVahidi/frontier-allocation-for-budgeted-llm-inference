@@ -1,0 +1,42 @@
+**Decomposition:**
+
+1. **Subquestion 1:** How much chalk is left after Monday?  
+   - Given: Initial chalk length = 5 inches, used 45% on Monday.  
+   - Formula: Remaining chalk = Initial length × (1 - Percentage used).  
+
+2. **Subquestion 2:** What is the length of chalk used each day after Monday?  
+   - Given: 20% of remaining chalk is used each day.  
+   - Formula: Daily usage = Remaining chalk × 20%.  
+
+3. **Subquestion 3:** How many days can the teacher use the chalk before it is less than 2 inches?  
+   - Given: Chalk is recycled when < 2 inches.  
+   - Formula: Track remaining chalk daily until it falls below 2 inches.  
+
+**Work:**
+
+1. **Subquestion 1:**  
+   Remaining chalk after Monday = 5 × (1 - 0.45) = 5 × 0.55 = **2.75 inches**.  
+
+2. **Subquestion 2:**  
+   Daily usage after Monday = Remaining chalk × 0.2.  
+
+3. **Subquestion 3:**  
+   - **Day 1:** Remaining chalk = 2.75 × (1 - 0.2) = 2.75 × 0.8 = **2.2 inches**.  
+   - **Day 2:** Remaining chalk = 2.2 × 0.8 = **1.76 inches** (less than 2 inches).  
+
+**Target Check:**  
+The chalk is recycled when it is less than 2 inches. After Day 2, the remaining chalk is 1.76 inches, which meets the recycling condition.  
+
+**Final Answer:**  
+The teacher has **2 days** before he has to recycle the chalk.  
+
+- **decomposition:**  
+  1. Calculate remaining chalk after Monday.  
+  2. Determine daily usage after Monday.  
+  3. Track remaining chalk until it falls below 2 inches.  
+- **work:**  
+  1. 5 × 0.55 = 2.75 inches.  
+  2. Daily usage = 20% of remaining chalk.  
+  3. Day 1: 2.75 × 0.8 = 2.2 inches; Day 2: 2.2 × 0.8 = 1.76 inches.  
+- **target_check:** Chalk is recycled at < 2 inches, achieved on Day 2.  
+- **final_answer:** 2

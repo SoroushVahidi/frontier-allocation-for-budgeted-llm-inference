@@ -1,0 +1,65 @@
+{
+  "prediction": "65",
+  "parsed_answer": "65",
+  "metadata": {
+    "external_baseline_family": "l1_lcpo_length_control",
+    "l1_fair_enabled": true,
+    "l1_control_mode": "max",
+    "not_official_external_method": true,
+    "token_budget_instruction": 512,
+    "token_per_action": 64.0,
+    "budget_actions_equivalent": 8,
+    "generated_tokens_estimate": 1,
+    "budget_error_tokens": 511.0,
+    "token_budget_violation": false,
+    "prompt_style": "Let's think step by step and output the final answer within \\boxed{}.",
+    "deviations_from_official": "Transparent in-repo fair length-control baseline; not official L1 RL reproduction.",
+    "final_score": 0.9752000000000001,
+    "action_trace": [
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 1,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nElise is learning to write and decides to keep re-writing the alphabet until she knows it. She writes it in full twice, writes half of it once, then re-writes everything she has already written. How many letters has Elise written in total?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, calculate the number of letters Elise writes when she writes the alphabet in full twice. Since the alphabet has 26 letters, writing it twice results in 2 * 26 = 52 letters.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "First, calculate the number of letters Elise writes when she writes the alphabet in full twice. Since the alphabet has 26 letters, writing it twice results in 2 * 26 = 52 letters.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 2,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nElise is learning to write and decides to keep re-writing the alphabet until she knows it. She writes it in full twice, writes half of it once, then re-writes everything she has already written. How many letters has Elise written in total?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- First, calculate the number of letters Elise writes when she writes the alphabet in full twice. Since the alphabet has 26 letters, writing it twice results in 2 * 26 = 52 letters.\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"Next, calculate the number of letters Elise writes when she writes half of the alphabet once. Half of the alphabet is 26 / 2 = 13 letters.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "First, calculate the number of letters Elise writes when she writes the alphabet in full twice. Since the alphabet has 26 letters, writing it twice results in 2 * 26 = 52 letters.\nNext, calculate the number of letters Elise writes when she writes half of the alphabet once. Half of the alphabet is 26 / 2 = 13 letters.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 3,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nElise is learning to write and decides to keep re-writing the alphabet until she knows it. She writes it in full twice, writes half of it once, then re-writes everything she has already written. How many letters has Elise written in total?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- First, calculate the number of letters Elise writes when she writes the alphabet in full twice. Since the alphabet has 26 letters, writing it twice results in 2 * 26 = 52 letters.\n- Next, calculate the number of letters Elise writes when she writes half of the alphabet once. Half of the alphabet is 26 / 2 = 13 letters.\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"Now, add the letters from writing the alphabet twice and writing half of it once: 52 + 13 = 65 letters.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "First, calculate the number of letters Elise writes when she writes the alphabet in full twice. Since the alphabet has 26 letters, writing it twice results in 2 * 26 = 52 letters.\nNext, calculate the number of letters Elise writes when she writes half of the alphabet once. Half of the alphabet is 26 / 2 = 13 letters.\nNow, add the letters from writing the alphabet twice and writing half of it once: 52 + 13 = 65 letters.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 4,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nElise is learning to write and decides to keep re-writing the alphabet until she knows it. She writes it in full twice, writes half of it once, then re-writes everything she has already written. How many letters has Elise written in total?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- First, calculate the number of letters Elise writes when she writes the alphabet in full twice. Since the alphabet has 26 letters, writing it twice results in 2 * 26 = 52 letters.\n- Next, calculate the number of letters Elise writes when she writes half of the alphabet once. Half of the alphabet is 26 / 2 = 13 letters.\n- Now, add the letters from writing the alphabet twice and writing half of it once: 52 + 13 = 65 letters.\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"Finally, calculate the total number of letters Elise writes when she re-writes everything she has already written. Since she re-writes the 65 letters she has already written, this adds another 65 letters to the total.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "First, calculate the number of letters Elise writes when she writes the alphabet in full twice. Since the alphabet has 26 letters, writing it twice results in 2 * 26 = 52 letters.\nNext, calculate the number of letters Elise writes when she writes half of the alphabet once. Half of the alphabet is 26 / 2 = 13 letters.\nNow, add the letters from writing the alphabet twice and writing half of it once: 52 + 13 = 65 letters.\nFinally, calculate the total number of letters Elise writes when she re-writes everything she has already written. Since she re-writes the 65 letters she has already written, this adds another 65 letters to the total.",
+        "extracted_answer": "65"
+      }
+    ],
+    "final_branch_states": []
+  },
+  "error_message": "",
+  "status": "success",
+  "s1_observability": {}
+}

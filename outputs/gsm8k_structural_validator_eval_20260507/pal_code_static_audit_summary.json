@@ -1,0 +1,82 @@
+{
+  "bundle": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+  "cases": {
+    "gold_absent_discovery": 21,
+    "guardrail_sampled": 25,
+    "present_not_selected_sampled": 10
+  },
+  "cohort_comparison": {
+    "mean_quantity_coverage_gold_absent": 0.8244897959183672,
+    "mean_quantity_coverage_guardrail": 0.9386666666666666,
+    "mean_unused_salient_gold_absent": 0.8571428571428571,
+    "mean_unused_salient_guardrail": 0.24,
+    "mean_opaque_one_expr_gold_absent": 0.7142857142857143,
+    "mean_opaque_one_expr_guardrail": 0.36
+  },
+  "static_triggers": {
+    "temporal_no_state_no_sub": {
+      "actionable_retry_schema_hint": "state-table retry",
+      "fires_gold_absent": 5,
+      "rate_gold_absent": 0.23809523809523808,
+      "fires_guardrail": 2,
+      "rate_guardrail_fp": 0.08,
+      "fires_present_not_selected": 3,
+      "fires_total": 10,
+      "precision_like_ga_given_fired": 0.5
+    },
+    "rate_no_muldiv": {
+      "actionable_retry_schema_hint": "rate-equation retry",
+      "fires_gold_absent": 3,
+      "rate_gold_absent": 0.14285714285714285,
+      "fires_guardrail": 0,
+      "rate_guardrail_fp": 0.0,
+      "fires_present_not_selected": 2,
+      "fires_total": 5,
+      "precision_like_ga_given_fired": 0.6
+    },
+    "many_unused_final_sparse": {
+      "actionable_retry_schema_hint": "quantity-grounding retry",
+      "fires_gold_absent": 4,
+      "rate_gold_absent": 0.19047619047619047,
+      "fires_guardrail": 1,
+      "rate_guardrail_fp": 0.04,
+      "fires_present_not_selected": 3,
+      "fires_total": 8,
+      "precision_like_ga_given_fired": 0.5
+    },
+    "ungrounded_final_literal": {
+      "actionable_retry_schema_hint": "quantity-grounding retry",
+      "fires_gold_absent": 0,
+      "rate_gold_absent": 0.0,
+      "fires_guardrail": 0,
+      "rate_guardrail_fp": 0.0,
+      "fires_present_not_selected": 0,
+      "fires_total": 0,
+      "precision_like_ga_given_fired": 0.0
+    },
+    "syntax_exec_or_empty": {
+      "actionable_retry_schema_hint": "PAL repair / codegen retry",
+      "fires_gold_absent": 2,
+      "rate_gold_absent": 0.09523809523809523,
+      "fires_guardrail": 0,
+      "rate_guardrail_fp": 0.0,
+      "fires_present_not_selected": 2,
+      "fires_total": 4,
+      "precision_like_ga_given_fired": 0.5
+    },
+    "opaque_one_expr_low_coverage": {
+      "actionable_retry_schema_hint": "aggregation / decomposition retry",
+      "fires_gold_absent": 1,
+      "rate_gold_absent": 0.047619047619047616,
+      "fires_guardrail": 0,
+      "rate_guardrail_fp": 0.0,
+      "fires_present_not_selected": 3,
+      "fires_total": 4,
+      "precision_like_ga_given_fired": 0.25
+    }
+  },
+  "notes": {
+    "gold_used_only_offline": true,
+    "validator_validate_gsm8k_candidate_used_for_quantity_coverage_only": true
+  }
+}

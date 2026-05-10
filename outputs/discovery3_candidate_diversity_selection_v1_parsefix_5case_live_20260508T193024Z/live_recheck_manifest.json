@@ -1,0 +1,25 @@
+{
+  "source_dry_run_dir": "outputs/discovery3_candidate_diversity_selection_v1_parsefix_dry_run_20260508T191659Z",
+  "output_dir": "outputs/discovery3_candidate_diversity_selection_v1_parsefix_5case_live_20260508T193024Z",
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "call_cap": 5,
+  "planned_calls": 5,
+  "selected_case_ids": [
+    "openai_gsm8k_1215",
+    "openai_gsm8k_1112",
+    "openai_gsm8k_1299",
+    "openai_gsm8k_1199",
+    "openai_gsm8k_1219"
+  ],
+  "selected_scaffolds": [
+    "leave_unmodified",
+    "final_target_extraction_repair",
+    "ratio_unit_equation",
+    "state_transition_consistency",
+    "state_transition_consistency"
+  ],
+  "used_existing_prompts_only": true,
+  "regenerated_prompts": false
+}

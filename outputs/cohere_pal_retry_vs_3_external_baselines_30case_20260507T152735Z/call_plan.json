@@ -1,0 +1,29 @@
+{
+  "cases_per_method": 30,
+  "methods": [
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+    "external_l1_max",
+    "external_tale_prompt_budgeting",
+    "external_s1_budget_forcing"
+  ],
+  "estimated_calls_per_method_prior": {
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": "~21 (from 300-case ratio scaled)",
+    "external_l1_max": "~21",
+    "external_tale_prompt_budgeting": "~21",
+    "external_s1_budget_forcing": "~21"
+  },
+  "estimated_total_calls_prior": 400,
+  "hard_cap_logical_calls": 900,
+  "abort_conditions": [
+    "Wrong method IDs or provider",
+    "logical_calls_total exceeds cap",
+    "unexpected incomplete slices"
+  ],
+  "actual_total_logical_calls_observed": 224,
+  "actual_logical_calls_by_method": {
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": 63,
+    "external_l1_max": 40,
+    "external_tale_prompt_budgeting": 47,
+    "external_s1_budget_forcing": 74
+  }
+}

@@ -1,0 +1,46 @@
+To solve this problem, we need to set up equations based on the information given and use a rate table to organize our thoughts.
+
+Let's define:
+- \( C \) as Colin's current age.
+- \( W \) as Wendy's current age.
+
+From the problem, we have two key pieces of information:
+
+1. Wendy is five times as old as Colin will be seven years from now.
+2. In 25 years, Colin will be a third as old as Wendy is now.
+
+**Step 1: Translate the first piece of information into an equation.**
+
+- In 7 years, Colin's age will be \( C + 7 \).
+- Wendy's current age is \( W \).
+- According to the problem, \( W = 5(C + 7) \).
+
+**Step 2: Translate the second piece of information into an equation.**
+
+- In 25 years, Colin's age will be \( C + 25 \).
+- Wendy's current age is \( W \).
+- According to the problem, \( C + 25 = \frac{1}{3}W \).
+
+Now, let's set up our rate table to solve these equations.
+
+**Rate Table:**
+
+| Entity | Rate/Equation          | Quantity/Duration | Subtotal          |
+|--------|------------------------|-------------------|-------------------|
+| Wendy  | \( W = 5(C + 7) \)     |                   | \( W = 5C + 35 \) |
+| Colin  | \( C + 25 = \frac{1}{3}W \) |                   | Substitute \( W \) from above |
+
+Substitute \( W = 5C + 35 \) into the second equation:
+\[ C + 25 = \frac{1}{3}(5C + 35) \]
+
+Now, solve for \( C \):
+\[ C + 25 = \frac{5C + 35}{3} \]
+\[ 3(C + 25) = 5C + 35 \]
+\[ 3C + 75 = 5C + 35 \]
+\[ 75 - 35 = 5C - 3C \]
+\[ 40 = 2C \]
+\[ C = 20 \]
+
+Thus, Colin is currently 20 years old.
+
+\[ \boxed{20} \]

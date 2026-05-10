@@ -1,0 +1,4 @@
+case_id,scaffold,response_answer,gold_answer,why_scaffold_worked,should_integrate,risk
+openai_gsm8k_706,ratio_partition,25,25,Explicit part-ratio equation eliminated earlier relation-direction confusion.,yes,low
+openai_gsm8k_725,state_composition,95,95,Ordered state updates reduced operation-order mistakes.,yes,medium
+openai_gsm8k_726,ratio_partition,3,3,Explicit part-ratio equation eliminated earlier relation-direction confusion.,yes,low

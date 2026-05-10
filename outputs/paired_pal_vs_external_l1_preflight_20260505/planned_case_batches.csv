@@ -1,0 +1,5 @@
+target_paired_rows,estimated_total_row_sum_logical_calls_both_methods,estimated_global_cap_units_proxy,notes
+50,290.697674,418.604651,cap_proxy uses PR357 ratio logical_api_budget_cap_consumed_estimate / paired_examples_completed
+100,581.395349,837.209302,cap_proxy uses PR357 ratio logical_api_budget_cap_consumed_estimate / paired_examples_completed
+150,872.093023,1255.813953,cap_proxy uses PR357 ratio logical_api_budget_cap_consumed_estimate / paired_examples_completed
+200,1162.790698,1674.418605,cap_proxy uses PR357 ratio logical_api_budget_cap_consumed_estimate / paired_examples_completed

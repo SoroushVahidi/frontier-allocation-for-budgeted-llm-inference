@@ -1,0 +1,33 @@
+{
+  "external_l1_only_count": 7,
+  "raw_external_trace_available_count": 7,
+  "advantage_type_counts": {
+    "better_state_model": 1,
+    "better_percent_base": 1,
+    "better_final_target": 2,
+    "better_ratio_setup": 2,
+    "better_decomposition": 1
+  },
+  "detectable_gold_free_count": 7,
+  "not_detectable_gold_free_count": 0,
+  "proposed_fix_counts": {
+    "add_new_scaffold": 4,
+    "add_verifier_check": 2,
+    "imitate_l1_prompt_shape": 1
+  },
+  "cases_where_internal_scaffold_already_tried_and_failed": [
+    "openai_gsm8k_674",
+    "openai_gsm8k_752",
+    "openai_gsm8k_758",
+    "openai_gsm8k_769"
+  ],
+  "cases_requiring_new_information": [],
+  "recommendation": {
+    "inspect_external_l1_prompt": true,
+    "imitate_l1_answer_selection": true,
+    "improve_scaffold": true,
+    "add_verifier": true,
+    "run_stage3_exploratory": true,
+    "stop_l1_iteration": false
+  }
+}

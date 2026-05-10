@@ -1,0 +1,84 @@
+{
+  "counts_by_original_failure_source": {
+    "atlas_anchor": 23,
+    "both_wrong": 27,
+    "external_only_loss": 21,
+    "failed_gate_anchor": 12,
+    "gold_absent_everywhere_detectable": 34,
+    "pal_wrong": 48,
+    "selector_sensitivity": 12
+  },
+  "external_tree_available_cases": 48,
+  "external_tree_missing_cases": 0,
+  "failure_cases_collected": 48,
+  "failure_stages": {
+    "gold_absent_everywhere_detectable": 34,
+    "gold_in_selector_pool": 4,
+    "gold_in_trace_candidates": 10
+  },
+  "manifest": {
+    "corpus_row_count": 48,
+    "input_paths": {
+      "atlas_anchor_csv": "/home/soroush/research-next-wt/outputs/offline_pal_discovery_deficit_atlas_20260506/anchor_cases.csv",
+      "external_results_jsonl": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.jsonl",
+      "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv",
+      "pal_results_jsonl": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/pal_results.jsonl",
+      "path_coverage_csv": "/home/soroush/research-next-wt/outputs/offline_pal_path_coverage_counterfactual_20260506/coverage_table.csv",
+      "selector_sensitivity_csv": "/home/soroush/research-next-wt/outputs/offline_selector_sensitivity_replay_20260507/per_case_delta.csv"
+    },
+    "input_sha256": {
+      "atlas_anchor_csv": "1eefb95a71a789e2f15d4c6f90a0c228446f14dd3c2cf6a8486a99842b743019",
+      "external_results_jsonl": "724f5c74abddb019b1b7b5c9592bda8d938a9380629219bc15fe6f78404c9f9d",
+      "paired_casebook_csv": "580727748231c0f815ef791f6cde70336445363e21b9e186e8ca819fdceb6b4b",
+      "pal_results_jsonl": "5cd6f39e0023919b870b3c3bb03ce9a2c518e1b6aec6011b6bfd3dca91995b06",
+      "path_coverage_csv": "35ff4c38236c26e20ff72f4bb6a39199ed4146e22674f5897950a55e21f08b42",
+      "selector_sensitivity_csv": "8692b2bcebe13099c5ce498c464bd0a53b13f612e6ce3dadc673578af1792378"
+    },
+    "missing_or_unmatched": {
+      "external_missing_for_casebook_ids": 0,
+      "pal_missing_for_casebook_ids": 0,
+      "path_coverage_missing_for_casebook_ids": 252
+    },
+    "row_counts_loaded": {
+      "atlas_anchor_rows": 23,
+      "broad_anchor_rows": 12,
+      "conservative_anchor_rows": 12,
+      "external_results_rows": 300,
+      "isolated_anchor_rows": 12,
+      "paired_casebook_rows": 300,
+      "pal_results_rows": 300,
+      "path_coverage_rows": 48,
+      "selector_sensitivity_rows": 12
+    }
+  },
+  "meta": {
+    "api_calls": "none",
+    "created_at": "2026-05-07T04:21:16.759884+00:00",
+    "external_results_jsonl": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.jsonl",
+    "output_dir": "/home/soroush/research-next-wt/outputs/failure_case_corpus_20260507",
+    "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv",
+    "pal_results_jsonl": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/pal_results.jsonl"
+  },
+  "operation_hints": {
+    "difference": 10,
+    "division_share": 2,
+    "none": 6,
+    "percent": 2,
+    "product": 8,
+    "rate_ratio": 21,
+    "temporal_change": 17,
+    "total_sum": 7
+  },
+  "outcome_buckets": {
+    "both_wrong": 27,
+    "external_only": 21
+  },
+  "pal_tree_available_cases": 48,
+  "pal_tree_missing_cases": 0,
+  "quantity_buckets": {
+    "qnum_0_1": 6,
+    "qnum_2_3": 16,
+    "qnum_4_5": 14,
+    "qnum_6p": 12
+  }
+}

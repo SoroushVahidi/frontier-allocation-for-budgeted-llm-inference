@@ -1,0 +1,19 @@
+{
+
+"Let C be the total number of clients": "C = 3 + 5 = 8",
+
+"Let B be the total number of bottles of bleach needed": "B = 2 * C = 2 * 8 = 16",
+
+"Let P be the total number of packs of cloths needed": "P = C = 8",
+
+"Let E_bleach be the total expense for bleach": "E_bleach = 2 * B = 2 * 16 = 32",
+
+"Let E_cloths be the total expense for cloths": "E_cloths = 5 * P = 5 * 8 = 40",
+
+"Let E be the total expenses": "E = E_bleach + E_cloths = 32 + 40 = 72",
+
+"Let I be the total income": "I = 92",
+
+"Let Profit be the profit": "Profit = I - E = 92 - 72 = 20"
+
+}

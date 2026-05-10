@@ -1,0 +1,11 @@
+failure_category,specific_pattern,count,likely_fix_path
+L1_P9_external_trace_advantage_unknown,gold absent from PAL candidate pool while external found correct target path,7,collecting more evidence
+L1_P1_code_absent,code omitted final executable snippet/answer payload,6,retry-on-empty-code
+L1_P1_code_absent,no PAL code block emitted despite PAL seed running,5,retry-on-empty-code
+L1_P1_code_absent,code omitted final executable snippet/answer payload,3,adding retry-on-empty-code
+L1_P9_external_trace_advantage_unknown,Gold-equivalent answer absent from PAL candidate pool while external path reached correct answer.,3,collect more evidence
+L1_P5_correct_candidate_not_selected,Gold-equivalent candidate existed in PAL pool but selector chose a different final answer.,2,PAL selection/integration patch
+L1_P5_correct_candidate_not_selected,gold-equivalent candidate exists but selector/tiebreak picked another answer,2,PAL selection/integration patch
+L1_P2_unsafe_code,PAL code blocked by sandbox safety checks,1,executor allowlist/sandbox patch
+L1_P3_exec_failed,PAL code accepted but execution failed before producing a valid final answer,1,executor allowlist/sandbox patch
+L1_P4_exec_succeeded_wrong,PAL execution succeeded but computed numerically wrong final result,1,PAL prompt tightening

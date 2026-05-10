@@ -1,0 +1,24 @@
+{
+  "source_dry_run_dir": "/home/soroush/research-next-wt/outputs/adaptive_router_v3_dry_run_20260508T025305Z",
+  "selected_case_count": 10,
+  "max_cohere_calls": 14,
+  "planned_cohere_calls": 10,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "excluded_percent_base": true,
+  "excluded_unknown": true,
+  "scoring_is_offline": true,
+  "no_gold_in_prompts_verified": true,
+  "no_external_prediction_in_prompts_verified": true,
+  "abort_conditions": [
+    "missing COHERE_API_KEY",
+    "planned calls >14",
+    "missing prompt file",
+    "gold leakage",
+    "external prediction leakage",
+    "held-back percent case selected",
+    "unknown scaffold selected",
+    "duplicate case id"
+  ]
+}

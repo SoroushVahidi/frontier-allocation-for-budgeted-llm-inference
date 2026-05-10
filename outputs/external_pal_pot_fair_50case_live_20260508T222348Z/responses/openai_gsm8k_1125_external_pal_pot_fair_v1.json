@@ -1,0 +1,34 @@
+{
+  "prediction": "2450",
+  "parsed_answer": "2450",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "right_taps_per_minute_arms_down = 300\nleft_taps_per_minute_arms_down = 250\nright_taps_per_minute_arms_up = 200\nleft_taps_per_minute_arms_up = 200\n\ntotal_minutes = 5\nminutes_arms_up = 2\nminutes_arms_down = total_minutes - minutes_arms_up\n\ntotal_taps = (\n    (right_taps_per_minute_arms_down * minutes_arms_down) +\n    (left_taps_per_minute_arms_down * minutes_arms_down) +\n    (right_taps_per_minute_arms_up * minutes_arms_up) +\n    (left_taps_per_minute_arms_up * minutes_arms_up)\n)\n\nprint(total_taps)",
+      "stdout": "2450\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "2450",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "2450",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

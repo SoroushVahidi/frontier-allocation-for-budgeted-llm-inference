@@ -1,0 +1,40 @@
+{
+  "case_count": 15,
+  "actual_cohere_calls": 15,
+  "exact_count": 0,
+  "improved_over_original_count": 0,
+  "gold_absent_fixed_count": 0,
+  "present_not_selected_fixed_count": 0,
+  "exact_by_scaffold": {
+    "leave_unmodified": 0,
+    "ratio_unit_equation": 0,
+    "state_transition_consistency": 0,
+    "final_target_extraction_repair": 0
+  },
+  "improved_by_scaffold": {
+    "leave_unmodified": 0,
+    "ratio_unit_equation": 0,
+    "state_transition_consistency": 0,
+    "final_target_extraction_repair": 0
+  },
+  "exact_by_original_family": {
+    "unknown": 0,
+    "state_update": 0,
+    "final_target_mismatch": 0,
+    "ratio_setup": 0
+  },
+  "improved_by_original_family": {
+    "unknown": 0,
+    "state_update": 0,
+    "final_target_mismatch": 0,
+    "ratio_setup": 0
+  },
+  "exact_by_selection_failure_type": {
+    "present_not_selected": 0,
+    "gold_absent_discovery": 0
+  },
+  "api_errors": [],
+  "parsing_failures": 15,
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true
+}

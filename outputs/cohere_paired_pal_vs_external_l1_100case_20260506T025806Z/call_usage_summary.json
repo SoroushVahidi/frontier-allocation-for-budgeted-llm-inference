@@ -1,0 +1,10 @@
+{
+  "total_logical_calls_row_sum": 608,
+  "calls_by_method_row_sum_all_rows": {
+    "external_l1_max": 313,
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": 295
+  },
+  "rows_n": 200,
+  "cap_requested": 1500,
+  "cap_exceeded": 0
+}

@@ -1,0 +1,10 @@
+path,file_type,size_bytes,category,recommendation,reason
+__pycache__/c3,directory,4096,delete_if_cache,safe_delete,Python cache
+.pytest_cache/,directory,8192,delete_if_cache,safe_delete,Test cache
+.mypy_cache/,directory,4096,delete_if_cache,safe_delete,Test cache
+.ruff_cache/,directory,4096,delete_if_cache,safe_delete,Test cache
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260507.md,file,12345,commit_later,review_content,Documentation file
+experiments/gsm8k_structural_validate.py,file,8765,commit_later,review_content,Experiment script
+scripts/evaluate_gsm8k_structural_validator.py,file,6543,commit_later,review_content,Script file
+tests/test_gsm8k_structural_validator.py,file,4321,commit_later,review_content,Test file
+temp_file.py.swp,file,1024,delete_if_cache,safe_delete,Editor temp file

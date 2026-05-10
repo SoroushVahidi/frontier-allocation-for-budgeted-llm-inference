@@ -1,0 +1,14 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+James needs to get more toys for his doggie shelter. Each dog needs one toy. James currently has ４ toys on hand for ４ dogs, but there are ８ more dogs in the shelter now. After buying the toys, he went back to see that there are twice as many more dogs than when he left so he had to buy some more toys. When James came back yet again, ３ dogs were gone so he no longer needed those toys. How many toys in total does James need?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: total
+- family_hint: state_update
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this format:
+  FINAL_ANSWER: <single numeric value>

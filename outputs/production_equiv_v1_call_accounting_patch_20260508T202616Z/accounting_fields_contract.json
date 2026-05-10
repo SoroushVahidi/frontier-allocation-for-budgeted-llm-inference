@@ -1,0 +1,16 @@
+{
+  "actual_cohere_calls_completed_rows": "sum of per-case logical calls for completed rows only",
+  "actual_cohere_calls_run_level": "run-global logical calls consumed from cap enforcer snapshot/inference",
+  "global_cap_reached": "true when run-level consumed >= effective cap",
+  "cap_error_count": "rows with cap-reached runtime errors",
+  "completed_rows": "rows without api_error",
+  "incomplete_rows": "case_count - completed_rows",
+  "effective_call_cap": "configured max total logical Cohere calls",
+  "call_accounting_source": [
+    "per_case_counter",
+    "global_runner_counter",
+    "cap_enforcer",
+    "inferred_from_errors"
+  ],
+  "call_accounting_warning": "non-empty when completed-row calls differ from run-level consumption"
+}

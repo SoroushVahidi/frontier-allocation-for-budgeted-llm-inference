@@ -1,0 +1,7 @@
+**Target:** Calculate Charlie's total earnings for the day.
+
+1. Standard lessons: \( 4 \times 80 = 320 \)
+2. Veteran lessons: \( 2 \times 80 \times 0.75 = 120 \)
+3. Total earnings: \( 320 + 120 = 440 \)
+
+\boxed{440}

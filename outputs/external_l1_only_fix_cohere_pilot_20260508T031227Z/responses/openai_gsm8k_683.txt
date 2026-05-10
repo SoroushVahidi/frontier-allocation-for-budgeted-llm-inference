@@ -1,0 +1,45 @@
+To solve this problem, we need to determine the initial charge of the power bank when Maria went out to the park. Let's break down the problem step by step, identifying the base/denominator for each percentage statement.
+
+1. **Initial Setup:**
+   - Let the initial charge of the power bank be \( x \) (in percentage).
+
+2. **First 5 Hours:**
+   - The power bank loses 9% of the total capacity each hour.
+   - Base: **Original** (100%).
+   - After 5 hours, the charge lost is \( 5 \times 9\% = 45\% \) of the original capacity.
+   - Remaining charge after 5 hours: \( x - 45 \).
+
+3. **Next 3 Hours:**
+   - The power bank loses 7% of the total capacity each hour.
+   - Base: **Updated** (100% of the remaining capacity after 5 hours).
+   - After 3 hours, the charge lost is \( 3 \times 7\% = 21\% \) of the remaining capacity after 5 hours.
+   - Remaining charge after these 3 hours: \( (x - 45) - 0.21(x - 45) \).
+
+4. **Final Remaining Charge:**
+   - The final remaining charge is given as 28%.
+   - Base: **Remaining** (after all losses).
+   - Therefore, \( (x - 45) - 0.21(x - 45) = 28 \).
+
+5. **Solve for \( x \):**
+   \[
+   (x - 45)(1 - 0.21) = 28
+   \]
+   \[
+   (x - 45) \times 0.79 = 28
+   \]
+   \[
+   x - 45 = \frac{28}{0.79}
+   \]
+   \[
+   x - 45 \approx 35.44
+   \]
+   \[
+   x \approx 80.44
+   \]
+
+Since the problem involves percentages and typically deals with whole numbers, we round to the nearest whole number.
+
+The initial charge of the power bank when Maria went out to the park is:
+\[
+\boxed{80}
+\]

@@ -1,0 +1,15 @@
+{
+  "cohere_api_key_set": true,
+  "selected_cases_count": 50,
+  "selected_case_ids_exact_match": true,
+  "effective_call_cap": 200,
+  "alias_resolves": true,
+  "calibration_exists_and_ready": true,
+  "corrected_accounting_helper_available": true,
+  "discovery3_excluded": true,
+  "percent_base_disabled": true,
+  "no_gold_prediction_leakage_policy": true,
+  "output_dir_ready": true,
+  "abort_reasons": [],
+  "abort": false
+}

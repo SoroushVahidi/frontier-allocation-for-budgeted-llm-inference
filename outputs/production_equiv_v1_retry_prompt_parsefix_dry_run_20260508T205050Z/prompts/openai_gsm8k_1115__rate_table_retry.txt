@@ -1,0 +1,15 @@
+Solve this math word problem independently using a compact rate table when relevant.
+
+Problem:
+Abraham owns ８０ square meters of unused land. He sold half of the land for $５０, and after a month, he sold another １/４ of his land for $３０. He then sold the remaining land for $３ per square meter. How much money will he be able to earn after selling all his unused land?
+
+Instructions:
+- Identify the requested final quantity.
+- If rates/ratios are involved, organize values in a compact rate table.
+- Use concise equations and compute only the requested quantity.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.
+- If you are unsure, still output one best numeric answer on FINAL_ANSWER line.

@@ -1,0 +1,4 @@
+validate-methods-only: PASS
+validated_rows=2 bad_rows=0
+report_csv=/home/soroush/research-next-wt/outputs/cohere_real_model_cost_normalized_validation_20260506T024551Z/method_validation_report.csv
+command=.venv/bin/python scripts/run_cohere_real_model_cost_normalized_validation.py --providers cohere --datasets openai/gsm8k --budgets 6 --seeds 20260501 --methods external_l1_max,direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal --max-examples 1 --target-scored-per-slice 1 --validate-methods-only

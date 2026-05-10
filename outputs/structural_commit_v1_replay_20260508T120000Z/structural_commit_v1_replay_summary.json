@@ -1,0 +1,59 @@
+{
+  "bundle": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+  "diagnosis_csv": "/home/soroush/research-next-wt/outputs/present_not_selected_commitment_diagnosis_20260508T004419Z/present_not_selected_commitment_cases.csv",
+  "gate_functions": [
+    "decide_track_b_overlay_commitment_gate",
+    "decide_structural_commitment_v1"
+  ],
+  "pal_method": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+  "targets": {
+    "rows": 24,
+    "unknown_no_replay_data": 1,
+    "fixed_by_structural_commit_v1": 7,
+    "fixed_by_existing_track_b": 3,
+    "additional_fixes_over_track_b": 4,
+    "unchanged_still_wrong": 0,
+    "abstained": 16
+  },
+  "guardrails_all": {
+    "rows": 188,
+    "metadata_missing_rows": 2,
+    "correct_to_wrong_regressions": 0
+  },
+  "anchor_subset_openai_gsm8k": [
+    "openai_gsm8k_1087",
+    "openai_gsm8k_1279",
+    "openai_gsm8k_1290"
+  ],
+  "anchors_track_b_subset": {
+    "openai_gsm8k_1087": {
+      "cohort": "target_pns_diagnosis",
+      "structural_should_override": 1,
+      "track_b_should_override": 1,
+      "commitment_policy_layer": "track_b",
+      "matches_track_b_override": true
+    },
+    "openai_gsm8k_1279": {
+      "cohort": "target_pns_diagnosis",
+      "structural_should_override": 1,
+      "track_b_should_override": 1,
+      "commitment_policy_layer": "track_b",
+      "matches_track_b_override": true
+    },
+    "openai_gsm8k_1290": {
+      "cohort": "target_pns_diagnosis",
+      "structural_should_override": 1,
+      "track_b_should_override": 1,
+      "commitment_policy_layer": "track_b",
+      "matches_track_b_override": true
+    }
+  },
+  "fixes_by_mechanism_additional_over_track_b": {
+    "overlay_previous_equals_gold_but_surface_used_bad_pal_stdout": 3,
+    "frontier_tiebreak_selected_peer_not_gold_while_gold_in_pool": 1
+  },
+  "notes": {
+    "guardrail_cohort": "183 both-correct + 5 pal-only rows on band 1072-1318 when present in all_results.jsonl",
+    "guardrail_subset_note": "Full 188 ids from casebook; rows depend on PAL-method match in all_results.jsonl (see metadata_missing_rows)."
+  }
+}

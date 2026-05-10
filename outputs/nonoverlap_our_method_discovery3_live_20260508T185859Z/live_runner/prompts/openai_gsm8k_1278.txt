@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Alicia's clothes have to be sent to the dry cleaners weekly.  Her weekly drop-off includes ５ blouses, ２ pants and １ skirt.  If they charge her $５.００ per blouse, $６.００ per skirt and $８.００ per pair of pants, how much does she spend on dry-cleaning in ５ weeks?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

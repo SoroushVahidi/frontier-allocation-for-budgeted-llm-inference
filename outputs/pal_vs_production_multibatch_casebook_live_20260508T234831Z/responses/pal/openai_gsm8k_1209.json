@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "300",
+  "parsed_answer": "300",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "cookies_sold = 80\ncookies_price = 1\ncupcakes_sold = 60\ncupcakes_price = 4\nsisters_payment = 10\n\ntotal_earnings = (cookies_sold * cookies_price) + (cupcakes_sold * cupcakes_price)\ntotal_payment_to_sisters = sisters_payment * 2\n\nmoney_left = total_earnings - total_payment_to_sisters\nprint(money_left)",
+      "stdout": "300\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "300",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "300",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

@@ -1,0 +1,65 @@
+{
+  "total_cases": 7,
+  "actual_cohere_calls": 7,
+  "exact_match_count": 5,
+  "improved_over_current_integrated_count": 5,
+  "external_l1_only_cases_rescued": 5,
+  "results_by_scaffold": {
+    "state_composition_v2": {
+      "cases": 1,
+      "exact": 1,
+      "improved": 1
+    },
+    "percent_base_denominator_v2": {
+      "cases": 1,
+      "exact": 0,
+      "improved": 0
+    },
+    "final_target_verifier_retry": {
+      "cases": 2,
+      "exact": 2,
+      "improved": 2
+    },
+    "ratio_partition_v2": {
+      "cases": 2,
+      "exact": 1,
+      "improved": 1
+    },
+    "l1_style_concise_decomposition": {
+      "cases": 1,
+      "exact": 1,
+      "improved": 1
+    }
+  },
+  "results_by_advantage_type": {
+    "better_state_model": {
+      "cases": 1,
+      "exact": 1,
+      "improved": 1
+    },
+    "better_percent_base": {
+      "cases": 1,
+      "exact": 0,
+      "improved": 0
+    },
+    "better_final_target": {
+      "cases": 2,
+      "exact": 2,
+      "improved": 2
+    },
+    "better_ratio_setup": {
+      "cases": 2,
+      "exact": 1,
+      "improved": 1
+    },
+    "better_decomposition": {
+      "cases": 1,
+      "exact": 1,
+      "improved": 1
+    }
+  },
+  "api_errors": [],
+  "parsing_ambiguities": [],
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

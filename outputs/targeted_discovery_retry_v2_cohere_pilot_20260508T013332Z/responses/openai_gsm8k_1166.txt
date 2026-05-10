@@ -1,0 +1,41 @@
+**Initial State:**
+- Monthly saving target: $1125
+- Number of days in April: 30
+- First half of the month: 15 days
+- Second half of the month: 15 days
+- Let \( x \) be the daily savings in the first half.
+
+**Changes:**
+1. **First Half Savings:**
+   - Daily savings: \( x \)
+   - Total savings for the first half: \( 15x \)
+
+2. **Second Half Savings:**
+   - Daily savings: \( 2x \) (twice as much as the first half)
+   - Total savings for the second half: \( 15 \times 2x = 30x \)
+
+3. **Total Monthly Savings:**
+   - Total savings = Savings in first half + Savings in second half
+   - \( 15x + 30x = 45x \)
+
+**Final Queried Quantity:**
+- Daily savings in the second half: \( 2x \)
+
+**Compute the Final Quantity:**
+- Set the total savings equal to the monthly target:
+  \[
+  45x = 1125
+  \]
+- Solve for \( x \):
+  \[
+  x = \frac{1125}{45} = 25
+  \]
+- Daily savings in the second half:
+  \[
+  2x = 2 \times 25 = 50
+  \]
+
+**Final Answer:**
+\[
+\boxed{50}
+\]

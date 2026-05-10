@@ -1,0 +1,23 @@
+**Target Quantity:** Regular price of popcorn.
+
+**Money Ledger:**
+
+1. **Super Ticket Cost (one-time):** $20
+2. **Extra for Popcorn and Soda (one-time):** $1
+3. **Movie Ticket Cost (one-time):** $12
+4. **Soda Cost (one-time):** $3
+5. **Total Spent on Super Ticket Option (one-time):** $20 + $1 = $21
+6. **Total Spent on Regular Option (one-time):** $12 + Regular Price of Popcorn + $3
+7. **Savings by Not Buying Super Ticket (one-time):** $2
+
+**Equations:**
+
+Since you saved $2 by not buying the super ticket, the total spent on the regular option is $2 less than the super ticket option.
+
+$12 + Regular Price of Popcorn + $3 = $21 - $2
+$15 + Regular Price of Popcorn = $19
+
+Regular Price of Popcorn = $19 - $15
+Regular Price of Popcorn = $4
+
+\boxed{4}

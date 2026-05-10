@@ -1,0 +1,6 @@
+{
+"legs_per_dog": 4,
+"legs_per_cat": 4,
+"legs_per_bird": 2,
+"total_legs": 52
+}

@@ -1,0 +1,31 @@
+To solve this problem, let's define the variables and set up the rate table.
+
+Let:
+- $B$ be Brooke's current age (in years)
+- $S$ be Seth's current age (in years)
+
+From the problem, we know:
+1. Seth is twice as old as Brooke: $S = 2B$
+2. In 2 years, the sum of their ages will be 28.
+
+We'll use a rate table to represent the change in their ages over the 2-year period.
+
+| Entity  | Rate (years/year) | Quantity (years) | Subtotal (years) |
+|---------|---------------|-----------------|---------------|
+| Brooke  | 1             | 2               | B + 2          |
+| Seth    | 1             | 2               | S + 2          |
+
+The sum of their ages in 2 years is given as 28:
+\[ (B + 2) + (S + 2) = 28 \]
+
+Substitute $S = 2B$ into the equation:
+\[ (B + 2) + (2B + 2) = 28 \]
+\[ 3B + 4 = 28 \]
+\[ 3B = 24 \]
+\[ B = 8 \]
+
+Now, find Seth's age:
+\[ S = 2B = 2(8) = 16 \]
+
+The final answer is:
+\[ \boxed{16} \]

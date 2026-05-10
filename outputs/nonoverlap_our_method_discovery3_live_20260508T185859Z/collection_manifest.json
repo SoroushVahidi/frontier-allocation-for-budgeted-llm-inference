@@ -1,0 +1,15 @@
+{
+  "source_casebook": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+  "matched50_exclusion_file": "outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/selected_50case_core4_baseline_cases.csv",
+  "selected_case_count": 30,
+  "planned_calls": 30,
+  "call_cap": 250,
+  "cohere_api_key_set": true,
+  "hf_token_set": true,
+  "no_hf_download_planned": true,
+  "method_source": "patch-focused/stage3 scaffolded integrated path",
+  "live_runner_dir": "outputs/nonoverlap_our_method_discovery3_live_20260508T185859Z/live_runner",
+  "overlap_exclusion_confirmed": true,
+  "actual_calls": 30,
+  "method_source_executed": "patch-focused/stage3 scaffolded integrated path"
+}

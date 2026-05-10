@@ -1,0 +1,13 @@
+- **target_type:** total  
+- **equations:**  
+  Let \( D \) be Dora's age, \( F \) be her father's age, and \( M \) be her mother's age.  
+  Given:  
+  \( D = 15 \)  
+  \( F = 2D + 8 \)  
+  \( M = F - 4 \)  
+  Total combined age: \( D + F + M \)  
+  Substituting values:  
+  \( F = 2(15) + 8 = 38 \)  
+  \( M = 38 - 4 = 34 \)  
+  Total: \( 15 + 38 + 34 = 87 \)  
+- **final_answer:** 87

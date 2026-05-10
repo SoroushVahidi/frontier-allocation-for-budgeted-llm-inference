@@ -1,0 +1,33 @@
+{
+  "paired_cases_completed": 131,
+  "external_l1_max_exact_count": 109,
+  "pal_exact_count": 117,
+  "external_correct_pal_wrong_count": 5,
+  "pal_correct_external_wrong_count": 13,
+  "both_correct_count": 104,
+  "both_wrong_count": 9,
+  "calls_used_row_sum": 1141,
+  "cap_consumed_estimate": 1500,
+  "calls_cap": 1500,
+  "failed_or_skipped_count": 115,
+  "stop_reason": "B_hit_cap",
+  "yield_rate_external_only_losses": 0.03816793893129771,
+  "cumulative_external_only_losses_after_merge_with_prior15": 20,
+  "cumulative_reached_30": false,
+  "top_precise_patterns_in_new_losses": [
+    {
+      "pattern": "Gold-equivalent answer absent from PAL candidate pool while external path reached correct answer.",
+      "count": 3
+    },
+    {
+      "pattern": "Gold-equivalent candidate existed in PAL pool but selector chose a different final answer.",
+      "count": 2
+    }
+  ],
+  "enough_for_pattern_mining": false,
+  "recommended_next_step": "B_collect_more",
+  "methods": [
+    "external_l1_max",
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
+  ]
+}

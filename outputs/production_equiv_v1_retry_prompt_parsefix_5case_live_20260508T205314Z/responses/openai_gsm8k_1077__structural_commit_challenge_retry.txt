@@ -1,0 +1,10 @@
+{
+"Requested Quantity": "Total inches of rain on Tuesday",
+"Equations": [
+"Let M = Monday's rain = 2 inches",
+"Tuesday's rain = 2 * M + 1",
+"Tuesday's rain = 2 * 2 + 1 = 5 inches"
+],
+"Consistency Check": "Twice Monday's rain is 4 inches, adding 1 inch gives 5 inches, which matches the calculated result.",
+"FINAL_ANSWER": 5
+}

@@ -1,0 +1,16 @@
+Solve the math word problem with strict final-target extraction.
+
+Problem:
+Dora's father's age is eight more than twice Dora's age. If Dora's mother is four years younger than Dora's father, and Dora is fifteen years old, calculate the total combined age of Dora, her father, and her mother.
+
+Instructions:
+- Restate exactly what final quantity is asked.
+- Classify target type as one of: total, difference, remaining, rate, ratio part, or specific entity value.
+- Use only minimal equations needed to compute that target.
+- Verify the computed value matches the asked target (not an intermediate value).
+- Provide the final answer exactly once.
+
+Output format:
+- target_type: <one short phrase>
+- equations: <minimal equations>
+- final_answer: <single numeric answer>

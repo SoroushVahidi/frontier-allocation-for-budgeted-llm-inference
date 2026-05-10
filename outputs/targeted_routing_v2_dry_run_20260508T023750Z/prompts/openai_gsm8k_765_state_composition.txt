@@ -1,0 +1,16 @@
+You are solving a state-composition problem with sequential operations.
+
+Problem:
+Sally has realized she did not receive a full wage this week. Her bank account, which held $２００ at the start of the week, now holds $４２０. She has received no other money into her bank account this week. If her weekly wage should be $３００, how many dollars were withheld from Sally’s wage?
+
+Instructions:
+- Start from initial state values.
+- Apply each operation in story order (add/subtract/scale/convert units).
+- Keep intermediate states explicit to avoid mixing totals and components.
+- Restate the exact final target before computing the last step.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

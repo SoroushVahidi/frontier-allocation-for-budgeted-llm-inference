@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+A custodian has to clean a school with ８０ classrooms. They have ５ days to get it done. It takes them １５ minutes per classroom. If they work an ８ hour day, what percentage of their day, on average, is spent cleaning classrooms?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

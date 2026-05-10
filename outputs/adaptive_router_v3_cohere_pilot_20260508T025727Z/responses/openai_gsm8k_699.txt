@@ -1,0 +1,14 @@
+Julie starts with $500.
+
+1. She spends 20% of $500 on clothes:
+   \[ 500 \times 0.20 = 100 \]
+   Remaining money after buying clothes:
+   \[ 500 - 100 = 400 \]
+
+2. She spends 25% of the remaining $400 on CDs:
+   \[ 400 \times 0.25 = 100 \]
+   Remaining money after buying CDs:
+   \[ 400 - 100 = 300 \]
+
+The final amount of money Julie has left is:
+\boxed{300}

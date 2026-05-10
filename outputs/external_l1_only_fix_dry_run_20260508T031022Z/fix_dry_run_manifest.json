@@ -1,0 +1,38 @@
+{
+  "no_api_calls": true,
+  "case_count": 7,
+  "selected_scaffold_counts": {
+    "state_composition_v2": 1,
+    "percent_base_denominator_v2": 1,
+    "final_target_verifier_retry": 2,
+    "ratio_partition_v2": 2,
+    "l1_style_concise_decomposition": 1
+  },
+  "verifier_feature_counts": {
+    "asks_state_value": 5,
+    "state_update_risk": 2,
+    "asks_total": 1,
+    "asks_remaining": 1,
+    "percent_base_denominator_risk": 1,
+    "final_target_mismatch_risk": 2,
+    "sign_direction_cue": 3,
+    "asks_ratio_part": 2,
+    "asks_difference": 2,
+    "ratio_partition_risk": 2,
+    "asks_average_target": 1,
+    "dropped_lowest_average_risk": 1
+  },
+  "percent_base_cases": [
+    "openai_gsm8k_683"
+  ],
+  "l1_style_prompt_cases": [
+    "openai_gsm8k_758"
+  ],
+  "planned_next_pilot_calls": 7,
+  "abort_conditions_for_live_pilot": [
+    "any prompt leakage of gold_answer or external_l1_prediction",
+    "preflight indicates non-deterministic or API-calling path",
+    "selected scaffold unknown for any case",
+    "percent-base flagged cases not mapped to percent_base_denominator_v2"
+  ]
+}

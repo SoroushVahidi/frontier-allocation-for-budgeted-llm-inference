@@ -1,0 +1,13 @@
+**Target Variable:** The profit Kim will make in dollars.
+
+**Calculation:**
+
+1. **Total Clients:** 3 (current) + 5 (potential) = 8 clients.
+2. **Expenses per Client:**  
+   - Bleach: 2 bottles * $2 = $4  
+   - Cloths: 1 pack * $5 = $5  
+   **Total per client:** $4 + $5 = $9  
+3. **Total Expenses:** 8 clients * $9 = $72  
+4. **Profit:** Total Income - Total Expenses = $92 - $72 = $20  
+
+FINAL_ANSWER: 20

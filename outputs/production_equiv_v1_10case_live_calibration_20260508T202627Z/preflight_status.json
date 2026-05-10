@@ -1,0 +1,13 @@
+{
+  "cohere_api_key_set": true,
+  "selected_case_count": 10,
+  "selected_case_ids_in_matched_50": true,
+  "method_alias": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1",
+  "discovery3_excluded": true,
+  "percent_base_enabled": false,
+  "effective_call_cap": 50,
+  "output_dir_ready": true,
+  "alias_resolves": true,
+  "abort_reasons": [],
+  "abort": false
+}

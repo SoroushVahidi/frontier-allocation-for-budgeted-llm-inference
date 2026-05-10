@@ -1,0 +1,8 @@
+**Target:** Calculate Michael's change after buying hay for his horse.
+
+1. Distance = Speed × Time = 32 MPH × 0.5 hours = 16 miles
+2. Hay consumed = 16 miles × 0.5 bails/mile = 8 bails
+3. Total cost = 8 bails × $3/bail = $24
+4. Change = $30 (six $5 bills) - $24 = $6
+
+\boxed{6}

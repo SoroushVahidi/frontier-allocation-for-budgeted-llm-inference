@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "15",
+  "parsed_answer": "15",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "comic_books_weight = 30 * (1/4)\nremaining_weight = 15 - comic_books_weight\ntoys_to_remove = remaining_weight / (1/2)\nprint(int(toys_to_remove))",
+      "stdout": "15\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "15",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "15",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

@@ -1,0 +1,15 @@
+Solve the math word problem carefully.
+
+Problem:
+A teacher uses a five-inch piece of chalk to write math equations on a chalkboard for his students. The teacher likes to conserve chalk, so he tries to only use twenty% of the chalk each day. Since the teacher cannot write with a very small piece of chalk, he recycles the chalk when it is smaller than two inches. On Monday the teacher used a new piece of chalk. His students need extra help that day, so he ended up writing more than usual. He used up forty-five% of the chalk by the end of the day. If the teacher goes back to using only twenty% of the chalk each day, how many days does he have before he has to recyc …<truncated fourteen chars>
+
+Instructions:
+- Restate exactly what final quantity is asked.
+- Identify target type: total, difference, remaining, rate, ratio part, or specific entity value.
+- Use minimal equations.
+- Give one final numeric answer.
+
+Output:
+- target_type: ...
+- equations: ...
+- final_answer: ...

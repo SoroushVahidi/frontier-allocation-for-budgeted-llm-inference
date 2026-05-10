@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_steps = 10000\nsteps_to_school = total_steps // 2\nsteps_with_friend = 1000\nsteps_left_after_jog = 2000\n\n# Calculate steps taken during the jog\nsteps_during_jog = total_steps - steps_to_school - steps_with_friend - steps_left_after_jog\n\nprint(steps_during_jog)",
+    "stdout": "2000\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "2000",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "2000",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

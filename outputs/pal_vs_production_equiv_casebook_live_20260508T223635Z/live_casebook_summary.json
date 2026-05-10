@@ -1,0 +1,44 @@
+{
+  "case_count": 30,
+  "actual_cohere_calls_run_level": 148,
+  "completed_rows": 60,
+  "incomplete_rows": 0,
+  "cap_reached": false,
+  "api_errors_count": 0,
+  "parsing_failures_by_method": {
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1": 1,
+    "external_pal_pot_fair_v1": 0
+  },
+  "production_equiv_correct": 28,
+  "pal_correct": 27,
+  "sc6_correct": null,
+  "pal_only_count": 0,
+  "production_only_count": 2,
+  "both_correct_count": 26,
+  "both_wrong_count": 1,
+  "disagreement_count": 3,
+  "asymmetric_disagreement_count": 2,
+  "family_counts_by_outcome_type": {
+    "both_correct_same": 26,
+    "parse_or_api_issue": 1,
+    "production_only": 2,
+    "both_wrong_same": 1
+  },
+  "pal_only_family_counts": {},
+  "production_only_family_counts": {
+    "unknown": 2
+  },
+  "selector_feature_counts": {
+    "pal_program_executed_cleanly=True": 30,
+    "production_structural_commit=True": 30,
+    "answer_agreement=True": 27,
+    "answer_agreement=False": 3
+  },
+  "enough_pal_only_cases_for_pattern_analysis": false,
+  "enough_disagreement_cases_for_selector_design": false,
+  "recommended_next_step": "collect_more_pal_disagreements",
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "effective_call_cap": 220,
+  "call_accounting_warning": ""
+}

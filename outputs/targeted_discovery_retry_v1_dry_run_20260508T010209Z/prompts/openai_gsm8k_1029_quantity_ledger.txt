@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using a **quantity ledger**.
+
+Problem:
+Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repairs.  This increased the value of the house by 150%.  How much profit did he make?
+
+Instructions:
+- List every numeric quantity with its unit (or "unitless") and what it measures.
+- State clearly which quantity the question asks for (the **target**).
+- Write the equation or step-by-step arithmetic plan that connects the quantities to the target.
+- Execute the plan carefully and double-check units and percentages.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

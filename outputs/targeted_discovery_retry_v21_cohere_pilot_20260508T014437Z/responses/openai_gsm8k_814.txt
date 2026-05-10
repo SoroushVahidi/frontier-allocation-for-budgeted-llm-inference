@@ -1,0 +1,23 @@
+**Target Quantity:** Number of quarters Jenny leaves with.
+
+**Money Ledger:**
+
+1. **Cost of 15 roses (one-time):**  
+   - Single rose cost: $2 each  
+   - Dozen roses cost: $15 for 12 roses  
+   - Since 15 roses is more than a dozen, calculate:  
+     \( 12 \text{ roses} = \$15 \)  
+     \( 3 \text{ additional roses} = 3 \times \$2 = \$6 \)  
+     **Total cost:** \( \$15 + \$6 = \$21 \)
+
+2. **Money Jenny arrived with (one-time):**  
+   - Five $5 bills: \( 5 \times \$5 = \$25 \)
+
+3. **Change received (one-time):**  
+   - Change: \( \$25 - \$21 = \$4 \)
+
+4. **Conversion to quarters:**  
+   - Quarters per dollar: 4  
+   - Total quarters: \( 4 \times 4 = 16 \)
+
+**Final Answer:** \(\boxed{16}\)

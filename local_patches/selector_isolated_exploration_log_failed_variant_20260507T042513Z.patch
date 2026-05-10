@@ -1,0 +1,247 @@
+diff --git a/experiments/controllers.py b/experiments/controllers.py
+index a901b7a..55b4811 100644
+--- a/experiments/controllers.py
++++ b/experiments/controllers.py
+@@ -6906,6 +6906,8 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
+         enable_pal_empty_code_retry: bool = False,
+         pal_empty_code_retry_budget_actions: int = 1,
+         pal_empty_code_retry_policy: str = "empty_code_only",
++        enable_selector_isolated_exploration_log: bool = False,
++        selector_isolated_exploration_prompt_variant: str = "unit_rate_equation_v1",
+         enable_unit_track_seed: bool = False,
+         unit_track_seed_budget_actions: int = 0,
+         unit_track_selection_policy: str = "",
+@@ -6956,6 +6958,10 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
+         self.enable_pal_empty_code_retry = bool(enable_pal_empty_code_retry)
+         self.pal_empty_code_retry_budget_actions = max(0, int(pal_empty_code_retry_budget_actions))
+         self.pal_empty_code_retry_policy = str(pal_empty_code_retry_policy or "").strip() or "empty_code_only"
++        self.enable_selector_isolated_exploration_log = bool(enable_selector_isolated_exploration_log)
++        self.selector_isolated_exploration_prompt_variant = (
++            str(selector_isolated_exploration_prompt_variant or "").strip() or "unit_rate_equation_v1"
++        )
+         self.enable_unit_track_seed = bool(enable_unit_track_seed)
+         self.unit_track_seed_budget_actions = max(0, int(unit_track_seed_budget_actions))
+         self.unit_track_selection_policy = str(unit_track_selection_policy or "").strip() or (
+@@ -7074,6 +7080,68 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
+             "8) answer field should mirror computed final answer when known."
+         )
+ 
++    @staticmethod
++    def _rate_ratio_question_cue(question: str) -> bool:
++        q = str(question or "").lower()
++        return bool(
++            re.search(
++                r"\brate\b|\bratio\b|\bunit rate\b|\bper\b|\beach\b|\bspeed\b|\bprice\b|\bshare\b|\bproportion\b",
++                q,
++            )
++        )
++
++    @staticmethod
++    def _question_quantity_bucket(question: str) -> str:
++        nums = re.findall(r"[-+]?\d+(?:\.\d+)?", str(question or "").replace(",", ""))
++        n = len(nums)
++        if n <= 1:
++            return "qnum_0_1"
++        if n <= 3:
++            return "qnum_2_3"
++        if n <= 5:
++            return "qnum_4_5"
++        return "qnum_6p"
++
++    def _compose_selector_isolated_exploration_question(self, question: str) -> str:
++        return (
++            f"{question}\n\n"
++            "Solve with unit-rate / equation-form reasoning. Return strict JSON with keys: action, equation, answer, confidence.\n"
++            "Rules:\n"
++            "1) action should be final when answer is known.\n"
++            "2) answer must be final numeric answer only.\n"
++            "3) equation should support the final numeric answer.\n"
++            "4) prefer explicit per-unit conversion when relevant.\n"
++        )
++
++    def _run_selector_isolated_exploration_attempt(
++        self, question: str, gold_answer: str, max_actions: int
++    ) -> tuple[str | None, int, list[dict[str, Any]]]:
++        branch = self.generator.init_branch("selector_isolated_exploration_0")
++        actions = 0
++        trace: list[dict[str, Any]] = []
++        prompt = self._compose_selector_isolated_exploration_question(question)
++        while actions < max_actions and not branch.is_done and not branch.is_pruned:
++            self.generator.expand(branch, prompt, gold_answer)
++            actions += 1
++            latest = branch.trace_events[-1] if branch.trace_events else {}
++            trace.append(
++                {
++                    "action": "expand",
++                    "branch_id": branch.branch_id,
++                    "prompt_text": str(latest.get("prompt_text", "")),
++                    "response_text": str(latest.get("response_text", "")),
++                    "reasoning_text": str(latest.get("reasoning_text", "")),
++                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
++                    "source_metadata": "selector_isolated_exploration_log",
++                }
++            )
++        ans = branch.predicted_answer
++        if (ans is None or not str(ans).strip()) and trace:
++            mined = extract_final_answer(str(trace[-1].get("reasoning_text") or ""))
++            if mined is not None and str(mined).strip():
++                ans = str(mined).strip()
++        return (str(ans).strip() if ans is not None and str(ans).strip() else None, actions, trace)
++
+     @staticmethod
+     def _pal_candidate_is_non_executable(meta: dict[str, Any]) -> bool:
+         if not bool(str(meta.get("pal_code") or "").strip()):
+@@ -7621,6 +7689,68 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
+             or direct_gap < self.gate_top2_gap_threshold
+             or direct_entropy > self.gate_entropy_threshold
+         )
++        exploration_log_candidates: list[dict[str, Any]] = []
++        exploration_log_meta: dict[str, Any] = {
++            "exploration_log_enabled": bool(getattr(self, "enable_selector_isolated_exploration_log", False)),
++            "exploration_log_triggered": 0,
++            "exploration_log_count": 0,
++            "exploration_log_unique_groups": 0,
++            "exploration_log_selector_visible_count": 0,
++            "exploration_log_prompt_variant": str(
++                getattr(self, "selector_isolated_exploration_prompt_variant", "unit_rate_equation_v1") or "unit_rate_equation_v1"
++            ),
++            "exploration_log_reason": "disabled",
++        }
++        if bool(getattr(self, "enable_selector_isolated_exploration_log", False)) and str(getattr(self, "method_name", "")) == "direct_reserve_diverse_root_frontier_v1_guarded_selector_isolated_exploration_log_v1":
++            has_rate_ratio_cue = self._rate_ratio_question_cue(question)
++            qty_bucket = self._question_quantity_bucket(question)
++            strong_conflicting_non_incumbent = bool(
++                any(int(v or 0) >= 2 for k, v in direct_counts.items() if str(k) != str(incumbent_group))
++            )
++            if not has_rate_ratio_cue:
++                exploration_log_meta["exploration_log_reason"] = "no_rate_ratio_cue"
++            elif qty_bucket not in {"qnum_4_5", "qnum_6p"}:
++                exploration_log_meta["exploration_log_reason"] = "quantity_bucket_not_target"
++            elif not incumbent_uncertain:
++                exploration_log_meta["exploration_log_reason"] = "incumbent_not_uncertain"
++            elif remaining_budget <= 0:
++                exploration_log_meta["exploration_log_reason"] = "no_remaining_budget"
++            elif strong_conflicting_non_incumbent:
++                exploration_log_meta["exploration_log_reason"] = "strong_conflicting_non_incumbent"
++            else:
++                ans_log, used_log, _trace_log = self._run_selector_isolated_exploration_attempt(
++                    question, gold_answer, 1
++                )
++                exploration_log_meta["exploration_log_triggered"] = int(used_log > 0)
++                if ans_log is not None and str(ans_log).strip():
++                    g = _normalize_answer(ans_log) or "__unknown__"
++                    exploration_log_candidates.append(
++                        {
++                            "predicted_answer": str(ans_log).strip(),
++                            "normalized_answer_group": str(g),
++                            "source_id": "selector_isolated_exploration_log",
++                            "source_family": "selector_isolated_exploration_log",
++                            "selector_visible": 0,
++                            "prompt_variant": str(exploration_log_meta["exploration_log_prompt_variant"]),
++                            "trigger_reason": "rate_ratio_qnum_uncertain",
++                        }
++                    )
++                    exploration_log_meta["exploration_log_reason"] = "triggered_logged_candidate"
++                else:
++                    exploration_log_meta["exploration_log_reason"] = "triggered_no_candidate"
++            exploration_log_meta["exploration_log_count"] = int(len(exploration_log_candidates))
++            exploration_log_meta["exploration_log_unique_groups"] = int(
++                len(
++                    {
++                        str(r.get("normalized_answer_group") or "__unknown__")
++                        for r in exploration_log_candidates
++                        if isinstance(r, dict)
++                    }
++                )
++            )
++            exploration_log_meta["exploration_log_selector_visible_count"] = int(
++                sum(1 for r in exploration_log_candidates if isinstance(r, dict) and int(r.get("selector_visible", 0) or 0) == 1)
++            )
+         frontier_budget_before_decomp_eq = int(remaining_budget)
+         decomp_eq_answer: str | None = None
+         decomp_eq_trace_events: list[dict[str, Any]] = []
+@@ -8812,6 +8942,21 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
+             "direct_hybrid_overlay": dict(direct_hybrid_overlay_meta),
+             **tiebreak_meta,
+         }
++        if bool(getattr(self, "enable_selector_isolated_exploration_log", False)):
++            metadata["exploration_log_enabled"] = bool(exploration_log_meta.get("exploration_log_enabled", False))
++            metadata["exploration_log_triggered"] = int(exploration_log_meta.get("exploration_log_triggered", 0) or 0)
++            metadata["exploration_log_count"] = int(exploration_log_meta.get("exploration_log_count", 0) or 0)
++            metadata["exploration_log_unique_groups"] = int(
++                exploration_log_meta.get("exploration_log_unique_groups", 0) or 0
++            )
++            metadata["exploration_log_selector_visible_count"] = int(
++                exploration_log_meta.get("exploration_log_selector_visible_count", 0) or 0
++            )
++            metadata["exploration_log_prompt_variant"] = str(
++                exploration_log_meta.get("exploration_log_prompt_variant", "")
++            )
++            metadata["exploration_log_reason"] = str(exploration_log_meta.get("exploration_log_reason", ""))
++            metadata["exploration_log_candidates"] = list(exploration_log_candidates)
+         if bool(getattr(self, "enable_pal_branch", False)):
+             metadata["pal_answer"] = pal_answer
+             metadata["pal_execution"] = dict(pal_meta)
+diff --git a/experiments/frontier_matrix_core.py b/experiments/frontier_matrix_core.py
+index 0bbdad5..108f43f 100644
+--- a/experiments/frontier_matrix_core.py
++++ b/experiments/frontier_matrix_core.py
+@@ -50,6 +50,7 @@ from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
+     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4,
+     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK,
+     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL,
++    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_SELECTOR_ISOLATED_EXPLORATION_LOG_V1,
+     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD,
+     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_NUMERIC_LEAF,
+     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNIT_TRACK,
+@@ -1459,6 +1460,21 @@ def build_frontier_strategies(
+                 **strategy_seeded_outer_kwargs_k1_frontier4_pal,
+             )
+         )
++        strategy_seeded_outer_kwargs_k1_frontier4_selector_isolated = {
++            **strategy_seeded_outer_kwargs_k1_frontier4_pal,
++            "enable_selector_isolated_exploration_log": True,
++            "selector_isolated_exploration_prompt_variant": "unit_rate_equation_v1",
++        }
++        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_SELECTOR_ISOLATED_EXPLORATION_LOG_V1] = (
++            DirectReserveDiverseRootFrontierV1GuardedController(
++                generator_factory(),
++                scorer,
++                budget,
++                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_SELECTOR_ISOLATED_EXPLORATION_LOG_V1,
++                strategy_seed_max_actions=2,
++                **strategy_seeded_outer_kwargs_k1_frontier4_selector_isolated,
++            )
++        )
+         specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD] = (
+             DirectReserveDiverseRootFrontierV1GuardedController(
+                 generator_factory(),
+diff --git a/experiments/strategy_seeded_semantic_diversity_frontier_v1.py b/experiments/strategy_seeded_semantic_diversity_frontier_v1.py
+index 1222429..bf0f75f 100644
+--- a/experiments/strategy_seeded_semantic_diversity_frontier_v1.py
++++ b/experiments/strategy_seeded_semantic_diversity_frontier_v1.py
+@@ -192,6 +192,9 @@ METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIE
+ METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_PAL = (
+     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
+ )
++METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_SELECTOR_ISOLATED_EXPLORATION_LOG_V1 = (
++    "direct_reserve_diverse_root_frontier_v1_guarded_selector_isolated_exploration_log_v1"
++)
+ METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_FINALGUARD = (
+     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard"
+ )
+diff --git a/scripts/run_cohere_real_model_cost_normalized_validation.py b/scripts/run_cohere_real_model_cost_normalized_validation.py
+index a8bc4ee..997d20f 100755
+--- a/scripts/run_cohere_real_model_cost_normalized_validation.py
++++ b/scripts/run_cohere_real_model_cost_normalized_validation.py
+@@ -82,6 +82,10 @@ METHODS: dict[str, dict[str, Any]] = {
+         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+         "enable_output_repair": True,
+     },
++    "direct_reserve_diverse_root_frontier_v1_guarded_selector_isolated_exploration_log_v1": {
++        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_selector_isolated_exploration_log_v1",
++        "enable_output_repair": True,
++    },
+     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard": {
+         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard",
+         "enable_output_repair": True,

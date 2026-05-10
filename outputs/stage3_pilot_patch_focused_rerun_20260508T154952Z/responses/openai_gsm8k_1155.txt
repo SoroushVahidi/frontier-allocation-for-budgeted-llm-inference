@@ -1,0 +1,9 @@
+**target_type:** total  
+**equations:**  
+1. **Spacing per plant:** 1.5 feet (given)  
+2. **Total length available:** 111 feet  
+3. **Number of plants that fit:** \( \frac{111}{1.5} = 74 \)  
+4. **Plants needed to buy:** \( 74 - 17 = 57 \)  
+5. **Total cost:** \( 57 \times 6 = 342 \)  
+
+**final_answer:** 342

@@ -1,0 +1,13 @@
+{
+  "cohere_api_key_set": true,
+  "planned_calls": 5,
+  "planned_calls_within_cap": true,
+  "unique_case_ids": true,
+  "prompt_files_exist": true,
+  "every_prompt_contains_FINAL_ANSWER": true,
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "no_duplicate_cases": true,
+  "abort_reasons": [],
+  "abort": false
+}

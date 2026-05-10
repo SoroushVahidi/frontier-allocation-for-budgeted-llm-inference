@@ -1,0 +1,9 @@
+**Target:** Calculate Kim's weekly profit.
+
+1. Total clients = 3 (current) + 5 (potential) = 8
+2. Total bleach cost = 8 clients * 2 bottles/client * $2/bottle = $32
+3. Total cloths cost = 8 clients * $5/client = $40
+4. Total expenses = $32 (bleach) + $40 (cloths) = $72
+5. Profit = Total income - Total expenses = $92 - $72 = $20
+
+\boxed{20}

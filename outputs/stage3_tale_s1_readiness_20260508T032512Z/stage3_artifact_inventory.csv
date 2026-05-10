@@ -1,0 +1,7 @@
+artifact_name,path,case_count,has_problem_text,has_gold,has_external_l1,has_tale,has_s1,has_best_external,overlap_stage2_100,overlap_validated_fix_ids,usable_without_new_external_calls,notes
+collect_all_casebook,outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv,245,yes,yes,yes,yes,yes,yes,0,0,yes,Contains PAL + external_l1 + TALE + S1 + best_external per case; most reusable for Stage-3.
+collect_per_example_records,outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/cohere_real_model_cost_normalized_validation_20260507T161935Z/per_example_records.jsonl,247,yes,yes,no,no,no,no,0,0,no,Method-row level; requires pivot by example_id+method to build case table.
+pilot30_paired_casebook,outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z/paired_casebook.csv,30,yes,yes,yes,yes,yes,yes,0,0,yes,Small 30-case 4-way pilot; quick sanity set.
+pilot30_per_example_records,outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z/per_example_records.jsonl,30,yes,yes,no,no,no,no,0,0,no,
+latest_loss_union,outputs/latest_pal_external_loss_bank_20260508T004000Z/latest_pal_external_loss_union_by_case.csv,71,yes,yes,no,no,no,no,9,7,no,
+stage2_validated_fixes,outputs/external_l1_stage2_integrated_validated_fixes_checkpoint_20260508T032208Z/stage2_validated_fixes_results.csv,100,no,yes,yes,no,no,no,100,7,no,Current validated-fixes benchmark for overlap and provenance only.

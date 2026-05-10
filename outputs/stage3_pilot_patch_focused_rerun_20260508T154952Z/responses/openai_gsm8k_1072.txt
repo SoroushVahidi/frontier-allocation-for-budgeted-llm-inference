@@ -1,0 +1,9 @@
+**Target:** Find the number of 5-dollar bills Thomas has after all transactions.
+
+1. Initial bills: \( \frac{1000}{20} = 50 \)
+2. Bills after loss: \( 50 - 10 = 40 \)
+3. Bills after payment: \( \frac{40}{2} = 20 \)
+4. Money after tripling: \( 20 \times 3 \times 20 = 1200 \)
+5. Number of 5-dollar bills: \( \frac{1200}{5} = 240 \)
+
+\boxed{240}

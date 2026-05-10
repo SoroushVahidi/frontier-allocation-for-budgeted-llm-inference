@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "popsicles_cost = 20 * 0.25\nice_cream_bars_cost = 4 * 0.50\ntotal_cost = popsicles_cost + ice_cream_bars_cost\nprint(total_cost)",
+    "stdout": "7.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "7.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "7.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

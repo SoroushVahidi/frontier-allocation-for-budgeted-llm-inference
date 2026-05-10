@@ -1,0 +1,35 @@
+{
+  "pal_only_final_target_count": 9,
+  "contrast_case_count": 120,
+  "production_only_count": 0,
+  "both_correct_same_count": 119,
+  "both_correct_different_count": 0,
+  "both_wrong_different_count": 0,
+  "parse_or_api_issue_count": 1,
+  "pal_execution_success_rate_on_pal_only": 1.0,
+  "production_surface_source_counts_on_pal_only": {
+    "structural_commit": 9
+  },
+  "targeted_retry_triggered_count_on_pal_only": 2,
+  "selector_feature_counts_on_pal_only": {
+    "rule_hits": 8,
+    "pal_execution_success": 9,
+    "pal_program_present": 9,
+    "production_structural_commit": 9,
+    "large_relative_gap_gt_0_25": 8,
+    "huge_relative_gap_gt_0_75": 2
+  },
+  "selector_feature_counts_on_contrast": {
+    "rule_hits": 0,
+    "contrast_count": 120
+  },
+  "candidate_rules": [
+    "If PAL executed cleanly, PAL and production disagree, production surface is structural_commit, and relative numeric gap > 0.25, then flag final-target-risk and consider PAL."
+  ],
+  "estimated_rule_coverage_on_pal_only": "8/9",
+  "estimated_rule_risk_on_contrast": "0/120",
+  "whether_selector_designable_now": true,
+  "if_not_designable_reason": "",
+  "recommended_next_step": "design_no_api_pal_hybrid_selector_v1",
+  "no_api_calls": true
+}

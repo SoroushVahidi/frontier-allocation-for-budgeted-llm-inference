@@ -1,0 +1,13 @@
+{
+  "cohere_api_key_set": true,
+  "exactly_5_unique_clean_cases": true,
+  "all_cases_have_problem_text_and_gold": true,
+  "prompt_files_exist": true,
+  "every_prompt_contains_required_labels": true,
+  "every_prompt_contains_stronger_contract": true,
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "planned_calls": 5,
+  "abort_reasons": [],
+  "abort": false
+}

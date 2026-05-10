@@ -1,0 +1,23 @@
+**Step-by-Step Solution:**
+
+1. **Initial State:**
+   - Tank capacity: 18,000 gallons.
+
+2. **First Day:**
+   - Wanda pumped: \( \frac{1}{4} \times 18,000 = 4,500 \) gallons.
+   - Ms. B pumped: \( \frac{3}{4} \times 4,500 = 3,375 \) gallons.
+   - Total pumped on the first day: \( 4,500 + 3,375 = 7,875 \) gallons.
+
+3. **Second Day:**
+   - Wanda pumped: \( \frac{2}{3} \times 4,500 = 3,000 \) gallons.
+   - Ms. B pumped: \( \frac{1}{3} \times 3,375 = 1,125 \) gallons.
+   - Total pumped on the second day: \( 3,000 + 1,125 = 4,125 \) gallons.
+
+4. **Total Pumped Over Two Days:**
+   - Total pumped: \( 7,875 + 4,125 = 12,000 \) gallons.
+
+5. **Remaining Water to Fill the Tank:**
+   - Remaining: \( 18,000 - 12,000 = 6,000 \) gallons.
+
+**Final Answer:**
+\boxed{6000}

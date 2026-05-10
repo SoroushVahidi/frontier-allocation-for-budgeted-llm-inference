@@ -1,0 +1,8 @@
+{
+  "input_dry_run_dir": "outputs/discovery3_candidate_diversity_selection_v1_dry_run_20260508T190601Z",
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "strict_max_calls": 15,
+  "one_call_per_case": true
+}

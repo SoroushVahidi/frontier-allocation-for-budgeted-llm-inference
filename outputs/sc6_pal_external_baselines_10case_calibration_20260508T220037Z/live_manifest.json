@@ -1,0 +1,16 @@
+{
+  "timestamp_utc": "20260508T220037Z",
+  "methods": [
+    "external_self_consistency_6_fair_v1",
+    "external_pal_pot_fair_v1"
+  ],
+  "source_cases_csv": "/home/soroush/research-next-wt/outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/selected_50case_core4_baseline_cases.csv",
+  "case_count": 10,
+  "start_offset": 0,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "budget": 6,
+  "max_total_api_calls": 80,
+  "output_dir": "/home/soroush/research-next-wt/outputs/sc6_pal_external_baselines_10case_calibration_20260508T220037Z"
+}

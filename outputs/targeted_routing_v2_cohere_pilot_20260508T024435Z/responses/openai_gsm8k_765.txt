@@ -1,0 +1,17 @@
+To solve this problem, we need to determine how much money was withheld from Sally's wage. Let's break it down step by step:
+
+1. **Initial State**: Sally's bank account held $200 at the start of the week.
+2. **Final State**: Her bank account now holds $420.
+3. **Weekly Wage**: Sally's weekly wage should be $300.
+
+Since Sally received no other money into her bank account this week, the increase in her bank account balance must be due to her wage. 
+
+Let's calculate the amount of money Sally actually received:
+
+$420 (final balance) - $200 (initial balance) = $220
+
+This means Sally received $220, but her weekly wage should be $300. To find out how much was withheld, we subtract the amount she received from her expected wage:
+
+$300 (expected wage) - $220 (actual received) = $80
+
+The final answer is: $\boxed{80}$

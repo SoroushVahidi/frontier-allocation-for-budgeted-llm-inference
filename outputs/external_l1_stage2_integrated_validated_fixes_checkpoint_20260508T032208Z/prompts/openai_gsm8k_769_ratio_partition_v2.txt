@@ -1,0 +1,16 @@
+Solve this ratio partition problem using concise decomposition.
+
+Problem:
+A family of ６ (２ adults and ４ kids) are to divide a watermelon such that each adult gets a slice that is twice as big as that of each kid. What percentage of the watermelon does each adult get?
+
+Instructions:
+- Restate the asked target (which part, difference, or percentage).
+- Convert wording (twice/half/as many) into ratio parts.
+- Use one compact equation to solve part values.
+- Compute only the requested target quantity.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

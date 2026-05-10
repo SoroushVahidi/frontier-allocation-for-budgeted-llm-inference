@@ -1,0 +1,27 @@
+# Fresh paired PAL+retry vs external_l1_max (100-case target)
+
+- Selected fresh examples: **100**
+- Fully paired completed: **100**
+- Partial/unpaired: **0**
+- Total logical calls used/cap: **585/1500**
+- Failed/skipped: **0**
+- External exact accuracy: **0.850**
+- PAL+retry exact accuracy: **0.840**
+- Gap (PAL - external) pp: **-1.00**
+- Both correct / ext-only / pal-only / both-wrong: **76/9/8/7**
+- McNemar discordants (ext-only, pal-only): **9, 8**
+- PAL corrected gold_in_tree count/rate: **7/0.070**
+- PAL Discovery3 count/rate: **2/0.020**
+- PAL present-not-selected count/rate: **1/0.010**
+- PAL gold-absent count/rate: **13/0.130**
+- PAL seed/code/parse/safety/exec/strong/overlay rates: **1.000/0.990/0.990/0.970/0.960/0.970/0.960**
+- Retry enabled count/rate: **100/1.000**
+- Retry ran count/rate: **4/0.040**
+- Retry code/parse/safety/exec rates (when ran): **1.000/1.000/0.750/0.500**
+- Retry candidate strong count/rate: **2/0.500**
+- Retry fixes/breaks inferable: **2/0**
+- PAL exact | exec_ok: **0.854**
+- PAL exact | candidate_strong: **0.856**
+- Competitive with external_l1_max: **True**
+- Larger paired sampling justified: **True**
+- Proposed next cap if justified: **3000**

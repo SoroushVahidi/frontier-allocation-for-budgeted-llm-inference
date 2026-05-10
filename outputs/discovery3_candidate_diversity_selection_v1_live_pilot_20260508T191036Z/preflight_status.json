@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "cohere_api_key_set": true,
+  "planned_calls": 15,
+  "planned_calls_within_cap": true,
+  "case_count": 15,
+  "unique_case_count": 15,
+  "all_prompts_exist": true,
+  "no_ascii_gold_in_prompts": true,
+  "no_prediction_leakage": true,
+  "ready_for_live_confirmation": true,
+  "errors": []
+}

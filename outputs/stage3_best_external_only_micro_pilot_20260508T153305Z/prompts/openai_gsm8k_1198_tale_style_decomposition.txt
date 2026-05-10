@@ -1,0 +1,16 @@
+Solve the math word problem using named subquestions.
+
+Problem:
+A teacher uses a five-inch piece of chalk to write math equations on a chalkboard for his students. The teacher likes to conserve chalk, so he tries to only use twenty% of the chalk each day. Since the teacher cannot write with a very small piece of chalk, he recycles the chalk when it is smaller than two inches. On Monday the teacher used a new piece of chalk. His students need extra help that day, so he ended up writing more than usual. He used up forty-five% of the chalk by the end of the day. If the teacher goes back to using only twenty% of the chalk each day, how many days does he have before he has to recyc …<truncated fourteen chars>
+
+Instructions:
+- Decompose into short subquestions (Q1, Q2, ...).
+- Solve subquestions sequentially.
+- Explicitly verify that the final computed value matches the exact quantity asked.
+- Provide one final numeric answer.
+
+Output format:
+- decomposition: <Q1..Qn>
+- work: <concise steps>
+- target_check: <one line>
+- final_answer: <single numeric answer>

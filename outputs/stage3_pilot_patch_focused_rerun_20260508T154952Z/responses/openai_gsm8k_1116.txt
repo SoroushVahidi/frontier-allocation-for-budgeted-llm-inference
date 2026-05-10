@@ -1,0 +1,8 @@
+**Target:** Determine years until Adam reaches 4 feet (48 inches).
+
+1. Current height: \( h_0 = 40 \) inches  
+2. Growth rate: \( g = 2 \) inches/year  
+3. Target height: \( h_t = 48 \) inches  
+4. Years needed: \( t = \frac{h_t - h_0}{g} = \frac{48 - 40}{2} = 4 \)
+
+\boxed{4}

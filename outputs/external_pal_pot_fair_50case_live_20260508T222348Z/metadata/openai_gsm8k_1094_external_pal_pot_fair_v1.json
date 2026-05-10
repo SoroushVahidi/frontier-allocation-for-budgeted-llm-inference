@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "standard_rate = 80\nveteran_rate = standard_rate * 0.75\nstandard_lessons = 4\nveteran_lessons = 2\ntotal_earnings = (standard_rate * standard_lessons) + (veteran_rate * veteran_lessons)\nprint(total_earnings)",
+    "stdout": "440.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "440.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "440.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

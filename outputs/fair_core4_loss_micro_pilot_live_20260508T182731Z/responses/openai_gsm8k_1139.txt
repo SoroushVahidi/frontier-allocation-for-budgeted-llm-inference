@@ -1,0 +1,4 @@
+To solve this problem, we need to track the total hours Josh spent working out over 8 weeks, considering the variations in his routine.
+
+1. **Base Case:**  
+   Josh spends 4 hours per week for 6 weeks weeks. 6 weeks. 6 weeks. 6 weeks. 6. 6. 6... of of. 6. 6.   es. the     ** the  * 6. 6. 6. 6. 6. 6. ... 6. 6. 6. 6. 6. 6. 6. 6. 6. 6. 6. 6. 6. 6. 5

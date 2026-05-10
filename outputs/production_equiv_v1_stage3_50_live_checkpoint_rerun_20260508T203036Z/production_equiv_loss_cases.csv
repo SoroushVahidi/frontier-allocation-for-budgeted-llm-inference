@@ -1,0 +1,7 @@
+case_id,production_equiv_answer,prior_patch_answer,best_core4_answer_or_winner,gold_answer,loss_type,surface_source,targeted_retry_triggered,targeted_retry_committed,likely_failure_type,notes
+openai_gsm8k_1121,3000,(not available in source artifact),1,2000,production_equiv_wrong_prior_correct,structural_commit,True,False,wrong_answer,
+openai_gsm8k_1155,164.39999999999998,(not available in source artifact),1,342,production_equiv_wrong_prior_correct,structural_commit,False,False,wrong_answer,
+openai_gsm8k_1198,,(not available in source artifact),1,2,production_equiv_wrong_best_core4_correct,structural_commit,False,False,parsing_failure,
+openai_gsm8k_1077,4,(not available in source artifact),1,5,production_equiv_wrong_prior_correct,structural_commit,False,False,wrong_answer,
+openai_gsm8k_1080,54,(not available in source artifact),1,48,production_equiv_wrong_prior_correct,structural_commit,False,False,wrong_answer,
+openai_gsm8k_1131,10,(not available in source artifact),1,4,production_equiv_wrong_prior_correct,structural_commit,False,False,wrong_answer,

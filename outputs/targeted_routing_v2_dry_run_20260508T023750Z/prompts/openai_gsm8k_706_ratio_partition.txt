@@ -1,0 +1,16 @@
+You are solving a ratio partition problem.
+
+Problem:
+Jerry is rolling a six-sided die. How much more likely is it (expressed as a percentage) that he rolls a number greater than ３ than that he rolls two even numbers in a row?
+
+Instructions:
+- Identify total quantity and ratio parts.
+- Convert ratio to unit parts and compute one part value.
+- Recover requested part(s), difference, or percentage from part values.
+- If text includes "half/twice" relationships, rewrite them in ratio-equation form before solving.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

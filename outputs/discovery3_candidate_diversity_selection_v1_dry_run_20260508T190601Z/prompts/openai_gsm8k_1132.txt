@@ -1,0 +1,14 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+The power goes out in Brianna's house one night so she and her family gather all their candles and flashlights. There are ８ rooms in the house and ４ people living there, including Brianna. There is a flashlight for every person to carry and two for each room. They have a variety of candles available; ４ small candles each for half the rooms and ５ medium candles each for the other half of the rooms. With everything combined, how many candles and flashlights are Brianna's family using when the lights go out?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: total
+- family_hint: ratio_setup
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this format:
+  final_answer / FINAL_ANSWER: <single numeric value>

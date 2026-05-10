@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "34",
+  "parsed_answer": "34",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "shortest_tree = 6\nsecond_tree = shortest_tree + 5\ntallest_tree = 2 * (shortest_tree + second_tree)\nprint(tallest_tree)",
+      "stdout": "34\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "34",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "34",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

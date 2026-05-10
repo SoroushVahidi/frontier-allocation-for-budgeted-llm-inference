@@ -1,0 +1,15 @@
+{
+  "cohere_api_key_set": true,
+  "planned_cohere_calls": 50,
+  "max_cohere_calls": 55,
+  "planned_calls_ok": true,
+  "case_count_ok": true,
+  "all_prompt_files_exist": true,
+  "no_ascii_gold_in_prompts": true,
+  "no_external_or_best_external_prediction_in_prompts": true,
+  "external_outputs_available": true,
+  "no_duplicate_case_ids": true,
+  "explicit_gold_leak_hits": [],
+  "explicit_external_leak_hits": [],
+  "preflight_ok": true
+}

@@ -1,0 +1,21 @@
+To solve the problem, follow these steps:
+
+1. **Identify total quantity and ratio parts:**
+   - Total family members: 6 (2 adults and 4 kids).
+   - Let the slice size for each kid be \( k \).
+   - Each adult gets twice as much as each kid, so each adult gets \( 2k \).
+
+2. **Set up the ratio:**
+   - Total parts = (2 adults \(\times\) 2k) + (4 kids \(\times\) k) = \( 4k + 4k = 8k \).
+
+3. **Convert ratio to unit parts and compute one part value:**
+   - The total watermelon is represented by \( 8k \).
+   - One part \( k \) is \( \frac{1}{8} \) of the watermelon.
+
+4. **Recover requested part(s):**
+   - Each adult gets \( 2k \), which is \( 2 \times \frac{1}{8} = \frac{2}{8} = \frac{1}{4} \) of the watermelon.
+
+5. **Convert to percentage:**
+   - \( \frac{1}{4} \) of the watermelon is \( 25\% \).
+
+Thus, each adult gets \(\boxed{25}\) percent of the watermelon.

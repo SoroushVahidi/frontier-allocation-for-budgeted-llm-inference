@@ -1,0 +1,17 @@
+{
+  "prediction": "36",
+  "parsed_answer": "36",
+  "metadata": {
+    "baseline_family": "self_consistency",
+    "n_samples": 4,
+    "answer_votes": {
+      "36": 1
+    },
+    "selected_answer": "36",
+    "tie_break_rule": "max_votes_then_lexicographic_normalized_key",
+    "call_count": 4
+  },
+  "error_message": "",
+  "status": "success",
+  "s1_observability": {}
+}

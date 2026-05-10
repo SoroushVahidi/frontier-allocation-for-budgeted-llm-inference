@@ -1,0 +1,14 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+While Joanne is gathering apples from her family’s orchard, her sister comes outside to help her. Joanne gathers ３０ apples from the tallest trees, half this amount from the shortest trees, and more apples from the average trees. Compared with Joanne, her sister gathers twice as many apples from the tallest trees and ３ times as many apples from the shortest trees. She doesn't take any from the average trees. If the sisters have gathered a combined total of ５００ apples, how many apples did Joanne gather from the average trees?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: total
+- family_hint: ratio_setup
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this format:
+  FINAL_ANSWER: <single numeric value>

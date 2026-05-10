@@ -1,0 +1,40 @@
+{
+  "timestamp_utc": "20260507T204409Z",
+  "git_commit": "343190010113fe2e819140d41123af57f1caf4f7",
+  "git_branch": "research-next-frontier-iteration-2",
+  "methods": {
+    "baseline_pal": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+    "track_b": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_track_b_commitment_v1"
+  },
+  "provider": "cohere",
+  "cohere_model": "command-r-plus-08-2024",
+  "dataset": "openai/gsm8k",
+  "seed": 20260501,
+  "budget": 6,
+  "case_id_suffix_range_inclusive": [
+    80,
+    109
+  ],
+  "case_count": 30,
+  "overlap_report": {
+    "excluded_bands_documented_elsewhere": [
+      "openai_gsm8k_772-1071 (300-case)",
+      "openai_gsm8k_50-79 (4-way pilot)",
+      "openai_gsm8k_1072-1318 (247-ID cohort)"
+    ],
+    "chosen_slice": "indices 80-109 within shuffled pilot ordering for seed 20260501",
+    "note_planned_1319_1348": "unavailable \u2014 GSM8K test split yields indices 0-1318 only"
+  },
+  "logical_call_cap_hard": 300,
+  "logical_calls_observed_total_sum_rows": 130,
+  "environment_variable_names_checked_no_values": [
+    "COHERE_API_KEY",
+    "CO_API_KEY"
+  ],
+  "commands_run_summary": "validate-methods-only; dry-run-call-plan; live run with allowlist; materialize_track_b_ab_pilot_bundle.py",
+  "artifact_paths": {
+    "harness_output_dir": "outputs/cohere_track_b_ab_pilot_30case_20260507T204409Z/cohere_real_model_cost_normalized_validation_live_run_20260507T204409Z",
+    "per_example_records_jsonl": "outputs/cohere_track_b_ab_pilot_30case_20260507T204409Z/cohere_real_model_cost_normalized_validation_live_run_20260507T204409Z/per_example_records.jsonl",
+    "flattened_results_jsonl": "outputs/cohere_track_b_ab_pilot_30case_20260507T204409Z/results.jsonl"
+  }
+}

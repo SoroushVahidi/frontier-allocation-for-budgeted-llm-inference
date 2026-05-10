@@ -1,0 +1,17 @@
+You are solving a math word problem with percentage/fraction base tracking.
+
+Problem:
+Mrs. Tatiana owns a grocery store that sells different fruits and vegetables, which includes carrots. The price of carrots in the grocery store increases by ５% of the original price every year. What would be the price of carrots after three years if it was $１２０ initially? (Round to the nearest integer)
+
+Instructions:
+- List each percent/fraction statement and the exact base quantity it applies to.
+- For each step, mark whether the base is original, subtotal, remaining, or updated amount.
+- Do not apply a percent to the wrong base; keep a short ledger of base -> operation -> result.
+- If multiple periods are involved, state whether the percent is repeating on the same base or applied sequentially.
+- Compute only the asked target quantity and avoid intermediate-only answers.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

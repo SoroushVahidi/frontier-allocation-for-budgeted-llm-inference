@@ -1,0 +1,11 @@
+**Target:** Calculate the total number of toys James needs.
+
+1. Initial toys: 4 (for 4 dogs)
+2. Additional dogs: 8 (total dogs = 4 + 8 = 12)
+3. Toys needed after first purchase: 12 - 4 = 8
+4. Dogs double: 12 * 2 = 24
+5. Toys needed after second purchase: 24 - 12 = 12
+6. Dogs leave: 24 - 3 = 21
+7. Final toys needed: 21
+
+\[ \boxed{21} \]

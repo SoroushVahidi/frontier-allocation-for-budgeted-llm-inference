@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Thomas withdraws $１０００ in ２０ dollar bills from the bank account.  He loses １０ bills while getting home.  After that, he uses half of the remaining bills to pay for a bill.  Thomas then triples his money.  He then converts all his bills to ５ dollar bills.  How many ５ dollar bills does he have?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

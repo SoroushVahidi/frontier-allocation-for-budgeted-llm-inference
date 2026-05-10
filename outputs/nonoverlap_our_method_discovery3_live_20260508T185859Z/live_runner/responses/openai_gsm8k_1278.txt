@@ -1,0 +1,6 @@
+**Target:** Calculate Alicia's total dry-cleaning cost for 5 weeks.
+
+1. Weekly cost: \( 5(5) + 2(8) + 1(6) = 25 + 16 + 6 = 47 \)
+2. Total cost for 5 weeks: \( 5 \times 47 = 235 \)
+
+\boxed{235}

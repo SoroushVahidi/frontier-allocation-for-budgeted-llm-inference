@@ -1,0 +1,10 @@
+**Target:** Calculate Millie's profit per hour.
+
+1. Total cups of lemonade: \( 3 \text{ pitchers} \times 12 \text{ cups/pitcher} = 36 \text{ cups} \)
+2. Total revenue: \( 36 \text{ cups} \times \$1/\text{cup} = \$36 \)
+3. Total cost: \( \$18 \)
+4. Profit: \( \$36 - \$18 = \$18 \)
+5. Total hours to sell all lemonade: \( 36 \text{ cups} / 4 \text{ cups/hour} = 9 \text{ hours} \)
+6. Profit per hour: \( \$18 / 9 \text{ hours} = \$2 \text{ per hour} \)
+
+\boxed{2}

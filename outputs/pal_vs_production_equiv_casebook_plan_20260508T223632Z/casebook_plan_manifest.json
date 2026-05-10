@@ -1,0 +1,24 @@
+{
+  "selected_case_count": 30,
+  "planned_methods": [
+    "production_equiv_v1",
+    "external_pal_pot_fair_v1"
+  ],
+  "planned_calls_by_method": {
+    "production_equiv_v1": 5,
+    "external_pal_pot_fair_v1": 1
+  },
+  "estimated_total_calls": 180,
+  "excluded_case_sources": [
+    "/home/soroush/research-next-wt/outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/selected_50case_core4_baseline_cases.csv",
+    "/home/soroush/research-next-wt/outputs/nonoverlap_our_method_discovery3_live_20260508T185859Z/selected_nonoverlap_cases.csv"
+  ],
+  "primary_case_pool": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+  "all_cases_have_problem_text": true,
+  "all_cases_have_gold": true,
+  "no_duplicate_case_ids": true,
+  "no_overlap_with_matched50": true,
+  "no_overlap_with_prior_nonoverlap30": true,
+  "ready_for_live_collection": true,
+  "logical_call_cap": 220
+}

@@ -1,0 +1,14 @@
+{
+  "inspected_external_l1_only": 7,
+  "inspected_both_wrong": 7,
+  "v1_router_missed_supported_family": 5,
+  "needs_new_percent_base_scaffold": 3,
+  "needs_combinatorics_counting_scaffold": 1,
+  "needs_average_target_score_scaffold": 1,
+  "needs_ratio_partition_scaffold": 3,
+  "needs_state_composition_scaffold": 5,
+  "can_reuse_quantity_ledger_v2_1": 0,
+  "can_reuse_rate_table_v1": 0,
+  "can_reuse_target_difference_v1": 0,
+  "unknown_needs_manual_review": 0
+}

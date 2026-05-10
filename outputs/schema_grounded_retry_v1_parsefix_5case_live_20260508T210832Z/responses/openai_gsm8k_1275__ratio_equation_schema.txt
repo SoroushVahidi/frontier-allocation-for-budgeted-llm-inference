@@ -1,0 +1,17 @@
+{
+"SCHEMA_TYPE": "ratio_equation_schema",
+"TARGET_QUANTITY": "Total Instagram likes",
+"GIVEN_QUANTITIES": [
+"Initial likes after 1 week: 2000",
+"Likes after 3 more weeks: 70 * 2000",
+"New likes recently: 20000"
+],
+"EQUATIONS": [
+"Total likes = Initial likes + Likes after 3 weeks + New likes"
+],
+"COMPUTATION": [
+"Likes after 3 weeks = 70 * 2000 = 140000",
+"Total likes = 2000 + 140000 + 20000 = 162000"
+],
+"FINAL_ANSWER": 162000
+}

@@ -1,0 +1,10 @@
+{
+  "no_api_calls": true,
+  "source_analysis_dir": "outputs/stage3_patch_instability_analysis_20260508T154406Z",
+  "planned_cases": [
+    "openai_gsm8k_1155",
+    "openai_gsm8k_1198"
+  ],
+  "planned_calls_if_executed": 3,
+  "objective": "stabilize_case_1198_and_verify_1155_repeatability"
+}

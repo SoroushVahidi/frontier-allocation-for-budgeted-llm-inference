@@ -1,0 +1,21 @@
+{
+  "method": "external_pal_pot_fair_v1",
+  "case_count": 50,
+  "completed_rows": 50,
+  "incomplete_rows": 0,
+  "actual_cohere_calls_run_level": 50,
+  "actual_cohere_calls_completed_rows": 50,
+  "effective_call_cap": 100,
+  "global_cap_reached": false,
+  "cap_error_count": 0,
+  "exact_count": 40,
+  "parsing_failures": 0,
+  "api_errors": 0,
+  "method_execution_errors": 0,
+  "metadata_present_count": 50,
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "caveats": [
+    "PAL uses one JSON code-gen API call (temperature min(0.3, runner temperature)) plus local restricted Python execution; failures may be parsing or sandbox errors."
+  ]
+}

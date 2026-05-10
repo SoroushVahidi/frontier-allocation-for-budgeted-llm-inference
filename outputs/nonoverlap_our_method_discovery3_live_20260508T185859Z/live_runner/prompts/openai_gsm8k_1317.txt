@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Donny can only drink water if it's at least ４０ degrees. He has two mugs of water. One mug is ３３ degrees. The other is an unknown temperature. If he pours ４ ounces of water from the ３３-degree mug into his water bottle and one ounce from the other bottle, he is now able to drink the water.  At least how many degrees is the second bottle?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

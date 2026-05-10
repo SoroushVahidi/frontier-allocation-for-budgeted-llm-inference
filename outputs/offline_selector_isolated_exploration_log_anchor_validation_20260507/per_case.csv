@@ -1,0 +1,13 @@
+example_id,incumbent_prediction,log_variant_prediction,incumbent_exact,log_variant_exact,prediction_changed,exploration_log_triggered,exploration_log_count,exploration_log_unique_groups,exploration_log_selector_visible_count,exploration_log_reason,exploration_log_prompt_variant,exploration_log_enabled
+openai_gsm8k_1025,23,23,1,1,0,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_1027,1,2,0,1,1,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_778,7400,7400,1,1,0,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_780,-2,,0,0,1,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_812,73,74,1,0,1,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_814,,,0,0,0,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_819,68,68,1,1,0,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_929,18,18,1,1,0,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_934,,126,0,1,1,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_944,100,100,1,1,0,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_953,24,22,1,0,1,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1
+openai_gsm8k_979,3,1,1,0,1,1,1,1,0,triggered_logged_candidate,unit_rate_equation_v1,1

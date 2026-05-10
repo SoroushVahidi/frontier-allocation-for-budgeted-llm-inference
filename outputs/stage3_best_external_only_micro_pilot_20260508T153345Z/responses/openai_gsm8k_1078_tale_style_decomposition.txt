@@ -1,0 +1,32 @@
+**Decomposition:**
+
+1. **Dora's Age (D):** What is Dora's current age?
+2. **Father's Age (F):** How old is Dora's father in terms of Dora's age?
+3. **Mother's Age (M):** How old is Dora's mother in terms of Dora's father's age?
+4. **Combined Age:** What is the total combined age of Dora, her father, and her mother?
+
+**Work:**
+
+1. **Dora's Age (D):** Given, Dora is 15 years old.  
+   \( D = 15 \)
+
+2. **Father's Age (F):** Dora's father's age is eight more than twice Dora's age.  
+   \( F = 2D + 8 \)  
+   Substituting \( D = 15 \):  
+   \( F = 2(15) + 8 = 30 + 8 = 38 \)
+
+3. **Mother's Age (M):** Dora's mother is four years younger than Dora's father.  
+   \( M = F - 4 \)  
+   Substituting \( F = 38 \):  
+   \( M = 38 - 4 = 34 \)
+
+4. **Combined Age:** Total combined age of Dora, her father, and her mother.  
+   \( \text{Combined Age} = D + F + M \)  
+   Substituting \( D = 15 \), \( F = 38 \), and \( M = 34 \):  
+   \( \text{Combined Age} = 15 + 38 + 34 = 87 \)
+
+**Target Check:**  
+The problem requests the total combined age of Dora, her father, and her mother, which we computed as 87. This matches the exact requested target.
+
+**Final Answer:**  
+\(\boxed{87}\)

@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using **before/after state** over time.
+
+Problem:
+Jill and her friends watch 4 movies every Saturday and half the number of movies on Sunday than on Saturday. If they watch movies every weekend, how many movies can they watch in 4 weeks?
+
+Instructions:
+1. Write the **initial state** (all relevant quantities).
+2. List **each change in chronological order**, updating the state after each step.
+3. Identify the **final queried quantity** (what the problem asks for at the end).
+4. Compute that quantity from the final state.
+5. Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

@@ -1,0 +1,8 @@
+**Target:** Calculate total workout hours over 8 weeks.
+
+1. Regular weeks: \(6 \text{ weeks} \times 4 \text{ hours/week} = 24 \text{ hours}\)
+2. Consecutive 5-hour weeks: \(2 \text{ weeks} \times 5 \text{ hours/week} = 10 \text{ hours}\)
+3. 6-hour week: \(1 \text{ week} \times 6 \text{ hours/week} = 6 \text{ hours}\)
+4. Total hours: \(24 + 10 + 6 = 40 \text{ hours}\)
+
+\boxed{40}

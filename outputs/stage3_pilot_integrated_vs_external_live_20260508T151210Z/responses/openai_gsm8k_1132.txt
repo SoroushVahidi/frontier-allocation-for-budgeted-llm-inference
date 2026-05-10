@@ -1,0 +1,14 @@
+**Target:** Total candles and flashlights used.
+
+Let:
+- \( F \) = flashlights
+- \( C_s \) = small candles
+- \( C_m \) = medium candles
+
+Equations:
+1. \( F = 4 \) (one per person)
+2. \( C_s = 4 \times \frac{8}{2} = 16 \) (4 small candles for half the rooms)
+3. \( C_m = 5 \times \frac{8}{2} = 20 \) (5 medium candles for the other half)
+4. Total = \( F + C_s + C_m = 4 + 16 + 20 \)
+
+\boxed{40}

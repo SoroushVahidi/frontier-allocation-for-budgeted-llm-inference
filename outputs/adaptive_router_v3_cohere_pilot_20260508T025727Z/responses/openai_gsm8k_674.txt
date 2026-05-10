@@ -1,0 +1,10 @@
+Let's break down the problem step by step:
+
+1. **Initial height**: The beanstalk was 3 inches tall after the first week.
+2. **Second week growth**: It doubled in height, so it became 2 * 3 = 6 inches tall.
+3. **Third week growth**: It grew another 4 inches, so the total height after 3 weeks is 6 + 4 = 10 inches.
+
+Since the problem doesn't involve ratios or partitions directly, we can simply calculate the final height.
+
+The final answer is:
+\boxed{10}

@@ -1,0 +1,15 @@
+Solve this math word problem independently.
+
+Problem:
+Pat has a flower bed that is １１１ feet long.  Pat wants to fill her flower bed with plants.  Pat's flowers grow １２ inches wide so she needs to leave １.５ feet between every plant.  Pat already owns １７ flowers.  Each flowering plant costs $６ at the store,  how much money will Pat spend at the store to fill up her flower bed?
+
+Instructions:
+- Identify the exact requested final quantity.
+- Solve with concise equations.
+- Challenge your own result with one short consistency check before finalizing.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.
+- If you are unsure, still output one best numeric answer on FINAL_ANSWER line.

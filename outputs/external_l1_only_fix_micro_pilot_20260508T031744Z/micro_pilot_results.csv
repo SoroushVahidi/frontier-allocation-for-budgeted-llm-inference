@@ -1,0 +1,4 @@
+case_id,prompt_variant,selected_scaffold,parsed_final_answer,gold_answer,exact_match,current_integrated_prediction,external_l1_prediction,previous_failed_prediction,improved_over_previous_fix_pilot,rescued_external_l1_only,response_text_path,notes
+openai_gsm8k_683,patched_percent_base_v2,percent_base_denominator_v2,94,94,true,62,94,80,true,true,responses/openai_gsm8k_683_patched_percent_base_v2.txt,
+openai_gsm8k_769,ratio_partition_v2_repeat,ratio_partition_v2,25,25,true,100,25,33.33,true,true,responses/openai_gsm8k_769_ratio_partition_v2_repeat.txt,
+openai_gsm8k_769,l1_style_alternative,l1_style_concise_decomposition,25,25,true,100,25,33.33,true,true,responses/openai_gsm8k_769_l1_style_alternative.txt,

@@ -1,0 +1,14 @@
+Solve this GSM8K-style math problem independently. Do not use any external references.
+
+Problem:
+Emily can peel 6 shrimp a minute and saute 30 shrimp in 10 minutes. How long will it take her to peel and cook 90 shrimp?
+
+Scaffold: tale_style_decomposition
+- Decompose into short sub-questions and resolve each once.
+- Compose the final answer from those resolved sub-questions.
+
+Requirements:
+- Identify the exact final quantity requested before computing.
+- Show concise reasoning/equations only as needed.
+- End with exactly one final-answer line in this format: FINAL_ANSWER: <number>
+- Do not include alternative final answers.

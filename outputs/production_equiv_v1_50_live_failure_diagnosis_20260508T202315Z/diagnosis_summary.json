@@ -1,0 +1,20 @@
+{
+  "case_count": 50,
+  "completed_rows": 20,
+  "cap_error_rows": 30,
+  "metadata_present_count": 20,
+  "parsing_failure_count": 31,
+  "production_equiv_correct_count_completed_only": 16,
+  "production_equiv_correct_count_all_rows": 16,
+  "dry_run_estimated_total_calls": 61,
+  "inferred_actual_call_cap_hit": 80,
+  "recommended_cap_for_full_50": 132,
+  "recommended_next_step": "fix_call_accounting_first",
+  "blockers": [
+    "global_call_cap_insufficient_for_50",
+    "run_level_call_accounting_mismatch",
+    "metadata_incomplete_due_to_cap_interrupt",
+    "retry_commit_never_firing_under_current_outputs"
+  ],
+  "no_api_calls": true
+}

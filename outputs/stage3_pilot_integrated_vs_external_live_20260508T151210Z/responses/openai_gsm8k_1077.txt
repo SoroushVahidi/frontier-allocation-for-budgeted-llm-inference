@@ -1,0 +1,8 @@
+**Target:** Calculate Tuesday's rainfall.
+
+1. Monday's rain: \( M = 2 \) inches
+2. Tuesday's rain: \( T = 2M + 1 \)
+3. Substitute \( M \): \( T = 2(2) + 1 \)
+4. Simplify: \( T = 5 \)
+
+\boxed{5}

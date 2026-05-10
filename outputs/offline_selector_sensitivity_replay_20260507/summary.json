@@ -1,0 +1,25 @@
+{
+  "bucket_counts": {
+    "added_candidate_flip_wrong": 3,
+    "duplicate_skip_flip": 2,
+    "override_blocked_but_selection_changed": 10,
+    "previously_correct_regressed": 3
+  },
+  "cases_analyzed_worsened_any": 3,
+  "cases_prediction_changed_any": 11,
+  "cases_total": 12,
+  "meta": {
+    "api_calls": "none",
+    "broad_per_case_csv": "/home/soroush/research-next-wt/outputs/offline_rate_ratio_gate_anchor_validation_20260507/per_case.csv",
+    "conservative_per_case_csv": "/home/soroush/research-next-wt/outputs/offline_rate_ratio_conservative_gate_anchor_validation_20260507/per_case.csv",
+    "output_dir": "/home/soroush/research-next-wt/outputs/offline_selector_sensitivity_replay_20260507",
+    "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv"
+  },
+  "top_sensitivity_features": [
+    "added_any",
+    "conservative_override_blocked",
+    "triggered_any",
+    "duplicate_skip_any",
+    "gold_present_delta_positive"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "total_unique_failure_cases": 80,
+  "gold_absent_discovery_count": 14,
+  "present_not_selected_count": 6,
+  "family_counts": {
+    "state_update": 32,
+    "unknown": 33,
+    "ratio_setup": 13,
+    "final_target_mismatch": 8,
+    "percent_base": 1,
+    "format_parse": 4
+  },
+  "target_quantity_type_counts": {
+    "entity_value": 38,
+    "rate": 16,
+    "ratio_part": 11,
+    "total": 15,
+    "difference": 5,
+    "remaining": 5,
+    "average": 1
+  },
+  "risk_feature_counts": {
+    "state_update_risk_yes": 32,
+    "ratio_or_percent_risk_yes": 14
+  },
+  "recommended_patch_scope": "opt-in discovery3 candidate diversity + final-target selection verifier",
+  "selected_confirmation_cases": [
+    "openai_gsm8k_1215",
+    "openai_gsm8k_1299",
+    "openai_gsm8k_1199",
+    "openai_gsm8k_1219",
+    "openai_gsm8k_1232",
+    "openai_gsm8k_1275",
+    "openai_gsm8k_1217",
+    "openai_gsm8k_1081",
+    "openai_gsm8k_1112",
+    "openai_gsm8k_1115",
+    "openai_gsm8k_1132",
+    "openai_gsm8k_1137",
+    "openai_gsm8k_1139",
+    "openai_gsm8k_1144",
+    "openai_gsm8k_1147"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "source_stage3_pilot_readiness_dir": "outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z",
+  "source_stage3_live_pilot_dir": "outputs/stage3_pilot_integrated_vs_external_live_20260508T151210Z",
+  "source_patch_plan_dirs": [
+    "outputs/stage3_best_external_gap_patch_plan_20260508T153906Z",
+    "outputs/stage3_best_external_only_micro_pilot_20260508T153345Z",
+    "outputs/stage3_best_external_gap_patch_checkpoint_20260508T154111Z",
+    "outputs/stage3_1198_stability_micro_pilot_20260508T154605Z"
+  ],
+  "case_count": 50,
+  "max_cohere_calls": 55,
+  "planned_cohere_calls": 50,
+  "patch_case_ids": [
+    "openai_gsm8k_1078",
+    "openai_gsm8k_1155",
+    "openai_gsm8k_1198"
+  ],
+  "patch_policy_by_case": {
+    "openai_gsm8k_1078": "final_target_extraction_repair_from_micro_success",
+    "openai_gsm8k_1198": "frozen_successful_micro_prompt_final_target_extraction_repair",
+    "openai_gsm8k_1155": "checkpoint_successful_prompt_final_target_extraction_repair"
+  },
+  "external_outputs_reused": true,
+  "baselines": [
+    "external_l1_max",
+    "external_tale",
+    "external_s1",
+    "best_external"
+  ],
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "scoring_is_offline": true,
+  "no_gold_in_prompts_verified": true,
+  "no_external_prediction_in_prompts_verified": true,
+  "abort_conditions": [
+    "missing_cohere_api_key",
+    "planned_calls_exceed_cap",
+    "case_count_not_50",
+    "missing_prompt_files",
+    "gold_or_external_prediction_leak_detected",
+    "external_outputs_missing",
+    "duplicate_case_ids"
+  ]
+}

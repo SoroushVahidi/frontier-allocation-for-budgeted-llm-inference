@@ -1,0 +1,24 @@
+**Objects:**  
+- 200 students to be divided into 3 groups.  
+
+**Choices:**  
+- Let \( x \) be the number of students in each of the two equal groups.  
+- The smallest group has \( x - 10 \) students.  
+
+**Constraints:**  
+- Total students: \( x + x + (x - 10) = 200 \).  
+
+**Equation:**  
+\[ 3x - 10 = 200 \]  
+\[ 3x = 210 \]  
+\[ x = 70 \]  
+
+**Smallest group:**  
+\[ x - 10 = 70 - 10 = 60 \]  
+
+**Verification:**  
+- Two equal groups: \( 70 + 70 = 140 \).  
+- Smallest group: \( 60 \).  
+- Total: \( 140 + 60 = 200 \).  
+
+\boxed{60}

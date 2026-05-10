@@ -1,0 +1,22 @@
+{
+  "no_api_calls": true,
+  "case_count": 11,
+  "planned_cohere_calls": 11,
+  "max_recommended_live_calls": 11,
+  "scaffold_counts": {
+    "tale_style_decomposition": 1,
+    "robust_extraction_observability": 4,
+    "final_target_extraction_repair": 2,
+    "ratio_unit_equation": 1,
+    "state_transition_consistency": 3
+  },
+  "source_loss_bank": "outputs/fair_core4_loss_pattern_bank_20260508T182155Z",
+  "no_gold_in_prompts_verified": true,
+  "no_prediction_leakage_verified": true,
+  "recommended_live_subset": "all_11",
+  "abort_conditions": [
+    "Any prompt contains explicit gold/prediction leakage fields.",
+    "Planned calls exceed 11.",
+    "Preflight detects missing prompt file for any selected case."
+  ]
+}

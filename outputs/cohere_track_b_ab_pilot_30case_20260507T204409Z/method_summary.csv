@@ -1,0 +1,3 @@
+method,correct_count,total_count,accuracy,avg_logical_calls,failed_rows,skipped_rows,track_b_override_count
+direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal,20,30,0.6666666666666666,2.2333,0,0,
+direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_track_b_commitment_v1,22,30,0.7333333333333333,2.1,0,0,4

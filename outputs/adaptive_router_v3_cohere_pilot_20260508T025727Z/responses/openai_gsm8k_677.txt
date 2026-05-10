@@ -1,0 +1,24 @@
+**Identify:**
+- Count of items: Total questions = 70 (first test) + 40 (second test) = 110 questions.
+- Known values: Audrey got 60% of 70 questions correct on the first test.
+- Target average: 70% of the total questions.
+- Unknown value: Number of questions Audrey needs to get right on the second test.
+
+**Convert target average to required total:**
+\[ \text{Required total} = 0.70 \times 110 = 77 \]
+
+**Calculate known sum:**
+\[ \text{Known sum} = 0.60 \times 70 = 42 \]
+
+**Build equation:**
+\[ 42 + x = 77 \]
+where \( x \) is the number of questions Audrey needs to get right on the second test.
+
+**Solve for \( x \):**
+\[ x = 77 - 42 = 35 \]
+
+**Check against constraints:**
+Audrey needs to get 35 questions correct out of 40 on the second test, which is feasible.
+
+**Final answer:**
+\[ \boxed{35} \]

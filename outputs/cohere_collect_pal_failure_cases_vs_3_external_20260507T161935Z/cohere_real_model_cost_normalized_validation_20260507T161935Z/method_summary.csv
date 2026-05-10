@@ -1,0 +1,5 @@
+provider,method,n_slices,total_scored_examples,mean_accuracy_across_slices,mean_total_tokens_per_scored_example,mean_latency_seconds_per_scored_example,estimated_total_cost_usd
+cohere,direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal,1,247,0.7651821862348178,1177.0728744939272,10.462951732793522,1.251939
+cohere,external_l1_max,1,245,0.7428571428571429,650.6367346938775,6.05165907755102,0.828726
+cohere,external_s1_budget_forcing,1,247,0.7449392712550608,1337.582995951417,5.027703477732793,1.486977
+cohere,external_tale_prompt_budgeting,1,247,0.708502024291498,804.5991902834008,3.338384882591093,0.9621

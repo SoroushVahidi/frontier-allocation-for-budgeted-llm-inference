@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "pepper_cost = 15\nwatermelon_cost = 3 * pepper_cost\norange_cost = watermelon_cost - 5\ntotal_cost = (4 * watermelon_cost) + (20 * pepper_cost) + (10 * orange_cost)\nprint(total_cost)",
+    "stdout": "880\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "880",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "880",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

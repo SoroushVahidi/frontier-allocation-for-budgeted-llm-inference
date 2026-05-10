@@ -1,0 +1,17 @@
+**Step-by-Step Solution:**
+
+1. **Glee Club Pizzas:**
+   - Initial pizzas ordered: 20
+   - Pizzas eaten: \( 70\% \) of 20 = \( 0.70 \times 20 = 14 \)
+   - Pizzas left: \( 20 - 14 = 6 \)
+
+2. **Football Team Pizzas:**
+   - Initial pizzas ordered: Twice as many as the glee club = \( 2 \times 20 = 40 \)
+   - Pizzas eaten: \( 80\% \) of 40 = \( 0.80 \times 40 = 32 \)
+   - Pizzas left: \( 40 - 32 = 8 \)
+
+3. **Total Pizzas Left:**
+   - Combine leftover pizzas from both groups: \( 6 + 8 = 14 \)
+
+**Final Answer:**
+\boxed{14}

@@ -1,0 +1,25 @@
+**Problem Restatement:**  
+How much money will Pat spend at the store to fill up her flower bed?
+
+**Target Type:**  
+Total (total cost of additional plants needed).
+
+**Equations:**  
+1. **Total space per plant (including spacing):**  
+   \( 1.5 \, \text{feet} + 1 \, \text{foot} = 2.5 \, \text{feet} \)  
+   (Note: 12 inches = 1 foot, so each plant occupies 1 foot of space.)  
+
+2. **Number of plants that fit in the flower bed:**  
+   \( \frac{111 \, \text{feet}}{2.5 \, \text{feet/plant}} = 44.4 \)  
+   Since Pat cannot buy a fraction of a plant, she can fit **44 plants** in total.  
+
+3. **Additional plants needed:**  
+   \( 44 - 17 = 27 \)  
+
+4. **Total cost:**  
+   \( 27 \times 6 = 162 \)  
+
+**Final Answer:**  
+- target_type: total  
+- equations: \( \frac{111}{2.5} = 44.4 \rightarrow 44 \), \( 44 - 17 = 27 \), \( 27 \times 6 = 162 \)  
+- final_answer: **$162**

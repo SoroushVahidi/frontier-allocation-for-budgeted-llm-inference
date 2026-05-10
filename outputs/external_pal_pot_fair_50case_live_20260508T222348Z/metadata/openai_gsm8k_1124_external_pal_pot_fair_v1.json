@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "peel_rate = 6\nsaute_time = 10\nsaute_amount = 30\ntotal_shrimp = 90\n\n# Calculate peeling time\npeeling_time = total_shrimp / peel_rate\n\n# Calculate number of saute batches\nsaute_batches = (total_shrimp + saute_amount - 1) // saute_amount\n\n# Total cooking time\ntotal_time = peeling_time + saute_batches * saute_time\n\nprint(total_time)",
+    "stdout": "45.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "45.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "45.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

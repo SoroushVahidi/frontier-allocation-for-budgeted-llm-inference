@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Helga was the fastest clog dancer in all of Slovenia. With both hands at her sides, she could tap her right foot at a rate of ３００ taps per minute, while simultaneously tapping her left foot at a rate of ２５０ taps per minute.  When she raised her arms, her tap rate slowed down to ２００ taps per minute with each foot.  If she dances a total of ５ minutes, with her arms raised during only ２ of those minutes, what would be the combined total number of times that she taps both of her feet?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

@@ -1,0 +1,27 @@
+{
+  "source_patch_plan_dir": "outputs/stage3_best_external_gap_patch_plan_20260508T153906Z",
+  "case_count": 3,
+  "planned_cohere_calls": 3,
+  "max_cohere_calls": 4,
+  "patch_case_ids": [
+    "openai_gsm8k_1078",
+    "openai_gsm8k_1198"
+  ],
+  "control_case_ids": [
+    "openai_gsm8k_1155"
+  ],
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "scoring_is_offline": true,
+  "no_gold_in_prompts_verified": true,
+  "no_external_prediction_in_prompts_verified": true,
+  "abort_conditions": [
+    "missing_cohere_api_key",
+    "planned_calls_exceed_cap",
+    "case_count_not_three",
+    "missing_prompt_files",
+    "gold_or_external_prediction_leak_detected",
+    "duplicate_prompt_variants"
+  ]
+}

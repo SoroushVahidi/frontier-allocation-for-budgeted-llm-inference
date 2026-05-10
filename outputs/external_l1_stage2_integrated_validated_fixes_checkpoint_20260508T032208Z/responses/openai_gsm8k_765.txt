@@ -1,0 +1,15 @@
+**Final quantity asked:** How many dollars were withheld from Sally’s wage?
+
+Let \( W \) be the withheld amount.  
+Initial account balance: $200  
+Final account balance: $420  
+Weekly wage: $300  
+
+\[ 200 + (300 - W) = 420 \]  
+\[ 500 - W = 420 \]  
+\[ W = 500 - 420 \]  
+\[ W = 80 \]  
+
+**Verification:** Withheld amount is positive, matching the problem context.  
+
+\boxed{80}

@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "green_pens = 22\nyellow_pens = 10\nbags_blue = 6\nbags_red = 2\nblue_pens_per_bag = 9\nred_pens_per_bag = 6\ntotal_pens = green_pens + yellow_pens + (bags_blue * blue_pens_per_bag) + (bags_red * red_pens_per_bag)\nprint(total_pens)",
+    "stdout": "98\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "98",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "98",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

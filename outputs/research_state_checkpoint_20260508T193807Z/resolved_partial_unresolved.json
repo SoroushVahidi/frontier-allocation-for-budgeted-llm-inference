@@ -1,0 +1,23 @@
+{
+  "resolved": [
+    "fair core4 baseline IDs implemented and live-stable",
+    "local case runner avoids HF loading",
+    "matched-50 fair comparison available",
+    "paired report available",
+    "non-overlap failure collection available"
+  ],
+  "partially_resolved": [
+    "baseline parsing robustness",
+    "S1 observability",
+    "discovery3 failure taxonomy",
+    "SC6/PAL inclusion",
+    "production-equivalence bridge"
+  ],
+  "unresolved_blocking": [
+    "production-equivalent live runtime",
+    "broad claim versus full fair baseline suite including SC6/PAL",
+    "discovery/gold_absent improvement mechanism",
+    "larger 245-case validation",
+    "unknown-family clustering"
+  ]
+}

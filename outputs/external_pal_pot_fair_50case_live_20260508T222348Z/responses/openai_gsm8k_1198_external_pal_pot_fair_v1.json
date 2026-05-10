@@ -1,0 +1,34 @@
+{
+  "prediction": "2",
+  "parsed_answer": "2",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "chalk_length = 5\nremaining_chalk = chalk_length * (1 - 0.45)\ndays = 0\nwhile remaining_chalk >= 2:\n    remaining_chalk *= 0.8\n    days += 1\nprint(days)",
+      "stdout": "2\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "2",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "2",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

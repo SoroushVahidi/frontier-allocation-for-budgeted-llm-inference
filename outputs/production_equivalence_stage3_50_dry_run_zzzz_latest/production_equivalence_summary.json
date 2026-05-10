@@ -1,0 +1,27 @@
+{
+  "total_cases": 50,
+  "planned_base_only_count": 21,
+  "planned_structural_commit_count": 5,
+  "planned_targeted_retry_count": 24,
+  "planned_abstain_count": 0,
+  "scaffold_counts": {
+    "ratio_partition": 8,
+    "final_target_extraction_repair": 9,
+    "rate_table_v1": 2,
+    "state_composition": 2,
+    "average_target_score": 3,
+    "unknown": 2
+  },
+  "percent_base_held_back_count": 4,
+  "estimated_live_calls": 74,
+  "overlap_with_patch_focused_actions": 24,
+  "mismatch_with_patch_focused_actions": 26,
+  "no_api_calls": true,
+  "ready_for_live_checkpoint": false,
+  "blocking_issues": [
+    "controller-level adaptive_retry_router_v3 invocation",
+    "controller-level final_target_verifier_v1 gating before commitment",
+    "runtime-level targeted-retry call loop with bounded extra calls",
+    "production surface selection parity between patched prompts and controller outputs"
+  ]
+}

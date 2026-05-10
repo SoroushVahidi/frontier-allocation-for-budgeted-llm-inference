@@ -1,0 +1,24 @@
+{
+"SCHEMA_TYPE": "before_after_state_schema",
+"TARGET_QUANTITY": "Sylvie's annual salary after 3 more years",
+"GIVEN_QUANTITIES": [
+"Initial monthly salary: $600",
+"Annual increase rate: 10%",
+"Years of service before increase: 5",
+"Additional years of service: 3"
+],
+"EQUATIONS": [
+"Annual salary = Monthly salary * 12",
+"Increased salary = Current salary * (1 + Increase rate)",
+"Final salary = Initial annual salary * (1 + 0.10)^3"
+],
+"COMPUTATION": [
+"1. Calculate initial annual salary: $600 * 12 = $7200",
+"2. Since Sylvie has already completed 5 years, she is eligible for the increase. Calculate the salary after the first increase (which would have happened at the start of year 6): $7200 * 1.10 = $7920",
+"3. Apply the 10% increase for the next 3 years:",
+"   - After year 7: $7920 * 1.10 = $8712",
+"   - After year 8: $8712 * 1.10 = $9583.20",
+"   - After year 9: $9583.20 * 1.10 = $10541.52"
+],
+"FINAL_ANSWER": 10541.52
+}

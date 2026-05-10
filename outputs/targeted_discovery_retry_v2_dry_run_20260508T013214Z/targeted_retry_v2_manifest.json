@@ -1,0 +1,48 @@
+{
+  "no_api_calls": true,
+  "source_v1_dry_run_dir": "outputs/targeted_discovery_retry_v1_dry_run_20260508T010738Z",
+  "source_v1_pilot_dir": "outputs/targeted_discovery_retry_v1_cohere_pilot_20260508T011341Z",
+  "selected_case_count": 15,
+  "scaffold_counts": {
+    "quantity_ledger": 6,
+    "rate_table": 3,
+    "before_after_state": 3,
+    "target_difference": 3
+  },
+  "prompt_versions_by_scaffold": {
+    "quantity_ledger": "v2",
+    "rate_table": "v1",
+    "before_after_state": "v1",
+    "target_difference": "v1"
+  },
+  "selected_case_ids": [
+    "openai_gsm8k_750",
+    "openai_gsm8k_841",
+    "openai_gsm8k_1006",
+    "openai_gsm8k_1027",
+    "openai_gsm8k_1029",
+    "openai_gsm8k_1045",
+    "openai_gsm8k_1003",
+    "openai_gsm8k_1099",
+    "openai_gsm8k_906",
+    "openai_gsm8k_818",
+    "openai_gsm8k_864",
+    "openai_gsm8k_1166",
+    "openai_gsm8k_1019",
+    "openai_gsm8k_970",
+    "openai_gsm8k_1187"
+  ],
+  "estimated_live_api_calls_if_piloted": 15,
+  "gold_leak_check_passed": true,
+  "selection_rules": {
+    "quantity_ledger_failed_v1_cases_included": true,
+    "quantity_ledger_total_target": 6,
+    "validation_scaffolds": {
+      "rate_table": 3,
+      "before_after_state": 3,
+      "target_difference": 3
+    },
+    "exclude_high_provenance_risk_unless_needed": true
+  },
+  "excluded_case_counts_by_reason": {}
+}

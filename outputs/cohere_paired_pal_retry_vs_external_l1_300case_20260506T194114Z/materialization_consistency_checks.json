@@ -1,0 +1,8 @@
+{
+  "paired_rows_match_summary": true,
+  "pair_outcomes_match_summary": true,
+  "failed_count_matches_file": true,
+  "call_cap_respected": true,
+  "selected_disjoint_from_prior_used_ids": true,
+  "selected_overlap_count_with_prior": 0
+}

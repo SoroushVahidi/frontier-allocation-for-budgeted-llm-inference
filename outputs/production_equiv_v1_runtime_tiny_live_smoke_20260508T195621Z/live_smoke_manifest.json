@@ -1,0 +1,12 @@
+{
+  "method": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1",
+  "model": "command-a-03-2025",
+  "max_total_cohere_calls": 12,
+  "selected_cases": [
+    "openai_gsm8k_1095",
+    "openai_gsm8k_1121",
+    "openai_gsm8k_1082"
+  ],
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true
+}

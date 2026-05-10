@@ -1,0 +1,53 @@
+To solve this problem, we need to carefully track the base (denominator) for each percentage operation and ensure consistency throughout the solution.
+
+**Step 1: Define the base for the problem.**
+
+- **Base (B):** The total capacity of the power bank. This is the original base and remains fixed throughout the problem unless explicitly stated otherwise.
+
+**Step 2: Analyze the first charging period.**
+
+- **Rate of loss:** 9% of the total capacity (B) each hour.
+- **Duration:** 5 hours.
+- **Total loss in this period:** \( 5 \times 0.09B = 0.45B \).
+
+**Step 3: Analyze the second charging period.**
+
+- **Rate of loss:** 7% of the total capacity (B) each hour.
+- **Duration:** 3 hours.
+- **Total loss in this period:** \( 3 \times 0.07B = 0.21B \).
+
+**Step 4: Calculate the total loss.**
+
+- **Total loss:** \( 0.45B + 0.21B = 0.66B \).
+
+**Step 5: Determine the remaining charge.**
+
+- **Remaining charge:** 28% of the total capacity (B).
+- **Remaining charge in terms of B:** \( 0.28B \).
+
+**Step 6: Set up the equation for the initial charge.**
+
+Let \( x \) be the initial charge when Maria went out to the park.
+
+- **Initial charge minus total loss equals remaining charge:**
+  \[
+  x - 0.66B = 0.28B
+  \]
+
+**Step 7: Solve for \( x \).**
+
+\[
+x = 0.28B + 0.66B = 0.94B
+\]
+
+**Step 8: Express the initial charge as a percentage of the total capacity.**
+
+\[
+x = 0.94B \Rightarrow 94\%
+\]
+
+**Final Answer:**
+
+\[
+\boxed{94}
+\]

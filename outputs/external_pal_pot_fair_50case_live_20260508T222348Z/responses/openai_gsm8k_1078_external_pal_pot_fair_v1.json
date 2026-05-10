@@ -1,0 +1,34 @@
+{
+  "prediction": "87",
+  "parsed_answer": "87",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "dora_age = 15\nfather_age = 2 * dora_age + 8\nmother_age = father_age - 4\ntotal_age = dora_age + father_age + mother_age\nprint(total_age)",
+      "stdout": "87\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "87",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "87",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

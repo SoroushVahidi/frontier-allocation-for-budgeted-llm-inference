@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "1596.0",
+  "parsed_answer": "1596",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "initial_charge = 140\nmonths_in_half_year = 6\n\ntotal_first_half = initial_charge * months_in_half_year\n\ndiscounted_charge = initial_charge * 0.9\ntotal_second_half = discounted_charge * months_in_half_year\n\ntotal_yearly_payment = total_first_half + total_second_half\nprint(total_yearly_payment)",
+      "stdout": "1596.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "1596.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "1596.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

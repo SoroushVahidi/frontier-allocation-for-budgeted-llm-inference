@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "candles_per_pound = 10\nwicks_and_wax_cost = 10.00\ncandle_sell_price = 2.00\ntotal_candles = 20\n\n# Calculate pounds of beeswax needed\nbeeswax_pounds = total_candles / candles_per_pound\n\n# Calculate total supply cost\ntotal_supply_cost = beeswax_pounds * wicks_and_wax_cost\n\n# Calculate total revenue from selling candles\ntotal_revenue = total_candles * candle_sell_price\n\n# Calculate net profit\nnet_profit = total_revenue - total_supply_cost\n\nprint(net_profit)",
+    "stdout": "20.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "20.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "20.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

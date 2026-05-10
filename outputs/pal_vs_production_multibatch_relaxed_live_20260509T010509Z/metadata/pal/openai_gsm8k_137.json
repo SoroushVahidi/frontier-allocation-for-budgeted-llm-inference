@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "sub_cost = 2 * 7.50\nchips_cost = 2 * 1.50\ncookies_cost = 2 * 1.00\ntotal_cost = sub_cost + chips_cost + cookies_cost\ndelivery_fee = total_cost * 0.20\ntotal_with_delivery = total_cost + delivery_fee\ntotal_with_tip = total_with_delivery + 5.00\nprint(total_with_tip)",
+    "stdout": "29.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "29.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "29.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

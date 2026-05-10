@@ -1,0 +1,20 @@
+**Target Quantity:** Total cost of a bag of marbles after 36 months.
+
+**Money Ledger:**
+
+- **Original Price (P):** $20
+- **Increase per 2 months (I):** 20% of $20 = 0.20 * $20 = $4
+- **Number of 2-month periods in 36 months (N):** 36 / 2 = 18
+
+**Calculation:**
+
+Since the price increase is based on the original price every two months, we can calculate the total increase over 36 months as follows:
+
+Total Increase = N * I = 18 * $4 = $72
+
+Total Cost after 36 months = Original Price + Total Increase
+= $20 + $72
+= $92
+
+**Final Answer:**
+\boxed{92}

@@ -1,0 +1,29 @@
+{
+  "audit_complete": true,
+  "baselines_with_low_fairness_risk": [
+    "best_external_oracle"
+  ],
+  "baselines_with_medium_fairness_risk": [
+    "external_l1_max",
+    "external_s1_budget_forcing"
+  ],
+  "baselines_with_high_fairness_risk": [
+    "external_tale_prompt_budgeting"
+  ],
+  "needs_manual_external_repo_check": [
+    "external_tale_prompt_budgeting"
+  ],
+  "needs_reimplementation_before_strong_claim": [
+    "external_tale_prompt_budgeting",
+    "external_s1_budget_forcing",
+    "external_l1_max"
+  ],
+  "recommended_next_step": [
+    "keep_conservative_wording",
+    "inspect_official_tale_repo",
+    "implement_more_faithful_tale",
+    "implement_more_faithful_s1",
+    "rerun_baselines",
+    "proceed_with_production_equivalence"
+  ]
+}

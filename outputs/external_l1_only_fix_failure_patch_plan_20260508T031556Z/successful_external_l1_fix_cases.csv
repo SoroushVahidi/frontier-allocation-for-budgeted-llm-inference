@@ -1,0 +1,6 @@
+case_id,selected_scaffold_candidate,inferred_advantage_type,pilot_prediction,gold_answer,exact_match,should_integrate,integration_note
+openai_gsm8k_674,state_composition_v2,better_state_model,10,10,true,yes,Promote as guarded candidate for Stage-2 rerun path.
+openai_gsm8k_746,final_target_verifier_retry,better_final_target,6,6,true,yes,Promote as guarded candidate for Stage-2 rerun path.
+openai_gsm8k_752,ratio_partition_v2,better_ratio_setup,60,60,true,yes,Promote as guarded candidate for Stage-2 rerun path.
+openai_gsm8k_758,l1_style_concise_decomposition,better_decomposition,98,98,true,yes,Promote as guarded candidate for Stage-2 rerun path.
+openai_gsm8k_765,final_target_verifier_retry,better_final_target,80,80,true,yes,Promote as guarded candidate for Stage-2 rerun path.

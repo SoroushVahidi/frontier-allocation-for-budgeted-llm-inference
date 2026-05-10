@@ -1,0 +1,20 @@
+{
+  "source_analysis_dir": "/home/soroush/research-next-wt/outputs/paired_pal_external_100case_analysis_20260506",
+  "source_run_dir": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+  "actionable_failures_total": 5,
+  "actionable_categories": {
+    "P1_prompt_no_code_emitted": 2,
+    "P3_code_runtime_error_fixable_by_executor": 1,
+    "P5_code_executes_but_wrong_operation": 1,
+    "P2_code_rejected_for_safe_but_needed_construct": 1
+  },
+  "chosen_patch": "Allow safe int()/float() builtins in PAL executor (P2).",
+  "chosen_patch_rationale": "One actionable failure was blocked solely by call_disallowed:int; this is low-risk and runtime-gold-free.",
+  "estimated_helped_cases": {
+    "directly_likely": 1,
+    "potential_secondary": 0,
+    "notes": "Direct fix targets openai_gsm8k_95-like safe numeric cast rejections."
+  },
+  "next_step_after_patch": "patch replay (no-API test pass already complete), then small prompt smoke before larger validation.",
+  "api_status": "paused"
+}

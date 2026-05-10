@@ -1,0 +1,22 @@
+**Target Quantity:** Cost per pair of contacts.
+
+**Money Ledger:**
+
+1. **Cost per box (one-time, but discounted):** 
+   - Original cost: $100.00
+   - Discount: 10% of $100.00 = $10.00
+   - Discounted cost per box: $100.00 - $10.00 = $90.00
+
+2. **Total cost for 2 boxes (one-time):**
+   - Total cost = 2 * $90.00 = $180.00
+
+3. **Number of contacts in 2 boxes:**
+   - Each box contains 90 contacts.
+   - Total contacts = 2 * 90 = 180 contacts.
+
+4. **Cost per pair of contacts:**
+   - Since each pair uses 2 contacts, total pairs = 180 / 2 = 90 pairs.
+   - Cost per pair = Total cost / Total pairs = $180.00 / 90 = $2.00
+
+**Final Answer:**
+\boxed{2.00}

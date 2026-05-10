@@ -1,0 +1,15 @@
+Solve this math word problem independently.
+
+Problem:
+Elliott is trying to walk １０,０００ steps a day. He finished half of his steps on his walks to and from school and did another １,０００ steps going for a short walk with his friend. He also went for a short jog around the block and realized that after he had finished his jog, he only had ２,０００ steps left to take. How many steps did Elliott take during his jog?
+
+Instructions:
+- Identify the exact requested final quantity.
+- Solve with concise equations.
+- Challenge your own result with one short consistency check before finalizing.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.
+- If you are unsure, still output one best numeric answer on FINAL_ANSWER line.

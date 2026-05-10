@@ -1,0 +1,49 @@
+{
+  "case_count": 1,
+  "method_count": 6,
+  "record_count": 6,
+  "planned_logical_calls": 6,
+  "actual_logical_calls": 19,
+  "api_errors": [],
+  "parsing_failures": 0,
+  "per_method_status": {
+    "external_l1_max_fair_v1": {
+      "success": 1,
+      "method_execution_error": 0,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_self_consistency_4_fair_v1": {
+      "success": 1,
+      "method_execution_error": 0,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_self_consistency_6_fair_v1": {
+      "success": 1,
+      "method_execution_error": 0,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_pal_pot_fair_v1": {
+      "success": 1,
+      "method_execution_error": 0,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_s1_budget_forcing_faithful_v1": {
+      "success": 1,
+      "method_execution_error": 0,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_tale_ep_prompt_budgeting_faithful_v1": {
+      "success": 1,
+      "method_execution_error": 0,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    }
+  },
+  "simulate_no_api": false,
+  "max_total_api_calls": 20
+}

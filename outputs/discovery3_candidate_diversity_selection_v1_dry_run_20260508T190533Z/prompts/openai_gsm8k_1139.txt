@@ -1,0 +1,14 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+After tracking his workout routine for ８ weeks, Josh discovered that he had spent ４ hours working out every week except on some occasions. At one point, he spent ５ hours each for two consecutive weeks. Another time, he spent ６ hours in one week. What is the total number of hours he has spent working out across the ８ weeks?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: entity_value
+- family_hint: state_update
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this format:
+  FINAL_ANSWER: <single numeric value>

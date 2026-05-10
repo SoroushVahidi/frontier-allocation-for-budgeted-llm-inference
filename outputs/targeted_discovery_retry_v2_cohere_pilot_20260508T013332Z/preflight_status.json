@@ -1,0 +1,10 @@
+{
+  "cohere_api_key_set": true,
+  "all_prompt_files_exist": true,
+  "no_ascii_gold_in_prompts": true,
+  "planned_calls_ok": true,
+  "planned_calls": 15,
+  "max_cohere_calls": 15,
+  "missing_prompt_paths": [],
+  "gold_leak_case_ids": []
+}

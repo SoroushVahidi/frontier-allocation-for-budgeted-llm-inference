@@ -1,0 +1,15 @@
+Solve this math word problem independently with concise decomposition.
+
+Problem:
+Kim has started his own housekeeping business and is calculating how much profit he will make from his clients. He already has ３ clients, but is talking to another ５ potential clients and feels confident enough to include them in his calculations. Each client’s home will need ２ bottles of bleach and a pack of cloths to clean. Bottles of bleach will cost $２ each and packs of cloths will cost $５ each. These are his only expenses. He calculates that his total income each week will be $９２. Profit is the difference between total income and total expenses, so how much profit, in dollars, will Lucas  …<truncated １５ chars>
+
+Instructions:
+- Identify the final requested quantity.
+- Use 2-4 concise equation steps.
+- Ensure the final value corresponds to the requested quantity.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.
+- If you are unsure, still output one best numeric answer on FINAL_ANSWER line.

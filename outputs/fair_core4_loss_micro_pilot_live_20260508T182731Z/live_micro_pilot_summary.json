@@ -1,0 +1,25 @@
+{
+  "case_count": 11,
+  "actual_cohere_calls": 11,
+  "exact_count": 2,
+  "improved_over_our_before_count": 2,
+  "best_core4_only_fixed_count": 2,
+  "both_wrong_fixed_count": 0,
+  "exact_by_scaffold": {
+    "tale_style_decomposition": 1,
+    "robust_extraction_observability": 1,
+    "final_target_extraction_repair": 0,
+    "ratio_unit_equation": 0,
+    "state_transition_consistency": 0
+  },
+  "exact_by_failure_family": {
+    "final_target_mismatch": 1,
+    "format_parse": 1,
+    "ratio_setup": 0,
+    "state_update": 0
+  },
+  "api_errors": [],
+  "parsing_failures": 1,
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true
+}

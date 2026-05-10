@@ -1,0 +1,9 @@
+{
+  "cohere_api_key_set": true,
+  "relaxed_candidate_pool_size": 1131,
+  "all_problem_text": true,
+  "all_gold": true,
+  "no_duplicate_ids": true,
+  "estimated_first_batch_calls": 150,
+  "output_writable": true
+}

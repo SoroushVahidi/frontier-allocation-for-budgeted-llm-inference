@@ -1,0 +1,75 @@
+{
+  "empirical_source": "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/paired_summary.json",
+  "paired_examples_completed": 43,
+  "total_cohere_logical_api_calls_row_sum": 250,
+  "logical_api_budget_cap_consumed_estimate": 360,
+  "calls_by_method_sum_per_completed_rows_only": {
+    "external_l1_max": 125,
+    "PAL": 125
+  },
+  "derived_rates": {
+    "row_sum_logical_calls_per_paired_row_both_methods": 5.813953,
+    "logical_calls_per_method_per_completed_row_average": 2.906977,
+    "cap_consumed_proxy_per_paired_row": 8.372093,
+    "row_sum_to_cap_ratio_observed_in_PR357": 1.44
+  },
+  "accounting_caveat": "`total_cohere_logical_api_calls` sums per-example `cohere_logical_api_calls` counters (reset each example); the global branching cap consumed can exceed this sum mid-trajectory. When cap errors appear, `logical_api_budget_cap_consumed_estimate` records the inferred global budget from the RuntimeError (authoritative enforcement), while the row-sum remains useful for comparative per-example cost.",
+  "paired_batch_sizes_requested": [
+    50,
+    100,
+    150,
+    200
+  ],
+  "planned_batches": [
+    {
+      "target_paired_rows": 50,
+      "estimated_total_row_sum_logical_calls_both_methods": 290.697674,
+      "estimated_global_cap_units_proxy": 418.604651,
+      "notes": "cap_proxy uses PR357 ratio logical_api_budget_cap_consumed_estimate / paired_examples_completed"
+    },
+    {
+      "target_paired_rows": 100,
+      "estimated_total_row_sum_logical_calls_both_methods": 581.395349,
+      "estimated_global_cap_units_proxy": 837.209302,
+      "notes": "cap_proxy uses PR357 ratio logical_api_budget_cap_consumed_estimate / paired_examples_completed"
+    },
+    {
+      "target_paired_rows": 150,
+      "estimated_total_row_sum_logical_calls_both_methods": 872.093023,
+      "estimated_global_cap_units_proxy": 1255.813953,
+      "notes": "cap_proxy uses PR357 ratio logical_api_budget_cap_consumed_estimate / paired_examples_completed"
+    },
+    {
+      "target_paired_rows": 200,
+      "estimated_total_row_sum_logical_calls_both_methods": 1162.790698,
+      "estimated_global_cap_units_proxy": 1674.418605,
+      "notes": "cap_proxy uses PR357 ratio logical_api_budget_cap_consumed_estimate / paired_examples_completed"
+    }
+  ],
+  "cap_feasibility_floor_pairs": [
+    {
+      "max_total_api_calls_cap": 500,
+      "approx_max_full_pairs_floor_using_cap_proxy": 59,
+      "cap_proxy_per_pair": 8.372093,
+      "caveat": "Proxy assumes constant per-pair cap consumption like PR357 global branching cap; row-sum alone understates consumed budget."
+    },
+    {
+      "max_total_api_calls_cap": 750,
+      "approx_max_full_pairs_floor_using_cap_proxy": 89,
+      "cap_proxy_per_pair": 8.372093,
+      "caveat": "Proxy assumes constant per-pair cap consumption like PR357 global branching cap; row-sum alone understates consumed budget."
+    },
+    {
+      "max_total_api_calls_cap": 1000,
+      "approx_max_full_pairs_floor_using_cap_proxy": 119,
+      "cap_proxy_per_pair": 8.372093,
+      "caveat": "Proxy assumes constant per-pair cap consumption like PR357 global branching cap; row-sum alone understates consumed budget."
+    },
+    {
+      "max_total_api_calls_cap": 1500,
+      "approx_max_full_pairs_floor_using_cap_proxy": 179,
+      "cap_proxy_per_pair": 8.372093,
+      "caveat": "Proxy assumes constant per-pair cap consumption like PR357 global branching cap; row-sum alone understates consumed budget."
+    }
+  ]
+}

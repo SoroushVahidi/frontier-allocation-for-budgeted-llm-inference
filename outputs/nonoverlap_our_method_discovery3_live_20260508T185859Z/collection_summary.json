@@ -1,0 +1,43 @@
+{
+  "selected_case_count": 30,
+  "actual_cohere_calls": 30,
+  "our_correct_count": 23,
+  "our_wrong_count": 7,
+  "gold_absent_discovery_count": 5,
+  "present_not_selected_count": 2,
+  "final_target_mismatch_count": 0,
+  "parse_failure_count": 0,
+  "runtime_failure_count": 0,
+  "family_counts": {
+    "state_update": 14,
+    "unknown": 13,
+    "ratio_setup": 2,
+    "final_target_mismatch": 1
+  },
+  "target_quantity_type_counts": {
+    "entity_value": 15,
+    "rate": 8,
+    "ratio_part": 5,
+    "total": 1,
+    "difference": 1
+  },
+  "proposed_fix_counts": {
+    "none": 23,
+    "selection policy + final-target verifier": 2,
+    "expand candidate diversity / decomposition": 5
+  },
+  "top_priority_failures": [
+    "openai_gsm8k_1215",
+    "openai_gsm8k_1299",
+    "openai_gsm8k_1199",
+    "openai_gsm8k_1219",
+    "openai_gsm8k_1232",
+    "openai_gsm8k_1275",
+    "openai_gsm8k_1217"
+  ],
+  "no_hf_download": true,
+  "api_errors": [],
+  "parsing_failures": 0,
+  "enough_for_pattern_analysis": true,
+  "recommended_next_step": "design candidate-diversity + selection-policy patch and run focused 15-case confirmation pilot"
+}

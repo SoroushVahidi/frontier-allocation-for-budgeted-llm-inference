@@ -1,0 +1,21 @@
+{
+  "timestamp_utc": "20260508T234757Z",
+  "candidate_pool_size": 135,
+  "excluded_matched50_count": 50,
+  "excluded_prior_nonoverlap_count": 30,
+  "excluded_prior_pal_casebook_count": 30,
+  "planned_screen_batch_size": 50,
+  "planned_followup_batch_size_max": 25,
+  "target_pal_only_count": 30,
+  "target_disagreement_count": 50,
+  "max_screened_cases": 300,
+  "max_actual_calls": 900,
+  "estimated_calls_first_batch": 150,
+  "all_candidates_have_problem_text": true,
+  "all_candidates_have_gold": true,
+  "no_duplicate_case_ids": true,
+  "overlap_with_matched50_in_eligible_pool": 0,
+  "ready_for_live_loop": true,
+  "primary_case_pool_path": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+  "cohere_api_key_required": true
+}

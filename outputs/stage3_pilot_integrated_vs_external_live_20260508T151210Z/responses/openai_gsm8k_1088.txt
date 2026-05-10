@@ -1,0 +1,7 @@
+**Target:** Calculate total weekly hours John spends caring for dogs.
+
+1. Daily care per dog: 0.5 hours  
+2. Total daily care for 10 dogs: \( 10 \times 0.5 = 5 \) hours  
+3. Weekly care: \( 5 \times 7 = 35 \) hours  
+
+\boxed{35}

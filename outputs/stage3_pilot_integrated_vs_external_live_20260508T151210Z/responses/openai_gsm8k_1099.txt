@@ -1,0 +1,8 @@
+**Target:** Find half the total number of spots on all snakes in the park.
+
+1. Let \( m \) be the number of spots on a mamba. Then, the cobra has \( 2m \) spots.
+2. Given: \( 2m = 70 \Rightarrow m = 35 \).
+3. Total spots: \( 40 \times 70 + 60 \times 35 = 2800 + 2100 = 4900 \).
+4. Half the total spots: \( \frac{4900}{2} = 2450 \).
+
+\boxed{2450}

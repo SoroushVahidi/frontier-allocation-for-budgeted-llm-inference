@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "130",
+  "parsed_answer": "130",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "hours_week1 = 5\nhours_week2 = 8\nrate_per_hour = 10\ntotal_earnings = (hours_week1 + hours_week2) * rate_per_hour\nprint(total_earnings)",
+      "stdout": "130\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "130",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "130",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

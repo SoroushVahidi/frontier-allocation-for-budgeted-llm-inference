@@ -1,0 +1,4 @@
+case_id,pilot_track,scaffold,prompt_version,cohere_call_made,parsed_final_answer,gold_answer,exact_match,improved_over_current_pal,structural_commit_result_if_applicable,response_text_path,notes
+openai_gsm8k_1087,structural_commit_only,,,no,,,,,fixed_estimated_from_replay,,scored_from_structural_replay_evidence
+openai_gsm8k_1097,structural_commit_only,,,no,,,,,fixed_estimated_from_replay,,scored_from_structural_replay_evidence
+openai_gsm8k_1121,structural_commit_only,,,no,,,,,fixed_estimated_from_replay,,scored_from_structural_replay_evidence

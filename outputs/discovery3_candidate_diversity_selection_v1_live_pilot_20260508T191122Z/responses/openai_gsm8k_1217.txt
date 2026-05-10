@@ -1,0 +1,26 @@
+To solve this problem, let's break it down step by step.
+
+1. **Identify the exact requested final quantity:**
+   The final quantity we need to find is the total number of points Aries is sure to get.
+
+2. **Decompose into concise equations:**
+
+   - Total number of questions = 60
+   - Number of easy questions = 40% of 60 = 0.4 * 60 = 24
+   - Number of average and difficult questions = 60 - 24 = 36
+   - Since average and difficult questions are equally divided, number of average questions = number of difficult questions = 36 / 2 = 18
+
+   - Aries gets 75% of the easy questions correctly:
+     Number of easy questions Aries gets correctly = 0.75 * 24 = 18
+
+   - Aries gets half of the average and difficult questions correctly:
+     Number of average questions Aries gets correctly = 0.5 * 18 = 9
+     Number of difficult questions Aries gets correctly = 0.5 * 18 = 9
+
+   - Total points Aries is sure to get = Number of easy questions Aries gets correctly + Number of average questions Aries gets correctly + Number of difficult questions Aries gets correctly
+     Total points = 18 + 9 + 9 = 36
+
+3. **Verify units and target alignment:**
+   The units are consistent (number of questions), and the target is to find the total number of points Aries is sure to get.
+
+final_answer / FINAL_ANSWER: 36

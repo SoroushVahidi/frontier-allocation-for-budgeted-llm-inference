@@ -1,0 +1,15 @@
+To solve the problem, follow these steps:
+
+1. **Identify total quantity and ratio parts:**
+   - Total potatoes: 60
+   - Time to peel one potato: 1.5 minutes
+   - Time to cut one potato: 5 seconds (convert to minutes: 5/60 = 1/12 minutes)
+
+2. **Calculate total time for peeling and cutting:**
+   - Total peeling time: 60 potatoes * 1.5 minutes/potato = 90 minutes
+   - Total cutting time: 60 potatoes * (1/12) minutes/potato = 5 minutes
+
+3. **Sum the total time:**
+   - Total prep time = 90 minutes + 5 minutes = 95 minutes
+
+\boxed{95}

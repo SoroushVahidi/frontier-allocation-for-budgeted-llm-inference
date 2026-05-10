@@ -1,0 +1,29 @@
+{
+  "fair_case_count": 50,
+  "overlap_with_stage3_original_live": 50,
+  "overlap_with_patch_focused_rerun": 50,
+  "overlap_with_production_equivalence_dry_run": 50,
+  "existing_full_comparison_available": true,
+  "covered_existing_comparison_count": 50,
+  "cases_needing_new_our_method_run": 0,
+  "fair_core4_exact_by_method": {
+    "external_l1_max_fair_v1": 31,
+    "external_self_consistency_4_fair_v1": 33,
+    "external_s1_budget_forcing_faithful_v1": 32,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 34
+  },
+  "fair_best_core4_correct_count": 38,
+  "our_correct_count": 39,
+  "our_minus_l1": 8,
+  "our_minus_sc4": 6,
+  "our_minus_s1": 7,
+  "our_minus_tale": 5,
+  "our_minus_best_core4": 1,
+  "recommended_next_step": "use_existing_comparison",
+  "estimated_new_calls_if_run_needed": 0,
+  "caveats": [
+    "Patch-focused rerun is used as primary our-method source when available, with fallback to stage3 original live.",
+    "Production-equivalence artifact is dry-run planning only (no correctness labels).",
+    "Fair baseline parsing failures remain unresolved, so comparisons should include parsing-caveat language."
+  ]
+}

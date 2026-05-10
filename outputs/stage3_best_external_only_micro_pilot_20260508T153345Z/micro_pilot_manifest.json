@@ -1,0 +1,24 @@
+{
+  "source_gap_analysis_dir": "outputs/stage3_pilot_gap_analysis_20260508T152657Z",
+  "case_count": 3,
+  "planned_cohere_calls": 6,
+  "max_cohere_calls": 6,
+  "prompt_variants": [
+    "final_target_extraction_repair",
+    "tale_style_decomposition"
+  ],
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "scoring_is_offline": true,
+  "no_gold_in_prompts_verified": true,
+  "no_external_prediction_in_prompts_verified": true,
+  "abort_conditions": [
+    "missing_cohere_api_key",
+    "planned_calls_exceed_cap",
+    "case_count_not_three",
+    "missing_prompt_files",
+    "gold_or_external_prediction_leak_detected",
+    "duplicate_prompt_variant_per_case"
+  ]
+}

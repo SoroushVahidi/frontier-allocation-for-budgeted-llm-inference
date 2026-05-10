@@ -1,0 +1,37 @@
+{
+  "production_equiv_correct": 36,
+  "prior_patch_correct": 39,
+  "best_core4_correct": 38,
+  "fair_individual_scores": {
+    "external_l1_max_fair_v1": 31,
+    "external_self_consistency_4_fair_v1": 33,
+    "external_s1_budget_forcing_faithful_v1": 32,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 34
+  },
+  "retry_triggered_count": 11,
+  "retry_committed_count": 0,
+  "retry_cases_where_commit_might_help": 0,
+  "loss_cases_vs_prior_count": 5,
+  "loss_cases_vs_best_core4_count": 6,
+  "both_wrong_count": 8,
+  "main_failure_counts": {
+    "retry_commit_miss": 4,
+    "structural_commit_wrong": 9,
+    "parse_failure": 1
+  },
+  "recommended_next_step": "retry_commit_policy_micro_pilot",
+  "recommended_live_pilot_cases": [
+    "openai_gsm8k_1121",
+    "openai_gsm8k_1155",
+    "openai_gsm8k_1198",
+    "openai_gsm8k_1077",
+    "openai_gsm8k_1080",
+    "openai_gsm8k_1131",
+    "openai_gsm8k_1081",
+    "openai_gsm8k_1112",
+    "openai_gsm8k_1115",
+    "openai_gsm8k_1132"
+  ],
+  "estimated_calls_for_next_pilot": 40,
+  "no_api_calls": true
+}

@@ -1,0 +1,40 @@
+{
+  "external_l1_only_total": 7,
+  "external_l1_only_rescued": 0,
+  "external_l1_only_failure_types": {
+    "external_l1_advantage_pattern": 6,
+    "percent_base_error": 1
+  },
+  "both_wrong_total": 7,
+  "both_wrong_rescued": 3,
+  "scaffold_success_rates": {
+    "average_target_score": {
+      "exact": 1,
+      "total": 1
+    },
+    "combinatorics_counting": {
+      "exact": 1,
+      "total": 1
+    },
+    "percent_base_denominator": {
+      "exact": 1,
+      "total": 3
+    },
+    "ratio_partition": {
+      "exact": 3,
+      "total": 3
+    },
+    "state_composition": {
+      "exact": 4,
+      "total": 6
+    }
+  },
+  "percent_base_denominator_failure_count": 1,
+  "recommended_next_step": [
+    "refine_percent_base_denominator",
+    "add_adaptive_feature_router",
+    "integrate_only_successful_scaffolds",
+    "run_stage3_exploratory"
+  ],
+  "integration_recommendation": "integrate_only_ratio_state_average_combinatorics"
+}

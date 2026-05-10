@@ -1,0 +1,47 @@
+{
+  "unique_external_only_losses": 15,
+  "category_frequency": {
+    "L1_P1_code_absent": 3,
+    "L1_P3_exec_failed": 1,
+    "L1_P9_external_trace_advantage_unknown": 7,
+    "L1_P4_exec_succeeded_wrong": 1,
+    "L1_P5_correct_candidate_not_selected": 2,
+    "L1_P2_unsafe_code": 1
+  },
+  "top_3_precise_patterns": [
+    {
+      "pattern": "gold absent from PAL candidate pool while external found correct target path",
+      "count": 7
+    },
+    {
+      "pattern": "code omitted final executable snippet/answer payload",
+      "count": 3
+    },
+    {
+      "pattern": "gold-equivalent candidate exists but selector/tiebreak picked another answer",
+      "count": 2
+    }
+  ],
+  "fixability_counts": {
+    "prompt_tightening": 1,
+    "executor_sandbox_patch": 2,
+    "selection_integration_patch": 2,
+    "retry_on_empty_code": 3,
+    "collect_more_evidence": 7,
+    "not_actionable_yet": 0
+  },
+  "compare_with_pal_only_wins": {
+    "external_only_n": 15,
+    "pal_only_n": 31,
+    "external_only_gold_absent_rate": 0.7333333333333333,
+    "pal_only_gold_absent_rate": 0.0,
+    "external_only_present_not_selected_rate": 0.2,
+    "pal_only_present_not_selected_rate": 0.0,
+    "external_only_exec_ok_rate": 0.6666666666666666,
+    "pal_only_exec_ok_rate": 1.0
+  },
+  "is_15_enough_to_choose_patch": false,
+  "more_api_collection_needed_before_patching": true,
+  "recommended_next_step": "C_collect_more_external_only_losses",
+  "api_should_remain_paused": true
+}

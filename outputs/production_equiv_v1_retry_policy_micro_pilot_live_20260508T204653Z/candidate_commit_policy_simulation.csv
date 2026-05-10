@@ -1,0 +1,17 @@
+case_id,variant,retry_answer,retry_exact,current_answer,current_exact,would_commit,commit_reason,would_improve,would_regress,safe_policy_label
+openai_gsm8k_1121,final_target_guarded_retry,,0,3000,0,0,unparseable|missing_final_line|verifier_mismatch_risk,0,0,no_effect
+openai_gsm8k_1121,structural_commit_challenge_retry,,0,3000,0,0,unparseable|missing_final_line|verifier_mismatch_risk,0,0,no_effect
+openai_gsm8k_1155,final_target_guarded_retry,,0,164.39999999999998,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1155,structural_commit_challenge_retry,,0,164.39999999999998,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1198,final_target_guarded_retry,,0,,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1198,structural_commit_challenge_retry,,0,,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1077,final_target_guarded_retry,,0,4,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1077,structural_commit_challenge_retry,,0,4,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1080,final_target_guarded_retry,,0,54,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1080,structural_commit_challenge_retry,,0,54,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1131,final_target_guarded_retry,,0,10,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1131,structural_commit_challenge_retry,,0,10,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1081,final_target_guarded_retry,,0,9583.200000000003,0,0,unparseable|missing_final_line,0,0,no_effect
+openai_gsm8k_1112,final_target_guarded_retry,,0,20,0,0,unparseable|missing_final_line|verifier_mismatch_risk,0,0,no_effect
+openai_gsm8k_1115,final_target_guarded_retry,,0,2390,0,0,unparseable|missing_final_line|verifier_mismatch_risk,0,0,no_effect
+openai_gsm8k_1132,final_target_guarded_retry,,0,56,0,0,unparseable|missing_final_line,0,0,no_effect

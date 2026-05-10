@@ -1,0 +1,42 @@
+{
+  "unique_cases": 3,
+  "actual_cohere_calls": 6,
+  "exact_variant_count": 4,
+  "cases_fixed_count": 2,
+  "cases_fixed_ids": [
+    "openai_gsm8k_1078",
+    "openai_gsm8k_1198"
+  ],
+  "results_by_variant": {
+    "final_target_extraction_repair": {
+      "calls": 3,
+      "exact": 2,
+      "improved_over_stage3_integrated": 2,
+      "closes_best_external_gap": 0
+    },
+    "tale_style_decomposition": {
+      "calls": 3,
+      "exact": 2,
+      "improved_over_stage3_integrated": 2,
+      "closes_best_external_gap": 0
+    }
+  },
+  "results_by_best_external_winner": {
+    "external_tale": {
+      "calls": 4,
+      "exact": 2,
+      "improved_over_stage3_integrated": 2,
+      "closes_best_external_gap": 0
+    },
+    "external_l1_max": {
+      "calls": 2,
+      "exact": 2,
+      "improved_over_stage3_integrated": 2,
+      "closes_best_external_gap": 0
+    }
+  },
+  "api_errors": [],
+  "parsing_ambiguities": 0,
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

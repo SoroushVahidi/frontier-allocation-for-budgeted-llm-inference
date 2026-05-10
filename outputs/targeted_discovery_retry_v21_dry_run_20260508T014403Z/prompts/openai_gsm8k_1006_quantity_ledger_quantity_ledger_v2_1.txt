@@ -1,0 +1,24 @@
+You are solving a grade-school math word problem using a **quantity ledger**.
+
+Problem:
+John brings his dog to the vet. His dog needs ２ vaccines, which are $２０ each, and a heartworm check. The heartworm check is ６０% of his total bill. If he brought $１２５ with him, how much does he leave with?
+
+Instructions:
+- Restate the final target quantity exactly once (e.g., annual total paid/earned, profit, remaining amount).
+- Build a money ledger with named lines for every relevant amount (principal/cost/revenue/profit/bonus/total/remaining as applicable).
+- For each money/income/bonus/payment quantity in the story, do **recurrence classification**:
+  - one-time (add once),
+  - per-period recurring (multiply by number of periods),
+  - total across the whole horizon (do not multiply),
+  - unknown (compute only unambiguous parts).
+- Critical recurrence rule: **Never multiply a one-time bonus/payment by the number of periods** unless the story explicitly says it repeats.
+- Percent/fraction base rule: if a percentage is described as applying to an original/base amount each interval, use a constant increment (no compounding). If a percentage is a raise on salary, compute the raised salary first.
+- If the story says a bonus is "worth X months of salary" or "a fraction of a month’s salary", treat it as **one-time**: compute from the referenced month’s (raised) salary and add once.
+- Convert units/time spans so everything is on the same basis before combining.
+- Compute the final requested numeric result.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

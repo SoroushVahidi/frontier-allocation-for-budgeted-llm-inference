@@ -1,0 +1,40 @@
+**Decomposition:**
+
+1. **How many inches long is Pat's flower bed?**  
+   (Convert feet to inches)
+
+2. **How many inches of space does each plant require?**  
+   (Add the width of the plant and the required spacing)
+
+3. **How many plants can fit in the flower bed?**  
+   (Divide the total length by the space per plant)
+
+4. **How many additional plants does Pat need to buy?**  
+   (Subtract the number of plants she already owns from the total needed)
+
+5. **How much will Pat spend on additional plants?**  
+   (Multiply the number of additional plants by the cost per plant)
+
+**Work:**
+
+1. **How many inches long is Pat's flower bed?**  
+   \( 111 \, \text{feet} \times 12 \, \text{inches/foot} = 1332 \, \text{inches} \)
+
+2. **How many inches of space does each plant require?**  
+   \( 12 \, \text{inches (plant width)} + 18 \, \text{inches (1.5 feet spacing)} = 30 \, \text{inches} \)
+
+3. **How many plants can fit in the flower bed?**  
+   \( \frac{1332 \, \text{inches}}{30 \, \text{inches/plant}} = 44.4 \)  
+   Since Pat cannot plant a fraction of a plant, she can fit **44 plants**.
+
+4. **How many additional plants does Pat need to buy?**  
+   \( 44 \, \text{plants needed} - 17 \, \text{plants owned} = 27 \, \text{plants to buy} \)
+
+5. **How much will Pat spend on additional plants?**  
+   \( 27 \, \text{plants} \times 6 \, \text{\$/plant} = 162 \, \text{\$} \)
+
+**Target Check:**  
+The problem asks for the total amount of money Pat will spend at the store. The computed value is **$162**, which matches the exact requested target.
+
+**Final Answer:**  
+\( \boxed{162} \)

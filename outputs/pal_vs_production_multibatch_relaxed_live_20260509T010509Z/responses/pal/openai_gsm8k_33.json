@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "70",
+  "parsed_answer": "70",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "silver_coins = (110 - 30) // 2\ngold_coins = silver_coins + 30\nprint(gold_coins)",
+      "stdout": "70\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "70",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "70",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

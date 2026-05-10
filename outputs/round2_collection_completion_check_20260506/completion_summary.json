@@ -1,0 +1,40 @@
+{
+  "pid": 5202,
+  "pid_running": false,
+  "raw_live_output_present": true,
+  "raw_per_example_records_lines": 492,
+  "materialized_artifacts_complete": true,
+  "missing_required_files": [],
+  "paired_rows_completed": 131,
+  "external_only_losses_collected": 5,
+  "cumulative_external_only_losses_after_prior_15": 20,
+  "calls_used": 1141,
+  "calls_cap": 1500,
+  "failed_or_skipped_count": 115,
+  "consistency_checks_passed": true,
+  "bundle_usable_for_pattern_mining": false,
+  "api_call_needed_next": false,
+  "materialization_needed_next": false,
+  "pair_outcome_counts_from_paired_casebook": {
+    "both_correct": 104,
+    "both_wrong": 9,
+    "external_correct_pal_wrong": 5,
+    "pal_correct_external_wrong": 13
+  },
+  "pair_outcome_counts_from_summary": {
+    "both_correct": 104,
+    "both_wrong": 9,
+    "external_correct_pal_wrong": 5,
+    "pal_correct_external_wrong": 13
+  },
+  "check_details": {
+    "external_loss_count_matches_summary": true,
+    "external_loss_rows_external_true_pal_false": true,
+    "paired_casebook_counts_match_summary": true,
+    "failed_skipped_count_matches": true,
+    "call_cap_leq_1500": true,
+    "selected_cases_non_empty": true,
+    "required_artifacts_complete": true,
+    "raw_live_output_present": true
+  }
+}

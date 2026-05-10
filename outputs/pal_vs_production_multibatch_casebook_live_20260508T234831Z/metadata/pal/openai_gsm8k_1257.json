@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "cars = 57\nmotorcycles = 73\n\n# Calculate total wheels needed\ntotal_wheels_needed = cars * 4 + motorcycles * 2\n\n# Calculate wheels left\nwheels_left = 650 - total_wheels_needed\n\nprint(wheels_left)",
+    "stdout": "276\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "276",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "276",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

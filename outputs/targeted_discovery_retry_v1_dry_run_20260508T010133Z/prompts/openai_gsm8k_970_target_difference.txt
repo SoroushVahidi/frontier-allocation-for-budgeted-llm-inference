@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem with explicit **targets**.
+
+Problem:
+A football team played 22 games. They won 8 more than they lost. How many did they win?
+
+Instructions:
+1. Name the main **entities or quantities** (A, B, totals, etc.).
+2. Quote or paraphrase **exactly** what the problem asks for (difference, sum, "how many more", half of a total, etc.).
+3. Do **not** return an intermediate value if the question asks for a **difference**, **total**, or **scaled total** — match the target.
+4. Plan and compute accordingly.
+5. Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

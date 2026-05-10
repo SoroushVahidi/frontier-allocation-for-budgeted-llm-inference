@@ -1,0 +1,6 @@
+root_cause_tag,count
+unit_rate_missing,8
+percent_or_fraction_conversion,3
+denominator_or_base_quantity_missing,2
+candidate_generation_empty_or_low_diversity,2
+multi_step_quantity_tracking,1

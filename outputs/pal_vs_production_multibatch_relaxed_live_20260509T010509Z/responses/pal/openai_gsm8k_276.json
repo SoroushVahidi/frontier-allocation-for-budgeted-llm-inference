@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "9",
+  "parsed_answer": "9",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "cards_with_A = 80 * 2 // 5\nremaining = 80 - cards_with_A\ncards_with_B = remaining * 1 // 2\nremaining -= cards_with_B\ncards_with_C = remaining * 5 // 8\ncards_with_D = remaining - cards_with_C\nprint(cards_with_D)",
+      "stdout": "9\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "9",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "9",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

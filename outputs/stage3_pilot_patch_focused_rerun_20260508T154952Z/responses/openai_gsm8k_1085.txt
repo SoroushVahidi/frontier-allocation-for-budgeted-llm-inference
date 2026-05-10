@@ -1,0 +1,8 @@
+**Target:** Calculate annual laundry loads for Greg.
+
+1. Weekly twin loads: \( \frac{4}{2} = 2 \)
+2. Weekly king loads: \( 1 \)
+3. Weekly total loads: \( 2 + 1 = 3 \)
+4. Annual loads: \( 3 \times 52 = 156 \)
+
+\boxed{156}

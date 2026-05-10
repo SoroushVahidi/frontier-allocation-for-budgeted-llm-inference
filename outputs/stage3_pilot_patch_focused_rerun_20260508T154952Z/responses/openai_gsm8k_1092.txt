@@ -1,0 +1,8 @@
+**Target:** Calculate Adam's contribution from savings.
+
+1. Total cost: $30
+2. Mother's contribution: $6
+3. Father's contribution: $12 (twice mother's)
+4. Adam's contribution: $30 - $6 - $12 = $12
+
+\boxed{12}

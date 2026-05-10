@@ -1,0 +1,17 @@
+You are solving a math word problem with percentage/fraction base tracking.
+
+Problem:
+Adrien's total salary was ３０ percent higher than Lylah's. Four years later, his salary had increased, and he was earning ４０% more than what he was making four years ago. If Adrien's and Lylah's salary increased simultaneously, and Adrien earned $４００００ four years ago, calculate the total salary the two were receiving four years later?
+
+Instructions:
+- List each percent/fraction statement and the exact base quantity it applies to.
+- For each step, mark whether the base is original, subtotal, remaining, or updated amount.
+- Do not apply a percent to the wrong base; keep a short ledger of base -> operation -> result.
+- If multiple periods are involved, state whether the percent is repeating on the same base or applied sequentially.
+- Compute only the asked target quantity and avoid intermediate-only answers.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

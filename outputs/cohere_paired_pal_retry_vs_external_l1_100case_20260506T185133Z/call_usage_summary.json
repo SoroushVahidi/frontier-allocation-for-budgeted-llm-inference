@@ -1,0 +1,11 @@
+{
+  "total_cohere_logical_calls_used": 585,
+  "cap": 1500,
+  "by_method": {
+    "external_l1_max": 289,
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": 296
+  },
+  "cap_respected": true,
+  "rows_total": 200,
+  "rows_failed_or_skipped": 0
+}

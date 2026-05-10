@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "song_lines = 54\nscene1_lines = song_lines * 2\nscene1_sean_lines = scene1_lines // 3\nscene2_lines = song_lines + 6\nscene2_sean_lines = scene2_lines * 4 // 5\ntotal_lines = song_lines + scene1_sean_lines + scene2_sean_lines\nprint(total_lines)",
+    "stdout": "138\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "138",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "138",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

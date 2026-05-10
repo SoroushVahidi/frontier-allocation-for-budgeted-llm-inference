@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "bracelet_cost = 30\ntickets_per_ride = 2\nticket_cost = 2\n\n# Calculate the cost of buying tickets for all rides\ntotal_tickets = 9 * tickets_per_ride\ntotal_ticket_cost = total_tickets * ticket_cost\n\n# Calculate the savings by buying a bracelet\nsavings = total_ticket_cost - bracelet_cost\n\nprint(savings)",
+    "stdout": "6\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "6",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "6",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

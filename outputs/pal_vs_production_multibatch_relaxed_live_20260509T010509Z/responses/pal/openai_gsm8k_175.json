@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "15.0",
+  "parsed_answer": "15",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_profit = 25\nglasses_per_gallon = 20\nprice_per_glass = 0.5\nrevenue_per_gallon = glasses_per_gallon * price_per_glass\nlemon_cost_per_gallon = 3\nsugar_cost_per_gallon = 2\ntotal_cost_per_gallon = lemon_cost_per_gallon + sugar_cost_per_gallon\nprofit_per_gallon = revenue_per_gallon - total_cost_per_gallon\ngallons_sold = total_profit / profit_per_gallon\nlemon_cost = gallons_sold * lemon_cost_per_gallon\nprint(lemon_cost)",
+      "stdout": "15.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "15.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "15.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

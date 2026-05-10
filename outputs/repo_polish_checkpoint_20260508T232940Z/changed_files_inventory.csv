@@ -1,0 +1,416 @@
+path,status,category,keep_yes_no,commit_group,reason
+README.md,modified,documentation,yes,repo_hygiene,Navigation/status documentation.
+START_HERE_CURRENT.md,modified,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/CURRENT_ARTIFACTS_INDEX_20260507.md,modified,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/CURRENT_METHOD_STATUS_20260507.md,modified,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/CURRENT_RESEARCH_HANDOFF_20260507.md,modified,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/FAILED_DIRECTIONS_20260507.md,modified,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/NEW_CHAT_STARTER_PROMPT_20260507.md,modified,documentation,yes,repo_hygiene,Navigation/status documentation.
+experiments/adaptive_retry_router.py,modified,method_logic,yes,failed_retry_diagnostics,Free-form / adaptive retry line (not integrated as winning method).
+experiments/controllers.py,modified,method_logic,yes,production_equiv_runtime,Core runtime/controller path touched for production-equivalence and baselines.
+experiments/data.py,modified,method_logic,yes,production_equiv_runtime,Core runtime/controller path touched for production-equivalence and baselines.
+experiments/final_target_verifier.py,modified,method_logic,yes,production_equiv_runtime,Core runtime/controller path touched for production-equivalence and baselines.
+experiments/frontier_matrix_core.py,modified,method_logic,yes,production_equiv_runtime,Core runtime/controller path touched for production-equivalence and baselines.
+experiments/output_layer_repair.py,modified,method_logic,yes,production_equiv_runtime,Core runtime/controller path touched for production-equivalence and baselines.
+experiments/strategy_seeded_semantic_diversity_frontier_v1.py,modified,method_logic,yes,hold_do_not_commit_yet,Frontier strategy module; small delta.
+experiments/targeted_discovery_retry.py,modified,method_logic,yes,failed_retry_diagnostics,Free-form / adaptive retry line (not integrated as winning method).
+scripts/replay_track_b_commitment_gate.py,modified,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/run_cohere_real_model_cost_normalized_validation.py,modified,runner_script,yes,production_equiv_runtime,Main validation harness touched for wiring.
+tests/test_targeted_discovery_retry_v1.py,modified,test,yes,failed_retry_diagnostics,Tests for retry/discovery experiments.
+tests/test_track_b_overlay_commitment_gate.py,modified,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260506T025806Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260506T040238Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260506T130225Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260506T151731Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260506T173309Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260506T175516Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260506T185133Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260506T194114Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260507T152735Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_20260507T161935Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_live_run_20260507T204409Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_main_table_baselines_live_sanity.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_production_equiv_v1_runtime_tiny_live_smoke_20260508T195428Z.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_production_equiv_v1_runtime_tiny_live_smoke_debug.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/GSM8K_PAL_STRUCTURAL_VALIDATOR_PLAN_20260507.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/TARGET_STAGED_PAL_RETRY_EXPERIMENT_PLAN_20260507.md,untracked,documentation,yes,repo_hygiene,Navigation/status documentation.
+docs/references/,untracked,reference_ledger,yes,reference_docs,Citation/baseline ledger; small factual updates belong here.
+experiments/call_accounting.py,untracked,method_logic,yes,hold_do_not_commit_yet,Experiment module; group with owning feature.
+experiments/gsm8k_structural_validate.py,untracked,method_logic,yes,hold_do_not_commit_yet,Experiment module; group with owning feature.
+experiments/schema_grounded_retry.py,untracked,method_logic,yes,schema_grounded_negative_result,Schema-grounded retry implementation (negative diagnostic).
+experiments/target_staged_pal_pilot_dry_run.py,untracked,method_logic,yes,hold_do_not_commit_yet,PAL pilot scaffold; commit with PAL bundle when ready.
+experiments/target_staged_pal_pilot_manifest.py,untracked,method_logic,yes,hold_do_not_commit_yet,PAL pilot scaffold; commit with PAL bundle when ready.
+experiments/target_staged_pal_pilot_runner.py,untracked,method_logic,yes,hold_do_not_commit_yet,PAL pilot scaffold; commit with PAL bundle when ready.
+experiments/target_staged_pal_prompt.py,untracked,method_logic,yes,hold_do_not_commit_yet,PAL pilot scaffold; commit with PAL bundle when ready.
+local_patches/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Local manifests/prompts/patches; often workspace-local.
+manifests/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Local manifests/prompts/patches; often workspace-local.
+outputs/_tmp_atlas_test/,untracked,temporary_or_scratch,maybe,repo_hygiene,Scratch/test output under outputs/_tmp*; do not bulk-commit.
+outputs/_tmp_method_validate/,untracked,temporary_or_scratch,maybe,repo_hygiene,Scratch/test output under outputs/_tmp*; do not bulk-commit.
+outputs/adaptive_router_v3_cohere_pilot_20260508T025727Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/adaptive_router_v3_dry_run_20260508T025218Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/adaptive_router_v3_dry_run_20260508T025305Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/call_plan.json,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/case_overlap_report.json,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/cohere_real_model_cost_normalized_validation_20260507T161935Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/collection_state.json,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/counterfactual_policy_summary.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/failure_case_matrix.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/failure_cluster_summary.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/failure_collection_report.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/failure_collection_summary.json,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/failure_pattern_mining_report.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/manifest.json,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/pal_loss_external_win_cases.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/pal_wrong_all_external_wrong_cases.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_report.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/present_not_selected_replay_table.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/selected_failure_cases.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/top_manual_inspection_cases.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/track_b_gate_offline_replay_guardrails.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/track_b_gate_offline_replay_report.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/track_b_gate_offline_replay_summary.json,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/track_b_gate_offline_replay_targets.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_pal_empty_code_retry_followup_15case_20260506T175516Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_pal_empty_code_retry_smoke_5case_20260506T173309Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T012723Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T012724Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T012727Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T015601Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T015602Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T015615Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T015616Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T020859Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T020900Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T020906Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T023256Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T023712Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T024115Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T024551Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T025806Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T035833Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T040238Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T040323Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T125113Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T130225Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T130231Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T151731Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T171720Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T171725Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T171740Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T171744Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T171822Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T171827Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T171833Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T173333Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T175533Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T183110Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T183124Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T183128Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T184242Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T184759Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T185216Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260506T194131Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T011331Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T011554Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T013619Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T020943Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T021054Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T021254Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T021300Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T021358Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T022926Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T023004Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T023047Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T023431Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T033938Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T033955Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T034436Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_20260507T152800Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_PAL_IMPL_AUDIT_VALIDATE/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_PREFLIGHT_PAL_REGISTRY_CHECK/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_faithful_external_baselines_validate/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_faithful_external_baselines_validate_test/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Named *test* output folder; likely dry-run fixture.
+outputs/cohere_real_model_cost_normalized_validation_main_table_baselines_live_sanity/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_main_table_external_baselines_validate/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_main_table_external_baselines_validate_test/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Named *test* output folder; likely dry-run fixture.
+outputs/cohere_real_model_cost_normalized_validation_production_equiv_v1_runtime_tiny_live_smoke_20260508T195428Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_production_equiv_v1_runtime_tiny_live_smoke_debug/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_production_equiv_v1_runtime_wired_validate/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_real_model_cost_normalized_validation_production_equiv_v1_validate/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/cohere_track_b_ab_pilot_30case_20260507T204409Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/core4_50case_parsing_rescore_audit_20260508T181119Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/core4_baseline_5case_diagnosis_20260508T165835Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/current_merged_research_status_20260505/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_candidate_diversity_selection_v1_design_20260508T190533Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_candidate_diversity_selection_v1_design_20260508T190601Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_candidate_diversity_selection_v1_dry_run_20260508T190533Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_candidate_diversity_selection_v1_dry_run_20260508T190601Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_candidate_diversity_selection_v1_live_pilot_20260508T191036Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_candidate_diversity_selection_v1_live_pilot_20260508T191122Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_candidate_diversity_selection_v1_parsefix_5case_live_20260508T193024Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_candidate_diversity_selection_v1_parsefix_dry_run_20260508T191659Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_parsefix_parser_fallback_audit_20260508T193503Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/discovery3_v1_parse_failure_debug_20260508T191659Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/expanded_failure_bank_collection_20260508T185435Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_baseline_faithful_impl_plan_20260508T160533Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_baseline_faithfulness_audit_20260508T160139Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_full_suite_matched50_comparison_20260508T222631Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_advantage_analysis_20260508T030420Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T022701Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T023315Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T032242Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T032933Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T033026Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T140353Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T140722Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T141156Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T141203Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T141252Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T141324Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T142122Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T150140Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_capfail_test_integrated_checkpoint_dry_run_20260508T152401Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_checkpoint_readiness_20260508T021402Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_only_fix_cohere_pilot_20260508T031227Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_only_fix_dry_run_20260508T031022Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_only_fix_failure_patch_plan_20260508T031556Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_only_fix_micro_pilot_20260508T031744Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_only_routing_v2_failure_analysis_20260508T024806Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T022701Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T023315Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T032242Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T032933Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T033026Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T140353Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T140722Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T141156Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T141204Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T141252Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T141324Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T142122Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T150140Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_reusepath_test_integrated_checkpoint_dry_run_20260508T152401Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T022701Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T023315Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T032242Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T032933Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T033026Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T140353Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T140722Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T141156Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T141204Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T141252Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T141324Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T142122Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T150140Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_schema_test_integrated_checkpoint_dry_run_20260508T152401Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage1_integrated_checkpoint_20260508T021848Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage1_integrated_checkpoint_20260508T021923Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_checkpoint_readiness_20260508T022726Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_integrated_checkpoint_20260508T023303Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_integrated_checkpoint_dry_run_20260508T022730Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_integrated_validated_fixes_checkpoint_20260508T032208Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T022701Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T023315Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T032242Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T032933Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T033026Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T140352Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T140722Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T141156Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T141203Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T141252Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T141324Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T142122Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T150140Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_l1_stage2_test_integrated_checkpoint_dry_run_20260508T152401Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_only_loss_collection_completion_check_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_only_loss_collection_pal_vs_l1_20260506T040238Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_only_loss_pattern_audit_15_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_only_loss_pattern_audit_20_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_only_loss_pattern_audit_31_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_pal_pot_fair_50case_live_20260508T222348Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/external_sc6_fair_50case_live_20260508T221625Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/failure_case_corpus_20260507/integrated_30case_4way_followup.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/failure_case_corpus_20260507/selected_discovery_hypothesis_checklist.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/failure_case_corpus_20260507/trce_offline_validation_ledger.csv,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/failure_case_corpus_20260507/trce_offline_validation_report.md,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/failure_case_corpus_external_losses_88case_mixed_legacy_20260507T041547Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/failure_case_corpus_k1_frontier_tiebreak_10case_20260507T041532Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/fair_core4_loss_micro_pilot_live_20260508T182630Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/fair_core4_loss_micro_pilot_live_20260508T182731Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/fair_core4_loss_micro_pilot_plan_20260508T182408Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/fair_core4_loss_pattern_bank_20260508T182155Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/fair_core4_paired_comparison_report_20260508T181853Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/fair_core4_vs_our_method_alignment_plan_20260508T181550Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/final_paired_pal_external_preflight_20260505/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/gold_absent_discovery_diagnosis_20260508T005544Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/gold_absent_external_success_schema_mining_20260507/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/gsm8k_structural_validator_eval_20260507/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/integrated_live_pilot_v1_20260508T020827Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/integrated_live_pilot_v1_20260508T020844Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/integrated_live_pilot_v1_20260508T020859Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/integrated_structural_commit_targeted_retry_v1_replay_20260508T020150Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/integrated_structural_commit_targeted_retry_v1_replay_20260508T020401Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/latest_pal_external_loss_bank_20260508T004000Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_baseline_call_accounting_calibration_20260508T164916Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_baselines_live_sanity_local_cases_20260508T164033Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_baselines_live_sanity_local_cases_test/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Named *test* output folder; likely dry-run fixture.
+outputs/main_table_baselines_live_sanity_local_cases_zzzz_live/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_baselines_live_sanity_one_case_20260508T164539Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_core4_baselines_10case_checkpoint_20260508T170310Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_core4_baselines_25case_checkpoint_20260508T171502Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_core4_baselines_5case_checkpoint_20260508T165155Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/main_table_external_baselines_impl_plan_20260508T162252Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/method_maturity_stop_improvement_audit_20260508T212754Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/nonoverlap_our_method_discovery3_live_20260508T185859Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/offline_pal_empty_code_retry_readiness_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/offline_pal_external_failure_mine_20260506_BASELINE_REMAT_FAILURE_MINE/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/offline_pal_external_failure_mine_20260506_POOLFIX_FAILURE_MINE/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/offline_selector_isolated_exploration_log_anchor_validation_20260507/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/paired_pal_external_100case_analysis_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/paired_pal_vs_external_l1_preflight_20260505/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_100case_failure_patch_plan_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_controller_budget_order_review_20260505/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_pot_advantage_loss_pattern_audit_20260508T223101Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_pot_advantage_loss_pattern_audit_20260508T223121Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_real_implementation_audit_20260505/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_real_port_scope_review_20260505/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_real_port_validation_20260505/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_retry_100case_analysis_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_retry_consolidated_report_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_vs_production_equiv_casebook_live_20260508T223635Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/pal_vs_production_equiv_casebook_plan_20260508T223632Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/post_pal_merge_next_validation_plan_20260505/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/post_pal_retry_merge_validation_plan_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/present_not_selected_commitment_diagnosis_20260508T004419Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_10case_live_calibration_20260508T202627Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_50_live_failure_diagnosis_20260508T202315Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_call_accounting_patch_20260508T202616Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_integration_design_20260508T194401Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_readiness_gate_audit_20260508T195356Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_retry_commit_loss_audit_20260508T204005Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_retry_policy_micro_pilot_live_20260508T204653Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_retry_policy_micro_pilot_plan_20260508T204614Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_retry_prompt_parse_audit_20260508T205050Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_retry_prompt_parsefix_5case_live_20260508T205314Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_retry_prompt_parsefix_dry_run_20260508T205050Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_runtime_ready_stage3_50_dry_run_20260508T195400Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_runtime_tiny_live_smoke_20260508T195621Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_runtime_wired_stage3_50_dry_run_20260508T195044Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_runtime_wired_stage3_50_dry_run_test/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Named *test* output folder; likely dry-run fixture.
+outputs/production_equiv_v1_runtime_wiring_design_20260508T195040Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_stage3_50_dry_run_20260508T194406Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_stage3_50_dry_run_test/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Named *test* output folder; likely dry-run fixture.
+outputs/production_equiv_v1_stage3_50_live_checkpoint_20260508T200214Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_stage3_50_live_checkpoint_20260508T200357Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equiv_v1_stage3_50_live_checkpoint_rerun_20260508T203036Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equivalence_stage3_50_dry_run_20260508T155752Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/production_equivalence_stage3_50_dry_run_test/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Named *test* output folder; likely dry-run fixture.
+outputs/production_equivalence_stage3_50_dry_run_zzzz_latest/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/quantity_ledger_v21_analysis_20260508T014047Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/research_state_checkpoint_20260508T193807Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/round2_collection_completion_check_20260506/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/sc6_pal_external_baseline_call_plan_20260508T220034Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/sc6_pal_external_baselines_10case_calibration_20260508T220037Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/sc6_pal_external_baselines_10case_calibration_20260508T220734Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/schema_grounded_retry_v1_5case_format_sanity_live_20260508T210210Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped live/diagnostic output; negative result evidence.
+outputs/schema_grounded_retry_v1_design_20260508T205718Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped live/diagnostic output; negative result evidence.
+outputs/schema_grounded_retry_v1_dry_run_20260508T205718Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped live/diagnostic output; negative result evidence.
+outputs/schema_grounded_retry_v1_failure_family_bank_20260508T210018Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped live/diagnostic output; negative result evidence.
+outputs/schema_grounded_retry_v1_format_failure_audit_20260508T210541Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped live/diagnostic output; negative result evidence.
+outputs/schema_grounded_retry_v1_parsefix_5case_live_20260508T210832Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped live/diagnostic output; negative result evidence.
+outputs/schema_grounded_retry_v1_parsefix_dry_run_20260508T210541Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped live/diagnostic output; negative result evidence.
+outputs/stage2_external_l1_disagreement_analysis_20260508T023507Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage2_routing_gap_diagnosis_20260508T023750Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_1198_stability_dry_run_20260508T154406Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_1198_stability_micro_pilot_20260508T154605Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_best_external_gap_patch_checkpoint_20260508T154111Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_best_external_gap_patch_plan_20260508T153906Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_best_external_only_micro_pilot_20260508T153212Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_best_external_only_micro_pilot_20260508T153305Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_best_external_only_micro_pilot_20260508T153345Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_patch_instability_analysis_20260508T154406Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_pilot_gap_analysis_20260508T152657Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_pilot_integrated_vs_external_dry_run_20260508T032928Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_pilot_integrated_vs_external_live_20260508T151210Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_pilot_integrated_vs_external_live_preflight_20260508T141209Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_pilot_integrated_vs_external_live_preflight_20260508T141257Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_pilot_integrated_vs_external_live_preflight_20260508T141328Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_pilot_patch_focused_rerun_20260508T154952Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/stage3_tale_s1_readiness_20260508T032512Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/structural_commit_v1_replay_20260508T120000Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/target_staged_pal_retry_dry_run_20260507/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/targeted_discovery_retry_consolidated_20260508T015235Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_consolidated_20260508T015246Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_consolidated_20260508T015457Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_consolidated_20260508T015820Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_consolidated_20260508T015847Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v1_cohere_pilot_20260508T011341Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v1_dry_run_20260508T010133Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v1_dry_run_20260508T010209Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v1_dry_run_20260508T010738Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v21_cohere_pilot_20260508T014437Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v21_dry_run_20260508T014403Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v2_analysis_20260508T012908Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v2_cohere_pilot_20260508T013323Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v2_cohere_pilot_20260508T013332Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_discovery_retry_v2_dry_run_20260508T013214Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Pilot/retry diagnostic output; preserve as provenance.
+outputs/targeted_routing_v2_cohere_pilot_20260508T024435Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+outputs/targeted_routing_v2_dry_run_20260508T023750Z/,untracked,output_artifact,yes,hold_do_not_commit_yet,Timestamped outputs/ provenance; policy is no bulk commit.
+prompts/,untracked,temporary_or_scratch,maybe,hold_do_not_commit_yet,Local manifests/prompts/patches; often workspace-local.
+scripts/build_external_full_suite_matched50_comparison.py,untracked,runner_script,yes,external_baselines,Live/offline runner for external baselines or suite aggregation.
+scripts/build_gold_absent_discovery_diagnosis.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/build_pal_pot_advantage_loss_pattern_audit.py,untracked,runner_script,yes,external_baselines,Live/offline runner for external baselines or suite aggregation.
+scripts/build_pal_vs_production_equiv_casebook_plan.py,untracked,runner_script,yes,external_baselines,Live/offline runner for external baselines or suite aggregation.
+scripts/consolidate_targeted_discovery_retry_pilots.py,untracked,runner_script,yes,failed_retry_diagnostics,Retry pilot materialization/runner.
+scripts/evaluate_gsm8k_structural_validator.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/materialize_discovery3_candidate_diversity_selection_v1.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/materialize_targeted_discovery_retry_v1.py,untracked,runner_script,yes,failed_retry_diagnostics,Retry pilot materialization/runner.
+scripts/materialize_targeted_discovery_retry_v2.py,untracked,runner_script,yes,failed_retry_diagnostics,Retry pilot materialization/runner.
+scripts/materialize_targeted_discovery_retry_v21.py,untracked,runner_script,yes,failed_retry_diagnostics,Retry pilot materialization/runner.
+scripts/materialize_track_b_ab_pilot_bundle.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/mine_gold_absent_external_schema.py,untracked,runner_script,yes,external_baselines,Live/offline runner for external baselines or suite aggregation.
+scripts/pal_code_static_audit.py,untracked,runner_script,yes,external_baselines,Live/offline runner for external baselines or suite aggregation.
+scripts/replay_structural_commit_v1.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/run_external_baseline_matched50_live.py,untracked,runner_script,yes,external_baselines,Live/offline runner for external baselines or suite aggregation.
+scripts/run_integrated_live_pilot_v1.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/run_main_table_baselines_live_sanity_local_cases.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/run_main_table_core4_baselines_10case_two_slices.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/run_main_table_core4_baselines_5case_checkpoint.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+scripts/run_pal_vs_production_equiv_casebook_live.py,untracked,runner_script,yes,external_baselines,Live/offline runner for external baselines or suite aggregation.
+scripts/run_production_equiv_v1_live_calibration.py,untracked,runner_script,yes,production_equiv_runtime,Production-equivalence runner.
+scripts/run_production_equivalence_stage3_dry_run.py,untracked,runner_script,yes,production_equiv_runtime,Production-equivalence runner.
+scripts/run_sc6_pal_external_baselines_live.py,untracked,runner_script,yes,external_baselines,Live/offline runner for external baselines or suite aggregation.
+scripts/run_targeted_discovery_retry_cohere_pilot.py,untracked,runner_script,yes,failed_retry_diagnostics,Retry pilot materialization/runner.
+scripts/run_targeted_discovery_retry_v21_cohere_pilot.py,untracked,runner_script,yes,failed_retry_diagnostics,Retry pilot materialization/runner.
+scripts/run_targeted_discovery_retry_v2_cohere_pilot.py,untracked,runner_script,yes,failed_retry_diagnostics,Retry pilot materialization/runner.
+scripts/track_a_discovery_diagnostics.py,untracked,runner_script,yes,hold_do_not_commit_yet,Script; assign group when feature bundles.
+tests/fixtures/target_staged_pal/,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_conservative_answer_extraction_v2.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_discovery3_candidate_diversity_selection_v1.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_faithful_external_baselines.py,untracked,test,yes,external_baselines,External baseline contract tests.
+tests/test_gsm8k_structural_validate.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_gsm8k_structural_validator_eval.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_main_table_baselines_live_sanity_local_cases.py,untracked,test,yes,external_baselines,External baseline contract tests.
+tests/test_main_table_external_baselines.py,untracked,test,yes,external_baselines,External baseline contract tests.
+tests/test_production_equivalence_stage3.py,untracked,test,yes,production_equiv_runtime,Automated tests for named feature area.
+tests/test_schema_grounded_retry_v1.py,untracked,test,yes,schema_grounded_negative_result,Automated tests for named feature area.
+tests/test_selector_isolated_exploration_log.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_target_staged_pal_pilot_dry_run.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_target_staged_pal_pilot_manifest.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_target_staged_pal_pilot_runner.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.
+tests/test_target_staged_pal_prompt.py,untracked,test,yes,hold_do_not_commit_yet,Test module; group with related feature commit.

@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "10",
+  "parsed_answer": "10",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "first_venue_flat_fee = 200\nsecond_venue_per_person = 25\nfirst_venue_food_per_person = 5\n\n# Let x be the number of guests\n# Cost for first venue: flat fee + food cost per guest * number of guests\n# Cost for second venue: per person cost * number of guests\n# Set the two costs equal to each other and solve for x\n# 200 + 5x = 25x\n# 200 = 20x\n# x = 200 / 20\nx = 10\n\nprint(x)",
+      "stdout": "10\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "10",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "10",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

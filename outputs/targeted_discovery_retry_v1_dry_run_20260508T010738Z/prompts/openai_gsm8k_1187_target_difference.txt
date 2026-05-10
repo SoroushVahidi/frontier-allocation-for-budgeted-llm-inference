@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem with explicit **targets**.
+
+Problem:
+Arnold, Madeline, Camden, and Sarah painted ５６ easter eggs. Arnold and Madeline painted the same number of eggs. Camden and Sarah painted a total of ３０ eggs, but Camden painted １２ more than Sarah. How many more eggs did Camden paint than Arnold?
+
+Instructions:
+- Name the main **entities or quantities** (A, B, totals, etc.).
+- Quote or paraphrase **exactly** what the problem asks for (difference, sum, "how many more", half of a total, etc.).
+- Do **not** return an intermediate value if the question asks for a **difference**, **total**, or **scaled total** — match the target.
+- Plan and compute accordingly.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

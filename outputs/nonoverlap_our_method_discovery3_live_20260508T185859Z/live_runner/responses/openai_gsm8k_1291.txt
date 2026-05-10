@@ -1,0 +1,12 @@
+**Target:** Calculate the average percentage of an 8-hour workday spent cleaning classrooms.
+
+1. Total cleaning time per day:  
+   \( \frac{80 \text{ classrooms}}{5 \text{ days}} \times 15 \text{ min/classroom} = 240 \text{ min/day} \)
+
+2. Convert workday to minutes:  
+   \( 8 \text{ hours/day} \times 60 \text{ min/hour} = 480 \text{ min/day} \)
+
+3. Percentage of day spent cleaning:  
+   \( \frac{240 \text{ min/day}}{480 \text{ min/day}} \times 100 = 50\% \)
+
+\boxed{50}

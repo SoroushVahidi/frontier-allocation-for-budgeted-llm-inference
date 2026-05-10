@@ -1,0 +1,20 @@
+bcc4925 (HEAD -> research-next-frontier-iteration-2, origin/research-next-frontier-iteration-2) docs: update migration and external baseline status
+1ec2ebd Update external baseline loss casebook
+7ed446f Let me generate the one-line commit messages for the changes:
+12fa4a8 chore: add local branch cleanup checkpoint and documentation
+1966146 docs: add local untracked artifacts policy document
+92115ae Add PAL-vs-production failure collection infrastructure
+065a86f Harden final answer extraction and Track-B replay support
+b0b30e7 Update research status and baseline reference docs
+53aa930 Add targeted retry diagnostics and schema-grounded negative checks
+b5227a0 Add production-equivalent runtime and external baseline harness
+5549682 (backup/pre-commit-research-next-20260509T020531Z) Add gated live execution support for Stage-3 replay checkpoint
+266d2cc Add regression tests for Stage-2/Stage-3 replay checkpoints.
+6964afb Add Stage-3 targeted retry and verifier integration scaffolds.
+bc693b8 Track B: opt-in commitment gate and evaluator skip
+3431900 chore(scripts): add PAL-vs-external collection tooling
+953af73 test: Track B replay fixtures and commitment design contract
+96d28f1 docs: frontier iteration 2 handoff
+8432d6e docs: add baseline artifact inventory
+679e340 analysis: diagnose rate-ratio missing leaves
+8eeaa22 analysis: mine failure case patterns

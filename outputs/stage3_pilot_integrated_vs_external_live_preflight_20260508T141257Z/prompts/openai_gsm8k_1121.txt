@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Elliott is trying to walk １０,０００ steps a day. He finished half of his steps on his walks to and from school and did another １,０００ steps going for a short walk with his friend. He also went for a short jog around the block and realized that after he had finished his jog, he only had ２,０００ steps left to take. How many steps did Elliott take during his jog?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

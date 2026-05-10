@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Charlie is a tennis pro.  He spends most of the day teaching others lessons on how to improve their game.  His standard fee is $８０ per hour for lessons, but he reduces his rate by ２５% when he is giving lessons to a veteran.   If today Charlie has ４ １-hour lessons at his standard rate and ２ １-hour lessons with a veteran, what is the total amount of money he will make for the day, in dollars?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

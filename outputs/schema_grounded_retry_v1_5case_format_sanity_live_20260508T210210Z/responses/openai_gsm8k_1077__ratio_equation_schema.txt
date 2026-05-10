@@ -1,0 +1,14 @@
+{
+"SCHEMA_TYPE": "ratio_equation_schema",
+"TARGET_QUANTITY": "Tuesday's rainfall",
+"GIVEN_QUANTITIES": [
+"Monday's rainfall: 2 inches"
+],
+"EQUATIONS": [
+"Tuesday's rainfall = 2 * Monday's rainfall + 1"
+],
+"COMPUTATION": [
+"Tuesday's rainfall = 2 * 2 + 1 = 5"
+],
+"FINAL_ANSWER": 5
+}

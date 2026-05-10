@@ -1,0 +1,1415 @@
+{
+  "mode": "all_available_scaled",
+  "repo": "/home/soroush/research-next-wt",
+  "bundles_scanned": [
+    "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+    "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
+    "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+    "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+    "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+    "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+    "cohere_pal_empty_code_retry_followup_15case_20260506T175516Z",
+    "cohere_pal_empty_code_retry_smoke_5case_20260506T173309Z",
+    "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z",
+    "cohere_real_model_cost_normalized_validation_20260425T133000Z_COHERE_STAGE1_MIN",
+    "cohere_real_model_cost_normalized_validation_20260506T025806Z",
+    "cohere_real_model_cost_normalized_validation_20260506T040238Z",
+    "cohere_real_model_cost_normalized_validation_20260506T130225Z",
+    "cohere_real_model_cost_normalized_validation_20260506T151731Z",
+    "cohere_real_model_cost_normalized_validation_TRACE_REPLAY_COHERE_GSM8K_STAGE1_MIN",
+    "cohere_track_b_ab_pilot_30case_20260507T204409Z",
+    "external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z",
+    "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z",
+    "external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z",
+    "failure_case_corpus_inputs_external_losses_88case_20260507T041700Z"
+  ],
+  "n_bundles_with_pal_code_rows": 16,
+  "n_rows_after_dedup": 2288,
+  "dedup_key": [
+    "case_id",
+    "bundle_slug",
+    "pal_method"
+  ],
+  "cohort_counts": {
+    "gold_absent_discovery": 20,
+    "present_not_selected": 21,
+    "pal_correct_guardrail": 200,
+    "pal_wrong_other": 26,
+    "pilot_track_b": 0,
+    "unknown": 2021
+  },
+  "labeling_coverage": {
+    "rows_with_offline_stratification": 267,
+    "note": "Rates and policy on gold_absent_discovery / pal_correct_guardrail use cohort_counts as denominators; most PAL-code rows are unknown without a paired casebook / failure cluster."
+  },
+  "triggers": {
+    "temporal_no_state_no_sub": {
+      "actionable_retry_schema_hint": "state-table retry",
+      "fires_by_cohort": {
+        "pal_correct_guardrail": 13,
+        "gold_absent_discovery": 5,
+        "present_not_selected": 6,
+        "unknown": 184,
+        "pal_wrong_other": 10
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.25,
+        "pal_correct_guardrail": 0.065,
+        "present_not_selected": 0.2857142857142857,
+        "pal_wrong_other": 0.38461538461538464,
+        "pilot_track_b": 0.0,
+        "unknown": 0.09104403760514597
+      },
+      "fires_gold_absent_discovery": 5,
+      "fires_pal_correct_guardrail": 13,
+      "fires_present_not_selected": 6,
+      "fires_pal_wrong_other": 10,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 184,
+      "precision_like_among_labeled_fires": 0.14705882352941177,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.14705882352941177,
+      "policy_usefulness": "mixed",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1081",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1115",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1137",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1147",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1198",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1010",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1010",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1010",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1014",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1014",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1014",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 27,
+        "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z": 11,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 25,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 25,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 25,
+        "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z": 10,
+        "cohere_pal_empty_code_retry_followup_15case_20260506T175516Z": 1,
+        "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z": 8,
+        "cohere_real_model_cost_normalized_validation_20260506T025806Z": 10,
+        "cohere_real_model_cost_normalized_validation_20260506T040238Z": 12,
+        "cohere_real_model_cost_normalized_validation_20260506T130225Z": 17,
+        "cohere_real_model_cost_normalized_validation_20260506T151731Z": 9,
+        "external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z": 12,
+        "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z": 17,
+        "external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z": 9
+      }
+    },
+    "rate_no_muldiv": {
+      "actionable_retry_schema_hint": "rate-equation retry",
+      "fires_by_cohort": {
+        "gold_absent_discovery": 2,
+        "pal_correct_guardrail": 4,
+        "present_not_selected": 2,
+        "unknown": 18,
+        "pal_wrong_other": 1
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.1,
+        "pal_correct_guardrail": 0.02,
+        "present_not_selected": 0.09523809523809523,
+        "pal_wrong_other": 0.038461538461538464,
+        "pilot_track_b": 0.0,
+        "unknown": 0.008906481939633844
+      },
+      "fires_gold_absent_discovery": 2,
+      "fires_pal_correct_guardrail": 4,
+      "fires_present_not_selected": 2,
+      "fires_pal_wrong_other": 1,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 18,
+      "precision_like_among_labeled_fires": 0.2222222222222222,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.2222222222222222,
+      "policy_usefulness": "weak",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1137",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1230",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1071",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1071",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1071",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1176",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1210",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "present_not_selected"
+        },
+        {
+          "case_id": "openai_gsm8k_1212",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1307",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "present_not_selected"
+        },
+        {
+          "case_id": "openai_gsm8k_1310",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1312",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_144",
+          "bundle_slug": "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_144",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_515",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T130225Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_515",
+          "bundle_slug": "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_57",
+          "bundle_slug": "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z",
+          "audit_cohort": "pal_wrong_other"
+        },
+        {
+          "case_id": "openai_gsm8k_727",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
+          "audit_cohort": "unknown"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 8,
+        "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z": 2,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 4,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 4,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 4,
+        "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z": 1,
+        "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z": 1,
+        "cohere_real_model_cost_normalized_validation_20260506T025806Z": 1,
+        "cohere_real_model_cost_normalized_validation_20260506T130225Z": 1,
+        "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z": 1
+      }
+    },
+    "many_unused_final_sparse": {
+      "actionable_retry_schema_hint": "quantity-grounding retry",
+      "fires_by_cohort": {
+        "pal_correct_guardrail": 20,
+        "gold_absent_discovery": 4,
+        "present_not_selected": 2,
+        "pal_wrong_other": 2,
+        "unknown": 141
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.2,
+        "pal_correct_guardrail": 0.1,
+        "present_not_selected": 0.09523809523809523,
+        "pal_wrong_other": 0.07692307692307693,
+        "pilot_track_b": 0.0,
+        "unknown": 0.06976744186046512
+      },
+      "fires_gold_absent_discovery": 4,
+      "fires_pal_correct_guardrail": 20,
+      "fires_present_not_selected": 2,
+      "fires_pal_wrong_other": 2,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 141,
+      "precision_like_among_labeled_fires": 0.14285714285714285,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.14285714285714285,
+      "policy_usefulness": "mixed",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1081",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1112",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1115",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1198",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1015",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1015",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1015",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1048",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 26,
+        "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z": 7,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 25,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 25,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 25,
+        "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z": 5,
+        "cohere_pal_empty_code_retry_followup_15case_20260506T175516Z": 1,
+        "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z": 2,
+        "cohere_real_model_cost_normalized_validation_20260506T025806Z": 5,
+        "cohere_real_model_cost_normalized_validation_20260506T040238Z": 7,
+        "cohere_real_model_cost_normalized_validation_20260506T130225Z": 9,
+        "cohere_real_model_cost_normalized_validation_20260506T151731Z": 8,
+        "external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z": 7,
+        "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z": 9,
+        "external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z": 8
+      }
+    },
+    "ungrounded_final_literal": {
+      "actionable_retry_schema_hint": "quantity-grounding retry",
+      "fires_by_cohort": {
+        "present_not_selected": 1
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.0,
+        "pal_correct_guardrail": 0.0,
+        "present_not_selected": 0.047619047619047616,
+        "pal_wrong_other": 0.0,
+        "pilot_track_b": 0.0,
+        "unknown": 0.0
+      },
+      "fires_gold_absent_discovery": 0,
+      "fires_pal_correct_guardrail": 0,
+      "fires_present_not_selected": 1,
+      "fires_pal_wrong_other": 0,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 0,
+      "precision_like_among_labeled_fires": 0.0,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.0,
+      "policy_usefulness": "weak",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1290",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "present_not_selected"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 1
+      }
+    },
+    "syntax_exec_or_empty": {
+      "actionable_retry_schema_hint": "PAL repair / codegen retry",
+      "fires_by_cohort": {
+        "gold_absent_discovery": 1,
+        "unknown": 43
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.05,
+        "pal_correct_guardrail": 0.0,
+        "present_not_selected": 0.0,
+        "pal_wrong_other": 0.0,
+        "pilot_track_b": 0.0,
+        "unknown": 0.02127659574468085
+      },
+      "fires_gold_absent_discovery": 1,
+      "fires_pal_correct_guardrail": 0,
+      "fires_present_not_selected": 0,
+      "fires_pal_wrong_other": 0,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 43,
+      "precision_like_among_labeled_fires": 1.0,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 1.0,
+      "policy_usefulness": "weak",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1215",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1006",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1006",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1006",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_112",
+          "bundle_slug": "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_112",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_127",
+          "bundle_slug": "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_127",
+          "bundle_slug": "cohere_pal_empty_code_retry_followup_15case_20260506T175516Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_127",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_134",
+          "bundle_slug": "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_134",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_137",
+          "bundle_slug": "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_137",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_173",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T040238Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_173",
+          "bundle_slug": "external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_20",
+          "bundle_slug": "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_20",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T025806Z",
+          "audit_cohort": "unknown"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 1,
+        "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z": 2,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 2,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 2,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 2,
+        "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z": 10,
+        "cohere_pal_empty_code_retry_followup_15case_20260506T175516Z": 3,
+        "cohere_real_model_cost_normalized_validation_20260506T025806Z": 10,
+        "cohere_real_model_cost_normalized_validation_20260506T040238Z": 1,
+        "cohere_real_model_cost_normalized_validation_20260506T130225Z": 1,
+        "cohere_real_model_cost_normalized_validation_20260506T151731Z": 4,
+        "external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z": 1,
+        "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z": 1,
+        "external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z": 4
+      }
+    },
+    "opaque_one_expr_low_coverage": {
+      "actionable_retry_schema_hint": "aggregation / decomposition retry",
+      "fires_by_cohort": {
+        "pal_correct_guardrail": 7,
+        "present_not_selected": 1,
+        "unknown": 3,
+        "pal_wrong_other": 1
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.0,
+        "pal_correct_guardrail": 0.035,
+        "present_not_selected": 0.047619047619047616,
+        "pal_wrong_other": 0.038461538461538464,
+        "pilot_track_b": 0.0,
+        "unknown": 0.0014844136566056407
+      },
+      "fires_gold_absent_discovery": 0,
+      "fires_pal_correct_guardrail": 7,
+      "fires_present_not_selected": 1,
+      "fires_pal_wrong_other": 1,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 3,
+      "precision_like_among_labeled_fires": 0.0,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.0,
+      "policy_usefulness": "weak",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1076",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1123",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1193",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1210",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "present_not_selected"
+        },
+        {
+          "case_id": "openai_gsm8k_1241",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1277",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1289",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1312",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_57",
+          "bundle_slug": "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z",
+          "audit_cohort": "pal_wrong_other"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 8,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 1,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 1,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 1,
+        "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z": 1
+      }
+    },
+    "any_static_pal_suspicion": {
+      "actionable_retry_schema_hint": "OR(temporal, rate_no_muldiv, many_unused_final_sparse)",
+      "fires_by_cohort": {
+        "pal_correct_guardrail": 35,
+        "gold_absent_discovery": 7,
+        "present_not_selected": 7,
+        "unknown": 315,
+        "pal_wrong_other": 12
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.35,
+        "pal_correct_guardrail": 0.175,
+        "present_not_selected": 0.3333333333333333,
+        "pal_wrong_other": 0.46153846153846156,
+        "pilot_track_b": 0.0,
+        "unknown": 0.15586343394359228
+      },
+      "fires_gold_absent_discovery": 7,
+      "fires_pal_correct_guardrail": 35,
+      "fires_present_not_selected": 7,
+      "fires_pal_wrong_other": 12,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 315,
+      "precision_like_among_labeled_fires": 0.11475409836065574,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.11475409836065574,
+      "policy_usefulness": "weak",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1081",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1112",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1115",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1137",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1147",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1198",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1230",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1010",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 52,
+        "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z": 18,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 48,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 48,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 48,
+        "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z": 15,
+        "cohere_pal_empty_code_retry_followup_15case_20260506T175516Z": 2,
+        "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z": 10,
+        "cohere_real_model_cost_normalized_validation_20260506T025806Z": 15,
+        "cohere_real_model_cost_normalized_validation_20260506T040238Z": 19,
+        "cohere_real_model_cost_normalized_validation_20260506T130225Z": 25,
+        "cohere_real_model_cost_normalized_validation_20260506T151731Z": 16,
+        "external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z": 19,
+        "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z": 25,
+        "external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z": 16
+      }
+    },
+    "high_precision_static_pal_suspicion": {
+      "actionable_retry_schema_hint": "OR(rate_no_muldiv, many_unused_final_sparse, syntax_exec_or_empty)",
+      "fires_by_cohort": {
+        "pal_correct_guardrail": 23,
+        "gold_absent_discovery": 7,
+        "present_not_selected": 3,
+        "pal_wrong_other": 2,
+        "unknown": 187
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.35,
+        "pal_correct_guardrail": 0.115,
+        "present_not_selected": 0.14285714285714285,
+        "pal_wrong_other": 0.07692307692307693,
+        "pilot_track_b": 0.0,
+        "unknown": 0.0925284512617516
+      },
+      "fires_gold_absent_discovery": 7,
+      "fires_pal_correct_guardrail": 23,
+      "fires_present_not_selected": 3,
+      "fires_pal_wrong_other": 2,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 187,
+      "precision_like_among_labeled_fires": 0.2,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.2,
+      "policy_usefulness": "weak",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1081",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1112",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1115",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1137",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1198",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1215",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1230",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1006",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1006",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1006",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1007",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1008",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1015",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 33,
+        "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z": 10,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 28,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 28,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 28,
+        "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z": 16,
+        "cohere_pal_empty_code_retry_followup_15case_20260506T175516Z": 3,
+        "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z": 2,
+        "cohere_real_model_cost_normalized_validation_20260506T025806Z": 16,
+        "cohere_real_model_cost_normalized_validation_20260506T040238Z": 8,
+        "cohere_real_model_cost_normalized_validation_20260506T130225Z": 10,
+        "cohere_real_model_cost_normalized_validation_20260506T151731Z": 11,
+        "external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z": 8,
+        "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z": 10,
+        "external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z": 11
+      }
+    },
+    "temporal_specific_retry_candidate": {
+      "actionable_retry_schema_hint": "temporal_no_state_no_sub only",
+      "fires_by_cohort": {
+        "pal_correct_guardrail": 13,
+        "gold_absent_discovery": 5,
+        "present_not_selected": 6,
+        "unknown": 184,
+        "pal_wrong_other": 10
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.25,
+        "pal_correct_guardrail": 0.065,
+        "present_not_selected": 0.2857142857142857,
+        "pal_wrong_other": 0.38461538461538464,
+        "pilot_track_b": 0.0,
+        "unknown": 0.09104403760514597
+      },
+      "fires_gold_absent_discovery": 5,
+      "fires_pal_correct_guardrail": 13,
+      "fires_present_not_selected": 6,
+      "fires_pal_wrong_other": 10,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 184,
+      "precision_like_among_labeled_fires": 0.14705882352941177,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.14705882352941177,
+      "policy_usefulness": "mixed",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1081",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1115",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1137",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1147",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1198",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1002",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1005",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1010",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1010",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1010",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1014",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1014",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1014",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1021",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 27,
+        "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z": 11,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 25,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 25,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 25,
+        "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z": 10,
+        "cohere_pal_empty_code_retry_followup_15case_20260506T175516Z": 1,
+        "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z": 8,
+        "cohere_real_model_cost_normalized_validation_20260506T025806Z": 10,
+        "cohere_real_model_cost_normalized_validation_20260506T040238Z": 12,
+        "cohere_real_model_cost_normalized_validation_20260506T130225Z": 17,
+        "cohere_real_model_cost_normalized_validation_20260506T151731Z": 9,
+        "external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z": 12,
+        "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z": 17,
+        "external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z": 9
+      }
+    },
+    "rate_specific_retry_candidate": {
+      "actionable_retry_schema_hint": "rate_no_muldiv only",
+      "fires_by_cohort": {
+        "gold_absent_discovery": 2,
+        "pal_correct_guardrail": 4,
+        "present_not_selected": 2,
+        "unknown": 18,
+        "pal_wrong_other": 1
+      },
+      "cohort_sizes": {
+        "gold_absent_discovery": 20,
+        "present_not_selected": 21,
+        "pal_correct_guardrail": 200,
+        "pal_wrong_other": 26,
+        "pilot_track_b": 0,
+        "unknown": 2021
+      },
+      "rates": {
+        "gold_absent_discovery": 0.1,
+        "pal_correct_guardrail": 0.02,
+        "present_not_selected": 0.09523809523809523,
+        "pal_wrong_other": 0.038461538461538464,
+        "pilot_track_b": 0.0,
+        "unknown": 0.008906481939633844
+      },
+      "fires_gold_absent_discovery": 2,
+      "fires_pal_correct_guardrail": 4,
+      "fires_present_not_selected": 2,
+      "fires_pal_wrong_other": 1,
+      "fires_pilot_track_b": 0,
+      "fires_unknown_cohort": 18,
+      "precision_like_among_labeled_fires": 0.2222222222222222,
+      "precision_like_ga_over_discovery_guardrail_pn_wrong_fires": 0.2222222222222222,
+      "policy_usefulness": "weak",
+      "top_cases": [
+        {
+          "case_id": "openai_gsm8k_1137",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1230",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "gold_absent_discovery"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1025",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1071",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1071",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1071",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_1176",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1210",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "present_not_selected"
+        },
+        {
+          "case_id": "openai_gsm8k_1212",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1307",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "present_not_selected"
+        },
+        {
+          "case_id": "openai_gsm8k_1310",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_1312",
+          "bundle_slug": "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+          "audit_cohort": "pal_correct_guardrail"
+        },
+        {
+          "case_id": "openai_gsm8k_144",
+          "bundle_slug": "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_144",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T025806Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_515",
+          "bundle_slug": "cohere_real_model_cost_normalized_validation_20260506T130225Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_515",
+          "bundle_slug": "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z",
+          "audit_cohort": "unknown"
+        },
+        {
+          "case_id": "openai_gsm8k_57",
+          "bundle_slug": "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z",
+          "audit_cohort": "pal_wrong_other"
+        },
+        {
+          "case_id": "openai_gsm8k_727",
+          "bundle_slug": "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
+          "audit_cohort": "unknown"
+        }
+      ],
+      "bundle_breakdown_fires": {
+        "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z": 8,
+        "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z": 2,
+        "cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z": 4,
+        "cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506": 4,
+        "cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506": 4,
+        "cohere_paired_pal_vs_external_l1_100case_20260506T025806Z": 1,
+        "cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z": 1,
+        "cohere_real_model_cost_normalized_validation_20260506T025806Z": 1,
+        "cohere_real_model_cost_normalized_validation_20260506T130225Z": 1,
+        "external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z": 1
+      }
+    }
+  },
+  "cohort_priority_notes": "Mutually exclusive: pilot_track_b (bundle name) first; else collect-style or paired-casebook labels from offline fields only.",
+  "notes": {
+    "gold_used_only_offline": true,
+    "validator_validate_gsm8k_candidate_used_for_quantity_coverage_only": true,
+    "no_api": true
+  }
+}

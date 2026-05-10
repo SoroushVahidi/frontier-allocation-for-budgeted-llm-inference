@@ -1,0 +1,29 @@
+To solve this problem, we need to determine Josh's profit from flipping the house. Let's break it down step by step using a quantity ledger.
+
+**Final Target Quantity:** Profit from flipping the house.
+
+**Money Ledger:**
+
+1. **Cost of House (Principal):** $80,000 (one-time)
+2. **Repair Costs:** $50,000 (one-time)
+3. **Total Investment:** Cost of House + Repair Costs (one-time)
+4. **Increased Value:** 150% of the original house value (one-time)
+5. **New House Value:** Original House Value + Increased Value (one-time)
+6. **Profit:** New House Value - Total Investment (one-time)
+
+**Calculations:**
+
+1. **Total Investment:** 
+   \[ 80,000 + 50,000 = 130,000 \]
+
+2. **Increased Value:** 
+   \[ 150\% \text{ of } 80,000 = 1.5 \times 80,000 = 120,000 \]
+
+3. **New House Value:** 
+   \[ 80,000 + 120,000 = 200,000 \]
+
+4. **Profit:** 
+   \[ 200,000 - 130,000 = 70,000 \]
+
+Thus, the profit Josh made from flipping the house is:
+\[ \boxed{70000} \]

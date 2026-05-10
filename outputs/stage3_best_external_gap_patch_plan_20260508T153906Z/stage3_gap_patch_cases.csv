@@ -1,0 +1,4 @@
+case_id,fixed_by_micro_pilot,successful_variants,failed_variants,recommended_patch,reason,risk,expected_extra_calls_if_integrated,should_include_in_next_stage3_patch_checkpoint
+openai_gsm8k_1078,yes,final_target_extraction_repair;tale_style_decomposition,,use_either_best_of_two,Both variants solved case in micro-pilot.,low,1,yes
+openai_gsm8k_1155,no,,final_target_extraction_repair;tale_style_decomposition,leave_unfixed,No variant solved case in micro-pilot.,high,0,yes
+openai_gsm8k_1198,yes,final_target_extraction_repair;tale_style_decomposition,,use_either_best_of_two,Both variants solved case in micro-pilot.,low,1,yes

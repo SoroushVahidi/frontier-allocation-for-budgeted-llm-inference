@@ -1,0 +1,5 @@
+path,reason
+outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/,Latest relaxed method results
+outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/,Latest multibatch method results
+outputs/production_equiv_v1_50_live_failure_diagnosis_20260508T202315Z/,Detailed failure diagnosis
+outputs/production_equiv_v1_retry_commit_loss_audit_20260508T204005Z/,Retry commit loss audit

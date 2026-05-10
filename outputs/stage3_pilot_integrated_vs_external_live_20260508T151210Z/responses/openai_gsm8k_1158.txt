@@ -1,0 +1,17 @@
+**Target:** Calculate the total amount of money raised by all four girls.
+
+Let's denote the amounts raised by Alexandra, Kim, Sarah, and Maryam as $A$, $K$, $S$, and $M$ respectively.
+
+We know:
+1. $A = 430$
+2. $K = A + 320$
+3. $S = 300$
+4. $M = S + 400$
+
+Total amount raised:
+\[ T = A + K + S + M \]
+\[ T = 430 + (430 + 320) + 300 + (300 + 400) \]
+\[ T = 430 + 750 + 300 + 700 \]
+\[ T = 2180 \]
+
+\boxed{2180}

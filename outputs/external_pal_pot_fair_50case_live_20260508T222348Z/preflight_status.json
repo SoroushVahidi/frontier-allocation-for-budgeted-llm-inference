@@ -1,0 +1,12 @@
+{
+  "cohere_api_key_present": true,
+  "source_cases_exists": true,
+  "method": "external_pal_pot_fair_v1",
+  "case_count_requested": 50,
+  "max_total_api_calls": 100,
+  "planned_logical_calls_estimate": 50,
+  "budget_controller": 6,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "pal_caveats": "PAL uses one JSON code-gen API call (temperature min(0.3, runner temperature)) plus local restricted Python execution; failures may be parsing or sandbox errors."
+}

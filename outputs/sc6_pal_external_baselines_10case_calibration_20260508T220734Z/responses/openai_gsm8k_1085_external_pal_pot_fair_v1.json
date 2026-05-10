@@ -1,0 +1,34 @@
+{
+  "prediction": "156",
+  "parsed_answer": "156",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "twin_beds = 4\nking_beds = 1\nweeks_per_year = 52\n\ntwin_loads_per_week = (twin_beds + 1) // 2  # Ceiling division for twin beds\nking_loads_per_week = 1\n\ntotal_loads_per_week = twin_loads_per_week + king_loads_per_week\ntotal_loads_per_year = total_loads_per_week * weeks_per_year\n\nprint(total_loads_per_year)",
+      "stdout": "156\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "156",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "156",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

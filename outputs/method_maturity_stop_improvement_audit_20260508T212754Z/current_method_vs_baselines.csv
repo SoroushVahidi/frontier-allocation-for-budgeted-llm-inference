@@ -1,0 +1,8 @@
+method,correct_50,role,production_equiv_delta,caveat
+production_equiv_v1,36,our_method,0,trailed prior_patch_focused by 3 and best_core4 by 2
+external_l1_max_fair_v1,31,baseline,5,
+external_self_consistency_4_fair_v1,33,baseline,3,
+external_s1_budget_forcing_faithful_v1,32,baseline,4,
+external_tale_ep_prompt_budgeting_faithful_v1,34,baseline,2,
+best_core4_oracle,38,oracle,-2,upper bound over fair core4
+prior_patch_focused_integrated,39,our_method_prev,-3,same 50-case set; earlier patch-focused controller

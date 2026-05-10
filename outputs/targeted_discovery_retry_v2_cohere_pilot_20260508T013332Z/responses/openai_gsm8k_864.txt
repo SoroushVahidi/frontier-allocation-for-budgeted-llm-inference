@@ -1,0 +1,35 @@
+**Initial State:**
+- Movies watched on Saturday: 4
+- Movies watched on Sunday: 4 / 2 = 2
+- Total movies watched per weekend: 4 (Saturday) + 2 (Sunday) = 6
+- Number of weeks: 4
+
+**Changes:**
+1. **Week 1:**
+   - Saturday: 4 movies
+   - Sunday: 2 movies
+   - Total for Week 1: 4 + 2 = 6 movies
+
+2. **Week 2:**
+   - Saturday: 4 movies
+   - Sunday: 2 movies
+   - Total for Week 2: 4 + 2 = 6 movies
+
+3. **Week 3:**
+   - Saturday: 4 movies
+   - Sunday: 2 movies
+   - Total for Week 3: 4 + 2 = 6 movies
+
+4. **Week 4:**
+   - Saturday: 4 movies
+   - Sunday: 2 movies
+   - Total for Week 4: 4 + 2 = 6 movies
+
+**Final Queried Quantity:**
+- Total movies watched in 4 weeks.
+
+**Computation:**
+- Total movies = (6 movies/week) * 4 weeks = 24 movies
+
+**Final Answer:**
+\boxed{24}

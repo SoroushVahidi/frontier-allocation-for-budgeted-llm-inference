@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "6.0",
+  "parsed_answer": "6",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_pages = 4 + 20 + 7 + 8\nremaining_pages = total_pages - 15\naverage_pages_per_day = remaining_pages / 4\nprint(average_pages_per_day)",
+      "stdout": "6.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "6.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "6.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

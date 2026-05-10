@@ -1,0 +1,26 @@
+{
+  "total_cases": 50,
+  "integrated_correct": 38,
+  "external_l1_correct": 32,
+  "tale_correct": 31,
+  "s1_correct": 33,
+  "best_external_correct": 40,
+  "integrated_wrong_count": 12,
+  "best_external_only_count": 3,
+  "all_wrong_count": 9,
+  "failure_pattern_counts": {
+    "final_target_or_extraction_mismatch": 8,
+    "non_numeric_final_answer_format": 1,
+    "ratio_or_fraction_setup_error": 1,
+    "late_stage_arithmetic_or_magnitude_error": 2
+  },
+  "best_external_winner_counts_among_integrated_wrong": {
+    "external_tale": 2,
+    "external_l1_max": 1
+  },
+  "proposed_fix_counts": {
+    "verifier_check": 10,
+    "scaffold_refinement": 2
+  },
+  "recommended_next_step": "micro_pilot_best_external_only"
+}

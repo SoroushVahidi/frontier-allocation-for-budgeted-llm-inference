@@ -1,0 +1,5 @@
+provider,method,mean_accuracy,accuracy_per_1k_tokens,accuracy_per_estimated_dollar,total_tokens,estimated_total_cost_usd
+cohere,direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal,0.5666666666666667,0.016695638509963365,3.8712292519191047,33941.0,0.146379
+cohere,external_l1_max,0.7,0.032839181835241135,6.40251710386712,21316.0,0.109332
+cohere,external_s1_budget_forcing,0.6666666666666666,0.018229380292216966,3.92376131759905,36571.0,0.169905
+cohere,external_tale_prompt_budgeting,0.6666666666666666,0.026963262554769125,5.395183719493608,24725.0,0.123567

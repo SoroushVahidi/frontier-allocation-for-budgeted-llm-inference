@@ -1,0 +1,9 @@
+**Target:** Calculate total earnings from selling all land.
+
+1. Initial land: \( L = 80 \) m²  
+2. First sale: \( \frac{1}{2}L = 40 \) m² for $50  
+3. Second sale: \( \frac{1}{4}L = 20 \) m² for $30  
+4. Remaining land: \( 80 - 40 - 20 = 20 \) m² sold at $3/m²  
+5. Total earnings: \( 50 + 30 + (20 \times 3) = 50 + 30 + 60 = 140 \)
+
+\boxed{140}

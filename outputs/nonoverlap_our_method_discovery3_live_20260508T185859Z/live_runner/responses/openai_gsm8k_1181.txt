@@ -1,0 +1,10 @@
+**Target:** Calculate the total cost of John's research.
+
+1. Initial funding for first 5 months: $100,000
+2. Total research duration: $5 \times 10 = 50$ months
+3. Additional months: $50 - 5 = 45$ months
+4. Funding per additional month: $100,000 / 5 \times 1.5 = 30,000$
+5. Total additional funding: $45 \times 30,000 = 1,350,000$
+6. Total cost: $100,000 + 1,350,000 = 1,450,000$
+
+\[ \boxed{1450000} \]

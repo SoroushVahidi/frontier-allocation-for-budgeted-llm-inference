@@ -1,0 +1,28 @@
+{
+  "prediction": "3",
+  "parsed_answer": "3",
+  "metadata": {
+    "external_baseline_family": "token_budget_aware_llm_reasoning_tale",
+    "tale_faithful_enabled": true,
+    "tale_variant": "EP",
+    "budget_estimator_type": "char_length_linear",
+    "token_budget_estimator": "char_length_linear",
+    "token_budget_default": 256,
+    "token_budget_min": 64,
+    "token_budget_max": 512,
+    "token_budget_per_question_char": 0.75,
+    "token_budget_predicted": 432,
+    "assigned_token_budget": 432,
+    "budget_prompt_text_hash": "f4d99784c4add2358e7849040eb80a3b0c34697108560533aec83d2783d2613a",
+    "budget_prompt_style": "Let's think step by step and use less than {budget} tokens.",
+    "token_per_action": 64.0,
+    "budget_actions_equivalent": 7,
+    "generated_tokens_estimate": 1,
+    "token_budget_violation": false,
+    "deviations_from_official": "TALE-EP-only adapter; TALE-PT path not reproduced in this runtime.",
+    "final_score": 0.76
+  },
+  "actions_used": 1,
+  "expansions": 1,
+  "verifications": 0
+}

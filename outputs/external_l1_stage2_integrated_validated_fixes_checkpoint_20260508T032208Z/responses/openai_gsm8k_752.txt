@@ -1,0 +1,18 @@
+**Target:** Find the number of students in the smallest group.
+
+**Ratio Decomposition:**  
+Let \( x \) be the number of students in each of the two equal groups. The smallest group has \( x - 10 \) students. The total number of students is 200.
+
+**Compact Equation:**  
+\[ 2x + (x - 10) = 200 \]
+
+**Solve for \( x \):**  
+\[ 3x - 10 = 200 \]  
+\[ 3x = 210 \]  
+\[ x = 70 \]
+
+**Smallest Group:**  
+\[ x - 10 = 70 - 10 = 60 \]
+
+**Final Answer:**  
+\boxed{60}

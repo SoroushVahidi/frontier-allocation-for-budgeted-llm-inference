@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "base_cost = 6.50\nextra_meat = 2.00\nextra_cheese = 1.00\navocado = 1.00\nsauce = 0.25 * 2\nupgrade = 3.00\ngift_card = 5.00\ntotal_cost = base_cost + extra_meat + extra_cheese + avocado + sauce + upgrade\namount_owed = total_cost - gift_card\nprint(round(amount_owed, 2))",
+    "stdout": "9.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "9.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "9.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

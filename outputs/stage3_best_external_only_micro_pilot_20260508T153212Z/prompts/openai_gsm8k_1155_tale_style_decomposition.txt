@@ -1,0 +1,16 @@
+Solve the math word problem using named subquestions.
+
+Problem:
+Pat has a flower bed that is 111 feet long.  Pat wants to fill her flower bed with plants.  Pat's flowers grow 12 inches wide so she needs to leave 1.5 feet between every plant.  Pat already owns 17 flowers.  Each flowering plant costs $6 at the store,  how much money will Pat spend at the store to fill up her flower bed?
+
+Instructions:
+- Decompose into short subquestions (Q1, Q2, ...).
+- Solve subquestions sequentially.
+- Explicitly verify that the final computed value matches the exact quantity asked.
+- Provide one final numeric answer.
+
+Output format:
+- decomposition: <Q1..Qn>
+- work: <concise steps>
+- target_check: <one line>
+- final_answer: <single numeric answer>

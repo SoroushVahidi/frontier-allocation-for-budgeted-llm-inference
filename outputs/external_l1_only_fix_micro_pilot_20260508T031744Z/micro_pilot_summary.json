@@ -1,0 +1,11 @@
+{
+  "total_calls": 3,
+  "exact_match_count": 3,
+  "rescued_count": 3,
+  "case_683_fixed": true,
+  "case_769_fixed": true,
+  "api_errors": [],
+  "parsing_ambiguities": [],
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

@@ -1,0 +1,11 @@
+**Target:** Percentage of the watermelon each adult gets.
+
+**Ratio Conversion:**  
+Let each kid's slice be \( x \). Each adult's slice is \( 2x \).  
+Total parts: \( 2x \) (adult 1) + \( 2x \) (adult 2) + \( x \) (kid 1) + \( x \) (kid 2) + \( x \) (kid 3) + \( x \) (kid 4) = \( 6x \).
+
+**Compact Equation:**  
+Each adult's share: \( \frac{2x}{6x} \times 100\% = \frac{1}{3} \times 100\% \).
+
+**Final Answer:**  
+\boxed{33.33\%}

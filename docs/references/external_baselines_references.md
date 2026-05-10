@@ -1,0 +1,19 @@
+# External Baselines Reference Ledger
+
+This ledger tracks external baselines used, adapted, or excluded for fair comparison and manuscript-safe wording.
+
+| Method / baseline | Repo method ID | Paper / reference | Official repo | How used | Status | Caveats | Where implemented in repo | Where evaluated in outputs |
+|---|---|---|---|---|---|---|---|---|
+| L1 fair (length-controlled direct) | `external_l1_max_fair_v1` | Internal fairness baseline contract (no single canonical paper) | N/A | Main fair baseline in core4 matched-50 | adapted | Not an official external release; fairness-constrained internal implementation | `experiments/controllers.py`, `experiments/frontier_matrix_core.py` | `outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z` |
+| Self-Consistency-4 fair | `external_self_consistency_4_fair_v1` | [Self-Consistency Improves Chain of Thought Reasoning in Language Models](https://arxiv.org/abs/2203.11171) | N/A | Main fair baseline | adapted | K=4 budgeted fair variant; not claiming exact original harness parity | `experiments/controllers.py`, `experiments/frontier_matrix_core.py` | `outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z` |
+| Self-Consistency-6 fair | `external_self_consistency_6_fair_v1` | [Self-Consistency Improves Chain of Thought Reasoning in Language Models](https://arxiv.org/abs/2203.11171) | N/A | Fair comparator on matched-50 suite | adapted | K=6 fair variant; **36/50** on 2026-05-08 matched IDs — **ties** `production_equiv_v1` | `experiments/controllers.py`, `experiments/frontier_matrix_core.py` | `outputs/external_sc6_fair_50case_live_20260508T221625Z` (aggregated in `outputs/external_full_suite_matched50_comparison_20260508T222631Z`) |
+| PAL/PoT fair | `external_pal_pot_fair_v1` | [PAL: Program-aided Language Models](https://arxiv.org/pdf/2211.10435.pdf) | N/A | Fair baseline on matched-50 suite | adapted | Use wording “PAL/PoT-style” unless full official prompt/harness parity is demonstrated; **40/50** on 2026-05-08 matched IDs — **strongest individual external** on that slice | `experiments/controllers.py`, `experiments/frontier_matrix_core.py` | `outputs/external_pal_pot_fair_50case_live_20260508T222348Z` (aggregated in `outputs/external_full_suite_matched50_comparison_20260508T222631Z`) |
+| S1 faithful-style | `external_s1_budget_forcing_faithful_v1` | [S1 paper](https://arxiv.org/html/2501.19393v1) | [simplescaling/s1](https://github.com/simplescaling/s1) | Main faithful-style baseline in core4 matched-50 | adapted | Behavior-level S1-style budget forcing; not full official stack parity | `experiments/controllers.py`, `experiments/frontier_matrix_core.py` | `outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z` |
+| TALE-EP faithful-style | `external_tale_ep_prompt_budgeting_faithful_v1` | [ACL Findings PDF](https://aclanthology.org/2025.findings-acl.1274.pdf), [arXiv](https://arxiv.org/abs/2412.18547) | [GeniusHTX/TALE](https://github.com/GeniusHTX/TALE) | Main faithful-style baseline in core4 matched-50 | adapted | TALE-EP-style only; TALE-PT excluded (training-dependent) | `experiments/controllers.py`, `experiments/frontier_matrix_core.py` | `outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z` |
+| best_core4 oracle | `best_core4` (derived comparator) | Derived from fair core4 set | N/A | Oracle upper envelope over core4 methods | adapted | Oracle is not a deployable runtime method; analysis-only comparator | comparison/report scripts in `scripts/` and report artifacts | `outputs/fair_core4_paired_comparison_report_20260508T181853Z` |
+
+## Safe wording notes
+
+- Use “faithful-style” or “behavior-level adaptation” unless official code/prompt/harness parity is explicitly verified.
+- For PAL baseline, prefer “PAL/PoT-style baseline” unless exact parity is shown.
+- For S1 and TALE, avoid claiming full-stack replication unless all official training/runtime components are matched.

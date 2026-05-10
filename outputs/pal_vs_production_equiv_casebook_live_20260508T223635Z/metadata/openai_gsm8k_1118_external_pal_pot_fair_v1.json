@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "oranges_bought = 12\noranges_given_to_daughters = 3 * 2\noranges_given_to_boy = 3\noranges_remaining = oranges_bought - oranges_given_to_daughters - oranges_given_to_boy\nprint(oranges_remaining)",
+    "stdout": "3\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "3",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "3",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

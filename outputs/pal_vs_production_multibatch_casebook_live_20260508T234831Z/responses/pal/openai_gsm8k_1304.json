@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "7",
+  "parsed_answer": "7",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "monday_matches = 2\nfrida_matches = 1\nsatur_matches = 2 * monday_matches\n\ntotal_matches = monday_matches + frida_matches + satur_matches\nprint(total_matches)",
+      "stdout": "7\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "7",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "7",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

@@ -1,0 +1,18 @@
+{
+"SCHEMA_TYPE": "before_after_state_schema",
+"TARGET_QUANTITY": "total workout hours",
+"GIVEN_QUANTITIES": [
+"Standard weekly workout hours: 4",
+"Consecutive weeks with 5 hours: 2",
+"Week with 6 hours: 1",
+"Total weeks: 8"
+],
+"EQUATIONS": [
+"Total hours = (Standard weeks * 4) + (Consecutive weeks * 5) + 6"
+],
+"COMPUTATION": [
+"Standard weeks = Total weeks - Consecutive weeks - Week with 6 hours = 8 - 2 - 1 = 5",
+"Total hours = (5 * 4) + (2 * 5) + 6 = 20 + 10 + 6 = 36"
+],
+"FINAL_ANSWER": 36
+}

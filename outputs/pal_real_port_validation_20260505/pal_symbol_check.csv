@@ -1,0 +1,4 @@
+symbol,present_ok,detail
+experiments.pal_executor.execute_pal_code,true,
+_pal controller enable_pal_branch,true,DirectReserveFrontierGateController family
+_pal controller pal_budget_actions>=1,true,1

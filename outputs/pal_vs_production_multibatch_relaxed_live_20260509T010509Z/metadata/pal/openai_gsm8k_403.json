@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "watts_per_hour = 900\nhours_per_day = 8\ndays = 30\nreduced_hours_per_day = hours_per_day - 5\noriginal_energy = watts_per_hour * hours_per_day * days\nreduced_energy = watts_per_hour * reduced_hours_per_day * days\nsaved_energy_watts = original_energy - reduced_energy\nsaved_energy_kilowatts = saved_energy_watts / 1000\nprint(saved_energy_kilowatts)",
+    "stdout": "135.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "135.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "135.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

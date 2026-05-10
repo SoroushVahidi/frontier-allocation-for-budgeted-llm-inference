@@ -1,0 +1,21 @@
+{
+  "case_count": 5,
+  "actual_cohere_calls": 5,
+  "final_answer_line_found_count": 0,
+  "parsing_failures": 5,
+  "retry_exact_count": 0,
+  "cases_with_exact_retry": 0,
+  "would_improve_production_equiv_count": 0,
+  "exact_by_variant": {
+    "structural_commit_challenge_retry": 0,
+    "final_target_guarded_retry": 0
+  },
+  "parsing_failure_by_variant": {
+    "structural_commit_challenge_retry": 4,
+    "final_target_guarded_retry": 1
+  },
+  "api_errors": [],
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "ready_for_10case_retry_parsefix_live": false
+}

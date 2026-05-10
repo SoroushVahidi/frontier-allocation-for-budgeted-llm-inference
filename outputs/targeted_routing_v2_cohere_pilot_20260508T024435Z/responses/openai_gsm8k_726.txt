@@ -1,0 +1,12 @@
+To solve the problem, let's follow the steps:
+
+1. **Identify the relationship**: Geb is 10 less than half the age of Haley.
+2. **Express the relationship in equation form**: Let G be Geb's age and H be Haley's age. The equation is:
+   G = (1/2)H - 10
+3. **Given information**: Haley is 26 years old (H = 26).
+4. **Substitute H into the equation**: 
+   G = (1/2)(26) - 10
+   G = 13 - 10
+   G = 3
+
+\boxed{3}

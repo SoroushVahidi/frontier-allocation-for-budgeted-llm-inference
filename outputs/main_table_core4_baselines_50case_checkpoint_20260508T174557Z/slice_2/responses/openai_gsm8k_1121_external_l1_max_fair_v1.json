@@ -1,0 +1,65 @@
+{
+  "prediction": "2000",
+  "parsed_answer": "2000",
+  "metadata": {
+    "external_baseline_family": "l1_lcpo_length_control",
+    "l1_fair_enabled": true,
+    "l1_control_mode": "max",
+    "not_official_external_method": true,
+    "token_budget_instruction": 512,
+    "token_per_action": 64.0,
+    "budget_actions_equivalent": 8,
+    "generated_tokens_estimate": 1,
+    "budget_error_tokens": 511.0,
+    "token_budget_violation": false,
+    "prompt_style": "Let's think step by step and output the final answer within \\boxed{}.",
+    "deviations_from_official": "Transparent in-repo fair length-control baseline; not official L1 RL reproduction.",
+    "final_score": 0.9952000000000001,
+    "action_trace": [
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 1,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nElliott is trying to walk 10,000 steps a day. He finished half of his steps on his walks to and from school and did another 1,000 steps going for a short walk with his friend. He also went for a short jog around the block and realized that after he had finished his jog, he only had 2,000 steps left to take. How many steps did Elliott take during his jog?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"First, we know Elliott needs to walk 10,000 steps a day. He finished half of his steps on his walks to and from school, which is 10,000 / 2 = 5,000 steps.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "First, we know Elliott needs to walk 10,000 steps a day. He finished half of his steps on his walks to and from school, which is 10,000 / 2 = 5,000 steps.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 2,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nElliott is trying to walk 10,000 steps a day. He finished half of his steps on his walks to and from school and did another 1,000 steps going for a short walk with his friend. He also went for a short jog around the block and realized that after he had finished his jog, he only had 2,000 steps left to take. How many steps did Elliott take during his jog?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- First, we know Elliott needs to walk 10,000 steps a day. He finished half of his steps on his walks to and from school, which is 10,000 / 2 = 5,000 steps.\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"Next, we know Elliott did another 1,000 steps going for a short walk with his friend. So, the total steps taken so far is 5,000 + 1,000 = 6,000 steps.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "First, we know Elliott needs to walk 10,000 steps a day. He finished half of his steps on his walks to and from school, which is 10,000 / 2 = 5,000 steps.\nNext, we know Elliott did another 1,000 steps going for a short walk with his friend. So, the total steps taken so far is 5,000 + 1,000 = 6,000 steps.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 3,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nElliott is trying to walk 10,000 steps a day. He finished half of his steps on his walks to and from school and did another 1,000 steps going for a short walk with his friend. He also went for a short jog around the block and realized that after he had finished his jog, he only had 2,000 steps left to take. How many steps did Elliott take during his jog?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- First, we know Elliott needs to walk 10,000 steps a day. He finished half of his steps on his walks to and from school, which is 10,000 / 2 = 5,000 steps.\n- Next, we know Elliott did another 1,000 steps going for a short walk with his friend. So, the total steps taken so far is 5,000 + 1,000 = 6,000 steps.\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"After the jog, Elliott had 2,000 steps left to reach his goal of 10,000 steps. This means that before the jog, he had taken 10,000 - 2,000 = 8,000 steps in total.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "First, we know Elliott needs to walk 10,000 steps a day. He finished half of his steps on his walks to and from school, which is 10,000 / 2 = 5,000 steps.\nNext, we know Elliott did another 1,000 steps going for a short walk with his friend. So, the total steps taken so far is 5,000 + 1,000 = 6,000 steps.\nAfter the jog, Elliott had 2,000 steps left to reach his goal of 10,000 steps. This means that before the jog, he had taken 10,000 - 2,000 = 8,000 steps in total.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 3,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nElliott is trying to walk 10,000 steps a day. He finished half of his steps on his walks to and from school and did another 1,000 steps going for a short walk with his friend. He also went for a short jog around the block and realized that after he had finished his jog, he only had 2,000 steps left to take. How many steps did Elliott take during his jog?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- First, we know Elliott needs to walk 10,000 steps a day. He finished half of his steps on his walks to and from school, which is 10,000 / 2 = 5,000 steps.\n- Next, we know Elliott did another 1,000 steps going for a short walk with his friend. So, the total steps taken so far is 5,000 + 1,000 = 6,000 steps.\n- After the jog, Elliott had 2,000 steps left to reach his goal of 10,000 steps. This means that before the jog, he had taken 10,000 - 2,000 = 8,000 steps in total.\n",
+        "response_text": "{\n  \"action\": \"final\",\n  \"step\": \"\",\n  \"answer\": \"2000\",\n  \"confidence\": 1.0\n}",
+        "reasoning_text": "First, we know Elliott needs to walk 10,000 steps a day. He finished half of his steps on his walks to and from school, which is 10,000 / 2 = 5,000 steps.\nNext, we know Elliott did another 1,000 steps going for a short walk with his friend. So, the total steps taken so far is 5,000 + 1,000 = 6,000 steps.\nAfter the jog, Elliott had 2,000 steps left to reach his goal of 10,000 steps. This means that before the jog, he had taken 10,000 - 2,000 = 8,000 steps in total.",
+        "extracted_answer": "2000"
+      }
+    ],
+    "final_branch_states": []
+  },
+  "error_message": "",
+  "status": "success",
+  "s1_observability": {}
+}

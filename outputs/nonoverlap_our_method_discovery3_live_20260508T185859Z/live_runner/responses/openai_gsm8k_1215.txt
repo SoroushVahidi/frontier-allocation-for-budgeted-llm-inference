@@ -1,0 +1,18 @@
+**Target:** Find James' run time.
+
+Let \( J_s, J_b, J_r \) be Jon's swim, bike, and run times, and \( S, B, R \) be James' respective times.
+
+\[
+J_s = 40, \quad J_b = 80, \quad J_r = 50
+\]
+\[
+S = 0.9J_s, \quad B = J_b + 5, \quad J_s + J_b + J_r = S + B + R - 10
+\]
+\[
+40 + 80 + 50 = 0.9(40) + (80 + 5) + R - 10
+\]
+\[
+R = 170 - 36 - 85 + 10 = 69
+\]
+
+**Final Answer:** \(\boxed{69}\)

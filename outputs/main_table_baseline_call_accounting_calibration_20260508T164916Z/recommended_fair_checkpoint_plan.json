@@ -1,0 +1,29 @@
+{
+  "observed_total_calls_one_case": 19,
+  "observed_calls_by_method": {
+    "external_l1_max_fair_v1": 2,
+    "external_pal_pot_fair_v1": 1,
+    "external_s1_budget_forcing_faithful_v1": 4,
+    "external_self_consistency_4_fair_v1": 4,
+    "external_self_consistency_6_fair_v1": 4,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 4
+  },
+  "recommended_next_checkpoint_size": 5,
+  "recommended_methods_to_include": [
+    "external_l1_max_fair_v1",
+    "external_self_consistency_4_fair_v1",
+    "external_s1_budget_forcing_faithful_v1",
+    "external_tale_ep_prompt_budgeting_faithful_v1"
+  ],
+  "recommended_max_total_api_calls": 100,
+  "whether_to_include_SC6_now": false,
+  "whether_to_include_PAL_PoT_now": false,
+  "whether_to_run_budget4_only_first": true,
+  "whether_to_run_budget6_later": true,
+  "rationale": [
+    "One-case observed usage is 19 calls for all six methods; linear extrapolation quickly exceeds conservative caps.",
+    "SC-6 is the highest call-pressure baseline and should be deferred until accounting is validated on a small multi-case set.",
+    "PAL/PoT adds limited call pressure but introduces extra execution-path variability; defer in the first calibration checkpoint.",
+    "Run budget-4 first to stabilize call/accounting behavior, then add budget-6 in a second checkpoint."
+  ]
+}
