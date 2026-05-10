@@ -1,0 +1,6 @@
+failure_family,count
+final_target_mismatch,12
+structural_commit_wrong,11
+multi_step_computation,6
+parse_format,5
+retry_commit_miss,4

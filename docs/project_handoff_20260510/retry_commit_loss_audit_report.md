@@ -1,0 +1,12 @@
+# production_equiv_v1 retry-commit loss audit
+- Valid 50-case rerun confirmed: 36/50, no cap/API truncation, run-level calls=198/200.
+- Method beats each individual fair baseline but trails prior patch-focused (39) and best_core4 (38).
+- Retry triggered on 11 cases and committed on 0.
+- All final surfaces are structural_commit because commit gate never accepted retry outputs; metadata shows trigger/rejection events rather than missing surfacing.
+- Retry would-have-helped count (strict parsed-equals-gold): 0.
+- Loss counts: vs prior=5, vs best_core4=6, both_wrong=8.
+- Main failure families: {'retry_commit_miss': 4, 'structural_commit_wrong': 9, 'parse_failure': 1}.
+- Recommended next step: targeted retry-commit policy micro-pilot on high-priority loss cases before any 245-case expansion.
+- Suggested next pilot: 10 cases, estimated 40 calls under cap.
+- 245 should wait until retry commit path shows measurable recovery on targeted cases.
+- Caveat: audit depends on recorded parsed retry answers/metadata; unlogged latent candidate quality cannot be inferred.
