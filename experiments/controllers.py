@@ -198,25 +198,99 @@ def classify_question_shape(question: str) -> str:
     return "unknown"
 
 
-def detect_problem_domain_hint(question: str) -> str:
-    """Heuristic domain hint used for domain-aware diverse-anchor prioritization.
+def _map_explicit_failure_domain(raw: str) -> str | None:
+    s = str(raw or "").strip().lower()
+    if not s:
+        return None
+    if "money" in s or "cost" in s or "revenue" in s or "profit" in s or "$" in s:
+        return "money_cost_revenue"
+    if "ratio" in s or "proportion" in s or "percent" in s or "percentage" in s or "fraction" in s:
+        return "ratio_percent"
+    if "multi-step" in s or "multi step" in s or "multi_step" in s:
+        return "multi_step_arithmetic"
+    return None
 
-    Returns one of: money_cost_revenue | ratio_percent | multi_step_arithmetic | unknown
+
+def detect_problem_domain_hint_with_source(
+    question: str,
+    *,
+    explicit_domain: str | None = None,
+) -> tuple[str, str, str]:
+    """Domain hint used for domain-aware diverse-anchor prioritization.
+
+    Returns: (domain_hint, source, evidence)
+      - domain_hint: money_cost_revenue | ratio_percent | multi_step_arithmetic | unknown
+      - source: exact_case_metadata | heuristic | unknown
+      - evidence: short string for audit/debug
     """
+    mapped = _map_explicit_failure_domain(str(explicit_domain or ""))
+    if mapped is not None:
+        return mapped, "exact_case_metadata", str(explicit_domain)
+
     q = (question or "").strip().lower()
     if not q:
-        return "unknown"
+        return "unknown", "unknown", "empty_question"
 
     # Money/cost/revenue: avoid substring traps (e.g. "perCENTage" should not trigger "cent").
     if "$" in q:
-        return "money_cost_revenue"
+        return "money_cost_revenue", "heuristic", "contains:$"
     if re.search(r"\b(cost|costs|price|prices|revenue|profit|fee|fees|dollar|dollars|cent|cents)\b", q):
-        return "money_cost_revenue"
+        return "money_cost_revenue", "heuristic", "money_terms_regex"
+
+    # Ratio/proportion/percentage: broaden beyond percent/ratio keywords.
+    ratio_terms = (
+        "ratio",
+        "proportion",
+        "percent",
+        "percentage",
+        "fraction",
+        "fractional",
+        "half",
+        "third",
+        "quarter",
+        "twice",
+        "triple",
+        "per ",
+        "out of",
+        "share",
+    )
+    if any(t in q for t in ratio_terms):
+        return "ratio_percent", "heuristic", "ratio_terms"
+
+    # Multi-step arithmetic: broaden beyond the original then/after/total heuristic.
+    multistep_terms = (
+        " then ",
+        " after ",
+        " before ",
+        " total",
+        " altogether",
+        " remaining",
+        " left",
+        " combined",
+        " first",
+        " second",
+        " bought",
+        " sold",
+        " gave",
+        " received",
+        " added",
+        " subtract",
+        " subtracted",
+    )
+    if re.search(r"\d", q) and any(t in q for t in multistep_terms):
+        return "multi_step_arithmetic", "heuristic", "multistep_terms"
 
     shape = classify_question_shape(q)
     if shape in {"ratio_percent", "multi_step_arithmetic"}:
-        return shape
-    return "unknown"
+        return shape, "heuristic", f"classify_question_shape:{shape}"
+
+    return "unknown", "unknown", "no_match"
+
+
+def detect_problem_domain_hint(question: str) -> str:
+    """Backward-compatible wrapper returning only the domain hint string."""
+    dom, _src, _ev = detect_problem_domain_hint_with_source(question)
+    return dom
 
 
 def prioritize_diverse_prompt_anchor_ids(
@@ -8337,7 +8411,19 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         diverse_anchor_budget_per_anchor = max(1, int(getattr(self, "diverse_prompt_anchor_budget_actions", 0) or 0))
         remaining_budget_before_diverse_anchors = int(remaining_budget)
         anchor_priority_policy = str(getattr(self, "diverse_prompt_anchor_priority_policy", "domain_aware_v1") or "").strip()
-        detected_domain_hint = detect_problem_domain_hint(question)
+        explicit_domain = ""
+        try:
+            cem = getattr(self, "current_exact_case_metadata", {}) or {}
+            if isinstance(cem, dict):
+                explicit_domain = str(cem.get("failure_domain") or "")
+            else:
+                explicit_domain = ""
+        except Exception:
+            explicit_domain = ""
+        detected_domain_hint, domain_detection_source, domain_detection_evidence = detect_problem_domain_hint_with_source(
+            question,
+            explicit_domain=str(explicit_domain) if str(explicit_domain).strip() else None,
+        )
         configured_anchor_ids = list(getattr(self, "diverse_prompt_anchor_ids", DEFAULT_DIVERSE_PROMPT_ANCHOR_IDS))
         planned_anchor_ids = prioritize_diverse_prompt_anchor_ids(
             configured_anchor_ids,
@@ -9535,11 +9621,13 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "direct_l1_anchor_answer": direct_l1_anchor_answer,
             "direct_l1_anchor_added_to_pool": bool(direct_l1_anchor_present),
             "direct_l1_anchor_support_count": int(combined_group_counts.get(direct_l1_anchor_group, 0) if direct_l1_anchor_group else 0),
-            "direct_l1_anchor_selected": int(direct_l1_anchor_group == selected_group_key if direct_l1_anchor_group else 0),
-            "diverse_prompt_anchors_enabled": bool(getattr(self, "enable_diverse_prompt_anchors", False)),
-            "anchor_priority_policy": str(anchor_priority_policy),
-            "detected_problem_domain": str(detected_domain_hint),
-            "diverse_prompt_anchor_budget_actions": int(diverse_anchor_budget_per_anchor),
+                "direct_l1_anchor_selected": int(direct_l1_anchor_group == selected_group_key if direct_l1_anchor_group else 0),
+                "diverse_prompt_anchors_enabled": bool(getattr(self, "enable_diverse_prompt_anchors", False)),
+                "anchor_priority_policy": str(anchor_priority_policy),
+                "detected_problem_domain": str(detected_domain_hint),
+                "domain_detection_source": str(domain_detection_source),
+                "domain_detection_evidence": str(domain_detection_evidence),
+                "diverse_prompt_anchor_budget_actions": int(diverse_anchor_budget_per_anchor),
             "configured_anchor_ids": list(configured_anchor_ids),
             "prioritized_anchor_ids": list(planned_anchor_ids),
             "diverse_prompt_anchor_ids_planned": list(configured_anchor_ids),

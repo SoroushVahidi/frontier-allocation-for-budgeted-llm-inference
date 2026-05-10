@@ -22,6 +22,10 @@ A lightweight heuristic inspects the `question` text and returns one of:
 - `multi_step_arithmetic` (contains digits plus “then/after/total” pattern)
 - `unknown` (fallback)
 
+When running **exact-case JSONL** diagnostics via `scripts/run_cohere_real_model_cost_normalized_validation.py --exact-cases-jsonl ...`,
+the runner attaches the per-example row metadata to the controller (best-effort) so the detector can prefer
+the explicit `failure_domain` label when available.
+
 ### Anchor ordering (`domain_aware_v1`)
 Given the configured anchor list, we reorder the **non-direct** anchors as:
 - **money/cost/revenue**: `unit_ledger_money_anchor`, then `equation_first_anchor`
@@ -39,6 +43,8 @@ The reorder is stable:
 Per example, controller metadata now includes:
 - `anchor_priority_policy`
 - `detected_problem_domain`
+- `domain_detection_source` (`exact_case_metadata` | `heuristic` | `unknown`)
+- `domain_detection_evidence`
 - `configured_anchor_ids` (original configured list)
 - `prioritized_anchor_ids` (post-reorder list used for execution)
 - `diverse_prompt_anchor_ids_executed`
