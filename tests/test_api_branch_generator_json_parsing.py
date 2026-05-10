@@ -105,7 +105,7 @@ def test_expand_does_not_commit_continue_with_json_answer(api_gen: APIBranchGene
         api_gen.expand(b, "Q", "")
     assert b.is_done is False
     assert b.predicted_answer is None
-    assert b.trace_events[-1].get("expand_answer_extraction_source") == "api_parse_failed_no_answer"
+    assert b.trace_events[-1].get("expand_answer_extraction_source") == "api_continue_no_final_answer"
 
 
 def test_verify_alternate_keys_and_fallback(api_gen: APIBranchGenerator) -> None:
@@ -152,7 +152,15 @@ def test_resolve_expand_answer_ignores_json_answer_when_action_continue() -> Non
     merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
     ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
     assert ans == ""
-    assert tag == "api_parse_failed_no_answer"
+    assert tag == "api_continue_no_final_answer"
+
+
+def test_resolve_expand_answer_ignores_json_final_answer_when_action_continue() -> None:
+    raw = '{"action": "continue", "final_answer": "120", "step": "Subtotal after the first stage.", "confidence": 0.7}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == ""
+    assert tag == "api_continue_no_final_answer"
 
 
 def test_resolve_expand_answer_accepts_json_answer_when_action_final() -> None:
@@ -171,20 +179,38 @@ def test_resolve_expand_answer_accepts_json_answer_when_action_missing() -> None
     assert tag == "api_json_answer"
 
 
-def test_resolve_expand_answer_reasoning_step_boxed_continue() -> None:
-    raw = r'{"action": "continue", "answer": "", "step": "Thus \\boxed{88}.", "confidence": 0.5}'
+
+
+def test_resolve_expand_answer_missing_action_boxed_fallback_still_works() -> None:
+    raw = r'{"answer": "", "step": "Thus \\boxed{88}.", "confidence": 0.5}'
     merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
     ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
     assert ans == "88"
     assert tag == "api_json_reasoning_fallback"
 
 
+def test_resolve_expand_answer_reasoning_step_boxed_continue() -> None:
+    raw = r'{"action": "continue", "answer": "", "step": "Thus \\boxed{88}.", "confidence": 0.5}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == ""
+    assert tag == "api_continue_no_final_answer"
+
+
+def test_resolve_expand_answer_reasoning_step_hashes_continue() -> None:
+    raw = '{"action": "continue", "answer": "", "step": "Intermediate computation. #### 88", "confidence": 0.5}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == ""
+    assert tag == "api_continue_no_final_answer"
+
+
 def test_resolve_expand_answer_reasoning_numeric_without_boxed() -> None:
     raw = '{"action": "continue", "answer": "", "step": "The total is 62.", "confidence": 0.5}'
     merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
     ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
-    assert ans == "62"
-    assert tag == "api_json_reasoning_fallback"
+    assert ans == ""
+    assert tag == "api_continue_no_final_answer"
 
 
 def test_resolve_expand_skips_ambiguous_continue_step_without_finality_hint() -> None:
@@ -195,7 +221,7 @@ def test_resolve_expand_skips_ambiguous_continue_step_without_finality_hint() ->
     merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
     ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
     assert ans == ""
-    assert tag == "api_parse_failed_no_answer"
+    assert tag == "api_continue_no_final_answer"
 
 
 def test_resolve_expand_answer_parse_failed_records_tag() -> None:
@@ -253,7 +279,25 @@ def test_resolve_expand_numeric_leaf_continue_does_not_commit_leaf_as_answer() -
     merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
     ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged, expand_prompt_variant="numeric_leaf")
     assert ans == ""
-    assert tag == "api_parse_failed_no_answer"
+    assert tag == "api_continue_no_final_answer"
+
+
+def test_resolve_expand_numeric_leaf_continue_does_not_commit_boxed_or_hash_answer() -> None:
+    raw_boxed = r'{"action":"continue","answer":"","step":"provisional \\boxed{10}","confidence":0.6}'
+    merged_boxed = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw_boxed))
+    ans_boxed, tag_boxed = APIBranchGenerator._resolve_expand_answer(
+        raw_boxed, merged_boxed, expand_prompt_variant="numeric_leaf"
+    )
+    assert ans_boxed == ""
+    assert tag_boxed == "api_continue_no_final_answer"
+
+    raw_hash = '{"action":"continue","answer":"","step":"provisional #### 10","confidence":0.6}'
+    merged_hash = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw_hash))
+    ans_hash, tag_hash = APIBranchGenerator._resolve_expand_answer(
+        raw_hash, merged_hash, expand_prompt_variant="numeric_leaf"
+    )
+    assert ans_hash == ""
+    assert tag_hash == "api_continue_no_final_answer"
 
 
 def test_resolve_numeric_leaf_skips_loose_last_number_in_step_prose() -> None:
@@ -261,7 +305,7 @@ def test_resolve_numeric_leaf_skips_loose_last_number_in_step_prose() -> None:
     merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
     ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged, expand_prompt_variant="numeric_leaf")
     assert ans == ""
-    assert tag == "api_parse_failed_no_answer"
+    assert tag == "api_continue_no_final_answer"
 
 
 def test_extract_labeled_numeric_leaf_from_step() -> None:
