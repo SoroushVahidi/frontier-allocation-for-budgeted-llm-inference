@@ -1,7 +1,7 @@
 # Track B final-answer pipeline fix (evaluator layer)
 
 **Date:** 2026-05-07  
-**Worktree:** `/home/soroush/research-next-wt`
+**Worktree:** ``
 
 ## Bug / layering issue
 

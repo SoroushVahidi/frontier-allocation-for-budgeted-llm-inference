@@ -1,6 +1,6 @@
 # Integrated checkpoint: stage2
 
-- Case file: `/home/soroush/research-next-wt/outputs/external_l1_stage2_checkpoint_readiness_20260508T022726Z/stage2_recommended_cases.csv`
+- Case file: `outputs/external_l1_stage2_checkpoint_readiness_20260508T022726Z/stage2_recommended_cases.csv`
 - Cases: 100
 - Planned new calls: 2
 - Actual new calls: 0

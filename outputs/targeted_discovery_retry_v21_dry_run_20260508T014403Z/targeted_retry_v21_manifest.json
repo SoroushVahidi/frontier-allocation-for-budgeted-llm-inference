@@ -2,9 +2,9 @@
   "timestamp": "20260508T014406Z",
   "no_api_calls": true,
   "source_v2_dry_run_dir": "targeted_discovery_retry_v2_cohere_pilot_20260508T013332Z",
-  "source_v2_pilot_dir": "/home/soroush/research-next-wt/outputs/targeted_discovery_retry_v2_cohere_pilot_20260508T013332Z",
+  "source_v2_pilot_dir": "outputs/targeted_discovery_retry_v2_cohere_pilot_20260508T013332Z",
   "source_v1_dry_run_dir": "outputs/targeted_discovery_retry_v1_dry_run_20260508T010738Z",
-  "source_v1_pilot_dir": "/home/soroush/research-next-wt/outputs/targeted_discovery_retry_v1_cohere_pilot_20260508T011341Z",
+  "source_v1_pilot_dir": "outputs/targeted_discovery_retry_v1_cohere_pilot_20260508T011341Z",
   "selected_case_count": 10,
   "scaffold_counts": {
     "quantity_ledger": 9,

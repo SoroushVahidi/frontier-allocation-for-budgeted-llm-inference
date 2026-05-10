@@ -28,16 +28,16 @@
   "pal_or_other_candidate_correct_selected_wrong_count": 13,
   "source_artifact_count": 43,
   "source_roots": [
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/metadata/pal",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/metadata/production_equiv",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/responses/pal",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/responses/production_equiv",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/metadata/pal",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/metadata/production_equiv",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/responses/pal",
-    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/responses/production_equiv",
-    "/home/soroush/research-next-wt/outputs/production_equiv_v1_retry_commit_loss_audit_20260508T204005Z"
+    "outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z",
+    "outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/metadata/pal",
+    "outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/metadata/production_equiv",
+    "outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/responses/pal",
+    "outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/responses/production_equiv",
+    "outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z",
+    "outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/metadata/pal",
+    "outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/metadata/production_equiv",
+    "outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/responses/pal",
+    "outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/responses/production_equiv",
+    "outputs/production_equiv_v1_retry_commit_loss_audit_20260508T204005Z"
   ]
 }

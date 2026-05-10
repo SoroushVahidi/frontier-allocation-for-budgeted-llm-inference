@@ -1,6 +1,6 @@
 # Integrated checkpoint: schema_test
 
-- Case file: `/home/soroush/research-next-wt/outputs/external_l1_checkpoint_readiness_20260508T021402Z/recommended_checkpoint_cases.csv`
+- Case file: `outputs/external_l1_checkpoint_readiness_20260508T021402Z/recommended_checkpoint_cases.csv`
 - Cases: 40
 - Planned new calls: 2
 - Actual new calls: 0

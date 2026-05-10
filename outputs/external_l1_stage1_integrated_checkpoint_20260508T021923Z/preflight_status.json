@@ -1,5 +1,5 @@
 {
-  "source_readiness_dir": "/home/soroush/research-next-wt/outputs/external_l1_checkpoint_readiness_20260508T021402Z",
+  "source_readiness_dir": "outputs/external_l1_checkpoint_readiness_20260508T021402Z",
   "cohere_api_key_set": true,
   "external_paths_exist": true,
   "missing_external_paths": [],

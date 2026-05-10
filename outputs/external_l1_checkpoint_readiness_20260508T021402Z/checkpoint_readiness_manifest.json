@@ -6,19 +6,19 @@
     {
       "id": "A",
       "name": "reuse_100_case_paired_band",
-      "source": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
+      "source": "outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
       "case_count": 100
     },
     {
       "id": "B",
       "name": "reuse_300_case_paired_band",
-      "source": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+      "source": "outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
       "case_count": 300
     },
     {
       "id": "C",
       "name": "known_loss_bank_71",
-      "source": "/home/soroush/research-next-wt/outputs/latest_pal_external_loss_bank_20260508T004000Z/latest_pal_external_loss_union_by_case.csv",
+      "source": "outputs/latest_pal_external_loss_bank_20260508T004000Z/latest_pal_external_loss_union_by_case.csv",
       "case_count": 71
     },
     {
@@ -32,9 +32,9 @@
   "reason_for_chosen_set": "Balances generalization, paired baseline availability, and bounded call budget while avoiding overfitting to the 15-case integrated pilot.",
   "external_l1_outputs_reusable": "yes",
   "paths_to_reusable_external_l1_results": [
-    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/external_l1_results.csv",
-    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.csv",
-    "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_results.jsonl"
+    "outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/external_l1_results.csv",
+    "outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.csv",
+    "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_results.jsonl"
   ],
   "integrated_method_needs_live_calls": "yes",
   "estimated_new_cohere_calls": 2,

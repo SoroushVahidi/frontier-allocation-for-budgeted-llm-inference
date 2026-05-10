@@ -159,7 +159,7 @@ High-signal symbols already in-tree: `frontier_tiebreak_*`, `pal_overlay_*`, `se
 
 Use this prompt for the **first coding session**:
 
-> In `/home/soroush/research-next-wt`, implement **Phase 0–1** only for Track B:  
+> In ``, implement **Phase 0–1** only for Track B:  
 > (1) Add **`decide_track_b_overlay_commitment_gate`** in **`experiments/output_layer_repair.py`** — gold-free, narrow overlay/PAL-json-vs-stdout consistency gate informed by **`decide_pal_strong_overlay_promotion`** and fixture **`openai_gsm8k_1087`**.  
 > (2) Wire it in **`DirectReserveFrontierGateController`** behind **`enable_track_b_overlay_commitment_gate`**, default **False**.  
 > (3) Register **`..._pal_track_b_commitment_v1`** method ID with that flag **True** only for the new ID.  

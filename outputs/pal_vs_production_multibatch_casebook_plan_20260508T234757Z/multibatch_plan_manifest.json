@@ -16,6 +16,6 @@
   "no_duplicate_case_ids": true,
   "overlap_with_matched50_in_eligible_pool": 0,
   "ready_for_live_loop": true,
-  "primary_case_pool_path": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+  "primary_case_pool_path": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
   "cohere_api_key_required": true
 }

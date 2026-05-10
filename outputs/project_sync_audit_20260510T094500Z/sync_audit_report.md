@@ -12,7 +12,7 @@ This report summarizes the synchronization status between the local machine and 
    - `outputs/pal_retry_300case_analysis_20260506/`
    - `experiments/targeted_discovery_retry.py`
 5. **Which important local materials are tracked but unpushed?**
-   - Modified files in `/home/soroush/frontier-allocation-for-budgeted-llm-inference` (e.g., `experiments/output_layer_repair.py`).
+   - Modified files in `` (e.g., `experiments/output_layer_repair.py`).
 6. **Which important local materials are untracked/local-only?**
    - Many new scripts and experiment outputs in `outputs/` (e.g., `external_full_suite_matched50_comparison_20260508T222631Z`).
    - New manifests and prompts.

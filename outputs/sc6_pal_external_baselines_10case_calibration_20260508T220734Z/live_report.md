@@ -1,5 +1,5 @@
 # SC6 / PAL external baselines live (10 cases)
-- output: `/home/soroush/research-next-wt/outputs/sc6_pal_external_baselines_10case_calibration_20260508T220734Z`
+- output: `outputs/sc6_pal_external_baselines_10case_calibration_20260508T220734Z`
 - actual_cohere_calls_run_level: 70
 - effective_call_cap: 80
 - global_cap_reached: False

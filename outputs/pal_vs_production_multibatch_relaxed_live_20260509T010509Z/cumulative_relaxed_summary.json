@@ -1,5 +1,5 @@
 {
-  "previous_live_dir": "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z",
+  "previous_live_dir": "outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z",
   "new_screened_cases": 300,
   "new_followup_cases": 150,
   "total_cumulative_followup_cases": 225,

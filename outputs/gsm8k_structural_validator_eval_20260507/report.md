@@ -4,8 +4,8 @@
 
 Diagnostic run only; scores are **metadata** and do not prove downstream ranking quality.
 
-- **Bundle:** `/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z`
-- **Output:** `/home/soroush/research-next-wt/outputs/gsm8k_structural_validator_eval_20260507`
+- **Bundle:** `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z`
+- **Output:** `outputs/gsm8k_structural_validator_eval_20260507`
 
 ## Missing inputs
 

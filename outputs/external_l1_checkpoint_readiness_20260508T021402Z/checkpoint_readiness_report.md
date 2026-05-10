@@ -13,9 +13,9 @@
 
 ## Reusable baseline and fresh generation
 - Reusable external baseline artifacts:
-  - `/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/external_l1_results.csv`
-  - `/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.csv`
-  - `/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_results.jsonl`
+  - `outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/external_l1_results.csv`
+  - `outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.csv`
+  - `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_results.jsonl`
 - Must be generated fresh for approved run: integrated method outputs on selected checkpoint cases.
 
 ## Readiness status

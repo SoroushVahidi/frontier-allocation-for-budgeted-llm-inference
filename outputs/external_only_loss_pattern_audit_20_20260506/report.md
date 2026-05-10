@@ -1,6 +1,6 @@
 # External-only loss pattern audit (cumulative 20)
 
-- Output path: `/home/soroush/research-next-wt/outputs/external_only_loss_pattern_audit_20_20260506`
+- Output path: `outputs/external_only_loss_pattern_audit_20_20260506`
 - Unique external-only losses: **20** (expected 20: yes)
 - Source counts: {'previous_100pair_external_only_losses': 5, 'round1_collection_external_only_loss_casebook': 10, 'round2_collection_external_only_loss_casebook': 5}
 

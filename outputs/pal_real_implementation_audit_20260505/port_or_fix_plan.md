@@ -2,7 +2,7 @@
 
 ## Situation
 
-Classification **C**: **real PAL is absent from `research-next-wt`** (and absent from `pal-pilot-clean` / `diverse-root-clean`), but **exists locally** under `/home/soroush/frontier-allocation-for-budgeted-llm-inference` with:
+Classification **C**: **real PAL is absent from `research-next-wt`** (and absent from `pal-pilot-clean` / `diverse-root-clean`), but **exists locally** under `` with:
 
 - sandbox execution helper `experiments/pal_executor.py`
 - controller wiring (`enable_pal_branch`, `pal_budget_actions`, `_run_pal_seed_attempt`, metadata emission)

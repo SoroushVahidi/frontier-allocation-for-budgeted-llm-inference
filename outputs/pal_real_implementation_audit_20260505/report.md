@@ -2,7 +2,7 @@
 
 - **Classification:** **C**
 - **`..._tiebreak_pal` in clean worktree today:** **`METHODS`/spec resolve, but runtime is still the labelled duplicate of plain tiebreak (`enable_pal_branch` absent)** → **not real PAL behavior.**
-- **Where PAL actually exists:** **only in the dirty local checkout** `/home/soroush/frontier-allocation-for-budgeted-llm-inference` (not merged into `research-next-wt`; `pal-pilot-clean` / `diverse-root-clean` were also missing PAL executor + PAL controller flags).
+- **Where PAL actually exists:** **only in the dirty local checkout** `` (not merged into `research-next-wt`; `pal-pilot-clean` / `diverse-root-clean` were also missing PAL executor + PAL controller flags).
 
 ### Fix applied?
 

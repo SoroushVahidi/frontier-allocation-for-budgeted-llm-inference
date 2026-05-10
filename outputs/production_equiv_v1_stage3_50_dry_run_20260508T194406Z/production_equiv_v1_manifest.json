@@ -3,7 +3,7 @@
   "method_name": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1",
   "method_alias": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1",
   "case_count": 50,
-  "source_case_file": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
+  "source_case_file": "outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
   "enable_structural_commitment_v1": true,
   "enable_adaptive_router_v3_features": true,
   "enable_final_target_verifier_v1": true,

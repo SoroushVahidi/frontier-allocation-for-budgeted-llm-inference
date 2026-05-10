@@ -5,7 +5,7 @@
   "max_tokens": 700,
   "case_count": 10,
   "max_total_cohere_calls": 50,
-  "selected_case_source": "/home/soroush/research-next-wt/outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/selected_50case_core4_baseline_cases.csv",
+  "selected_case_source": "outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/selected_50case_core4_baseline_cases.csv",
   "discovery3_excluded": true,
   "percent_base_enabled": false
 }

@@ -1,5 +1,5 @@
 {
-  "source_dry_run_dir": "/home/soroush/research-next-wt/outputs/adaptive_router_v3_dry_run_20260508T025305Z",
+  "source_dry_run_dir": "outputs/adaptive_router_v3_dry_run_20260508T025305Z",
   "selected_case_count": 10,
   "max_cohere_calls": 14,
   "planned_cohere_calls": 10,

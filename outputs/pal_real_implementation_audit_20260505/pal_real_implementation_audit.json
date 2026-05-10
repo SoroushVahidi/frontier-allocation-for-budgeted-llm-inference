@@ -31,5 +31,5 @@
     "caveat": "passes registry wiring only; PAL runtime still absent until port completes"
   },
   "paired_pal_api_run_recommendation": "blocked_until_port",
-  "source_checkout_hint_for_port": "/home/soroush/frontier-allocation-for-budgeted-llm-inference"
+  "source_checkout_hint_for_port": ""
 }

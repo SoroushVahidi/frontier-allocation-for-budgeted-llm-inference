@@ -1,6 +1,6 @@
 # PAL real-port — scope & safety review (pre-commit / pre–API-run)
 
-Working tree: `/home/soroush/research-next-wt`. **No API calls**, **no live evaluation scripts**, **no git staging/commit** performed during this review.
+Working tree: ``. **No API calls**, **no live evaluation scripts**, **no git staging/commit** performed during this review.
 
 ## 1) Git inspect
 

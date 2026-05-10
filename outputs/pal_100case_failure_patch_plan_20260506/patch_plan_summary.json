@@ -1,6 +1,6 @@
 {
-  "source_analysis_dir": "/home/soroush/research-next-wt/outputs/paired_pal_external_100case_analysis_20260506",
-  "source_run_dir": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+  "source_analysis_dir": "outputs/paired_pal_external_100case_analysis_20260506",
+  "source_run_dir": "outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
   "actionable_failures_total": 5,
   "actionable_categories": {
     "P1_prompt_no_code_emitted": 2,

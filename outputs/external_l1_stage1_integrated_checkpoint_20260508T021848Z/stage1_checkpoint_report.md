@@ -1,13 +1,13 @@
 # Stage-1 integrated checkpoint vs external_l1_max
 
-- Case set: `/home/soroush/research-next-wt/outputs/external_l1_checkpoint_readiness_20260508T021402Z/recommended_checkpoint_cases.csv`
+- Case set: `outputs/external_l1_checkpoint_readiness_20260508T021402Z/recommended_checkpoint_cases.csv`
 - Calls used: 0 / 5
 - External baseline reused; external_l1 was not regenerated.
 
 ## External sources reused
-- `/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/external_l1_results.csv`
-- `/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.csv`
-- `/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_results.jsonl`
+- `outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z/external_l1_results.csv`
+- `outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/external_l1_results.csv`
+- `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_results.jsonl`
 
 ## Scoreboard
 - external_l1_correct: 34/40

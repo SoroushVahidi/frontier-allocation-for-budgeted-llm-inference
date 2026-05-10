@@ -1,6 +1,6 @@
 {
-  "readiness_dir": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z",
-  "case_file": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
+  "readiness_dir": "outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z",
+  "case_file": "outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
   "case_count": 50,
   "cohere_api_key_set": true,
   "planned_new_cohere_calls": 50,

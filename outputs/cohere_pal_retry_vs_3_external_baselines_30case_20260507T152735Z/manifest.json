@@ -58,7 +58,7 @@
     "HUGGINGFACE_HUB_TOKEN": "set",
     "OPENAI_API_KEY": "unset"
   },
-  "command_line": ".venv/bin/python scripts/run_cohere_real_model_cost_normalized_validation.py --timestamp 20260507T152735Z --providers cohere --datasets openai/gsm8k --budgets 6 --seeds 20260501 --target-scored-per-slice 30 --max-examples 30 --methods direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal,external_l1_max,external_tale_prompt_budgeting,external_s1_budget_forcing --allowed-example-ids-file /home/soroush/research-next-wt/outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z/allowed_example_ids.jsonl --output-root /home/soroush/research-next-wt/outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z --max-total-api-calls 900",
+  "command_line": ".venv/bin/python scripts/run_cohere_real_model_cost_normalized_validation.py --timestamp 20260507T152735Z --providers cohere --datasets openai/gsm8k --budgets 6 --seeds 20260501 --target-scored-per-slice 30 --max-examples 30 --methods direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal,external_l1_max,external_tale_prompt_budgeting,external_s1_budget_forcing --allowed-example-ids-file outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z/allowed_example_ids.jsonl --output-root outputs/cohere_pal_retry_vs_3_external_baselines_30case_20260507T152735Z --max-total-api-calls 900",
   "git_commit": "8432d6e265aaa976a400cdaa9253fc4a611839a9",
   "git_branch": "research-next-frontier-iteration-2",
   "runner_manifest_superset": {

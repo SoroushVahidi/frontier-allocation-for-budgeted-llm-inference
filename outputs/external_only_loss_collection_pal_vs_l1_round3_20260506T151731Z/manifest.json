@@ -1,6 +1,6 @@
 {
-  "bundle_dir": "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z",
-  "raw_output_dir": "/home/soroush/research-next-wt/outputs/cohere_real_model_cost_normalized_validation_20260506T151731Z",
+  "bundle_dir": "outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z",
+  "raw_output_dir": "outputs/cohere_real_model_cost_normalized_validation_20260506T151731Z",
   "paired_methods": [
     "external_l1_max",
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
@@ -8,8 +8,8 @@
   "paired_examples_completed": 150,
   "rows_in_per_example_jsonl": 300,
   "logical_api_calls_cap_requested": 1500,
-  "selected_cases_csv": "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/selected_cases.csv",
-  "allowed_example_ids_file": "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/allowed_example_ids.jsonl",
+  "selected_cases_csv": "outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/selected_cases.csv",
+  "allowed_example_ids_file": "outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/allowed_example_ids.jsonl",
   "excluded_example_ids_count_from_preflight": 414,
   "fresh_candidates_total_from_preflight": 905,
   "selected_cases_count_from_preflight": 150,

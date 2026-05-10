@@ -1,6 +1,6 @@
 {
   "mode": "all_available_scaled",
-  "repo": "/home/soroush/research-next-wt",
+  "repo": "",
   "bundles_scanned": [
     "cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
     "cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",

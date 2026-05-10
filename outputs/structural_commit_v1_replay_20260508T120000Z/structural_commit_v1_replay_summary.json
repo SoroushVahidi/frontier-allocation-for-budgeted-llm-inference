@@ -1,6 +1,6 @@
 {
-  "bundle": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
-  "diagnosis_csv": "/home/soroush/research-next-wt/outputs/present_not_selected_commitment_diagnosis_20260508T004419Z/present_not_selected_commitment_cases.csv",
+  "bundle": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+  "diagnosis_csv": "outputs/present_not_selected_commitment_diagnosis_20260508T004419Z/present_not_selected_commitment_cases.csv",
   "gate_functions": [
     "decide_track_b_overlay_commitment_gate",
     "decide_structural_commitment_v1"

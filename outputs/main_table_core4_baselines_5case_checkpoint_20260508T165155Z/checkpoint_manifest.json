@@ -1,6 +1,6 @@
 {
-  "source_cases_csv": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
-  "calibration_csv": "/home/soroush/research-next-wt/outputs/main_table_baseline_call_accounting_calibration_20260508T164916Z/per_method_call_accounting.csv",
+  "source_cases_csv": "outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
+  "calibration_csv": "outputs/main_table_baseline_call_accounting_calibration_20260508T164916Z/per_method_call_accounting.csv",
   "model": "command-a-03-2025",
   "temperature": 0.0,
   "budget": 4,

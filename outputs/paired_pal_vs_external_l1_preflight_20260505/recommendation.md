@@ -6,7 +6,7 @@ Offline inventory + deterministic cohort sizing only. **No Cohere/OpenAI API cal
 
 ## Deterministic workspace
 
-- Repo/worktree: `/home/soroush/research-next-wt`
+- Repo/worktree: ``
 - Pool matches `load_pilot_examples("openai/gsm8k", subset_size=2048, seed=20260501)` (effective pool size **1319**).
 
 ## Fresh cohort availability

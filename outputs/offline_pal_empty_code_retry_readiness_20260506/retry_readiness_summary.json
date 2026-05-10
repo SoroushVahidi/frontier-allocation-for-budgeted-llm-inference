@@ -1,5 +1,5 @@
 {
-  "input_casebook": "/home/soroush/research-next-wt/outputs/external_only_loss_pattern_audit_31_20260506/external_only_31_casebook.csv",
+  "input_casebook": "outputs/external_only_loss_pattern_audit_31_20260506/external_only_31_casebook.csv",
   "external_only_losses_total": 31,
   "l1_p1_code_absent_total": 14,
   "retry_eligible_cases_total": 16,

@@ -1,6 +1,6 @@
 {
-  "manifest_path": "/home/soroush/research-next-wt/manifests/target_staged_pal_retry_primary_11_20260507.json",
-  "out_dir": "/home/soroush/research-next-wt/outputs/target_staged_pal_retry_dry_run_20260507",
+  "manifest_path": "manifests/target_staged_pal_retry_primary_11_20260507.json",
+  "out_dir": "outputs/target_staged_pal_retry_dry_run_20260507",
   "api_execution_enabled": false,
   "primary_case_count": 11,
   "per_case_budget": 6,

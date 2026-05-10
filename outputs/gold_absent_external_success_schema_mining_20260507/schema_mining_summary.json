@@ -1,5 +1,5 @@
 {
-  "bundle": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+  "bundle": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
   "gold_absent_discovery_total": 21,
   "primary_external_correct_n": 11,
   "secondary_both_wrong_n": 10,

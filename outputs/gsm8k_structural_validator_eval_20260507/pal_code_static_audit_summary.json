@@ -1,5 +1,5 @@
 {
-  "bundle": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+  "bundle": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
   "cases": {
     "gold_absent_discovery": 21,
     "guardrail_sampled": 25,
