@@ -1,0 +1,16 @@
+{
+  "prediction": "",
+  "parsed_answer": "",
+  "metadata": {
+    "baseline_family": "self_consistency",
+    "n_samples": 6,
+    "answer_votes": {},
+    "selected_answer": null,
+    "tie_break_rule": "max_votes_then_lexicographic_normalized_key",
+    "call_count": 6
+  },
+  "error_message": "",
+  "status": "parsing_failure",
+  "logical_calls": 6,
+  "cap_error": false
+}

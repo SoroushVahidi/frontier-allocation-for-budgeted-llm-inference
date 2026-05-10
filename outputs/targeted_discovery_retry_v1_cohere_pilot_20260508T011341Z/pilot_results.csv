@@ -1,0 +1,11 @@
+case_id,scaffold,prompt_path,cohere_call_index,response_text_path,parsed_final_answer,gold_answer,exact_match,current_pal_prediction,external_prediction_if_available,improved_over_current_pal,notes
+openai_gsm8k_720,quantity_ledger,prompts/openai_gsm8k_720_quantity_ledger.txt,1,responses/openai_gsm8k_720.txt,106,106,true,106.12080000000002,106,yes,
+openai_gsm8k_750,quantity_ledger,prompts/openai_gsm8k_750_quantity_ledger.txt,2,responses/openai_gsm8k_750.txt,772.6,92,false,532.4666656177045,92,no,
+openai_gsm8k_841,quantity_ledger,prompts/openai_gsm8k_841_quantity_ledger.txt,3,responses/openai_gsm8k_841.txt,262000,262500,false,262000,262500,no,
+openai_gsm8k_906,rate_table,prompts/openai_gsm8k_906_rate_table.txt,4,responses/openai_gsm8k_906.txt,16,16,true,12,16,yes,
+openai_gsm8k_1003,rate_table,prompts/openai_gsm8k_1003_rate_table.txt,5,responses/openai_gsm8k_1003.txt,20,20,true,3,20,yes,
+openai_gsm8k_1099,rate_table,prompts/openai_gsm8k_1099_rate_table.txt,6,responses/openai_gsm8k_1099.txt,2450,2450,true,4900,2450,yes,
+openai_gsm8k_864,before_after_state,prompts/openai_gsm8k_864_before_after_state.txt,7,responses/openai_gsm8k_864.txt,24,24,true,48,24,yes,
+openai_gsm8k_818,before_after_state,prompts/openai_gsm8k_818_before_after_state.txt,8,responses/openai_gsm8k_818.txt,10,10,true,5,10,yes,
+openai_gsm8k_970,target_difference,prompts/openai_gsm8k_970_target_difference.txt,9,responses/openai_gsm8k_970.txt,15,15,true,11,15,yes,
+openai_gsm8k_1019,target_difference,prompts/openai_gsm8k_1019_target_difference.txt,10,responses/openai_gsm8k_1019.txt,30,30,true,44.77611940298539,30,yes,

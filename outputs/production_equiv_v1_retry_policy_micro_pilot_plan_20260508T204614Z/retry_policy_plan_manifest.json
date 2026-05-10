@@ -1,0 +1,17 @@
+{
+  "source_audit_dir": "outputs/production_equiv_v1_retry_commit_loss_audit_20260508T204005Z",
+  "source_rerun_dir": "outputs/production_equiv_v1_stage3_50_live_checkpoint_rerun_20260508T203036Z",
+  "case_count": 10,
+  "planned_calls": 16,
+  "variants": [
+    "final_target_guarded_retry",
+    "structural_commit_challenge_retry",
+    "rate_table_retry",
+    "concise_decomposition_retry"
+  ],
+  "cap": 40,
+  "discovery3_excluded": true,
+  "percent_base_enabled": false,
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true
+}

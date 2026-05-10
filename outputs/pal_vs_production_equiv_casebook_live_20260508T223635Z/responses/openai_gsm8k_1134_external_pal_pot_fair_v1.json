@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "6277",
+  "parsed_answer": "6277",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_inhabitants = 23786\nmale_inhabitants = 8417\nfemale_inhabitants = 9092\nchild_inhabitants = total_inhabitants - male_inhabitants - female_inhabitants\nprint(child_inhabitants)",
+      "stdout": "6277\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "6277",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "6277",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

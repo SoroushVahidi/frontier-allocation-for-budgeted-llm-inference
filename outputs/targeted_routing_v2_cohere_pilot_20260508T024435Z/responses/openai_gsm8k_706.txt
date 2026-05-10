@@ -1,0 +1,18 @@
+To solve this problem, we need to calculate the probabilities of two events and then find the percentage difference between them.
+
+1. **Event 1: Rolling a number greater than 3**  
+   A six-sided die has the numbers 1, 2, 3, 4, 5, and 6. Numbers greater than 3 are 4, 5, and 6.  
+   Probability = (Number of favorable outcomes) / (Total outcomes) = 3/6 = 1/2 = 0.5.
+
+2. **Event 2: Rolling two even numbers in a row**  
+   Even numbers on a die are 2, 4, and 6.  
+   Probability of rolling one even number = 3/6 = 1/2 = 0.5.  
+   Since the rolls are independent, the probability of rolling two even numbers in a row = 0.5 * 0.5 = 0.25.
+
+3. **Difference in probabilities**  
+   Difference = Probability of Event 1 - Probability of Event 2 = 0.5 - 0.25 = 0.25.
+
+4. **Convert difference to percentage**  
+   Percentage difference = 0.25 * 100 = 25%.
+
+\boxed{25}

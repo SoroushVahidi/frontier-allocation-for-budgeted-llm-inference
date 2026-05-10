@@ -1,0 +1,52 @@
+{
+  "case_count": 50,
+  "actual_cohere_calls": 50,
+  "patch_focused_correct_count": 39,
+  "prior_integrated_correct_count": 38,
+  "external_l1_correct_count": 32,
+  "tale_correct_count": 31,
+  "s1_correct_count": 33,
+  "best_external_correct_count": 40,
+  "patch_focused_minus_prior_integrated": 1,
+  "patch_focused_minus_external_l1": 7,
+  "patch_focused_minus_tale": 8,
+  "patch_focused_minus_s1": 6,
+  "patch_focused_minus_best_external": -1,
+  "paired_patch_only_vs_best_external_only": {
+    "patch_only": 1,
+    "best_external_only": 2
+  },
+  "patch_case_results": {
+    "openai_gsm8k_1078": {
+      "action": "patched_prompt",
+      "patch_variant": "final_target_extraction_repair",
+      "parsed_final_answer": "87",
+      "gold_answer": "87",
+      "patch_focused_correct": 1,
+      "prior_integrated_correct": "0",
+      "best_external_correct": "1"
+    },
+    "openai_gsm8k_1155": {
+      "action": "patched_prompt",
+      "patch_variant": "final_target_extraction_repair",
+      "parsed_final_answer": "342",
+      "gold_answer": "342",
+      "patch_focused_correct": 1,
+      "prior_integrated_correct": "0",
+      "best_external_correct": "1"
+    },
+    "openai_gsm8k_1198": {
+      "action": "patched_prompt",
+      "patch_variant": "final_target_extraction_repair_frozen",
+      "parsed_final_answer": "3",
+      "gold_answer": "2",
+      "patch_focused_correct": 0,
+      "prior_integrated_correct": "0",
+      "best_external_correct": "1"
+    }
+  },
+  "api_errors": [],
+  "parsing_ambiguities": 0,
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

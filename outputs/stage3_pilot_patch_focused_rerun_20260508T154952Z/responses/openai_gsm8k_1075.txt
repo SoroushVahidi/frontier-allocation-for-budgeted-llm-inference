@@ -1,0 +1,7 @@
+**Target:** Determine grams of chips to eat without exceeding 2000 calorie daily limit.
+
+1. Calories remaining: \( 2000 - 1800 = 200 \)
+2. Calories per gram: \( \frac{250 \text{ calories}}{300 \text{ g} / 5 \text{ servings}} = \frac{250}{60} = \frac{25}{6} \text{ calories/g} \)
+3. Grams allowed: \( \frac{200}{\frac{25}{6}} = 200 \times \frac{6}{25} = 48 \)
+
+\boxed{48}

@@ -1,0 +1,8 @@
+**Target:** Calculate Madeline's annual dog expenses.
+
+1. Weekly food cost: $25
+2. Monthly costs: Food = $25 * 4 = $100, Treats = $20, Medicine = $100
+3. Total monthly cost: $100 + $20 + $100 = $220
+4. Annual cost: $220 * 12 = $2640
+
+\boxed{2640}

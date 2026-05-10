@@ -1,0 +1,1 @@
+Adaptive router v3 uses deterministic target-quantity and number-role features with conservative routing. Percent-base-denominator remains held back by default.

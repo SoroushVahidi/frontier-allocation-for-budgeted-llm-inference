@@ -1,0 +1,25 @@
+To solve this problem, let's break it down step by step.
+
+1. **Initial Land and First Sale:**
+   - Abraham starts with 80 square meters of land.
+   - He sells half of the land for $50.
+   - Land sold in the first transaction: \( \frac{1}{2} \times 80 = 40 \) square meters.
+   - Remaining land after the first sale: \( 80 - 40 = 40 \) square meters.
+
+2. **Second Sale:**
+   - He then sells another \( \frac{1}{4} \) of his original land for $30.
+   - Land sold in the second transaction: \( \frac{1}{4} \times 80 = 20 \) square meters.
+   - Remaining land after the second sale: \( 40 - 20 = 20 \) square meters.
+
+3. **Final Sale:**
+   - He sells the remaining land for $3 per square meter.
+   - Land sold in the final transaction: 20 square meters.
+   - Money earned from the final sale: \( 20 \times 3 = 60 \) dollars.
+
+4. **Total Earnings:**
+   - Money earned from the first sale: $50
+   - Money earned from the second sale: $30
+   - Money earned from the final sale: $60
+   - Total money earned: \( 50 + 30 + 60 = 140 \) dollars.
+
+final_answer / FINAL_ANSWER: 140

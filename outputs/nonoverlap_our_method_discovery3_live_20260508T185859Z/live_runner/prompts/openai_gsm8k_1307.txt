@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+John likes to have a glass of water with breakfast, lunch and dinner.  Finally, he has one before he goes to bed as well.  John does this every weekday, but on the weekends he likes to relax and have a soda with dinner instead.  How many glasses of water does John drink in a week?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

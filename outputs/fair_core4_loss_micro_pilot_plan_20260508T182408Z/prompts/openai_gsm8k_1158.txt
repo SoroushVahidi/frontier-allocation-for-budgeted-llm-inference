@@ -1,0 +1,14 @@
+Solve this GSM8K-style math problem independently. Do not use any external references.
+
+Problem:
+The girls are trying to raise money for a carnival. Kim raises $320 more than Alexandra, who raises $430, and Maryam raises $400 more than Sarah, who raises $300. How much money, in dollars, did they all raise in total?
+
+Scaffold: final_target_extraction_repair
+- Restate the target variable in one short sentence.
+- Verify that your final number answers that exact target, not an intermediate quantity.
+
+Requirements:
+- Identify the exact final quantity requested before computing.
+- Show concise reasoning/equations only as needed.
+- End with exactly one final-answer line in this format: FINAL_ANSWER: <number>
+- Do not include alternative final answers.

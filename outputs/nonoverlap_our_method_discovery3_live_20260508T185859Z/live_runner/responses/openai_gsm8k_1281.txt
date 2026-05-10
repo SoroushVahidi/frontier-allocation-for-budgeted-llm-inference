@@ -1,0 +1,13 @@
+**Target:** Calculate total lines Sean must memorize.
+
+1. Song lines: \( S = 54 \)
+2. Scene 1 lines: \( L_1 = 2S \), Sean's lines: \( \frac{1}{3}L_1 = \frac{2S}{3} \)
+3. Scene 2 lines: \( L_2 = S + 6 \), Sean's lines: \( \frac{4}{5}L_2 = \frac{4}{5}(S + 6) \)
+4. Total lines: \( T = S + \frac{2S}{3} + \frac{4}{5}(S + 6) \)
+
+\[ T = 54 + \frac{2 \cdot 54}{3} + \frac{4}{5}(54 + 6) \]
+\[ T = 54 + 36 + \frac{4}{5} \cdot 60 \]
+\[ T = 54 + 36 + 48 \]
+\[ T = 138 \]
+
+\boxed{138}

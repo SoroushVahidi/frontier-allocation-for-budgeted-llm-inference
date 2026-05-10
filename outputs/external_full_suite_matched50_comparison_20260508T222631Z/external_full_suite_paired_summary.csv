@@ -1,0 +1,11 @@
+comparator,production_equiv_correct,comparator_correct,delta,both_correct,production_equiv_only,comparator_only,both_wrong,mcnemar_b,mcnemar_c,parsing_failure_caveat
+external_l1_max_fair_v1,36,31,5,28,8,3,11,3,8,core4_rescored_audit_unresolved_pf=7
+external_self_consistency_4_fair_v1,36,33,3,31,5,2,12,2,5,core4_rescored_audit_unresolved_pf=6
+external_self_consistency_6_fair_v1,36,36,0,34,2,2,12,2,2,live_50; parsing_failures=0
+external_pal_pot_fair_v1,36,40,-4,34,2,6,8,6,2,live_50; parsing_failures=0
+external_s1_budget_forcing_faithful_v1,36,32,4,29,7,3,11,3,7,core4_rescored_audit_unresolved_pf=10
+external_tale_ep_prompt_budgeting_faithful_v1,36,34,2,30,6,4,10,4,6,core4_rescored_audit_unresolved_pf=6
+best_individual_external,36,43,-7,36,0,7,7,7,0,
+best_full_external_oracle,36,43,-7,36,0,7,7,7,0,
+best_core4_oracle,36,38,-2,32,4,6,8,6,4,
+prior_patch_focused_integrated,36,39,-3,34,2,5,9,5,2,

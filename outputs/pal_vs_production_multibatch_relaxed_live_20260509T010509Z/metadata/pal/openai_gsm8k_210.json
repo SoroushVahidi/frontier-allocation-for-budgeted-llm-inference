@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_cost = 30 + 2 * 20\nearned_babysitting = 4 * 5\ninitial_savings = 10\nremaining_cost = total_cost - (earned_babysitting + initial_savings)\nlawn_mows_needed = remaining_cost // 4\nif remaining_cost % 4 != 0:\n    lawn_mows_needed += 1\nprint(lawn_mows_needed)",
+    "stdout": "10\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "10",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "10",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

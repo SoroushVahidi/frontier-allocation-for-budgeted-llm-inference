@@ -1,0 +1,17 @@
+**Entities/Quantities:**
+- Let \( W \) be the number of games won.
+- Let \( L \) be the number of games lost.
+- Total games played: \( W + L = 22 \).
+
+**Problem Asks For:**
+- The number of games won (\( W \)).
+
+**Reasoning:**
+1. The team won 8 more games than they lost: \( W = L + 8 \).
+2. Substitute \( W = L + 8 \) into the total games equation: \( (L + 8) + L = 22 \).
+3. Simplify: \( 2L + 8 = 22 \).
+4. Solve for \( L \): \( 2L = 14 \), so \( L = 7 \).
+5. Substitute \( L = 7 \) back into \( W = L + 8 \): \( W = 7 + 8 = 15 \).
+
+**Final Answer:**
+\boxed{15}

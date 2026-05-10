@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using a **rate table**.
+
+Problem:
+Seth is twice as old as Brooke. In ２ years, the sum of their ages will be ２８. How old is Seth?
+
+Instructions:
+- Identify each relevant **rate** (with units), the **base quantity** or time span, and what **total** is needed.
+- Build a small table: entity / rate / quantity or duration / subtotal — one row per line of reasoning.
+- Make sure units cancel consistently before you combine rows.
+- Compute the final numeric result and verify it matches the story.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

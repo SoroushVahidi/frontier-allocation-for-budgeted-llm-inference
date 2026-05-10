@@ -1,0 +1,13 @@
+{
+  "total_cases": 3,
+  "actual_cohere_calls": 3,
+  "exact_count": 2,
+  "patch_cases_exact": 1,
+  "patch_cases_total": 2,
+  "control_exact": 1,
+  "closes_best_external_gap_recomputed_count": 2,
+  "api_errors": [],
+  "parsing_ambiguities": 0,
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

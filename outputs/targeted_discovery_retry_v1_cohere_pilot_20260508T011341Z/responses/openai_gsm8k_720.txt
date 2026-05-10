@@ -1,0 +1,18 @@
+**Quantity Ledger:**
+
+1. **Principal Amount**: $100 (USD) - The initial amount Mandy owes Benedict.  
+2. **Monthly Interest Rate**: 2% (unitless) - The interest rate per month.  
+3. **Number of Months**: 3 (unitless) - The duration for which the interest is applied.  
+4. **Total Amount to Pay**: ? (USD) - **Target** quantity.  
+
+**Plan:**  
+1. Calculate the monthly interest: \( \text{Monthly Interest} = \text{Principal} \times \text{Monthly Interest Rate} \).  
+2. Calculate the total interest over 3 months: \( \text{Total Interest} = \text{Monthly Interest} \times \text{Number of Months} \).  
+3. Add the total interest to the principal to find the total amount to pay: \( \text{Total Amount to Pay} = \text{Principal} + \text{Total Interest} \).  
+
+**Execution:**  
+1. Monthly Interest: \( 100 \times 0.02 = 2 \) USD.  
+2. Total Interest: \( 2 \times 3 = 6 \) USD.  
+3. Total Amount to Pay: \( 100 + 6 = 106 \) USD.  
+
+**Final Answer:** \(\boxed{106}\)

@@ -1,0 +1,53 @@
+{
+  "created_at_utc": "2026-05-06T18:52:11.411656+00:00",
+  "output_dir": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
+  "selected_count": 100,
+  "target_selected_count": 100,
+  "dataset": "openai/gsm8k",
+  "seed": 20260501,
+  "budget": 6,
+  "methods": [
+    "external_l1_max",
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
+  ],
+  "max_total_api_calls": 1500,
+  "required_exclusion_dirs": [
+    "outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z",
+    "outputs/external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z",
+    "outputs/external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z",
+    "outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z",
+    "outputs/cohere_pal_empty_code_retry_smoke_5case_20260506T173309Z",
+    "outputs/cohere_pal_empty_code_retry_followup_15case_20260506T175516Z"
+  ],
+  "exclusion_files_used": [
+    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z/allowed_example_ids.jsonl",
+    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z/paired_casebook.csv",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z/allowed_example_ids.jsonl",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z/paired_casebook.csv",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z/allowed_example_ids.jsonl",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z/paired_casebook.csv",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/allowed_example_ids.jsonl",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/paired_casebook.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_pal_empty_code_retry_smoke_5case_20260506T173309Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_pal_empty_code_retry_smoke_5case_20260506T173309Z/allowed_example_ids.jsonl",
+    "/home/soroush/research-next-wt/outputs/cohere_pal_empty_code_retry_followup_15case_20260506T175516Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_pal_empty_code_retry_followup_15case_20260506T175516Z/allowed_example_ids.jsonl",
+    "/home/soroush/research-next-wt/outputs/cohere_trace_complete_loss_subset_20260427T175000Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/allowed_example_ids.jsonl",
+    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/paired_casebook.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_trace_complete_loss_subset_20260427T180000Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_trace_complete_loss_subset_20260427T183000_DEBUG4/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_trace_complete_loss_subset_20260427T174225Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_trace_complete_loss_subset_20260427T183000_DEBUG10/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_20260506T040238Z/allowed_example_ids.jsonl",
+    "/home/soroush/research-next-wt/outputs/cohere_trace_complete_loss_subset_20260427T172834Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_trace_complete_loss_subset_20260427T183000Z/selected_cases.csv",
+    "/home/soroush/research-next-wt/outputs/cohere_trace_complete_loss_subset_DEBUG_SELECTION/selected_cases.csv"
+  ],
+  "excluded_example_ids_count": 672
+}

@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "monday_rain = 2\ntuesday_rain = 2 * monday_rain + 1\nprint(tuesday_rain)",
+    "stdout": "5\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "5",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "5",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

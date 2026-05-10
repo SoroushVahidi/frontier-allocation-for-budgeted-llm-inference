@@ -1,0 +1,31 @@
+{
+  "total_latest_method_failures": 243,
+  "full_count": 28,
+  "partial_count": 1,
+  "id_only_count": 214,
+  "top_families": [
+    [
+      "final_target_mismatch",
+      9
+    ],
+    [
+      "structural_commit_wrong",
+      9
+    ],
+    [
+      "retry_commit_miss",
+      4
+    ],
+    [
+      "parse_format",
+      3
+    ],
+    [
+      "multi_step_computation",
+      2
+    ]
+  ],
+  "has_extra_cases": false,
+  "extra_case_count": 0,
+  "output_directory": "outputs/full_failure_case_inventory_20260510T115129"
+}

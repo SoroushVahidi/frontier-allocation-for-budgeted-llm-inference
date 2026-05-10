@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "price_per_gallon = 3.00\ncashback_per_gallon = 0.20\ngallons_purchased = 10\ntotal_cost = (price_per_gallon - cashback_per_gallon) * gallons_purchased\nprint(total_cost)",
+    "stdout": "28.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "28.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "28.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

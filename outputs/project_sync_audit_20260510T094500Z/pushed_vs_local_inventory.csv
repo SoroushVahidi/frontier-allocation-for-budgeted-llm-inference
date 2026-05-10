@@ -1,0 +1,10 @@
+path,status,location,pushed
+docs/project_handoff_20260510/,tracked,research-next-wt,yes
+outputs/pal_retry_300case_analysis_20260506/,tracked,research-next-wt,yes
+experiments/targeted_discovery_retry.py,tracked,research-next-wt,yes
+experiments/output_layer_repair.py,modified,frontier-allocation-for-budgeted-llm-inference,no
+outputs/external_full_suite_matched50_comparison_20260508T222631Z/,untracked,research-next-wt,no
+manifests/target_staged_pal_retry_primary_11_20260507.json,untracked,research-next-wt,no
+prompts/target_staged_pal_retry/,untracked,research-next-wt,no
+scripts/run_production_equiv_v1_live_calibration.py,untracked,research-next-wt,no
+tests/test_structural_commitment_v1.py,untracked,research-next-wt,no

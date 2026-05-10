@@ -1,0 +1,18 @@
+**Quantity Ledger for Mandy's Payment to Benedict**
+
+**Target Quantity:** Total amount Mandy should pay Benedict after 3 months.
+
+**Ledger:**
+
+1. **Principal (one-time):** $100 (initial amount owed)
+2. **Monthly Interest (per-period recurring):** 2% of the principal, which is $100 * 0.02 = $2 per month
+3. **Total Interest for 3 months:** $2 * 3 = $6
+4. **Total Amount to be Paid:** Principal + Total Interest = $100 + $6
+
+**Final Calculation:**
+
+Total Amount to be Paid = $100 + $6 = $106
+
+**Final Answer:**
+
+\boxed{106}

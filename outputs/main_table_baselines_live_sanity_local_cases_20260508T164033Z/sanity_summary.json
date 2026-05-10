@@ -1,0 +1,80 @@
+{
+  "case_count": 2,
+  "method_count": 6,
+  "record_count": 12,
+  "planned_logical_calls": 12,
+  "actual_logical_calls": 20,
+  "api_errors": [
+    {
+      "case_id": "openai_gsm8k_1083",
+      "method": "external_l1_max_fair_v1",
+      "error": "RuntimeError: Global logical API call cap reached (20 >= 20). Increase --max-total-api-calls or reduce workload."
+    },
+    {
+      "case_id": "openai_gsm8k_1083",
+      "method": "external_self_consistency_4_fair_v1",
+      "error": "RuntimeError: Global logical API call cap reached (20 >= 20). Increase --max-total-api-calls or reduce workload."
+    },
+    {
+      "case_id": "openai_gsm8k_1083",
+      "method": "external_self_consistency_6_fair_v1",
+      "error": "RuntimeError: Global logical API call cap reached (20 >= 20). Increase --max-total-api-calls or reduce workload."
+    },
+    {
+      "case_id": "openai_gsm8k_1083",
+      "method": "external_pal_pot_fair_v1",
+      "error": "RuntimeError: Global logical API call cap reached (20 >= 20). Increase --max-total-api-calls or reduce workload."
+    },
+    {
+      "case_id": "openai_gsm8k_1083",
+      "method": "external_s1_budget_forcing_faithful_v1",
+      "error": "RuntimeError: Global logical API call cap reached (20 >= 20). Increase --max-total-api-calls or reduce workload."
+    },
+    {
+      "case_id": "openai_gsm8k_1083",
+      "method": "external_tale_ep_prompt_budgeting_faithful_v1",
+      "error": "RuntimeError: Global logical API call cap reached (20 >= 20). Increase --max-total-api-calls or reduce workload."
+    }
+  ],
+  "parsing_failures": 0,
+  "per_method_status": {
+    "external_l1_max_fair_v1": {
+      "success": 1,
+      "method_execution_error": 1,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_self_consistency_4_fair_v1": {
+      "success": 1,
+      "method_execution_error": 1,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_self_consistency_6_fair_v1": {
+      "success": 1,
+      "method_execution_error": 1,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_pal_pot_fair_v1": {
+      "success": 1,
+      "method_execution_error": 1,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_s1_budget_forcing_faithful_v1": {
+      "success": 1,
+      "method_execution_error": 1,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    },
+    "external_tale_ep_prompt_budgeting_faithful_v1": {
+      "success": 1,
+      "method_execution_error": 1,
+      "parsing_failure": 0,
+      "metadata_present": 1
+    }
+  },
+  "simulate_no_api": false,
+  "max_total_api_calls": 20
+}

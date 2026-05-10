@@ -1,0 +1,51 @@
+{
+  "generated_at_utc": "2026-05-06",
+  "workspace": {
+    "pwd": "/home/soroush/research-next-wt",
+    "branch": "research-next-frontier-iteration",
+    "head_sha": "f0bd30886b3de383eda2149bdf1b716d0061141c",
+    "head_subject": "results: add capped Cohere PAL vs external L1 pilot (#357)"
+  },
+  "merged_main_history_highlights": [
+    {
+      "pr": 358,
+      "squash_commit": "78252a04240f23dd7e5ed59482a532afdb61a088",
+      "title": "Add diverse-root frontier discovery strategy (#358)",
+      "summary": "Diverse-root frontier discovery stack (V1/guarded variants), eval runners and GSM8K held-out comparison wiring, candidate/trace extraction and parsing hardening, and safe real-generation budget controls—per squash commit message and merged codebase."
+    },
+    {
+      "pr": 357,
+      "squash_commit": "f0bd30886b3de383eda2149bdf1b716d0061141c",
+      "title": "results: add capped Cohere PAL vs external L1 pilot (#357)",
+      "summary": "Committed capped paired PAL vs external_l1_max pilot bundle under outputs/, plus allowlist/materialization helpers (scripts/build_fresh_gsm8k_paired_allowlist.py, scripts/materialize_cohere_paired_pal_external_bundle.py)."
+    }
+  ],
+  "documentation_reviewed": [
+    "README.md",
+    "START_HERE_CURRENT.md",
+    "docs/UNIT_TRACK_STATUS_20260505.md",
+    "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/paired_report.md",
+    "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/paired_summary.json"
+  ],
+  "curated_committed_artifacts": {
+    "pal_paired_pilot_pr_357": "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/",
+    "diverse_root_pr_358": "No standalone top-level docs/ report located for PR #358 in this snapshot; primary narrative is squash commit message plus experiments/scripts/tests implementing diverse-root frontier V1."
+  },
+  "current_best_internal_method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+  "best_current_empirical_signal": {
+    "label": "capped paired PAL vs external_l1_max pilot (PR #357 bundle)",
+    "external_l1_max_exact": "36/43",
+    "pal_exact": "40/43",
+    "pal_advantage_percentage_points": 9.3,
+    "source_relative_path": "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/paired_summary.json"
+  },
+  "claim_boundary": "Small capped paired pilot on a fresh allowlist slice under explicit logical-call budgeting—not paper-level proof or broad external_l1_max defeat.",
+  "previous_targeted_pal_evidence": "PAL fixed 21/28 targeted internal-loss cases after the PAL integration fix (internal loss-casebook milestone; not re-derived here).",
+  "main_remaining_bottlenecks": [
+    "Need larger fresh paired PAL vs external_l1_max validation.",
+    "Remaining PAL failures mostly code absent / safety rejection.",
+    "Need clean metric consistency for PAL-aware discovery / Discovery3.",
+    "Need decide whether to improve PAL prompt or scale paired validation first."
+  ],
+  "recommended_next_research_action": "No new algorithmic variant before scaling evidence; run a larger paired PAL-vs-external validation only after a no-API preflight that estimates calls and case count under the chosen caps."
+}

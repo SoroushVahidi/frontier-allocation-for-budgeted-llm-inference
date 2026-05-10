@@ -1,0 +1,20 @@
+Solve this GSM8K-style problem independently using a quantity-ledger schema.
+
+Problem:
+The power goes out in Brianna's house one night so she and her family gather all their candles and flashlights. There are ８ rooms in the house and ４ people living there, including Brianna. There is a flashlight for every person to carry and two for each room. They have a variety of candles available; ４ small candles each for half the rooms and ５ medium candles each for the other half of the rooms. With everything combined, how many candles and flashlights are Brianna's family using when the lights go out?
+
+Use a ledger over given quantities, then compute the requested target.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.

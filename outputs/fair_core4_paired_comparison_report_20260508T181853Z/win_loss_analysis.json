@@ -1,0 +1,98 @@
+{
+  "case_count": 50,
+  "our_correct": 39,
+  "fair_core4_scores": {
+    "external_l1_max_fair_v1": 31,
+    "external_self_consistency_4_fair_v1": 33,
+    "external_s1_budget_forcing_faithful_v1": 32,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 34
+  },
+  "best_core4_correct": 38,
+  "paired_summary_by_comparator": {
+    "external_l1_max_fair_v1": {
+      "comparator": "external_l1_max_fair_v1",
+      "our_correct": 39,
+      "comparator_correct": 31,
+      "our_minus_comparator": 8,
+      "both_correct": 30,
+      "our_only": 9,
+      "comparator_only": 1,
+      "both_wrong": 10,
+      "mcnemar_b_our_only": 9,
+      "mcnemar_c_comparator_only": 1,
+      "parsing_failures_comparator": 7,
+      "caveat": "comparator has unresolved parsing failures"
+    },
+    "external_self_consistency_4_fair_v1": {
+      "comparator": "external_self_consistency_4_fair_v1",
+      "our_correct": 39,
+      "comparator_correct": 33,
+      "our_minus_comparator": 6,
+      "both_correct": 31,
+      "our_only": 8,
+      "comparator_only": 2,
+      "both_wrong": 9,
+      "mcnemar_b_our_only": 8,
+      "mcnemar_c_comparator_only": 2,
+      "parsing_failures_comparator": 6,
+      "caveat": "comparator has unresolved parsing failures"
+    },
+    "external_s1_budget_forcing_faithful_v1": {
+      "comparator": "external_s1_budget_forcing_faithful_v1",
+      "our_correct": 39,
+      "comparator_correct": 32,
+      "our_minus_comparator": 7,
+      "both_correct": 30,
+      "our_only": 9,
+      "comparator_only": 2,
+      "both_wrong": 9,
+      "mcnemar_b_our_only": 9,
+      "mcnemar_c_comparator_only": 2,
+      "parsing_failures_comparator": 10,
+      "caveat": "comparator has unresolved parsing failures"
+    },
+    "external_tale_ep_prompt_budgeting_faithful_v1": {
+      "comparator": "external_tale_ep_prompt_budgeting_faithful_v1",
+      "our_correct": 39,
+      "comparator_correct": 34,
+      "our_minus_comparator": 5,
+      "both_correct": 33,
+      "our_only": 6,
+      "comparator_only": 1,
+      "both_wrong": 10,
+      "mcnemar_b_our_only": 6,
+      "mcnemar_c_comparator_only": 1,
+      "parsing_failures_comparator": 6,
+      "caveat": "comparator has unresolved parsing failures"
+    },
+    "best_core4_oracle": {
+      "comparator": "best_core4_oracle",
+      "our_correct": 39,
+      "comparator_correct": 38,
+      "our_minus_comparator": 1,
+      "both_correct": 36,
+      "our_only": 3,
+      "comparator_only": 2,
+      "both_wrong": 9,
+      "mcnemar_b_our_only": 3,
+      "mcnemar_c_comparator_only": 2,
+      "parsing_failures_comparator": "",
+      "caveat": "oracle upper-envelope over 4 baselines"
+    }
+  },
+  "strongest_individual_baseline": "external_tale_ep_prompt_budgeting_faithful_v1",
+  "our_margin_over_strongest_individual_baseline": 5,
+  "our_margin_over_best_core4": 1,
+  "parsing_failure_counts": {
+    "external_l1_max_fair_v1": 7,
+    "external_self_consistency_4_fair_v1": 6,
+    "external_s1_budget_forcing_faithful_v1": 10,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 6
+  },
+  "claim_strength": "production_equivalent_needed",
+  "caveats": [
+    "Our method score is from patch-focused/pilot-scaffolded runtime, not production-equivalent runtime.",
+    "Core4 fair baselines retain unresolved parsing failures that may depress absolute scores.",
+    "SC-6 and PAL/PoT are not included in this comparison set."
+  ]
+}

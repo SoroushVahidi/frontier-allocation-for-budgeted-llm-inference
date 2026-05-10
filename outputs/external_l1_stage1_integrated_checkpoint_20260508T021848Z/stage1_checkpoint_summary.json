@@ -1,0 +1,19 @@
+{
+  "case_count": 40,
+  "actual_new_cohere_calls": 0,
+  "external_l1_correct_count": 34,
+  "baseline_pal_correct_count": 33,
+  "integrated_correct_count": 33,
+  "integrated_minus_external_l1": -1,
+  "integrated_minus_baseline_pal": 0,
+  "paired_external_l1_only": 2,
+  "paired_integrated_only": 1,
+  "both_correct": 32,
+  "both_wrong": 5,
+  "mcnemar_inputs": {
+    "external_correct_integrated_wrong": 2,
+    "integrated_correct_external_wrong": 1
+  },
+  "api_errors": [],
+  "parsing_ambiguities": 0
+}

@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using a **quantity ledger**.
+
+Problem:
+Jenny goes to the florist to buy some flowers. Roses cost $2 each and $15 for a dozen. If she bought 15 roses and arrived with five 5 dollar bills and they only have quarters for change, how many quarters does she leave with?
+
+Instructions:
+- List every numeric quantity with its unit (or "unitless") and what it measures.
+- State clearly which quantity the question asks for (the **target**).
+- Write the equation or step-by-step arithmetic plan that connects the quantities to the target.
+- Execute the plan carefully and double-check units and percentages.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

@@ -1,0 +1,9 @@
+**Target:** Calculate the additional drying time for 6 paintings with the new varnish compared to the old varnish.
+
+1. Old varnish time per painting: \( t_{\text{old}} = 7 \) minutes
+2. New varnish time per painting: \( t_{\text{new}} = 12 \) minutes
+3. Total time for 6 paintings with old varnish: \( T_{\text{old}} = 6 \times t_{\text{old}} = 42 \) minutes
+4. Total time for 6 paintings with new varnish: \( T_{\text{new}} = 6 \times t_{\text{new}} = 72 \) minutes
+5. Additional time: \( \Delta T = T_{\text{new}} - T_{\text{old}} = 72 - 42 = 30 \) minutes
+
+\boxed{30}

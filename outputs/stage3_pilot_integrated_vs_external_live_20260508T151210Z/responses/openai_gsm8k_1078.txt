@@ -1,0 +1,12 @@
+**Target:** Calculate the total combined age of Dora, her father, and her mother.
+
+Let \( D = 15 \) (Dora's age), \( F \) (father's age), and \( M \) (mother's age).
+
+1. \( F = 2D + 8 \)
+2. \( M = F - 4 \)
+3. Total age: \( D + F + M \)
+
+Substitute and simplify:
+\[ D + (2D + 8) + ((2D + 8) - 4) = 15 + 30 + 12 + 8 - 4 = 61 \]
+
+\boxed{61}

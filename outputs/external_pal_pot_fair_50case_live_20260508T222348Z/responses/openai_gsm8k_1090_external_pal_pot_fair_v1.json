@@ -1,0 +1,34 @@
+{
+  "prediction": "5",
+  "parsed_answer": "5",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_spent = 300\nprice_per_book = 15\nnumber_of_kids = 4\n\ntotal_books = total_spent // price_per_book\nbooks_per_kid = total_books // number_of_kids\n\nprint(books_per_kid)",
+      "stdout": "5\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "5",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "5",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

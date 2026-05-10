@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "writing_time = 4\nrecording_time = writing_time / 2\nediting_time = 90 / 60  \ntotal_time = writing_time + recording_time + editing_time\nprint(f\"{(editing_time / total_time) * 100:.0f}\")",
+    "stdout": "20\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "20",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "20",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

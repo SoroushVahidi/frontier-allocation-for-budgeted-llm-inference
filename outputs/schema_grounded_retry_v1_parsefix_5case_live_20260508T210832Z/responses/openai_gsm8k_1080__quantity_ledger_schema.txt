@@ -1,0 +1,21 @@
+{
+"SCHEMA_TYPE": "quantity_ledger_schema",
+"TARGET_QUANTITY": "Total number of legs",
+"GIVEN_QUANTITIES": [
+"Dogs: 5",
+"Cats: 2",
+"Birds: 10",
+"Legs per dog: 4",
+"Legs per cat: 4",
+"Legs per bird: 2"
+],
+"EQUATIONS": [
+"Total legs = (Dogs * Legs per dog) + (Cats * Legs per cat) + (Birds * Legs per bird)"
+],
+"COMPUTATION": [
+"Total legs = (5 * 4) + (2 * 4) + (10 * 2)",
+"Total legs = 20 + 8 + 20",
+"Total legs = 48"
+],
+"FINAL_ANSWER": 48
+}

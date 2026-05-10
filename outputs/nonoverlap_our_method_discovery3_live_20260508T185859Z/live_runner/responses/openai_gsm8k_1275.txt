@@ -1,0 +1,8 @@
+**Target:** Calculate the total number of Instagram likes after the recent increase.
+
+1. Initial likes after 1 week: \( L_1 = 2000 \)
+2. Likes after 3 more weeks: \( L_2 = 70 \times L_1 = 70 \times 2000 = 140000 \)
+3. Recent additional likes: \( L_3 = 20000 \)
+4. Total likes: \( L_{\text{total}} = L_2 + L_3 = 140000 + 20000 = 160000 \)
+
+\boxed{160000}

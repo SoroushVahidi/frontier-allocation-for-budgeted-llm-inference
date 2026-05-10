@@ -1,0 +1,14 @@
+{
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "max_total_cohere_calls": 5,
+  "case_count": 5,
+  "selected_case_ids": [
+    "openai_gsm8k_1121",
+    "openai_gsm8k_1155",
+    "openai_gsm8k_1077",
+    "openai_gsm8k_1080",
+    "openai_gsm8k_1081"
+  ]
+}

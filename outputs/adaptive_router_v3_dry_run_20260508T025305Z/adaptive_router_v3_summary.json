@@ -1,0 +1,21 @@
+{
+  "total_cases_scored": 114,
+  "stage2_disagreement_cases_scored": 14,
+  "chosen_scaffold_counts": {
+    "base_method_no_retry": 66,
+    "ratio_partition": 13,
+    "average_target_score": 7,
+    "state_composition": 9,
+    "target_difference_v1": 1,
+    "unknown": 2,
+    "combinatorics_counting": 2
+  },
+  "targeted_retry_count": 32,
+  "abstain_count": 2,
+  "base_count": 66,
+  "held_back_percent_base_count": 6,
+  "external_l1_only_cases_targeted": 5,
+  "both_wrong_cases_targeted": 5,
+  "successful_v2_scaffold_cases_targeted": 31,
+  "percent_base_cases_held_back": 6
+}

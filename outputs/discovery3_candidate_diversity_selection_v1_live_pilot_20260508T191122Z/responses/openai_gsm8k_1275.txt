@@ -1,0 +1,23 @@
+To solve this problem, let's break it down step by step.
+
+1. **Identify the exact requested final quantity**: The total number of Instagram likes after the recent addition of 20,000 new likes.
+
+2. **Decompose into concise equations**:
+   - Initial number of likes after 1 week: \( L_0 = 2000 \)
+   - Number of likes after 3 more weeks: \( L_1 = 70 \times L_0 \)
+   - Recent addition of likes: \( \Delta L = 20000 \)
+   - Total number of likes: \( L_{\text{total}} = L_1 + \Delta L \)
+
+3. **Compute independently**:
+   - Calculate \( L_1 \):
+     \[
+     L_1 = 70 \times 2000 = 140000
+     \]
+   - Calculate \( L_{\text{total}} \):
+     \[
+     L_{\text{total}} = 140000 + 20000 = 160000
+     \]
+
+4. **Verify units and target alignment**: The units are consistent (likes), and the target is the total number of likes.
+
+final_answer / FINAL_ANSWER: 160000

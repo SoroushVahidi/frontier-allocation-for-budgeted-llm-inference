@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "first_pack = 400\nsecond_pack = 2 * first_pack\ntotal_packs = first_pack + second_pack\ndiscount = 0.2 * total_packs\ntotal_after_discount = total_packs - discount\ntotal_cost = total_after_discount + 150\nprint(total_cost)",
+    "stdout": "1110.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "1110.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "1110.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

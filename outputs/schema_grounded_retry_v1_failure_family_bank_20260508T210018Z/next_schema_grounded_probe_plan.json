@@ -1,0 +1,30 @@
+{
+  "recommended_next_step": "5case_format_sanity_probe",
+  "recommended_next_step_after_sanity": "family_level_dev_probe",
+  "more_failure_collection_needed": false,
+  "recommended_5case_format_probe_cases": [
+    "openai_gsm8k_1077",
+    "openai_gsm8k_1080",
+    "openai_gsm8k_1081",
+    "openai_gsm8k_1091",
+    "openai_gsm8k_1096"
+  ],
+  "recommended_family_dev_probe_cases": [
+    "openai_gsm8k_1275",
+    "openai_gsm8k_1137",
+    "openai_gsm8k_1080",
+    "openai_gsm8k_1139",
+    "openai_gsm8k_1121",
+    "openai_gsm8k_1141",
+    "openai_gsm8k_1317",
+    "openai_gsm8k_1279",
+    "openai_gsm8k_1108",
+    "openai_gsm8k_1186",
+    "openai_gsm8k_1129",
+    "openai_gsm8k_1182"
+  ],
+  "estimated_calls_5case": 5,
+  "estimated_calls_family_dev": 12,
+  "what_success_means": "Schema outputs parse reliably with required block labels and FINAL_ANSWER; family-level dev cases show directional improvement potential.",
+  "what_success_does_not_mean": "No claim of broad SOTA or readiness for 50/245 without holdout validation and controlled reruns."
+}

@@ -1,0 +1,13 @@
+failure_category,count
+A.external_also_wrong,15
+B.code_absent,2
+D.exec_failed,1
+E.exec_succeeded_wrong,1
+C.unsafe_code,1
+
+pattern_note,count
+external also wrong (hard item or shared reasoning miss),15
+no executable PAL code returned,2
+execution failed before producing usable answer,1
+code executed but produced wrong final computation,1
+code blocked by safety whitelist/sandbox,1

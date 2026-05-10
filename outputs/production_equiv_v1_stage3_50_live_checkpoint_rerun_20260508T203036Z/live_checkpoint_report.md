@@ -1,0 +1,17 @@
+# production_equiv_v1 stage3 50-case live checkpoint rerun
+- case_count: 50
+- completed_rows: 50
+- incomplete_rows: 0
+- actual_cohere_calls_completed_rows: 102
+- actual_cohere_calls_run_level: 198
+- effective_call_cap: 200
+- global_cap_reached: False
+- cap_error_count: 0
+- production_equiv_correct_count: 36
+- parsing_failures: 1
+- metadata_present_count: 50
+- targeted_retry_triggered_count: 11
+- targeted_retry_committed_count: 0
+- surface_source_counts: {'structural_commit': 50}
+- no_gold_leakage: True
+- no_prediction_leakage: True

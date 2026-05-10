@@ -1,0 +1,49 @@
+{
+  "output_path": "/home/soroush/research-next-wt/outputs/final_paired_pal_external_preflight_20260505",
+  "artifact_files_scanned": [
+    "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/allowed_example_ids.jsonl",
+    "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/paired_casebook.csv",
+    "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/selected_cases.csv",
+    "outputs/cohere_trace_complete_loss_subset_20260427T172834Z/selected_cases.csv",
+    "outputs/cohere_trace_complete_loss_subset_20260427T174225Z/selected_cases.csv",
+    "outputs/cohere_trace_complete_loss_subset_20260427T175000Z/selected_cases.csv",
+    "outputs/cohere_trace_complete_loss_subset_20260427T180000Z/selected_cases.csv",
+    "outputs/cohere_trace_complete_loss_subset_20260427T183000Z/selected_cases.csv",
+    "outputs/cohere_trace_complete_loss_subset_20260427T183000_DEBUG10/selected_cases.csv",
+    "outputs/cohere_trace_complete_loss_subset_20260427T183000_DEBUG4/selected_cases.csv",
+    "outputs/cohere_trace_complete_loss_subset_DEBUG_SELECTION/selected_cases.csv",
+    "outputs/conservative_trace_support_selector_20260501T025054Z/selector_casebook.csv",
+    "outputs/conservative_trace_support_selector_20260501T025615Z/selector_casebook.csv",
+    "outputs/external_loss_casebook_20260430T184023Z/loss_casebook_200.csv",
+    "outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_combined_200.csv",
+    "outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_final_rows_only.csv",
+    "outputs/external_loss_casebook_broad_20260430T185500Z/loss_casebook_trace_complete.csv",
+    "outputs/l1_defeat_selector_wulver_20260430T182316Z/cohere_verifier/override_casebook.csv",
+    "outputs/l1_defeat_selector_wulver_20260430T182316Z/fast_selector/override_casebook.csv",
+    "outputs/l1_defeat_selector_wulver_20260430T182316Z/override_casebook.csv",
+    "outputs/outcome_verifier_answer_group_selector_20260501T152447Z/selector_casebook.csv",
+    "outputs/outcome_verifier_answer_group_selector_real_cohere_final_20260501T175325Z/selector_casebook.csv",
+    "outputs/outcome_verifier_answer_group_selector_real_cohere_partial_20260501T170635Z/selector_casebook.csv",
+    "outputs/outcome_verifier_answer_group_selector_repro_linkage_20260501T181534Z/selector_casebook.csv",
+    "outputs/outcome_verifier_answer_group_selector_trace_quality_20260501T152451Z/selector_casebook.csv",
+    "outputs/selected_selector_casebook_linkage_audit_20260501T181551Z/casebook_linkage_audit.csv",
+    "outputs/selector_evidence_package_20260501T014547Z/present_not_selected_casebook.csv",
+    "outputs/selector_on_gold_present_losses_20260430T211700Z/selector_gold_present_casebook.csv",
+    "outputs/selector_on_gold_present_losses_20260430T211700Z/selector_safety_casebook.csv"
+  ],
+  "exclusion_count": 113,
+  "fresh_candidate_count": 1206,
+  "best_method": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+  "known_evidence": {
+    "targeted_28_corrected_replayed": "21/28",
+    "paired_pilot_43": "pal 40/43 vs external_l1_max 36/43 (+9.30pp)"
+  },
+  "recommended_default": {
+    "max_total_api_calls": 1000,
+    "recommended_fully_paired_target": 67
+  },
+  "optional_stronger": {
+    "max_total_api_calls": 1500,
+    "recommended_fully_paired_target": 100
+  }
+}

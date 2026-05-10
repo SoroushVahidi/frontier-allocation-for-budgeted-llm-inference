@@ -1,0 +1,18 @@
+To solve the problem, we need to determine the total number of candles and flashlights Brianna's family is using. Let's break it down step by step.
+
+1. **Flashlights:**
+   - There are 4 people, and each person has 1 flashlight.
+   - Total flashlights = 4 people * 1 flashlight/person = 4 flashlights.
+
+2. **Candles:**
+   - There are 8 rooms.
+   - Half of the rooms (4 rooms) have 4 small candles each.
+   - The other half of the rooms (4 rooms) have 5 medium candles each.
+   - Total small candles = 4 rooms * 4 candles/room = 16 small candles.
+   - Total medium candles = 4 rooms * 5 candles/room = 20 medium candles.
+   - Total candles = 16 small candles + 20 medium candles = 36 candles.
+
+3. **Total items (candles + flashlights):**
+   - Total items = Total flashlights + Total candles = 4 flashlights + 36 candles = 40 items.
+
+FINAL_ANSWER: 40

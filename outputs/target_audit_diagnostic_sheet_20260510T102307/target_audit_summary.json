@@ -1,0 +1,43 @@
+{
+  "case_count": 15,
+  "correct_alternate_evidence_counts": {
+    "best_core4": 4,
+    "best_core4_correct": 4,
+    "gold_in_selector_candidate_pool": 9,
+    "pal_correct": 9,
+    "prior_patch_correct": 4,
+    "s1": 1,
+    "sc4": 1,
+    "tale": 1
+  },
+  "created_at": "20260510T102307",
+  "failure_family_counts": {
+    "final_target_mismatch": 9,
+    "structural_commit_wrong": 6
+  },
+  "gold_present_in_candidate_pool_count": 9,
+  "mismatch_subtype_counts": {
+    "elapsed_time_vs_participant_minutes": 1,
+    "per_unit_vs_total": 2,
+    "subtotal_as_final": 2,
+    "total_vs_component": 5,
+    "unit_conversion": 1,
+    "wrong_quantity_target": 4
+  },
+  "notes": "Derived from existing local artifacts only; no raw logs copied; PAL code/stdout fields are truncated for curation. Correct-alternate counts include PAL, selector-pool, prior-patch, and best_core4 evidence where available.",
+  "pal_or_other_candidate_correct_selected_wrong_count": 13,
+  "source_artifact_count": 43,
+  "source_roots": [
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/metadata/pal",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/metadata/production_equiv",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/responses/pal",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/responses/production_equiv",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/metadata/pal",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/metadata/production_equiv",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/responses/pal",
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/responses/production_equiv",
+    "/home/soroush/research-next-wt/outputs/production_equiv_v1_retry_commit_loss_audit_20260508T204005Z"
+  ]
+}

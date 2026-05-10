@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "weekdays_per_month = 4 * 4 * 5\nweekends_per_month = 4 * 4 * 2\ntotal_rented = (weekdays_per_month * 60) + (weekends_per_month * 100)\nprint(total_rented * 2)",
+    "stdout": "16000\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "16000",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "16000",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

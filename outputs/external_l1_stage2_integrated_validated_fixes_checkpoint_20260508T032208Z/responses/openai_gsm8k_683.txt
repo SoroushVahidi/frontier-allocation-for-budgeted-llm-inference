@@ -1,0 +1,41 @@
+To solve this problem, we need to carefully track the base (denominator) for each percentage operation and ensure consistency throughout the solution.
+
+**Step 1: Define the base for the percentages.**
+
+- The problem states that the power bank loses a percentage of its **total capacity** each hour. Therefore, the base for all percentage operations is the **original total capacity** of the power bank. Let's denote this original total capacity as \( C \).
+
+**Step 2: Calculate the charge lost in the first 5 hours.**
+
+- The power bank loses 9% of \( C \) each hour for 5 hours.
+- Total charge lost in 5 hours: \( 5 \times 0.09C = 0.45C \).
+
+**Step 3: Calculate the charge lost in the next 3 hours.**
+
+- The power bank loses 7% of \( C \) each hour for 3 hours.
+- Total charge lost in 3 hours: \( 3 \times 0.07C = 0.21C \).
+
+**Step 4: Calculate the total charge lost.**
+
+- Total charge lost: \( 0.45C + 0.21C = 0.66C \).
+
+**Step 5: Determine the remaining charge.**
+
+- The problem states that the remaining charge is 28% of the total capacity.
+- Remaining charge: \( 0.28C \).
+
+**Step 6: Set up the equation for the initial charge.**
+
+- Let \( x \) be the initial charge when Maria went out to the park.
+- The charge lost plus the remaining charge equals the initial charge: \( x - 0.66C = 0.28C \).
+
+**Step 7: Solve for \( x \).**
+
+\[ x = 0.66C + 0.28C = 0.94C \]
+
+**Step 8: Express the initial charge as a percentage of the total capacity.**
+
+- Initial charge percentage: \( 0.94 \times 100\% = 94\% \).
+
+**Final Answer:**
+
+\boxed{94}

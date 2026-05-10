@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "31.00",
+  "parsed_answer": "31",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "quarters = 32 * 0.25\ndimes = 95 * 0.10\nnickels = 120 * 0.05\npennies = 750 * 0.01\ntotal = quarters + dimes + nickels + pennies\nprint(f\"Total: ${total:.2f}\")",
+      "stdout": "Total: $31.00\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "31.00",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "31.00",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

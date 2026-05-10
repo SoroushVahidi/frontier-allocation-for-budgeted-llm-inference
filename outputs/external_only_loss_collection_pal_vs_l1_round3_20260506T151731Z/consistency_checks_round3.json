@@ -1,0 +1,12 @@
+{
+  "checks": {
+    "external_only_row_count_matches_summary": true,
+    "external_only_rows_external_true_pal_false": true,
+    "pair_outcomes_match_summary": true,
+    "failed_skipped_count_matches_file": true,
+    "call_cap_leq_1500": true,
+    "selected_cases_excluded_from_previous_used_ids": true
+  },
+  "selected_overlap_count": 0,
+  "selected_overlap_example_ids": []
+}

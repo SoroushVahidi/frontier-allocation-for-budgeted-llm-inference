@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "initial_melons = 120\n\n# First harvest\nfirst_harvest = initial_melons * 0.3\nremaining_melons = initial_melons - first_harvest\n\n# Second harvest\nsecond_harvest = remaining_melons * 3/4\nunharvested_melons = remaining_melons - second_harvest\n\nprint(unharvested_melons)",
+    "stdout": "21.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "21.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "21.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

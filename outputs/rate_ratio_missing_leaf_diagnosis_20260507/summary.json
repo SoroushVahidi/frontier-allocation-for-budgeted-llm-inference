@@ -1,0 +1,76 @@
+{
+  "anchor_focus_case_ids": [
+    "openai_gsm8k_812",
+    "openai_gsm8k_953",
+    "openai_gsm8k_814",
+    "openai_gsm8k_979",
+    "openai_gsm8k_1069"
+  ],
+  "api_pilot_recommendation": "No API pilot yet; continue offline root-cause inspection first. Run capped Cohere pilot only after an offline fix yields clearer tag reduction and no regression against recovered references.",
+  "recovered_rate_ratio_reference_cases": [
+    {
+      "current_output_source": "offline_selector_isolated_exploration_log_anchor_validation_20260507/per_case.csv",
+      "example_id": "openai_gsm8k_1025",
+      "original_bucket_membership": "both_wrong|gold_absent_everywhere_detectable|previously_correct_regressed_validation_anchors|rate_ratio_anchors"
+    },
+    {
+      "current_output_source": "offline_selector_isolated_exploration_log_anchor_validation_20260507/per_case.csv",
+      "example_id": "openai_gsm8k_1027",
+      "original_bucket_membership": "external_only|gold_absent_everywhere_detectable|rate_ratio_anchors"
+    },
+    {
+      "current_output_source": "offline_selector_isolated_exploration_log_anchor_validation_20260507/per_case.csv",
+      "example_id": "openai_gsm8k_778",
+      "original_bucket_membership": "both_wrong|gold_absent_everywhere_detectable|rate_ratio_anchors"
+    },
+    {
+      "current_output_source": "offline_selector_isolated_exploration_log_anchor_validation_20260507/per_case.csv",
+      "example_id": "openai_gsm8k_819",
+      "original_bucket_membership": "both_wrong|gold_absent_everywhere_detectable|rate_ratio_anchors"
+    },
+    {
+      "current_output_source": "offline_selector_isolated_exploration_log_anchor_validation_20260507/per_case.csv",
+      "example_id": "openai_gsm8k_929",
+      "original_bucket_membership": "both_wrong|gold_absent_everywhere_detectable|rate_ratio_anchors"
+    },
+    {
+      "current_output_source": "offline_selector_isolated_exploration_log_anchor_validation_20260507/per_case.csv",
+      "example_id": "openai_gsm8k_934",
+      "original_bucket_membership": "both_wrong|gold_absent_everywhere_detectable|rate_ratio_anchors"
+    },
+    {
+      "current_output_source": "offline_selector_isolated_exploration_log_anchor_validation_20260507/per_case.csv",
+      "example_id": "openai_gsm8k_944",
+      "original_bucket_membership": "both_wrong|gold_absent_everywhere_detectable|rate_ratio_anchors"
+    }
+  ],
+  "selected_case_count": 9,
+  "selection_rule": "still_failing AND operation_hints contains rate_ratio AND failure_stage contains gold_absent_everywhere_detectable",
+  "still_failing_inference_rule": "use current_correct if present, else recovery_table.recovery_status, else our_exact==0",
+  "top_root_cause_tags": [
+    {
+      "count": 8,
+      "root_cause_tag": "unit_rate_missing"
+    },
+    {
+      "count": 3,
+      "root_cause_tag": "percent_or_fraction_conversion"
+    },
+    {
+      "count": 2,
+      "root_cause_tag": "denominator_or_base_quantity_missing"
+    },
+    {
+      "count": 2,
+      "root_cause_tag": "candidate_generation_empty_or_low_diversity"
+    },
+    {
+      "count": 1,
+      "root_cause_tag": "multi_step_quantity_tracking"
+    }
+  ],
+  "trace_data_summary": {
+    "external_action_trace_available_count": 9,
+    "pal_trace_available_count": 9
+  }
+}

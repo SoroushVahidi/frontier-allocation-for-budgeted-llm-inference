@@ -1,0 +1,35 @@
+{
+  "classification": "C",
+  "classification_meaning": "real PAL absent from clean worktree but present in another local checkout (frontier-main-dirty)",
+  "_pal_method_behavior_in_clean_worktree": "labelled_duplicate_of_non_PAL_tiebreak_spec",
+  "evidence_notes": [
+    "research-next-wt: experiments/pal_executor.py missing; controllers.py contains zero enable_pal_branch references",
+    "research-next-wt: frontier_matrix_core TIEBREAK_PAL uses strategy_seeded_outer_kwargs_k1_frontier4_tb only (no enable_pal_branch / pal_budget_actions)",
+    "research-next-wt: output_layer_repair.py lacks PAL integration helpers found in main checkout",
+    "paired pilot consumer scripts read pal_execution/pal_overlay fields but clean tree has no producers besides historical artifacts",
+    "frontier-allocation-for-budgeted-llm-inference (dirty main): experiments/pal_executor.py present; controllers.py contains PAL seed path (_run_pal_seed_attempt -> execute_pal_code); frontier_matrix_core uses strategy_seeded_outer_kwargs_k1_frontier4_pal for TIEBREAK_PAL",
+    "pal-pilot-clean / diverse-root-clean: no experiments/pal_executor.py; controllers enable_pal_branch count 0",
+    "validate-methods-only on clean passes for registry string ids but does not prove PAL executes"
+  ],
+  "fixes_applied_in_this_audit": [],
+  "tests_requested_status": {
+    "tests/test_pal_executor.py": "missing_file",
+    "tests/test_pal_variant.py": "missing_file",
+    "tests/test_pal_smoke_postprocess.py": "missing_file",
+    "tests/test_output_layer_frontier_surfacing.py": "missing_file",
+    "tests/test_method_validation_pal_tiebreak_registry.py": "passed_2",
+    "tests/test_api_branch_generator_json_parsing.py": "passed_27_when_run_with_method_validation_file"
+  },
+  "pytest_subset_run_clean_worktree": {
+    "command": ".venv/bin/python -m pytest -q tests/test_method_validation_pal_tiebreak_registry.py tests/test_api_branch_generator_json_parsing.py",
+    "result": "29 passed in ~0.55s"
+  },
+  "validate_methods_only_clean_worktree": {
+    "command": "scripts/run_cohere_real_model_cost_normalized_validation.py --validate-methods-only --methods external_l1_max,..._tiebreak_pal ...",
+    "timestamp": "PAL_IMPL_AUDIT_VALIDATE",
+    "result": "validated_rows=2 bad_rows=0",
+    "caveat": "passes registry wiring only; PAL runtime still absent until port completes"
+  },
+  "paired_pal_api_run_recommendation": "blocked_until_port",
+  "source_checkout_hint_for_port": "/home/soroush/frontier-allocation-for-budgeted-llm-inference"
+}

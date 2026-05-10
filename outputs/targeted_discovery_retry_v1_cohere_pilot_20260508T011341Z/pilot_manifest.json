@@ -1,0 +1,50 @@
+{
+  "timestamp": "20260508T011341Z",
+  "source_dry_run_dir": "outputs/targeted_discovery_retry_v1_dry_run_20260508T010738Z",
+  "selected_case_count": 10,
+  "selected_case_ids": [
+    "openai_gsm8k_720",
+    "openai_gsm8k_750",
+    "openai_gsm8k_841",
+    "openai_gsm8k_906",
+    "openai_gsm8k_1003",
+    "openai_gsm8k_1099",
+    "openai_gsm8k_864",
+    "openai_gsm8k_818",
+    "openai_gsm8k_970",
+    "openai_gsm8k_1019"
+  ],
+  "scaffold_counts": {
+    "quantity_ledger": 3,
+    "rate_table": 3,
+    "before_after_state": 2,
+    "target_difference": 2
+  },
+  "max_cohere_calls": 10,
+  "planned_cohere_calls": 10,
+  "model_name": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "no_gold_in_prompts_verified": true,
+  "abort_conditions": [
+    "COHERE_API_KEY missing",
+    "any prompt missing",
+    "ASCII gold answer appears in prompt",
+    "planned calls exceeds max_cohere_calls",
+    "cohere client init/call fails before first successful call"
+  ],
+  "prompt_paths": [
+    "prompts/openai_gsm8k_720_quantity_ledger.txt",
+    "prompts/openai_gsm8k_750_quantity_ledger.txt",
+    "prompts/openai_gsm8k_841_quantity_ledger.txt",
+    "prompts/openai_gsm8k_906_rate_table.txt",
+    "prompts/openai_gsm8k_1003_rate_table.txt",
+    "prompts/openai_gsm8k_1099_rate_table.txt",
+    "prompts/openai_gsm8k_864_before_after_state.txt",
+    "prompts/openai_gsm8k_818_before_after_state.txt",
+    "prompts/openai_gsm8k_970_target_difference.txt",
+    "prompts/openai_gsm8k_1019_target_difference.txt"
+  ],
+  "scoring_is_offline": true,
+  "actual_cohere_calls": 10
+}

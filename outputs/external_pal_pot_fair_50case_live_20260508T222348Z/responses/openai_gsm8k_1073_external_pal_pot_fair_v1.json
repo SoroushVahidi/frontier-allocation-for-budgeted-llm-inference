@@ -1,0 +1,34 @@
+{
+  "prediction": "2640",
+  "parsed_answer": "2640",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "weekly_food_cost = 25\nmonthly_treat_cost = 20\nmonthly_medicine_cost = 100\nweeks_in_month = 4\n\n# Calculate monthly cost\nmonthly_food_cost = weekly_food_cost * weeks_in_month\nmonthly_total_cost = monthly_food_cost + monthly_treat_cost + monthly_medicine_cost\n\n# Calculate yearly cost\nyearly_cost = monthly_total_cost * 12\n\nprint(yearly_cost)",
+      "stdout": "2640\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "2640",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "2640",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

@@ -1,0 +1,26 @@
+{
+  "total_pns_cases_inspected": 24,
+  "total_cases_in_diagnosis_table": 24,
+  "executable_pal_present_but_not_committed": 16,
+  "track_b_fixed": 3,
+  "track_b_still_wrong": 20,
+  "mechanisms": {
+    "overlay_previous_equals_gold_but_surface_used_bad_pal_stdout": 16,
+    "histogram_skew_duplicate_paths_favor_wrong_answer": 1,
+    "gold_in_pool_but_missing_from_answer_group_histogram": 1,
+    "frontier_tiebreak_selected_peer_not_gold_while_gold_in_pool": 3,
+    "gold_in_tree_but_not_in_selector_pool_normalized": 2,
+    "other_or_unknown": 1
+  },
+  "likely_fixable_by_policy_v1": 19,
+  "unknown_or_needs_trace": 5,
+  "pal_stdout_surfaced_mismatch_observable": 1,
+  "notes": {
+    "replay_PNS_cohort_rows": 23,
+    "extra_union_PNS_without_replay": [
+      "openai_gsm8k_851"
+    ],
+    "track_b_note": "still_wrong bucket counts offline outcomes where Track B did not apply fixed_by_override (mostly abstained with gate_abstain_reason).",
+    "counterfactual_guardrail_reference": "present_not_selected_replay_report.md section E (both_correct cohort 183 rows)"
+  }
+}

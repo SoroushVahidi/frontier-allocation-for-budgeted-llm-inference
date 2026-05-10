@@ -1,0 +1,11 @@
+{
+  "excluded_ids_count": 202,
+  "fresh_pool_size": 1117,
+  "pair_count_target": 240,
+  "picked_count": 240,
+  "estimated_calls_per_pair_from_prev100": 6.08,
+  "estimated_calls_for_target_pairs": 1459.2,
+  "expected_external_only_wins_at_5pct": 12.0,
+  "max_target_pairs_under_1500_by_prev_rate": 246,
+  "note": "20 external-only wins remains unlikely if 5% rate persists."
+}

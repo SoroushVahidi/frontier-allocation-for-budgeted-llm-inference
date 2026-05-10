@@ -1,0 +1,8 @@
+**Target:** Calculate total action figures Peter buys in one week.
+
+1. **Daily budget:** $70 / 7 days = $10/day  
+2. **Wooden figures (Sun-Wed):** 4 days × $5/figure = 2 figures/day → 8 figures  
+3. **Plastic figures (Thu-Sat):** 3 days × $10/day ÷ $2/figure = 15 figures  
+4. **Total figures:** 8 (wooden) + 15 (plastic) = 23  
+
+\boxed{23}

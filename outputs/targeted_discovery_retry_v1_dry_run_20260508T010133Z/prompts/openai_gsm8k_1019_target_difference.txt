@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem with explicit **targets**.
+
+Problem:
+At the Burger Palace restaurant, there is an enormous jar containing red, blue and green jelly beans.  On the outside of the jar is a note that reads, "This jar contains 1% fewer red jelly beans than blue jelly beans and 1% more green jelly beans than blue jelly beans."  If the jar contains a total of 4500 jelly beans, how many more green jelly beans does it contain than red jelly beans?
+
+Instructions:
+1. Name the main **entities or quantities** (A, B, totals, etc.).
+2. Quote or paraphrase **exactly** what the problem asks for (difference, sum, "how many more", half of a total, etc.).
+3. Do **not** return an intermediate value if the question asks for a **difference**, **total**, or **scaled total** — match the target.
+4. Plan and compute accordingly.
+5. Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

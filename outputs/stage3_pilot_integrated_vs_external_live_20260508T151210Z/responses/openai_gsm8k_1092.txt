@@ -1,0 +1,7 @@
+**Target:** Calculate Adam's contribution from savings.
+
+1. Father's contribution: $2 \times 6 = 12$
+2. Total received: $6 + 12 = 18$
+3. Adam's contribution: $30 - 18 = x$
+
+\[ x = 30 - 18 = \boxed{12} \]

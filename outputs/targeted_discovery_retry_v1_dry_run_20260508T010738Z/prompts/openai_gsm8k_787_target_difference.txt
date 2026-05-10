@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem with explicit **targets**.
+
+Problem:
+Dr. Hugo Grumpus and his assistant, Igor, were preparing to perform a laboratory experiment.  Dr. Grumpus told Igor to gather １６ test tubes, ７ beakers, and １４ Petri dishes, and to place them all on the lab bench.  By accident, Igor gathered half as many test tubes as requested, two more than the number of Petri dishes requested.  And while he had picked up the correct number of beakers, he lost several on the way to the lab bench.  In total, the number of items Igor had placed on the lab bench was ２９.  How many beakers did Igor lose?
+
+Instructions:
+- Name the main **entities or quantities** (A, B, totals, etc.).
+- Quote or paraphrase **exactly** what the problem asks for (difference, sum, "how many more", half of a total, etc.).
+- Do **not** return an intermediate value if the question asks for a **difference**, **total**, or **scaled total** — match the target.
+- Plan and compute accordingly.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

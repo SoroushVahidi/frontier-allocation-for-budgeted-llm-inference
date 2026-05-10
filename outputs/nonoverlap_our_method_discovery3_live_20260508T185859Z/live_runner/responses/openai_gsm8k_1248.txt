@@ -1,0 +1,8 @@
+**Target:** Determine the total number of boxes needed to store all pencils.
+
+1. Let \( x \) be the number of pencils per box.  
+2. From the problem: \( 3x + 2 = 26 \Rightarrow 3x = 24 \Rightarrow x = 8 \).  
+3. Total pencils: \( 26 + 46 = 72 \).  
+4. Boxes needed: \( \frac{72}{8} = 9 \).
+
+\boxed{9}

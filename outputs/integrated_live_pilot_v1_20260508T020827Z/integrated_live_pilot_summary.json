@@ -1,0 +1,13 @@
+{
+  "total_selected_cases": 15,
+  "actual_cohere_calls": 0,
+  "targeted_retry_exact": 0,
+  "targeted_retry_total": 0,
+  "structural_commit_fixed": 3,
+  "structural_commit_total": 3,
+  "combined_exact_or_fixed": 3,
+  "combined_total": 3,
+  "api_errors": [],
+  "parsing_ambiguities": 0,
+  "no_gold_leakage": true
+}

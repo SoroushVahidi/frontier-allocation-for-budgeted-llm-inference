@@ -1,0 +1,17 @@
+{
+  "source_readiness_dir": "/home/soroush/research-next-wt/outputs/external_l1_checkpoint_readiness_20260508T021402Z",
+  "cohere_api_key_set": true,
+  "external_paths_exist": true,
+  "missing_external_paths": [],
+  "case_count_ok": true,
+  "case_count": 40,
+  "planned_calls_ok": true,
+  "planned_new_cohere_calls": 2,
+  "max_new_cohere_calls": 5,
+  "targeted_prompt_files_ok": true,
+  "missing_prompt_paths": [],
+  "no_ascii_gold_in_prompts": true,
+  "gold_leak_case_ids": [],
+  "no_unsupported_targeted_cases": true,
+  "unsupported_targeted_case_ids": []
+}

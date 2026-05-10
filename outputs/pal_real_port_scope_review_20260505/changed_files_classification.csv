@@ -1,0 +1,20 @@
+path,classification,notes
+experiments/pal_executor.py,PAL-required (new),"Restricted AST whitelist; execute_pal_code; no network; builtins limited."
+experiments/branching.py,PAL-required,"Maps expand JSON → trace_evt pal_code / pal_json_answer / pal_confidence; no-op when fields absent."
+experiments/controllers.py,PAL-required with scope creep,"Adds PAL seed + overlay wiring; **also** folds in optional decomp_eq / opcheck / unit_track / hybrid seed orchestration inside DirectReserveFrontierGateController.run ordering. Defaults keep non-PAL methods off."
+experiments/output_layer_repair.py,PAL-required,"decide_pal_strong_overlay_promotion (gold-free); augment_final_nodes PAL paths; apply_pal_residual_strong_integration_fix evaluator hook."
+experiments/frontier_matrix_core.py,PAL-required plus registry compatibility,"Adds _pal spec kwargs (enable_pal_branch=True …). Also registers **decomp_eq** and **opcheck** K1/tiebreak specs (test + parity; not default for plain tiebreak)."
+experiments/strategy_seeded_semantic_diversity_frontier_v1.py,PAL-required plus registry compatibility,"PAL method constant; **decomp_eq** / **opcheck** string constants for imports/tests."
+scripts/run_cohere_real_model_cost_normalized_validation.py,PAL-required + evaluation hook,"METHODS row for *_tiebreak_pal; external_l1_max row untouched; `--pal-residual-strong-integration-fix` BooleanOptionalAction default True gated on methods containing tiebreak_pal."
+scripts/materialize_pal_smoke_summary.py,Supporting (offline tooling),"Reads local JSON/CSV/JSONL only; prefers result_metadata fallback metadata."
+tests/test_pal_executor.py,PAL-required,
+tests/test_pal_variant.py,PAL-required,"Includes baseline k1 tiebreak without pal_execution; unit_track/opcheck smoke; subprocess validate-methods-only."
+tests/test_pal_smoke_postprocess.py,PAL-required,
+tests/test_method_validation_pal_tiebreak_registry.py,PAL-required,
+tests/test_output_layer_frontier_surfacing.py,Supporting,PAL-aware surfacing/regression harness (untracked until added).
+tests/test_guarded_k1_frontier4_method.py,Supporting/regression,Hardening for guarded K1 frontier4 behaviors (ported file).
+outputs/cohort*,Generated / do not commit,Timestamped validator output_dirs under outputs/…
+outputs/pal_real_port_validation_*/**,Generated / optional,Proof bundle; convention is keep untracked unless repo policy snapshots docs under outputs/.
+outputs/paired_pal_vs_external_l1_preflight_*/**,Generated / do not commit,Preflight artifacts.
+outputs/current_merged_research_status_*/**,Generated / do not commit,Status dump.
+outputs/pal_real_implementation_audit_*/**,Reference audit (pre-existing),"Input context; typically do not commit raw audit trees."

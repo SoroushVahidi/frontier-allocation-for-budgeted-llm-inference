@@ -1,0 +1,47 @@
+To solve this problem, let's break it down step by step.
+
+**Identify the exact requested final quantity:**
+We need to find out how many apples Joanne gathered from the average trees.
+
+**Define variables:**
+- Let \( x \) be the number of apples Joanne gathered from the average trees.
+- Joanne gathered 30 apples from the tallest trees.
+- Joanne gathered half of 30 apples from the shortest trees, which is \( \frac{30}{2} = 15 \) apples.
+- Joanne's sister gathered twice as many apples from the tallest trees as Joanne, which is \( 2 \times 30 = 60 \) apples.
+- Joanne's sister gathered three times as many apples from the shortest trees as Joanne, which is \( 3 \times 15 = 45 \) apples.
+- Joanne's sister did not gather any apples from the average trees.
+
+**Set up the equation for the total number of apples gathered:**
+The total number of apples gathered by both sisters is 500. Therefore, we can write the equation:
+
+\[
+30 + 15 + x + 60 + 45 = 500
+\]
+
+**Simplify the equation:**
+Combine the constants:
+
+\[
+30 + 15 + 60 + 45 + x = 500
+\]
+
+\[
+150 + x = 500
+\]
+
+**Solve for \( x \):**
+
+\[
+x = 500 - 150
+\]
+
+\[
+x = 350
+\]
+
+**Verify units and target alignment:**
+The units are consistent (apples), and we are solving for the number of apples Joanne gathered from the average trees.
+
+**Final Answer:**
+
+final_answer / FINAL_ANSWER: 350

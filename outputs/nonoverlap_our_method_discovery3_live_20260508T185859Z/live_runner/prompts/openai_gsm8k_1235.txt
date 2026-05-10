@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Mike's teacher, leaves as homework the reading of a ２００-page book. The assignment is to be completed within ３０ days. Mike plans to read １０ pages a day. How many days before the deadline will Mike finish his reading?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

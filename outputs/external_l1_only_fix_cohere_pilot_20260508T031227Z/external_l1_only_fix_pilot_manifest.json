@@ -1,0 +1,28 @@
+{
+  "source_dry_run_dir": "outputs/external_l1_only_fix_dry_run_20260508T031022Z",
+  "case_count": 7,
+  "max_cohere_calls": 7,
+  "planned_cohere_calls": 7,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "scaffolds": [
+    "final_target_verifier_retry",
+    "l1_style_concise_decomposition",
+    "percent_base_denominator_v2",
+    "ratio_partition_v2",
+    "state_composition_v2"
+  ],
+  "scoring_is_offline": true,
+  "no_gold_in_prompts_verified": true,
+  "no_external_prediction_in_prompts_verified": true,
+  "abort_conditions": [
+    "COHERE_API_KEY missing",
+    "planned calls exceed cap",
+    "selected case count != 7",
+    "missing prompt file",
+    "gold leakage in prompt",
+    "external prediction leakage in prompt",
+    "duplicate case IDs"
+  ]
+}

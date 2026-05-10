@@ -1,0 +1,8 @@
+**Target:** Calculate total coins saved by Rong and Neil after 10 years.
+
+1. Rong's monthly savings: \( R = 20 \) coins.
+2. Neil's monthly savings: \( N = R + \frac{2}{5}R = \frac{7}{5}R = 28 \) coins.
+3. Total months in 10 years: \( T = 10 \times 12 = 120 \) months.
+4. Total coins saved: \( \text{Total} = (R + N) \times T = (20 + 28) \times 120 = 48 \times 120 = 5760 \).
+
+\boxed{5760}

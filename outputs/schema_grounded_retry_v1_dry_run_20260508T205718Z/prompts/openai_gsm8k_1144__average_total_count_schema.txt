@@ -1,0 +1,20 @@
+Solve this GSM8K-style problem independently using an average-total-count schema.
+
+Problem:
+While Joanne is gathering apples from her family’s orchard, her sister comes outside to help her. Joanne gathers ３０ apples from the tallest trees, half this amount from the shortest trees, and more apples from the average trees. Compared with Joanne, her sister gathers twice as many apples from the tallest trees and ３ times as many apples from the shortest trees. She doesn't take any from the average trees. If the sisters have gathered a combined total of ５００ apples, how many apples did Joanne gather from the average trees?
+
+Convert between average, total, and count explicitly, then solve the asked target.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.

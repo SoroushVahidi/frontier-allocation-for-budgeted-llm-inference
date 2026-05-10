@@ -1,0 +1,17 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+In a ６０-item quiz, ４０% of the questions are easy, and the rest are equally divided as average and difficult questions. If Aries is sure to get ７５% of the easy questions, and half of the average and difficult questions correctly, how many points is she sure to get?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: ratio_part
+- family_hint: unknown
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on the FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.

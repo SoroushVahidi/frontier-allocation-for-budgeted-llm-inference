@@ -1,0 +1,16 @@
+**Quantity Ledger for Josh's House Flipping Profit**
+
+**Final Target Quantity:** Profit from flipping the house.
+
+**Money Ledger:**
+
+1. **Initial Cost (one-time):** $80,000 (purchase price)
+2. **Repairs Cost (one-time):** $50,000
+3. **Total Investment:** $80,000 + $50,000 = $130,000
+4. **Value Increase:** 150% of the initial house value ($80,000)  
+   - Increase in value = 1.5 * $80,000 = $120,000
+5. **New House Value:** $80,000 + $120,000 = $200,000
+6. **Profit:** New House Value - Total Investment  
+   - Profit = $200,000 - $130,000 = $70,000
+
+**Final Answer:** \boxed{70000}

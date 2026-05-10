@@ -1,0 +1,7 @@
+method,planned_calls_from_call_plan,actual_logical_calls_observed,exact_match,parsing_failure,api_error,metadata_present,observed_call_multiplier,notes
+external_l1_max_fair_v1,1,2,1,0,0,1,2.0,controller may use multi-step/verification internally
+external_pal_pot_fair_v1,1,1,1,0,0,1,1.0,single llm call plus local code execution
+external_s1_budget_forcing_faithful_v1,1,4,1,0,0,1,4.0,controller may use multi-step/verification internally
+external_self_consistency_4_fair_v1,1,4,1,0,0,1,4.0,elevated expected due to n=4 sampling
+external_self_consistency_6_fair_v1,1,4,0,0,0,1,4.0,highest expected due to n=6 sampling
+external_tale_ep_prompt_budgeting_faithful_v1,1,4,0,0,0,1,4.0,controller may use multi-step/verification internally

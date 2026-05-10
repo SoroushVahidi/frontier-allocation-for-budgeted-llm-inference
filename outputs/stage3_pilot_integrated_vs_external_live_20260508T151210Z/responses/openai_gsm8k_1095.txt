@@ -1,0 +1,9 @@
+**Target:** Find the difference in the number of flour bags and milk bottles Mark needs to buy.
+
+1. Flour needed: \( 4 \times 3 = 12 \) cups  
+2. Milk needed: \( 4 \times 1 = 4 \) cups  
+3. Flour bags: \( \frac{12}{2} = 6 \)  
+4. Milk bottles: \( \frac{4}{2} = 2 \)  
+5. Difference: \( 6 - 2 = 4 \)
+
+\boxed{4}

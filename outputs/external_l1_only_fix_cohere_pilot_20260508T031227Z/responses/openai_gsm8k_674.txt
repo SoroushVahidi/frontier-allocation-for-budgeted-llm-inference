@@ -1,0 +1,14 @@
+**Target:** Height of the beanstalk after 3 weeks.
+
+1. **Initial State:** After the first week, the beanstalk is 3 inches tall.  
+   **State Ledger:** Height = 3 inches.
+
+2. **Second Week Update:** The beanstalk doubles in height.  
+   **Calculation:** 3 inches * 2 = 6 inches.  
+   **State Ledger:** Height = 6 inches.
+
+3. **Third Week Update:** The beanstalk grows another 4 inches.  
+   **Calculation:** 6 inches + 4 inches = 10 inches.  
+   **State Ledger:** Height = 10 inches.
+
+**Final Answer:** \boxed{10}

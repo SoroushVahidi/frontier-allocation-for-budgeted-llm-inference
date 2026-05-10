@@ -1,0 +1,13 @@
+# production_equiv_v1 retry policy micro-pilot live report
+- planned_calls: 16
+- actual_cohere_calls: 16
+- retry_exact_count: 0
+- cases_with_any_exact_retry: 0
+- oracle_improvement_cases: 0
+- candidate_policy_improvement_cases: 0
+- candidate_policy_regressions: 0
+- parsing_failures: 16
+- api_errors: []
+- no_gold_leakage: True
+- no_prediction_leakage: True
+- recommended_next_step: improve_retry_prompts

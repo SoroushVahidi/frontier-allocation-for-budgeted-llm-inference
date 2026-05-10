@@ -1,0 +1,21 @@
+{
+"SCHEMA_TYPE": "quantity_ledger_schema",
+"TARGET_QUANTITY": "Total cost of apples and bananas",
+"GIVEN_QUANTITIES": [
+  "Cost of one apple: $2",
+  "Number of apples: 5",
+  "Cost of one banana: $1",
+  "Number of bananas: 8"
+],
+"EQUATIONS": [
+  "Total cost of apples = Cost of one apple * Number of apples",
+  "Total cost of bananas = Cost of one banana * Number of bananas",
+  "Total cost = Total cost of apples + Total cost of bananas"
+],
+"COMPUTATION": [
+  "Total cost of apples = 2 * 5 = 10",
+  "Total cost of bananas = 1 * 8 = 8",
+  "Total cost = 10 + 8 = 18"
+],
+"FINAL_ANSWER": 18
+}

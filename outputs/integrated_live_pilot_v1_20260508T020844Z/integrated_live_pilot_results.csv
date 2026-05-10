@@ -1,0 +1,16 @@
+case_id,pilot_track,scaffold,prompt_version,cohere_call_made,parsed_final_answer,gold_answer,exact_match,improved_over_current_pal,structural_commit_result_if_applicable,response_text_path,notes
+openai_gsm8k_1006,targeted_retry,quantity_ledger,quantity_ledger_v2_1,yes,,25,false,unknown,,responses/openai_gsm8k_1006.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1027,targeted_retry,quantity_ledger,quantity_ledger_v2_1,yes,,2,false,unknown,,responses/openai_gsm8k_1027.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1029,targeted_retry,quantity_ledger,quantity_ledger_v2_1,yes,,70000,false,unknown,,responses/openai_gsm8k_1029.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1003,targeted_retry,rate_table,v1,yes,,20,false,unknown,,responses/openai_gsm8k_1003.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1099,targeted_retry,rate_table,v1,yes,,2450,false,unknown,,responses/openai_gsm8k_1099.txt,api_error:ModuleNotFoundError
+openai_gsm8k_906,targeted_retry,rate_table,v1,yes,,16,false,unknown,,responses/openai_gsm8k_906.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1166,targeted_retry,before_after_state,v1,yes,,50,false,unknown,,responses/openai_gsm8k_1166.txt,api_error:ModuleNotFoundError
+openai_gsm8k_818,targeted_retry,before_after_state,v1,yes,,10,false,unknown,,responses/openai_gsm8k_818.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1019,targeted_retry,target_difference,v1,yes,,30,false,unknown,,responses/openai_gsm8k_1019.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1187,targeted_retry,target_difference,v1,yes,,8,false,unknown,,responses/openai_gsm8k_1187.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1045,targeted_retry,quantity_ledger,quantity_ledger_v2_1,yes,,4,false,unknown,,responses/openai_gsm8k_1045.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1155,targeted_retry,quantity_ledger,quantity_ledger_v2_1,yes,,342,false,unknown,,responses/openai_gsm8k_1155.txt,api_error:ModuleNotFoundError
+openai_gsm8k_1087,structural_commit_only,,,no,,,,,fixed_estimated_from_replay,,scored_from_structural_replay_evidence
+openai_gsm8k_1097,structural_commit_only,,,no,,,,,fixed_estimated_from_replay,,scored_from_structural_replay_evidence
+openai_gsm8k_1121,structural_commit_only,,,no,,,,,fixed_estimated_from_replay,,scored_from_structural_replay_evidence

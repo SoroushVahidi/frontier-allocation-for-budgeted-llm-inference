@@ -1,0 +1,40 @@
+To solve this problem, let's follow the Discovery3 scaffold step-by-step.
+
+**Step 1: Identify the exact requested final quantity.**
+The problem asks for the total number of coins Rong and Neil have together after 10 years.
+
+**Step 2: Decompose into concise equations.**
+
+1. **Rong's savings rate:**
+   Rong saves 20 coins per month.
+
+2. **Neil's savings rate:**
+   Neil saves \( \frac{2}{5} \) times more coins than Rong per month.
+   \[
+   \text{Neil's savings rate} = 20 + \left(\frac{2}{5} \times 20\right) = 20 + 8 = 28 \text{ coins per month}
+   \]
+
+3. **Total months in 10 years:**
+   \[
+   \text{Total months} = 10 \times 12 = 120 \text{ months}
+   \]
+
+4. **Total coins saved by Rong in 10 years:**
+   \[
+   \text{Rong's total coins} = 20 \times 120 = 2400
+   \]
+
+5. **Total coins saved by Neil in 10 years:**
+   \[
+   \text{Neil's total coins} = 28 \times 120 = 3360
+   \]
+
+6. **Total coins saved by both in 10 years:**
+   \[
+   \text{Total coins} = 2400 + 3360 = 5760
+   \]
+
+**Step 3: Verify units and target alignment.**
+The units are consistent (coins), and the target is the total number of coins saved by both Rong and Neil after 10 years.
+
+**FINAL_ANSWER: 5760**

@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "customers_no_mask = 3\nshoplifters = 4 * customers_no_mask - 5\nviolent_customers = 3 * shoplifters\ntotal_known = customers_no_mask + shoplifters + violent_customers\nother_reasons = 50 - total_known\nprint(other_reasons)",
+    "stdout": "19\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "19",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "19",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

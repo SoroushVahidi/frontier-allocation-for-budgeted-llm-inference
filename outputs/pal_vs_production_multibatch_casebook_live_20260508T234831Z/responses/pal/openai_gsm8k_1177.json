@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "320",
+  "parsed_answer": "320",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_people = 50 + 40 + (2 * 40) + (3 * 50)\nprint(total_people)",
+      "stdout": "320\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "320",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "320",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

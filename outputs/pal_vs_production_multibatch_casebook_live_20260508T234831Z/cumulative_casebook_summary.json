@@ -1,0 +1,45 @@
+{
+  "screened_cases": 135,
+  "followup_cases": 75,
+  "actual_cohere_calls_run_level": 429,
+  "effective_call_cap": 900,
+  "cap_reached": false,
+  "eligible_cases_remaining": 0,
+  "pal_screen_correct_count": 131,
+  "pal_screen_clean_execution_count": 135,
+  "production_equiv_correct_on_followup": 71,
+  "pal_correct_on_followup": 75,
+  "pal_only_count": 3,
+  "production_only_count": 0,
+  "both_correct_count": 71,
+  "both_wrong_count": 0,
+  "both_wrong_different_count": 0,
+  "disagreement_count": 4,
+  "useful_selector_case_count": 3,
+  "pal_only_family_counts": {
+    "final_target_mismatch": 3
+  },
+  "production_only_family_counts": {},
+  "disagreement_family_counts": {
+    "final_target_mismatch": 3,
+    "parse_format": 1
+  },
+  "selector_feature_counts": {
+    "pal_clean_execution": 75,
+    "pal_parse_confident": 75,
+    "production_structural_commit": 75,
+    "answer_agreement": 71,
+    "target_quantity_cue": 46,
+    "numeric_outlier": 3
+  },
+  "external_oracle_style_advantage_count": 0,
+  "external_oracle_style_advantage_derivable_without_extra_methods": false,
+  "enough_pal_only_cases_for_pattern_analysis": false,
+  "enough_disagreement_cases_for_selector_design": false,
+  "enough_useful_selector_cases": false,
+  "stop_reason": "no_eligible_cases_remain",
+  "recommended_next_step": "relax_sampling_strategy",
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "call_accounting_warning": ""
+}

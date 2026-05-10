@@ -1,0 +1,12 @@
+{
+  "case_1198_instability_type": "prompt_drift",
+  "case_1155_new_status": "now_exact_in_patch_checkpoint",
+  "recommended_next_step": "freeze_successful_micro_pilot_prompt",
+  "should_call_cohere_next": true,
+  "recommended_next_calls": 2,
+  "caveats": [
+    "single-case instability can be prompt-sensitive even at temperature 0",
+    "1155 improvement may not generalize without repeatability check",
+    "no broad Stage-3 rerun until 1198 stability is confirmed"
+  ]
+}

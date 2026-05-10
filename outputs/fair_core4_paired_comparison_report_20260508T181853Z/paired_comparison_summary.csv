@@ -1,0 +1,6 @@
+comparator,our_correct,comparator_correct,our_minus_comparator,both_correct,our_only,comparator_only,both_wrong,mcnemar_b_our_only,mcnemar_c_comparator_only,parsing_failures_comparator,caveat
+external_l1_max_fair_v1,39,31,8,30,9,1,10,9,1,7,comparator has unresolved parsing failures
+external_self_consistency_4_fair_v1,39,33,6,31,8,2,9,8,2,6,comparator has unresolved parsing failures
+external_s1_budget_forcing_faithful_v1,39,32,7,30,9,2,9,9,2,10,comparator has unresolved parsing failures
+external_tale_ep_prompt_budgeting_faithful_v1,39,34,5,33,6,1,10,6,1,6,comparator has unresolved parsing failures
+best_core4_oracle,39,38,1,36,3,2,9,3,2,,oracle upper-envelope over 4 baselines

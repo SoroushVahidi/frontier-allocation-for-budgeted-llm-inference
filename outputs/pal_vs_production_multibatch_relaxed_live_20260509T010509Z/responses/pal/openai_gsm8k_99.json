@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "58",
+  "parsed_answer": "58",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "initial_plants = 2 * 40\nnew_plants = 18\ngifted_plants = 1 * 40\nremaining_plants = initial_plants + new_plants - gifted_plants\nprint(remaining_plants)",
+      "stdout": "58\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "58",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "58",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

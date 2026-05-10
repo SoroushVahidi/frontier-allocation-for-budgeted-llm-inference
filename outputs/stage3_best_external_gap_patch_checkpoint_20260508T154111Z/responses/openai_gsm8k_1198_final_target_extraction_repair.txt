@@ -1,0 +1,15 @@
+**target_type:** remaining  
+**equations:**  
+1. Initial chalk length: \( L_0 = 5 \) inches  
+2. Chalk used on Monday: \( 0.45 \times 5 = 2.25 \) inches  
+3. Remaining chalk after Monday: \( 5 - 2.25 = 2.75 \) inches  
+4. Daily usage after Monday: \( 0.2 \times \text{remaining chalk} \)  
+5. Find the number of days \( d \) until remaining chalk < 2 inches:  
+   \( 2.75 \times (1 - 0.2)^d < 2 \)  
+   \( (0.8)^d < \frac{2}{2.75} \approx 0.727 \)  
+   \( d \log(0.8) < \log(0.727) \)  
+   \( d > \frac{\log(0.727)}{\log(0.8)} \approx 3.1 \)  
+
+Since \( d \) must be a whole number, \( d = 4 \).  
+
+**final_answer:** 4

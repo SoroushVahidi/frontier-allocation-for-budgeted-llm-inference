@@ -1,0 +1,6 @@
+question,answer,evidence
+Did Cohere produce an evaluable strict_f3 vs external_l1_max comparison?,no,matched=0
+"If not, why not?",not_evaluable_zero_matched_examples,delta=NA
+Was OpenAI fallback used?,no,not_requested
+"Is the evidence still appendix-only, or strong enough for main-paper use?",yes,"incomplete_slices=0, mixed=False"
+"Under provider=cohere, does strict_f3 beat external_l1_max?",not_evaluable_zero_matched_examples,matched=0

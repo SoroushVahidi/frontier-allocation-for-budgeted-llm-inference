@@ -1,0 +1,33 @@
+{
+  "total_cases": 10,
+  "actual_cohere_calls": 10,
+  "exact_match_count": 8,
+  "improved_over_current_integrated_count": 5,
+  "external_l1_only_cases_selected": 4,
+  "external_l1_only_cases_rescued": 0,
+  "both_wrong_cases_selected": 3,
+  "both_wrong_cases_rescued": 1,
+  "high_risk_cases_selected": 3,
+  "results_by_scaffold": {
+    "average_target_score": {
+      "exact": 2,
+      "total": 2
+    },
+    "combinatorics_counting": {
+      "exact": 1,
+      "total": 1
+    },
+    "ratio_partition": {
+      "exact": 3,
+      "total": 4
+    },
+    "state_composition": {
+      "exact": 2,
+      "total": 3
+    }
+  },
+  "api_errors": [],
+  "parsing_ambiguities": 0,
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

@@ -1,0 +1,15 @@
+**Target:** Find the number of apples Joanne gathered from the average trees.
+
+Let $x$ be the number of apples Joanne gathered from the average trees.
+
+Joanne's total: $30 + 15 + x$
+Sister's total: $2(30) + 3(15)$
+Combined total: $(30 + 15 + x) + (60 + 45) = 500$
+
+Simplify and solve for $x$:
+$30 + 15 + x + 105 = 500$
+$x + 150 = 500$
+$x = 350 - 150$
+$x = 200$
+
+\boxed{200}

@@ -1,0 +1,7 @@
+comparator,production_equiv_correct,comparator_correct,delta,both_correct,production_equiv_only,comparator_only,both_wrong,mcnemar_b,mcnemar_c
+external_l1_max_fair_v1,16,31,-15,11,5,20,14,5,20
+external_self_consistency_4_fair_v1,16,33,-17,13,3,20,14,3,20
+external_s1_budget_forcing_faithful_v1,16,32,-16,13,3,19,15,3,19
+external_tale_ep_prompt_budgeting_faithful_v1,16,34,-18,14,2,20,14,2,20
+best_core4_oracle,16,38,-22,14,2,24,10,2,24
+prior_patch_focused_integrated_method,16,39,-23,15,1,24,10,1,24

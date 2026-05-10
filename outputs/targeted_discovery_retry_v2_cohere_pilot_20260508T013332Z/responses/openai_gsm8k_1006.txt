@@ -1,0 +1,12 @@
+**Target Quantity:** How much money does John leave with?
+
+**Money Ledger:**
+
+1. **Vaccines Cost (VC):** 2 vaccines × $20 = $40  
+2. **Total Bill Before Heartworm Check (TB):** $40  
+3. **Heartworm Check Cost (HC):** 60% of TB = 0.60 × $40 = $24  
+4. **Total Bill (TB + HC):** $40 + $24 = $64  
+5. **Money Brought (MB):** $125  
+6. **Remaining Money (RM):** MB - Total Bill = $125 - $64 = $61  
+
+**Final Answer:** \boxed{61}

@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "passion_fruit_per_jar = 2\njackfruit_per_jar = 1.5\nhoney_per_jar = 2\npassion_fruit_cost = 6\njackfruit_cost = 8\nhoney_cost = 10\nselling_price_per_jar = 50\n\ntotal_jars = 10\n\ntotal_passion_fruit = passion_fruit_per_jar * total_jars\ntotal_jackfruit = jackfruit_per_jar * total_jars\ntotal_honey = honey_per_jar * total_jars\n\ntotal_cost = (total_passion_fruit * passion_fruit_cost) + (total_jackfruit * jackfruit_cost) + (total_honey * honey_cost)\ntotal_revenue = selling_price_per_jar * total_jars\n\nprofit = total_revenue - total_cost\nprint(profit)",
+    "stdout": "60.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "60.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "60.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

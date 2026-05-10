@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "wolves_last_night = 10\ncougars_last_night = 15\ncougars_today = cougars_last_night - 3\nwolves_today = 3 * cougars_today\ntotal_animals = wolves_last_night + cougars_last_night + wolves_today + cougars_today\nprint(total_animals)",
+    "stdout": "73\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "73",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "73",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

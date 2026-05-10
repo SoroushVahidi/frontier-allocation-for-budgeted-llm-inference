@@ -1,0 +1,8 @@
+**Target:** Find the actual number of people who attended the concert.
+
+1. Let \( x \) be the actual number of attendees.
+2. Courtney's reported number: \( x + 0.2x = 1.2x \).
+3. Given \( 1.2x = 48 \).
+4. Solve for \( x \): \( x = \frac{48}{1.2} = 40 \).
+
+\boxed{40}

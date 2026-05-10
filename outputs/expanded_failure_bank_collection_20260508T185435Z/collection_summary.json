@@ -1,0 +1,44 @@
+{
+  "selected_case_count": 50,
+  "live_cases_run": 0,
+  "actual_cohere_calls": 0,
+  "reused_existing_records_count": 50,
+  "expanded_failure_bank_rows": 50,
+  "our_wrong_count": 11,
+  "our_wrong_baseline_right_count": 2,
+  "both_wrong_count": 9,
+  "gold_absent_discovery_count": 9,
+  "present_not_selected_count": 2,
+  "final_target_mismatch_count": 0,
+  "parse_failure_count": 0,
+  "runtime_failure_count": 0,
+  "family_counts": {
+    "state_update": 15,
+    "unknown": 20,
+    "ratio_setup": 10,
+    "final_target_mismatch": 4,
+    "percent_base": 1
+  },
+  "proposed_fix_counts": {
+    "none": 39,
+    "selection policy + final-target verifier": 2,
+    "expand candidate diversity / decomposition": 9
+  },
+  "top_priority_cases": [
+    "openai_gsm8k_1124",
+    "openai_gsm8k_1198",
+    "openai_gsm8k_1081",
+    "openai_gsm8k_1112",
+    "openai_gsm8k_1115",
+    "openai_gsm8k_1132",
+    "openai_gsm8k_1137",
+    "openai_gsm8k_1139",
+    "openai_gsm8k_1144",
+    "openai_gsm8k_1147",
+    "openai_gsm8k_1158"
+  ],
+  "recommended_next_step": "run_our_method_on_new_nonoverlap_casebook_subset_with_discovery3_logging",
+  "no_hf_download": true,
+  "api_errors": [],
+  "parsing_failures": 13
+}

@@ -1,0 +1,3 @@
+path,reason,preserved
+outputs/**/*.jsonl,raw traces,yes (artifact branch)
+outputs/**/raw_responses/,raw API logs,no

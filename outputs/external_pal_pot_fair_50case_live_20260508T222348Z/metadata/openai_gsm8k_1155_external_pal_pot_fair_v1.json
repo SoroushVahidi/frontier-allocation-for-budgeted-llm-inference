@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_length = 111\nplant_width = 1.5\nowned_plants = 17\nplant_cost = 6\n\n# Calculate the number of plants needed\nnum_plants = int(total_length / plant_width)\n\n# Calculate the number of plants to buy\nplants_to_buy = max(0, num_plants - owned_plants)\n\n# Calculate total cost\ntotal_cost = plants_to_buy * plant_cost\n\nprint(total_cost)",
+    "stdout": "342\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "342",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "342",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

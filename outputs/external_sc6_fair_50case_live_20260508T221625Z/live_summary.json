@@ -1,0 +1,21 @@
+{
+  "method": "external_self_consistency_6_fair_v1",
+  "case_count": 50,
+  "completed_rows": 50,
+  "incomplete_rows": 0,
+  "actual_cohere_calls_run_level": 300,
+  "actual_cohere_calls_completed_rows": 300,
+  "effective_call_cap": 350,
+  "global_cap_reached": false,
+  "cap_error_count": 0,
+  "exact_count": 36,
+  "parsing_failures": 0,
+  "api_errors": 0,
+  "method_execution_errors": 0,
+  "metadata_present_count": 50,
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "caveats": [
+    "Fair harness uses APIBranchGenerator with temperature=0.0 for self-consistency branches; diversity is primarily from independent samples / branch IDs, not thermal noise."
+  ]
+}

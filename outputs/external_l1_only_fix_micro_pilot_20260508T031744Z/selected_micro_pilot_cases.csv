@@ -1,0 +1,4 @@
+case_id,prompt_variant,selected_scaffold,prompt_path,gold_answer,current_integrated_prediction,external_l1_prediction,previous_failed_prediction,reason_for_retry
+openai_gsm8k_683,patched_percent_base_v2,percent_base_denominator_v2,prompts/openai_gsm8k_683_patched_percent_base_v2.txt,94,62,94,80,percent-base fixed-base instruction patch
+openai_gsm8k_769,ratio_partition_v2_repeat,ratio_partition_v2,prompts/openai_gsm8k_769_ratio_partition_v2_repeat.txt,25,100,25,33.33,repeat scaffold after patch cycle
+openai_gsm8k_769,l1_style_alternative,l1_style_concise_decomposition,prompts/openai_gsm8k_769_l1_style_alternative.txt,25,100,25,33.33,alternative scaffold for arithmetic part-count slip

@@ -1,0 +1,8 @@
+{
+"flashlights": 4, 
+"room_flashlights": 8, 
+"small_candles_per_room": 4, 
+"medium_candles_per_room": 5, 
+"small_candle_rooms": 4, 
+"medium_candle_rooms": 4
+}

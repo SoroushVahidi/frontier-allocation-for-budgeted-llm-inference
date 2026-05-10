@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+It rained ２ inches on Monday and is expected to rain １ more inch than twice of Monday’s total on Tuesday. How many inches of rain will there be on Tuesday?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

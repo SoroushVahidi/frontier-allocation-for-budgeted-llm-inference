@@ -1,0 +1,8 @@
+**Target:** Calculate total dog food needed for a week.
+
+1. German Shepherds' daily consumption: \(3 \times 5 = 15\) kg
+2. Bulldogs' daily consumption: \(2 \times 3 = 6\) kg
+3. Total daily consumption: \(15 + 6 = 21\) kg
+4. Weekly consumption: \(21 \times 7 = 147\) kg
+
+\boxed{147}

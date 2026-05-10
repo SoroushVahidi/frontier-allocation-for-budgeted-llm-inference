@@ -1,0 +1,34 @@
+{
+  "prediction": "9583",
+  "parsed_answer": "9583",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "initial_salary = 600\nannual_increase = 0.10\nyears_of_increase = 3\n\n# Calculate the salary after 3 more years\nfinal_salary = initial_salary * (1 + annual_increase) ** years_of_increase\n\n# Calculate the annual salary\nannual_salary = final_salary * 12\n\nprint(round(annual_salary))",
+      "stdout": "9583\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "9583",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "9583",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

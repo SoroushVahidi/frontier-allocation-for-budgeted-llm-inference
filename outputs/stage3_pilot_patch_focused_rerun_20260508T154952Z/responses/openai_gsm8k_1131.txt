@@ -1,0 +1,21 @@
+**Target:** Find the number of white fish Bob bought.
+
+Let \( w \) be the number of white fish bought, and \( o \) be the number of orange fish bought. We know:
+\[ w + o = 17 \]
+\[ 3 + o = 2(4 + w) \]
+
+Simplify the second equation:
+\[ 3 + o = 8 + 2w \]
+\[ o - 2w = 5 \]
+
+Solve the system of equations:
+\[ w + o = 17 \]
+\[ o = 2w + 5 \]
+
+Substitute \( o \) in the first equation:
+\[ w + (2w + 5) = 17 \]
+\[ 3w + 5 = 17 \]
+\[ 3w = 12 \]
+\[ w = 4 \]
+
+\boxed{4}

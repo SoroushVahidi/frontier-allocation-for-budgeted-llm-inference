@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+The highest temperature ever recorded in Southlandia is -４８ degrees Fahrenheit. The highest temperature ever recorded in Northlandia is ２１ degrees Fahrenheit. The highest temperature recorded in Midlandia is -３ degrees Fahrenheit. What is the average highest temperature of these ３ countries?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

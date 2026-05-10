@@ -1,0 +1,27 @@
+{
+  "created_at_utc": "2026-05-06T15:18:30.612720+00:00",
+  "bundle_dir": "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z",
+  "dataset": "openai/gsm8k",
+  "seed": 20260501,
+  "budget": 6,
+  "methods": [
+    "external_l1_max",
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
+  ],
+  "excluded_example_ids_count": 414,
+  "fresh_candidates_total": 905,
+  "selected_cases_count": 150,
+  "selected_cases_csv": "outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/selected_cases.csv",
+  "allowed_example_ids_file": "outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/allowed_example_ids.jsonl",
+  "exclusion_source_counts": {
+    "outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z/selected_cases.csv": 100,
+    "outputs/cohere_paired_pal_vs_external_l1_100case_20260506T025806Z/paired_casebook.csv": 0,
+    "outputs/external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z/selected_cases.csv": 140,
+    "outputs/external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z/external_only_loss_casebook.csv": 0,
+    "outputs/external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z/selected_cases.csv": 131,
+    "outputs/external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z/external_only_loss_casebook.csv": 0,
+    "outputs/external_only_loss_pattern_audit_20_20260506/external_only_20_casebook.csv": 0,
+    "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/selected_cases.csv": 43,
+    "outputs/external_only_loss_pattern_audit_15_20260506/external_only_15_casebook.csv": 0
+  }
+}

@@ -1,0 +1,4 @@
+stage,operation_hint,quantity_bucket,diversity_bucket,count
+gold_in_direct_attempts,total_sum,qnum_2_3,div_low,1
+gold_in_execution_only,rate_ratio,qnum_2_3,div_low,1
+gold_absent_all_detectable,percent,qnum_2_3,div_low,1

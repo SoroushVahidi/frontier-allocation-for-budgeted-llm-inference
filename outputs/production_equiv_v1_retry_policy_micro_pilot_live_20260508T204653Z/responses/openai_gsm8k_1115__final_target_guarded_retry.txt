@@ -1,0 +1,6 @@
+{
+"Sold half of the land": 80.00000001192093,
+"Sold another 1/4 of his land": 20.0,
+"Remaining land": 20.0,
+"Total earnings": 170.0
+}

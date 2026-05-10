@@ -1,0 +1,15 @@
+Solve this math word problem independently.
+
+Problem:
+The power goes out in Brianna's house one night so she and her family gather all their candles and flashlights. There are ８ rooms in the house and ４ people living there, including Brianna. There is a flashlight for every person to carry and two for each room. They have a variety of candles available; ４ small candles each for half the rooms and ５ medium candles each for the other half of the rooms. With everything combined, how many candles and flashlights are Brianna's family using when the lights go out?
+
+Instructions:
+- Identify the exact requested final quantity before doing arithmetic.
+- Use concise equations only.
+- Verify the computed value answers the requested final quantity, not an intermediate value.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.
+- If you are unsure, still output one best numeric answer on FINAL_ANSWER line.

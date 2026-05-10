@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "rafaela_tips = 40 * 20\njulieta_tips = rafaela_tips * 0.9\ntotal_tips = rafaela_tips + julieta_tips\nprint(total_tips)",
+    "stdout": "1520.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "1520.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "1520.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

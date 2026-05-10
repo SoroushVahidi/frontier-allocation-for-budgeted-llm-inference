@@ -1,0 +1,7 @@
+**Target:** Find the number of video games Bobby has.
+
+1. Brian's original games: \( B = 20 \)
+2. Brian's games after loss: \( B' = B - 5 = 15 \)
+3. Bobby's games: \( 3B' - 5 = 3(15) - 5 = 45 - 5 = 40 \)
+
+\boxed{40}

@@ -1,0 +1,22 @@
+**Target:** Find how many more eggs Camden painted than Arnold.
+
+Let \( A \) be the number of eggs Arnold painted, \( M \) be the number Madeline painted, \( C \) be the number Camden painted, and \( S \) be the number Sarah painted.
+
+Given:
+1. \( A + M + C + S = 56 \)
+2. \( A = M \)
+3. \( C + S = 30 \)
+4. \( C = S + 12 \)
+
+From (4), substitute \( C \) in (3):
+\[ S + 12 + S = 30 \Rightarrow 2S + 12 = 30 \Rightarrow 2S = 18 \Rightarrow S = 9 \]
+
+Then, \( C = S + 12 = 9 + 12 = 21 \).
+
+From (2), \( M = A \). Substitute \( C \) and \( S \) into (1):
+\[ A + A + 21 + 9 = 56 \Rightarrow 2A + 30 = 56 \Rightarrow 2A = 26 \Rightarrow A = 13 \]
+
+Finally, find \( C - A \):
+\[ C - A = 21 - 13 = 8 \]
+
+\boxed{8}

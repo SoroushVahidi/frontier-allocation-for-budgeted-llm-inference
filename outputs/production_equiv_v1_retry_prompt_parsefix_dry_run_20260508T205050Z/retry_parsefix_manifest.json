@@ -1,0 +1,9 @@
+{
+  "no_api_calls": true,
+  "case_count": 10,
+  "planned_calls": 10,
+  "no_gold_in_prompts_verified": true,
+  "no_prediction_leakage_verified": true,
+  "every_prompt_contains_final_answer_literal": true,
+  "ready_for_5case_live_recheck": true
+}

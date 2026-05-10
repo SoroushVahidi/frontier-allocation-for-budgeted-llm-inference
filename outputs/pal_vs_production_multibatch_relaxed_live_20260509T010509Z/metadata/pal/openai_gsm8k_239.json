@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_students = 1000\r\nstudents_exit_A = int(0.3 * total_students)\r\nremaining_students = total_students - students_exit_A\r\nstudents_exit_B = int(3/5 * remaining_students)\r\nstudents_exit_C = remaining_students - students_exit_B\r\nprint(students_exit_C)",
+    "stdout": "280\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "280",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "280",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

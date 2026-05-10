@@ -1,0 +1,6 @@
+**Target:** Calculate the average highest temperature of Southlandia, Northlandia, and Midlandia.
+
+1. Sum of highest temperatures: $-48 + 21 - 3 = -30$
+2. Average calculation: $\frac{-30}{3} = -10$
+
+**Final Answer:** $\boxed{-10}$

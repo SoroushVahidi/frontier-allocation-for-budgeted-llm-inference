@@ -1,0 +1,12 @@
+{
+  "planned_cases_per_method": 30,
+  "planned_methods": 2,
+  "planned_total_scored_rows": 60,
+  "estimated_logical_calls_notes": "Prior cohort mean ~2.2 calls/PAL row; 60\u00d72.2\u2248132",
+  "hard_cap_logical_calls": 300,
+  "abort_conditions": [
+    "Global logical API cap exceeded",
+    "Cohere readiness failure",
+    "Unknown method ID"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "cookies_today = 36\ncookies_tomorrow = 30\ncups_per_dozen = 2\ntotal_cookies = cookies_today + cookies_tomorrow\ntotal_dozens = total_cookies / 12\ntotal_cups = total_dozens * cups_per_dozen\nprint(total_cups)",
+    "stdout": "11.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "11.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "11.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

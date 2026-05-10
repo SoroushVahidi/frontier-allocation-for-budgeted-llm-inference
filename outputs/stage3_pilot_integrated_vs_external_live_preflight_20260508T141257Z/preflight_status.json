@@ -1,0 +1,45 @@
+{
+  "readiness_dir": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z",
+  "case_file": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
+  "case_count": 50,
+  "cohere_api_key_set": true,
+  "planned_new_cohere_calls": 50,
+  "planned_calls_ok": true,
+  "reuse_external_outputs": true,
+  "baselines": [
+    "external_l1_max",
+    "external_tale",
+    "external_s1",
+    "best_external"
+  ],
+  "external_outputs_complete": false,
+  "external_missing_entries": [
+    "openai_gsm8k_1081:best_external_prediction",
+    "openai_gsm8k_1112:best_external_prediction",
+    "openai_gsm8k_1115:best_external_prediction",
+    "openai_gsm8k_1131:best_external_prediction",
+    "openai_gsm8k_1132:best_external_prediction",
+    "openai_gsm8k_1137:best_external_prediction",
+    "openai_gsm8k_1139:best_external_prediction",
+    "openai_gsm8k_1144:best_external_prediction",
+    "openai_gsm8k_1147:best_external_prediction",
+    "openai_gsm8k_1158:best_external_prediction"
+  ],
+  "no_ascii_gold_in_prompts": false,
+  "gold_leak_case_ids": [
+    "openai_gsm8k_1095",
+    "openai_gsm8k_1116",
+    "openai_gsm8k_1122",
+    "openai_gsm8k_1198",
+    "openai_gsm8k_1131"
+  ],
+  "no_external_prediction_in_prompts": true,
+  "external_prediction_leak_case_ids": [],
+  "no_duplicate_case_ids": true,
+  "duplicate_case_ids": [],
+  "live_execution_supported": true,
+  "execute_live": false,
+  "execute_live_required_for_api_calls": true,
+  "would_call_cohere": true,
+  "preflight_ok": false
+}

@@ -1,0 +1,4 @@
+batch_id,pal_screened,followup_n,calls_end,notes
+1,50,25,148,screened_total=50
+2,50,25,296,screened_total=100
+3,35,25,429,screened_total=135

@@ -1,0 +1,51 @@
+{
+  "no_api_calls": true,
+  "recommended_case_set": "A_existing_245_complete_4way_run",
+  "recommended_case_count": 245,
+  "baseline_names": [
+    "external_l1_max",
+    "TALE",
+    "S1",
+    "best_external"
+  ],
+  "reusable_external_outputs": [
+    "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+    "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/cohere_real_model_cost_normalized_validation_20260507T161935Z/per_example_records.jsonl"
+  ],
+  "integrated_method_source": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1_validated_fixes policy from Stage-2 checkpoint",
+  "estimated_new_cohere_calls_for_integrated_method": 245,
+  "estimated_new_external_calls": 0,
+  "max_recommended_calls": 245,
+  "abort_conditions": [
+    "missing reusable all_casebook/per_example_records artifacts",
+    "validated-fixes runtime alias unresolved in runner",
+    "attempt to regenerate TALE/S1/external_l1 despite reusable outputs"
+  ],
+  "scoring_plan": {
+    "primary": "paired exact-match vs each baseline and best_external",
+    "secondary": "validated_only vs external_only counts, cost-aware call accounting",
+    "slice_checks": [
+      "stage2-overlap slice",
+      "external-only historical-failure slice"
+    ]
+  },
+  "statistical_tests_plan": {
+    "paired_binary": "McNemar (validated_fixes vs external_l1_max; validated_fixes vs best_external)",
+    "effect_size": "paired win-rate delta with Wilson CI"
+  },
+  "caveats": [
+    "Recommended set has zero overlap with Stage-2 100 and validated-fix IDs; this is out-of-sample generalization check.",
+    "Integrated method predictions for this set require new calls unless replay-only approximation is accepted."
+  ],
+  "runner_support": {
+    "existing_runner": "scripts/run_cohere_real_model_cost_normalized_validation.py",
+    "supports_tale_s1_external_l1": true,
+    "supports_no_api_dry_run_call_plan": true,
+    "supports_reusing_precomputed_external_outputs_directly": false,
+    "supports_custom_validated_fixes_method_alias_out_of_box": false,
+    "minimal_changes_needed": [
+      "Add validated-fixes method alias to METHODS registry (or reuse existing runtime ID with case-level allowlist override file).",
+      "Add replay mode to ingest precomputed external baseline predictions from casebook instead of regenerating external methods."
+    ]
+  }
+}

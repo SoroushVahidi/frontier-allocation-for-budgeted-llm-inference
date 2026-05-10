@@ -1,0 +1,20 @@
+{
+  "integrated_correct_count": 38,
+  "external_l1_correct_count": 32,
+  "tale_correct_count": 31,
+  "s1_correct_count": 33,
+  "best_external_correct_count": 40,
+  "integrated_minus_external_l1": 6,
+  "integrated_minus_tale": 7,
+  "integrated_minus_s1": 5,
+  "integrated_minus_best_external": -2,
+  "paired_external_l1_only": 1,
+  "paired_tale_only": 3,
+  "paired_s1_only": 2,
+  "paired_best_external_only": 3,
+  "paired_integrated_only_vs_external_l1": 7,
+  "api_errors": [],
+  "parsing_ambiguities": 0,
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

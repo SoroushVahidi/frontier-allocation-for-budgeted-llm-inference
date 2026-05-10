@@ -1,0 +1,74 @@
+{
+  "unique_external_only_losses": 31,
+  "expected_unique_count": 31,
+  "count_matches_expectation": true,
+  "source_counts": {
+    "cumulative_20_casebook_rows": 20,
+    "round3_external_only_rows": 11,
+    "100pair_external_only_from_paired": 5,
+    "round1_external_only_casebook": 10,
+    "round2_external_only_casebook": 5
+  },
+  "category_frequency": {
+    "L1_P1_code_absent": 14,
+    "L1_P3_exec_failed": 1,
+    "L1_P9_external_trace_advantage_unknown": 10,
+    "L1_P4_exec_succeeded_wrong": 1,
+    "L1_P5_correct_candidate_not_selected": 4,
+    "L1_P2_unsafe_code": 1
+  },
+  "top_5_precise_patterns": [
+    {
+      "pattern": "code omitted final executable snippet/answer payload",
+      "count": 9
+    },
+    {
+      "pattern": "gold absent from PAL candidate pool while external found correct target path",
+      "count": 7
+    },
+    {
+      "pattern": "no PAL code block emitted despite PAL seed running",
+      "count": 5
+    },
+    {
+      "pattern": "Gold-equivalent answer absent from PAL candidate pool while external path reached correct answer.",
+      "count": 3
+    },
+    {
+      "pattern": "gold-equivalent candidate exists but selector/tiebreak picked another answer",
+      "count": 2
+    }
+  ],
+  "fixability_frequency": {
+    "adding retry-on-empty-code": 3,
+    "executor allowlist/sandbox patch": 2,
+    "collecting more evidence": 7,
+    "PAL prompt tightening": 1,
+    "retry-on-empty-code": 11,
+    "PAL selection/integration patch": 4,
+    "collect more evidence": 3
+  },
+  "fixable_count_prompt_executor_selection_retry": 21,
+  "fixable_ratio_prompt_executor_selection_retry": 0.6774193548387096,
+  "pal_only_wins_comparison": {
+    "external_only_metrics": {
+      "n": 31,
+      "pal_gold_absent_rate": 0.5806451612903226,
+      "pal_exec_ok_rate": 0.6774193548387096,
+      "pal_code_present_rate": 0.5483870967741935,
+      "present_not_selected_rate": 0.3548387096774194
+    },
+    "pal_only_wins_metrics": {
+      "n": 62,
+      "pal_gold_absent_rate": 0.0,
+      "pal_exec_ok_rate": 1.0,
+      "pal_code_present_rate": 0.7096774193548387,
+      "present_not_selected_rate": 0.0
+    }
+  },
+  "enough_to_choose_patch": true,
+  "more_api_collection_needed_before_patching": false,
+  "recommended_next_step": "B. add retry-on-empty-code",
+  "patch_target_if_recommended": "Implement retry when PAL seed runs but pal_code_present==0: force one constrained regeneration requiring executable code and explicit final answer print.",
+  "api_should_remain_paused": true
+}

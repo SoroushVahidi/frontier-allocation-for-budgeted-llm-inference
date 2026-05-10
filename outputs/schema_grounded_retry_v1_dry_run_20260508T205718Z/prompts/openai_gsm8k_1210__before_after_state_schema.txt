@@ -1,0 +1,20 @@
+Solve this GSM8K-style problem independently using before/after state transitions.
+
+Problem:
+Frankie watches TV after he finishes his homework every night. On Monday and Tuesday, he watched a １-hour episode of his favorite show each night. On Wednesday, he watched a few episodes of a ３０-minute show. On Thursday, he finished homework early and watched a １-hour episode and a ３０-minute show. On Friday, he got to stay up late for the weekend, so he watched two １-hour episodes. If he watched ７ hours of TV in all, how many ３０-minute episodes did he watch on Wednesday?
+
+Track state updates in order and compute the requested final target.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.

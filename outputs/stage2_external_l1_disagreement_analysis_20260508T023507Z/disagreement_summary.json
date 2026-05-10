@@ -1,0 +1,23 @@
+{
+  "integrated_only_count": 8,
+  "external_l1_only_count": 7,
+  "both_wrong_count": 7,
+  "integrated_only_by_mechanism": {
+    "unknown": 8
+  },
+  "external_l1_only_by_mechanism": {
+    "gold_absent_discovery": 5,
+    "unknown": 2
+  },
+  "both_wrong_by_mechanism": {
+    "unknown": 7
+  },
+  "how_many_external_l1_only_are_known_loss_bank_cases": 7,
+  "how_many_external_l1_only_have_supported_scaffold_available": 0,
+  "how_many_external_l1_only_are_outside_allowlist": 3,
+  "recommended_next_track": [
+    "investigate_new_pattern",
+    "expand_supported_scaffolds",
+    "run_stage3_exploratory"
+  ]
+}

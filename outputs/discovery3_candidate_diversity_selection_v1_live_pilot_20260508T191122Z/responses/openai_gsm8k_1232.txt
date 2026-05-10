@@ -1,0 +1,20 @@
+To determine how much more money Nick will make at the job with the higher net pay rate, we need to calculate the net income for both Job A and Job B, and then find the difference.
+
+**Job A:**
+- Hourly wage: $15
+- Hours per year: 2000
+- Total income before tax: \( 15 \times 2000 = 30,000 \) dollars
+- Tax rate: 20%
+- Net income: \( 30,000 \times (1 - 0.20) = 30,000 \times 0.80 = 24,000 \) dollars
+
+**Job B:**
+- Annual salary: $42,000
+- Property tax: $6,000
+- Income after property tax: \( 42,000 - 6,000 = 36,000 \) dollars
+- Tax rate on net income: 10%
+- Net income: \( 36,000 \times (1 - 0.10) = 36,000 \times 0.90 = 32,400 \) dollars
+
+**Difference in net income:**
+\[ 32,400 - 24,000 = 8,400 \]
+
+final_answer / FINAL_ANSWER: 8400

@@ -1,0 +1,19 @@
+You are solving a grade-school math word problem using a **quantity ledger**.
+
+Problem:
+Tim gets a promotion that offers him a ５% raise on his $２００００ a month salary.  It also gives him a bonus worth half a month's salary. How much money will he make in a year?
+
+Instructions:
+- Restate the exact final target quantity the question asks for (for money: total paid/earned, yearly amount, change, remaining, profit, etc.).
+- Build a money ledger with named lines for every distinct amount in the story (principal/cost/revenue/bonus/total/remaining as applicable).
+- For any percentage or fraction mentioned, decide what it applies to:
+  - If the story ties the change to the original/base amount each time, use a fixed increment from the original/base (do not compound).
+  - If it describes a raise on a salary, compute the raised salary first; any later bonus defined as a fraction of a month's salary must use the raised salary.
+- Convert units and time spans so everything is on the same basis before combining.
+- Compute the final requested numeric result carefully.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

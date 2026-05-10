@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Nancy is cleaning out her old woodshed. She saw ９０ spiders, １/３rd as many millipedes as spiders, and a number of stink bugs equal to twice the number of millipedes minus １２. How many bugs did she count total?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

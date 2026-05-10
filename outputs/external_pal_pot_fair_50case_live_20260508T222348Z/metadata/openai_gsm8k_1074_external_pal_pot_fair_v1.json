@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "eggs_laid = 16\neggs_eaten = 3\neggs_baked = 4\neggs_sold = eggs_laid - eggs_eaten - eggs_baked\nprice_per_egg = 2\ndaily_earnings = eggs_sold * price_per_egg\nprint(daily_earnings)",
+    "stdout": "18\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "18",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "18",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

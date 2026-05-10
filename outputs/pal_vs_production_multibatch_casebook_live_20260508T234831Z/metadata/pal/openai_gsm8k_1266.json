@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "drilled = 4\ncapped = drilled + 7\ntotal_fixed = drilled + capped\npercentage_fixed = (total_fixed / 30) * 100\nprint(percentage_fixed)",
+    "stdout": "50.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "50.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "50.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

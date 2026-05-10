@@ -1,0 +1,14 @@
+{
+  "case_count": 5,
+  "fallback_applicable_count": 2,
+  "original_parsing_failures": 3,
+  "new_parsing_failures": 3,
+  "original_exact_count": 0,
+  "fallback_exact_count": 0,
+  "exact_gain": 0,
+  "ambiguous_count": 0,
+  "parser_patched": true,
+  "ready_for_5case_live_recheck": true,
+  "ready_for_15case_rerun": false,
+  "alias_patterns_found": []
+}

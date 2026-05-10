@@ -1,0 +1,3 @@
+path,tracked,pushed,needed_for_repro
+manifests/target_staged_pal_retry_primary_11_20260507.json,no,no,yes
+prompts/target_staged_pal_retry/user_template_v1.md,no,no,yes

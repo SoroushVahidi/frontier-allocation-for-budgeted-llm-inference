@@ -1,0 +1,8 @@
+**Target:** Find the whirligig's speed.
+
+1. Let \( t \) be the thingamabob's speed.
+2. Whatchamacallit's speed: \( 11t = 121 \) m/s.
+3. Solve for \( t \): \( t = \frac{121}{11} = 11 \) m/s.
+4. Whirligig's speed: \( 5t = 5 \times 11 = 55 \) m/s.
+
+\boxed{55}

@@ -1,0 +1,17 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+Jon runs a triathlon.  It takes him ４０ minutes for the swim, an hour and ２０ minutes for the bike ride and ５０ minutes for the run.  Compared to Jon, James finishes the swim １０% faster but takes ５ minutes longer on the bike.  If Jon won by １０ minutes, how long did it take James to do the run?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: entity_value
+- family_hint: unknown
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on the FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.

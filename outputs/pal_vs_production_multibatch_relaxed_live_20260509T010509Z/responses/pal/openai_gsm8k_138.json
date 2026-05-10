@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "105",
+  "parsed_answer": "105",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "first_test_questions = 75\nfirst_test_time = 8\nfirst_test_rate = 5\n\nsecond_test_questions = 100\nsecond_test_time = 6\nsecond_test_rate = 5\n\nfirst_test_completed = first_test_time * first_test_rate\nsecond_test_completed = second_test_time * second_test_rate\n\ntotal_questions = first_test_questions + second_test_questions\ntotal_completed = first_test_completed + second_test_completed\n\nincomplete_questions = total_questions - total_completed\n\nprint(incomplete_questions)",
+      "stdout": "105\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "105",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "105",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

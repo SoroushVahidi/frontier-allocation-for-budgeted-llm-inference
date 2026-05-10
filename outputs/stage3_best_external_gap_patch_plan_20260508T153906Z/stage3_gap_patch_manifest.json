@@ -1,0 +1,20 @@
+{
+  "no_api_calls": true,
+  "source_micro_pilot_dir": "outputs/stage3_best_external_only_micro_pilot_20260508T153345Z",
+  "fixed_cases_count": 2,
+  "fixed_case_ids": [
+    "openai_gsm8k_1078",
+    "openai_gsm8k_1198"
+  ],
+  "recommended_patch_cases": [
+    "openai_gsm8k_1078",
+    "openai_gsm8k_1198"
+  ],
+  "expected_new_calls_for_patch_checkpoint": 2,
+  "scoring_flag_audit_result": {
+    "flag_issue_rows": 4,
+    "total_rows": 6,
+    "issue_summary": "closes_best_external_gap_original is too conservative/misdefined for this micro-pilot output schema"
+  },
+  "recommended_next_step": "run_patch_checkpoint_on_3_cases"
+}

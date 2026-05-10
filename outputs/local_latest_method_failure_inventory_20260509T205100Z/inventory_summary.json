@@ -1,0 +1,20 @@
+{
+  "total_latest_method_failures": 49,
+  "completeness_counts": {
+    "FULL": 28,
+    "PARTIAL": 1,
+    "ID_ONLY": 20
+  },
+  "family_counts": {
+    "final_target_mismatch": 9,
+    "multi_step_computation": 2,
+    "parse_format": 3,
+    "arithmetic_execution": 1,
+    "retry_commit_miss": 4,
+    "wrong_answer_completed": 1,
+    "structural_commit_wrong": 9,
+    "parsing_failure": 1,
+    "cap_hit_incomplete": 19
+  },
+  "total_older_failures": 71
+}

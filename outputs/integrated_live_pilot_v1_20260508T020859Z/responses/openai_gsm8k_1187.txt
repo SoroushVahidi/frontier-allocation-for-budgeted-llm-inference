@@ -1,0 +1,26 @@
+**Entities/Quantities:**
+- Let \( A \) be the number of eggs Arnold painted.
+- Let \( M \) be the number of eggs Madeline painted.
+- Let \( C \) be the number of eggs Camden painted.
+- Let \( S \) be the number of eggs Sarah painted.
+
+**Problem Asks For:**
+How many more eggs did Camden paint than Arnold?
+
+**Reasoning:**
+1. From the problem, \( A = M \).
+2. Camden and Sarah painted a total of 30 eggs: \( C + S = 30 \).
+3. Camden painted 12 more than Sarah: \( C = S + 12 \).
+4. Substitute \( C = S + 12 \) into \( C + S = 30 \):
+   \[
+   (S + 12) + S = 30 \Rightarrow 2S + 12 = 30 \Rightarrow 2S = 18 \Rightarrow S = 9
+   \]
+5. Then, \( C = S + 12 = 9 + 12 = 21 \).
+6. The total number of eggs painted is 56: \( A + M + C + S = 56 \).
+7. Since \( A = M \), substitute \( C = 21 \) and \( S = 9 \):
+   \[
+   2A + 21 + 9 = 56 \Rightarrow 2A + 30 = 56 \Rightarrow 2A = 26 \Rightarrow A = 13
+   \]
+8. The difference between Camden and Arnold is \( C - A = 21 - 13 = 8 \).
+
+\boxed{8}

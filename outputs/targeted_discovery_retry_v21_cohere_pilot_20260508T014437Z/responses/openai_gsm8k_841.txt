@@ -1,0 +1,16 @@
+**Final Target Quantity:** Annual total earned
+
+**Money Ledger:**
+
+1. **Monthly Salary (Principal):** $20,000  
+2. **Raise (5% of Monthly Salary):** $1,000 (one-time calculation, then recurring)  
+3. **Raised Monthly Salary:** $21,000 (recurring, 12 times a year)  
+4. **Bonus (Half a Month's Raised Salary):** $10,500 (one-time)  
+5. **Annual Salary (Raised Monthly Salary × 12):** $252,000  
+6. **Total Annual Earned (Annual Salary + Bonus):** $262,500  
+
+**Recurrence Classification:**
+- Monthly Salary: per-period recurring (raised to $21,000 after promotion)  
+- Bonus: one-time  
+
+**Final Answer:** \boxed{262500}

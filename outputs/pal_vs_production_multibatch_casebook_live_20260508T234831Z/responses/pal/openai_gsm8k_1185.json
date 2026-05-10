@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "2.0",
+  "parsed_answer": "2",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "giant_cubes = 3\nmedium_cubes = 7\nsmall_cubes = 8\n\ngiant_usage = giant_cubes * 4\nmedium_usage = medium_cubes * 2\nsmall_usage = small_cubes * 0.5\n\ntotal_usage = giant_usage + medium_usage + small_usage\nremaining_water = 32 - total_usage\n\nprint(remaining_water)",
+      "stdout": "2.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "2.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "2.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

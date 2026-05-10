@@ -1,0 +1,8 @@
+**Target:** Calculate the total number of letters Elise has written.
+
+1. Full alphabet written twice: \(2 \times 26 = 52\)
+2. Half alphabet written once: \( \frac{26}{2} = 13\)
+3. Total before re-writing: \(52 + 13 = 65\)
+4. Re-write everything: \(65 + 65 = 130\)
+
+\boxed{130}

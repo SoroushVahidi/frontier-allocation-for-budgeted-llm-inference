@@ -1,0 +1,6 @@
+{
+"Initial Salary": 600,
+"Annual Increase": 0.10,
+"Years of Service": 3,
+"Final Salary": 600 
+}

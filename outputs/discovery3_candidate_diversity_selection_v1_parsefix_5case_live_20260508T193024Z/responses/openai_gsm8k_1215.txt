@@ -1,0 +1,33 @@
+To solve this problem, let's break it down step by step.
+
+**Step 1: Identify the exact requested final quantity.**
+The problem asks for the time it took James to do the run.
+
+**Step 2: Decompose into concise equations.**
+
+Let's denote:
+- \( J_s \) as Jon's swim time: 40 minutes
+- \( J_b \) as Jon's bike time: 80 minutes (1 hour 20 minutes)
+- \( J_r \) as Jon's run time: 50 minutes
+- \( T_J \) as Jon's total time: \( J_s + J_b + J_r = 40 + 80 + 50 = 170 \) minutes
+
+For James:
+- \( S_J \) as James's swim time: \( 0.9 \times J_s = 0.9 \times 40 = 36 \) minutes (10% faster than Jon)
+- \( B_J \) as James's bike time: \( J_b + 5 = 80 + 5 = 85 \) minutes (5 minutes longer than Jon)
+- \( R_J \) as James's run time: unknown
+- \( T_{James} \) as James's total time
+
+We know Jon won by 10 minutes, so:
+\[ T_{James} = T_J + 10 = 170 + 10 = 180 \] minutes
+
+Now, express James's total time in terms of his run time:
+\[ T_{James} = S_J + B_J + R_J \]
+\[ 180 = 36 + 85 + R_J \]
+\[ 180 = 121 + R_J \]
+\[ R_J = 180 - 121 \]
+\[ R_J = 59 \]
+
+**Step 3: Verify units and target alignment.**
+The units are consistent (minutes), and we are solving for James's run time, which aligns with the target quantity.
+
+**FINAL_ANSWER: 59**

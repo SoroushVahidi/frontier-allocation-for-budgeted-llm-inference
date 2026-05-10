@@ -1,0 +1,20 @@
+{
+  "total_unique_latest_PAL_loss_cases": 71,
+  "unique_L1_only_losses": 58,
+  "unique_any_best_external_losses": 71,
+  "present_not_selected": 24,
+  "gold_absent_discovery": 36,
+  "unknown_mechanism": 11,
+  "Track_B_fixed": 3,
+  "Track_B_still_wrong": 4,
+  "rate_ratio": 6,
+  "temporal_change": 12,
+  "difference": 3,
+  "missing_final_leaf": 0,
+  "executable_pal_present_but_not_committed": 16,
+  "notes": {
+    "union_definition": "Unique case_ids among union-eligible bank rows (latest PAL manifests only).",
+    "L1_only_count_is_subset_of_rows_with_L1_win": true,
+    "failure_case_corpus_and_88case_excluded_from_union": true
+  }
+}

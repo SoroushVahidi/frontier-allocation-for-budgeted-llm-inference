@@ -1,0 +1,44 @@
+To solve this problem, we need to follow the sequence of transactions on Sheila's credit card and compute the new balance step by step.
+
+1. **Initial Charge:**
+   Sheila initially charged $85.00 on her credit card.
+   \[
+   \text{Initial Balance} = 85.00
+   \]
+
+2. **Return of an Item:**
+   She returned an item worth $15.00.
+   \[
+   \text{Balance after return} = 85.00 - 15.00 = 70.00
+   \]
+
+3. **Purchase of a Frying Pan:**
+   The frying pan was on sale for 20% off $20.00.
+   \[
+   \text{Discount on frying pan} = 20.00 \times 0.20 = 4.00
+   \]
+   \[
+   \text{Price of frying pan} = 20.00 - 4.00 = 16.00
+   \]
+   Adding this to the balance:
+   \[
+   \text{Balance after frying pan purchase} = 70.00 + 16.00 = 86.00
+   \]
+
+4. **Purchase of a Set of Towels:**
+   The set of towels was 10% off $30.00.
+   \[
+   \text{Discount on towels} = 30.00 \times 0.10 = 3.00
+   \]
+   \[
+   \text{Price of towels} = 30.00 - 3.00 = 27.00
+   \]
+   Adding this to the balance:
+   \[
+   \text{Final Balance} = 86.00 + 27.00 = 113.00
+   \]
+
+Thus, the new balance on Sheila's credit card is:
+\[
+\text{final_answer / FINAL_ANSWER: } 113.00
+\]

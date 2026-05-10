@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "160",
+  "parsed_answer": "160",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_cost = 8 * 5 * 4\ntotal_revenue = 8 * 5 * 8\nprofit = total_revenue - total_cost\nprint(profit)",
+      "stdout": "160\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "160",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "160",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

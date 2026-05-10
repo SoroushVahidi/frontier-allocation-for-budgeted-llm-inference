@@ -1,0 +1,26 @@
+{
+  "total_cases": 15,
+  "response_files_found": 15,
+  "numeric_answer_present_count": 15,
+  "final_answer_line_present_count": 14,
+  "safe_rescore_count": 14,
+  "conservative_exact_count": 4,
+  "parser_failure_type_counts": {
+    "prompt_output_contract_failure": 14,
+    "multiple_numbers_no_final_marker": 1
+  },
+  "scaffold_failure_counts": {
+    "leave_unmodified": 1,
+    "ratio_unit_equation": 4,
+    "state_transition_consistency": 9,
+    "final_target_extraction_repair": 1
+  },
+  "recommended_fix": "prompt_output_contract_patch",
+  "should_rerun_live": true,
+  "recommended_rerun_size": 5,
+  "caveats": [
+    "All responses contain numbers; failures are overwhelmingly output-contract mismatch.",
+    "Model used alias line `final_answer / FINAL_ANSWER:` instead of strict `FINAL_ANSWER:`.",
+    "Conservative reparsing from alias line is informative but not used to alter official scores."
+  ]
+}

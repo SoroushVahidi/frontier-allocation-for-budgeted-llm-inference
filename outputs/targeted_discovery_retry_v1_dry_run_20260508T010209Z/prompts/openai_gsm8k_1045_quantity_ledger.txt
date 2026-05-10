@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using a **quantity ledger**.
+
+Problem:
+You can buy a movie super ticket for $20 that includes rights to watch any movie and you get one popcorn with a soda for only $1 extra. Or you can buy a movie ticket for $12 and buy one popcorn and a soda at regular price. What's the regular price of popcorn if the soda costs $3 and you didn't buy the super ticket and ended up saving $2?
+
+Instructions:
+- List every numeric quantity with its unit (or "unitless") and what it measures.
+- State clearly which quantity the question asks for (the **target**).
+- Write the equation or step-by-step arithmetic plan that connects the quantities to the target.
+- Execute the plan carefully and double-check units and percentages.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

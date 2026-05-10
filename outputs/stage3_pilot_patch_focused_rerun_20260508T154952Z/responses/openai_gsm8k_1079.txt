@@ -1,0 +1,7 @@
+**Target:** Calculate the total number of people inside the church.
+
+1. Buses: \( 12 \times 35 = 420 \) people
+2. Cars: \( 20 \times 3 = 60 \) people
+3. Total: \( 420 + 60 = 480 \) people
+
+\boxed{480}

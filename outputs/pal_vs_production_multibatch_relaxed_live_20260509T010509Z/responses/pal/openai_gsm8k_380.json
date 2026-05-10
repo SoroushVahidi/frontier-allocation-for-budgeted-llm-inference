@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "803.0",
+  "parsed_answer": "803",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "principal = 3650\nrate = 0.10\nmonths = 5\n\n# Calculate the total amount to be paid\ntotal_amount = principal * (1 + rate)\n\n# Calculate the monthly payment\nmonthly_payment = total_amount / months\n\nprint(round(monthly_payment, 2))",
+      "stdout": "803.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "803.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "803.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

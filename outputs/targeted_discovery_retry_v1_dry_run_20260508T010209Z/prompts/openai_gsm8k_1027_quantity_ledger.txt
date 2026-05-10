@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using a **quantity ledger**.
+
+Problem:
+90 single use contacts come in 1 box and will last Pete 45 days.  Each box is $100.00 and currently 10% off.  If he buys 2 boxes of contact, how much will each pair of contacts cost?
+
+Instructions:
+- List every numeric quantity with its unit (or "unitless") and what it measures.
+- State clearly which quantity the question asks for (the **target**).
+- Write the equation or step-by-step arithmetic plan that connects the quantities to the target.
+- Execute the plan carefully and double-check units and percentages.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

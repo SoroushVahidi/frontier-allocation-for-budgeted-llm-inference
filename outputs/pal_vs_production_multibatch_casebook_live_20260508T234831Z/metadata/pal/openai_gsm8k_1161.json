@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "package_3_price = 2.50\npackage_2_price = 1.00\n\n# Calculate cost for 18 flowers using the better price (package of 3)\nnum_packages_3 = 18 // 3\ntotal_cost_package_3 = num_packages_3 * package_3_price\n\n# Calculate cost for 18 flowers using the other price (package of 2)\nnum_packages_2 = 18 // 2\nremaining_flowers = 18 % 2\ntotal_cost_package_2 = (num_packages_2 * package_2_price) + (remaining_flowers * package_2_price)\n\n# Calculate savings\nsavings = total_cost_package_2 - total_cost_package_3\nprint(savings)",
+    "stdout": "-6.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "-6.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "-6.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "no_api_calls": true,
+  "case_count": 15,
+  "planned_extra_calls": 15,
+  "selected_case_ids": [
+    "openai_gsm8k_1215",
+    "openai_gsm8k_1299",
+    "openai_gsm8k_1199",
+    "openai_gsm8k_1219",
+    "openai_gsm8k_1232",
+    "openai_gsm8k_1275",
+    "openai_gsm8k_1217",
+    "openai_gsm8k_1081",
+    "openai_gsm8k_1112",
+    "openai_gsm8k_1115",
+    "openai_gsm8k_1132",
+    "openai_gsm8k_1137",
+    "openai_gsm8k_1139",
+    "openai_gsm8k_1144",
+    "openai_gsm8k_1147"
+  ],
+  "scaffold_counts": {
+    "leave_unmodified": 1,
+    "ratio_unit_equation": 4,
+    "state_transition_consistency": 9,
+    "final_target_extraction_repair": 1
+  },
+  "trigger_counts": {
+    "not_triggered": 5,
+    "triggered": 10
+  },
+  "no_gold_in_prompts_verified": true,
+  "no_prediction_leakage_verified": true,
+  "ready_for_live_confirmation": true,
+  "abort_conditions": [
+    "planned_extra_calls > 15",
+    "gold or prediction leakage detected in prompts",
+    "missing confirmation cases"
+  ]
+}

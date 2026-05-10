@@ -1,0 +1,46 @@
+{
+  "no_api_calls": true,
+  "source_stage3_readiness_dir": "outputs/stage3_tale_s1_readiness_20260508T032512Z",
+  "source_all_casebook": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+  "case_count": 50,
+  "estimated_new_cohere_calls": 50,
+  "max_recommended_calls": 50,
+  "external_outputs_reused": true,
+  "baselines_available": [
+    "external_l1_max",
+    "external_tale",
+    "external_s1",
+    "best_external"
+  ],
+  "sampling_strategy": "stratified by outcome_bucket with best-external winner diversity; out-of-sample vs Stage-2 enforced",
+  "outcome_bucket_counts": {
+    "pal_wrong_external_correct": 20,
+    "all_correct": 15,
+    "pal_wrong_all_external_wrong": 10,
+    "mixed_other": 5
+  },
+  "best_external_winner_counts": {
+    "external_l1_max": 32,
+    "external_tale": 6,
+    "external_s1": 2,
+    "none": 10
+  },
+  "abort_conditions": [
+    "missing required baseline prediction/correct columns",
+    "overlap with stage2 validated-fix IDs detected",
+    "case_count != 50"
+  ],
+  "scoring_plan": {
+    "primary": "paired exact-match vs external_l1, TALE, S1, best_external",
+    "secondary": "outcome-bucket deltas and winner-slice deltas"
+  },
+  "statistical_tests_plan": {
+    "pairwise": "McNemar for validated_fixes vs each baseline",
+    "effect_size": "paired win-rate delta + CI"
+  },
+  "live_execution_supported": false,
+  "missing_live_components": [
+    "stage3 replay runner currently dry-run only",
+    "no live integrated-call + final scoring path in new runner"
+  ]
+}

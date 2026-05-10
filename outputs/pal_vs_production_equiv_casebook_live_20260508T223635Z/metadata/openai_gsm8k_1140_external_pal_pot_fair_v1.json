@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "saturday_gingerbread = 10\nsunday_gingerbread = saturday_gingerbread + 5\nsunday_apple_pie = 15\nsaturday_apple_pie = sunday_apple_pie - 4\ntotal_gingerbread = saturday_gingerbread + sunday_gingerbread\ntotal_apple_pie = saturday_apple_pie + sunday_apple_pie\ntotal_earnings = (total_gingerbread * 6) + (total_apple_pie * 15)\nprint(total_earnings)",
+    "stdout": "540\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "540",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "540",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

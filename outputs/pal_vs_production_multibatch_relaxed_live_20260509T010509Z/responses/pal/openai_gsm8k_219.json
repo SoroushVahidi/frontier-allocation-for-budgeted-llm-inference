@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "54.0",
+  "parsed_answer": "54",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "naomi_points = 68\nyuri_points = (naomi_points / 2) + 10\nbrianna_points = naomi_points + 17\ntotal_points = 251\njojo_points = total_points - naomi_points - yuri_points - brianna_points\nprint(jojo_points)",
+      "stdout": "54.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "54.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "54.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

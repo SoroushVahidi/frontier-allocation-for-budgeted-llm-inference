@@ -1,0 +1,33 @@
+{
+  "prediction": "78",
+  "parsed_answer": "78",
+  "metadata": {
+    "external_baseline_family": "s1_simple_test_time_scaling",
+    "s1_faithful_enabled": true,
+    "continuation_cue": "Wait",
+    "num_ignore_think_end": 1,
+    "min_thinking_steps": 0,
+    "forced_continue_count": 1,
+    "stop_boundary_detected_count": 1,
+    "wait_token": "Wait",
+    "forced_continue_events": 1,
+    "deviations_from_official": "Action-budget proxy and branch-level done-boundary detection differ from official token-level serving stack.",
+    "nominal_budget_actions": 4,
+    "realized_reasoning_tokens_estimate": 74,
+    "final_answer_tokens_estimate": 1,
+    "total_generated_tokens_estimate": 75,
+    "continuation_override_tokens_estimate": 1,
+    "continuation_override_accounting_policy": "forced_continue_events * wait_token_word_count",
+    "final_score": 0.9752000000000001
+  },
+  "error_message": "",
+  "status": "success",
+  "s1_observability": {
+    "raw_final_response_text": "",
+    "raw_last_response_text": "",
+    "forced_continue_count": 1,
+    "stop_boundary_detected_count": 1,
+    "final_answer_tokens_estimate": 1,
+    "s1_no_final_answer_detected": false
+  }
+}

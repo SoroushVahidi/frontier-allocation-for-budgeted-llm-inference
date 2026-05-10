@@ -1,0 +1,26 @@
+{
+  "plan_timestamp_utc": "20260508T220034Z",
+  "logical_calls_per_case": {
+    "external_self_consistency_6_fair_v1": 6,
+    "external_pal_pot_fair_v1": 1
+  },
+  "controller_budget_recommendation": 6,
+  "plan_A_10case": {
+    "cases": 10,
+    "expected_total_calls_both_methods": 70,
+    "max_recommended_cap": 80
+  },
+  "plan_B_full_50": {
+    "cases": 50,
+    "expected_total_calls_both_methods": 350,
+    "max_recommended_cap": 300
+  },
+  "chosen_live_plan": "ten_case_calibration_only",
+  "chosen_live_plan_reason": "Expected full-50 workload 350 logical calls for both methods exceeds decision threshold 250 (50*6 + 50*1 = 350). PAL path variability and SC6 decode diversity (temp=0) add risk; run 10-case calibration first with cap 80 (expected 70 calls).",
+  "known_risks": {
+    "sc6_temperature_0": "Independent samples at temperature 0 may collapse diversity vs paper-style sampling; caveated in manifests.",
+    "pal_executor": "Restricted Python execution may fail or return unparseable stdout; method_execution_error or parsing_failure.",
+    "method_execution_error": "Branch generator must expose PoT path; rare RuntimeError from API cap.",
+    "parsing_failure": "Empty normalized answer after self-consistency vote or missing PAL numeric extraction."
+  }
+}

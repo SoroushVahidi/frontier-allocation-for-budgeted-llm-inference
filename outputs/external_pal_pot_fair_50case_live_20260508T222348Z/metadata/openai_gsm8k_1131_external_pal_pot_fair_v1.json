@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "orange_fish = 3\nwhite_fish = 4\n\ntotal_fish_before = orange_fish + white_fish\ntotal_fish_after = total_fish_before + 17\n\n# Let x be the number of white fish bought\n# Then 17 - x is the number of orange fish bought\n\n# After buying, the number of orange fish is twice the number of white fish\n# So, (orange_fish + (17 - x)) = 2 * (white_fish + x)\n\n# Solving for x\nx = (17 - orange_fish + 2 * white_fish) // 3\n\nprint(x)",
+    "stdout": "7\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "7",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "7",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

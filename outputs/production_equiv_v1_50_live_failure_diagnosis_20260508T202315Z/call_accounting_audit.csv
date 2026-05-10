@@ -1,0 +1,2 @@
+total_rows,completed_rows,cap_error_rows,rows_before_first_cap_error,reported_actual_calls_from_summary,inferred_actual_calls_from_errors_or_runner,dry_run_estimated_total_calls,dry_run_estimated_extra_calls,observed_calls_per_completed_case,projected_calls_for_50_no_cap,recommended_cap_for_full_50,recommended_cap_for_10case_smoke
+50,20,30,20,41,80,61,11,2.050,102.5,132,30

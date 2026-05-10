@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "to_inches = lambda feet, inches: feet * 12 + inches\n\ntopher_shoe = to_inches(8, 4)\nbobby_shoe = (to_inches(8, 4) - 10) / 9\nprint(round(bobby_shoe))",
+    "stdout": "10\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "10",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "10",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

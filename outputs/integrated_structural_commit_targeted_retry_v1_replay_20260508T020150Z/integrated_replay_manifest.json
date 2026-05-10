@@ -1,0 +1,15 @@
+{
+  "no_api_calls": true,
+  "method_name": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1",
+  "structural_commit_source": "/home/soroush/research-next-wt/outputs/structural_commit_v1_replay_20260508T120000Z",
+  "targeted_retry_consolidation_source": "/home/soroush/research-next-wt/outputs/targeted_discovery_retry_consolidated_20260508T015847Z",
+  "failure_bank_source": "/home/soroush/research-next-wt/outputs/latest_pal_external_loss_bank_20260508T004000Z/latest_pal_external_loss_union_by_case.csv",
+  "allowlist_mode": true,
+  "targeted_retry_tested_solved_count": 18,
+  "structural_commit_fixed_count": 7,
+  "estimated_combined_fixes_on_known_failure_bank": 25,
+  "caveats": [
+    "Targeted retry stays allowlisted to tested/recommended consolidated coverage only.",
+    "Integrated replay is evidence stitching from existing artifacts; no new model calls."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "84",
+  "parsed_answer": "84",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "mitchel_rides = 30\nanne_rides = mitchel_rides * 0.7\nrobert_rides = anne_rides * 4\nprint(int(robert_rides))",
+      "stdout": "84\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "84",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "84",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

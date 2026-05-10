@@ -1,0 +1,19 @@
+To solve this problem, we need to calculate the total time it takes Billy to peel and cut all 60 potatoes.
+
+1. **Time to peel one potato**: 1.5 minutes
+2. **Time to cut one potato**: 5 seconds = 5/60 minutes = 1/12 minutes (converting seconds to minutes)
+
+**Total time per potato** = Time to peel + Time to cut
+= 1.5 minutes + 1/12 minutes
+= (1.5 * 12 + 1) / 12 minutes
+= (18 + 1) / 12 minutes
+= 19/12 minutes per potato
+
+**Total time for 60 potatoes** = Total time per potato * 60
+= (19/12) * 60 minutes
+= 19 * 5 minutes
+= 95 minutes
+
+The final target is the total time it takes Billy to finish prepping the potatoes.
+
+\boxed{95}

@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "10",
+  "parsed_answer": "10",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "tractor_daily_revenue = 10 * 100\nsilo_daily_revenue = 5 * 220\npercentage_increase = ((silo_daily_revenue - tractor_daily_revenue) / tractor_daily_revenue) * 100\nprint(round(percentage_increase))",
+      "stdout": "10\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "10",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "10",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

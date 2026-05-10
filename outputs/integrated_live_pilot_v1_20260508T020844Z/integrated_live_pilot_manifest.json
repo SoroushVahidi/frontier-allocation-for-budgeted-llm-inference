@@ -1,0 +1,28 @@
+{
+  "method_name": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1",
+  "source_integrated_replay_dir": "/home/soroush/research-next-wt/outputs/integrated_structural_commit_targeted_retry_v1_replay_20260508T020401Z",
+  "selected_case_count": 15,
+  "selected_targeted_retry_case_count": 12,
+  "selected_structural_only_case_count": 3,
+  "max_cohere_calls": 15,
+  "planned_cohere_calls": 12,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "prompt_versions_by_scaffold": {
+    "quantity_ledger": "quantity_ledger_v2_1",
+    "rate_table": "v1",
+    "before_after_state": "v1",
+    "target_difference": "v1"
+  },
+  "no_gold_in_prompts_verified": true,
+  "scoring_is_offline": true,
+  "abort_conditions": [
+    "COHERE_API_KEY missing",
+    "planned calls exceeds 15",
+    "missing prompt file",
+    "gold leak in prompt",
+    "unsupported case selected",
+    "duplicate case id"
+  ]
+}

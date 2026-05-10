@@ -1,0 +1,9 @@
+**Target:** Calculate weekly revenue from reservations.
+
+Let \( n = 6 \) (reservations/night), \( m = 2 \) (meals/reservation), \( p = 5 \) (price/meal), \( w = 5 \) (wine/reservation), \( d = 2 \) (days/week).
+
+\[ \text{Revenue/night} = n \times (m \times p + w) \]
+\[ \text{Revenue/week} = d \times \text{Revenue/night} \]
+\[ \text{Revenue/week} = 2 \times 6 \times (2 \times 5 + 5) = 2 \times 6 \times 15 = 180 \]
+
+\boxed{180}

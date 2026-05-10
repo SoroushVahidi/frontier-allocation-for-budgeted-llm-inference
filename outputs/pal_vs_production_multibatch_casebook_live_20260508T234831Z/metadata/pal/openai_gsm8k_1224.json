@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "dad_age_when_emil_24 = 24 * 2\ndifference_in_years = 24 - 19\ndad_age_now = dad_age_when_emil_24 - difference_in_years\nbrother_age_when_emil_24 = 24 / 2\nbrother_age_now = brother_age_when_emil_24 - difference_in_years\nprint(dad_age_now + brother_age_now)",
+    "stdout": "50.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "50.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "50.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

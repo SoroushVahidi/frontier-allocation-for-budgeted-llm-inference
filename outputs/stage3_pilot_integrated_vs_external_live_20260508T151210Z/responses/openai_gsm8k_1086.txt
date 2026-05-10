@@ -1,0 +1,9 @@
+**Target:** Calculate the total number of Pokemon cards Elaine has after three months.
+
+1. Initial cards: \( x = 20 \)
+2. First month: \( 3x = 3(20) = 60 \)
+3. Second month: \( 60 - 20 = 40 \)
+4. Third month: \( 2(60 + 40) = 2(100) = 200 \)
+5. Total cards: \( x + 60 + 40 + 200 = 20 + 60 + 40 + 200 = 320 \)
+
+\boxed{320}

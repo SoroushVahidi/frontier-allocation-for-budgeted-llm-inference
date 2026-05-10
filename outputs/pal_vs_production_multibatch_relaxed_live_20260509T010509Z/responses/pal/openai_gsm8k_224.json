@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "180",
+  "parsed_answer": "180",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "carlos_cost = 30 * 3\nbenji_cost = 18 * 5\ntotal_cost = carlos_cost + benji_cost\nprint(total_cost)",
+      "stdout": "180\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "180",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "180",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

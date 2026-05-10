@@ -1,0 +1,5 @@
+attempt_name,cases,calls,parse_success_count,final_answer_present_count,exact_count,improvement_count,api_errors,leakage_ok,conclusion,integrate_yes_no,reason
+free_form_retry_original,10,16,0,0,0,0,,True,no useful retry candidates; parsing failed for all,no,retry_exact_count=0 and improvement_count=0 under strict contract
+free_form_retry_parsefix,5,5,0,0,0,0,,True,parsefix contract did not recover any working retries,no,0/5 exact and 0 potential improvements
+schema_grounded_retry_original,5,5,0,0,0,0,,True,model ignored schema block; 0/5 parse+validation,no,schema labels present in prompts but absent in responses
+schema_grounded_retry_parsefix,5,5,0,0,0,0,,True,even stricter schema contract did not yield parseable outputs,no,0/5 parse and validation success on clean cases

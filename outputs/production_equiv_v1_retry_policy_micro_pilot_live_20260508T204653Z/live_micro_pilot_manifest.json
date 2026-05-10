@@ -1,0 +1,15 @@
+{
+  "plan_dir": "outputs/production_equiv_v1_retry_policy_micro_pilot_plan_20260508T204614Z",
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "max_total_cohere_calls": 40,
+  "planned_calls": 16,
+  "case_count": 10,
+  "variants": [
+    "final_target_guarded_retry",
+    "structural_commit_challenge_retry"
+  ],
+  "discovery3_excluded": true,
+  "percent_base_enabled": false
+}

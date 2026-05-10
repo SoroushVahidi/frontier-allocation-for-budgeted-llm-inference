@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "anakin_starfish = 10\nanakin_seahorses = 6\nanakin_clownfish = 3\n\nlocsin_starfish = anakin_starfish - 5\nlocsin_seahorses = anakin_seahorses - 3\nlocsin_clownfish = anakin_clownfish + 2\n\ntotal_fish = (anakin_starfish + anakin_seahorses + anakin_clownfish) + (locsin_starfish + locsin_seahorses + locsin_clownfish)\n\nprint(total_fish)",
+    "stdout": "32\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "32",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "32",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

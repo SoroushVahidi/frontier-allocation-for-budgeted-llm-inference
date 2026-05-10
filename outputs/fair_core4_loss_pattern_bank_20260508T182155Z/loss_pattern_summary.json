@@ -1,0 +1,37 @@
+{
+  "best_core4_only_count": 2,
+  "both_wrong_count": 9,
+  "loss_family_counts_best_core4_only": {
+    "final_target_mismatch": 1,
+    "format_parse": 1
+  },
+  "loss_family_counts_both_wrong": {
+    "format_parse": 3,
+    "final_target_mismatch": 2,
+    "ratio_setup": 1,
+    "state_update": 3
+  },
+  "winning_baseline_counts_in_best_core4_only": {
+    "l1": 1,
+    "sc4": 2,
+    "s1": 2,
+    "tale": 1
+  },
+  "parse_failure_overlap_counts": {
+    "best_core4_only_with_any_parse_failure": 1,
+    "both_wrong_with_any_parse_failure": 3
+  },
+  "proposed_fix_counts": {
+    "final-target verifier refinement": 3,
+    "improve robust extraction observability": 4,
+    "ratio scaffold with unit equations": 1,
+    "state-transition consistency checker": 3
+  },
+  "recommended_next_step": "run_micro_pilot",
+  "whether_more_data_needed": false,
+  "caveats": [
+    "Failure family labels are heuristic and based on offline artifacts only.",
+    "Our predictions are from patch-focused pilot runtime rather than production-equivalent runtime.",
+    "Core4 parsing failures can blur true reasoning-vs-extraction attribution."
+  ]
+}

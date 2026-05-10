@@ -1,0 +1,10 @@
+**Target:** Determine the number of books each child received.
+
+1. Total cost = Number of books × Price per book  
+   \( 300 = n \times 15 \)  
+2. Solve for \( n \):  
+   \( n = \frac{300}{15} = 20 \)  
+3. Books per child = Total books ÷ Number of kids  
+   \( \frac{20}{4} = 5 \)
+
+\boxed{5}

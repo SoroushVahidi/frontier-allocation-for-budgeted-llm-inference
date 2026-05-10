@@ -1,0 +1,9 @@
+**Target:** Calculate the number of dozens of eggs Lori needs for her party.
+
+1. Each guest eats 3 halves, and 1 egg makes 2 halves.
+2. For 16 guests:  
+   Total halves needed = \( 16 \times 3 = 48 \) halves.
+3. Eggs required = \( \frac{48}{2} = 24 \) eggs.
+4. Dozens of eggs = \( \frac{24}{12} = 2 \).
+
+\boxed{2}

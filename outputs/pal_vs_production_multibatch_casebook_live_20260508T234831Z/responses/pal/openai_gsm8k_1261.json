@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "21",
+  "parsed_answer": "21",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_bananas = 315\nmonkeys = 3\ndays_in_week = 7\n\n# Calculate total bananas eaten per day by all monkeys\ntotal_bananas_per_day = total_bananas / days_in_week\n\n# First monkey eats 10 bananas per day\nmonkey1_bananas = 10\n\n# Second monkey eats 4 more than the first\nmonkey2_bananas = monkey1_bananas + 4\n\n# Calculate bananas eaten by the first two monkeys\ntotal_first_two_monkeys = monkey1_bananas + monkey2_bananas\n\n# Third monkey eats the rest\nmonkey3_bananas = total_bananas_per_day - total_first_two_monkeys\n\nprint(int(monkey3_bananas))",
+      "stdout": "21\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "21",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "21",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

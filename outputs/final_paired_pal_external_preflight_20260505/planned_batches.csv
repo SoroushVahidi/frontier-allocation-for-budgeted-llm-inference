@@ -1,0 +1,5 @@
+max_total_api_calls,pairs_conservative_floor,pairs_stretch_upper,recommended_fully_paired_target
+500,37,42,33
+750,56,63,50
+1000,75,85,67
+1500,112,127,100

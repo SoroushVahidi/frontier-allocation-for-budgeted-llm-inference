@@ -1,0 +1,16 @@
+You are solving a target-average / missing-value problem.
+
+Problem:
+Brinley is in Mr. Bert's math class. Mr. Bert gives six tests each semester. He allows the students to remove the lowest score from the average each semester. If Brinley has scores of ８９, ７１, ９２, １００ and ８６ on the first five tests, what score does she need on the sixth test to get an average of ９３?
+
+Instructions:
+- Identify: count of items, known values, target average, and unknown value(s).
+- Convert average target to required total using: required_total = target_average * item_count.
+- Build equation: known_sum + unknown = required_total (or equivalent).
+- Solve for the unknown value and check it against the problem constraints.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

@@ -1,0 +1,20 @@
+Solve this GSM8K-style problem independently using before/after state transitions.
+
+Problem:
+A teacher uses a ５-inch piece of chalk to write math equations on a chalkboard for his students. The teacher likes to conserve chalk, so he tries to only use ２０% of the chalk each day. Since the teacher cannot write with a very small piece of chalk, he recycles the chalk when it is smaller than ２ inches. On Monday the teacher used a new piece of chalk. His students need extra help that day, so he ended up writing more than usual. He used up ４５% of the chalk by the end of the day. If the teacher goes back to using only ２０% of the chalk each day, how many days does he have before he has to recyc …<truncated １４ chars>
+
+Track state updates in order and compute the requested final target.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.

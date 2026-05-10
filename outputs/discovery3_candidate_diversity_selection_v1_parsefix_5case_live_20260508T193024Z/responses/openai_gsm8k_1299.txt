@@ -1,0 +1,46 @@
+To solve this problem, let's identify the requested final quantity and decompose the information into concise equations.
+
+**Requested Final Quantity:**
+The problem asks for the amount of oil Tanya uses, in ounces.
+
+**Variables:**
+Let's define the variables:
+- \( z \) = amount of citrus zest (and fragrance, since they are equal)
+- \( s \) = amount of salt (and sugar, since they are equal)
+- \( o \) = amount of oil
+
+**Equations based on the problem:**
+1. The total amount of the mixture is 10 ounces:
+   \[ z + z + s + s + o = 10 \]
+   Simplifying, we get:
+   \[ 2z + 2s + o = 10 \]
+
+2. The amount of oil is twice the amount of salt:
+   \[ o = 2s \]
+
+3. The amount of salt is twice the amount of zest:
+   \[ s = 2z \]
+
+**Substitute and Solve:**
+
+From equation (3), substitute \( s = 2z \) into equation (2):
+\[ o = 2(2z) = 4z \]
+
+Now substitute \( s = 2z \) and \( o = 4z \) into equation (1):
+\[ 2z + 2(2z) + 4z = 10 \]
+\[ 2z + 4z + 4z = 10 \]
+\[ 10z = 10 \]
+\[ z = 1 \]
+
+Now find \( s \) and \( o \):
+\[ s = 2z = 2(1) = 2 \]
+\[ o = 4z = 4(1) = 4 \]
+
+**Verification:**
+- Citrus zest and fragrance: \( z = 1 \) ounce each
+- Salt and sugar: \( s = 2 \) ounces each
+- Oil: \( o = 4 \) ounces
+- Total: \( 1 + 1 + 2 + 2 + 4 = 10 \) ounces, which matches the given total.
+
+**Final Answer:**
+\[ FINAL_ANSWER: 4 \]

@@ -1,0 +1,26 @@
+case_id,scaffold,recommended_prompt_version,ever_exact,recommended_version_exact,latest_occurrence_exact,ever_improved,best_parsed_final_answer,recommended_version_parsed_final_answer,gold_answer,current_pal_prediction,pilots_seen,latest_status_ever,latest_status_recommended_version,recommended_integration_action,reason
+openai_gsm8k_1003,rate_table,v1,true,true,true,true,20,20,20,3,v1;v2,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1006,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,25,25,25,1,v2;v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1019,target_difference,v1,true,true,true,true,30,30,30,44.77611940298539,v1;v2,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1027,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,2,2,2,1,v2;v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1029,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,70000,70000,70000,195000,v2;v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1045,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,4,4,4,12,v2;v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1099,rate_table,v1,true,true,true,true,2450,2450,2450,4900,v1;v2,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1125,rate_table,v1,false,false,false,false,,,2450,305000,,untested,untested,unknown,not piloted
+openai_gsm8k_1155,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,342,342,342,81.66666666666667,v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1166,before_after_state,v1,true,true,true,true,50,50,50,25,v2,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1187,target_difference,v1,true,true,true,true,8,8,8,4,v2,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_1198,before_after_state,v1,false,false,false,false,,,2,3,,untested,untested,unknown,not piloted
+openai_gsm8k_1215,before_after_state,v1,false,false,false,false,,,59,45,,untested,untested,unknown,not piloted
+openai_gsm8k_674,rate_table,v1,false,false,false,false,,,10,13,,untested,untested,unknown,not piloted
+openai_gsm8k_683,rate_table,v1,false,false,false,false,,,94,62,,untested,untested,unknown,not piloted
+openai_gsm8k_720,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,106,106,106,106.12080000000002,v1;v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_750,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,92,92,92,532.4666656177045,v1;v2;v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_769,rate_table,v1,false,false,false,false,,,25,100,,untested,untested,unknown,not piloted
+openai_gsm8k_787,target_difference,v1,false,false,false,false,,,2,-2,,untested,untested,unknown,not piloted
+openai_gsm8k_814,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,16,16,16,-20,v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_818,before_after_state,v1,true,true,true,true,10,10,10,5,v1;v2,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_841,quantity_ledger,quantity_ledger_v2_1,true,true,true,true,262500,262500,262500,262000,v1;v2;v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_864,before_after_state,v1,true,true,true,true,24,24,24,48,v1;v2,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_906,rate_table,v1,true,true,true,true,16,16,16,12,v1;v2;v21,solved,solved,integrate_targeted_retry,solved by recommended prompt version
+openai_gsm8k_970,target_difference,v1,true,true,true,true,15,15,15,11,v1;v2,solved,solved,integrate_targeted_retry,solved by recommended prompt version

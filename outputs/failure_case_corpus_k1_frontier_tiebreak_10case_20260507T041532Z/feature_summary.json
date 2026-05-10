@@ -1,0 +1,64 @@
+{
+  "external_tree_available_cases": 0,
+  "external_tree_missing_cases": 4,
+  "failure_cases_collected": 4,
+  "failure_stages": {
+    "gold_absent_everywhere_detectable": 4
+  },
+  "manifest": {
+    "corpus_row_count": 4,
+    "input_paths": {
+      "atlas_anchor_csv": "",
+      "external_results_jsonl": "",
+      "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/paired_casebook.csv",
+      "pal_results_jsonl": "/home/soroush/frontier-allocation-for-budgeted-llm-inference/outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/per_example_records.jsonl",
+      "path_coverage_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/path_coverage.csv",
+      "selector_sensitivity_csv": ""
+    },
+    "input_sha256": {
+      "atlas_anchor_csv": "",
+      "external_results_jsonl": "",
+      "paired_casebook_csv": "236d88e4694ec180a60bc77d73ff14169ed59f295cfbe08b859802044d4a4a9b",
+      "pal_results_jsonl": "9ae5e78061ba1fc9d16381ffe34a4ca6dd7f6853c9f8230203c37b7f35ed3407",
+      "path_coverage_csv": "4d3fcab3f85a2aafa1b0dcd938d5b1ae255905d17bf35270c02031838ffc95c8",
+      "selector_sensitivity_csv": ""
+    },
+    "missing_or_unmatched": {
+      "external_missing_for_casebook_ids": 10,
+      "pal_missing_for_casebook_ids": 0,
+      "path_coverage_missing_for_casebook_ids": 0
+    },
+    "row_counts_loaded": {
+      "atlas_anchor_rows": 0,
+      "external_results_rows": 0,
+      "paired_casebook_rows": 10,
+      "pal_results_rows": 10,
+      "path_coverage_rows": 10,
+      "selector_sensitivity_rows": 0
+    }
+  },
+  "meta": {
+    "api_calls": "none",
+    "created_at": "2026-05-07T04:15:32.520461+00:00",
+    "external_results_jsonl": "",
+    "output_dir": "/home/soroush/research-next-wt/outputs/failure_case_corpus_k1_frontier_tiebreak_10case_20260507T041532Z",
+    "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/paired_casebook.csv",
+    "pal_results_jsonl": "/home/soroush/frontier-allocation-for-budgeted-llm-inference/outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/per_example_records.jsonl"
+  },
+  "operation_hints": {
+    "difference": 1,
+    "product": 1,
+    "rate_ratio": 4,
+    "total_sum": 1
+  },
+  "outcome_buckets": {
+    "both_wrong": 2,
+    "external_only": 2
+  },
+  "quantity_buckets": {
+    "qnum_0_1": 1,
+    "qnum_2_3": 1,
+    "qnum_4_5": 1,
+    "qnum_6p": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "bucket_counts_focus": {
+    "both_wrong": 27,
+    "external_only": 21
+  },
+  "counterfactual_counts": {
+    "gold_absent_everywhere_detectable": 34,
+    "gold_available_somewhere_not_selector_pool": 10,
+    "selection_or_overlay_likely_loss": 4,
+    "upstream_generation_likely_loss": 34
+  },
+  "discovery_first_gate": {
+    "recoverable_if_trigger": 0,
+    "would_trigger": 5
+  },
+  "dominant_root_cause": "gold_absent_everywhere_detectable",
+  "focus_rows": 48,
+  "meta": {
+    "api_calls": "none",
+    "casebook_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv",
+    "output_dir": "/home/soroush/research-next-wt/outputs/offline_pal_path_coverage_counterfactual_20260506",
+    "pal_results_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/pal_results.jsonl"
+  }
+}

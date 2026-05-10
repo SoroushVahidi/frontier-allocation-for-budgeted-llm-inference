@@ -1,0 +1,52 @@
+{
+  "previous_live_dir": "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z",
+  "new_screened_cases": 300,
+  "new_followup_cases": 150,
+  "total_cumulative_followup_cases": 225,
+  "actual_cohere_calls_run_level_new": 887,
+  "effective_call_cap_new": 900,
+  "cap_reached": false,
+  "eligible_cases_remaining": 0,
+  "new_pal_screen_correct_count": 183,
+  "new_pal_screen_clean_execution_count": 298,
+  "new_production_equiv_correct_on_followup": 141,
+  "new_pal_correct_on_followup": 149,
+  "new_pal_only_count": 6,
+  "new_production_only_count": 0,
+  "new_both_correct_count": 141,
+  "new_both_wrong_count": 1,
+  "new_both_wrong_different_count": 0,
+  "new_disagreement_count": 8,
+  "new_useful_selector_case_count": 6,
+  "cumulative_pal_only_count": 9,
+  "cumulative_production_only_count": 0,
+  "cumulative_disagreement_count": 12,
+  "cumulative_useful_selector_case_count": 9,
+  "pal_only_family_counts_cumulative": {
+    "final_target_mismatch": 9
+  },
+  "production_only_family_counts_cumulative": {},
+  "disagreement_family_counts_cumulative": {
+    "final_target_mismatch": 9,
+    "parse_format": 3
+  },
+  "counts_by_overlap_source": {
+    "unknown_prior": 75,
+    "fresh": 150
+  },
+  "selector_feature_counts_cumulative": {
+    "pal_clean_execution": 225,
+    "pal_parse_confident": 225,
+    "production_structural_commit": 225,
+    "answer_agreement": 213,
+    "target_quantity_cue": 158,
+    "numeric_outlier": 9
+  },
+  "enough_pal_only_cases_for_pattern_analysis": false,
+  "enough_disagreement_cases_for_selector_design": false,
+  "enough_useful_selector_cases": false,
+  "stop_reason": "max_new_screened_reached",
+  "recommended_next_step": "continue_collection_with_more_sources",
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true
+}

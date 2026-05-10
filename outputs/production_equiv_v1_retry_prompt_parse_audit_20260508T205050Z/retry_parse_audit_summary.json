@@ -1,0 +1,30 @@
+{
+  "total_rows": 16,
+  "response_files_found": 16,
+  "numeric_answer_present_count": 10,
+  "final_answer_line_present_count": 0,
+  "alias_final_answer_present_count": 0,
+  "conservative_rescore_applicable_count": 10,
+  "conservative_rescore_exact_count": 0,
+  "parser_failure_type_counts": {
+    "no_numeric_answer": 6,
+    "multiple_numbers_no_final_marker": 9,
+    "prose_final_answer": 1
+  },
+  "variant_failure_counts": {
+    "final_target_guarded_retry": {
+      "no_numeric_answer": 3,
+      "multiple_numbers_no_final_marker": 7
+    },
+    "structural_commit_challenge_retry": {
+      "no_numeric_answer": 3,
+      "multiple_numbers_no_final_marker": 2,
+      "prose_final_answer": 1
+    }
+  },
+  "recommended_fix": "strict_retry_output_contract",
+  "should_patch_retry_prompts": true,
+  "should_patch_parser": false,
+  "should_rerun_5case_retry_live": true,
+  "caveats": "Conservative reparse avoids gold-guided candidate selection; posthoc exact uses gold only for evaluation."
+}

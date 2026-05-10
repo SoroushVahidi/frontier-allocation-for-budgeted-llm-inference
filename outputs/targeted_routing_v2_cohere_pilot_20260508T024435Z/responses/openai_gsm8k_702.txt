@@ -1,0 +1,24 @@
+To solve the problem, we need to calculate the price of carrots after three years, given that the price increases by 5% of the original price every year.
+
+**Year 1:**
+- Percent statement: 5% increase
+- Base quantity: $120 (original price)
+- Operation: 5% of $120 = 0.05 * $120 = $6
+- Result: $120 + $6 = $126 (updated amount)
+
+**Year 2:**
+- Percent statement: 5% increase
+- Base quantity: $126 (updated amount from Year 1)
+- Operation: 5% of $126 = 0.05 * $126 = $6.30
+- Result: $126 + $6.30 = $132.30 (updated amount)
+
+**Year 3:**
+- Percent statement: 5% increase
+- Base quantity: $132.30 (updated amount from Year 2)
+- Operation: 5% of $132.30 = 0.05 * $132.30 = $6.615
+- Result: $132.30 + $6.615 = $138.915 (updated amount)
+
+Rounded to the nearest integer, the final price is:
+
+**Final Answer:**
+\boxed{139}

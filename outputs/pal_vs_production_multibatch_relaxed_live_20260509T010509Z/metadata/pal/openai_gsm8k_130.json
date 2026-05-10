@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "initial_elves = 60\nelves_quit_first = initial_elves // 3\nelves_remaining_after_first_quit = initial_elves - elves_quit_first\nelves_quit_second = 10\nelves_remaining_final = elves_remaining_after_first_quit - elves_quit_second\nprint(elves_remaining_final)",
+    "stdout": "30\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "30",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "30",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

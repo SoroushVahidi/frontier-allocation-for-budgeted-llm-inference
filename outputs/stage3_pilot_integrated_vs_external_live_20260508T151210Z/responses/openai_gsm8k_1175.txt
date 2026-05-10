@@ -1,0 +1,7 @@
+**Target:** Calculate weekly revenue from reservations.
+
+1. Revenue per reservation: \( 2 \times 5 + 5 = 15 \)  
+2. Nightly revenue: \( 6 \times 15 = 90 \)  
+3. Weekly revenue (2 days): \( 90 \times 2 = 180 \)  
+
+\boxed{180}

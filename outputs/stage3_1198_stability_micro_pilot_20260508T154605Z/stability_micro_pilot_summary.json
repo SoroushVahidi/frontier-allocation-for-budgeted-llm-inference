@@ -1,0 +1,11 @@
+{
+  "actual_cohere_calls": 2,
+  "exact_variant_count": 2,
+  "any_variant_exact": true,
+  "frozen_prompt_exact": true,
+  "fallback_prompt_exact": true,
+  "api_errors": [],
+  "parsing_ambiguities": 0,
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

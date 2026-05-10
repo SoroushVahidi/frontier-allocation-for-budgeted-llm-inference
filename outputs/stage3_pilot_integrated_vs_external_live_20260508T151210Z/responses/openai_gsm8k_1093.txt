@@ -1,0 +1,7 @@
+**Target:** Calculate the total number of bugs Nancy counted.
+
+1. Millipedes: \( m = \frac{1}{3} \times 90 = 30 \)
+2. Stink bugs: \( s = 2m - 12 = 2 \times 30 - 12 = 48 \)
+3. Total bugs: \( 90 + 30 + 48 = 168 \)
+
+\boxed{168}

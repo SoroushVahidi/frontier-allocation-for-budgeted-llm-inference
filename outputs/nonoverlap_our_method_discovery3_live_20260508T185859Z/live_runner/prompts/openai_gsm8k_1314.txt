@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Dale is selling butterscotch candies to raise money for his club at school. He doesn't have the candies yet and is instead just taking orders. He started off with １００ total that he ordered and wanted to sell, but he ended up selling １５０ butterscotch candies. Then he ordered １００ more. How many does Dale still need to sell to sell all of his candy?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

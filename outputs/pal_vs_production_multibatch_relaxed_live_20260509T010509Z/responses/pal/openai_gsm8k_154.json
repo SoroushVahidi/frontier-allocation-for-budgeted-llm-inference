@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "272",
+  "parsed_answer": "272",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "monday_friday_hours = 3 * 1\ntuesday_thursday_hours = 2 * 2\n\n# Calculate total hours per week\ntotal_hours_per_week = (monday_friday_hours * 3) + (tuesday_thursday_hours * 2)\n\n# Calculate total hours for the semester\ntotal_hours_semester = total_hours_per_week * 16\n\nprint(total_hours_semester)",
+      "stdout": "272\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "272",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "272",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

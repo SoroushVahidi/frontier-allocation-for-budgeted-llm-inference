@@ -1,0 +1,185 @@
+{
+  "documentation": {
+    "primary_signal_row": "current_final per case for trigger tallies",
+    "csv_includes_roles": [
+      "current_final",
+      "pal_stdout"
+    ],
+    "gold_used_only_offline": true
+  },
+  "triggers": {
+    "low_cov_and_missing_operation_cue": {
+      "fired_gold_absent_preferred": 0,
+      "fired_gold_absent_secondary": 0,
+      "fired_gold_absent_all": 0,
+      "fired_present_not_selected": 0,
+      "fired_guardrail_correct": 1,
+      "fired_total_across_buckets": 1,
+      "bucket_totals": {
+        "gold_absent_cases": 21,
+        "present_not_selected_cases": 23,
+        "guardrail_correct_cases": 183
+      },
+      "approx_precision_gold_absent_given_fired": 0.0,
+      "fraction_gold_absent_cases_firing": 0.0,
+      "false_positive_rate_guardrail_current_final": 0.00546448087431694,
+      "example_case_ids_gold_absent": [],
+      "example_case_ids_present_not_selected": [],
+      "example_case_ids_guardrail": [
+        "openai_gsm8k_1312"
+      ]
+    },
+    "temporal_cue_gap": {
+      "fired_gold_absent_preferred": 0,
+      "fired_gold_absent_secondary": 3,
+      "fired_gold_absent_all": 3,
+      "fired_present_not_selected": 5,
+      "fired_guardrail_correct": 24,
+      "fired_total_across_buckets": 32,
+      "bucket_totals": {
+        "gold_absent_cases": 21,
+        "present_not_selected_cases": 23,
+        "guardrail_correct_cases": 183
+      },
+      "approx_precision_gold_absent_given_fired": 0.09375,
+      "fraction_gold_absent_cases_firing": 0.14285714285714285,
+      "false_positive_rate_guardrail_current_final": 0.13114754098360656,
+      "example_case_ids_gold_absent": [
+        "openai_gsm8k_1112",
+        "openai_gsm8k_1139",
+        "openai_gsm8k_1147"
+      ],
+      "example_case_ids_present_not_selected": [
+        "openai_gsm8k_1121",
+        "openai_gsm8k_1210",
+        "openai_gsm8k_1279",
+        "openai_gsm8k_1290",
+        "openai_gsm8k_1307"
+      ],
+      "example_case_ids_guardrail": [
+        "openai_gsm8k_1079",
+        "openai_gsm8k_1111",
+        "openai_gsm8k_1113",
+        "openai_gsm8k_1128",
+        "openai_gsm8k_1152"
+      ]
+    },
+    "rate_ratio_cue_gap": {
+      "fired_gold_absent_preferred": 0,
+      "fired_gold_absent_secondary": 1,
+      "fired_gold_absent_all": 1,
+      "fired_present_not_selected": 2,
+      "fired_guardrail_correct": 13,
+      "fired_total_across_buckets": 16,
+      "bucket_totals": {
+        "gold_absent_cases": 21,
+        "present_not_selected_cases": 23,
+        "guardrail_correct_cases": 183
+      },
+      "approx_precision_gold_absent_given_fired": 0.0625,
+      "fraction_gold_absent_cases_firing": 0.047619047619047616,
+      "false_positive_rate_guardrail_current_final": 0.07103825136612021,
+      "example_case_ids_gold_absent": [
+        "openai_gsm8k_1137"
+      ],
+      "example_case_ids_present_not_selected": [
+        "openai_gsm8k_1205",
+        "openai_gsm8k_1210"
+      ],
+      "example_case_ids_guardrail": [
+        "openai_gsm8k_1074",
+        "openai_gsm8k_1195",
+        "openai_gsm8k_1201",
+        "openai_gsm8k_1206",
+        "openai_gsm8k_1209"
+      ]
+    },
+    "total_aggregation_cue_gap": {
+      "fired_gold_absent_preferred": 0,
+      "fired_gold_absent_secondary": 0,
+      "fired_gold_absent_all": 0,
+      "fired_present_not_selected": 0,
+      "fired_guardrail_correct": 2,
+      "fired_total_across_buckets": 2,
+      "bucket_totals": {
+        "gold_absent_cases": 21,
+        "present_not_selected_cases": 23,
+        "guardrail_correct_cases": 183
+      },
+      "approx_precision_gold_absent_given_fired": 0.0,
+      "fraction_gold_absent_cases_firing": 0.0,
+      "false_positive_rate_guardrail_current_final": 0.01092896174863388,
+      "example_case_ids_gold_absent": [],
+      "example_case_ids_present_not_selected": [],
+      "example_case_ids_guardrail": [
+        "openai_gsm8k_1130",
+        "openai_gsm8k_1170"
+      ]
+    },
+    "difference_contrast_cue_gap": {
+      "fired_gold_absent_preferred": 0,
+      "fired_gold_absent_secondary": 0,
+      "fired_gold_absent_all": 0,
+      "fired_present_not_selected": 1,
+      "fired_guardrail_correct": 6,
+      "fired_total_across_buckets": 7,
+      "bucket_totals": {
+        "gold_absent_cases": 21,
+        "present_not_selected_cases": 23,
+        "guardrail_correct_cases": 183
+      },
+      "approx_precision_gold_absent_given_fired": 0.0,
+      "fraction_gold_absent_cases_firing": 0.0,
+      "false_positive_rate_guardrail_current_final": 0.03278688524590164,
+      "example_case_ids_gold_absent": [],
+      "example_case_ids_present_not_selected": [
+        "openai_gsm8k_1083"
+      ],
+      "example_case_ids_guardrail": [
+        "openai_gsm8k_1184",
+        "openai_gsm8k_1195",
+        "openai_gsm8k_1268",
+        "openai_gsm8k_1293",
+        "openai_gsm8k_1295"
+      ]
+    },
+    "target_type_mismatch": {
+      "fired_gold_absent_preferred": 0,
+      "fired_gold_absent_secondary": 0,
+      "fired_gold_absent_all": 0,
+      "fired_present_not_selected": 0,
+      "fired_guardrail_correct": 0,
+      "fired_total_across_buckets": 0,
+      "bucket_totals": {
+        "gold_absent_cases": 21,
+        "present_not_selected_cases": 23,
+        "guardrail_correct_cases": 183
+      },
+      "approx_precision_gold_absent_given_fired": 0.0,
+      "fraction_gold_absent_cases_firing": 0.0,
+      "false_positive_rate_guardrail_current_final": 0.0,
+      "example_case_ids_gold_absent": [],
+      "example_case_ids_present_not_selected": [],
+      "example_case_ids_guardrail": []
+    },
+    "exec_or_syntax_bad_plus_low_cov": {
+      "fired_gold_absent_preferred": 0,
+      "fired_gold_absent_secondary": 0,
+      "fired_gold_absent_all": 0,
+      "fired_present_not_selected": 0,
+      "fired_guardrail_correct": 0,
+      "fired_total_across_buckets": 0,
+      "bucket_totals": {
+        "gold_absent_cases": 21,
+        "present_not_selected_cases": 23,
+        "guardrail_correct_cases": 183
+      },
+      "approx_precision_gold_absent_given_fired": 0.0,
+      "fraction_gold_absent_cases_firing": 0.0,
+      "false_positive_rate_guardrail_current_final": 0.0,
+      "example_case_ids_gold_absent": [],
+      "example_case_ids_present_not_selected": [],
+      "example_case_ids_guardrail": []
+    }
+  }
+}

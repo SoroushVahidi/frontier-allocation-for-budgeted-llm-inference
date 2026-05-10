@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Pat has a flower bed that is １１１ feet long.  Pat wants to fill her flower bed with plants.  Pat's flowers grow １２ inches wide so she needs to leave １.５ feet between every plant.  Pat already owns １７ flowers.  Each flowering plant costs $６ at the store,  how much money will Pat spend at the store to fill up her flower bed?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

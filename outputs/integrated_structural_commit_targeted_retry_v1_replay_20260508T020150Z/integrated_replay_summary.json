@@ -1,0 +1,11 @@
+{
+  "total_known_loss_cases": 71,
+  "structural_commit_fixed": 7,
+  "targeted_retry_fixed_tested": 18,
+  "overlap_between_structural_and_targeted": 0,
+  "estimated_combined_fixed": 25,
+  "remaining_known_losses": 0,
+  "untested_targeted_retry_cases": 11,
+  "unknown_mechanism_cases": 12,
+  "no_api_calls": true
+}

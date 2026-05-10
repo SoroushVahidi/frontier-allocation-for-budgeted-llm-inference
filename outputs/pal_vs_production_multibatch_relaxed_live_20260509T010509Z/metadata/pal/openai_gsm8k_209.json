@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "plates_cost = 6000\nplates_number = 0.5 * 12\ntotal_plates_cost = plates_cost * plates_number\ncups_number = 20 * 12\ncups_cost = (total_plates_cost + 1200) / cups_number\nprint(cups_cost)",
+    "stdout": "155.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "155.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "155.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

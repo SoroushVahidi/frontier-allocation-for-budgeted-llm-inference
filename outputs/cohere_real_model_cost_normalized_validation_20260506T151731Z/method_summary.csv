@@ -1,0 +1,3 @@
+provider,method,n_slices,total_scored_examples,mean_accuracy_across_slices,mean_total_tokens_per_scored_example,mean_latency_seconds_per_scored_example,estimated_total_cost_usd
+cohere,direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal,1,150,0.88,2683.826666666667,19.699070406666667,1.656654
+cohere,external_l1_max,1,150,0.8333333333333334,2613.3133333333335,8.793084013333333,1.526979

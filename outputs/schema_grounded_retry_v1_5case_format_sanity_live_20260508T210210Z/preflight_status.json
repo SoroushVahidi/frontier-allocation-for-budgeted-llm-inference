@@ -1,0 +1,14 @@
+{
+  "cohere_api_key_set": true,
+  "exactly_5_unique_recommended_cases": true,
+  "prompt_files_exist": true,
+  "required_labels_present_in_all_prompts": true,
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "planned_calls": 5,
+  "planned_calls_within_cap": true,
+  "no_discovery3_references": true,
+  "percent_base_disabled": true,
+  "abort_reasons": [],
+  "abort": false
+}

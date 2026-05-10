@@ -1,0 +1,16 @@
+Solve the math word problem using named subquestions.
+
+Problem:
+Dora's father's age is eight more than twice Dora's age. If Dora's mother is four years younger than Dora's father, and Dora is fifteen years old, calculate the total combined age of Dora, her father, and her mother.
+
+Instructions:
+- Decompose into short subquestions.
+- Solve in order.
+- Verify the computed value matches the exact requested target.
+- Give one final numeric answer.
+
+Output:
+- decomposition: ...
+- work: ...
+- target_check: ...
+- final_answer: ...

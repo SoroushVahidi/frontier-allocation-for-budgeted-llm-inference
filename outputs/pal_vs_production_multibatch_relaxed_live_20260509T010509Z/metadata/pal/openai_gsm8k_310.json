@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "suit_cost = 100\nsuitcase_cost = 50\nflight_ticket_cost = 5 * suit_cost + 700\ntotal_spent = 6 * suit_cost + 3 * suitcase_cost + flight_ticket_cost\nremaining_money = 6000 - total_spent - 2000\nprint(remaining_money)",
+    "stdout": "2050\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "2050",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "2050",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

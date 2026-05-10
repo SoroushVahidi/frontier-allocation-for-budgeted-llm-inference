@@ -1,0 +1,13 @@
+**Target:** Calculate the percentage of the watermelon each adult gets.
+
+Let $x$ be the fraction of the watermelon each kid gets. Then, each adult gets $2x$.
+
+Total watermelon: $2(2x) + 4x = 1$ (since there are 2 adults and 4 kids)
+
+Simplify: $4x + 4x = 1 \Rightarrow 8x = 1 \Rightarrow x = \frac{1}{8}$
+
+Adult's share: $2x = 2(\frac{1}{8}) = \frac{1}{4}$
+
+Convert to percentage: $\frac{1}{4} \times 100\% = 25\%$
+
+**Final answer:** $\boxed{25}$

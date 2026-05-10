@@ -1,0 +1,13 @@
+{
+  "failed_count": 2,
+  "success_count": 5,
+  "percent_base_failures": [
+    "openai_gsm8k_683"
+  ],
+  "ratio_failures": [
+    "openai_gsm8k_769"
+  ],
+  "recommended_patch_scope": "patch_percent_base_only",
+  "should_run_another_micro_pilot_before_stage2": true,
+  "recommended_stage2_integration": "integrate_successful_5_plus_patched_candidates"
+}

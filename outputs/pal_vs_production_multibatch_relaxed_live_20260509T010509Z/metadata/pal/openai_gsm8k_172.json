@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "sally_thirtytwo_age = 8\nsally_four_age = sally_thirtytwo_age\ngranny_red_age = 2 * sally_four_age\nsally_two_age = granny_red_age + 3\ntotal_age = sally_two_age + granny_red_age + sally_four_age + sally_thirtytwo_age\nprint(total_age)",
+    "stdout": "51\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "51",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "51",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

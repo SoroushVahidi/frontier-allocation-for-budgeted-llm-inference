@@ -1,0 +1,12 @@
+symbol,research-next-wt_hits_notes,frontier-main-dirty_checkout_hits_notes,pal-pilot-clean_hits_notes,diverse-root-clean_hits_notes
+pal_executor,file_missing,code_in_experiments/pal_executor.py,file_missing,file_missing
+execute_pal_code,not_found,experiments/pal_executor.py + imported_in_controllers,not_found,not_found
+enable_pal_branch,not_found,experiments/frontier_matrix_core.py (PAL spec kwargs); experiments/controllers.py (DirectReserve branch),not_found,not_found
+pal_budget_actions,not_found,same_as_enable_pal_branch,not_found,not_found
+_run_pal_seed_attempt,not_found,experiments/controllers.py (~7055 region),not_found,not_found
+pal_execution,runtime_writer_absent_reads_only_scripts/materialize_cohere_paired_pal_external_bundle.py,paired_bundle_reader_only_in_scripts_unless controllers emit,paired_bundle_reader_only,paired_bundle_reader_only
+pal_candidate_strong,scripts/materialize_* only,,,
+pal_overlay,scripts/materialize_* only,,,
+pal_seed_ran,scripts/materialize_* only,,,
+pal_code,scripts/materialize_* only,,,
+materialize_pal_smoke_summary.py,file_missing,scripts/materialize_pal_smoke_summary.py exists,file_missing,file_missing

@@ -1,0 +1,73 @@
+{
+  "windows_planned": 5,
+  "window_size_target": 60,
+  "methods_per_case": [
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+    "external_l1_max",
+    "external_tale_prompt_budgeting",
+    "external_s1_budget_forcing"
+  ],
+  "rows_per_case": 4,
+  "estimated_logical_calls_per_row_prior_run": 1.87,
+  "estimated_total_logical_calls_all_windows": 1849,
+  "hard_cap_logical_calls": 3000,
+  "abort_conditions": [
+    "Unknown method ID in METHODS registry",
+    "Provider not cohere",
+    "max_total_api_calls exhausted",
+    "45 preferred failures (PAL wrong \u2227 \u22651 external correct) collected (stop scheduling new windows)"
+  ],
+  "windows": [
+    {
+      "window_index": 1,
+      "case_count": 60,
+      "rows": 240,
+      "estimated_logical_calls": 449
+    },
+    {
+      "window_index": 2,
+      "case_count": 60,
+      "rows": 240,
+      "estimated_logical_calls": 449
+    },
+    {
+      "window_index": 3,
+      "case_count": 60,
+      "rows": 240,
+      "estimated_logical_calls": 449
+    },
+    {
+      "window_index": 4,
+      "case_count": 60,
+      "rows": 240,
+      "estimated_logical_calls": 449
+    },
+    {
+      "window_index": 5,
+      "case_count": 7,
+      "rows": 28,
+      "estimated_logical_calls": 53
+    }
+  ],
+  "case_selection": {
+    "dataset": "openai/gsm8k",
+    "seed": 20260501,
+    "budget": 6,
+    "id_suffix_range_inclusive": [
+      1072,
+      1318
+    ],
+    "exclude_prior_300_case_band_openai_gsm8k_772_1071": true,
+    "exclude_prior_30_case_pilot_band_openai_gsm8k_50_79": true,
+    "exclude_failure_case_corpus_20260507": true,
+    "corpus_skipped_ids": []
+  },
+  "actual_total_logical_calls": 1893,
+  "actual_logical_calls_by_method": {
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": 537,
+    "external_l1_max": 301,
+    "external_tale_prompt_budgeting": 387,
+    "external_s1_budget_forcing": 668
+  },
+  "evaluated_cases": 247
+}

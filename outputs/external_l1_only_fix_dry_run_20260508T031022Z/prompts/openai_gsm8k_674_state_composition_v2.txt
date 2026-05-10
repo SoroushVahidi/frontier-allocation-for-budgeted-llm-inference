@@ -1,0 +1,16 @@
+Solve this sequential state-change problem with concise checkpoints.
+
+Problem:
+Jane planted a beanstalk in her backyard. After the first week, it was ３ inches tall. It doubled in height the second week. It grew another ４ inches in the third week. How tall was the beanstalk after ３ weeks?
+
+Instructions:
+- Restate the final target quantity first.
+- Apply updates in strict story order (before/after/then/later).
+- Keep a short state ledger after each update.
+- Verify the final step answers the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

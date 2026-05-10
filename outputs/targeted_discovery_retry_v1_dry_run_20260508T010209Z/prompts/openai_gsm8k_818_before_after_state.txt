@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using **before/after state** over time.
+
+Problem:
+A bakery produces 60 loaves of bread each day. Two-thirds of the loaves are sold in the morning and half of what is left is sold equally in the afternoon and evening. How many loaves of bread are sold in the afternoon?
+
+Instructions:
+- Write the **initial state** (all relevant quantities).
+- List **each change in chronological order**, updating the state after each step.
+- Identify the **final queried quantity** (what the problem asks for at the end).
+- Compute that quantity from the final state.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

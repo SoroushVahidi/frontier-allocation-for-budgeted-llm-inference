@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "80.0",
+  "parsed_answer": "80",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "print(sum([65, 94, 81, 86, 74]) / 5)",
+      "stdout": "80.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "80.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "80.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

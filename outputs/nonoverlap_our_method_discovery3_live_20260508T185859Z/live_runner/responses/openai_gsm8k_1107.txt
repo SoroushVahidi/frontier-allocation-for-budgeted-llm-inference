@@ -1,0 +1,6 @@
+**Target:** Calculate total calls Tim handles in a 5-day work week.
+
+1. Daily calls: \( \frac{6 \text{ hours}}{\text{day}} \times \frac{60 \text{ minutes}}{\text{hour}} \div 15 \text{ minutes/call} = 24 \text{ calls/day} \)
+2. Weekly calls: \( 24 \text{ calls/day} \times 5 \text{ days} = 120 \text{ calls} \)
+
+\boxed{120}

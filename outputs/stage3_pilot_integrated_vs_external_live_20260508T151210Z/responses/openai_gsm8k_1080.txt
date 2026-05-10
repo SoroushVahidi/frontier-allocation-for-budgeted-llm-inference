@@ -1,0 +1,8 @@
+**Target:** Calculate the total number of legs of all pets in the store.
+
+1. Dogs: \(5 \times 4 = 20\) legs  
+2. Cats: \(2 \times 4 = 8\) legs  
+3. Birds: \(10 \times 2 = 20\) legs  
+4. Total legs: \(20 + 8 + 20 = 48\)
+
+\boxed{48}

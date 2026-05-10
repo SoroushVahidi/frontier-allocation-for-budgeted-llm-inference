@@ -1,0 +1,32 @@
+{
+  "timestamp_utc": "2026-05-02T18:42:33.891030+00:00",
+  "git_commit_sha": "unknown",
+  "python_executable": "/usr/bin/python3",
+  "python_version": "3.12.3",
+  "cohere": {
+    "env_var_checked": [
+      "COHERE_API_KEY"
+    ],
+    "key_present": false,
+    "sdk_import_initial": false,
+    "sdk_install_attempted": true,
+    "sdk_import_after_install": false,
+    "readiness_status": "sdk_install_failed",
+    "model_requested": "command-a-03-2025",
+    "sanitized_error": "Failed to install cohere SDK"
+  },
+  "huggingface": {
+    "env_var_checked": [
+      "HF_TOKEN",
+      "HUGGINGFACE_HUB_TOKEN"
+    ],
+    "hf_token_present": false,
+    "huggingface_hub_token_present": false,
+    "sdk_import_initial": false,
+    "sdk_install_attempted": true,
+    "sdk_import_after_install": false,
+    "readiness_status": "sdk_install_failed",
+    "sanitized_error": "Failed to install huggingface_hub SDK"
+  },
+  "no_secret_values_written": true
+}

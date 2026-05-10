@@ -1,0 +1,26 @@
+{
+  "n": 100,
+  "external_accuracy": 0.75,
+  "pal_accuracy": 0.8,
+  "external_wilson_95_ci": {
+    "low": 0.656955364519384,
+    "high": 0.8245478863771232
+  },
+  "pal_wilson_95_ci": {
+    "low": 0.7111708344068411,
+    "high": 0.8666330666689676
+  },
+  "paired_difference_pal_minus_external": 0.05,
+  "discordant_pairs": {
+    "pal_only_correct": 10,
+    "external_only_correct": 5,
+    "total": 15
+  },
+  "sign_test_two_sided_p": 0.3017578125,
+  "mcnemar_exact_two_sided_p": 0.3017578125,
+  "bootstrap_paired_diff_95_ci": {
+    "low": -0.02,
+    "high": 0.13,
+    "replicates": 20000
+  }
+}

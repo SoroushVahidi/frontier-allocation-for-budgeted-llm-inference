@@ -1,0 +1,7 @@
+**Target:** Total candles and flashlights used.
+
+1. Flashlights: \(4\) (one per person).
+2. Room candles: \( \frac{8}{2} \times (4 + 5) = 4 \times 9 = 36 \).
+3. Total: \( 4 + 36 = 40 \).
+
+\boxed{40}

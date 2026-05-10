@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "5",
+  "parsed_answer": "5",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "holes_dug = 6 * 14\nfilled_per_day = 9\ndug_per_night = 6\nnet_filled_per_day = filled_per_day - dug_per_night\ndays_to_fill = (holes_dug + dug_per_night - 1) // net_filled_per_day\nweeks_to_fill = (days_to_fill + 6) // 7\nprint(weeks_to_fill)",
+      "stdout": "5\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "5",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "5",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

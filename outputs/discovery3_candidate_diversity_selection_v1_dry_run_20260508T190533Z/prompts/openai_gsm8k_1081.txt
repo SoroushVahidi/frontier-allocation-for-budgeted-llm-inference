@@ -1,0 +1,14 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+A company pays each of its employees $６００ in a month. The company has a policy of increasing the salaries of each of its employees by １０% of the initial salary every year for those who've stayed in the company for five years. If Sylvie just clocked ５ years in the company last December, what's her annual salary after three more years of service?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: entity_value
+- family_hint: state_update
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this format:
+  FINAL_ANSWER: <single numeric value>

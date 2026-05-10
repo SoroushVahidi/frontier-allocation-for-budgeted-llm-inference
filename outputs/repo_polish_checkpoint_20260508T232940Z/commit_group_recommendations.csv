@@ -1,0 +1,8 @@
+commit_group,include_globs,notes
+production_equiv_runtime,experiments/controllers.py; experiments/data.py; experiments/frontier_matrix_core.py; experiments/output_layer_repair.py; experiments/final_target_verifier.py; scripts/run_production_equiv*.py; tests/test_production_equivalence_stage3.py; docs touching prod-equiv scope,Bundle core wiring + tests + narrow doc updates; avoid mixing large unrelated experiments.
+external_baselines,scripts/run_external_baseline_matched50_live.py; scripts/run_sc6_pal_external_baselines_live.py; tests/test_main_table_external_baselines.py; tests/test_faithful_external_baselines.py; ledger rows in docs/references/external_baselines_references.md,Keep baseline contracts and evaluation harness together.
+failed_retry_diagnostics,experiments/targeted_discovery_retry.py; experiments/adaptive_retry_router.py; tests/test_targeted_discovery_retry_v1.py; outputs/targeted_discovery_retry_*,Treat as diagnostics; do not imply production promotion in commit message.
+schema_grounded_negative_result,experiments/schema_grounded_retry.py; tests/test_schema_grounded_retry_v1.py; outputs/schema_grounded_retry_v1_*,"Negative-result bundle; preserve outputs, keep code for replay/regression."
+reference_docs,docs/references/*.md; docs/CLAIMS.md small deltas,Claim-safety and citation hygiene only.
+repo_hygiene,START_HERE_CURRENT.md; docs/CURRENT_PROJECT_STATUS.md; README.md,Navigation checkpoints without method logic.
+hold_do_not_commit_yet,outputs/**; large unreviewed script dumps; local_patches/**; manifests/**,Keep uncommitted until reviewed; never bulk-add outputs/.

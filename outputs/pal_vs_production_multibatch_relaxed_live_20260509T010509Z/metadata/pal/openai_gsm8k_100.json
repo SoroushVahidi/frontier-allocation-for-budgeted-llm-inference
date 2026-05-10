@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "first_friend = 20\nsecond_friend = first_friend * 1.25\nfourth_friend = 60\nthird_friend = fourth_friend + 10\ntotal_rings = first_friend + second_friend + third_friend + fourth_friend\nprint(int(total_rings))",
+    "stdout": "175\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "175",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "175",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

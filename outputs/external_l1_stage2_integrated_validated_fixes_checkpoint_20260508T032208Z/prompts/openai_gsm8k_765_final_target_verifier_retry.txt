@@ -1,0 +1,16 @@
+Solve this math word problem with explicit final-target verification.
+
+Problem:
+Sally has realized she did not receive a full wage this week. Her bank account, which held $２００ at the start of the week, now holds $４２０. She has received no other money into her bank account this week. If her weekly wage should be $３００, how many dollars were withheld from Sally’s wage?
+
+Instructions:
+- Restate exactly what final quantity is asked (value, difference, remaining, total, or percentage).
+- Write minimal equations only; no extra narration.
+- Before final line, check sign/direction (e.g., withheld, remaining, more/less).
+- Ensure the final line answers the stated target, not an intermediate value.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

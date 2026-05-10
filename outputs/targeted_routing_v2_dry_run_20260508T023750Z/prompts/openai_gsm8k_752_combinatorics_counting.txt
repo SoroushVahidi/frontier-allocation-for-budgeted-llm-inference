@@ -1,0 +1,16 @@
+You are solving a counting/combinatorics problem.
+
+Problem:
+A class of ２００ students is split into ３ groups such that ２ of them are equal in number and the last one (which is the smallest) is １０ less than each of the other groups. How many students are in this (smallest) group?
+
+Instructions:
+- List objects, choices, and constraints explicitly.
+- Decide whether order matters; if unsure, test both quickly and pick the one matching the story.
+- Count systematically using cases, product/addition rule, or simple equations.
+- Verify no double-counting and no missing cases.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

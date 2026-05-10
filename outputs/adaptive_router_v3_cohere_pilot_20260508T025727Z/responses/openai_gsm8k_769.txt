@@ -1,0 +1,21 @@
+To solve the problem, follow these steps:
+
+1. **Identify total quantity and ratio parts:**
+   - Total family members: 6 (2 adults and 4 kids).
+   - Let the slice size for each kid be \( x \).
+   - Each adult gets twice as much as each kid, so each adult gets \( 2x \).
+
+2. **Set up the ratio equation:**
+   - Total parts = (4 kids \(\times x\)) + (2 adults \(\times 2x\)) = \(4x + 4x = 8x\).
+
+3. **Determine one part value:**
+   - The whole watermelon is represented by \( 8x \).
+   - One part \( x \) is \(\frac{1}{8}\) of the watermelon.
+
+4. **Find the adult's share:**
+   - Each adult gets \( 2x \), which is \( 2 \times \frac{1}{8} = \frac{2}{8} = \frac{1}{4} \) of the watermelon.
+
+5. **Convert to percentage:**
+   - \(\frac{1}{4}\) of the watermelon is \( 25\% \).
+
+\boxed{25}

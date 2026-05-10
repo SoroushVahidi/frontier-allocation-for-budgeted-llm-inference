@@ -1,0 +1,15 @@
+{
+  "total_latest_method_failures": 16,
+  "full_count": 1,
+  "partial_count": 15,
+  "id_only_count": 0,
+  "top_families": [
+    [
+      "multi_step_computation",
+      1
+    ]
+  ],
+  "has_extra_cases": false,
+  "extra_case_count": 0,
+  "output_directory": "outputs/full_failure_case_inventory_20260510T115106"
+}

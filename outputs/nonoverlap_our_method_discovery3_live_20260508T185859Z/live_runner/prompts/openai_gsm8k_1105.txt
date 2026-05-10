@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+The Kennel house keeps ３ German Shepherds and ２ Bulldogs. If a German Shepherd consumes ５ kilograms of dog food and a bulldog consumes ３ kilograms of dog food per day. How many kilograms of dog food will they need in a week?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

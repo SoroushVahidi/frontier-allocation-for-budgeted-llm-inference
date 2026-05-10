@@ -1,0 +1,11 @@
+example_id,gold_in_selector_pool,gold_in_trace_candidates,gold_in_execution_output,gold_absent_everywhere_detectable
+openai_gsm8k_1087,1,0,0,0
+openai_gsm8k_118,0,0,0,1
+openai_gsm8k_297,0,0,0,1
+openai_gsm8k_310,1,0,0,0
+openai_gsm8k_324,0,0,0,1
+openai_gsm8k_409,1,0,0,0
+openai_gsm8k_555,1,0,0,0
+openai_gsm8k_800,0,0,0,1
+openai_gsm8k_954,1,0,0,0
+openai_gsm8k_961,1,0,0,0

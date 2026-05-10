@@ -1,0 +1,13 @@
+To solve the problem, let's break it down step by step:
+
+1. **Total students**: 3000
+2. **Students over 16**: 3000 / 2 = 1500
+3. **Male students over 16**: 1500 / 4 = 375
+4. **Female students over 16**: 1500 - 375 = 1125
+5. **Students under 16**: 3000 / 2 = 1500
+6. **Male students under 16**: 1500 / 2 = 750
+7. **Female students under 16**: 1500 - 750 = 750
+
+**Total female students**: 1125 (over 16) + 750 (under 16) = 1875
+
+The final answer is: $\boxed{1875}$

@@ -1,0 +1,15 @@
+{
+  "no_api_calls": true,
+  "source_diagnosis_dir": "/home/soroush/research-next-wt/outputs/stage2_routing_gap_diagnosis_20260508T023750Z",
+  "selected_case_count": 14,
+  "scaffold_counts": {
+    "state_composition": 6,
+    "percent_base_denominator": 3,
+    "combinatorics_counting": 1,
+    "average_target_score": 1,
+    "ratio_partition": 3
+  },
+  "estimated_live_calls": 14,
+  "gold_leak_check_passed": true,
+  "gold_leak_case_ids": []
+}

@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+The power goes out in Brianna's house one night so she and her family gather all their candles and flashlights. There are ８ rooms in the house and ４ people living there, including Brianna. There is a flashlight for every person to carry and two for each room. They have a variety of candles available; ４ small candles each for half the rooms and ５ medium candles each for the other half of the rooms. With everything combined, how many candles and flashlights are Brianna's family using when the lights go out?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

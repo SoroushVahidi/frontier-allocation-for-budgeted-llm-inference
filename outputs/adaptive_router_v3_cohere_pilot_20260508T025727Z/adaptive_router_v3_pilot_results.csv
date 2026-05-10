@@ -1,0 +1,11 @@
+case_id,source_category,chosen_scaffold_v3,parsed_final_answer,gold_answer,exact_match,current_integrated_prediction,current_integrated_correct,external_l1_prediction,external_l1_correct,improved_over_current_integrated,would_flip_stage2_result_vs_external_l1,response_text_path,notes
+openai_gsm8k_674,external_l1_only,ratio_partition,10,10,true,13,false,10,true,yes,no,responses/openai_gsm8k_674.txt,
+openai_gsm8k_752,external_l1_only,combinatorics_counting,60,60,true,63,false,60,true,yes,no,responses/openai_gsm8k_752.txt,
+openai_gsm8k_758,external_l1_only,average_target_score,98,98,true,1,false,98,true,yes,no,responses/openai_gsm8k_758.txt,
+openai_gsm8k_769,external_l1_only,ratio_partition,25,25,true,100,false,25,true,yes,no,responses/openai_gsm8k_769.txt,
+openai_gsm8k_695,both_wrong,state_composition,6000,194,false,1,false,4125,false,unknown,unknown,responses/openai_gsm8k_695.txt,
+openai_gsm8k_707,both_wrong,ratio_partition,14,145,false,14,false,14,false,unknown,unknown,responses/openai_gsm8k_707.txt,
+openai_gsm8k_725,both_wrong,ratio_partition,95,95,true,5700,false,5700,false,yes,yes,responses/openai_gsm8k_725.txt,
+openai_gsm8k_677,high_risk_stage2,average_target_score,35,35,true,35,true,35,true,no,no,responses/openai_gsm8k_677.txt,
+openai_gsm8k_699,high_risk_stage2,state_composition,300,300,true,300,true,300,true,no,no,responses/openai_gsm8k_699.txt,
+openai_gsm8k_739,high_risk_stage2,state_composition,1875,1875,true,1875,true,2250,false,no,yes,responses/openai_gsm8k_739.txt,

@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using **before/after state** over time.
+
+Problem:
+Jon runs a triathlon.  It takes him ４０ minutes for the swim, an hour and ２０ minutes for the bike ride and ５０ minutes for the run.  Compared to Jon, James finishes the swim １０% faster but takes ５ minutes longer on the bike.  If Jon won by １０ minutes, how long did it take James to do the run?
+
+Instructions:
+- Write the **initial state** (all relevant quantities).
+- List **each change in chronological order**, updating the state after each step.
+- Identify the **final queried quantity** (what the problem asks for at the end).
+- Compute that quantity from the final state.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

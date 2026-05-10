@@ -1,0 +1,8 @@
+**Target:** Calculate the total cost for Pat to fill her flower bed with plants.
+
+1. **Total space per plant:** 1.5 feet (spacing) + 1 foot (plant width) = 2.5 feet
+2. **Number of plants needed:** 111 feet / 2.5 feet/plant = 44.4 → 44 plants (round down, as partial plants aren't possible)
+3. **Plants to buy:** 44 (total needed) - 17 (already owned) = 27 plants
+4. **Total cost:** 27 plants × $6/plant = $162
+
+\boxed{162}

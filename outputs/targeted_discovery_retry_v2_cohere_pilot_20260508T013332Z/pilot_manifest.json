@@ -1,0 +1,48 @@
+{
+  "timestamp": "20260508T013332Z",
+  "source_v2_dry_run_dir": "outputs/targeted_discovery_retry_v2_dry_run_20260508T013214Z",
+  "selected_case_count": 15,
+  "selected_case_ids": [
+    "openai_gsm8k_750",
+    "openai_gsm8k_841",
+    "openai_gsm8k_1006",
+    "openai_gsm8k_1027",
+    "openai_gsm8k_1029",
+    "openai_gsm8k_1045",
+    "openai_gsm8k_1003",
+    "openai_gsm8k_1099",
+    "openai_gsm8k_906",
+    "openai_gsm8k_818",
+    "openai_gsm8k_864",
+    "openai_gsm8k_1166",
+    "openai_gsm8k_1019",
+    "openai_gsm8k_970",
+    "openai_gsm8k_1187"
+  ],
+  "scaffold_counts": {
+    "quantity_ledger": 6,
+    "rate_table": 3,
+    "before_after_state": 3,
+    "target_difference": 3
+  },
+  "max_cohere_calls": 15,
+  "planned_cohere_calls": 15,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "no_gold_in_prompts_verified": true,
+  "abort_conditions": [
+    "COHERE_API_KEY missing",
+    "any prompt missing",
+    "ASCII gold answer appears in prompt",
+    "planned calls exceeds cap"
+  ],
+  "prompt_versions_by_scaffold": {
+    "quantity_ledger": "v2",
+    "rate_table": "v1",
+    "before_after_state": "v1",
+    "target_difference": "v1"
+  },
+  "scoring_is_offline": true,
+  "actual_cohere_calls": 15
+}

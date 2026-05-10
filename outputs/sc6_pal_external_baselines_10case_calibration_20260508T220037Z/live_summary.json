@@ -1,0 +1,44 @@
+{
+  "case_count": 10,
+  "methods": [
+    "external_self_consistency_6_fair_v1",
+    "external_pal_pot_fair_v1"
+  ],
+  "actual_cohere_calls_run_level": 70,
+  "actual_cohere_calls_completed_rows": 70,
+  "effective_call_cap": 80,
+  "global_cap_reached": false,
+  "cap_error_count": 0,
+  "completed_rows": 20,
+  "incomplete_rows": 0,
+  "exact_by_method": {
+    "external_self_consistency_6_fair_v1": 0,
+    "external_pal_pot_fair_v1": 0
+  },
+  "parsing_failures_by_method": {
+    "external_self_consistency_6_fair_v1": 8,
+    "external_pal_pot_fair_v1": 0
+  },
+  "api_errors_by_method": {
+    "external_self_consistency_6_fair_v1": 0,
+    "external_pal_pot_fair_v1": 0
+  },
+  "method_execution_errors_by_method": {
+    "external_self_consistency_6_fair_v1": 0,
+    "external_pal_pot_fair_v1": 0
+  },
+  "metadata_present_by_method": {
+    "external_self_consistency_6_fair_v1": 10,
+    "external_pal_pot_fair_v1": 10
+  },
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "ready_for_full_50_if_10case": true,
+  "ready_for_main_table_update": false,
+  "call_accounting_warning": "",
+  "sc6_decoding_note": "Self-consistency samples share generator temperature=0.0; diversity is primarily from independent draws / branch initialization, not thermal noise.",
+  "caveats": [
+    "Self-consistency samples share generator temperature=0.0; diversity is primarily from independent draws / branch initialization, not thermal noise.",
+    "PAL uses min(0.3, runner temperature) internally for JSON code generation."
+  ]
+}

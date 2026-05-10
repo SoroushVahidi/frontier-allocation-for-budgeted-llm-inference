@@ -1,0 +1,38 @@
+{
+  "timestamp": "20260508T010738Z",
+  "no_api_calls": true,
+  "source_diagnosis_dir": "outputs/gold_absent_discovery_diagnosis_20260508T005544Z",
+  "selected_case_count": 25,
+  "scaffold_counts": {
+    "quantity_ledger": 9,
+    "rate_table": 7,
+    "before_after_state": 5,
+    "target_difference": 4
+  },
+  "selection_rules": {
+    "cohort": "gold_absent_tagged_only",
+    "families": [
+      "difference_comparison",
+      "money_budget",
+      "rate_ratio",
+      "temporal_change"
+    ],
+    "scaffold_map": {
+      "money_budget": "quantity_ledger",
+      "rate_ratio": "rate_table",
+      "temporal_change": "before_after_state",
+      "difference_comparison": "target_difference",
+      "fallback": "quantity_ledger (unused when family filtered)"
+    },
+    "anchor_priority_source": "outputs/gold_absent_discovery_diagnosis_20260508T005544Z/anchor_cases.md",
+    "exclude_high_provenance_unless_anchor": true
+  },
+  "excluded_case_counts_by_reason": {
+    "family_not_in_first_cohort": 12,
+    "not_gold_absent_tagged": 11
+  },
+  "future_method_name": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1",
+  "estimated_live_api_calls_if_piloted": 25,
+  "budget6_schedule_proposed": "Schedule A \u2014 conservative single targeted retry slot for eligible gold-absent cohort",
+  "api_required_for_next_step": true
+}

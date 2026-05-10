@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Frankie watches TV after he finishes his homework every night. On Monday and Tuesday, he watched a １-hour episode of his favorite show each night. On Wednesday, he watched a few episodes of a ３０-minute show. On Thursday, he finished homework early and watched a １-hour episode and a ３０-minute show. On Friday, he got to stay up late for the weekend, so he watched two １-hour episodes. If he watched ７ hours of TV in all, how many ３０-minute episodes did he watch on Wednesday?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

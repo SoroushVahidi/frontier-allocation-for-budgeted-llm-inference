@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "16.0",
+  "parsed_answer": "16",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "food_cost = 2 + 3\nnon_food_cost = 3 + 3 + 4\ntax = non_food_cost * 0.1\ntotal_cost = food_cost + non_food_cost + tax\nprint(total_cost)",
+      "stdout": "16.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "16.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "16.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

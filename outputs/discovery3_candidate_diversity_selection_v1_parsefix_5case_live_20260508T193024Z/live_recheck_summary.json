@@ -1,0 +1,23 @@
+{
+  "case_count": 5,
+  "actual_cohere_calls": 5,
+  "exact_count": 0,
+  "parsing_failures": 3,
+  "final_answer_line_found_count": 2,
+  "improved_over_original_count": 0,
+  "exact_by_scaffold": {
+    "leave_unmodified": 0,
+    "final_target_extraction_repair": 0,
+    "ratio_unit_equation": 0,
+    "state_transition_consistency": 0
+  },
+  "parsing_failure_by_scaffold": {
+    "leave_unmodified": 1,
+    "final_target_extraction_repair": 0,
+    "ratio_unit_equation": 1,
+    "state_transition_consistency": 1
+  },
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "ready_for_15case_rerun": false
+}

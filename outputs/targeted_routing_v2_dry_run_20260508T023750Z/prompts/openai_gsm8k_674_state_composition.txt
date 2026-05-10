@@ -1,0 +1,16 @@
+You are solving a state-composition problem with sequential operations.
+
+Problem:
+Jane planted a beanstalk in her backyard. After the first week, it was ３ inches tall. It doubled in height the second week. It grew another ４ inches in the third week. How tall was the beanstalk after ３ weeks?
+
+Instructions:
+- Start from initial state values.
+- Apply each operation in story order (add/subtract/scale/convert units).
+- Keep intermediate states explicit to avoid mixing totals and components.
+- Restate the exact final target before computing the last step.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

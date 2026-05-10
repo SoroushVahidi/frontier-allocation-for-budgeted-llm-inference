@@ -1,0 +1,11 @@
+case_id,scaffold,prompt_version,response_text_path,parsed_final_answer,gold_answer,exact_match,current_pal_prediction,improved_over_current_pal,prior_v1_status,notes
+openai_gsm8k_750,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_750.txt,92,92,true,532.4666656177045,yes,failed,
+openai_gsm8k_841,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_841.txt,262500,262500,true,262000,yes,failed,
+openai_gsm8k_1006,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_1006.txt,25,25,true,1,yes,not_piloted,
+openai_gsm8k_1027,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_1027.txt,2,2,true,1,yes,not_piloted,
+openai_gsm8k_1029,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_1029.txt,70000,70000,true,195000,yes,not_piloted,
+openai_gsm8k_1045,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_1045.txt,4,4,true,12,yes,not_piloted,
+openai_gsm8k_720,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_720.txt,106,106,true,106.12080000000002,yes,exact,
+openai_gsm8k_1155,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_1155.txt,342,342,true,81.66666666666667,yes,not_piloted,
+openai_gsm8k_814,quantity_ledger,quantity_ledger_v2_1,responses/openai_gsm8k_814.txt,16,16,true,-20,yes,not_piloted,
+openai_gsm8k_906,rate_table,v1,responses/openai_gsm8k_906.txt,16,16,true,12,yes,exact,

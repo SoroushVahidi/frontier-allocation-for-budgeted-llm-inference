@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+While at the dollar store, Sloane counts １００ customers entering the store. The next day, she counts ５０ more customers than the first day. If the total number of customers by the third day was ５００, how many customers did she count on the third day?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

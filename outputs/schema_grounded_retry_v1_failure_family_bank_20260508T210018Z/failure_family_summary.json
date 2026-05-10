@@ -1,0 +1,56 @@
+{
+  "total_unique_cases": 113,
+  "production_equiv_wrong_count": 14,
+  "prior_patch_wrong_count if available": 0,
+  "nonoverlap_wrong_count": 30,
+  "count_by_selection_failure_type": {
+    "final_target_mismatch": 9,
+    "parse_failure": 68,
+    "unknown": 30,
+    "present_not_selected": 5,
+    "gold_absent_discovery": 1
+  },
+  "count_by_inferred_failure_family": {
+    "ratio_equation": 5,
+    "quantity_ledger": 2,
+    "before_after_state": 5,
+    "unknown_or_mixed": 93,
+    "target_difference": 2,
+    "rate_table": 3,
+    "average_total_count": 2,
+    "parse_format": 1
+  },
+  "count_by_schema_candidate": {
+    "ratio_equation_schema": 5,
+    "quantity_ledger_schema": 96,
+    "before_after_state_schema": 5,
+    "target_difference_schema": 2,
+    "rate_table_schema": 3,
+    "average_total_count_schema": 2
+  },
+  "high_priority_count": 6,
+  "families_with_enough_support": [
+    "ratio_equation",
+    "before_after_state",
+    "unknown_or_mixed"
+  ],
+  "families_with_weak_support": [
+    "quantity_ledger",
+    "target_difference",
+    "rate_table",
+    "average_total_count"
+  ],
+  "families_not_supported": [
+    "parse_format"
+  ],
+  "recommended_schema_families_to_test": [
+    "ratio_equation",
+    "before_after_state",
+    "unknown_or_mixed"
+  ],
+  "recommended_dev_validation_split": {
+    "dev_probe": 56,
+    "validation_holdout": 57
+  },
+  "no_api_calls": true
+}

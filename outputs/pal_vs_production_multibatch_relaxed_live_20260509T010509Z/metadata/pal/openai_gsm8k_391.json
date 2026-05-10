@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_ratio = 5 + 6\nbetty_popsicles = (5 / total_ratio) * 165\nsam_popsicles = (6 / total_ratio) * 165\ndifference = sam_popsicles - betty_popsicles\nprint(difference)",
+    "stdout": "15.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "15.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "15.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

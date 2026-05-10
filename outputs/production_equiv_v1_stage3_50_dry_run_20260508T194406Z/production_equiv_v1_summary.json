@@ -1,0 +1,29 @@
+{
+  "case_count": 50,
+  "no_api_calls": true,
+  "planned_targeted_retry_count": 11,
+  "estimated_extra_calls": 11,
+  "estimated_total_calls": 61,
+  "router_decision_counts": {
+    "targeted_retry": 19,
+    "base": 28,
+    "abstain": 3
+  },
+  "scaffold_counts": {
+    "final_target_extraction_repair": 9,
+    "rate_table_v1": 2
+  },
+  "excluded_patch_reasons": {
+    "scaffold_not_validated_for_production_equiv_v1:ratio_partition": 8,
+    "scaffold_not_validated_for_production_equiv_v1:base_method_no_retry": 24,
+    "scaffold_not_validated_for_production_equiv_v1:state_composition": 2,
+    "scaffold_not_validated_for_production_equiv_v1:average_target_score": 3,
+    "scaffold_not_validated_for_production_equiv_v1:unknown": 2
+  },
+  "ready_for_live_cases": 0,
+  "ready_for_live_checkpoint": false,
+  "blocking_issues": [
+    "controller_runtime_targeted_retry_loop_not_fully_wired",
+    "controller_surface_parity_source_not_fully_wired"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "joanne_tallest = 30\njoanne_shortest = joanne_tallest / 2\nsister_tallest = 2 * joanne_tallest\nsister_shortest = 3 * joanne_shortest\ntotal_apples = 500\njoanne_average = total_apples - (joanne_tallest + joanne_shortest + sister_tallest + sister_shortest)\nprint(int(joanne_average))",
+    "stdout": "350\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "350",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "350",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

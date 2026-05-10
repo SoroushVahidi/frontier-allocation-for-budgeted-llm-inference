@@ -1,0 +1,11 @@
+# production_equiv_v1 runtime tiny live smoke
+- case_count: 3
+- actual_cohere_calls: 6
+- exact_count: 2
+- parsing_failures: 0
+- api_errors: []
+- targeted_retry_triggered_count: 2
+- targeted_retry_committed_count: 0
+- metadata_present_count: 3
+- production_equiv_surface_source_counts: {'structural_commit': 3}
+- ready_for_50case_live_checkpoint: True

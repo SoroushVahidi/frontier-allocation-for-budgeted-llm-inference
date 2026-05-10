@@ -1,0 +1,22 @@
+{
+  "source_v2_dry_run_dir": "outputs/targeted_discovery_retry_v21_dry_run_20260508T014403Z",
+  "selected_case_count": 10,
+  "max_cohere_calls": 10,
+  "planned_cohere_calls": 10,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "prompt_versions_by_scaffold": {
+    "quantity_ledger_v2_1": 9,
+    "v1": 1
+  },
+  "no_gold_in_prompts_verified": true,
+  "abort_conditions": [
+    "COHERE_API_KEY missing",
+    "prompt missing",
+    "ASCII gold appears in prompt",
+    "planned calls exceeds cap"
+  ],
+  "scoring_is_offline": true,
+  "actual_cohere_calls": 10
+}

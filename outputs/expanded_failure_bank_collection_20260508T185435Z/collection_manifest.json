@@ -1,0 +1,24 @@
+{
+  "created_at_utc": "2026-05-08T18:54:35.678437+00:00",
+  "preflight": {
+    "pwd": "/home/soroush/research-next-wt",
+    "git_head_short": "5549682",
+    "cohere_api_key_set": true,
+    "hf_token_set": true,
+    "has_casebook": true,
+    "has_fair50": true,
+    "has_our_patch": true,
+    "has_our_live": true,
+    "has_prod_dry_run": true
+  },
+  "live_preflight": {
+    "planned_calls": 0,
+    "planned_calls_within_250": true,
+    "selected_have_problem_and_gold": true,
+    "no_hf_download_needed": true,
+    "live_execution_required": false
+  },
+  "selection_policy": "prefer full-record fair50 cases; defer additional casebook rows lacking our labels",
+  "no_hf_download": true,
+  "hard_call_cap": 250
+}

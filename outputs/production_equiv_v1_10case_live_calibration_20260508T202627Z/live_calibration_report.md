@@ -1,0 +1,21 @@
+# production_equiv_v1 10-case live calibration
+- case_count: 10
+- completed_rows: 10
+- incomplete_rows: 0
+- actual_cohere_calls_completed_rows: 20
+- actual_cohere_calls_run_level: 40
+- effective_call_cap: 50
+- global_cap_reached: False
+- cap_error_count: 0
+- call_accounting_source: ['per_case_counter', 'global_runner_counter']
+- call_accounting_warning: run-level logical call consumption differs from sum of completed-row per-case counters; use actual_cohere_calls_run_level for cost/cap interpretation.
+- production_equiv_correct_count: 10
+- parsing_failures: 0
+- metadata_present_count: 10
+- targeted_retry_triggered_count: 2
+- targeted_retry_committed_count: 0
+- surface_source_counts: {'structural_commit': 10}
+- no_gold_leakage: True
+- no_prediction_leakage: True
+- ready_for_full_50_rerun: True
+- recommended_full_50_cap: 132

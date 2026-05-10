@@ -1,0 +1,38 @@
+{
+  "source_patch_plan_dir": "outputs/external_l1_only_fix_failure_patch_plan_20260508T031556Z",
+  "case_count": 2,
+  "planned_cohere_calls": 3,
+  "max_cohere_calls": 3,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "prompt_variants": [
+    {
+      "case_id": "openai_gsm8k_683",
+      "prompt_variant": "patched_percent_base_v2",
+      "selected_scaffold": "percent_base_denominator_v2"
+    },
+    {
+      "case_id": "openai_gsm8k_769",
+      "prompt_variant": "ratio_partition_v2_repeat",
+      "selected_scaffold": "ratio_partition_v2"
+    },
+    {
+      "case_id": "openai_gsm8k_769",
+      "prompt_variant": "l1_style_alternative",
+      "selected_scaffold": "l1_style_concise_decomposition"
+    }
+  ],
+  "scoring_is_offline": true,
+  "no_gold_in_prompts_verified": true,
+  "no_external_prediction_in_prompts_verified": true,
+  "abort_conditions": [
+    "COHERE_API_KEY missing",
+    "planned calls exceed cap",
+    "missing prompt files",
+    "gold leakage in prompts",
+    "external prediction leakage in prompts",
+    "duplicate prompt path",
+    "selected case ids outside {683,769}"
+  ]
+}

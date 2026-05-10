@@ -1,0 +1,6 @@
+{
+"Total space needed per plant": 2.5,
+"Total number of plants needed": 44,
+"Number of plants to buy": 27,
+"Total cost": 162
+}

@@ -1,0 +1,22 @@
+{
+  "case_count": 100,
+  "actual_new_cohere_calls": 7,
+  "external_l1_correct_count": 85,
+  "baseline_pal_correct_count": 84,
+  "previous_integrated_correct_count": 86,
+  "validated_fixes_correct_count": 92,
+  "validated_fixes_minus_external_l1": 7,
+  "validated_fixes_minus_previous_integrated": 6,
+  "paired_external_l1_only": 1,
+  "paired_validated_fixes_only": 8,
+  "both_correct": 84,
+  "both_wrong": 7,
+  "mcnemar_inputs": {
+    "b_validated_only": 8,
+    "c_external_only": 1
+  },
+  "api_errors": [],
+  "parsing_ambiguities": [],
+  "no_gold_leakage": true,
+  "no_external_prediction_leakage": true
+}

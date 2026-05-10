@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Michael is racing his horse and notices that for every mile the horse runs, he eats １/２ a bail of hay. A bail of hay costs $３. If his horse runs for ３０ minutes at ３２MPH, and Michael has six ５ dollar bills, how much change does he have after he buys the hay?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

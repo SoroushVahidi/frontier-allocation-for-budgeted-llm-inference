@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "20",
+  "parsed_answer": "20",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_feed_per_chicken = 3\nnumber_of_chickens = 20\n\n# Calculate the total feed needed for all chickens\ntotal_feed_needed = total_feed_per_chicken * number_of_chickens\n\n# Subtract the feed already given in the morning and afternoon\nfeed_given_morning = 15\nfeed_given_afternoon = 25\nfeed_needed_final_meal = total_feed_needed - feed_given_morning - feed_given_afternoon\n\nprint(feed_needed_final_meal)",
+      "stdout": "20\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "20",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "20",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

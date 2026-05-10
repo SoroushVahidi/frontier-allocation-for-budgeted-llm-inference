@@ -1,0 +1,8 @@
+{
+  "total_latest_method_failures": 1127,
+  "full_count": 215,
+  "partial_count": 467,
+  "id_only_count": 445,
+  "extra_full_count": 97,
+  "output_directory": "outputs/exhaustive_latest_method_failure_audit_20260510T115729"
+}

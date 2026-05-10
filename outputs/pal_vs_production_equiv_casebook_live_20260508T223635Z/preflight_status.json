@@ -1,0 +1,19 @@
+{
+  "cohere_api_key_set": true,
+  "case_count": 30,
+  "case_count_in_range": true,
+  "all_problem_text": true,
+  "all_gold": true,
+  "no_duplicate_ids": true,
+  "no_matched50_overlap": true,
+  "estimated_calls_upper_bound": 180,
+  "within_cap": true,
+  "method_alias": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1",
+  "pal_method": "external_pal_pot_fair_v1",
+  "output_writable": true,
+  "prompt_leakage_check": "questions_only_no_gold_in_user_prompt_for_standard_expand",
+  "alias_resolves": true,
+  "pal_resolves": true,
+  "critical_failures": [],
+  "abort_before_api": false
+}

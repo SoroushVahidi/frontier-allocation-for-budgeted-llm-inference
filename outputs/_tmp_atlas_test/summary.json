@@ -1,0 +1,45 @@
+{
+  "focus_rows": 3,
+  "meta": {
+    "api_calls": "none",
+    "casebook_path": "/home/soroush/research-next-wt/tests/fixtures/offline_pal_discovery_deficit_atlas_minimal/paired_casebook.csv",
+    "output_dir": "/home/soroush/research-next-wt/outputs/_tmp_atlas_test",
+    "pal_results_path": "/home/soroush/research-next-wt/tests/fixtures/offline_pal_discovery_deficit_atlas_minimal/pal_results.jsonl"
+  },
+  "operation_counts": {
+    "percent": 1,
+    "rate_ratio": 1,
+    "total_sum": 1
+  },
+  "quantity_bucket_counts": {
+    "qnum_2_3": 3
+  },
+  "stage_counts": {
+    "gold_absent_all_detectable": 1,
+    "gold_in_direct_attempts": 1,
+    "gold_in_execution_only": 1
+  },
+  "top_archetypes": [
+    {
+      "count": 1,
+      "diversity_bucket": "div_low",
+      "operation_hint": "total_sum",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_in_direct_attempts"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_low",
+      "operation_hint": "rate_ratio",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_in_execution_only"
+    },
+    {
+      "count": 1,
+      "diversity_bucket": "div_low",
+      "operation_hint": "percent",
+      "quantity_bucket": "qnum_2_3",
+      "stage": "gold_absent_all_detectable"
+    }
+  ]
+}

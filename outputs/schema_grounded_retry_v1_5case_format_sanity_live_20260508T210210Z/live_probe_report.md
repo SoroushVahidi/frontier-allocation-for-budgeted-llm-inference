@@ -1,0 +1,11 @@
+# schema_grounded_retry_v1 5-case format sanity live probe
+- This probe evaluates output-format/schema parseability, not algorithmic improvement claims.
+- selected_cases: ['openai_gsm8k_1077', 'openai_gsm8k_1080', 'openai_gsm8k_1081', 'openai_gsm8k_1091', 'openai_gsm8k_1096']
+- actual_cohere_calls: 5
+- parse_success_count: 0
+- validation_success_count: 0
+- required_labels_all_present_count: 0
+- final_answer_present_count: 0
+- exact_count: 0
+- ready_for_family_level_dev_probe: False
+- recommended_next_step: refine_schema_prompt_contract_and_recheck

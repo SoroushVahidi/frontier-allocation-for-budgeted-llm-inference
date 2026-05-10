@@ -1,0 +1,16 @@
+You are solving a state-composition problem with sequential operations.
+
+Problem:
+A tank has a capacity of １８０００ gallons. Wanda and Ms. B decided to pump water from a pond to fill the tank in two days. On the first day, working in shifts, Wanda filled １/４ of the tank's capacity with water, and Ms. B pumped ３/４ as much water as Wanda pumped into the tank that day. On the second day, Wanda pumped ２/３ of the amount of water she pumped on the previous day, while Ms. B only pumped １/３ of the number of gallons she pumped on the first day. How many gallons of water are remaining for the tank to be full?
+
+Instructions:
+- Start from initial state values.
+- Apply each operation in story order (add/subtract/scale/convert units).
+- Keep intermediate states explicit to avoid mixing totals and components.
+- Restate the exact final target before computing the last step.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

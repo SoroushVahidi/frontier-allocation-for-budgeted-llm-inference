@@ -1,0 +1,34 @@
+Solve this GSM8K-style problem independently using before/after state transitions.
+
+Problem:
+After tracking his workout routine for ８ weeks, Josh discovered that he had spent ４ hours working out every week except on some occasions. At one point, he spent ５ hours each for two consecutive weeks. Another time, he spent ６ hours in one week. What is the total number of hours he has spent working out across the ８ weeks?
+
+Track state updates in order and compute the requested final target.
+Your entire response must be only the block below.
+Do not explain outside the block.
+Copy these exact labels.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.
+
+Template:
+SCHEMA_TYPE:
+TARGET_QUANTITY:
+GIVEN_QUANTITIES:
+-
+EQUATIONS:
+-
+COMPUTATION:
+-
+FINAL_ANSWER:

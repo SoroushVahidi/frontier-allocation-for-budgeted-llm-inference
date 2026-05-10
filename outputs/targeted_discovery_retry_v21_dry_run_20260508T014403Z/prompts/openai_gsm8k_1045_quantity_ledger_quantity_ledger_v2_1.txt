@@ -1,0 +1,24 @@
+You are solving a grade-school math word problem using a **quantity ledger**.
+
+Problem:
+You can buy a movie super ticket for $２０ that includes rights to watch any movie and you get one popcorn with a soda for only $１ extra. Or you can buy a movie ticket for $１２ and buy one popcorn and a soda at regular price. What's the regular price of popcorn if the soda costs $３ and you didn't buy the super ticket and ended up saving $２?
+
+Instructions:
+- Restate the final target quantity exactly once (e.g., annual total paid/earned, profit, remaining amount).
+- Build a money ledger with named lines for every relevant amount (principal/cost/revenue/profit/bonus/total/remaining as applicable).
+- For each money/income/bonus/payment quantity in the story, do **recurrence classification**:
+  - one-time (add once),
+  - per-period recurring (multiply by number of periods),
+  - total across the whole horizon (do not multiply),
+  - unknown (compute only unambiguous parts).
+- Critical recurrence rule: **Never multiply a one-time bonus/payment by the number of periods** unless the story explicitly says it repeats.
+- Percent/fraction base rule: if a percentage is described as applying to an original/base amount each interval, use a constant increment (no compounding). If a percentage is a raise on salary, compute the raised salary first.
+- If the story says a bonus is "worth X months of salary" or "a fraction of a month’s salary", treat it as **one-time**: compute from the referenced month’s (raised) salary and add once.
+- Convert units/time spans so everything is on the same basis before combining.
+- Compute the final requested numeric result.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

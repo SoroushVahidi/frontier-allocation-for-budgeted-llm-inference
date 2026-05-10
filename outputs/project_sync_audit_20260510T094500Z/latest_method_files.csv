@@ -1,0 +1,7 @@
+path,location,tracked,pushed,in_main
+scripts/run_production_equiv_v1_live_calibration.py,research-next-wt,no,no,no
+scripts/run_production_equivalence_stage3_dry_run.py,research-next-wt,no,no,no
+tests/test_production_equivalence_stage3.py,research-next-wt,no,no,no
+scripts/replay_structural_commit_v1.py,research-next-wt,no,no,no
+experiments/output_layer_repair.py,frontier-allocation-for-budgeted-llm-inference,yes,no,yes (modified)
+experiments/targeted_discovery_retry.py,research-next-wt,yes,yes,yes

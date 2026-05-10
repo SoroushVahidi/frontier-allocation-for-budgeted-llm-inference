@@ -1,0 +1,9 @@
+**Target:** Find the score Brinley needs on the sixth test to achieve a 93 average after dropping the lowest score.
+
+1. Sum of top 5 scores: \( S = 89 + 92 + 100 + 86 + x \)
+2. Average condition: \( \frac{S}{5} = 93 \)
+3. Solve for \( x \): \( S = 465 \Rightarrow 89 + 92 + 100 + 86 + x = 465 \Rightarrow x = 465 - 367 \)
+
+\[
+\boxed{98}
+\]

@@ -1,0 +1,65 @@
+{
+  "run_output_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
+  "paired_n": 100,
+  "external_exact": 85,
+  "pal_retry_exact": 84,
+  "external_accuracy": 0.85,
+  "pal_retry_accuracy": 0.84,
+  "wilson95_external": [
+    0.7671644040916763,
+    0.9069401471634337
+  ],
+  "wilson95_pal_retry": [
+    0.7557973061072976,
+    0.8990471151119521
+  ],
+  "paired_diff_pal_minus_external": -0.01,
+  "paired_diff_pal_minus_external_pp": -1.0,
+  "discordants": {
+    "pal_only": 8,
+    "external_only": 9
+  },
+  "mcnemar_exact_pvalue": 1.0,
+  "binomial_sign_pvalue": 1.0,
+  "bootstrap95_paired_diff": [
+    -0.09,
+    0.07
+  ],
+  "bootstrap95_paired_diff_pp": [
+    -9.0,
+    7.000000000000001
+  ],
+  "retry": {
+    "ran_count": 4,
+    "ran_rate": 0.04,
+    "code_rate": 1.0,
+    "parse_ok_rate": 1.0,
+    "safety_ok_rate": 0.75,
+    "exec_ok_rate": 0.5,
+    "candidate_strong_rate": 0.5,
+    "fixes": 0,
+    "breaks": 0,
+    "net": 0
+  },
+  "external_only_count": 9,
+  "pal_only_count": 8,
+  "comparison_previous_noretry_100case": {
+    "previous_external_accuracy": 0.75,
+    "new_external_accuracy": 0.85,
+    "previous_pal_accuracy": 0.8,
+    "new_pal_retry_accuracy": 0.84,
+    "previous_gap_pp": 5.0,
+    "new_gap_pp": -1.0,
+    "caveat": "different samples; not paired ablation"
+  },
+  "metric_consistency": {
+    "failed_or_skipped_empty": true,
+    "candidate_strong_implies_exec_ok_violations": 2,
+    "selected_disjoint_from_prior_exclusions": true,
+    "intersection_count": 0,
+    "suspected_metric_issue": [
+      "pal_corrected_gold_in_tree is a strict subset metric (only corrected-when-wrong), not raw gold_in_tree presence; low value is expected by definition.",
+      "pal_discovery3 is sparsely triggered in this run; likely reflects strict field definition/threshold rather than pipeline bug."
+    ]
+  }
+}

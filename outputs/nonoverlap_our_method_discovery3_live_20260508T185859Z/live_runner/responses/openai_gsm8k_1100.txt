@@ -1,0 +1,8 @@
+**Target:** Calculate total cost for 4 watermelons, 20 peppers, and 10 oranges.
+
+1. Let \( p = 15 \) (pepper cost).  
+2. Watermelon cost: \( w = 3p = 3(15) = 45 \).  
+3. Orange cost: \( o = w - 5 = 45 - 5 = 40 \).  
+4. Total cost: \( 4w + 20p + 10o = 4(45) + 20(15) + 10(40) = 180 + 300 + 400 = 880 \).
+
+\boxed{880}

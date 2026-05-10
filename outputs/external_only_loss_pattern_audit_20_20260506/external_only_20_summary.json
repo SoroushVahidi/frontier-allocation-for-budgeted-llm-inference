@@ -1,0 +1,63 @@
+{
+  "unique_external_only_losses": 20,
+  "expected_unique_count": 20,
+  "count_matches_expectation": true,
+  "source_counts": {
+    "previous_100pair_external_only_losses": 5,
+    "round1_collection_external_only_loss_casebook": 10,
+    "round2_collection_external_only_loss_casebook": 5
+  },
+  "dedupe_key": "example_id",
+  "category_frequency": {
+    "L1_P1_code_absent": 3,
+    "L1_P3_exec_failed": 1,
+    "L1_P9_external_trace_advantage_unknown": 10,
+    "L1_P4_exec_succeeded_wrong": 1,
+    "L1_P5_correct_candidate_not_selected": 4,
+    "L1_P2_unsafe_code": 1
+  },
+  "top_3_precise_patterns": [
+    {
+      "pattern": "gold absent from PAL candidate pool while external found correct target path",
+      "count": 7
+    },
+    {
+      "pattern": "code omitted final executable snippet/answer payload",
+      "count": 3
+    },
+    {
+      "pattern": "Gold-equivalent answer absent from PAL candidate pool while external path reached correct answer.",
+      "count": 3
+    }
+  ],
+  "fix_path_frequency": {
+    "adding retry-on-empty-code": 3,
+    "executor allowlist/sandbox patch": 2,
+    "collecting more evidence": 7,
+    "PAL prompt tightening": 1,
+    "PAL selection/integration patch": 4,
+    "collect more evidence": 3
+  },
+  "fixable_count_prompt_executor_selection_retry": 7,
+  "fixable_ratio_prompt_executor_selection_retry": 0.35,
+  "pal_only_wins_comparison": {
+    "external_only_metrics": {
+      "n": 20,
+      "pal_code_present_rate": 0.85,
+      "pal_exec_ok_rate": 0.75,
+      "gold_absent_rate": 0.7,
+      "present_not_selected_rate": 0.25
+    },
+    "pal_only_wins_metrics": {
+      "n": 44,
+      "pal_code_present_rate": 1.0,
+      "pal_exec_ok_rate": 1.0,
+      "gold_absent_rate": 0.0,
+      "present_not_selected_rate": 0.0
+    }
+  },
+  "enough_to_choose_patch": false,
+  "more_api_collection_needed_before_patching": true,
+  "recommended_next_step": "C. collect more external-only losses",
+  "api_should_remain_paused": true
+}

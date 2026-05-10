@@ -1,0 +1,12 @@
+**Final Target Quantity:** Profit made by Josh.
+
+**Money Ledger:**
+
+1. **Cost of House (Principal):** $80,000  
+2. **Repairs Cost:** $50,000  
+3. **Total Investment:** $80,000 + $50,000 = $130,000  
+4. **Increase in Value:** 150% of the original house value ($80,000) = 1.5 × $80,000 = $120,000  
+5. **New House Value:** $80,000 + $120,000 = $200,000  
+6. **Profit:** New House Value - Total Investment = $200,000 - $130,000 = $70,000  
+
+\boxed{70000}

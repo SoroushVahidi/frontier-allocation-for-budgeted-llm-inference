@@ -1,0 +1,22 @@
+{
+  "case_count": 10,
+  "planned_calls": 16,
+  "actual_cohere_calls": 16,
+  "retry_exact_count": 0,
+  "cases_with_any_exact_retry": 0,
+  "cases_improved_if_oracle_selects_retry": 0,
+  "cases_improved_under_candidate_policy": 0,
+  "regressions_under_candidate_policy": 0,
+  "parsing_failures": 16,
+  "exact_by_variant": {
+    "final_target_guarded_retry": 0,
+    "structural_commit_challenge_retry": 0
+  },
+  "improvement_by_variant": {},
+  "candidate_policy_safe_positive_count": 0,
+  "candidate_policy_regression_count": 0,
+  "api_errors": [],
+  "no_gold_leakage": true,
+  "no_prediction_leakage": true,
+  "recommended_next_step": "improve_retry_prompts"
+}

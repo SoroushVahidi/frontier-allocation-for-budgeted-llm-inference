@@ -1,0 +1,10 @@
+{
+  "input_casebook": "/home/soroush/research-next-wt/outputs/external_only_loss_pattern_audit_31_20260506/external_only_31_casebook.csv",
+  "external_only_losses_total": 31,
+  "l1_p1_code_absent_total": 14,
+  "retry_eligible_cases_total": 16,
+  "retry_eligible_l1_p1_count": 14,
+  "retry_eligible_fraction_all": 0.5161290322580645,
+  "retry_eligible_fraction_l1_p1": 1.0,
+  "notes": "Offline replay cannot claim accuracy gains because retry requires a new model call; this package estimates eligibility only."
+}

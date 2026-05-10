@@ -1,0 +1,4 @@
+batch_id,planned_pal_screen_count,planned_production_followup_cap,estimated_logical_calls_upper_bound,notes
+1,50,25,150,PAL screen first; production_equiv follow-up on subset (<=25) with priority PAL-correct-clean.
+2,50,25,150,PAL screen first; production_equiv follow-up on subset (<=25) with priority PAL-correct-clean.
+3,35,25,135,PAL screen first; production_equiv follow-up on subset (<=25) with priority PAL-correct-clean.

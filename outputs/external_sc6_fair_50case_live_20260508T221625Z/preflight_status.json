@@ -1,0 +1,12 @@
+{
+  "cohere_api_key_present": true,
+  "source_cases_exists": true,
+  "method": "external_self_consistency_6_fair_v1",
+  "case_count_requested": 50,
+  "max_total_api_calls": 350,
+  "planned_logical_calls_estimate": 300,
+  "budget_controller": 6,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "sc6_temperature_caveat": "Fair harness uses APIBranchGenerator with temperature=0.0 for self-consistency branches; diversity is primarily from independent samples / branch IDs, not thermal noise."
+}

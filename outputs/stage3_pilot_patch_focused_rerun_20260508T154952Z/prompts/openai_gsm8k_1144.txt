@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+While Joanne is gathering apples from her family’s orchard, her sister comes outside to help her. Joanne gathers ３０ apples from the tallest trees, half this amount from the shortest trees, and more apples from the average trees. Compared with Joanne, her sister gathers twice as many apples from the tallest trees and ３ times as many apples from the shortest trees. She doesn't take any from the average trees. If the sisters have gathered a combined total of ５００ apples, how many apples did Joanne gather from the average trees?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

@@ -1,0 +1,8 @@
+**Target:** Determine the total number of old records brought in by the 5 people.
+
+1. Let \( x \) be the number of old records brought in.
+2. Each 2 old records trade for 1 new record, so \( \frac{x}{2} \) new records are obtained.
+3. Given 7 new records, set up the equation: \( \frac{x}{2} = 7 \).
+4. Solve for \( x \): \( x = 7 \times 2 = 14 \).
+
+\boxed{14}

@@ -1,0 +1,22 @@
+**Target:** Find the amount of oil Tanya uses.
+
+Let:
+- $z$ = ounces of zest (and fragrance)
+- $s$ = ounces of salt (and sugar)
+- $o$ = ounces of oil
+
+Equations:
+1. $o = 2s$ (twice as much oil as salt)
+2. $s = 2z$ (twice as much salt as zest)
+3. $z + z + s + s + o = 10$ (total mixture equals 10 ounces)
+
+Substitute and solve:
+$2z + 2z + 2z + 2z + 4z = 10$
+$12z = 10$
+$z = \frac{10}{12} = \frac{5}{6}$
+
+$s = 2z = 2(\frac{5}{6}) = \frac{10}{6} = \frac{5}{3}$
+
+$o = 2s = 2(\frac{5}{3}) = \frac{10}{3}$
+
+**Final Answer:** $\boxed{\frac{10}{3}}$

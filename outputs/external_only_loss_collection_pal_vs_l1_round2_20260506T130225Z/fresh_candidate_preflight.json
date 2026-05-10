@@ -1,0 +1,17 @@
+{
+  "stamp": "20260506T130225Z",
+  "dataset": "openai/gsm8k",
+  "seed": 20260501,
+  "budget": 6,
+  "methods": [
+    "external_l1_max",
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
+  ],
+  "deterministic_pool_size": 1319,
+  "excluded_ids_count": 426,
+  "fresh_pool_size": 893,
+  "pair_count_target": 246,
+  "picked_count": 246,
+  "max_total_api_calls": 1500,
+  "selection_rule": "deterministic load_pilot_examples order after exclusion set"
+}

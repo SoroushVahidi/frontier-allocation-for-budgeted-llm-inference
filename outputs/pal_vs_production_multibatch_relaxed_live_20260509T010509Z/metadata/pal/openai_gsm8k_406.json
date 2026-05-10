@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "corns = 2 * 40\ncannolis = 40 + 60\nnew_corns = cannolis - 40\ntotal = corns + new_corns + cannolis\nprint(total)",
+    "stdout": "240\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "240",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "240",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

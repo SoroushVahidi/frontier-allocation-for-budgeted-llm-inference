@@ -1,0 +1,12 @@
+{
+  "timestamp_utc": "20260508T221625Z",
+  "method": "external_self_consistency_6_fair_v1",
+  "source_cases_csv": "/home/soroush/research-next-wt/outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/selected_50case_core4_baseline_cases.csv",
+  "case_count": 50,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "max_tokens": 700,
+  "budget": 6,
+  "max_total_api_calls": 350,
+  "output_dir": "/home/soroush/research-next-wt/outputs/external_sc6_fair_50case_live_20260508T221625Z"
+}

@@ -1,0 +1,29 @@
+Let's break down the problem step by step, tracking the base quantities and operations:
+
+1. **Initial Setup:**
+   - Let the initial charge of the power bank be \( x \% \).
+
+2. **First 5 Hours:**
+   - The power bank loses \( 9\% \) of the total capacity each hour.
+   - Base: **Original** (\( x \% \))
+   - Operation: Subtract \( 9\% \) of the total capacity for 5 hours.
+   - Result: \( x - 5 \times 9 = x - 45 \% \)
+
+3. **Next 3 Hours:**
+   - The power bank loses \( 7\% \) of the total capacity each hour.
+   - Base: **Subtotal** (\( x - 45 \% \))
+   - Operation: Subtract \( 7\% \) of the total capacity for 3 hours.
+   - Result: \( (x - 45) - 3 \times 7 = x - 45 - 21 = x - 66 \% \)
+
+4. **Final Charge:**
+   - The charge remaining is \( 28\% \).
+   - Base: **Remaining** (\( x - 66 \% \))
+   - Operation: Set the remaining charge equal to \( 28\% \).
+   - Equation: \( x - 66 = 28 \)
+
+5. **Solve for \( x \):**
+   \[
+   x - 66 = 28 \Rightarrow x = 28 + 66 \Rightarrow x = 94
+   \]
+
+Thus, the charge of the power bank when Maria went out to the park was \(\boxed{94}\).

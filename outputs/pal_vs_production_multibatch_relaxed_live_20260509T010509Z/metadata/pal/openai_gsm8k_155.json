@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "rolls = 300 * 4\ncroissants = 120 * 6\nbaguettes = 60 * 12\ntotal_inches = rolls + croissants + baguettes\ntotal_feet = total_inches / 12\nprint(total_feet)",
+    "stdout": "220.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "220.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "220.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

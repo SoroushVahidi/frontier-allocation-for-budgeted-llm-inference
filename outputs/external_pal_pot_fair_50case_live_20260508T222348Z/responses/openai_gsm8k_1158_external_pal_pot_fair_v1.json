@@ -1,0 +1,34 @@
+{
+  "prediction": "2180",
+  "parsed_answer": "2180",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "alexandra = 430\nkim = alexandra + 320\nsarah = 300\nmaryam = sarah + 400\ntotal = alexandra + kim + sarah + maryam\nprint(total)",
+      "stdout": "2180\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "2180",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "2180",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

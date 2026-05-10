@@ -1,0 +1,13 @@
+Sylvie's initial monthly salary is $600, so her initial annual salary is:
+\[ 600 \times 12 = 7200 \]
+
+After 5 years, her salary increases by 10% of the initial salary:
+\[ 7200 \times 0.10 = 720 \]
+\[ 7200 + 720 = 7920 \]
+
+This increase is applied once after 5 years. For the next 3 years, her salary remains at $7920 annually, as the 10% increase is a one-time adjustment after 5 years.
+
+Thus, after three more years of service, her annual salary is:
+\[ \boxed{7920} \]
+
+FINAL_ANSWER: 7920

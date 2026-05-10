@@ -1,0 +1,26 @@
+{
+  "prediction": "65",
+  "prediction_normalized": "65",
+  "metadata": {
+    "external_baseline_family": "s1_simple_test_time_scaling",
+    "s1_faithful_enabled": true,
+    "continuation_cue": "Wait",
+    "num_ignore_think_end": 1,
+    "min_thinking_steps": 0,
+    "forced_continue_count": 0,
+    "stop_boundary_detected_count": 0,
+    "wait_token": "Wait",
+    "forced_continue_events": 0,
+    "deviations_from_official": "Action-budget proxy and branch-level done-boundary detection differ from official token-level serving stack.",
+    "nominal_budget_actions": 4,
+    "realized_reasoning_tokens_estimate": 116,
+    "final_answer_tokens_estimate": 1,
+    "total_generated_tokens_estimate": 117,
+    "continuation_override_tokens_estimate": 0,
+    "continuation_override_accounting_policy": "forced_continue_events * wait_token_word_count",
+    "final_score": 0.9752000000000001
+  },
+  "actions_used": 4,
+  "expansions": 4,
+  "verifications": 0
+}

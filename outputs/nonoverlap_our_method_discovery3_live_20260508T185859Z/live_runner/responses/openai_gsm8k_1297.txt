@@ -1,0 +1,10 @@
+**Target:** Find the number of customers counted on the third day.
+
+1. Let \( x \) be the number of customers on the third day.
+2. Total customers by the third day: \( 100 + (100 + 50) + x = 500 \).
+3. Simplify: \( 250 + x = 500 \).
+4. Solve for \( x \): \( x = 500 - 250 \).
+
+\[
+\boxed{250}
+\]

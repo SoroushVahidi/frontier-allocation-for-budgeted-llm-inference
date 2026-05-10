@@ -1,0 +1,11 @@
+{
+  "baseline_family": "self_consistency",
+  "n_samples": 6,
+  "answer_votes": {
+    "58": 2,
+    "54": 1
+  },
+  "selected_answer": "58",
+  "tie_break_rule": "max_votes_then_lexicographic_normalized_key",
+  "call_count": 6
+}

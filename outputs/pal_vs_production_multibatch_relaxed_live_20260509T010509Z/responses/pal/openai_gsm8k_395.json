@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "38",
+  "parsed_answer": "38",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "cards_made = 20\nboxes_of_cards = 2\ncards_per_box = 15\ncards_given_to_classmates = 24\ncards_given_to_family = 5\ncards_received = 17\n\ntotal_cards = cards_made + (boxes_of_cards * cards_per_box)\nremaining_cards = total_cards - cards_given_to_classmates - cards_given_to_family\nfinal_total = remaining_cards + cards_received\n\nprint(final_total)",
+      "stdout": "38\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "38",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "38",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

@@ -1,0 +1,42 @@
+{
+  "assumptions": {
+    "reference_pilot_pairs": 43,
+    "reference_cap_note": "pilot behavior indicated row-sum can understate global cap usage",
+    "pairs_per_call_conservative": 0.075,
+    "pairs_per_call_stretch": 0.085,
+    "headroom_factor_on_conservative_pairs": 0.9
+  },
+  "estimates_by_cap": {
+    "500": {
+      "cap": 500,
+      "pairs_conservative_floor": 37,
+      "pairs_stretch_upper": 42,
+      "recommended_fully_paired_target": 33,
+      "note": "Conservative due to row-sum vs global-cap mismatch observed in prior pilot."
+    },
+    "750": {
+      "cap": 750,
+      "pairs_conservative_floor": 56,
+      "pairs_stretch_upper": 63,
+      "recommended_fully_paired_target": 50,
+      "note": "Conservative due to row-sum vs global-cap mismatch observed in prior pilot."
+    },
+    "1000": {
+      "cap": 1000,
+      "pairs_conservative_floor": 75,
+      "pairs_stretch_upper": 85,
+      "recommended_fully_paired_target": 67,
+      "note": "Conservative due to row-sum vs global-cap mismatch observed in prior pilot."
+    },
+    "1500": {
+      "cap": 1500,
+      "pairs_conservative_floor": 112,
+      "pairs_stretch_upper": 127,
+      "recommended_fully_paired_target": 100,
+      "note": "Conservative due to row-sum vs global-cap mismatch observed in prior pilot."
+    }
+  },
+  "exclusion_count": 113,
+  "fresh_candidate_count": 1206,
+  "artifact_file_count_scanned": 29
+}

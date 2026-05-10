@@ -1,0 +1,13 @@
+# schema_grounded_retry_v1 parsefix 5-case live recheck
+- This run is format-contract verification only (not algorithmic improvement evidence).
+- selected_case_ids: ['openai_gsm8k_1121', 'openai_gsm8k_1137', 'openai_gsm8k_1139', 'openai_gsm8k_1275', 'openai_gsm8k_1080']
+- selected_schemas: {'openai_gsm8k_1121': 'before_after_state_schema', 'openai_gsm8k_1137': 'ratio_equation_schema', 'openai_gsm8k_1139': 'before_after_state_schema', 'openai_gsm8k_1275': 'ratio_equation_schema', 'openai_gsm8k_1080': 'quantity_ledger_schema'}
+- actual_cohere_calls: 5
+- parse_success_count: 0
+- validation_success_count: 0
+- required_labels_all_present_count: 0
+- final_answer_present_count: 0
+- exact_count: 0
+- format_contract_passed: False
+- ready_for_family_level_dev_probe: False
+- recommended_next_step: refine_schema_prompt_contract_and_recheck

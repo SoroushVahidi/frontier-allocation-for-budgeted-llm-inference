@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "8",
+  "parsed_answer": "8",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "peter_per_box = 64 // 4\nmartha_per_box = 56 // 7\nprint(peter_per_box - martha_per_box)",
+      "stdout": "8\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "8",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "8",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

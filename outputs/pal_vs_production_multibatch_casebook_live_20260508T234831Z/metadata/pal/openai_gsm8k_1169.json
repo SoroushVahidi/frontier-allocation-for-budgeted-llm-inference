@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "blake_distance = 15 * 2 * 100\nkelly_distance = 1 * 2 * 100 + 34 * 2 * 40\ndifference = abs(blake_distance - kelly_distance)\nprint(difference)",
+    "stdout": "80\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "80",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "80",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

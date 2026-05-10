@@ -1,0 +1,5 @@
+method,correct_count,total_count,accuracy,avg_actions_used,avg_logical_calls,parse_failure_count,budget_exhausted_count
+direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal,17,30,0.5666666666666667,,2.1,0,0
+external_l1_max,21,30,0.7,,1.3333333333333333,0,0
+external_tale_prompt_budgeting,20,30,0.6666666666666666,,1.5666666666666667,0,0
+external_s1_budget_forcing,20,30,0.6666666666666666,,2.466666666666667,0,0

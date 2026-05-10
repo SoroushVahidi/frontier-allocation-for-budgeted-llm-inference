@@ -1,0 +1,28 @@
+{
+  "policy_name": "pal_empty_code_retry",
+  "enabled_by_method_config_only": true,
+  "trigger_conditions": {
+    "pal_method_selected": true,
+    "pal_seed_ran": true,
+    "pal_code_missing_or_non_executable": true,
+    "remaining_budget_at_least_retry_cost": true,
+    "policy_value": "empty_code_only"
+  },
+  "budget_semantics": {
+    "total_budget_fixed": true,
+    "retry_consumes_frontier_action_slots": true,
+    "default_retry_cost_actions": 1
+  },
+  "selection_contract": {
+    "retry_candidate_not_blindly_promoted": true,
+    "uses_existing_pal_overlay_conflict_rules": true,
+    "strong_candidate_requirements": [
+      "parse_ok",
+      "safety_ok",
+      "exec_ok",
+      "numeric",
+      "non_fallback"
+    ]
+  },
+  "runtime_gold_usage": "forbidden"
+}

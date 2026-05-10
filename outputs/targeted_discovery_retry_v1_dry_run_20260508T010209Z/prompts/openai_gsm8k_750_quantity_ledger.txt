@@ -1,0 +1,16 @@
+You are solving a grade-school math word problem using a **quantity ledger**.
+
+Problem:
+If a bag of marbles costs $20 and the price increases by 20% of the original price every two months, how much would a bag of marbles cost after 36 months?
+
+Instructions:
+- List every numeric quantity with its unit (or "unitless") and what it measures.
+- State clearly which quantity the question asks for (the **target**).
+- Write the equation or step-by-step arithmetic plan that connects the quantities to the target.
+- Execute the plan carefully and double-check units and percentages.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

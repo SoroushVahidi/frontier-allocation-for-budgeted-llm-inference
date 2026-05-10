@@ -1,0 +1,7 @@
+**Target:** Calculate total yards of yarn used by Mariah and her grandma.
+
+1. Mariah's usage: \( \frac{1}{4} \times 364 = 91 \) yards  
+2. Grandma's usage: \( \frac{1}{2} \times 364 = 182 \) yards  
+3. Total usage: \( 91 + 182 = 273 \) yards  
+
+\boxed{273}

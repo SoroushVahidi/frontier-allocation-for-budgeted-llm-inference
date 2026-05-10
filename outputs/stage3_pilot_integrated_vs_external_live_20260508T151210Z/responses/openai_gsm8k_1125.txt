@@ -1,0 +1,14 @@
+**Target:** Calculate the total number of taps Helga makes with both feet in 5 minutes.
+
+1. Taps with arms down (3 minutes):  
+   Right foot: \(300 \times 3 = 900\)  
+   Left foot: \(250 \times 3 = 750\)  
+
+2. Taps with arms raised (2 minutes):  
+   Right foot: \(200 \times 2 = 400\)  
+   Left foot: \(200 \times 2 = 400\)  
+
+3. Total taps:  
+   \(900 + 750 + 400 + 400 = 2450\)
+
+\boxed{2450}

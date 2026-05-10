@@ -1,0 +1,17 @@
+Solve this GSM8K-style problem independently.
+
+Problem:
+Abraham owns ８０ square meters of unused land. He sold half of the land for $５０, and after a month, he sold another １/４ of his land for $３０. He then sold the remaining land for $３ per square meter. How much money will he be able to earn after selling all his unused land?
+
+Discovery3 scaffold:
+- target_quantity_type_hint: remaining
+- family_hint: state_update
+- First identify the exact requested final quantity.
+- Decompose into concise equations (state transitions and/or rate/ratio equations as needed).
+- Compute independently from the problem text only.
+- Verify units and target alignment before finalizing.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on the FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.

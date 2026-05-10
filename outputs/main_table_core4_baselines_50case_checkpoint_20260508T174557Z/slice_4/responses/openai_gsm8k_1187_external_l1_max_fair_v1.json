@@ -1,0 +1,65 @@
+{
+  "prediction": "",
+  "parsed_answer": "",
+  "metadata": {
+    "external_baseline_family": "l1_lcpo_length_control",
+    "l1_fair_enabled": true,
+    "l1_control_mode": "max",
+    "not_official_external_method": true,
+    "token_budget_instruction": 512,
+    "token_per_action": 64.0,
+    "budget_actions_equivalent": 8,
+    "generated_tokens_estimate": 0,
+    "budget_error_tokens": 512.0,
+    "token_budget_violation": false,
+    "prompt_style": "Let's think step by step and output the final answer within \\boxed{}.",
+    "deviations_from_official": "Transparent in-repo fair length-control baseline; not official L1 RL reproduction.",
+    "final_score": 0.84352,
+    "action_trace": [
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 1,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nArnold, Madeline, Camden, and Sarah painted 56 easter eggs. Arnold and Madeline painted the same number of eggs. Camden and Sarah painted a total of 30 eggs, but Camden painted 12 more than Sarah. How many more eggs did Camden paint than Arnold?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n(none)\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"Let's denote the number of eggs painted by Arnold as A, Madeline as M, Camden as C, and Sarah as S. From the problem, we know: A = M, C + S = 30, C = S + 12, and A + M + C + S = 56.\",\n  \"answer\": \"\",\n  \"confidence\": 0.8\n}",
+        "reasoning_text": "Let's denote the number of eggs painted by Arnold as A, Madeline as M, Camden as C, and Sarah as S. From the problem, we know: A = M, C + S = 30, C = S + 12, and A + M + C + S = 56.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 2,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nArnold, Madeline, Camden, and Sarah painted 56 easter eggs. Arnold and Madeline painted the same number of eggs. Camden and Sarah painted a total of 30 eggs, but Camden painted 12 more than Sarah. How many more eggs did Camden paint than Arnold?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- Let's denote the number of eggs painted by Arnold as A, Madeline as M, Camden as C, and Sarah as S. From the problem, we know: A = M, C + S = 30, C = S + 12, and A + M + C + S = 56.\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"Since A = M, we can substitute M with A in the total equation: 2A + C + S = 56. We also know C + S = 30, so we can substitute this into the equation: 2A + 30 = 56.\",\n  \"answer\": \"\",\n  \"confidence\": 0.9\n}",
+        "reasoning_text": "Let's denote the number of eggs painted by Arnold as A, Madeline as M, Camden as C, and Sarah as S. From the problem, we know: A = M, C + S = 30, C = S + 12, and A + M + C + S = 56.\nSince A = M, we can substitute M with A in the total equation: 2A + C + S = 56. We also know C + S = 30, so we can substitute this into the equation: 2A + 30 = 56.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 3,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nArnold, Madeline, Camden, and Sarah painted 56 easter eggs. Arnold and Madeline painted the same number of eggs. Camden and Sarah painted a total of 30 eggs, but Camden painted 12 more than Sarah. How many more eggs did Camden paint than Arnold?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- Let's denote the number of eggs painted by Arnold as A, Madeline as M, Camden as C, and Sarah as S. From the problem, we know: A = M, C + S = 30, C = S + 12, and A + M + C + S = 56.\n- Since A = M, we can substitute M with A in the total equation: 2A + C + S = 56. We also know C + S = 30, so we can substitute this into the equation: 2A + 30 = 56.\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"Solving for A, we get 2A = 56 - 30 = 26, so A = 13. Since A = M, M is also 13.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "Let's denote the number of eggs painted by Arnold as A, Madeline as M, Camden as C, and Sarah as S. From the problem, we know: A = M, C + S = 30, C = S + 12, and A + M + C + S = 56.\nSince A = M, we can substitute M with A in the total equation: 2A + C + S = 56. We also know C + S = 30, so we can substitute this into the equation: 2A + 30 = 56.\nSolving for A, we get 2A = 56 - 30 = 26, so A = 13. Since A = M, M is also 13.",
+        "extracted_answer": ""
+      },
+      {
+        "action": "expand",
+        "branch_id": "l1_max_0",
+        "parent_branch_id": null,
+        "branch_depth": 4,
+        "prompt_text": "You are solving a GSM8K math word problem. Continue reasoning for ONE short step or finish with a final numeric answer. If you can already determine the final numeric result from the question and prior reasoning, use action='final' and put that number in answer (do not defer unnecessarily). Return strict JSON with keys: action, step, answer, confidence. action must be 'continue' or 'final'. answer should be empty unless final. confidence is 0..1.\n\nQuestion:\nArnold, Madeline, Camden, and Sarah painted 56 easter eggs. Arnold and Madeline painted the same number of eggs. Camden and Sarah painted a total of 30 eggs, but Camden painted 12 more than Sarah. How many more eggs did Camden paint than Arnold?\n\nLet's think step by step and output the final answer within \\boxed{}. Think for maximum 512 tokens.\n\nCurrent partial reasoning:\n- Let's denote the number of eggs painted by Arnold as A, Madeline as M, Camden as C, and Sarah as S. From the problem, we know: A = M, C + S = 30, C = S + 12, and A + M + C + S = 56.\n- Since A = M, we can substitute M with A in the total equation: 2A + C + S = 56. We also know C + S = 30, so we can substitute this into the equation: 2A + 30 = 56.\n- Solving for A, we get 2A = 56 - 30 = 26, so A = 13. Since A = M, M is also 13.\n",
+        "response_text": "{\n  \"action\": \"continue\",\n  \"step\": \"Now that we know A and M, we can find C and S. From C + S = 30 and C = S + 12, we can substitute C in the first equation: (S + 12) + S = 30, which simplifies to 2S + 12 = 30. Solving for S, we get 2S = 18, so S = 9. Since C = S + 12, C = 9 + 12 = 21.\",\n  \"answer\": \"\",\n  \"confidence\": 1\n}",
+        "reasoning_text": "Let's denote the number of eggs painted by Arnold as A, Madeline as M, Camden as C, and Sarah as S. From the problem, we know: A = M, C + S = 30, C = S + 12, and A + M + C + S = 56.\nSince A = M, we can substitute M with A in the total equation: 2A + C + S = 56. We also know C + S = 30, so we can substitute this into the equation: 2A + 30 = 56.\nSolving for A, we get 2A = 56 - 30 = 26, so A = 13. Since A = M, M is also 13.\nNow that we know A and M, we can find C and S. From C + S = 30 and C = S + 12, we can substitute C in the first equation: (S + 12) + S = 30, which simplifies to 2S + 12 = 30. Solving for S, we get 2S = 18, so S = 9. Since C = S + 12, C = 9 + 12 = 21.",
+        "extracted_answer": ""
+      }
+    ],
+    "final_branch_states": []
+  },
+  "error_message": "",
+  "status": "parsing_failure",
+  "s1_observability": {}
+}

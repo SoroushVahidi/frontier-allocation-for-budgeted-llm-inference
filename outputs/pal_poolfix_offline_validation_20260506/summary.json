@@ -1,0 +1,13 @@
+{
+  "total_rows": 600,
+  "pal_rows_seen": 300,
+  "pal_rows_changed": 0,
+  "candidates_added": 0,
+  "gold_absent_overlay_cb_external_only": {"before": 7, "after": 7},
+  "gold_absent_overlay_cb_both_wrong": {"before": 19, "after": 19},
+  "external_exact_rate": 0.8133,
+  "pal_exact_rate": 0.84,
+  "exact_rates_changed": false,
+  "api_calls": "none",
+  "conclusion": "execution-pool merge does not reduce dominant failure mode on this artifact"
+}

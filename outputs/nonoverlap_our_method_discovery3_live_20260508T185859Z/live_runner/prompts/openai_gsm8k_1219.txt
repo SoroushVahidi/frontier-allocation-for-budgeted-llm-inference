@@ -1,0 +1,16 @@
+Use concise decomposition with strict target alignment.
+
+Problem:
+Sheila charged $８５.００ worth of merchandise on her credit card.  She ended up returning one item that cost $１５.００.  After she returned the item, she bought a frying pan that was on sale for ２０% off $２０.００ and a set of towels that was １０% off $３０.００.  She put both of these purchases on her credit card.  What is the new balance on her credit card?
+
+Instructions:
+- Restate target in one short sentence.
+- Write 2-4 compact equation lines.
+- Prefer direct algebraic setup over verbose explanation.
+- Final line must be a single value for the asked target.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "10000.0",
+  "parsed_answer": "10000",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "daily_patients = 500\naverage_visit_minutes = 24\ndoctor_charge_per_hour = 150\nhospital_charge_per_hour = 200\n\ntotal_visit_hours = (daily_patients * average_visit_minutes) / 60\nhospital_revenue = total_visit_hours * hospital_charge_per_hour\ndoctor_cost = total_visit_hours * doctor_charge_per_hour\nprofit = hospital_revenue - doctor_cost\nprint(profit)",
+      "stdout": "10000.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "10000.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "10000.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

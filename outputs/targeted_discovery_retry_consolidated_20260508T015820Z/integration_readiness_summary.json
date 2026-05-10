@@ -1,0 +1,25 @@
+{
+  "total_unique_piloted": 25,
+  "ever_solved_count": 18,
+  "recommended_version_solved_count": 18,
+  "truly_unsolved_case_ids_by_ever_exact": [],
+  "unsolved_case_ids_by_recommended_version": [],
+  "untested_count": 7,
+  "v1_exact": 8,
+  "v2_exact": 12,
+  "v21_exact": 10,
+  "scaffold_exact_counts_aggregate": {
+    "rate_table": 3,
+    "quantity_ledger": 9,
+    "target_difference": 3,
+    "before_after_state": 3
+  },
+  "recommended_prompt_versions": {
+    "quantity_ledger": "quantity_ledger_v2_1",
+    "rate_table": "v1",
+    "before_after_state": "v1",
+    "target_difference": "v1"
+  },
+  "ready_for_integration": false,
+  "integration_caveats": []
+}

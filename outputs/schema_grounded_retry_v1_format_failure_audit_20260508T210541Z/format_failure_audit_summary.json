@@ -1,0 +1,24 @@
+{
+  "live_probe_case_count": 5,
+  "prompts_found_count": 5,
+  "responses_found_count": 5,
+  "prompt_required_labels_present_count": 5,
+  "response_required_labels_present_count": 0,
+  "missing_problem_text_cases": [
+    "openai_gsm8k_1091",
+    "openai_gsm8k_1096"
+  ],
+  "missing_gold_cases": [
+    "openai_gsm8k_1091",
+    "openai_gsm8k_1096"
+  ],
+  "likely_failure_cause_counts": {
+    "model_ignored_schema": 3,
+    "missing_problem_text": 2
+  },
+  "parser_label_mismatch_detected": false,
+  "prompt_file_mismatch_detected": false,
+  "recommended_fix": "recheck_with_clean_cases",
+  "ready_for_parsefix_dry_run": true,
+  "no_api_calls": true
+}

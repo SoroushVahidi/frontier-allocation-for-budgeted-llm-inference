@@ -1,0 +1,20 @@
+Solve this GSM8K-style problem independently using a rate-table schema.
+
+Problem:
+Abraham owns ８０ square meters of unused land. He sold half of the land for $５０, and after a month, he sold another １/４ of his land for $３０. He then sold the remaining land for $３ per square meter. How much money will he be able to earn after selling all his unused land?
+
+Represent relevant rates and quantities first, then compute the target.
+Output format (required):
+SCHEMA_TYPE: <one of: quantity_ledger_schema, rate_table_schema, before_after_state_schema, ratio_equation_schema, target_difference_schema, average_total_count_schema>
+TARGET_QUANTITY: <short phrase>
+GIVEN_QUANTITIES:
+- <name>: <value or expression>
+EQUATIONS:
+- <equation>
+COMPUTATION:
+- <step>
+FINAL_ANSWER: <number>
+Rules:
+- Do not put units or words after FINAL_ANSWER number.
+- Do not give multiple final answers.
+- If uncertain, still output one best numeric FINAL_ANSWER.

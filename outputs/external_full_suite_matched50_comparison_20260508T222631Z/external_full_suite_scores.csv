@@ -1,0 +1,12 @@
+method,correct_50
+production_equiv_v1,36
+external_l1_max_fair_v1,31
+external_self_consistency_4_fair_v1,33
+external_self_consistency_6_fair_v1,36
+external_pal_pot_fair_v1,40
+external_s1_budget_forcing_faithful_v1,32
+external_tale_ep_prompt_budgeting_faithful_v1,34
+best_individual_external,43
+best_full_external_oracle,43
+best_core4_oracle,38
+prior_patch_focused_integrated,39

@@ -1,0 +1,34 @@
+{
+  "prediction": "2040",
+  "parsed_answer": "2040",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "daily_meditation = 15 * 2\nweekly_meditation = daily_meditation * 7\nweekly_yoga = 60 * 5\ntotal_weekly = weekly_meditation + weekly_yoga\ntotal_time = total_weekly * 4\nprint(total_time)",
+      "stdout": "2040\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "2040",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "2040",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

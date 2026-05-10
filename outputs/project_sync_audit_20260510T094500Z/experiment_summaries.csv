@@ -1,0 +1,3 @@
+path,tracked,pushed,safe_to_push
+outputs/local_latest_method_failure_inventory_20260509T205100Z/failure_inventory_report.md,no,no,yes
+outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/live_loop_report.md,no,no,yes

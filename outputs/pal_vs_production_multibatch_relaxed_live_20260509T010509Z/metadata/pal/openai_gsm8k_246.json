@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "total_hours = 6 * 4 * 5\ntotal_cost = total_hours * 250\ndiscounted_cost = total_cost * 0.9\nprint(discounted_cost)",
+    "stdout": "27000.0\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "27000.0",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "27000.0",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

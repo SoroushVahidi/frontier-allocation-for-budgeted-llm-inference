@@ -1,0 +1,12 @@
+**Target:** Calculate the difference in net pay between Job A and Job B.
+
+1. **Job A Net Pay:**  
+   \( \text{Net Pay}_A = 15 \times 2000 \times (1 - 0.20) = 24,000 \)
+
+2. **Job B Net Pay:**  
+   \( \text{Net Pay}_B = (42,000 - 6,000) \times (1 - 0.10) = 32,400 \)
+
+3. **Difference:**  
+   \( \text{Difference} = \text{Net Pay}_B - \text{Net Pay}_A = 32,400 - 24,000 = 8,400 \)
+
+\boxed{8400}

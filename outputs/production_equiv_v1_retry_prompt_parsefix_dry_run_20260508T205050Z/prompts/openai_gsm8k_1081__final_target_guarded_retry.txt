@@ -1,0 +1,15 @@
+Solve this math word problem independently.
+
+Problem:
+A company pays each of its employees $６００ in a month. The company has a policy of increasing the salaries of each of its employees by １０% of the initial salary every year for those who've stayed in the company for five years. If Sylvie just clocked ５ years in the company last December, what's her annual salary after three more years of service?
+
+Instructions:
+- Identify the exact requested final quantity before doing arithmetic.
+- Use concise equations only.
+- Verify the computed value answers the requested final quantity, not an intermediate value.
+- Output exactly one final-answer line at the end in this exact format:
+  FINAL_ANSWER: <number>
+- Do not put units or words after the number on FINAL_ANSWER line.
+- Do not give multiple final answers.
+- If the answer is a fraction or decimal, put only that value.
+- If you are unsure, still output one best numeric answer on FINAL_ANSWER line.

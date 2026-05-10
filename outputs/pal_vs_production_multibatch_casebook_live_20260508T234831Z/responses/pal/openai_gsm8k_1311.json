@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "5",
+  "parsed_answer": "5",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "joey_points = 214 + 26\nmarcy_points = 225 + 10\nprint(joey_points - marcy_points)",
+      "stdout": "5\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "5",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "5",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

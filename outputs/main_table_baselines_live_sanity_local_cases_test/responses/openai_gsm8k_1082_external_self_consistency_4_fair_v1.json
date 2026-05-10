@@ -1,0 +1,18 @@
+{
+  "prediction": "128",
+  "prediction_normalized": "128",
+  "metadata": {
+    "baseline_family": "self_consistency",
+    "n_samples": 4,
+    "answer_votes": {
+      "128": 1,
+      "133": 1
+    },
+    "selected_answer": "128",
+    "tie_break_rule": "max_votes_then_lexicographic_normalized_key",
+    "call_count": 4
+  },
+  "actions_used": 4,
+  "expansions": 3,
+  "verifications": 1
+}

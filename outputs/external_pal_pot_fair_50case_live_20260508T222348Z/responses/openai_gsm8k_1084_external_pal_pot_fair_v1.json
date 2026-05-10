@@ -1,0 +1,34 @@
+{
+  "prediction": "78",
+  "parsed_answer": "78",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_pieces = 15 * 60\npieces_given = (15 - 2) * 60\npieces_per_friend = pieces_given // 10\nprint(pieces_per_friend)",
+      "stdout": "78\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "78",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "78",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "error_message": "",
+  "status": "success",
+  "logical_calls": 1,
+  "cap_error": false
+}

@@ -1,0 +1,21 @@
+**Restated Final Quantity Asked:**  
+How many days does the teacher have before he has to recycle the chalk?
+
+**Target Type:**  
+Remaining (number of days until the chalk is smaller than 2 inches).
+
+**Equations:**  
+1. **Initial chalk length:** 5 inches.  
+2. **Chalk used on Monday:** 45% of 5 inches = 0.45 × 5 = 2.25 inches.  
+3. **Remaining chalk after Monday:** 5 - 2.25 = 2.75 inches.  
+4. **Daily usage:** 20% of remaining chalk.  
+5. **Chalk length after each day:**  
+   - Day 1: 2.75 - (0.20 × 2.75) = 2.75 - 0.55 = 2.20 inches.  
+   - Day 2: 2.20 - (0.20 × 2.20) = 2.20 - 0.44 = 1.76 inches.  
+
+Since the chalk is smaller than 2 inches after Day 2, the teacher recycles it on the third day.
+
+**Final Answer:**  
+- target_type: remaining  
+- equations: \( 5 - 2.25 = 2.75 \), \( 2.75 - 0.55 = 2.20 \), \( 2.20 - 0.44 = 1.76 \)  
+- final_answer: 2

@@ -1,0 +1,7 @@
+**Target:** Calculate total kilograms of rice given to cousin and brother.
+
+1. Sacks given to cousin and brother: \(3 + 4 = 7\) sacks  
+2. Kilograms per sack: \(25\) kg  
+3. Total kilograms given: \(7 \times 25 = 175\) kg  
+
+\boxed{175}

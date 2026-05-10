@@ -1,0 +1,14 @@
+{
+  "ok": false,
+  "cohere_api_key_set": true,
+  "planned_calls": 11,
+  "planned_calls_within_cap": true,
+  "case_count": 11,
+  "unique_case_count": 11,
+  "all_prompts_exist": true,
+  "no_ascii_gold_in_prompts": false,
+  "no_prediction_leakage": true,
+  "errors": [
+    "gold_leak_cases:['openai_gsm8k_1198']"
+  ]
+}

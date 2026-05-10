@@ -1,0 +1,208 @@
+{
+  "bundle": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+  "gold_absent_discovery_total": 21,
+  "primary_external_correct_n": 11,
+  "secondary_both_wrong_n": 10,
+  "cases_documented": 21,
+  "schema_counts_all": {
+    "target_mapping_error": 3,
+    "aggregation_total": 7,
+    "multi_step_chain": 16,
+    "rate_equation": 4,
+    "temporal_state_update": 5,
+    "unit_conversion": 2,
+    "product_grouping": 2,
+    "difference_comparison": 5,
+    "proportional_scaling": 1
+  },
+  "pal_failure_mode_counts_all": {
+    "wrong_target_variable": 5,
+    "wrong_operator": 8,
+    "missing_intermediate_state": 2,
+    "arithmetic_from_wrong_relation": 8,
+    "failed_code_or_empty_code": 4,
+    "overcompressed_one_expression": 1,
+    "omitted_quantity": 1
+  },
+  "external_success_signal_counts_all": {
+    "used_aggregation_over_groups": 7,
+    "directly_answered_target_variable": 6,
+    "used_rate_times_duration": 2,
+    "explicitly_used_missing_quantity": 8,
+    "used_state_table_or_before_after_update": 3,
+    "other": 4
+  },
+  "schema_x_pal_failure_cross": {
+    "aggregation_total": {
+      "wrong_target_variable": 1,
+      "failed_code_or_empty_code": 1,
+      "wrong_operator": 2,
+      "arithmetic_from_wrong_relation": 2
+    },
+    "difference_comparison": {
+      "arithmetic_from_wrong_relation": 1,
+      "failed_code_or_empty_code": 1,
+      "wrong_operator": 1
+    },
+    "multi_step_chain": {
+      "failed_code_or_empty_code": 2,
+      "omitted_quantity": 1,
+      "arithmetic_from_wrong_relation": 2,
+      "wrong_target_variable": 1
+    },
+    "rate_equation": {
+      "wrong_operator": 1,
+      "missing_intermediate_state": 1
+    },
+    "target_mapping_error": {
+      "wrong_target_variable": 2,
+      "arithmetic_from_wrong_relation": 1
+    },
+    "temporal_state_update": {
+      "overcompressed_one_expression": 1,
+      "missing_intermediate_state": 1,
+      "wrong_operator": 3,
+      "arithmetic_from_wrong_relation": 1
+    },
+    "unit_conversion": {
+      "wrong_operator": 1,
+      "arithmetic_from_wrong_relation": 1,
+      "wrong_target_variable": 1
+    }
+  },
+  "top_repeated_schemas": [
+    [
+      "multi_step_chain",
+      16
+    ],
+    [
+      "aggregation_total",
+      7
+    ],
+    [
+      "temporal_state_update",
+      5
+    ],
+    [
+      "difference_comparison",
+      5
+    ],
+    [
+      "rate_equation",
+      4
+    ]
+  ],
+  "top_5_representative_primary_cases": [
+    {
+      "case_id": "openai_gsm8k_1099",
+      "required_schemas": "target_mapping_error|aggregation_total|multi_step_chain",
+      "pal_failure_modes": "wrong_target_variable",
+      "external_method_with_trace": "external_s1_budget_forcing"
+    },
+    {
+      "case_id": "openai_gsm8k_1125",
+      "required_schemas": "rate_equation|temporal_state_update|multi_step_chain",
+      "pal_failure_modes": "wrong_operator|missing_intermediate_state",
+      "external_method_with_trace": "external_s1_budget_forcing"
+    },
+    {
+      "case_id": "openai_gsm8k_1155",
+      "required_schemas": "unit_conversion|product_grouping",
+      "pal_failure_modes": "wrong_operator|arithmetic_from_wrong_relation",
+      "external_method_with_trace": "external_s1_budget_forcing"
+    },
+    {
+      "case_id": "openai_gsm8k_1187",
+      "required_schemas": "difference_comparison|multi_step_chain",
+      "pal_failure_modes": "arithmetic_from_wrong_relation",
+      "external_method_with_trace": "external_tale_prompt_budgeting"
+    },
+    {
+      "case_id": "openai_gsm8k_1198",
+      "required_schemas": "temporal_state_update|multi_step_chain",
+      "pal_failure_modes": "overcompressed_one_expression|missing_intermediate_state",
+      "external_method_with_trace": "external_tale_prompt_budgeting"
+    }
+  ],
+  "primary_cases_for_manual_review": [
+    "openai_gsm8k_1099",
+    "openai_gsm8k_1125",
+    "openai_gsm8k_1155",
+    "openai_gsm8k_1166",
+    "openai_gsm8k_1187",
+    "openai_gsm8k_1198",
+    "openai_gsm8k_1215",
+    "openai_gsm8k_1230",
+    "openai_gsm8k_1244",
+    "openai_gsm8k_1248",
+    "openai_gsm8k_1281"
+  ],
+  "retry_idea_estimates": [
+    {
+      "idea": "state_table_temporal_retry",
+      "targets_schema": [
+        "temporal_state_update"
+      ],
+      "approx_cases_primary": 2,
+      "approx_cases_all": 5,
+      "clear_trigger": "medium",
+      "guardrail_risk": "high_if_misdetects_multiplicative_rate_problems",
+      "needs_api_now": false,
+      "offline_testable": true
+    },
+    {
+      "idea": "rate_equation_retry",
+      "targets_schema": [
+        "rate_equation"
+      ],
+      "approx_cases_primary": 2,
+      "approx_cases_all": 4,
+      "clear_trigger": "low",
+      "guardrail_risk": "high",
+      "needs_api_now": false,
+      "offline_testable": true
+    },
+    {
+      "idea": "aggregation_total_retry",
+      "targets_schema": [
+        "aggregation_total"
+      ],
+      "approx_cases_primary": 3,
+      "approx_cases_all": 7,
+      "clear_trigger": "low",
+      "guardrail_risk": "medium",
+      "needs_api_now": false,
+      "offline_testable": true
+    },
+    {
+      "idea": "target_variable_rewrite_retry",
+      "targets_schema": [
+        "target_mapping_error"
+      ],
+      "approx_cases_primary": 2,
+      "approx_cases_all": 3,
+      "clear_trigger": "low_without_NLU",
+      "guardrail_risk": "medium",
+      "needs_api_now": false,
+      "offline_testable": "partial_keyword_checks_only"
+    },
+    {
+      "idea": "quantity_grounding_retry",
+      "targets_schema": [
+        "unit_conversion",
+        "product_grouping"
+      ],
+      "approx_cases_primary": 2,
+      "approx_cases_all": 3,
+      "clear_trigger": "medium_for_unit_mismatch_heuristics",
+      "guardrail_risk": "medium",
+      "needs_api_now": false,
+      "offline_testable": true
+    }
+  ],
+  "verdict": {
+    "strongest_repeated_schema": "multi_step_chain",
+    "recommended_next_step": "Targeted prompting for multi_step_chain + explicit final target restatement (addresses wrong_target_variable and many relation errors) before narrow rate/table triggers.",
+    "algorithmic_path_clarity": "Moderate: recurring PAL errors cluster on target mis-read, staged totals, and unit/phase modeling \u2014 but n=11 primary successes limits trigger design; scale labeled failures before implementation."
+  }
+}

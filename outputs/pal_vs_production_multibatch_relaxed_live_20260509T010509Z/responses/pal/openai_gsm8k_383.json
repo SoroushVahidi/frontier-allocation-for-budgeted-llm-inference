@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "2",
+  "parsed_answer": "2",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "total_cups = 3 * 12\nrevenue = total_cups * 1\nprofit = revenue - 18\nhours_to_sell_all = total_cups / 4\nprofit_per_hour = profit / hours_to_sell_all\nprint(round(profit_per_hour))",
+      "stdout": "2\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "2",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "2",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

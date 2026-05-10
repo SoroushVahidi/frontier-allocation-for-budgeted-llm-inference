@@ -1,0 +1,26 @@
+{
+  "baseline_family": "pal_pot",
+  "pot_output": {
+    "ok": true,
+    "python_code": "may_employees = 40\nmay_pay_per_employee = 15 * 40 * 4\nmay_total_pay = may_employees * may_pay_per_employee\n\njun_employees = may_employees - may_employees // 4\njun_pay_per_employee = 15 * 40 * 4\njun_total_pay = jun_employees * jun_pay_per_employee\n\ntotal_pay = may_total_pay + jun_total_pay\nprint(total_pay)",
+    "stdout": "168000\n",
+    "stderr": "",
+    "exception": null,
+    "prediction": "168000",
+    "suitable": true,
+    "cost_units": {
+      "generation": 1,
+      "execution": 1
+    }
+  },
+  "code_generated": false,
+  "code_executed": false,
+  "execution_error": "",
+  "parsed_answer": "168000",
+  "sandbox_policy": "local_pal_executor_or_generator_defined",
+  "call_count": 1,
+  "cost_proxy": {
+    "code_generation": 1,
+    "sandbox_execution": 1
+  }
+}

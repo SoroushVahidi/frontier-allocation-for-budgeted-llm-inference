@@ -1,0 +1,32 @@
+{
+  "production_equiv_correct": 36,
+  "pal_pot_correct": 40,
+  "best_external_oracle_correct": 43,
+  "pal_pot_advantage_count": 6,
+  "production_equiv_advantage_over_pal_count": 2,
+  "external_oracle_advantage_count": 7,
+  "production_equiv_wrong_best_external_oracle_correct_count": 7,
+  "family_counts_for_pal_advantage": {
+    "unknown": 2,
+    "state_update_arithmetic": 2,
+    "multi_step_computation": 1,
+    "production_parse_failure": 1
+  },
+  "family_counts_for_external_oracle_advantage": {
+    "unknown": 2,
+    "state_update_arithmetic": 3,
+    "multi_step_computation": 1,
+    "production_parse_failure": 1
+  },
+  "recurring_actionable_families": [],
+  "weak_families": [
+    "unknown",
+    "state_update_arithmetic",
+    "multi_step_computation",
+    "production_parse_failure"
+  ],
+  "whether_actionable_pattern_found": false,
+  "if_actionable_pattern_found_recommended_mechanism": null,
+  "if_no_actionable_pattern_recommended_action": "Reframe claims; PAL wins are heterogeneous keyword buckets\u2014no >=3-case recurring family beyond coarse buckets; defer improvement until larger failure bank or budget framing study.",
+  "no_api_calls": true
+}

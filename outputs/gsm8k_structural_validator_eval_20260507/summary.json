@@ -1,0 +1,142 @@
+{
+  "missing_input_paths": [],
+  "candidate_rows_total": 1296,
+  "distinct_cases": 228,
+  "avg_structural_score_gold_matching": 0.47337182519920323,
+  "avg_structural_score_non_gold": 0.6563058545335944,
+  "deprecated_note": "Global gold vs non-gold means mix evidence classes \u2014 see stratified_summary.json",
+  "separation_by_cohort": {
+    "guardrail_correct": {
+      "mean_gold_matching": 0.5080574290567546,
+      "n_gold_rows": 834,
+      "mean_non_gold": 0.7838416265382558,
+      "n_non_gold_rows": 89
+    },
+    "gold_absent_discovery": {
+      "mean_gold_matching": 0.1823684210526316,
+      "n_gold_rows": 38,
+      "mean_non_gold": 0.5251791726791728,
+      "n_non_gold_rows": 99
+    },
+    "other": {
+      "mean_gold_matching": 0.0,
+      "n_gold_rows": 0,
+      "mean_non_gold": 0.64375,
+      "n_non_gold_rows": 6
+    },
+    "present_not_selected": {
+      "mean_gold_matching": 0.33799558080808084,
+      "n_gold_rows": 132,
+      "mean_non_gold": 0.6737159863945579,
+      "n_non_gold_rows": 98
+    }
+  },
+  "present_not_selected": {
+    "cases_total": 23,
+    "cases_with_any_gold_matching_candidate": 23,
+    "cases_compared_gold_alt_vs_wrong_final": 23,
+    "cases_gold_alt_higher_score_than_wrong_final": 0,
+    "cases_tie_score": 20,
+    "cases_missing_score_or_no_gold_alt_in_pool": 0,
+    "cases_wrong_final_scores_higher_than_best_gold_alt": 3
+  },
+  "guardrail_correct_pal_current_final_rows": 183,
+  "guardrail_warning_rate_any_warning": 0.36065573770491804,
+  "top_warning_patterns": [
+    [
+      "unused_salient_problem_quantities",
+      736
+    ],
+    [
+      "low_quantity_coverage_vs_problem",
+      608
+    ],
+    [
+      "missing_operation_cue_in_trace_or_code:rate",
+      375
+    ],
+    [
+      "rate_question_weak_operator_evidence_in_trace",
+      346
+    ],
+    [
+      "missing_operation_cue_in_trace_or_code:temporal",
+      263
+    ],
+    [
+      "temporal_story_weak_follow_through_in_trace",
+      162
+    ],
+    [
+      "missing_operation_cue_in_trace_or_code:fraction",
+      107
+    ],
+    [
+      "comparison_question_weak_contrast_evidence_in_trace",
+      88
+    ],
+    [
+      "missing_operation_cue_in_trace_or_code:difference",
+      82
+    ],
+    [
+      "missing_operation_cue_in_trace_or_code:total",
+      80
+    ],
+    [
+      "aggregation_question_weak_total_evidence_in_trace",
+      80
+    ],
+    [
+      "money_context_but_answer_not_numeric",
+      2
+    ],
+    [
+      "target_type_vs_answer_surface_mismatch_heuristic",
+      1
+    ]
+  ],
+  "gold_absent_common_warnings_top": [
+    [
+      "missing_operation_cue_in_trace_or_code:fraction",
+      7
+    ],
+    [
+      "unused_salient_problem_quantities",
+      7
+    ],
+    [
+      "missing_operation_cue_in_trace_or_code:temporal",
+      6
+    ],
+    [
+      "missing_operation_cue_in_trace_or_code:rate",
+      2
+    ],
+    [
+      "rate_question_weak_operator_evidence_in_trace",
+      2
+    ]
+  ],
+  "example_helper_cases": [],
+  "example_mislead_cases": [
+    {
+      "case_id": "openai_gsm8k_1083",
+      "wrong_final_score": 0.7250000000000001,
+      "best_gold_score": 0.23500000000000001,
+      "wrong_answer": "605"
+    },
+    {
+      "case_id": "openai_gsm8k_1299",
+      "wrong_final_score": 0.8500000000000001,
+      "best_gold_score": 0.1575,
+      "wrong_answer": "5"
+    },
+    {
+      "case_id": "openai_gsm8k_1307",
+      "wrong_final_score": 0.7250000000000001,
+      "best_gold_score": 0.0975,
+      "wrong_answer": "21"
+    }
+  ]
+}

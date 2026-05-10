@@ -1,0 +1,85 @@
+{
+  "evaluated_case_count": 247,
+  "evaluated_complete_4way_case_count": 245,
+  "incomplete_case_ids": [
+    "openai_gsm8k_1101",
+    "openai_gsm8k_1102"
+  ],
+  "incomplete_case_note": "For both IDs, external_l1_max rows failed with Cohere request read timeouts (see all_results.jsonl status=failed). PAL/TALE/S1 rows are scored.",
+  "method_rows_count": 986,
+  "failed_skipped_row_count": 2,
+  "preferred_failures_in_pool_pal_wrong_external_correct": 34,
+  "secondary_failures_in_pool_pal_wrong_all_external_wrong": 23,
+  "preferred_failures_selected": 34,
+  "secondary_failures_selected": 11,
+  "selected_failure_count": 45,
+  "per_method_accuracy": {
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": {
+      "correct": 189,
+      "total": 247,
+      "accuracy": 0.7651821862348178
+    },
+    "external_l1_max": {
+      "correct": 182,
+      "total": 245,
+      "accuracy": 0.7428571428571429
+    },
+    "external_tale_prompt_budgeting": {
+      "correct": 175,
+      "total": 247,
+      "accuracy": 0.708502024291498
+    },
+    "external_s1_budget_forcing": {
+      "correct": 184,
+      "total": 247,
+      "accuracy": 0.7449392712550608
+    }
+  },
+  "call_usage_per_method": {
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": 537,
+    "external_l1_max": 301,
+    "external_tale_prompt_budgeting": 387,
+    "external_s1_budget_forcing": 668
+  },
+  "total_logical_calls": 1893,
+  "hard_cap_logical_calls": 3000,
+  "cap_respected": true,
+  "pal_vs_best_external_counts": {
+    "both_correct": 183,
+    "both_wrong": 23,
+    "external_only": 34,
+    "pal_only": 5
+  },
+  "per_window_failure_yield": [
+    {
+      "allowlist_file": "allowlist_window_001.jsonl",
+      "cases_in_window": 60,
+      "preferred_failures_in_selected_corpus": 13,
+      "secondary_in_selected_corpus": 4
+    },
+    {
+      "allowlist_file": "allowlist_window_002.jsonl",
+      "cases_in_window": 60,
+      "preferred_failures_in_selected_corpus": 5,
+      "secondary_in_selected_corpus": 7
+    },
+    {
+      "allowlist_file": "allowlist_window_003.jsonl",
+      "cases_in_window": 60,
+      "preferred_failures_in_selected_corpus": 8,
+      "secondary_in_selected_corpus": 0
+    },
+    {
+      "allowlist_file": "allowlist_window_004.jsonl",
+      "cases_in_window": 60,
+      "preferred_failures_in_selected_corpus": 7,
+      "secondary_in_selected_corpus": 0
+    },
+    {
+      "allowlist_file": "allowlist_window_005.jsonl",
+      "cases_in_window": 7,
+      "preferred_failures_in_selected_corpus": 1,
+      "secondary_in_selected_corpus": 0
+    }
+  ]
+}

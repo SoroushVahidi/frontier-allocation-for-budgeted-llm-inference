@@ -1,0 +1,9 @@
+**Target:** Calculate the total number of laundry loads per year.
+
+1. Weekly loads:  
+   Twin beds: \( \frac{4}{2} = 2 \) loads, King bed: \( 1 \) load → Total weekly loads = \( 2 + 1 = 3 \).
+
+2. Annual loads:  
+   \( 3 \text{ loads/week} \times 52 \text{ weeks/year} = 156 \).
+
+\boxed{156}

@@ -1,0 +1,26 @@
+**Step-by-Step Solution:**
+
+1. **Identify:**
+   - Count of items: 6 tests (but the lowest score will be removed, so effectively 5 scores will be averaged).
+   - Known values: 89, 71, 92, 100, 86.
+   - Target average: 93.
+   - Unknown value: Score on the sixth test, denoted as \( x \).
+
+2. **Convert average target to required total:**
+   - Since the lowest score is removed, we need to find the total of the top 5 scores that will give an average of 93.
+   - Required total = target average * number of scores to be averaged = \( 93 \times 5 = 465 \).
+
+3. **Build equation:**
+   - Sum of known scores: \( 89 + 92 + 100 + 86 = 367 \) (excluding 71 as it is the lowest).
+   - Equation: \( 367 + x = 465 \).
+
+4. **Solve for the unknown value:**
+   \[
+   x = 465 - 367 = 98
+   \]
+
+5. **Check against constraints:**
+   - The score \( x = 98 \) is valid and does not violate any problem constraints.
+
+**Final Answer:**
+\boxed{98}

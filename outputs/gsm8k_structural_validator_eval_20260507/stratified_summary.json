@@ -1,0 +1,203 @@
+{
+  "missing_input_paths": [],
+  "documentation": {
+    "evidence_class": {
+      "pal_trace_code": "non-empty trace and non-empty code passed to validator",
+      "text_trace": "trace without code",
+      "answer_only": "no trace and no code (typical external_answer)",
+      "unknown": "code without trace or other edge wiring"
+    },
+    "score_family": {
+      "structural_trace_score": "PAL/trace-channel structural_score rows",
+      "answer_only_diagnostic": "answer-only rows \u2014 same validator call, interpret separately",
+      "unknown": "edge evidence class"
+    },
+    "no_global_mixed_evidence_headline": true
+  },
+  "candidate_rows_total": 1296,
+  "distinct_cases": 228,
+  "score_family_row_counts": {
+    "structural_trace_score": 624,
+    "answer_only_diagnostic": 672
+  },
+  "evidence_class_counts_by_candidate_role": {
+    "current_final": {
+      "pal_trace_code": 225,
+      "text_trace": 3
+    },
+    "direct_reserve": {
+      "pal_trace_code": 21,
+      "text_trace": 2
+    },
+    "other": {
+      "pal_trace_code": 137,
+      "text_trace": 4
+    },
+    "pal_stdout": {
+      "pal_trace_code": 224
+    },
+    "external_answer": {
+      "answer_only": 672
+    },
+    "overlay_tiebreak": {
+      "pal_trace_code": 7,
+      "text_trace": 1
+    }
+  },
+  "stratified_means_by_evidence_class": {
+    "answer_only": {
+      "mean_structural_score_gold_matching_rows": 0.269232186912594,
+      "n_gold_matching_rows": 608,
+      "mean_structural_score_non_gold_rows": 0.20722284226190477,
+      "n_non_gold_rows": 64
+    },
+    "pal_trace_code": {
+      "mean_structural_score_gold_matching_rows": 0.786477519941987,
+      "n_gold_matching_rows": 394,
+      "mean_structural_score_non_gold_rows": 0.7804729437229437,
+      "n_non_gold_rows": 220
+    },
+    "text_trace": {
+      "mean_structural_score_gold_matching_rows": 0.8500000000000001,
+      "n_gold_matching_rows": 2,
+      "mean_structural_score_non_gold_rows": 0.8343750000000001,
+      "n_non_gold_rows": 8
+    }
+  },
+  "present_not_selected_legacy_mixed_pool": {
+    "cases_total": 23,
+    "cases_with_any_gold_matching_candidate": 23,
+    "cases_compared_gold_alt_vs_wrong_final": 23,
+    "cases_gold_alt_higher_score_than_wrong_final": 0,
+    "cases_tie_score": 20,
+    "cases_missing_score_or_no_gold_alt_in_pool": 0,
+    "cases_wrong_final_scores_higher_than_best_gold_alt": 3,
+    "note": "Includes external_answer \u2014 unfair vs PAL; use pal_internal block instead."
+  },
+  "present_not_selected_pal_internal_only": {
+    "cases_total": 23,
+    "cases_with_gold_matching_internal_alt": 20,
+    "cases_compared": 20,
+    "cases_gold_internal_higher_than_wrong_final": 0,
+    "cases_tie": 20,
+    "cases_missing_gold_internal_or_score": 3,
+    "cases_misleading_wrong_final_higher": 0,
+    "example_helper": [],
+    "example_mislead": []
+  },
+  "guardrail_correct_current_final": {
+    "rows_all_evidence_classes": 183,
+    "warning_rate_any_warning": 0.36065573770491804,
+    "rows_pal_trace_code_only": 183,
+    "warning_rate_pal_trace_code_only": 0.36065573770491804
+  },
+  "top_warnings_by_evidence_class": {
+    "answer_only": [
+      [
+        "unused_salient_problem_quantities",
+        664
+      ],
+      [
+        "low_quantity_coverage_vs_problem",
+        606
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:rate",
+        335
+      ],
+      [
+        "rate_question_weak_operator_evidence_in_trace",
+        334
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:temporal",
+        162
+      ],
+      [
+        "temporal_story_weak_follow_through_in_trace",
+        162
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:difference",
+        76
+      ],
+      [
+        "comparison_question_weak_contrast_evidence_in_trace",
+        76
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:total",
+        75
+      ],
+      [
+        "aggregation_question_weak_total_evidence_in_trace",
+        75
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:fraction",
+        61
+      ],
+      [
+        "money_context_but_answer_not_numeric",
+        2
+      ],
+      [
+        "target_type_vs_answer_surface_mismatch_heuristic",
+        1
+      ]
+    ],
+    "pal_trace_code": [
+      [
+        "missing_operation_cue_in_trace_or_code:temporal",
+        101
+      ],
+      [
+        "unused_salient_problem_quantities",
+        72
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:fraction",
+        45
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:rate",
+        40
+      ],
+      [
+        "rate_question_weak_operator_evidence_in_trace",
+        12
+      ],
+      [
+        "comparison_question_weak_contrast_evidence_in_trace",
+        12
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:difference",
+        6
+      ],
+      [
+        "missing_operation_cue_in_trace_or_code:total",
+        5
+      ],
+      [
+        "aggregation_question_weak_total_evidence_in_trace",
+        5
+      ],
+      [
+        "low_quantity_coverage_vs_problem",
+        2
+      ]
+    ],
+    "text_trace": [
+      [
+        "missing_operation_cue_in_trace_or_code:fraction",
+        1
+      ]
+    ]
+  },
+  "deprecated_legacy_global_means": {
+    "avg_structural_score_gold_matching_all_rows": 0.47337182519920323,
+    "avg_structural_score_non_gold_all_rows": 0.6563058545335944,
+    "warning": "Do not use for ranking \u2014 mixes pal_trace_code with answer_only."
+  }
+}

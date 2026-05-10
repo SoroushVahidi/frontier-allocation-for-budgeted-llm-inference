@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "20260508T234831Z",
+  "plan_dir": "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_plan_20260508T234757Z",
+  "method_alias": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1",
+  "pal_method": "external_pal_pot_fair_v1",
+  "cap": 900,
+  "screen_batch": 50,
+  "followup_cap": 25
+}

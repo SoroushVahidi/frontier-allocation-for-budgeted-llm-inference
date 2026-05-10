@@ -1,0 +1,25 @@
+{
+"SCHEMA_TYPE": "ratio_equation_schema",
+"TARGET_QUANTITY": "Total toys needed",
+"GIVEN_QUANTITIES": [
+"Initial toys: 4",
+"Initial dogs: 4",
+"Additional dogs (first time): 8",
+"Additional dogs (second time): 2 * (4 + 8)",
+"Dogs gone: 3"
+],
+"EQUATIONS": [
+"Toys needed after first purchase = Initial dogs + Additional dogs (first time) = 4 + 8 = 12",
+"Dogs after first purchase = Initial dogs + Additional dogs (first time) = 4 + 8 = 12",
+"Dogs after second purchase = 2 * Dogs after first purchase = 2 * 12 = 24",
+"Toys needed after second purchase = Dogs after second purchase = 24",
+"Final toys needed = Toys needed after second purchase - Dogs gone = 24 - 3 = 21"
+],
+"COMPUTATION": [
+"Initial toys are insufficient, so James buys 12 - 4 = 8 toys initially.",
+"After the first purchase, there are 12 dogs, but James sees twice as many dogs after returning, so there are 24 dogs now.",
+"James needs 24 toys for the dogs.",
+"After the second purchase, 3 dogs are gone, so James needs 24 - 3 = 21 toys in total."
+],
+"FINAL_ANSWER": 21
+}

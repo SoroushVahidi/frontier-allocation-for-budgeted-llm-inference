@@ -1,0 +1,69 @@
+{
+  "external_tree_available_cases": 0,
+  "external_tree_missing_cases": 88,
+  "failure_cases_collected": 88,
+  "failure_stages": {
+    "gold_absent_everywhere_detectable": 87,
+    "gold_in_selector_pool": 1
+  },
+  "manifest": {
+    "corpus_row_count": 88,
+    "input_paths": {
+      "atlas_anchor_csv": "",
+      "external_results_jsonl": "",
+      "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/paired_casebook.csv",
+      "pal_results_jsonl": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/pal_results.jsonl",
+      "path_coverage_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/path_coverage.csv",
+      "selector_sensitivity_csv": ""
+    },
+    "input_sha256": {
+      "atlas_anchor_csv": "",
+      "external_results_jsonl": "",
+      "paired_casebook_csv": "3ab9fca8c0390c3e0581a57d8502df54ea47e182f615b07bcf9e8531edf70508",
+      "pal_results_jsonl": "94a3cf0bd1971fe303c11a2d37255df5399de5fabd2c501b315ff363ae7a96f0",
+      "path_coverage_csv": "a3c3224e4976fa8f25f3ae87c07096f605c387b7702cf1529fc281edc9466424",
+      "selector_sensitivity_csv": ""
+    },
+    "missing_or_unmatched": {
+      "external_missing_for_casebook_ids": 88,
+      "pal_missing_for_casebook_ids": 0,
+      "path_coverage_missing_for_casebook_ids": 0
+    },
+    "row_counts_loaded": {
+      "atlas_anchor_rows": 0,
+      "external_results_rows": 0,
+      "paired_casebook_rows": 88,
+      "pal_results_rows": 26,
+      "path_coverage_rows": 26,
+      "selector_sensitivity_rows": 0
+    }
+  },
+  "meta": {
+    "api_calls": "none",
+    "created_at": "2026-05-07T04:15:48.028904+00:00",
+    "external_results_jsonl": "",
+    "output_dir": "/home/soroush/research-next-wt/outputs/failure_case_corpus_external_losses_88case_mixed_legacy_20260507T041547Z",
+    "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/paired_casebook.csv",
+    "pal_results_jsonl": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/pal_results.jsonl"
+  },
+  "operation_hints": {
+    "difference": 18,
+    "division_share": 4,
+    "none": 20,
+    "percent": 8,
+    "product": 15,
+    "rate_ratio": 30,
+    "temporal_change": 21,
+    "total_sum": 15
+  },
+  "outcome_buckets": {
+    "both_correct": 19,
+    "external_only": 69
+  },
+  "quantity_buckets": {
+    "qnum_0_1": 4,
+    "qnum_2_3": 39,
+    "qnum_4_5": 37,
+    "qnum_6p": 8
+  }
+}

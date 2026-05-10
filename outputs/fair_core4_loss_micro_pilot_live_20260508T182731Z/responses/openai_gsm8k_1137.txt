@@ -1,0 +1,25 @@
+Let's track the state updates step-by-step:
+
+1. **Initial State:**  
+   - Dogs: 4  
+   - Toys: 4  
+
+2. **8 more dogs arrive:**  
+   - Dogs: 4 + 8 = 12  
+   - Toys needed: 12 - 4 = 8 (James buys 8 toys)  
+   - Total toys: 4 + 8 = 12  
+
+3. **Twice as many dogs arrive while James is away:**  
+   - Dogs: 12 * 2 = 24  
+   - Toys needed: 24 - 12 = 12 (James buys 12 toys)  
+   - Total toys: 12 + 12 = 24  
+
+4. **3 dogs leave:**  
+   - Dogs: 24 - 3 = 21  
+   - Toys no longer needed: 3  
+   - Total toys needed: 24 - 3 = 21  
+
+**Final State:**  
+- Total toys needed: 21  
+
+FINAL_ANSWER: 21

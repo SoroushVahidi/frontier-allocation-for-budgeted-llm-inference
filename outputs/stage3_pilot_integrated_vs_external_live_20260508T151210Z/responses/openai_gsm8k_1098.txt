@@ -1,0 +1,7 @@
+**Target:** Calculate the average highest temperature of Southlandia, Northlandia, and Midlandia.
+
+1. Sum of highest temperatures: (-48) + 21 + (-3) = -30
+2. Number of countries: 3
+3. Average highest temperature: (-30) / 3 = -10
+
+\boxed{-10}

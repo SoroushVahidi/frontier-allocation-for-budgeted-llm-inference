@@ -1,0 +1,39 @@
+{
+  "original_exact_by_method": {
+    "external_l1_max_fair_v1": 31,
+    "external_self_consistency_4_fair_v1": 33,
+    "external_s1_budget_forcing_faithful_v1": 32,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 34
+  },
+  "rescored_exact_by_method": {
+    "external_l1_max_fair_v1": 31,
+    "external_self_consistency_4_fair_v1": 33,
+    "external_s1_budget_forcing_faithful_v1": 32,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 34
+  },
+  "original_parsing_failures_by_method": {
+    "external_l1_max_fair_v1": 7,
+    "external_self_consistency_4_fair_v1": 6,
+    "external_s1_budget_forcing_faithful_v1": 10,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 6
+  },
+  "unresolved_parsing_failures_by_method": {
+    "external_s1_budget_forcing_faithful_v1": 10,
+    "external_l1_max_fair_v1": 7,
+    "external_self_consistency_4_fair_v1": 6,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 6
+  },
+  "safe_rescore_count_by_method": {
+    "external_l1_max_fair_v1": 0,
+    "external_self_consistency_4_fair_v1": 0,
+    "external_s1_budget_forcing_faithful_v1": 0,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 0
+  },
+  "exact_gain_by_method": {
+    "external_l1_max_fair_v1": 0,
+    "external_self_consistency_4_fair_v1": 0,
+    "external_s1_budget_forcing_faithful_v1": 0,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 0
+  },
+  "no_api_calls": true
+}

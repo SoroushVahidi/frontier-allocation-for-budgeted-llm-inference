@@ -1,0 +1,20 @@
+{
+  "focused_pytest": "50 passed",
+  "focused_cmd": "pytest -q tests/test_pal_variant.py tests/test_guarded_k1_frontier4_method.py tests/test_output_layer_frontier_surfacing.py tests/test_method_validation_pal_tiebreak_registry.py",
+  "key_fix": "direct_hybrid now decrements remaining_budget after seed execution",
+  "invariants": {
+    "base_k1_optional_seeds_disabled_by_default": true,
+    "pal_fixed_budget_action": true,
+    "frontier_budget_non_negative": true,
+    "external_l1_max_unchanged": true,
+    "gold_not_used_for_runtime_overlay_decisions": true,
+    "max_actions_exceeded_in_direct_hybrid_after_fix": false
+  },
+  "tests_added_or_strengthened": [
+    "test_baseline_k1_tiebreak_has_no_optional_seed_metadata",
+    "test_pal_budget_and_frontier_budget_accounting_with_mocked_path",
+    "test_pal_skips_seed_when_remaining_budget_is_zero",
+    "test_pal_method_does_not_activate_opcheck_or_unit_track_or_decomp_eq",
+    "test_direct_hybrid_frontier_budget_respects_max_actions"
+  ]
+}

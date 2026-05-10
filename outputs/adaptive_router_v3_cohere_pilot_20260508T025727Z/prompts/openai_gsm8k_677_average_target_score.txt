@@ -1,0 +1,16 @@
+You are solving a target-average / missing-value problem.
+
+Problem:
+Audrey has to take two math tests to pass ６th grade. She must correctly answer ７０% of the total questions to move on to the ７th grade. The first test has ７０ questions and she gets ６０% of them correct. The second test has ４０ questions. How many questions does she need to get right on the second test to move onto the ７th grade?
+
+Instructions:
+- Identify: count of items, known values, target average, and unknown value(s).
+- Convert average target to required total using: required_total = target_average * item_count.
+- Build equation: known_sum + unknown = required_total (or equivalent).
+- Solve for the unknown value and check it against the problem constraints.
+- Output the **final answer only** at the end as specified below.
+
+
+Rules:
+- Use only the problem statement above; do not assume hidden facts.
+- Show your reasoning briefly, then give the final numeric answer as the **last line** in \boxed{} (single value).

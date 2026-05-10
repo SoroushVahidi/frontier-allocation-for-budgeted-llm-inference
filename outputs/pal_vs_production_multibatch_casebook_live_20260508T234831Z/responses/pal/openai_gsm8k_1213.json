@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "2350",
+  "parsed_answer": "2350",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "initial_fruits = 50\n\ntotal_fruits = (\n    initial_fruits\n    + (3 * initial_fruits)\n    + (7 * initial_fruits)\n    + (20 * initial_fruits - 200)\n    + (20 * initial_fruits)\n)\n\nprint(total_fruits)",
+      "stdout": "2350\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "2350",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "2350",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

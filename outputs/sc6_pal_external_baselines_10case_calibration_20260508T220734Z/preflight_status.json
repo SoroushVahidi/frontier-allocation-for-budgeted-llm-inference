@@ -1,0 +1,11 @@
+{
+  "cohere_api_key_present": true,
+  "source_cases_exists": true,
+  "case_count_requested": 10,
+  "max_total_api_calls": 80,
+  "planned_logical_calls_estimate": 70,
+  "budget_controller": 6,
+  "model": "command-a-03-2025",
+  "temperature": 0.0,
+  "sc6_temperature_caveat": "Self-consistency samples share generator temperature=0.0; diversity is primarily from independent draws / branch initialization, not thermal noise."
+}

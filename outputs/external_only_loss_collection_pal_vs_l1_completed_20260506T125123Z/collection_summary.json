@@ -1,0 +1,43 @@
+{
+  "methods": [
+    "external_l1_max",
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
+  ],
+  "selected_fresh_cases": 140,
+  "paired_cases_completed": 140,
+  "partial_unpaired_count": 0,
+  "external_l1_max_exact_count": 109,
+  "pal_exact_count": 120,
+  "external_correct_pal_wrong_count": 10,
+  "pal_correct_external_wrong_count": 21,
+  "both_correct_count": 99,
+  "both_wrong_count": 10,
+  "new_external_only_loss_count": 10,
+  "cumulative_external_only_loss_count_including_previous_100pair_run": 15,
+  "calls_used_row_sum": 1123,
+  "calls_used_cap_consumed_estimate": 1500,
+  "calls_cap": 1500,
+  "cap_exceeded": false,
+  "failed_or_skipped_count": 100,
+  "yield_external_only_losses_per_paired_case": 0.07142857142857142,
+  "estimated_calls_needed_to_reach_50_external_only_losses_from_current_yield_current_batch_basis": 4492.0,
+  "estimated_calls_needed_to_reach_50_external_only_losses_from_current_yield_cumulative_basis": 3930.5,
+  "stop_reason": "B_hit_cap",
+  "top_precise_patterns_among_external_only_losses": [
+    {
+      "label": "L1_P4_exec_succeeded_wrong",
+      "count": 8
+    },
+    {
+      "label": "L1_P1_code_absent",
+      "count": 1
+    },
+    {
+      "label": "L1_P5_correct_candidate_not_selected",
+      "count": 1
+    }
+  ],
+  "enough_for_pattern_mining": false,
+  "recommended_next_step": "A_no_api_pattern_audit",
+  "metric_consistency_warnings": []
+}

@@ -1,0 +1,17 @@
+**Target Quantity:** Remaining amount John leaves with.
+
+**Money Ledger:**
+
+1. **Vaccine Cost (one-time):** $20 × 2 = $40  
+2. **Heartworm Check (one-time):** 60% of total bill  
+3. **Total Bill:** Vaccine Cost + Heartworm Check  
+4. **Heartworm Check Calculation:** Let \( T \) be the total bill.  
+   \( 0.60T = T - 40 \)  
+   \( 0.40T = 40 \)  
+   \( T = 100 \)  
+5. **Heartworm Check Amount:** \( 0.60 \times 100 = 60 \)  
+6. **Total Bill Confirmed:** $40 (vaccines) + $60 (heartworm) = $100  
+7. **Amount Brought:** $125  
+8. **Remaining Amount:** Amount Brought - Total Bill = $125 - $100 = $25  
+
+**Final Answer:** \(\boxed{25}\)

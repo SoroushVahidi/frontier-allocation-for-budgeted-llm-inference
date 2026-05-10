@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "114200.0",
+  "parsed_answer": "114200",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "weekly_salary = 2000\naward_bonus = 5000\nraise_percentage = 0.05\n\n# Calculate the total salary without the award\ntotal_salary_without_award = weekly_salary * 52\n\n# Calculate the total raise amount for the year\ntotal_raise = total_salary_without_award * raise_percentage\n\n# Calculate the total salary with the award and raise\ntotal_salary_with_award = total_salary_without_award + total_raise + award_bonus\n\nprint(total_salary_with_award)",
+      "stdout": "114200.0\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "114200.0",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "114200.0",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

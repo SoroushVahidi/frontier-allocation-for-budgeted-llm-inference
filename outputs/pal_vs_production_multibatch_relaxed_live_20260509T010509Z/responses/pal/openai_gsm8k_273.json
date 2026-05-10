@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "315",
+  "parsed_answer": "315",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "body_stitches = 900\ncollar_stitches = body_stitches // 10\nrosette_stitches = collar_stitches * 2\ntotal_stitches = 1800\n\nstitches_for_sleeves = total_stitches - body_stitches - collar_stitches - rosette_stitches\n\nsleeve_stitches = stitches_for_sleeves // 2\n\nprint(sleeve_stitches)",
+      "stdout": "315\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "315",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "315",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

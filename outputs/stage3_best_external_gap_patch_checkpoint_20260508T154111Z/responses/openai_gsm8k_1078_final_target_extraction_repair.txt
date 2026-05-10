@@ -1,0 +1,6 @@
+**target_type:** total combined age  
+**equations:**  
+1. Father's age: \( F = 2 \times 15 + 8 = 38 \)  
+2. Mother's age: \( M = 38 - 4 = 34 \)  
+3. Total combined age: \( T = 15 + 38 + 34 = 87 \)  
+**final_answer:** 87

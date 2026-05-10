@@ -1,0 +1,33 @@
+{
+  "prediction_raw": "76",
+  "parsed_answer": "76",
+  "metadata": {
+    "baseline_family": "pal_pot",
+    "pot_output": {
+      "ok": true,
+      "python_code": "monday_cakes = 4\ntuesday_cakes = 3 * monday_cakes\nwednesday_cakes = 5 * tuesday_cakes\ntotal_cakes = monday_cakes + tuesday_cakes + wednesday_cakes\nprint(total_cakes)",
+      "stdout": "76\n",
+      "stderr": "",
+      "exception": null,
+      "prediction": "76",
+      "suitable": true,
+      "cost_units": {
+        "generation": 1,
+        "execution": 1
+      }
+    },
+    "code_generated": false,
+    "code_executed": false,
+    "execution_error": "",
+    "parsed_answer": "76",
+    "sandbox_policy": "local_pal_executor_or_generator_defined",
+    "call_count": 1,
+    "cost_proxy": {
+      "code_generation": 1,
+      "sandbox_execution": 1
+    }
+  },
+  "status": "success",
+  "error_message": "",
+  "logical_calls": 1
+}

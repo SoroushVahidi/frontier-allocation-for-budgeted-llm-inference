@@ -1,0 +1,7 @@
+- **target_type:** total  
+- **equations:**  
+  Let \( D = 15 \) (Dora's age).  
+  Father's age \( = 2D + 8 = 2(15) + 8 = 38 \).  
+  Mother's age \( = 38 - 4 = 34 \).  
+  Total combined age \( = D + \text{Father's age} + \text{Mother's age} = 15 + 38 + 34 = 87 \).  
+- **final_answer:** 87
