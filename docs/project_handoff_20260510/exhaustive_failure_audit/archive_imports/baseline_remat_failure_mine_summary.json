@@ -1,0 +1,149 @@
+{
+  "bucket_counts": {
+    "both_correct": 223,
+    "both_wrong": 27,
+    "external_only": 21,
+    "pal_only": 29
+  },
+  "marginal_by_subset": {
+    "both_wrong": {
+      "final_answer_source_cb|(empty)": 27,
+      "pal_code_present|1": 27,
+      "pal_discovery3|0": 22,
+      "pal_discovery3|1": 5,
+      "pal_exec_ok|0": 1,
+      "pal_exec_ok|1": 26,
+      "pal_gold_absent|0": 5,
+      "pal_gold_absent|1": 22,
+      "pal_overlay_triggered|0": 2,
+      "pal_overlay_triggered|1": 25,
+      "pal_parse_ok|1": 27,
+      "pal_present_not_selected|0": 24,
+      "pal_present_not_selected|1": 3,
+      "pal_safety_ok|0": 1,
+      "pal_safety_ok|1": 26,
+      "retry_skipped_reason_raw|(empty)": 4,
+      "retry_skipped_reason_raw|seed_code_present_and_executable": 23,
+      "truth_retry_ran|0": 23,
+      "truth_retry_ran|1": 4,
+      "truth_retry_selected_source|none": 24,
+      "truth_retry_selected_source|pal_empty_code_retry": 3
+    },
+    "external_only": {
+      "final_answer_source_cb|(empty)": 21,
+      "pal_code_present|0": 2,
+      "pal_code_present|1": 19,
+      "pal_discovery3|0": 12,
+      "pal_discovery3|1": 9,
+      "pal_exec_ok|0": 3,
+      "pal_exec_ok|1": 18,
+      "pal_gold_absent|0": 9,
+      "pal_gold_absent|1": 12,
+      "pal_overlay_triggered|0": 5,
+      "pal_overlay_triggered|1": 16,
+      "pal_parse_ok|0": 2,
+      "pal_parse_ok|1": 19,
+      "pal_present_not_selected|0": 13,
+      "pal_present_not_selected|1": 8,
+      "pal_safety_ok|0": 2,
+      "pal_safety_ok|1": 19,
+      "retry_skipped_reason_raw|(empty)": 4,
+      "retry_skipped_reason_raw|seed_code_present_and_executable": 17,
+      "truth_retry_ran|0": 17,
+      "truth_retry_ran|1": 4,
+      "truth_retry_selected_source|none": 20,
+      "truth_retry_selected_source|pal_empty_code_retry": 1
+    }
+  },
+  "materialization_consistency_checks": {
+    "call_cap_respected": true,
+    "failed_count_matches_file": true,
+    "pair_outcomes_match_summary": true,
+    "paired_rows_match_summary": true,
+    "selected_disjoint_from_prior_used_ids": true,
+    "selected_overlap_count_with_prior": 0
+  },
+  "meta": {
+    "casebook_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506/paired_casebook.csv",
+    "materialization_consistency_checks_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/materialization_consistency_checks.json",
+    "output_dir": "/home/soroush/research-next-wt/outputs/offline_pal_external_failure_mine_20260506_BASELINE_REMAT_FAILURE_MINE",
+    "paired_summary_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_summary.json",
+    "pal_results_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_BASELINE_REMAT_20260506/pal_results.jsonl",
+    "rows_join_attempted": 300
+  },
+  "paired_summary_excerpt": {
+    "selected_fresh_examples_count": 300
+  },
+  "retry_recompute": {
+    "casebook_retry_enabled_all_zero_but_raw_enabled_rows": 300,
+    "inferable_retry_helped_exact_count": 8,
+    "inferable_retry_hurt_exact_count": 4,
+    "missing_pal_results_rows": 0,
+    "rows_total": 300,
+    "truth_retry_enabled_count": 300,
+    "truth_retry_ran_count": 16,
+    "truth_retry_selected_as_final_source_count": 12
+  },
+  "top_signatures": {
+    "both_wrong": [
+      [
+        "gold_absent_cb|overlay_cb",
+        19
+      ],
+      [
+        "discovery3_cb|overlay_cb|present_not_selected_cb",
+        2
+      ],
+      [
+        "gold_absent_cb|overlay_cb|retry_ran_raw|retry_selected_raw",
+        2
+      ],
+      [
+        "exec_fail_cb|gold_absent_cb|retry_ran_raw|safety_fail_cb",
+        1
+      ],
+      [
+        "discovery3_cb|present_not_selected_cb",
+        1
+      ],
+      [
+        "discovery3_cb|overlay_cb",
+        1
+      ],
+      [
+        "discovery3_cb|overlay_cb|retry_ran_raw|retry_selected_raw",
+        1
+      ]
+    ],
+    "external_only": [
+      [
+        "discovery3_cb|overlay_cb|present_not_selected_cb",
+        8
+      ],
+      [
+        "gold_absent_cb|overlay_cb",
+        7
+      ],
+      [
+        "code_absent_cb|exec_fail_cb|gold_absent_cb|parse_fail_cb|retry_ran_raw|safety_fail_cb",
+        2
+      ],
+      [
+        "exec_fail_cb|gold_absent_cb|retry_ran_raw",
+        1
+      ],
+      [
+        "gold_absent_cb",
+        1
+      ],
+      [
+        "discovery3_cb|overlay_cb",
+        1
+      ],
+      [
+        "gold_absent_cb|retry_ran_raw|retry_selected_raw",
+        1
+      ]
+    ]
+  }
+}

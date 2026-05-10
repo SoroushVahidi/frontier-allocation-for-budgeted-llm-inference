@@ -1,0 +1,73 @@
+{
+  "run_directory": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+  "analysis_directory": "/home/soroush/research-next-wt/outputs/pal_retry_300case_analysis_20260506",
+  "paired_n": 300,
+  "external_exact_count": 244,
+  "pal_retry_exact_count": 252,
+  "external_accuracy": 0.8133333333333334,
+  "pal_retry_accuracy": 0.84,
+  "paired_gap_pal_minus_external_pp": 2.6666666666666616,
+  "wilson95_external": [
+    0.7653812201652491,
+    0.8533625178673686
+  ],
+  "wilson95_pal_retry": [
+    0.7942563251514081,
+    0.8771464544159004
+  ],
+  "contingency_exact_match": {
+    "both_correct": 223,
+    "external_only_correct": 21,
+    "pal_only_correct": 29,
+    "both_wrong": 27
+  },
+  "mcnemar_discordants": {
+    "b_ext_only": 21,
+    "c_pal_only": 29,
+    "mcnemar_exact_p_two_sided_binomial": 0.3222363203575469
+  },
+  "bootstrap95_paired_diff_fraction": [
+    -0.02,
+    0.07333333333333333
+  ],
+  "bootstrap95_paired_diff_pp": [
+    -2.0,
+    7.333333333333333
+  ],
+  "retry_from_raw_metadata": {
+    "truth_retry_enabled_count": 300,
+    "truth_retry_enabled_rate": 1.0,
+    "truth_retry_ran_count": 16,
+    "truth_retry_ran_rate": 0.05333333333333334,
+    "retry_code_present_rate_when_ran": 0.9375,
+    "retry_parse_ok_rate_when_ran": 0.9375,
+    "retry_safety_ok_rate_when_ran": 0.875,
+    "retry_exec_ok_rate_when_ran": 0.75,
+    "retry_candidate_strong_rate_when_ran": 0.75,
+    "retry_selected_fixes_inferable": 8,
+    "retry_selected_breaks_inferable": 4,
+    "pal_exact_given_retry_ran": 0.5,
+    "pal_exact_given_retry_not_ran": 0.8591549295774648
+  },
+  "superiority_statistically_supported": false,
+  "paired_casebook_retry_enabled_field_bug_detected": true,
+  "calls": {
+    "total_cohere_logical_calls_used": 1865,
+    "cap": 3000,
+    "by_method": {
+      "external_l1_max": 963,
+      "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": 902
+    },
+    "cap_respected": true,
+    "rows_total": 600,
+    "rows_failed_or_skipped": 0
+  },
+  "materialization_consistency": {
+    "paired_rows_match_summary": true,
+    "pair_outcomes_match_summary": true,
+    "failed_count_matches_file": true,
+    "call_cap_respected": true,
+    "selected_disjoint_from_prior_used_ids": true,
+    "selected_overlap_count_with_prior": 0
+  }
+}
