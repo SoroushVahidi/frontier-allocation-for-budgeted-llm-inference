@@ -1700,6 +1700,7 @@ def build_frontier_strategies(
             **strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid,
             "enable_diverse_prompt_anchors": True,
             "diverse_prompt_anchor_budget_actions": 1,
+            "diverse_prompt_anchor_priority_policy": "domain_aware_v1",
         }
         specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIVERSE_ANCHOR] = (
             DirectReserveDiverseRootFrontierV1GuardedController(
