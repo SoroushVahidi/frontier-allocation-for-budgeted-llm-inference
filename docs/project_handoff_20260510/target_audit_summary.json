@@ -1,0 +1,13 @@
+{
+  "total_cases": 18,
+  "families": {
+    "final_target_mismatch": 9,
+    "structural_commit_wrong": 9
+  },
+  "subtypes": {
+    "other": 8,
+    "total_vs_component": 1,
+    "structural_commit_intermediate": 9
+  },
+  "gold_present_count": 2
+}
