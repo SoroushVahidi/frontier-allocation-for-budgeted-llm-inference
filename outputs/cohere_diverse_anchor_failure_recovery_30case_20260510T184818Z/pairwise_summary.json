@@ -1,0 +1,56 @@
+{
+  "valid_for_primary_question": false,
+  "invalid_reason": "The repository runner loads openai/gsm8k through a shuffled pilot subset and assigns example_id by shuffled position, so allowlisted IDs from the failure artifacts did not resolve to the same questions/gold answers.",
+  "selected_case_count": 30,
+  "all_selected_cases_gold_mismatched_in_runner": true,
+  "old_method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_hybrid",
+  "new_method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+  "logical_cohere_calls_used_by_controller": 180,
+  "logical_call_cap": 300,
+  "readiness_check_cohere": "passed",
+  "other_paid_apis_used": "none",
+  "raw_invalid_old_exact_accuracy": 0.6333333333333333,
+  "raw_invalid_new_exact_accuracy": 0.6333333333333333,
+  "raw_invalid_recovered_case_ids": [
+    "openai_gsm8k_190",
+    "openai_gsm8k_162",
+    "openai_gsm8k_433",
+    "openai_gsm8k_347",
+    "openai_gsm8k_508"
+  ],
+  "raw_invalid_still_failed_case_ids": [
+    "openai_gsm8k_168",
+    "openai_gsm8k_264",
+    "openai_gsm8k_197",
+    "openai_gsm8k_70",
+    "openai_gsm8k_166",
+    "openai_gsm8k_551"
+  ],
+  "raw_invalid_regressed_case_ids": [
+    "openai_gsm8k_217",
+    "openai_gsm8k_6",
+    "openai_gsm8k_36",
+    "openai_gsm8k_450",
+    "openai_gsm8k_458"
+  ],
+  "per_anchor_executed": {
+    "direct_l1_anchor": 30,
+    "equation_first_anchor": 30,
+    "unit_ledger_money_anchor": 30
+  },
+  "per_anchor_correct_raw_runner": {
+    "direct_l1_anchor": 19,
+    "equation_first_anchor": 10,
+    "unit_ledger_money_anchor": 11
+  },
+  "per_anchor_support_raw_runner": {
+    "direct_l1_anchor": 62,
+    "equation_first_anchor": 56,
+    "unit_ledger_money_anchor": 62
+  },
+  "per_anchor_correct_on_raw_recoveries": {
+    "direct_l1_anchor": 5,
+    "unit_ledger_money_anchor": 2,
+    "equation_first_anchor": 1
+  }
+}

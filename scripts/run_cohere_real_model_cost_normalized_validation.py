@@ -20,7 +20,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from experiments.branching import APIBranchGenerator, configure_logical_api_call_budget
-from experiments.data import normalize_answer_text
+from experiments.data import PilotExample, normalize_answer_text
 from experiments.frontier_matrix_core import ScoreConfig, SimpleBranchScorer, build_frontier_strategies, build_semantic_diversity_diagnostic_registry, load_pilot_examples
 from experiments.output_layer_repair import (
     apply_controller_committed_surfacing_for_evaluation,
@@ -123,6 +123,10 @@ METHODS: dict[str, dict[str, Any]] = {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_hybrid",
         "enable_output_repair": True,
     },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+        "enable_output_repair": True,
+    },
     "direct_reserve_frontier_gate_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "calibrated_near_direct_frontier_gate_v1": {"runtime": "calibrated_near_direct_frontier_gate_v1", "enable_output_repair": True},
@@ -211,6 +215,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--emit-trace-audit", action="store_true", help="Emit compact per-case DR-v2 vs external_l1_max trace-audit CSV.")
     p.add_argument("--validate-methods-only", action="store_true", help="Validate requested method IDs resolve to runnable strategy specs and exit without API calls.")
     p.add_argument("--allowed-example-ids-file", default="", help="Optional JSONL file containing rows with example_id (and optional dataset/seed/budget/method) to hard-filter runs.")
+    p.add_argument("--exact-cases-jsonl", default="", help="Optional exact-case JSONL with example_id, question/problem_text, and gold answer; bypasses shuffled dataset loading.")
+    p.add_argument("--validate-exact-cases-only", action="store_true", help="Validate exact-case JSONL and method resolution without API calls, then exit.")
+    p.add_argument("--expected-exact-case-count", type=int, default=0, help="Optional expected number of cases for --validate-exact-cases-only.")
     p.add_argument("--dry-run-call-plan", action="store_true", help="Emit planned case count after filtering and exit without API calls.")
     p.add_argument(
         "--max-total-api-calls",
@@ -354,19 +361,148 @@ def normalize_providers(args: argparse.Namespace) -> list[str]:
     return normed
 
 
-def load_allowed_case_filter(path_text: str) -> dict[tuple[str, int, int, str], set[str]]:
+def load_allowed_case_filter(path_text: str) -> dict[tuple[str, int, int, str], dict[str, dict[str, Any]]]:
     if not path_text:
         return {}
     path = Path(path_text)
     rows = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
-    allow: dict[tuple[str, int, int, str], set[str]] = {}
+    allow: dict[tuple[str, int, int, str], dict[str, dict[str, Any]]] = {}
     for r in rows:
         dataset = str(r.get("dataset", "openai/gsm8k"))
         seed = int(r.get("seed", 11))
         budget = int(r.get("budget", 4))
         method = str(r.get("our_method_name", r.get("method", "direct_reserve_semantic_frontier_v2")))
-        allow.setdefault((dataset, seed, budget, method), set()).add(str(r.get("example_id")))
+        example_id = str(r.get("example_id"))
+        allow.setdefault((dataset, seed, budget, method), {})[example_id] = dict(r)
     return allow
+
+
+def _normalize_exact_question(text: str) -> str:
+    return " ".join(str(text or "").split())
+
+
+def load_exact_case_rows(path_text: str, *, dataset: str = "openai/gsm8k") -> list[dict[str, Any]]:
+    """Load exact replay cases from JSONL without shuffling or external dataset access."""
+    if not path_text:
+        return []
+    path = Path(path_text)
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        example_id = str(row.get("example_id") or row.get("case_id") or "").strip()
+        question = str(row.get("question") or row.get("problem_text") or "").strip()
+        gold_raw = row.get("gold_answer_canonical", row.get("gold_canonical", row.get("gold_answer", row.get("gold"))))
+        if not example_id:
+            raise ValueError(f"{path}:{line_no}: missing example_id/case_id")
+        if example_id in seen:
+            raise ValueError(f"{path}:{line_no}: duplicate example_id {example_id!r}")
+        if not question:
+            raise ValueError(f"{path}:{line_no}: missing question/problem_text for {example_id}")
+        if gold_raw is None or str(gold_raw).strip() == "":
+            raise ValueError(f"{path}:{line_no}: missing gold answer for {example_id}")
+        gold_can = canonicalize_answer(str(gold_raw), dataset=dataset)
+        if gold_can is None:
+            raise ValueError(f"{path}:{line_no}: could not canonicalize gold answer for {example_id}: {gold_raw!r}")
+        out = dict(row)
+        out["example_id"] = example_id
+        out["question"] = question
+        out["gold_answer_canonical"] = str(gold_can)
+        out.setdefault("dataset", dataset)
+        out["question_normalized_for_replay"] = _normalize_exact_question(question)
+        rows.append(out)
+        seen.add(example_id)
+    return rows
+
+
+def exact_case_rows_to_examples(rows: list[dict[str, Any]]) -> list[PilotExample]:
+    return [PilotExample(example_id=str(r["example_id"]), question=str(r["question"]), answer=str(r["gold_answer_canonical"])) for r in rows]
+
+
+def validate_exact_case_examples(rows: list[dict[str, Any]], examples: list[PilotExample], *, dataset: str = "openai/gsm8k") -> list[dict[str, Any]]:
+    """Return mismatch rows; an empty list means exact replay cases match the runner examples."""
+    mismatches: list[dict[str, Any]] = []
+    if len(rows) != len(examples):
+        mismatches.append({"type": "count_mismatch", "expected_rows": len(rows), "runner_examples": len(examples)})
+    for idx, (row, ex) in enumerate(zip(rows, examples)):
+        expected_answer = canonicalize_answer(str(row.get("gold_answer_canonical") or row.get("gold_answer") or row.get("gold")), dataset=dataset)
+        actual_answer = canonicalize_answer(str(ex.answer), dataset=dataset)
+        expected_question_norm = _normalize_exact_question(str(row.get("question") or row.get("problem_text") or ""))
+        actual_question_norm = _normalize_exact_question(ex.question)
+        if str(row.get("example_id")) != str(ex.example_id):
+            mismatches.append({"type": "example_id_mismatch", "index": idx, "expected": row.get("example_id"), "actual": ex.example_id})
+        if expected_question_norm != actual_question_norm:
+            mismatches.append({"type": "question_mismatch", "index": idx, "example_id": row.get("example_id"), "expected": expected_question_norm, "actual": actual_question_norm})
+        if expected_answer != actual_answer:
+            mismatches.append({"type": "gold_mismatch", "index": idx, "example_id": row.get("example_id"), "expected": expected_answer, "actual": actual_answer})
+    return mismatches
+
+
+def resolve_examples_for_dataset(dataset: str, *, subset_size: int, seed: int, exact_case_rows: list[dict[str, Any]] | None = None) -> list[PilotExample]:
+    if exact_case_rows is not None:
+        filtered = [r for r in exact_case_rows if str(r.get("dataset", dataset)) == dataset]
+        return exact_case_rows_to_examples(filtered)
+    return load_pilot_examples(dataset, subset_size=subset_size, seed=seed)
+
+
+def validate_exact_cases_only(args: argparse.Namespace, providers: list[str], datasets: list[str], budgets: list[int], methods: list[str]) -> None:
+    if not args.exact_cases_jsonl:
+        raise SystemExit("--validate-exact-cases-only requires --exact-cases-jsonl")
+    out_dir = REPO_ROOT / args.output_root / f"cohere_real_model_cost_normalized_validation_{args.timestamp}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    all_rows: list[dict[str, Any]] = []
+    all_mismatches: list[dict[str, Any]] = []
+    per_dataset: list[dict[str, Any]] = []
+    for dataset in datasets:
+        rows = load_exact_case_rows(args.exact_cases_jsonl, dataset=dataset)
+        examples = resolve_examples_for_dataset(dataset, subset_size=len(rows), seed=0, exact_case_rows=rows)
+        mismatches = validate_exact_case_examples(rows, examples, dataset=dataset)
+        all_rows.extend(rows)
+        all_mismatches.extend(mismatches)
+        per_dataset.append({"dataset": dataset, "case_count": len(rows), "mismatch_count": len(mismatches)})
+    method_rows: list[dict[str, Any]] = []
+    for provider in providers:
+        for budget in budgets:
+            rng = random.Random(1000003 * 11 + 97 * budget + len(datasets[0] if datasets else ""))
+            runner_specs = build_frontier_strategies(
+                lambda: None,
+                budget,
+                [1],
+                rng,
+                use_openai_api=(provider == "openai"),
+                include_broad_diversity_aggregation_methods=True,
+                include_external_l1_baseline=True,
+                include_external_s1_baseline=True,
+                include_external_tale_baseline=True,
+            )
+            for method in methods:
+                runtime = METHODS.get(method, {}).get("runtime", "")
+                ok = bool(runtime and runtime in runner_specs)
+                method_rows.append({"provider": provider, "budget": budget, "method_id": method, "runtime_id": runtime, "runnable_without_api": ok})
+                if not ok:
+                    all_mismatches.append({"type": "method_not_runnable", "provider": provider, "budget": budget, "method_id": method, "runtime_id": runtime})
+    if args.expected_exact_case_count and len(all_rows) != args.expected_exact_case_count:
+        all_mismatches.append({"type": "expected_case_count_mismatch", "expected": args.expected_exact_case_count, "actual": len(all_rows)})
+    report = {
+        "exact_cases_jsonl": args.exact_cases_jsonl,
+        "case_count": len(all_rows),
+        "expected_case_count": args.expected_exact_case_count or None,
+        "datasets": per_dataset,
+        "methods": method_rows,
+        "mismatch_count": len(all_mismatches),
+        "mismatches": all_mismatches,
+        "api_calls_made": 0,
+        "shuffled_loader_used": False,
+    }
+    report_path = out_dir / "exact_case_validation_report.json"
+    report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"exact-case validation report: {report_path}")
+    print(f"exact_case_count={len(all_rows)} mismatch_count={len(all_mismatches)} api_calls_made=0 shuffled_loader_used=false")
+    if all_mismatches:
+        raise SystemExit(2)
+    raise SystemExit(0)
 
 
 def ensure_cohere_readiness(*, model: str, timestamp: str) -> tuple[bool, str]:
@@ -680,6 +816,9 @@ def main() -> None:
             raise ValueError(f"Unknown method: {m}")
     if args.validate_methods_only:
         validate_methods_only(args, providers, budgets, methods)
+    if args.validate_exact_cases_only:
+        validate_exact_cases_only(args, providers, datasets, budgets, methods)
+    exact_case_rows_by_dataset = {d: load_exact_case_rows(args.exact_cases_jsonl, dataset=d) for d in datasets} if args.exact_cases_jsonl else {}
 
     model_by_provider = {
         "cohere": args.cohere_model,
@@ -762,7 +901,12 @@ def main() -> None:
                         if max_suffix > 0:
                             pool_n = max(pool_n, max_suffix + 1)
                     try:
-                        examples = load_pilot_examples(dataset, subset_size=pool_n, seed=seed)
+                        exact_rows = exact_case_rows_by_dataset.get(dataset) if exact_case_rows_by_dataset else None
+                        examples = resolve_examples_for_dataset(dataset, subset_size=pool_n, seed=seed, exact_case_rows=exact_rows)
+                        if exact_rows is not None:
+                            mismatches = validate_exact_case_examples(exact_rows, examples, dataset=dataset)
+                            if mismatches:
+                                raise RuntimeError(f"exact-case validation failed before API execution: {mismatches[:3]}")
                     except Exception as exc:  # noqa: BLE001
                         dataset_load_failures[(provider, dataset, seed)] = f"{type(exc).__name__}: {str(exc)[:500]}"
                         continue
@@ -809,7 +953,8 @@ def main() -> None:
                         )
 
                         for method in methods:
-                            method_allowed_ids = allowed_case_filter.get((dataset, seed, budget, method))
+                            method_allowed_cases = allowed_case_filter.get((dataset, seed, budget, method))
+                            method_allowed_ids = set(method_allowed_cases or {})
                             if allowed_case_filter and not method_allowed_ids:
                                 continue
                             runtime = METHODS[method]["runtime"]
@@ -820,7 +965,7 @@ def main() -> None:
                                 continue
                             attempted = 0
                             scored = 0
-                            planned_case_count = len(method_allowed_ids) if method_allowed_ids is not None else len(examples)
+                            planned_case_count = len(method_allowed_ids) if method_allowed_cases is not None else len(examples)
                             if args.dry_run_call_plan:
                                 append_progress(
                                     progress_path,
@@ -836,8 +981,26 @@ def main() -> None:
                                 )
                                 continue
                             for ex in examples:
-                                if method_allowed_ids is not None and str(ex.example_id) not in method_allowed_ids:
+                                if method_allowed_cases is not None and str(ex.example_id) not in method_allowed_ids:
                                     continue
+                                if method_allowed_cases is not None:
+                                    allowed_meta = method_allowed_cases.get(str(ex.example_id), {})
+                                    expected_gold = allowed_meta.get("gold_answer_canonical") or allowed_meta.get("gold_answer")
+                                    expected_question = str(allowed_meta.get("question") or allowed_meta.get("problem_text") or "").strip()
+                                    if expected_gold is not None:
+                                        expected_can = canonicalize_answer(str(expected_gold), dataset=dataset)
+                                        actual_can = canonicalize_answer(str(ex.answer), dataset=dataset)
+                                        if expected_can is not None and actual_can != expected_can:
+                                            raise RuntimeError(
+                                                "allowed-example-id gold mismatch for "
+                                                f"{ex.example_id}: expected {expected_can!r} from allowlist, "
+                                                f"loaded {actual_can!r}; refusing API run because example_id is not stable for this dataset loader"
+                                            )
+                                    if expected_question and str(ex.question).strip() != expected_question:
+                                        raise RuntimeError(
+                                            "allowed-example-id question mismatch for "
+                                            f"{ex.example_id}; refusing API run because example_id is not stable for this dataset loader"
+                                        )
                                 if attempted >= max_attempt or scored >= target_n:
                                     break
                                 ck = CaseKey(dataset=dataset, seed=seed, budget=budget, method=f"{provider}:{method}", example_id=str(ex.example_id))
