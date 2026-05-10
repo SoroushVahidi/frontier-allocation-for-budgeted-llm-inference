@@ -1,0 +1,35 @@
+{
+  "total_latest_method_failure_records": 1159,
+  "full_count": 215,
+  "unique_full_case_ids": 174,
+  "partial_count": 464,
+  "id_only_count": 480,
+  "additional_full_cases_beyond_main": 158,
+  "method_counts": {
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal": 158,
+    "inferred_latest": 25,
+    "production_equiv_v1_loss_bank": 13,
+    "production_equiv_v1_casebook": 2,
+    "production_equiv_v1_relaxed": 13,
+    "production_equiv_v1_multibatch": 4
+  },
+  "source_counts": {
+    "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_poolfix_20260506/pal_results.csv": 48,
+    "/home/soroush/research-next-wt/outputs/production_equiv_v1_stage3_50_live_checkpoint_rerun_20260508T203036Z/live_checkpoint_results.csv": 13,
+    "/home/soroush/research-next-wt/outputs/local_latest_method_failure_inventory_20260509T205100Z/latest_method_failures.csv": 28,
+    "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/cohere_real_model_cost_normalized_validation_20260507T161935Z/per_example_records.jsonl": 58,
+    "/home/soroush/research-next-wt/outputs/production_equiv_v1_stage3_50_live_checkpoint_20260508T200357Z/live_checkpoint_results.csv": 1,
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_equiv_casebook_live_20260508T223635Z/pal_vs_prod_casebook.csv": 1,
+    "/home/soroush/research-next-wt/docs/project_handoff_20260510/canonical_failure_bank.csv": 4,
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z/cumulative_pal_vs_prod_casebook.csv": 3,
+    "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_relaxed_live_20260509T010509Z/cumulative_with_previous_casebook.csv": 7,
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_completed_20260506T125123Z/pal_results.csv": 20,
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z/pal_results.csv": 18,
+    "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round2_20260506T130225Z/pal_results.csv": 14
+  },
+  "completeness_counts": {
+    "FULL": 215,
+    "PARTIAL": 464,
+    "ID_ONLY": 480
+  }
+}
