@@ -198,6 +198,79 @@ def classify_question_shape(question: str) -> str:
     return "unknown"
 
 
+def detect_problem_domain_hint(question: str) -> str:
+    """Heuristic domain hint used for domain-aware diverse-anchor prioritization.
+
+    Returns one of: money_cost_revenue | ratio_percent | multi_step_arithmetic | unknown
+    """
+    q = (question or "").strip().lower()
+    if not q:
+        return "unknown"
+
+    # Money/cost/revenue: avoid substring traps (e.g. "perCENTage" should not trigger "cent").
+    if "$" in q:
+        return "money_cost_revenue"
+    if re.search(r"\b(cost|costs|price|prices|revenue|profit|fee|fees|dollar|dollars|cent|cents)\b", q):
+        return "money_cost_revenue"
+
+    shape = classify_question_shape(q)
+    if shape in {"ratio_percent", "multi_step_arithmetic"}:
+        return shape
+    return "unknown"
+
+
+def prioritize_diverse_prompt_anchor_ids(
+    planned_anchor_ids: list[str],
+    *,
+    domain_hint: str,
+    policy: str,
+) -> list[str]:
+    """Reorder planned diverse-anchor IDs without changing which anchors exist.
+
+    - Preserves `direct_l1_anchor` position (it is special-cased by the direct-hybrid seed logic).
+    - For unknown domains, preserves current default ordering.
+    """
+    ids = [str(x).strip() for x in (planned_anchor_ids or []) if str(x).strip()]
+    if not ids:
+        return []
+    if str(policy or "").strip() not in {"domain_aware_v1"}:
+        return list(ids)
+
+    head: list[str] = []
+    rest: list[str] = []
+    for x in ids:
+        if x == "direct_l1_anchor":
+            head.append(x)
+        else:
+            rest.append(x)
+
+    desired: list[str] = []
+    if domain_hint == "money_cost_revenue":
+        desired = ["unit_ledger_money_anchor", "equation_first_anchor"]
+    elif domain_hint == "ratio_percent":
+        desired = ["ratio_percentage_anchor", "equation_first_anchor"]
+    elif domain_hint == "multi_step_arithmetic":
+        desired = ["equation_first_anchor", "backward_check_anchor"]
+
+    if not desired:
+        # Unknown/mixed: keep original ordering.
+        return list(head + rest)
+
+    # Stable reorder: desired anchors first (in desired order), then the remaining anchors in original order.
+    out: list[str] = []
+    seen: set[str] = set()
+    out.extend(head)
+    for x in desired:
+        if x in rest and x not in seen:
+            out.append(x)
+            seen.add(x)
+    for x in rest:
+        if x not in seen:
+            out.append(x)
+            seen.add(x)
+    return out
+
+
 @dataclass
 class MethodResult:
     """Per-method result for one example."""
@@ -7111,6 +7184,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         enable_diverse_prompt_anchors: bool = False,
         diverse_prompt_anchor_budget_actions: int = 0,
         diverse_prompt_anchor_ids: tuple[str, ...] | list[str] | None = None,
+        diverse_prompt_anchor_priority_policy: str = "domain_aware_v1",
         method_name: str = "direct_reserve_frontier_gate_v1",
     ) -> None:
         super().__init__(
@@ -7184,6 +7258,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             for anchor_id in raw_anchor_ids
             if str(anchor_id).strip() in DIVERSE_PROMPT_ANCHOR_SPECS
         )
+        self.diverse_prompt_anchor_priority_policy = str(diverse_prompt_anchor_priority_policy or "").strip() or "domain_aware_v1"
         self.method_name = method_name
 
     def _compose_direct_hybrid_l1_question(self, question: str) -> str:
@@ -8261,6 +8336,14 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         diverse_anchor_skipped: list[dict[str, Any]] = []
         diverse_anchor_budget_per_anchor = max(1, int(getattr(self, "diverse_prompt_anchor_budget_actions", 0) or 0))
         remaining_budget_before_diverse_anchors = int(remaining_budget)
+        anchor_priority_policy = str(getattr(self, "diverse_prompt_anchor_priority_policy", "domain_aware_v1") or "").strip()
+        detected_domain_hint = detect_problem_domain_hint(question)
+        configured_anchor_ids = list(getattr(self, "diverse_prompt_anchor_ids", DEFAULT_DIVERSE_PROMPT_ANCHOR_IDS))
+        planned_anchor_ids = prioritize_diverse_prompt_anchor_ids(
+            configured_anchor_ids,
+            domain_hint=str(detected_domain_hint),
+            policy=str(anchor_priority_policy),
+        )
         if bool(getattr(self, "enable_diverse_prompt_anchors", False)):
             seen_anchor_ids: set[str] = set()
             if direct_hybrid_execution_meta.get("executed") and hybrid_seed_answer is not None:
@@ -8279,7 +8362,6 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     }
                 )
                 seen_anchor_ids.add("direct_l1_anchor")
-            planned_anchor_ids = list(getattr(self, "diverse_prompt_anchor_ids", DEFAULT_DIVERSE_PROMPT_ANCHOR_IDS))
             for idx, anchor_id in enumerate(planned_anchor_ids):
                 anchor_id = str(anchor_id).strip()
                 if not anchor_id or anchor_id in seen_anchor_ids:
@@ -9455,8 +9537,13 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "direct_l1_anchor_support_count": int(combined_group_counts.get(direct_l1_anchor_group, 0) if direct_l1_anchor_group else 0),
             "direct_l1_anchor_selected": int(direct_l1_anchor_group == selected_group_key if direct_l1_anchor_group else 0),
             "diverse_prompt_anchors_enabled": bool(getattr(self, "enable_diverse_prompt_anchors", False)),
+            "anchor_priority_policy": str(anchor_priority_policy),
+            "detected_problem_domain": str(detected_domain_hint),
             "diverse_prompt_anchor_budget_actions": int(diverse_anchor_budget_per_anchor),
-            "diverse_prompt_anchor_ids_planned": list(getattr(self, "diverse_prompt_anchor_ids", DEFAULT_DIVERSE_PROMPT_ANCHOR_IDS)),
+            "configured_anchor_ids": list(configured_anchor_ids),
+            "prioritized_anchor_ids": list(planned_anchor_ids),
+            "diverse_prompt_anchor_ids_planned": list(configured_anchor_ids),
+            "diverse_prompt_anchor_ids_prioritized": list(planned_anchor_ids),
             "diverse_prompt_anchor_ids_executed": [
                 str(r.get("anchor_id") or "").strip()
                 for r in diverse_anchor_records

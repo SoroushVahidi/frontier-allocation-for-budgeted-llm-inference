@@ -104,6 +104,10 @@ def test_diverse_anchor_ids_are_recorded_and_direct_l1_is_preserved() -> None:
     assert md["diverse_prompt_anchor_budget_actions"] == 1
     assert md["diverse_prompt_anchor_ids_executed"] == ["direct_l1_anchor", "equation_first_anchor", "ratio_percentage_anchor"]
     assert md["diverse_prompt_anchor_skipped"] == []
+    assert md["anchor_priority_policy"] == "domain_aware_v1"
+    assert md["detected_problem_domain"] == "money_cost_revenue"
+    assert md["configured_anchor_ids"] == ["direct_l1_anchor", "equation_first_anchor", "ratio_percentage_anchor"]
+    assert md["prioritized_anchor_ids"] == ["direct_l1_anchor", "equation_first_anchor", "ratio_percentage_anchor"]
 
 
 def test_diverse_anchors_create_multiple_groups_and_entropy_metadata() -> None:
@@ -114,6 +118,10 @@ def test_diverse_anchors_create_multiple_groups_and_entropy_metadata() -> None:
 
     md = ctrl.run("A ratio percentage problem.", "40").metadata
 
+    anchor_meta = md["diverse_prompt_anchor_metadata"]
+    anchor_ids = [row["anchor_id"] for row in anchor_meta]
+    assert anchor_ids == ["direct_l1_anchor", "ratio_percentage_anchor", "equation_first_anchor"]
+    assert md["detected_problem_domain"] == "ratio_percent"
     assert md["candidate_pool_answer_group_count"] == 4
     assert md["candidate_pool_answer_group_count_after_anchor"] == 4
     assert md["answer_group_entropy"] > 0.0
@@ -163,11 +171,59 @@ def test_diverse_anchor_skips_are_recorded_when_budget_exhausted() -> None:
     assert md["diverse_prompt_anchor_budget_actions"] == 1
     assert md["remaining_budget_before_diverse_anchors"] == 2
     assert md["remaining_budget_after_diverse_anchors"] == 0
-    assert md["diverse_prompt_anchor_ids_executed"] == ["direct_l1_anchor", "equation_first_anchor", "unit_ledger_money_anchor"]
+    assert md["detected_problem_domain"] == "ratio_percent"
+    assert md["prioritized_anchor_ids"] == [
+        "direct_l1_anchor",
+        "ratio_percentage_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "backward_check_anchor",
+    ]
+    assert md["diverse_prompt_anchor_ids_executed"] == ["direct_l1_anchor", "ratio_percentage_anchor", "equation_first_anchor"]
     skipped = md["diverse_prompt_anchor_skipped"]
     skipped_ids = [row.get("anchor_id") for row in skipped]
-    assert skipped_ids == ["ratio_percentage_anchor", "backward_check_anchor"]
+    assert skipped_ids == ["unit_ledger_money_anchor", "backward_check_anchor"]
     assert all(row.get("skip_reason") == "insufficient_remaining_budget" for row in skipped)
+
+
+def test_budget4_money_domain_prioritizes_unit_ledger_then_equation_first() -> None:
+    ctrl = _controller(
+        ["10", "20", "30", "40"],
+        ("direct_l1_anchor", "equation_first_anchor", "unit_ledger_money_anchor", "ratio_percentage_anchor", "backward_check_anchor"),
+        max_actions_per_problem=4,
+    )
+    md = ctrl.run("A money word problem about costs and revenue.", "40").metadata
+    assert md["detected_problem_domain"] == "money_cost_revenue"
+    assert md["diverse_prompt_anchor_ids_executed"] == ["direct_l1_anchor", "unit_ledger_money_anchor", "equation_first_anchor"]
+
+
+def test_budget4_multi_step_arithmetic_prioritizes_backward_check_second() -> None:
+    ctrl = _controller(
+        ["10", "20", "30", "40"],
+        ("direct_l1_anchor", "equation_first_anchor", "unit_ledger_money_anchor", "ratio_percentage_anchor", "backward_check_anchor"),
+        max_actions_per_problem=4,
+    )
+    md = ctrl.run("John has 3 apples then buys 4 more. What is the total?", "7").metadata
+    assert md["detected_problem_domain"] == "multi_step_arithmetic"
+    assert md["diverse_prompt_anchor_ids_executed"] == ["direct_l1_anchor", "equation_first_anchor", "backward_check_anchor"]
+
+
+def test_budget4_unknown_domain_falls_back_to_default_order() -> None:
+    ctrl = _controller(
+        ["10", "20", "30", "40"],
+        ("direct_l1_anchor", "equation_first_anchor", "unit_ledger_money_anchor", "ratio_percentage_anchor", "backward_check_anchor"),
+        max_actions_per_problem=4,
+    )
+    md = ctrl.run("Solve for x in x + 2 = 5.", "3").metadata
+    assert md["detected_problem_domain"] == "unknown"
+    assert md["prioritized_anchor_ids"] == [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor",
+    ]
+    assert md["diverse_prompt_anchor_ids_executed"] == ["direct_l1_anchor", "equation_first_anchor", "unit_ledger_money_anchor"]
 
 
 def test_diverse_anchor_scaffolding_uses_simulated_generator_without_api_keys(monkeypatch) -> None:
