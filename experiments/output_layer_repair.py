@@ -802,7 +802,7 @@ def augment_final_nodes_with_metadata_frontier(
     out: list[dict[str, Any]] = list(final_nodes)
     pool_rows = metadata.get("selector_candidate_pool") or []
     has_direct_hybrid = any(
-        isinstance(r, dict) and str(r.get("source_metadata") or "").strip() == "direct_hybrid_seed" for r in pool_rows
+        isinstance(r, dict) and str(r.get("source_metadata") or "").strip() in {"direct_hybrid_seed", "direct_l1_anchor"} for r in pool_rows
     )
     existing: set[str] = {str(n.get("branch_id") or "") for n in out if n.get("branch_id")}
     existing_idx: dict[str, int] = {
