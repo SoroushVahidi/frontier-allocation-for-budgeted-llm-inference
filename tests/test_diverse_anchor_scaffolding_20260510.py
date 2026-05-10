@@ -65,11 +65,11 @@ class _NoFrontier:
         )
 
 
-def _controller(answers: list[str], anchor_ids: tuple[str, ...]) -> DirectReserveFrontierGateController:
+def _controller(answers: list[str], anchor_ids: tuple[str, ...], *, max_actions_per_problem: int = 10) -> DirectReserveFrontierGateController:
     return DirectReserveFrontierGateController(
         _MockGenerator(answers),
         _MockScorer(),
-        max_actions_per_problem=10,
+        max_actions_per_problem=int(max_actions_per_problem),
         direct_reserve_attempts_override=1,
         enable_direct_hybrid_seed=True,
         direct_hybrid_seed_budget_actions=1,
@@ -101,6 +101,9 @@ def test_diverse_anchor_ids_are_recorded_and_direct_l1_is_preserved() -> None:
     pool_anchor_ids = {row.get("anchor_id") for row in pool if row.get("anchor_id")}
     assert {"direct_l1_anchor", "equation_first_anchor", "ratio_percentage_anchor"}.issubset(pool_anchor_ids)
     assert all("answer_group" in row for row in pool)
+    assert md["diverse_prompt_anchor_budget_actions"] == 1
+    assert md["diverse_prompt_anchor_ids_executed"] == ["direct_l1_anchor", "equation_first_anchor", "ratio_percentage_anchor"]
+    assert md["diverse_prompt_anchor_skipped"] == []
 
 
 def test_diverse_anchors_create_multiple_groups_and_entropy_metadata() -> None:
@@ -146,6 +149,25 @@ def test_frontier_collapse_metadata_marks_low_diversity() -> None:
     assert md["candidate_pool_answer_group_count_after_anchor"] == 1
     assert md["answer_group_entropy"] == 0.0
     assert md["frontier_collapse_detected"] is True
+
+
+def test_diverse_anchor_skips_are_recorded_when_budget_exhausted() -> None:
+    ctrl = _controller(
+        ["10", "20", "30", "40"],
+        ("direct_l1_anchor", "equation_first_anchor", "unit_ledger_money_anchor", "ratio_percentage_anchor", "backward_check_anchor"),
+        max_actions_per_problem=4,
+    )
+
+    md = ctrl.run("A ratio percentage problem.", "40").metadata
+
+    assert md["diverse_prompt_anchor_budget_actions"] == 1
+    assert md["remaining_budget_before_diverse_anchors"] == 2
+    assert md["remaining_budget_after_diverse_anchors"] == 0
+    assert md["diverse_prompt_anchor_ids_executed"] == ["direct_l1_anchor", "equation_first_anchor", "unit_ledger_money_anchor"]
+    skipped = md["diverse_prompt_anchor_skipped"]
+    skipped_ids = [row.get("anchor_id") for row in skipped]
+    assert skipped_ids == ["ratio_percentage_anchor", "backward_check_anchor"]
+    assert all(row.get("skip_reason") == "insufficient_remaining_budget" for row in skipped)
 
 
 def test_diverse_anchor_scaffolding_uses_simulated_generator_without_api_keys(monkeypatch) -> None:
