@@ -148,19 +148,31 @@ def main() -> None:
         pool = pmd.get("selector_candidate_pool") or []
         pool_ans = _j([r.get("predicted_answer") for r in pool if isinstance(r, dict)])
 
+        pal_present_not_selected = int(git == 1 and pal_exact == 0)
+        pal_gold_absent = int(git == 0 and d3 == 0)
+
         row = {
             "example_id": eid,
             "question": q,
             "gold_answer": gold,
+            "external_final_answer": ext_ans,
+            "external_exact": ex_exact,
             "external_l1_max_final_answer": ext_ans,
             "external_l1_max_exact": ex_exact,
             "pal_final_answer": pal_ans,
             "pal_exact": pal_exact,
             "pair_outcome": outcome,
+            "both_correct": int(outcome == "both_correct"),
+            "external_correct_pal_wrong": int(outcome == "external_correct_pal_wrong"),
+            "pal_correct_external_wrong": int(outcome == "pal_correct_external_wrong"),
+            "both_wrong": int(outcome == "both_wrong"),
             "external_l1_max_candidate_answers_json": _external_candidate_answers(emd),
             "external_l1_max_discovery3": "unavailable",
             "pal_corrected_gold_in_tree": git,
+            "pal_discovery3": d3,
             "pal_discovery3_candidate_gold_present": d3,
+            "pal_present_not_selected": pal_present_not_selected,
+            "pal_gold_absent": pal_gold_absent,
             "pal_final_answer_source": p.get("final_answer_source") or "",
             "pal_selected_group": str(pmd.get("selected_group") or ""),
             "pal_frontier_tiebreak_triggered": int(bool(pmd.get("frontier_tiebreak_triggered"))),

@@ -8,6 +8,7 @@ from collections import Counter, defaultdict
 import math
 import re
 from typing import Any, Callable, Protocol
+import hashlib
 import json
 import os
 
@@ -16,15 +17,21 @@ from sklearn.linear_model import LogisticRegression
 
 from experiments.branching import BranchState
 from experiments.data import extract_final_answer
+from experiments.adaptive_retry_router import AdaptiveRouterV3Config, choose_adaptive_retry_scaffold_v3, compute_adaptive_retry_features
+from experiments.final_target_verifier import final_target_verifier_features, select_with_final_target_verifier_v1
 from experiments.direct_hybrid_selection import resolve_direct_hybrid_seed_overlay
-from experiments.pal_executor import execute_pal_code
+from experiments.pal_executor import execute_pal_code, extract_pal_stdout_numeric_candidate
 from experiments.frontier_max_support_tiebreak import (
     build_merged_support_histogram_for_tiebreak,
     normalize_answer_group_key,
     pick_answer_text_for_normalized_group,
     resolve_frontier_bias_max_support_tiebreak,
 )
-from experiments.output_layer_repair import decide_pal_strong_overlay_promotion
+from experiments.output_layer_repair import (
+    decide_pal_strong_overlay_promotion,
+    decide_structural_commitment_v1,
+    decide_track_b_overlay_commitment_gate,
+)
 from experiments.objective_function_stack import compute_process_quality, compute_target_completion
 from experiments.problem_type_utils import classify_problem_type
 from experiments.prm_partial_scorer import PartialBranchScorer
@@ -47,6 +54,7 @@ from experiments.prm_step_verifier_rerank import (
 )
 from experiments.selector_error_features import build_group_feature_rows
 from experiments.verifiers import CandidateVerifier
+from experiments.targeted_discovery_retry import build_final_target_extraction_repair_prompt, build_prompt
 from scripts.direct_reserve_learned_override_utils import (
     DEFAULT_MODEL_TYPE as DIRECT_RESERVE_LEARNED_OVERRIDE_DEFAULT_MODEL,
     build_runtime_answer_group_candidates,
@@ -221,6 +229,75 @@ class BestOfNController(BaseController):
             avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)),
             budget_exhausted=actions >= self.max_actions,
             metadata={"n_candidates": self.n_candidates},
+        )
+
+
+class SelfConsistencyFairController(BaseController):
+    """Fair self-consistency baseline with deterministic majority vote."""
+
+    def __init__(
+        self,
+        generator: BranchGenerator,
+        scorer: BranchScorer,
+        max_actions_per_problem: int,
+        *,
+        n_samples: int,
+        method_name: str,
+    ) -> None:
+        super().__init__(generator, scorer, max_actions_per_problem)
+        self.n_samples = max(1, int(n_samples))
+        self.method_name = method_name
+
+    def run(self, question: str, gold_answer: str) -> MethodResult:
+        actions = expansions = verifications = 0
+        branches = [self.generator.init_branch(f"sc_{i}") for i in range(self.n_samples)]
+        surviving_trace: list[int] = []
+        answers: list[str] = []
+        normalized_to_raw: dict[str, str] = {}
+
+        for branch in branches:
+            while actions < self.max_actions and not branch.is_done and not branch.is_pruned:
+                self.generator.expand(branch, question, gold_answer)
+                actions += 1
+                expansions += 1
+                surviving_trace.append(sum(1 for b in branches if not b.is_done and not b.is_pruned))
+            if actions < self.max_actions:
+                self.generator.verify(branch, question)
+                actions += 1
+                verifications += 1
+            raw = str(branch.predicted_answer or "").strip()
+            if raw:
+                key = normalize_answer_group_key(raw)
+                if key and key not in normalized_to_raw:
+                    normalized_to_raw[key] = raw
+                if key:
+                    answers.append(key)
+
+        vote_counter = Counter(answers)
+        selected_key = ""
+        if vote_counter:
+            max_votes = max(vote_counter.values())
+            ties = sorted(k for k, v in vote_counter.items() if v == max_votes)
+            selected_key = ties[0]
+        selected_answer = normalized_to_raw.get(selected_key, selected_key) if selected_key else None
+
+        return MethodResult(
+            method=self.method_name,
+            prediction=selected_answer,
+            is_correct=self._answers_match(selected_answer, gold_answer),
+            actions_used=actions,
+            expansions=expansions,
+            verifications=verifications,
+            avg_surviving_branches=sum(surviving_trace) / max(1, len(surviving_trace)),
+            budget_exhausted=actions >= self.max_actions,
+            metadata={
+                "baseline_family": "self_consistency",
+                "n_samples": self.n_samples,
+                "answer_votes": dict(vote_counter),
+                "selected_answer": selected_answer,
+                "tie_break_rule": "max_votes_then_lexicographic_normalized_key",
+                "call_count": self.n_samples,
+            },
         )
 
 
@@ -5541,7 +5618,18 @@ class ProgramOfThoughtController(BaseController):
             avg_surviving_branches=1.0,
             budget_exhausted=exhausted,
             metadata={
+                "baseline_family": "pal_pot",
                 "pot_output": out,
+                "code_generated": bool(isinstance(out, dict) and str(out.get("program", "")).strip()),
+                "code_executed": bool(isinstance(out, dict) and out.get("execution_ok") is True),
+                "execution_error": (
+                    str(out.get("execution_error", "")).strip()
+                    if isinstance(out, dict)
+                    else ""
+                ),
+                "parsed_answer": pred_str or "",
+                "sandbox_policy": "local_pal_executor_or_generator_defined",
+                "call_count": 1,
                 "cost_proxy": {"code_generation": gen_units, "sandbox_execution": exec_units},
             },
         )
@@ -5565,12 +5653,22 @@ class S1BudgetForcingController(BaseController):
         num_ignore_think_end: int = 1,
         min_thinking_steps: int = 0,
         wait_token: str = "Wait",
+        max_forced_continuations: int | None = None,
+        faithful_mode: bool = False,
+        deviations_from_official: str = "",
         method_name: str = "external_s1_budget_forcing",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
         self.num_ignore_think_end = max(0, int(num_ignore_think_end))
         self.min_thinking_steps = max(0, int(min_thinking_steps))
         self.wait_token = wait_token
+        self.max_forced_continuations = (
+            max(0, int(max_forced_continuations))
+            if max_forced_continuations is not None
+            else None
+        )
+        self.faithful_mode = bool(faithful_mode)
+        self.deviations_from_official = str(deviations_from_official or "").strip()
         self.method_name = method_name
 
     @staticmethod
@@ -5594,6 +5692,10 @@ class S1BudgetForcingController(BaseController):
             if branch.is_done:
                 need_min_thinking = expansions < self.min_thinking_steps
                 can_force_continue = forced_continue_events < self.num_ignore_think_end
+                if self.max_forced_continuations is not None:
+                    can_force_continue = can_force_continue and (
+                        forced_continue_events < self.max_forced_continuations
+                    )
                 if need_min_thinking or can_force_continue:
                     forced_continue_events += 1
                     branch.is_done = False
@@ -5623,10 +5725,15 @@ class S1BudgetForcingController(BaseController):
             budget_exhausted=actions >= self.max_actions and not branch.is_done,
             metadata={
                 "external_baseline_family": "s1_simple_test_time_scaling",
+                "s1_faithful_enabled": self.faithful_mode,
+                "continuation_cue": self.wait_token,
                 "num_ignore_think_end": self.num_ignore_think_end,
                 "min_thinking_steps": self.min_thinking_steps,
+                "forced_continue_count": forced_continue_events,
+                "stop_boundary_detected_count": forced_continue_events,
                 "wait_token": self.wait_token,
                 "forced_continue_events": forced_continue_events,
+                "deviations_from_official": self.deviations_from_official,
                 "nominal_budget_actions": self.max_actions,
                 "realized_reasoning_tokens_estimate": realized_reasoning_tokens_estimate,
                 "final_answer_tokens_estimate": final_answer_tokens_estimate,
@@ -5658,6 +5765,11 @@ class TALEPromptBudgetingController(BaseController):
         token_budget_max: int = 512,
         token_budget_per_question_char: float = 0.75,
         token_per_action: float = 64.0,
+        prompt_template: str = "Let's think step by step and use less than {budget} tokens.",
+        budget_estimator_type: str = "char_length_linear",
+        faithful_mode: bool = False,
+        tale_variant: str = "EP",
+        deviations_from_official: str = "",
         method_name: str = "external_tale_prompt_budgeting",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -5666,6 +5778,11 @@ class TALEPromptBudgetingController(BaseController):
         self.token_budget_max = max(self.token_budget_min, int(token_budget_max))
         self.token_budget_per_question_char = max(0.0, float(token_budget_per_question_char))
         self.token_per_action = max(1.0, float(token_per_action))
+        self.prompt_template = str(prompt_template or "").strip() or "Let's think step by step and use less than {budget} tokens."
+        self.budget_estimator_type = str(budget_estimator_type or "char_length_linear").strip() or "char_length_linear"
+        self.faithful_mode = bool(faithful_mode)
+        self.tale_variant = str(tale_variant or "EP").strip() or "EP"
+        self.deviations_from_official = str(deviations_from_official or "").strip()
         self.method_name = method_name
 
     def _estimate_budget_tokens(self, question: str) -> int:
@@ -5688,10 +5805,8 @@ class TALEPromptBudgetingController(BaseController):
         budget_actions = max(1, int(round(budget_tokens / self.token_per_action)))
         allowed_actions = min(self.max_actions, budget_actions)
 
-        budgeted_question = (
-            f"{question}\n"
-            f"Let's think step by step and use less than {budget_tokens} tokens."
-        )
+        budget_text = self.prompt_template.format(budget=budget_tokens)
+        budgeted_question = f"{question}\n{budget_text}"
 
         while actions < allowed_actions and not branch.is_done and not branch.is_pruned:
             self.generator.expand(branch, budgeted_question, gold_answer)
@@ -5714,16 +5829,25 @@ class TALEPromptBudgetingController(BaseController):
             budget_exhausted=actions >= allowed_actions and not branch.is_done,
             metadata={
                 "external_baseline_family": "token_budget_aware_llm_reasoning_tale",
-                "token_budget_estimator": "char_length_linear",
+                "tale_faithful_enabled": self.faithful_mode,
+                "tale_variant": self.tale_variant,
+                "budget_estimator_type": self.budget_estimator_type,
+                "token_budget_estimator": self.budget_estimator_type,
                 "token_budget_default": self.token_budget_default,
                 "token_budget_min": self.token_budget_min,
                 "token_budget_max": self.token_budget_max,
                 "token_budget_per_question_char": self.token_budget_per_question_char,
                 "token_budget_predicted": budget_tokens,
+                "assigned_token_budget": budget_tokens,
+                "budget_prompt_text_hash": hashlib.sha256(
+                    budget_text.encode("utf-8")
+                ).hexdigest(),
+                "budget_prompt_style": self.prompt_template,
                 "token_per_action": self.token_per_action,
                 "budget_actions_equivalent": budget_actions,
                 "generated_tokens_estimate": generated_tokens_estimate,
                 "token_budget_violation": budget_violation,
+                "deviations_from_official": self.deviations_from_official,
                 "final_score": self.scorer.score_branch(branch),
             },
         )
@@ -6915,6 +7039,13 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         direct_hybrid_selection_policy: str = "",
         direct_hybrid_l1_token_budget: int | None = None,
         direct_hybrid_l1_prompt_style: str = "",
+        enable_track_b_overlay_commitment_gate: bool = False,
+        enable_structural_commitment_v1: bool = False,
+        enable_production_equiv_v1_runtime_hook: bool = False,
+        production_equiv_targeted_retry_max_extra_calls: int = 1,
+        production_equiv_allowed_targeted_retry_scaffolds: tuple[str, ...] = (),
+        production_equiv_enable_percent_base_denominator: bool = False,
+        production_equiv_enable_discovery3_candidate_diversity_selection_v1: bool = False,
         method_name: str = "direct_reserve_frontier_gate_v1",
     ) -> None:
         super().__init__(
@@ -6969,6 +7100,17 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         )
         self.direct_hybrid_l1_token_budget = direct_hybrid_l1_token_budget
         self.direct_hybrid_l1_prompt_style = str(direct_hybrid_l1_prompt_style or "").strip()
+        self.enable_track_b_overlay_commitment_gate = bool(enable_track_b_overlay_commitment_gate)
+        self.enable_structural_commitment_v1 = bool(enable_structural_commitment_v1)
+        self.enable_production_equiv_v1_runtime_hook = bool(enable_production_equiv_v1_runtime_hook)
+        self.production_equiv_targeted_retry_max_extra_calls = max(0, int(production_equiv_targeted_retry_max_extra_calls))
+        self.production_equiv_allowed_targeted_retry_scaffolds = tuple(
+            str(x).strip() for x in production_equiv_allowed_targeted_retry_scaffolds if str(x).strip()
+        )
+        self.production_equiv_enable_percent_base_denominator = bool(production_equiv_enable_percent_base_denominator)
+        self.production_equiv_enable_discovery3_candidate_diversity_selection_v1 = bool(
+            production_equiv_enable_discovery3_candidate_diversity_selection_v1
+        )
         self.method_name = method_name
 
     def _compose_direct_hybrid_l1_question(self, question: str) -> str:
@@ -7570,6 +7712,60 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "unit_tracked_answer_parseable_numeric": int(parseable),
         }
         return (str(unit_answer).strip() if unit_answer is not None and str(unit_answer).strip() else None, actions, unit_meta, trace)
+
+    @staticmethod
+    def _map_production_equiv_scaffold(router_scaffold: str) -> str:
+        mapping = {
+            "quantity_ledger": "quantity_ledger_v2_1",
+            "rate_table": "rate_table_v1",
+            "before_after_state": "before_after_state_v1",
+            "target_difference": "target_difference_v1",
+            "final_target_verifier_retry": "final_target_extraction_repair",
+        }
+        return mapping.get(str(router_scaffold or "").strip(), str(router_scaffold or "").strip())
+
+    def _build_production_equiv_retry_prompt(self, question: str, scaffold: str) -> str:
+        s = str(scaffold or "").strip()
+        if s == "quantity_ledger_v2_1":
+            return build_prompt(question, "quantity_ledger", prompt_version="quantity_ledger_v2_1")
+        if s == "rate_table_v1":
+            return build_prompt(question, "rate_table", prompt_version="v1")
+        if s == "before_after_state_v1":
+            return build_prompt(question, "before_after_state", prompt_version="v1")
+        if s == "target_difference_v1":
+            return build_prompt(question, "target_difference", prompt_version="v1")
+        if s == "final_target_extraction_repair":
+            return build_final_target_extraction_repair_prompt(question)
+        if s == "l1_style_concise_decomposition":
+            return build_prompt(question, "l1_style_concise_decomposition", prompt_version="v1")
+        return build_prompt(question, "quantity_ledger", prompt_version="quantity_ledger_v2_1")
+
+    def _run_production_equiv_targeted_retry_once(
+        self, *, question: str, gold_answer: str, scaffold: str
+    ) -> tuple[str | None, str, list[dict[str, Any]]]:
+        prompt = self._build_production_equiv_retry_prompt(question, scaffold)
+        branch = self.generator.init_branch("production_equiv_retry_0")
+        self.generator.expand(branch, prompt, gold_answer)
+        latest = branch.trace_events[-1] if branch.trace_events else {}
+        raw = str(latest.get("response_text") or latest.get("reasoning_text") or "").strip()
+        parsed = str(branch.predicted_answer or "").strip()
+        if not parsed and raw:
+            parsed = str(extract_final_answer(raw) or "").strip()
+        return (
+            (parsed if parsed else None),
+            raw,
+            [
+                {
+                    "action": "expand",
+                    "branch_id": "production_equiv_retry_0",
+                    "source": "production_equiv_targeted_retry",
+                    "prompt_text": prompt,
+                    "response_text": raw,
+                    "extracted_answer": parsed,
+                    "source_metadata": "production_equiv_targeted_retry",
+                }
+            ],
+        )
 
     def run(self, question: str, gold_answer: str) -> MethodResult:
         reserve_attempts = self._direct_reserve_attempts()
@@ -8212,38 +8408,101 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "pal_selection_reason": "not_applicable",
             "pal_selection_block_reason": "none",
             "pal_frontier_conflict": False,
+            "track_b_gate_evaluated": False,
+            "track_b_gate_decision": {},
+            "track_b_gate_override_applied": False,
         }
         if bool(getattr(self, "enable_pal_branch", False)) and pal_answer is not None:
             strong_pal = bool(int(pal_meta.get("pal_candidate_is_strong", 0)) == 1)
             frontier_weak = bool(frontier_result is None or frontier_support <= 1)
-            promote_overlay, overlay_detail, overlay_diag = decide_pal_strong_overlay_promotion(
-                combined_group_counts_base=dict(combined_group_counts_base),
-                pal_answer_raw=str(pal_answer),
-                incumbent_final_answer_raw=str(final_answer),
-                frontier_weak=bool(frontier_weak),
-                tiebreak_triggered=bool(tiebreak_meta.get("frontier_tiebreak_triggered")),
-                tiebreak_selected_group_raw=str(tiebreak_meta.get("frontier_tiebreak_selected_group") or "").strip(),
-                strong_pal=strong_pal,
-                pal_score=float(pal_meta.get("pal_score", 0.0) or 0.0),
-            )
-            pal_overlay_meta["pal_frontier_conflict"] = bool(overlay_diag.get("pal_frontier_conflict"))
-            pal_overlay_meta["pal_frontier_max_peer_histogram_support"] = overlay_diag.get(
-                "max_non_pal_histogram_support"
-            )
-            pal_overlay_meta["pal_frontier_max_peer_histogram_group_raw"] = overlay_diag.get(
-                "max_non_pal_histogram_group_raw"
-            )
-            pal_overlay_meta["tiebreak_histogram_support_at_selection"] = overlay_diag.get(
-                "tiebreak_selected_group_histogram_support"
-            )
-            if promote_overlay:
-                final_answer = pal_answer
-                pal_overlay_meta["pal_overlay_applied"] = True
-                pal_overlay_meta["pal_overlay_reason"] = "pal_promoted"
-                pal_overlay_meta["pal_selection_reason"] = str(overlay_detail)
+            skip_pal_strong_overlay = False
+            exec_px = pal_meta.get("pal_execution_result")
+            pal_flat: dict[str, Any] = {
+                "pal_candidate_answer": str(pal_meta.get("pal_candidate_answer") or "").strip(),
+                "pal_json_answer": str(pal_meta.get("pal_json_answer") or "").strip(),
+            }
+            if isinstance(exec_px, dict):
+                if not pal_flat["pal_candidate_answer"]:
+                    pal_flat["pal_candidate_answer"] = str(
+                        exec_px.get("pal_answer_normalized") or exec_px.get("pal_answer_raw") or ""
+                    ).strip()
+
+            if bool(getattr(self, "enable_track_b_overlay_commitment_gate", False)) or bool(
+                getattr(self, "enable_structural_commitment_v1", False)
+            ):
+                pal_overlay_meta["track_b_gate_evaluated"] = True
+                ov_tb_summary: dict[str, Any] | None = None
+                fa_pre_pal = final_answer
+                if fa_pre_pal is not None and str(fa_pre_pal).strip():
+                    ov_tb_summary = {"pal_overlay_previous_answer": str(fa_pre_pal).strip()}
+                if bool(getattr(self, "enable_structural_commitment_v1", False)):
+                    dr_for_gate = str(incumbent_answer).strip() if incumbent_answer is not None else ""
+                    tb_gate_out = decide_structural_commitment_v1(
+                        combined_group_counts_base=dict(combined_group_counts_base),
+                        tiebreak_meta=dict(tiebreak_meta),
+                        pal_execution_flat=dict(pal_flat),
+                        overlay_tiebreak_summary=ov_tb_summary,
+                        direct_reserve_answer_raw=dr_for_gate or None,
+                    )
+                else:
+                    tb_gate_out = decide_track_b_overlay_commitment_gate(
+                        combined_group_counts_base=dict(combined_group_counts_base),
+                        tiebreak_meta=dict(tiebreak_meta),
+                        pal_execution_flat=dict(pal_flat),
+                        overlay_tiebreak_summary=ov_tb_summary,
+                    )
+                pal_overlay_meta["track_b_gate_decision"] = dict(tb_gate_out)
+                if bool(tb_gate_out.get("should_override")):
+                    ov_ans = tb_gate_out.get("recommended_answer")
+                    if not ov_ans:
+                        rg = tb_gate_out.get("recommended_normalized_group")
+                        if isinstance(rg, str) and rg.strip():
+                            ov_ans = pick_answer_text_for_normalized_group(
+                                str(rg).strip(),
+                                direct_answers=direct_answers,
+                                incumbent_answer=incumbent_answer,
+                                frontier_answer=frontier_answer,
+                                frontier_metadata=frontier_meta,
+                                selector_candidate_pool=None,
+                            )
+                    if ov_ans:
+                        final_answer = str(ov_ans).strip()
+                        pal_overlay_meta["track_b_gate_override_applied"] = True
+                        skip_pal_strong_overlay = True
+                        pal_overlay_meta["pal_overlay_previous_answer"] = final_answer
+
+            if skip_pal_strong_overlay:
+                pal_overlay_meta["pal_overlay_reason"] = "track_b_gate_supersedes_pal_strong_overlay"
+                pal_overlay_meta["pal_selection_block_reason"] = "skipped_after_track_b_commitment_gate"
             else:
-                pal_overlay_meta["pal_overlay_reason"] = str(overlay_detail)
-                pal_overlay_meta["pal_selection_block_reason"] = str(overlay_detail)
+                promote_overlay, overlay_detail, overlay_diag = decide_pal_strong_overlay_promotion(
+                    combined_group_counts_base=dict(combined_group_counts_base),
+                    pal_answer_raw=str(pal_answer),
+                    incumbent_final_answer_raw=str(final_answer),
+                    frontier_weak=bool(frontier_weak),
+                    tiebreak_triggered=bool(tiebreak_meta.get("frontier_tiebreak_triggered")),
+                    tiebreak_selected_group_raw=str(tiebreak_meta.get("frontier_tiebreak_selected_group") or "").strip(),
+                    strong_pal=strong_pal,
+                    pal_score=float(pal_meta.get("pal_score", 0.0) or 0.0),
+                )
+                pal_overlay_meta["pal_frontier_conflict"] = bool(overlay_diag.get("pal_frontier_conflict"))
+                pal_overlay_meta["pal_frontier_max_peer_histogram_support"] = overlay_diag.get(
+                    "max_non_pal_histogram_support"
+                )
+                pal_overlay_meta["pal_frontier_max_peer_histogram_group_raw"] = overlay_diag.get(
+                    "max_non_pal_histogram_group_raw"
+                )
+                pal_overlay_meta["tiebreak_histogram_support_at_selection"] = overlay_diag.get(
+                    "tiebreak_selected_group_histogram_support"
+                )
+                if promote_overlay:
+                    final_answer = pal_answer
+                    pal_overlay_meta["pal_overlay_applied"] = True
+                    pal_overlay_meta["pal_overlay_reason"] = "pal_promoted"
+                    pal_overlay_meta["pal_selection_reason"] = str(overlay_detail)
+                else:
+                    pal_overlay_meta["pal_overlay_reason"] = str(overlay_detail)
+                    pal_overlay_meta["pal_selection_block_reason"] = str(overlay_detail)
 
         unit_track_overlay_meta: dict[str, Any] = {
             "unit_track_overlay_applied": False,
@@ -8374,7 +8633,106 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         verifications = int(frontier_result.verifications if frontier_result else 0)
         support_margin = float(frontier_support - incumbent_support)
         maturity_margin = float(frontier_maturity - len(direct_answers))
+
+        production_equiv_meta: dict[str, Any] = {
+            "production_equiv_v1_enabled": bool(getattr(self, "enable_production_equiv_v1_runtime_hook", False)),
+            "structural_commitment_enabled": bool(getattr(self, "enable_structural_commitment_v1", False)),
+            "adaptive_router_v3_features": {},
+            "final_target_verifier_features": {},
+            "runtime_targeted_retry_enabled": bool(getattr(self, "enable_production_equiv_v1_runtime_hook", False)),
+            "targeted_retry_triggered": False,
+            "targeted_retry_scaffold": "",
+            "targeted_retry_extra_calls_used": 0,
+            "targeted_retry_answer_raw": "",
+            "targeted_retry_answer_parsed": "",
+            "targeted_retry_committed": False,
+            "targeted_retry_rejection_reason": "",
+            "production_equiv_surface_source": "base",
+            "production_equiv_surface_reason": "base_or_structural_commit_selection",
+            "production_equiv_excluded_patches": [
+                "discovery3_candidate_diversity_selection_v1",
+                "unvalidated_discovery3_ratio_state_prompts",
+            ],
+        }
+        production_equiv_trace_events: list[dict[str, Any]] = []
+        if bool(getattr(self, "enable_production_equiv_v1_runtime_hook", False)):
+            router_cfg = AdaptiveRouterV3Config(
+                enable_percent_base_denominator=bool(
+                    getattr(self, "production_equiv_enable_percent_base_denominator", False)
+                )
+            )
+            router_features = compute_adaptive_retry_features(question)
+            verifier_features = final_target_verifier_features(
+                problem_text=question,
+                candidate_answer_text=str(final_answer or ""),
+                candidate_trace="",
+            )
+            production_equiv_meta["adaptive_router_v3_features"] = dict(router_features)
+            production_equiv_meta["final_target_verifier_features"] = dict(verifier_features)
+            router_decision, chosen_scaffold, _held_back = choose_adaptive_retry_scaffold_v3(
+                question, router_features, router_cfg
+            )
+            mapped_scaffold = self._map_production_equiv_scaffold(chosen_scaffold)
+            allowed = set(getattr(self, "production_equiv_allowed_targeted_retry_scaffolds", ()) or ())
+            if verifier_features.get("final_target_mismatch_risk"):
+                mapped_scaffold = "final_target_extraction_repair"
+            if mapped_scaffold and mapped_scaffold in allowed and router_decision in {"targeted_retry", "abstain", "base"}:
+                production_equiv_meta["targeted_retry_triggered"] = True
+                production_equiv_meta["targeted_retry_scaffold"] = mapped_scaffold
+                budget_room = max(0, int(self.max_actions) - int(actions_used))
+                can_call = min(
+                    int(getattr(self, "production_equiv_targeted_retry_max_extra_calls", 1)),
+                    int(budget_room),
+                )
+                if can_call >= 1:
+                    retry_ans, retry_raw, retry_trace = self._run_production_equiv_targeted_retry_once(
+                        question=question,
+                        gold_answer=gold_answer,
+                        scaffold=mapped_scaffold,
+                    )
+                    production_equiv_trace_events.extend(retry_trace)
+                    production_equiv_meta["targeted_retry_extra_calls_used"] = 1
+                    production_equiv_meta["targeted_retry_answer_raw"] = retry_raw
+                    production_equiv_meta["targeted_retry_answer_parsed"] = str(retry_ans or "")
+                    actions_used += 1
+                    expansions += 1
+                    if retry_ans is not None and str(retry_ans).strip():
+                        selector_md: dict[str, Any] = {}
+                        sel = select_with_final_target_verifier_v1(
+                            [
+                                {"answer": str(final_answer or ""), "source": "our_candidate", "confidence": 0.55},
+                                {"answer": str(retry_ans), "source": "retry_candidate", "confidence": 0.60},
+                            ],
+                            question,
+                            verifier_features,
+                            selector_md,
+                        )
+                        if str(sel.get("selected_source") or "") == "retry_candidate":
+                            final_answer = str(retry_ans).strip()
+                            production_equiv_meta["targeted_retry_committed"] = True
+                            production_equiv_meta["production_equiv_surface_source"] = "targeted_retry_committed"
+                            production_equiv_meta["production_equiv_surface_reason"] = str(
+                                sel.get("selection_reason") or "verifier_retry_preferred"
+                            )
+                        else:
+                            production_equiv_meta["production_equiv_surface_source"] = "targeted_retry_rejected"
+                            production_equiv_meta["targeted_retry_rejection_reason"] = str(
+                                sel.get("selection_reason") or "verifier_kept_base_answer"
+                            )
+                    else:
+                        production_equiv_meta["production_equiv_surface_source"] = "targeted_retry_rejected"
+                        production_equiv_meta["targeted_retry_rejection_reason"] = "retry_answer_missing_or_unparseable"
+                else:
+                    production_equiv_meta["targeted_retry_rejection_reason"] = "no_budget_for_extra_retry_call"
+            else:
+                production_equiv_meta["targeted_retry_rejection_reason"] = "no_validated_retry_scaffold_or_not_triggered"
+            if bool(getattr(self, "enable_structural_commitment_v1", False)):
+                if production_equiv_meta["production_equiv_surface_source"] == "base":
+                    production_equiv_meta["production_equiv_surface_source"] = "structural_commit"
+                    production_equiv_meta["production_equiv_surface_reason"] = "structural_commit_enabled_base_selected"
+
         action_trace = list(frontier_meta.get("action_trace", [])) if isinstance(frontier_meta.get("action_trace", []), list) else []
+        action_trace.extend(production_equiv_trace_events)
         hs_group_sel = normalize_answer_group_key(str(hybrid_seed_answer or "")) or "__unknown__"
         final_g_sel = _normalize_answer(final_answer) or "__unknown__"
         for ev in hybrid_seed_trace_events:
@@ -8711,6 +9069,13 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                 }
             )
 
+        selector_candidate_pool = merge_pal_execution_into_selector_candidate_pool(
+            selector_candidate_pool,
+            pal_meta,
+            actions_used=int(actions_used),
+            selected_group_key=str(selected_group_key),
+        )
+
         metadata = {
             "method_family": "diagnostic_direct_reserve_frontier_gate",
             "diagnostic_only": True,
@@ -8804,6 +9169,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "direct_hybrid_seed_execution": dict(direct_hybrid_execution_meta),
             "direct_hybrid_overlay": dict(direct_hybrid_overlay_meta),
             **tiebreak_meta,
+            **production_equiv_meta,
         }
         if bool(getattr(self, "enable_pal_branch", False)):
             metadata["pal_answer"] = pal_answer
@@ -9862,6 +10228,9 @@ class L1LengthControlController(BaseController):
         token_budget: int = 512,
         token_per_action: float = 64.0,
         prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        fair_mode: bool = False,
+        not_official_external_method: bool = False,
+        deviations_from_official: str = "",
         method_name: str = "external_l1_exact",
     ) -> None:
         super().__init__(generator, scorer, max_actions_per_problem)
@@ -9872,6 +10241,9 @@ class L1LengthControlController(BaseController):
         self.token_budget = max(1, int(token_budget))
         self.token_per_action = max(1.0, float(token_per_action))
         self.prompt_style = prompt_style.strip() if prompt_style.strip() else "Let's think step by step."
+        self.fair_mode = bool(fair_mode)
+        self.not_official_external_method = bool(not_official_external_method)
+        self.deviations_from_official = str(deviations_from_official or "").strip()
         self.method_name = method_name
 
     @staticmethod
@@ -9936,7 +10308,9 @@ class L1LengthControlController(BaseController):
             budget_exhausted=actions >= allowed_actions and not branch.is_done,
             metadata={
                 "external_baseline_family": "l1_lcpo_length_control",
+                "l1_fair_enabled": self.fair_mode,
                 "l1_control_mode": self.control_mode,
+                "not_official_external_method": self.not_official_external_method,
                 "token_budget_instruction": self.token_budget,
                 "token_per_action": self.token_per_action,
                 "budget_actions_equivalent": budget_actions,
@@ -9944,6 +10318,7 @@ class L1LengthControlController(BaseController):
                 "budget_error_tokens": budget_error,
                 "token_budget_violation": bool(violation),
                 "prompt_style": self.prompt_style,
+                "deviations_from_official": self.deviations_from_official,
                 "final_score": self.scorer.score_branch(branch),
                 "action_trace": action_trace,
                 "final_branch_states": (
@@ -9978,3 +10353,98 @@ def _normalize_answer(text: str | None) -> str:
             value = value[:-2]
         return value
     return stripped.lower()
+
+
+PAL_EXECUTION_SELECTOR_POOL_SOURCE_ID = "pal_execution"
+
+
+def _numeric_answer_token_parseable(s: str | None) -> bool:
+    """Gold-free permissive numeric check for selector-pool admission (distinct from PAL 'strong')."""
+    if s is None:
+        return False
+    t = str(s).strip().replace(",", "")
+    if not t:
+        return False
+    try:
+        float(t)
+        return True
+    except ValueError:
+        return False
+
+
+def merge_pal_execution_into_selector_candidate_pool(
+    selector_candidate_pool: list[dict[str, Any]],
+    pal_meta: dict[str, Any],
+    *,
+    actions_used: int,
+    selected_group_key: str,
+) -> list[dict[str, Any]]:
+    """Attach PAL interpreter outputs as explicit pool rows for offline gold-absent diagnostics (gold-free).
+
+    Merges ``pal_answer_normalized``, ``pal_answer_raw``, and stdout-derived numeric when parseable,
+    deduped by controller ``_normalize_answer`` group vs existing ``predicted_answer`` rows.
+    """
+    pool = list(selector_candidate_pool)
+    if int(pal_meta.get("pal_budget_cost_observed", 0) or 0) <= 0:
+        return pool
+
+    er = pal_meta.get("pal_execution_result")
+    if not isinstance(er, dict):
+        er = {}
+
+    ordered: list[tuple[str, str]] = []
+    n = str(er.get("pal_answer_normalized") or "").strip()
+    r = str(er.get("pal_answer_raw") or "").strip()
+    st = extract_pal_stdout_numeric_candidate(str(er.get("pal_stdout") or ""))
+    for val, provenance in ((n, "pal_answer_normalized"), (r, "pal_answer_raw"), (st, "pal_stdout_numeric")):
+        if not val or not _numeric_answer_token_parseable(val):
+            continue
+        ordered.append((val, provenance))
+
+    seen_groups: set[str] = set()
+    for row in pool:
+        if not isinstance(row, dict):
+            continue
+        pa = row.get("predicted_answer")
+        if pa is None or not str(pa).strip():
+            continue
+        g = _normalize_answer(str(pa).strip()) or "__unknown__"
+        if g not in {"", "__unknown__"}:
+            seen_groups.add(g)
+
+    pal_score = 0.0
+    try:
+        pal_score = float(pal_meta.get("pal_score", 0.0) or 0.0)
+    except (TypeError, ValueError):
+        pal_score = 0.0
+
+    added = 0
+    for val, provenance in ordered:
+        g = _normalize_answer(val) or "__unknown__"
+        if g in {"", "__unknown__"}:
+            continue
+        if g in seen_groups:
+            continue
+        seen_groups.add(g)
+        bid = f"pal_execution__{added}"
+        added += 1
+        pool.append(
+            {
+                "candidate_id": bid,
+                "branch_id": bid,
+                "predicted_answer": val,
+                "normalized_answer": g,
+                "trace": "",
+                "trace_steps": [],
+                "reasoning_text": "",
+                "source_id": PAL_EXECUTION_SELECTOR_POOL_SOURCE_ID,
+                "source_family": PAL_EXECUTION_SELECTOR_POOL_SOURCE_ID,
+                "source_prior": max(0.0, min(1.0, pal_score)),
+                "branch_score": float(pal_score),
+                "cost_norm": 0.0,
+                "actions_used": int(actions_used),
+                "is_original_selected": int(g == selected_group_key),
+                "source_metadata": f"{PAL_EXECUTION_SELECTOR_POOL_SOURCE_ID}:{provenance}",
+            }
+        )
+    return pool

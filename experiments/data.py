@@ -26,6 +26,17 @@ BOXED_PATTERN = re.compile(r"\\boxed\{([^}]*)\}")
 NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?")
 MCQ_LABEL_PATTERN = re.compile(r"\b([A-E])\b")
 FRACTION_PATTERN = re.compile(r"^\s*([-+]?\d+)\s*/\s*(\d+)\s*$")
+STRICT_FINAL_ANSWER_PATTERN = re.compile(r"^\s*FINAL_ANSWER\s*:\s*(.+?)\s*$", re.IGNORECASE)
+ALIASED_FINAL_ANSWER_PATTERNS = (
+    re.compile(r"^\s*Final answer\s*:\s*(.+?)\s*$", re.IGNORECASE),
+    re.compile(r"^\s*Answer\s*:\s*(.+?)\s*$", re.IGNORECASE),
+    re.compile(r"^\s*The answer is\s+(.+?)\s*$", re.IGNORECASE),
+    re.compile(r"^\s*Therefore,\s*the answer is\s+(.+?)\s*$", re.IGNORECASE),
+    re.compile(r"^\s*So the answer is\s+(.+?)\s*$", re.IGNORECASE),
+    re.compile(r"^\s*final result is\s+(.+?)\s*$", re.IGNORECASE),
+    re.compile(r"^\s*final value is\s+(.+?)\s*$", re.IGNORECASE),
+)
+NUMERIC_ONLY_LINE_PATTERN = re.compile(r"^\s*([-+]?\d[\d,]*(?:\.\d+)?|[-+]?\d+\s*/\s*\d+)\s*$")
 
 
 def _normalize_numeric_token(token: str) -> str | None:
@@ -50,6 +61,130 @@ def _normalize_numeric_token(token: str) -> str | None:
 
 def _normalize_text_answer(text: str) -> str:
     return " ".join(text.strip().lower().split())
+
+
+def extract_final_answer_conservative_v2(answer_text: str) -> dict[str, Any]:
+    """Conservative, method-agnostic final-answer extraction with provenance metadata."""
+    text = str(answer_text or "")
+    lines = text.splitlines()
+
+    def _norm_num(s: str) -> str | None:
+        return _normalize_numeric_token(s)
+
+    # 1) strict FINAL_ANSWER line
+    strict_candidates: list[tuple[str, str]] = []
+    for line in lines:
+        m = STRICT_FINAL_ANSWER_PATTERN.match(line.strip())
+        if not m:
+            continue
+        num = _norm_num(m.group(1).strip())
+        if num is not None:
+            strict_candidates.append((num, line.strip()))
+    if strict_candidates:
+        uniq = {n for n, _ in strict_candidates}
+        if len(uniq) == 1:
+            num, raw_line = strict_candidates[-1]
+            return {
+                "answer": num,
+                "extraction_rule_used": "strict_final_answer_line",
+                "extraction_ambiguous": False,
+                "candidate_count": len(strict_candidates),
+                "final_answer_line_text": raw_line,
+            }
+        return {
+            "answer": None,
+            "extraction_rule_used": "strict_final_answer_line",
+            "extraction_ambiguous": True,
+            "candidate_count": len(strict_candidates),
+            "final_answer_line_text": "",
+        }
+
+    # 2) clear alias final-answer lines
+    alias_candidates: list[tuple[str, str]] = []
+    for line in lines:
+        line_s = line.strip()
+        for pat in ALIASED_FINAL_ANSWER_PATTERNS:
+            m = pat.match(line_s)
+            if not m:
+                continue
+            payload = m.group(1).strip().rstrip(".")
+            num = _norm_num(payload)
+            if num is not None:
+                alias_candidates.append((num, line_s))
+            break
+    if alias_candidates:
+        uniq = {n for n, _ in alias_candidates}
+        if len(uniq) == 1:
+            num, raw_line = alias_candidates[-1]
+            return {
+                "answer": num,
+                "extraction_rule_used": "alias_final_answer_line",
+                "extraction_ambiguous": False,
+                "candidate_count": len(alias_candidates),
+                "final_answer_line_text": raw_line,
+            }
+        return {
+            "answer": None,
+            "extraction_rule_used": "alias_final_answer_line",
+            "extraction_ambiguous": True,
+            "candidate_count": len(alias_candidates),
+            "final_answer_line_text": "",
+        }
+
+    # 3) boxed numeric answer
+    boxed = BOXED_PATTERN.findall(text)
+    boxed_candidates: list[tuple[str, str]] = []
+    for b in boxed:
+        nums = NUMBER_PATTERN.findall(b)
+        if len(nums) == 1:
+            nn = _norm_num(nums[0])
+            if nn is not None:
+                boxed_candidates.append((nn, b.strip()))
+    if boxed_candidates:
+        uniq = {n for n, _ in boxed_candidates}
+        if len(uniq) == 1:
+            num, raw_line = boxed_candidates[-1]
+            return {
+                "answer": num,
+                "extraction_rule_used": "boxed_numeric_answer",
+                "extraction_ambiguous": False,
+                "candidate_count": len(boxed_candidates),
+                "final_answer_line_text": raw_line,
+            }
+        return {
+            "answer": None,
+            "extraction_rule_used": "boxed_numeric_answer",
+            "extraction_ambiguous": True,
+            "candidate_count": len(boxed_candidates),
+            "final_answer_line_text": "",
+        }
+
+    # 4) last line containing only one numeric value
+    numeric_only_lines: list[tuple[str, str]] = []
+    for line in lines:
+        m = NUMERIC_ONLY_LINE_PATTERN.match(line.strip())
+        if not m:
+            continue
+        nn = _norm_num(m.group(1))
+        if nn is not None:
+            numeric_only_lines.append((nn, line.strip()))
+    if numeric_only_lines:
+        num, raw_line = numeric_only_lines[-1]
+        return {
+            "answer": num,
+            "extraction_rule_used": "last_numeric_only_line",
+            "extraction_ambiguous": False,
+            "candidate_count": len(numeric_only_lines),
+            "final_answer_line_text": raw_line,
+        }
+
+    return {
+        "answer": None,
+        "extraction_rule_used": "no_conservative_match",
+        "extraction_ambiguous": False,
+        "candidate_count": 0,
+        "final_answer_line_text": "",
+    }
 
 
 def normalize_answer_text(answer_text: str | None) -> dict[str, Any]:
@@ -115,6 +250,9 @@ def normalize_answer_text(answer_text: str | None) -> dict[str, Any]:
 
 def extract_final_answer(answer_text: str) -> str:
     """Extract a compact final answer for GSM8K/MATH-style response fields."""
+    v2 = extract_final_answer_conservative_v2(answer_text)
+    if v2.get("answer"):
+        return str(v2["answer"])
     match = ANSWER_PATTERN.search(answer_text)
     if not match:
         boxed = BOXED_PATTERN.findall(answer_text)

@@ -44,6 +44,10 @@ METHODS: dict[str, dict[str, Any]] = {
     "strict_f3_anti_collapse_weak_v1": {"runtime": "strict_f3_anti_collapse_weak_v1", "enable_output_repair": True},
     "strict_f2": {"runtime": STRICT_F2, "enable_output_repair": True},
     "external_l1_max": {"runtime": "external_l1_max", "enable_output_repair": True},
+    "external_l1_max_fair_v1": {"runtime": "external_l1_max_fair_v1", "enable_output_repair": True},
+    "external_self_consistency_4_fair_v1": {"runtime": "external_self_consistency_4_fair_v1", "enable_output_repair": True},
+    "external_self_consistency_6_fair_v1": {"runtime": "external_self_consistency_6_fair_v1", "enable_output_repair": True},
+    "external_pal_pot_fair_v1": {"runtime": "external_pal_pot_fair_v1", "enable_output_repair": True},
     "direct_reserve_semantic_frontier_v1": {"runtime": "direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "direct_reserve_semantic_frontier_v2": {"runtime": "direct_reserve_frontier_gate_v2", "enable_output_repair": True},
     "direct_reserve_semantic_frontier_v2_selection_fix_v1": {"runtime": "direct_reserve_semantic_frontier_v2_selection_fix_v1", "enable_output_repair": True},
@@ -82,6 +86,26 @@ METHODS: dict[str, dict[str, Any]] = {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
         "enable_output_repair": True,
     },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_track_b_commitment_v1": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_track_b_commitment_v1",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_adaptive_router_v3_final_target_verifier_v1": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_adaptive_router_v3_final_target_verifier_v1",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_production_equiv_v1",
+        "enable_output_repair": True,
+    },
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard": {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_finalguard",
         "enable_output_repair": True,
@@ -103,7 +127,17 @@ METHODS: dict[str, dict[str, Any]] = {
     "near_direct_reserve_frontier_gate_v1": {"runtime": "near_direct_reserve_frontier_gate_v1", "enable_output_repair": True},
     "calibrated_near_direct_frontier_gate_v1": {"runtime": "calibrated_near_direct_frontier_gate_v1", "enable_output_repair": True},
     "tale": {"runtime": "external_tale_prompt_budgeting", "enable_output_repair": True},
+    "external_tale_prompt_budgeting": {"runtime": "external_tale_prompt_budgeting", "enable_output_repair": True},
+    "external_tale_ep_prompt_budgeting_faithful_v1": {
+        "runtime": "external_tale_ep_prompt_budgeting_faithful_v1",
+        "enable_output_repair": True,
+    },
     "s1": {"runtime": "external_s1_budget_forcing", "enable_output_repair": True},
+    "external_s1_budget_forcing": {"runtime": "external_s1_budget_forcing", "enable_output_repair": True},
+    "external_s1_budget_forcing_faithful_v1": {
+        "runtime": "external_s1_budget_forcing_faithful_v1",
+        "enable_output_repair": True,
+    },
     "self_consistency_3": {"runtime": "self_consistency_3", "enable_output_repair": True},
     # Explicit root strategy seeding + semantic maturation frontier (diagnostic; see docs in experiment module).
     "strategy_seeded_semantic_diversity_frontier_v1": {
@@ -336,11 +370,11 @@ def load_allowed_case_filter(path_text: str) -> dict[tuple[str, int, int, str], 
 
 
 def ensure_cohere_readiness(*, model: str, timestamp: str) -> tuple[bool, str]:
-    key = os.getenv("COHERE_API_KEY", "")
-    checked = ["COHERE_API_KEY"]
+    key = os.getenv("COHERE_API_KEY", "") or os.getenv("CO_API_KEY", "")
+    checked = ["COHERE_API_KEY", "CO_API_KEY"]
     status = "present" if key else "missing_or_empty"
     if not key:
-        err = "COHERE_API_KEY is missing or empty"
+        err = "Neither COHERE_API_KEY nor CO_API_KEY is set"
         report_path = write_readiness_failure_report(
             timestamp=timestamp,
             checked_envs=checked,
@@ -386,8 +420,9 @@ def ensure_cohere_readiness(*, model: str, timestamp: str) -> tuple[bool, str]:
             "print('READINESS_OK',bool(r))"
         ),
     ]
+    probe_env = {**os.environ, "COHERE_API_KEY": key}
     try:
-        probe = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
+        probe = subprocess.run(cmd, capture_output=True, text=True, timeout=90, env=probe_env)
     except subprocess.TimeoutExpired:
         err = "cohere readiness probe timed out after 90s"
         report_path = write_readiness_failure_report(
@@ -677,7 +712,7 @@ def main() -> None:
     records = list(existing)
 
     api_keys = {
-        "cohere": os.getenv("COHERE_API_KEY", ""),
+        "cohere": os.getenv("COHERE_API_KEY", "") or os.getenv("CO_API_KEY", ""),
         "openai": os.getenv("OPENAI_API_KEY", ""),
     }
     ov_verifier_env = {

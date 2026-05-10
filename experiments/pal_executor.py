@@ -108,6 +108,11 @@ def _extract_numeric_from_stdout(stdout: str) -> str:
     return _normalize_numeric(lines[-1])
 
 
+def extract_pal_stdout_numeric_candidate(stdout: str) -> str:
+    """Public helper: last printable line from PAL stdout normalized to a numeric token (gold-free)."""
+    return _extract_numeric_from_stdout(stdout)
+
+
 class _PALSafetyVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
         self.error: str = ""
