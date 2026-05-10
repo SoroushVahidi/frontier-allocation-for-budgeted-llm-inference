@@ -74,7 +74,7 @@ def _controller(
     *,
     frontier_answer: str = "24",
     frontier_support: int = 2,
-    enable_guard: bool = True,
+    enable_guard: bool = False,
     enable_direct_hybrid_seed: bool = True,
     max_actions_per_problem: int = 7,
 ) -> DirectReserveDiverseRootFrontierV1GuardedController:
@@ -94,11 +94,39 @@ def _controller(
     )
 
 
-def test_regression_guard_preserves_frontier_budget_for_direct_l1_domination() -> None:
+def test_regression_guard_disabled_by_default_reports_disabled_metadata() -> None:
+    ctrl = _controller(
+        ["20", "20", "24", "24", "24"],
+        frontier_answer="24",
+        frontier_support=2,
+        enable_direct_hybrid_seed=False,
+        max_actions_per_problem=7,
+    )
+
+    result = ctrl.run("A ratio/proportion/percentage problem.", "24")
+    metadata = result.metadata
+
+    assert metadata["regression_guard_available"] is True
+    assert metadata["regression_guard_enabled"] is False
+    assert metadata["regression_guard_triggered"] is False
+    assert metadata["regression_guard_reason"] == "disabled"
+    assert metadata["detected_problem_domain"] == "ratio_percent"
+    assert metadata["diverse_prompt_anchor_ids_executed"] == [
+        "direct_l1_anchor",
+        "ratio_percentage_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "backward_check_anchor",
+    ]
+    assert metadata["answer_group_support_counts"][normalize_answer_group_key("24")] >= 2
+
+
+def test_regression_guard_can_be_enabled_for_direct_l1_domination() -> None:
     ctrl = _controller(
         ["24", "18", "80", "48", "20"],
         frontier_answer="24",
         frontier_support=2,
+        enable_guard=True,
         max_actions_per_problem=6,
     )
 
@@ -107,6 +135,7 @@ def test_regression_guard_preserves_frontier_budget_for_direct_l1_domination() -
 
     assert metadata["final_answer"] == "24"
     assert metadata["selected_group"] == "24"
+    assert metadata["regression_guard_available"] is True
     assert metadata["regression_guard_enabled"] is True
     assert metadata["regression_guard_triggered"] is True
     assert metadata["regression_guard_reason"] == "preserve_frontier_budget_after_direct_l1_domination"
@@ -132,6 +161,7 @@ def test_regression_guard_does_not_block_direct_l1_correct_improvement() -> None
         ["20", "24", "24", "20", "20"],
         frontier_answer="24",
         frontier_support=1,
+        enable_guard=True,
         max_actions_per_problem=7,
     )
 
@@ -140,6 +170,8 @@ def test_regression_guard_does_not_block_direct_l1_correct_improvement() -> None
 
     assert metadata["final_answer"] == "24"
     assert metadata["selected_group"] == "24"
+    assert metadata["regression_guard_available"] is True
+    assert metadata["regression_guard_enabled"] is True
     assert metadata["regression_guard_triggered"] is False
     assert metadata["direct_l1_anchor_dominant"] is False
     assert metadata["diverse_prompt_anchor_ids_executed"][:3] == [
@@ -155,6 +187,7 @@ def test_regression_guard_does_not_block_domain_specific_anchor_improvement() ->
         ["20", "20", "24", "24", "24"],
         frontier_answer="24",
         frontier_support=2,
+        enable_guard=True,
         enable_direct_hybrid_seed=False,
         max_actions_per_problem=7,
     )
@@ -162,6 +195,8 @@ def test_regression_guard_does_not_block_domain_specific_anchor_improvement() ->
     result = ctrl.run("A ratio/proportion/percentage problem.", "24")
     metadata = result.metadata
 
+    assert metadata["regression_guard_available"] is True
+    assert metadata["regression_guard_enabled"] is True
     assert metadata["regression_guard_triggered"] is False
     assert metadata["detected_problem_domain"] == "ratio_percent"
     assert metadata["diverse_prompt_anchor_ids_executed"] == [

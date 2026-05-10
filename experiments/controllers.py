@@ -362,6 +362,7 @@ def compute_diverse_anchor_regression_guard_state(
     group worth preserving. It does not change support accounting.
     """
     meta: dict[str, Any] = {
+        "regression_guard_available": True,
         "regression_guard_enabled": bool(enabled),
         "regression_guard_triggered": False,
         "regression_guard_reason": "disabled",
@@ -8524,6 +8525,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         diverse_anchor_records: list[dict[str, Any]] = []
         diverse_anchor_skipped: list[dict[str, Any]] = []
         diverse_anchor_regression_guard_meta: dict[str, Any] = {
+            "regression_guard_available": True,
             "regression_guard_enabled": bool(getattr(self, "enable_diverse_anchor_regression_guard", False)),
             "regression_guard_triggered": False,
             "regression_guard_reason": "disabled",
