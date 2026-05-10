@@ -2,14 +2,14 @@
 
 Environment: `HF_HUB_OFFLINE=1`, `HF_DATASETS_OFFLINE=1` (no API calls during tests).
 
-Interpreter: `/home/soroush/frontier-allocation-for-budgeted-llm-inference/.venv/bin/python` with working directory `/home/soroush/research-next-wt`.
+Interpreter: `.venv/bin/python` with working directory ``.
 
 ## Commands
 
 ```bash
-cd /home/soroush/research-next-wt
+cd 
 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
-  /home/soroush/frontier-allocation-for-budgeted-llm-inference/.venv/bin/python -m pytest -q \
+  .venv/bin/python -m pytest -q \
   tests/test_pal_executor.py \
   tests/test_pal_variant.py \
   tests/test_pal_smoke_postprocess.py \
@@ -26,9 +26,9 @@ HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
 ## validate-methods-only
 
 ```bash
-cd /home/soroush/research-next-wt
+cd 
 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
-  /home/soroush/frontier-allocation-for-budgeted-llm-inference/.venv/bin/python \
+  .venv/bin/python \
   scripts/run_cohere_real_model_cost_normalized_validation.py \
   --providers cohere \
   --datasets openai/gsm8k \

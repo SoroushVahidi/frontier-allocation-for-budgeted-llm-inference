@@ -1,5 +1,5 @@
 {
-  "run_output_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
+  "run_output_path": "outputs/cohere_paired_pal_retry_vs_external_l1_100case_20260506T185133Z",
   "paired_n": 100,
   "external_exact": 85,
   "pal_retry_exact": 84,

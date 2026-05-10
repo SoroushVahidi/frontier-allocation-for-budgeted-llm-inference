@@ -1,8 +1,8 @@
 # Offline PAL vs external paired failure mine
 
 ## Inputs
-- casebook: `/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv`
-- pal_results: `/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/pal_results.jsonl`
+- casebook: `outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv`
+- pal_results: `outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/pal_results.jsonl`
 
 ## Bucket counts
 - **both_correct**: 223

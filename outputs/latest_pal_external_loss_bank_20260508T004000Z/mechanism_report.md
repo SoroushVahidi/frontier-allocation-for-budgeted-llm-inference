@@ -38,6 +38,6 @@
 
 ## Repro
 ```bash
-cd /home/soroush/research-next-wt
-python3 /home/soroush/research-next-wt/outputs/latest_pal_external_loss_bank_20260508T004000Z/build_failure_bank.py
+cd 
+python3 outputs/latest_pal_external_loss_bank_20260508T004000Z/build_failure_bank.py
 ```

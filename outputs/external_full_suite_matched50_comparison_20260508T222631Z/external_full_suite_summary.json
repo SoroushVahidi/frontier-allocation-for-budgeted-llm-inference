@@ -26,10 +26,10 @@
   "whether_main_claim_needs_revision": true,
   "no_api_calls": false,
   "artifact_sources": {
-    "production_equiv": "/home/soroush/research-next-wt/outputs/production_equiv_v1_stage3_50_live_checkpoint_rerun_20260508T203036Z/live_checkpoint_results.csv",
-    "paired_core4": "/home/soroush/research-next-wt/outputs/fair_core4_paired_comparison_report_20260508T181853Z/per_case_outcomes.csv",
-    "prior_patch": "/home/soroush/research-next-wt/outputs/fair_core4_vs_our_method_alignment_plan_20260508T181550Z/existing_fair_comparison.csv",
-    "sc6_live": "/home/soroush/research-next-wt/outputs/external_sc6_fair_50case_live_20260508T221625Z/live_results.csv",
-    "pal_live": "/home/soroush/research-next-wt/outputs/external_pal_pot_fair_50case_live_20260508T222348Z/live_results.csv"
+    "production_equiv": "outputs/production_equiv_v1_stage3_50_live_checkpoint_rerun_20260508T203036Z/live_checkpoint_results.csv",
+    "paired_core4": "outputs/fair_core4_paired_comparison_report_20260508T181853Z/per_case_outcomes.csv",
+    "prior_patch": "outputs/fair_core4_vs_our_method_alignment_plan_20260508T181550Z/existing_fair_comparison.csv",
+    "sc6_live": "outputs/external_sc6_fair_50case_live_20260508T221625Z/live_results.csv",
+    "pal_live": "outputs/external_pal_pot_fair_50case_live_20260508T222348Z/live_results.csv"
   }
 }

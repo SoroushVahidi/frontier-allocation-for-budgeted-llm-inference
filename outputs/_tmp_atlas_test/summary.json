@@ -2,9 +2,9 @@
   "focus_rows": 3,
   "meta": {
     "api_calls": "none",
-    "casebook_path": "/home/soroush/research-next-wt/tests/fixtures/offline_pal_discovery_deficit_atlas_minimal/paired_casebook.csv",
-    "output_dir": "/home/soroush/research-next-wt/outputs/_tmp_atlas_test",
-    "pal_results_path": "/home/soroush/research-next-wt/tests/fixtures/offline_pal_discovery_deficit_atlas_minimal/pal_results.jsonl"
+    "casebook_path": "tests/fixtures/offline_pal_discovery_deficit_atlas_minimal/paired_casebook.csv",
+    "output_dir": "outputs/_tmp_atlas_test",
+    "pal_results_path": "tests/fixtures/offline_pal_discovery_deficit_atlas_minimal/pal_results.jsonl"
   },
   "operation_counts": {
     "percent": 1,

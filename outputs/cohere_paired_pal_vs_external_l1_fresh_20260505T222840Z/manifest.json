@@ -1,5 +1,5 @@
 {
-  "bundle_dir": "/home/soroush/frontier-allocation-for-budgeted-llm-inference/outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z",
+  "bundle_dir": "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z",
   "paired_methods": [
     "external_l1_max",
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"

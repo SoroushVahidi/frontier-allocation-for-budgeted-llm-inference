@@ -1,5 +1,5 @@
 {
-  "bundle": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
+  "bundle": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z",
   "fixture_anchor_subset": [
     {
       "baseline_correct": 0,

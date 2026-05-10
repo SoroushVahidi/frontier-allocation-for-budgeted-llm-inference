@@ -10,10 +10,10 @@
   "cases_total": 12,
   "meta": {
     "api_calls": "none",
-    "broad_per_case_csv": "/home/soroush/research-next-wt/outputs/offline_rate_ratio_gate_anchor_validation_20260507/per_case.csv",
-    "conservative_per_case_csv": "/home/soroush/research-next-wt/outputs/offline_rate_ratio_conservative_gate_anchor_validation_20260507/per_case.csv",
-    "output_dir": "/home/soroush/research-next-wt/outputs/offline_selector_sensitivity_replay_20260507",
-    "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv"
+    "broad_per_case_csv": "outputs/offline_rate_ratio_gate_anchor_validation_20260507/per_case.csv",
+    "conservative_per_case_csv": "outputs/offline_rate_ratio_conservative_gate_anchor_validation_20260507/per_case.csv",
+    "output_dir": "outputs/offline_selector_sensitivity_replay_20260507",
+    "paired_casebook_csv": "outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv"
   },
   "top_sensitivity_features": [
     "added_any",

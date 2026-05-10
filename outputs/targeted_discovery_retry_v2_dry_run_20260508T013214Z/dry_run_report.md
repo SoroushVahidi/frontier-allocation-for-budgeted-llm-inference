@@ -1,6 +1,6 @@
 # Targeted discovery retry v2 dry run
 
-- Output: `/home/soroush/research-next-wt/outputs/targeted_discovery_retry_v2_dry_run_20260508T013214Z`
+- Output: `outputs/targeted_discovery_retry_v2_dry_run_20260508T013214Z`
 - Selected cases: 15
 - Scaffold counts: `{'quantity_ledger': 6, 'rate_table': 3, 'before_after_state': 3, 'target_difference': 3}`
 - Prompt versions: `{'quantity_ledger': 'v2', 'rate_table': 'v1', 'before_after_state': 'v1', 'target_difference': 'v1'}`

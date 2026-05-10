@@ -1,6 +1,6 @@
 {
-  "readiness_dir": "/home/soroush/research-next-wt/outputs/external_l1_checkpoint_readiness_20260508T021402Z",
-  "case_file": "/home/soroush/research-next-wt/outputs/external_l1_checkpoint_readiness_20260508T021402Z/recommended_checkpoint_cases.csv",
+  "readiness_dir": "outputs/external_l1_checkpoint_readiness_20260508T021402Z",
+  "case_file": "outputs/external_l1_checkpoint_readiness_20260508T021402Z/recommended_checkpoint_cases.csv",
   "case_count": 40,
   "cohere_api_key_set": true,
   "external_l1_paths_exist": true,

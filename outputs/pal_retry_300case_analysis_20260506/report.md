@@ -1,7 +1,7 @@
 # PAL+retry vs external_l1_max — 300-case analysis summary (no API)
 
-- **Analysis output path:** `/home/soroush/research-next-wt/outputs/pal_retry_300case_analysis_20260506`
-- **Input run path:** `/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z`
+- **Analysis output path:** `outputs/pal_retry_300case_analysis_20260506`
+- **Input run path:** `outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z`
 
 ## Statistical conclusion
 - Gap (PAL+retry − external): **+2.67 pp** on `300` fully paired GSM8K cases.

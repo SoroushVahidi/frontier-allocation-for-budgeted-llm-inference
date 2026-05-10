@@ -1,7 +1,7 @@
 {
   "no_hf_loading": true,
-  "source_cases_csv": "/home/soroush/research-next-wt/outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
-  "local_cases_csv": "/home/soroush/research-next-wt/outputs/main_table_baselines_live_sanity_local_cases_zzzz_live/local_sanity_cases.csv",
+  "source_cases_csv": "outputs/stage3_tale_s1_pilot_readiness_20260508T032919Z/stage3_pilot_cases.csv",
+  "local_cases_csv": "outputs/main_table_baselines_live_sanity_local_cases_zzzz_live/local_sanity_cases.csv",
   "methods": [
     "external_l1_max_fair_v1",
     "external_self_consistency_4_fair_v1",

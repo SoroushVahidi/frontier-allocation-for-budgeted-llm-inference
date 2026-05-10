@@ -1,10 +1,10 @@
 # Full Failure Case Inventory Report — 20260510T115129
 
 ## SECTION 1 — Paths searched
-- /home/soroush/frontier-allocation-for-budgeted-llm-inference
-- /home/soroush/research-next-wt
-- /home/soroush/diverse-root-clean
-- /home/soroush/pal-pilot-clean
+- 
+- 
+- 
+- 
 
 ## SECTION 2 — Total latest-method failures found
 Total unique failures: 243

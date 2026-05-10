@@ -1,6 +1,6 @@
 # Consolidated PAL + Retry Research Status (No API)
 
-- Output path: `/home/soroush/research-next-wt/outputs/pal_retry_consolidated_report_20260506`
+- Output path: `outputs/pal_retry_consolidated_report_20260506`
 - API status for this report: **paused** (no new API/model-eval runs)
 
 ## Headline results

@@ -1,6 +1,6 @@
 # Targeted no-API review: `DirectReserveFrontierGateController.run()` ordering + budget
 
-Working dir: `/home/soroush/research-next-wt`
+Working dir: ``
 
 Constraints followed:
 - no Cohere/HF/OpenAI/API calls
@@ -60,7 +60,7 @@ Command:
 
 ```bash
 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 \
-/home/soroush/frontier-allocation-for-budgeted-llm-inference/.venv/bin/python -m pytest -q \
+.venv/bin/python -m pytest -q \
   tests/test_pal_variant.py \
   tests/test_guarded_k1_frontier4_method.py \
   tests/test_output_layer_frontier_surfacing.py \

@@ -1,6 +1,6 @@
 # Paired PAL vs external (100-case) analysis
 
-- Output path: /home/soroush/research-next-wt/outputs/paired_pal_external_100case_analysis_20260506
+- Output path: outputs/paired_pal_external_100case_analysis_20260506
 - Statistical conclusion: PAL is competitive and directionally better on this sample, but not yet definitive for superiority.
 - P-value (discordant exact/sign): 0.3018
 - Wilson 95% CI external: 65.70% to 82.45%

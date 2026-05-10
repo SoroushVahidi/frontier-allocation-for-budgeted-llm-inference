@@ -1,7 +1,7 @@
 {
   "timestamp_utc": "20260509T010509Z",
   "plan_dir": "outputs/pal_vs_production_multibatch_relaxed_plan_20260509T010414Z",
-  "prev_live_dir": "/home/soroush/research-next-wt/outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z",
+  "prev_live_dir": "outputs/pal_vs_production_multibatch_casebook_live_20260508T234831Z",
   "max_new_actual_calls": 900,
   "target_cum_pal_only": 30
 }

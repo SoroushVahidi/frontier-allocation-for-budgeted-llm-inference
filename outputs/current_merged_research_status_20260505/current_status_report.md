@@ -2,7 +2,7 @@
 
 ## Clean workspace
 
-- **Worktree:** `/home/soroush/research-next-wt`
+- **Worktree:** ``
 - **Branch:** `research-next-frontier-iteration`
 - **Tip:** includes squash merges **#358** then **#357** on `main` (`78252a0` → `f0bd308` ancestry under current HEAD).
 

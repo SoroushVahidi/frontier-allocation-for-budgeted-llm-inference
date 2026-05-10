@@ -1,7 +1,7 @@
 # Track B final-answer pipeline audit
 
 **Date:** 2026-05-07  
-**Worktree:** `/home/soroush/research-next-wt`  
+**Worktree:** ``  
 **Scope:** Analysis only — no API calls, no commits, no runtime changes in this step.
 
 This document explains why **`metadata.final_answer`** (controller commitment after the Track B gate) can **disagree** with **`final_answer_raw`** stored on harness rows and used for **`exact_match`**. The pilot case **`openai_gsm8k_98`** is the canonical example.
@@ -98,7 +98,7 @@ So **`final_answer_raw`** vs **`metadata.final_answer`** materially changes inte
 
 ### Evaluator stack (`evaluate_with_diagnostics`)
 
-```531:624:/home/soroush/research-next-wt/scripts/run_cohere_real_model_cost_normalized_validation.py
+```531:624:scripts/run_cohere_real_model_cost_normalized_validation.py
 def evaluate_with_diagnostics(
     ...
     repaired = apply_controller_committed_surfacing_for_evaluation(md, repaired, dataset=dataset)
@@ -118,7 +118,7 @@ PAL integration is enabled for **`tiebreak_pal`** methods when the CLI flag is s
 
 ### `apply_controller_committed_surfacing_for_evaluation`
 
-```776:799:/home/soroush/research-next-wt/experiments/output_layer_repair.py
+```776:799:experiments/output_layer_repair.py
 def apply_controller_committed_surfacing_for_evaluation(
     ...
     if ctrl_raw:
@@ -131,7 +131,7 @@ def apply_controller_committed_surfacing_for_evaluation(
 
 ### `apply_pal_residual_strong_integration_fix` — skip when overlay already applied at controller
 
-```467:471:/home/soroush/research-next-wt/experiments/output_layer_repair.py
+```467:471:experiments/output_layer_repair.py
     if isinstance(pal_already, dict) and bool(pal_already.get("pal_overlay_applied")):
         sidecar["pal_integration_fix_reason"] = "skipped_pal_overlay_already_applied"
         return out, sidecar
@@ -141,7 +141,7 @@ def apply_controller_committed_surfacing_for_evaluation(
 
 ### Row write
 
-```959:968:/home/soroush/research-next-wt/scripts/run_cohere_real_model_cost_normalized_validation.py
+```959:968:scripts/run_cohere_real_model_cost_normalized_validation.py
                                     "final_answer_raw": eval_diag.get("surfaced_final_answer_raw"),
                                     ...
                                     "controller_final_answer_raw": eval_diag.get("controller_final_answer_raw"),

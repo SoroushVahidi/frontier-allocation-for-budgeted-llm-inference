@@ -1,7 +1,7 @@
 {
-  "workspace": "/home/soroush/research-next-wt",
+  "workspace": "",
   "branch_hint": "research-next-frontier-iteration",
-  "python_interpreter_used_for_tests": "/home/soroush/frontier-allocation-for-budgeted-llm-inference/.venv/bin/python",
+  "python_interpreter_used_for_tests": ".venv/bin/python",
   "note": "research-next-wt has no .venv; tests used the sibling repo venv with cwd=research-next-wt on PYTHONPATH via execution from that directory.",
   "files_modified_tracked": [
     "experiments/branching.py",
@@ -24,5 +24,5 @@
   "other_repo_files": [
     "outputs/pal_real_implementation_audit_20260505/port_or_fix_plan.md (input audit; not modified by this port)"
   ],
-  "validate_methods_only_report_csv": "/home/soroush/research-next-wt/outputs/cohere_real_model_cost_normalized_validation_20260506T012727Z/method_validation_report.csv"
+  "validate_methods_only_report_csv": "outputs/cohere_real_model_cost_normalized_validation_20260506T012727Z/method_validation_report.csv"
 }

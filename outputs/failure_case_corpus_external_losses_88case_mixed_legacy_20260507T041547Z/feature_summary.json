@@ -11,9 +11,9 @@
     "input_paths": {
       "atlas_anchor_csv": "",
       "external_results_jsonl": "",
-      "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/paired_casebook.csv",
-      "pal_results_jsonl": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/pal_results.jsonl",
-      "path_coverage_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/path_coverage.csv",
+      "paired_casebook_csv": "outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/paired_casebook.csv",
+      "pal_results_jsonl": "outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/pal_results.jsonl",
+      "path_coverage_csv": "outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/path_coverage.csv",
       "selector_sensitivity_csv": ""
     },
     "input_sha256": {
@@ -42,9 +42,9 @@
     "api_calls": "none",
     "created_at": "2026-05-07T04:15:48.028904+00:00",
     "external_results_jsonl": "",
-    "output_dir": "/home/soroush/research-next-wt/outputs/failure_case_corpus_external_losses_88case_mixed_legacy_20260507T041547Z",
-    "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/paired_casebook.csv",
-    "pal_results_jsonl": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/pal_results.jsonl"
+    "output_dir": "outputs/failure_case_corpus_external_losses_88case_mixed_legacy_20260507T041547Z",
+    "paired_casebook_csv": "outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/paired_casebook.csv",
+    "pal_results_jsonl": "outputs/failure_case_corpus_inputs_external_losses_88case_20260507T041700Z/pal_results.jsonl"
   },
   "operation_hints": {
     "difference": 18,

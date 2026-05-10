@@ -2,7 +2,7 @@
 
 Offline telemetry only — **no** API, **no** controllers, **no** selection wiring.
 
-**Bundle:** `/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z`
+**Bundle:** `outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z`
 
 ## A. Why Track B ranking is paused
 

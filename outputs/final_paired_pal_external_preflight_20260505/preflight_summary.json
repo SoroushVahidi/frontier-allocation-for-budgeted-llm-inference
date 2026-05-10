@@ -1,5 +1,5 @@
 {
-  "output_path": "/home/soroush/research-next-wt/outputs/final_paired_pal_external_preflight_20260505",
+  "output_path": "outputs/final_paired_pal_external_preflight_20260505",
   "artifact_files_scanned": [
     "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/allowed_example_ids.jsonl",
     "outputs/cohere_paired_pal_vs_external_l1_fresh_20260505T222840Z/paired_casebook.csv",

@@ -1,6 +1,6 @@
 {
   "method_name": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1",
-  "source_integrated_replay_dir": "/home/soroush/research-next-wt/outputs/integrated_structural_commit_targeted_retry_v1_replay_20260508T020401Z",
+  "source_integrated_replay_dir": "outputs/integrated_structural_commit_targeted_retry_v1_replay_20260508T020401Z",
   "selected_case_count": 15,
   "selected_targeted_retry_case_count": 12,
   "selected_structural_only_case_count": 3,

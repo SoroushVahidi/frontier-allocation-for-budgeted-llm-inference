@@ -1,6 +1,6 @@
 {
-  "run_directory": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
-  "analysis_directory": "/home/soroush/research-next-wt/outputs/pal_retry_300case_analysis_20260506",
+  "run_directory": "outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z",
+  "analysis_directory": "outputs/pal_retry_300case_analysis_20260506",
   "paired_n": 300,
   "external_exact_count": 244,
   "pal_retry_exact_count": 252,

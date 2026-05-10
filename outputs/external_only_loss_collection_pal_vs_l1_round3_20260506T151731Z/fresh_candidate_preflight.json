@@ -1,6 +1,6 @@
 {
   "created_at_utc": "2026-05-06T15:18:30.612720+00:00",
-  "bundle_dir": "/home/soroush/research-next-wt/outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z",
+  "bundle_dir": "outputs/external_only_loss_collection_pal_vs_l1_round3_20260506T151731Z",
   "dataset": "openai/gsm8k",
   "seed": 20260501,
   "budget": 6,

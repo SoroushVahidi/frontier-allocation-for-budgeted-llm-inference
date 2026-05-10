@@ -1,6 +1,6 @@
 {
-  "readiness_dir": "/home/soroush/research-next-wt/outputs/external_l1_stage2_checkpoint_readiness_20260508T022726Z",
-  "case_file": "/home/soroush/research-next-wt/outputs/external_l1_stage2_checkpoint_readiness_20260508T022726Z/stage2_recommended_cases.csv",
+  "readiness_dir": "outputs/external_l1_stage2_checkpoint_readiness_20260508T022726Z",
+  "case_file": "outputs/external_l1_stage2_checkpoint_readiness_20260508T022726Z/stage2_recommended_cases.csv",
   "case_count": 100,
   "cohere_api_key_set": true,
   "external_l1_paths_exist": true,

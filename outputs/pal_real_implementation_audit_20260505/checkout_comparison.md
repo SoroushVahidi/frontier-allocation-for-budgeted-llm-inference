@@ -1,6 +1,6 @@
 # PAL implementation — checkout comparison
 
-| Path | `/home/soroush/research-next-wt` (clean branch) | `/home/soroush/frontier-allocation-for-budgeted-llm-inference` (local main checkout) | `/home/soroush/pal-pilot-clean` | `/home/soroush/diverse-root-clean` |
+| Path | `` (clean branch) | `` (local main checkout) | `` | `` |
 |---|---|---|---|---|
 | `experiments/pal_executor.py` | **missing** | **present** | missing | missing |
 | `tests/test_pal_executor.py` | missing | present | unknown | unknown |

@@ -17,8 +17,8 @@
   "focus_rows": 48,
   "meta": {
     "api_calls": "none",
-    "casebook_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv",
-    "output_dir": "/home/soroush/research-next-wt/outputs/offline_pal_path_coverage_counterfactual_20260506",
-    "pal_results_path": "/home/soroush/research-next-wt/outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/pal_results.jsonl"
+    "casebook_path": "outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/paired_casebook.csv",
+    "output_dir": "outputs/offline_pal_path_coverage_counterfactual_20260506",
+    "pal_results_path": "outputs/cohere_paired_pal_retry_vs_external_l1_300case_20260506T194114Z/pal_results.jsonl"
   }
 }

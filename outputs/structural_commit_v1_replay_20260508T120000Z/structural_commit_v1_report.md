@@ -1,6 +1,6 @@
 # Structural commitment v1 — offline replay
 
-Output: `/home/soroush/research-next-wt/outputs/structural_commit_v1_replay_20260508T120000Z`
+Output: `outputs/structural_commit_v1_replay_20260508T120000Z`
 
 ## Targets (PNS diagnosis case IDs)
 ```json

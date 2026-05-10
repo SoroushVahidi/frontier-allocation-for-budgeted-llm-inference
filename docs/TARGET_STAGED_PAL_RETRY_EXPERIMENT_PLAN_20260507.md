@@ -1,6 +1,6 @@
 # Target + staged subgoal PAL retry — offline experiment design (2026-05-07)
 
-**Worktree:** `/home/soroush/research-next-wt`  
+**Worktree:** ``  
 **Status:** Design / specification only — **no API executed**, **no controller changes**, **no runtime retry wiring**.  
 **Grounding:** `outputs/gold_absent_external_success_schema_mining_20260507/` (especially 11 **primary** gold-absent / external-correct rows) plus collection bundle artifacts.
 

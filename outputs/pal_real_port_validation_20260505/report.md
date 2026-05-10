@@ -1,6 +1,6 @@
 # PAL real implementation port — validation report
 
-Workspace: `/home/soroush/research-next-wt`. No Cohere/HF/OpenAI calls were made for this report beyond offline dataset access already satisfied by the test suite; `--validate-methods-only` was run in the same offline environment.
+Workspace: ``. No Cohere/HF/OpenAI calls were made for this report beyond offline dataset access already satisfied by the test suite; `--validate-methods-only` was run in the same offline environment.
 
 ## Files changed
 

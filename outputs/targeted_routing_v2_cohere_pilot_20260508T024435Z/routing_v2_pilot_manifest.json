@@ -1,5 +1,5 @@
 {
-  "source_dry_run_dir": "/home/soroush/research-next-wt/outputs/targeted_routing_v2_dry_run_20260508T023750Z",
+  "source_dry_run_dir": "outputs/targeted_routing_v2_dry_run_20260508T023750Z",
   "selected_case_count": 14,
   "max_cohere_calls": 14,
   "planned_cohere_calls": 14,

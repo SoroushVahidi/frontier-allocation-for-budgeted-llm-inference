@@ -1,11 +1,11 @@
 # Exhaustive Latest-Method Failure Audit Report — 20260510T120010
 
 ## SECTION 1 — Paths and archives searched
-- `/home/soroush/frontier-allocation-for-budgeted-llm-inference`
-- `/home/soroush/research-next-wt`
-- `/home/soroush/diverse-root-clean`
-- `/home/soroush/pal-pilot-clean`
-- `/home/soroush/migration_artifacts_20260509/` (Extracted archives: `pal_vs_production_and_track_b.tgz`, `pal_retry_vs_external_core_artifacts.tgz`, `external_baseline_and_selector_diagnostics.tgz`)
+- ``
+- ``
+- ``
+- ``
+- `` (Extracted archives: `pal_vs_production_and_track_b.tgz`, `pal_retry_vs_external_core_artifacts.tgz`, `external_baseline_and_selector_diagnostics.tgz`)
 - `/tmp/migration_audit/`
 
 Total potential failure-bearing files inspected: **6,065**

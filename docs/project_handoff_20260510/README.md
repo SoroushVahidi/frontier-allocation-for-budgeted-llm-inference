@@ -2,8 +2,8 @@
 
 ## Overview
 This folder contains a curated set of documents and artifacts consolidated from multiple local paths:
-- `/home/soroush/research-next-wt`
-- `/home/soroush/frontier-allocation-for-budgeted-llm-inference`
+- ``
+- ``
 
 The goal is to provide a GitHub-ready package for the next phase of the project, focusing on the latest failure inventories, experiment summaries, and research state.
 

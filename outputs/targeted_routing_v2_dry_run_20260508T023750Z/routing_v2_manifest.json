@@ -1,6 +1,6 @@
 {
   "no_api_calls": true,
-  "source_diagnosis_dir": "/home/soroush/research-next-wt/outputs/stage2_routing_gap_diagnosis_20260508T023750Z",
+  "source_diagnosis_dir": "outputs/stage2_routing_gap_diagnosis_20260508T023750Z",
   "selected_case_count": 14,
   "scaffold_counts": {
     "state_composition": 6,

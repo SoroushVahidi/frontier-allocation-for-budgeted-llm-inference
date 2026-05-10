@@ -1,6 +1,6 @@
 # Target-staged PAL dry-run — prompt preview
 
-_Manifest:_ `/home/soroush/research-next-wt/manifests/target_staged_pal_retry_primary_11_20260507.json`
+_Manifest:_ `manifests/target_staged_pal_retry_primary_11_20260507.json`
 
 ## Prompt 1
 

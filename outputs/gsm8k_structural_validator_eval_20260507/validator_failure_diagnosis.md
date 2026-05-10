@@ -239,7 +239,7 @@ Use this as the implementation brief when ready (verbatim):
 
 | Question | Answer |
 |----------|--------|
-| Report path | `/home/soroush/research-next-wt/outputs/gsm8k_structural_validator_eval_20260507/validator_failure_diagnosis.md` |
+| Report path | `outputs/gsm8k_structural_validator_eval_20260507/validator_failure_diagnosis.md` |
 | Main reason score failed | **Haystack/evidence asymmetry**: PAL candidates validated with **full trace+code**; **externals answer-only** → coverage/cue scores **punish correct externals** and **reward wrong PAL finals**. |
 | Validator direction still useful? | **Yes** as **tag telemetry** and **within-family** signals; **not** as a universal scalar ranker yet. |
 | Track B / A usefulness | **Track B**: scalar comparison across PAL vs external **not** useful yet; **pairwise PAL-internal** might be. **Track A**: **PAL-only** warning tags remain plausible **retry hints** after FP review. |

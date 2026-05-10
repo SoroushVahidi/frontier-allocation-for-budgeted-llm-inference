@@ -10,10 +10,10 @@
   },
   "estimated_total_calls": 180,
   "excluded_case_sources": [
-    "/home/soroush/research-next-wt/outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/selected_50case_core4_baseline_cases.csv",
-    "/home/soroush/research-next-wt/outputs/nonoverlap_our_method_discovery3_live_20260508T185859Z/selected_nonoverlap_cases.csv"
+    "outputs/main_table_core4_baselines_50case_checkpoint_20260508T174557Z/selected_50case_core4_baseline_cases.csv",
+    "outputs/nonoverlap_our_method_discovery3_live_20260508T185859Z/selected_nonoverlap_cases.csv"
   ],
-  "primary_case_pool": "/home/soroush/research-next-wt/outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
+  "primary_case_pool": "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z/all_casebook.csv",
   "all_cases_have_problem_text": true,
   "all_cases_have_gold": true,
   "no_duplicate_case_ids": true,

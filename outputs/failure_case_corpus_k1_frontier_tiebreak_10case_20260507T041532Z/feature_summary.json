@@ -10,9 +10,9 @@
     "input_paths": {
       "atlas_anchor_csv": "",
       "external_results_jsonl": "",
-      "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/paired_casebook.csv",
-      "pal_results_jsonl": "/home/soroush/frontier-allocation-for-budgeted-llm-inference/outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/per_example_records.jsonl",
-      "path_coverage_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/path_coverage.csv",
+      "paired_casebook_csv": "outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/paired_casebook.csv",
+      "pal_results_jsonl": "outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/per_example_records.jsonl",
+      "path_coverage_csv": "outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/path_coverage.csv",
       "selector_sensitivity_csv": ""
     },
     "input_sha256": {
@@ -41,9 +41,9 @@
     "api_calls": "none",
     "created_at": "2026-05-07T04:15:32.520461+00:00",
     "external_results_jsonl": "",
-    "output_dir": "/home/soroush/research-next-wt/outputs/failure_case_corpus_k1_frontier_tiebreak_10case_20260507T041532Z",
-    "paired_casebook_csv": "/home/soroush/research-next-wt/outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/paired_casebook.csv",
-    "pal_results_jsonl": "/home/soroush/frontier-allocation-for-budgeted-llm-inference/outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/per_example_records.jsonl"
+    "output_dir": "outputs/failure_case_corpus_k1_frontier_tiebreak_10case_20260507T041532Z",
+    "paired_casebook_csv": "outputs/failure_case_corpus_inputs_k1_frontier_tiebreak_10case_20260507T040900Z/paired_casebook.csv",
+    "pal_results_jsonl": "outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/per_example_records.jsonl"
   },
   "operation_hints": {
     "difference": 1,
