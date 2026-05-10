@@ -84,6 +84,68 @@ class BranchGenerator(Protocol):
     def prune(branch: BranchState) -> Any: ...
 
 
+
+
+DIVERSE_PROMPT_ANCHOR_SPECS: dict[str, dict[str, str]] = {
+    "direct_l1_anchor": {
+        "anchor_prompt_style": "direct_l1_max_budget",
+        "source_family": "direct_l1_anchor",
+        "prompt_suffix": "Let's think step by step and output the final answer within \\boxed{}. Think for maximum {token_budget} tokens.",
+    },
+    "equation_first_anchor": {
+        "anchor_prompt_style": "equation_first",
+        "source_family": "equation_first_anchor",
+        "prompt_suffix": "Start by defining variables and equations before arithmetic. Solve the equations, then output only the final numeric answer in \\boxed{}.",
+    },
+    "unit_ledger_money_anchor": {
+        "anchor_prompt_style": "unit_ledger_money",
+        "source_family": "unit_ledger_money_anchor",
+        "prompt_suffix": "Build a compact unit/entity ledger first, with special care for money, costs, prices, revenue, and totals. Reconcile units before outputting the final numeric answer in \\boxed{}.",
+    },
+    "ratio_percentage_anchor": {
+        "anchor_prompt_style": "ratio_percentage",
+        "source_family": "ratio_percentage_anchor",
+        "prompt_suffix": "Identify the base quantity for every ratio, fraction, percentage, or proportion before computing. State the base explicitly, then output the final numeric answer in \\boxed{}.",
+    },
+    "backward_check_anchor": {
+        "anchor_prompt_style": "backward_check",
+        "source_family": "backward_check_anchor",
+        "prompt_suffix": "Solve using backward checks or inverse reasoning where helpful. Verify the final value against the original quantities, then output the final numeric answer in \\boxed{}.",
+    },
+    "decomposition_anchor": {
+        "anchor_prompt_style": "decomposition",
+        "source_family": "decomposition_anchor",
+        "prompt_suffix": "Decompose the problem into subgoals and solve them in dependency order. Keep intermediate quantities labeled, then output the final numeric answer in \\boxed{}.",
+    },
+}
+
+DEFAULT_DIVERSE_PROMPT_ANCHOR_IDS: tuple[str, ...] = (
+    "direct_l1_anchor",
+    "equation_first_anchor",
+    "unit_ledger_money_anchor",
+    "ratio_percentage_anchor",
+    "backward_check_anchor",
+)
+
+
+def compute_answer_group_entropy_from_counts(counts: dict[str, Any] | Counter[str]) -> float:
+    """Return unnormalized Shannon entropy over answer-group support counts (natural log)."""
+    vals: list[int] = []
+    for v in dict(counts or {}).values():
+        try:
+            iv = int(v)
+        except Exception:
+            continue
+        if iv > 0:
+            vals.append(iv)
+    total = sum(vals)
+    if total <= 0 or len(vals) <= 1:
+        return 0.0
+    entropy = 0.0
+    for iv in vals:
+        p = iv / total
+        entropy -= p * math.log(max(1e-12, p))
+    return float(entropy)
 CASE_SPLIT_LABELS: tuple[str, ...] = (
     "counting_combinatorics",
     "case_split",
@@ -5868,7 +5930,7 @@ class DirectReserveGateRerankController(BaseController):
         max_actions_per_problem: int,
         *,
         strict_controller_factory: callable,
-        direct_prompt_style: str = "Let's think step by step and output the final answer within \boxed{}.",
+        direct_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
         direct_prompt_styles: list[str] | None = None,
         direct_reserve_attempts_override: int | None = None,
         direct_token_budget: int = 512,
@@ -6228,7 +6290,7 @@ class DirectReserveGateRerankControllerV2(DirectReserveGateRerankController):
         max_actions_per_problem: int,
         *,
         strict_controller_factory: callable,
-        direct_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        direct_prompt_style: str = "Let's think step by step and output the final answer within \\\boxed{}.",
         direct_prompt_styles: list[str] | None = None,
         direct_reserve_attempts_override: int | None = None,
         direct_token_budget: int = 384,
@@ -6511,7 +6573,7 @@ class DirectReserveGateRerankControllerV2ThresholdedOrdered(DirectReserveGateRer
         max_actions_per_problem: int,
         *,
         strict_controller_factory: callable,
-        direct_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        direct_prompt_style: str = "Let's think step by step and output the final answer within \\\boxed{}.",
         direct_prompt_styles: list[str] | None = None,
         direct_reserve_attempts_override: int | None = None,
         direct_token_budget: int = 384,
@@ -7006,7 +7068,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         max_actions_per_problem: int,
         *,
         strict_controller_factory: callable,
-        direct_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        direct_prompt_style: str = "Let's think step by step and output the final answer within \\\boxed{}.",
         direct_prompt_styles: list[str] | None = None,
         direct_reserve_attempts_override: int | None = None,
         direct_token_budget: int = 512,
@@ -7046,6 +7108,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         production_equiv_allowed_targeted_retry_scaffolds: tuple[str, ...] = (),
         production_equiv_enable_percent_base_denominator: bool = False,
         production_equiv_enable_discovery3_candidate_diversity_selection_v1: bool = False,
+        enable_diverse_prompt_anchors: bool = False,
+        diverse_prompt_anchor_budget_actions: int = 0,
+        diverse_prompt_anchor_ids: tuple[str, ...] | list[str] | None = None,
         method_name: str = "direct_reserve_frontier_gate_v1",
     ) -> None:
         super().__init__(
@@ -7111,6 +7176,14 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         self.production_equiv_enable_discovery3_candidate_diversity_selection_v1 = bool(
             production_equiv_enable_discovery3_candidate_diversity_selection_v1
         )
+        self.enable_diverse_prompt_anchors = bool(enable_diverse_prompt_anchors)
+        self.diverse_prompt_anchor_budget_actions = max(0, int(diverse_prompt_anchor_budget_actions))
+        raw_anchor_ids = diverse_prompt_anchor_ids if diverse_prompt_anchor_ids is not None else DEFAULT_DIVERSE_PROMPT_ANCHOR_IDS
+        self.diverse_prompt_anchor_ids = tuple(
+            str(anchor_id).strip()
+            for anchor_id in raw_anchor_ids
+            if str(anchor_id).strip() in DIVERSE_PROMPT_ANCHOR_SPECS
+        )
         self.method_name = method_name
 
     def _compose_direct_hybrid_l1_question(self, question: str) -> str:
@@ -7120,6 +7193,52 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         tb_i = max(1, int(tb))
         ps = self.direct_hybrid_l1_prompt_style or self.direct_prompt_style
         return f"{question}\n\n{ps} Think for maximum {tb_i} tokens."
+
+    def _compose_diverse_prompt_anchor_question(self, question: str, anchor_id: str) -> str:
+        spec = DIVERSE_PROMPT_ANCHOR_SPECS.get(str(anchor_id), {})
+        suffix_template = str(spec.get("prompt_suffix") or self.direct_prompt_style)
+        suffix = suffix_template.replace(
+            "{token_budget}",
+            str(max(1, int(self.direct_hybrid_l1_token_budget or self.direct_token_budget))),
+        )
+        return f"{question}\n\n{suffix}"
+
+    def _run_diverse_prompt_anchor_once(
+        self, *, question: str, gold_answer: str, anchor_id: str, budget_actions: int
+    ) -> tuple[str | None, int, list[dict[str, Any]]]:
+        spec = DIVERSE_PROMPT_ANCHOR_SPECS.get(str(anchor_id), {})
+        branch_id = f"{anchor_id}_0"
+        branch = self.generator.init_branch(branch_id)
+        prompt = self._compose_diverse_prompt_anchor_question(question, anchor_id)
+        used = 0
+        trace: list[dict[str, Any]] = []
+        while used < max(0, int(budget_actions)) and not branch.is_done and not branch.is_pruned:
+            self.generator.expand(branch, prompt, gold_answer)
+            used += 1
+            latest = branch.trace_events[-1] if branch.trace_events else {}
+            trace.append(
+                {
+                    "action": "expand",
+                    "branch_id": branch_id,
+                    "prompt_text": str(latest.get("prompt_text", "") or prompt),
+                    "response_text": str(latest.get("response_text", "")),
+                    "reasoning_text": str(latest.get("reasoning_text", "")),
+                    "extracted_answer": str(latest.get("extracted_answer", "") or ""),
+                    "source_metadata": str(anchor_id),
+                    "anchor_id": str(anchor_id),
+                    "anchor_prompt_style": str(spec.get("anchor_prompt_style") or anchor_id),
+                    "source_family": str(spec.get("source_family") or anchor_id),
+                }
+            )
+        answer = branch.predicted_answer
+        if (answer is None or not str(answer).strip()) and trace:
+            for key in ("extracted_answer", "reasoning_text", "response_text"):
+                raw = str(trace[-1].get(key) or "")
+                mined = raw if key == "extracted_answer" else str(extract_final_answer(raw) or "")
+                if str(mined).strip():
+                    answer = str(mined).strip()
+                    break
+        return (str(answer).strip() if answer is not None and str(answer).strip() else None), int(used), trace
 
     def _stop_additional_direct_reserve_after_attempt(
         self,
@@ -8138,6 +8257,61 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     }
                 )
 
+        diverse_anchor_records: list[dict[str, Any]] = []
+        diverse_anchor_budget_per_anchor = max(1, int(getattr(self, "diverse_prompt_anchor_budget_actions", 0) or 0))
+        if bool(getattr(self, "enable_diverse_prompt_anchors", False)):
+            seen_anchor_ids: set[str] = set()
+            if direct_hybrid_execution_meta.get("executed") and hybrid_seed_answer is not None:
+                spec = DIVERSE_PROMPT_ANCHOR_SPECS["direct_l1_anchor"]
+                diverse_anchor_records.append(
+                    {
+                        "anchor_id": "direct_l1_anchor",
+                        "anchor_prompt_style": str(spec["anchor_prompt_style"]),
+                        "source_family": str(spec["source_family"]),
+                        "candidate_answer": str(hybrid_seed_answer),
+                        "answer_group": normalize_answer_group_key(str(hybrid_seed_answer)) or "__unknown__",
+                        "budget_cost_observed": int(direct_hybrid_execution_meta.get("direct_hybrid_seed_budget_cost_observed", 0) or 0),
+                        "executed": True,
+                        "source_metadata": "direct_l1_anchor",
+                        "trace_events": list(hybrid_seed_trace_events),
+                    }
+                )
+                seen_anchor_ids.add("direct_l1_anchor")
+            for anchor_id in getattr(self, "diverse_prompt_anchor_ids", DEFAULT_DIVERSE_PROMPT_ANCHOR_IDS):
+                anchor_id = str(anchor_id).strip()
+                if not anchor_id or anchor_id in seen_anchor_ids:
+                    continue
+                if anchor_id == "direct_l1_anchor" and bool(getattr(self, "enable_direct_hybrid_seed", False)):
+                    # Preserve Direct L1 Anchor semantics: if the explicit hybrid seed was enabled but did not run,
+                    # do not silently spend an additional call under the diverse-anchor flag.
+                    continue
+                if remaining_budget < diverse_anchor_budget_per_anchor:
+                    break
+                ans_anchor, used_anchor, trace_anchor = self._run_diverse_prompt_anchor_once(
+                    question=question,
+                    gold_answer=gold_answer,
+                    anchor_id=anchor_id,
+                    budget_actions=diverse_anchor_budget_per_anchor,
+                )
+                direct_actions += int(used_anchor)
+                remaining_budget = max(0, remaining_budget - int(used_anchor))
+                spec = DIVERSE_PROMPT_ANCHOR_SPECS.get(anchor_id, {})
+                if ans_anchor is not None and str(ans_anchor).strip():
+                    diverse_anchor_records.append(
+                        {
+                            "anchor_id": anchor_id,
+                            "anchor_prompt_style": str(spec.get("anchor_prompt_style") or anchor_id),
+                            "source_family": str(spec.get("source_family") or anchor_id),
+                            "candidate_answer": str(ans_anchor).strip(),
+                            "answer_group": normalize_answer_group_key(str(ans_anchor)) or "__unknown__",
+                            "budget_cost_observed": int(used_anchor),
+                            "executed": bool(used_anchor > 0),
+                            "source_metadata": anchor_id,
+                            "trace_events": list(trace_anchor),
+                        }
+                    )
+                seen_anchor_ids.add(anchor_id)
+
         remaining_budget = max(0, remaining_budget)
         should_expand_frontier = bool(remaining_budget > 0 and incumbent_uncertain)
 
@@ -8165,13 +8339,41 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         for _g, _c in direct_counts.items():
             combined_group_counts_base[_g] += int(_c)
 
-        # --- Direct L1 Anchor Patch ---
-        direct_l1_anchor_answer = hybrid_seed_answer
+        # --- Direct L1 Anchor + diverse prompt-anchor support accounting ---
+        if not bool(getattr(self, "enable_diverse_prompt_anchors", False)) and hybrid_seed_answer is not None:
+            spec = DIVERSE_PROMPT_ANCHOR_SPECS["direct_l1_anchor"]
+            diverse_anchor_records = [
+                {
+                    "anchor_id": "direct_l1_anchor",
+                    "anchor_prompt_style": str(spec["anchor_prompt_style"]),
+                    "source_family": str(spec["source_family"]),
+                    "candidate_answer": str(hybrid_seed_answer),
+                    "answer_group": normalize_answer_group_key(str(hybrid_seed_answer)) or "__unknown__",
+                    "budget_cost_observed": int(direct_hybrid_execution_meta.get("direct_hybrid_seed_budget_cost_observed", 0) or 0),
+                    "executed": bool(direct_hybrid_execution_meta.get("executed")),
+                    "source_metadata": "direct_l1_anchor",
+                    "trace_events": list(hybrid_seed_trace_events),
+                }
+            ]
+        direct_l1_record = next(
+            (
+                r
+                for r in diverse_anchor_records
+                if str(r.get("anchor_id") or "") == "direct_l1_anchor"
+                and str(r.get("candidate_answer") or "").strip()
+            ),
+            None,
+        )
+        direct_l1_anchor_answer = (
+            str(direct_l1_record.get("candidate_answer")).strip() if isinstance(direct_l1_record, dict) else hybrid_seed_answer
+        )
         direct_l1_anchor_group = normalize_answer_group_key(str(direct_l1_anchor_answer)) if direct_l1_anchor_answer else None
-        direct_l1_anchor_present = bool(direct_l1_anchor_answer)
-        if direct_l1_anchor_group and direct_l1_anchor_group != "__unknown__":
-            combined_group_counts_base[direct_l1_anchor_group] += 1
-        # ------------------------------
+        direct_l1_anchor_present = bool(direct_l1_record)
+        for anchor_record in diverse_anchor_records:
+            ag = str(anchor_record.get("answer_group") or "").strip() or "__unknown__"
+            if ag != "__unknown__":
+                combined_group_counts_base[ag] += 1
+        # ---------------------------------------------------------------
 
         frontier_support = int(frontier_support_counts.get(frontier_group, 0))
         frontier_maturity = int((frontier_result.expansions if frontier_result else 0) + (frontier_result.verifications if frontier_result else 0))
@@ -8892,25 +9094,30 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "selected": int(group_key == (_normalize_answer(final_answer) or "__unknown__")),
                 }
             )
-        if direct_hybrid_execution_meta.get("executed"):
-            hs_pred = str(hybrid_seed_answer or "").strip()
-            hs_group = _normalize_answer(hs_pred) if hs_pred else "__unknown__"
+        for anchor_record in diverse_anchor_records:
+            anchor_id = str(anchor_record.get("anchor_id") or "").strip()
+            pred = str(anchor_record.get("candidate_answer") or "").strip()
+            if not anchor_id or not pred:
+                continue
+            group = normalize_answer_group_key(pred) or "__unknown__"
             final_g = _normalize_answer(final_answer) or "__unknown__"
             final_branch_states.append(
                 {
-                    "branch_id": "direct_l1_anchor_0",
+                    "branch_id": f"{anchor_id}_0",
                     "parent_branch_id": "",
                     "branch_depth": 1,
                     "score": 1.0,
-                    "predicted_answer": hs_pred,
-                    "is_done": bool(hs_pred),
+                    "predicted_answer": pred,
+                    "is_done": bool(pred),
                     "is_pruned": False,
                     "steps": [],
-                    "trace_events": list(hybrid_seed_trace_events),
-                    "strategy_family": "direct_l1_anchor",
-                    "source": "direct_l1_anchor",
-                    "source_metadata": "direct_l1_anchor",
-                    "selected": int(hs_group == final_g),
+                    "trace_events": list(anchor_record.get("trace_events") or []),
+                    "strategy_family": str(anchor_record.get("source_family") or anchor_id),
+                    "source": anchor_id,
+                    "source_metadata": anchor_id,
+                    "anchor_id": anchor_id,
+                    "anchor_prompt_style": str(anchor_record.get("anchor_prompt_style") or anchor_id),
+                    "selected": int(group == final_g),
                 }
             )
         if int(pal_meta.get("pal_budget_cost_observed", 0) or 0) > 0:
@@ -9075,6 +9282,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "actions_used": int(actions_used),
                     "is_original_selected": int(group_key == selected_group_key),
                     "source_metadata": str(s.get("source_metadata") or "").strip(),
+                    "anchor_id": str(s.get("anchor_id") or "").strip(),
+                    "anchor_prompt_style": str(s.get("anchor_prompt_style") or "").strip(),
+                    "answer_group": group_key,
                 }
             )
 
@@ -9084,6 +9294,26 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             actions_used=int(actions_used),
             selected_group_key=str(selected_group_key),
         )
+
+        answer_group_entropy = compute_answer_group_entropy_from_counts(dict(combined_group_counts))
+        candidate_answer_groups = {
+            _normalize_answer(x.get("predicted_answer")) or "__unknown__"
+            for x in selector_candidate_pool
+        }
+        candidate_pool_answer_group_count = int(len(candidate_answer_groups))
+        per_anchor_support: dict[str, int] = {}
+        diverse_anchor_metadata: list[dict[str, Any]] = []
+        for anchor_record in diverse_anchor_records:
+            anchor_id = str(anchor_record.get("anchor_id") or "").strip()
+            ag = str(anchor_record.get("answer_group") or "").strip() or "__unknown__"
+            support = int(combined_group_counts.get(ag, 0)) if ag else 0
+            if anchor_id:
+                per_anchor_support[anchor_id] = support
+            slim = {k: v for k, v in dict(anchor_record).items() if k != "trace_events"}
+            slim["per_anchor_support"] = support
+            slim["candidate_pool_answer_group_count"] = candidate_pool_answer_group_count
+            slim["answer_group_entropy"] = float(answer_group_entropy)
+            diverse_anchor_metadata.append(slim)
 
         metadata = {
             "method_family": "diagnostic_direct_reserve_frontier_gate",
@@ -9157,7 +9387,10 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "final_branch_states": final_branch_states if bool(getattr(self, "emit_full_traces", False)) else [],
             "selector_candidate_pool": selector_candidate_pool,
             "selector_candidate_pool_size": int(len(selector_candidate_pool)),
-            "selector_candidate_answer_group_count": int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in selector_candidate_pool})),
+            "selector_candidate_answer_group_count": candidate_pool_answer_group_count,
+            "candidate_pool_answer_group_count": candidate_pool_answer_group_count,
+            "answer_group_entropy": float(answer_group_entropy),
+            "frontier_collapse_detected": bool(candidate_pool_answer_group_count <= 1 or answer_group_entropy <= 1e-12),
             "selector_candidate_pool_sources": sorted({str(x.get("source_id", "")) for x in selector_candidate_pool if str(x.get("source_id", "")).strip()}),
             "selected_group": str(
                 (_normalize_answer(final_answer) if final_answer is not None else None)
@@ -9182,8 +9415,12 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "direct_l1_anchor_added_to_pool": bool(direct_l1_anchor_present),
             "direct_l1_anchor_support_count": int(combined_group_counts.get(direct_l1_anchor_group, 0) if direct_l1_anchor_group else 0),
             "direct_l1_anchor_selected": int(direct_l1_anchor_group == selected_group_key if direct_l1_anchor_group else 0),
-            "candidate_pool_answer_group_count_before_anchor": int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in selector_candidate_pool if x.get("source_id") != "direct_l1_anchor"})),
-            "candidate_pool_answer_group_count_after_anchor": int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in selector_candidate_pool})),
+            "diverse_prompt_anchors_enabled": bool(getattr(self, "enable_diverse_prompt_anchors", False)),
+            "diverse_prompt_anchor_ids_planned": list(getattr(self, "diverse_prompt_anchor_ids", DEFAULT_DIVERSE_PROMPT_ANCHOR_IDS)),
+            "diverse_prompt_anchor_metadata": diverse_anchor_metadata,
+            "per_anchor_support": per_anchor_support,
+            "candidate_pool_answer_group_count_before_anchor": int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in selector_candidate_pool if not str(x.get("anchor_id") or "").strip() and x.get("source_id") != "direct_l1_anchor"})),
+            "candidate_pool_answer_group_count_after_anchor": candidate_pool_answer_group_count,
             **tiebreak_meta,
             **production_equiv_meta,
         }
@@ -9835,7 +10072,7 @@ class NearDirectReserveFrontierGateController(BaseController):
         strict_controller_factory: callable,
         protected_token_budget: int = 512,
         protected_token_per_action: float = 64.0,
-        protected_prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        protected_prompt_style: str = "Let's think step by step and output the final answer within \\\boxed{}.",
         frontier_override_min_support_margin: int = 1,
         frontier_override_min_maturity: int = 2,
         require_frontier_multi_evidence: bool = True,
@@ -9846,7 +10083,7 @@ class NearDirectReserveFrontierGateController(BaseController):
         self.protected_token_budget = max(1, int(protected_token_budget))
         self.protected_token_per_action = max(1.0, float(protected_token_per_action))
         self.protected_prompt_style = str(protected_prompt_style or "").strip() or (
-            "Let's think step by step and output the final answer within \\boxed{}."
+            "Let's think step by step and output the final answer within \\\boxed{}."
         )
         self.frontier_override_min_support_margin = max(1, int(frontier_override_min_support_margin))
         self.frontier_override_min_maturity = max(1, int(frontier_override_min_maturity))
@@ -10243,7 +10480,7 @@ class L1LengthControlController(BaseController):
         control_mode: str = "exact",
         token_budget: int = 512,
         token_per_action: float = 64.0,
-        prompt_style: str = "Let's think step by step and output the final answer within \\boxed{}.",
+        prompt_style: str = "Let's think step by step and output the final answer within \\\boxed{}.",
         fair_mode: bool = False,
         not_official_external_method: bool = False,
         deviations_from_official: str = "",

@@ -1,0 +1,278 @@
+{
+  "aggregate": {
+    "all_direct_l1_anchor_present": true,
+    "all_required_metadata_present": true,
+    "api_calls_made": 0,
+    "cases": 4,
+    "collapse_case_detected": true,
+    "duplicate_merge_case_passed": true,
+    "frontier_budget_preservation_case_passed": true,
+    "max_candidate_answer_group_count": 7,
+    "min_candidate_answer_group_count": 1
+  },
+  "anchors_configured": [
+    "direct_l1_anchor",
+    "equation_first_anchor",
+    "unit_ledger_money_anchor",
+    "ratio_percentage_anchor",
+    "backward_check_anchor"
+  ],
+  "audit_name": "diverse_anchor_no_api_audit_20260510",
+  "cases": [
+    {
+      "anchors_configured": [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor"
+      ],
+      "anchors_executed": [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor"
+      ],
+      "anchors_executed_count": 5,
+      "answer_group_entropy": 1.7917594692280547,
+      "answer_group_support_counts": {
+        "10": 1,
+        "20": 1,
+        "30": 1,
+        "35": 1,
+        "40": 1,
+        "45": 1
+      },
+      "api_calls_made": 0,
+      "candidate_answer_group_count": 6,
+      "candidate_pool_answer_group_count_after_anchor": 6,
+      "case_id": "diverse_groups",
+      "direct_l1_anchor_answer": "20",
+      "direct_l1_anchor_present": true,
+      "duplicate_answers_merge_correctly": true,
+      "expected_remaining_frontier_budget_after_anchors": 6,
+      "frontier_budget_preserved_after_anchor_phase": true,
+      "frontier_collapse_detected": false,
+      "frontier_executed": false,
+      "frontier_factory_budget_observed": null,
+      "gold_answer": "40",
+      "gold_in_pool": true,
+      "method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+      "per_anchor_support": {
+        "backward_check_anchor": 1,
+        "direct_l1_anchor": 1,
+        "equation_first_anchor": 1,
+        "ratio_percentage_anchor": 1,
+        "unit_ledger_money_anchor": 1
+      },
+      "prediction": "20",
+      "remaining_budget_before_frontier": 6,
+      "required_metadata_present": true,
+      "selector_candidate_pool_size": 6,
+      "selector_candidate_pool_sources": [
+        "backward_check_anchor",
+        "direct_l1_anchor",
+        "direct_reserve",
+        "equation_first_anchor",
+        "ratio_percentage_anchor",
+        "unit_ledger_money_anchor"
+      ]
+    },
+    {
+      "anchors_configured": [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor"
+      ],
+      "anchors_executed": [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor"
+      ],
+      "anchors_executed_count": 5,
+      "answer_group_entropy": 0.45056120886630463,
+      "answer_group_support_counts": {
+        "10": 1,
+        "20": 5
+      },
+      "api_calls_made": 0,
+      "candidate_answer_group_count": 2,
+      "candidate_pool_answer_group_count_after_anchor": 2,
+      "case_id": "duplicate_merge",
+      "direct_l1_anchor_answer": "20",
+      "direct_l1_anchor_present": true,
+      "duplicate_answers_merge_correctly": true,
+      "expected_remaining_frontier_budget_after_anchors": 6,
+      "frontier_budget_preserved_after_anchor_phase": true,
+      "frontier_collapse_detected": false,
+      "frontier_executed": false,
+      "frontier_factory_budget_observed": null,
+      "gold_answer": "20",
+      "gold_in_pool": true,
+      "method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+      "per_anchor_support": {
+        "backward_check_anchor": 5,
+        "direct_l1_anchor": 5,
+        "equation_first_anchor": 5,
+        "ratio_percentage_anchor": 5,
+        "unit_ledger_money_anchor": 5
+      },
+      "prediction": "20",
+      "remaining_budget_before_frontier": 6,
+      "required_metadata_present": true,
+      "selector_candidate_pool_size": 6,
+      "selector_candidate_pool_sources": [
+        "backward_check_anchor",
+        "direct_l1_anchor",
+        "direct_reserve",
+        "equation_first_anchor",
+        "ratio_percentage_anchor",
+        "unit_ledger_money_anchor"
+      ]
+    },
+    {
+      "anchors_configured": [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor"
+      ],
+      "anchors_executed": [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor"
+      ],
+      "anchors_executed_count": 5,
+      "answer_group_entropy": 0.0,
+      "answer_group_support_counts": {
+        "10": 6
+      },
+      "api_calls_made": 0,
+      "candidate_answer_group_count": 1,
+      "candidate_pool_answer_group_count_after_anchor": 1,
+      "case_id": "frontier_collapse",
+      "direct_l1_anchor_answer": "10",
+      "direct_l1_anchor_present": true,
+      "duplicate_answers_merge_correctly": true,
+      "expected_remaining_frontier_budget_after_anchors": 6,
+      "frontier_budget_preserved_after_anchor_phase": true,
+      "frontier_collapse_detected": true,
+      "frontier_executed": false,
+      "frontier_factory_budget_observed": null,
+      "gold_answer": "999",
+      "gold_in_pool": false,
+      "method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+      "per_anchor_support": {
+        "backward_check_anchor": 6,
+        "direct_l1_anchor": 6,
+        "equation_first_anchor": 6,
+        "ratio_percentage_anchor": 6,
+        "unit_ledger_money_anchor": 6
+      },
+      "prediction": "10",
+      "remaining_budget_before_frontier": 6,
+      "required_metadata_present": true,
+      "selector_candidate_pool_size": 6,
+      "selector_candidate_pool_sources": [
+        "backward_check_anchor",
+        "direct_l1_anchor",
+        "direct_reserve",
+        "equation_first_anchor",
+        "ratio_percentage_anchor",
+        "unit_ledger_money_anchor"
+      ]
+    },
+    {
+      "anchors_configured": [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor"
+      ],
+      "anchors_executed": [
+        "direct_l1_anchor",
+        "equation_first_anchor",
+        "unit_ledger_money_anchor",
+        "ratio_percentage_anchor",
+        "backward_check_anchor"
+      ],
+      "anchors_executed_count": 5,
+      "answer_group_entropy": 1.945910149055313,
+      "answer_group_support_counts": {
+        "10": 1,
+        "20": 1,
+        "30": 1,
+        "35": 1,
+        "40": 1,
+        "45": 1,
+        "99": 1
+      },
+      "api_calls_made": 0,
+      "candidate_answer_group_count": 7,
+      "candidate_pool_answer_group_count_after_anchor": 7,
+      "case_id": "frontier_budget_preservation",
+      "direct_l1_anchor_answer": "20",
+      "direct_l1_anchor_present": true,
+      "duplicate_answers_merge_correctly": true,
+      "expected_remaining_frontier_budget_after_anchors": 6,
+      "frontier_budget_preserved_after_anchor_phase": true,
+      "frontier_collapse_detected": false,
+      "frontier_executed": true,
+      "frontier_factory_budget_observed": 6,
+      "gold_answer": "40",
+      "gold_in_pool": true,
+      "method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+      "per_anchor_support": {
+        "backward_check_anchor": 1,
+        "direct_l1_anchor": 1,
+        "equation_first_anchor": 1,
+        "ratio_percentage_anchor": 1,
+        "unit_ledger_money_anchor": 1
+      },
+      "prediction": "99",
+      "remaining_budget_before_frontier": 6,
+      "required_metadata_present": true,
+      "selector_candidate_pool_size": 7,
+      "selector_candidate_pool_sources": [
+        "backward_check_anchor",
+        "direct_l1_anchor",
+        "direct_reserve",
+        "equation_first_anchor",
+        "mock_frontier",
+        "ratio_percentage_anchor",
+        "unit_ledger_money_anchor"
+      ]
+    }
+  ],
+  "method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+  "number_of_cases": 4,
+  "registry": {
+    "api_calls_made": 0,
+    "api_env_keys_removed_for_check": [
+      "OPENAI_API_KEY",
+      "COHERE_API_KEY",
+      "CO_API_KEY",
+      "GOOGLE_API_KEY",
+      "GEMINI_API_KEY"
+    ],
+    "builds_without_api_keys": true,
+    "controller_class": "DirectReserveDiverseRootFrontierV1GuardedController",
+    "diverse_prompt_anchor_budget_actions": 1,
+    "enable_direct_hybrid_seed": true,
+    "enable_diverse_prompt_anchors": true,
+    "method_id": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+    "registered_in_build_frontier_strategies": true,
+    "simulated_metadata_keys_present": true,
+    "simulated_run_error": "",
+    "simulated_run_without_api_keys": true
+  }
+}
