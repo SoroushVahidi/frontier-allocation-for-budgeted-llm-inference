@@ -819,6 +819,14 @@ def main() -> None:
     if args.validate_exact_cases_only:
         validate_exact_cases_only(args, providers, datasets, budgets, methods)
     exact_case_rows_by_dataset = {d: load_exact_case_rows(args.exact_cases_jsonl, dataset=d) for d in datasets} if args.exact_cases_jsonl else {}
+    exact_case_meta_by_dataset: dict[str, dict[str, dict[str, Any]]] = {}
+    if exact_case_rows_by_dataset:
+        for _d, _rows in exact_case_rows_by_dataset.items():
+            if not isinstance(_rows, list):
+                continue
+            exact_case_meta_by_dataset[_d] = {
+                str(r.get("example_id")): r for r in _rows if isinstance(r, dict) and str(r.get("example_id") or "").strip()
+            }
 
     model_by_provider = {
         "cohere": args.cohere_model,
@@ -1027,6 +1035,17 @@ def main() -> None:
                                 controller = specs[runtime]
                                 if args.save_branch_traces:
                                     setattr(controller, "emit_full_traces", True)
+                                # If running exact-case JSONL mode, attach per-example metadata so downstream
+                                # diagnostics (e.g. domain-aware anchor prioritization) can use explicit labels.
+                                if args.exact_cases_jsonl and dataset in exact_case_meta_by_dataset:
+                                    try:
+                                        row_meta = exact_case_meta_by_dataset.get(dataset, {}).get(str(ex.example_id), {})
+                                        setattr(controller, "current_example_id", str(ex.example_id))
+                                        setattr(controller, "current_exact_case_metadata", dict(row_meta) if isinstance(row_meta, dict) else {})
+                                    except Exception:
+                                        # Best-effort only: never block the run on metadata plumbing.
+                                        setattr(controller, "current_example_id", str(ex.example_id))
+                                        setattr(controller, "current_exact_case_metadata", {})
                                 if hasattr(controller, "generator") and hasattr(controller.generator, "base") and hasattr(controller.generator.base, "reset_usage_counters"):
                                     controller.generator.base.reset_usage_counters()
                                 status = "scored"
