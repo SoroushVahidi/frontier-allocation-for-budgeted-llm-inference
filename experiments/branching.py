@@ -792,14 +792,12 @@ class APIBranchGenerator:
         expand_prompt_variant: str = "default",
     ) -> tuple[str, str]:
         """Return (answer, extraction_source_tag) for expand() (gold-free)."""
-        action_l = str(merged.get("action", "") or "").strip().lower()
-        if action_l == "continue":
-            return "", "api_continue_no_final_answer"
         for k in _EXPAND_ANSWER_KEYS:
             s = cls._stringify_scalar_answer_value(merged.get(k))
             if s:
                 tag = "api_json_final_answer" if k == "final_answer" else "api_json_answer"
                 return s, tag
+        action_l = str(merged.get("action", "") or "").strip().lower()
         if expand_prompt_variant == "numeric_leaf":
             nlv = cls._stringify_scalar_answer_value(merged.get("numeric_leaf_value"))
             nls = str(merged.get("numeric_leaf_status") or "").strip().lower()
