@@ -1,6 +1,8 @@
-# Start here — current front door (2026-05-05)
+# Start here — current front door (2026-05-10)
 
 Short orientation for humans and agents. Historical and timestamped material stays in place; this file points to **current** interpretation and safe next actions.
+
+**LATEST HANDOFF:** [`docs/CODEX_WEB_HANDOFF_20260510.md`](docs/CODEX_WEB_HANDOFF_20260510.md)
 
 **Focused notes:** [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) · [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) · [`docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md`](docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md) · [`docs/DISCOVERY_FAILURE_TAXONOMY.md`](docs/DISCOVERY_FAILURE_TAXONOMY.md) · [`docs/OUTPUT_RETENTION_POLICY_CURRENT.md`](docs/OUTPUT_RETENTION_POLICY_CURRENT.md) · [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md)
 
@@ -49,6 +51,8 @@ This is the best current small-slice progress signal. It is **not** a broad clai
 |----|--------|--------------|
 | #351 | merged | Adds `direct_reserve_diverse_root_frontier_v1`, `direct_reserve_diverse_root_frontier_v1_guarded`, guarded held-out GSM8K eval, API JSON parsing hardening, and candidate diagnostics. |
 | #353 | merged | Adds cached verifier selector replay tooling and tests. No default runtime selector promotion. |
+| #373 | merged | Adds **Direct L1 Anchor** support to combat frontier collapse. |
+| #374 | merged | Audits Direct L1 Anchor effect; diversity increased in 100% of cases. |
 | `k1_frontier4_frontier_tiebreak` | active diagnostic line | Fixes much of the selection/commit issue after surfacing repairs. |
 | `finalguard` | parked | No offline gain on the key 10-case artifact. |
 | `numeric_leaf` | parked for now | Mechanical fields populated, but 118/800 stayed wrong. |
