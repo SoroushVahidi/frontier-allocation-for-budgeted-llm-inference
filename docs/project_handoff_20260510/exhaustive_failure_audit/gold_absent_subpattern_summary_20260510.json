@@ -1,0 +1,39 @@
+{
+  "total_gold_absent": 172,
+  "summary": {
+    "question_types": {
+      "ratio/proportion/percentage": 38,
+      "money/cost/revenue": 54,
+      "rate/speed/work": 11,
+      "inventory/remaining quantity": 4,
+      "multi-step arithmetic": 39,
+      "unit conversion": 10,
+      "temporal/calendar": 16
+    },
+    "error_types": {
+      "unknown": 168,
+      "counting/grouping off-by-factor (multiple)": 1,
+      "premature intermediate answer": 1,
+      "counting/grouping off-by-factor (factor)": 1,
+      "premature intermediate answer (copied from problem)": 1
+    },
+    "distance_buckets": {
+      "unknown": 154,
+      "medium (10-50%)": 4,
+      "near (<10%)": 2,
+      "far (>50%)": 8,
+      "far (>50%) (multiple)": 1,
+      "far (>50%) (factor)": 2,
+      "exact (unexpected) (multiple)": 1
+    },
+    "candidate_diversity": {
+      "low (1 group)": 165,
+      "medium (2-3 groups)": 7
+    },
+    "external_l1_contrast": {
+      "Both wrong": 100,
+      "unknown": 67,
+      "L1 correct, ours wrong": 5
+    }
+  }
+}
