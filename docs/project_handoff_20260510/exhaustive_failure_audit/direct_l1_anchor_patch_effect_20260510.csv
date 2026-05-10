@@ -1,0 +1,173 @@
+case_id,question_type,error_type,gold,original_predicted,anchor_answer,has_anchor,diversity_before,diversity_after,diversity_increased,gold_recovered,anchor_matches_l1_max,external_l1_exact
+openai_gsm8k_1003,ratio/proportion/percentage,unknown,20,,,0,0,0,0,0,0,0
+openai_gsm8k_1006,money/cost/revenue,unknown,25,,,0,0,0,0,0,0,0
+openai_gsm8k_1013,rate/speed/work,unknown,22,,,0,0,0,0,0,0,0
+openai_gsm8k_1019,ratio/proportion/percentage,unknown,30,,,0,0,0,0,0,0,0
+openai_gsm8k_1021,inventory/remaining quantity,unknown,8,,,0,0,0,0,0,0,0
+openai_gsm8k_1025,multi-step arithmetic,unknown,23,,,0,0,0,0,0,0,0
+openai_gsm8k_1027,money/cost/revenue,unknown,2,,,0,0,0,0,0,0,0
+openai_gsm8k_1029,money/cost/revenue,unknown,70000,,,0,0,0,0,0,0,0
+openai_gsm8k_1035,ratio/proportion/percentage,unknown,193,,,0,0,0,0,0,0,0
+openai_gsm8k_1039,ratio/proportion/percentage,unknown,1080,,,0,0,0,0,0,0,0
+openai_gsm8k_1045,money/cost/revenue,unknown,4,,,0,0,0,0,0,0,0
+openai_gsm8k_1069,ratio/proportion/percentage,unknown,191,,,0,0,0,0,0,0,0
+openai_gsm8k_1077,unit conversion,unknown,5,4,,0,0,0,0,0,0,1
+openai_gsm8k_1080,multi-step arithmetic,unknown,48,54,,0,0,0,0,0,0,1
+openai_gsm8k_1081,money/cost/revenue,unknown,9360,9583.200000000003,,0,0,0,0,0,0,0
+openai_gsm8k_1082,ratio/proportion/percentage,unknown,130,,,0,0,0,0,0,0,1
+openai_gsm8k_1083,rate/speed/work,unknown,55,,,0,0,0,0,0,0,1
+openai_gsm8k_1085,multi-step arithmetic,unknown,156,,,0,0,0,0,0,0,1
+openai_gsm8k_1087,money/cost/revenue,unknown,6,,,0,0,0,0,0,0,0
+openai_gsm8k_1095,multi-step arithmetic,unknown,4,,,0,0,0,0,0,0,1
+openai_gsm8k_1097,temporal/calendar,unknown,10,,,0,0,0,0,0,0,1
+openai_gsm8k_1099,ratio/proportion/percentage,unknown,2450,,,0,0,0,0,0,0,1
+openai_gsm8k_1101,multi-step arithmetic,unknown,20,,,0,0,0,0,0,0,1
+openai_gsm8k_1112,money/cost/revenue,unknown,101,,,0,0,0,0,0,0,0
+openai_gsm8k_1114,money/cost/revenue,unknown,1,,,0,0,0,0,0,0,1
+openai_gsm8k_1115,money/cost/revenue,unknown,170,,,0,0,0,0,0,0,0
+openai_gsm8k_1116,unit conversion,unknown,4,,,0,0,0,0,0,0,1
+openai_gsm8k_1120,multi-step arithmetic,unknown,31,,,0,0,0,0,0,0,1
+openai_gsm8k_1121,ratio/proportion/percentage,unknown,2000,,,0,0,0,0,0,0,1
+openai_gsm8k_1122,multi-step arithmetic,unknown,2,,,0,0,0,0,0,0,1
+openai_gsm8k_1124,temporal/calendar,unknown,45,,,0,0,0,0,0,0,1
+openai_gsm8k_1125,rate/speed/work,unknown,2450,,,0,0,0,0,0,0,1
+openai_gsm8k_1131,multi-step arithmetic,unknown,4,10,,0,0,0,0,0,0,0
+openai_gsm8k_1132,ratio/proportion/percentage,unknown,99,56,,0,0,0,0,0,0,0
+openai_gsm8k_1137,inventory/remaining quantity,unknown,33,,,0,0,0,0,0,0,0
+openai_gsm8k_1139,money/cost/revenue,unknown,36,,,0,0,0,0,0,0,0
+openai_gsm8k_1142,money/cost/revenue,unknown,7000,,,0,0,0,0,0,0,1
+openai_gsm8k_1144,ratio/proportion/percentage,unknown,13,350,,0,0,0,0,0,0,0
+openai_gsm8k_1147,money/cost/revenue,counting/grouping off-by-factor (multiple),34,2040,,0,0,0,0,0,0,0
+openai_gsm8k_1150,multi-step arithmetic,unknown,40,,,0,0,0,0,0,0,1
+openai_gsm8k_1155,money/cost/revenue,unknown,342,164.39999999999998,,0,0,0,0,0,0,1
+openai_gsm8k_1158,money/cost/revenue,unknown,2280,2180,,0,0,0,0,0,0,0
+openai_gsm8k_1162,money/cost/revenue,unknown,23,,,0,0,0,0,0,0,0
+openai_gsm8k_1166,money/cost/revenue,unknown,50,,,0,0,0,0,0,0,1
+openai_gsm8k_1175,money/cost/revenue,unknown,180,,,0,0,0,0,0,0,1
+openai_gsm8k_1181,money/cost/revenue,unknown,1450000,,,0,0,0,0,0,0,0
+openai_gsm8k_1187,multi-step arithmetic,unknown,8,,,0,0,0,0,0,0,0
+openai_gsm8k_1198,ratio/proportion/percentage,unknown,2,,,0,0,0,0,0,0,0
+openai_gsm8k_1199,multi-step arithmetic,unknown,135,,,0,0,0,0,0,0,0
+openai_gsm8k_1204,ratio/proportion/percentage,unknown,40,,,0,0,0,0,0,0,0
+openai_gsm8k_1205,unit conversion,unknown,175,,,0,0,0,0,0,0,1
+openai_gsm8k_1210,temporal/calendar,unknown,3,,,0,0,0,0,0,0,0
+openai_gsm8k_1214,multi-step arithmetic,unknown,273,,,0,0,0,0,0,0,1
+openai_gsm8k_1215,ratio/proportion/percentage,unknown,59,,,0,0,0,0,0,0,0
+openai_gsm8k_1217,ratio/proportion/percentage,unknown,8,,,0,0,0,0,0,0,0
+openai_gsm8k_1218,money/cost/revenue,unknown,120,180,120,1,2,3,1,1,0,0
+openai_gsm8k_1219,money/cost/revenue,unknown,99,,,0,0,0,0,0,0,0
+openai_gsm8k_1223,money/cost/revenue,unknown,2,,,0,0,0,0,0,0,0
+openai_gsm8k_1230,ratio/proportion/percentage,unknown,60,,,0,0,0,0,0,0,0
+openai_gsm8k_1232,money/cost/revenue,unknown,332,,,0,0,0,0,0,0,0
+openai_gsm8k_1235,temporal/calendar,unknown,10,,,0,0,0,0,0,0,0
+openai_gsm8k_1244,temporal/calendar,unknown,3,,,0,0,0,0,0,0,1
+openai_gsm8k_1248,multi-step arithmetic,unknown,9,,,0,0,0,0,0,0,1
+openai_gsm8k_1275,temporal/calendar,unknown,162000,,,0,0,0,0,0,0,0
+openai_gsm8k_1278,money/cost/revenue,unknown,235,,,0,0,0,0,0,0,0
+openai_gsm8k_1279,ratio/proportion/percentage,unknown,24,,,0,0,0,0,0,0,0
+openai_gsm8k_1281,ratio/proportion/percentage,unknown,138,,,0,0,0,0,0,0,0
+openai_gsm8k_1285,money/cost/revenue,unknown,10,,,0,0,0,0,0,0,1
+openai_gsm8k_1290,money/cost/revenue,unknown,6600,,,0,0,0,0,0,0,0
+openai_gsm8k_1291,money/cost/revenue,unknown,50,,,0,0,0,0,0,0,0
+openai_gsm8k_1297,ratio/proportion/percentage,unknown,250,,,0,0,0,0,0,0,0
+openai_gsm8k_1299,multi-step arithmetic,unknown,4,,,0,0,0,0,0,0,1
+openai_gsm8k_1303,multi-step arithmetic,unknown,98,,,0,0,0,0,0,0,1
+openai_gsm8k_1307,multi-step arithmetic,unknown,26,,,0,0,0,0,0,0,1
+openai_gsm8k_1314,multi-step arithmetic,unknown,50,,,0,0,0,0,0,0,1
+openai_gsm8k_1317,multi-step arithmetic,unknown,68,,,0,0,0,0,0,0,0
+openai_gsm8k_157,rate/speed/work,unknown,230,,80,1,0,1,1,0,1,1
+openai_gsm8k_162,multi-step arithmetic,unknown,50,,,0,0,0,0,0,0,
+openai_gsm8k_166,ratio/proportion/percentage,unknown,15,,,0,0,0,0,0,0,
+openai_gsm8k_168,money/cost/revenue,unknown,35,,18,1,0,1,1,0,1,1
+openai_gsm8k_17,money/cost/revenue,unknown,4,,,0,0,0,0,0,0,
+openai_gsm8k_180,multi-step arithmetic,unknown,8,,20,1,0,1,1,0,1,1
+openai_gsm8k_183,unit conversion,unknown,40,,,0,0,0,0,0,0,
+openai_gsm8k_184,multi-step arithmetic,unknown,525,,,0,0,0,0,0,0,
+openai_gsm8k_190,money/cost/revenue,unknown,420,,360,1,0,1,1,0,1,1
+openai_gsm8k_197,multi-step arithmetic,unknown,6,,6277,1,0,1,1,0,1,1
+openai_gsm8k_204,unit conversion,unknown,4,,98,1,0,1,1,0,1,1
+openai_gsm8k_213,money/cost/revenue,unknown,24,,250,1,0,1,1,0,1,1
+openai_gsm8k_217,multi-step arithmetic,unknown,27,11,15,1,2,3,1,0,1,1
+openai_gsm8k_22,money/cost/revenue,unknown,291,,,0,0,0,0,0,0,
+openai_gsm8k_228,temporal/calendar,unknown,127,,1,1,0,1,1,0,1,1
+openai_gsm8k_233,unit conversion,unknown,21,,12,1,0,1,1,0,1,1
+openai_gsm8k_239,money/cost/revenue,unknown,13,,,0,0,0,0,0,0,
+openai_gsm8k_245,money/cost/revenue,unknown,100,14,7,1,2,3,1,0,1,1
+openai_gsm8k_262,ratio/proportion/percentage,unknown,23,,,0,0,0,0,0,0,
+openai_gsm8k_264,money/cost/revenue,unknown,50,,400,1,0,1,1,0,1,1
+openai_gsm8k_275,rate/speed/work,unknown,48,,,0,0,0,0,0,0,
+openai_gsm8k_297,rate/speed/work,premature intermediate answer,114,20,55,1,0,1,1,0,1,1
+openai_gsm8k_30,ratio/proportion/percentage,unknown,109,121,109,1,2,3,1,1,1,1
+openai_gsm8k_324,multi-step arithmetic,counting/grouping off-by-factor (factor),76,0.8,,0,0,0,0,0,0,
+openai_gsm8k_334,money/cost/revenue,unknown,1000,,,0,0,0,0,0,0,
+openai_gsm8k_337,money/cost/revenue,unknown,195,,1,1,0,1,1,0,1,1
+openai_gsm8k_340,money/cost/revenue,unknown,1596,,,0,0,0,0,0,0,
+openai_gsm8k_347,ratio/proportion/percentage,unknown,500,,36,1,0,1,1,0,1,1
+openai_gsm8k_348,temporal/calendar,unknown,32,,,0,0,0,0,0,0,
+openai_gsm8k_35,rate/speed/work,unknown,13,,,0,0,0,0,0,0,
+openai_gsm8k_354,temporal/calendar,unknown,189,,45,1,0,1,1,0,1,1
+openai_gsm8k_358,ratio/proportion/percentage,unknown,4,4,20,1,2,3,1,0,1,1
+openai_gsm8k_36,multi-step arithmetic,unknown,16,,,0,0,0,0,0,0,
+openai_gsm8k_362,money/cost/revenue,unknown,90000,,23,1,0,1,1,0,1,1
+openai_gsm8k_367,multi-step arithmetic,unknown,243,,19,1,0,1,1,0,1,1
+openai_gsm8k_374,unit conversion,unknown,2,,45,1,0,1,1,0,1,1
+openai_gsm8k_376,money/cost/revenue,unknown,95,,15,1,0,1,1,0,1,1
+openai_gsm8k_391,money/cost/revenue,unknown,75,,15,1,0,1,1,0,1,1
+openai_gsm8k_395,temporal/calendar,unknown,25,,,0,0,0,0,0,0,
+openai_gsm8k_411,unit conversion,unknown,4,,,0,0,0,0,0,0,
+openai_gsm8k_433,multi-step arithmetic,unknown,70,,,0,0,0,0,0,0,
+openai_gsm8k_437,multi-step arithmetic,unknown,28,,,0,0,0,0,0,0,
+openai_gsm8k_450,ratio/proportion/percentage,unknown,22,,,0,0,0,0,0,0,
+openai_gsm8k_457,money/cost/revenue,unknown,470,,,0,0,0,0,0,0,
+openai_gsm8k_458,ratio/proportion/percentage,unknown,30,,,0,0,0,0,0,0,
+openai_gsm8k_461,multi-step arithmetic,unknown,6,,,0,0,0,0,0,0,
+openai_gsm8k_468,multi-step arithmetic,unknown,31,,,0,0,0,0,0,0,
+openai_gsm8k_508,ratio/proportion/percentage,unknown,54,,,0,0,0,0,0,0,
+openai_gsm8k_51,ratio/proportion/percentage,unknown,65,,,0,0,0,0,0,0,
+openai_gsm8k_516,temporal/calendar,unknown,8,,,0,0,0,0,0,0,
+openai_gsm8k_519,money/cost/revenue,unknown,20,,,0,0,0,0,0,0,
+openai_gsm8k_535,money/cost/revenue,unknown,500,,,0,0,0,0,0,0,
+openai_gsm8k_550,money/cost/revenue,unknown,1800,,,0,0,0,0,0,0,
+openai_gsm8k_551,ratio/proportion/percentage,unknown,10,,,0,0,0,0,0,0,
+openai_gsm8k_59,multi-step arithmetic,unknown,187,287,187,1,2,3,1,1,1,1
+openai_gsm8k_6,multi-step arithmetic,unknown,310,,,0,0,0,0,0,0,
+openai_gsm8k_61,inventory/remaining quantity,unknown,11,,,0,0,0,0,0,0,
+openai_gsm8k_62,money/cost/revenue,premature intermediate answer (copied from problem),25000,50,25000,1,2,3,1,1,1,1
+openai_gsm8k_70,ratio/proportion/percentage,unknown,18,,,0,0,0,0,0,0,
+openai_gsm8k_73,money/cost/revenue,unknown,145,,,0,0,0,0,0,0,
+openai_gsm8k_773,ratio/proportion/percentage,unknown,2,,,0,0,0,0,0,0,0
+openai_gsm8k_778,money/cost/revenue,unknown,7400,,,0,0,0,0,0,0,0
+openai_gsm8k_780,money/cost/revenue,unknown,1,,,0,0,0,0,0,0,0
+openai_gsm8k_781,unit conversion,unknown,20,,,0,0,0,0,0,0,0
+openai_gsm8k_787,ratio/proportion/percentage,unknown,2,,,0,0,0,0,0,0,0
+openai_gsm8k_794,ratio/proportion/percentage,unknown,170,,,0,0,0,0,0,0,0
+openai_gsm8k_812,money/cost/revenue,unknown,73,,,0,0,0,0,0,0,0
+openai_gsm8k_814,money/cost/revenue,unknown,16,,,0,0,0,0,0,0,0
+openai_gsm8k_818,ratio/proportion/percentage,unknown,10,,,0,0,0,0,0,0,0
+openai_gsm8k_819,money/cost/revenue,unknown,68,,,0,0,0,0,0,0,0
+openai_gsm8k_820,multi-step arithmetic,unknown,5,,,0,0,0,0,0,0,0
+openai_gsm8k_829,multi-step arithmetic,unknown,4,,,0,0,0,0,0,0,0
+openai_gsm8k_832,rate/speed/work,unknown,3,,,0,0,0,0,0,0,0
+openai_gsm8k_841,money/cost/revenue,unknown,262500,,,0,0,0,0,0,0,0
+openai_gsm8k_851,ratio/proportion/percentage,unknown,120000,,,0,0,0,0,0,0,0
+openai_gsm8k_864,ratio/proportion/percentage,unknown,24,,,0,0,0,0,0,0,0
+openai_gsm8k_865,money/cost/revenue,unknown,3,,,0,0,0,0,0,0,0
+openai_gsm8k_875,multi-step arithmetic,unknown,13,,,0,0,0,0,0,0,0
+openai_gsm8k_878,multi-step arithmetic,unknown,13,,,0,0,0,0,0,0,0
+openai_gsm8k_897,temporal/calendar,unknown,150,,,0,0,0,0,0,0,0
+openai_gsm8k_898,temporal/calendar,unknown,14,,,0,0,0,0,0,0,0
+openai_gsm8k_905,ratio/proportion/percentage,unknown,16,,,0,0,0,0,0,0,0
+openai_gsm8k_906,multi-step arithmetic,unknown,16,,,0,0,0,0,0,0,0
+openai_gsm8k_917,inventory/remaining quantity,unknown,1,,,0,0,0,0,0,0,0
+openai_gsm8k_929,rate/speed/work,unknown,18,,,0,0,0,0,0,0,0
+openai_gsm8k_931,temporal/calendar,unknown,452,,,0,0,0,0,0,0,0
+openai_gsm8k_934,temporal/calendar,unknown,126,,,0,0,0,0,0,0,0
+openai_gsm8k_944,unit conversion,unknown,100,,,0,0,0,0,0,0,0
+openai_gsm8k_951,money/cost/revenue,unknown,26,,,0,0,0,0,0,0,0
+openai_gsm8k_953,rate/speed/work,unknown,24,,,0,0,0,0,0,0,0
+openai_gsm8k_970,multi-step arithmetic,unknown,15,,,0,0,0,0,0,0,0
+openai_gsm8k_974,ratio/proportion/percentage,unknown,11,,,0,0,0,0,0,0,0
+openai_gsm8k_976,multi-step arithmetic,unknown,40,,,0,0,0,0,0,0,0
+openai_gsm8k_979,temporal/calendar,unknown,3,,,0,0,0,0,0,0,0
+openai_gsm8k_984,rate/speed/work,unknown,21,,,0,0,0,0,0,0,0
+openai_gsm8k_995,ratio/proportion/percentage,unknown,144,,,0,0,0,0,0,0,0

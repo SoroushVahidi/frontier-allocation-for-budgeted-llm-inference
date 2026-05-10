@@ -1,0 +1,53 @@
+{
+  "total_cases": 172,
+  "cases_with_anchor": 26,
+  "diversity_increased": 26,
+  "gold_recovered": 4,
+  "remains_gold_absent": 168,
+  "anchor_differs_from_wrong": 26,
+  "anchor_matches_l1_max": 25,
+  "by_question_type": {
+    "ratio/proportion/percentage": {
+      "remains_absent": 37,
+      "recovered": 1
+    },
+    "money/cost/revenue": {
+      "remains_absent": 52,
+      "recovered": 2
+    },
+    "rate/speed/work": {
+      "remains_absent": 11
+    },
+    "inventory/remaining quantity": {
+      "remains_absent": 4
+    },
+    "multi-step arithmetic": {
+      "remains_absent": 38,
+      "recovered": 1
+    },
+    "unit conversion": {
+      "remains_absent": 10
+    },
+    "temporal/calendar": {
+      "remains_absent": 16
+    }
+  },
+  "by_error_type": {
+    "unknown": {
+      "remains_absent": 165,
+      "recovered": 3
+    },
+    "counting/grouping off-by-factor (multiple)": {
+      "remains_absent": 1
+    },
+    "premature intermediate answer": {
+      "remains_absent": 1
+    },
+    "counting/grouping off-by-factor (factor)": {
+      "remains_absent": 1
+    },
+    "premature intermediate answer (copied from problem)": {
+      "recovered": 1
+    }
+  }
+}
