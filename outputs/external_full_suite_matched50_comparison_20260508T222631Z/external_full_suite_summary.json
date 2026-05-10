@@ -1,0 +1,35 @@
+{
+  "case_count": 50,
+  "scores_by_method": {
+    "production_equiv_v1": 36,
+    "external_l1_max_fair_v1": 31,
+    "external_self_consistency_4_fair_v1": 33,
+    "external_self_consistency_6_fair_v1": 36,
+    "external_pal_pot_fair_v1": 40,
+    "external_s1_budget_forcing_faithful_v1": 32,
+    "external_tale_ep_prompt_budgeting_faithful_v1": 34,
+    "best_individual_external": 43,
+    "best_full_external_oracle": 43,
+    "best_core4_oracle": 38,
+    "prior_patch_focused_integrated": 39
+  },
+  "best_individual_external_method": "external_pal_pot_fair_v1",
+  "best_individual_external_score": 40,
+  "best_full_external_oracle_score": 43,
+  "production_equiv_score": 36,
+  "production_equiv_minus_best_individual_external": -4,
+  "production_equiv_minus_best_full_external_oracle": -7,
+  "production_equiv_minus_sc6": 0,
+  "production_equiv_minus_pal_pot": -4,
+  "whether_production_equiv_beats_all_individual_external_baselines": false,
+  "whether_production_equiv_beats_best_external_oracle": false,
+  "whether_main_claim_needs_revision": true,
+  "no_api_calls": false,
+  "artifact_sources": {
+    "production_equiv": "/home/soroush/research-next-wt/outputs/production_equiv_v1_stage3_50_live_checkpoint_rerun_20260508T203036Z/live_checkpoint_results.csv",
+    "paired_core4": "/home/soroush/research-next-wt/outputs/fair_core4_paired_comparison_report_20260508T181853Z/per_case_outcomes.csv",
+    "prior_patch": "/home/soroush/research-next-wt/outputs/fair_core4_vs_our_method_alignment_plan_20260508T181550Z/existing_fair_comparison.csv",
+    "sc6_live": "/home/soroush/research-next-wt/outputs/external_sc6_fair_50case_live_20260508T221625Z/live_results.csv",
+    "pal_live": "/home/soroush/research-next-wt/outputs/external_pal_pot_fair_50case_live_20260508T222348Z/live_results.csv"
+  }
+}

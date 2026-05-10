@@ -1,0 +1,93 @@
+{
+  "experiment_id": "target_staged_pal_retry_primary_11_20260507",
+  "description": "Deployable pilot manifest — 11 gold-absent primary cases (external-correct). Oracle variant forbidden.",
+  "api_execution_enabled": false,
+  "per_case_budget": 6,
+  "primary_case_count": 11,
+  "soft_logical_call_cap": 80,
+  "hard_logical_call_cap": 120,
+  "default_template_variant": "target_staged_pal_retry_no_external_v1",
+  "allowed_deployable_template_variants": [
+    "target_staged_pal_retry_no_external_v1",
+    "target_staged_pal_retry_v1"
+  ],
+  "cases": [
+    {
+      "source_case_id": "openai_gsm8k_1099",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "target_mapping_error|aggregation_total|multi_step_chain",
+      "pal_failure_modes": "wrong_target_variable"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1125",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "rate_equation|temporal_state_update|multi_step_chain",
+      "pal_failure_modes": "wrong_operator|missing_intermediate_state"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1155",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "unit_conversion|product_grouping",
+      "pal_failure_modes": "wrong_operator|arithmetic_from_wrong_relation"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1166",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "multi_step_chain|rate_equation",
+      "pal_failure_modes": "failed_code_or_empty_code"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1187",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "difference_comparison|multi_step_chain",
+      "pal_failure_modes": "arithmetic_from_wrong_relation"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1198",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "temporal_state_update|multi_step_chain",
+      "pal_failure_modes": "overcompressed_one_expression|missing_intermediate_state"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1215",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "difference_comparison|multi_step_chain",
+      "pal_failure_modes": "failed_code_or_empty_code"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1230",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "aggregation_total|proportional_scaling",
+      "pal_failure_modes": "wrong_target_variable"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1244",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "unit_conversion|multi_step_chain",
+      "pal_failure_modes": "wrong_target_variable"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1248",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "target_mapping_error|multi_step_chain",
+      "pal_failure_modes": "arithmetic_from_wrong_relation"
+    },
+    {
+      "source_case_id": "openai_gsm8k_1281",
+      "template_variant": "target_staged_pal_retry_no_external_v1",
+      "deployable": true,
+      "required_schemas": "multi_step_chain|aggregation_total",
+      "pal_failure_modes": "omitted_quantity|arithmetic_from_wrong_relation"
+    }
+  ]
+}
