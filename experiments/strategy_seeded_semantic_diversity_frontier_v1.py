@@ -268,6 +268,7 @@ class DirectReserveDiverseRootFrontierV1GuardedController(DirectReserveDiverseRo
         max_actions_per_problem: int,
         *,
         strategy_seed_max_actions: int = 1,
+        enable_diverse_anchor_regression_guard: bool = False,
         method_name: str = METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED,
         **kwargs: Any,
     ) -> None:
@@ -279,6 +280,7 @@ class DirectReserveDiverseRootFrontierV1GuardedController(DirectReserveDiverseRo
             method_name=method_name,
             **kwargs,
         )
+        self.enable_diverse_anchor_regression_guard = bool(enable_diverse_anchor_regression_guard)
 
     def run(self, question: str, gold_answer: str) -> MethodResult:
         """Run v1, then apply fallback guard based on frontier support."""

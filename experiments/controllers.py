@@ -345,6 +345,121 @@ def prioritize_diverse_prompt_anchor_ids(
     return out
 
 
+def compute_diverse_anchor_regression_guard_state(
+    *,
+    enabled: bool,
+    attempt_index: int,
+    remaining_budget: int,
+    budget_per_anchor: int,
+    direct_group_counts: dict[str, Any],
+    frontier_group_counts: dict[str, Any],
+    diverse_anchor_records: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Gold-free regression guard for diverse-anchor scheduling.
+
+    The guard only preserves frontier budget when the current best group is a weak
+    direct-L1-only anchor consensus and there is still at least one non-anchor candidate
+    group worth preserving. It does not change support accounting.
+    """
+    meta: dict[str, Any] = {
+        "regression_guard_enabled": bool(enabled),
+        "regression_guard_triggered": False,
+        "regression_guard_reason": "disabled",
+        "preserved_candidate_groups": [],
+        "anchor_dominant_selected_group": "",
+        "direct_l1_anchor_dominant": False,
+    }
+    if not enabled:
+        return meta
+
+    def _clean_counts(raw: dict[str, Any] | Counter[str]) -> Counter[str]:
+        counts: Counter[str] = Counter()
+        if not isinstance(raw, dict):
+            return counts
+        for key, value in raw.items():
+            group = str(key).strip()
+            if not group or group == "__unknown__":
+                continue
+            try:
+                count = int(value)
+            except Exception:
+                continue
+            if count > 0:
+                counts[group] += count
+        return counts
+
+    direct_counts = _clean_counts(direct_group_counts)
+    frontier_counts = _clean_counts(frontier_group_counts)
+    before_counts = Counter(frontier_counts)
+    before_counts.update(direct_counts)
+
+    anchor_counts: Counter[str] = Counter()
+    anchor_sources_by_group: dict[str, set[str]] = defaultdict(set)
+    for record in diverse_anchor_records or []:
+        if not isinstance(record, dict):
+            continue
+        group = str(record.get("answer_group") or "").strip() or "__unknown__"
+        if group in {"", "__unknown__"}:
+            continue
+        anchor_counts[group] += 1
+        anchor_sources_by_group[group].add(str(record.get("source_family") or record.get("anchor_id") or "").strip())
+
+    after_counts = Counter(before_counts)
+    after_counts.update(anchor_counts)
+
+    candidate_pool_answer_group_count_before_anchor = int(
+        len({group for group, count in before_counts.items() if group not in {"", "__unknown__"} and int(count) > 0})
+    )
+    candidate_pool_answer_group_count_after_anchor = int(
+        len({group for group, count in after_counts.items() if group not in {"", "__unknown__"} and int(count) > 0})
+    )
+
+    if not after_counts:
+        meta["regression_guard_reason"] = "no_candidate_groups"
+        return meta
+
+    ranked_groups = sorted(
+        [group for group in after_counts if group not in {"", "__unknown__"}],
+        key=lambda group: (
+            -int(after_counts.get(group, 0) or 0),
+            0 if "direct_l1_anchor" in anchor_sources_by_group.get(group, set()) else 1,
+            str(group),
+        ),
+    )
+    selected_group = ranked_groups[0]
+    selected_support = int(after_counts.get(selected_group, 0) or 0)
+    selected_sources = sorted(anchor_sources_by_group.get(selected_group, set()))
+    direct_l1_anchor_dominant = bool(selected_support <= 1 and selected_sources == ["direct_l1_anchor"])
+    preserved_candidate_groups = [
+        group
+        for group in ranked_groups
+        if group != selected_group and (int(before_counts.get(group, 0) or 0) > 0)
+    ]
+
+    trigger = bool(
+        attempt_index >= 1
+        and remaining_budget <= max(1, int(budget_per_anchor))
+        and candidate_pool_answer_group_count_after_anchor > candidate_pool_answer_group_count_before_anchor
+        and direct_l1_anchor_dominant
+        and preserved_candidate_groups
+    )
+
+    meta.update(
+        {
+            "candidate_pool_answer_group_count_before_anchor": candidate_pool_answer_group_count_before_anchor,
+            "candidate_pool_answer_group_count_after_anchor": candidate_pool_answer_group_count_after_anchor,
+            "anchor_dominant_selected_group": selected_group if direct_l1_anchor_dominant else "",
+            "direct_l1_anchor_dominant": bool(direct_l1_anchor_dominant),
+            "preserved_candidate_groups": list(preserved_candidate_groups),
+            "regression_guard_reason": (
+                "preserve_frontier_budget_after_direct_l1_domination" if trigger else "no_regression_risk"
+            ),
+            "regression_guard_triggered": bool(trigger),
+        }
+    )
+    return meta
+
+
 @dataclass
 class MethodResult:
     """Per-method result for one example."""
@@ -8408,6 +8523,14 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
 
         diverse_anchor_records: list[dict[str, Any]] = []
         diverse_anchor_skipped: list[dict[str, Any]] = []
+        diverse_anchor_regression_guard_meta: dict[str, Any] = {
+            "regression_guard_enabled": bool(getattr(self, "enable_diverse_anchor_regression_guard", False)),
+            "regression_guard_triggered": False,
+            "regression_guard_reason": "disabled",
+            "preserved_candidate_groups": [],
+            "anchor_dominant_selected_group": "",
+            "direct_l1_anchor_dominant": False,
+        }
         diverse_anchor_budget_per_anchor = max(1, int(getattr(self, "diverse_prompt_anchor_budget_actions", 0) or 0))
         remaining_budget_before_diverse_anchors = int(remaining_budget)
         anchor_priority_policy = str(getattr(self, "diverse_prompt_anchor_priority_policy", "domain_aware_v1") or "").strip()
@@ -8517,6 +8640,31 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     }
                 )
                 seen_anchor_ids.add(anchor_id)
+                diverse_anchor_regression_guard_meta = compute_diverse_anchor_regression_guard_state(
+                    enabled=bool(getattr(self, "enable_diverse_anchor_regression_guard", False)),
+                    attempt_index=int(idx),
+                    remaining_budget=int(remaining_budget),
+                    budget_per_anchor=int(diverse_anchor_budget_per_anchor),
+                    direct_group_counts=dict(direct_counts),
+                    frontier_group_counts={},
+                    diverse_anchor_records=list(diverse_anchor_records),
+                )
+                if bool(diverse_anchor_regression_guard_meta.get("regression_guard_triggered")):
+                    tail = planned_anchor_ids[idx + 1 :]
+                    for tail_id in tail:
+                        tail_id = str(tail_id).strip()
+                        if not tail_id or tail_id in seen_anchor_ids:
+                            continue
+                        diverse_anchor_skipped.append(
+                            {
+                                "anchor_id": tail_id,
+                                "skip_reason": "regression_guard_preserved_frontier_budget",
+                                "remaining_budget": int(remaining_budget),
+                                "budget_per_anchor": int(diverse_anchor_budget_per_anchor),
+                            }
+                        )
+                        seen_anchor_ids.add(tail_id)
+                    break
 
         remaining_budget = max(0, remaining_budget)
         remaining_budget_after_diverse_anchors = int(remaining_budget)
@@ -9621,13 +9769,14 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "direct_l1_anchor_answer": direct_l1_anchor_answer,
             "direct_l1_anchor_added_to_pool": bool(direct_l1_anchor_present),
             "direct_l1_anchor_support_count": int(combined_group_counts.get(direct_l1_anchor_group, 0) if direct_l1_anchor_group else 0),
-                "direct_l1_anchor_selected": int(direct_l1_anchor_group == selected_group_key if direct_l1_anchor_group else 0),
-                "diverse_prompt_anchors_enabled": bool(getattr(self, "enable_diverse_prompt_anchors", False)),
-                "anchor_priority_policy": str(anchor_priority_policy),
-                "detected_problem_domain": str(detected_domain_hint),
-                "domain_detection_source": str(domain_detection_source),
-                "domain_detection_evidence": str(domain_detection_evidence),
-                "diverse_prompt_anchor_budget_actions": int(diverse_anchor_budget_per_anchor),
+            "direct_l1_anchor_selected": int(direct_l1_anchor_group == selected_group_key if direct_l1_anchor_group else 0),
+            "diverse_prompt_anchors_enabled": bool(getattr(self, "enable_diverse_prompt_anchors", False)),
+            "anchor_priority_policy": str(anchor_priority_policy),
+            "detected_problem_domain": str(detected_domain_hint),
+            "domain_detection_source": str(domain_detection_source),
+            "domain_detection_evidence": str(domain_detection_evidence),
+            "diverse_prompt_anchor_budget_actions": int(diverse_anchor_budget_per_anchor),
+            **diverse_anchor_regression_guard_meta,
             "configured_anchor_ids": list(configured_anchor_ids),
             "prioritized_anchor_ids": list(planned_anchor_ids),
             "diverse_prompt_anchor_ids_planned": list(configured_anchor_ids),
