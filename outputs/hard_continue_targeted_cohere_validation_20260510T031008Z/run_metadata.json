@@ -1,0 +1,26 @@
+{
+  "command": "scripts/run_hard_continue_targeted_cohere_validation.py --timestamp 20260510T031008Z --method direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal --budget 6 --seed 11 --cohere-model command-r-plus-08-2024 --max-total-api-calls 120",
+  "case_pool": "outputs/fresh_gsm8k_direct_reserve_scorer_plan_20260426T_FRESH_GSM8K_SCORER_VALIDATION/fresh_candidate_pool.csv",
+  "case_ids": [
+    "openai_gsm8k_1177",
+    "openai_gsm8k_1180",
+    "openai_gsm8k_1218",
+    "openai_gsm8k_30",
+    "openai_gsm8k_59",
+    "openai_gsm8k_62",
+    "openai_gsm8k_217",
+    "openai_gsm8k_245",
+    "openai_gsm8k_358",
+    "openai_gsm8k_1285",
+    "openai_gsm8k_228",
+    "openai_gsm8k_337"
+  ],
+  "outputs": [
+    "validation_summary.json",
+    "per_case_results.csv",
+    "continue_leakage_audit.csv",
+    "validation_report.md",
+    "command.sh",
+    "run_metadata.json"
+  ]
+}

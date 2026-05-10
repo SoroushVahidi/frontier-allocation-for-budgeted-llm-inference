@@ -1,0 +1,23 @@
+{
+  "timestamp": "20260510T031008Z",
+  "method": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal",
+  "model": "command-r-plus-08-2024",
+  "budget": 6,
+  "seed": 11,
+  "case_count": 12,
+  "primary_case_count": 9,
+  "secondary_case_count": 3,
+  "exact_correct_count": 9,
+  "accuracy": 0.75,
+  "continue_response_count": 13,
+  "continue_leakage_case_count": 0,
+  "continue_leakage_event_count": 0,
+  "failure_family_counts": {
+    "correct": 9,
+    "gold_absent_or_not_in_answer_groups": 2,
+    "final_target_mismatch_or_selection_error": 1
+  },
+  "logical_api_call_budget": 120,
+  "logical_api_calls_consumed": 52,
+  "success_no_continue_response_contributed_final_answer": true
+}
