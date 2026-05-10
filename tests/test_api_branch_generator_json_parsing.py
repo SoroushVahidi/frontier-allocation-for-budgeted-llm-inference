@@ -98,6 +98,16 @@ def test_expand_alternate_numeric_answer_key(api_gen: APIBranchGenerator) -> Non
     assert b.predicted_answer == "77"
 
 
+def test_expand_does_not_commit_continue_with_json_answer(api_gen: APIBranchGenerator) -> None:
+    raw = '{"action": "continue", "answer": "120", "step": "Subtotal after the first stage.", "confidence": 0.7}'
+    with patch.object(APIBranchGenerator, "_call_api", return_value=raw):
+        b = api_gen.init_branch("b0")
+        api_gen.expand(b, "Q", "")
+    assert b.is_done is False
+    assert b.predicted_answer is None
+    assert b.trace_events[-1].get("expand_answer_extraction_source") == "api_parse_failed_no_answer"
+
+
 def test_verify_alternate_keys_and_fallback(api_gen: APIBranchGenerator) -> None:
     raw = '{"confidence": 0.8, "solution_answer": "21"}'
     with patch.object(APIBranchGenerator, "_call_api", return_value=raw):
@@ -135,6 +145,30 @@ def test_resolve_expand_answer_from_final_answer_key() -> None:
     ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
     assert ans == "44"
     assert tag == "api_json_final_answer"
+
+
+def test_resolve_expand_answer_ignores_json_answer_when_action_continue() -> None:
+    raw = '{"action": "continue", "answer": "120", "step": "Subtotal after the first stage.", "confidence": 0.7}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == ""
+    assert tag == "api_parse_failed_no_answer"
+
+
+def test_resolve_expand_answer_accepts_json_answer_when_action_final() -> None:
+    raw = '{"action": "final", "answer": "480", "step": "", "confidence": 0.9}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == "480"
+    assert tag == "api_json_answer"
+
+
+def test_resolve_expand_answer_accepts_json_answer_when_action_missing() -> None:
+    raw = '{"answer": "480", "step": "", "confidence": 0.9}'
+    merged = APIBranchGenerator._merge_wrapped_json_dicts(APIBranchGenerator._safe_json(raw))
+    ans, tag = APIBranchGenerator._resolve_expand_answer(raw, merged)
+    assert ans == "480"
+    assert tag == "api_json_answer"
 
 
 def test_resolve_expand_answer_reasoning_step_boxed_continue() -> None:
