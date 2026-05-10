@@ -8164,6 +8164,15 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         combined_group_counts_base = Counter(dict(frontier_support_counts))
         for _g, _c in direct_counts.items():
             combined_group_counts_base[_g] += int(_c)
+
+        # --- Direct L1 Anchor Patch ---
+        direct_l1_anchor_answer = hybrid_seed_answer
+        direct_l1_anchor_group = normalize_answer_group_key(str(direct_l1_anchor_answer)) if direct_l1_anchor_answer else None
+        direct_l1_anchor_present = bool(direct_l1_anchor_answer)
+        if direct_l1_anchor_group and direct_l1_anchor_group != "__unknown__":
+            combined_group_counts_base[direct_l1_anchor_group] += 1
+        # ------------------------------
+
         frontier_support = int(frontier_support_counts.get(frontier_group, 0))
         frontier_maturity = int((frontier_result.expansions if frontier_result else 0) + (frontier_result.verifications if frontier_result else 0))
         override_margin = float(frontier_support - incumbent_support)
@@ -8889,7 +8898,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             final_g = _normalize_answer(final_answer) or "__unknown__"
             final_branch_states.append(
                 {
-                    "branch_id": "direct_hybrid_seed_0",
+                    "branch_id": "direct_l1_anchor_0",
                     "parent_branch_id": "",
                     "branch_depth": 1,
                     "score": 1.0,
@@ -8898,9 +8907,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     "is_pruned": False,
                     "steps": [],
                     "trace_events": list(hybrid_seed_trace_events),
-                    "strategy_family": "direct_hybrid_seed",
-                    "source": "direct_hybrid_seed",
-                    "source_metadata": "direct_hybrid_seed",
+                    "strategy_family": "direct_l1_anchor",
+                    "source": "direct_l1_anchor",
+                    "source_metadata": "direct_l1_anchor",
                     "selected": int(hs_group == final_g),
                 }
             )
@@ -9168,6 +9177,13 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             ),
             "direct_hybrid_seed_execution": dict(direct_hybrid_execution_meta),
             "direct_hybrid_overlay": dict(direct_hybrid_overlay_meta),
+            "direct_l1_anchor_present": bool(direct_l1_anchor_present),
+            "direct_l1_anchor_answer": direct_l1_anchor_answer,
+            "direct_l1_anchor_added_to_pool": bool(direct_l1_anchor_present),
+            "direct_l1_anchor_support_count": int(combined_group_counts.get(direct_l1_anchor_group, 0) if direct_l1_anchor_group else 0),
+            "direct_l1_anchor_selected": int(direct_l1_anchor_group == selected_group_key if direct_l1_anchor_group else 0),
+            "candidate_pool_answer_group_count_before_anchor": int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in selector_candidate_pool if x.get("source_id") != "direct_l1_anchor"})),
+            "candidate_pool_answer_group_count_after_anchor": int(len({_normalize_answer(x.get("predicted_answer")) or "__unknown__" for x in selector_candidate_pool})),
             **tiebreak_meta,
             **production_equiv_meta,
         }
