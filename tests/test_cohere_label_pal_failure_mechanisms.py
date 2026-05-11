@@ -476,4 +476,3 @@ def test_resume_skips_already_labeled_cases(tmp_path: Path) -> None:
     manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["labeled_rows_written"] == 0
     assert manifest["actual_calls"] == 0
-

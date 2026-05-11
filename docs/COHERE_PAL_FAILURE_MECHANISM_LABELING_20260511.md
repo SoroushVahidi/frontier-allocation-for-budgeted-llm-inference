@@ -89,4 +89,3 @@ Optional API smoke (only if `COHERE_API_KEY` is set; do not exceed 5 calls unles
 ```bash
 python3 scripts/cohere_label_pal_failure_mechanisms.py --subset diagnostic_15 --limit 5 --max-calls 5 --allow-api --output-dir /tmp/cohere_pal_failure_mechanism_labels_smoke_20260511
 ```
-

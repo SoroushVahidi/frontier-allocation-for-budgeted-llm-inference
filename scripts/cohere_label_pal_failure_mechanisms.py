@@ -258,17 +258,19 @@ def _load_cohere_client() -> Any:
 
 
 def _call_cohere(*, client: Any, model: str, prompt: str) -> tuple[str, dict[str, Any]]:
-    # Use generate-style completion to avoid depending on chat-specific SDK variants.
-    resp = client.generate(model=model, prompt=prompt, max_tokens=512, temperature=0.2)
-    text = ""
-    try:
-        text = str(resp.generations[0].text or "")
-    except Exception:
-        text = str(getattr(resp, "text", "") or "")
+    # Cohere removed the legacy Generate endpoint in 2025; use Chat API.
+    # Keep the call surface narrow and deterministic for smoke labeling.
+    resp = client.chat(
+        model=model,
+        message=prompt,
+        temperature=0.2,
+        max_tokens=512,
+    )
+    text = str(getattr(resp, "text", "") or "").strip()
     meta = {
         "cohere_model": model,
     }
-    return text.strip(), meta
+    return text, meta
 
 
 def _parse_label_json(text: str) -> tuple[dict[str, Any] | None, str]:
