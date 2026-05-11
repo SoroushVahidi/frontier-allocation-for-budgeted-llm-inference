@@ -265,7 +265,6 @@ def _build_rows_for_record(record: dict[str, Any], *, source_path: Path, resolve
 
     for index, node in enumerate(nodes):
         node_id = f"{_stringify(record.get('example_id') or 'example')}::{source_kind}::{index}"
-        parent_id = parent_by_node.get(node_id)
         if index > 0:
             prev_node_id = f"{_stringify(record.get('example_id') or 'example')}::{source_kind}::{index - 1}"
             parent_by_node[node_id] = prev_node_id
@@ -431,7 +430,6 @@ def run(argv: list[str] | None = None) -> dict[str, Any]:
     args = parse_args(argv)
 
     input_paths = [_resolve_existing_path(raw) for raw in args.input]
-    all_records: list[dict[str, Any]] = []
     source_resolutions: list[dict[str, Any]] = []
     rows: list[dict[str, Any]] = []
     row_kinds: Counter[str] = Counter()
@@ -440,7 +438,6 @@ def run(argv: list[str] | None = None) -> dict[str, Any]:
         records = _load_jsonl(source_path)
         if not records:
             raise ValueError(f"Input artifact contains no JSONL rows: {source_path}")
-        all_records.extend(records)
         fields = _extract_nested_fields(records)
         source_rows = 0
         source_row_type_counts: Counter[str] = Counter()
