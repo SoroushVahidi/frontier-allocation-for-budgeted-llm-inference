@@ -65,6 +65,21 @@ def test_selected_failure_recovery_exact_case_count_is_preserved() -> None:
     assert rows[0]["example_id"] == "openai_gsm8k_337"
 
 
+def test_selected_failure_recovery_exact_case_50count_is_preserved_and_appended() -> None:
+    path_30 = Path("docs/project_handoff_20260510/exact_case_replay/failure_recovery_30case_exact_cases_20260510.jsonl")
+    path_50 = Path("docs/project_handoff_20260510/exact_case_replay/failure_recovery_50case_exact_cases_20260510.jsonl")
+    rows_30 = runner.load_exact_case_rows(str(path_30))
+    rows_50 = runner.load_exact_case_rows(str(path_50))
+
+    assert len(rows_50) == 50
+    assert len({r["example_id"] for r in rows_50}) == 50
+    assert [r["example_id"] for r in rows_50[:30]] == [r["example_id"] for r in rows_30]
+    for row in rows_50:
+        assert str(row.get("question") or "").strip()
+        assert str(row.get("gold_answer_canonical") or "").strip()
+        assert str(row.get("failure_domain") or "").strip()
+
+
 def test_exact_case_mode_does_not_use_shuffled_loader(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     p = tmp_path / "exact_cases.jsonl"
     _write_jsonl(p, [{"example_id": "case_1", "question": "What is 2 + 2?", "gold_answer_canonical": "4"}])
