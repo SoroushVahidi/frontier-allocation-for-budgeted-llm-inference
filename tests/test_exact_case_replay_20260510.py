@@ -12,6 +12,7 @@ from scripts import run_cohere_real_model_cost_normalized_validation as runner
 OLD_METHOD = "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_hybrid"
 NEW_METHOD = "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor"
 STABILITY_METHOD = "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_stability_redundant_anchor_v1"
+UNCERTAINTY_METHOD = "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_uncertainty_retry_v1"
 
 
 def _write_jsonl(path: Path, rows: list[dict[str, object]]) -> None:
@@ -111,3 +112,21 @@ def test_runner_registry_resolves_stability_redundant_anchor_without_api() -> No
     assert runner.METHODS[NEW_METHOD]["runtime"] in specs
     assert runner.METHODS[STABILITY_METHOD]["runtime"] in specs
     assert runner.METHODS[STABILITY_METHOD]["enable_output_repair"] is True
+
+
+def test_runner_registry_resolves_uncertainty_retry_without_api() -> None:
+    specs = build_frontier_strategies(
+        lambda: None,
+        4,
+        [1],
+        random.Random(11),
+        use_openai_api=False,
+        include_broad_diversity_aggregation_methods=True,
+        include_external_l1_baseline=True,
+        include_external_s1_baseline=True,
+        include_external_tale_baseline=True,
+    )
+
+    assert runner.METHODS[NEW_METHOD]["runtime"] in specs
+    assert runner.METHODS[UNCERTAINTY_METHOD]["runtime"] in specs
+    assert runner.METHODS[UNCERTAINTY_METHOD]["enable_output_repair"] is True

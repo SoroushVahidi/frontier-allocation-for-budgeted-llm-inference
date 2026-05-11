@@ -499,6 +499,145 @@ def resolve_diverse_anchor_stability_domain_gate(
     return False, policy, f"{domain}_blocked_by_default_gate"
 
 
+def resolve_diverse_anchor_uncertainty_retry_target(
+    *,
+    enabled: bool,
+    planned_anchor_ids: list[str],
+    domain_hint: str,
+    explicit_target_anchor_id: str = "",
+) -> tuple[str, str]:
+    if not enabled:
+        return "", "disabled"
+    candidate = str(explicit_target_anchor_id or "").strip()
+    if candidate and candidate in planned_anchor_ids and candidate != "direct_l1_anchor":
+        return candidate, "explicit_target"
+    preferred_by_domain = {
+        "money_cost_revenue": ["unit_ledger_money_anchor", "equation_first_anchor"],
+        "ratio_percent": ["ratio_percentage_anchor"],
+        "multi_step_arithmetic": ["backward_check_anchor", "equation_first_anchor"],
+    }
+    for anchor_id in preferred_by_domain.get(str(domain_hint or "").strip() or "unknown", []):
+        if anchor_id in planned_anchor_ids and anchor_id != "direct_l1_anchor":
+            return anchor_id, f"{str(domain_hint or '').strip() or 'unknown'}_preferred"
+    for anchor_id in planned_anchor_ids:
+        anchor_id = str(anchor_id).strip()
+        if anchor_id and anchor_id != "direct_l1_anchor":
+            return anchor_id, "first_non_direct_l1_anchor"
+    return "", "no_retry_anchor_available"
+
+
+def compute_diverse_anchor_uncertainty_retry_features(
+    *,
+    enabled: bool,
+    policy: str,
+    target_anchor_id: str,
+    diverse_anchor_records: list[dict[str, Any]],
+    direct_counts: dict[str, Any] | Counter[str],
+    incumbent_group: str,
+    direct_top_support: float,
+    direct_gap: float,
+    direct_entropy: float,
+    remaining_budget: int,
+    domain_hint: str,
+    extra_anchor_attempts_planned: int,
+) -> dict[str, Any]:
+    direct_counter: Counter[str] = Counter()
+    if isinstance(direct_counts, dict):
+        for key, value in direct_counts.items():
+            try:
+                direct_counter[str(key)] += int(value or 0)
+            except Exception:
+                continue
+
+    combined_group_counts: Counter[str] = Counter(direct_counter)
+    anchor_attempt_counts: Counter[str] = Counter()
+    anchor_group_counts: Counter[str] = Counter()
+    parse_surface_warning = False
+    domain_anchor_disagrees = False
+    for record in diverse_anchor_records or []:
+        anchor_id = str(record.get("anchor_id") or "").strip()
+        group = str(record.get("answer_group") or "").strip() or "__unknown__"
+        candidate_answer = str(record.get("candidate_answer") or "").strip()
+        if anchor_id:
+            anchor_attempt_counts[anchor_id] += 1
+        if group and group != "__unknown__":
+            anchor_group_counts[group] += 1
+            combined_group_counts[group] += 1
+        if candidate_answer in {"", "model_step_missing"} or group == "__unknown__":
+            parse_surface_warning = True
+        if target_anchor_id and anchor_id == target_anchor_id and group and group not in {"__unknown__", incumbent_group}:
+            domain_anchor_disagrees = True
+
+    candidate_pool_answer_group_count = int(len({g for g in combined_group_counts if str(g).strip() and str(g) != "__unknown__"}))
+    selected_support = int(combined_group_counts.get(incumbent_group, 0))
+    selected_support_ratio = float(selected_support / max(1, sum(combined_group_counts.values())))
+    selected_group_is_weak = bool(selected_support <= 1 or direct_top_support < 0.5 or direct_gap <= 0.25)
+    high_disagreement = bool(candidate_pool_answer_group_count >= 3 or direct_entropy >= 0.9 or direct_gap <= 0.25)
+    direct_l1_anchor_dominant = bool(
+        selected_group_is_weak
+        and target_anchor_id
+        and any(
+            str(record.get("anchor_id") or "").strip() == "direct_l1_anchor"
+            and str(record.get("answer_group") or "").strip() == incumbent_group
+            for record in diverse_anchor_records or []
+        )
+    )
+    should_trigger = bool(
+        enabled
+        and policy not in {"", "disabled"}
+        and target_anchor_id
+        and extra_anchor_attempts_planned > 0
+        and remaining_budget > 0
+        and (
+            parse_surface_warning
+            or domain_anchor_disagrees
+            or (selected_group_is_weak and high_disagreement)
+            or (direct_l1_anchor_dominant and high_disagreement)
+        )
+    )
+
+    if not enabled or policy == "disabled":
+        reason = "disabled"
+    elif not target_anchor_id:
+        reason = "no_retry_anchor_available"
+    elif extra_anchor_attempts_planned <= 0:
+        reason = "retry_budget_zero"
+    elif remaining_budget <= 0:
+        reason = "no_budget_available"
+    elif should_trigger:
+        reason = "enabled_and_retried"
+    else:
+        reason = "confidence_sufficient"
+
+    return {
+        "uncertainty_retry_policy": str(policy or "disabled"),
+        "uncertainty_retry_enabled": bool(enabled),
+        "uncertainty_retry_should_trigger": bool(should_trigger),
+        "uncertainty_retry_triggered": False,
+        "uncertainty_retry_reason": str(reason),
+        "uncertainty_retry_target_anchor_id": str(target_anchor_id or ""),
+        "uncertainty_retry_budget_available": int(remaining_budget),
+        "uncertainty_retry_features": {
+            "domain_hint": str(domain_hint or "unknown"),
+            "incumbent_group": str(incumbent_group or "__unknown__"),
+            "selected_support": int(selected_support),
+            "selected_support_ratio": float(selected_support_ratio),
+            "direct_top_support": float(direct_top_support),
+            "direct_gap": float(direct_gap),
+            "direct_entropy": float(direct_entropy),
+            "candidate_pool_answer_group_count": int(candidate_pool_answer_group_count),
+            "selected_group_is_weak": bool(selected_group_is_weak),
+            "high_disagreement": bool(high_disagreement),
+            "parse_surface_warning": bool(parse_surface_warning),
+            "direct_l1_anchor_dominant": bool(direct_l1_anchor_dominant),
+            "domain_anchor_disagrees": bool(domain_anchor_disagrees),
+            "anchor_attempt_counts": dict(anchor_attempt_counts),
+            "anchor_group_counts": dict(anchor_group_counts),
+        },
+        "uncertainty_retry_extra_attempts": 0,
+    }
+
+
 def compute_diverse_anchor_stability_features(
     *,
     enabled: bool,
@@ -7487,6 +7626,10 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         diverse_anchor_stability_domain_gate: str = "disabled",
         diverse_anchor_stability_extra_anchor_attempts: int = 0,
         diverse_anchor_stability_target_anchor_id: str = "",
+        enable_diverse_anchor_uncertainty_retry_policy: bool = False,
+        diverse_anchor_uncertainty_retry_policy: str = "disabled",
+        diverse_anchor_uncertainty_retry_target_anchor_id: str = "",
+        diverse_anchor_uncertainty_retry_extra_anchor_attempts: int = 1,
         method_name: str = "direct_reserve_frontier_gate_v1",
     ) -> None:
         super().__init__(
@@ -7568,6 +7711,16 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         )
         self.diverse_anchor_stability_extra_anchor_attempts = max(0, int(diverse_anchor_stability_extra_anchor_attempts))
         self.diverse_anchor_stability_target_anchor_id = str(diverse_anchor_stability_target_anchor_id or "").strip()
+        self.enable_diverse_anchor_uncertainty_retry_policy = bool(enable_diverse_anchor_uncertainty_retry_policy)
+        self.diverse_anchor_uncertainty_retry_policy = (
+            str(diverse_anchor_uncertainty_retry_policy or "").strip() or "disabled"
+        )
+        self.diverse_anchor_uncertainty_retry_target_anchor_id = str(
+            diverse_anchor_uncertainty_retry_target_anchor_id or ""
+        ).strip()
+        self.diverse_anchor_uncertainty_retry_extra_anchor_attempts = max(
+            0, int(diverse_anchor_uncertainty_retry_extra_anchor_attempts)
+        )
         self.method_name = method_name
 
     def _compose_direct_hybrid_l1_question(self, question: str) -> str:
@@ -8853,6 +9006,91 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                         seen_anchor_ids.add(tail_id)
                     break
 
+        uncertainty_retry_budget_available = int(remaining_budget)
+        uncertainty_retry_target_anchor_id, uncertainty_retry_target_anchor_reason = resolve_diverse_anchor_uncertainty_retry_target(
+            enabled=bool(getattr(self, "enable_diverse_anchor_uncertainty_retry_policy", False)),
+            planned_anchor_ids=list(planned_anchor_ids),
+            domain_hint=str(detected_domain_hint),
+            explicit_target_anchor_id=str(
+                getattr(self, "diverse_anchor_uncertainty_retry_target_anchor_id", "") or ""
+            ),
+        )
+        uncertainty_retry_meta = compute_diverse_anchor_uncertainty_retry_features(
+            enabled=bool(getattr(self, "enable_diverse_anchor_uncertainty_retry_policy", False)),
+            policy=str(getattr(self, "diverse_anchor_uncertainty_retry_policy", "disabled") or "disabled"),
+            target_anchor_id=str(uncertainty_retry_target_anchor_id or ""),
+            diverse_anchor_records=list(diverse_anchor_records),
+            direct_counts=dict(direct_counts),
+            incumbent_group=str(incumbent_group or "__unknown__"),
+            direct_top_support=float(direct_top_support),
+            direct_gap=float(direct_gap),
+            direct_entropy=float(direct_entropy),
+            remaining_budget=int(uncertainty_retry_budget_available),
+            domain_hint=str(detected_domain_hint),
+            extra_anchor_attempts_planned=int(
+                getattr(self, "diverse_anchor_uncertainty_retry_extra_anchor_attempts", 0) or 0
+            ),
+        )
+        uncertainty_retry_meta["uncertainty_retry_target_anchor_reason"] = str(
+            uncertainty_retry_target_anchor_reason or ""
+        )
+        uncertainty_retry_extra_attempts_done = 0
+        if bool(uncertainty_retry_meta.get("uncertainty_retry_should_trigger")):
+            retry_plan = int(getattr(self, "diverse_anchor_uncertainty_retry_extra_anchor_attempts", 0) or 0)
+            if retry_plan <= 0:
+                uncertainty_retry_meta["uncertainty_retry_reason"] = "retry_budget_zero"
+            elif remaining_budget <= 0:
+                uncertainty_retry_meta["uncertainty_retry_reason"] = "no_budget_available"
+            elif not str(uncertainty_retry_target_anchor_id or "").strip():
+                uncertainty_retry_meta["uncertainty_retry_reason"] = "no_retry_anchor_available"
+            else:
+                for extra_idx in range(retry_plan):
+                    if remaining_budget < diverse_anchor_budget_per_anchor:
+                        break
+                    ans_retry, used_retry, trace_retry = self._run_diverse_prompt_anchor_once(
+                        question=question,
+                        gold_answer=gold_answer,
+                        anchor_id=str(uncertainty_retry_target_anchor_id),
+                        budget_actions=diverse_anchor_budget_per_anchor,
+                        attempt_index=extra_idx + 1,
+                    )
+                    direct_actions += int(used_retry)
+                    remaining_budget = max(0, remaining_budget - int(used_retry))
+                    spec = DIVERSE_PROMPT_ANCHOR_SPECS.get(str(uncertainty_retry_target_anchor_id), {})
+                    diverse_anchor_records.append(
+                        {
+                            "anchor_id": str(uncertainty_retry_target_anchor_id),
+                            "anchor_prompt_style": str(spec.get("anchor_prompt_style") or uncertainty_retry_target_anchor_id),
+                            "source_family": str(spec.get("source_family") or uncertainty_retry_target_anchor_id),
+                            "candidate_answer": (
+                                str(ans_retry).strip() if ans_retry is not None and str(ans_retry).strip() else ""
+                            ),
+                            "answer_group": (
+                                normalize_answer_group_key(str(ans_retry))
+                                if ans_retry is not None and str(ans_retry).strip()
+                                else "__unknown__"
+                            )
+                            or "__unknown__",
+                            "budget_cost_observed": int(used_retry),
+                            "executed": bool(used_retry > 0),
+                            "source_metadata": str(uncertainty_retry_target_anchor_id),
+                            "trace_events": list(trace_retry),
+                            "uncertainty_retry_index": int(extra_idx + 1),
+                            "uncertainty_retry_policy": str(
+                                getattr(self, "diverse_anchor_uncertainty_retry_policy", "disabled") or "disabled"
+                            ),
+                        }
+                    )
+                    uncertainty_retry_extra_attempts_done += 1
+                if uncertainty_retry_extra_attempts_done > 0:
+                    uncertainty_retry_meta["uncertainty_retry_triggered"] = True
+                    uncertainty_retry_meta["uncertainty_retry_reason"] = "enabled_and_retried"
+                elif remaining_budget <= 0:
+                    uncertainty_retry_meta["uncertainty_retry_reason"] = "no_budget_available"
+                else:
+                    uncertainty_retry_meta["uncertainty_retry_reason"] = "confidence_sufficient"
+        uncertainty_retry_meta["uncertainty_retry_extra_attempts"] = int(uncertainty_retry_extra_attempts_done)
+
         remaining_budget = max(0, remaining_budget)
         remaining_budget_after_diverse_anchors = int(remaining_budget)
         should_expand_frontier = bool(remaining_budget > 0 and incumbent_uncertain)
@@ -9977,6 +10215,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "diverse_prompt_anchor_budget_actions": int(diverse_anchor_budget_per_anchor),
             **diverse_anchor_regression_guard_meta,
             **diverse_anchor_stability_meta,
+            **uncertainty_retry_meta,
             "stability_domain_gate": str(diverse_anchor_stability_domain_gate_policy),
             "stability_domain_gate_allowed": bool(diverse_anchor_stability_domain_gate_allowed),
             "stability_domain_gate_reason": str(diverse_anchor_stability_domain_gate_reason),

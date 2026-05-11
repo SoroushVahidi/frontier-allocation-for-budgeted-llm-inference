@@ -232,6 +232,9 @@ METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIE
 METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR = (
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_stability_redundant_anchor_v1"
 )
+METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_uncertainty_retry_v1"
+)
 
 _NUMERIC_LEAF_DR_APPEND = (
     " Emit numeric_leaf_status and numeric_leaf_value in branch JSON on each expand (see expand prompt); "
