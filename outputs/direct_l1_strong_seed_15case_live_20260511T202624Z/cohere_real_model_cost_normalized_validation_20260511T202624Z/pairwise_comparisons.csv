@@ -1,0 +1,3 @@
+provider,comparison,method_a,method_b,matched_examples,mean_accuracy_delta_a_minus_b,bootstrap95_low,bootstrap95_high,wins_a,wins_b,ties,comparison_status
+cohere,strict_f3_vs_external_l1_max,strict_f3,external_l1_max,0,NA,NA,NA,0,0,0,not_evaluable_zero_matched_examples
+cohere,strict_f3_vs_strict_gate1_cap_k6,strict_f3,strict_gate1_cap_k6,0,NA,NA,NA,0,0,0,not_evaluable_zero_matched_examples
