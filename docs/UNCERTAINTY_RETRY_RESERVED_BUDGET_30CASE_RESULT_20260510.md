@@ -2,7 +2,7 @@
 
 ## Executive Status
 
-The 30-case Cohere budget-4 exact run completed successfully and supports the intended comparison.
+The 30-case Cohere budget-4 exact run completed successfully and supports the intended replay comparison.
 
 Run artifact directory:
 `/tmp/cohere_exact_case_uncertainty_retry_reserved_budget4_30case_20260510`
@@ -18,6 +18,8 @@ Run artifact directory:
 - Gold-in-pool: `12/30 -> 15/30`
 - Retry budget available: `30/30`
 - Retry triggered: `22/30`
+- Retry released: `8/30`
+- Logical Cohere calls: `232/300`
 
 ## Interpretation
 
