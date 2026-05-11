@@ -1718,6 +1718,7 @@ def build_frontier_strategies(
             **strategy_seeded_outer_kwargs_k1_frontier4_diverse_anchor,
             "enable_diverse_anchor_stability_policy": True,
             "diverse_anchor_stability_policy": "stability_redundant_anchor_v1",
+            "diverse_anchor_stability_domain_gate": "multi_step_arithmetic_only_v1",
             "diverse_anchor_stability_extra_anchor_attempts": 1,
         }
         specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR] = (

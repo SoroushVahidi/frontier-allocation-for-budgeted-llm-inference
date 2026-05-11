@@ -478,10 +478,34 @@ def resolve_diverse_anchor_stability_target(
     return "", "no_redundant_anchor_available"
 
 
+def resolve_diverse_anchor_stability_domain_gate(
+    *,
+    enabled: bool,
+    domain_hint: str,
+    gate_policy: str,
+) -> tuple[bool, str, str]:
+    policy = str(gate_policy or "").strip() or "disabled"
+    domain = str(domain_hint or "").strip() or "unknown"
+    if not enabled or policy == "disabled":
+        return False, policy, "disabled"
+    if policy in {"all_domains_v1", "all_domains", "allow_all_v1"}:
+        return True, policy, "override_all_domains"
+    if policy in {"multi_step_arithmetic_only_v1", "stability_redundant_anchor_v1"}:
+        if domain == "multi_step_arithmetic":
+            return True, policy, "multi_step_arithmetic_allowed_by_default_gate"
+        return False, policy, f"{domain}_blocked_by_default_gate"
+    if domain == "multi_step_arithmetic":
+        return True, policy, "multi_step_arithmetic_allowed_by_fallback_gate"
+    return False, policy, f"{domain}_blocked_by_default_gate"
+
+
 def compute_diverse_anchor_stability_features(
     *,
     enabled: bool,
     policy: str,
+    domain_gate: str,
+    domain_gate_allowed: bool,
+    domain_gate_reason: str,
     target_anchor_id: str,
     diverse_anchor_records: list[dict[str, Any]],
     candidate_pool_answer_group_count: int,
@@ -506,16 +530,27 @@ def compute_diverse_anchor_stability_features(
                 target_group = str(record.get("answer_group") or "").strip()
                 break
     target_group_support = int(anchor_group_counts.get(target_group, 0)) if target_group else 0
-    repeated_anchor_needed = bool(enabled and target_anchor_id and target_repeat_count > 1)
-    unstable_anchor_warning = bool(enabled and target_anchor_id and target_group_support <= 1 and candidate_pool_answer_group_count >= 3)
+    repeated_anchor_needed = bool(enabled and domain_gate_allowed and target_anchor_id and target_repeat_count > 1)
+    unstable_anchor_warning = bool(
+        enabled and domain_gate_allowed and target_anchor_id and target_group_support <= 1 and candidate_pool_answer_group_count >= 3
+    )
+    if not enabled:
+        stability_reason = "disabled"
+    elif not domain_gate_allowed:
+        stability_reason = "domain_gate_blocked"
+    elif repeated_anchor_needed:
+        stability_reason = "enabled_and_repeated"
+    else:
+        stability_reason = "no_redundancy_triggered"
     return {
         "stability_policy": str(policy or "disabled"),
         "stability_policy_enabled": bool(enabled),
+        "stability_domain_gate": str(domain_gate or "disabled"),
+        "stability_domain_gate_allowed": bool(domain_gate_allowed),
+        "stability_domain_gate_reason": str(domain_gate_reason or ""),
         "stability_extra_anchor_attempts": int(extra_anchor_attempts_done),
         "stability_target_anchor_id": str(target_anchor_id or ""),
-        "stability_reason": (
-            "enabled_and_repeated" if repeated_anchor_needed else ("disabled" if not enabled else "no_redundancy_triggered")
-        ),
+        "stability_reason": str(stability_reason),
         "candidate_pool_stability_features": {
             "candidate_pool_answer_group_count": int(candidate_pool_answer_group_count),
             "answer_group_entropy": float(answer_group_entropy),
@@ -526,6 +561,9 @@ def compute_diverse_anchor_stability_features(
             "target_anchor_support": int(target_group_support),
             "repeated_anchor_needed": bool(repeated_anchor_needed),
             "unstable_anchor_warning": bool(unstable_anchor_warning),
+            "stability_domain_gate": str(domain_gate or "disabled"),
+            "stability_domain_gate_allowed": bool(domain_gate_allowed),
+            "stability_domain_gate_reason": str(domain_gate_reason or ""),
         },
     }
 
@@ -7446,6 +7484,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         diverse_prompt_anchor_priority_policy: str = "domain_aware_v1",
         enable_diverse_anchor_stability_policy: bool = False,
         diverse_anchor_stability_policy: str = "disabled",
+        diverse_anchor_stability_domain_gate: str = "disabled",
         diverse_anchor_stability_extra_anchor_attempts: int = 0,
         diverse_anchor_stability_target_anchor_id: str = "",
         method_name: str = "direct_reserve_frontier_gate_v1",
@@ -7524,6 +7563,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         self.diverse_prompt_anchor_priority_policy = str(diverse_prompt_anchor_priority_policy or "").strip() or "domain_aware_v1"
         self.enable_diverse_anchor_stability_policy = bool(enable_diverse_anchor_stability_policy)
         self.diverse_anchor_stability_policy = str(diverse_anchor_stability_policy or "").strip() or "disabled"
+        self.diverse_anchor_stability_domain_gate = (
+            str(diverse_anchor_stability_domain_gate or "").strip() or "disabled"
+        )
         self.diverse_anchor_stability_extra_anchor_attempts = max(0, int(diverse_anchor_stability_extra_anchor_attempts))
         self.diverse_anchor_stability_target_anchor_id = str(diverse_anchor_stability_target_anchor_id or "").strip()
         self.method_name = method_name
@@ -8638,8 +8680,24 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             domain_hint=str(detected_domain_hint),
             policy=str(anchor_priority_policy),
         )
+        diverse_anchor_stability_enabled = bool(getattr(self, "enable_diverse_anchor_stability_policy", False))
+        diverse_anchor_stability_domain_gate = str(
+            getattr(self, "diverse_anchor_stability_domain_gate", "disabled") or "disabled"
+        )
+        (
+            diverse_anchor_stability_domain_gate_allowed,
+            diverse_anchor_stability_domain_gate_policy,
+            diverse_anchor_stability_domain_gate_reason,
+        ) = resolve_diverse_anchor_stability_domain_gate(
+            enabled=diverse_anchor_stability_enabled,
+            domain_hint=str(detected_domain_hint),
+            gate_policy=diverse_anchor_stability_domain_gate,
+        )
+        effective_diverse_anchor_stability_enabled = bool(
+            diverse_anchor_stability_enabled and diverse_anchor_stability_domain_gate_allowed
+        )
         diverse_anchor_stability_target_anchor_id, diverse_anchor_stability_reason = resolve_diverse_anchor_stability_target(
-            enabled=bool(getattr(self, "enable_diverse_anchor_stability_policy", False)),
+            enabled=effective_diverse_anchor_stability_enabled,
             planned_anchor_ids=list(planned_anchor_ids),
             explicit_target_anchor_id=str(getattr(self, "diverse_anchor_stability_target_anchor_id", "") or ""),
         )
@@ -8733,7 +8791,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                 )
                 seen_anchor_ids.add(anchor_id)
                 if (
-                    bool(getattr(self, "enable_diverse_anchor_stability_policy", False))
+                    bool(effective_diverse_anchor_stability_enabled)
                     and str(anchor_id) == str(diverse_anchor_stability_target_anchor_id)
                     and int(getattr(self, "diverse_anchor_stability_extra_anchor_attempts", 0) or 0) > 0
                 ):
@@ -9801,6 +9859,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         diverse_anchor_stability_meta = compute_diverse_anchor_stability_features(
             enabled=bool(getattr(self, "enable_diverse_anchor_stability_policy", False)),
             policy=str(getattr(self, "diverse_anchor_stability_policy", "disabled") or "disabled"),
+            domain_gate=str(diverse_anchor_stability_domain_gate_policy),
+            domain_gate_allowed=bool(diverse_anchor_stability_domain_gate_allowed),
+            domain_gate_reason=str(diverse_anchor_stability_domain_gate_reason),
             target_anchor_id=str(diverse_anchor_stability_target_anchor_id or ""),
             diverse_anchor_records=list(diverse_anchor_records),
             candidate_pool_answer_group_count=int(candidate_pool_answer_group_count),
@@ -9916,6 +9977,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "diverse_prompt_anchor_budget_actions": int(diverse_anchor_budget_per_anchor),
             **diverse_anchor_regression_guard_meta,
             **diverse_anchor_stability_meta,
+            "stability_domain_gate": str(diverse_anchor_stability_domain_gate_policy),
+            "stability_domain_gate_allowed": bool(diverse_anchor_stability_domain_gate_allowed),
+            "stability_domain_gate_reason": str(diverse_anchor_stability_domain_gate_reason),
             "configured_anchor_ids": list(configured_anchor_ids),
             "prioritized_anchor_ids": list(planned_anchor_ids),
             "diverse_prompt_anchor_ids_planned": list(configured_anchor_ids),
