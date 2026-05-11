@@ -70,6 +70,14 @@ METHODS: dict[str, dict[str, Any]] = {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k3",
         "enable_output_repair": True,
     },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
+        "enable_output_repair": True,
+    },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_stability_redundant_anchor_v1": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_stability_redundant_anchor_v1",
+        "enable_output_repair": True,
+    },
     "direct_reserve_diverse_root_frontier_v1_guarded_k2_frontier2": {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k2_frontier2",
         "enable_output_repair": True,
