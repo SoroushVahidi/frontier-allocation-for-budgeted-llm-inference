@@ -91,6 +91,7 @@ def _controller(
         enable_diverse_anchor_uncertainty_retry_policy=enable_retry,
         diverse_anchor_uncertainty_retry_policy=retry_policy if enable_retry else "disabled",
         diverse_anchor_uncertainty_retry_extra_anchor_attempts=retry_attempts,
+        diverse_anchor_uncertainty_retry_reserved_budget_actions=1 if enable_retry else 0,
         enable_frontier_max_support_tiebreak=True,
         gate_top_support_threshold=2.0,
         strict_controller_factory=lambda _remaining_budget: _MockFrontier(frontier_answer, frontier_support),
@@ -118,7 +119,7 @@ def test_uncertainty_retry_disabled_by_default_reports_disabled_metadata() -> No
 
 
 def test_uncertainty_retry_triggers_for_multi_step_unstable_pool() -> None:
-    ctrl = _controller(_mixed_answers(), enable_retry=True, question_budget=8)
+    ctrl = _controller(_mixed_answers(), enable_retry=True, question_budget=5)
 
     metadata = ctrl.run("John has 3 apples then buys 4 more. What is the total?", "7").metadata
 
@@ -128,12 +129,19 @@ def test_uncertainty_retry_triggers_for_multi_step_unstable_pool() -> None:
     assert metadata["uncertainty_retry_should_trigger"] is True
     assert metadata["uncertainty_retry_triggered"] is True
     assert metadata["uncertainty_retry_reason"] == "enabled_and_retried"
+    assert metadata["uncertainty_retry_reserved_budget"] == 1
+    assert metadata["uncertainty_retry_budget_reserved"] == 1
+    assert metadata["uncertainty_retry_budget_available"] == 1
+    assert metadata["remaining_budget_before_uncertainty_retry"] == 1
+    assert metadata["remaining_budget_after_uncertainty_retry"] == 0
+    assert metadata["uncertainty_retry_budget_released"] == 0
     assert metadata["uncertainty_retry_target_anchor_id"] == "backward_check_anchor"
     assert metadata["uncertainty_retry_target_anchor_reason"] == "multi_step_arithmetic_preferred"
     assert metadata["uncertainty_retry_extra_attempts"] == 1
     assert metadata["uncertainty_retry_features"]["selected_group_is_weak"] is True
     assert metadata["uncertainty_retry_features"]["high_disagreement"] is True
-    assert metadata["diverse_prompt_anchor_ids_executed"].count("backward_check_anchor") == 2
+    assert metadata["diverse_prompt_anchor_ids_executed"].count("backward_check_anchor") == 1
+    assert metadata["answer_group_support_counts"]["20"] == 4
 
 
 def test_uncertainty_retry_chooses_ratio_target_when_triggered() -> None:
@@ -160,21 +168,38 @@ def test_uncertainty_retry_chooses_money_target_when_triggered() -> None:
     assert metadata["diverse_prompt_anchor_ids_executed"].count("unit_ledger_money_anchor") == 2
 
 
+def test_uncertainty_retry_merges_duplicate_retry_answers_into_support_counts() -> None:
+    ctrl = _controller(_mixed_answers(), enable_retry=True, question_budget=8)
+
+    metadata = ctrl.run("John has 3 apples then buys 4 more. What is the total?", "7").metadata
+
+    assert metadata["uncertainty_retry_triggered"] is True
+    assert metadata["diverse_prompt_anchor_ids_executed"].count("backward_check_anchor") == 2
+    assert metadata["answer_group_support_counts"]["20"] == 7
+    assert metadata["uncertainty_retry_budget_reserved"] == 1
+    assert metadata["remaining_budget_before_uncertainty_retry"] == 1
+    assert metadata["remaining_budget_after_uncertainty_retry"] == 0
+
+
 def test_uncertainty_retry_skips_when_no_budget_available() -> None:
-    ctrl = _controller(_mixed_answers(), enable_retry=True, question_budget=7)
+    ctrl = _controller(_mixed_answers(), enable_retry=True, question_budget=2)
 
     metadata = ctrl.run("John has 3 apples then buys 4 more. What is the total?", "7").metadata
 
     assert metadata["uncertainty_retry_enabled"] is True
     assert metadata["uncertainty_retry_should_trigger"] is False
     assert metadata["uncertainty_retry_triggered"] is False
-    assert metadata["uncertainty_retry_reason"] == "no_budget_available"
+    assert metadata["uncertainty_retry_reason"] == "insufficient_budget_for_retry_reserve"
     assert metadata["uncertainty_retry_budget_available"] == 0
+    assert metadata["uncertainty_retry_reserved_budget"] == 1
+    assert metadata["uncertainty_retry_budget_reserved"] == 0
+    assert metadata["remaining_budget_before_uncertainty_retry"] == 0
+    assert metadata["remaining_budget_after_uncertainty_retry"] == 0
     assert metadata["uncertainty_retry_extra_attempts"] == 0
 
 
 def test_uncertainty_retry_does_not_trigger_on_strong_consensus() -> None:
-    ctrl = _controller(["20"] * 8, enable_retry=True, question_budget=8)
+    ctrl = _controller(["20"] * 8, enable_retry=True, question_budget=4)
 
     metadata = ctrl.run("John has 3 apples then buys 4 more. What is the total?", "7").metadata
 
@@ -182,5 +207,11 @@ def test_uncertainty_retry_does_not_trigger_on_strong_consensus() -> None:
     assert metadata["uncertainty_retry_should_trigger"] is False
     assert metadata["uncertainty_retry_triggered"] is False
     assert metadata["uncertainty_retry_reason"] == "confidence_sufficient"
+    assert metadata["uncertainty_retry_reserved_budget"] == 1
+    assert metadata["uncertainty_retry_budget_reserved"] == 1
+    assert metadata["uncertainty_retry_budget_released"] == 1
+    assert metadata["uncertainty_retry_budget_unused"] == 1
+    assert metadata["remaining_budget_before_uncertainty_retry"] == 1
+    assert metadata["remaining_budget_after_uncertainty_retry"] == 1
     assert metadata["uncertainty_retry_target_anchor_id"] == "backward_check_anchor"
     assert metadata["uncertainty_retry_extra_attempts"] == 0
