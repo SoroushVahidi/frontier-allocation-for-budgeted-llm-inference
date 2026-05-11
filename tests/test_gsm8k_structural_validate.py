@@ -128,6 +128,10 @@ def test_execution_metadata_exec_ok() -> None:
         execution_metadata={"pal_exec_ok": 1},
     )
     assert out["exec_ok"] is True
+    assert "target_tuple" in out and "structural_selector_score" in out
+    assert out["target_tuple"]["question_kind"] == "unknown"
+    assert "entity_unit_ledger_proxy" in out
+    assert "duplicate_wrong_signature" in out
     out2 = validate_gsm8k_candidate(
         problem_text="Compute 1+1.",
         candidate_answer="2",

@@ -9,14 +9,18 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+from collections import OrderedDict
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
+import re
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 from experiments.gsm8k_structural_validate import validate_gsm8k_candidate
 from experiments.output_layer_repair import canonicalize_answer
+from experiments.selector_error_features import build_structural_target_feature_row
 
 DATASET = "openai/gsm8k"
 PAL_METHOD = "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
@@ -25,6 +29,24 @@ DEFAULT_BUNDLE = (
     REPO_ROOT / "outputs/cohere_collect_pal_failure_cases_vs_3_external_20260507T161935Z"
 )
 DEFAULT_OUT = REPO_ROOT / "outputs/gsm8k_structural_validator_eval_20260507"
+DEFAULT_PRIMARY_FAILURE_CSV = (
+    REPO_ROOT / "docs/project_handoff_20260510/exhaustive_failure_audit/full_latest_method_failures.csv"
+)
+DEFAULT_FOCUS_GOLD_ABSENT_CSV = (
+    REPO_ROOT / "docs/project_handoff_20260510/exhaustive_failure_audit/gold_absent_subpattern_analysis_20260510.csv"
+)
+DEFAULT_SECONDARY_ANCHOR_CSV = (
+    REPO_ROOT / "docs/project_handoff_20260510/exhaustive_failure_audit/direct_l1_anchor_patch_effect_20260510.csv"
+)
+DEFAULT_GUARDRAIL_30_JSONL = (
+    REPO_ROOT / "docs/project_handoff_20260510/exact_case_replay/failure_recovery_30case_exact_cases_20260510.jsonl"
+)
+DEFAULT_DIAGNOSTIC_15_JSONL = (
+    REPO_ROOT / "docs/project_handoff_20260510/exact_case_replay/direct_l1_strong_seed_15case_exact_cases_20260511.jsonl"
+)
+DEFAULT_TARGET_AUDIT_DIAGNOSTIC_JSONL = (
+    REPO_ROOT / "docs/project_handoff_20260510/target_audit_diagnostic_cases.jsonl"
+)
 
 # casebook column -> (role label, answer column, correct column)
 EXTERNAL_SPECS: tuple[tuple[str, str, str], ...] = (
@@ -89,6 +111,10 @@ def _safe_json(raw: str | None) -> dict[str, Any]:
     except json.JSONDecodeError:
         return {}
     return out if isinstance(out, dict) else {}
+
+
+def _safe_text(value: Any) -> str:
+    return str(value or "").strip()
 
 
 def _norm_match(ans: str | None, gold: str | None) -> bool:
@@ -205,6 +231,101 @@ def load_csv_rows(path: Path) -> list[dict[str, str]]:
         for row in r:
             rows.append({str(k): str(v) if v is not None else "" for k, v in row.items()})
     return rows
+
+
+def load_jsonl_rows(path: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    if not path.is_file():
+        return rows
+    with path.open(encoding="utf-8", errors="replace") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(d, dict):
+                rows.append(d)
+    return rows
+
+
+def load_case_id_set_from_csv(path: Path, *, case_id_col: str = "case_id", predicate: Any | None = None) -> set[str]:
+    out: set[str] = set()
+    if not path.is_file():
+        return out
+    with path.open(encoding="utf-8", newline="") as f:
+        r = csv.DictReader(f)
+        for row in r:
+            if predicate is not None and not predicate(row):
+                continue
+            cid = str(row.get(case_id_col) or "").strip()
+            if cid:
+                out.add(cid)
+    return out
+
+
+def load_case_map_from_csv(path: Path, *, case_id_col: str = "case_id", predicate: Any | None = None) -> dict[str, dict[str, str]]:
+    out: dict[str, dict[str, str]] = {}
+    if not path.is_file():
+        return out
+    with path.open(encoding="utf-8", newline="") as f:
+        r = csv.DictReader(f)
+        for row in r:
+            if predicate is not None and not predicate(row):
+                continue
+            cid = str(row.get(case_id_col) or "").strip()
+            if cid and cid not in out:
+                out[cid] = {str(k): str(v) if v is not None else "" for k, v in row.items()}
+    return out
+
+
+def load_case_id_set_from_jsonl(
+    path: Path,
+    *,
+    case_id_keys: tuple[str, ...] = ("case_id", "example_id"),
+    predicate: Any | None = None,
+) -> set[str]:
+    out: set[str] = set()
+    if not path.is_file():
+        return out
+    with path.open(encoding="utf-8", errors="replace") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(row, dict):
+                continue
+            if predicate is not None and not predicate(row):
+                continue
+            cid = ""
+            for key in case_id_keys:
+                cid = str(row.get(key) or "").strip()
+                if cid:
+                    break
+            if cid:
+                out.add(cid)
+    return out
+
+
+def _normalize_group_key(answer: str | None) -> str:
+    if answer is None:
+        return ""
+    stripped = str(answer).strip()
+    if not stripped:
+        return ""
+    nums = re.findall(r"[-+]?\d+(?:\.\d+)?", stripped.replace(",", ""))
+    if nums:
+        value = nums[-1]
+        if value.endswith(".0"):
+            value = value[:-2]
+        return value
+    return stripped.lower()
 
 
 def guardrail_case_ids(casebook_rows: list[dict[str, str]]) -> set[str]:
@@ -512,6 +633,8 @@ def flatten_validation(
 ) -> dict[str, Any]:
     flags = list(missing_case)
     ans = spec.get("candidate_answer")
+    target_tuple = v.get("target_tuple") or {}
+    ledger_proxy = v.get("entity_unit_ledger_proxy") or {}
     return {
         "case_id": spec["case_id"],
         "cohort": spec["cohort"],
@@ -522,6 +645,14 @@ def flatten_validation(
         "candidate_answer": ans,
         "matches_gold_offline": _norm_match(str(ans) if ans is not None else None, gold),
         "structural_score": v.get("structural_score"),
+        "target_tuple": json.dumps(target_tuple, sort_keys=True),
+        "entity_unit_ledger_proxy": json.dumps(ledger_proxy, sort_keys=True),
+        "final_answer_role": v.get("final_answer_role"),
+        "last_operation_family": v.get("last_operation_family"),
+        "target_alignment_score": v.get("target_alignment_score"),
+        "intermediate_answer_penalty": v.get("intermediate_answer_penalty"),
+        "duplicate_wrong_signature": v.get("duplicate_wrong_signature"),
+        "structural_selector_score": v.get("structural_selector_score"),
         "errors_count": len(v.get("errors") or []),
         "warnings_count": len(v.get("warnings") or []),
         "quantity_coverage": v.get("quantity_coverage"),
@@ -537,14 +668,782 @@ def flatten_validation(
     }
 
 
+def _replay_case_group_key(answer: str | None) -> str:
+    return _normalize_group_key(answer)
+
+
+def _group_candidate_pool(
+    *,
+    question: str,
+    candidate_pool: list[dict[str, Any]],
+    pal_code: str | None,
+    pal_execution: dict[str, Any] | None,
+    answer_group_support_counts: dict[str, Any] | None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    support_counts = dict(answer_group_support_counts or {})
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for idx, cand in enumerate(candidate_pool):
+        if not isinstance(cand, dict):
+            continue
+        group_key = _replay_case_group_key(cand.get("normalized_answer") or cand.get("predicted_answer"))
+        if not group_key:
+            continue
+        grouped[group_key].append(dict(cand))
+
+    per_group: list[dict[str, Any]] = []
+    for group_key, rows in grouped.items():
+        feats: list[dict[str, Any]] = []
+        candidate_rows: list[dict[str, Any]] = []
+        for row in rows:
+            trace = str(row.get("trace") or row.get("reasoning_text") or "")
+            candidate_answer = row.get("predicted_answer") or row.get("normalized_answer")
+            candidate_code = pal_code
+            exec_meta = {
+                "candidate_role": row.get("candidate_role"),
+                "reasoning_role": row.get("reasoning_role"),
+                "source_family": row.get("source_family"),
+                "source_metadata": row.get("source_metadata"),
+                "answer_group": group_key,
+                "target_entity": row.get("target_entity"),
+                "target_unit": row.get("target_unit"),
+                "unit_consistency_status": row.get("unit_consistency_status"),
+            }
+            feats.append(
+                build_structural_target_feature_row(
+                    question=question,
+                    candidate_trace=trace,
+                    candidate_code=candidate_code,
+                    candidate_answer=candidate_answer,
+                    execution_metadata=exec_meta,
+                    support_count=int(support_counts.get(group_key, len(rows)) or len(rows)),
+                )
+            )
+            candidate_row = dict(row)
+            candidate_row["group_key"] = group_key
+            candidate_row["support_count"] = int(support_counts.get(group_key, len(rows)) or len(rows))
+            candidate_row["structural_features"] = feats[-1]
+            candidate_rows.append(candidate_row)
+        duplicate_counts: Counter[str] = Counter(
+            feat["duplicate_wrong_signature"]
+            for feat in feats
+            if feat.get("duplicate_wrong_signature") and feat.get("final_answer_role") != "target"
+        )
+        best_feat = max(
+            feats,
+            key=lambda f: (
+                float(f.get("structural_selector_score", 0.0)),
+                float(f.get("target_alignment_score", 0.0)),
+                -float(f.get("intermediate_answer_penalty", 0.0)),
+            ),
+        )
+        group_row = {
+            "group_key": group_key,
+            "support_count": int(support_counts.get(group_key, len(rows)) or len(rows)),
+            "candidate_count": len(rows),
+            "frontier_support_count": 0,
+            "direct_support_count": 0,
+            "best_structural_selector_score": float(best_feat.get("structural_selector_score", 0.0)),
+            "best_target_alignment_score": float(best_feat.get("target_alignment_score", 0.0)),
+            "best_intermediate_answer_penalty": float(best_feat.get("intermediate_answer_penalty", 0.0)),
+            "best_ledger_confidence": float(
+                (best_feat.get("entity_unit_ledger_proxy") or {}).get("ledger_confidence", 0.0)
+            ),
+            "best_final_answer_role": str(best_feat.get("final_answer_role") or "unknown"),
+            "best_last_operation_family": str(best_feat.get("last_operation_family") or "unknown"),
+            "duplicate_wrong_penalty": float(max(0, max(duplicate_counts.values(), default=0) - 1)),
+            "duplicate_wrong_signature_count": int(max(duplicate_counts.values(), default=0)),
+            "features": feats,
+            "candidate_rows": candidate_rows,
+            "candidate_answers": [str(r.get("predicted_answer") or r.get("normalized_answer") or "").strip() for r in rows],
+        }
+        per_group.append(group_row)
+
+    return per_group, {"group_count": len(per_group)}
+
+
+def _baseline_selector_group(
+    *,
+    selected_group: str | None,
+    answer_group_support_counts: dict[str, Any] | None,
+    frontier_answer_group_counts: dict[str, Any] | None,
+    direct_answer_group_counts: dict[str, Any] | None,
+) -> str:
+    baseline = _replay_case_group_key(selected_group)
+    if baseline:
+        return baseline
+    support_counts = dict(answer_group_support_counts or {})
+    frontier_counts = dict(frontier_answer_group_counts or {})
+    direct_counts = dict(direct_answer_group_counts or {})
+    if not support_counts:
+        return ""
+    try:
+        max_support = max(int(v) for v in support_counts.values())
+    except Exception:
+        return ""
+    tied = sorted(
+        [
+            str(g).strip()
+            for g, c in support_counts.items()
+            if str(g).strip() and str(g) != "__unknown__" and int(c) == int(max_support)
+        ]
+    )
+    if not tied:
+        return ""
+    if len(tied) == 1:
+        return tied[0]
+
+    def _fc(g: str) -> int:
+        try:
+            return int(frontier_counts.get(g, 0) or 0)
+        except Exception:
+            return 0
+
+    def _dc(g: str) -> int:
+        try:
+            return int(direct_counts.get(g, 0) or 0)
+        except Exception:
+            return 0
+
+    ranked = sorted(tied, key=lambda g: (-_fc(g), _dc(g), g))
+    return ranked[0] if ranked else tied[0]
+
+
+def _variant_group_score(variant: str, group_row: dict[str, Any]) -> float:
+    support = float(group_row.get("support_count", 0) or 0)
+    target = float(group_row.get("best_target_alignment_score", 0.0) or 0.0)
+    intermediate = float(group_row.get("best_intermediate_answer_penalty", 0.0) or 0.0)
+    ledger = float(group_row.get("best_ledger_confidence", 0.0) or 0.0)
+    duplicate_penalty = float(group_row.get("duplicate_wrong_penalty", 0.0) or 0.0)
+    structural = float(group_row.get("best_structural_selector_score", 0.0) or 0.0)
+    frontier = float(group_row.get("frontier_support_count", 0) or 0)
+    direct = float(group_row.get("direct_support_count", 0) or 0)
+
+    if variant == "baseline_current_selector_tiebreak":
+        return support
+    if variant == "+ target check":
+        return support + 0.75 * target
+    if variant == "+ anti-intermediate filter":
+        return support + 0.75 * target - 0.85 * intermediate
+    if variant == "+ unit/entity ledger proxy":
+        return support + 0.75 * target - 0.85 * intermediate + 0.60 * ledger
+    if variant == "+ wrong-consensus penalty":
+        return support + 0.75 * target - 0.85 * intermediate + 0.60 * ledger - 0.50 * duplicate_penalty
+    if variant == "combined_structural_selector":
+        return 0.30 * support + 0.55 * structural + 0.15 * ledger - 0.35 * duplicate_penalty
+    return support + frontier * 1e-3 - direct * 1e-6
+
+
+def _variant_sort_key(variant_score: float, group_row: dict[str, Any]) -> tuple[float, float, float, float, str]:
+    return (
+        -float(variant_score),
+        -float(group_row.get("support_count", 0) or 0),
+        -float(group_row.get("frontier_support_count", 0) or 0),
+        float(group_row.get("direct_support_count", 0) or 0),
+        str(group_row.get("group_key") or ""),
+    )
+
+
+def _select_group_for_variant(
+    *,
+    variant: str,
+    candidate_pool: list[dict[str, Any]],
+    question: str,
+    selected_group: str | None,
+    answer_group_support_counts: dict[str, Any] | None,
+    frontier_answer_group_counts: dict[str, Any] | None,
+    direct_answer_group_counts: dict[str, Any] | None,
+    pal_code: str | None,
+    pal_execution: dict[str, Any] | None,
+) -> tuple[str, dict[str, Any]]:
+    grouped, meta = _group_candidate_pool(
+        question=question,
+        candidate_pool=candidate_pool,
+        pal_code=pal_code,
+        pal_execution=pal_execution,
+        answer_group_support_counts=answer_group_support_counts,
+    )
+    if not grouped:
+        return "", {"missing_candidate_pool": True, **meta}
+    frontier_counts = dict(frontier_answer_group_counts or {})
+    direct_counts = dict(direct_answer_group_counts or {})
+    for row in grouped:
+        row["frontier_support_count"] = int(frontier_counts.get(row["group_key"], 0) or 0)
+        row["direct_support_count"] = int(direct_counts.get(row["group_key"], 0) or 0)
+    baseline_group = _baseline_selector_group(
+        selected_group=selected_group,
+        answer_group_support_counts=answer_group_support_counts,
+        frontier_answer_group_counts=frontier_answer_group_counts,
+        direct_answer_group_counts=direct_answer_group_counts,
+    )
+    if variant == "baseline_current_selector_tiebreak":
+        return baseline_group, {"baseline_group": baseline_group, "group_count": len(grouped), **meta}
+    ranked = sorted(
+        grouped,
+        key=lambda row: _variant_sort_key(_variant_group_score(variant, row), row),
+    )
+    chosen = ranked[0] if ranked else {}
+    return str(chosen.get("group_key") or baseline_group or ""), {
+        "baseline_group": baseline_group,
+        "group_count": len(grouped),
+        "ranked_group_keys": [str(r.get("group_key") or "") for r in ranked[:10]],
+        **meta,
+    }
+
+
+def _selected_answer_for_group(
+    group_key: str,
+    *,
+    candidate_pool: list[dict[str, Any]],
+    fallback_answer: str | None = None,
+) -> str:
+    g = _replay_case_group_key(group_key)
+    if not g:
+        return fallback_answer or ""
+    for row in candidate_pool:
+        ans = str(row.get("predicted_answer") or row.get("normalized_answer") or "").strip()
+        if not ans:
+            continue
+        if _replay_case_group_key(ans) == g:
+            return ans
+    return fallback_answer or g
+
+
+def _load_slice_case_map(path: Path, *, kind: str) -> dict[str, dict[str, Any]]:
+    if not path.is_file():
+        return {}
+    if path.suffix.lower() == ".jsonl":
+        rows = load_jsonl_rows(path)
+        out: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            cid = str(row.get("case_id") or row.get("example_id") or "").strip()
+            if cid:
+                out[cid] = dict(row)
+        return out
+    rows = load_csv_rows(path)
+    out = {}
+    for row in rows:
+        cid = str(row.get("case_id") or row.get("example_id") or "").strip()
+        if cid:
+            out[cid] = dict(row)
+    return out
+
+
+def _build_replay_case_records(
+    *,
+    bundle: Path,
+    primary_slice_csv: Path,
+    focus_slice_csv: Path,
+    secondary_slice_csv: Path,
+    guardrail_jsonl: Path,
+    diagnostic_jsonl: Path,
+    target_audit_jsonl: Path,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    pal_by_case = load_pal_all_results(bundle / "all_results.jsonl")
+    replay_csv_rows = load_csv_rows(bundle / "present_not_selected_replay_table.csv")
+    replay_by_case = {r["case_id"]: r for r in replay_csv_rows if r.get("case_id")}
+    selected_by_case = load_selected_failures(bundle / "selected_failure_cases.jsonl")
+    casebook_by_case = {r["case_id"]: r for r in load_csv_rows(bundle / "all_casebook.csv") if r.get("case_id")}
+
+    primary_ids = load_case_id_set_from_csv(
+        primary_slice_csv,
+        predicate=lambda r: str(r.get("method_id") or "") == PAL_METHOD
+        and str(r.get("evidence_completeness") or "").upper() == "FULL",
+    )
+    focus_ids = load_case_id_set_from_csv(
+        focus_slice_csv,
+        predicate=lambda r: str(r.get("external_contrast") or "") == "Both wrong",
+    )
+    secondary_ids = load_case_id_set_from_csv(
+        secondary_slice_csv,
+        predicate=lambda r: str(r.get("anchor_matches_l1_max") or "").lower() in {"1", "true", "yes"}
+        or str(r.get("external_l1_exact") or "").lower() in {"1", "true", "yes"},
+    )
+    guardrail_ids = load_case_id_set_from_jsonl(guardrail_jsonl)
+    diagnostic_ids = load_case_id_set_from_jsonl(diagnostic_jsonl)
+    target_audit_rows = load_jsonl_rows(target_audit_jsonl)
+    target_audit_stats = {
+        "n_cases": len(target_audit_rows),
+        "n_gold_present": sum(1 for row in target_audit_rows if str(row.get("gold_answer") or "").strip()),
+        "n_selected_present": sum(1 for row in target_audit_rows if str(row.get("selected_answer") or "").strip()),
+        "case_ids": sorted(
+            {
+                str(row.get("case_id") or "").strip()
+                for row in target_audit_rows
+                if str(row.get("case_id") or "").strip()
+            }
+        ),
+    }
+
+    slices = {
+        "primary_pal_full_failure_slice": primary_ids,
+        "focus_wrong_supported_consensus_slice": focus_ids,
+        "secondary_direct_l1_anchor_slice": secondary_ids,
+        "guardrail_30case_exact_replay": guardrail_ids,
+        "diagnostic_15case_direct_l1_strong_seed": diagnostic_ids,
+    }
+
+    all_case_ids: list[str] = []
+    seen: set[str] = set()
+    for case_ids in slices.values():
+        for cid in sorted(case_ids):
+            if cid and cid not in seen:
+                seen.add(cid)
+                all_case_ids.append(cid)
+
+    case_records: list[dict[str, Any]] = []
+    slice_stats: dict[str, dict[str, Any]] = {}
+
+    for slice_name, case_ids in slices.items():
+        replay_ready = 0
+        missing_candidate_pools = 0
+        missing_gold = 0
+        missing_question = 0
+        missing_support_counts = 0
+        for cid in sorted(case_ids):
+            pal_row = pal_by_case.get(cid)
+            replay_row = replay_by_case.get(cid)
+            casebook_row = casebook_by_case.get(cid)
+            selected_failure = selected_by_case.get(cid)
+            question = ""
+            gold = ""
+            if replay_row:
+                question = str(replay_row.get("question") or "")
+                gold = str(replay_row.get("gold_answer_raw") or replay_row.get("gold_answer") or "")
+            elif casebook_row:
+                question = str(casebook_row.get("question") or "")
+                gold = str(casebook_row.get("gold_answer") or "")
+            elif selected_failure:
+                question = str(selected_failure.get("question") or "")
+                gold = str(selected_failure.get("gold_answer") or "")
+            elif pal_row:
+                question = str(pal_row.get("question") or "")
+                gold = str(pal_row.get("gold_answer") or "")
+
+            if not gold.strip():
+                missing_gold += 1
+            if not question.strip():
+                missing_question += 1
+
+            candidate_pool = list(pal_row.get("selector_candidate_pool") or []) if pal_row else []
+            if not candidate_pool:
+                missing_candidate_pools += 1
+            if not pal_row or not isinstance(pal_row.get("answer_group_support_counts"), dict):
+                missing_support_counts += 1
+            if pal_row and candidate_pool and question.strip():
+                replay_ready += 1
+            case_records.append(
+                {
+                    "slice_name": slice_name,
+                    "case_id": cid,
+                    "in_replay_bundle": int(cid in pal_by_case),
+                    "has_candidate_pool": int(bool(candidate_pool)),
+                    "has_gold": int(bool(gold.strip())),
+                    "has_question": int(bool(question.strip())),
+                    "has_support_counts": int(bool(pal_row and isinstance(pal_row.get("answer_group_support_counts"), dict))),
+                    "selected_failure_loaded": int(selected_failure is not None),
+                    "bundle_case_id": int(cid in pal_by_case),
+                    "bundle_selected_group": _safe_text((replay_row or {}).get("selected_group") or (pal_row or {}).get("selected_group")),
+                    "bundle_predicted_answer": _safe_text((replay_row or {}).get("pal_final_answer_raw") or (pal_row or {}).get("predicted_answer") or (pal_row or {}).get("raw_final_output")),
+                    "missing_reason": "|".join(
+                        [
+                            flag
+                            for flag, enabled in (
+                                ("missing_candidate_pool", not bool(candidate_pool)),
+                                ("missing_gold", not bool(gold.strip())),
+                                ("missing_question", not bool(question.strip())),
+                                ("missing_support_counts", not bool(pal_row and isinstance(pal_row.get("answer_group_support_counts"), dict))),
+                            )
+                            if enabled
+                        ]
+                    ),
+                }
+            )
+        slice_stats[slice_name] = {
+            "n_cases": len(case_ids),
+            "n_replay_ready": replay_ready,
+            "n_missing_candidate_pool": missing_candidate_pools,
+            "n_missing_gold": missing_gold,
+            "n_missing_question": missing_question,
+            "n_missing_support_counts": missing_support_counts,
+        }
+
+    return case_records, {
+        "slices": slice_stats,
+        "primary_ids": sorted(primary_ids),
+        "focus_ids": sorted(focus_ids),
+        "secondary_ids": sorted(secondary_ids),
+        "guardrail_ids": sorted(guardrail_ids),
+        "diagnostic_ids": sorted(diagnostic_ids),
+        "target_audit_reference": target_audit_stats,
+    }
+
+
+def run_structural_target_replay(
+    *,
+    bundle: Path,
+    out_dir: Path,
+    primary_slice_csv: Path,
+    focus_slice_csv: Path,
+    secondary_slice_csv: Path,
+    guardrail_jsonl: Path,
+    diagnostic_jsonl: Path,
+    target_audit_jsonl: Path,
+) -> dict[str, Any]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    case_records, slice_index = _build_replay_case_records(
+        bundle=bundle,
+        primary_slice_csv=primary_slice_csv,
+        focus_slice_csv=focus_slice_csv,
+        secondary_slice_csv=secondary_slice_csv,
+        guardrail_jsonl=guardrail_jsonl,
+        diagnostic_jsonl=diagnostic_jsonl,
+        target_audit_jsonl=target_audit_jsonl,
+    )
+
+    pal_by_case = load_pal_all_results(bundle / "all_results.jsonl")
+    replay_by_case = {r["case_id"]: r for r in load_csv_rows(bundle / "present_not_selected_replay_table.csv") if r.get("case_id")}
+
+    rows: list[dict[str, Any]] = []
+    candidate_feature_rows: list[dict[str, Any]] = []
+    missing_reason_hist: Counter[str] = Counter()
+    variant_case_counts: Counter[str] = Counter()
+    slice_variant_summary: dict[str, dict[str, Any]] = defaultdict(dict)
+    variants = [
+        "baseline_current_selector_tiebreak",
+        "+ target check",
+        "+ anti-intermediate filter",
+        "+ unit/entity ledger proxy",
+        "+ wrong-consensus penalty",
+        "combined_structural_selector",
+    ]
+
+    for rec in case_records:
+        cid = rec["case_id"]
+        slice_name = rec["slice_name"]
+        pal_row = pal_by_case.get(cid)
+        replay_row = replay_by_case.get(cid, {})
+        candidate_pool = list(pal_row.get("selector_candidate_pool") or []) if pal_row else []
+        missing_reason_hist.update([x for x in str(rec.get("missing_reason") or "").split("|") if x])
+        if not pal_row or not candidate_pool:
+            continue
+        question = str((replay_row or {}).get("question") or pal_row.get("question") or "")
+        gold = str((replay_row or {}).get("gold_answer_raw") or pal_row.get("gold_answer") or "")
+        answer_support_counts = pal_row.get("answer_group_support_counts") if isinstance(pal_row.get("answer_group_support_counts"), dict) else {}
+        frontier_counts = pal_row.get("frontier_answer_group_counts") if isinstance(pal_row.get("frontier_answer_group_counts"), dict) else {}
+        direct_counts = pal_row.get("direct_answer_group_counts") if isinstance(pal_row.get("direct_answer_group_counts"), dict) else {}
+        selected_group = _safe_text((replay_row or {}).get("selected_group") or pal_row.get("selected_group") or pal_row.get("predicted_answer"))
+        pal_code = _safe_text((pal_row.get("pal_execution") or {}).get("pal_code"))
+        pal_execution = dict(pal_row.get("pal_execution") or {})
+        grouped_candidates, _ = _group_candidate_pool(
+            question=question,
+            candidate_pool=candidate_pool,
+            pal_code=pal_code,
+            pal_execution=pal_execution,
+            answer_group_support_counts=answer_support_counts,
+        )
+        for group_row in grouped_candidates:
+            for cand_row in group_row.get("candidate_rows") or []:
+                cand_feat = dict(cand_row.get("structural_features") or {})
+                cand_feat.update(
+                    {
+                        "slice_name": slice_name,
+                        "case_id": cid,
+                        "group_key": group_row.get("group_key") or "",
+                        "candidate_answer": cand_row.get("predicted_answer") or cand_row.get("normalized_answer") or "",
+                        "source_family": cand_row.get("source_family") or "",
+                        "candidate_role": cand_row.get("candidate_role") or "",
+                        "support_count": cand_row.get("support_count") or 0,
+                        "candidate_pool_size": len(candidate_pool),
+                    }
+                )
+                candidate_feature_rows.append(cand_feat)
+
+        gold_group = _replay_case_group_key(gold)
+        baseline_group = _baseline_selector_group(
+            selected_group=selected_group,
+            answer_group_support_counts=answer_support_counts,
+            frontier_answer_group_counts=frontier_counts,
+            direct_answer_group_counts=direct_counts,
+        )
+
+        for variant in variants:
+            selected_variant_group, variant_meta = _select_group_for_variant(
+                variant=variant,
+                candidate_pool=candidate_pool,
+                question=question,
+                selected_group=selected_group,
+                answer_group_support_counts=answer_support_counts,
+                frontier_answer_group_counts=frontier_counts,
+                direct_answer_group_counts=direct_counts,
+                pal_code=pal_code,
+                pal_execution=pal_execution,
+            )
+            chosen_answer = _selected_answer_for_group(
+                selected_variant_group,
+                candidate_pool=candidate_pool,
+                fallback_answer=_safe_text(pal_row.get("predicted_answer") or pal_row.get("raw_final_output") or ""),
+            )
+            exact = _norm_match(chosen_answer, gold)
+            rows.append(
+                {
+                    "slice_name": slice_name,
+                    "case_id": cid,
+                    "variant": variant,
+                    "baseline_group": baseline_group,
+                    "selected_group": selected_variant_group,
+                    "selected_answer": chosen_answer,
+                    "gold_answer": gold,
+                    "gold_group": gold_group,
+                    "matches_gold": int(exact),
+                    "candidate_pool_size": len(candidate_pool),
+                    "candidate_group_count": int(variant_meta.get("group_count", 0) or 0),
+                    "missing_candidate_pool": int(not bool(candidate_pool)),
+                    "missing_reason": rec.get("missing_reason") or "",
+                    "ranked_group_keys": "|".join(variant_meta.get("ranked_group_keys") or []),
+                }
+            )
+            variant_case_counts[variant] += 1
+
+        slice_variant_summary[slice_name]["n_cases"] = slice_variant_summary[slice_name].get("n_cases", 0) + 1
+
+    def _mean(xs: list[float]) -> float:
+        return sum(xs) / max(len(xs), 1)
+
+    summary_by_slice: dict[str, dict[str, Any]] = defaultdict(dict)
+    for slice_name in sorted({r["slice_name"] for r in rows} | set(slice_index["slices"].keys())):
+        slice_rows = [r for r in rows if r["slice_name"] == slice_name]
+        summary_by_slice[slice_name]["n_replay_cases"] = len({r["case_id"] for r in slice_rows})
+        summary_by_slice[slice_name]["n_result_rows"] = len(slice_rows)
+        summary_by_slice[slice_name]["slice_label_stats"] = slice_index["slices"].get(slice_name, {})
+        for variant in variants:
+            vrows = [r for r in slice_rows if r["variant"] == variant]
+            if not vrows:
+                summary_by_slice[slice_name][variant] = {"accuracy": None, "n": 0}
+                continue
+            acc = sum(int(r["matches_gold"]) for r in vrows) / max(len(vrows), 1)
+            summary_by_slice[slice_name][variant] = {
+                "accuracy": acc,
+                "n": len(vrows),
+                "selected_group_examples": [r["selected_group"] for r in vrows[:5]],
+            }
+
+    primary_slice_name = "primary_pal_full_failure_slice"
+    baseline_acc = summary_by_slice.get(primary_slice_name, {}).get("baseline_current_selector_tiebreak", {}).get("accuracy")
+    combined_acc = summary_by_slice.get(primary_slice_name, {}).get("combined_structural_selector", {}).get("accuracy")
+    variant_delta_summary: dict[str, dict[str, Any]] = defaultdict(dict)
+    for slice_name in sorted({r["slice_name"] for r in rows} | set(slice_index["slices"].keys())):
+        slice_rows = [r for r in rows if r["slice_name"] == slice_name]
+        baseline_by_case = {
+            r["case_id"]: r for r in slice_rows if r["variant"] == "baseline_current_selector_tiebreak"
+        }
+        n_cases = int(slice_index["slices"].get(slice_name, {}).get("n_cases", len({r["case_id"] for r in slice_rows})) or 0)
+        for variant in variants[1:]:
+            variant_by_case = {r["case_id"]: r for r in slice_rows if r["variant"] == variant}
+            compared = sorted(set(baseline_by_case) & set(variant_by_case))
+            fixes = 0
+            regressions = 0
+            for cid in compared:
+                base = baseline_by_case[cid]
+                cur = variant_by_case[cid]
+                if int(cur["matches_gold"]) > int(base["matches_gold"]):
+                    fixes += 1
+                elif int(cur["matches_gold"]) < int(base["matches_gold"]):
+                    regressions += 1
+            variant_delta_summary[slice_name][variant] = {
+                "fixes": fixes,
+                "regressions": regressions,
+                "unknowns": max(0, n_cases - len(compared)),
+                "n_compared": len(compared),
+            }
+    improvements = 0
+    regressions = 0
+    unknowns = 0
+    for cid in {r["case_id"] for r in rows if r["slice_name"] == primary_slice_name}:
+        case_rows = [r for r in rows if r["slice_name"] == primary_slice_name and r["case_id"] == cid]
+        if not case_rows:
+            continue
+        base = next((r for r in case_rows if r["variant"] == "baseline_current_selector_tiebreak"), None)
+        combo = next((r for r in case_rows if r["variant"] == "combined_structural_selector"), None)
+        if not base or not combo:
+            unknowns += 1
+            continue
+        if int(combo["matches_gold"]) > int(base["matches_gold"]):
+            improvements += 1
+        elif int(combo["matches_gold"]) < int(base["matches_gold"]):
+            regressions += 1
+
+    json_summary = {
+        "bundle": str(bundle),
+        "output_dir": str(out_dir),
+        "primary_slice_csv": str(primary_slice_csv),
+        "focus_slice_csv": str(focus_slice_csv),
+        "secondary_slice_csv": str(secondary_slice_csv),
+        "guardrail_jsonl": str(guardrail_jsonl),
+        "diagnostic_jsonl": str(diagnostic_jsonl),
+        "slice_index": slice_index,
+        "summary_by_slice": summary_by_slice,
+        "variant_delta_summary": variant_delta_summary,
+        "primary_improvements_vs_baseline": improvements,
+        "primary_regressions_vs_baseline": regressions,
+        "primary_unknowns_vs_baseline": unknowns,
+        "missing_reason_hist": dict(missing_reason_hist),
+        "variant_case_counts": dict(variant_case_counts),
+        "replay_rows": rows,
+        "candidate_feature_rows": candidate_feature_rows,
+        "claim_boundary": {
+            "safe": [
+                "The replay compares deterministic structural selector variants on archived candidate pools only.",
+                "No API calls were made.",
+                "The current bundle does not cover every primary/focus slice case, so missing metadata is reported explicitly.",
+            ],
+            "unsafe": [
+                "Do not claim the structural selector beats external_l1_max.",
+                "Do not claim the focus wrong-supported-consensus slice is fully replayed unless the candidate pool is present.",
+            ],
+        },
+    }
+
+    (out_dir / "replay_summary.json").write_text(json.dumps(json_summary, indent=2), encoding="utf-8")
+
+    report_lines = [
+        "# PAL frontier structural-target replay v1",
+        "",
+        "Offline deterministic replay only. No API calls were made.",
+        "",
+        "## Coverage",
+        "",
+        f"- Primary slice cases: **{slice_index['slices']['primary_pal_full_failure_slice']['n_cases']}** (doc target: 157 PAL still-failing covered cases)",
+        f"- Primary replay-ready cases in current bundle: **{slice_index['slices']['primary_pal_full_failure_slice']['n_replay_ready']}**",
+        f"- Focus slice cases: **{slice_index['slices']['focus_wrong_supported_consensus_slice']['n_cases']}** (doc target: 97 wrong-supported-consensus cases)",
+        f"- Focus replay-ready cases in current bundle: **{slice_index['slices']['focus_wrong_supported_consensus_slice']['n_replay_ready']}**",
+        f"- Secondary slice cases: **{slice_index['slices']['secondary_direct_l1_anchor_slice']['n_cases']}** (doc target: 43 direct-L1-anchor-potential cases)",
+        f"- Secondary replay-ready cases in current bundle: **{slice_index['slices']['secondary_direct_l1_anchor_slice']['n_replay_ready']}**",
+        f"- Guardrail 30-case exact slice: **{slice_index['slices']['guardrail_30case_exact_replay']['n_cases']}**",
+        f"- Direct L1 strong-seed 15-case diagnostic: **{slice_index['slices']['diagnostic_15case_direct_l1_strong_seed']['n_cases']}**",
+        f"- Target-audit 18-case diagnostic reference: **{slice_index['target_audit_reference']['n_cases']}**",
+        f"- Candidate feature rows emitted: **{len(candidate_feature_rows)}**",
+        "",
+        "## Current bundle gap",
+        "",
+        f"- Missing candidate pool rows on primary slice: **{slice_index['slices']['primary_pal_full_failure_slice']['n_missing_candidate_pool']}**",
+        f"- Missing candidate pool rows on focus slice: **{slice_index['slices']['focus_wrong_supported_consensus_slice']['n_missing_candidate_pool']}**",
+        f"- Missing candidate pool rows on secondary slice: **{slice_index['slices']['secondary_direct_l1_anchor_slice']['n_missing_candidate_pool']}**",
+        "",
+        "## Variant accuracies on replay-ready cases",
+        "",
+    ]
+    for slice_name, stats in summary_by_slice.items():
+        report_lines.append(f"### {slice_name}")
+        report_lines.append("")
+        report_lines.append(f"- Replay cases: **{stats.get('n_replay_cases', 0)}**")
+        report_lines.append(f"- Result rows: **{stats.get('n_result_rows', 0)}**")
+        report_lines.append(f"- Label coverage: `{json.dumps(stats.get('slice_label_stats', {}), sort_keys=True)}`")
+        for variant in variants:
+            v = stats.get(variant, {})
+            report_lines.append(
+                f"- {variant}: accuracy={v.get('accuracy') if v.get('accuracy') is not None else 'NA'} n={v.get('n', 0)}"
+            )
+            if variant != "baseline_current_selector_tiebreak":
+                delta = variant_delta_summary.get(slice_name, {}).get(variant, {})
+                report_lines.append(
+                    f"  - delta vs baseline: fixes={delta.get('fixes', 0)} regressions={delta.get('regressions', 0)} unknowns={delta.get('unknowns', 0)}"
+                )
+        report_lines.append("")
+
+    report_lines.extend(
+        [
+            "## Primary-slice deltas",
+            "",
+            f"- Baseline accuracy: **{baseline_acc if baseline_acc is not None else 'NA'}**",
+            f"- Combined structural selector accuracy: **{combined_acc if combined_acc is not None else 'NA'}**",
+            f"- Improvements vs baseline: **{improvements}**",
+            f"- Regressions vs baseline: **{regressions}**",
+            f"- Unknown / missing baseline-compare rows: **{unknowns}**",
+            "",
+            "## Variant delta summary",
+            "",
+            "```json",
+            json.dumps({k: dict(v) for k, v in variant_delta_summary.items()}, indent=2),
+            "```",
+            "",
+            "## Missing metadata",
+            "",
+            "```json",
+            json.dumps(dict(missing_reason_hist), indent=2),
+            "```",
+            "",
+            "## Safe claim wording",
+            "",
+            "- This is a deterministic offline replay on archived candidate pools.",
+            "- Structural target and ledger heuristics were computed without gold labels.",
+            "- Current bundle coverage is incomplete for the focus slice, so focus-slice claims should stay provisional.",
+            "",
+            "## Unsafe wording",
+            "",
+            "- Do not say the structural selector is proven superior to external_l1_max.",
+            "- Do not say the 97-case wrong-supported-consensus bucket is fully solved.",
+            "- Do not move runtime defaults on the basis of this replay alone.",
+        ]
+    )
+    (out_dir / "replay_report.md").write_text("\n".join(report_lines), encoding="utf-8")
+
+    if rows:
+        with (out_dir / "replay_rows.csv").open("w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+            writer.writeheader()
+            for row in rows:
+                writer.writerow(row)
+
+    if candidate_feature_rows:
+        with (out_dir / "candidate_feature_rows.jsonl").open("w", encoding="utf-8") as f:
+            for row in candidate_feature_rows:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        with (out_dir / "candidate_feature_rows.csv").open("w", encoding="utf-8", newline="") as f:
+            fieldnames = list(candidate_feature_rows[0].keys())
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in candidate_feature_rows:
+                writer.writerow(row)
+
+    return json_summary
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--bundle-dir", type=Path, default=DEFAULT_BUNDLE)
     ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT)
+    ap.add_argument(
+        "--replay-selector-ablation",
+        action="store_true",
+        help="Run the offline structural-target selector replay instead of the validator-only batch report.",
+    )
+    ap.add_argument("--primary-slice-csv", type=Path, default=DEFAULT_PRIMARY_FAILURE_CSV)
+    ap.add_argument("--focus-slice-csv", type=Path, default=DEFAULT_FOCUS_GOLD_ABSENT_CSV)
+    ap.add_argument("--secondary-slice-csv", type=Path, default=DEFAULT_SECONDARY_ANCHOR_CSV)
+    ap.add_argument("--guardrail-30-jsonl", type=Path, default=DEFAULT_GUARDRAIL_30_JSONL)
+    ap.add_argument("--diagnostic-15-jsonl", type=Path, default=DEFAULT_DIAGNOSTIC_15_JSONL)
+    ap.add_argument("--target-audit-jsonl", type=Path, default=DEFAULT_TARGET_AUDIT_DIAGNOSTIC_JSONL)
     args = ap.parse_args()
     bundle: Path = args.bundle_dir.resolve()
     out_dir: Path = args.out_dir.resolve()
+    if args.replay_selector_ablation and out_dir == DEFAULT_OUT:
+        out_dir = out_dir / f"pal_frontier_structural_target_replay_v1_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.replay_selector_ablation:
+        summary = run_structural_target_replay(
+            bundle=bundle,
+            out_dir=out_dir,
+            primary_slice_csv=args.primary_slice_csv,
+            focus_slice_csv=args.focus_slice_csv,
+            secondary_slice_csv=args.secondary_slice_csv,
+            guardrail_jsonl=args.guardrail_30_jsonl,
+            diagnostic_jsonl=args.diagnostic_15_jsonl,
+            target_audit_jsonl=args.target_audit_jsonl,
+        )
+        (out_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        print(json.dumps({"output_dir": str(out_dir), "primary_replay_cases": summary["slice_index"]["slices"]["primary_pal_full_failure_slice"]["n_replay_ready"]}, indent=2))
+        return
 
     missing_inputs: list[str] = []
     paths = {

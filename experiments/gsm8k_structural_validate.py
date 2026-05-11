@@ -11,6 +11,8 @@ import math
 import re
 from typing import Any
 
+from experiments.selector_error_features import build_structural_target_feature_row
+
 # --- Numeric extraction ------------------------------------------------------------
 
 _DIGIT_TOKEN_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?")
@@ -336,6 +338,14 @@ def _empty_payload(*, internal_note: str | None = None) -> dict[str, Any]:
         "abstain_reasons": [],
         "source_family": None,
         "validator_version": "gsm8k_structural_validate_v0",
+        "target_tuple": {},
+        "entity_unit_ledger_proxy": {},
+        "final_answer_role": "unknown",
+        "last_operation_family": "unknown",
+        "target_alignment_score": 0.0,
+        "intermediate_answer_penalty": 0.0,
+        "duplicate_wrong_signature": "",
+        "structural_selector_score": 0.0,
     }
     if internal_note:
         base["errors"].append(internal_note)
@@ -469,6 +479,15 @@ def _validate_gsm8k_candidate_impl(
         warnings=warnings,
     )
 
+    structural_features = build_structural_target_feature_row(
+        question=pt,
+        candidate_trace=candidate_trace,
+        candidate_code=candidate_code,
+        candidate_answer=ans_str,
+        execution_metadata=execution_metadata,
+        support_count=1,
+    )
+
     out: dict[str, Any] = {
         "errors": list(errors),
         "warnings": list(warnings),
@@ -486,5 +505,5 @@ def _validate_gsm8k_candidate_impl(
         "source_family": source_family,
         "validator_version": "gsm8k_structural_validate_v0",
     }
+    out.update(structural_features)
     return out
-
