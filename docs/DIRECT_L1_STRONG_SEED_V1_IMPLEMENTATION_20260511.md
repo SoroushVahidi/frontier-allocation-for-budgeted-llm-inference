@@ -71,4 +71,3 @@ Tracked exact-case JSONL:
 
 - This doc makes no external-baseline claim.
 - Missing coverage in other methods (e.g., uncertainty-retry variants) is not treated as failure.
-
