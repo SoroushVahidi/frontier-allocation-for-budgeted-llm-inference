@@ -1,0 +1,94 @@
+{
+  "experiment_id": "target_staged_pal_frontier_v1",
+  "alias": "ts_pal_frontier_v1",
+  "description": "No-API preflight for target-staged PAL frontier candidate generation. Deterministic schema prepass plus five branch families. No runtime defaults changed.",
+  "mode": "dry_run_only",
+  "runtime_defaults_changed": false,
+  "api_calls_allowed": false,
+  "total_action_budget": "inherit_current_pal_retry_budget",
+  "resolved_total_action_budget": 6,
+  "reserve_target_schema_slot": 1,
+  "extra_samples": 0,
+  "branch_families": [
+    "target_first_reasoning",
+    "entity_unit_ledger_reasoning",
+    "equation_first_reasoning",
+    "pal_code_with_required_target_variable",
+    "backward_from_target_check"
+  ],
+  "prompt_templates": [
+    "prompts/target_staged_pal_frontier_v1/target_schema_prepass.md",
+    "prompts/target_staged_pal_frontier_v1/target_first_reasoning.md",
+    "prompts/target_staged_pal_frontier_v1/entity_unit_ledger_reasoning.md",
+    "prompts/target_staged_pal_frontier_v1/equation_first_reasoning.md",
+    "prompts/target_staged_pal_frontier_v1/pal_code_with_required_target_variable.md",
+    "prompts/target_staged_pal_frontier_v1/backward_from_target_check.md"
+  ],
+  "slice_definitions": {
+    "primary": {
+      "label": "wrong_supported_consensus_97",
+      "case_count": 97,
+      "source_path": "docs/project_handoff_20260510/exhaustive_failure_audit/gold_absent_subpattern_analysis_20260510.csv",
+      "question_mode": "synthetic_fallback_or_bank_enrichment",
+      "selection_mode": "deterministic_prefix"
+    },
+    "secondary": {
+      "label": "direct_l1_anchor_potential_43",
+      "case_count": 43,
+      "source_path": "docs/project_handoff_20260510/exhaustive_failure_audit/direct_l1_anchor_patch_effect_20260510.csv",
+      "question_mode": "synthetic_fallback_or_bank_enrichment",
+      "selection_mode": "deterministic_prefix"
+    },
+    "guardrail": {
+      "label": "four_way_pilot_30",
+      "case_count": 30,
+      "source_path": "docs/project_handoff_20260510/exact_case_replay/failure_recovery_30case_exact_cases_20260510.jsonl",
+      "question_mode": "real_exact_case_when_available",
+      "selection_mode": "exact_case_replay"
+    },
+    "caution": {
+      "label": "direct_l1_strong_seed_15",
+      "case_count": 15,
+      "source_path": "docs/project_handoff_20260510/exact_case_replay/direct_l1_strong_seed_15case_exact_cases_20260511.jsonl",
+      "question_mode": "real_exact_case_when_available",
+      "selection_mode": "exact_case_replay"
+    }
+  },
+  "reference_case_banks": [
+    "docs/project_handoff_20260510/target_audit_diagnostic_cases.jsonl"
+  ],
+  "target_schema_contract": {
+    "target_variable": "string",
+    "entity": "string",
+    "unit": "string",
+    "time_or_state": "string",
+    "operation_goal": "string",
+    "known_quantities": [
+      {
+        "name": "string",
+        "value": "string",
+        "unit": "string"
+      }
+    ],
+    "required_relations": [
+      "string"
+    ],
+    "uncertainty": true
+  },
+  "expected_output_files": [
+    "manifest.resolved.json",
+    "call_plan.jsonl",
+    "traces.jsonl",
+    "candidate_feature_rows.csv",
+    "candidate_feature_rows.jsonl",
+    "replay_summary.json",
+    "replay_report.md"
+  ],
+  "validation_flags": [
+    "schema_roundtrip",
+    "prompt_render",
+    "no_gold_leakage",
+    "dry_run_only",
+    "trace_compatibility"
+  ]
+}
