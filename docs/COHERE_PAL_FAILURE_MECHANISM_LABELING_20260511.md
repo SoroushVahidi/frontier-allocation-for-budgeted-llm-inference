@@ -89,3 +89,14 @@ Optional API smoke (only if `COHERE_API_KEY` is set; do not exceed 5 calls unles
 ```bash
 python3 scripts/cohere_label_pal_failure_mechanisms.py --subset diagnostic_15 --limit 5 --max-calls 5 --allow-api --output-dir /tmp/cohere_pal_failure_mechanism_labels_smoke_20260511
 ```
+
+## Approved Smoke Result (5 Calls)
+
+This repo ran an approved, strictly capped Cohere smoke run (annotation only):
+
+- Total Cohere calls: `5`
+- Legacy Generate API failure: `1` (endpoint removed; migrated script to Chat API)
+- Chat API successes: `4` (produced 4 labels, stopped at cap)
+- Model: `command-r-plus-08-2024`
+- Top labels (heuristic): `arithmetic_error` (3), `premature_intermediate_answer` (1)
+- Labels are heuristic annotations, not ground truth. No external-baseline claim.
