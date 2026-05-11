@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import random
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -78,6 +79,29 @@ def test_selected_failure_recovery_exact_case_50count_is_preserved_and_appended(
         assert str(row.get("question") or "").strip()
         assert str(row.get("gold_answer_canonical") or "").strip()
         assert str(row.get("failure_domain") or "").strip()
+
+
+def test_selected_failure_recovery_exact_case_50count_appended_rows_have_provenance_and_domain_balance() -> None:
+    path_50 = Path("docs/project_handoff_20260510/exact_case_replay/failure_recovery_50case_exact_cases_20260510.jsonl")
+    rows_50 = runner.load_exact_case_rows(str(path_50))
+    appended = rows_50[30:]
+
+    assert len(appended) == 20
+    assert Counter(r["failure_domain"] for r in appended) == Counter(
+        {
+            "money/cost/revenue": 7,
+            "ratio/proportion/percentage": 7,
+            "multi-step arithmetic": 6,
+        }
+    )
+    for row in appended:
+        assert str(row.get("source_artifact_kind") or "").strip()
+        assert str(row.get("source_artifact_path") or "").strip()
+        assert str(row.get("selection_reason") or "").strip()
+        assert str(row.get("question") or "").strip()
+        assert str(row.get("gold_answer_canonical") or "").strip()
+        assert str(row.get("failure_domain") or "").strip()
+        assert str(row.get("source_artifact_path") or "").startswith("outputs/")
 
 
 def test_exact_case_mode_does_not_use_shuffled_loader(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
