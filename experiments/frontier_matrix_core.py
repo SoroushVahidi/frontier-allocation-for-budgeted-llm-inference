@@ -62,6 +62,7 @@ from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DECOMP_EQ,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_OPCHECK,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_L1_STRONG_SEED_V1,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIVERSE_ANCHOR,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY,
@@ -1697,6 +1698,30 @@ def build_frontier_strategies(
                 strategy_seed_max_actions=2,
                 **strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid,
             )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_direct_l1_strong_seed_v1 = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid,
+            # Opt-in stronger direct-L1 style seed: direct answer, then an independent arithmetic/unit self-check.
+            # This is intentionally only used by the explicit *_direct_l1_strong_seed_v1 method ID.
+            "direct_hybrid_seed_source": "direct_l1_strong_seed_v1",
+            "direct_hybrid_l1_prompt_style": (
+                "Solve the problem directly.\n"
+                "1) State exactly what quantity the problem asks for (include units if applicable).\n"
+                "2) Compute the answer.\n"
+                "3) Independently self-check the arithmetic and unit consistency using a different computation path.\n"
+                "If the check disagrees, fix the solution.\n"
+                "Output only the final numeric answer in \\boxed{}."
+            ),
+        }
+        specs[
+            METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_L1_STRONG_SEED_V1
+        ] = DirectReserveDiverseRootFrontierV1GuardedController(
+            generator_factory(),
+            scorer,
+            budget,
+            method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_L1_STRONG_SEED_V1,
+            strategy_seed_max_actions=2,
+            **strategy_seeded_outer_kwargs_k1_frontier4_direct_l1_strong_seed_v1,
         )
         strategy_seeded_outer_kwargs_k1_frontier4_diverse_anchor = {
             **strategy_seeded_outer_kwargs_k1_frontier4_direct_hybrid,

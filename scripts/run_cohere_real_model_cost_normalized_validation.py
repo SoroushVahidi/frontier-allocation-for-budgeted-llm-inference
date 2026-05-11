@@ -135,6 +135,10 @@ METHODS: dict[str, dict[str, Any]] = {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_hybrid",
         "enable_output_repair": True,
     },
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_l1_strong_seed_v1": {
+        "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_direct_l1_strong_seed_v1",
+        "enable_output_repair": True,
+    },
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor": {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_diverse_anchor",
         "enable_output_repair": True,
