@@ -16,13 +16,14 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 | Order | Doc | Purpose |
 |------:|-----|---------|
 | 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | Minimal reviewer setup, checks, and reproduction path |
-| 1 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Current front door: merged state, current target method, external baseline, and next experiment pattern |
-| 2 | [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) | Latest method-by-method status: tested, parked, active, and next hopeful lines |
-| 3 | [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md) | Guardrails to avoid old-method/API-waste mistakes |
-| 4 | [`docs/CLAIMS.md`](docs/CLAIMS.md) | Short claim-scope guide: safe claims, unsafe claims, evidence posture |
-| 5 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
-| 6 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Latest bounded diagnostics vs **`external_l1_max`** |
-| 7 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
+| 1 | [`docs/CURRENT_STATE_SUMMARY_20260511.md`](docs/CURRENT_STATE_SUMMARY_20260511.md) | Canonical current-state summary: main evidence hierarchy, method roles, artifact map, replay status, and safe claims |
+| 2 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Current front door: merged state, current target method, external baseline, and next experiment pattern |
+| 3 | [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) | Latest method-by-method status: tested, parked, active, and next hopeful lines |
+| 4 | [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md) | Guardrails to avoid old-method/API-waste mistakes |
+| 5 | [`docs/CLAIMS.md`](docs/CLAIMS.md) | Short claim-scope guide: safe claims, unsafe claims, evidence posture |
+| 6 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
+| 7 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Separate strict-method diagnostic vs **`external_l1_max`** |
+| 8 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
 
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 
@@ -30,17 +31,48 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 
 ---
 
+## Current evidence hierarchy
+
+The hierarchy is stable and should be read in this order:
+
+1. `300-case PAL+retry vs external_l1_max` is the main external-baseline evidence.
+2. The `30-case` four-way Cohere pilot is diagnostic caution only.
+3. The `15-case` Direct L1 strong-seed run is a targeted mixed / negative follow-up diagnostic.
+4. `pal_frontier_structural_target_replay_v1` is an offline, no-API replay experiment. It is useful for structural analysis and logging, but it is not runtime promotion evidence.
+
 ## Current method target for new external-baseline diagnostics
 
 `external_l1_max` remains the strong external comparator. Recent real-model diagnostics show a large gap for older strict methods, but those diagnostics do **not** test the newly merged diverse-root guarded stack.
 
+The main external-baseline evidence for the current PAL line is the paired 300-case Cohere bundle:
+
+- PAL+retry / guarded PAL: `252/300`
+- `external_l1_max`: `244/300`
+- paired gap: `+8` cases / `+2.67 pp`
+- McNemar `p≈0.322`
+- bootstrap paired-diff CI: `[-2.00 pp, +7.33 pp]`
+
+Use that bundle as the headline comparison. Do **not** replace it with the newer 15-case Direct L1 strong-seed diagnostic.
+
+The latest offline structural-target replay lives here:
+
+- `outputs/gsm8k_structural_validator_eval_20260507/pal_frontier_structural_target_replay_v1_20260511T222238Z/`
+- this is no-API replay only, with candidate-level structural fields and selector ablations
+- do not promote runtime defaults from it
+
 For any fresh fair comparison against `external_l1_max`, the current active internal line is:
+
+```text
+direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal
+```
+
+This is the live diagnostic/development method for the PAL line, not a paper-promoted default. The smaller k1 frontier tiebreak line remains a useful debug sidecar:
 
 ```text
 direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak
 ```
 
-This is a live diagnostic/development method, not a paper-promoted default. The merged guarded base remains:
+The merged guarded base remains:
 
 ```text
 direct_reserve_diverse_root_frontier_v1_guarded
@@ -66,7 +98,13 @@ The current best small same-case live diagnostic is:
 outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/
 ```
 
-It reports cached `external_l1_max` at **8/10** and live `k1_frontier4_frontier_tiebreak` at **6/10** on the same 10 cases. This is progress, but not a broad claim of external-baseline defeat.
+It reports cached `external_l1_max` at **8/10** and live `k1_frontier4_frontier_tiebreak` at **6/10** on the same 10 cases. This is a small diagnostic signal only.
+
+Current targeted diagnostics, in order of evidentiary importance:
+
+1. The 300-case PAL+retry vs `external_l1_max` bundle is the main evidence.
+2. The 30-case PAL vs three external baselines pilot is diagnostic only.
+3. The 15-case Direct L1 strong-seed run is a mixed follow-up diagnostic and is not promoted.
 
 The audited working selector **`outcome_verifier_answer_group_selector_v1`** with **`scorer_mode = cached_jsonl`** remains selected for the **recovery / selector-evidence track only**. Machine config:
 
