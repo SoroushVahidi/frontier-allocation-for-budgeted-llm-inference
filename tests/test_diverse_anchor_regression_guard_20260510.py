@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from experiments.controllers import MethodResult
+from experiments.frontier_matrix_core import build_frontier_strategies, generator_factory_for_mode
 from experiments.frontier_max_support_tiebreak import normalize_answer_group_key
 from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     DirectReserveDiverseRootFrontierV1GuardedController,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR,
 )
 
 
@@ -75,6 +77,9 @@ def _controller(
     frontier_answer: str = "24",
     frontier_support: int = 2,
     enable_guard: bool = False,
+    enable_stability: bool = False,
+    stability_attempts: int = 0,
+    stability_target_anchor_id: str = "",
     enable_direct_hybrid_seed: bool = True,
     max_actions_per_problem: int = 7,
 ) -> DirectReserveDiverseRootFrontierV1GuardedController:
@@ -88,6 +93,10 @@ def _controller(
         enable_diverse_prompt_anchors=True,
         diverse_prompt_anchor_budget_actions=1,
         enable_diverse_anchor_regression_guard=enable_guard,
+        enable_diverse_anchor_stability_policy=enable_stability,
+        diverse_anchor_stability_policy="stability_redundant_anchor_v1" if enable_stability else "disabled",
+        diverse_anchor_stability_extra_anchor_attempts=stability_attempts,
+        diverse_anchor_stability_target_anchor_id=stability_target_anchor_id,
         enable_frontier_max_support_tiebreak=True,
         gate_top_support_threshold=2.0,
         strict_controller_factory=lambda _remaining_budget: _MockFrontier(frontier_answer, frontier_support),
@@ -213,3 +222,66 @@ def test_regression_guard_does_not_block_domain_specific_anchor_improvement() ->
         for row in metadata["diverse_prompt_anchor_metadata"]
         if row["anchor_id"] in {"ratio_percentage_anchor", "equation_first_anchor", "unit_ledger_money_anchor", "backward_check_anchor"}
     )
+
+
+def test_stability_policy_disabled_by_default_reports_disabled_metadata() -> None:
+    ctrl = _controller(
+        ["20", "24", "24", "20", "20"],
+        frontier_answer="24",
+        frontier_support=2,
+        max_actions_per_problem=7,
+    )
+
+    metadata = ctrl.run("A money/cost/revenue problem.", "24").metadata
+
+    assert metadata["stability_policy"] == "disabled"
+    assert metadata["stability_policy_enabled"] is False
+    assert metadata["stability_extra_anchor_attempts"] == 0
+    assert metadata["stability_target_anchor_id"] == ""
+    assert metadata["stability_reason"] == "disabled"
+    assert metadata["candidate_pool_stability_features"]["repeated_anchor_needed"] is False
+
+
+def test_stability_policy_repeats_high_priority_anchor_when_enabled() -> None:
+    ctrl = _controller(
+        ["20", "24", "24", "24", "20", "20"],
+        frontier_answer="24",
+        frontier_support=2,
+        enable_stability=True,
+        stability_attempts=1,
+        max_actions_per_problem=8,
+    )
+
+    metadata = ctrl.run("A money/cost/revenue problem.", "24").metadata
+
+    assert metadata["stability_policy"] == "stability_redundant_anchor_v1"
+    assert metadata["stability_policy_enabled"] is True
+    assert metadata["stability_extra_anchor_attempts"] == 1
+    assert metadata["stability_target_anchor_id"] == "unit_ledger_money_anchor"
+    assert metadata["stability_reason"] == "enabled_and_repeated"
+    assert metadata["diverse_prompt_anchor_ids_executed"].count("unit_ledger_money_anchor") == 2
+    assert metadata["candidate_pool_stability_features"]["repeated_anchor_needed"] is True
+    assert metadata["candidate_pool_stability_features"]["target_anchor_repeat_count"] == 2
+    assert metadata["answer_group_support_counts"][normalize_answer_group_key("24")] >= 3
+
+
+def test_stability_policy_variant_is_registered_in_frontier_matrix() -> None:
+    import random
+
+    specs = build_frontier_strategies(
+        generator_factory_for_mode(False, random.Random(7), "gpt-4o-mini", 0.1, 220, 30),
+        8,
+        [1],
+        random.Random(11),
+        use_openai_api=False,
+        include_broad_diversity_aggregation_methods=True,
+        include_external_l1_baseline=False,
+        include_external_s1_baseline=False,
+        include_external_tale_baseline=False,
+    )
+
+    ctrl = specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR]
+    assert getattr(ctrl, "enable_diverse_prompt_anchors", False) is True
+    assert getattr(ctrl, "enable_diverse_anchor_stability_policy", False) is True
+    assert getattr(ctrl, "diverse_anchor_stability_policy", "") == "stability_redundant_anchor_v1"
+    assert getattr(ctrl, "diverse_anchor_stability_extra_anchor_attempts", 0) == 1

@@ -461,6 +461,75 @@ def compute_diverse_anchor_regression_guard_state(
     return meta
 
 
+def resolve_diverse_anchor_stability_target(
+    *,
+    enabled: bool,
+    planned_anchor_ids: list[str],
+    explicit_target_anchor_id: str = "",
+) -> tuple[str, str]:
+    if not enabled:
+        return "", "disabled"
+    candidate = str(explicit_target_anchor_id or "").strip()
+    if candidate and candidate in planned_anchor_ids and candidate != "direct_l1_anchor":
+        return candidate, "explicit_target"
+    for anchor_id in planned_anchor_ids:
+        if str(anchor_id).strip() and str(anchor_id).strip() != "direct_l1_anchor":
+            return str(anchor_id).strip(), "first_non_direct_l1_anchor"
+    return "", "no_redundant_anchor_available"
+
+
+def compute_diverse_anchor_stability_features(
+    *,
+    enabled: bool,
+    policy: str,
+    target_anchor_id: str,
+    diverse_anchor_records: list[dict[str, Any]],
+    candidate_pool_answer_group_count: int,
+    answer_group_entropy: float,
+    extra_anchor_attempts_done: int,
+) -> dict[str, Any]:
+    anchor_attempt_counts: Counter[str] = Counter()
+    anchor_group_counts: Counter[str] = Counter()
+    for record in diverse_anchor_records or []:
+        anchor_id = str(record.get("anchor_id") or "").strip()
+        group = str(record.get("answer_group") or "").strip() or "__unknown__"
+        if anchor_id:
+            anchor_attempt_counts[anchor_id] += 1
+        if group and group != "__unknown__":
+            anchor_group_counts[group] += 1
+
+    target_repeat_count = int(anchor_attempt_counts.get(target_anchor_id, 0))
+    target_group = ""
+    if target_anchor_id:
+        for record in diverse_anchor_records or []:
+            if str(record.get("anchor_id") or "").strip() == target_anchor_id:
+                target_group = str(record.get("answer_group") or "").strip()
+                break
+    target_group_support = int(anchor_group_counts.get(target_group, 0)) if target_group else 0
+    repeated_anchor_needed = bool(enabled and target_anchor_id and target_repeat_count > 1)
+    unstable_anchor_warning = bool(enabled and target_anchor_id and target_group_support <= 1 and candidate_pool_answer_group_count >= 3)
+    return {
+        "stability_policy": str(policy or "disabled"),
+        "stability_policy_enabled": bool(enabled),
+        "stability_extra_anchor_attempts": int(extra_anchor_attempts_done),
+        "stability_target_anchor_id": str(target_anchor_id or ""),
+        "stability_reason": (
+            "enabled_and_repeated" if repeated_anchor_needed else ("disabled" if not enabled else "no_redundancy_triggered")
+        ),
+        "candidate_pool_stability_features": {
+            "candidate_pool_answer_group_count": int(candidate_pool_answer_group_count),
+            "answer_group_entropy": float(answer_group_entropy),
+            "anchor_attempt_counts": dict(anchor_attempt_counts),
+            "anchor_group_counts": dict(anchor_group_counts),
+            "target_anchor_repeat_count": int(target_repeat_count),
+            "target_anchor_group": str(target_group or ""),
+            "target_anchor_support": int(target_group_support),
+            "repeated_anchor_needed": bool(repeated_anchor_needed),
+            "unstable_anchor_warning": bool(unstable_anchor_warning),
+        },
+    }
+
+
 @dataclass
 class MethodResult:
     """Per-method result for one example."""
@@ -7375,6 +7444,10 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         diverse_prompt_anchor_budget_actions: int = 0,
         diverse_prompt_anchor_ids: tuple[str, ...] | list[str] | None = None,
         diverse_prompt_anchor_priority_policy: str = "domain_aware_v1",
+        enable_diverse_anchor_stability_policy: bool = False,
+        diverse_anchor_stability_policy: str = "disabled",
+        diverse_anchor_stability_extra_anchor_attempts: int = 0,
+        diverse_anchor_stability_target_anchor_id: str = "",
         method_name: str = "direct_reserve_frontier_gate_v1",
     ) -> None:
         super().__init__(
@@ -7449,6 +7522,10 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             if str(anchor_id).strip() in DIVERSE_PROMPT_ANCHOR_SPECS
         )
         self.diverse_prompt_anchor_priority_policy = str(diverse_prompt_anchor_priority_policy or "").strip() or "domain_aware_v1"
+        self.enable_diverse_anchor_stability_policy = bool(enable_diverse_anchor_stability_policy)
+        self.diverse_anchor_stability_policy = str(diverse_anchor_stability_policy or "").strip() or "disabled"
+        self.diverse_anchor_stability_extra_anchor_attempts = max(0, int(diverse_anchor_stability_extra_anchor_attempts))
+        self.diverse_anchor_stability_target_anchor_id = str(diverse_anchor_stability_target_anchor_id or "").strip()
         self.method_name = method_name
 
     def _compose_direct_hybrid_l1_question(self, question: str) -> str:
@@ -7469,10 +7546,16 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         return f"{question}\n\n{suffix}"
 
     def _run_diverse_prompt_anchor_once(
-        self, *, question: str, gold_answer: str, anchor_id: str, budget_actions: int
+        self,
+        *,
+        question: str,
+        gold_answer: str,
+        anchor_id: str,
+        budget_actions: int,
+        attempt_index: int = 0,
     ) -> tuple[str | None, int, list[dict[str, Any]]]:
         spec = DIVERSE_PROMPT_ANCHOR_SPECS.get(str(anchor_id), {})
-        branch_id = f"{anchor_id}_0"
+        branch_id = f"{anchor_id}_{int(attempt_index)}"
         branch = self.generator.init_branch(branch_id)
         prompt = self._compose_diverse_prompt_anchor_question(question, anchor_id)
         used = 0
@@ -8555,6 +8638,12 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             domain_hint=str(detected_domain_hint),
             policy=str(anchor_priority_policy),
         )
+        diverse_anchor_stability_target_anchor_id, diverse_anchor_stability_reason = resolve_diverse_anchor_stability_target(
+            enabled=bool(getattr(self, "enable_diverse_anchor_stability_policy", False)),
+            planned_anchor_ids=list(planned_anchor_ids),
+            explicit_target_anchor_id=str(getattr(self, "diverse_anchor_stability_target_anchor_id", "") or ""),
+        )
+        diverse_anchor_stability_extra_anchor_attempts_done = 0
         if bool(getattr(self, "enable_diverse_prompt_anchors", False)):
             seen_anchor_ids: set[str] = set()
             if direct_hybrid_execution_meta.get("executed") and hybrid_seed_answer is not None:
@@ -8621,6 +8710,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     gold_answer=gold_answer,
                     anchor_id=anchor_id,
                     budget_actions=diverse_anchor_budget_per_anchor,
+                    attempt_index=0,
                 )
                 direct_actions += int(used_anchor)
                 remaining_budget = max(0, remaining_budget - int(used_anchor))
@@ -8642,6 +8732,43 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     }
                 )
                 seen_anchor_ids.add(anchor_id)
+                if (
+                    bool(getattr(self, "enable_diverse_anchor_stability_policy", False))
+                    and str(anchor_id) == str(diverse_anchor_stability_target_anchor_id)
+                    and int(getattr(self, "diverse_anchor_stability_extra_anchor_attempts", 0) or 0) > 0
+                ):
+                    extra_attempts_planned = int(getattr(self, "diverse_anchor_stability_extra_anchor_attempts", 0) or 0)
+                    for extra_idx in range(extra_attempts_planned):
+                        if remaining_budget < diverse_anchor_budget_per_anchor:
+                            break
+                        ans_retry, used_retry, trace_retry = self._run_diverse_prompt_anchor_once(
+                            question=question,
+                            gold_answer=gold_answer,
+                            anchor_id=anchor_id,
+                            budget_actions=diverse_anchor_budget_per_anchor,
+                            attempt_index=extra_idx + 1,
+                        )
+                        direct_actions += int(used_retry)
+                        remaining_budget = max(0, remaining_budget - int(used_retry))
+                        diverse_anchor_records.append(
+                            {
+                                "anchor_id": anchor_id,
+                                "anchor_prompt_style": str(spec.get("anchor_prompt_style") or anchor_id),
+                                "source_family": str(spec.get("source_family") or anchor_id),
+                                "candidate_answer": (str(ans_retry).strip() if ans_retry is not None and str(ans_retry).strip() else ""),
+                                "answer_group": (
+                                    normalize_answer_group_key(str(ans_retry)) if ans_retry is not None and str(ans_retry).strip() else "__unknown__"
+                                )
+                                or "__unknown__",
+                                "budget_cost_observed": int(used_retry),
+                                "executed": bool(used_retry > 0),
+                                "source_metadata": anchor_id,
+                                "trace_events": list(trace_retry),
+                                "stability_retry_index": int(extra_idx + 1),
+                                "stability_policy": str(getattr(self, "diverse_anchor_stability_policy", "disabled") or "disabled"),
+                            }
+                        )
+                        diverse_anchor_stability_extra_anchor_attempts_done += 1
                 diverse_anchor_regression_guard_meta = compute_diverse_anchor_regression_guard_state(
                     enabled=bool(getattr(self, "enable_diverse_anchor_regression_guard", False)),
                     attempt_index=int(idx),
@@ -9671,6 +9798,15 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             slim["candidate_pool_answer_group_count"] = candidate_pool_answer_group_count
             slim["answer_group_entropy"] = float(answer_group_entropy)
             diverse_anchor_metadata.append(slim)
+        diverse_anchor_stability_meta = compute_diverse_anchor_stability_features(
+            enabled=bool(getattr(self, "enable_diverse_anchor_stability_policy", False)),
+            policy=str(getattr(self, "diverse_anchor_stability_policy", "disabled") or "disabled"),
+            target_anchor_id=str(diverse_anchor_stability_target_anchor_id or ""),
+            diverse_anchor_records=list(diverse_anchor_records),
+            candidate_pool_answer_group_count=int(candidate_pool_answer_group_count),
+            answer_group_entropy=float(answer_group_entropy),
+            extra_anchor_attempts_done=int(diverse_anchor_stability_extra_anchor_attempts_done),
+        )
 
         metadata = {
             "method_family": "diagnostic_direct_reserve_frontier_gate",
@@ -9779,6 +9915,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             "domain_detection_evidence": str(domain_detection_evidence),
             "diverse_prompt_anchor_budget_actions": int(diverse_anchor_budget_per_anchor),
             **diverse_anchor_regression_guard_meta,
+            **diverse_anchor_stability_meta,
             "configured_anchor_ids": list(configured_anchor_ids),
             "prioritized_anchor_ids": list(planned_anchor_ids),
             "diverse_prompt_anchor_ids_planned": list(configured_anchor_ids),
