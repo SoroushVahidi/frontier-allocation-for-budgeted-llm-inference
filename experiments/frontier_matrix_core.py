@@ -1737,6 +1737,7 @@ def build_frontier_strategies(
             "enable_diverse_anchor_uncertainty_retry_policy": True,
             "diverse_anchor_uncertainty_retry_policy": "uncertainty_triggered_retry_v1",
             "diverse_anchor_uncertainty_retry_extra_anchor_attempts": 1,
+            "diverse_anchor_uncertainty_retry_reserved_budget_actions": 1,
         }
         specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY] = (
             DirectReserveDiverseRootFrontierV1GuardedController(

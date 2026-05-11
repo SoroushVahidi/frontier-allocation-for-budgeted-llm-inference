@@ -7630,6 +7630,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         diverse_anchor_uncertainty_retry_policy: str = "disabled",
         diverse_anchor_uncertainty_retry_target_anchor_id: str = "",
         diverse_anchor_uncertainty_retry_extra_anchor_attempts: int = 1,
+        diverse_anchor_uncertainty_retry_reserved_budget_actions: int = 0,
         method_name: str = "direct_reserve_frontier_gate_v1",
     ) -> None:
         super().__init__(
@@ -7720,6 +7721,9 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         ).strip()
         self.diverse_anchor_uncertainty_retry_extra_anchor_attempts = max(
             0, int(diverse_anchor_uncertainty_retry_extra_anchor_attempts)
+        )
+        self.diverse_anchor_uncertainty_retry_reserved_budget_actions = max(
+            0, int(diverse_anchor_uncertainty_retry_reserved_budget_actions)
         )
         self.method_name = method_name
 
@@ -8855,6 +8859,19 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
             explicit_target_anchor_id=str(getattr(self, "diverse_anchor_stability_target_anchor_id", "") or ""),
         )
         diverse_anchor_stability_extra_anchor_attempts_done = 0
+        uncertainty_retry_reserved_budget_actions = max(
+            0, int(getattr(self, "diverse_anchor_uncertainty_retry_reserved_budget_actions", 0) or 0)
+        )
+        uncertainty_retry_budget_reserved = 0
+        if (
+            bool(getattr(self, "enable_diverse_anchor_uncertainty_retry_policy", False))
+            and str(getattr(self, "diverse_anchor_uncertainty_retry_policy", "disabled") or "disabled") != "disabled"
+            and int(getattr(self, "diverse_anchor_uncertainty_retry_extra_anchor_attempts", 0) or 0) > 0
+            and uncertainty_retry_reserved_budget_actions > 0
+            and remaining_budget > 0
+        ):
+            uncertainty_retry_budget_reserved = min(uncertainty_retry_reserved_budget_actions, int(remaining_budget))
+        diverse_anchor_remaining_budget = max(0, int(remaining_budget) - int(uncertainty_retry_budget_reserved))
         if bool(getattr(self, "enable_diverse_prompt_anchors", False)):
             seen_anchor_ids: set[str] = set()
             if direct_hybrid_execution_meta.get("executed") and hybrid_seed_answer is not None:
@@ -8884,12 +8901,12 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                         {
                             "anchor_id": anchor_id,
                             "skip_reason": "direct_l1_preserved_semantics_hybrid_seed_enabled",
-                            "remaining_budget": int(remaining_budget),
+                            "remaining_budget": int(diverse_anchor_remaining_budget),
                             "budget_per_anchor": int(diverse_anchor_budget_per_anchor),
                         }
                     )
                     continue
-                if remaining_budget < diverse_anchor_budget_per_anchor:
+                if diverse_anchor_remaining_budget < diverse_anchor_budget_per_anchor:
                     # Record explicit skip reasons for the remaining planned anchors.
                     tail = planned_anchor_ids[idx:]
                     for tail_id in tail:
@@ -8901,7 +8918,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                                 {
                                     "anchor_id": tail_id,
                                     "skip_reason": "direct_l1_preserved_semantics_hybrid_seed_enabled",
-                                    "remaining_budget": int(remaining_budget),
+                                    "remaining_budget": int(diverse_anchor_remaining_budget),
                                     "budget_per_anchor": int(diverse_anchor_budget_per_anchor),
                                 }
                             )
@@ -8910,7 +8927,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                                 {
                                     "anchor_id": tail_id,
                                     "skip_reason": "insufficient_remaining_budget",
-                                    "remaining_budget": int(remaining_budget),
+                                    "remaining_budget": int(diverse_anchor_remaining_budget),
                                     "budget_per_anchor": int(diverse_anchor_budget_per_anchor),
                                 }
                             )
@@ -8924,7 +8941,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                     attempt_index=0,
                 )
                 direct_actions += int(used_anchor)
-                remaining_budget = max(0, remaining_budget - int(used_anchor))
+                diverse_anchor_remaining_budget = max(0, diverse_anchor_remaining_budget - int(used_anchor))
                 spec = DIVERSE_PROMPT_ANCHOR_SPECS.get(anchor_id, {})
                 diverse_anchor_records.append(
                     {
@@ -8950,7 +8967,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                 ):
                     extra_attempts_planned = int(getattr(self, "diverse_anchor_stability_extra_anchor_attempts", 0) or 0)
                     for extra_idx in range(extra_attempts_planned):
-                        if remaining_budget < diverse_anchor_budget_per_anchor:
+                        if diverse_anchor_remaining_budget < diverse_anchor_budget_per_anchor:
                             break
                         ans_retry, used_retry, trace_retry = self._run_diverse_prompt_anchor_once(
                             question=question,
@@ -8960,7 +8977,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                             attempt_index=extra_idx + 1,
                         )
                         direct_actions += int(used_retry)
-                        remaining_budget = max(0, remaining_budget - int(used_retry))
+                        diverse_anchor_remaining_budget = max(0, diverse_anchor_remaining_budget - int(used_retry))
                         diverse_anchor_records.append(
                             {
                                 "anchor_id": anchor_id,
@@ -8983,7 +9000,7 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                 diverse_anchor_regression_guard_meta = compute_diverse_anchor_regression_guard_state(
                     enabled=bool(getattr(self, "enable_diverse_anchor_regression_guard", False)),
                     attempt_index=int(idx),
-                    remaining_budget=int(remaining_budget),
+                    remaining_budget=int(diverse_anchor_remaining_budget),
                     budget_per_anchor=int(diverse_anchor_budget_per_anchor),
                     direct_group_counts=dict(direct_counts),
                     frontier_group_counts={},
@@ -8999,14 +9016,15 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                             {
                                 "anchor_id": tail_id,
                                 "skip_reason": "regression_guard_preserved_frontier_budget",
-                                "remaining_budget": int(remaining_budget),
+                                "remaining_budget": int(diverse_anchor_remaining_budget),
                                 "budget_per_anchor": int(diverse_anchor_budget_per_anchor),
                             }
                         )
                         seen_anchor_ids.add(tail_id)
                     break
 
-        uncertainty_retry_budget_available = int(remaining_budget)
+        remaining_budget_before_uncertainty_retry = int(diverse_anchor_remaining_budget + uncertainty_retry_budget_reserved)
+        uncertainty_retry_budget_available = int(remaining_budget_before_uncertainty_retry)
         uncertainty_retry_target_anchor_id, uncertainty_retry_target_anchor_reason = resolve_diverse_anchor_uncertainty_retry_target(
             enabled=bool(getattr(self, "enable_diverse_anchor_uncertainty_retry_policy", False)),
             planned_anchor_ids=list(planned_anchor_ids),
@@ -9034,18 +9052,36 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
         uncertainty_retry_meta["uncertainty_retry_target_anchor_reason"] = str(
             uncertainty_retry_target_anchor_reason or ""
         )
+        uncertainty_retry_meta["uncertainty_retry_reserved_budget"] = int(uncertainty_retry_reserved_budget_actions)
+        uncertainty_retry_meta["uncertainty_retry_budget_reserved"] = int(uncertainty_retry_budget_reserved)
+        uncertainty_retry_meta["remaining_budget_before_uncertainty_retry"] = int(
+            remaining_budget_before_uncertainty_retry
+        )
+        uncertainty_retry_meta["remaining_budget_after_uncertainty_retry"] = int(
+            remaining_budget_before_uncertainty_retry
+        )
+        uncertainty_retry_meta["uncertainty_retry_budget_released"] = 0
+        uncertainty_retry_meta["uncertainty_retry_budget_unused"] = 0
+        if (
+            bool(uncertainty_retry_meta.get("uncertainty_retry_enabled"))
+            and str(uncertainty_retry_meta.get("uncertainty_retry_policy") or "").strip() != "disabled"
+            and uncertainty_retry_reserved_budget_actions > 0
+            and remaining_budget_before_uncertainty_retry <= 0
+        ):
+            uncertainty_retry_meta["uncertainty_retry_reason"] = "insufficient_budget_for_retry_reserve"
         uncertainty_retry_extra_attempts_done = 0
+        uncertainty_retry_remaining_budget = int(remaining_budget_before_uncertainty_retry)
         if bool(uncertainty_retry_meta.get("uncertainty_retry_should_trigger")):
             retry_plan = int(getattr(self, "diverse_anchor_uncertainty_retry_extra_anchor_attempts", 0) or 0)
             if retry_plan <= 0:
                 uncertainty_retry_meta["uncertainty_retry_reason"] = "retry_budget_zero"
-            elif remaining_budget <= 0:
-                uncertainty_retry_meta["uncertainty_retry_reason"] = "no_budget_available"
+            elif remaining_budget_before_uncertainty_retry <= 0:
+                uncertainty_retry_meta["uncertainty_retry_reason"] = "insufficient_budget_for_retry_reserve"
             elif not str(uncertainty_retry_target_anchor_id or "").strip():
                 uncertainty_retry_meta["uncertainty_retry_reason"] = "no_retry_anchor_available"
             else:
                 for extra_idx in range(retry_plan):
-                    if remaining_budget < diverse_anchor_budget_per_anchor:
+                    if uncertainty_retry_remaining_budget < diverse_anchor_budget_per_anchor:
                         break
                     ans_retry, used_retry, trace_retry = self._run_diverse_prompt_anchor_once(
                         question=question,
@@ -9055,7 +9091,6 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                         attempt_index=extra_idx + 1,
                     )
                     direct_actions += int(used_retry)
-                    remaining_budget = max(0, remaining_budget - int(used_retry))
                     spec = DIVERSE_PROMPT_ANCHOR_SPECS.get(str(uncertainty_retry_target_anchor_id), {})
                     diverse_anchor_records.append(
                         {
@@ -9081,18 +9116,28 @@ class DirectReserveFrontierGateController(DirectReserveGateRerankController):
                             ),
                         }
                     )
+                    uncertainty_retry_remaining_budget = max(0, uncertainty_retry_remaining_budget - int(used_retry))
                     uncertainty_retry_extra_attempts_done += 1
                 if uncertainty_retry_extra_attempts_done > 0:
                     uncertainty_retry_meta["uncertainty_retry_triggered"] = True
                     uncertainty_retry_meta["uncertainty_retry_reason"] = "enabled_and_retried"
-                elif remaining_budget <= 0:
-                    uncertainty_retry_meta["uncertainty_retry_reason"] = "no_budget_available"
+                    uncertainty_retry_meta["uncertainty_retry_budget_released"] = int(
+                        max(0, uncertainty_retry_budget_reserved - int(uncertainty_retry_extra_attempts_done))
+                    )
+                elif remaining_budget_before_uncertainty_retry <= 0:
+                    uncertainty_retry_meta["uncertainty_retry_reason"] = "insufficient_budget_for_retry_reserve"
                 else:
                     uncertainty_retry_meta["uncertainty_retry_reason"] = "confidence_sufficient"
+        if not uncertainty_retry_meta.get("uncertainty_retry_triggered"):
+            uncertainty_retry_meta["uncertainty_retry_budget_released"] = int(uncertainty_retry_budget_reserved)
+            uncertainty_retry_meta["uncertainty_retry_budget_unused"] = int(uncertainty_retry_budget_reserved)
+        remaining_budget = int(uncertainty_retry_remaining_budget)
+        uncertainty_retry_meta["remaining_budget_after_uncertainty_retry"] = int(remaining_budget)
+        uncertainty_retry_meta["uncertainty_retry_budget_available"] = int(remaining_budget_before_uncertainty_retry)
         uncertainty_retry_meta["uncertainty_retry_extra_attempts"] = int(uncertainty_retry_extra_attempts_done)
 
         remaining_budget = max(0, remaining_budget)
-        remaining_budget_after_diverse_anchors = int(remaining_budget)
+        remaining_budget_after_diverse_anchors = int(remaining_budget_before_uncertainty_retry)
         should_expand_frontier = bool(remaining_budget > 0 and incumbent_uncertain)
 
         frontier_result: MethodResult | None = None
