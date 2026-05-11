@@ -37,6 +37,9 @@ from experiments.trace_schema import build_branch_trace, write_trace_package
 STRICT_F3 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
 STRICT_GATE1_CAP_K6 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control"
 STRICT_F2 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_coverage_forced_v1"
+TARGET_STAGED_PAL_FRONTIER_RUNTIME = (
+    "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1"
+)
 
 METHODS: dict[str, dict[str, Any]] = {
     "strict_f3": {"runtime": STRICT_F3, "enable_output_repair": True},
@@ -108,6 +111,15 @@ METHODS: dict[str, dict[str, Any]] = {
     },
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1": {
         "runtime": "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_targeted_retry_v1",
+        "enable_output_repair": True,
+    },
+    # Opt-in target-staged scaffold alias: keep the live runner on the existing PAL structural targeted-retry runtime.
+    "target_staged_pal_frontier_v1": {
+        "runtime": TARGET_STAGED_PAL_FRONTIER_RUNTIME,
+        "enable_output_repair": True,
+    },
+    "ts_pal_frontier_v1": {
+        "runtime": TARGET_STAGED_PAL_FRONTIER_RUNTIME,
         "enable_output_repair": True,
     },
     "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal_structural_commit_v1_adaptive_router_v3_final_target_verifier_v1": {
