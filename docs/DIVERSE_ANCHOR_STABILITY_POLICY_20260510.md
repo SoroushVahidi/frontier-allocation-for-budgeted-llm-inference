@@ -45,3 +45,8 @@ It keeps the same domain-aware anchor ordering as the default diverse-anchor met
 ## Notes
 
 The earlier stability analysis on the 30-case replay showed that the guard experiment was not a good default. This policy is therefore isolated as an opt-in experiment, not a production selector change.
+
+Postmortem:
+
+- `docs/DOMAIN_GATED_STABILITY_POLICY_POSTMORTEM_20260510.md`
+- Do not use `stability_redundant_anchor_v1` for broad claims or as a recommended next method.
