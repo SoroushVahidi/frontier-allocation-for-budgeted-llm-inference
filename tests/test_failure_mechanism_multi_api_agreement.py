@@ -1,0 +1,224 @@
+from __future__ import annotations
+
+import csv
+import json
+from pathlib import Path
+
+from scripts import label_failure_mechanisms_multi_api as labeler
+
+
+def _packet(case_id: str, subset: str) -> dict[str, object]:
+    return {
+        "case_id": case_id,
+        "primary_subset": subset,
+        "subset_memberships": [{"subset": subset, "rank": 1, "approximate": False, "selection_logic": "exact"}],
+        "question": f"Question for {case_id}",
+        "model_final_prediction": "7",
+        "candidate_answers": ["7"],
+        "candidate_answer_groups": [],
+        "selector_metadata": {"selected_source": "frontier"},
+        "action_trace_summary": {"failure_family": "unknown"},
+        "pal_exec_summary": {"pal_execution_status": "success"},
+        "structural_fields": {"target_tuple": {"question_kind": "count"}},
+        "failure_audit_labels": {"question_type": "multi-step arithmetic"},
+        "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+        "include_gold_for_labeling": False,
+        "gold_assisted": False,
+    }
+
+
+def test_agreement_summary_and_frequency_outputs(tmp_path: Path) -> None:
+    out_dir = tmp_path / "agreement"
+    case_packets = [_packet("c1", "diagnostic_30"), _packet("c2", "target_staged_15")]
+    prompt_packets = [{**packet, "prompt": f"PROMPT {packet['case_id']}", "prompt_sha256": f"sha-{packet['case_id']}"} for packet in case_packets]
+    parsed_rows = [
+        {
+            "request_id": "cohere:c1:1",
+            "case_id": "c1",
+            "provider": "cohere",
+            "model": "m1",
+            "subset_memberships": "[]",
+            "primary_subset": "diagnostic_30",
+            "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+            "prompt_sha256": "sha-c1",
+            "request_sha256": "req-c1",
+            "dry_run": False,
+            "api_call_made": 1,
+            "label_status": "parsed",
+            "case_id": "c1",
+            "primary_label": "wrong_target_variable",
+            "secondary_labels": ["wrong_relation"],
+            "selector_vs_generation": "generation_failure",
+            "candidate_pool_status": "gold_absent",
+            "confidence": 0.9,
+            "evidence": "reason",
+            "recommended_fix_family": "target_schema",
+            "label_valid": True,
+            "label_errors": [],
+        },
+        {
+            "request_id": "cerebras:c1:1",
+            "case_id": "c1",
+            "provider": "cerebras",
+            "model": "m1",
+            "subset_memberships": "[]",
+            "primary_subset": "diagnostic_30",
+            "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+            "prompt_sha256": "sha-c1",
+            "request_sha256": "req-c1b",
+            "dry_run": False,
+            "api_call_made": 1,
+            "label_status": "parsed",
+            "primary_label": "wrong_target_variable",
+            "secondary_labels": ["wrong_relation"],
+            "selector_vs_generation": "generation_failure",
+            "candidate_pool_status": "gold_absent",
+            "confidence": 0.8,
+            "evidence": "reason",
+            "recommended_fix_family": "target_schema",
+            "label_valid": True,
+            "label_errors": [],
+        },
+        {
+            "request_id": "fireworks:c1:1",
+            "case_id": "c1",
+            "provider": "fireworks",
+            "model": "m1",
+            "subset_memberships": "[]",
+            "primary_subset": "diagnostic_30",
+            "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+            "prompt_sha256": "sha-c1",
+            "request_sha256": "req-c1c",
+            "dry_run": False,
+            "api_call_made": 1,
+            "label_status": "parsed",
+            "primary_label": "wrong_target_variable",
+            "secondary_labels": ["wrong_relation"],
+            "selector_vs_generation": "generation_failure",
+            "candidate_pool_status": "gold_absent",
+            "confidence": 0.85,
+            "evidence": "reason",
+            "recommended_fix_family": "target_schema",
+            "label_valid": True,
+            "label_errors": [],
+        },
+        {
+            "request_id": "cohere:c2:1",
+            "case_id": "c2",
+            "provider": "cohere",
+            "model": "m1",
+            "subset_memberships": "[]",
+            "primary_subset": "target_staged_15",
+            "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+            "prompt_sha256": "sha-c2",
+            "request_sha256": "req-c2",
+            "dry_run": False,
+            "api_call_made": 1,
+            "label_status": "parsed",
+            "primary_label": "wrong_relation",
+            "secondary_labels": ["wrong_operator"],
+            "selector_vs_generation": "selector_failure",
+            "candidate_pool_status": "gold_absent",
+            "confidence": 0.6,
+            "evidence": "reason",
+            "recommended_fix_family": "selector_structural",
+            "label_valid": True,
+            "label_errors": [],
+        },
+        {
+            "request_id": "cerebras:c2:1",
+            "case_id": "c2",
+            "provider": "cerebras",
+            "model": "m1",
+            "subset_memberships": "[]",
+            "primary_subset": "target_staged_15",
+            "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+            "prompt_sha256": "sha-c2",
+            "request_sha256": "req-c2b",
+            "dry_run": False,
+            "api_call_made": 1,
+            "label_status": "parsed",
+            "primary_label": "wrong_relation",
+            "secondary_labels": ["wrong_operator"],
+            "selector_vs_generation": "selector_failure",
+            "candidate_pool_status": "gold_absent",
+            "confidence": 0.65,
+            "evidence": "reason",
+            "recommended_fix_family": "selector_structural",
+            "label_valid": True,
+            "label_errors": [],
+        },
+        {
+            "request_id": "fireworks:c2:1",
+            "case_id": "c2",
+            "provider": "fireworks",
+            "model": "m1",
+            "subset_memberships": "[]",
+            "primary_subset": "target_staged_15",
+            "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+            "prompt_sha256": "sha-c2",
+            "request_sha256": "req-c2c",
+            "dry_run": False,
+            "api_call_made": 1,
+            "label_status": "parsed",
+            "primary_label": "wrong_operator",
+            "secondary_labels": ["wrong_relation"],
+            "selector_vs_generation": "mixed",
+            "candidate_pool_status": "gold_absent",
+            "confidence": 0.7,
+            "evidence": "reason",
+            "recommended_fix_family": "equation_relation",
+            "label_valid": True,
+            "label_errors": [],
+        },
+    ]
+    manifest = {
+        "allow_api": False,
+        "dry_run": True,
+        "api_clients_constructed": False,
+        "include_gold_for_labeling": False,
+        "gold_assisted": False,
+        "providers": ["cohere", "cerebras", "fireworks"],
+        "provider_models": {"cohere": "m1", "cerebras": "m1", "fireworks": "m1"},
+        "provider_caps": {"cohere": 0, "cerebras": 0, "fireworks": 0},
+        "planned_request_count": 6,
+        "api_call_count": 0,
+    }
+
+    agreement = labeler._build_outputs(
+        case_packets=case_packets,
+        providers=["cohere", "cerebras", "fireworks"],
+        provider_models={"cohere": "m1", "cerebras": "m1", "fireworks": "m1"},
+        provider_caps={"cohere": 0, "cerebras": 0, "fireworks": 0},
+        allow_api=False,
+        include_gold_for_labeling=False,
+        max_calls_total=0,
+        prompt_packets=prompt_packets,
+        request_rows=[],
+        raw_rows=[],
+        parsed_rows=parsed_rows,
+        output_dir=out_dir,
+        manifest=manifest,
+    )
+
+    assert agreement["all_agree_case_count"] == 1
+    assert agreement["disagreement_case_count"] == 1
+    assert agreement["missing_label_case_count"] == 0
+    assert agreement["provider_label_counts"]["cohere"]["wrong_target_variable"] == 1
+    assert agreement["provider_label_counts"]["fireworks"]["wrong_operator"] == 1
+
+    matrix_rows = list(csv.DictReader((out_dir / "case_label_matrix.csv").open(encoding="utf-8")))
+    by_case = {row["case_id"]: row for row in matrix_rows}
+    assert by_case["c1"]["agreement_status"] == "all_agree"
+    assert by_case["c1"]["consensus_primary_label"] == "wrong_target_variable"
+    assert by_case["c2"]["agreement_status"] == "disagreement"
+    assert by_case["c2"]["consensus_primary_label"] == "wrong_relation"
+
+    frequency_rows = list(csv.DictReader((out_dir / "label_frequency_summary.csv").open(encoding="utf-8")))
+    overall = [row for row in frequency_rows if row["scope"] == "overall" and row["metric"] == "primary_label"]
+    assert any(row["label"] == "wrong_target_variable" and row["count"] == "3" for row in overall)
+    assert any(row["label"] == "wrong_relation" and row["count"] == "2" for row in overall)
+    assert any(row["label"] == "wrong_operator" and row["count"] == "1" for row in overall)
+
+    disagreement_rows = list(csv.DictReader((out_dir / "disagreement_cases.csv").open(encoding="utf-8")))
+    assert [row["case_id"] for row in disagreement_rows] == ["c2"]

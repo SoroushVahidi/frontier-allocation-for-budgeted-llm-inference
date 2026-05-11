@@ -1,0 +1,1490 @@
+#!/usr/bin/env python3
+"""Label PAL failure mechanisms across multiple providers.
+
+The default mode is a deterministic no-API dry run. Live provider calls require
+`--allow-api`, explicit providers, and a hard total call cap. The script keeps
+the prompt packet gold-free unless `--include-gold-for-labeling` is set.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import json
+import os
+import sys
+from collections import Counter, defaultdict
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Iterable
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+
+DEFAULT_FAILURE_CSV = REPO_ROOT / "docs/project_handoff_20260510/exhaustive_failure_audit/full_latest_method_failures.csv"
+DEFAULT_GOLD_ABSENT_CSV = REPO_ROOT / "docs/project_handoff_20260510/exhaustive_failure_audit/gold_absent_subpattern_analysis_20260510.csv"
+DEFAULT_ANCHOR_EFFECT_CSV = REPO_ROOT / "docs/project_handoff_20260510/exhaustive_failure_audit/direct_l1_anchor_patch_effect_20260510.csv"
+DEFAULT_TARGET_AUDIT_JSONL = REPO_ROOT / "docs/project_handoff_20260510/target_audit_diagnostic_cases.jsonl"
+DEFAULT_DIAGNOSTIC_30_JSONL = REPO_ROOT / "docs/project_handoff_20260510/exact_case_replay/failure_recovery_30case_exact_cases_20260510.jsonl"
+DEFAULT_TARGET_STAGED_15_JSONL = REPO_ROOT / "docs/project_handoff_20260510/exact_case_replay/direct_l1_strong_seed_15case_exact_cases_20260511.jsonl"
+DEFAULT_OUTPUTS_ROOT = REPO_ROOT / "outputs"
+DEFAULT_OUTPUT_PREFIX = "failure_mechanism_multi_api_"
+DEFAULT_METHOD = "direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal"
+DEFAULT_SUBSETS = (
+    "diagnostic_30",
+    "wrong_supported_consensus_97",
+    "pal_still_failing_157",
+    "direct_l1_anchor_potential_43",
+    "target_staged_15",
+)
+DEFAULT_PROVIDERS = ("cohere", "cerebras", "fireworks")
+DEFAULT_MODELS = {
+    "cohere": "command-r-plus-08-2024",
+    "cerebras": "llama3.1-8b",
+    "fireworks": "accounts/fireworks/models/llama-v3p1-8b-instruct",
+}
+DEFAULT_PROMPT_TEMPLATE_ID = "failure_mechanism_multi_api_v1"
+LABEL_FIELDS = [
+    "case_id",
+    "primary_label",
+    "secondary_labels",
+    "selector_vs_generation",
+    "candidate_pool_status",
+    "confidence",
+    "evidence",
+    "recommended_fix_family",
+]
+PRIMARY_LABELS = {
+    "wrong_target_variable",
+    "premature_intermediate_answer",
+    "wrong_entity_or_unit",
+    "wrong_time_or_state",
+    "wrong_relation",
+    "wrong_operator",
+    "ratio_or_percentage_base_error",
+    "PAL_code_grounding_error",
+    "PAL_execution_failure",
+    "pure_arithmetic_error",
+    "correct_candidate_present_not_selected",
+    "all_candidates_wrong",
+    "candidate_pool_missing",
+    "metadata_insufficient",
+    "unknown",
+}
+SECONDARY_LABELS = PRIMARY_LABELS
+SELECTOR_VS_GENERATION = {
+    "selector_failure",
+    "generation_failure",
+    "mixed",
+    "metadata_insufficient",
+    "unknown",
+}
+POOL_STATUS = {"gold_present", "gold_absent", "no_candidate_pool", "unknown"}
+FIX_FAMILIES = {
+    "target_schema",
+    "equation_relation",
+    "unit_ledger",
+    "PAL_grounding",
+    "selector_structural",
+    "candidate_generation_diversity",
+    "richer_logging",
+    "unknown",
+}
+FORBIDDEN_PROMPT_TOKENS = ("gold_answer", "answer_key")
+TRUE_TOKENS = {"1", "true", "t", "yes", "y", "on"}
+FALSE_TOKENS = {"0", "false", "f", "no", "n", "off", "none", "nan", "unknown"}
+
+
+def _utc_stamp() -> str:
+    return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
+def _stringify(value: Any) -> str:
+    if value is None:
+        return ""
+    return str(value).strip()
+
+
+def _is_truthy(value: Any) -> bool:
+    text = _stringify(value).lower()
+    if not text:
+        return False
+    if text in TRUE_TOKENS:
+        return True
+    if text in FALSE_TOKENS:
+        return False
+    return bool(text)
+
+
+def _safe_float(value: Any, default: float = 0.0) -> float:
+    try:
+        text = _stringify(value)
+        if not text:
+            return default
+        return float(text)
+    except Exception:
+        return default
+
+
+def _sha256_text(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _read_csv_rows(path: Path) -> list[dict[str, str]]:
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        return [dict(row) for row in csv.DictReader(handle)]
+
+
+def _read_jsonl_rows(path: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            rows.append(json.loads(line))
+    return rows
+
+
+def _write_json(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def _write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({field: row.get(field, "") for field in fieldnames})
+
+
+def _jsonable(value: Any) -> Any:
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    if isinstance(value, list):
+        return [_jsonable(item) for item in value]
+    if isinstance(value, dict):
+        return {str(k): _jsonable(v) for k, v in value.items()}
+    return _stringify(value)
+
+
+def _maybe_parse_jsonish(value: Any) -> Any:
+    if isinstance(value, (dict, list)) or value is None:
+        return value
+    text = _stringify(value)
+    if not text:
+        return ""
+    if text.startswith("{") or text.startswith("["):
+        try:
+            return json.loads(text)
+        except Exception:
+            return text
+    return text
+
+
+def _latest_file(root: Path, pattern: str) -> Path | None:
+    candidates = list(root.rglob(pattern))
+    if not candidates:
+        return None
+    return max(candidates, key=lambda path: (path.stat().st_mtime, str(path)))
+
+
+def _case_id_from_payload(payload: dict[str, Any]) -> str:
+    return _stringify(payload.get("case_id") or payload.get("example_id"))
+
+
+def _load_case_map(rows: Iterable[dict[str, Any]], key_field: str = "case_id") -> dict[str, dict[str, Any]]:
+    by_id: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        case_id = _stringify(row.get(key_field) or row.get("example_id"))
+        if case_id and case_id not in by_id:
+            by_id[case_id] = dict(row)
+    return by_id
+
+
+def _load_jsonl_case_map(path: Path) -> dict[str, dict[str, Any]]:
+    if not path.is_file():
+        return {}
+    by_id: dict[str, dict[str, Any]] = {}
+    for row in _read_jsonl_rows(path):
+        case_id = _case_id_from_payload(row)
+        if case_id and case_id not in by_id:
+            by_id[case_id] = dict(row)
+    return by_id
+
+
+def _load_structural_feature_map(structural_csv: Path | None, outputs_root: Path) -> tuple[dict[str, dict[str, Any]], Path | None]:
+    if structural_csv is None or not structural_csv.is_file():
+        structural_csv = _latest_file(outputs_root, "candidate_feature_rows.csv")
+    if structural_csv is None or not structural_csv.is_file():
+        return {}, None
+
+    grouped: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for row in _read_csv_rows(structural_csv):
+        case_id = _stringify(row.get("case_id") or row.get("example_id"))
+        if case_id:
+            grouped[case_id].append(row)
+
+    out: dict[str, dict[str, Any]] = {}
+    for case_id, rows in grouped.items():
+        def score_row(row: dict[str, str]) -> tuple[float, str, str]:
+            return (
+                _safe_float(row.get("structural_selector_score"), default=float("-inf")),
+                _stringify(row.get("candidate_answer")),
+                _stringify(row.get("group_key")),
+            )
+
+        best = max(rows, key=score_row)
+        candidate_rows = sorted(rows, key=lambda row: (-_safe_float(row.get("structural_selector_score")), _stringify(row.get("candidate_answer")), _stringify(row.get("group_key"))))
+        out[case_id] = {
+            "source_path": str(structural_csv),
+            "row_count": len(rows),
+            "top_candidate": _jsonable(best),
+            "candidate_rows": [_jsonable(row) for row in candidate_rows[:5]],
+            "target_tuple": _maybe_parse_jsonish(best.get("target_tuple")),
+            "entity_unit_ledger_proxy": _maybe_parse_jsonish(best.get("entity_unit_ledger_proxy")),
+            "final_answer_role": _stringify(best.get("final_answer_role")),
+            "last_operation_family": _stringify(best.get("last_operation_family")),
+            "target_alignment_score": _safe_float(best.get("target_alignment_score"), 0.0),
+            "intermediate_answer_penalty": _safe_float(best.get("intermediate_answer_penalty"), 0.0),
+            "duplicate_wrong_signature": _stringify(best.get("duplicate_wrong_signature")),
+            "structural_selector_score": _safe_float(best.get("structural_selector_score"), 0.0),
+        }
+    return out, structural_csv
+
+
+def _load_failure_map(path: Path) -> dict[str, dict[str, Any]]:
+    return _load_case_map(_read_csv_rows(path))
+
+
+def _load_gold_absent_map(path: Path) -> dict[str, dict[str, Any]]:
+    return _load_case_map(_read_csv_rows(path))
+
+
+def _load_anchor_map(path: Path) -> dict[str, dict[str, Any]]:
+    return _load_case_map(_read_csv_rows(path))
+
+
+def _load_target_audit_map(path: Path) -> dict[str, dict[str, Any]]:
+    return _load_jsonl_case_map(path)
+
+
+def _read_case_ids_from_jsonl(path: Path) -> list[str]:
+    ids: list[str] = []
+    if not path.is_file():
+        return ids
+    for row in _read_jsonl_rows(path):
+        case_id = _case_id_from_payload(row)
+        if case_id:
+            ids.append(case_id)
+    return ids
+
+
+def _select_rows_by_score(rows: list[dict[str, Any]], *, limit: int, key_fn) -> list[dict[str, Any]]:
+    ordered = sorted(rows, key=key_fn)
+    if limit > 0:
+        ordered = ordered[:limit]
+    return ordered
+
+
+def _select_pal_still_failing_case_ids(failure_rows: list[dict[str, Any]], *, limit: int = 157, method: str = DEFAULT_METHOD) -> tuple[list[str], dict[str, Any]]:
+    selected = [
+        row
+        for row in failure_rows
+        if _stringify(row.get("method_id")) == method and _stringify(row.get("evidence_completeness")).upper() == "FULL"
+    ]
+    selected = sorted(selected, key=lambda row: (_stringify(row.get("case_id")), _stringify(row.get("artifact_source"))))
+    raw_count = len(selected)
+    selected = selected[:limit] if limit > 0 else selected
+    return [_stringify(row.get("case_id")) for row in selected if _stringify(row.get("case_id"))], {
+        "subset": "pal_still_failing_157",
+        "raw_count": raw_count,
+        "selected_count": len(selected),
+        "approximate": raw_count != len(selected),
+        "selection_logic": "method_id == default PAL method; evidence_completeness == FULL; sorted by case_id then artifact_source; trimmed to 157 if needed",
+    }
+
+
+def _select_wrong_supported_consensus_case_ids(gold_rows: list[dict[str, Any]], *, limit: int = 97) -> tuple[list[str], dict[str, Any]]:
+    selected = [row for row in gold_rows if _stringify(row.get("external_contrast")).lower() == "both wrong"]
+    selected = sorted(
+        selected,
+        key=lambda row: (
+            _safe_float(row.get("num_candidate_groups"), 0.0),
+            _stringify(row.get("diversity_bucket")),
+            _stringify(row.get("case_id")),
+        ),
+    )
+    raw_count = len(selected)
+    selected = selected[:limit] if limit > 0 else selected
+    return [_stringify(row.get("case_id")) for row in selected if _stringify(row.get("case_id"))], {
+        "subset": "wrong_supported_consensus_97",
+        "raw_count": raw_count,
+        "selected_count": len(selected),
+        "approximate": raw_count != len(selected),
+        "selection_logic": "gold_absent rows with external_contrast == 'Both wrong'; sorted by num_candidate_groups, diversity_bucket, case_id; trimmed to 97 if needed",
+    }
+
+
+def _select_direct_l1_anchor_potential_case_ids(anchor_rows: list[dict[str, Any]], *, limit: int = 43) -> tuple[list[str], dict[str, Any]]:
+    selected = [row for row in anchor_rows if _is_truthy(row.get("anchor_matches_l1_max")) or _is_truthy(row.get("external_l1_exact"))]
+    selected = sorted(
+        selected,
+        key=lambda row: (
+            -int(_is_truthy(row.get("anchor_matches_l1_max"))),
+            -int(_is_truthy(row.get("external_l1_exact"))),
+            -int(_is_truthy(row.get("gold_recovered"))),
+            -int(_is_truthy(row.get("diversity_increased"))),
+            _stringify(row.get("case_id")),
+        ),
+    )
+    raw_count = len(selected)
+    selected = selected[:limit] if limit > 0 else selected
+    return [_stringify(row.get("case_id")) for row in selected if _stringify(row.get("case_id"))], {
+        "subset": "direct_l1_anchor_potential_43",
+        "raw_count": raw_count,
+        "selected_count": len(selected),
+        "approximate": raw_count != len(selected),
+        "selection_logic": "anchor-effect rows with anchor_matches_l1_max or external_l1_exact truthy; sorted by strong-match flags then case_id; trimmed to 43 if needed",
+    }
+
+
+def _select_exact_case_ids(jsonl_path: Path, subset_name: str) -> tuple[list[str], dict[str, Any]]:
+    case_ids = _read_case_ids_from_jsonl(jsonl_path)
+    return case_ids, {
+        "subset": subset_name,
+        "raw_count": len(case_ids),
+        "selected_count": len(case_ids),
+        "approximate": False,
+        "selection_logic": f"exact case ids loaded from {jsonl_path}",
+    }
+
+
+def _build_subset_specs(
+    *,
+    failure_rows: list[dict[str, Any]],
+    gold_rows: list[dict[str, Any]],
+    anchor_rows: list[dict[str, Any]],
+    diagnostic_30_jsonl: Path,
+    target_staged_15_jsonl: Path,
+    subsets: list[str],
+) -> list[dict[str, Any]]:
+    subset_specs: list[dict[str, Any]] = []
+    subset_set = {subset.strip() for subset in subsets if subset.strip()}
+
+    if "diagnostic_30" in subset_set:
+        case_ids, meta = _select_exact_case_ids(diagnostic_30_jsonl, "diagnostic_30")
+        subset_specs.append({**meta, "case_ids": case_ids})
+    if "target_staged_15" in subset_set:
+        case_ids, meta = _select_exact_case_ids(target_staged_15_jsonl, "target_staged_15")
+        subset_specs.append({**meta, "case_ids": case_ids})
+    if "pal_still_failing_157" in subset_set:
+        case_ids, meta = _select_pal_still_failing_case_ids(failure_rows)
+        subset_specs.append({**meta, "case_ids": case_ids})
+    if "wrong_supported_consensus_97" in subset_set:
+        case_ids, meta = _select_wrong_supported_consensus_case_ids(gold_rows)
+        subset_specs.append({**meta, "case_ids": case_ids})
+    if "direct_l1_anchor_potential_43" in subset_set:
+        case_ids, meta = _select_direct_l1_anchor_potential_case_ids(anchor_rows)
+        subset_specs.append({**meta, "case_ids": case_ids})
+
+    unknown = subset_set - {spec["subset"] for spec in subset_specs}
+    if unknown:
+        raise ValueError(
+            f"Unknown subset(s): {', '.join(sorted(unknown))}. Supported: {', '.join(DEFAULT_SUBSETS)}"
+        )
+    return subset_specs
+
+
+def _order_case_ids_for_union(subset_specs: list[dict[str, Any]]) -> tuple[list[str], dict[str, list[dict[str, Any]]], dict[str, str]]:
+    memberships: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    primary_subset: dict[str, str] = {}
+    ordered_case_ids: list[str] = []
+    seen: set[str] = set()
+
+    priority = {subset: idx for idx, subset in enumerate(DEFAULT_SUBSETS)}
+    for spec in sorted(subset_specs, key=lambda item: (priority.get(item["subset"], 999), item["subset"])):
+        subset = spec["subset"]
+        for rank, case_id in enumerate(spec["case_ids"], start=1):
+            membership = {
+                "subset": subset,
+                "rank": rank,
+                "approximate": bool(spec.get("approximate")),
+                "selection_logic": spec.get("selection_logic", ""),
+            }
+            memberships[case_id].append(membership)
+            if case_id not in primary_subset:
+                primary_subset[case_id] = subset
+            if case_id not in seen:
+                seen.add(case_id)
+                ordered_case_ids.append(case_id)
+    return ordered_case_ids, memberships, primary_subset
+
+
+def _build_case_packet(
+    *,
+    case_id: str,
+    subset_memberships: list[dict[str, Any]],
+    primary_subset: str,
+    failure_map: dict[str, dict[str, Any]],
+    gold_map: dict[str, dict[str, Any]],
+    anchor_map: dict[str, dict[str, Any]],
+    target_audit_map: dict[str, dict[str, Any]],
+    structural_map: dict[str, dict[str, Any]],
+    include_gold_for_labeling: bool,
+) -> dict[str, Any]:
+    failure_row = failure_map.get(case_id, {})
+    gold_row = gold_map.get(case_id, {})
+    anchor_row = anchor_map.get(case_id, {})
+    target_row = target_audit_map.get(case_id, {})
+    structural_row = structural_map.get(case_id, {})
+
+    question = (
+        _stringify(target_row.get("question"))
+        or _stringify(target_row.get("problem_text"))
+        or _stringify(failure_row.get("problem_text"))
+    )
+    selected_prediction = (
+        _stringify(target_row.get("selected_answer"))
+        or _stringify(failure_row.get("selected_answer"))
+        or _stringify(target_row.get("predicted"))
+    )
+    reference_answer = _stringify(target_row.get("gold_answer")) or _stringify(failure_row.get("gold_answer"))
+
+    candidate_answers: list[str] = []
+    candidate_groups: list[dict[str, Any]] = []
+    if isinstance(target_row.get("candidate_answers"), list):
+        candidate_answers.extend(_stringify(value) for value in target_row.get("candidate_answers", []) if _stringify(value))
+    if isinstance(target_row.get("candidate_sources"), list):
+        sources = [value for value in target_row.get("candidate_sources", []) if _stringify(value)]
+    else:
+        sources = []
+    candidate_support_counts = target_row.get("candidate_support_counts")
+    if isinstance(candidate_support_counts, dict):
+        for candidate, support in candidate_support_counts.items():
+            if _stringify(candidate):
+                candidate_groups.append(
+                    {
+                        "candidate_answer": _stringify(candidate),
+                        "support_count": _safe_float(support, 0.0),
+                        "source_family": "",
+                    }
+                )
+
+    for key in ("direct_reserve_answer", "frontier_answer", "tiebreak_answer", "pal_answer", "selected_answer"):
+        candidate = _stringify(target_row.get(key))
+        if candidate:
+            candidate_answers.append(candidate)
+    if structural_row:
+        top_candidate = structural_row.get("top_candidate", {})
+        if isinstance(top_candidate, dict):
+            candidate = _stringify(top_candidate.get("candidate_answer"))
+            if candidate:
+                candidate_answers.append(candidate)
+        for row in structural_row.get("candidate_rows", []):
+            if isinstance(row, dict):
+                candidate = _stringify(row.get("candidate_answer"))
+                if candidate:
+                    candidate_answers.append(candidate)
+                candidate_groups.append(
+                    {
+                        "group_key": _stringify(row.get("group_key")),
+                        "candidate_answer": candidate,
+                        "source_family": _stringify(row.get("source_family")),
+                        "candidate_role": _stringify(row.get("candidate_role")),
+                        "support_count": _safe_float(row.get("support_count"), 0.0),
+                        "candidate_pool_size": _safe_float(row.get("candidate_pool_size"), 0.0),
+                        "structural_selector_score": _safe_float(row.get("structural_selector_score"), 0.0),
+                    }
+                )
+    candidate_answers = sorted(dict.fromkeys([cand for cand in candidate_answers if cand]))
+    candidate_groups = sorted(
+        {json.dumps(group, sort_keys=True): group for group in candidate_groups}.values(),
+        key=lambda row: (
+            -_safe_float(row.get("structural_selector_score"), 0.0),
+            _stringify(row.get("candidate_answer")),
+            _stringify(row.get("group_key")),
+        ),
+    )
+
+    selector_metadata = {
+        "selected_answer": selected_prediction,
+        "selected_source": _stringify(target_row.get("selected_source")) or _stringify(failure_row.get("selected_source")),
+        "structural_commit_reason": _stringify(target_row.get("structural_commit_reason")),
+        "direct_reserve_answer": _stringify(target_row.get("direct_reserve_answer")),
+        "frontier_answer": _stringify(target_row.get("frontier_answer")),
+        "tiebreak_answer": _stringify(target_row.get("tiebreak_answer")),
+        "correct_alternate_available": _stringify(target_row.get("correct_alternate_available")),
+        "gold_present_in_candidate_pool": _stringify(target_row.get("gold_present_in_candidate_pool")),
+    }
+    action_trace_summary = {
+        "failure_family": _stringify(failure_row.get("failure_family")) or _stringify(target_row.get("failure_category")),
+        "failure_category": _stringify(target_row.get("failure_category")),
+        "latest_method_failure_tag": _stringify(target_row.get("latest_method_failure_tag")),
+        "selection_reason": _stringify(target_row.get("selection_reason")) or _stringify(failure_row.get("notes")),
+        "short_diagnosis": _stringify(target_row.get("short_diagnosis")),
+        "likely_mismatch_subtype": _stringify(target_row.get("likely_mismatch_subtype")),
+    }
+    pal_exec_summary = {
+        "pal_answer": _stringify(target_row.get("pal_answer")),
+        "pal_execution_status": _stringify(target_row.get("pal_execution_status")),
+        "pal_stdout": _stringify(target_row.get("pal_stdout")),
+        "pal_code": _stringify(target_row.get("pal_code")),
+    }
+    failure_audit_labels = {
+        "question_type": _stringify(gold_row.get("question_type")),
+        "error_type": _stringify(gold_row.get("error_type")),
+        "num_candidate_groups": _safe_float(gold_row.get("num_candidate_groups"), 0.0),
+        "diversity_bucket": _stringify(gold_row.get("diversity_bucket")),
+        "external_contrast": _stringify(gold_row.get("external_contrast")),
+        "candidate_pool_status": _stringify(target_row.get("gold_present_in_candidate_pool")) or _stringify(gold_row.get("external_contrast")),
+        "direct_l1_anchor_potential": int(_is_truthy(anchor_row.get("anchor_matches_l1_max")) or _is_truthy(anchor_row.get("external_l1_exact"))),
+        "anchor_matches_l1_max": int(_is_truthy(anchor_row.get("anchor_matches_l1_max"))),
+        "external_l1_exact": int(_is_truthy(anchor_row.get("external_l1_exact"))),
+        "gold_recovered": int(_is_truthy(anchor_row.get("gold_recovered"))),
+        "diversity_increased": int(_is_truthy(anchor_row.get("diversity_increased"))),
+    }
+    structural_fields = dict(structural_row)
+
+    packet = {
+        "case_id": case_id,
+        "primary_subset": primary_subset,
+        "subset_memberships": subset_memberships,
+        "question": question,
+        "model_final_prediction": selected_prediction,
+        "candidate_answers": candidate_answers,
+        "candidate_answer_groups": candidate_groups,
+        "selector_metadata": selector_metadata,
+        "action_trace_summary": action_trace_summary,
+        "pal_exec_summary": pal_exec_summary,
+        "structural_fields": structural_fields,
+        "failure_audit_labels": failure_audit_labels,
+        "source_artifacts": {
+            "failure_csv": _stringify(failure_row.get("artifact_source")),
+            "target_audit_jsonl": _stringify(target_row.get("source_artifact_path")),
+            "structural_csv": _stringify(structural_row.get("source_path")),
+            "exact_subset_sources": [membership.get("subset") for membership in subset_memberships if membership.get("subset") in {"diagnostic_30", "target_staged_15"}],
+        },
+        "prompt_template_id": DEFAULT_PROMPT_TEMPLATE_ID,
+        "include_gold_for_labeling": bool(include_gold_for_labeling),
+        "gold_assisted": bool(include_gold_for_labeling),
+    }
+    if include_gold_for_labeling and reference_answer:
+        packet["reference_answer"] = reference_answer
+    return packet
+
+
+def _build_prompt_payload(packet: dict[str, Any]) -> dict[str, Any]:
+    payload = {
+        "case_id": packet["case_id"],
+        "question": packet.get("question", ""),
+        "model_final_prediction": packet.get("model_final_prediction", ""),
+        "candidate_answers": packet.get("candidate_answers", []),
+        "candidate_answer_groups": packet.get("candidate_answer_groups", []),
+        "selector_metadata": packet.get("selector_metadata", {}),
+        "action_trace_summary": packet.get("action_trace_summary", {}),
+        "pal_exec_summary": packet.get("pal_exec_summary", {}),
+        "structural_fields": packet.get("structural_fields", {}),
+        "failure_audit_labels": packet.get("failure_audit_labels", {}),
+        "prompt_template_id": packet.get("prompt_template_id", DEFAULT_PROMPT_TEMPLATE_ID),
+        "primary_subset": packet.get("primary_subset", ""),
+        "subset_memberships": packet.get("subset_memberships", []),
+    }
+    if packet.get("include_gold_for_labeling") and packet.get("reference_answer"):
+        payload["reference_answer"] = packet["reference_answer"]
+    return payload
+
+
+def _render_prompt(packet: dict[str, Any]) -> str:
+    payload = _build_prompt_payload(packet)
+    prompt_lines = [
+        "You are labeling PAL failure mechanisms from trace-grounded evidence.",
+        "Return JSON only. Do not use any reference answer or label metadata beyond the packet.",
+        "",
+        "Return exactly these keys:",
+        ", ".join(LABEL_FIELDS),
+        "",
+        "Allowed label values:",
+        f"- primary_label: {', '.join(sorted(PRIMARY_LABELS))}",
+        f"- secondary_labels: list of primary_label values",
+        f"- selector_vs_generation: {', '.join(sorted(SELECTOR_VS_GENERATION))}",
+        f"- candidate_pool_status: {', '.join(sorted(POOL_STATUS))}",
+        f"- recommended_fix_family: {', '.join(sorted(FIX_FAMILIES))}",
+        "",
+        "Evidence packet:",
+        json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False),
+        "",
+        "Rules:",
+        "- Keep the answer short and trace-grounded.",
+        "- Set confidence to a number between 0 and 1.",
+        "- Secondary labels must be a JSON array.",
+        "- If evidence is sparse, use metadata_insufficient or unknown where appropriate.",
+    ]
+    return "\n".join(prompt_lines).rstrip() + "\n"
+
+
+def _parse_label_json(text: str) -> tuple[dict[str, Any] | None, str]:
+    try:
+        payload = json.loads(text)
+    except Exception as exc:
+        return None, f"json_parse_error:{type(exc).__name__}"
+    if not isinstance(payload, dict):
+        return None, "json_not_object"
+
+    normalized = {
+        "case_id": _stringify(payload.get("case_id")),
+        "primary_label": _stringify(payload.get("primary_label")),
+        "secondary_labels": [_stringify(item) for item in (payload.get("secondary_labels") or []) if _stringify(item)],
+        "selector_vs_generation": _stringify(payload.get("selector_vs_generation")),
+        "candidate_pool_status": _stringify(payload.get("candidate_pool_status")),
+        "confidence": _safe_float(payload.get("confidence"), default=-1.0),
+        "evidence": _stringify(payload.get("evidence")),
+        "recommended_fix_family": _stringify(payload.get("recommended_fix_family")),
+    }
+
+    errors: list[str] = []
+    if normalized["primary_label"] not in PRIMARY_LABELS:
+        errors.append("invalid_primary_label")
+    if any(label not in SECONDARY_LABELS for label in normalized["secondary_labels"]):
+        errors.append("invalid_secondary_label")
+    if normalized["selector_vs_generation"] not in SELECTOR_VS_GENERATION:
+        errors.append("invalid_selector_vs_generation")
+    if normalized["candidate_pool_status"] not in POOL_STATUS:
+        errors.append("invalid_candidate_pool_status")
+    if normalized["recommended_fix_family"] not in FIX_FAMILIES:
+        errors.append("invalid_recommended_fix_family")
+    if not (0.0 <= normalized["confidence"] <= 1.0):
+        errors.append("invalid_confidence")
+    if not normalized["evidence"]:
+        errors.append("missing_evidence")
+
+    normalized["secondary_labels"] = sorted(dict.fromkeys(normalized["secondary_labels"]))
+    normalized["label_valid"] = not errors
+    normalized["label_errors"] = errors
+    return normalized, ""
+
+
+def _load_cohere_client() -> Any:
+    import cohere  # type: ignore
+
+    api_key = os.getenv("COHERE_API_KEY", "").strip() or os.getenv("CO_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("COHERE_API_KEY (or CO_API_KEY) is not set; cannot run with --allow-api.")
+    if hasattr(cohere, "ClientV2"):
+        return cohere.ClientV2(api_key=api_key)
+    return cohere.Client(api_key)
+
+
+def _load_openai_client(*, base_url: str, api_key: str) -> Any:
+    from openai import OpenAI  # type: ignore
+
+    return OpenAI(base_url=base_url, api_key=api_key)
+
+
+def _extract_openai_text(response: Any) -> str:
+    choices = getattr(response, "choices", [])
+    if not choices:
+        return ""
+    message = getattr(choices[0], "message", None)
+    if message is None:
+        return ""
+    content = getattr(message, "content", "")
+    if isinstance(content, str):
+        return content.strip()
+    if isinstance(content, list):
+        parts: list[str] = []
+        for item in content:
+            text = getattr(item, "text", None)
+            if text:
+                parts.append(str(text))
+            elif isinstance(item, dict) and item.get("text"):
+                parts.append(str(item["text"]))
+        return "".join(parts).strip()
+    return _stringify(content)
+
+
+def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, dict[str, Any]]:
+    provider = provider.lower().strip()
+    if provider == "cohere":
+        client = _load_cohere_client()
+        response = client.chat(
+            model=model,
+            message=prompt,
+            temperature=0.0,
+            max_tokens=512,
+        )
+        text = ""
+        if getattr(response, "message", None) and getattr(response.message, "content", None):
+            content = response.message.content
+            if isinstance(content, list) and content:
+                first = content[0]
+                text = _stringify(getattr(first, "text", first))
+            else:
+                text = _stringify(content)
+        else:
+            text = _stringify(getattr(response, "text", ""))
+        return text.strip(), {"provider": provider, "model": model}
+
+    if provider == "cerebras":
+        api_key = os.getenv("CEREBRAS_API_KEY", "").strip()
+        if not api_key:
+            raise RuntimeError("CEREBRAS_API_KEY is not set; cannot run with --allow-api.")
+        client = _load_openai_client(base_url="https://api.cerebras.ai/v1", api_key=api_key)
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+            max_tokens=512,
+            response_format={"type": "json_object"},
+        )
+        return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.cerebras.ai/v1"}
+
+    if provider == "fireworks":
+        api_key = os.getenv("FIREWORKS_API_KEY", "").strip() or os.getenv("OPENAI_API_KEY", "").strip()
+        if not api_key:
+            raise RuntimeError("FIREWORKS_API_KEY (or OPENAI_API_KEY) is not set; cannot run with --allow-api.")
+        client = _load_openai_client(base_url="https://api.fireworks.ai/inference/v1", api_key=api_key)
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+            max_tokens=512,
+            response_format={"type": "json_object"},
+        )
+        return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.fireworks.ai/inference/v1"}
+
+    raise ValueError(f"Unknown provider: {provider}")
+
+
+def _normalize_providers(text: str, *, allow_api: bool) -> list[str]:
+    providers = [provider.strip().lower() for provider in _stringify(text).split(",") if provider.strip()]
+    if providers:
+        unknown = [provider for provider in providers if provider not in DEFAULT_PROVIDERS]
+        if unknown:
+            raise ValueError(f"Unknown provider(s): {', '.join(sorted(unknown))}. Supported: {', '.join(DEFAULT_PROVIDERS)}")
+        return providers
+    if allow_api:
+        raise ValueError("--providers is required when --allow-api is set.")
+    return list(DEFAULT_PROVIDERS)
+
+
+def _parse_provider_caps(values: list[str]) -> dict[str, int]:
+    caps: dict[str, int] = {}
+    for raw in values:
+        text = _stringify(raw)
+        if not text:
+            continue
+        if "=" not in text:
+            raise ValueError(f"Invalid --provider-cap value {raw!r}; expected provider=cap")
+        provider, cap_text = text.split("=", 1)
+        provider = provider.strip().lower()
+        if provider not in DEFAULT_PROVIDERS:
+            raise ValueError(f"Unknown provider in --provider-cap: {provider}")
+        try:
+            cap = int(cap_text)
+        except Exception as exc:
+            raise ValueError(f"Invalid cap for provider {provider}: {cap_text!r}") from exc
+        if cap <= 0:
+            raise ValueError(f"Cap for provider {provider} must be positive")
+        caps[provider] = cap
+    return caps
+
+
+def _derive_even_caps(*, total: int, providers: list[str]) -> dict[str, int]:
+    if total < len(providers):
+        raise ValueError("max-calls-total must be at least the number of providers when deriving an even split")
+    base = total // len(providers)
+    remainder = total % len(providers)
+    caps: dict[str, int] = {}
+    for index, provider in enumerate(providers):
+        caps[provider] = base + (1 if index < remainder else 0)
+    return caps
+
+
+def _build_provider_request(
+    *,
+    provider: str,
+    model: str,
+    case_packet: dict[str, Any],
+    prompt_text: str,
+    request_index: int,
+    provider_cap: int,
+    dry_run: bool,
+    include_gold_for_labeling: bool,
+) -> dict[str, Any]:
+    request_id = f"{provider}:{case_packet['case_id']}:{request_index:05d}"
+    request = {
+        "request_id": request_id,
+        "case_id": case_packet["case_id"],
+        "primary_subset": case_packet["primary_subset"],
+        "subset_memberships": case_packet["subset_memberships"],
+        "provider": provider,
+        "model": model,
+        "prompt_template_id": case_packet["prompt_template_id"],
+        "prompt_text": prompt_text,
+        "prompt_sha256": _sha256_text(prompt_text),
+        "request_sha256": _sha256_text(json.dumps({
+            "case_id": case_packet["case_id"],
+            "provider": provider,
+            "model": model,
+            "prompt_sha256": _sha256_text(prompt_text),
+            "provider_cap": provider_cap,
+            "include_gold_for_labeling": include_gold_for_labeling,
+        }, sort_keys=True)),
+        "provider_cap": provider_cap,
+        "dry_run": bool(dry_run),
+        "include_gold_for_labeling": bool(include_gold_for_labeling),
+        "api_call_made": 0,
+    }
+    return request
+
+
+def _compute_label_frequency_summary(parsed_rows: list[dict[str, Any]], providers: list[str]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    metric_fields = [
+        "primary_label",
+        "selector_vs_generation",
+        "candidate_pool_status",
+        "recommended_fix_family",
+    ]
+    total_by_metric: dict[str, Counter[str]] = {metric: Counter() for metric in metric_fields}
+    provider_metric: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
+    for row in parsed_rows:
+        if not row.get("label_valid"):
+            continue
+        provider = _stringify(row.get("provider"))
+        for metric in metric_fields:
+            value = _stringify(row.get(metric))
+            if value:
+                total_by_metric[metric][value] += 1
+                provider_metric[(provider, metric)][value] += 1
+    for metric, counter in total_by_metric.items():
+        total = sum(counter.values())
+        for label, count in sorted(counter.items(), key=lambda item: (-item[1], item[0])):
+            rows.append(
+                {
+                    "scope": "overall",
+                    "provider": "",
+                    "metric": metric,
+                    "label": label,
+                    "count": count,
+                    "share": round(count / max(1, total), 6),
+                }
+            )
+    for provider in providers:
+        for metric in metric_fields:
+            counter = provider_metric.get((provider, metric), Counter())
+            total = sum(counter.values())
+            for label, count in sorted(counter.items(), key=lambda item: (-item[1], item[0])):
+                rows.append(
+                    {
+                        "scope": "provider",
+                        "provider": provider,
+                        "metric": metric,
+                        "label": label,
+                        "count": count,
+                        "share": round(count / max(1, total), 6),
+                    }
+                )
+    return rows
+
+
+def _summarize_agreement(case_matrix_rows: list[dict[str, Any]], providers: list[str], parsed_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    per_case: dict[str, dict[str, Any]] = defaultdict(dict)
+    for row in parsed_rows:
+        case_id = _stringify(row.get("case_id"))
+        provider = _stringify(row.get("provider"))
+        if case_id and provider:
+            per_case[case_id][provider] = row
+
+    provider_label_counts: dict[str, Counter[str]] = {provider: Counter() for provider in providers}
+    for row in parsed_rows:
+        if not row.get("label_valid"):
+            continue
+        provider = _stringify(row.get("provider"))
+        label = _stringify(row.get("primary_label"))
+        if provider and label:
+            provider_label_counts.setdefault(provider, Counter())[label] += 1
+
+    all_agree = 0
+    partial_agree = 0
+    disagreements = 0
+    missing = 0
+    for row in case_matrix_rows:
+        status = _stringify(row.get("agreement_status"))
+        if status == "all_agree":
+            all_agree += 1
+        elif status == "partial_agree":
+            partial_agree += 1
+        elif status == "missing":
+            missing += 1
+        else:
+            disagreements += 1
+
+    return {
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "providers": providers,
+        "case_count": len(case_matrix_rows),
+        "parsed_label_row_count": len(parsed_rows),
+        "all_agree_case_count": all_agree,
+        "partial_agree_case_count": partial_agree,
+        "disagreement_case_count": disagreements,
+        "missing_label_case_count": missing,
+        "provider_label_counts": {provider: dict(sorted(counter.items(), key=lambda item: (-item[1], item[0]))) for provider, counter in provider_label_counts.items()},
+    }
+
+
+def _build_case_label_matrix(
+    *,
+    case_packets: list[dict[str, Any]],
+    parsed_rows: list[dict[str, Any]],
+    providers: list[str],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    parsed_by_case_provider: dict[tuple[str, str], dict[str, Any]] = {}
+    for row in parsed_rows:
+        parsed_by_case_provider[(_stringify(row.get("case_id")), _stringify(row.get("provider")))] = row
+
+    matrix_rows: list[dict[str, Any]] = []
+    disagreement_rows: list[dict[str, Any]] = []
+
+    for packet in case_packets:
+        row: dict[str, Any] = {
+            "case_id": packet["case_id"],
+            "primary_subset": packet["primary_subset"],
+            "subset_memberships": json.dumps(packet["subset_memberships"], sort_keys=True),
+            "label_count": 0,
+            "missing_provider_count": 0,
+            "agreement_status": "missing",
+            "consensus_primary_label": "",
+            "provider_labels_json": "",
+        }
+        primary_labels: list[str] = []
+        provider_labels_payload: dict[str, Any] = {}
+        missing_providers: list[str] = []
+        for provider in providers:
+            parsed = parsed_by_case_provider.get((packet["case_id"], provider))
+            provider_labels_payload[provider] = parsed or {}
+            label = _stringify(parsed.get("primary_label")) if parsed else ""
+            confidence = parsed.get("confidence") if parsed else ""
+            row[f"{provider}_primary_label"] = label
+            row[f"{provider}_confidence"] = confidence
+            row[f"{provider}_candidate_pool_status"] = _stringify(parsed.get("candidate_pool_status")) if parsed else ""
+            row[f"{provider}_selector_vs_generation"] = _stringify(parsed.get("selector_vs_generation")) if parsed else ""
+            if label:
+                primary_labels.append(label)
+            else:
+                missing_providers.append(provider)
+        row["label_count"] = len(primary_labels)
+        row["missing_provider_count"] = len(missing_providers)
+        row["provider_labels_json"] = json.dumps(provider_labels_payload, sort_keys=True)
+
+        if len(primary_labels) == len(providers) and len(set(primary_labels)) == 1:
+            row["agreement_status"] = "all_agree"
+            row["consensus_primary_label"] = primary_labels[0]
+        elif len(set(primary_labels)) <= 1 and primary_labels:
+            row["agreement_status"] = "partial_agree"
+            row["consensus_primary_label"] = primary_labels[0]
+        elif primary_labels:
+            row["agreement_status"] = "disagreement"
+            row["consensus_primary_label"] = Counter(primary_labels).most_common(1)[0][0]
+        else:
+            row["agreement_status"] = "missing"
+            row["consensus_primary_label"] = ""
+        matrix_rows.append(row)
+
+        if row["agreement_status"] in {"disagreement", "missing"}:
+            disagreement_rows.append(
+                {
+                    "case_id": packet["case_id"],
+                    "primary_subset": packet["primary_subset"],
+                    "agreement_status": row["agreement_status"],
+                    "consensus_primary_label": row["consensus_primary_label"],
+                    "missing_providers": "|".join(missing_providers),
+                    "provider_labels_json": row["provider_labels_json"],
+                }
+            )
+
+    return matrix_rows, disagreement_rows
+
+
+def _selected_request_limit(
+    *,
+    allow_api: bool,
+    max_calls_total: int,
+    providers: list[str],
+    explicit_provider_caps: dict[str, int],
+) -> dict[str, int]:
+    if not allow_api:
+        return {provider: 0 for provider in providers}
+    if explicit_provider_caps:
+        missing = [provider for provider in providers if provider not in explicit_provider_caps]
+        if missing:
+            raise ValueError(
+                f"--provider-cap must be supplied for every selected provider when explicit caps are used; missing: {', '.join(missing)}"
+            )
+        return dict(explicit_provider_caps)
+    return _derive_even_caps(total=max_calls_total, providers=providers)
+
+
+def _build_outputs(
+    *,
+    case_packets: list[dict[str, Any]],
+    providers: list[str],
+    provider_models: dict[str, str],
+    provider_caps: dict[str, int],
+    allow_api: bool,
+    include_gold_for_labeling: bool,
+    max_calls_total: int,
+    prompt_packets: list[dict[str, Any]],
+    request_rows: list[dict[str, Any]],
+    raw_rows: list[dict[str, Any]],
+    parsed_rows: list[dict[str, Any]],
+    output_dir: Path,
+    manifest: dict[str, Any],
+) -> dict[str, Any]:
+    case_matrix_rows, disagreement_rows = _build_case_label_matrix(case_packets=case_packets, parsed_rows=parsed_rows, providers=providers)
+    frequency_rows = _compute_label_frequency_summary(parsed_rows, providers)
+    agreement_summary = _summarize_agreement(case_matrix_rows, providers, parsed_rows)
+    agreement_summary.update(
+        {
+            "allow_api": allow_api,
+            "include_gold_for_labeling": include_gold_for_labeling,
+            "max_calls_total": max_calls_total,
+            "provider_caps": provider_caps,
+            "provider_models": provider_models,
+            "planned_request_count": len(request_rows),
+            "raw_label_row_count": len(raw_rows),
+            "parsed_label_row_count": len(parsed_rows),
+            "case_matrix_row_count": len(case_matrix_rows),
+            "disagreement_case_count": len(disagreement_rows),
+        }
+    )
+
+    _write_jsonl(output_dir / "trace_packets.jsonl", prompt_packets)
+    _write_jsonl(output_dir / "provider_requests_dry_run.jsonl", request_rows)
+    _write_jsonl(output_dir / "raw_provider_labels.jsonl", raw_rows)
+    _write_jsonl(output_dir / "parsed_labels.jsonl", parsed_rows)
+    _write_json(output_dir / "agreement_summary.json", agreement_summary)
+    _write_csv(
+        output_dir / "label_frequency_summary.csv",
+        frequency_rows,
+        ["scope", "provider", "metric", "label", "count", "share"],
+    )
+    _write_csv(
+        output_dir / "case_label_matrix.csv",
+        case_matrix_rows,
+        [
+            "case_id",
+            "primary_subset",
+            "subset_memberships",
+            *[f"{provider}_primary_label" for provider in providers],
+            *[f"{provider}_confidence" for provider in providers],
+            *[f"{provider}_candidate_pool_status" for provider in providers],
+            *[f"{provider}_selector_vs_generation" for provider in providers],
+            "label_count",
+            "missing_provider_count",
+            "agreement_status",
+            "consensus_primary_label",
+            "provider_labels_json",
+        ],
+    )
+    _write_csv(
+        output_dir / "disagreement_cases.csv",
+        disagreement_rows,
+        ["case_id", "primary_subset", "agreement_status", "consensus_primary_label", "missing_providers", "provider_labels_json"],
+    )
+    _write_json(output_dir / "manifest.json", manifest)
+    return agreement_summary
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--failure-csv", default=str(DEFAULT_FAILURE_CSV), help="Failure audit CSV.")
+    parser.add_argument("--gold-absent-csv", default=str(DEFAULT_GOLD_ABSENT_CSV), help="Gold-absent audit CSV.")
+    parser.add_argument("--anchor-effect-csv", default=str(DEFAULT_ANCHOR_EFFECT_CSV), help="Anchor-effect CSV.")
+    parser.add_argument("--target-audit-jsonl", default=str(DEFAULT_TARGET_AUDIT_JSONL), help="Target audit JSONL with richer trace fields.")
+    parser.add_argument("--diagnostic-30-jsonl", default=str(DEFAULT_DIAGNOSTIC_30_JSONL), help="Exact 30-case diagnostic JSONL.")
+    parser.add_argument("--target-staged-15-jsonl", default=str(DEFAULT_TARGET_STAGED_15_JSONL), help="Exact 15-case target-staged JSONL.")
+    parser.add_argument("--structural-feature-csv", default="", help="Optional structural feature CSV; defaults to latest candidate_feature_rows.csv under outputs.")
+    parser.add_argument("--outputs-root", default=str(DEFAULT_OUTPUTS_ROOT), help="Outputs root for auto-discovery.")
+    parser.add_argument("--subsets", "--subset", default=",".join(DEFAULT_SUBSETS), help="Comma-separated subset list.")
+    parser.add_argument("--providers", default="", help="Comma-separated providers. Required in API mode.")
+    parser.add_argument("--cohere-model", default=DEFAULT_MODELS["cohere"], help="Cohere model name.")
+    parser.add_argument("--cerebras-model", default=DEFAULT_MODELS["cerebras"], help="Cerebras model name.")
+    parser.add_argument("--fireworks-model", default=DEFAULT_MODELS["fireworks"], help="Fireworks model name.")
+    parser.add_argument("--provider-cap", action="append", default=[], help="Repeatable provider cap in the form provider=cap.")
+    parser.add_argument("--max-calls-total", type=int, default=0, help="Hard total call cap. Required in API mode.")
+    parser.add_argument("--allow-api", action="store_true", help="Allow provider API calls.")
+    parser.add_argument("--include-gold-for-labeling", action="store_true", help="Include reference answers in prompt packets and mark outputs gold-assisted.")
+    parser.add_argument("--output-dir", default="", help="Output directory override.")
+    parser.add_argument("--timestamp", default=_utc_stamp(), help="UTC timestamp suffix for the default output directory.")
+    parser.add_argument("--dry-run", "--validate-only", action="store_true", dest="dry_run", help="No-API dry run only.")
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+
+    failure_csv = Path(args.failure_csv).expanduser()
+    gold_absent_csv = Path(args.gold_absent_csv).expanduser()
+    anchor_effect_csv = Path(args.anchor_effect_csv).expanduser()
+    target_audit_jsonl = Path(args.target_audit_jsonl).expanduser()
+    diagnostic_30_jsonl = Path(args.diagnostic_30_jsonl).expanduser()
+    target_staged_15_jsonl = Path(args.target_staged_15_jsonl).expanduser()
+    structural_feature_csv = Path(args.structural_feature_csv).expanduser() if args.structural_feature_csv else None
+    outputs_root = Path(args.outputs_root).expanduser()
+    output_dir = Path(args.output_dir).expanduser() if args.output_dir else outputs_root / f"{DEFAULT_OUTPUT_PREFIX}{args.timestamp}"
+
+    for path, label in [
+        (failure_csv, "failure CSV"),
+        (gold_absent_csv, "gold-absent CSV"),
+        (anchor_effect_csv, "anchor-effect CSV"),
+        (target_audit_jsonl, "target audit JSONL"),
+        (diagnostic_30_jsonl, "diagnostic-30 JSONL"),
+        (target_staged_15_jsonl, "target-staged JSONL"),
+    ]:
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing required {label}: {path}")
+
+    providers = _normalize_providers(args.providers, allow_api=bool(args.allow_api))
+    subsets = [subset.strip() for subset in _stringify(args.subsets).split(",") if subset.strip()]
+    failure_rows = _read_csv_rows(failure_csv)
+    gold_rows = _read_csv_rows(gold_absent_csv)
+    anchor_rows = _read_csv_rows(anchor_effect_csv)
+    failure_map = _load_failure_map(failure_csv)
+    gold_map = _load_gold_absent_map(gold_absent_csv)
+    anchor_map = _load_anchor_map(anchor_effect_csv)
+    target_audit_map = _load_target_audit_map(target_audit_jsonl)
+    structural_map, resolved_structural_csv = _load_structural_feature_map(structural_feature_csv, outputs_root)
+
+    subset_specs = _build_subset_specs(
+        failure_rows=failure_rows,
+        gold_rows=gold_rows,
+        anchor_rows=anchor_rows,
+        diagnostic_30_jsonl=diagnostic_30_jsonl,
+        target_staged_15_jsonl=target_staged_15_jsonl,
+        subsets=subsets,
+    )
+    ordered_case_ids, memberships, primary_subsets = _order_case_ids_for_union(subset_specs)
+    case_packets = [
+        _build_case_packet(
+            case_id=case_id,
+            subset_memberships=memberships[case_id],
+            primary_subset=primary_subsets[case_id],
+            failure_map=failure_map,
+            gold_map=gold_map,
+            anchor_map=anchor_map,
+            target_audit_map=target_audit_map,
+            structural_map=structural_map,
+            include_gold_for_labeling=bool(args.include_gold_for_labeling),
+        )
+        for case_id in ordered_case_ids
+    ]
+
+    prompt_packets = []
+    for packet in case_packets:
+        prompt_text = _render_prompt(packet)
+        prompt_packets.append({**packet, "prompt": prompt_text, "prompt_sha256": _sha256_text(prompt_text)})
+
+    explicit_caps = _parse_provider_caps(args.provider_cap)
+    max_calls_total = int(args.max_calls_total or 0)
+    allow_api = bool(args.allow_api)
+    dry_run = bool(args.dry_run) or not allow_api
+    if allow_api and max_calls_total <= 0:
+        raise ValueError("--allow-api requires a positive --max-calls-total")
+    provider_caps = _selected_request_limit(
+        allow_api=allow_api,
+        max_calls_total=max_calls_total,
+        providers=providers,
+        explicit_provider_caps=explicit_caps,
+    )
+    provider_models = {
+        "cohere": _stringify(args.cohere_model) or DEFAULT_MODELS["cohere"],
+        "cerebras": _stringify(args.cerebras_model) or DEFAULT_MODELS["cerebras"],
+        "fireworks": _stringify(args.fireworks_model) or DEFAULT_MODELS["fireworks"],
+    }
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    request_rows: list[dict[str, Any]] = []
+    raw_rows: list[dict[str, Any]] = []
+    parsed_rows: list[dict[str, Any]] = []
+    total_calls = 0
+    provider_call_counts: Counter[str] = Counter()
+    provider_request_counts: Counter[str] = Counter()
+    api_clients_constructed = False
+
+    if allow_api and not dry_run:
+        api_clients_constructed = True
+
+    for packet in case_packets:
+        prompt_text = _render_prompt(packet)
+        for provider in providers:
+            provider_request_counts[provider] += 1
+            request_row = _build_provider_request(
+                provider=provider,
+                model=provider_models[provider],
+                case_packet=packet,
+                prompt_text=prompt_text,
+                request_index=provider_request_counts[provider],
+                provider_cap=provider_caps.get(provider, 0),
+                dry_run=dry_run,
+                include_gold_for_labeling=bool(args.include_gold_for_labeling),
+            )
+            request_rows.append(request_row)
+            if dry_run:
+                raw_row = {
+                    "request_id": request_row["request_id"],
+                    "case_id": packet["case_id"],
+                    "provider": provider,
+                    "model": provider_models[provider],
+                    "prompt_sha256": request_row["prompt_sha256"],
+                    "request_sha256": request_row["request_sha256"],
+                    "dry_run": True,
+                    "api_call_made": 0,
+                    "raw_label_text": "",
+                    "raw_label_sha256": "",
+                    "raw_response_json": "",
+                    "api_error": "",
+                }
+                parsed_row = {
+                    "request_id": request_row["request_id"],
+                    "case_id": packet["case_id"],
+                    "provider": provider,
+                    "model": provider_models[provider],
+                    "subset_memberships": json.dumps(packet["subset_memberships"], sort_keys=True),
+                    "primary_subset": packet["primary_subset"],
+                    "prompt_template_id": packet["prompt_template_id"],
+                    "prompt_sha256": request_row["prompt_sha256"],
+                    "request_sha256": request_row["request_sha256"],
+                    "dry_run": True,
+                    "api_call_made": 0,
+                    "label_status": "dry_run",
+                    "primary_label": "",
+                    "secondary_labels": [],
+                    "selector_vs_generation": "",
+                    "candidate_pool_status": "",
+                    "confidence": "",
+                    "evidence": "",
+                    "recommended_fix_family": "",
+                    "label_valid": False,
+                    "label_errors": ["dry_run"],
+                }
+                raw_rows.append(raw_row)
+                parsed_rows.append(parsed_row)
+                continue
+
+            if total_calls >= max_calls_total:
+                raise RuntimeError(f"Hard call cap reached before processing {packet['case_id']} / {provider}")
+            raw_text, api_meta = _call_provider_api(provider=provider, model=provider_models[provider], prompt=prompt_text)
+            total_calls += 1
+            provider_call_counts[provider] += 1
+            parsed_label, parse_error = _parse_label_json(raw_text)
+            raw_rows.append(
+                {
+                    "request_id": request_row["request_id"],
+                    "case_id": packet["case_id"],
+                    "provider": provider,
+                    "model": provider_models[provider],
+                    "prompt_sha256": request_row["prompt_sha256"],
+                    "request_sha256": request_row["request_sha256"],
+                    "dry_run": False,
+                    "api_call_made": 1,
+                    "raw_label_text": raw_text,
+                    "raw_label_sha256": _sha256_text(raw_text),
+                    "raw_response_json": json.dumps(api_meta, sort_keys=True),
+                    "api_error": "",
+                }
+            )
+            if parsed_label is None:
+                parsed_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": packet["case_id"],
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "subset_memberships": json.dumps(packet["subset_memberships"], sort_keys=True),
+                        "primary_subset": packet["primary_subset"],
+                        "prompt_template_id": packet["prompt_template_id"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "label_status": "parse_error",
+                        "label_parse_error": parse_error,
+                        "primary_label": "",
+                        "secondary_labels": [],
+                        "selector_vs_generation": "",
+                        "candidate_pool_status": "",
+                        "confidence": "",
+                        "evidence": "",
+                        "recommended_fix_family": "",
+                        "label_valid": False,
+                        "label_errors": [parse_error],
+                    }
+                )
+            else:
+                parsed_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": packet["case_id"],
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "subset_memberships": json.dumps(packet["subset_memberships"], sort_keys=True),
+                        "primary_subset": packet["primary_subset"],
+                        "prompt_template_id": packet["prompt_template_id"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "label_status": "parsed",
+                        **parsed_label,
+                        "label_parse_error": parse_error,
+                    }
+                )
+
+    manifest = {
+        "experiment_id": "failure_mechanism_multi_api_v1",
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "script": "scripts/label_failure_mechanisms_multi_api.py",
+        "allow_api": allow_api,
+        "dry_run": dry_run,
+        "api_clients_constructed": api_clients_constructed,
+        "max_calls_total": max_calls_total,
+        "providers": providers,
+        "provider_models": provider_models,
+        "provider_caps": provider_caps,
+        "include_gold_for_labeling": bool(args.include_gold_for_labeling),
+        "gold_assisted": bool(args.include_gold_for_labeling),
+        "subset_specs": subset_specs,
+        "subset_names": subsets,
+        "subset_case_counts": {spec["subset"]: len(spec["case_ids"]) for spec in subset_specs},
+        "unique_case_count": len(case_packets),
+        "planned_request_count": len(request_rows),
+        "api_call_count": total_calls,
+        "failure_csv": str(failure_csv),
+        "gold_absent_csv": str(gold_absent_csv),
+        "anchor_effect_csv": str(anchor_effect_csv),
+        "target_audit_jsonl": str(target_audit_jsonl),
+        "diagnostic_30_jsonl": str(diagnostic_30_jsonl),
+        "target_staged_15_jsonl": str(target_staged_15_jsonl),
+        "structural_feature_csv": str(resolved_structural_csv) if resolved_structural_csv else "",
+        "output_files": [
+            "manifest.json",
+            "trace_packets.jsonl",
+            "provider_requests_dry_run.jsonl",
+            "raw_provider_labels.jsonl",
+            "parsed_labels.jsonl",
+            "agreement_summary.json",
+            "label_frequency_summary.csv",
+            "case_label_matrix.csv",
+            "disagreement_cases.csv",
+            "report.md",
+        ],
+        "label_schema": {
+            "fields": LABEL_FIELDS,
+            "primary_label_values": sorted(PRIMARY_LABELS),
+            "secondary_label_values": sorted(SECONDARY_LABELS),
+            "selector_vs_generation_values": sorted(SELECTOR_VS_GENERATION),
+            "candidate_pool_status_values": sorted(POOL_STATUS),
+            "recommended_fix_family_values": sorted(FIX_FAMILIES),
+        },
+        "selection_notes": [
+            "diagnostic_30 and target_staged_15 are exact JSONL slices.",
+            "pal_still_failing_157 is derived from the full failure CSV and trimmed to 157 if necessary.",
+            "wrong_supported_consensus_97 is derived from the gold-absent CSV rows with external_contrast == Both wrong and trimmed to 97 if necessary.",
+            "direct_l1_anchor_potential_43 is derived from the anchor-effect CSV rows with strong anchor evidence and trimmed to 43 if necessary.",
+        ],
+        "no_api_clients_constructed": not api_clients_constructed,
+    }
+
+    agreement_summary = _build_outputs(
+        case_packets=case_packets,
+        providers=providers,
+        provider_models=provider_models,
+        provider_caps=provider_caps,
+        allow_api=allow_api,
+        include_gold_for_labeling=bool(args.include_gold_for_labeling),
+        max_calls_total=max_calls_total,
+        prompt_packets=prompt_packets,
+        request_rows=request_rows,
+        raw_rows=raw_rows,
+        parsed_rows=parsed_rows,
+        output_dir=output_dir,
+        manifest=manifest,
+    )
+
+    report_lines = [
+        "# Multi-API Failure Mechanism Labeling Plan",
+        "",
+        "## Run Mode",
+        "",
+        f"- allow_api: `{allow_api}`",
+        f"- dry_run: `{dry_run}`",
+        f"- api_clients_constructed: `{api_clients_constructed}`",
+        f"- include_gold_for_labeling: `{bool(args.include_gold_for_labeling)}`",
+        f"- max_calls_total: `{max_calls_total}`",
+        f"- providers: `{', '.join(providers)}`",
+        f"- provider_caps: `{json.dumps(provider_caps, sort_keys=True)}`",
+        "",
+        "## Inputs",
+        "",
+        f"- failure_csv: `{failure_csv}`",
+        f"- gold_absent_csv: `{gold_absent_csv}`",
+        f"- anchor_effect_csv: `{anchor_effect_csv}`",
+        f"- target_audit_jsonl: `{target_audit_jsonl}`",
+        f"- diagnostic_30_jsonl: `{diagnostic_30_jsonl}`",
+        f"- target_staged_15_jsonl: `{target_staged_15_jsonl}`",
+        f"- structural_feature_csv: `{resolved_structural_csv}`",
+        "",
+        "## Selected Slices",
+        "",
+    ]
+    for spec in subset_specs:
+        report_lines.append(
+            f"- `{spec['subset']}`: raw `{spec['raw_count']}` -> selected `{spec['selected_count']}`; approximate `{spec['approximate']}`"
+        )
+        report_lines.append(f"  - logic: {spec['selection_logic']}")
+    report_lines.extend(
+        [
+            "",
+            "## Counts",
+            "",
+            f"- unique_case_count: `{len(case_packets)}`",
+            f"- planned_request_count: `{len(request_rows)}`",
+            f"- api_call_count: `{total_calls}`",
+            "",
+            "## Agreement Snapshot",
+            "",
+            f"- all_agree_case_count: `{agreement_summary['all_agree_case_count']}`",
+            f"- partial_agree_case_count: `{agreement_summary['partial_agree_case_count']}`",
+            f"- disagreement_case_count: `{agreement_summary['disagreement_case_count']}`",
+            f"- missing_label_case_count: `{agreement_summary['missing_label_case_count']}`",
+            "",
+            "## Notes",
+            "",
+            "- Default mode is no-API dry-run.",
+            "- Live mode requires `--allow-api`, explicit providers, and a total call cap.",
+            "- The prompt packet is gold-free unless `--include-gold-for-labeling` is set.",
+            "- Approximate slices are documented in the manifest and report because the raw audits do not recover the target counts exactly.",
+        ]
+    )
+    (output_dir / "report.md").write_text("\n".join(report_lines).rstrip() + "\n", encoding="utf-8")
+    print(json.dumps(manifest, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
