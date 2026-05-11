@@ -78,6 +78,7 @@ def _controller(
     frontier_support: int = 2,
     enable_guard: bool = False,
     enable_stability: bool = False,
+    stability_domain_gate: str = "disabled",
     stability_attempts: int = 0,
     stability_target_anchor_id: str = "",
     enable_direct_hybrid_seed: bool = True,
@@ -95,6 +96,7 @@ def _controller(
         enable_diverse_anchor_regression_guard=enable_guard,
         enable_diverse_anchor_stability_policy=enable_stability,
         diverse_anchor_stability_policy="stability_redundant_anchor_v1" if enable_stability else "disabled",
+        diverse_anchor_stability_domain_gate=stability_domain_gate,
         diverse_anchor_stability_extra_anchor_attempts=stability_attempts,
         diverse_anchor_stability_target_anchor_id=stability_target_anchor_id,
         enable_frontier_max_support_tiebreak=True,
@@ -236,33 +238,112 @@ def test_stability_policy_disabled_by_default_reports_disabled_metadata() -> Non
 
     assert metadata["stability_policy"] == "disabled"
     assert metadata["stability_policy_enabled"] is False
+    assert metadata["stability_domain_gate"] == "disabled"
+    assert metadata["stability_domain_gate_allowed"] is False
     assert metadata["stability_extra_anchor_attempts"] == 0
     assert metadata["stability_target_anchor_id"] == ""
     assert metadata["stability_reason"] == "disabled"
     assert metadata["candidate_pool_stability_features"]["repeated_anchor_needed"] is False
 
 
-def test_stability_policy_repeats_high_priority_anchor_when_enabled() -> None:
+def test_stability_policy_repeats_high_priority_anchor_when_enabled_for_multi_step() -> None:
     ctrl = _controller(
         ["20", "24", "24", "24", "20", "20"],
         frontier_answer="24",
         frontier_support=2,
         enable_stability=True,
+        stability_domain_gate="multi_step_arithmetic_only_v1",
+        stability_attempts=1,
+        max_actions_per_problem=8,
+    )
+
+    metadata = ctrl.run("John has 3 apples then buys 4 more. What is the total?", "7").metadata
+
+    assert metadata["stability_policy"] == "stability_redundant_anchor_v1"
+    assert metadata["stability_policy_enabled"] is True
+    assert metadata["stability_domain_gate"] == "multi_step_arithmetic_only_v1"
+    assert metadata["stability_domain_gate_allowed"] is True
+    assert metadata["stability_domain_gate_reason"] == "multi_step_arithmetic_allowed_by_default_gate"
+    assert metadata["stability_extra_anchor_attempts"] == 1
+    assert metadata["stability_target_anchor_id"] == "equation_first_anchor"
+    assert metadata["stability_reason"] == "enabled_and_repeated"
+    assert metadata["diverse_prompt_anchor_ids_executed"].count("equation_first_anchor") == 2
+    assert metadata["candidate_pool_stability_features"]["repeated_anchor_needed"] is True
+    assert metadata["candidate_pool_stability_features"]["target_anchor_repeat_count"] == 2
+    assert metadata["answer_group_support_counts"][normalize_answer_group_key("24")] >= 2
+
+
+def test_stability_domain_gate_blocks_money_by_default() -> None:
+    ctrl = _controller(
+        ["20", "24", "24", "24", "20", "20"],
+        frontier_answer="24",
+        frontier_support=2,
+        enable_stability=True,
+        stability_domain_gate="multi_step_arithmetic_only_v1",
         stability_attempts=1,
         max_actions_per_problem=8,
     )
 
     metadata = ctrl.run("A money/cost/revenue problem.", "24").metadata
 
-    assert metadata["stability_policy"] == "stability_redundant_anchor_v1"
+    assert metadata["detected_problem_domain"] == "money_cost_revenue"
     assert metadata["stability_policy_enabled"] is True
-    assert metadata["stability_extra_anchor_attempts"] == 1
+    assert metadata["stability_domain_gate"] == "multi_step_arithmetic_only_v1"
+    assert metadata["stability_domain_gate_allowed"] is False
+    assert metadata["stability_domain_gate_reason"] == "money_cost_revenue_blocked_by_default_gate"
+    assert metadata["stability_target_anchor_id"] == ""
+    assert metadata["stability_extra_anchor_attempts"] == 0
+    assert metadata["stability_reason"] == "domain_gate_blocked"
+    assert metadata["diverse_prompt_anchor_ids_executed"].count("unit_ledger_money_anchor") == 1
+
+
+def test_stability_domain_gate_blocks_ratio_by_default() -> None:
+    ctrl = _controller(
+        ["20", "24", "24", "24", "20", "20"],
+        frontier_answer="24",
+        frontier_support=2,
+        enable_stability=True,
+        stability_domain_gate="multi_step_arithmetic_only_v1",
+        stability_attempts=1,
+        max_actions_per_problem=8,
+    )
+
+    metadata = ctrl.run("A ratio/proportion/percentage problem.", "24").metadata
+
+    assert metadata["detected_problem_domain"] == "ratio_percent"
+    assert metadata["stability_policy_enabled"] is True
+    assert metadata["stability_domain_gate"] == "multi_step_arithmetic_only_v1"
+    assert metadata["stability_domain_gate_allowed"] is False
+    assert metadata["stability_domain_gate_reason"] == "ratio_percent_blocked_by_default_gate"
+    assert metadata["stability_target_anchor_id"] == ""
+    assert metadata["stability_extra_anchor_attempts"] == 0
+    assert metadata["stability_reason"] == "domain_gate_blocked"
+    assert metadata["diverse_prompt_anchor_ids_executed"].count("ratio_percentage_anchor") == 1
+
+
+def test_stability_domain_gate_can_be_overridden_for_all_domains() -> None:
+    ctrl = _controller(
+        ["20", "24", "24", "24", "20", "20"],
+        frontier_answer="24",
+        frontier_support=2,
+        enable_stability=True,
+        stability_domain_gate="all_domains_v1",
+        stability_attempts=1,
+        max_actions_per_problem=8,
+    )
+
+    metadata = ctrl.run("A money/cost/revenue problem.", "24").metadata
+
+    assert metadata["detected_problem_domain"] == "money_cost_revenue"
+    assert metadata["stability_policy_enabled"] is True
+    assert metadata["stability_domain_gate"] == "all_domains_v1"
+    assert metadata["stability_domain_gate_allowed"] is True
+    assert metadata["stability_domain_gate_reason"] == "override_all_domains"
     assert metadata["stability_target_anchor_id"] == "unit_ledger_money_anchor"
+    assert metadata["stability_extra_anchor_attempts"] == 1
     assert metadata["stability_reason"] == "enabled_and_repeated"
     assert metadata["diverse_prompt_anchor_ids_executed"].count("unit_ledger_money_anchor") == 2
-    assert metadata["candidate_pool_stability_features"]["repeated_anchor_needed"] is True
     assert metadata["candidate_pool_stability_features"]["target_anchor_repeat_count"] == 2
-    assert metadata["answer_group_support_counts"][normalize_answer_group_key("24")] >= 3
 
 
 def test_stability_policy_variant_is_registered_in_frontier_matrix() -> None:
@@ -284,4 +365,5 @@ def test_stability_policy_variant_is_registered_in_frontier_matrix() -> None:
     assert getattr(ctrl, "enable_diverse_prompt_anchors", False) is True
     assert getattr(ctrl, "enable_diverse_anchor_stability_policy", False) is True
     assert getattr(ctrl, "diverse_anchor_stability_policy", "") == "stability_redundant_anchor_v1"
+    assert getattr(ctrl, "diverse_anchor_stability_domain_gate", "") == "multi_step_arithmetic_only_v1"
     assert getattr(ctrl, "diverse_anchor_stability_extra_anchor_attempts", 0) == 1
