@@ -64,6 +64,7 @@ from experiments.strategy_seeded_semantic_diversity_frontier_v1 import (
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIRECT_HYBRID,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_DIVERSE_ANCHOR,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR,
+    METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY,
     build_strategy_prompt_styles_semantic_frontier_v1_guarded_k1_frontier4_numeric_leaf,
     METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K2_FRONTIER2,
     StrategySeededSemanticDiversityFrontierV1Controller,
@@ -1729,6 +1730,22 @@ def build_frontier_strategies(
                 method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_STABILITY_REDUNDANT_ANCHOR,
                 strategy_seed_max_actions=2,
                 **strategy_seeded_outer_kwargs_k1_frontier4_stability_redundant_anchor,
+            )
+        )
+        strategy_seeded_outer_kwargs_k1_frontier4_uncertainty_retry = {
+            **strategy_seeded_outer_kwargs_k1_frontier4_diverse_anchor,
+            "enable_diverse_anchor_uncertainty_retry_policy": True,
+            "diverse_anchor_uncertainty_retry_policy": "uncertainty_triggered_retry_v1",
+            "diverse_anchor_uncertainty_retry_extra_anchor_attempts": 1,
+        }
+        specs[METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY] = (
+            DirectReserveDiverseRootFrontierV1GuardedController(
+                generator_factory(),
+                scorer,
+                budget,
+                method_name=METHOD_DIRECT_RESERVE_DIVERSE_ROOT_FRONTIER_V1_GUARDED_K1_FRONTIER4_FRONTIER_TIEBREAK_UNCERTAINTY_RETRY,
+                strategy_seed_max_actions=2,
+                **strategy_seeded_outer_kwargs_k1_frontier4_uncertainty_retry,
             )
         )
         specs["direct_reserve_semantic_frontier_v2_selection_fix_v1"] = DirectReserveFrontierGateV2SelectionFixV1Controller(
