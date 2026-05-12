@@ -188,7 +188,7 @@ def test_dry_run_reports_no_clients_and_writes_minimal_bundle(tmp_path: Path, mo
             "--subsets",
             "diagnostic_30",
             "--providers",
-            "cohere",
+            "mistral",
             "--output-dir",
             str(out_dir),
         ]
@@ -403,7 +403,7 @@ def test_provider_config_check_records_models_without_clients(tmp_path: Path, mo
     structural = tmp_path / "candidate_feature_rows.csv"
     out_dir = tmp_path / "out_check"
 
-    for key in ("COHERE_API_KEY", "CEREBRAS_API_KEY", "FIREWORKS_API_KEY", "OPENAI_API_KEY", "CO_API_KEY"):
+    for key in ("COHERE_API_KEY", "CEREBRAS_API_KEY", "FIREWORKS_API_KEY", "OPENAI_API_KEY", "CO_API_KEY", "MISTRAL_API_KEY"):
         monkeypatch.setenv(key, f"{key}_VALUE")
 
     _write_csv(
@@ -552,13 +552,15 @@ def test_provider_config_check_records_models_without_clients(tmp_path: Path, mo
             "--subsets",
             "diagnostic_30",
             "--providers",
-            "cohere,cerebras,fireworks",
+            "cohere,cerebras,fireworks,mistral",
             "--cohere-model",
             "cohere-x",
             "--cerebras-model",
             "cerebras-y",
             "--fireworks-model",
             "fireworks-z",
+            "--mistral-model",
+            "mistral-a",
             "--check-provider-config",
             "--output-dir",
             str(out_dir),
@@ -571,10 +573,13 @@ def test_provider_config_check_records_models_without_clients(tmp_path: Path, mo
     assert manifest["provider_models"]["cohere"] == "cohere-x"
     assert manifest["provider_models"]["cerebras"] == "cerebras-y"
     assert manifest["provider_models"]["fireworks"] == "fireworks-z"
+    assert manifest["provider_models"]["mistral"] == "mistral-a"
     assert manifest["provider_config_summary"]["cohere"]["model"] == "cohere-x"
     assert manifest["provider_config_summary"]["cerebras"]["model"] == "cerebras-y"
     assert manifest["provider_config_summary"]["fireworks"]["model"] == "fireworks-z"
-    assert manifest["planned_request_count"] == 3
+    assert manifest["provider_config_summary"]["mistral"]["model"] == "mistral-a"
+    assert manifest["provider_config_summary"]["mistral"]["env_ready"] is True
+    assert manifest["planned_request_count"] == 4
 
 
 def test_pattern_discovery_dry_run_limit_plans_one_batch_per_provider(tmp_path: Path, monkeypatch) -> None:
@@ -746,7 +751,11 @@ def test_pattern_discovery_dry_run_limit_plans_one_batch_per_provider(tmp_path: 
             "--subsets",
             "diagnostic_30",
             "--providers",
-            "openai,cohere,cerebras,fireworks",
+            "cohere,fireworks,mistral",
+            "--fireworks-model",
+            "accounts/fireworks/models/glm-5",
+            "--mistral-model",
+            "mistral-small-latest",
             "--limit",
             "1",
             "--output-dir",
@@ -762,20 +771,20 @@ def test_pattern_discovery_dry_run_limit_plans_one_batch_per_provider(tmp_path: 
     assert manifest["requested_case_count"] == 2
     assert manifest["selected_case_count"] == 1
     assert manifest["unique_case_count"] == 1
-    assert manifest["batch_count"] == 4
-    assert manifest["provider_batch_count"] == 4
-    assert manifest["planned_request_count"] == 4
-    assert manifest["expected_request_count"] == 4
-    assert manifest["provider_models"]["openai"] == "gpt-4.1-mini"
+    assert manifest["batch_count"] == 3
+    assert manifest["provider_batch_count"] == 3
+    assert manifest["planned_request_count"] == 3
+    assert manifest["expected_request_count"] == 3
+    assert manifest["provider_models"]["mistral"] == "mistral-small-latest"
 
     provider_requests = [json.loads(line) for line in (out_dir / "provider_requests_dry_run.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     raw_rows = [json.loads(line) for line in (out_dir / "raw_provider_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     parsed_rows = [json.loads(line) for line in (out_dir / "parsed_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     trace_packets = [json.loads(line) for line in (out_dir / "trace_packets.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
-    assert len(provider_requests) == 4
-    assert len(raw_rows) == 4
-    assert len(parsed_rows) == 4
-    assert len(trace_packets) == 4
+    assert len(provider_requests) == 3
+    assert len(raw_rows) == 3
+    assert len(parsed_rows) == 3
+    assert len(trace_packets) == 3
     assert all(request["dry_run"] is True for request in provider_requests)
     assert all("gold_answer" not in request["prompt_text"].lower() for request in provider_requests)
     assert all("answer_key" not in request["prompt_text"].lower() for request in provider_requests)

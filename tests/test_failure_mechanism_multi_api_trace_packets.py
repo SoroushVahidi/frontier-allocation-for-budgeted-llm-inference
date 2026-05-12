@@ -182,16 +182,16 @@ def test_trace_packets_include_structural_fields_and_stay_gold_free(tmp_path: Pa
     assert manifest["allow_api"] is False
     assert manifest["api_clients_constructed"] is False
     assert manifest["unique_case_count"] == 1
-    assert manifest["planned_request_count"] == 3
+    assert manifest["planned_request_count"] == 2
 
     trace_packets = [json.loads(line) for line in (out_dir / "trace_packets.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     provider_requests = [json.loads(line) for line in (out_dir / "provider_requests_dry_run.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     raw_rows = [json.loads(line) for line in (out_dir / "raw_provider_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     parsed_rows = [json.loads(line) for line in (out_dir / "parsed_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     assert len(trace_packets) == 1
-    assert len(provider_requests) == 3
-    assert len(raw_rows) == 3
-    assert len(parsed_rows) == 3
+    assert len(provider_requests) == 2
+    assert len(raw_rows) == 2
+    assert len(parsed_rows) == 2
     assert all("gold_answer" not in request["prompt_text"].lower() for request in provider_requests)
     assert all("answer_key" not in request["prompt_text"].lower() for request in provider_requests)
 

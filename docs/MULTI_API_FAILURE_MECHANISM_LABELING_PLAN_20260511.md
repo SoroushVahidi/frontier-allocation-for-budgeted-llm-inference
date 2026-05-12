@@ -17,6 +17,7 @@ explicit flags and hard caps.
   - Cohere
   - Cerebras
   - Fireworks
+  - Mistral
 - Default mode behavior:
   - `label`: deterministic per-case failure labeling
   - `pattern_discovery`: batch-level pattern discovery
@@ -26,7 +27,8 @@ explicit flags and hard caps.
 ## Accuracy vs Pattern Discovery
 
 - Cohere is the only provider used for accuracy comparisons.
-- OpenAI, Cohere, Cerebras, and Fireworks are all allowed for pattern discovery.
+- OpenAI, Cohere, Cerebras, Fireworks, and Mistral are all allowed for pattern discovery.
+- Mistral outputs are qualitative failure-pattern evidence only, not benchmark-comparison evidence.
 - Pattern discovery outputs are hypotheses until manually audited.
 
 ## Label Schema
@@ -167,15 +169,21 @@ Provider caps are either:
 
 The script should stop hard if the cap would be exceeded.
 
-## Smoke Note
+## Provider Status
 
-A tiny API smoke was run on 5 diagnostic cases across the 3 selected providers.
+Current provider status for this scaffold:
 
-- Cohere produced 5 parsed labels.
-- Cerebras failed all 5 calls with an API-layer 403 response.
-- Fireworks failed all 5 calls with an API-layer 404 model-not-found response.
+- Cohere: usable
+- Fireworks: usable with `accounts/fireworks/models/glm-5`
+- Mistral: usable with `mistral-small-latest`
+- Cerebras: blocked by HTTP 403 / code 1010 until support resolves it
 
-This is enough to confirm the Cohere path works on the small smoke slice, but it is not enough to draw any conclusion about the full diagnostic_30 or the larger 97/157 slices. Do not run the full 30-case or 97-case labeling until provider configs are fixed and a fresh smoke confirms readiness.
+Operational rules:
+
+- Use Cohere only for accuracy comparisons against prior algorithm results.
+- Use Fireworks and Mistral only for qualitative failure-pattern discovery or annotation.
+- Do not use non-Cohere outputs as evidence that any method beats `external_l1_max`.
+- Do not claim a final recurring pattern from a tiny smoke run.
 
 ## Pattern Discovery Mode
 
@@ -212,6 +220,12 @@ Pattern discovery prompts must:
 - state that this is not an accuracy comparison
 - state that non-Cohere providers are allowed only for pattern discovery, not for algorithm comparison
 
+Default qualitative pattern-discovery model choices:
+
+- Cohere: `command-r-plus-08-2024`
+- Fireworks: `accounts/fireworks/models/glm-5`
+- Mistral: `mistral-small-latest`
+
 Dry-run command:
 
 ```bash
@@ -219,16 +233,19 @@ python3 scripts/label_failure_mechanisms_multi_api.py \
   --mode pattern_discovery \
   --subset wrong_supported_consensus_97 \
   --limit 10 \
-  --providers openai,cohere,cerebras,fireworks \
+  --providers cohere,fireworks,mistral \
+  --cohere-model command-r-plus-08-2024 \
+  --fireworks-model accounts/fireworks/models/glm-5 \
+  --mistral-model mistral-small-latest \
   --dry-run \
-  --max-calls-total 40 \
+  --max-calls-total 3 \
   --output-dir /tmp/pattern_discovery_dryrun
 ```
 
 Expected dry-run behavior:
 
 - 10 cases selected
-- 4 provider requests planned
+- 3 provider requests planned
 - 0 API calls
 - provider request previews written
 - no gold leakage
@@ -241,13 +258,16 @@ python3 scripts/label_failure_mechanisms_multi_api.py \
   --mode pattern_discovery \
   --subset wrong_supported_consensus_97 \
   --limit 5 \
-  --providers openai,cohere,cerebras,fireworks \
+  --providers cohere,fireworks,mistral \
+  --cohere-model command-r-plus-08-2024 \
+  --fireworks-model accounts/fireworks/models/glm-5 \
+  --mistral-model mistral-small-latest \
   --allow-api \
-  --max-calls-total 20 \
+  --max-calls-total 3 \
   --output-dir "outputs/failure_mechanism_multi_api_pattern_smoke_${STAMP}"
 ```
 
-Treat discovered patterns as hypotheses until manually audited.
+Treat discovered patterns as hypotheses until manually audited. Do not use these outputs for accuracy comparison.
 
 ## Validation Plan
 

@@ -44,13 +44,14 @@ DEFAULT_SUBSETS = (
     "direct_l1_anchor_potential_43",
     "target_staged_15",
 )
-DEFAULT_PROVIDERS = ("cohere", "cerebras", "fireworks")
-SUPPORTED_PROVIDERS = ("openai", "cohere", "cerebras", "fireworks")
+DEFAULT_PROVIDERS = ("cohere", "fireworks")
+SUPPORTED_PROVIDERS = ("openai", "cohere", "cerebras", "fireworks", "mistral")
 DEFAULT_MODELS = {
     "openai": "gpt-4.1-mini",
     "cohere": "command-r-plus-08-2024",
     "cerebras": "llama3.1-8b",
-    "fireworks": "accounts/fireworks/models/llama-v3p1-8b-instruct",
+    "fireworks": "accounts/fireworks/models/glm-5",
+    "mistral": "mistral-small-latest",
 }
 DEFAULT_PROMPT_TEMPLATE_ID = "failure_mechanism_multi_api_v1"
 LABEL_FIELDS = [
@@ -117,6 +118,7 @@ PROVIDER_ENV_VARS = {
     "cohere": ("COHERE_API_KEY", "CO_API_KEY"),
     "cerebras": ("CEREBRAS_API_KEY",),
     "fireworks": ("FIREWORKS_API_KEY", "OPENAI_API_KEY"),
+    "mistral": ("MISTRAL_API_KEY",),
 }
 PROVIDER_READINESS_VALUES = {
     "ready",
@@ -142,6 +144,22 @@ PATTERN_DISCOVERY_CASE_KEYS = (
     "primary_subset",
     "subset_memberships",
 )
+
+PATTERN_DISCOVERY_MAX_TOKENS = {
+    "openai": 1536,
+    "cohere": 1536,
+    "cerebras": 1536,
+    "fireworks": 2048,
+    "mistral": 2048,
+}
+
+LABEL_MODE_MAX_TOKENS = {
+    "openai": 512,
+    "cohere": 512,
+    "cerebras": 512,
+    "fireworks": 512,
+    "mistral": 512,
+}
 
 
 def _utc_stamp() -> str:
@@ -177,6 +195,13 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
 
 def _sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _max_tokens_for_mode(provider: str, mode: str) -> int:
+    provider = provider.lower().strip()
+    if mode == "pattern_discovery":
+        return PATTERN_DISCOVERY_MAX_TOKENS.get(provider, 1536)
+    return LABEL_MODE_MAX_TOKENS.get(provider, 512)
 
 
 def _read_csv_rows(path: Path) -> list[dict[str, str]]:
@@ -793,7 +818,7 @@ def _post_json_request(*, url: str, api_key: str, body: dict[str, Any], headers:
 
 def _sanitize_error_message(text: str, *, max_len: int = 500) -> str:
     clean = _stringify(text)
-    for key in ("COHERE_API_KEY", "CEREBRAS_API_KEY", "FIREWORKS_API_KEY", "OPENAI_API_KEY", "CO_API_KEY"):
+    for key in ("COHERE_API_KEY", "CEREBRAS_API_KEY", "FIREWORKS_API_KEY", "OPENAI_API_KEY", "CO_API_KEY", "MISTRAL_API_KEY"):
         value = os.getenv(key, "")
         if value:
             clean = clean.replace(value, "[REDACTED]")
@@ -814,7 +839,7 @@ def _provider_env_ready(provider: str) -> bool:
 
 
 def _extract_http_status(error_text: str) -> int | None:
-    match = re.search(r"\b(401|403|404|409|429)\b", error_text or "")
+    match = re.search(r"\b([1-5][0-9]{2})\b", error_text or "")
     if match:
         try:
             return int(match.group(1))
@@ -891,7 +916,7 @@ def _provider_config_summary(*, providers: list[str], provider_models: dict[str,
     for provider in providers:
         env_presence = _provider_env_presence(provider)
         model = _stringify(provider_models.get(provider))
-        model_required = provider in {"openai", "cerebras", "fireworks"}
+        model_required = provider in {"openai", "cerebras", "fireworks", "mistral"}
         summary[provider] = {
             "selected": True,
             "model": model,
@@ -989,8 +1014,9 @@ def _render_pattern_prompt(batch_packet: dict[str, Any]) -> str:
     prompt_lines = [
         "You are discovering recurring detailed failure patterns inside a batch of PAL failure traces.",
         "This is not an accuracy comparison.",
-        "OpenAI, Cohere, Cerebras, and Fireworks are allowed only for pattern discovery, not for algorithm comparison.",
-        "Return JSON only.",
+        "OpenAI, Cohere, Cerebras, Fireworks, and Mistral are allowed only for pattern discovery, not for algorithm comparison.",
+        "Return exactly one JSON object and nothing else.",
+        "Do not emit markdown, code fences, preambles, or trailing prose.",
         "Do not use gold information or hidden labels unless explicitly present in the batch packet; by default they are absent.",
         "Report observed patterns, not just inferred reasons.",
         "Distinguish supporting cases from negative or uncertain cases.",
@@ -999,7 +1025,7 @@ def _render_pattern_prompt(batch_packet: dict[str, Any]) -> str:
         "Return exactly this JSON schema:",
         json.dumps(
             {
-                "provider": "openai|cohere|cerebras|fireworks",
+                "provider": "openai|cohere|cerebras|fireworks|mistral",
                 "model": "string",
                 "batch_id": "string",
                 "cases_reviewed": ["case_id"],
@@ -1036,10 +1062,9 @@ def _render_pattern_prompt(batch_packet: dict[str, Any]) -> str:
 
 
 def _parse_pattern_discovery_json(text: str) -> tuple[dict[str, Any] | None, str]:
-    try:
-        payload = json.loads(text)
-    except Exception as exc:
-        return None, f"json_parse_error:{type(exc).__name__}"
+    payload, parse_error = _parse_json_object_with_fallback(text)
+    if payload is None:
+        return None, parse_error
     if not isinstance(payload, dict):
         return None, "json_not_object"
 
@@ -1153,27 +1178,304 @@ def _summarize_pattern_discovery(parsed_rows: list[dict[str, Any]], providers: l
     }
 
 
-def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, dict[str, Any]]:
+def _strip_code_fences(text: str) -> str:
+    stripped = _stringify(text)
+    if stripped.startswith("```"):
+        stripped = re.sub(r"^```(?:json)?\s*", "", stripped, flags=re.IGNORECASE)
+        stripped = re.sub(r"\s*```$", "", stripped)
+    return stripped.strip()
+
+
+def _parse_json_object_with_fallback(text: str) -> tuple[dict[str, Any] | None, str]:
+    candidate = _strip_code_fences(text)
+    if not candidate:
+        return None, "json_parse_error:empty_response"
+    try:
+        payload = json.loads(candidate)
+        if isinstance(payload, dict):
+            return payload, ""
+        return None, "json_not_object"
+    except Exception as exc:
+        direct_error = f"json_parse_error:{type(exc).__name__}"
+
+    decoder = json.JSONDecoder()
+    search_space = candidate
+    start = search_space.find("{")
+    while start != -1:
+        try:
+            payload, _ = decoder.raw_decode(search_space[start:])
+        except json.JSONDecodeError:
+            start = search_space.find("{", start + 1)
+            continue
+        if isinstance(payload, dict):
+            return payload, ""
+        start = search_space.find("{", start + 1)
+    return None, direct_error
+
+
+def _provider_hypothesis_snapshots(parsed_rows: list[dict[str, Any]], providers: list[str]) -> dict[str, dict[str, Any]]:
+    snapshots: dict[str, dict[str, Any]] = {}
+    for provider in providers:
+        rows = [row for row in parsed_rows if _stringify(row.get("provider")) == provider]
+        valid_rows = [row for row in rows if row.get("label_valid")]
+        if valid_rows:
+            row = valid_rows[0]
+            top_patterns = []
+            for pattern in (row.get("top_patterns") or [])[:3]:
+                if not isinstance(pattern, dict):
+                    continue
+                top_patterns.append(
+                    {
+                        "pattern_name": _stringify(pattern.get("pattern_name")),
+                        "likely_failure_stage": _stringify(pattern.get("likely_failure_stage")),
+                        "confidence": _safe_float(pattern.get("confidence"), 0.0),
+                        "supporting_case_ids": [_stringify(case_id) for case_id in (pattern.get("supporting_case_ids") or []) if _stringify(case_id)],
+                        "negative_or_uncertain_case_ids": [
+                            _stringify(case_id)
+                            for case_id in (pattern.get("negative_or_uncertain_case_ids") or [])
+                            if _stringify(case_id)
+                        ],
+                    }
+                )
+            snapshots[provider] = {
+                "available": True,
+                "provider": provider,
+                "model": _stringify(row.get("model")),
+                "label_status": _stringify(row.get("label_status")),
+                "top_patterns": top_patterns,
+            }
+            continue
+        status_row = rows[0] if rows else {}
+        snapshots[provider] = {
+            "available": False,
+            "provider": provider,
+            "model": _stringify(status_row.get("model")),
+            "label_status": _stringify(status_row.get("label_status")) or "missing",
+            "provider_readiness": _stringify(status_row.get("provider_readiness")),
+            "provider_error_message_short": _stringify(status_row.get("provider_error_message_short")),
+            "top_patterns": [],
+        }
+    return snapshots
+
+
+def _dominant_manual_stage(
+    mismatch_counts: Counter[str],
+    family_counts: Counter[str],
+    theme_counts: Counter[str],
+) -> str:
+    mismatch_text = " ".join(mismatch_counts.keys()).lower()
+    family_text = " ".join(family_counts.keys()).lower()
+    if "target" in mismatch_text or "target" in family_text:
+        return "target_extraction"
+    if "selector" in family_text:
+        return "selector"
+    if theme_counts.get("ratio_percent"):
+        return "relation_mapping"
+    if theme_counts.get("state_transition"):
+        return "operator_choice"
+    return "candidate_generation"
+
+
+def _build_codex_manual_hypothesis(
+    *,
+    trace_packets_path: Path,
+    providers: list[str],
+    provider_snapshots: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    if not trace_packets_path.is_file():
+        return {
+            "available": False,
+            "analyst": "codex_gpt_manual",
+            "reason": f"missing_trace_packets:{trace_packets_path}",
+        }
+
+    case_map: dict[str, dict[str, Any]] = {}
+    for row in _read_jsonl_rows(trace_packets_path):
+        for case in row.get("cases", []) or []:
+            if not isinstance(case, dict):
+                continue
+            case_id = _stringify(case.get("case_id"))
+            if case_id and case_id not in case_map:
+                case_map[case_id] = case
+
+    if not case_map:
+        return {
+            "available": False,
+            "analyst": "codex_gpt_manual",
+            "reason": "empty_case_batch",
+        }
+
+    theme_counts: Counter[str] = Counter()
+    mismatch_counts: Counter[str] = Counter()
+    family_counts: Counter[str] = Counter()
+    low_diversity_case_ids: list[str] = []
+    theme_support_case_ids: dict[str, list[str]] = defaultdict(list)
+
+    for case_id, case in case_map.items():
+        question = _stringify(case.get("question")).lower()
+        failure_audit = case.get("failure_audit_labels") or {}
+        action_summary = case.get("action_trace_summary") or {}
+
+        num_candidate_groups = _safe_float(failure_audit.get("num_candidate_groups"), 0.0)
+        if num_candidate_groups <= 1.0:
+            low_diversity_case_ids.append(case_id)
+
+        mismatch = _stringify(action_summary.get("likely_mismatch_subtype"))
+        family = _stringify(action_summary.get("failure_family") or action_summary.get("failure_category"))
+        if mismatch:
+            mismatch_counts[mismatch] += 1
+        if family:
+            family_counts[family] += 1
+
+        case_themes: set[str] = set()
+        if any(token in question for token in ("percent", "%", "ratio", "twice", "half", "per", "rate")):
+            case_themes.add("ratio_percent")
+        if any(token in question for token in ("after", "before", "remaining", "left", "now", "later", "still")):
+            case_themes.add("state_transition")
+        if any(token in question for token in ("difference", "more than", "less than", "how many more")):
+            case_themes.add("target_difference")
+        if any(token in question for token in ("total", "altogether", "combined", "in all")):
+            case_themes.add("final_total_target")
+        if "average" in question:
+            case_themes.add("average_target")
+
+        for theme in case_themes:
+            theme_counts[theme] += 1
+            theme_support_case_ids[theme].append(case_id)
+
+    dominant_theme = theme_counts.most_common(1)[0][0] if theme_counts else "mixed"
+    dominant_stage = _dominant_manual_stage(mismatch_counts, family_counts, theme_counts)
+    supporting_case_ids = sorted(
+        dict.fromkeys(theme_support_case_ids.get(dominant_theme, [])[:8] or low_diversity_case_ids[:8] or list(case_map.keys())[:8])
+    )
+    uncertain_case_ids = sorted(dict.fromkeys(case_id for case_id in case_map if case_id not in supporting_case_ids))[:8]
+    low_diversity_share = len(low_diversity_case_ids) / max(1, len(case_map))
+    confidence = min(
+        0.85,
+        round(
+            0.35
+            + 0.3 * (theme_counts.get(dominant_theme, 0) / max(1, len(case_map)))
+            + 0.2 * low_diversity_share
+            + 0.1 * (sum(mismatch_counts.values()) > 0),
+            2,
+        ),
+    )
+
+    description = (
+        f"Manual Codex/GPT read: the batch looks dominated by a `{dominant_theme}`-flavored "
+        f"`{dominant_stage}` failure, with low candidate diversity making the wrong interpretation sticky."
+    )
+    evidence_summary = (
+        f"{theme_counts.get(dominant_theme, 0)}/{len(case_map)} cases match the dominant `{dominant_theme}` theme; "
+        f"{len(low_diversity_case_ids)}/{len(case_map)} show <=1 candidate group in the audit metadata. "
+        f"Top mismatch/family hints: mismatch={dict(mismatch_counts.most_common(3))}, family={dict(family_counts.most_common(3))}."
+    )
+
+    overlap_notes: list[str] = []
+    for provider in providers:
+        snapshot = provider_snapshots.get(provider, {})
+        top_pattern = ((snapshot.get("top_patterns") or [{}])[0]) if snapshot.get("available") else {}
+        pattern_name = _stringify(top_pattern.get("pattern_name"))
+        if pattern_name:
+            overlap_notes.append(f"{provider}: top pattern `{pattern_name}`")
+        else:
+            overlap_notes.append(
+                f"{provider}: unavailable ({_stringify(snapshot.get('label_status')) or _stringify(snapshot.get('provider_readiness')) or 'missing'})"
+            )
+
+    return {
+        "available": True,
+        "analyst": "codex_gpt_manual",
+        "hypothesis_name": f"{dominant_theme}_driven_{dominant_stage}",
+        "description": description,
+        "supporting_case_ids": supporting_case_ids,
+        "negative_or_uncertain_case_ids": uncertain_case_ids,
+        "confidence": confidence,
+        "likely_failure_stage": dominant_stage,
+        "dominant_question_themes": dict(theme_counts.most_common()),
+        "dominant_mismatch_hints": dict(mismatch_counts.most_common()),
+        "dominant_family_hints": dict(family_counts.most_common()),
+        "evidence_summary": evidence_summary,
+        "comparison_context": overlap_notes,
+        "caution": "Preliminary manual hypothesis only. Do not treat this smoke as a final pattern claim or an accuracy comparison.",
+    }
+
+
+def _build_hypothesis_comparison(
+    *,
+    providers: list[str],
+    provider_snapshots: dict[str, dict[str, Any]],
+    codex_manual_hypothesis: dict[str, Any],
+) -> dict[str, Any]:
+    comparison_rows: list[dict[str, Any]] = []
+    for provider in providers:
+        snapshot = provider_snapshots.get(provider, {})
+        comparison_rows.append(
+            {
+                "name": provider,
+                "available": bool(snapshot.get("available")),
+                "top_pattern_names": [
+                    _stringify(pattern.get("pattern_name"))
+                    for pattern in (snapshot.get("top_patterns") or [])
+                    if _stringify(pattern.get("pattern_name"))
+                ],
+                "top_failure_stages": [
+                    _stringify(pattern.get("likely_failure_stage"))
+                    for pattern in (snapshot.get("top_patterns") or [])
+                    if _stringify(pattern.get("likely_failure_stage"))
+                ],
+                "status": _stringify(snapshot.get("label_status")) or _stringify(snapshot.get("provider_readiness")),
+            }
+        )
+    comparison_rows.append(
+        {
+            "name": "codex_gpt_manual",
+            "available": bool(codex_manual_hypothesis.get("available")),
+            "top_pattern_names": [_stringify(codex_manual_hypothesis.get("hypothesis_name"))],
+            "top_failure_stages": [_stringify(codex_manual_hypothesis.get("likely_failure_stage"))],
+            "status": "manual_local_analysis",
+        }
+    )
+    return {
+        "hypotheses": comparison_rows,
+        "claim_boundary": "Tiny smoke only. Compare hypotheses qualitatively; do not treat this as a final pattern finding or an accuracy comparison.",
+    }
+
+
+def _call_provider_api(*, provider: str, model: str, prompt: str, mode: str = "label") -> tuple[str, dict[str, Any]]:
     provider = provider.lower().strip()
+    max_tokens = _max_tokens_for_mode(provider, mode)
     if provider == "openai":
         client = _load_openai_client()
         response = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.0,
-            max_tokens=512,
+            max_tokens=max_tokens,
             response_format={"type": "json_object"},
         )
         return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.openai.com/v1"}
 
     if provider == "cohere":
         client = _load_cohere_client()
-        response = client.chat(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-            max_tokens=512,
-        )
+        request_kwargs = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.0,
+            "max_tokens": max_tokens,
+            "response_format": {"type": "json_object"},
+        }
+        try:
+            response = client.chat(**request_kwargs)
+        except TypeError:
+            request_kwargs.pop("response_format", None)
+            response = client.chat(**request_kwargs)
+        except Exception as exc:
+            error_text = _stringify(exc).lower()
+            if "response_format" not in error_text and "json_object" not in error_text:
+                raise
+            request_kwargs.pop("response_format", None)
+            response = client.chat(**request_kwargs)
         text = ""
         message = getattr(response, "message", None)
         if message is not None and getattr(message, "content", None) is not None:
@@ -1204,7 +1506,7 @@ def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, 
                 "model": model,
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.0,
-                "max_tokens": 512,
+                "max_tokens": max_tokens,
                 "response_format": {"type": "json_object"},
             },
         )
@@ -1221,11 +1523,27 @@ def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, 
                 "model": model,
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.0,
-                "max_tokens": 512,
+                "max_tokens": max_tokens,
                 "response_format": {"type": "json_object"},
             },
         )
         return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.fireworks.ai/inference/v1"}
+
+    if provider == "mistral":
+        api_key = os.getenv("MISTRAL_API_KEY", "").strip()
+        if not api_key:
+            raise RuntimeError("MISTRAL_API_KEY is not set; cannot run with --allow-api.")
+        response = _post_json_request(
+            url="https://api.mistral.ai/v1/chat/completions",
+            api_key=api_key,
+            body={
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.0,
+                "max_tokens": max_tokens,
+            },
+        )
+        return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.mistral.ai/v1"}
 
     raise ValueError(f"Unknown provider: {provider}")
 
@@ -1757,6 +2075,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--cohere-model", default=DEFAULT_MODELS["cohere"], help="Cohere model name.")
     parser.add_argument("--cerebras-model", default="", help="Cerebras model name. Required for live API mode.")
     parser.add_argument("--fireworks-model", default="", help="Fireworks model name. Required for live API mode.")
+    parser.add_argument("--mistral-model", default=DEFAULT_MODELS["mistral"], help="Mistral model name.")
     parser.add_argument("--provider-cap", action="append", default=[], help="Repeatable provider cap in the form provider=cap.")
     parser.add_argument("--limit", type=int, default=0, help="Optional deterministic case limit applied after subset construction.")
     parser.add_argument("--max-calls-total", type=int, default=0, help="Hard total call cap. Required in API mode.")
@@ -1861,12 +2180,14 @@ def main(argv: list[str] | None = None) -> int:
         "cohere": _stringify(args.cohere_model) or DEFAULT_MODELS["cohere"],
         "cerebras": _stringify(args.cerebras_model),
         "fireworks": _stringify(args.fireworks_model),
+        "mistral": _stringify(args.mistral_model) or DEFAULT_MODELS["mistral"],
     }
     if not allow_api or check_provider_config:
         provider_models["openai"] = provider_models["openai"] or DEFAULT_MODELS["openai"]
     if not allow_api or check_provider_config:
         provider_models["cerebras"] = provider_models["cerebras"] or DEFAULT_MODELS["cerebras"]
         provider_models["fireworks"] = provider_models["fireworks"] or DEFAULT_MODELS["fireworks"]
+        provider_models["mistral"] = provider_models["mistral"] or DEFAULT_MODELS["mistral"]
     provider_config_summary = _provider_config_summary(providers=providers, provider_models=provider_models)
 
     mode = _stringify(args.mode).lower()

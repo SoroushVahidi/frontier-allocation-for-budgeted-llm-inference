@@ -268,6 +268,24 @@ def test_provider_readiness_summary_classifies_403_and_404_errors() -> None:
     assert summary["provider_error_samples"]["fireworks"][0]["provider_http_status"] == 404
 
 
+def test_provider_error_details_classify_mistral_http_errors() -> None:
+    cases = [
+        (401, "auth_error"),
+        (403, "auth_error"),
+        (404, "model_not_found"),
+        (429, "rate_limited"),
+        (500, "unknown_error"),
+    ]
+
+    for status_code, expected in cases:
+        details = labeler._provider_error_details(
+            label_status="api_error",
+            api_error=f"HTTP error from https://api.mistral.ai/v1/chat/completions: {status_code} test-error",
+        )
+        assert details["provider_readiness"] == expected
+        assert details["provider_http_status"] == status_code
+
+
 def test_pattern_discovery_summary_aggregates_names_stages_and_hypotheses() -> None:
     parsed_rows = [
         {
