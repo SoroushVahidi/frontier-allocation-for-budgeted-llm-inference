@@ -11,9 +11,11 @@ Target-binding checklist:
 
 Rules:
 - Do not use any hidden reference answer, answer-key information, or label metadata.
+- Do not reproduce a salient intermediate, a prior candidate value, or another prominent number as the final answer unless the target-binding checklist independently confirms it is the requested quantity.
 - Bind the final target before arithmetic.
-- Explicitly bind the before-state and after-state.
-- Work backward from the final state using inverse operations.
+- Write a before/after state table: label the before-state variable B, each operation applied, and the resulting after-state value.
+- Apply inverse operations in exact reverse order of the described process.
+- Verify: forward-simulate from your answer; the result must match the stated after-state.
 - Warn against returning an after-process amount.
 - Separate population, count, money, payroll, and time totals from the requested original value.
 - Keep the final answer tied to the original quantity requested.

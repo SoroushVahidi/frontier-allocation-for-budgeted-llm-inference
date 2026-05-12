@@ -319,6 +319,48 @@ def test_difference_remainder_prompt_contains_compare_subtract_formula() -> None
     assert "subtract" in rendered.lower() or "minus" in rendered.lower() or "subtrahend" in rendered.lower()
 
 
+def test_every_prompt_contains_anti_anchoring_instruction() -> None:
+    for tid, rendered in _render_all_prompts().items():
+        assert "prior candidate" in rendered or "salient intermediate" in rendered, (
+            f"{tid} missing anti-anchoring instruction"
+        )
+
+
+def test_ratio_prompt_has_self_referential_total_rule() -> None:
+    rendered = _render_all_prompts()["ratio_base_branch"]
+    assert "1 - ratio" in rendered or "(1 - ratio)" in rendered or "known_non_ratio_part" in rendered
+    assert "solve for the total first" in rendered or "solve total first" in rendered or "total first" in rendered
+
+
+def test_ratio_prompt_has_weighted_score_formula() -> None:
+    rendered = _render_all_prompts()["ratio_base_branch"]
+    assert "fraction_correct" in rendered or "fraction correct" in rendered or "earned points independently" in rendered
+
+
+def test_original_before_process_prompt_has_timeline_and_forward_check() -> None:
+    rendered = _render_all_prompts()["original_before_process_branch"]
+    assert "before/after state table" in rendered or "before-state" in rendered or "before_state" in rendered
+    assert "forward-simulate" in rendered or "forward simulate" in rendered or "forward simulation" in rendered
+    assert "after-state" in rendered or "after_state" in rendered
+
+
+def test_target_first_prompt_has_recompute_and_per_recipient_rule() -> None:
+    rendered = _render_all_prompts()["target_first_final_transform_branch"]
+    assert "Re-derive" in rendered or "re-derive" in rendered or "independently" in rendered
+    assert "per-person" in rendered or "per-child" in rendered or "number of recipients" in rendered or "recipients" in rendered
+
+
+def test_difference_prompt_has_folding_multiplier_rule() -> None:
+    rendered = _render_all_prompts()["difference_or_remainder_branch"]
+    assert "fold" in rendered.lower() or "layer" in rendered.lower() or "stack" in rendered.lower()
+    assert "multiplier" in rendered.lower() or "pages per" in rendered.lower() or "per layer" in rendered.lower()
+
+
+def test_per_unit_share_prompt_has_common_unit_conversion_rule() -> None:
+    rendered = _render_all_prompts()["per_unit_share_branch"]
+    assert "common unit" in rendered or "single common unit" in rendered or "convert all quantities" in rendered
+
+
 def test_target_first_prompt_contains_final_transform_classification_list() -> None:
     rendered = _render_all_prompts()["target_first_final_transform_branch"]
     for label in ("difference", "remainder", "profit", "per_unit_share", "ratio_probability", "unit_conversion", "original_before_process", "additive_total", "other"):

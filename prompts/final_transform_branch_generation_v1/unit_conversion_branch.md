@@ -11,6 +11,7 @@ Target-binding checklist:
 
 Rules:
 - Do not use any hidden reference answer, answer-key information, or label metadata.
+- Do not reproduce a salient intermediate, a prior candidate value, or another prominent number as the final answer unless the target-binding checklist independently confirms it is the requested quantity.
 - Bind the final target before arithmetic.
 - State both the source unit and the target unit explicitly.
 - Write the conversion factor before computing.

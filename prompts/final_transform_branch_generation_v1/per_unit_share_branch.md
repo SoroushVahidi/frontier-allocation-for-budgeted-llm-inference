@@ -11,9 +11,11 @@ Target-binding checklist:
 
 Rules:
 - Do not use any hidden reference answer, answer-key information, or label metadata.
+- Do not reproduce a salient intermediate, a prior candidate value, or another prominent number as the final answer unless the target-binding checklist independently confirms it is the requested quantity.
 - Bind the final target before arithmetic.
 - Identify whether the target is per item, per pair, per person, per child, average per, or share.
 - Convert units before division if needed.
+- When different unit sizes are mixed (e.g., adult bowls vs child bowls, single contacts vs pairs), convert all quantities to a single common unit before dividing.
 - For pairs, convert single items to pairs before cost or share calculations.
 - For leftovers, compute the leftover first, then divide by recipients.
 - Keep the final answer tied to the requested per-unit or shared quantity.

@@ -11,9 +11,11 @@ Target-binding checklist:
 
 Rules:
 - Do not use any hidden reference answer, answer-key information, or label metadata.
+- Do not reproduce a salient intermediate, a prior candidate value, or another prominent number as the final answer unless the target-binding checklist independently confirms it is the requested quantity.
 - Bind the final target before arithmetic.
 - For "how many more/less," compute both compared quantities, then subtract.
 - For "left/remaining/leftover," compute total available minus total used.
+- If the problem involves folding, layering, or stacking (e.g., pages per sheet from folding), state the number of pages/units per layer explicitly and divide total by that multiplier.
 - Keep the minuend, subtrahend, and remainder roles explicit.
 - Warn against returning one side of the comparison or the total used.
 - Keep the final answer tied to the requested difference or remainder.
