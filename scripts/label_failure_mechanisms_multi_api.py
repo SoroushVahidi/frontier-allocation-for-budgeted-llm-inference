@@ -13,7 +13,10 @@ import csv
 import hashlib
 import json
 import os
+import re
 import sys
+import urllib.error
+import urllib.request
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -97,6 +100,21 @@ FIX_FAMILIES = {
 FORBIDDEN_PROMPT_TOKENS = ("gold_answer", "answer_key")
 TRUE_TOKENS = {"1", "true", "t", "yes", "y", "on"}
 FALSE_TOKENS = {"0", "false", "f", "no", "n", "off", "none", "nan", "unknown"}
+PROVIDER_ENV_VARS = {
+    "cohere": ("COHERE_API_KEY", "CO_API_KEY"),
+    "cerebras": ("CEREBRAS_API_KEY",),
+    "fireworks": ("FIREWORKS_API_KEY", "OPENAI_API_KEY"),
+}
+PROVIDER_READINESS_VALUES = {
+    "ready",
+    "auth_error",
+    "rate_limited",
+    "model_not_found",
+    "parse_error",
+    "unknown_error",
+    "dry_run",
+    "config_check",
+}
 
 
 def _utc_stamp() -> str:
@@ -688,10 +706,8 @@ def _load_cohere_client() -> Any:
     return cohere.Client(api_key)
 
 
-def _load_openai_client(*, base_url: str, api_key: str) -> Any:
-    from openai import OpenAI  # type: ignore
-
-    return OpenAI(base_url=base_url, api_key=api_key)
+def _load_openai_client() -> Any:
+    raise RuntimeError("OpenAI client loading is not used by this scaffold.")
 
 
 def _extract_openai_text(response: Any) -> str:
@@ -716,22 +732,200 @@ def _extract_openai_text(response: Any) -> str:
     return _stringify(content)
 
 
+def _post_json_request(*, url: str, api_key: str, body: dict[str, Any], headers: dict[str, str] | None = None) -> dict[str, Any]:
+    request_headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    if headers:
+        request_headers.update(headers)
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers=request_headers,
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response:
+            payload = response.read().decode("utf-8")
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace") if hasattr(exc, "read") else str(exc)
+        raise RuntimeError(f"HTTP error from {url}: {exc.code} {detail}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"Network error calling {url}: {exc}") from exc
+    try:
+        return json.loads(payload)
+    except Exception as exc:
+        raise RuntimeError(f"Unable to parse JSON response from {url}") from exc
+
+
+def _sanitize_error_message(text: str, *, max_len: int = 500) -> str:
+    clean = _stringify(text)
+    for key in ("COHERE_API_KEY", "CEREBRAS_API_KEY", "FIREWORKS_API_KEY", "OPENAI_API_KEY", "CO_API_KEY"):
+        value = os.getenv(key, "")
+        if value:
+            clean = clean.replace(value, "[REDACTED]")
+    if len(clean) > max_len:
+        clean = clean[: max_len - 3] + "..."
+    return clean
+
+
+def _provider_env_presence(provider: str) -> dict[str, bool]:
+    return {env_name: bool(os.getenv(env_name, "").strip()) for env_name in PROVIDER_ENV_VARS.get(provider, ())}
+
+
+def _provider_env_ready(provider: str) -> bool:
+    presence = _provider_env_presence(provider)
+    if not presence:
+        return False
+    return any(presence.values())
+
+
+def _extract_http_status(error_text: str) -> int | None:
+    match = re.search(r"\b(401|403|404|409|429)\b", error_text or "")
+    if match:
+        try:
+            return int(match.group(1))
+        except Exception:
+            return None
+    return None
+
+
+def _extract_error_code(error_text: str) -> str:
+    text = error_text or ""
+    for pattern in (
+        r"error code:\s*([A-Z0-9_\-]+)",
+        r'"code"\s*:\s*"([^"]+)"',
+        r"code\s*[:=]\s*([A-Z0-9_\-]+)",
+    ):
+        match = re.search(pattern, text, flags=re.IGNORECASE)
+        if match:
+            return _stringify(match.group(1))
+    return ""
+
+
+def _short_error_message(error_text: str, *, max_len: int = 220) -> str:
+    clean = _sanitize_error_message(error_text, max_len=1000)
+    if "HTTP error from " in clean:
+        clean = clean.split(": ", 1)[-1]
+    clean = re.sub(r"[\r\n\t]+", " ", clean).strip()
+    if len(clean) > max_len:
+        clean = clean[: max_len - 3] + "..."
+    return clean
+
+
+def _classify_provider_readiness(*, label_status: str, api_error: str = "", label_parse_error: str = "") -> str:
+    status = _stringify(label_status).lower()
+    if status == "parsed":
+        return "ready"
+    if status == "dry_run":
+        return "dry_run"
+    if status == "config_check":
+        return "config_check"
+    if status == "parse_error" or _stringify(label_parse_error):
+        return "parse_error"
+
+    text = _stringify(api_error).lower()
+    http_status = _extract_http_status(text)
+    if http_status in {401, 403} or any(token in text for token in ("unauthorized", "forbidden", "invalid api key", "1010")):
+        return "auth_error"
+    if http_status == 429 or any(token in text for token in ("rate limit", "too many requests", "quota")):
+        return "rate_limited"
+    if http_status == 404 or any(token in text for token in ("not found", "not deployed", "inaccessible")):
+        return "model_not_found"
+    return "unknown_error"
+
+
+def _provider_error_details(*, label_status: str, api_error: str = "", label_parse_error: str = "") -> dict[str, Any]:
+    readiness = _classify_provider_readiness(label_status=label_status, api_error=api_error, label_parse_error=label_parse_error)
+    if readiness == "ready":
+        return {
+            "provider_readiness": readiness,
+            "provider_http_status": None,
+            "provider_error_code": "",
+            "provider_error_message_short": "",
+        }
+    short_message = _short_error_message(api_error or label_parse_error or label_status)
+    return {
+        "provider_readiness": readiness,
+        "provider_http_status": _extract_http_status(api_error),
+        "provider_error_code": _extract_error_code(api_error),
+        "provider_error_message_short": short_message,
+    }
+
+
+def _provider_config_summary(*, providers: list[str], provider_models: dict[str, str]) -> dict[str, dict[str, Any]]:
+    summary: dict[str, dict[str, Any]] = {}
+    for provider in providers:
+        env_presence = _provider_env_presence(provider)
+        model = _stringify(provider_models.get(provider))
+        model_required = provider in {"cerebras", "fireworks"}
+        summary[provider] = {
+            "selected": True,
+            "model": model,
+            "model_required": model_required,
+            "env_presence": env_presence,
+            "env_ready": _provider_env_ready(provider),
+            "model_ready": bool(model),
+            "config_ready": bool(model) and _provider_env_ready(provider),
+        }
+    return summary
+
+
+def _provider_readiness_summary(parsed_rows: list[dict[str, Any]], providers: list[str]) -> dict[str, Any]:
+    provider_counts: dict[str, Counter[str]] = {provider: Counter() for provider in providers}
+    provider_errors: dict[str, list[dict[str, Any]]] = {provider: [] for provider in providers}
+    for row in parsed_rows:
+        provider = _stringify(row.get("provider"))
+        if provider not in provider_counts:
+            continue
+        readiness = _stringify(row.get("provider_readiness")) or _classify_provider_readiness(
+            label_status=_stringify(row.get("label_status")),
+            api_error=_stringify(row.get("api_error")),
+            label_parse_error=_stringify(row.get("label_parse_error")),
+        )
+        provider_counts[provider][readiness] += 1
+        if readiness != "ready":
+            provider_errors[provider].append(
+                {
+                    "case_id": _stringify(row.get("case_id")),
+                    "request_id": _stringify(row.get("request_id")),
+                    "label_status": _stringify(row.get("label_status")),
+                    "provider_readiness": readiness,
+                    "provider_http_status": row.get("provider_http_status"),
+                    "provider_error_code": _stringify(row.get("provider_error_code")),
+                    "provider_error_message_short": _stringify(row.get("provider_error_message_short")),
+                }
+            )
+    return {
+        "provider_readiness_counts": {provider: dict(sorted(counter.items(), key=lambda item: (-item[1], item[0]))) for provider, counter in provider_counts.items()},
+        "provider_error_samples": {provider: errors[:5] for provider, errors in provider_errors.items() if errors},
+    }
+
+
 def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, dict[str, Any]]:
     provider = provider.lower().strip()
     if provider == "cohere":
         client = _load_cohere_client()
         response = client.chat(
             model=model,
-            message=prompt,
+            messages=[{"role": "user", "content": prompt}],
             temperature=0.0,
             max_tokens=512,
         )
         text = ""
-        if getattr(response, "message", None) and getattr(response.message, "content", None):
-            content = response.message.content
+        message = getattr(response, "message", None)
+        if message is not None and getattr(message, "content", None) is not None:
+            content = message.content
             if isinstance(content, list) and content:
-                first = content[0]
-                text = _stringify(getattr(first, "text", first))
+                parts: list[str] = []
+                for item in content:
+                    text_piece = _stringify(getattr(item, "text", ""))
+                    if not text_piece and isinstance(item, dict):
+                        text_piece = _stringify(item.get("text"))
+                    if text_piece:
+                        parts.append(text_piece)
+                text = "".join(parts)
             else:
                 text = _stringify(content)
         else:
@@ -742,13 +936,16 @@ def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, 
         api_key = os.getenv("CEREBRAS_API_KEY", "").strip()
         if not api_key:
             raise RuntimeError("CEREBRAS_API_KEY is not set; cannot run with --allow-api.")
-        client = _load_openai_client(base_url="https://api.cerebras.ai/v1", api_key=api_key)
-        response = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-            max_tokens=512,
-            response_format={"type": "json_object"},
+        response = _post_json_request(
+            url="https://api.cerebras.ai/v1/chat/completions",
+            api_key=api_key,
+            body={
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.0,
+                "max_tokens": 512,
+                "response_format": {"type": "json_object"},
+            },
         )
         return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.cerebras.ai/v1"}
 
@@ -756,13 +953,16 @@ def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, 
         api_key = os.getenv("FIREWORKS_API_KEY", "").strip() or os.getenv("OPENAI_API_KEY", "").strip()
         if not api_key:
             raise RuntimeError("FIREWORKS_API_KEY (or OPENAI_API_KEY) is not set; cannot run with --allow-api.")
-        client = _load_openai_client(base_url="https://api.fireworks.ai/inference/v1", api_key=api_key)
-        response = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-            max_tokens=512,
-            response_format={"type": "json_object"},
+        response = _post_json_request(
+            url="https://api.fireworks.ai/inference/v1/chat/completions",
+            api_key=api_key,
+            body={
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.0,
+                "max_tokens": 512,
+                "response_format": {"type": "json_object"},
+            },
         )
         return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.fireworks.ai/inference/v1"}
 
@@ -1058,6 +1258,7 @@ def _build_outputs(
     case_matrix_rows, disagreement_rows = _build_case_label_matrix(case_packets=case_packets, parsed_rows=parsed_rows, providers=providers)
     frequency_rows = _compute_label_frequency_summary(parsed_rows, providers)
     agreement_summary = _summarize_agreement(case_matrix_rows, providers, parsed_rows)
+    readiness_summary = _provider_readiness_summary(parsed_rows, providers)
     agreement_summary.update(
         {
             "allow_api": allow_api,
@@ -1072,6 +1273,7 @@ def _build_outputs(
             "disagreement_case_count": len(disagreement_rows),
         }
     )
+    agreement_summary.update(readiness_summary)
 
     _write_jsonl(output_dir / "trace_packets.jsonl", prompt_packets)
     _write_jsonl(output_dir / "provider_requests_dry_run.jsonl", request_rows)
@@ -1123,11 +1325,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--subsets", "--subset", default=",".join(DEFAULT_SUBSETS), help="Comma-separated subset list.")
     parser.add_argument("--providers", default="", help="Comma-separated providers. Required in API mode.")
     parser.add_argument("--cohere-model", default=DEFAULT_MODELS["cohere"], help="Cohere model name.")
-    parser.add_argument("--cerebras-model", default=DEFAULT_MODELS["cerebras"], help="Cerebras model name.")
-    parser.add_argument("--fireworks-model", default=DEFAULT_MODELS["fireworks"], help="Fireworks model name.")
+    parser.add_argument("--cerebras-model", default="", help="Cerebras model name. Required for live API mode.")
+    parser.add_argument("--fireworks-model", default="", help="Fireworks model name. Required for live API mode.")
     parser.add_argument("--provider-cap", action="append", default=[], help="Repeatable provider cap in the form provider=cap.")
+    parser.add_argument("--limit", type=int, default=0, help="Optional deterministic case limit applied after subset construction.")
     parser.add_argument("--max-calls-total", type=int, default=0, help="Hard total call cap. Required in API mode.")
     parser.add_argument("--allow-api", action="store_true", help="Allow provider API calls.")
+    parser.add_argument(
+        "--check-provider-config",
+        action="store_true",
+        help="Report provider env/model configuration without sending requests.",
+    )
     parser.add_argument("--include-gold-for-labeling", action="store_true", help="Include reference answers in prompt packets and mark outputs gold-assisted.")
     parser.add_argument("--output-dir", default="", help="Output directory override.")
     parser.add_argument("--timestamp", default=_utc_stamp(), help="UTC timestamp suffix for the default output directory.")
@@ -1179,6 +1387,12 @@ def main(argv: list[str] | None = None) -> int:
         subsets=subsets,
     )
     ordered_case_ids, memberships, primary_subsets = _order_case_ids_for_union(subset_specs)
+    prelimit_unique_case_count = len(ordered_case_ids)
+    limit_value = int(args.limit or 0)
+    if limit_value < 0:
+        raise ValueError("--limit must be non-negative")
+    if limit_value > 0:
+        ordered_case_ids = ordered_case_ids[:limit_value]
     case_packets = [
         _build_case_packet(
             case_id=case_id,
@@ -1202,8 +1416,9 @@ def main(argv: list[str] | None = None) -> int:
     explicit_caps = _parse_provider_caps(args.provider_cap)
     max_calls_total = int(args.max_calls_total or 0)
     allow_api = bool(args.allow_api)
-    dry_run = bool(args.dry_run) or not allow_api
-    if allow_api and max_calls_total <= 0:
+    check_provider_config = bool(args.check_provider_config)
+    dry_run = bool(args.dry_run) or not allow_api or check_provider_config
+    if allow_api and not check_provider_config and max_calls_total <= 0:
         raise ValueError("--allow-api requires a positive --max-calls-total")
     provider_caps = _selected_request_limit(
         allow_api=allow_api,
@@ -1213,9 +1428,138 @@ def main(argv: list[str] | None = None) -> int:
     )
     provider_models = {
         "cohere": _stringify(args.cohere_model) or DEFAULT_MODELS["cohere"],
-        "cerebras": _stringify(args.cerebras_model) or DEFAULT_MODELS["cerebras"],
-        "fireworks": _stringify(args.fireworks_model) or DEFAULT_MODELS["fireworks"],
+        "cerebras": _stringify(args.cerebras_model),
+        "fireworks": _stringify(args.fireworks_model),
     }
+    if not allow_api or check_provider_config:
+        provider_models["cerebras"] = provider_models["cerebras"] or DEFAULT_MODELS["cerebras"]
+        provider_models["fireworks"] = provider_models["fireworks"] or DEFAULT_MODELS["fireworks"]
+    provider_config_summary = _provider_config_summary(providers=providers, provider_models=provider_models)
+
+    if check_provider_config:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        config_manifest = {
+            "experiment_id": "failure_mechanism_multi_api_v1",
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "script": "scripts/label_failure_mechanisms_multi_api.py",
+            "allow_api": False,
+            "dry_run": True,
+            "check_provider_config": True,
+            "api_clients_constructed": False,
+            "max_calls_total": max_calls_total,
+            "limit": limit_value,
+            "providers": providers,
+            "provider_models": provider_models,
+            "provider_caps": {provider: 0 for provider in providers},
+            "provider_config_summary": provider_config_summary,
+            "include_gold_for_labeling": bool(args.include_gold_for_labeling),
+            "gold_assisted": bool(args.include_gold_for_labeling),
+            "subset_specs": subset_specs,
+            "subset_names": subsets,
+            "subset_case_counts": {spec["subset"]: len(spec["case_ids"]) for spec in subset_specs},
+            "prelimit_unique_case_count": prelimit_unique_case_count,
+            "requested_case_count": prelimit_unique_case_count,
+            "selected_case_count": len(case_packets),
+            "unique_case_count": len(case_packets),
+            "planned_request_count": len(case_packets) * len(providers),
+            "api_call_count": 0,
+            "failure_csv": str(failure_csv),
+            "gold_absent_csv": str(gold_absent_csv),
+            "anchor_effect_csv": str(anchor_effect_csv),
+            "target_audit_jsonl": str(target_audit_jsonl),
+            "diagnostic_30_jsonl": str(diagnostic_30_jsonl),
+            "target_staged_15_jsonl": str(target_staged_15_jsonl),
+            "structural_feature_csv": str(resolved_structural_csv) if resolved_structural_csv else "",
+            "output_files": ["manifest.json", "report.md"],
+            "label_schema": {
+                "fields": LABEL_FIELDS,
+                "primary_label_values": sorted(PRIMARY_LABELS),
+                "secondary_label_values": sorted(SECONDARY_LABELS),
+                "selector_vs_generation_values": sorted(SELECTOR_VS_GENERATION),
+                "candidate_pool_status_values": sorted(POOL_STATUS),
+                "recommended_fix_family_values": sorted(FIX_FAMILIES),
+            },
+            "selection_notes": [
+                "diagnostic_30 and target_staged_15 are exact JSONL slices.",
+                "pal_still_failing_157 is derived from the full failure CSV and trimmed to 157 if necessary.",
+                "wrong_supported_consensus_97 is derived from the gold-absent CSV rows with external_contrast == Both wrong and trimmed to 97 if necessary.",
+                "direct_l1_anchor_potential_43 is derived from the anchor-effect CSV rows with strong anchor evidence and trimmed to 43 if necessary.",
+            ],
+            "no_api_clients_constructed": True,
+            "prelimit_unique_case_count": prelimit_unique_case_count,
+            "limit": limit_value,
+        }
+        _write_json(output_dir / "manifest.json", config_manifest)
+        config_report_lines = [
+            "# Multi-API Failure Mechanism Labeling Plan",
+            "",
+            "## Run Mode",
+            "",
+            f"- allow_api: `False`",
+            f"- dry_run: `True`",
+            f"- check_provider_config: `True`",
+            f"- api_clients_constructed: `False`",
+            f"- limit: `{limit_value}`",
+            f"- providers: `{', '.join(providers)}`",
+            f"- provider_models: `{json.dumps(provider_models, sort_keys=True)}`",
+            "",
+            "## Provider Config",
+            "",
+        ]
+        for provider in providers:
+            config = provider_config_summary.get(provider, {})
+            config_report_lines.append(
+                f"- `{provider}`: env_ready `{config.get('env_ready')}`; model `{config.get('model')}`; config_ready `{config.get('config_ready')}`"
+            )
+            env_presence = config.get("env_presence", {})
+            if isinstance(env_presence, dict):
+                for env_name, present in sorted(env_presence.items()):
+                    config_report_lines.append(f"  - {env_name}: `{present}`")
+        config_report_lines.extend(
+            [
+                "",
+                "## Slices",
+                "",
+            ]
+        )
+        for spec in subset_specs:
+            config_report_lines.append(
+                f"- `{spec['subset']}`: raw `{spec['raw_count']}` -> selected `{spec['selected_count']}`; approximate `{spec['approximate']}`"
+            )
+        config_report_lines.extend(
+            [
+                "",
+                "## Counts",
+                "",
+                f"- prelimit_unique_case_count: `{prelimit_unique_case_count}`",
+                f"- requested_case_count: `{prelimit_unique_case_count}`",
+                f"- selected_case_count: `{len(case_packets)}`",
+                f"- unique_case_count: `{len(case_packets)}`",
+                f"- planned_request_count: `{len(case_packets) * len(providers)}`",
+                "",
+                "## Notes",
+                "",
+                "- This is a provider-config dry-check only; no requests were sent.",
+                "- The prompt packet is still rendered gold-free unless `--include-gold-for-labeling` is set.",
+            ]
+        )
+        (output_dir / "report.md").write_text("\n".join(config_report_lines).rstrip() + "\n", encoding="utf-8")
+        print(json.dumps(config_manifest, indent=2, sort_keys=True))
+        return 0
+
+    if allow_api:
+        missing_models = [provider for provider in providers if provider in {"cerebras", "fireworks"} and not provider_models.get(provider)]
+        if missing_models:
+            raise ValueError(
+                "Live API mode requires explicit --cerebras-model and --fireworks-model for selected providers; missing: "
+                + ", ".join(sorted(missing_models))
+            )
+        missing_env = [provider for provider in providers if not _provider_env_ready(provider)]
+        if missing_env:
+            raise ValueError(
+                "Live API mode requires provider environment variables for selected providers; missing or empty env for: "
+                + ", ".join(sorted(missing_env))
+            )
 
     output_dir.mkdir(parents=True, exist_ok=True)
     request_rows: list[dict[str, Any]] = []
@@ -1232,6 +1576,8 @@ def main(argv: list[str] | None = None) -> int:
     for packet in case_packets:
         prompt_text = _render_prompt(packet)
         for provider in providers:
+            if not dry_run and total_calls >= max_calls_total:
+                raise RuntimeError(f"Hard call cap reached before processing {packet['case_id']} / {provider}")
             provider_request_counts[provider] += 1
             request_row = _build_provider_request(
                 provider=provider,
@@ -1258,6 +1604,10 @@ def main(argv: list[str] | None = None) -> int:
                     "raw_label_sha256": "",
                     "raw_response_json": "",
                     "api_error": "",
+                    "provider_readiness": "dry_run",
+                    "provider_http_status": "",
+                    "provider_error_code": "",
+                    "provider_error_message_short": "",
                 }
                 parsed_row = {
                     "request_id": request_row["request_id"],
@@ -1281,36 +1631,27 @@ def main(argv: list[str] | None = None) -> int:
                     "recommended_fix_family": "",
                     "label_valid": False,
                     "label_errors": ["dry_run"],
+                    "provider_readiness": "dry_run",
+                    "provider_http_status": "",
+                    "provider_error_code": "",
+                    "provider_error_message_short": "",
                 }
                 raw_rows.append(raw_row)
                 parsed_rows.append(parsed_row)
                 continue
 
-            if total_calls >= max_calls_total:
-                raise RuntimeError(f"Hard call cap reached before processing {packet['case_id']} / {provider}")
-            raw_text, api_meta = _call_provider_api(provider=provider, model=provider_models[provider], prompt=prompt_text)
             total_calls += 1
             provider_call_counts[provider] += 1
-            parsed_label, parse_error = _parse_label_json(raw_text)
-            raw_rows.append(
-                {
-                    "request_id": request_row["request_id"],
-                    "case_id": packet["case_id"],
-                    "provider": provider,
-                    "model": provider_models[provider],
-                    "prompt_sha256": request_row["prompt_sha256"],
-                    "request_sha256": request_row["request_sha256"],
-                    "dry_run": False,
-                    "api_call_made": 1,
-                    "raw_label_text": raw_text,
-                    "raw_label_sha256": _sha256_text(raw_text),
-                    "raw_response_json": json.dumps(api_meta, sort_keys=True),
-                    "api_error": "",
-                }
-            )
-            if parsed_label is None:
-                parsed_rows.append(
-                    {
+            try:
+                raw_text, api_meta = _call_provider_api(provider=provider, model=provider_models[provider], prompt=prompt_text)
+                parsed_label, parse_error = _parse_label_json(raw_text)
+                if parsed_label is None:
+                    provider_details = _provider_error_details(
+                        label_status="parse_error",
+                        api_error=raw_text,
+                        label_parse_error=parse_error,
+                    )
+                    parsed_row = {
                         "request_id": request_row["request_id"],
                         "case_id": packet["case_id"],
                         "provider": provider,
@@ -1333,9 +1674,51 @@ def main(argv: list[str] | None = None) -> int:
                         "recommended_fix_family": "",
                         "label_valid": False,
                         "label_errors": [parse_error],
+                        **provider_details,
+                    }
+                    raw_rows.append(
+                        {
+                            "request_id": request_row["request_id"],
+                            "case_id": packet["case_id"],
+                            "provider": provider,
+                            "model": provider_models[provider],
+                            "prompt_sha256": request_row["prompt_sha256"],
+                            "request_sha256": request_row["request_sha256"],
+                            "dry_run": False,
+                            "api_call_made": 1,
+                            "raw_label_text": raw_text,
+                            "raw_label_sha256": _sha256_text(raw_text),
+                            "raw_response_json": json.dumps({**api_meta, **provider_details}, sort_keys=True),
+                            "api_error": "",
+                            **provider_details,
+                        }
+                    )
+                    parsed_rows.append(parsed_row)
+                    continue
+
+                provider_details = _provider_error_details(
+                    label_status="parsed" if parsed_label.get("label_valid") else "parse_error",
+                    api_error="",
+                    label_parse_error="" if parsed_label.get("label_valid") else "invalid_label_schema",
+                )
+                label_status = "parsed" if parsed_label.get("label_valid") else "parse_error"
+                raw_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": packet["case_id"],
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "raw_label_text": raw_text,
+                        "raw_label_sha256": _sha256_text(raw_text),
+                        "raw_response_json": json.dumps({**api_meta, **provider_details}, sort_keys=True),
+                        "api_error": "",
+                        **provider_details,
                     }
                 )
-            else:
                 parsed_rows.append(
                     {
                         "request_id": request_row["request_id"],
@@ -1349,9 +1732,60 @@ def main(argv: list[str] | None = None) -> int:
                         "request_sha256": request_row["request_sha256"],
                         "dry_run": False,
                         "api_call_made": 1,
-                        "label_status": "parsed",
+                        "label_status": label_status,
                         **parsed_label,
-                        "label_parse_error": parse_error,
+                        "label_parse_error": "" if label_status == "parsed" else "invalid_label_schema",
+                        **provider_details,
+                    }
+                )
+            except Exception as exc:
+                error_text = _sanitize_error_message(str(exc))
+                provider_details = _provider_error_details(label_status="api_error", api_error=error_text)
+                raw_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": packet["case_id"],
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "raw_label_text": "",
+                        "raw_label_sha256": "",
+                        "raw_response_json": json.dumps(
+                            {"error": error_text, "provider": provider, "model": provider_models[provider], **provider_details},
+                            sort_keys=True,
+                        ),
+                        "api_error": error_text,
+                        **provider_details,
+                    }
+                )
+                parsed_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": packet["case_id"],
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "subset_memberships": json.dumps(packet["subset_memberships"], sort_keys=True),
+                        "primary_subset": packet["primary_subset"],
+                        "prompt_template_id": packet["prompt_template_id"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "label_status": "api_error",
+                        "api_error": error_text,
+                        "primary_label": "",
+                        "secondary_labels": [],
+                        "selector_vs_generation": "",
+                        "candidate_pool_status": "",
+                        "confidence": "",
+                        "evidence": "",
+                        "recommended_fix_family": "",
+                        "label_valid": False,
+                        "label_errors": [error_text],
+                        **provider_details,
                     }
                 )
 
@@ -1361,18 +1795,25 @@ def main(argv: list[str] | None = None) -> int:
         "script": "scripts/label_failure_mechanisms_multi_api.py",
         "allow_api": allow_api,
         "dry_run": dry_run,
+        "check_provider_config": check_provider_config,
         "api_clients_constructed": api_clients_constructed,
         "max_calls_total": max_calls_total,
+        "limit": limit_value,
         "providers": providers,
         "provider_models": provider_models,
         "provider_caps": provider_caps,
+        "provider_config_summary": provider_config_summary,
         "include_gold_for_labeling": bool(args.include_gold_for_labeling),
         "gold_assisted": bool(args.include_gold_for_labeling),
         "subset_specs": subset_specs,
         "subset_names": subsets,
         "subset_case_counts": {spec["subset"]: len(spec["case_ids"]) for spec in subset_specs},
+        "prelimit_unique_case_count": prelimit_unique_case_count,
+        "requested_case_count": prelimit_unique_case_count,
+        "selected_case_count": len(case_packets),
         "unique_case_count": len(case_packets),
         "planned_request_count": len(request_rows),
+        "expected_request_count": len(case_packets) * len(providers),
         "api_call_count": total_calls,
         "failure_csv": str(failure_csv),
         "gold_absent_csv": str(gold_absent_csv),
@@ -1436,6 +1877,7 @@ def main(argv: list[str] | None = None) -> int:
         f"- api_clients_constructed: `{api_clients_constructed}`",
         f"- include_gold_for_labeling: `{bool(args.include_gold_for_labeling)}`",
         f"- max_calls_total: `{max_calls_total}`",
+        f"- limit: `{limit_value}`",
         f"- providers: `{', '.join(providers)}`",
         f"- provider_caps: `{json.dumps(provider_caps, sort_keys=True)}`",
         "",
@@ -1449,9 +1891,25 @@ def main(argv: list[str] | None = None) -> int:
         f"- target_staged_15_jsonl: `{target_staged_15_jsonl}`",
         f"- structural_feature_csv: `{resolved_structural_csv}`",
         "",
-        "## Selected Slices",
+        "## Provider Config",
         "",
     ]
+    for provider in providers:
+        config = provider_config_summary.get(provider, {})
+        report_lines.append(
+            f"- `{provider}`: env_ready `{config.get('env_ready')}`; model `{config.get('model')}`; config_ready `{config.get('config_ready')}`"
+        )
+        env_presence = config.get("env_presence", {})
+        if isinstance(env_presence, dict):
+            for env_name, present in sorted(env_presence.items()):
+                report_lines.append(f"  - {env_name}: `{present}`")
+    report_lines.extend(
+        [
+            "",
+            "## Selected Slices",
+            "",
+        ]
+    )
     for spec in subset_specs:
         report_lines.append(
             f"- `{spec['subset']}`: raw `{spec['raw_count']}` -> selected `{spec['selected_count']}`; approximate `{spec['approximate']}`"
@@ -1462,8 +1920,11 @@ def main(argv: list[str] | None = None) -> int:
             "",
             "## Counts",
             "",
+            f"- requested_case_count: `{prelimit_unique_case_count}`",
+            f"- selected_case_count: `{len(case_packets)}`",
             f"- unique_case_count: `{len(case_packets)}`",
             f"- planned_request_count: `{len(request_rows)}`",
+            f"- expected_request_count: `{len(case_packets) * len(providers)}`",
             f"- api_call_count: `{total_calls}`",
             "",
             "## Agreement Snapshot",
@@ -1473,11 +1934,39 @@ def main(argv: list[str] | None = None) -> int:
             f"- disagreement_case_count: `{agreement_summary['disagreement_case_count']}`",
             f"- missing_label_case_count: `{agreement_summary['missing_label_case_count']}`",
             "",
+            "## Provider Readiness",
+            "",
+        ]
+    )
+    readiness_counts = agreement_summary.get("provider_readiness_counts", {})
+    readiness_samples = agreement_summary.get("provider_error_samples", {})
+    for provider in providers:
+        provider_counts = readiness_counts.get(provider, {})
+        report_lines.append(f"- `{provider}`: `{json.dumps(provider_counts, sort_keys=True)}`")
+        for sample in readiness_samples.get(provider, []):
+            report_lines.append(
+                "  - "
+                + json.dumps(
+                    {
+                        "case_id": sample.get("case_id"),
+                        "label_status": sample.get("label_status"),
+                        "provider_readiness": sample.get("provider_readiness"),
+                        "provider_http_status": sample.get("provider_http_status"),
+                        "provider_error_code": sample.get("provider_error_code"),
+                        "provider_error_message_short": sample.get("provider_error_message_short"),
+                    },
+                    sort_keys=True,
+                )
+            )
+    report_lines.extend(
+        [
+            "",
             "## Notes",
             "",
             "- Default mode is no-API dry-run.",
-            "- Live mode requires `--allow-api`, explicit providers, and a total call cap.",
+            "- Live mode requires `--allow-api`, explicit providers, selected models for Cerebras/Fireworks, provider env vars, and a total call cap.",
             "- The prompt packet is gold-free unless `--include-gold-for-labeling` is set.",
+            "- `--check-provider-config` reports provider env/model readiness without sending requests.",
             "- Approximate slices are documented in the manifest and report because the raw audits do not recover the target counts exactly.",
         ]
     )

@@ -222,3 +222,47 @@ def test_agreement_summary_and_frequency_outputs(tmp_path: Path) -> None:
 
     disagreement_rows = list(csv.DictReader((out_dir / "disagreement_cases.csv").open(encoding="utf-8")))
     assert [row["case_id"] for row in disagreement_rows] == ["c2"]
+
+
+def test_provider_readiness_summary_classifies_403_and_404_errors() -> None:
+    parsed_rows = [
+        {
+            "case_id": "c1",
+            "provider": "cohere",
+            "label_status": "parsed",
+            "provider_readiness": "ready",
+            "provider_http_status": None,
+            "provider_error_code": "",
+            "provider_error_message_short": "",
+        },
+        {
+            "case_id": "c1",
+            "provider": "cerebras",
+            "label_status": "api_error",
+            "api_error": "HTTP error from https://api.cerebras.ai/v1/chat/completions: 403 error code: 1010",
+            "label_parse_error": "",
+            "provider_readiness": "auth_error",
+            "provider_http_status": 403,
+            "provider_error_code": "1010",
+            "provider_error_message_short": "403 error code: 1010",
+        },
+        {
+            "case_id": "c1",
+            "provider": "fireworks",
+            "label_status": "api_error",
+            "api_error": 'HTTP error from https://api.fireworks.ai/inference/v1/chat/completions: 404 {"error":{"message":"Model not found, inaccessible, and/or not deployed","code":"NOT_FOUND"}}',
+            "label_parse_error": "",
+            "provider_readiness": "model_not_found",
+            "provider_http_status": 404,
+            "provider_error_code": "NOT_FOUND",
+            "provider_error_message_short": "404 {\"error\":{\"message\":\"Model not found, inaccessible, and/or not deployed\",\"code\":\"NOT_FOUND\"}}",
+        },
+    ]
+
+    summary = labeler._provider_readiness_summary(parsed_rows, ["cohere", "cerebras", "fireworks"])
+
+    assert summary["provider_readiness_counts"]["cohere"]["ready"] == 1
+    assert summary["provider_readiness_counts"]["cerebras"]["auth_error"] == 1
+    assert summary["provider_readiness_counts"]["fireworks"]["model_not_found"] == 1
+    assert summary["provider_error_samples"]["cerebras"][0]["provider_readiness"] == "auth_error"
+    assert summary["provider_error_samples"]["fireworks"][0]["provider_http_status"] == 404

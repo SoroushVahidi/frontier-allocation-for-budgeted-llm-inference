@@ -157,6 +157,16 @@ Provider caps are either:
 
 The script should stop hard if the cap would be exceeded.
 
+## Smoke Note
+
+A tiny API smoke was run on 5 diagnostic cases across the 3 selected providers.
+
+- Cohere produced 5 parsed labels.
+- Cerebras failed all 5 calls with an API-layer 403 response.
+- Fireworks failed all 5 calls with an API-layer 404 model-not-found response.
+
+This is enough to confirm the Cohere path works on the small smoke slice, but it is not enough to draw any conclusion about the full diagnostic_30 or the larger 97/157 slices. Do not run the full 30-case or 97-case labeling until provider configs are fixed and a fresh smoke confirms readiness.
+
 ## Validation Plan
 
 No-API validation should check:
@@ -179,4 +189,3 @@ Stop or pivot if any of the following happens:
 - live mode ignores the cap policy
 - agreement outputs do not separate consensus from disagreement cleanly
 - the run requires runtime-default changes to function
-
