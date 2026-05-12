@@ -29,6 +29,8 @@ from experiments.frontier_max_support_tiebreak import normalize_answer_group_key
 
 DEFAULT_TRACE_PACKETS = Path("/tmp/codex_pattern_mining_wrong_consensus_97_packets/trace_packets.jsonl")
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "outputs" / "final_target_verifier_offline_replay_latest"
+CALIBRATED_V1_ALLOWED_TARGET_TYPES = {"difference", "rate", "remaining", "total", "ratio_part"}
+CALIBRATED_V1_ALLOWED_SOURCES = {"our_candidate", "retry_candidate"}
 
 
 def _utc_stamp() -> str:
@@ -486,6 +488,64 @@ def _select_with_verifier(case: dict[str, Any], candidates: list[dict[str, Any]]
     }
 
 
+def _retained_baseline_selection(
+    case: dict[str, Any],
+    candidates: list[dict[str, Any]],
+    *,
+    selected_reason: str,
+    verifier_features: dict[str, Any],
+    question_target_type: str,
+    selector_meta: dict[str, Any],
+) -> dict[str, Any]:
+    baseline = _norm_answer(case.get("model_final_prediction") or case.get("selector_metadata", {}).get("selected_answer"))
+    baseline_candidate = next((cand for cand in candidates if cand["answer"] == baseline), None)
+    if baseline_candidate is None and candidates:
+        baseline_candidate = candidates[0]
+    return {
+        "verifier_selected_answer": baseline,
+        "verifier_selected_source": "baseline_candidate",
+        "verifier_selected_candidate": baseline_candidate or {},
+        "verifier_selected_reason": selected_reason,
+        "question_target_type": question_target_type,
+        "verifier_features": verifier_features,
+        "selector_metadata": selector_meta,
+    }
+
+
+def _select_with_verifier_calibrated_v1(case: dict[str, Any], candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    chosen = _select_with_verifier(case, candidates)
+    selected_answer = _norm_answer(chosen.get("verifier_selected_answer"))
+    baseline = _norm_answer(case.get("model_final_prediction") or case.get("selector_metadata", {}).get("selected_answer"))
+    selector_metadata = chosen.get("selector_metadata") or {}
+    if selected_answer == baseline:
+        return chosen
+
+    chosen_candidate = chosen.get("verifier_selected_candidate") or {}
+    selected_source = _stringify(chosen.get("verifier_selected_source"))
+    question_target_type = _stringify(chosen.get("question_target_type"))
+    baseline_source = _stringify(case.get("selector_metadata", {}).get("selected_source"))
+
+    if (
+        selected_source not in CALIBRATED_V1_ALLOWED_SOURCES
+        or question_target_type not in CALIBRATED_V1_ALLOWED_TARGET_TYPES
+        or _stringify(chosen_candidate.get("final_answer_role")) != "target"
+        or (baseline_source == "repair_layer" and baseline == "1")
+    ):
+        return _retained_baseline_selection(
+            case,
+            candidates,
+            selected_reason="calibrated_v1_baseline_retained",
+            verifier_features=chosen.get("verifier_features") or {},
+            question_target_type=question_target_type,
+            selector_meta=selector_metadata,
+        )
+
+    return {
+        **chosen,
+        "verifier_selected_reason": "calibrated_v1_accept",
+    }
+
+
 def _packet_completeness_summary(case_rows: list[dict[str, Any]], *, min_completeness: float) -> dict[str, Any]:
     total = len(case_rows)
     subset_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
@@ -577,7 +637,7 @@ def _load_cases(trace_packets_path: Path) -> list[dict[str, Any]]:
     return case_rows
 
 
-def _replay_case(case: dict[str, Any]) -> dict[str, Any]:
+def _replay_case(case: dict[str, Any], *, variant: str = "v1") -> dict[str, Any]:
     question = _stringify(case.get("question"))
     baseline = _norm_answer(case.get("model_final_prediction") or case.get("selector_metadata", {}).get("selected_answer"))
     selected_source = _stringify(case.get("selector_metadata", {}).get("selected_source"))
@@ -588,7 +648,10 @@ def _replay_case(case: dict[str, Any]) -> dict[str, Any]:
     transformed_focus = _looks_transformed_target_case(question, action_summary, verifier_features)
     focus_tag = _case_focus_tag(question, case.get("selector_metadata", {}) or {}, action_summary, verifier_features)
     candidates = _build_candidate_pool(case)
-    chosen = _select_with_verifier(case, candidates)
+    if variant == "calibrated_v1":
+        chosen = _select_with_verifier_calibrated_v1(case, candidates)
+    else:
+        chosen = _select_with_verifier(case, candidates)
 
     baseline_candidate = next((cand for cand in candidates if cand["answer"] == baseline), None)
     chosen_candidate = chosen.get("verifier_selected_candidate") or {}
@@ -633,6 +696,7 @@ def _replay_case(case: dict[str, Any]) -> dict[str, Any]:
         "transformed_focus": transformed_focus,
         "repair_layer_collapse_to_1": selected_source == "repair_layer" and baseline == "1",
         "selected_source": selected_source,
+        "selection_variant": variant,
         "direct_reserve_answer": direct,
         "frontier_candidate_answer": frontier,
         "candidates": candidates,
@@ -647,6 +711,7 @@ def main() -> None:
     parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
     parser.add_argument("--min-packet-completeness", type=float, default=0.75)
     parser.add_argument("--case-limit", type=int, default=None)
+    parser.add_argument("--variant", choices=("v1", "calibrated_v1"), default="v1")
     args = parser.parse_args()
 
     trace_packets_path = Path(args.trace_packets)
@@ -661,7 +726,7 @@ def main() -> None:
         case_rows = case_rows[: max(0, int(args.case_limit))]
     packet_completeness = _packet_completeness_summary(case_rows, min_completeness=min_packet_completeness)
 
-    replay_rows = [_replay_case(case) for case in case_rows]
+    replay_rows = [_replay_case(case, variant=args.variant) for case in case_rows]
     casebook_rows: list[dict[str, Any]] = []
     replay_jsonl_rows: list[dict[str, Any]] = []
 
@@ -738,6 +803,7 @@ def main() -> None:
         "trace_packets_path": str(trace_packets_path),
         "output_dir": str(output_dir),
         "case_count": len(replay_rows),
+        "variant": args.variant,
         "packet_completeness_summary": packet_completeness,
         "baseline_target_role_rate": round(baseline_top_role_rate, 6),
         "replay_target_role_rate": round(replay_top_role_rate, 6),
@@ -760,6 +826,7 @@ def main() -> None:
 
     manifest = {
         "experiment_id": "final_target_verifier_offline_replay",
+        "variant": args.variant,
         "created_at_utc": summary["created_at_utc"],
         "inputs": {
             "trace_packets": str(trace_packets_path),
@@ -790,6 +857,7 @@ def main() -> None:
         "",
         f"- trace_packets: `{trace_packets_path}`",
         f"- output_dir: `{output_dir}`",
+        f"- variant: `{args.variant}`",
         f"- cases: `{len(replay_rows)}`",
         f"- baseline_target_role_rate: `{summary['baseline_target_role_rate']}`",
         f"- replay_target_role_rate: `{summary['replay_target_role_rate']}`",
