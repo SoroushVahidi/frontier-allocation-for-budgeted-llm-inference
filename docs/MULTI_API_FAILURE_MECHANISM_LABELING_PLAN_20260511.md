@@ -13,11 +13,21 @@ explicit flags and hard caps.
 - Script: `scripts/label_failure_mechanisms_multi_api.py`
 - Default mode: dry-run only
 - Supported providers:
+  - OpenAI
   - Cohere
   - Cerebras
   - Fireworks
+- Default mode behavior:
+  - `label`: deterministic per-case failure labeling
+  - `pattern_discovery`: batch-level pattern discovery
 - Default prompt packet: gold-free
 - Gold assistance: opt-in only via `--include-gold-for-labeling`
+
+## Accuracy vs Pattern Discovery
+
+- Cohere is the only provider used for accuracy comparisons.
+- OpenAI, Cohere, Cerebras, and Fireworks are all allowed for pattern discovery.
+- Pattern discovery outputs are hypotheses until manually audited.
 
 ## Label Schema
 
@@ -166,6 +176,78 @@ A tiny API smoke was run on 5 diagnostic cases across the 3 selected providers.
 - Fireworks failed all 5 calls with an API-layer 404 model-not-found response.
 
 This is enough to confirm the Cohere path works on the small smoke slice, but it is not enough to draw any conclusion about the full diagnostic_30 or the larger 97/157 slices. Do not run the full 30-case or 97-case labeling until provider configs are fixed and a fresh smoke confirms readiness.
+
+## Pattern Discovery Mode
+
+Pattern discovery asks each provider to review a compact batch and identify recurring detailed failure patterns.
+
+Required response schema:
+
+- `provider`
+- `model`
+- `batch_id`
+- `cases_reviewed`
+- `top_patterns`
+- `recommended_taxonomy_changes`
+- `what_extra_metadata_is_needed`
+- `do_not_claim`
+
+Each `top_patterns` item must include:
+
+- `pattern_name`
+- `description`
+- `supporting_case_ids`
+- `negative_or_uncertain_case_ids`
+- `confidence`
+- `evidence_summary`
+- `likely_failure_stage`
+
+Pattern discovery prompts must:
+
+- ask for recurring detailed patterns inside the batch
+- require case IDs and trace-grounded evidence
+- distinguish observed patterns from inferred reasons
+- mention uncertain and negative cases
+- stay gold-free by default
+- state that this is not an accuracy comparison
+- state that non-Cohere providers are allowed only for pattern discovery, not for algorithm comparison
+
+Dry-run command:
+
+```bash
+python3 scripts/label_failure_mechanisms_multi_api.py \
+  --mode pattern_discovery \
+  --subset wrong_supported_consensus_97 \
+  --limit 10 \
+  --providers openai,cohere,cerebras,fireworks \
+  --dry-run \
+  --max-calls-total 40 \
+  --output-dir /tmp/pattern_discovery_dryrun
+```
+
+Expected dry-run behavior:
+
+- 10 cases selected
+- 4 provider requests planned
+- 0 API calls
+- provider request previews written
+- no gold leakage
+
+5-case live-smoke template, not run yet:
+
+```bash
+STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+python3 scripts/label_failure_mechanisms_multi_api.py \
+  --mode pattern_discovery \
+  --subset wrong_supported_consensus_97 \
+  --limit 5 \
+  --providers openai,cohere,cerebras,fireworks \
+  --allow-api \
+  --max-calls-total 20 \
+  --output-dir "outputs/failure_mechanism_multi_api_pattern_smoke_${STAMP}"
+```
+
+Treat discovered patterns as hypotheses until manually audited.
 
 ## Validation Plan
 

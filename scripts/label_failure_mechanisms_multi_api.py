@@ -45,7 +45,9 @@ DEFAULT_SUBSETS = (
     "target_staged_15",
 )
 DEFAULT_PROVIDERS = ("cohere", "cerebras", "fireworks")
+SUPPORTED_PROVIDERS = ("openai", "cohere", "cerebras", "fireworks")
 DEFAULT_MODELS = {
+    "openai": "gpt-4.1-mini",
     "cohere": "command-r-plus-08-2024",
     "cerebras": "llama3.1-8b",
     "fireworks": "accounts/fireworks/models/llama-v3p1-8b-instruct",
@@ -97,10 +99,21 @@ FIX_FAMILIES = {
     "richer_logging",
     "unknown",
 }
+PATTERN_FAILURE_STAGES = {
+    "target_extraction",
+    "relation_mapping",
+    "operator_choice",
+    "PAL_grounding",
+    "candidate_generation",
+    "selector",
+    "metadata",
+    "unknown",
+}
 FORBIDDEN_PROMPT_TOKENS = ("gold_answer", "answer_key")
 TRUE_TOKENS = {"1", "true", "t", "yes", "y", "on"}
 FALSE_TOKENS = {"0", "false", "f", "no", "n", "off", "none", "nan", "unknown"}
 PROVIDER_ENV_VARS = {
+    "openai": ("OPENAI_API_KEY",),
     "cohere": ("COHERE_API_KEY", "CO_API_KEY"),
     "cerebras": ("CEREBRAS_API_KEY",),
     "fireworks": ("FIREWORKS_API_KEY", "OPENAI_API_KEY"),
@@ -115,6 +128,20 @@ PROVIDER_READINESS_VALUES = {
     "dry_run",
     "config_check",
 }
+PATTERN_DISCOVERY_CASE_KEYS = (
+    "case_id",
+    "question",
+    "model_final_prediction",
+    "candidate_answers",
+    "candidate_answer_groups",
+    "selector_metadata",
+    "action_trace_summary",
+    "pal_exec_summary",
+    "structural_fields",
+    "failure_audit_labels",
+    "primary_subset",
+    "subset_memberships",
+)
 
 
 def _utc_stamp() -> str:
@@ -707,7 +734,12 @@ def _load_cohere_client() -> Any:
 
 
 def _load_openai_client() -> Any:
-    raise RuntimeError("OpenAI client loading is not used by this scaffold.")
+    from openai import OpenAI  # type: ignore
+
+    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is not set; cannot run with --allow-api.")
+    return OpenAI(api_key=api_key)
 
 
 def _extract_openai_text(response: Any) -> str:
@@ -859,7 +891,7 @@ def _provider_config_summary(*, providers: list[str], provider_models: dict[str,
     for provider in providers:
         env_presence = _provider_env_presence(provider)
         model = _stringify(provider_models.get(provider))
-        model_required = provider in {"cerebras", "fireworks"}
+        model_required = provider in {"openai", "cerebras", "fireworks"}
         summary[provider] = {
             "selected": True,
             "model": model,
@@ -903,8 +935,237 @@ def _provider_readiness_summary(parsed_rows: list[dict[str, Any]], providers: li
     }
 
 
+def _build_pattern_case_packet(packet: dict[str, Any]) -> dict[str, Any]:
+    compact = {key: _jsonable(packet.get(key)) for key in PATTERN_DISCOVERY_CASE_KEYS}
+    compact["structural_fields"] = compact.get("structural_fields", {})
+    compact["candidate_answer_groups"] = compact.get("candidate_answer_groups", [])[:5]
+    compact["candidate_answers"] = compact.get("candidate_answers", [])[:8]
+    compact["subset_memberships"] = compact.get("subset_memberships", [])
+    return compact
+
+
+def _build_pattern_batch_id(*, provider: str, case_packets: list[dict[str, Any]]) -> str:
+    case_ids = [packet["case_id"] for packet in case_packets]
+    case_digest = _sha256_text("|".join(case_ids))[:12] if case_ids else "empty"
+    return f"{provider}:{len(case_ids)}:{case_digest}"
+
+
+def _build_pattern_batch_packet(
+    *,
+    provider: str,
+    model: str,
+    batch_id: str,
+    case_packets: list[dict[str, Any]],
+    include_gold_for_labeling: bool,
+) -> dict[str, Any]:
+    compact_cases = [_build_pattern_case_packet(packet) for packet in case_packets]
+    batch_packet = {
+        "provider": provider,
+        "model": model,
+        "batch_id": batch_id,
+        "cases_reviewed": [packet["case_id"] for packet in case_packets],
+        "case_count": len(case_packets),
+        "cases": compact_cases,
+        "mode": "pattern_discovery",
+        "prompt_template_id": "failure_mechanism_multi_api_pattern_v1",
+        "include_gold_for_labeling": bool(include_gold_for_labeling),
+        "gold_assisted": bool(include_gold_for_labeling),
+        "non_cohere_policy": "Allowed only for pattern discovery, not for algorithm comparison.",
+        "not_accuracy_comparison": True,
+    }
+    return batch_packet
+
+
+def _render_pattern_prompt(batch_packet: dict[str, Any]) -> str:
+    payload = {
+        "provider": batch_packet.get("provider", ""),
+        "model": batch_packet.get("model", ""),
+        "batch_id": batch_packet.get("batch_id", ""),
+        "cases_reviewed": batch_packet.get("cases_reviewed", []),
+        "case_count": batch_packet.get("case_count", 0),
+        "cases": batch_packet.get("cases", []),
+        "mode": "pattern_discovery",
+    }
+    prompt_lines = [
+        "You are discovering recurring detailed failure patterns inside a batch of PAL failure traces.",
+        "This is not an accuracy comparison.",
+        "OpenAI, Cohere, Cerebras, and Fireworks are allowed only for pattern discovery, not for algorithm comparison.",
+        "Return JSON only.",
+        "Do not use gold information or hidden labels unless explicitly present in the batch packet; by default they are absent.",
+        "Report observed patterns, not just inferred reasons.",
+        "Distinguish supporting cases from negative or uncertain cases.",
+        "Every pattern must cite case IDs and trace-grounded evidence.",
+        "",
+        "Return exactly this JSON schema:",
+        json.dumps(
+            {
+                "provider": "openai|cohere|cerebras|fireworks",
+                "model": "string",
+                "batch_id": "string",
+                "cases_reviewed": ["case_id"],
+                "top_patterns": [
+                    {
+                        "pattern_name": "string",
+                        "description": "string",
+                        "supporting_case_ids": ["case_id"],
+                        "negative_or_uncertain_case_ids": ["case_id"],
+                        "confidence": 0.0,
+                        "evidence_summary": "short trace-grounded explanation",
+                        "likely_failure_stage": "target_extraction|relation_mapping|operator_choice|PAL_grounding|candidate_generation|selector|metadata|unknown",
+                    }
+                ],
+                "recommended_taxonomy_changes": ["string"],
+                "what_extra_metadata_is_needed": ["string"],
+                "do_not_claim": ["string"],
+            },
+            indent=2,
+            sort_keys=True,
+        ),
+        "",
+        "Batch packet:",
+        json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False),
+        "",
+        "Rules:",
+        "- Focus on recurring detailed patterns within the batch.",
+        "- Provide short, trace-grounded evidence summaries.",
+        "- Confidence must be a number between 0 and 1.",
+        "- Use negative_or_uncertain_case_ids when a case weakens or does not clearly support the pattern.",
+        "- Do not present this as an accuracy comparison or benchmark ranking.",
+    ]
+    return "\n".join(prompt_lines).rstrip() + "\n"
+
+
+def _parse_pattern_discovery_json(text: str) -> tuple[dict[str, Any] | None, str]:
+    try:
+        payload = json.loads(text)
+    except Exception as exc:
+        return None, f"json_parse_error:{type(exc).__name__}"
+    if not isinstance(payload, dict):
+        return None, "json_not_object"
+
+    normalized_patterns: list[dict[str, Any]] = []
+    raw_patterns = payload.get("top_patterns") or []
+    if not isinstance(raw_patterns, list):
+        return None, "invalid_top_patterns"
+
+    for item in raw_patterns:
+        if not isinstance(item, dict):
+            return None, "invalid_pattern_item"
+        normalized_patterns.append(
+            {
+                "pattern_name": _stringify(item.get("pattern_name")),
+                "description": _stringify(item.get("description")),
+                "supporting_case_ids": sorted({_stringify(case_id) for case_id in (item.get("supporting_case_ids") or []) if _stringify(case_id)}),
+                "negative_or_uncertain_case_ids": sorted({_stringify(case_id) for case_id in (item.get("negative_or_uncertain_case_ids") or []) if _stringify(case_id)}),
+                "confidence": _safe_float(item.get("confidence"), default=-1.0),
+                "evidence_summary": _stringify(item.get("evidence_summary")),
+                "likely_failure_stage": _stringify(item.get("likely_failure_stage")),
+            }
+        )
+
+    normalized = {
+        "provider": _stringify(payload.get("provider")),
+        "model": _stringify(payload.get("model")),
+        "batch_id": _stringify(payload.get("batch_id")),
+        "cases_reviewed": sorted({_stringify(case_id) for case_id in (payload.get("cases_reviewed") or []) if _stringify(case_id)}),
+        "top_patterns": normalized_patterns,
+        "recommended_taxonomy_changes": [_stringify(item) for item in (payload.get("recommended_taxonomy_changes") or []) if _stringify(item)],
+        "what_extra_metadata_is_needed": [_stringify(item) for item in (payload.get("what_extra_metadata_is_needed") or []) if _stringify(item)],
+        "do_not_claim": [_stringify(item) for item in (payload.get("do_not_claim") or []) if _stringify(item)],
+    }
+
+    errors: list[str] = []
+    if normalized["provider"] not in SUPPORTED_PROVIDERS:
+        errors.append("invalid_provider")
+    if not normalized["model"]:
+        errors.append("missing_model")
+    if not normalized["batch_id"]:
+        errors.append("missing_batch_id")
+    if not normalized["cases_reviewed"]:
+        errors.append("missing_cases_reviewed")
+    for pattern in normalized_patterns:
+        if not pattern["pattern_name"]:
+            errors.append("missing_pattern_name")
+        if not pattern["description"]:
+            errors.append("missing_pattern_description")
+        if not pattern["evidence_summary"]:
+            errors.append("missing_pattern_evidence")
+        if pattern["likely_failure_stage"] not in PATTERN_FAILURE_STAGES:
+            errors.append("invalid_likely_failure_stage")
+        if not (0.0 <= pattern["confidence"] <= 1.0):
+            errors.append("invalid_pattern_confidence")
+    normalized["pattern_valid"] = not errors
+    normalized["pattern_errors"] = errors
+    normalized["label_valid"] = not errors
+    normalized["label_errors"] = errors
+    return normalized, ""
+
+
+def _summarize_pattern_discovery(parsed_rows: list[dict[str, Any]], providers: list[str]) -> dict[str, Any]:
+    provider_pattern_name_counts: dict[str, Counter[str]] = {provider: Counter() for provider in providers}
+    provider_supporting_counts: dict[str, Counter[str]] = {provider: Counter() for provider in providers}
+    provider_stage_counts: dict[str, Counter[str]] = {provider: Counter() for provider in providers}
+    provider_ambiguous_case_ids: dict[str, set[str]] = {provider: set() for provider in providers}
+    provider_hypothesis_names: dict[str, set[str]] = {provider: set() for provider in providers}
+    global_pattern_name_to_providers: dict[str, set[str]] = defaultdict(set)
+
+    for row in parsed_rows:
+        provider = _stringify(row.get("provider"))
+        if provider not in provider_pattern_name_counts:
+            continue
+        if not row.get("label_valid"):
+            continue
+        for pattern in row.get("top_patterns", []) or []:
+            if not isinstance(pattern, dict):
+                continue
+            name = _stringify(pattern.get("pattern_name"))
+            stage = _stringify(pattern.get("likely_failure_stage")) or "unknown"
+            support_ids = [_stringify(case_id) for case_id in (pattern.get("supporting_case_ids") or []) if _stringify(case_id)]
+            ambiguous_ids = [_stringify(case_id) for case_id in (pattern.get("negative_or_uncertain_case_ids") or []) if _stringify(case_id)]
+            if name:
+                provider_pattern_name_counts[provider][name] += 1
+                provider_supporting_counts[provider][name] += len(support_ids)
+                provider_hypothesis_names[provider].add(name)
+                global_pattern_name_to_providers[name].add(provider)
+            provider_stage_counts[provider][stage] += 1
+            provider_ambiguous_case_ids[provider].update(ambiguous_ids)
+
+    stage_distribution = {
+        provider: dict(sorted(counter.items(), key=lambda item: (-item[1], item[0])))
+        for provider, counter in provider_stage_counts.items()
+    }
+    unique_hypotheses = {
+        provider: sorted(
+            name for name in provider_hypothesis_names[provider] if global_pattern_name_to_providers.get(name) == {provider}
+        )
+        for provider in providers
+    }
+
+    return {
+        "provider_pattern_name_counts": {provider: dict(sorted(counter.items(), key=lambda item: (-item[1], item[0]))) for provider, counter in provider_pattern_name_counts.items()},
+        "provider_supporting_case_counts": {provider: dict(sorted(counter.items(), key=lambda item: (-item[1], item[0]))) for provider, counter in provider_supporting_counts.items()},
+        "provider_likely_failure_stage_distribution": stage_distribution,
+        "provider_ambiguous_case_ids": {provider: sorted(case_ids) for provider, case_ids in provider_ambiguous_case_ids.items()},
+        "provider_unique_hypotheses": unique_hypotheses,
+        "provider_total_pattern_rows": {
+            provider: sum(provider_pattern_name_counts[provider].values()) for provider in providers
+        },
+    }
+
+
 def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, dict[str, Any]]:
     provider = provider.lower().strip()
+    if provider == "openai":
+        client = _load_openai_client()
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+            max_tokens=512,
+            response_format={"type": "json_object"},
+        )
+        return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.openai.com/v1"}
+
     if provider == "cohere":
         client = _load_cohere_client()
         response = client.chat(
@@ -972,9 +1233,9 @@ def _call_provider_api(*, provider: str, model: str, prompt: str) -> tuple[str, 
 def _normalize_providers(text: str, *, allow_api: bool) -> list[str]:
     providers = [provider.strip().lower() for provider in _stringify(text).split(",") if provider.strip()]
     if providers:
-        unknown = [provider for provider in providers if provider not in DEFAULT_PROVIDERS]
+        unknown = [provider for provider in providers if provider not in SUPPORTED_PROVIDERS]
         if unknown:
-            raise ValueError(f"Unknown provider(s): {', '.join(sorted(unknown))}. Supported: {', '.join(DEFAULT_PROVIDERS)}")
+            raise ValueError(f"Unknown provider(s): {', '.join(sorted(unknown))}. Supported: {', '.join(SUPPORTED_PROVIDERS)}")
         return providers
     if allow_api:
         raise ValueError("--providers is required when --allow-api is set.")
@@ -991,7 +1252,7 @@ def _parse_provider_caps(values: list[str]) -> dict[str, int]:
             raise ValueError(f"Invalid --provider-cap value {raw!r}; expected provider=cap")
         provider, cap_text = text.split("=", 1)
         provider = provider.strip().lower()
-        if provider not in DEFAULT_PROVIDERS:
+        if provider not in SUPPORTED_PROVIDERS:
             raise ValueError(f"Unknown provider in --provider-cap: {provider}")
         try:
             cap = int(cap_text)
@@ -1048,6 +1309,42 @@ def _build_provider_request(
         "dry_run": bool(dry_run),
         "include_gold_for_labeling": bool(include_gold_for_labeling),
         "api_call_made": 0,
+    }
+    return request
+
+
+def _build_pattern_provider_request(
+    *,
+    provider: str,
+    model: str,
+    batch_packet: dict[str, Any],
+    prompt_text: str,
+    request_index: int,
+    provider_cap: int,
+    dry_run: bool,
+) -> dict[str, Any]:
+    request_id = f"{provider}:{batch_packet['batch_id']}:{request_index:05d}"
+    request = {
+        "request_id": request_id,
+        "batch_id": batch_packet["batch_id"],
+        "provider": provider,
+        "model": model,
+        "mode": "pattern_discovery",
+        "prompt_template_id": batch_packet.get("prompt_template_id", "failure_mechanism_multi_api_pattern_v1"),
+        "prompt_text": prompt_text,
+        "prompt_sha256": _sha256_text(prompt_text),
+        "request_sha256": _sha256_text(json.dumps({
+            "batch_id": batch_packet["batch_id"],
+            "provider": provider,
+            "model": model,
+            "prompt_sha256": _sha256_text(prompt_text),
+            "provider_cap": provider_cap,
+        }, sort_keys=True)),
+        "provider_cap": provider_cap,
+        "dry_run": bool(dry_run),
+        "api_call_made": 0,
+        "batch_case_count": batch_packet.get("case_count", 0),
+        "cases_reviewed": batch_packet.get("cases_reviewed", []),
     }
     return request
 
@@ -1312,6 +1609,137 @@ def _build_outputs(
     return agreement_summary
 
 
+def _build_pattern_outputs(
+    *,
+    batch_packets: list[dict[str, Any]],
+    providers: list[str],
+    provider_models: dict[str, str],
+    provider_caps: dict[str, int],
+    allow_api: bool,
+    include_gold_for_labeling: bool,
+    max_calls_total: int,
+    prompt_packets: list[dict[str, Any]],
+    request_rows: list[dict[str, Any]],
+    raw_rows: list[dict[str, Any]],
+    parsed_rows: list[dict[str, Any]],
+    output_dir: Path,
+    manifest: dict[str, Any],
+) -> dict[str, Any]:
+    pattern_summary = _summarize_pattern_discovery(parsed_rows, providers)
+    readiness_summary = _provider_readiness_summary(parsed_rows, providers)
+    pattern_summary.update(
+        {
+            "mode": "pattern_discovery",
+            "allow_api": allow_api,
+            "include_gold_for_labeling": include_gold_for_labeling,
+            "max_calls_total": max_calls_total,
+            "provider_caps": provider_caps,
+            "provider_models": provider_models,
+            "planned_request_count": len(request_rows),
+            "requested_case_count": manifest.get("requested_case_count", pattern_summary.get("selected_case_count", 0)),
+            "expected_request_count": len(providers),
+            "raw_label_row_count": len(raw_rows),
+            "parsed_label_row_count": len(parsed_rows),
+            "batch_count": len(batch_packets),
+            "provider_batch_count": len(providers),
+            "selected_case_count": batch_packets[0].get("case_count", 0) if batch_packets else 0,
+            "cases_reviewed": batch_packets[0].get("cases_reviewed", []) if batch_packets else [],
+            "api_call_count": sum(1 for row in raw_rows if _is_truthy(row.get("api_call_made"))),
+        }
+    )
+    pattern_summary.update(readiness_summary)
+
+    _write_jsonl(output_dir / "trace_packets.jsonl", prompt_packets)
+    _write_jsonl(output_dir / "provider_requests_dry_run.jsonl", request_rows)
+    _write_jsonl(output_dir / "raw_provider_labels.jsonl", raw_rows)
+    _write_jsonl(output_dir / "parsed_labels.jsonl", parsed_rows)
+    _write_json(output_dir / "pattern_summary.json", pattern_summary)
+    report_lines = [
+        "# Multi-API Failure Mechanism Pattern Discovery",
+        "",
+        "## Run Mode",
+        "",
+        f"- mode: `pattern_discovery`",
+        f"- allow_api: `{allow_api}`",
+        f"- dry_run: `{not allow_api or not request_rows or all(row.get('dry_run') for row in request_rows)}`",
+        f"- include_gold_for_labeling: `{include_gold_for_labeling}`",
+        f"- max_calls_total: `{max_calls_total}`",
+        f"- providers: `{', '.join(providers)}`",
+        f"- provider_caps: `{json.dumps(provider_caps, sort_keys=True)}`",
+        "",
+        "## Batch Counts",
+        "",
+        f"- selected_case_count: `{pattern_summary.get('selected_case_count', 0)}`",
+        f"- requested_case_count: `{manifest.get('requested_case_count', pattern_summary.get('selected_case_count', 0))}`",
+        f"- batch_count: `{pattern_summary.get('batch_count', 0)}`",
+        f"- provider_batch_count: `{pattern_summary.get('provider_batch_count', 0)}`",
+        f"- planned_request_count: `{pattern_summary.get('planned_request_count', 0)}`",
+        f"- expected_request_count: `{pattern_summary.get('planned_request_count', 0)}`",
+        f"- api_call_count: `{sum(1 for row in raw_rows if _is_truthy(row.get('api_call_made')))}`",
+        "",
+        "## Provider Config",
+        "",
+    ]
+    provider_config_summary = manifest.get("provider_config_summary", {})
+    for provider in providers:
+        config = provider_config_summary.get(provider, {})
+        report_lines.append(
+            f"- `{provider}`: env_ready `{config.get('env_ready')}`; model `{config.get('model')}`; config_ready `{config.get('config_ready')}`"
+        )
+        env_presence = config.get("env_presence", {})
+        if isinstance(env_presence, dict):
+            for env_name, present in sorted(env_presence.items()):
+                report_lines.append(f"  - {env_name}: `{present}`")
+    report_lines.extend(
+        [
+            "",
+            "## Pattern Summary",
+            "",
+            f"- provider_pattern_name_counts: `{json.dumps(pattern_summary.get('provider_pattern_name_counts', {}), sort_keys=True)}`",
+            f"- provider_supporting_case_counts: `{json.dumps(pattern_summary.get('provider_supporting_case_counts', {}), sort_keys=True)}`",
+            f"- provider_likely_failure_stage_distribution: `{json.dumps(pattern_summary.get('provider_likely_failure_stage_distribution', {}), sort_keys=True)}`",
+            f"- provider_ambiguous_case_ids: `{json.dumps(pattern_summary.get('provider_ambiguous_case_ids', {}), sort_keys=True)}`",
+            f"- provider_unique_hypotheses: `{json.dumps(pattern_summary.get('provider_unique_hypotheses', {}), sort_keys=True)}`",
+            "",
+            "## Provider Readiness",
+            "",
+        ]
+    )
+    readiness_counts = pattern_summary.get("provider_readiness_counts", {})
+    readiness_samples = pattern_summary.get("provider_error_samples", {})
+    for provider in providers:
+        provider_counts = readiness_counts.get(provider, {})
+        report_lines.append(f"- `{provider}`: `{json.dumps(provider_counts, sort_keys=True)}`")
+        for sample in readiness_samples.get(provider, []):
+            report_lines.append(
+                "  - "
+                + json.dumps(
+                    {
+                        "batch_id": sample.get("case_id"),
+                        "label_status": sample.get("label_status"),
+                        "provider_readiness": sample.get("provider_readiness"),
+                        "provider_http_status": sample.get("provider_http_status"),
+                        "provider_error_code": sample.get("provider_error_code"),
+                        "provider_error_message_short": sample.get("provider_error_message_short"),
+                    },
+                    sort_keys=True,
+                )
+            )
+    report_lines.extend(
+        [
+            "",
+            "## Notes",
+            "",
+            "- Pattern discovery batches are hypotheses until manually audited.",
+            "- Non-Cohere providers are allowed here only for pattern discovery, not for algorithm comparison.",
+            "- The pattern prompt is gold-free unless `--include-gold-for-labeling` is set.",
+        ]
+    )
+    (output_dir / "report.md").write_text("\n".join(report_lines).rstrip() + "\n", encoding="utf-8")
+    _write_json(output_dir / "manifest.json", manifest)
+    return pattern_summary
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--failure-csv", default=str(DEFAULT_FAILURE_CSV), help="Failure audit CSV.")
@@ -1324,6 +1752,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--outputs-root", default=str(DEFAULT_OUTPUTS_ROOT), help="Outputs root for auto-discovery.")
     parser.add_argument("--subsets", "--subset", default=",".join(DEFAULT_SUBSETS), help="Comma-separated subset list.")
     parser.add_argument("--providers", default="", help="Comma-separated providers. Required in API mode.")
+    parser.add_argument("--mode", choices=["label", "pattern_discovery"], default="label", help="Label each case or discover patterns across a batch.")
+    parser.add_argument("--openai-model", default=DEFAULT_MODELS["openai"], help="OpenAI model name.")
     parser.add_argument("--cohere-model", default=DEFAULT_MODELS["cohere"], help="Cohere model name.")
     parser.add_argument("--cerebras-model", default="", help="Cerebras model name. Required for live API mode.")
     parser.add_argument("--fireworks-model", default="", help="Fireworks model name. Required for live API mode.")
@@ -1427,14 +1857,19 @@ def main(argv: list[str] | None = None) -> int:
         explicit_provider_caps=explicit_caps,
     )
     provider_models = {
+        "openai": _stringify(args.openai_model) or DEFAULT_MODELS["openai"],
         "cohere": _stringify(args.cohere_model) or DEFAULT_MODELS["cohere"],
         "cerebras": _stringify(args.cerebras_model),
         "fireworks": _stringify(args.fireworks_model),
     }
     if not allow_api or check_provider_config:
+        provider_models["openai"] = provider_models["openai"] or DEFAULT_MODELS["openai"]
+    if not allow_api or check_provider_config:
         provider_models["cerebras"] = provider_models["cerebras"] or DEFAULT_MODELS["cerebras"]
         provider_models["fireworks"] = provider_models["fireworks"] or DEFAULT_MODELS["fireworks"]
     provider_config_summary = _provider_config_summary(providers=providers, provider_models=provider_models)
+
+    mode = _stringify(args.mode).lower()
 
     if check_provider_config:
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -1545,6 +1980,360 @@ def main(argv: list[str] | None = None) -> int:
         )
         (output_dir / "report.md").write_text("\n".join(config_report_lines).rstrip() + "\n", encoding="utf-8")
         print(json.dumps(config_manifest, indent=2, sort_keys=True))
+        return 0
+
+    if mode == "pattern_discovery":
+        if allow_api:
+            missing_models = [provider for provider in providers if not provider_models.get(provider)]
+            if missing_models:
+                raise ValueError(
+                    "Pattern discovery live mode requires explicit models for selected providers; missing: "
+                    + ", ".join(sorted(missing_models))
+                )
+            missing_env = [provider for provider in providers if not _provider_env_ready(provider)]
+            if missing_env:
+                raise ValueError(
+                    "Pattern discovery live mode requires provider environment variables for selected providers; missing or empty env for: "
+                    + ", ".join(sorted(missing_env))
+                )
+            if max_calls_total < len(providers):
+                raise RuntimeError(
+                    "Hard call cap is too small for one batch request per selected provider in pattern discovery mode."
+                )
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        batch_packets: list[dict[str, Any]] = []
+        prompt_packets: list[dict[str, Any]] = []
+        request_rows: list[dict[str, Any]] = []
+        raw_rows: list[dict[str, Any]] = []
+        parsed_rows: list[dict[str, Any]] = []
+        total_calls = 0
+        provider_call_counts: Counter[str] = Counter()
+        provider_request_counts: Counter[str] = Counter()
+        api_clients_constructed = False
+
+        if allow_api and not dry_run:
+            api_clients_constructed = True
+
+        for provider in providers:
+            batch_id = _build_pattern_batch_id(provider=provider, case_packets=case_packets)
+            batch_packet = _build_pattern_batch_packet(
+                provider=provider,
+                model=provider_models[provider],
+                batch_id=batch_id,
+                case_packets=case_packets,
+                include_gold_for_labeling=bool(args.include_gold_for_labeling),
+            )
+            batch_packets.append(batch_packet)
+            prompt_text = _render_pattern_prompt(batch_packet)
+            prompt_packets.append({**batch_packet, "prompt": prompt_text, "prompt_sha256": _sha256_text(prompt_text)})
+            provider_request_counts[provider] += 1
+            request_row = _build_pattern_provider_request(
+                provider=provider,
+                model=provider_models[provider],
+                batch_packet=batch_packet,
+                prompt_text=prompt_text,
+                request_index=provider_request_counts[provider],
+                provider_cap=provider_caps.get(provider, 0),
+                dry_run=dry_run,
+            )
+            request_rows.append(request_row)
+
+            if dry_run:
+                raw_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": batch_id,
+                        "batch_id": batch_id,
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "mode": "pattern_discovery",
+                        "cases_reviewed": batch_packet["cases_reviewed"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": True,
+                        "api_call_made": 0,
+                        "raw_label_text": "",
+                        "raw_label_sha256": "",
+                        "raw_response_json": "",
+                        "api_error": "",
+                        "provider_readiness": "dry_run",
+                        "provider_http_status": "",
+                        "provider_error_code": "",
+                        "provider_error_message_short": "",
+                    }
+                )
+                parsed_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": batch_id,
+                        "batch_id": batch_id,
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "mode": "pattern_discovery",
+                        "cases_reviewed": batch_packet["cases_reviewed"],
+                        "top_patterns": [],
+                        "recommended_taxonomy_changes": [],
+                        "what_extra_metadata_is_needed": [],
+                        "do_not_claim": [],
+                        "prompt_template_id": request_row["prompt_template_id"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": True,
+                        "api_call_made": 0,
+                        "label_status": "dry_run",
+                        "pattern_valid": False,
+                        "pattern_errors": ["dry_run"],
+                        "label_valid": False,
+                        "label_errors": ["dry_run"],
+                        "provider_readiness": "dry_run",
+                        "provider_http_status": "",
+                        "provider_error_code": "",
+                        "provider_error_message_short": "",
+                    }
+                )
+                continue
+
+            total_calls += 1
+            provider_call_counts[provider] += 1
+            try:
+                raw_text, api_meta = _call_provider_api(provider=provider, model=provider_models[provider], prompt=prompt_text)
+                parsed_pattern, parse_error = _parse_pattern_discovery_json(raw_text)
+                if parsed_pattern is None:
+                    provider_details = _provider_error_details(
+                        label_status="parse_error",
+                        api_error=raw_text,
+                        label_parse_error=parse_error,
+                    )
+                    raw_rows.append(
+                        {
+                            "request_id": request_row["request_id"],
+                            "case_id": batch_id,
+                            "batch_id": batch_id,
+                            "provider": provider,
+                            "model": provider_models[provider],
+                            "mode": "pattern_discovery",
+                            "cases_reviewed": batch_packet["cases_reviewed"],
+                            "prompt_sha256": request_row["prompt_sha256"],
+                            "request_sha256": request_row["request_sha256"],
+                            "dry_run": False,
+                            "api_call_made": 1,
+                            "raw_label_text": raw_text,
+                            "raw_label_sha256": _sha256_text(raw_text),
+                            "raw_response_json": json.dumps({**api_meta, **provider_details}, sort_keys=True),
+                            "api_error": "",
+                            **provider_details,
+                        }
+                    )
+                    parsed_rows.append(
+                        {
+                            "request_id": request_row["request_id"],
+                            "case_id": batch_id,
+                            "batch_id": batch_id,
+                            "provider": provider,
+                            "model": provider_models[provider],
+                            "mode": "pattern_discovery",
+                            "cases_reviewed": batch_packet["cases_reviewed"],
+                            "top_patterns": [],
+                            "recommended_taxonomy_changes": [],
+                            "what_extra_metadata_is_needed": [],
+                            "do_not_claim": [],
+                            "prompt_template_id": request_row["prompt_template_id"],
+                            "prompt_sha256": request_row["prompt_sha256"],
+                            "request_sha256": request_row["request_sha256"],
+                            "dry_run": False,
+                            "api_call_made": 1,
+                            "label_status": "parse_error",
+                            "label_parse_error": parse_error,
+                            "pattern_valid": False,
+                            "pattern_errors": [parse_error],
+                            "label_valid": False,
+                            "label_errors": [parse_error],
+                            **provider_details,
+                        }
+                    )
+                    continue
+
+                provider_details = _provider_error_details(
+                    label_status="parsed" if parsed_pattern.get("label_valid") else "parse_error",
+                    api_error="",
+                    label_parse_error="" if parsed_pattern.get("label_valid") else "invalid_pattern_schema",
+                )
+                label_status = "parsed" if parsed_pattern.get("label_valid") else "parse_error"
+                raw_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": batch_id,
+                        "batch_id": batch_id,
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "mode": "pattern_discovery",
+                        "cases_reviewed": batch_packet["cases_reviewed"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "raw_label_text": raw_text,
+                        "raw_label_sha256": _sha256_text(raw_text),
+                        "raw_response_json": json.dumps({**api_meta, **provider_details}, sort_keys=True),
+                        "api_error": "",
+                        **provider_details,
+                    }
+                )
+                parsed_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": batch_id,
+                        "batch_id": batch_id,
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "mode": "pattern_discovery",
+                        "cases_reviewed": batch_packet["cases_reviewed"],
+                        "top_patterns": parsed_pattern["top_patterns"],
+                        "recommended_taxonomy_changes": parsed_pattern["recommended_taxonomy_changes"],
+                        "what_extra_metadata_is_needed": parsed_pattern["what_extra_metadata_is_needed"],
+                        "do_not_claim": parsed_pattern["do_not_claim"],
+                        "prompt_template_id": request_row["prompt_template_id"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "label_status": label_status,
+                        "pattern_valid": bool(parsed_pattern.get("pattern_valid")),
+                        "pattern_errors": list(parsed_pattern.get("pattern_errors") or []),
+                        "label_valid": bool(parsed_pattern.get("label_valid")),
+                        "label_errors": list(parsed_pattern.get("label_errors") or []),
+                        **provider_details,
+                    }
+                )
+            except Exception as exc:
+                error_text = _sanitize_error_message(str(exc))
+                provider_details = _provider_error_details(label_status="api_error", api_error=error_text)
+                raw_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": batch_id,
+                        "batch_id": batch_id,
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "mode": "pattern_discovery",
+                        "cases_reviewed": batch_packet["cases_reviewed"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "raw_label_text": "",
+                        "raw_label_sha256": "",
+                        "raw_response_json": json.dumps(
+                            {"error": error_text, "provider": provider, "model": provider_models[provider], **provider_details},
+                            sort_keys=True,
+                        ),
+                        "api_error": error_text,
+                        **provider_details,
+                    }
+                )
+                parsed_rows.append(
+                    {
+                        "request_id": request_row["request_id"],
+                        "case_id": batch_id,
+                        "batch_id": batch_id,
+                        "provider": provider,
+                        "model": provider_models[provider],
+                        "mode": "pattern_discovery",
+                        "cases_reviewed": batch_packet["cases_reviewed"],
+                        "top_patterns": [],
+                        "recommended_taxonomy_changes": [],
+                        "what_extra_metadata_is_needed": [],
+                        "do_not_claim": [],
+                        "prompt_template_id": request_row["prompt_template_id"],
+                        "prompt_sha256": request_row["prompt_sha256"],
+                        "request_sha256": request_row["request_sha256"],
+                        "dry_run": False,
+                        "api_call_made": 1,
+                        "label_status": "api_error",
+                        "api_error": error_text,
+                        "pattern_valid": False,
+                        "pattern_errors": [error_text],
+                        "label_valid": False,
+                        "label_errors": [error_text],
+                        **provider_details,
+                    }
+                )
+
+        manifest = {
+            "experiment_id": "failure_mechanism_multi_api_v1",
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "script": "scripts/label_failure_mechanisms_multi_api.py",
+            "mode": "pattern_discovery",
+            "allow_api": allow_api,
+            "dry_run": dry_run,
+            "check_provider_config": check_provider_config,
+            "api_clients_constructed": api_clients_constructed,
+            "max_calls_total": max_calls_total,
+            "limit": limit_value,
+            "providers": providers,
+            "provider_models": provider_models,
+            "provider_caps": provider_caps,
+            "provider_config_summary": provider_config_summary,
+            "include_gold_for_labeling": bool(args.include_gold_for_labeling),
+            "gold_assisted": bool(args.include_gold_for_labeling),
+            "subset_specs": subset_specs,
+            "subset_names": subsets,
+            "subset_case_counts": {spec["subset"]: len(spec["case_ids"]) for spec in subset_specs},
+            "prelimit_unique_case_count": prelimit_unique_case_count,
+            "requested_case_count": prelimit_unique_case_count,
+            "selected_case_count": len(case_packets),
+            "unique_case_count": len(case_packets),
+            "batch_count": len(batch_packets),
+            "provider_batch_count": len(providers),
+            "planned_request_count": len(request_rows),
+            "expected_request_count": len(providers),
+            "api_call_count": total_calls,
+            "failure_csv": str(failure_csv),
+            "gold_absent_csv": str(gold_absent_csv),
+            "anchor_effect_csv": str(anchor_effect_csv),
+            "target_audit_jsonl": str(target_audit_jsonl),
+            "diagnostic_30_jsonl": str(diagnostic_30_jsonl),
+            "target_staged_15_jsonl": str(target_staged_15_jsonl),
+            "structural_feature_csv": str(resolved_structural_csv) if resolved_structural_csv else "",
+            "output_files": [
+                "manifest.json",
+                "trace_packets.jsonl",
+                "provider_requests_dry_run.jsonl",
+                "raw_provider_labels.jsonl",
+                "parsed_labels.jsonl",
+                "pattern_summary.json",
+                "report.md",
+            ],
+            "pattern_schema": {
+                "provider_values": sorted(SUPPORTED_PROVIDERS),
+                "failure_stage_values": sorted(PATTERN_FAILURE_STAGES),
+            },
+            "selection_notes": [
+                "diagnostic_30 and target_staged_15 are exact JSONL slices.",
+                "pal_still_failing_157 is derived from the full failure CSV and trimmed to 157 if necessary.",
+                "wrong_supported_consensus_97 is derived from the gold-absent CSV rows with external_contrast == Both wrong and trimmed to 97 if necessary.",
+                "direct_l1_anchor_potential_43 is derived from the anchor-effect CSV rows with strong anchor evidence and trimmed to 43 if necessary.",
+                "Pattern discovery batches are hypotheses until manually audited.",
+            ],
+            "no_api_clients_constructed": not api_clients_constructed,
+        }
+
+        _build_pattern_outputs(
+            batch_packets=batch_packets,
+            providers=providers,
+            provider_models=provider_models,
+            provider_caps=provider_caps,
+            allow_api=allow_api,
+            include_gold_for_labeling=bool(args.include_gold_for_labeling),
+            max_calls_total=max_calls_total,
+            prompt_packets=prompt_packets,
+            request_rows=request_rows,
+            raw_rows=raw_rows,
+            parsed_rows=parsed_rows,
+            output_dir=output_dir,
+            manifest=manifest,
+        )
         return 0
 
     if allow_api:

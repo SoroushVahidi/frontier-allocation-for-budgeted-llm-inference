@@ -266,3 +266,66 @@ def test_provider_readiness_summary_classifies_403_and_404_errors() -> None:
     assert summary["provider_readiness_counts"]["fireworks"]["model_not_found"] == 1
     assert summary["provider_error_samples"]["cerebras"][0]["provider_readiness"] == "auth_error"
     assert summary["provider_error_samples"]["fireworks"][0]["provider_http_status"] == 404
+
+
+def test_pattern_discovery_summary_aggregates_names_stages_and_hypotheses() -> None:
+    parsed_rows = [
+        {
+            "provider": "openai",
+            "label_valid": True,
+            "top_patterns": [
+                {
+                    "pattern_name": "target drift",
+                    "likely_failure_stage": "target_extraction",
+                    "supporting_case_ids": ["c1", "c2"],
+                    "negative_or_uncertain_case_ids": ["c3"],
+                },
+                {
+                    "pattern_name": "selector collapse",
+                    "likely_failure_stage": "selector",
+                    "supporting_case_ids": ["c4"],
+                    "negative_or_uncertain_case_ids": ["c5", "c6"],
+                },
+            ],
+        },
+        {
+            "provider": "cohere",
+            "label_valid": True,
+            "top_patterns": [
+                {
+                    "pattern_name": "target drift",
+                    "likely_failure_stage": "target_extraction",
+                    "supporting_case_ids": ["c7"],
+                    "negative_or_uncertain_case_ids": ["c8"],
+                },
+                {
+                    "pattern_name": "metadata gap",
+                    "likely_failure_stage": "metadata",
+                    "supporting_case_ids": ["c9", "c10"],
+                    "negative_or_uncertain_case_ids": [],
+                },
+            ],
+        },
+        {
+            "provider": "fireworks",
+            "label_valid": False,
+            "top_patterns": [
+                {
+                    "pattern_name": "ignored",
+                    "likely_failure_stage": "unknown",
+                    "supporting_case_ids": ["c11"],
+                    "negative_or_uncertain_case_ids": [],
+                }
+            ],
+        },
+    ]
+
+    summary = labeler._summarize_pattern_discovery(parsed_rows, ["openai", "cohere", "fireworks"])
+
+    assert summary["provider_pattern_name_counts"]["openai"]["target drift"] == 1
+    assert summary["provider_supporting_case_counts"]["openai"]["target drift"] == 2
+    assert summary["provider_likely_failure_stage_distribution"]["openai"]["target_extraction"] == 1
+    assert summary["provider_ambiguous_case_ids"]["openai"] == ["c3", "c5", "c6"]
+    assert summary["provider_unique_hypotheses"]["openai"] == ["selector collapse"]
+    assert summary["provider_unique_hypotheses"]["cohere"] == ["metadata gap"]
+    assert summary["provider_total_pattern_rows"]["fireworks"] == 0

@@ -97,3 +97,99 @@ def test_prompt_rendering_and_label_schema_validation() -> None:
     assert invalid_payload["label_valid"] is False
     assert "invalid_primary_label" in invalid_payload["label_errors"]
     assert "invalid_confidence" in invalid_payload["label_errors"]
+
+
+def test_pattern_discovery_prompt_rendering_and_schema_validation() -> None:
+    batch_packet = {
+        "provider": "openai",
+        "model": "gpt-4.1-mini",
+        "batch_id": "openai:2:abc123",
+        "cases_reviewed": ["c1", "c2"],
+        "case_count": 2,
+        "cases": [
+            {
+                "case_id": "c1",
+                "question": "Question c1",
+                "candidate_answers": ["7"],
+                "candidate_answer_groups": [],
+                "selector_metadata": {},
+                "action_trace_summary": {},
+                "pal_exec_summary": {},
+                "structural_fields": {"target_tuple": {"question_kind": "count"}},
+                "failure_audit_labels": {},
+                "primary_subset": "diagnostic_30",
+                "subset_memberships": [{"subset": "diagnostic_30", "rank": 1, "approximate": False, "selection_logic": "exact"}],
+            }
+        ],
+        "mode": "pattern_discovery",
+        "prompt_template_id": "failure_mechanism_multi_api_pattern_v1",
+        "include_gold_for_labeling": False,
+        "gold_assisted": False,
+        "non_cohere_policy": "Allowed only for pattern discovery, not for algorithm comparison.",
+        "not_accuracy_comparison": True,
+    }
+    prompt = labeler._render_pattern_prompt(batch_packet)
+    assert "pattern discovery" in prompt.lower()
+    assert "accuracy comparison" in prompt.lower()
+    assert "gold_answer" not in prompt.lower()
+    assert "answer_key" not in prompt.lower()
+
+    parsed, error = labeler._parse_pattern_discovery_json(
+        json.dumps(
+            {
+                "provider": "openai",
+                "model": "gpt-4.1-mini",
+                "batch_id": "openai:2:abc123",
+                "cases_reviewed": ["c1", "c2"],
+                "top_patterns": [
+                    {
+                        "pattern_name": "target extraction drift",
+                        "description": "The target variable is misread before solving.",
+                        "supporting_case_ids": ["c1"],
+                        "negative_or_uncertain_case_ids": ["c2"],
+                        "confidence": 0.82,
+                        "evidence_summary": "The trace shows the wrong target being carried into the solution.",
+                        "likely_failure_stage": "target_extraction",
+                    }
+                ],
+                "recommended_taxonomy_changes": ["Add target binding diagnostics."],
+                "what_extra_metadata_is_needed": ["target schema"],
+                "do_not_claim": ["This is not an accuracy comparison."],
+            }
+        )
+    )
+    assert error == ""
+    assert parsed is not None
+    assert parsed["pattern_valid"] is True
+    assert parsed["label_valid"] is True
+    assert parsed["cases_reviewed"] == ["c1", "c2"]
+    assert parsed["top_patterns"][0]["likely_failure_stage"] == "target_extraction"
+
+    invalid_parsed, invalid_error = labeler._parse_pattern_discovery_json(
+        json.dumps(
+            {
+                "provider": "openai",
+                "model": "gpt-4.1-mini",
+                "batch_id": "openai:2:abc123",
+                "cases_reviewed": ["c1"],
+                "top_patterns": [
+                    {
+                        "pattern_name": "bad",
+                        "description": "bad",
+                        "supporting_case_ids": [],
+                        "negative_or_uncertain_case_ids": [],
+                        "confidence": 0.5,
+                        "evidence_summary": "evidence",
+                        "likely_failure_stage": "not_a_stage",
+                    }
+                ],
+                "recommended_taxonomy_changes": [],
+                "what_extra_metadata_is_needed": [],
+                "do_not_claim": [],
+            }
+        )
+    )
+    assert invalid_error == ""
+    assert invalid_parsed is not None
+    assert invalid_parsed["pattern_valid"] is False
+    assert "invalid_likely_failure_stage" in invalid_parsed["pattern_errors"]

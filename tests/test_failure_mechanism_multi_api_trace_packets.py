@@ -207,3 +207,56 @@ def test_trace_packets_include_structural_fields_and_stay_gold_free(tmp_path: Pa
     assert packet["gold_assisted"] is False
     assert "reference_answer" not in packet
 
+
+def test_pattern_discovery_trace_packets_include_batch_structure_and_stay_gold_free(tmp_path: Path) -> None:
+    case_packets = [
+        {
+            "case_id": "c1",
+            "primary_subset": "wrong_supported_consensus_97",
+            "subset_memberships": [{"subset": "wrong_supported_consensus_97", "rank": 1, "approximate": True, "selection_logic": "exact"}],
+            "question": "Question c1",
+            "model_final_prediction": "7",
+            "candidate_answers": ["7", "8"],
+            "candidate_answer_groups": [{"candidate_answer": "7", "support_count": 2}],
+            "selector_metadata": {"selected_source": "frontier"},
+            "action_trace_summary": {"failure_family": "unknown"},
+            "pal_exec_summary": {"pal_execution_status": "success"},
+            "structural_fields": {"target_tuple": {"question_kind": "count"}},
+            "failure_audit_labels": {"question_type": "multi-step arithmetic"},
+            "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+            "include_gold_for_labeling": False,
+            "gold_assisted": False,
+        },
+        {
+            "case_id": "c2",
+            "primary_subset": "wrong_supported_consensus_97",
+            "subset_memberships": [{"subset": "wrong_supported_consensus_97", "rank": 2, "approximate": True, "selection_logic": "exact"}],
+            "question": "Question c2",
+            "model_final_prediction": "9",
+            "candidate_answers": ["9"],
+            "candidate_answer_groups": [],
+            "selector_metadata": {"selected_source": "frontier"},
+            "action_trace_summary": {"failure_family": "metadata"},
+            "pal_exec_summary": {"pal_execution_status": "success"},
+            "structural_fields": {"target_tuple": {"question_kind": "count"}},
+            "failure_audit_labels": {"question_type": "multi-step arithmetic"},
+            "prompt_template_id": labeler.DEFAULT_PROMPT_TEMPLATE_ID,
+            "include_gold_for_labeling": False,
+            "gold_assisted": False,
+        },
+    ]
+    batch_packet = labeler._build_pattern_batch_packet(
+        provider="openai",
+        model="gpt-4.1-mini",
+        batch_id="openai:2:abc123",
+        case_packets=case_packets,
+        include_gold_for_labeling=False,
+    )
+    prompt = labeler._render_pattern_prompt(batch_packet)
+    assert batch_packet["case_count"] == 2
+    assert batch_packet["cases_reviewed"] == ["c1", "c2"]
+    assert "not an accuracy comparison" in prompt.lower()
+    assert "gold_answer" not in prompt.lower()
+    assert "answer_key" not in prompt.lower()
+    assert "c1" in prompt and "c2" in prompt
+    assert "pattern_name" in prompt
