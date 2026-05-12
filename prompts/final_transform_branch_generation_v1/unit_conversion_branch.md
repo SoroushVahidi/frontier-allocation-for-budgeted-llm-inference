@@ -18,6 +18,7 @@ Rules:
 - Warn against returning an unconverted quantity.
 - Keep the final answer tied to the converted quantity requested.
 - Final answer format: `FINAL_ANSWER: <number>`.
+- Do not prefix the answer with `$`, `%`, or any unit — output a bare integer or decimal only.
 - Do not output any other number after `FINAL_ANSWER`.
 - Keep reasoning concise.
 
@@ -27,4 +28,4 @@ QUESTION:
 TARGET_SCHEMA_JSON:
 {{target_schema_json}}
 
-Respond with a concise target-binding sketch, then `FINAL_ANSWER: <number>` only.
+Respond with a concise target-binding sketch, then `FINAL_ANSWER: <bare number>` only.

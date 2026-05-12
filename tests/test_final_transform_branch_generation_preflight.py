@@ -270,6 +270,13 @@ def test_every_prompt_contains_final_answer_format() -> None:
         assert "FINAL_ANSWER: <number>" in rendered, f"{tid} missing FINAL_ANSWER format"
 
 
+def test_every_prompt_requires_bare_number_no_currency() -> None:
+    for tid, rendered in _render_all_prompts().items():
+        assert "bare integer or decimal" in rendered, (
+            f"{tid} missing bare-number format enforcement (must prohibit $ prefix)"
+        )
+
+
 def test_every_prompt_contains_target_binding_checklist() -> None:
     for tid, rendered in _render_all_prompts().items():
         assert "What is the final target?" in rendered, f"{tid} missing checklist item 1"

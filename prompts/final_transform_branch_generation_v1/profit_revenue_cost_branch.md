@@ -19,6 +19,7 @@ Rules:
 - Do not return sale price, revenue, increase, or total cost when profit is asked.
 - Keep the final answer tied to the requested financial target.
 - Final answer format: `FINAL_ANSWER: <number>`.
+- Do not prefix the answer with `$`, `%`, or any unit — output a bare integer or decimal only.
 - Do not output any other number after `FINAL_ANSWER`.
 - Keep reasoning concise.
 
@@ -28,4 +29,4 @@ QUESTION:
 TARGET_SCHEMA_JSON:
 {{target_schema_json}}
 
-Respond with a concise target-binding sketch, then `FINAL_ANSWER: <number>` only.
+Respond with a concise target-binding sketch, then `FINAL_ANSWER: <bare number>` only.

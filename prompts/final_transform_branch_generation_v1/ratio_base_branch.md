@@ -20,6 +20,7 @@ Rules:
 - Warn against using the wrong base or total.
 - Keep the final answer tied to the target named in the question.
 - Final answer format: `FINAL_ANSWER: <number>`.
+- Do not prefix the answer with `$`, `%`, or any unit — output a bare integer or decimal only.
 - Do not output any other number after `FINAL_ANSWER`.
 - Keep reasoning concise.
 
@@ -29,4 +30,4 @@ QUESTION:
 TARGET_SCHEMA_JSON:
 {{target_schema_json}}
 
-Respond with a concise target-binding sketch, then `FINAL_ANSWER: <number>` only.
+Respond with a concise target-binding sketch, then `FINAL_ANSWER: <bare number>` only.
