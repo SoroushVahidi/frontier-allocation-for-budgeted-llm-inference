@@ -1,0 +1,191 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from scripts import prepare_final_transform_branch_generation_v1_preflight as preflight
+
+
+def _write_trace_packets(path: Path, cases: list[dict[str, str]]) -> None:
+    payload = {"batch_id": "test", "case_count": len(cases), "cases": cases}
+    path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+
+
+def _write_gold_absent_report(path: Path, rows: list[tuple[str, str, str, str, str, str]]) -> None:
+    lines = [
+        "# Wrong-supported-consensus gold-pool split",
+        "",
+        "## B. gold_absent_from_pool",
+        "",
+        "| case_id | question_type | selected prediction | nearest candidate values | final-transform subtype | generation branch needed |",
+        "|---|---|---|---|---|---|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} |"
+        )
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    ("question", "expected_family"),
+    [
+        ("What percentage of the total is 12?", "ratio_base_branch"),
+        ("What was the original amount before the price doubled?", "original_before_process_branch"),
+        ("If 18 apples are shared equally among 6 people, how many does each person get?", "per_unit_share_branch"),
+        ("What is the profit if revenue is $20 and cost is $12?", "profit_revenue_cost_branch"),
+        ("How many more apples are there than oranges?", "difference_or_remainder_branch"),
+        ("Convert 3 hours to minutes.", "unit_conversion_branch"),
+    ],
+)
+def test_question_routing_targets_expected_branch_family(question: str, expected_family: str) -> None:
+    families, cues, reason = preflight.classify_branch_families(question)
+    assert expected_family in families
+    assert cues
+    assert reason
+
+
+def test_prompt_rendering_has_no_placeholders_or_gold_markers() -> None:
+    question = "What percentage of the total is 12?"
+    schema = preflight.build_target_schema(question, case_id="openai_gsm8k_demo")
+
+    for template_id in preflight.PROMPT_TEMPLATE_IDS:
+        rendered = preflight.render_prompt(template_id, question=question, target_schema=schema)
+        assert "{{" not in rendered and "}}" not in rendered
+        assert question in rendered
+        assert f"BRANCH_FAMILY: {template_id}" in rendered
+        lowered = rendered.lower()
+        assert "gold_answer" not in lowered
+        assert "answer_key" not in lowered
+        assert "hidden labels" not in lowered
+
+
+def test_dry_run_creates_call_plan_and_stays_within_branch_slots(tmp_path: Path) -> None:
+    trace_path = tmp_path / "trace_packets.jsonl"
+    report_path = tmp_path / "gold_pool_report.md"
+    out_dir = tmp_path / "out"
+
+    _write_trace_packets(
+        trace_path,
+        [
+            {
+                "case_id": "openai_gsm8k_ratio",
+                "question": "What percentage of the total is 12?",
+                "selector_candidate_pool": ["12", "3", "4"],
+                "candidate_answers": ["12", "3", "4"],
+            },
+            {
+                "case_id": "openai_gsm8k_original",
+                "question": "What was the original amount before the price doubled?",
+                "selector_candidate_pool": ["10", "20"],
+                "candidate_answers": ["10", "20"],
+            },
+        ],
+    )
+    _write_gold_absent_report(
+        report_path,
+        [
+            (
+                "openai_gsm8k_ratio",
+                "ratio_part",
+                "12",
+                "12[baseline_candidate|0.1], 3[pal_candidate|0.2]",
+                "mistargeted_final_transformation",
+                "ratio-base branch",
+            ),
+            (
+                "openai_gsm8k_original",
+                "remaining",
+                "20",
+                "20[baseline_candidate|0.1], 10[pal_candidate|0.2]",
+                "mistargeted_final_transformation",
+                "original-before-process branch",
+            ),
+        ],
+    )
+
+    summary = preflight.run(
+        [
+            "--trace-packets",
+            str(trace_path),
+            "--gold-pool-report",
+            str(report_path),
+            "--out-dir",
+            str(out_dir),
+            "--timestamp",
+            "20260512T010101Z",
+            "--max-branch-slots-per-case",
+            "1",
+        ]
+    )
+
+    assert summary["case_count"] == 2
+    assert summary["selected_case_count"] == 2
+    assert summary["call_plan_row_count"] == 2
+    assert summary["no_api_clients_constructed"] is True
+    assert (out_dir / "manifest.json").is_file()
+    assert (out_dir / "call_plan.jsonl").is_file()
+    assert (out_dir / "routing_summary.csv").is_file()
+    assert (out_dir / "dry_run_report.md").is_file()
+
+    call_plan_rows = [json.loads(line) for line in (out_dir / "call_plan.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert len(call_plan_rows) == 2
+    assert {row["selected_branch_family"] for row in call_plan_rows} == {
+        "ratio_base_branch",
+        "original_before_process_branch",
+    }
+    assert all(row["render_ok"] for row in call_plan_rows)
+    assert all(row["no_gold_leak_ok"] for row in call_plan_rows)
+
+
+def test_fixed_budget_does_not_append_more_than_configured_slots(tmp_path: Path) -> None:
+    trace_path = tmp_path / "trace_packets.jsonl"
+    report_path = tmp_path / "gold_pool_report.md"
+    out_dir = tmp_path / "out"
+
+    _write_trace_packets(
+        trace_path,
+        [
+            {
+                "case_id": "openai_gsm8k_multi_cue",
+                "question": "What percentage is each person paying per item?",
+                "selector_candidate_pool": ["1", "2", "3"],
+                "candidate_answers": ["1", "2", "3"],
+            }
+        ],
+    )
+    _write_gold_absent_report(
+        report_path,
+        [
+            (
+                "openai_gsm8k_multi_cue",
+                "ratio_part",
+                "2",
+                "2[baseline_candidate|0.1], 3[pal_candidate|0.2]",
+                "mistargeted_final_transformation",
+                "ratio-base branch",
+            )
+        ],
+    )
+
+    summary = preflight.run(
+        [
+            "--trace-packets",
+            str(trace_path),
+            "--gold-pool-report",
+            str(report_path),
+            "--out-dir",
+            str(out_dir),
+            "--timestamp",
+            "20260512T020202Z",
+            "--max-branch-slots-per-case",
+            "1",
+        ]
+    )
+    assert summary["call_plan_row_count"] == 1
+    rows = [json.loads(line) for line in (out_dir / "call_plan.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 1
+    assert rows[0]["branch_slot"] == 1
+    assert rows[0]["selected_branch_family"] in preflight.BRANCH_FAMILIES
