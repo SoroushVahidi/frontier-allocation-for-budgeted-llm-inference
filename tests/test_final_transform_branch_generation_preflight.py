@@ -66,8 +66,16 @@ def test_prompt_rendering_has_no_placeholders_or_gold_markers() -> None:
 
 
 def test_target_first_fallback_routes_multi_step_transformed_target() -> None:
-    question = "A store starts with 10 apples and later has 7 after some changes. What is the final amount?"
+    question = "Wendy is five times as old as Colin will be seven years from now. What is Colin's age now?"
     families, cues, reason = preflight.classify_branch_families(question, "10[pal_candidate|0.4], 7[baseline_candidate|0.3], 12[retry_candidate|0.2]")
+    assert families == ["target_first_final_transform_branch"]
+    assert cues == []
+    assert "fallback" in reason
+
+
+def test_target_first_fallback_routes_comparative_ratio_story() -> None:
+    question = "Jerry has two pools, both with leaks emptying them out at 4 gallons/minute. 4 minutes ago, the big pool had twice as much water as the small pool. Now the big pool has four times as much water as the small pool. How much water does the small pool have now?"
+    families, cues, reason = preflight.classify_branch_families(question, "12[pal_candidate|0.4], 7[baseline_candidate|0.3], 10[retry_candidate|0.2]")
     assert families == ["target_first_final_transform_branch"]
     assert cues == []
     assert "fallback" in reason
@@ -78,6 +86,16 @@ def test_ratio_priority_beats_generic_target_first() -> None:
     families, cues, reason = preflight.classify_branch_families(question, "12[baseline_candidate|0.4], 3[pal_candidate|0.3], 4[retry_candidate|0.2]")
     assert families == ["ratio_base_branch"]
     assert "ratio_base" in cues
+    assert "fallback" not in reason
+
+
+def test_profit_priority_beats_ratio_and_per_unit() -> None:
+    question = "Each box is $100.00 and currently 10% off. If he buys 2 boxes, how much will it cost?"
+    families, cues, reason = preflight.classify_branch_families(question, "100[pal_candidate|0.4], 90[baseline_candidate|0.3], 2[retry_candidate|0.2]")
+    assert families == ["profit_revenue_cost_branch"]
+    assert "profit_revenue_cost" in cues
+    assert "ratio_base" in cues
+    assert "per_unit_share" not in cues
     assert "fallback" not in reason
 
 
@@ -103,7 +121,7 @@ def test_dry_run_creates_call_plan_and_stays_within_branch_slots(tmp_path: Path)
             },
             {
                 "case_id": "openai_gsm8k_fallback",
-                "question": "A store starts with 10 apples and later has 7 after some changes. What is the final amount?",
+                "question": "Wendy is five times as old as Colin will be seven years from now. What is Colin's age now?",
                 "selector_candidate_pool": ["10", "7", "12"],
                 "candidate_answers": ["10", "7", "12"],
             },
@@ -158,6 +176,7 @@ def test_dry_run_creates_call_plan_and_stays_within_branch_slots(tmp_path: Path)
     assert summary["selected_case_count"] == 3
     assert summary["call_plan_row_count"] == 3
     assert summary["no_api_clients_constructed"] is True
+    assert summary["branch_family_counts"]["target_first_final_transform_branch"] == 1
     assert (out_dir / "manifest.json").is_file()
     assert (out_dir / "call_plan.jsonl").is_file()
     assert (out_dir / "routing_summary.csv").is_file()
@@ -228,7 +247,7 @@ def test_fixed_budget_does_not_append_more_than_configured_slots(tmp_path: Path)
 
 
 def test_target_first_prompt_renders_without_placeholders() -> None:
-    question = "A store starts with 10 apples and later has 7 after some changes. What is the final amount?"
+    question = "Wendy is five times as old as Colin will be seven years from now. What is Colin's age now?"
     schema = preflight.build_target_schema(question, case_id="openai_gsm8k_fallback")
     rendered = preflight.render_prompt("target_first_final_transform_branch", question=question, target_schema=schema)
     assert "{{" not in rendered and "}}" not in rendered

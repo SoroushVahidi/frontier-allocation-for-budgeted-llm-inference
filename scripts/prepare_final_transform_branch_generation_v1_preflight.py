@@ -74,7 +74,7 @@ _ORIGINAL_BEFORE_PROCESS_RE = re.compile(
     re.I,
 )
 _PER_UNIT_SHARE_RE = re.compile(
-    r"\b(each|every|apiece|per\s+(?:person|item|unit|group|team|share)|shared\s+equally|split\s+evenly|divided\s+equally|per-unit|per\s+unit)\b",
+    r"\b(apiece|per\s+(?:person|item|unit|group|team|share|day|week|month)|shared\s+equally|split\s+evenly|divided\s+equally|per-unit|per\s+unit|each\s+(?:person|item|unit|group|team|share)|every\s+(?:person|item|unit|group|team|share)|average\s+per)\b",
     re.I,
 )
 _RATIO_BASE_RE = re.compile(
@@ -83,6 +83,10 @@ _RATIO_BASE_RE = re.compile(
 )
 _GENERIC_TRANSFORM_RE = re.compile(
     r"\b(after|left|remaining|total|each|per|difference|more|less|before|original|cost|price|percent|fraction|ratio|share|final)\b",
+    re.I,
+)
+_TARGET_FIRST_FALLBACK_RE = re.compile(
+    r"\b(age|ages|older|younger|how old|twice as old|thrice as old|half as old|times as old|times as much|times as long|half as long|years ago|years from now|combined|sum of their ages|height|length|rope|mountain|money used|how much money|show up|could only play|before|after|final|total)\b",
     re.I,
 )
 
@@ -382,11 +386,11 @@ def classify_branch_families(question: str, candidate_pool_values: str | None = 
     cues = _question_cues(question)
     families: list[str] = []
     priority = (
-        ("ratio_base_branch", "ratio_base"),
         ("original_before_process_branch", "original_before_process"),
-        ("per_unit_share_branch", "per_unit_share"),
         ("profit_revenue_cost_branch", "profit_revenue_cost"),
         ("difference_or_remainder_branch", "difference_or_remainder"),
+        ("ratio_base_branch", "ratio_base"),
+        ("per_unit_share_branch", "per_unit_share"),
         ("unit_conversion_branch", "unit_conversion"),
     )
     for family, cue in priority:
@@ -396,27 +400,7 @@ def classify_branch_families(question: str, candidate_pool_values: str | None = 
     if not families:
         numeric_pool_count = _candidate_pool_numeric_count(candidate_pool_values or "")
         q = (question or "").lower()
-        generic_signals = (
-            "after",
-            "left",
-            "remaining",
-            "total",
-            "each",
-            "per",
-            "difference",
-            "more",
-            "less",
-            "before",
-            "original",
-            "cost",
-            "price",
-            "percent",
-            "fraction",
-            "ratio",
-            "share",
-            "final",
-        )
-        if numeric_pool_count >= 2 and _GENERIC_TRANSFORM_RE.search(q) and any(tok in q for tok in generic_signals):
+        if numeric_pool_count >= 2 and (_GENERIC_TRANSFORM_RE.search(q) or _TARGET_FIRST_FALLBACK_RE.search(q)):
             families = ["target_first_final_transform_branch"]
     if not families:
         families = ["unknown_final_transform"]
