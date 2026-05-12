@@ -287,6 +287,17 @@ def test_provider_error_details_classify_mistral_http_errors() -> None:
         assert details["provider_http_status"] == status_code
 
 
+def test_provider_error_details_extract_retry_after_from_rate_limit() -> None:
+    details = labeler._provider_error_details(
+        label_status="api_error",
+        api_error="HTTP error from https://api.mistral.ai/v1/chat/completions: 429 rate limited retry_after=30",
+    )
+
+    assert details["provider_readiness"] == "rate_limited"
+    assert details["provider_http_status"] == 429
+    assert details["provider_retry_after"] == "30"
+
+
 def test_pattern_discovery_summary_aggregates_names_stages_and_hypotheses() -> None:
     parsed_rows = [
         {

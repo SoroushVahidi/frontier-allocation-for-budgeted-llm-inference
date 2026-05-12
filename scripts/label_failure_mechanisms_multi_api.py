@@ -150,11 +150,11 @@ PATTERN_DISCOVERY_CASE_KEYS = (
 )
 
 PATTERN_DISCOVERY_MAX_TOKENS = {
-    "openai": 1536,
-    "cohere": 1536,
-    "cerebras": 1536,
-    "fireworks": 2048,
-    "mistral": 2048,
+    "openai": 4096,
+    "cohere": 4096,
+    "cerebras": 4096,
+    "fireworks": 4096,
+    "mistral": 4096,
 }
 
 LABEL_MODE_MAX_TOKENS = {
@@ -206,6 +206,25 @@ def _max_tokens_for_mode(provider: str, mode: str) -> int:
     if mode == "pattern_discovery":
         return PATTERN_DISCOVERY_MAX_TOKENS.get(provider, 1536)
     return LABEL_MODE_MAX_TOKENS.get(provider, 512)
+
+
+class ProviderRequestError(RuntimeError):
+    def __init__(
+        self,
+        message: str,
+        *,
+        url: str = "",
+        http_status: int | None = None,
+        response_body: str = "",
+        headers: dict[str, str] | None = None,
+        retry_after: str = "",
+    ) -> None:
+        super().__init__(message)
+        self.url = url
+        self.http_status = http_status
+        self.response_body = response_body
+        self.headers = headers or {}
+        self.retry_after = retry_after
 
 
 def _read_csv_rows(path: Path) -> list[dict[str, str]]:
@@ -1127,14 +1146,54 @@ def _load_openai_client() -> Any:
     return OpenAI(api_key=api_key)
 
 
-def _extract_openai_text(response: Any) -> str:
+def _response_choices(response: Any) -> list[Any]:
+    if isinstance(response, dict):
+        choices = response.get("choices")
+        return choices if isinstance(choices, list) else []
     choices = getattr(response, "choices", [])
-    if not choices:
+    return choices if isinstance(choices, list) else []
+
+
+def _choice_message_content(choice: Any) -> Any:
+    if isinstance(choice, dict):
+        message = choice.get("message")
+        if isinstance(message, dict):
+            return message.get("content", "")
         return ""
-    message = getattr(choices[0], "message", None)
+    message = getattr(choice, "message", None)
     if message is None:
         return ""
-    content = getattr(message, "content", "")
+    if isinstance(message, dict):
+        return message.get("content", "")
+    return getattr(message, "content", "")
+
+
+def _extract_response_finish_reason(response: Any) -> str:
+    choices = _response_choices(response)
+    if not choices:
+        return ""
+    choice = choices[0]
+    if isinstance(choice, dict):
+        return _stringify(choice.get("finish_reason"))
+    return _stringify(getattr(choice, "finish_reason", ""))
+
+
+def _response_json_preview(response: Any, *, max_len: int = 1200) -> str:
+    if response is None:
+        return ""
+    try:
+        if isinstance(response, (dict, list)):
+            return _sanitize_error_message(json.dumps(response, ensure_ascii=False, sort_keys=True), max_len=max_len)
+    except Exception:
+        pass
+    return _sanitize_error_message(_stringify(response), max_len=max_len)
+
+
+def _extract_openai_text(response: Any) -> str:
+    choices = _response_choices(response)
+    if not choices:
+        return ""
+    content = _choice_message_content(choices[0])
     if isinstance(content, str):
         return content.strip()
     if isinstance(content, list):
@@ -1143,13 +1202,23 @@ def _extract_openai_text(response: Any) -> str:
             text = getattr(item, "text", None)
             if text:
                 parts.append(str(text))
-            elif isinstance(item, dict) and item.get("text"):
-                parts.append(str(item["text"]))
+            elif isinstance(item, dict):
+                text_value = item.get("text")
+                if text_value:
+                    parts.append(str(text_value))
+                elif item.get("type") == "text" and item.get("content"):
+                    parts.append(str(item["content"]))
         return "".join(parts).strip()
     return _stringify(content)
 
 
-def _post_json_request(*, url: str, api_key: str, body: dict[str, Any], headers: dict[str, str] | None = None) -> dict[str, Any]:
+def _post_json_request(
+    *,
+    url: str,
+    api_key: str,
+    body: dict[str, Any],
+    headers: dict[str, str] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     request_headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -1164,16 +1233,45 @@ def _post_json_request(*, url: str, api_key: str, body: dict[str, Any], headers:
     )
     try:
         with urllib.request.urlopen(request, timeout=120) as response:
-            payload = response.read().decode("utf-8")
+            payload = response.read().decode("utf-8", errors="replace")
+            response_headers = {key: value for key, value in response.headers.items()}
+            http_status = getattr(response, "status", None) or response.getcode()
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace") if hasattr(exc, "read") else str(exc)
-        raise RuntimeError(f"HTTP error from {url}: {exc.code} {detail}") from exc
+        error_headers = {key: value for key, value in exc.headers.items()} if getattr(exc, "headers", None) else {}
+        retry_after = error_headers.get("Retry-After") or error_headers.get("retry-after") or ""
+        message = f"HTTP error from {url}: {exc.code} {detail}"
+        if retry_after:
+            message += f" retry_after={retry_after}"
+        raise ProviderRequestError(
+            message,
+            url=url,
+            http_status=exc.code,
+            response_body=detail,
+            headers=error_headers,
+            retry_after=retry_after,
+        ) from exc
     except urllib.error.URLError as exc:
-        raise RuntimeError(f"Network error calling {url}: {exc}") from exc
+        raise ProviderRequestError(f"Network error calling {url}: {exc}", url=url) from exc
     try:
-        return json.loads(payload)
+        parsed = json.loads(payload)
     except Exception as exc:
-        raise RuntimeError(f"Unable to parse JSON response from {url}") from exc
+        raise ProviderRequestError(
+            f"Unable to parse JSON response from {url}",
+            url=url,
+            http_status=http_status,
+            response_body=payload,
+            headers=response_headers,
+            retry_after=response_headers.get("Retry-After") or response_headers.get("retry-after") or "",
+        ) from exc
+    return parsed, {
+        "response_http_status": http_status,
+        "raw_response_body_snippet": _sanitize_error_message(payload, max_len=1200),
+        "response_content_type": response_headers.get("Content-Type", ""),
+        "response_finish_reason": _extract_response_finish_reason(parsed),
+        "response_json_preview": _response_json_preview(parsed, max_len=1200),
+        "retry_after": response_headers.get("Retry-After") or response_headers.get("retry-after") or "",
+    }
 
 
 def _sanitize_error_message(text: str, *, max_len: int = 500) -> str:
@@ -1221,6 +1319,13 @@ def _extract_error_code(error_text: str) -> str:
     return ""
 
 
+def _extract_retry_after(error_text: str) -> str:
+    match = re.search(r"retry_after\s*[=:]\s*([0-9]+(?:\.[0-9]+)?)", error_text or "", flags=re.IGNORECASE)
+    if match:
+        return _stringify(match.group(1))
+    return ""
+
+
 def _short_error_message(error_text: str, *, max_len: int = 220) -> str:
     clean = _sanitize_error_message(error_text, max_len=1000)
     if "HTTP error from " in clean:
@@ -1261,6 +1366,7 @@ def _provider_error_details(*, label_status: str, api_error: str = "", label_par
             "provider_http_status": None,
             "provider_error_code": "",
             "provider_error_message_short": "",
+            "provider_retry_after": "",
         }
     short_message = _short_error_message(api_error or label_parse_error or label_status)
     return {
@@ -1268,6 +1374,7 @@ def _provider_error_details(*, label_status: str, api_error: str = "", label_par
         "provider_http_status": _extract_http_status(api_error),
         "provider_error_code": _extract_error_code(api_error),
         "provider_error_message_short": short_message,
+        "provider_retry_after": _extract_retry_after(api_error),
     }
 
 
@@ -1312,6 +1419,7 @@ def _provider_readiness_summary(parsed_rows: list[dict[str, Any]], providers: li
                     "provider_http_status": row.get("provider_http_status"),
                     "provider_error_code": _stringify(row.get("provider_error_code")),
                     "provider_error_message_short": _stringify(row.get("provider_error_message_short")),
+                    "provider_retry_after": _stringify(row.get("provider_retry_after")),
                 }
             )
     return {
@@ -1326,7 +1434,67 @@ def _build_pattern_case_packet(packet: dict[str, Any]) -> dict[str, Any]:
     compact["candidate_answer_groups"] = compact.get("candidate_answer_groups", [])[:5]
     compact["candidate_answers"] = compact.get("candidate_answers", [])[:8]
     compact["subset_memberships"] = compact.get("subset_memberships", [])
+    audit = compact.get("failure_audit_labels", {})
+    if isinstance(audit, dict):
+        sanitized_audit: dict[str, Any] = {}
+        for key, value in audit.items():
+            key_text = _stringify(key)
+            if "gold" in key_text.lower():
+                continue
+            if isinstance(value, str):
+                value = value.replace("gold_absent", "reference_absent").replace("gold_present", "reference_present")
+            sanitized_audit[key_text] = value
+        compact["failure_audit_labels"] = sanitized_audit
     return compact
+
+
+def _sanitize_pattern_prompt_key(key: Any) -> str:
+    text = _stringify(key)
+    if not text:
+        return text
+    sanitized = text
+    replacements = (
+        ("gold_answer", "reference_answer"),
+        ("answer_key", "reference_label"),
+        ("gold_present", "reference_present"),
+        ("gold_absent", "reference_absent"),
+        ("gold", "reference"),
+    )
+    for needle, replacement in replacements:
+        sanitized = sanitized.replace(needle, replacement)
+        sanitized = sanitized.replace(needle.upper(), replacement.upper())
+        sanitized = sanitized.replace(needle.title(), replacement.title())
+    return sanitized
+
+
+def _sanitize_pattern_prompt_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        sanitized_dict: dict[str, Any] = {}
+        for key, inner_value in value.items():
+            sanitized_key = _sanitize_pattern_prompt_key(key)
+            if not sanitized_key:
+                continue
+            sanitized_dict[sanitized_key] = _sanitize_pattern_prompt_value(inner_value)
+        return sanitized_dict
+    if isinstance(value, list):
+        return [_sanitize_pattern_prompt_value(item) for item in value]
+    if isinstance(value, tuple):
+        return [_sanitize_pattern_prompt_value(item) for item in value]
+    if isinstance(value, str):
+        sanitized = value
+        replacements = (
+            ("gold_answer", "reference_answer"),
+            ("answer_key", "reference_label"),
+            ("gold_present", "reference_present"),
+            ("gold_absent", "reference_absent"),
+            ("gold", "reference"),
+        )
+        for needle, replacement in replacements:
+            sanitized = sanitized.replace(needle, replacement)
+            sanitized = sanitized.replace(needle.upper(), replacement.upper())
+            sanitized = sanitized.replace(needle.title(), replacement.title())
+        return sanitized
+    return value
 
 
 def _build_pattern_batch_id(*, provider: str, case_packets: list[dict[str, Any]]) -> str:
@@ -1362,7 +1530,8 @@ def _build_pattern_batch_packet(
 
 
 def _render_pattern_prompt(batch_packet: dict[str, Any]) -> str:
-    payload = {
+    payload = _sanitize_pattern_prompt_value(
+        {
         "provider": batch_packet.get("provider", ""),
         "model": batch_packet.get("model", ""),
         "batch_id": batch_packet.get("batch_id", ""),
@@ -1370,14 +1539,15 @@ def _render_pattern_prompt(batch_packet: dict[str, Any]) -> str:
         "case_count": batch_packet.get("case_count", 0),
         "cases": batch_packet.get("cases", []),
         "mode": "pattern_discovery",
-    }
+        }
+    )
     prompt_lines = [
         "You are discovering recurring detailed failure patterns inside a batch of PAL failure traces.",
         "This is not an accuracy comparison.",
         "OpenAI, Cohere, Cerebras, Fireworks, and Mistral are allowed only for pattern discovery, not for algorithm comparison.",
         "Return exactly one JSON object and nothing else.",
         "Do not emit markdown, code fences, preambles, or trailing prose.",
-        "Do not use gold information or hidden labels unless explicitly present in the batch packet; by default they are absent.",
+        "Do not use reference-answer information or hidden labels unless explicitly present in the batch packet; by default they are absent.",
         "Report observed patterns, not just inferred reasons.",
         "Distinguish supporting cases from negative or uncertain cases.",
         "Every pattern must cite case IDs and trace-grounded evidence.",
@@ -1802,9 +1972,34 @@ def _build_hypothesis_comparison(
     }
 
 
-def _call_provider_api(*, provider: str, model: str, prompt: str, mode: str = "label") -> tuple[str, dict[str, Any]]:
+def _exception_api_meta(exc: Exception, *, provider: str, model: str, requested_max_output_tokens: int) -> dict[str, Any]:
+    meta = {
+        "provider": provider,
+        "model": model,
+        "requested_max_output_tokens": requested_max_output_tokens,
+    }
+    if isinstance(exc, ProviderRequestError):
+        meta.update(
+            {
+                "response_http_status": exc.http_status,
+                "raw_response_body_snippet": _sanitize_error_message(exc.response_body, max_len=1200),
+                "retry_after": _stringify(exc.retry_after),
+                "response_content_type": _stringify(exc.headers.get("Content-Type")),
+            }
+        )
+    return meta
+
+
+def _call_provider_api(
+    *,
+    provider: str,
+    model: str,
+    prompt: str,
+    mode: str = "label",
+    max_output_tokens: int | None = None,
+) -> tuple[str, dict[str, Any]]:
     provider = provider.lower().strip()
-    max_tokens = _max_tokens_for_mode(provider, mode)
+    max_tokens = max_output_tokens if max_output_tokens and max_output_tokens > 0 else _max_tokens_for_mode(provider, mode)
     if provider == "openai":
         client = _load_openai_client()
         response = client.chat.completions.create(
@@ -1814,7 +2009,14 @@ def _call_provider_api(*, provider: str, model: str, prompt: str, mode: str = "l
             max_tokens=max_tokens,
             response_format={"type": "json_object"},
         )
-        return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.openai.com/v1"}
+        return _extract_openai_text(response), {
+            "provider": provider,
+            "model": model,
+            "base_url": "https://api.openai.com/v1",
+            "requested_max_output_tokens": max_tokens,
+            "response_finish_reason": _extract_response_finish_reason(response),
+            "response_json_preview": _response_json_preview(response, max_len=1200),
+        }
 
     if provider == "cohere":
         client = _load_cohere_client()
@@ -1853,13 +2055,19 @@ def _call_provider_api(*, provider: str, model: str, prompt: str, mode: str = "l
                 text = _stringify(content)
         else:
             text = _stringify(getattr(response, "text", ""))
-        return text.strip(), {"provider": provider, "model": model}
+        return text.strip(), {
+            "provider": provider,
+            "model": model,
+            "requested_max_output_tokens": max_tokens,
+            "response_finish_reason": _extract_response_finish_reason(response),
+            "response_json_preview": _response_json_preview(response, max_len=1200),
+        }
 
     if provider == "cerebras":
         api_key = os.getenv("CEREBRAS_API_KEY", "").strip()
         if not api_key:
             raise RuntimeError("CEREBRAS_API_KEY is not set; cannot run with --allow-api.")
-        response = _post_json_request(
+        response, transport_meta = _post_json_request(
             url="https://api.cerebras.ai/v1/chat/completions",
             api_key=api_key,
             body={
@@ -1870,13 +2078,19 @@ def _call_provider_api(*, provider: str, model: str, prompt: str, mode: str = "l
                 "response_format": {"type": "json_object"},
             },
         )
-        return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.cerebras.ai/v1"}
+        return _extract_openai_text(response), {
+            "provider": provider,
+            "model": model,
+            "base_url": "https://api.cerebras.ai/v1",
+            "requested_max_output_tokens": max_tokens,
+            **transport_meta,
+        }
 
     if provider == "fireworks":
         api_key = os.getenv("FIREWORKS_API_KEY", "").strip() or os.getenv("OPENAI_API_KEY", "").strip()
         if not api_key:
             raise RuntimeError("FIREWORKS_API_KEY (or OPENAI_API_KEY) is not set; cannot run with --allow-api.")
-        response = _post_json_request(
+        response, transport_meta = _post_json_request(
             url="https://api.fireworks.ai/inference/v1/chat/completions",
             api_key=api_key,
             body={
@@ -1887,13 +2101,19 @@ def _call_provider_api(*, provider: str, model: str, prompt: str, mode: str = "l
                 "response_format": {"type": "json_object"},
             },
         )
-        return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.fireworks.ai/inference/v1"}
+        return _extract_openai_text(response), {
+            "provider": provider,
+            "model": model,
+            "base_url": "https://api.fireworks.ai/inference/v1",
+            "requested_max_output_tokens": max_tokens,
+            **transport_meta,
+        }
 
     if provider == "mistral":
         api_key = os.getenv("MISTRAL_API_KEY", "").strip()
         if not api_key:
             raise RuntimeError("MISTRAL_API_KEY is not set; cannot run with --allow-api.")
-        response = _post_json_request(
+        response, transport_meta = _post_json_request(
             url="https://api.mistral.ai/v1/chat/completions",
             api_key=api_key,
             body={
@@ -1903,7 +2123,13 @@ def _call_provider_api(*, provider: str, model: str, prompt: str, mode: str = "l
                 "max_tokens": max_tokens,
             },
         )
-        return _extract_openai_text(response), {"provider": provider, "model": model, "base_url": "https://api.mistral.ai/v1"}
+        return _extract_openai_text(response), {
+            "provider": provider,
+            "model": model,
+            "base_url": "https://api.mistral.ai/v1",
+            "requested_max_output_tokens": max_tokens,
+            **transport_meta,
+        }
 
     raise ValueError(f"Unknown provider: {provider}")
 
@@ -1961,6 +2187,7 @@ def _build_provider_request(
     prompt_text: str,
     request_index: int,
     provider_cap: int,
+    max_output_tokens: int,
     dry_run: bool,
     include_gold_for_labeling: bool,
 ) -> dict[str, Any]:
@@ -1982,8 +2209,10 @@ def _build_provider_request(
             "prompt_sha256": _sha256_text(prompt_text),
             "provider_cap": provider_cap,
             "include_gold_for_labeling": include_gold_for_labeling,
+            "max_output_tokens": max_output_tokens,
         }, sort_keys=True)),
         "provider_cap": provider_cap,
+        "max_output_tokens": max_output_tokens,
         "dry_run": bool(dry_run),
         "include_gold_for_labeling": bool(include_gold_for_labeling),
         "api_call_made": 0,
@@ -1999,6 +2228,7 @@ def _build_pattern_provider_request(
     prompt_text: str,
     request_index: int,
     provider_cap: int,
+    max_output_tokens: int,
     dry_run: bool,
 ) -> dict[str, Any]:
     request_id = f"{provider}:{batch_packet['batch_id']}:{request_index:05d}"
@@ -2017,8 +2247,10 @@ def _build_pattern_provider_request(
             "model": model,
             "prompt_sha256": _sha256_text(prompt_text),
             "provider_cap": provider_cap,
+            "max_output_tokens": max_output_tokens,
         }, sort_keys=True)),
         "provider_cap": provider_cap,
+        "max_output_tokens": max_output_tokens,
         "dry_run": bool(dry_run),
         "api_call_made": 0,
         "batch_case_count": batch_packet.get("case_count", 0),
@@ -2470,6 +2702,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=0.75,
         help="Warn when question or prediction completeness falls below this present-rate threshold.",
     )
+    parser.add_argument(
+        "--max-output-tokens",
+        type=int,
+        default=0,
+        help="Optional output token override for provider calls. Defaults to mode/provider-specific caps.",
+    )
     parser.add_argument("--max-calls-total", type=int, default=0, help="Hard total call cap. Required in API mode.")
     parser.add_argument("--allow-api", action="store_true", help="Allow provider API calls.")
     parser.add_argument(
@@ -2592,6 +2830,17 @@ def main(argv: list[str] | None = None) -> int:
     provider_config_summary = _provider_config_summary(providers=providers, provider_models=provider_models)
 
     mode = _stringify(args.mode).lower()
+    max_output_tokens_override = int(args.max_output_tokens or 0)
+    if max_output_tokens_override < 0:
+        raise ValueError("--max-output-tokens must be non-negative")
+    provider_max_output_tokens = {
+        provider: (
+            max_output_tokens_override
+            if max_output_tokens_override > 0
+            else _max_tokens_for_mode(provider, mode)
+        )
+        for provider in providers
+    }
 
     if check_provider_config:
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -2607,6 +2856,8 @@ def main(argv: list[str] | None = None) -> int:
             "limit": limit_value,
             "providers": providers,
             "provider_models": provider_models,
+            "provider_max_output_tokens": provider_max_output_tokens,
+            "max_output_tokens_override": max_output_tokens_override,
             "provider_caps": {provider: 0 for provider in providers},
             "provider_config_summary": provider_config_summary,
             "packet_completeness_summary": packet_completeness_summary,
@@ -2774,6 +3025,7 @@ def main(argv: list[str] | None = None) -> int:
                 prompt_text=prompt_text,
                 request_index=provider_request_counts[provider],
                 provider_cap=provider_caps.get(provider, 0),
+                max_output_tokens=provider_max_output_tokens[provider],
                 dry_run=dry_run,
             )
             request_rows.append(request_row)
@@ -2836,7 +3088,13 @@ def main(argv: list[str] | None = None) -> int:
             total_calls += 1
             provider_call_counts[provider] += 1
             try:
-                raw_text, api_meta = _call_provider_api(provider=provider, model=provider_models[provider], prompt=prompt_text)
+                raw_text, api_meta = _call_provider_api(
+                    provider=provider,
+                    model=provider_models[provider],
+                    prompt=prompt_text,
+                    mode="pattern_discovery",
+                    max_output_tokens=provider_max_output_tokens[provider],
+                )
                 parsed_pattern, parse_error = _parse_pattern_discovery_json(raw_text)
                 if parsed_pattern is None:
                     provider_details = _provider_error_details(
@@ -2964,7 +3222,16 @@ def main(argv: list[str] | None = None) -> int:
                         "raw_label_text": "",
                         "raw_label_sha256": "",
                         "raw_response_json": json.dumps(
-                            {"error": error_text, "provider": provider, "model": provider_models[provider], **provider_details},
+                            {
+                                "error": error_text,
+                                **_exception_api_meta(
+                                    exc,
+                                    provider=provider,
+                                    model=provider_models[provider],
+                                    requested_max_output_tokens=provider_max_output_tokens[provider],
+                                ),
+                                **provider_details,
+                            },
                             sort_keys=True,
                         ),
                         "api_error": error_text,
@@ -3012,6 +3279,8 @@ def main(argv: list[str] | None = None) -> int:
             "limit": limit_value,
             "providers": providers,
             "provider_models": provider_models,
+            "provider_max_output_tokens": provider_max_output_tokens,
+            "max_output_tokens_override": max_output_tokens_override,
             "provider_caps": provider_caps,
             "provider_config_summary": provider_config_summary,
             "packet_completeness_summary": packet_completeness_summary,
@@ -3117,6 +3386,7 @@ def main(argv: list[str] | None = None) -> int:
                 prompt_text=prompt_text,
                 request_index=provider_request_counts[provider],
                 provider_cap=provider_caps.get(provider, 0),
+                max_output_tokens=provider_max_output_tokens[provider],
                 dry_run=dry_run,
                 include_gold_for_labeling=bool(args.include_gold_for_labeling),
             )
@@ -3174,7 +3444,13 @@ def main(argv: list[str] | None = None) -> int:
             total_calls += 1
             provider_call_counts[provider] += 1
             try:
-                raw_text, api_meta = _call_provider_api(provider=provider, model=provider_models[provider], prompt=prompt_text)
+                raw_text, api_meta = _call_provider_api(
+                    provider=provider,
+                    model=provider_models[provider],
+                    prompt=prompt_text,
+                    mode=mode,
+                    max_output_tokens=provider_max_output_tokens[provider],
+                )
                 parsed_label, parse_error = _parse_label_json(raw_text)
                 if parsed_label is None:
                     provider_details = _provider_error_details(
@@ -3285,7 +3561,16 @@ def main(argv: list[str] | None = None) -> int:
                         "raw_label_text": "",
                         "raw_label_sha256": "",
                         "raw_response_json": json.dumps(
-                            {"error": error_text, "provider": provider, "model": provider_models[provider], **provider_details},
+                            {
+                                "error": error_text,
+                                **_exception_api_meta(
+                                    exc,
+                                    provider=provider,
+                                    model=provider_models[provider],
+                                    requested_max_output_tokens=provider_max_output_tokens[provider],
+                                ),
+                                **provider_details,
+                            },
                             sort_keys=True,
                         ),
                         "api_error": error_text,
@@ -3332,6 +3617,8 @@ def main(argv: list[str] | None = None) -> int:
         "limit": limit_value,
         "providers": providers,
         "provider_models": provider_models,
+        "provider_max_output_tokens": provider_max_output_tokens,
+        "max_output_tokens_override": max_output_tokens_override,
         "provider_caps": provider_caps,
         "provider_config_summary": provider_config_summary,
         "packet_completeness_summary": packet_completeness_summary,
