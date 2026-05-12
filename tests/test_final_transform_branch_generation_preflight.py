@@ -32,9 +32,12 @@ def _write_gold_absent_report(path: Path, rows: list[tuple[str, str, str, str, s
 @pytest.mark.parametrize(
     ("question", "expected_family"),
     [
-        ("What percentage of the total is 12?", "ratio_base_branch"),
+        ("What fraction of the total is 12?", "ratio_base_branch"),
+        ("Out of the total, what percent is 12?", "ratio_base_branch"),
+        ("What is the probability the team wins?", "ratio_base_branch"),
         ("What was the original amount before the price doubled?", "original_before_process_branch"),
-        ("If 18 apples are shared equally among 6 people, how many does each person get?", "per_unit_share_branch"),
+        ("What amount did they have initially after doubling and losing some?", "original_before_process_branch"),
+        ("If 18 apples are split evenly, how many does each person get?", "per_unit_share_branch"),
         ("What is the profit if revenue is $20 and cost is $12?", "profit_revenue_cost_branch"),
         ("How many more apples are there than oranges?", "difference_or_remainder_branch"),
         ("Convert 3 hours to minutes.", "unit_conversion_branch"),
@@ -62,6 +65,22 @@ def test_prompt_rendering_has_no_placeholders_or_gold_markers() -> None:
         assert "hidden labels" not in lowered
 
 
+def test_target_first_fallback_routes_multi_step_transformed_target() -> None:
+    question = "A store starts with 10 apples and later has 7 after some changes. What is the final amount?"
+    families, cues, reason = preflight.classify_branch_families(question, "10[pal_candidate|0.4], 7[baseline_candidate|0.3], 12[retry_candidate|0.2]")
+    assert families == ["target_first_final_transform_branch"]
+    assert cues == []
+    assert "fallback" in reason
+
+
+def test_ratio_priority_beats_generic_target_first() -> None:
+    question = "Out of the total, what fraction is 12?"
+    families, cues, reason = preflight.classify_branch_families(question, "12[baseline_candidate|0.4], 3[pal_candidate|0.3], 4[retry_candidate|0.2]")
+    assert families == ["ratio_base_branch"]
+    assert "ratio_base" in cues
+    assert "fallback" not in reason
+
+
 def test_dry_run_creates_call_plan_and_stays_within_branch_slots(tmp_path: Path) -> None:
     trace_path = tmp_path / "trace_packets.jsonl"
     report_path = tmp_path / "gold_pool_report.md"
@@ -81,6 +100,12 @@ def test_dry_run_creates_call_plan_and_stays_within_branch_slots(tmp_path: Path)
                 "question": "What was the original amount before the price doubled?",
                 "selector_candidate_pool": ["10", "20"],
                 "candidate_answers": ["10", "20"],
+            },
+            {
+                "case_id": "openai_gsm8k_fallback",
+                "question": "A store starts with 10 apples and later has 7 after some changes. What is the final amount?",
+                "selector_candidate_pool": ["10", "7", "12"],
+                "candidate_answers": ["10", "7", "12"],
             },
         ],
     )
@@ -103,6 +128,14 @@ def test_dry_run_creates_call_plan_and_stays_within_branch_slots(tmp_path: Path)
                 "mistargeted_final_transformation",
                 "original-before-process branch",
             ),
+            (
+                "openai_gsm8k_fallback",
+                "entity_value",
+                "7",
+                "10[baseline_candidate|0.1], 7[pal_candidate|0.2], 12[retry_candidate|0.3]",
+                "other",
+                "target-first final-transform",
+            ),
         ],
     )
 
@@ -121,9 +154,9 @@ def test_dry_run_creates_call_plan_and_stays_within_branch_slots(tmp_path: Path)
         ]
     )
 
-    assert summary["case_count"] == 2
-    assert summary["selected_case_count"] == 2
-    assert summary["call_plan_row_count"] == 2
+    assert summary["case_count"] == 3
+    assert summary["selected_case_count"] == 3
+    assert summary["call_plan_row_count"] == 3
     assert summary["no_api_clients_constructed"] is True
     assert (out_dir / "manifest.json").is_file()
     assert (out_dir / "call_plan.jsonl").is_file()
@@ -131,13 +164,16 @@ def test_dry_run_creates_call_plan_and_stays_within_branch_slots(tmp_path: Path)
     assert (out_dir / "dry_run_report.md").is_file()
 
     call_plan_rows = [json.loads(line) for line in (out_dir / "call_plan.jsonl").read_text(encoding="utf-8").splitlines()]
-    assert len(call_plan_rows) == 2
+    assert len(call_plan_rows) == 3
     assert {row["selected_branch_family"] for row in call_plan_rows} == {
         "ratio_base_branch",
         "original_before_process_branch",
+        "target_first_final_transform_branch",
     }
     assert all(row["render_ok"] for row in call_plan_rows)
     assert all(row["no_gold_leak_ok"] for row in call_plan_rows)
+    assert summary["branch_family_counts"]["target_first_final_transform_branch"] == 1
+    assert summary["branch_family_counts"]["ratio_base_branch"] == 1
 
 
 def test_fixed_budget_does_not_append_more_than_configured_slots(tmp_path: Path) -> None:
@@ -189,3 +225,13 @@ def test_fixed_budget_does_not_append_more_than_configured_slots(tmp_path: Path)
     assert len(rows) == 1
     assert rows[0]["branch_slot"] == 1
     assert rows[0]["selected_branch_family"] in preflight.BRANCH_FAMILIES
+
+
+def test_target_first_prompt_renders_without_placeholders() -> None:
+    question = "A store starts with 10 apples and later has 7 after some changes. What is the final amount?"
+    schema = preflight.build_target_schema(question, case_id="openai_gsm8k_fallback")
+    rendered = preflight.render_prompt("target_first_final_transform_branch", question=question, target_schema=schema)
+    assert "{{" not in rendered and "}}" not in rendered
+    assert "BRANCH_FAMILY: target_first_final_transform_branch" in rendered
+    assert "gold_answer" not in rendered.lower()
+    assert "answer_key" not in rendered.lower()

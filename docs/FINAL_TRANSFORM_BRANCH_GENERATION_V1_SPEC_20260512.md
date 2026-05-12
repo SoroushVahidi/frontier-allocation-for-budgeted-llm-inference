@@ -38,6 +38,8 @@ The 70 gold-absent cases cluster into:
 | target-first final-transform | 9 |
 | difference/how-many-more branch | 4 |
 
+The router also includes a fallback `target_first_final_transform_branch` for transformed-target questions that do not cleanly match a specialized family.
+
 ## Why This Is Generation-First
 
 Selector tuning cannot recover gold answers that never enter the pool. The preflight therefore reserves the branch budget for specialized final-transform prompts, rather than spending the budget on more ranking only.
@@ -50,6 +52,7 @@ Selector tuning cannot recover gold answers that never enter the pool. The prefl
 - `profit_revenue_cost_branch`
 - `difference_or_remainder_branch`
 - `unit_conversion_branch`
+- `target_first_final_transform_branch`
 - `unknown_final_transform`
 
 ## Routing Cues
@@ -62,6 +65,7 @@ Use deterministic question cues only:
 - profit/revenue/cost: profit, revenue, cost, price, spend, spent, income, earnings
 - difference/remainder: how many more, difference, remainder, left, left over, remaining
 - unit conversion: convert, conversion, hours to minutes, minutes to hours, miles to feet, etc.
+- target-first final-transform fallback: multi-step transformed-target questions with several numeric candidates but no tighter family match
 
 ## Fixed-Budget Policy
 

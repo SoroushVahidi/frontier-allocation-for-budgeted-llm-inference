@@ -26,6 +26,7 @@ BRANCH_FAMILIES = (
     "profit_revenue_cost_branch",
     "difference_or_remainder_branch",
     "unit_conversion_branch",
+    "target_first_final_transform_branch",
     "unknown_final_transform",
 )
 
@@ -36,6 +37,7 @@ PROMPT_TEMPLATE_IDS = (
     "profit_revenue_cost_branch",
     "difference_or_remainder_branch",
     "unit_conversion_branch",
+    "target_first_final_transform_branch",
 )
 
 FORBIDDEN_PROMPT_PATTERNS = (
@@ -53,7 +55,10 @@ _MONEY_RE = re.compile(r"[\$£€]|\b(dollars?|cents?|cost(?:s|ing)?|price(?:s)?
 _COUNT_RE = re.compile(r"\b(how many|number of|count|counts)\b", re.I)
 _RATE_RE = re.compile(r"\b(per|each|every|rate)\b", re.I)
 _DIFF_RE = re.compile(r"\b(more than|less than|difference|remaining|left|left over|remainder|how many more)\b", re.I)
-_RATIO_RE = re.compile(r"\b(percent|percentage|ratio|fraction|proportion|out of)\b", re.I)
+_RATIO_RE = re.compile(
+    r"\b(percent|percentage|probability|chance|odds|ratio|fraction|proportion|out of|what fraction|what percent|of the total|among|share of)\b|%",
+    re.I,
+)
 _TIME_RE = re.compile(r"\b(now|today|after|before|from now|initial|final|remaining|left)\b", re.I)
 
 _UNIT_CONVERSION_RE = re.compile(
@@ -65,7 +70,7 @@ _PROFIT_REVENUE_COST_RE = re.compile(
     re.I,
 )
 _ORIGINAL_BEFORE_PROCESS_RE = re.compile(
-    r"\b(original(?:ly)?|original\s+amount|before|initial(?:ly)?|at\s+first|used\s+to\s+be|starting\s+with|prior\s+to|pre[- ]?change)\b",
+    r"\b(original(?:ly)?|original\s+amount|initial(?:ly)?|at\s+first|used\s+to\s+be|starting\s+with|started\s+with|start\s+with|prior\s+to|pre[- ]?change|before|after\s+(?:halving|doubling|tripling|losing|gaining|spending|giving\s+away|adding|subtracting))\b",
     re.I,
 )
 _PER_UNIT_SHARE_RE = re.compile(
@@ -73,7 +78,11 @@ _PER_UNIT_SHARE_RE = re.compile(
     re.I,
 )
 _RATIO_BASE_RE = re.compile(
-    r"\b(percent(?:age)?|ratio|fraction|proportion|out\s+of|what\s+(?:percent|percentage|fraction|ratio)|base\s+quantity|base)\b",
+    r"\b(percent(?:age)?|probability|chance|odds|ratio|fraction|proportion|out\s+of|what\s+(?:percent|percentage|fraction|ratio)|base\s+quantity|base|of\s+the\s+total|among|share\s+of)\b|%",
+    re.I,
+)
+_GENERIC_TRANSFORM_RE = re.compile(
+    r"\b(after|left|remaining|total|each|per|difference|more|less|before|original|cost|price|percent|fraction|ratio|share|final)\b",
     re.I,
 )
 
@@ -340,6 +349,17 @@ def _load_gold_absent_report_rows(report_path: Path) -> list[dict[str, str]]:
     return rows
 
 
+def _candidate_pool_numeric_count(candidate_pool_values: str) -> int:
+    values: list[str] = []
+    for chunk in (candidate_pool_values or "").split(","):
+        token = chunk.strip().split("[", 1)[0].strip()
+        if not token:
+            continue
+        if re.fullmatch(r"-?\d+(?:\.\d+)?", token):
+            values.append(token)
+    return len(set(values))
+
+
 def _question_cues(question: str) -> list[str]:
     cues: list[str] = []
     q = (question or "").lower()
@@ -351,36 +371,59 @@ def _question_cues(question: str) -> list[str]:
         cues.append("original_before_process")
     if _DIFF_RE.search(q):
         cues.append("difference_or_remainder")
-    if _RATIO_RE.search(q):
+    if _RATIO_BASE_RE.search(q):
         cues.append("ratio_base")
     if _PER_UNIT_SHARE_RE.search(q):
         cues.append("per_unit_share")
     return cues
 
 
-def classify_branch_families(question: str) -> tuple[list[str], list[str], str]:
+def classify_branch_families(question: str, candidate_pool_values: str | None = None) -> tuple[list[str], list[str], str]:
     cues = _question_cues(question)
     families: list[str] = []
-    for family in (
-        "unit_conversion_branch",
-        "original_before_process_branch",
-        "profit_revenue_cost_branch",
-        "difference_or_remainder_branch",
-        "ratio_base_branch",
-        "per_unit_share_branch",
-    ):
-        if (
-            family == "unit_conversion_branch" and "unit_conversion" in cues
-            or family == "profit_revenue_cost_branch" and "profit_revenue_cost" in cues
-            or family == "original_before_process_branch" and "original_before_process" in cues
-            or family == "difference_or_remainder_branch" and "difference_or_remainder" in cues
-            or family == "ratio_base_branch" and "ratio_base" in cues
-            or family == "per_unit_share_branch" and "per_unit_share" in cues
-        ):
+    priority = (
+        ("ratio_base_branch", "ratio_base"),
+        ("original_before_process_branch", "original_before_process"),
+        ("per_unit_share_branch", "per_unit_share"),
+        ("profit_revenue_cost_branch", "profit_revenue_cost"),
+        ("difference_or_remainder_branch", "difference_or_remainder"),
+        ("unit_conversion_branch", "unit_conversion"),
+    )
+    for family, cue in priority:
+        if cue in cues:
             families.append(family)
+            break
+    if not families:
+        numeric_pool_count = _candidate_pool_numeric_count(candidate_pool_values or "")
+        q = (question or "").lower()
+        generic_signals = (
+            "after",
+            "left",
+            "remaining",
+            "total",
+            "each",
+            "per",
+            "difference",
+            "more",
+            "less",
+            "before",
+            "original",
+            "cost",
+            "price",
+            "percent",
+            "fraction",
+            "ratio",
+            "share",
+            "final",
+        )
+        if numeric_pool_count >= 2 and _GENERIC_TRANSFORM_RE.search(q) and any(tok in q for tok in generic_signals):
+            families = ["target_first_final_transform_branch"]
     if not families:
         families = ["unknown_final_transform"]
-    reason = " ; ".join(cues) if cues else "no strong final-transform cue"
+    if families == ["target_first_final_transform_branch"]:
+        reason = "generic transformed-target fallback"
+    else:
+        reason = " ; ".join(cues) if cues else "no strong final-transform cue"
     return families, cues, reason
 
 
@@ -434,11 +477,12 @@ def build_call_plan(
         question = _stringify(case.get("question"))
         if case_id not in report_rows:
             continue
-        families, cues, reason = _assign_branch_families(question, max_slots=max_branch_slots_per_case)
-        target_schema = build_target_schema(question, case_id=case_id)
         report_meta = report_rows[case_id]
+        families, cues, reason = classify_branch_families(question, report_meta["candidate_pool_values"])
+        target_schema = build_target_schema(question, case_id=case_id)
         for cue in cues:
             cue_counts[cue] += 1
+        families = families[: max(1, max_branch_slots_per_case)]
         if families == ["unknown_final_transform"]:
             unknown_count += 1
         for branch_slot, family in enumerate(families, start=1):
