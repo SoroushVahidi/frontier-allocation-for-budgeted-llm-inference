@@ -62,23 +62,23 @@ _RATIO_RE = re.compile(
 _TIME_RE = re.compile(r"\b(now|today|after|before|from now|initial|final|remaining|left)\b", re.I)
 
 _UNIT_CONVERSION_RE = re.compile(
-    r"\b(convert|conversion|hours?\s+to\s+minutes?|minutes?\s+to\s+hours?|miles?\s+to\s+feet?|feet\s+to\s+inches?|kilometers?\s+to\s+miles?|grams?\s+to\s+kilograms?|liters?\s+to\s+gallons?)\b",
+    r"\b(?:convert|conversion|hours?\s+to\s+minutes?|minutes?\s+to\s+hours?|miles?\s+to\s+feet?|feet\s+to\s+inches?|kilometers?\s+to\s+miles?|grams?\s+to\s+kilograms?|liters?\s+to\s+gallons?|(?:pages?|sheets?)\s+per|per\s+(?:page|sheet)|items?\s+per\s+(?:container|box|bag|pack|carton)|tabloid)\b",
     re.I,
 )
 _PROFIT_REVENUE_COST_RE = re.compile(
-    r"\b(profit|revenue|cost(?:s|ing)?|price(?:s)?|sell(?:s|ing|er)?|spent|spend(?:s|ing)?|income|earn(?:ings?|ed)?|margin)\b",
+    r"\b(profit|revenue|cost(?:s|ing)?|price(?:s)?|sell(?:s|ing|er)?|sold|bought|loss(?:es)?|sale(?:s)?|spent|spend(?:s|ing)?|income|earn(?:ings?|ed)?|margin)\b",
     re.I,
 )
 _ORIGINAL_BEFORE_PROCESS_RE = re.compile(
-    r"\b(original(?:ly)?|original\s+amount|initial(?:ly)?|at\s+first|used\s+to\s+be|starting\s+with|started\s+with|start\s+with|prior\s+to|pre[- ]?change|before|after\s+(?:halving|doubling|tripling|losing|gaining|spending|giving\s+away|adding|subtracting))\b",
+    r"\b(original(?:ly)?|original\s+amount|initial(?:ly)?|at\s+first|used\s+to\s+be|starting\s+with|started\s+with|start\s+with|prior\s+to|pre[- ]?change|before|after\s+(?:halving|doubling|tripling|losing|gaining|spending|giving\s+away|adding|subtracting)|reverse(?:\s+process)?)\b",
     re.I,
 )
 _PER_UNIT_SHARE_RE = re.compile(
-    r"\b(apiece|per\s+(?:person|item|unit|group|team|share|day|week|month)|shared\s+equally|split\s+evenly|divided\s+equally|per-unit|per\s+unit|each\s+(?:person|item|unit|group|team|share)|every\s+(?:person|item|unit|group|team|share)|average\s+per)\b",
+    r"\b(apiece|per\s+(?:person|item|unit|group|team|share|day|week|month|pair|contact)|per\s+pair|pair(?:s)?\s+of|each\s+pair|shared\s+equally|split\s+evenly|divided\s+equally|per-unit|per\s+unit|each\s+(?:person|item|unit|group|team|share|pair)|every\s+(?:person|item|unit|group|team|share)|average\s+per|contacts?\s+per)\b",
     re.I,
 )
 _RATIO_BASE_RE = re.compile(
-    r"\b(percent(?:age)?|probability|chance|odds|ratio|fraction|proportion|out\s+of|what\s+(?:percent|percentage|fraction|ratio)|base\s+quantity|base|of\s+the\s+total|among|share\s+of)\b|%",
+    r"\b(percent(?:age)?|probability|likelihood|chance|odds|ratio|fraction|proportion|out\s+of|what\s+(?:percent|percentage|fraction|ratio)|base\s+quantity|base|of\s+the\s+total|among|share\s+of|weighted)\b|%",
     re.I,
 )
 _GENERIC_TRANSFORM_RE = re.compile(
@@ -387,10 +387,10 @@ def classify_branch_families(question: str, candidate_pool_values: str | None = 
     families: list[str] = []
     priority = (
         ("original_before_process_branch", "original_before_process"),
+        ("per_unit_share_branch", "per_unit_share"),
         ("profit_revenue_cost_branch", "profit_revenue_cost"),
         ("difference_or_remainder_branch", "difference_or_remainder"),
         ("ratio_base_branch", "ratio_base"),
-        ("per_unit_share_branch", "per_unit_share"),
         ("unit_conversion_branch", "unit_conversion"),
     )
     for family, cue in priority:

@@ -17,6 +17,49 @@ The targeted failure mode is final-target binding failure:
 
 The dominant subtype in the split report is `mistargeted_final_transformation`.
 
+## 12-Case Cohere Pilot Results
+
+A 12-case Cohere pilot of `final_transform_branch_generation_v1` produced mixed results:
+
+- exact: 0/12
+- new candidates: 11/12
+- more target-aligned: 10/12
+
+Breakdown of failures:
+- target-correct but arithmetic-wrong: 1
+- still wrong-target / relation / state / conversion: 8
+- parse / formatting failures: 3
+
+**Conclusion:** Do not scale to 30 cases yet. Prompts were tightened after this pilot before any larger run.
+
+## Prompt Tightening Summary
+
+All branch prompts were revised after the 12-case pilot to address mistargeted final transformations:
+
+- Added target-binding checklist (4 questions) before arithmetic in every prompt.
+- Required `FINAL_ANSWER: <number>` format in every prompt.
+- Added rule: do not output any other number after `FINAL_ANSWER`.
+- Added branch-specific formulas and anti-confusion warnings:
+  - `ratio_base_branch`: explicit `target = numerator / base` or `target_percent = 100 * numerator / base`.
+  - `profit_revenue_cost_branch`: explicit profit formula; warn against returning sale price, revenue, or total cost.
+  - `per_unit_share_branch`: pair/leftover handling; convert single items to pairs before division.
+  - `original_before_process_branch`: inverse-operation language; explicit before/after state binding.
+  - `difference_or_remainder_branch`: both-sides compute then subtract; warn against one-sided return.
+  - `unit_conversion_branch`: state source and target unit; write conversion factor before computing.
+  - `target_first_final_transform_branch`: classify final transform type; list used and rejected quantities.
+
+## Final-Answer Parse Contract
+
+Every branch prompt requires the model to end its response with exactly:
+
+```
+FINAL_ANSWER: <number>
+```
+
+- No text after `FINAL_ANSWER: <number>` is permitted.
+- The number must be a bare numeric value (integer or decimal).
+- This contract is enforced by the prompt rule and verified by downstream parsing.
+
 ## Gold-Pool Split
 
 From `/tmp/gold_pool_split_wrong_consensus_97_report.md`:
@@ -59,12 +102,12 @@ Selector tuning cannot recover gold answers that never enter the pool. The prefl
 
 Use deterministic question cues only:
 
-- ratio/percentage base: percent, percentage, ratio, fraction, proportion, out of
-- original-before-process: originally, before, after, at first, initial, used to be
-- per-unit/share: each, every, apiece, per person, shared equally, split evenly, per item
-- profit/revenue/cost: profit, revenue, cost, price, spend, spent, income, earnings
+- ratio/percentage base: percent, percentage, ratio, fraction, proportion, out of, probability, likelihood, chance, odds, weighted
+- original-before-process: originally, before, after halving/doubling/etc., at first, initial, used to be, started with, reverse process
+- per-unit/share: each, every, apiece, per person, shared equally, split evenly, per item, pairs of, per pair, each pair, contacts per
+- profit/revenue/cost: profit, revenue, cost, price, spend, spent, income, earnings, sold, bought, loss, sale
 - difference/remainder: how many more, difference, remainder, left, left over, remaining
-- unit conversion: convert, conversion, hours to minutes, minutes to hours, miles to feet, etc.
+- unit conversion: convert, conversion, hours to minutes, minutes to hours, miles to feet, pages per, sheets per, per page, per sheet, items per container/box/bag/pack/carton, tabloid
 - target-first final-transform fallback: multi-step transformed-target questions with several numeric candidates but no tighter family match
 
 ## Fixed-Budget Policy

@@ -89,7 +89,7 @@ def test_ratio_priority_beats_generic_target_first() -> None:
     assert "fallback" not in reason
 
 
-def test_profit_priority_beats_ratio_and_per_unit() -> None:
+def test_profit_routes_when_no_per_unit_share_cue_fires() -> None:
     question = "Each box is $100.00 and currently 10% off. If he buys 2 boxes, how much will it cost?"
     families, cues, reason = preflight.classify_branch_families(question, "100[pal_candidate|0.4], 90[baseline_candidate|0.3], 2[retry_candidate|0.2]")
     assert families == ["profit_revenue_cost_branch"]
@@ -254,3 +254,92 @@ def test_target_first_prompt_renders_without_placeholders() -> None:
     assert "BRANCH_FAMILY: target_first_final_transform_branch" in rendered
     assert "gold_answer" not in rendered.lower()
     assert "answer_key" not in rendered.lower()
+
+
+# ── Task 5 additions ──────────────────────────────────────────────────────────
+
+
+def _render_all_prompts() -> dict[str, str]:
+    question = "What percentage of the total is 12?"
+    schema = preflight.build_target_schema(question, case_id="openai_gsm8k_demo")
+    return {tid: preflight.render_prompt(tid, question=question, target_schema=schema) for tid in preflight.PROMPT_TEMPLATE_IDS}
+
+
+def test_every_prompt_contains_final_answer_format() -> None:
+    for tid, rendered in _render_all_prompts().items():
+        assert "FINAL_ANSWER: <number>" in rendered, f"{tid} missing FINAL_ANSWER format"
+
+
+def test_every_prompt_contains_target_binding_checklist() -> None:
+    for tid, rendered in _render_all_prompts().items():
+        assert "What is the final target?" in rendered, f"{tid} missing checklist item 1"
+        assert "What unit/state/share/base" in rendered, f"{tid} missing checklist item 2"
+        assert "tempting but not final" in rendered, f"{tid} missing checklist item 3"
+        assert "final transform maps" in rendered, f"{tid} missing checklist item 4"
+
+
+def test_no_prompt_contains_gold_markers() -> None:
+    for tid, rendered in _render_all_prompts().items():
+        low = rendered.lower()
+        assert "gold_answer" not in low, f"{tid} contains gold_answer"
+        assert "answer_key" not in low, f"{tid} contains answer_key"
+        assert "hidden labels" not in low, f"{tid} contains hidden labels"
+
+
+def test_ratio_prompt_contains_numerator_base_formula() -> None:
+    rendered = _render_all_prompts()["ratio_base_branch"]
+    assert "numerator" in rendered
+    assert "denominator" in rendered or "base" in rendered
+    assert "target = numerator / base" in rendered or "target_percent = 100 * numerator / base" in rendered
+
+
+def test_profit_prompt_contains_revenue_cost_formula() -> None:
+    rendered = _render_all_prompts()["profit_revenue_cost_branch"]
+    assert "profit = revenue - total_cost" in rendered or "profit = sale_price - purchase_price" in rendered
+    assert "sale price" in rendered.lower() or "sale_price" in rendered
+
+
+def test_per_unit_prompt_contains_pair_share_leftover_wording() -> None:
+    rendered = _render_all_prompts()["per_unit_share_branch"]
+    assert "pair" in rendered
+    assert "leftover" in rendered or "leftovers" in rendered
+    assert "share" in rendered or "per person" in rendered or "per item" in rendered
+
+
+def test_original_before_process_prompt_contains_inverse_operation_language() -> None:
+    rendered = _render_all_prompts()["original_before_process_branch"]
+    assert "inverse" in rendered or "backward" in rendered or "work backward" in rendered
+    assert "before" in rendered.lower() and "after" in rendered.lower()
+
+
+def test_difference_remainder_prompt_contains_compare_subtract_formula() -> None:
+    rendered = _render_all_prompts()["difference_or_remainder_branch"]
+    assert "how many more" in rendered.lower() or "how many less" in rendered.lower()
+    assert "remaining" in rendered.lower() or "leftover" in rendered.lower() or "left" in rendered.lower()
+    assert "subtract" in rendered.lower() or "minus" in rendered.lower() or "subtrahend" in rendered.lower()
+
+
+def test_target_first_prompt_contains_final_transform_classification_list() -> None:
+    rendered = _render_all_prompts()["target_first_final_transform_branch"]
+    for label in ("difference", "remainder", "profit", "per_unit_share", "ratio_probability", "unit_conversion", "original_before_process", "additive_total", "other"):
+        assert label in rendered, f"target_first prompt missing classification label: {label}"
+
+
+@pytest.mark.parametrize(
+    ("question", "expected_family"),
+    [
+        ("How many pages per book if each book has 200 pages?", "unit_conversion_branch"),
+        ("How many sheets per ream are there?", "unit_conversion_branch"),
+        ("What is the likelihood that the event occurs?", "ratio_base_branch"),
+        ("How many pairs of gloves does each person get if 30 pairs are split equally among 5 people?", "per_unit_share_branch"),
+        ("How much profit did she make after buying for $5 and selling for $12?", "profit_revenue_cost_branch"),
+        ("What was the original price before it was doubled?", "original_before_process_branch"),
+        ("How many contacts can she make per pair of lenses?", "per_unit_share_branch"),
+        ("She sold 3 items for $9 each. What was her total revenue?", "profit_revenue_cost_branch"),
+        ("He bought 5 apples for $2 each. How much did he spend?", "profit_revenue_cost_branch"),
+        ("She worked backward to find the initial value.", "original_before_process_branch"),
+    ],
+)
+def test_new_routing_cues_send_to_expected_branch(question: str, expected_family: str) -> None:
+    families, _cues, _reason = preflight.classify_branch_families(question)
+    assert expected_family in families, f"Expected {expected_family} for: {question!r}, got {families}"
