@@ -325,6 +325,40 @@ class TestPromptSchema:
         assert "answer_variable_name" in rendered
         assert "target_variable_name" in rendered
 
+    def test_prompt_requires_avn_matches_variables_entry(self):
+        # Prompt must say answer_variable_name must match the name field of a variables[] entry
+        rendered = self._get_rendered()
+        assert "variables[]" in rendered or "variables[" in rendered
+        # Must mention the exact-match / identical-string requirement
+        assert "identical" in rendered.lower() or "exactly equal" in rendered.lower() or "exact" in rendered.lower()
+
+    def test_prompt_requires_final_var_last(self):
+        # Prompt must state the final target variable must be the last item in variables[]
+        rendered = self._get_rendered()
+        assert "last" in rendered.lower()
+
+    def test_prompt_forbids_aliases_for_final_variable(self):
+        # Prompt must forbid aliases / more than one name for the final variable
+        rendered = self._get_rendered()
+        assert "alias" in rendered.lower() or "one name" in rendered.lower() or "one consistent" in rendered.lower()
+
+    def test_prompt_requires_snake_case(self):
+        # Prompt must require snake_case variable names
+        rendered = self._get_rendered()
+        assert "snake_case" in rendered or "snake" in rendered.lower()
+
+    def test_real_template_contains_all_new_constraints(self):
+        template = _load_prompt_template()
+        rendered = render_prompt(template, "How much profit did she earn?")
+        # snake_case requirement
+        assert "snake_case" in rendered or "snake" in rendered.lower()
+        # final variable last
+        assert "last" in rendered.lower()
+        # no alias
+        assert "alias" in rendered.lower() or "one name" in rendered.lower() or "one consistent" in rendered.lower()
+        # avn must equal name field of entry in variables
+        assert "variables[]" in rendered or "variables[" in rendered
+
 
 # ---------------------------------------------------------------------------
 # CLI / integration

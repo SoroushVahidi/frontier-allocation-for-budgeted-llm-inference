@@ -52,10 +52,10 @@ The model must return a single valid JSON object with **exactly** these fields:
 
 | Field | Rule |
 |-------|------|
-| `target_variable_name` | Semantic, not generic (`x`, `answer`, `result`, `val`) |
-| `variables[*].name` | Semantic; must include the target variable as one entry |
+| `target_variable_name` | Concise snake_case; not generic (`x`, `answer`, `result`, `val`) |
+| `variables[*].name` | Concise snake_case; must include the target variable as the **last** entry |
+| `answer_variable_name` | Must exactly equal `target_variable_name` AND the `name` field of the last entry in `variables[]`. No synonyms, aliases, or alternate spellings. |
 | `rejected_non_final_variables` | At least one entry when a tempting intermediate exists |
-| `answer_variable_name` | Must exactly match `target_variable_name` |
 | `final_answer` | Bare integer or decimal; no `$`, `%`, commas, units, or string wrapping |
 
 ---
@@ -64,6 +64,9 @@ The model must return a single valid JSON object with **exactly** these fields:
 
 - **No gold leakage**: prompt must not include `gold_answer`, `answer_key`, hidden labels, or the correct answer.
 - **No generic variable names**: `x`, `y`, `z`, `answer`, `result`, `val` are forbidden.
+- **snake_case names only**: all variable names must be lowercase with underscores; no spaces, no camelCase.
+- **Final variable last**: the target variable must be the last entry in `variables[]`.
+- **No aliases**: the final target variable must have exactly one name, used consistently in `target_variable_name`, the last `variables[].name`, and `answer_variable_name`.
 - **Reject tempting nearby values**: always name at least one rejected variable when the question involves subtraction, profit/loss, ratio, or original-before-process.
 - **One JSON object only**: no markdown fence, no explanation before or after.
 
@@ -102,24 +105,68 @@ Gold answers are not used for selection or ranking. The `gold_absent` flag is re
 
 ---
 
+---
+
+## Live Pilot Results
+
+These are **schema and feasibility pilots only**. They do not constitute evidence of accuracy improvement.  
+Gold was not included in any prompt. All gold comparisons were made post-hoc for reporting only.
+
+### Cohere pilot — 2026-05-12 (8 cases, `command-r-plus-08-2024`)
+
+| Metric | Value |
+|--------|-------|
+| Calls succeeded | 8/8 |
+| JSON parse | 8/8 (100%) |
+| Schema compliance | 8/8 (100%) |
+| `answer_variable_name == target_variable_name` | 8/8 |
+| `final_answer` bare number | 8/8 |
+| New candidates (not in existing pool) | 6/8 |
+| Matches proxy structural best (post-hoc) | 0/8 |
+| Schema issues | None |
+
+Output: `outputs/target_variable_dict_pal_branch_v1_live_pilot_8_20260512T175650Z/`
+
+### Cerebras pilot — 2026-05-12 (8 cases, `llama3.1-8b`)
+
+| Metric | Value |
+|--------|-------|
+| Calls succeeded | 8/8 |
+| JSON parse | 8/8 (100%) |
+| Schema compliance | 6/8 (75%) |
+| `answer_variable_name == target_variable_name` | 8/8 |
+| `final_answer` bare number | 8/8 |
+| New candidates (not in existing pool) | 7/8 |
+| Matches proxy structural best (post-hoc) | 0/8 |
+| Schema issues | `answer_variable_not_in_variables`: 2/8 |
+
+Output: `outputs/cerebras_target_variable_dict_pal_live_pilot_8_20260512T193711Z/`
+
+**Root cause of `answer_variable_not_in_variables` (2/8 cases):** The model declared `answer_variable_name: "X"` and `target_variable_name: "X"` but used a different string as the final variable's `name` field in `variables[]`. This is a naming-consistency failure, not an arithmetic or structural error. The prompt has been tightened to make the exact-match constraint explicit.
+
+**Note on 0/8 proxy-best match:** The proxy structural best is derived from the existing candidate pool, which already contains wrong-target answers. Generating new candidates that do not match the pool is expected behaviour, not a failure. Accuracy against gold requires a held-out live evaluation, which has not been run.
+
+---
+
 ## Safe Claims
 
 - Explicit target-variable binding addresses the structural gap identified in `frontier_next_edge_policy_v1`.
-- This is a no-API preflight; no model output has been collected yet.
-- Case selection is gold-free and reproducible.
+- The Cohere 8-case pilot shows 100% schema compliance on the tightened JSON schema.
+- The Cerebras 8-case pilot shows 75% schema compliance; the 2/8 failure type has a known root cause and a prompt fix.
+- Gold was not included in prompts in either pilot. Gold comparison was post-hoc only.
+- These pilots are schema/feasibility evidence only; they do not prove accuracy improvement over `external_l1_max`.
 
 ## Unsafe Claims
 
-- Do not claim accuracy improvement over external_l1_max without live pilot evidence.
-- Do not claim the JSON schema will be reliably produced without validation on live outputs.
-- Do not run a live pilot until preflight passes and the `frontier_next_edge_policy_v1` evidence threshold is confirmed.
+- Do not claim accuracy improvement over `external_l1_max` without held-out live evaluation on the wrong-supported-consensus-97 slice.
+- Do not claim schema compliance equals accuracy on the underlying math task.
+- Do not generalize Cerebras 8-case results to the full 97-case slice.
 
 ---
 
 ## Recommended Next Steps
 
-1. Pass preflight (this document).
-2. Run a ≤12-case Cohere-only fixed-budget live pilot.
-3. Validate JSON schema compliance and `answer_variable_name == target_variable_name`.
-4. Check backward_from_target_check recall on live pilot.
-5. Only expand if live pilot shows ≥3/12 exact-match improvement on gold-absent slice.
+1. Prompt tightening complete (this update). Re-run preflight to confirm no gold leakage.
+2. Run a 20-case BFTC pilot (highest-priority: lift 1.60, 23/24 Cerebras recommendation).
+3. Run a 20-case Cerebras TVD PAL follow-up to verify `avn_not_in_variables` rate drops after prompt fix.
+4. Only claim accuracy improvement after a held-out pilot with gold-absent case evaluation.
