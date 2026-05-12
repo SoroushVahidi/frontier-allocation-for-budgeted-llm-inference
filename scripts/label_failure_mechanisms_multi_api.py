@@ -136,6 +136,10 @@ PATTERN_DISCOVERY_CASE_KEYS = (
     "model_final_prediction",
     "candidate_answers",
     "candidate_answer_groups",
+    "answer_group_support_counts",
+    "selector_candidate_pool",
+    "direct_reserve_answer",
+    "frontier_candidate_answer",
     "selector_metadata",
     "action_trace_summary",
     "pal_exec_summary",
@@ -352,6 +356,244 @@ def _load_target_audit_map(path: Path) -> dict[str, dict[str, Any]]:
     return _load_jsonl_case_map(path)
 
 
+def _normalize_local_path(path_text: str) -> Path | None:
+    text = _stringify(path_text)
+    if not text:
+        return None
+    path = Path(text).expanduser()
+    if not path.is_absolute():
+        path = REPO_ROOT / path
+    return path
+
+
+def _load_optional_csv_case_map(path: Path, *, key_field: str = "case_id") -> dict[str, dict[str, Any]]:
+    if not path.is_file():
+        return {}
+    return _load_case_map(_read_csv_rows(path), key_field=key_field)
+
+
+def _load_failure_artifact_bundle_map(failure_rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    bundles: dict[str, dict[str, Any]] = {}
+    for row in failure_rows:
+        artifact_source = _stringify(row.get("artifact_source"))
+        if not artifact_source or artifact_source in bundles:
+            continue
+        artifact_path = _normalize_local_path(artifact_source)
+        if artifact_path is None or not artifact_path.is_file() or artifact_path.suffix.lower() != ".csv":
+            bundles[artifact_source] = {}
+            continue
+        bundle_dir = artifact_path.parent
+        bundles[artifact_source] = {
+            "artifact_path": str(artifact_path),
+            "result_rows": _load_optional_csv_case_map(artifact_path, key_field="example_id"),
+            "selected_case_rows": _load_optional_csv_case_map(bundle_dir / "selected_cases.csv", key_field="example_id"),
+            "pal_discovery_rows": _load_optional_csv_case_map(bundle_dir / "pal_discovery3_audit.csv", key_field="example_id"),
+            "pal_retry_rows": _load_optional_csv_case_map(bundle_dir / "pal_retry_audit.csv", key_field="example_id"),
+        }
+    return bundles
+
+
+def _artifact_case_context(
+    artifact_bundles: dict[str, dict[str, Any]],
+    *,
+    artifact_source: str,
+    case_id: str,
+) -> dict[str, Any]:
+    bundle = artifact_bundles.get(_stringify(artifact_source), {})
+    if not bundle:
+        return {}
+    result_row = dict(bundle.get("result_rows", {}).get(case_id, {}) or {})
+    selected_case_row = dict(bundle.get("selected_case_rows", {}).get(case_id, {}) or {})
+    pal_discovery_row = dict(bundle.get("pal_discovery_rows", {}).get(case_id, {}) or {})
+    pal_retry_row = dict(bundle.get("pal_retry_rows", {}).get(case_id, {}) or {})
+    result_metadata = _maybe_parse_jsonish(result_row.get("result_metadata"))
+    if not isinstance(result_metadata, dict):
+        result_metadata = {}
+    final_nodes = _maybe_parse_jsonish(result_row.get("final_nodes"))
+    if not isinstance(final_nodes, list):
+        final_nodes = []
+    return {
+        "artifact_path": _stringify(bundle.get("artifact_path")),
+        "result_row": result_row,
+        "selected_case_row": selected_case_row,
+        "pal_discovery_row": pal_discovery_row,
+        "pal_retry_row": pal_retry_row,
+        "result_metadata": result_metadata,
+        "final_nodes": final_nodes,
+    }
+
+
+def _coerce_string_list(value: Any) -> list[str]:
+    parsed = _maybe_parse_jsonish(value)
+    if isinstance(parsed, list):
+        values: list[str] = []
+        for item in parsed:
+            if isinstance(item, dict):
+                candidate = (
+                    _stringify(item.get("normalized_answer"))
+                    or _stringify(item.get("predicted_answer"))
+                    or _stringify(item.get("candidate_answer"))
+                    or _stringify(item.get("answer"))
+                )
+                if candidate:
+                    values.append(candidate)
+                continue
+            text = _stringify(item)
+            if text:
+                values.append(text)
+        return values
+    text = _stringify(parsed)
+    return [text] if text else []
+
+
+def _coerce_support_map(value: Any) -> dict[str, float]:
+    parsed = _maybe_parse_jsonish(value)
+    if not isinstance(parsed, dict):
+        return {}
+    support_map: dict[str, float] = {}
+    for key, support in parsed.items():
+        key_text = _stringify(key)
+        if key_text:
+            support_map[key_text] = _safe_float(support, 0.0)
+    return support_map
+
+
+def _compact_trace_excerpt(action_trace: list[dict[str, Any]], *, limit: int = 3) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for step in action_trace[:limit]:
+        if not isinstance(step, dict):
+            continue
+        reasoning_text = _stringify(step.get("reasoning_text") or step.get("step") or step.get("response_text"))
+        if len(reasoning_text) > 240:
+            reasoning_text = reasoning_text[:237] + "..."
+        out.append(
+            {
+                "branch_id": _stringify(step.get("branch_id")),
+                "source": _stringify(step.get("source")),
+                "action": _stringify(step.get("action")),
+                "reasoning_text": reasoning_text,
+                "extracted_answer": _stringify(step.get("extracted_answer") or step.get("predicted_answer")),
+                "target_alignment_category": _stringify(step.get("target_alignment_category")),
+            }
+        )
+    return out
+
+
+def _action_trace_present(summary: dict[str, Any]) -> bool:
+    for key, value in summary.items():
+        if key == "trace_excerpt":
+            if isinstance(value, list) and value:
+                return True
+            continue
+        if _stringify(value):
+            return True
+    return False
+
+
+def _pal_execution_present(summary: dict[str, Any]) -> bool:
+    for value in summary.values():
+        if isinstance(value, dict):
+            if any(_stringify(inner) for inner in value.values()):
+                return True
+            continue
+        if _stringify(value):
+            return True
+    return False
+
+
+def _compute_packet_completeness_summary(
+    case_packets: list[dict[str, Any]],
+    *,
+    min_completeness: float,
+) -> dict[str, Any]:
+    total = len(case_packets)
+    subset_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+
+    def mark(subset: str, field: str, present: bool) -> None:
+        subset_counts[subset]["case_count"] += 0
+        if present:
+            subset_counts[subset][field] += 1
+
+    question_present = 0
+    prediction_present = 0
+    candidate_pool_present = 0
+    action_trace_present = 0
+    pal_execution_present = 0
+    structural_fields_present = 0
+    empty_packet_count = 0
+
+    for packet in case_packets:
+        subset = _stringify(packet.get("primary_subset")) or "unknown"
+        subset_counts[subset]["case_count"] += 1
+
+        has_question = bool(_stringify(packet.get("question")))
+        has_prediction = bool(_stringify(packet.get("model_final_prediction")))
+        has_candidate_pool = bool(packet.get("candidate_answers") or packet.get("candidate_answer_groups") or packet.get("selector_candidate_pool"))
+        has_action_trace = _action_trace_present(packet.get("action_trace_summary") or {})
+        has_pal_execution = _pal_execution_present(packet.get("pal_exec_summary") or {})
+        has_structural = bool(packet.get("structural_fields"))
+
+        question_present += int(has_question)
+        prediction_present += int(has_prediction)
+        candidate_pool_present += int(has_candidate_pool)
+        action_trace_present += int(has_action_trace)
+        pal_execution_present += int(has_pal_execution)
+        structural_fields_present += int(has_structural)
+
+        subset_counts[subset]["question_present_count"] += int(has_question)
+        subset_counts[subset]["prediction_present_count"] += int(has_prediction)
+        subset_counts[subset]["candidate_pool_present_count"] += int(has_candidate_pool)
+        subset_counts[subset]["action_trace_present_count"] += int(has_action_trace)
+        subset_counts[subset]["pal_execution_present_count"] += int(has_pal_execution)
+        subset_counts[subset]["structural_fields_present_count"] += int(has_structural)
+
+        if not any((has_question, has_prediction, has_candidate_pool, has_action_trace, has_pal_execution, has_structural)):
+            empty_packet_count += 1
+            subset_counts[subset]["empty_packet_count"] += 1
+
+    def rate(count: int) -> float:
+        return round(count / max(1, total), 6)
+
+    per_subset: dict[str, dict[str, Any]] = {}
+    for subset, counts in subset_counts.items():
+        subset_total = counts.get("case_count", 0)
+        per_subset[subset] = {
+            "case_count": subset_total,
+            "question_present_rate": round(counts.get("question_present_count", 0) / max(1, subset_total), 6),
+            "prediction_present_rate": round(counts.get("prediction_present_count", 0) / max(1, subset_total), 6),
+            "candidate_pool_present_rate": round(counts.get("candidate_pool_present_count", 0) / max(1, subset_total), 6),
+            "action_trace_present_rate": round(counts.get("action_trace_present_count", 0) / max(1, subset_total), 6),
+            "pal_execution_present_rate": round(counts.get("pal_execution_present_count", 0) / max(1, subset_total), 6),
+            "structural_fields_present_rate": round(counts.get("structural_fields_present_count", 0) / max(1, subset_total), 6),
+            "empty_packet_count": counts.get("empty_packet_count", 0),
+        }
+
+    warnings: list[str] = []
+    if total:
+        if rate(question_present) < min_completeness:
+            warnings.append(
+                f"question_present_rate={rate(question_present):.3f} is below min completeness {min_completeness:.3f}"
+            )
+        if rate(prediction_present) < min_completeness:
+            warnings.append(
+                f"prediction_present_rate={rate(prediction_present):.3f} is below min completeness {min_completeness:.3f}"
+            )
+
+    return {
+        "case_count": total,
+        "min_packet_completeness": round(min_completeness, 6),
+        "question_present_rate": rate(question_present),
+        "prediction_present_rate": rate(prediction_present),
+        "candidate_pool_present_rate": rate(candidate_pool_present),
+        "action_trace_present_rate": rate(action_trace_present),
+        "pal_execution_present_rate": rate(pal_execution_present),
+        "structural_fields_present_rate": rate(structural_fields_present),
+        "empty_packet_count": empty_packet_count,
+        "per_subset": per_subset,
+        "warnings": warnings,
+    }
+
+
 def _read_case_ids_from_jsonl(path: Path) -> list[str]:
     ids: list[str] = []
     if not path.is_file():
@@ -514,6 +756,7 @@ def _build_case_packet(
     anchor_map: dict[str, dict[str, Any]],
     target_audit_map: dict[str, dict[str, Any]],
     structural_map: dict[str, dict[str, Any]],
+    artifact_bundles: dict[str, dict[str, Any]],
     include_gold_for_labeling: bool,
 ) -> dict[str, Any]:
     failure_row = failure_map.get(case_id, {})
@@ -521,18 +764,60 @@ def _build_case_packet(
     anchor_row = anchor_map.get(case_id, {})
     target_row = target_audit_map.get(case_id, {})
     structural_row = structural_map.get(case_id, {})
+    artifact_source = _stringify(failure_row.get("artifact_source"))
+    artifact_context = _artifact_case_context(artifact_bundles, artifact_source=artifact_source, case_id=case_id)
+    artifact_row = artifact_context.get("result_row", {})
+    selected_case_row = artifact_context.get("selected_case_row", {})
+    pal_discovery_row = artifact_context.get("pal_discovery_row", {})
+    pal_retry_row = artifact_context.get("pal_retry_row", {})
+    result_metadata = artifact_context.get("result_metadata", {})
+    final_nodes = artifact_context.get("final_nodes", [])
 
     question = (
         _stringify(target_row.get("question"))
         or _stringify(target_row.get("problem_text"))
+        or _stringify(artifact_row.get("question"))
+        or _stringify(selected_case_row.get("question"))
         or _stringify(failure_row.get("problem_text"))
     )
     selected_prediction = (
         _stringify(target_row.get("selected_answer"))
         or _stringify(failure_row.get("selected_answer"))
+        or _stringify(artifact_row.get("final_answer_raw"))
+        or _stringify(result_metadata.get("final_answer"))
+        or _stringify(artifact_row.get("repair_answer_raw"))
+        or _stringify(artifact_row.get("selected_answer_raw"))
         or _stringify(target_row.get("predicted"))
+        or _stringify(gold_row.get("predicted"))
     )
-    reference_answer = _stringify(target_row.get("gold_answer")) or _stringify(failure_row.get("gold_answer"))
+    reference_answer = (
+        _stringify(target_row.get("gold_answer"))
+        or _stringify(failure_row.get("gold_answer"))
+        or _stringify(artifact_row.get("gold_answer"))
+        or _stringify(selected_case_row.get("gold_answer"))
+        or _stringify(gold_row.get("gold"))
+    )
+    answer_group_support_counts = _coerce_support_map(result_metadata.get("answer_group_support_counts"))
+    selector_candidate_pool = _coerce_string_list(result_metadata.get("selector_candidate_pool"))
+    if not selector_candidate_pool:
+        selector_candidate_pool = _coerce_string_list(pal_discovery_row.get("pal_selector_candidate_pool_json"))
+    direct_reserve_answer = _stringify(target_row.get("direct_reserve_answer")) or _stringify(result_metadata.get("direct_reserve_answer"))
+    if not direct_reserve_answer:
+        for attempt in result_metadata.get("direct_reserve_attempts", []) or []:
+            if isinstance(attempt, dict):
+                direct_reserve_answer = _stringify(attempt.get("extracted_answer") or attempt.get("predicted_answer"))
+                if direct_reserve_answer:
+                    break
+    if not direct_reserve_answer:
+        for row in final_nodes:
+            if isinstance(row, dict) and "direct_reserve" in _stringify(row.get("branch_id") or row.get("source_metadata")):
+                direct_reserve_answer = _stringify(row.get("predicted_answer") or row.get("trace_extracted_answer"))
+                if direct_reserve_answer:
+                    break
+    frontier_candidate_answer = _stringify(target_row.get("frontier_answer")) or _stringify(result_metadata.get("frontier_candidate_answer"))
+    if not frontier_candidate_answer:
+        selector_pool_values = _coerce_string_list(result_metadata.get("selector_candidate_pool"))
+        frontier_candidate_answer = selector_pool_values[0] if selector_pool_values else ""
 
     candidate_answers: list[str] = []
     candidate_groups: list[dict[str, Any]] = []
@@ -553,11 +838,38 @@ def _build_case_packet(
                         "source_family": "",
                     }
                 )
+    if answer_group_support_counts:
+        for candidate, support in answer_group_support_counts.items():
+            candidate_groups.append(
+                {
+                    "candidate_answer": candidate,
+                    "support_count": support,
+                    "source_family": "selector_answer_group",
+                }
+            )
 
     for key in ("direct_reserve_answer", "frontier_answer", "tiebreak_answer", "pal_answer", "selected_answer"):
         candidate = _stringify(target_row.get(key))
         if candidate:
             candidate_answers.append(candidate)
+    for candidate in selector_candidate_pool:
+        candidate_answers.append(candidate)
+    for key in ("final_answer_raw", "repair_answer_raw", "controller_final_answer_raw"):
+        candidate = _stringify(artifact_row.get(key))
+        if candidate:
+            candidate_answers.append(candidate)
+    for key in ("direct_reserve_answer", "frontier_candidate_answer", "pal_candidate_answer", "pal_answer", "final_answer"):
+        candidate = _stringify(result_metadata.get(key))
+        if candidate:
+            candidate_answers.append(candidate)
+    for row in final_nodes:
+        if not isinstance(row, dict):
+            continue
+        candidate = _stringify(row.get("predicted_answer") or row.get("trace_extracted_answer"))
+        if candidate:
+            candidate_answers.append(candidate)
+    for candidate in _coerce_string_list(pal_discovery_row.get("pal_final_nodes_normalized_answers_json")):
+        candidate_answers.append(candidate)
     if structural_row:
         top_candidate = structural_row.get("top_candidate", {})
         if isinstance(top_candidate, dict):
@@ -592,27 +904,61 @@ def _build_case_packet(
 
     selector_metadata = {
         "selected_answer": selected_prediction,
-        "selected_source": _stringify(target_row.get("selected_source")) or _stringify(failure_row.get("selected_source")),
+        "selected_source": (
+            _stringify(target_row.get("selected_source"))
+            or _stringify(failure_row.get("selected_source"))
+            or _stringify(artifact_row.get("final_answer_source"))
+            or _stringify(pal_retry_row.get("retry_selected_source"))
+        ),
         "structural_commit_reason": _stringify(target_row.get("structural_commit_reason")),
-        "direct_reserve_answer": _stringify(target_row.get("direct_reserve_answer")),
-        "frontier_answer": _stringify(target_row.get("frontier_answer")),
+        "direct_reserve_answer": direct_reserve_answer,
+        "frontier_answer": frontier_candidate_answer,
         "tiebreak_answer": _stringify(target_row.get("tiebreak_answer")),
         "correct_alternate_available": _stringify(target_row.get("correct_alternate_available")),
         "gold_present_in_candidate_pool": _stringify(target_row.get("gold_present_in_candidate_pool")),
+        "selector_candidate_pool_size": len(selector_candidate_pool),
+        "answer_group_support_counts": answer_group_support_counts,
     }
+    action_trace = result_metadata.get("action_trace")
+    if not isinstance(action_trace, list):
+        action_trace = result_metadata.get("frontier_candidate_metadata", {}).get("action_trace") if isinstance(result_metadata.get("frontier_candidate_metadata"), dict) else []
+    if not isinstance(action_trace, list):
+        action_trace = []
     action_trace_summary = {
-        "failure_family": _stringify(failure_row.get("failure_family")) or _stringify(target_row.get("failure_category")),
+        "failure_family": _stringify(failure_row.get("failure_family")) or _stringify(target_row.get("failure_category")) or _stringify(artifact_row.get("failure_tag")),
         "failure_category": _stringify(target_row.get("failure_category")),
-        "latest_method_failure_tag": _stringify(target_row.get("latest_method_failure_tag")),
-        "selection_reason": _stringify(target_row.get("selection_reason")) or _stringify(failure_row.get("notes")),
+        "latest_method_failure_tag": _stringify(target_row.get("latest_method_failure_tag")) or _stringify(artifact_row.get("failure_tag")),
+        "selection_reason": _stringify(target_row.get("selection_reason")) or _stringify(failure_row.get("notes")) or _stringify(result_metadata.get("override_reason")),
         "short_diagnosis": _stringify(target_row.get("short_diagnosis")),
         "likely_mismatch_subtype": _stringify(target_row.get("likely_mismatch_subtype")),
+        "final_answer_source": _stringify(artifact_row.get("final_answer_source")),
+        "frontier_candidate_maturity": _stringify(result_metadata.get("frontier_candidate_maturity")),
+        "frontier_candidate_support": _stringify(result_metadata.get("frontier_candidate_support")),
+        "selector_candidate_pool_size": _stringify(result_metadata.get("selector_candidate_pool_size")),
+        "action_trace_step_count": len(action_trace),
+        "trace_excerpt": _compact_trace_excerpt(action_trace),
     }
+    pal_execution = result_metadata.get("pal_execution_result")
+    if not isinstance(pal_execution, dict):
+        pal_execution = result_metadata.get("pal_execution") if isinstance(result_metadata.get("pal_execution"), dict) else {}
+    pal_execution_status = _stringify(target_row.get("pal_execution_status"))
+    if not pal_execution_status and pal_execution:
+        if _is_truthy(pal_execution.get("pal_exec_ok")):
+            pal_execution_status = "success"
+        elif _stringify(pal_execution.get("pal_error_type")) or _stringify(pal_execution.get("pal_error_message_sanitized")):
+            pal_execution_status = "error"
     pal_exec_summary = {
-        "pal_answer": _stringify(target_row.get("pal_answer")),
-        "pal_execution_status": _stringify(target_row.get("pal_execution_status")),
-        "pal_stdout": _stringify(target_row.get("pal_stdout")),
+        "pal_answer": _stringify(target_row.get("pal_answer")) or _stringify(result_metadata.get("pal_candidate_answer")) or _stringify(result_metadata.get("pal_answer")),
+        "pal_execution_status": pal_execution_status,
+        "pal_stdout": _stringify(target_row.get("pal_stdout")) or _stringify(pal_execution.get("pal_stdout")),
         "pal_code": _stringify(target_row.get("pal_code")),
+        "pal_parse_ok": _stringify(pal_execution.get("pal_parse_ok")),
+        "pal_safety_ok": _stringify(pal_execution.get("pal_safety_ok")),
+        "pal_exec_ok": _stringify(pal_execution.get("pal_exec_ok")),
+        "pal_error_type": _stringify(pal_execution.get("pal_error_type")),
+        "pal_error_message": _stringify(pal_execution.get("pal_error_message_sanitized")),
+        "pal_retry_reason": _stringify(pal_retry_row.get("pal_retry_reason")),
+        "retry_selected_source": _stringify(pal_retry_row.get("retry_selected_source")),
     }
     failure_audit_labels = {
         "question_type": _stringify(gold_row.get("question_type")),
@@ -626,6 +972,8 @@ def _build_case_packet(
         "external_l1_exact": int(_is_truthy(anchor_row.get("external_l1_exact"))),
         "gold_recovered": int(_is_truthy(anchor_row.get("gold_recovered"))),
         "diversity_increased": int(_is_truthy(anchor_row.get("diversity_increased"))),
+        "distance_bucket": _stringify(gold_row.get("distance_bucket")),
+        "rel_error": _stringify(gold_row.get("rel_error")),
     }
     structural_fields = dict(structural_row)
 
@@ -637,16 +985,24 @@ def _build_case_packet(
         "model_final_prediction": selected_prediction,
         "candidate_answers": candidate_answers,
         "candidate_answer_groups": candidate_groups,
+        "answer_group_support_counts": answer_group_support_counts,
+        "selector_candidate_pool": selector_candidate_pool,
+        "direct_reserve_answer": direct_reserve_answer,
+        "frontier_candidate_answer": frontier_candidate_answer,
         "selector_metadata": selector_metadata,
         "action_trace_summary": action_trace_summary,
         "pal_exec_summary": pal_exec_summary,
         "structural_fields": structural_fields,
         "failure_audit_labels": failure_audit_labels,
         "source_artifacts": {
-            "failure_csv": _stringify(failure_row.get("artifact_source")),
+            "failure_csv": artifact_source,
             "target_audit_jsonl": _stringify(target_row.get("source_artifact_path")),
             "structural_csv": _stringify(structural_row.get("source_path")),
+            "artifact_bundle": _stringify(artifact_context.get("artifact_path")),
             "exact_subset_sources": [membership.get("subset") for membership in subset_memberships if membership.get("subset") in {"diagnostic_30", "target_staged_15"}],
+        },
+        "internal_scoring_metadata": {
+            "gold_answer": reference_answer,
         },
         "prompt_template_id": DEFAULT_PROMPT_TEMPLATE_ID,
         "include_gold_for_labeling": bool(include_gold_for_labeling),
@@ -664,6 +1020,10 @@ def _build_prompt_payload(packet: dict[str, Any]) -> dict[str, Any]:
         "model_final_prediction": packet.get("model_final_prediction", ""),
         "candidate_answers": packet.get("candidate_answers", []),
         "candidate_answer_groups": packet.get("candidate_answer_groups", []),
+        "answer_group_support_counts": packet.get("answer_group_support_counts", {}),
+        "selector_candidate_pool": packet.get("selector_candidate_pool", []),
+        "direct_reserve_answer": packet.get("direct_reserve_answer", ""),
+        "frontier_candidate_answer": packet.get("frontier_candidate_answer", ""),
         "selector_metadata": packet.get("selector_metadata", {}),
         "action_trace_summary": packet.get("action_trace_summary", {}),
         "pal_exec_summary": packet.get("pal_exec_summary", {}),
@@ -1867,6 +2227,7 @@ def _build_outputs(
     request_rows: list[dict[str, Any]],
     raw_rows: list[dict[str, Any]],
     parsed_rows: list[dict[str, Any]],
+    packet_completeness_summary: dict[str, Any],
     output_dir: Path,
     manifest: dict[str, Any],
 ) -> dict[str, Any]:
@@ -1886,6 +2247,7 @@ def _build_outputs(
             "parsed_label_row_count": len(parsed_rows),
             "case_matrix_row_count": len(case_matrix_rows),
             "disagreement_case_count": len(disagreement_rows),
+            "packet_completeness_summary": packet_completeness_summary,
         }
     )
     agreement_summary.update(readiness_summary)
@@ -1895,6 +2257,7 @@ def _build_outputs(
     _write_jsonl(output_dir / "raw_provider_labels.jsonl", raw_rows)
     _write_jsonl(output_dir / "parsed_labels.jsonl", parsed_rows)
     _write_json(output_dir / "agreement_summary.json", agreement_summary)
+    _write_json(output_dir / "packet_completeness_summary.json", packet_completeness_summary)
     _write_csv(
         output_dir / "label_frequency_summary.csv",
         frequency_rows,
@@ -1940,6 +2303,7 @@ def _build_pattern_outputs(
     request_rows: list[dict[str, Any]],
     raw_rows: list[dict[str, Any]],
     parsed_rows: list[dict[str, Any]],
+    packet_completeness_summary: dict[str, Any],
     output_dir: Path,
     manifest: dict[str, Any],
 ) -> dict[str, Any]:
@@ -1963,6 +2327,7 @@ def _build_pattern_outputs(
             "selected_case_count": batch_packets[0].get("case_count", 0) if batch_packets else 0,
             "cases_reviewed": batch_packets[0].get("cases_reviewed", []) if batch_packets else [],
             "api_call_count": sum(1 for row in raw_rows if _is_truthy(row.get("api_call_made"))),
+            "packet_completeness_summary": packet_completeness_summary,
         }
     )
     pattern_summary.update(readiness_summary)
@@ -1972,6 +2337,7 @@ def _build_pattern_outputs(
     _write_jsonl(output_dir / "raw_provider_labels.jsonl", raw_rows)
     _write_jsonl(output_dir / "parsed_labels.jsonl", parsed_rows)
     _write_json(output_dir / "pattern_summary.json", pattern_summary)
+    _write_json(output_dir / "packet_completeness_summary.json", packet_completeness_summary)
     report_lines = [
         "# Multi-API Failure Mechanism Pattern Discovery",
         "",
@@ -2011,6 +2377,17 @@ def _build_pattern_outputs(
     report_lines.extend(
         [
             "",
+            "## Packet Completeness",
+            "",
+            f"- question_present_rate: `{packet_completeness_summary.get('question_present_rate', 0.0)}`",
+            f"- prediction_present_rate: `{packet_completeness_summary.get('prediction_present_rate', 0.0)}`",
+            f"- candidate_pool_present_rate: `{packet_completeness_summary.get('candidate_pool_present_rate', 0.0)}`",
+            f"- action_trace_present_rate: `{packet_completeness_summary.get('action_trace_present_rate', 0.0)}`",
+            f"- pal_execution_present_rate: `{packet_completeness_summary.get('pal_execution_present_rate', 0.0)}`",
+            f"- structural_fields_present_rate: `{packet_completeness_summary.get('structural_fields_present_rate', 0.0)}`",
+            f"- empty_packet_count: `{packet_completeness_summary.get('empty_packet_count', 0)}`",
+            f"- per_subset: `{json.dumps(packet_completeness_summary.get('per_subset', {}), sort_keys=True)}`",
+            "",
             "## Pattern Summary",
             "",
             f"- provider_pattern_name_counts: `{json.dumps(pattern_summary.get('provider_pattern_name_counts', {}), sort_keys=True)}`",
@@ -2046,6 +2423,15 @@ def _build_pattern_outputs(
     report_lines.extend(
         [
             "",
+            "## Warnings",
+            "",
+        ]
+    )
+    for warning in packet_completeness_summary.get("warnings", []):
+        report_lines.append(f"- {warning}")
+    report_lines.extend(
+        [
+            "",
             "## Notes",
             "",
             "- Pattern discovery batches are hypotheses until manually audited.",
@@ -2078,6 +2464,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--mistral-model", default=DEFAULT_MODELS["mistral"], help="Mistral model name.")
     parser.add_argument("--provider-cap", action="append", default=[], help="Repeatable provider cap in the form provider=cap.")
     parser.add_argument("--limit", type=int, default=0, help="Optional deterministic case limit applied after subset construction.")
+    parser.add_argument(
+        "--min-packet-completeness",
+        type=float,
+        default=0.75,
+        help="Warn when question or prediction completeness falls below this present-rate threshold.",
+    )
     parser.add_argument("--max-calls-total", type=int, default=0, help="Hard total call cap. Required in API mode.")
     parser.add_argument("--allow-api", action="store_true", help="Allow provider API calls.")
     parser.add_argument(
@@ -2126,6 +2518,7 @@ def main(argv: list[str] | None = None) -> int:
     anchor_map = _load_anchor_map(anchor_effect_csv)
     target_audit_map = _load_target_audit_map(target_audit_jsonl)
     structural_map, resolved_structural_csv = _load_structural_feature_map(structural_feature_csv, outputs_root)
+    artifact_bundles = _load_failure_artifact_bundle_map(failure_rows)
 
     subset_specs = _build_subset_specs(
         failure_rows=failure_rows,
@@ -2152,10 +2545,18 @@ def main(argv: list[str] | None = None) -> int:
             anchor_map=anchor_map,
             target_audit_map=target_audit_map,
             structural_map=structural_map,
+            artifact_bundles=artifact_bundles,
             include_gold_for_labeling=bool(args.include_gold_for_labeling),
         )
         for case_id in ordered_case_ids
     ]
+    min_packet_completeness = float(args.min_packet_completeness or 0.0)
+    if min_packet_completeness < 0.0 or min_packet_completeness > 1.0:
+        raise ValueError("--min-packet-completeness must be between 0 and 1")
+    packet_completeness_summary = _compute_packet_completeness_summary(
+        case_packets,
+        min_completeness=min_packet_completeness,
+    )
 
     prompt_packets = []
     for packet in case_packets:
@@ -2208,6 +2609,7 @@ def main(argv: list[str] | None = None) -> int:
             "provider_models": provider_models,
             "provider_caps": {provider: 0 for provider in providers},
             "provider_config_summary": provider_config_summary,
+            "packet_completeness_summary": packet_completeness_summary,
             "include_gold_for_labeling": bool(args.include_gold_for_labeling),
             "gold_assisted": bool(args.include_gold_for_labeling),
             "subset_specs": subset_specs,
@@ -2226,7 +2628,7 @@ def main(argv: list[str] | None = None) -> int:
             "diagnostic_30_jsonl": str(diagnostic_30_jsonl),
             "target_staged_15_jsonl": str(target_staged_15_jsonl),
             "structural_feature_csv": str(resolved_structural_csv) if resolved_structural_csv else "",
-            "output_files": ["manifest.json", "report.md"],
+            "output_files": ["manifest.json", "report.md", "packet_completeness_summary.json"],
             "label_schema": {
                 "fields": LABEL_FIELDS,
                 "primary_label_values": sorted(PRIMARY_LABELS),
@@ -2293,13 +2695,29 @@ def main(argv: list[str] | None = None) -> int:
                 f"- unique_case_count: `{len(case_packets)}`",
                 f"- planned_request_count: `{len(case_packets) * len(providers)}`",
                 "",
+                "## Packet Completeness",
+                "",
+                f"- question_present_rate: `{packet_completeness_summary.get('question_present_rate', 0.0)}`",
+                f"- prediction_present_rate: `{packet_completeness_summary.get('prediction_present_rate', 0.0)}`",
+                f"- candidate_pool_present_rate: `{packet_completeness_summary.get('candidate_pool_present_rate', 0.0)}`",
+                f"- action_trace_present_rate: `{packet_completeness_summary.get('action_trace_present_rate', 0.0)}`",
+                f"- pal_execution_present_rate: `{packet_completeness_summary.get('pal_execution_present_rate', 0.0)}`",
+                f"- structural_fields_present_rate: `{packet_completeness_summary.get('structural_fields_present_rate', 0.0)}`",
+                f"- empty_packet_count: `{packet_completeness_summary.get('empty_packet_count', 0)}`",
+                f"- per_subset: `{json.dumps(packet_completeness_summary.get('per_subset', {}), sort_keys=True)}`",
+                "",
                 "## Notes",
                 "",
                 "- This is a provider-config dry-check only; no requests were sent.",
                 "- The prompt packet is still rendered gold-free unless `--include-gold-for-labeling` is set.",
             ]
         )
+        if packet_completeness_summary.get("warnings"):
+            config_report_lines.extend(["", "## Warnings", ""])
+            for warning in packet_completeness_summary.get("warnings", []):
+                config_report_lines.append(f"- {warning}")
         (output_dir / "report.md").write_text("\n".join(config_report_lines).rstrip() + "\n", encoding="utf-8")
+        _write_json(output_dir / "packet_completeness_summary.json", packet_completeness_summary)
         print(json.dumps(config_manifest, indent=2, sort_keys=True))
         return 0
 
@@ -2596,6 +3014,7 @@ def main(argv: list[str] | None = None) -> int:
             "provider_models": provider_models,
             "provider_caps": provider_caps,
             "provider_config_summary": provider_config_summary,
+            "packet_completeness_summary": packet_completeness_summary,
             "include_gold_for_labeling": bool(args.include_gold_for_labeling),
             "gold_assisted": bool(args.include_gold_for_labeling),
             "subset_specs": subset_specs,
@@ -2624,6 +3043,7 @@ def main(argv: list[str] | None = None) -> int:
                 "raw_provider_labels.jsonl",
                 "parsed_labels.jsonl",
                 "pattern_summary.json",
+                "packet_completeness_summary.json",
                 "report.md",
             ],
             "pattern_schema": {
@@ -2652,6 +3072,7 @@ def main(argv: list[str] | None = None) -> int:
             request_rows=request_rows,
             raw_rows=raw_rows,
             parsed_rows=parsed_rows,
+            packet_completeness_summary=packet_completeness_summary,
             output_dir=output_dir,
             manifest=manifest,
         )
@@ -2913,6 +3334,7 @@ def main(argv: list[str] | None = None) -> int:
         "provider_models": provider_models,
         "provider_caps": provider_caps,
         "provider_config_summary": provider_config_summary,
+        "packet_completeness_summary": packet_completeness_summary,
         "include_gold_for_labeling": bool(args.include_gold_for_labeling),
         "gold_assisted": bool(args.include_gold_for_labeling),
         "subset_specs": subset_specs,
@@ -2939,6 +3361,7 @@ def main(argv: list[str] | None = None) -> int:
             "raw_provider_labels.jsonl",
             "parsed_labels.jsonl",
             "agreement_summary.json",
+            "packet_completeness_summary.json",
             "label_frequency_summary.csv",
             "case_label_matrix.csv",
             "disagreement_cases.csv",
@@ -2973,6 +3396,7 @@ def main(argv: list[str] | None = None) -> int:
         request_rows=request_rows,
         raw_rows=raw_rows,
         parsed_rows=parsed_rows,
+        packet_completeness_summary=packet_completeness_summary,
         output_dir=output_dir,
         manifest=manifest,
     )
@@ -3037,6 +3461,17 @@ def main(argv: list[str] | None = None) -> int:
             f"- expected_request_count: `{len(case_packets) * len(providers)}`",
             f"- api_call_count: `{total_calls}`",
             "",
+            "## Packet Completeness",
+            "",
+            f"- question_present_rate: `{packet_completeness_summary.get('question_present_rate', 0.0)}`",
+            f"- prediction_present_rate: `{packet_completeness_summary.get('prediction_present_rate', 0.0)}`",
+            f"- candidate_pool_present_rate: `{packet_completeness_summary.get('candidate_pool_present_rate', 0.0)}`",
+            f"- action_trace_present_rate: `{packet_completeness_summary.get('action_trace_present_rate', 0.0)}`",
+            f"- pal_execution_present_rate: `{packet_completeness_summary.get('pal_execution_present_rate', 0.0)}`",
+            f"- structural_fields_present_rate: `{packet_completeness_summary.get('structural_fields_present_rate', 0.0)}`",
+            f"- empty_packet_count: `{packet_completeness_summary.get('empty_packet_count', 0)}`",
+            f"- per_subset: `{json.dumps(packet_completeness_summary.get('per_subset', {}), sort_keys=True)}`",
+            "",
             "## Agreement Snapshot",
             "",
             f"- all_agree_case_count: `{agreement_summary['all_agree_case_count']}`",
@@ -3068,6 +3503,15 @@ def main(argv: list[str] | None = None) -> int:
                     sort_keys=True,
                 )
             )
+    report_lines.extend(
+        [
+            "",
+            "## Warnings",
+            "",
+        ]
+    )
+    for warning in packet_completeness_summary.get("warnings", []):
+        report_lines.append(f"- {warning}")
     report_lines.extend(
         [
             "",

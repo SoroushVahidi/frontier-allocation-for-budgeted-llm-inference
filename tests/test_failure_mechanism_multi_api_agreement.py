@@ -197,6 +197,7 @@ def test_agreement_summary_and_frequency_outputs(tmp_path: Path) -> None:
         request_rows=[],
         raw_rows=[],
         parsed_rows=parsed_rows,
+        packet_completeness_summary={"question_present_rate": 1.0, "prediction_present_rate": 1.0, "warnings": [], "per_subset": {}, "candidate_pool_present_rate": 1.0, "action_trace_present_rate": 1.0, "pal_execution_present_rate": 1.0, "structural_fields_present_rate": 1.0, "empty_packet_count": 0},
         output_dir=out_dir,
         manifest=manifest,
     )

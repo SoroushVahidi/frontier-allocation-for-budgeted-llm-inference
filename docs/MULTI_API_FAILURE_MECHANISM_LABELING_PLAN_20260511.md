@@ -123,6 +123,10 @@ The rendered prompt may include only:
 - `model_final_prediction`
 - `candidate_answers`
 - `candidate_answer_groups`
+- `answer_group_support_counts`
+- `selector_candidate_pool`
+- `direct_reserve_answer`
+- `frontier_candidate_answer`
 - `selector_metadata`
 - `action_trace_summary`
 - `pal_exec_summary`
@@ -134,6 +138,15 @@ The rendered prompt may include only:
 The packet stays gold-free by default. If `--include-gold-for-labeling` is set,
 the packet can include a reference answer, and the manifest/report must mark the
 run as gold-assisted.
+
+For non-diagnostic subsets such as `wrong_supported_consensus_97`, packet construction should join richer evidence from:
+
+- `target_audit_diagnostic_cases.jsonl` when available
+- the canonical failure bank CSVs
+- the referenced `artifact_source` bundle such as `pal_results.csv`
+- sibling audit files in the same bundle directory, for example `selected_cases.csv`, `pal_discovery3_audit.csv`, and `pal_retry_audit.csv`
+
+Gold answers may be loaded into internal scoring metadata, but they must stay out of provider prompts unless `--include-gold-for-labeling` is explicitly set.
 
 ## Output Directory
 
@@ -148,11 +161,29 @@ Expected files:
 - `provider_requests_dry_run.jsonl`
 - `raw_provider_labels.jsonl`
 - `parsed_labels.jsonl`
+- `packet_completeness_summary.json`
 - `agreement_summary.json`
 - `label_frequency_summary.csv`
 - `case_label_matrix.csv`
 - `disagreement_cases.csv`
 - `report.md`
+
+Packet completeness must be tracked in the manifest/report:
+
+- `question_present_rate`
+- `prediction_present_rate`
+- `candidate_pool_present_rate`
+- `action_trace_present_rate`
+- `pal_execution_present_rate`
+- `structural_fields_present_rate`
+- `empty_packet_count`
+- per-subset completeness summary
+
+Default warning policy:
+
+- warn when question completeness falls below `0.75`
+- warn when prediction completeness falls below `0.75`
+- configurable via `--min-packet-completeness`
 
 ## Cap Policy
 

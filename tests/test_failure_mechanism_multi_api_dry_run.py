@@ -982,3 +982,122 @@ def test_provider_config_check_reports_openai_without_clients(tmp_path: Path, mo
     assert manifest["provider_config_summary"]["openai"]["model"] == "openai-x"
     assert manifest["provider_config_summary"]["openai"]["env_ready"] is True
     assert manifest["planned_request_count"] == 4
+
+
+def test_sparse_packet_warning_is_recorded_in_manifest_and_report(tmp_path: Path, monkeypatch) -> None:
+    failure = tmp_path / "failure.csv"
+    gold = tmp_path / "gold.csv"
+    anchor = tmp_path / "anchor.csv"
+    target_audit = tmp_path / "target_audit.jsonl"
+    diag30 = tmp_path / "diagnostic_30.jsonl"
+    target15 = tmp_path / "target_15.jsonl"
+    structural = tmp_path / "candidate_feature_rows.csv"
+    out_dir = tmp_path / "out_sparse"
+
+    _write_csv(
+        failure,
+        [
+            {
+                "case_id": "c1",
+                "method_id": labeler.DEFAULT_METHOD,
+                "method_version": "v1",
+                "evidence_completeness": "FULL",
+                "failure_family": "unknown",
+                "problem_text": "",
+                "gold_answer": "",
+                "selected_answer": "",
+                "selected_source": "",
+                "artifact_source": "",
+                "has_candidate_metadata": "unknown",
+                "has_trace_metadata": "unknown",
+                "has_pal_metadata": "unknown",
+                "local_or_tracked_source": "local",
+                "notes": "",
+            }
+        ],
+    )
+    _write_csv(gold, [{"case_id": "c1", "question_type": "unknown", "error_type": "unknown", "gold": "7", "external_contrast": "Both wrong"}])
+    _write_csv(anchor, [{"case_id": "c1"}])
+    _write_jsonl(target_audit, [])
+    _write_jsonl(diag30, [{"example_id": "c1"}])
+    _write_jsonl(target15, [{"example_id": "c1"}])
+    _write_csv(structural, [{"case_id": "c1", "target_tuple": ""}])
+
+    monkeypatch.setattr(
+        labeler,
+        "_call_provider_api",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("API call attempted in dry run")),
+    )
+
+    rc = labeler.main(
+        [
+            "--failure-csv",
+            str(failure),
+            "--gold-absent-csv",
+            str(gold),
+            "--anchor-effect-csv",
+            str(anchor),
+            "--target-audit-jsonl",
+            str(target_audit),
+            "--diagnostic-30-jsonl",
+            str(diag30),
+            "--target-staged-15-jsonl",
+            str(target15),
+            "--structural-feature-csv",
+            str(structural),
+            "--subsets",
+            "diagnostic_30",
+            "--providers",
+            "cohere",
+            "--output-dir",
+            str(out_dir),
+        ]
+    )
+    assert rc == 0
+
+    manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    warnings = manifest["packet_completeness_summary"]["warnings"]
+    assert any("question_present_rate" in warning for warning in warnings)
+    assert any("prediction_present_rate" in warning for warning in warnings)
+    report_text = (out_dir / "report.md").read_text(encoding="utf-8")
+    assert "## Warnings" in report_text
+
+
+def test_wrong_supported_consensus_repo_dry_run_has_nonempty_questions_for_most_cases(tmp_path: Path, monkeypatch) -> None:
+    out_dir = tmp_path / "out_repo_pattern"
+
+    monkeypatch.setattr(
+        labeler,
+        "_call_provider_api",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("API call attempted in dry run")),
+    )
+
+    rc = labeler.main(
+        [
+            "--mode",
+            "pattern_discovery",
+            "--subsets",
+            "wrong_supported_consensus_97",
+            "--limit",
+            "10",
+            "--providers",
+            "cohere,fireworks,mistral",
+            "--cohere-model",
+            "command-r-plus-08-2024",
+            "--fireworks-model",
+            "accounts/fireworks/models/glm-5",
+            "--mistral-model",
+            "mistral-small-latest",
+            "--dry-run",
+            "--max-calls-total",
+            "3",
+            "--output-dir",
+            str(out_dir),
+        ]
+    )
+    assert rc == 0
+
+    manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    completeness = manifest["packet_completeness_summary"]
+    assert completeness["question_present_rate"] >= 0.75
+    assert completeness["prediction_present_rate"] >= 0.75
