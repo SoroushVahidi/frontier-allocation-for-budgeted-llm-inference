@@ -64,8 +64,8 @@ def _valid_response() -> dict:
 
 
 class _FakeCohereClient:
-    def __init__(self, response_text: str):
-        self.response_text = response_text
+    def __init__(self, response_obj):
+        self.response_obj = response_obj
         self.calls: list[dict] = []
 
     def chat(self, *, model: str, message: str, max_tokens: int, temperature: float):
@@ -77,12 +77,41 @@ class _FakeCohereClient:
                 "temperature": temperature,
             }
         )
+        return self.response_obj
 
-        class _Message:
-            def __init__(self, text: str):
-                self.content = [type("Content", (), {"text": text})()]
 
-        return type("Response", (), {"message": _Message(self.response_text), "usage": {"input_tokens": 1}})()
+class _MessageWithContent:
+    def __init__(self, content):
+        self.content = content
+
+
+class _BlockWithText:
+    def __init__(self, text: str):
+        self.text = text
+
+
+class _ResponseWithText:
+    def __init__(self, text: str):
+        self.text = text
+        self.usage = {"input_tokens": 1}
+
+
+class _ResponseWithMessage:
+    def __init__(self, message):
+        self.message = message
+        self.usage = {"input_tokens": 1}
+
+
+class _ResponseWithGenerations:
+    def __init__(self, text: str):
+        self.generations = [type("Generation", (), {"text": text})()]
+        self.usage = {"input_tokens": 1}
+
+
+class _ResponseWithNestedResponse:
+    def __init__(self, text: str):
+        self.response = type("NestedResponse", (), {"text": text})()
+        self.usage = {"input_tokens": 1}
 
 
 class TestNoApiAtImport:
@@ -105,9 +134,68 @@ class TestValidation:
         assert obj is None
         assert method == "parse_failed"
 
-    def test_call_cohere_uses_message_parameter(self):
-        client = _FakeCohereClient('{"ok": true}')
-        text, usage = runner._call_cohere(client, "command-r-plus-08-2024", "prompt text", 256, 0.0)
+    def test_extract_cohere_text_from_response_text(self):
+        text, source, issue = runner._extract_cohere_text(_ResponseWithText('{"ok": true}'))
+        assert text == '{"ok": true}'
+        assert source == "response.text"
+        assert issue is None
+
+    def test_extract_cohere_text_from_message(self):
+        response = _ResponseWithMessage(_MessageWithContent([_BlockWithText('{"ok": true}')]))
+        text, source, issue = runner._extract_cohere_text(response)
+        assert text == '{"ok": true}'
+        assert source == "response.message.content"
+        assert issue is None
+
+    def test_extract_cohere_text_from_generations(self):
+        text, source, issue = runner._extract_cohere_text(_ResponseWithGenerations('{"ok": true}'))
+        assert text == '{"ok": true}'
+        assert source == "response.generations[0].text"
+        assert issue is None
+
+    def test_extract_cohere_text_from_dict_text(self):
+        text, source, issue = runner._extract_cohere_text({"text": '{"ok": true}'})
+        assert text == '{"ok": true}'
+        assert source == "response.text"
+        assert issue is None
+
+    def test_extract_cohere_text_from_dict_message_content(self):
+        response = {"message": {"content": [{"text": '{"ok": true}'}]}}
+        text, source, issue = runner._extract_cohere_text(response)
+        assert text == '{"ok": true}'
+        assert source == "response.message.content"
+        assert issue is None
+
+    def test_extract_cohere_text_from_content_list(self):
+        response = {"content": [{"text": '{"ok": true}'}]}
+        text, source, issue = runner._extract_cohere_text(response)
+        assert text == '{"ok": true}'
+        assert source == "response.content"
+        assert issue is None
+
+    def test_extract_cohere_text_from_message_string(self):
+        response = _ResponseWithMessage('{"ok": true}')
+        text, source, issue = runner._extract_cohere_text(response)
+        assert text == '{"ok": true}'
+        assert source == "response.message"
+        assert issue is None
+
+    def test_extract_cohere_text_from_dict_generations(self):
+        response = {"generations": [{"text": '{"ok": true}'}]}
+        text, source, issue = runner._extract_cohere_text(response)
+        assert text == '{"ok": true}'
+        assert source == "dict.generations[0].text"
+        assert issue is None
+
+    def test_extract_cohere_text_empty_response_sets_issue(self):
+        text, source, issue = runner._extract_cohere_text({})
+        assert text == ""
+        assert source == "unavailable"
+        assert issue == "no_text_found"
+
+    def test_call_cohere_uses_message_parameter_and_extracts_text(self):
+        client = _FakeCohereClient(_ResponseWithText('{"ok": true}'))
+        text, usage, diagnostics = runner._call_cohere(client, "command-r-plus-08-2024", "prompt text", 256, 0.0)
         assert text == '{"ok": true}'
         assert client.calls == [
             {
@@ -118,6 +206,15 @@ class TestValidation:
             }
         ]
         assert isinstance(usage, dict)
+        assert diagnostics["extraction_source"] == "response.text"
+        assert diagnostics["extraction_issue"] is None
+        assert diagnostics["response_type"] == "_ResponseWithText"
+
+    def test_call_cohere_extracts_text_from_nested_response(self):
+        client = _FakeCohereClient(_ResponseWithNestedResponse('{"ok": true}'))
+        text, _, diagnostics = runner._call_cohere(client, "command-r-plus-08-2024", "prompt text", 256, 0.0)
+        assert text == '{"ok": true}'
+        assert diagnostics["extraction_source"] == "response.response.text"
 
     def test_schema_validation_catches_missing_fields(self):
         parsed = runner.parse_relation_verifier_response(
@@ -249,3 +346,27 @@ class TestDryRunCli:
         assert all("gold_answer" not in row["prompt_text"] for row in rows)
         assert all("answer_key" not in row["prompt_text"] for row in rows)
         assert all("hidden label" not in row["prompt_text"].lower() for row in rows)
+
+    def test_process_case_records_extraction_diagnostics_when_call_returns_empty_text(self):
+        class _EmptyResponse:
+            text = ""
+            usage = {"input_tokens": 1}
+
+        result, api_calls = runner._process_case(
+            req=_provider_request(),
+            gold_labels={"openai_gsm8k_1021": "8"},
+            client=_FakeCohereClient(_EmptyResponse()),
+            model="command-r-plus-08-2024",
+            max_tokens=256,
+            temperature=0.0,
+            call_index=1,
+            dry_run=False,
+        )
+        assert api_calls == 1
+        assert result["call_ok"] is True
+        assert result["raw_response"] == ""
+        assert result["response_type"] == "_EmptyResponse"
+        assert result["extraction_source"] == "unavailable"
+        assert result["extraction_issue"] == "empty_text:response.text"
+        assert result["issues"] == ["json_parse_failed:empty_response"]
+        assert "prompt text" not in (result["response_repr"] or "").lower()

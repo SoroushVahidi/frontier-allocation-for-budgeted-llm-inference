@@ -15,6 +15,7 @@ import os
 import re
 import sys
 from collections import Counter
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -135,6 +136,161 @@ def _load_gold_labels(path: Path) -> dict[str, str]:
     return out
 
 
+def _safe_repr(obj: Any, limit: int = 400) -> str:
+    try:
+        text = repr(obj)
+    except Exception as exc:
+        text = f"<repr_failed:{type(exc).__name__}>"
+    if len(text) > limit:
+        return text[: limit - 3] + "..."
+    return text
+
+
+def _public_attrs(obj: Any, limit: int = 40) -> list[str]:
+    try:
+        attrs = [name for name in dir(obj) if not name.startswith("_")]
+    except Exception:
+        return []
+    return sorted(attrs)[:limit]
+
+
+def _to_mapping(obj: Any) -> Mapping[str, Any] | None:
+    if isinstance(obj, Mapping):
+        return obj
+    for attr_name in ("model_dump", "dict"):
+        method = getattr(obj, attr_name, None)
+        if callable(method):
+            try:
+                value = method()
+            except Exception:
+                continue
+            if isinstance(value, Mapping):
+                return value
+    return None
+
+
+def _get_field(obj: Any, field: str) -> Any:
+    if obj is None:
+        return None
+    if isinstance(obj, Mapping):
+        return obj.get(field)
+    return getattr(obj, field, None)
+
+
+def _extract_text_from_content_blocks(content: Any, source: str) -> tuple[str, str, str | None]:
+    if isinstance(content, str):
+        return content, source, None if content.strip() else f"empty_text:{source}"
+    if isinstance(content, list):
+        parts: list[str] = []
+        for idx, block in enumerate(content):
+            if isinstance(block, str):
+                if block.strip():
+                    parts.append(block)
+                continue
+            text = _get_field(block, "text")
+            if isinstance(text, str) and text.strip():
+                parts.append(text)
+                continue
+            nested = _get_field(block, "content")
+            if isinstance(nested, str) and nested.strip():
+                parts.append(nested)
+        if parts:
+            return "\n".join(parts), source, None
+        return "", source, f"empty_text:{source}"
+    return "", source, f"unsupported_content:{source}"
+
+
+def _extract_cohere_text(response: Any) -> tuple[str, str, str | None]:
+    checks: list[tuple[str, Any]] = [
+        ("response.text", _get_field(response, "text")),
+        ("response.message", _get_field(response, "message")),
+        ("response.content", _get_field(response, "content")),
+    ]
+    response_mapping = _to_mapping(response)
+    if response_mapping is not None:
+        checks.extend(
+            [
+                ("dict.text", response_mapping.get("text")),
+                ("dict.message", response_mapping.get("message")),
+                ("dict.content", response_mapping.get("content")),
+                ("dict.generations", response_mapping.get("generations")),
+                ("dict.response", response_mapping.get("response")),
+            ]
+        )
+    generations = _get_field(response, "generations")
+    if generations is not None:
+        checks.append(("response.generations", generations))
+    nested_response = _get_field(response, "response")
+    if nested_response is not None:
+        checks.append(("response.response", nested_response))
+
+    first_issue: str | None = None
+    for source, value in checks:
+        if value is None:
+            continue
+        if isinstance(value, str):
+            if value.strip():
+                return value, source, None
+            if first_issue is None:
+                first_issue = f"empty_text:{source}"
+            continue
+        if source.endswith("message"):
+            message_text = _get_field(value, "text")
+            if isinstance(message_text, str) and message_text.strip():
+                return message_text, f"{source}.text", None
+            message_content = _get_field(value, "content")
+            if message_content is not None:
+                text, content_source, issue = _extract_text_from_content_blocks(message_content, f"{source}.content")
+                if text:
+                    return text, content_source, None
+                if issue and first_issue is None:
+                    first_issue = issue
+            message_message = _get_field(value, "message")
+            if isinstance(message_message, str) and message_message.strip():
+                return message_message, f"{source}.message", None
+        if source.endswith("content"):
+            text, content_source, issue = _extract_text_from_content_blocks(value, source)
+            if text:
+                return text, content_source, None
+            if issue and first_issue is None:
+                first_issue = issue
+            continue
+        if source.endswith("generations") and isinstance(value, list) and value:
+            first = value[0]
+            text = _get_field(first, "text")
+            if isinstance(text, str) and text.strip():
+                return text, f"{source}[0].text", None
+            if first_issue is None:
+                first_issue = f"empty_text:{source}[0].text"
+            continue
+        if source.endswith("response"):
+            nested_text = _get_field(value, "text")
+            if isinstance(nested_text, str) and nested_text.strip():
+                return nested_text, f"{source}.text", None
+            nested_message = _get_field(value, "message")
+            if nested_message is not None:
+                message_text = _get_field(nested_message, "text")
+                if isinstance(message_text, str) and message_text.strip():
+                    return message_text, f"{source}.message.text", None
+                message_content = _get_field(nested_message, "content")
+                if message_content is not None:
+                    text, content_source, issue = _extract_text_from_content_blocks(
+                        message_content, f"{source}.message.content"
+                    )
+                    if text:
+                        return text, content_source, None
+                    if issue and first_issue is None:
+                        first_issue = issue
+        mapping_value = _to_mapping(value)
+        if mapping_value is not None and "text" in mapping_value:
+            mapped_text = mapping_value.get("text")
+            if isinstance(mapped_text, str) and mapped_text.strip():
+                return mapped_text, f"{source}.text", None
+            if first_issue is None:
+                first_issue = f"empty_text:{source}.text"
+    return "", "unavailable", first_issue or "no_text_found"
+
+
 def _casebook_lookup_candidates(case_id: str) -> list[str]:
     normalized = str(case_id).strip()
     candidates = [normalized]
@@ -210,25 +366,29 @@ def parse_relation_verifier_response(obj: dict[str, Any]) -> dict[str, Any]:
     return _validate_response(obj)
 
 
-def _call_cohere(client: Any, model: str, prompt: str, max_tokens: int, temperature: float) -> tuple[str, dict[str, Any]]:
+def _call_cohere(client: Any, model: str, prompt: str, max_tokens: int, temperature: float) -> tuple[str, dict[str, Any], dict[str, Any]]:
     response = client.chat(
         model=model,
         message=prompt,
         max_tokens=max_tokens,
         temperature=temperature,
     )
-    text = ""
-    if hasattr(response, "message") and response.message:
-        content = response.message.content
-        if content and hasattr(content[0], "text"):
-            text = content[0].text or ""
+    text, extraction_source, extraction_issue = _extract_cohere_text(response)
     usage: dict[str, Any] = {}
-    if hasattr(response, "usage") and response.usage:
+    usage_obj = _get_field(response, "usage") or _get_field(response, "meta")
+    if usage_obj:
         try:
-            usage = json.loads(json.dumps(response.usage, default=str))
+            usage = json.loads(json.dumps(usage_obj, default=str))
         except Exception:
-            usage = {"raw": str(response.usage)}
-    return text, usage
+            usage = {"raw": _safe_repr(usage_obj)}
+    diagnostics = {
+        "response_type": type(response).__name__,
+        "response_public_attrs": _public_attrs(response),
+        "response_repr": _safe_repr(response),
+        "extraction_source": extraction_source,
+        "extraction_issue": extraction_issue,
+    }
+    return text, usage, diagnostics
 
 
 def _process_case(
@@ -287,9 +447,10 @@ def _process_case(
 
     result["api_call_made"] = True
     try:
-        raw_text, usage = _call_cohere(client, model, prompt_text, max_tokens, temperature)
+        raw_text, usage, diagnostics = _call_cohere(client, model, prompt_text, max_tokens, temperature)
         result["raw_response"] = raw_text
         result["usage"] = usage
+        result.update(diagnostics)
         result["call_ok"] = True
         result["call_error"] = None
     except Exception as exc:
@@ -297,6 +458,11 @@ def _process_case(
             {
                 "raw_response": "",
                 "usage": {},
+                "response_type": None,
+                "response_public_attrs": [],
+                "response_repr": None,
+                "extraction_source": "call_failed",
+                "extraction_issue": f"call_failed:{type(exc).__name__}",
                 "call_ok": False,
                 "call_error": f"{type(exc).__name__}: {str(exc)[:200]}",
                 "parse_ok": False,
@@ -321,6 +487,7 @@ def _process_case(
     result["parse_ok"] = obj is not None
     result["parse_method"] = parse_method
     if obj is None:
+        issue_tag = f"json_parse_failed:{parse_method}"
         result.update(
             {
                 "schema_ok": False,
@@ -335,7 +502,7 @@ def _process_case(
                 "failed_relation": "",
                 "repair_hint": "",
                 "confidence": 0.0,
-                "issues": ["json_parse_failed:parse_failed"],
+                "issues": [issue_tag],
             }
         )
         return result, 1
@@ -511,6 +678,11 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
                 "raw_response": result.get("raw_response"),
                 "call_error": result.get("call_error"),
                 "usage": result.get("usage"),
+                "response_type": result.get("response_type"),
+                "response_public_attrs": result.get("response_public_attrs"),
+                "response_repr": result.get("response_repr"),
+                "extraction_source": result.get("extraction_source"),
+                "extraction_issue": result.get("extraction_issue"),
             }
         )
         parsed_rows.append(
