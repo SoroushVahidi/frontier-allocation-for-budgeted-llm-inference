@@ -218,6 +218,7 @@ def _extract_question(row: dict[str, Any]) -> str:
         row,
         [
             "question",
+            "problem_statement",
             "prompt",
             "problem",
             "input_question",
@@ -277,6 +278,7 @@ def _extract_candidate_answer(row: dict[str, Any]) -> str:
             "candidate_answer",
             "answer",
             "final_answer",
+            "normalized_answer",
             "executable_final_answer",
             "fa",
             "model_final_prediction",
@@ -389,7 +391,7 @@ def _normalized_row(
     case_id = _stringify(row.get("case_id") or row.get("problem_id") or row.get("example_id") or row.get("id"))
     problem_id = _normalize_case_id(case_id) or _normalize_case_id(row.get("problem_id") or row.get("example_id")) or f"{source_path_obj.stem}:{source_row_index if source_row_index is not None else 0}"
     dataset_name = _first_nonempty(row, ["dataset_name", "dataset", "source_dataset"]) or source_path_obj.stem or "unknown"
-    candidate_source = _first_nonempty(row, ["candidate_source", "source", "provenance_type", "method"]) or source_path_obj.stem or "unknown"
+    candidate_source = _first_nonempty(row, ["candidate_source", "source_family", "source", "provenance_type", "provenance_source", "method"]) or source_path_obj.stem or "unknown"
     candidate_trace = _extract_candidate_trace(row)
     candidate_equation = _extract_candidate_equation(row)
     candidate_answer = _extract_candidate_answer(row)
