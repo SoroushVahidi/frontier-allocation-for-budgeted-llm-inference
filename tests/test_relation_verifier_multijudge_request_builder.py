@@ -481,5 +481,58 @@ def test_report_does_not_contain_label_hints(tmp_path):
         assert hint not in report, f'Report must not contain label hint: {hint!r}'
 
 
+def test_prompt_includes_target_phrase_heuristic_warning(tmp_path):
+    """Test that every prompt includes the target-phrase heuristic note."""
+    row = {**_BASE_ROW, 'target_phrase': 'apples left'}
+    output_dir = _run_builder(tmp_path, [row])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    prompt = requests[0]['prompt']
+    assert 'automatically extracted hint' in prompt, (
+        'Prompt must include target-phrase heuristic warning'
+    )
+    assert 'vague, or type-like' in prompt
+
+
+def test_vague_type_like_target_phrase_includes_heuristic_warning(tmp_path):
+    """Test that a type-like target_phrase such as 'percentage' still includes the warning."""
+    row = {**_BASE_ROW, 'target_phrase': 'percentage'}
+    output_dir = _run_builder(tmp_path, [row])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    prompt = requests[0]['prompt']
+    assert 'automatically extracted hint' in prompt, (
+        "Type-like target_phrase 'percentage' must still include heuristic warning"
+    )
+    assert 'vague, or type-like' in prompt
+
+
+def test_prompt_includes_opaque_trace_instruction(tmp_path):
+    """Test that every prompt includes the opaque/JSON-only trace instruction."""
+    row = {**_BASE_ROW}
+    output_dir = _run_builder(tmp_path, [row])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    prompt = requests[0]['prompt']
+    assert 'opaque' in prompt, 'Prompt must include opaque-trace instruction'
+    assert 'JSON-only' in prompt
+    assert 'Do not infer hidden reasoning' in prompt
+    assert 'insufficient_evidence' in prompt
+
+
+def test_prompt_does_not_contain_good_judge_should_label(tmp_path):
+    """Test that prompts do not contain 'good judge should label' commentary."""
+    row = {**_BASE_ROW}
+    output_dir = _run_builder(tmp_path, [row])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    prompt = requests[0]['prompt']
+    assert 'good judge should label' not in prompt
+
+
+def test_report_does_not_contain_good_judge_should_label(tmp_path):
+    """Test that request_build_report.md does not contain expected-label commentary."""
+    row = {**_BASE_ROW}
+    output_dir = _run_builder(tmp_path, [row])
+    report = (output_dir / 'request_build_report.md').read_text()
+    assert 'good judge should label' not in report
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

@@ -84,6 +84,8 @@ QUESTION:
 TARGET PHRASE:
 {target_phrase}
 
+Note: The target phrase is an automatically extracted hint. If it is empty, vague, or type-like, use the quantity requested by the full question as the target.
+
 CANDIDATE ANSWER:
 {candidate_answer}
 
@@ -92,6 +94,8 @@ CANDIDATE TRACE:
 
 TASK:
 Determine whether the candidate trace represents the correct semantic relation for computing the target phrase.
+
+If the candidate trace is opaque, JSON-only, or lacks reasoning steps, judge only the visible trace and candidate answer. If the candidate appears wrong but the exact failure cannot be localized from the visible trace, use first_error_axis = insufficient_evidence. Do not infer hidden reasoning.
 
 Respond with JSON containing:
 - relation_ready_label: one of {{ready, not_ready, uncertain, gold_inconsistent}}
@@ -133,6 +137,7 @@ def check_prompt_for_leakage(prompt):
         'ready candidate',
         'not_ready candidate',
         'uncertain candidate',
+        'good judge should label',
     ]
     for term in forbidden:
         if term in prompt:
