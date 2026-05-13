@@ -61,10 +61,18 @@ EXPECTED_JSON_SCHEMA = {
 }
 
 
+_EMPTY_TARGET_PHRASE_FALLBACK = (
+    'Not explicitly extracted. Use the question\'s requested quantity as the target.'
+)
+
+
 def build_prompt(row):
     """Build a prompt for a judge to label the row."""
     question = row.get('question', 'N/A')
-    target_phrase = row.get('target_phrase', '(unspecified)')
+    raw_phrase = row.get('target_phrase', '')
+    target_phrase = raw_phrase.strip() if raw_phrase else ''
+    if not target_phrase:
+        target_phrase = _EMPTY_TARGET_PHRASE_FALLBACK
     candidate_answer = row.get('candidate_answer', 'N/A')
     candidate_trace = row.get('candidate_trace_short', 'N/A')
 
@@ -113,12 +121,18 @@ Respond with JSON containing:
 
 
 def check_prompt_for_leakage(prompt):
-    """Check that prompt does not contain manual labels or gold answers."""
+    """Check that prompt does not contain manual labels, gold answers, or label hints."""
     forbidden = [
         'relation_ready_label_manual',
         'first_error_axis_manual',
         'notes_manual',
         'gold_answer',
+        'likely not_ready',
+        'likely ready',
+        'likely uncertain',
+        'ready candidate',
+        'not_ready candidate',
+        'uncertain candidate',
     ]
     for term in forbidden:
         if term in prompt:

@@ -395,5 +395,91 @@ def test_skips_rows_with_missing_fields(tmp_path):
     assert 'Skipped' in report
 
 
+def _run_builder(tmp_path, rows, extra_args=None):
+    """Helper: write CSV, run builder, return output_dir."""
+    import subprocess, sys
+    csv_path = create_test_csv(tmp_path, rows)
+    output_dir = tmp_path / 'output'
+    cmd = [
+        sys.executable,
+        'scripts/build_relation_verifier_multijudge_label_requests.py',
+        '--input-csv', str(csv_path),
+        '--output-dir', str(output_dir),
+    ]
+    if extra_args:
+        cmd.extend(extra_args)
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    assert result.returncode == 0, f'Builder failed: {result.stderr}'
+    return output_dir
+
+
+_BASE_ROW = {
+    'row_id': 'test_1',
+    'problem_id': 'test/problem/1',
+    'question': 'How many apples are left?',
+    'target_phrase': 'apples left',
+    'target_semantic_type': 'number',
+    'candidate_source': 'direct_formula_family',
+    'candidate_answer': '5',
+    'candidate_trace_short': '10 - 5 = 5',
+    'relation_ready_label_manual': 'ready',
+    'first_error_axis_manual': '',
+    'notes_manual': '',
+    'gold_answer_metadata_only': '',
+}
+
+
+def test_empty_target_phrase_uses_fallback(tmp_path):
+    """Test that empty target_phrase is replaced with the fallback instruction."""
+    row = {**_BASE_ROW, 'target_phrase': ''}
+    output_dir = _run_builder(tmp_path, [row])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    assert len(requests) == 1
+    prompt = requests[0]['prompt']
+    assert 'Not explicitly extracted' in prompt, (
+        'Empty target_phrase must use fallback instruction in prompt'
+    )
+    assert 'Use the question\'s requested quantity as the target' in prompt
+
+
+def test_whitespace_only_target_phrase_uses_fallback(tmp_path):
+    """Test that a whitespace-only target_phrase is also treated as empty."""
+    row = {**_BASE_ROW, 'target_phrase': '   '}
+    output_dir = _run_builder(tmp_path, [row])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    prompt = requests[0]['prompt']
+    assert 'Not explicitly extracted' in prompt
+
+
+def test_prompt_does_not_contain_likely(tmp_path):
+    """Test that prompts do not contain label-hint words like 'likely'."""
+    row = {**_BASE_ROW}
+    output_dir = _run_builder(tmp_path, [row])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    prompt = requests[0]['prompt']
+    assert 'likely not_ready' not in prompt
+    assert 'likely ready' not in prompt
+    assert 'likely uncertain' not in prompt
+
+
+def test_prompt_does_not_contain_ready_candidate(tmp_path):
+    """Test that prompts do not contain the phrase 'ready candidate'."""
+    row = {**_BASE_ROW}
+    output_dir = _run_builder(tmp_path, [row])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    prompt = requests[0]['prompt']
+    assert 'ready candidate' not in prompt
+    assert 'not_ready candidate' not in prompt
+
+
+def test_report_does_not_contain_label_hints(tmp_path):
+    """Test that request_build_report.md contains no expected-label guesses."""
+    row = {**_BASE_ROW}
+    output_dir = _run_builder(tmp_path, [row])
+    report = (output_dir / 'request_build_report.md').read_text()
+    for hint in ('likely not_ready', 'likely ready', 'ready candidate', 'uncertain likely'):
+        assert hint not in report, f'Report must not contain label hint: {hint!r}'
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
