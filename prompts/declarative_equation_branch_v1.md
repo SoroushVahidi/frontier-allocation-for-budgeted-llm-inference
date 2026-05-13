@@ -23,7 +23,7 @@ Rules:
  - final_answer must equal the numeric result of solution_formula when a numeric solution is available.
  - If the relation is ambiguous or underspecified, do not invent missing facts. Set uncertainty=true, give an abstain_reason, and use null for final_answer if needed.
  - Distinguish before/after/original/final state when the question involves process transitions such as profit, remaining amount, pre/post change, or unit conversion endpoints.
-- No gold answers, answer keys, or hidden labels may appear anywhere in the output.
+- No gold answers, answer keys, private evaluation metadata, or dataset annotations may appear anywhere in the output.
 
 QUESTION:
 {{question}}
