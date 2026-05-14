@@ -330,7 +330,10 @@ def run_mock_api(payloads_path, mock_path, output_dir, start_index, max_rows, ro
 
 def run_api(payloads_path, output_dir, start_index, max_rows, row_ids, api_key_env):
     try:
-        from mistralai import Mistral as MistralClient  # noqa: PLC0415
+        try:
+            from mistralai import Mistral as MistralClient  # noqa: PLC0415
+        except ImportError:
+            from mistralai.client import Mistral as MistralClient  # noqa: PLC0415
     except ImportError:
         print('Error: mistralai SDK not installed. Run: pip install mistralai', file=sys.stderr)
         sys.exit(1)
