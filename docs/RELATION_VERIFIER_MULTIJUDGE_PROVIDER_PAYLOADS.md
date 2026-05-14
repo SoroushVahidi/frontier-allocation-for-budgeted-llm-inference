@@ -134,6 +134,24 @@ Cerebras does not support `response_format`, so the field is omitted.
 
 ---
 
+## Label Convention: `ready` Means Final-Selection-Ready
+
+In this pilot, `ready` means the visible candidate trace AND answer are
+acceptable for final selection — not merely that the semantic relation is
+plausible. A candidate with the correct semantic structure but a wrong
+numerical answer is `not_ready` with `first_error_axis = arithmetic_only_error`.
+
+The judge prompt encodes this explicitly:
+
+> *ready: the trace correctly represents the semantic relation AND the answer is
+> acceptable for final selection; a numerically wrong answer with correct semantic
+> structure is still not_ready.*
+
+Future datasets may split `semantic_relation_ready` from `final_answer_correct`,
+but the schema is unchanged in this pilot.
+
+---
+
 ## Safety Constraints
 
 The script enforces the following constraints at build time:

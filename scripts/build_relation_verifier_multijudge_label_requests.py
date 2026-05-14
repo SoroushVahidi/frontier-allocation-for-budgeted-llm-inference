@@ -99,8 +99,8 @@ If the candidate trace is opaque, JSON-only, or lacks reasoning steps, judge onl
 
 Respond with JSON containing:
 - relation_ready_label: one of {{ready, not_ready, uncertain, gold_inconsistent}}
-  - ready: the trace correctly computes the target relation
-  - not_ready: the trace has semantic or arithmetic errors
+  - ready: the trace correctly represents the semantic relation AND the answer is acceptable for final selection; a numerically wrong answer with correct semantic structure is still not_ready
+  - not_ready: the trace has a semantic or arithmetic error; if all source facts, target variable, units, and semantic relation are correct but the numerical computation is wrong, use not_ready with first_error_axis = arithmetic_only_error
   - uncertain: insufficient evidence to judge
   - gold_inconsistent: the trace is correct but conflicts with stated metadata
 - first_error_axis: if not_ready, identify the primary error type from:

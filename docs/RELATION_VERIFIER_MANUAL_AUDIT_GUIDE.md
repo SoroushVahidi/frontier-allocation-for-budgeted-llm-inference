@@ -6,10 +6,16 @@ Use this guide to label the seed audit CSV for the first RelationReady / relatio
 
 ### `relation_ready_label_manual`
 
-- `ready` — the candidate trace represents the requested semantic relation and can be used as a positive seed.
-- `not_ready` — the candidate trace is wrong, incomplete, or semantically mismatched.
+- `ready` — the candidate trace correctly represents the requested semantic relation **and** the answer is acceptable for final selection. A trace that identifies the correct semantic relation but arrives at a wrong numerical answer is **not** `ready`.
+- `not_ready` — the candidate trace is wrong, incomplete, semantically mismatched, or numerically incorrect.
 - `uncertain` — the row is ambiguous or you cannot decide from the available evidence.
 - `gold_inconsistent` — the row appears to conflict with the gold metadata or is not a valid training seed source.
+
+#### Pilot convention: `ready` means final-selection-ready
+
+In this pilot, `ready` means the visible candidate trace AND answer are acceptable for final selection — not merely that the semantic relation is plausible. A candidate that identifies the correct semantic relation but arrives at the wrong numerical answer must be labeled `not_ready` with `first_error_axis = arithmetic_only_error`.
+
+Future datasets may split `semantic_relation_ready` from `final_answer_correct`, but do not change the schema in this pilot.
 
 ### `first_error_axis_manual`
 

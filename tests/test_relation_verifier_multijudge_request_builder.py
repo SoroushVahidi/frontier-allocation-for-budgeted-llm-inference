@@ -613,5 +613,59 @@ def test_refined_axis_examples_are_generic(tmp_path):
     assert 'rrseed_' not in prompt, 'Axis examples must not embed real row IDs'
 
 
+# ---------------------------------------------------------------------------
+# Final-selection convention tests
+# ---------------------------------------------------------------------------
+
+def test_prompt_ready_means_acceptable_for_final_selection(tmp_path):
+    """ready label definition must state it means acceptable for final selection."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'acceptable for final selection' in prompt, (
+        'ready label definition must state acceptable for final selection'
+    )
+
+
+def test_prompt_wrong_arithmetic_is_not_ready(tmp_path):
+    """Prompt must state that a numerically wrong answer with correct semantic structure is not_ready."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'numerically wrong answer with correct semantic structure is still not_ready' in prompt, (
+        'Prompt must state that wrong arithmetic with correct semantics is still not_ready'
+    )
+
+
+def test_prompt_not_ready_references_arithmetic_only_error(tmp_path):
+    """not_ready definition must explicitly reference arithmetic_only_error for computation slips."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'first_error_axis = arithmetic_only_error' in prompt, (
+        'not_ready definition must direct judges to use arithmetic_only_error for numeric slips'
+    )
+
+
+def test_final_selection_convention_contains_no_label_leakage(tmp_path):
+    """The final-selection convention text must not introduce any leakage terms."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    forbidden = [
+        'gold_answer_metadata_only',
+        'relation_ready_label_manual',
+        'first_error_axis_manual',
+        'notes_manual',
+        'likely not_ready',
+        'likely ready',
+        'likely uncertain',
+        'ready candidate',
+        'not_ready candidate',
+        'uncertain candidate',
+        'good judge should label',
+    ]
+    for term in forbidden:
+        assert term not in prompt, (
+            f'Final-selection convention text must not contain leakage term: {term!r}'
+        )
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
