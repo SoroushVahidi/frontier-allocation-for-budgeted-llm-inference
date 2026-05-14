@@ -21,7 +21,9 @@ python3 scripts/run_relation_verifier_cohere_judge_adapter.py \
   --output-dir    <output_dir> \
   --mode          dry_run | mock_api | api \
   [--mock-response-jsonl <mock.jsonl>]   # required for mock_api
+  [--start-index  N]                     # zero-based start (default: 0)
   [--max-rows     N]
+  [--row-ids      id1,id2,...]           # explicit allowlist; overrides start-index/max-rows
   [--allow-api]                          # required for api mode
   [--api-key-env  COHERE_API_KEY]        # default: COHERE_API_KEY
 ```
@@ -34,9 +36,17 @@ python3 scripts/run_relation_verifier_cohere_judge_adapter.py \
 | `--output-dir` | yes | — | Output directory (created if absent) |
 | `--mode` | yes | — | `dry_run`, `mock_api`, or `api` |
 | `--mock-response-jsonl` | mock_api only | — | JSONL of synthetic Cohere responses |
-| `--max-rows` | no | all | Limit Cohere rows processed |
+| `--start-index` | no | `0` | Zero-based index into the Cohere payload list; combined with `--max-rows` to select a slice |
+| `--max-rows` | no | all | Maximum number of Cohere rows to process after applying `--start-index` |
+| `--row-ids` | no | — | Comma-separated explicit `row_id` allowlist; **takes precedence over `--start-index` and `--max-rows`** |
 | `--allow-api` | api mode only | false | Enables real Cohere calls |
 | `--api-key-env` | no | `COHERE_API_KEY` | Env-var name holding the API key |
+
+**Row selection priority:** `--row-ids` → `--start-index` + `--max-rows`.  
+Example — submit only rows 6–10 (zero-based indices 5–9):
+```bash
+--start-index 5 --max-rows 5
+```
 
 ---
 

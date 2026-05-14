@@ -133,14 +133,33 @@ def normalize_response_text(row_id, model, response_text):
 
 
 # ---------------------------------------------------------------------------
+# Row selection helper
+# ---------------------------------------------------------------------------
+
+def select_rows(cohere_rows, start_index, max_rows, row_ids):
+    """Return the subset of Cohere rows to process.
+
+    Priority: --row-ids allowlist (if provided) overrides --start-index /
+    --max-rows.  When no new options are given the behaviour is identical to
+    the previous --max-rows-only logic.
+    """
+    if row_ids:
+        allowed = set(row_ids)
+        return [r for r in cohere_rows if r.get('row_id') in allowed]
+    rows = cohere_rows[start_index:]
+    if max_rows:
+        rows = rows[:max_rows]
+    return rows
+
+
+# ---------------------------------------------------------------------------
 # Mode: dry_run
 # ---------------------------------------------------------------------------
 
-def run_dry_run(payloads_path, output_dir, max_rows):
+def run_dry_run(payloads_path, output_dir, start_index, max_rows, row_ids):
     all_rows = read_jsonl(payloads_path)
     cohere_rows = [r for r in all_rows if r.get('provider') == 'cohere']
-    if max_rows:
-        cohere_rows = cohere_rows[:max_rows]
+    cohere_rows = select_rows(cohere_rows, start_index, max_rows, row_ids)
 
     manifest = []
     field_issues = []
@@ -179,7 +198,8 @@ def run_dry_run(payloads_path, output_dir, max_rows):
         '',
         '- **Mode:** dry_run (no API calls)',
         f'- **Input:** `{payloads_path}`',
-        f'- **Cohere rows found:** {n}',
+        f'- **Start index:** {start_index}' + (f' (row_ids filter active — start-index ignored)' if row_ids else ''),
+        f'- **Selected rows:** {n}',
         f'- **Valid rows:** {valid_count}',
         f'- **Rows with field issues:** {len(field_issues)}',
         f'- **Rows with prompt leakage:** {len(leakage_issues)}',
@@ -232,11 +252,10 @@ def run_dry_run(payloads_path, output_dir, max_rows):
 # Mode: mock_api
 # ---------------------------------------------------------------------------
 
-def run_mock_api(payloads_path, mock_path, output_dir, max_rows):
+def run_mock_api(payloads_path, mock_path, output_dir, start_index, max_rows, row_ids):
     all_rows = read_jsonl(payloads_path)
     cohere_rows = [r for r in all_rows if r.get('provider') == 'cohere']
-    if max_rows:
-        cohere_rows = cohere_rows[:max_rows]
+    cohere_rows = select_rows(cohere_rows, start_index, max_rows, row_ids)
 
     payload_index = {}
     for row in cohere_rows:
@@ -303,7 +322,7 @@ def run_mock_api(payloads_path, mock_path, output_dir, max_rows):
 # Mode: api  (real Cohere calls — requires --allow-api)
 # ---------------------------------------------------------------------------
 
-def run_api(payloads_path, output_dir, max_rows, api_key_env):
+def run_api(payloads_path, output_dir, start_index, max_rows, row_ids, api_key_env):
     try:
         import cohere as cohere_sdk  # noqa: PLC0415
     except ImportError:
@@ -320,8 +339,7 @@ def run_api(payloads_path, output_dir, max_rows, api_key_env):
 
     all_rows = read_jsonl(payloads_path)
     cohere_rows = [r for r in all_rows if r.get('provider') == 'cohere']
-    if max_rows:
-        cohere_rows = cohere_rows[:max_rows]
+    cohere_rows = select_rows(cohere_rows, start_index, max_rows, row_ids)
 
     co = cohere_sdk.Client(api_key)
     normalized = []
@@ -398,6 +416,11 @@ def main():
                         help='Mock response JSONL for mock_api mode')
     parser.add_argument('--max-rows', type=int,
                         help='Process at most N Cohere payload rows')
+    parser.add_argument('--start-index', type=int, default=0,
+                        help='Zero-based start index into the Cohere payload list (default: 0)')
+    parser.add_argument('--row-ids',
+                        help='Comma-separated explicit row_id allowlist; takes precedence over '
+                             '--start-index and --max-rows')
     parser.add_argument('--allow-api', action='store_true', default=False,
                         help='Permit real Cohere API calls (api mode only)')
     parser.add_argument('--api-key-env', default='COHERE_API_KEY',
@@ -412,9 +435,11 @@ def main():
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    row_ids = [r.strip() for r in args.row_ids.split(',')] if args.row_ids else None
+
     if args.mode == 'dry_run':
         manifest, field_issues, leakage_issues = run_dry_run(
-            payloads_path, output_dir, args.max_rows
+            payloads_path, output_dir, args.start_index, args.max_rows, row_ids
         )
         n = len(manifest)
         print(f'Dry-run complete: {payloads_path}')
@@ -441,7 +466,7 @@ def main():
             sys.exit(1)
 
         normalized, invalid = run_mock_api(
-            payloads_path, mock_path, output_dir, args.max_rows
+            payloads_path, mock_path, output_dir, args.start_index, args.max_rows, row_ids
         )
         print('Mock-API run complete.')
         print(f'Output directory: {output_dir}')
@@ -466,7 +491,7 @@ def main():
             sys.exit(1)
 
         normalized, invalid = run_api(
-            payloads_path, output_dir, args.max_rows, args.api_key_env
+            payloads_path, output_dir, args.start_index, args.max_rows, row_ids, args.api_key_env
         )
         print('API run complete.')
         print(f'Output directory: {output_dir}')

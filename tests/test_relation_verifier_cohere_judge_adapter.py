@@ -545,5 +545,111 @@ def test_requests_post_not_used():
     assert 'httpx.post' not in script_text
 
 
+# ---------------------------------------------------------------------------
+# Row slicing — --start-index and --row-ids
+# ---------------------------------------------------------------------------
+
+def test_dry_run_start_index_slices_rows(tmp_path):
+    rows = [_cohere_payload_row(f'rrseed_{i:03d}') for i in range(10)]
+    payloads_path = tmp_path / 'payloads.jsonl'
+    write_jsonl(payloads_path, rows)
+    output_dir = tmp_path / 'output'
+
+    run_script(['--payloads-jsonl', str(payloads_path),
+                '--output-dir', str(output_dir),
+                '--mode', 'dry_run',
+                '--start-index', '5',
+                '--max-rows', '5'])
+
+    manifest = read_jsonl(output_dir / 'cohere_dry_run_manifest.jsonl')
+    assert len(manifest) == 5
+    assert manifest[0]['row_id'] == 'rrseed_005'
+    assert manifest[-1]['row_id'] == 'rrseed_009'
+
+
+def test_dry_run_start_index_zero_is_default_behaviour(tmp_path):
+    rows = [_cohere_payload_row(f'rrseed_{i:03d}') for i in range(5)]
+    payloads_path = tmp_path / 'payloads.jsonl'
+    write_jsonl(payloads_path, rows)
+    output_dir = tmp_path / 'output'
+
+    run_script(['--payloads-jsonl', str(payloads_path),
+                '--output-dir', str(output_dir),
+                '--mode', 'dry_run',
+                '--start-index', '0',
+                '--max-rows', '3'])
+
+    manifest = read_jsonl(output_dir / 'cohere_dry_run_manifest.jsonl')
+    assert len(manifest) == 3
+    assert manifest[0]['row_id'] == 'rrseed_000'
+
+
+def test_dry_run_row_ids_selects_specific_rows(tmp_path):
+    rows = [_cohere_payload_row(f'rrseed_{i:03d}') for i in range(10)]
+    payloads_path = tmp_path / 'payloads.jsonl'
+    write_jsonl(payloads_path, rows)
+    output_dir = tmp_path / 'output'
+
+    run_script(['--payloads-jsonl', str(payloads_path),
+                '--output-dir', str(output_dir),
+                '--mode', 'dry_run',
+                '--row-ids', 'rrseed_002,rrseed_007'])
+
+    manifest = read_jsonl(output_dir / 'cohere_dry_run_manifest.jsonl')
+    assert len(manifest) == 2
+    selected_ids = {m['row_id'] for m in manifest}
+    assert selected_ids == {'rrseed_002', 'rrseed_007'}
+
+
+def test_dry_run_row_ids_takes_precedence_over_start_index(tmp_path):
+    rows = [_cohere_payload_row(f'rrseed_{i:03d}') for i in range(10)]
+    payloads_path = tmp_path / 'payloads.jsonl'
+    write_jsonl(payloads_path, rows)
+    output_dir = tmp_path / 'output'
+
+    # --start-index 8 would select rows 8-9, but --row-ids should win
+    run_script(['--payloads-jsonl', str(payloads_path),
+                '--output-dir', str(output_dir),
+                '--mode', 'dry_run',
+                '--start-index', '8',
+                '--row-ids', 'rrseed_001,rrseed_003'])
+
+    manifest = read_jsonl(output_dir / 'cohere_dry_run_manifest.jsonl')
+    assert len(manifest) == 2
+    selected_ids = {m['row_id'] for m in manifest}
+    assert selected_ids == {'rrseed_001', 'rrseed_003'}
+
+
+def test_dry_run_report_includes_start_index(tmp_path):
+    rows = [_cohere_payload_row(f'rrseed_{i:03d}') for i in range(10)]
+    payloads_path = tmp_path / 'payloads.jsonl'
+    write_jsonl(payloads_path, rows)
+    output_dir = tmp_path / 'output'
+
+    run_script(['--payloads-jsonl', str(payloads_path),
+                '--output-dir', str(output_dir),
+                '--mode', 'dry_run',
+                '--start-index', '5',
+                '--max-rows', '5'])
+
+    report = (output_dir / 'cohere_adapter_report.md').read_text()
+    assert 'Start index' in report
+    assert '5' in report
+
+
+def test_dry_run_row_ids_unknown_id_yields_empty_manifest(tmp_path):
+    payloads_path = tmp_path / 'payloads.jsonl'
+    write_jsonl(payloads_path, [_cohere_payload_row('rrseed_real')])
+    output_dir = tmp_path / 'output'
+
+    run_script(['--payloads-jsonl', str(payloads_path),
+                '--output-dir', str(output_dir),
+                '--mode', 'dry_run',
+                '--row-ids', 'rrseed_ghost'])
+
+    manifest = read_jsonl(output_dir / 'cohere_dry_run_manifest.jsonl')
+    assert len(manifest) == 0
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
