@@ -107,16 +107,16 @@ Respond with JSON containing:
   - wrong_target_variable: identifies wrong variable or quantity
   - wrong_relation_composition: correct variables but wrong combination/formula
   - wrong_process_state: double-counts or misses state transitions
-  - source_fact_missing: omits or misuses a source fact
-  - unit_scale_error: wrong units or scaling
+  - source_fact_missing: use when the trace omits, ignores, or misuses a required quantity, fact, or component from the question, even if the remaining arithmetic is locally valid (Example: a total-cost question includes item A, item B, and item C, but the trace sums only A and B)
+  - unit_scale_error: use when the trace uses the wrong unit, rate, denominator, or scale for the target relation (Example: the question asks for miles per hour, but the trace divides by days; or a recipe/rate is scaled as if two different quantities require the same amount)
   - percentage_base_error: wrong percentage base
   - per_unit_total_error: confusion between per-unit and total
   - total_difference_error: asks for difference but computes something else
   - original_final_state_error: asks for initial but gives final state
-  - arithmetic_only_error: correct relation, wrong computation
+  - arithmetic_only_error: use only when the trace has the correct source facts, target variable, units, and semantic relation, but makes a numerical computation slip
   - formula_format_error: malformed equation or notation
   - prompt_gold_inconsistent: conflicts with prompt statement
-  - insufficient_evidence: cannot localize the error from visible trace
+  - insufficient_evidence: use only when the visible trace is too sparse or opaque to localize the failure; do not use when a missing source fact, unit/scale error, wrong process state, or arithmetic-only error can be identified from the visible trace
   Leave blank if ready
 - confidence: high, medium, or low
 - rationale: brief explanation"""

@@ -534,5 +534,84 @@ def test_report_does_not_contain_good_judge_should_label(tmp_path):
     assert 'good judge should label' not in report
 
 
+# ---------------------------------------------------------------------------
+# Refined axis definition tests
+# ---------------------------------------------------------------------------
+
+def test_prompt_arithmetic_only_error_definition_is_narrow(tmp_path):
+    """arithmetic_only_error must specify correct source facts / computation slip."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'correct source facts' in prompt, (
+        'arithmetic_only_error definition must require correct source facts'
+    )
+    assert 'numerical computation slip' in prompt, (
+        'arithmetic_only_error definition must reference numerical computation slip'
+    )
+
+
+def test_prompt_source_fact_missing_definition_and_example(tmp_path):
+    """source_fact_missing must include refined definition and generic example."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'even if the remaining arithmetic is locally valid' in prompt, (
+        'source_fact_missing definition must include locally-valid arithmetic caveat'
+    )
+    assert 'item A, item B, and item C' in prompt, (
+        'source_fact_missing must include the generic total-cost example'
+    )
+
+
+def test_prompt_unit_scale_error_definition_and_example(tmp_path):
+    """unit_scale_error must include refined definition and generic example."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'wrong unit, rate, denominator, or scale' in prompt, (
+        'unit_scale_error definition must name unit/rate/denominator/scale'
+    )
+    assert 'miles per hour' in prompt, (
+        'unit_scale_error must include the generic miles-per-hour example'
+    )
+
+
+def test_prompt_insufficient_evidence_is_tightened(tmp_path):
+    """insufficient_evidence must state it is a fallback of last resort."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'too sparse or opaque to localize the failure' in prompt, (
+        'insufficient_evidence must require trace to be sparse/opaque'
+    )
+    assert 'do not use when a missing source fact' in prompt, (
+        'insufficient_evidence must explicitly forbid use when other axes apply'
+    )
+
+
+def test_refined_axis_definitions_contain_no_label_leakage(tmp_path):
+    """The refined axis definition text must not leak label hints or private fields."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    forbidden = [
+        'gold_answer',
+        'relation_ready_label_manual',
+        'first_error_axis_manual',
+        'notes_manual',
+        'likely not_ready',
+        'likely ready',
+        'likely uncertain',
+        'ready candidate',
+        'not_ready candidate',
+        'good judge should label',
+    ]
+    for term in forbidden:
+        assert term not in prompt, f'Refined prompt must not contain leakage term: {term!r}'
+
+
+def test_refined_axis_examples_are_generic(tmp_path):
+    """Generic examples in axis definitions must not reference specific row IDs."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'rrseed_' not in prompt, 'Axis examples must not embed real row IDs'
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
