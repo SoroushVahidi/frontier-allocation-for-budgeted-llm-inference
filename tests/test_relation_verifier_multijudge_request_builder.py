@@ -539,25 +539,25 @@ def test_report_does_not_contain_good_judge_should_label(tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_prompt_arithmetic_only_error_definition_is_narrow(tmp_path):
-    """arithmetic_only_error must specify correct source facts / computation slip."""
+    """arithmetic_only_error must specify correct source facts and wrong computation."""
     output_dir = _run_builder(tmp_path, [_BASE_ROW])
     prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
     assert 'correct source facts' in prompt, (
         'arithmetic_only_error definition must require correct source facts'
     )
-    assert 'numerical computation slip' in prompt, (
-        'arithmetic_only_error definition must reference numerical computation slip'
+    assert 'numerical computation itself is wrong' in prompt, (
+        'arithmetic_only_error definition must state the numerical computation is wrong'
     )
 
 
 def test_prompt_source_fact_missing_definition_and_example(tmp_path):
-    """source_fact_missing must include refined definition and generic example."""
+    """source_fact_missing must include contrast against arithmetic_only_error and generic example."""
     output_dir = _run_builder(tmp_path, [_BASE_ROW])
     prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
-    assert 'even if the remaining arithmetic is locally valid' in prompt, (
-        'source_fact_missing definition must include locally-valid arithmetic caveat'
+    assert 'do not use arithmetic_only_error just because the final number is wrong' in prompt, (
+        'source_fact_missing must warn against defaulting to arithmetic_only_error'
     )
-    assert 'item A, item B, and item C' in prompt, (
+    assert 'items A, B, and C' in prompt, (
         'source_fact_missing must include the generic total-cost example'
     )
 
@@ -581,8 +581,8 @@ def test_prompt_insufficient_evidence_is_tightened(tmp_path):
     assert 'too sparse or opaque to localize the failure' in prompt, (
         'insufficient_evidence must require trace to be sparse/opaque'
     )
-    assert 'do not use when a missing source fact' in prompt, (
-        'insufficient_evidence must explicitly forbid use when other axes apply'
+    assert 'do not use it merely because the trace is incomplete' in prompt, (
+        'insufficient_evidence must explicitly forbid use when specific failure is identifiable'
     )
 
 
@@ -665,6 +665,75 @@ def test_final_selection_convention_contains_no_label_leakage(tmp_path):
         assert term not in prompt, (
             f'Final-selection convention text must not contain leakage term: {term!r}'
         )
+
+
+# ---------------------------------------------------------------------------
+# Axis contrast rules (v2 refinements)
+# ---------------------------------------------------------------------------
+
+def test_prompt_arithmetic_only_error_has_negative_condition(tmp_path):
+    """arithmetic_only_error must include an explicit negative condition listing axes to prefer."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'do not use arithmetic_only_error if a required input value' in prompt, (
+        'arithmetic_only_error must carry an explicit negative condition'
+    )
+    assert 'prefer source_fact_missing, unit_scale_error' in prompt, (
+        'arithmetic_only_error negative condition must name the preferred axes'
+    )
+
+
+def test_prompt_source_fact_missing_contrast_against_arithmetic(tmp_path):
+    """source_fact_missing must explicitly contrast against arithmetic_only_error."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'do not use arithmetic_only_error just because the final number is wrong' in prompt, (
+        'source_fact_missing must warn against defaulting to arithmetic_only_error'
+    )
+
+
+def test_prompt_unit_scale_error_vs_wrong_relation_composition(tmp_path):
+    """unit_scale_error must include a contrast against wrong_relation_composition."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'prefer this over wrong_relation_composition when the formula structure is correct but the wrong unit is applied' in prompt, (
+        'unit_scale_error must explicitly contrast with wrong_relation_composition'
+    )
+
+
+def test_prompt_wrong_relation_composition_requires_correct_source_facts(tmp_path):
+    """wrong_relation_composition must state it applies only when source facts and units are correct."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'correct source facts and units are present but the formula combines them' in prompt, (
+        'wrong_relation_composition must require correct source facts and units'
+    )
+
+
+def test_prompt_insufficient_evidence_narrowed_v2(tmp_path):
+    """insufficient_evidence must forbid use when specific component or wrong unit is identifiable."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'do not use it merely because the trace is incomplete' in prompt, (
+        'insufficient_evidence must explicitly forbid use when specific failure is identifiable'
+    )
+    assert 'specific omitted component or wrong unit can be identified' in prompt, (
+        'insufficient_evidence must name specific omitted component / wrong unit as disqualifiers'
+    )
+
+
+def test_axis_contrast_rules_contain_no_leakage(tmp_path):
+    """All new axis contrast text must be free of label-leakage terms."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    forbidden = [
+        'gold_answer', 'relation_ready_label_manual', 'first_error_axis_manual',
+        'notes_manual', 'likely not_ready', 'likely ready', 'likely uncertain',
+        'ready candidate', 'not_ready candidate', 'uncertain candidate',
+        'good judge should label', 'rrseed_',
+    ]
+    for term in forbidden:
+        assert term not in prompt, f'Axis contrast text must not contain: {term!r}'
 
 
 if __name__ == '__main__':

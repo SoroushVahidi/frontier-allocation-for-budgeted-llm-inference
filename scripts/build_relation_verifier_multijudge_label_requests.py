@@ -105,18 +105,18 @@ Respond with JSON containing:
   - gold_inconsistent: the trace is correct but conflicts with stated metadata
 - first_error_axis: if not_ready, identify the primary error type from:
   - wrong_target_variable: identifies wrong variable or quantity
-  - wrong_relation_composition: correct variables but wrong combination/formula
+  - wrong_relation_composition: use when the correct source facts and units are present but the formula combines them with the wrong high-level operation or relation (Example: question asks A minus B but trace computes A plus B)
   - wrong_process_state: double-counts or misses state transitions
-  - source_fact_missing: use when the trace omits, ignores, or misuses a required quantity, fact, or component from the question, even if the remaining arithmetic is locally valid (Example: a total-cost question includes item A, item B, and item C, but the trace sums only A and B)
-  - unit_scale_error: use when the trace uses the wrong unit, rate, denominator, or scale for the target relation (Example: the question asks for miles per hour, but the trace divides by days; or a recipe/rate is scaled as if two different quantities require the same amount)
+  - source_fact_missing: use when a required component is omitted or misused even if the final answer could be described as a bad total; do not use arithmetic_only_error just because the final number is wrong if an input component is missing (Example: a total-cost question requires items A, B, and C, but the trace sums only A and B)
+  - unit_scale_error: use when the main problem is the wrong unit, rate, denominator, or scale — prefer this over wrong_relation_composition when the formula structure is correct but the wrong unit is applied (Example: the question asks for miles per hour but the trace divides by days; or a recipe/rate problem treats different quantities as requiring the same amount)
   - percentage_base_error: wrong percentage base
   - per_unit_total_error: confusion between per-unit and total
   - total_difference_error: asks for difference but computes something else
   - original_final_state_error: asks for initial but gives final state
-  - arithmetic_only_error: use only when the trace has the correct source facts, target variable, units, and semantic relation, but makes a numerical computation slip
+  - arithmetic_only_error: use only when all required source facts, input components, units, denominator, and semantic relation are correct and present, but the numerical computation itself is wrong; do not use arithmetic_only_error if a required input value, component, source fact, unit, denominator, or sub-total is absent or misused — in those cases prefer source_fact_missing, unit_scale_error, or the more specific semantic axis
   - formula_format_error: malformed equation or notation
   - prompt_gold_inconsistent: conflicts with prompt statement
-  - insufficient_evidence: use only when the visible trace is too sparse or opaque to localize the failure; do not use when a missing source fact, unit/scale error, wrong process state, or arithmetic-only error can be identified from the visible trace
+  - insufficient_evidence: use only when the visible trace is too sparse or opaque to localize the failure; do not use it merely because the trace is incomplete if a specific omitted component or wrong unit can be identified from the visible trace
   Leave blank if ready
 - confidence: high, medium, or low
 - rationale: brief explanation"""
