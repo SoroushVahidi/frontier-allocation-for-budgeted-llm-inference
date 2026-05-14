@@ -95,7 +95,7 @@ CANDIDATE TRACE:
 TASK:
 Determine whether the candidate trace represents the correct semantic relation for computing the target phrase.
 
-If the candidate trace is opaque, JSON-only, or lacks reasoning steps, judge only the visible trace and candidate answer. If the candidate appears wrong but the exact failure cannot be localized from the visible trace, use first_error_axis = insufficient_evidence. Do not infer hidden reasoning.
+If the candidate trace is opaque, JSON-only, or lacks reasoning steps, judge only the visible trace and candidate answer. If the candidate appears wrong but the exact failure cannot be localized from the visible trace, use first_error_axis = insufficient_evidence. If the visible trace shows only a final answer or an action-final JSON object with no reasoning steps, use first_error_axis = insufficient_evidence when the candidate is not_ready, regardless of whether you can independently infer or reconstruct why the answer is wrong. Do not infer hidden reasoning.
 
 Respond with JSON containing:
 - relation_ready_label: one of {{ready, not_ready, uncertain, gold_inconsistent}}

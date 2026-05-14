@@ -736,5 +736,44 @@ def test_axis_contrast_rules_contain_no_leakage(tmp_path):
         assert term not in prompt, f'Axis contrast text must not contain: {term!r}'
 
 
+# ---------------------------------------------------------------------------
+# Opaque / final-answer-only trace rule
+# ---------------------------------------------------------------------------
+
+def test_prompt_includes_final_answer_only_insufficient_evidence_rule(tmp_path):
+    """Prompt must state that a final-answer-only trace → insufficient_evidence when not_ready."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'action-final JSON object with no reasoning steps' in prompt, (
+        'Prompt must name action-final JSON object as triggering insufficient_evidence'
+    )
+    assert 'regardless of whether you can independently infer or reconstruct' in prompt, (
+        'Prompt must forbid reconstruction-based axis assignment on opaque traces'
+    )
+
+
+def test_prompt_still_contains_do_not_infer_hidden_reasoning(tmp_path):
+    """Existing 'Do not infer hidden reasoning' instruction must still be present."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'Do not infer hidden reasoning' in prompt, (
+        'Original do-not-infer instruction must be preserved'
+    )
+
+
+def test_prompt_opaque_rule_contains_no_leakage(tmp_path):
+    """The opaque-trace rule addition must not introduce leakage terms."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    forbidden = [
+        'gold_answer', 'relation_ready_label_manual', 'first_error_axis_manual',
+        'notes_manual', 'likely not_ready', 'likely ready', 'likely uncertain',
+        'ready candidate', 'not_ready candidate', 'uncertain candidate',
+        'good judge should label', 'rrseed_',
+    ]
+    for term in forbidden:
+        assert term not in prompt, f'Opaque-trace rule must not contain: {term!r}'
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
