@@ -775,5 +775,106 @@ def test_prompt_opaque_rule_contains_no_leakage(tmp_path):
         assert term not in prompt, f'Opaque-trace rule must not contain: {term!r}'
 
 
+# ---------------------------------------------------------------------------
+# Few-shot axis examples
+# ---------------------------------------------------------------------------
+
+def test_prompt_includes_axis_examples_section(tmp_path):
+    """Prompt must include the AXIS EXAMPLES section header."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'AXIS EXAMPLES' in prompt, 'Prompt must include AXIS EXAMPLES section'
+
+
+def test_prompt_includes_opaque_fewshot_example_with_insufficient_evidence(tmp_path):
+    """Prompt must include a few-shot opaque/final-answer-only example mapped to insufficient_evidence."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert '8 red balls and 5 blue balls' in prompt, (
+        'Prompt must include the synthetic opaque-trace few-shot example'
+    )
+    assert '"action":"final","answer":14' in prompt, (
+        'Opaque few-shot example must show an action-final JSON trace'
+    )
+
+
+def test_prompt_includes_source_fact_missing_fewshot_example(tmp_path):
+    """Prompt must include a few-shot example for source_fact_missing."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'item A costing $4' in prompt, (
+        'Prompt must include the synthetic source_fact_missing few-shot example'
+    )
+
+
+def test_prompt_includes_unit_scale_error_fewshot_example(tmp_path):
+    """Prompt must include a few-shot example for unit_scale_error."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert '30 miles in 5 hours' in prompt, (
+        'Prompt must include the synthetic unit_scale_error few-shot example'
+    )
+
+
+def test_prompt_includes_wrong_process_state_fewshot_example(tmp_path):
+    """Prompt must include a few-shot example for wrong_process_state."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert '3 inches tall' in prompt, (
+        'Prompt must include the synthetic wrong_process_state few-shot example'
+    )
+    assert 'doubles in height' in prompt, (
+        'wrong_process_state example must mention doubling height'
+    )
+
+
+def test_prompt_fewshot_section_still_contains_final_selection_convention(tmp_path):
+    """After adding few-shot examples, the final-selection convention must still be present."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'acceptable for final selection' in prompt
+    assert 'numerically wrong answer with correct semantic structure is still not_ready' in prompt
+    assert 'first_error_axis = arithmetic_only_error' in prompt
+
+
+def test_prompt_fewshot_examples_contain_no_leakage(tmp_path):
+    """The few-shot examples must not introduce any leakage terms."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    forbidden = [
+        'gold_answer_metadata_only',
+        'relation_ready_label_manual',
+        'first_error_axis_manual',
+        'notes_manual',
+        'likely not_ready',
+        'likely ready',
+        'likely uncertain',
+        'ready candidate',
+        'not_ready candidate',
+        'uncertain candidate',
+        'good judge should label',
+        'rrseed_',
+    ]
+    for term in forbidden:
+        assert term not in prompt, f'Few-shot examples must not contain leakage term: {term!r}'
+
+
+def test_fewshot_examples_are_generic_no_real_row_ids(tmp_path):
+    """Few-shot examples must not reference real row IDs from the pilot set."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    prompt = read_jsonl(output_dir / 'judge_requests.jsonl')[0]['prompt']
+    assert 'rrseed_' not in prompt, 'Few-shot examples must not embed real row IDs'
+
+
+def test_provider_payload_compatible_after_fewshot_addition(tmp_path):
+    """Prompt with few-shot examples must still be a plain string (provider-payload compatible)."""
+    output_dir = _run_builder(tmp_path, [_BASE_ROW])
+    requests = read_jsonl(output_dir / 'judge_requests.jsonl')
+    assert len(requests) == 1
+    assert isinstance(requests[0]['prompt'], str), 'Prompt must remain a plain string'
+    assert len(requests[0]['prompt']) > 0
+    assert 'expected_json_schema' in requests[0], 'expected_json_schema field must still be present'
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

@@ -97,6 +97,44 @@ Determine whether the candidate trace represents the correct semantic relation f
 
 If the candidate trace is opaque, JSON-only, or lacks reasoning steps, judge only the visible trace and candidate answer. If the candidate appears wrong but the exact failure cannot be localized from the visible trace, use first_error_axis = insufficient_evidence. If the visible trace shows only a final answer or an action-final JSON object with no reasoning steps, use first_error_axis = insufficient_evidence when the candidate is not_ready, regardless of whether you can independently infer or reconstruct why the answer is wrong. Do not infer hidden reasoning.
 
+AXIS EXAMPLES (synthetic, for reference only):
+
+Example 1 — Opaque / final-answer-only trace:
+  Question: A box has 8 red balls and 5 blue balls. How many balls are there in total?
+  Candidate trace: {{"action":"final","answer":14}}
+  Expected:
+    relation_ready_label: not_ready
+    first_error_axis: insufficient_evidence
+    confidence: high
+    Rationale: The visible trace contains only a final-answer JSON object with no reasoning steps. Even though the answer appears wrong, the failure cannot be localized from the visible trace alone.
+
+Example 2 — Source fact missing:
+  Question: A total bill includes item A costing $4, item B costing $6, and item C costing $5. What is the total bill?
+  Candidate trace: Add item A costing $4 and item B costing $6: 4 + 6 = 10.
+  Expected:
+    relation_ready_label: not_ready
+    first_error_axis: source_fact_missing
+    confidence: high
+    Rationale: Item C ($5) is a required component but is omitted from the trace.
+
+Example 3 — Unit scale error:
+  Question: A runner travels 30 miles in 5 hours. What is the speed in miles per hour?
+  Candidate trace: The trip took 1 day, so speed is 30 miles per day.
+  Expected:
+    relation_ready_label: not_ready
+    first_error_axis: unit_scale_error
+    confidence: high
+    Rationale: The trace uses the wrong unit/denominator; the question asks for miles per hour, not miles per day.
+
+Example 4 — Wrong process state:
+  Question: A plant is 3 inches tall, doubles in height, then grows 4 more inches. How tall is it?
+  Candidate trace: Add initial height, doubled height, and growth: 3 + 6 + 4 = 13.
+  Expected:
+    relation_ready_label: not_ready
+    first_error_axis: wrong_process_state
+    confidence: high
+    Rationale: The doubled height (6) already includes the initial height (3), so adding 3 again double-counts the initial state.
+
 Respond with JSON containing:
 - relation_ready_label: one of {{ready, not_ready, uncertain, gold_inconsistent}}
   - ready: the trace correctly represents the semantic relation AND the answer is acceptable for final selection; a numerically wrong answer with correct semantic structure is still not_ready
