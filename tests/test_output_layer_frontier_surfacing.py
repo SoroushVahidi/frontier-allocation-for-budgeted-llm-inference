@@ -310,11 +310,30 @@ def test_decide_pal_strong_overlay_blocks_peer_three_without_pal_mass() -> None:
     assert diag.get("max_non_pal_histogram_support") == 3
 
 
-def test_decide_pal_strong_overlay_allows_duplicate_wrong_twosome_when_histogram_two() -> None:
+def test_decide_pal_strong_overlay_blocks_duplicate_wrong_twosome_when_histogram_two() -> None:
+    # PAL_STRONG_OVERLAY_PEER_SUPPORT_CONFLICT_MIN lowered 3→2: peer support=2 now blocks PAL.
     from experiments.output_layer_repair import decide_pal_strong_overlay_promotion
 
     promote, reason, _diag = decide_pal_strong_overlay_promotion(
         combined_group_counts_base={"120": 2},
+        pal_answer_raw="480",
+        incumbent_final_answer_raw="120",
+        frontier_weak=False,
+        tiebreak_triggered=False,
+        tiebreak_selected_group_raw="",
+        strong_pal=True,
+        pal_score=1.0,
+    )
+    assert promote is False
+    assert "blocked" in reason
+
+
+def test_decide_pal_strong_overlay_allows_pal_when_peer_support_one() -> None:
+    # Peer support=1 < threshold=2: no conflict, PAL may displace unsupported incumbent.
+    from experiments.output_layer_repair import decide_pal_strong_overlay_promotion
+
+    promote, reason, _diag = decide_pal_strong_overlay_promotion(
+        combined_group_counts_base={"120": 1},
         pal_answer_raw="480",
         incumbent_final_answer_raw="120",
         frontier_weak=False,
@@ -364,8 +383,13 @@ def test_pal_residual_integration_skips_weak_exec_or_bad_safety_parse() -> None:
     assert not bool(pit.get("pal_integration_fix_triggered"))
 
 
-def test_pal_residual_integration_promotes_strong_pal_when_duplicate_wrong_twosome_like_t5_case24() -> None:
-    """Gold-free analogue of openai_gsm8k_24 cohort (two-branch wrong incumbent)."""
+def test_pal_residual_integration_blocked_by_peer_two_threshold_like_t5_case24() -> None:
+    """PAL_STRONG_OVERLAY_PEER_SUPPORT_CONFLICT_MIN=2 blocks PAL when peer support==2.
+
+    Gold-free analogue of openai_gsm8k_24 cohort.  Peer has support=2, which now meets
+    the conflict threshold (lowered from 3 to 2), so the residual integration fix must NOT
+    promote PAL — both with and without the fix flag the result is wrong (exact_match=0).
+    """
     from scripts.run_cohere_real_model_cost_normalized_validation import evaluate_with_diagnostics
 
     md = {
@@ -409,6 +433,172 @@ def test_pal_residual_integration_promotes_strong_pal_when_duplicate_wrong_twoso
         enable_pal_residual_strong_integration_fix=True,
     )
     assert diag0["exact_match"] == 0
-    assert diag1["exact_match"] == 1
+    # PAL blocked by peer_conflict_min_support=2; residual fix does not trigger.
+    assert diag1["exact_match"] == 0
     pit = diag1.get("pal_integration") or {}
-    assert pit.get("pal_integration_fix_triggered") is True
+    assert not bool(pit.get("pal_integration_fix_triggered"))
+
+
+# ---------------------------------------------------------------------------
+# Rescue guard: Fix 1 — do not overwrite controller-committed answer
+# ---------------------------------------------------------------------------
+
+def test_rescue_guard_blocks_when_surfaced_matches_committed_hint() -> None:
+    """Rescue must not fire when the extracted answer already matches selected_group_hint.
+
+    Reproduces the OLM failure pattern: PAL found gold (answer=42), controller committed
+    selected_group=42, but the tree has 3 nodes all agreeing on a wrong answer (7).
+    Without the guard, rescue would overwrite 42→7.  With the guard it is blocked.
+    """
+    from experiments.output_layer_repair import choose_repair_answer
+
+    pal_node = {"branch_id": "pal_seed_0", "predicted_answer": "42", "reasoning_text": "", "score": 0.9}
+    tree_nodes = [
+        {"branch_id": f"fb{i}", "predicted_answer": "7", "reasoning_text": "", "score": 0.3}
+        for i in range(3)
+    ]
+    nodes = [pal_node] + tree_nodes
+    rep = choose_repair_answer(
+        final_nodes=nodes,
+        selected_group_hint="42",
+        dataset="openai/gsm8k",
+        enable_rescue=True,
+    )
+    assert rep["surfaced_final_answer_raw"] == "42"
+    assert rep["rescue_applied"] is False
+
+
+def test_rescue_fires_normally_when_hint_absent() -> None:
+    """With no hint rescue still fires — baseline/external method path must be unaffected."""
+    from experiments.output_layer_repair import choose_repair_answer
+
+    nodes = [
+        {"branch_id": "b0", "predicted_answer": "3", "reasoning_text": "", "score": 0.9},
+        {"branch_id": "b1", "predicted_answer": "8", "reasoning_text": "", "score": 0.3},
+        {"branch_id": "b2", "predicted_answer": "8", "reasoning_text": "", "score": 0.3},
+        {"branch_id": "b3", "predicted_answer": "8", "reasoning_text": "", "score": 0.3},
+    ]
+    rep = choose_repair_answer(
+        final_nodes=nodes,
+        selected_group_hint=None,
+        dataset="openai/gsm8k",
+        enable_rescue=True,
+    )
+    assert rep["surfaced_final_answer_raw"] == "8"
+    assert rep["rescue_applied"] is True
+
+
+def test_rescue_fires_when_surfaced_does_not_match_hint() -> None:
+    """Rescue fires when the extracted answer differs from the hint.
+
+    hint="42" but no node in the pool has answer "42", so the policy falls back to the
+    highest-scored node (sentinel "1").  Since "1" != "42", the guard does NOT block
+    rescue.  The tree majority is "8" (support=2), so rescue promotes "8".
+    """
+    from experiments.output_layer_repair import choose_repair_answer
+
+    # Sentinel is chosen (highest score); hint "42" has no matching candidate.
+    sentinel_node = {"branch_id": "pal_seed_0", "predicted_answer": "1", "reasoning_text": "", "score": 0.9}
+    tree_nodes = [
+        {"branch_id": f"fb{i}", "predicted_answer": "8", "reasoning_text": "", "score": 0.3}
+        for i in range(2)
+    ]
+    nodes = [sentinel_node] + tree_nodes
+    rep = choose_repair_answer(
+        final_nodes=nodes,
+        selected_group_hint="42",
+        dataset="openai/gsm8k",
+        enable_rescue=True,
+    )
+    assert rep["rescue_applied"] is True
+    assert rep["surfaced_final_answer_raw"] == "8"
+
+
+def test_rescue_guard_handles_float_normalization() -> None:
+    """'5.0' and '5' canonicalize to the same value so the guard must treat them as matching."""
+    from experiments.output_layer_repair import choose_repair_answer
+
+    pal_node = {"branch_id": "pal_seed_0", "predicted_answer": "5.0", "reasoning_text": "", "score": 0.9}
+    tree_nodes = [
+        {"branch_id": f"fb{i}", "predicted_answer": "8", "reasoning_text": "", "score": 0.3}
+        for i in range(3)
+    ]
+    nodes = [pal_node] + tree_nodes
+    rep = choose_repair_answer(
+        final_nodes=nodes,
+        selected_group_hint="5",
+        dataset="openai/gsm8k",
+        enable_rescue=True,
+    )
+    assert rep["rescue_applied"] is False
+    # Surfaced value should canonicalize to "5"
+    from experiments.output_layer_repair import canonicalize_answer
+    assert canonicalize_answer(rep["surfaced_final_answer_raw"], dataset="openai/gsm8k") == "5"
+
+
+# ---------------------------------------------------------------------------
+# Threshold regression tests: Fix 2 & Fix 3
+# ---------------------------------------------------------------------------
+
+def test_tiebreak_threshold_1_blocks_pal_when_tiebreak_group_has_support_1() -> None:
+    """PAL_STRONG_OVERLAY_TIEBREAK_PEER_SUPPORT_CONFLICT_MIN lowered 2→1.
+
+    Old behavior: tb_sup=1 < 2 → not conflicted → PAL promoted (WRONG for PNS cases).
+    New behavior: tb_sup=1 >= 1 → conflicted → PAL blocked.
+    """
+    from experiments.output_layer_repair import decide_pal_strong_overlay_promotion
+
+    promote, reason, diag = decide_pal_strong_overlay_promotion(
+        combined_group_counts_base={"90": 1},
+        pal_answer_raw="15",
+        incumbent_final_answer_raw="90",
+        frontier_weak=False,
+        tiebreak_triggered=True,
+        tiebreak_selected_group_raw="90",
+        strong_pal=True,
+        pal_score=1.0,
+    )
+    assert promote is False
+    assert "blocked" in reason
+    assert diag.get("tiebreak_selected_group_histogram_support") == 1
+
+
+def test_tiebreak_threshold_allows_pal_when_tiebreak_group_has_no_histogram_mass() -> None:
+    """Tiebreak group with support=0 does not trigger conflict; PAL may still displace."""
+    from experiments.output_layer_repair import decide_pal_strong_overlay_promotion
+
+    promote, reason, _diag = decide_pal_strong_overlay_promotion(
+        combined_group_counts_base={},
+        pal_answer_raw="15",
+        incumbent_final_answer_raw="90",
+        frontier_weak=False,
+        tiebreak_triggered=True,
+        tiebreak_selected_group_raw="90",
+        strong_pal=True,
+        pal_score=1.0,
+    )
+    assert promote is True
+    assert "displaces" in reason
+
+
+def test_peer_conflict_threshold_2_blocks_pal_when_peer_has_support_2() -> None:
+    """PAL_STRONG_OVERLAY_PEER_SUPPORT_CONFLICT_MIN=2: peer support=2 now conflicts.
+
+    Old threshold=3: 2 < 3 → no conflict → PAL promoted (WRONG for PNS gsm8k_75/78).
+    New threshold=2: 2 >= 2 → conflict → PAL blocked.
+    """
+    from experiments.output_layer_repair import decide_pal_strong_overlay_promotion
+
+    promote, reason, diag = decide_pal_strong_overlay_promotion(
+        combined_group_counts_base={"17": 2},
+        pal_answer_raw="68",
+        incumbent_final_answer_raw="17",
+        frontier_weak=False,
+        tiebreak_triggered=False,
+        tiebreak_selected_group_raw="",
+        strong_pal=True,
+        pal_score=1.0,
+    )
+    assert promote is False
+    assert "blocked" in reason
+    assert diag.get("max_non_pal_histogram_support") == 2

@@ -54,8 +54,8 @@ def _to_text(v: Any) -> str | None:
 
 
 # Histogram mass from non-PAL peers at or above these thresholds blocks PAL takeover.
-PAL_STRONG_OVERLAY_PEER_SUPPORT_CONFLICT_MIN = 3
-PAL_STRONG_OVERLAY_TIEBREAK_PEER_SUPPORT_CONFLICT_MIN = 2
+PAL_STRONG_OVERLAY_PEER_SUPPORT_CONFLICT_MIN = 2
+PAL_STRONG_OVERLAY_TIEBREAK_PEER_SUPPORT_CONFLICT_MIN = 1
 
 
 def _max_histogram_support_excluding_normalized_group(
@@ -1448,7 +1448,17 @@ def choose_repair_answer(
     rescue_applied = False
     rescue_detail: dict[str, Any] = {"applied": False, "reason": "disabled_or_not_triggered"}
 
-    if enable_rescue and done_nodes:
+    # Guard: do not let rescue overwrite an answer that already matches the controller-committed
+    # selected_group_hint.  This prevents the tree-majority from clobbering a correct PAL answer
+    # that the controller committed before evaluation time.
+    _ctrl_hint_canonical = canonicalize_answer(selected_group, dataset=dataset) if selected_group else None
+    _surfaced_matches_hint = (
+        _ctrl_hint_canonical is not None
+        and surfaced_canonical is not None
+        and _ctrl_hint_canonical == surfaced_canonical
+    )
+
+    if enable_rescue and done_nodes and not _surfaced_matches_hint:
         canon_rows = []
         for n in done_nodes:
             ans_raw = effective_answer_raw_from_node(n, dataset=dataset)
