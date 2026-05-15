@@ -219,3 +219,120 @@ def test_gold_answer_metadata_only_never_feature():
     for row in out_rows:
         assert "gold_answer_metadata_only" not in row["structured_features"]
         assert "gold_answer_metadata_only" not in row["feature_text"]
+
+
+# ---------------------------------------------------------------------------
+# Multi-CSV tests
+# ---------------------------------------------------------------------------
+
+EXTRA_ROWS = [
+    {
+        "row_id": "r4",
+        "problem_id": "pid4",
+        "case_id": "cid4",
+        "split_group_id": "train",
+        "candidate_source": "direct_formula_family",
+        "question": "How many grapes?",
+        "target_phrase": "total grapes",
+        "target_semantic_type": "count",
+        "candidate_answer": "10",
+        "candidate_trace_short": "There are 10 grapes.",
+        "gold_answer_metadata_only": "10",
+        "relation_ready_label_manual": "ready",
+        "first_error_axis_manual": "",
+        "notes_manual": "",
+    },
+    # Duplicate of r1 — should be dropped when combined
+    {
+        "row_id": "r1",
+        "problem_id": "pid1",
+        "case_id": "cid1",
+        "split_group_id": "train",
+        "candidate_source": "direct_formula_family",
+        "question": "How many apples?",
+        "target_phrase": "total apples",
+        "target_semantic_type": "count",
+        "candidate_answer": "5",
+        "candidate_trace_short": "There are 5 apples.",
+        "gold_answer_metadata_only": "",
+        "relation_ready_label_manual": "ready",
+        "first_error_axis_manual": "",
+        "notes_manual": "",
+    },
+]
+
+
+def test_multiple_csvs_combine():
+    """Rows from two CSVs are combined."""
+    mod = _import_builder()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        p1 = pathlib.Path(tmpdir) / "csv1.csv"
+        p2 = pathlib.Path(tmpdir) / "csv2.csv"
+        write_csv(MINIMAL_ROWS, p1)
+        write_csv(EXTRA_ROWS, p2)
+        rows, _ = mod.load_and_tag_csvs([p1, p2])
+        row_ids = [r["row_id"] for r in rows]
+        assert "r1" in row_ids
+        assert "r4" in row_ids
+
+
+def test_duplicate_row_id_deduped():
+    """When two CSVs share a row_id, the first-seen row is kept, the second dropped."""
+    mod = _import_builder()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        p1 = pathlib.Path(tmpdir) / "csv1.csv"
+        p2 = pathlib.Path(tmpdir) / "csv2.csv"
+        write_csv(MINIMAL_ROWS, p1)       # contains r1
+        write_csv(EXTRA_ROWS, p2)         # also contains r1 (duplicate)
+        rows, n_dups = mod.load_and_tag_csvs([p1, p2])
+        assert n_dups == 1, f"expected 1 duplicate, got {n_dups}"
+        matching = [r for r in rows if r["row_id"] == "r1"]
+        assert len(matching) == 1, "r1 must appear exactly once after dedup"
+
+
+def test_provenance_set_to_source_csv():
+    """provenance in output rows must be the CSV filename, not the row_id."""
+    mod = _import_builder()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        p1 = pathlib.Path(tmpdir) / "csv1.csv"
+        write_csv(MINIMAL_ROWS, p1)
+        rows, _ = mod.load_and_tag_csvs([p1])
+        out_rows, _ = mod.build_dataset(rows, {"uncertain", "gold_inconsistent"}, "binary", None)
+        for r in out_rows:
+            assert r["provenance"] == str(p1), (
+                f"expected provenance={p1}, got {r['provenance']}"
+            )
+
+
+def test_unlabeled_rows_excluded():
+    """Rows with empty relation_ready_label_manual are excluded."""
+    mod = _import_builder()
+    unlabeled = {**MINIMAL_ROWS[0], "row_id": "r_empty", "relation_ready_label_manual": ""}
+    rows = MINIMAL_ROWS + [unlabeled]
+    out_rows, stats = mod.build_dataset(rows, {"uncertain", "gold_inconsistent"}, "binary", None)
+    ids = [r["row_id"] for r in out_rows]
+    assert "r_empty" not in ids
+    assert stats["excluded_by_label"][""] == 1
+
+
+def test_multi_csv_main_end_to_end():
+    """main() with two --input-csv flags produces a combined train_rows.jsonl."""
+    mod = _import_builder()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        p1 = pathlib.Path(tmpdir) / "csv1.csv"
+        p2 = pathlib.Path(tmpdir) / "csv2.csv"
+        out_dir = pathlib.Path(tmpdir) / "out"
+        write_csv(MINIMAL_ROWS, p1)
+        write_csv(EXTRA_ROWS, p2)
+        ret = mod.main([
+            "--input-csv", str(p1),
+            "--input-csv", str(p2),
+            "--output-dir", str(out_dir),
+        ])
+        assert ret == 0
+        jsonl = list(out_dir.glob("train_rows.jsonl"))
+        assert jsonl, "train_rows.jsonl not created"
+        rows = [json.loads(l) for l in jsonl[0].read_text().splitlines()]
+        ids = [r["row_id"] for r in rows]
+        assert "r4" in ids          # from csv2
+        assert ids.count("r1") == 1  # deduped

@@ -6,10 +6,16 @@ Forbidden columns (never in feature_text or structured_features):
     gold_answer_metadata_only, relation_ready_label_manual,
     first_error_axis_manual, notes_manual
 
-Usage:
+Usage (single CSV):
     python3 scripts/build_relation_verifier_training_dataset.py \
         --input-csv outputs/.../manual_audit_33rows.csv \
         --output-dir outputs/relation_verifier_training_dataset_smoke_<STAMP>
+
+Usage (multiple CSVs — combined, deduped by row_id):
+    python3 scripts/build_relation_verifier_training_dataset.py \
+        --input-csv outputs/.../manual_audit_33rows.csv \
+        --input-csv outputs/.../manual_audit_batch.csv \
+        --output-dir outputs/relation_verifier_training_dataset_combined_<STAMP>
 """
 from __future__ import annotations
 
@@ -56,6 +62,27 @@ def build_structured_features(row: dict[str, str]) -> dict[str, str]:
 def load_csv(path: pathlib.Path) -> list[dict[str, str]]:
     with open(path, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
+
+
+def load_and_tag_csvs(paths: list[pathlib.Path]) -> tuple[list[dict[str, str]], int]:
+    """Load multiple CSVs, tag each row with its source path, dedupe by row_id.
+
+    First occurrence of a row_id wins.  Returns (tagged_rows, n_duplicates_dropped).
+    """
+    seen: dict[str, str] = {}  # row_id -> source_csv
+    tagged: list[dict[str, str]] = []
+    duplicates = 0
+    for path in paths:
+        for row in load_csv(path):
+            rid = row.get("row_id", "")
+            if rid and rid in seen:
+                duplicates += 1
+                continue
+            row["_source_csv"] = str(path)
+            if rid:
+                seen[rid] = str(path)
+            tagged.append(row)
+    return tagged, duplicates
 
 
 def build_dataset(
@@ -105,7 +132,7 @@ def build_dataset(
                 "structured_features": sf,
                 "label": label,
                 "auxiliary_axis": row.get("first_error_axis_manual", ""),
-                "provenance": str(path) if (path := row.get("row_id")) else "unknown",
+                "provenance": row.get("_source_csv", "unknown"),
             }
         )
         stats["label_distribution"][raw_label] += 1
@@ -118,17 +145,24 @@ def build_dataset(
     return out_rows, stats
 
 
-def write_report(stats: dict, output_dir: pathlib.Path, input_csv: pathlib.Path) -> None:
+def write_report(
+    stats: dict,
+    output_dir: pathlib.Path,
+    input_csvs: list[pathlib.Path],
+    n_duplicates: int = 0,
+) -> None:
+    csv_lines = "\n".join(f"  - `{p}`" for p in input_csvs)
     lines = [
         "# RelationReady Training Dataset Report",
         "",
-        f"- **Input CSV:** `{input_csv}`",
+        f"- **Input CSV(s):**\n{csv_lines}",
         f"- **Generated:** {datetime.now(timezone.utc).isoformat()}",
         "",
         "## Row counts",
         "",
         f"| Total input | {stats['total_input']} |",
         "|---|---|",
+        f"| Duplicates dropped | {n_duplicates} |",
         f"| Included | {stats['included']} |",
     ]
     for lbl, cnt in sorted(stats["excluded_by_label"].items()):
@@ -168,7 +202,14 @@ def write_report(stats: dict, output_dir: pathlib.Path, input_csv: pathlib.Path)
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build RelationReady training dataset")
-    parser.add_argument("--input-csv", required=True)
+    parser.add_argument(
+        "--input-csv",
+        action="append",
+        dest="input_csvs",
+        required=True,
+        metavar="PATH",
+        help="Path to a labeled audit CSV. Repeat to combine multiple CSVs.",
+    )
     parser.add_argument("--output-dir", required=True)
     parser.add_argument(
         "--exclude-labels",
@@ -179,17 +220,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-rows", type=int, default=None)
     args = parser.parse_args(argv)
 
-    input_csv = pathlib.Path(args.input_csv)
+    input_paths = [pathlib.Path(p) for p in args.input_csvs]
     output_dir = pathlib.Path(args.output_dir)
     exclude_labels = set(args.exclude_labels.split(",")) if args.exclude_labels else set()
 
-    if not input_csv.exists():
-        print(f"ERROR: input CSV not found: {input_csv}", file=sys.stderr)
-        return 1
+    for p in input_paths:
+        if not p.exists():
+            print(f"ERROR: input CSV not found: {p}", file=sys.stderr)
+            return 1
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    rows = load_csv(input_csv)
+    rows, n_duplicates = load_and_tag_csvs(input_paths)
     out_rows, stats = build_dataset(rows, exclude_labels, args.label_mode, args.max_rows)
 
     # Write train_rows.jsonl
@@ -198,9 +240,10 @@ def main(argv: list[str] | None = None) -> int:
         for row in out_rows:
             f.write(json.dumps(row) + "\n")
 
-    write_report(stats, output_dir, input_csv)
+    write_report(stats, output_dir, input_paths, n_duplicates)
 
-    print(f"Input rows:    {stats['total_input']}")
+    print(f"Input CSVs:    {[str(p) for p in input_paths]}")
+    print(f"Input rows:    {stats['total_input']}  (after dedup: {n_duplicates} duplicates dropped)")
     print(f"Included rows: {stats['included']}")
     print(f"Excluded:      {dict(stats['excluded_by_label'])}")
     print(f"Labels:        {dict(stats['label_distribution'])}")
