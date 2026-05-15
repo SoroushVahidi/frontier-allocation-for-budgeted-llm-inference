@@ -253,3 +253,174 @@ def test_missing_csv_returns_error():
             "--priority", "all",
         ])
         assert ret != 0
+
+
+# ---------------------------------------------------------------------------
+# likely_ready selection tests
+# ---------------------------------------------------------------------------
+
+# Mix of labeled, unlabeled, opaque, and high-signal rows
+MIXED_ROWS = [
+    {   # labeled — must be excluded from likely_ready
+        "row_id": "labeled_0",
+        "problem_id": "pid0",
+        "case_id": "cid0",
+        "split_group_id": "train",
+        "candidate_source": "cand_0",
+        "source_artifact": "failures.jsonl",
+        "suggested_priority": "medium",
+        "trace_quality_flags": "has_code|has_arithmetic|answer_present",
+        "question": "Labeled question?",
+        "target_phrase": "",
+        "target_semantic_type": "",
+        "candidate_answer": "42",
+        "candidate_trace_short": "x = 6\ny = 7\nprint(x*y)",
+        "gold_answer_metadata_only": "42",
+        "relation_ready_label_manual": "not_ready",
+        "first_error_axis_manual": "other",
+        "notes_manual": "already reviewed",
+    },
+    {   # high-signal unlabeled: has_code + has_arithmetic + multi-line
+        "row_id": "unlabeled_high",
+        "problem_id": "pid1",
+        "case_id": "cid1",
+        "split_group_id": "",
+        "candidate_source": "cand_1",
+        "source_artifact": "failures.jsonl",
+        "suggested_priority": "medium",
+        "trace_quality_flags": "has_code|has_arithmetic|answer_present",
+        "question": "High signal question?",
+        "target_phrase": "",
+        "target_semantic_type": "",
+        "candidate_answer": "15",
+        "candidate_trace_short": "a = 5\nb = 10\nprint(a + b)",
+        "gold_answer_metadata_only": "15",
+        "relation_ready_label_manual": "",
+        "first_error_axis_manual": "",
+        "notes_manual": "",
+    },
+    {   # low-signal unlabeled: JSON-final only
+        "row_id": "unlabeled_json",
+        "problem_id": "pid2",
+        "case_id": "cid2",
+        "split_group_id": "",
+        "candidate_source": "cand_0",
+        "source_artifact": "failures.jsonl",
+        "suggested_priority": "medium",
+        "trace_quality_flags": "answer_present",
+        "question": "JSON final question?",
+        "target_phrase": "",
+        "target_semantic_type": "",
+        "candidate_answer": "7",
+        "candidate_trace_short": '{"action": "final", "answer": "7"}',
+        "gold_answer_metadata_only": "7",
+        "relation_ready_label_manual": "",
+        "first_error_axis_manual": "",
+        "notes_manual": "",
+    },
+    {   # worst-signal: model_step_missing
+        "row_id": "unlabeled_missing",
+        "problem_id": "pid3",
+        "case_id": "cid3",
+        "split_group_id": "",
+        "candidate_source": "cand_1",
+        "source_artifact": "failures.jsonl",
+        "suggested_priority": "medium",
+        "trace_quality_flags": "opaque|answer_present",
+        "question": "Missing trace question?",
+        "target_phrase": "",
+        "target_semantic_type": "",
+        "candidate_answer": "3",
+        "candidate_trace_short": "model_step_missing",
+        "gold_answer_metadata_only": "3",
+        "relation_ready_label_manual": "",
+        "first_error_axis_manual": "",
+        "notes_manual": "",
+    },
+]
+
+
+def test_likely_ready_excludes_labeled_rows():
+    mod = _import_exporter()
+    batch, total = mod.select_likely_ready(MIXED_ROWS, 0, 10)
+    ids = [r["row_id"] for r in batch]
+    assert "labeled_0" not in ids, "labeled rows must be excluded"
+    assert total == 3  # 3 unlabeled rows
+
+
+def test_likely_ready_prefers_high_signal_over_opaque():
+    mod = _import_exporter()
+    batch, _ = mod.select_likely_ready(MIXED_ROWS, 0, 10)
+    ids = [r["row_id"] for r in batch]
+    high_pos = ids.index("unlabeled_high")
+    missing_pos = ids.index("unlabeled_missing")
+    assert high_pos < missing_pos, "high-signal row must rank above model_step_missing row"
+
+
+def test_likely_ready_score_ordering():
+    mod = _import_exporter()
+    high_score = mod.score_likely_ready(MIXED_ROWS[1])   # has_code + arithmetic + multi-line
+    json_score = mod.score_likely_ready(MIXED_ROWS[2])   # JSON-final penalty
+    missing_score = mod.score_likely_ready(MIXED_ROWS[3])  # model_step_missing worst
+    assert high_score > json_score > missing_score
+
+
+def test_likely_ready_gold_excluded_from_output():
+    mod = _import_exporter()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        d = pathlib.Path(tmpdir)
+        csv_path = d / "audit.csv"
+        out_dir = d / "out"
+        write_csv(MIXED_ROWS, csv_path)
+        ret = mod.main([
+            "--input-csv", str(csv_path),
+            "--output-dir", str(out_dir),
+            "--priority", "all",
+            "--selection", "likely_ready",
+            "--batch-size", "10",
+        ])
+        assert ret == 0
+        batch_files = list(out_dir.glob("labeling_batch_likelyready_*.md"))
+        assert batch_files, "batch file with likelyready tag must be created"
+        content = batch_files[0].read_text()
+        assert "METADATA ONLY" not in content
+        assert "gold_answer_metadata_only" not in content
+
+
+def test_likely_ready_label_placeholders_present():
+    mod = _import_exporter()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        d = pathlib.Path(tmpdir)
+        csv_path = d / "audit.csv"
+        out_dir = d / "out"
+        write_csv(MIXED_ROWS, csv_path)
+        mod.main([
+            "--input-csv", str(csv_path),
+            "--output-dir", str(out_dir),
+            "--priority", "all",
+            "--selection", "likely_ready",
+            "--batch-size", "10",
+        ])
+        batch_files = list(out_dir.glob("labeling_batch_likelyready_*.md"))
+        content = batch_files[0].read_text()
+        assert "relation_ready_label_manual" in content
+        assert "fill:" in content
+
+
+def test_likely_ready_report_written():
+    mod = _import_exporter()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        d = pathlib.Path(tmpdir)
+        csv_path = d / "audit.csv"
+        out_dir = d / "out"
+        write_csv(MIXED_ROWS, csv_path)
+        mod.main([
+            "--input-csv", str(csv_path),
+            "--output-dir", str(out_dir),
+            "--priority", "all",
+            "--selection", "likely_ready",
+            "--batch-size", "10",
+        ])
+        report = (out_dir / "labeling_batch_report.md").read_text()
+        assert "likely_ready" in report
+        assert "NO" in report  # gold excluded

@@ -3,13 +3,22 @@
 Gold answers are excluded by default. Use --include-gold-metadata to include them
 as clearly-marked metadata (never in feature text).
 
-Usage:
+Usage (standard sequential batch):
     python3 scripts/export_relation_verifier_labeling_batch_text.py \
         --input-csv outputs/.../manual_audit_batch.csv \
         --output-dir outputs/.../labeling_batches \
         --priority high \
         --start-index 0 \
         --batch-size 10
+
+Usage (targeted likely-ready selection — ranks unlabeled rows by readiness signals):
+    python3 scripts/export_relation_verifier_labeling_batch_text.py \
+        --input-csv outputs/.../manual_audit_batch.csv \
+        --output-dir outputs/.../labeling_batches \
+        --priority all \
+        --selection likely_ready \
+        --start-index 0 \
+        --batch-size 30
 """
 from __future__ import annotations
 
@@ -65,6 +74,66 @@ def filter_by_priority(rows: list[dict], priority: str) -> list[dict]:
     if priority == "all":
         return rows
     return [r for r in rows if r.get("suggested_priority", "").strip() == priority]
+
+
+def is_unlabeled(row: dict[str, str]) -> bool:
+    return not row.get("relation_ready_label_manual", "").strip()
+
+
+def score_likely_ready(row: dict[str, str]) -> int:
+    """Score a row by gold-free signals that correlate with a 'ready' label.
+
+    Uses only trace_quality_flags and candidate_trace_short — no gold metadata.
+    Higher score = more likely ready.
+    """
+    flags = row.get("trace_quality_flags", "").lower()
+    trace = row.get("candidate_trace_short", "").strip()
+
+    score = 0
+
+    # Strong positive: executable code in the trace
+    if "has_code" in flags:
+        score += 3
+    # Moderate positive: arithmetic present
+    if "has_arithmetic" in flags:
+        score += 2
+    # Mild positive: answer is present (completeness signal)
+    if "answer_present" in flags:
+        score += 1
+
+    # Multi-line trace suggests multi-step reasoning
+    if "\n" in trace:
+        score += 2
+
+    # Penalty: opaque flag means the trace is hidden
+    if "opaque" in flags:
+        score -= 5
+
+    # Penalty: trace is literally missing
+    if trace.lower() == "model_step_missing":
+        score -= 10
+
+    # Penalty: trace is a JSON-final-only blob (no reasoning shown)
+    stripped = trace.lstrip()
+    if stripped.startswith('{"action": "final"') or stripped.startswith('{"action":"final"'):
+        score -= 4
+
+    return score
+
+
+def select_likely_ready(
+    rows: list[dict[str, str]],
+    start_index: int,
+    batch_size: int,
+) -> tuple[list[dict[str, str]], int]:
+    """Filter to unlabeled rows, score by readiness signals, return ranked slice.
+
+    Returns (batch_rows, total_unlabeled_count).
+    """
+    unlabeled = [r for r in rows if is_unlabeled(r)]
+    scored = sorted(unlabeled, key=score_likely_ready, reverse=True)
+    batch = scored[start_index : start_index + batch_size]
+    return batch, len(unlabeled)
 
 
 def truncate_trace(trace: str, max_chars: int) -> str:
@@ -145,16 +214,20 @@ def write_labeling_batch(
     output_dir: pathlib.Path,
     max_trace_chars: int,
     include_gold: bool,
+    selection: str = "default",
 ) -> pathlib.Path:
     end_index = start_index + len(batch_rows) - 1
-    filename = f"labeling_batch_{priority}_{start_index}_{end_index}.md"
+    sel_tag = "likelyready" if selection == "likely_ready" else priority
+    filename = f"labeling_batch_{sel_tag}_{start_index}_{end_index}.md"
     out_path = output_dir / filename
 
+    sel_note = " (ranked by likely-ready score)" if selection == "likely_ready" else ""
     header = [
         f"# RelationReady Labeling Batch",
         f"",
         f"- **Priority:** `{priority}`",
-        f"- **Rows:** {start_index} – {end_index} (indices within priority group)",
+        f"- **Selection:** `{selection}`{sel_note}",
+        f"- **Rows:** {start_index} – {end_index} (indices within selection)",
         f"- **Count:** {len(batch_rows)}",
         f"- **Generated:** {datetime.now(timezone.utc).isoformat()}",
         f"- **Gold metadata included:** {'YES — marked METADATA ONLY' if include_gold else 'NO'}",
@@ -197,13 +270,15 @@ def write_batch_report(
     exported: int,
     include_gold: bool,
     batch_file: pathlib.Path,
+    selection: str = "default",
 ) -> pathlib.Path:
     lines = [
         f"# Labeling Batch Export Report",
         f"",
         f"- **Input CSV:** `{input_csv}`",
         f"- **Priority filter:** `{priority}`",
-        f"- **Total rows in priority group:** {total_in_priority}",
+        f"- **Selection mode:** `{selection}`",
+        f"- **Total rows in selection pool:** {total_in_priority}",
         f"- **Start index:** {start_index}",
         f"- **Batch size requested:** {batch_size}",
         f"- **Rows exported:** {exported}",
@@ -227,6 +302,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--input-csv", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--priority", default="high", choices=["high", "medium", "normal", "all"])
+    parser.add_argument(
+        "--selection",
+        default="default",
+        choices=["default", "likely_ready"],
+        help=(
+            "default: sequential slice within priority group. "
+            "likely_ready: rank unlabeled rows by readiness signals, export top-N."
+        ),
+    )
     parser.add_argument("--start-index", type=int, default=0)
     parser.add_argument("--batch-size", type=int, default=10)
     parser.add_argument("--include-gold-metadata", action="store_true", default=False)
@@ -244,17 +328,30 @@ def main(argv: list[str] | None = None) -> int:
 
     rows = load_csv(input_csv)
     rows = enrich_with_pool_jsonl(rows, input_csv)
-    filtered = filter_by_priority(rows, args.priority)
-    total_in_priority = len(filtered)
 
-    if args.start_index >= total_in_priority:
+    if args.selection == "likely_ready":
+        # Filter by priority first, then rank unlabeled rows by readiness score
+        priority_rows = filter_by_priority(rows, args.priority)
+        batch, total_pool = select_likely_ready(priority_rows, args.start_index, args.batch_size)
+        total_in_priority = total_pool
+    else:
+        filtered = filter_by_priority(rows, args.priority)
+        total_in_priority = len(filtered)
+        batch = filtered[args.start_index : args.start_index + args.batch_size]
+
+    if not batch and args.start_index > 0:
         print(
-            f"ERROR: start-index {args.start_index} >= total rows in priority group {total_in_priority}",
+            f"ERROR: start-index {args.start_index} exceeds available rows ({total_in_priority})",
             file=sys.stderr,
         )
         return 1
 
-    batch = filtered[args.start_index : args.start_index + args.batch_size]
+    if not batch:
+        print(
+            f"ERROR: no rows found for priority='{args.priority}' selection='{args.selection}'",
+            file=sys.stderr,
+        )
+        return 1
 
     batch_file = write_labeling_batch(
         batch_rows=batch,
@@ -263,6 +360,7 @@ def main(argv: list[str] | None = None) -> int:
         output_dir=output_dir,
         max_trace_chars=args.max_trace_chars,
         include_gold=args.include_gold_metadata,
+        selection=args.selection,
     )
 
     report_path = write_batch_report(
@@ -275,9 +373,11 @@ def main(argv: list[str] | None = None) -> int:
         exported=len(batch),
         include_gold=args.include_gold_metadata,
         batch_file=batch_file,
+        selection=args.selection,
     )
 
-    print(f"Priority group '{args.priority}': {total_in_priority} rows total")
+    pool_label = "unlabeled rows in pool" if args.selection == "likely_ready" else f"rows in priority group '{args.priority}'"
+    print(f"Selection '{args.selection}': {total_in_priority} {pool_label}")
     print(f"Exported rows {args.start_index}–{args.start_index + len(batch) - 1} ({len(batch)} rows)")
     print(f"Gold metadata: {'included (METADATA ONLY)' if args.include_gold_metadata else 'excluded'}")
     print(f"Batch file: {batch_file}")
