@@ -43,6 +43,7 @@ AUDIT_CSV_COLUMNS = [
     "candidate_trace_short",
     "source_artifact",
     "trace_quality_flags",
+    "suggested_priority",
     "gold_answer_metadata_only",
     "relation_ready_label_manual",
     "first_error_axis_manual",
