@@ -579,6 +579,38 @@ def test_dry_run_still_makes_no_api_call_after_rubric_update(tmp_path):
     assert manifest['api_calls_made'] == 0
 
 
+def test_prompt_contains_no_second_guessing_rule(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    assert 'second-guess' in prompt.lower() or 'independently solve' in prompt.lower(), (
+        'Prompt must instruct the judge not to independently solve and second-guess the trace')
+
+
+def test_prompt_contains_equivalent_formula_rule(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    assert 'algebraically equivalent' in prompt.lower(), (
+        'Prompt must state that algebraically equivalent formulas must be accepted')
+
+
+def test_prompt_few_shot_contains_conversion_factor_example(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    assert ('five-dollar' in prompt.lower() or 'five dollar' in prompt.lower() or
+            'five_dollar' in prompt.lower()), (
+        'Prompt must include a few-shot example covering correct $20→$5 conversion by ×4')
+
+
+def test_prompt_few_shot_contains_trivial_sum_example(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    assert '1650' in prompt and '800' in prompt and '2450' in prompt, (
+        'Prompt must include the trivial-sum few-shot example with 1650+800=2450')
+
+
+def test_prompt_hesitation_rule_covers_algebraic_equivalence(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    assert 'algebraically equivalent' in prompt.lower() or \
+           'algebraic equivalence' in prompt.lower(), (
+        'Hesitation rule must mention checking algebraic equivalence before marking not_ready')
+
+
 # ---------------------------------------------------------------------------
 # 50/100 row boundary — real CSV
 # ---------------------------------------------------------------------------

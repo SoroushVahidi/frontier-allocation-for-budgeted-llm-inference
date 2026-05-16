@@ -83,13 +83,38 @@ WHAT "ready" MEANS — RELATION STRUCTURE, NOT ARITHMETIC CORRECTNESS:
   off — only flag it when the arithmetic mistake structurally prevents the trace from
   establishing the candidate answer.
 
+DO NOT SECOND-GUESS THE TRACE'S ARITHMETIC:
+- Your task is to judge whether the visible relation structure is correct, NOT to
+  independently solve the problem and compare against your own answer.
+- If the trace uses the correct quantities and the correct operator for the target
+  relation, mark ready — even if you would write the expression in a different order.
+- EQUIVALENT FORMULAS MUST BE ACCEPTED: expressions that are algebraically equivalent
+  to the correct formula are correct. For example:
+    `250 / 300 * 5`,  `250 * 5 / 300`,  and  `(250 * 5) / 300`
+  all express "total_calories / grams_per_bag * servings" and yield the same value.
+  Do NOT flag operator ordering as unit_scale_error or arithmetic_error when the
+  expression is algebraically equivalent and uses the correct source quantities.
+- CONVERSION FACTORS: multiplying a $20-bill count by 4 to obtain the equivalent
+  $5-bill count IS CORRECT (each $20 = four $5 bills). Do not flag as arithmetic_error
+  because you expected division. Always ask: does this operator correctly represent the
+  target relation, not just: does it match what I would write?
+- Only flag arithmetic_error when the operator is fundamentally wrong in a way that
+  cannot be reconciled: e.g., division where the relation requires multiplication for
+  a rate×time computation, or subtraction where addition is structurally required.
+
 TRUNCATION RULE:
 - Do NOT mark source_fact_missing when only a trivial final aggregation
   (a sum or subtraction of two already-computed visible values) is absent, and the
   candidate answer matches that obvious aggregation.
+- TRIVIAL means: every component of the final step is explicitly computed and visible
+  in the trace, and the only missing step is combining them.
+  Concrete example: trace shows `arm_down_taps = 550 * 3 = 1650` and
+  `arm_raised_taps = 400 * 2 = 800`, candidate answer = 2450.
+  The final `1650 + 800 = 2450` line is trivial — mark ready (hesitant if unsure).
+- NOT TRIVIAL means: the final step requires applying a rate, multiplying by a count,
+  or using a source fact that does not appear anywhere in the visible trace.
 - Mark not_ready/source_fact_missing ONLY when an essential relation step, source
-  fact, unit conversion, or nontrivial intermediate computation is missing from the
-  visible trace.
+  fact, unit conversion, or nontrivial intermediate computation is missing.
 - If truncation hides a crucial step that is genuinely needed to establish the answer,
   mark not_ready.
 
@@ -97,6 +122,12 @@ HESITATION RULE — you must flag is_hesitant=true in these situations:
 - Deciding between ready and not_ready because of truncation ambiguity.
 - Deciding between ready and arithmetic_error because of a small arithmetic slip.
 - Deciding between source_fact_missing and ready due to an implicit final aggregation.
+- About to mark not_ready because a formula is differently ordered — first check
+  whether it is algebraically equivalent to the correct formula.
+- About to mark arithmetic_error or unit_scale_error for a conversion factor —
+  first verify whether the operator (× vs ÷) is structurally correct for the relation.
+- All required component values are explicitly computed and visible; only the final
+  aggregation line is absent or truncated.
 - Uncertain which axis applies.
 - Any case where a careful annotator would pause before deciding.
 Do NOT report high confidence on every row — boundary cases exist in this dataset.
@@ -175,6 +206,38 @@ candidate_trace: distance = 60 / 3 = 20
 Reason: The trace divides speed by time instead of multiplying, using the wrong
 relation operator for distance = rate × time. This is a structural relation error,
 not a minor arithmetic slip.
+
+--- EXAMPLE 5: ready — correct conversion factor, do not second-guess ---
+question: Thomas has 15 twenty-dollar bills and exchanges them all for five-dollar bills.
+How many five-dollar bills does he receive?
+candidate_answer: 60
+candidate_trace: five_dollar_bills = twenty_dollar_bills * 4
+→ Label: ready  axis: ""  confidence: high  is_hesitant: false
+Reason: Each $20 bill equals four $5 bills, so multiplying by 4 IS the correct
+conversion relation. Do NOT flag as arithmetic_error. The judge must not substitute
+their own independent calculation (÷4 would be wrong here).
+
+--- EXAMPLE 6: ready — algebraically equivalent formula, do not flag as unit error ---
+question: A bag has 5 servings of 250 calories each and weighs 300g. Calories per gram?
+candidate_answer: 4.17
+candidate_trace: cal_per_gram = 250 / 300 * 5
+→ Label: ready  axis: ""  confidence: high  is_hesitant: false
+Reason: `250 / 300 * 5` equals `(250 * 5) / 300` by left-to-right evaluation —
+algebraically equivalent. The formula uses the correct source quantities and the
+correct relation. Do NOT flag as unit_scale_error because multiplication and division
+are reordered; the result and the relation are identical.
+
+--- EXAMPLE 7: ready — trivial final sum truncated, all components visible ---
+question: A dancer taps for 3 minutes at 550/min and 2 minutes at 400/min. Total taps?
+candidate_answer: 2450
+candidate_trace: arm_down_taps = 550 * 3 = 1650
+arm_raised_taps = 400 * 2 = 800
+[trace truncated]
+→ Label: ready  axis: ""  confidence: medium  is_hesitant: true
+hesitation_reason: final sum 1650+800 not written but both components are visible
+Reason: Both components (1650 and 800) are explicitly computed and visible.
+Candidate answer 2450 = 1650 + 800 exactly. The final summation line is trivial —
+apply the trivial-aggregation rule and mark ready. Flag is_hesitant for the truncation.
 
 === END OF EXAMPLES ==="""
 
