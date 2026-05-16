@@ -225,15 +225,19 @@ def _train_fold(
     import torch
     from sentence_transformers import SentenceTransformer
     from setfit import SetFitModel, Trainer, TrainingArguments
+    from sklearn.linear_model import LogisticRegression
 
     torch.manual_seed(seed + fold_idx)
 
     # Load via SentenceTransformer directly to avoid SetFitModel.from_pretrained
     # fetching config_setfit.json (absent on vanilla ST model repos, raises 404).
+    # Provide an explicit head: from_pretrained always does this but direct
+    # construction leaves model_head=None, causing AttributeError on trainer.train().
     st_body = SentenceTransformer(model_name, device=device)
     if max_seq_length is not None:
         st_body.max_seq_length = max_seq_length
-    model = SetFitModel(model_body=st_body)
+    head = LogisticRegression(max_iter=1000, class_weight="balanced")
+    model = SetFitModel(model_body=st_body, model_head=head)
 
     train_ds = _make_hf_dataset(train_texts, train_labels)
 
