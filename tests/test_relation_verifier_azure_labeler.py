@@ -491,6 +491,95 @@ def test_no_requests_post_used():
 
 
 # ---------------------------------------------------------------------------
+# Prompt calibration — rubric content checks
+# ---------------------------------------------------------------------------
+
+def _get_prompt_text(tmp_path):
+    """Build a prompt from a single synthetic row and return the text."""
+    csv_path = _make_csv(tmp_path, [_make_row('rrpool_probe')])
+    out = tmp_path / 'output'
+    run_script(['--input-csv', str(csv_path), '--output-dir', str(out), '--mode', 'dry_run'])
+    reqs = read_jsonl(out / 'azure_label_requests.jsonl')
+    assert len(reqs) == 1
+    return reqs[0]['prompt']
+
+
+def test_prompt_contains_arithmetic_structure_convention(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    # The revised rubric must explain that ready = correct structure, not correct arithmetic
+    assert 'arithmetic correctness' in prompt.lower() or \
+           'arithmetic slip' in prompt.lower() or \
+           'arithmetic mistake' in prompt.lower(), (
+        'Prompt must contain the arithmetic-structure convention')
+
+
+def test_prompt_contains_trivial_aggregation_truncation_rule(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    assert 'trivial final aggregation' in prompt.lower() or \
+           'trivial aggregation' in prompt.lower(), (
+        'Prompt must contain the trivial-final-aggregation truncation rule')
+
+
+def test_prompt_contains_hesitation_rule(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    assert 'is_hesitant=true' in prompt or 'is_hesitant' in prompt, (
+        'Prompt must contain the hesitation rule')
+    # Must list at least one trigger condition for hesitation
+    assert 'boundary' in prompt.lower() or \
+           'truncation' in prompt.lower() or \
+           'ambiguity' in prompt.lower() or \
+           'arithmetic slip' in prompt.lower(), (
+        'Prompt must list trigger conditions for is_hesitant')
+
+
+def test_prompt_contains_few_shot_examples(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    assert 'FEW-SHOT' in prompt.upper() or 'EXAMPLE' in prompt.upper(), (
+        'Prompt must contain few-shot examples section')
+    # Should contain at least 2 distinct label outcomes
+    assert 'ready' in prompt
+    assert 'not_ready' in prompt
+
+
+def test_prompt_few_shot_examples_are_gold_free(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    # The few-shot examples must not leak any gold/manual metadata terms
+    forbidden = [
+        'is_correct_offline_metadata',
+        'gold_answer_metadata_only',
+        'relation_ready_label_manual',
+        'first_error_axis_manual',
+        'notes_manual',
+    ]
+    for term in forbidden:
+        assert term not in prompt, (
+            f'Few-shot examples contain forbidden gold/manual term: {term!r}')
+
+
+def test_prompt_gold_and_manual_still_excluded_after_rubric_update(tmp_path):
+    row = _make_row('rrpool_probe', labeled=True, label='ready', gold='yes')
+    csv_path = _make_csv(tmp_path, [row])
+    out = tmp_path / 'output'
+    run_script(['--input-csv', str(csv_path), '--output-dir', str(out),
+                '--mode', 'dry_run', '--include-labeled'])
+    reqs = read_jsonl(out / 'azure_label_requests.jsonl')
+    assert len(reqs) == 1
+    prompt = reqs[0]['prompt']
+    assert 'is_correct_offline_metadata' not in prompt
+    assert 'relation_ready_label_manual' not in prompt
+    assert 'first_error_axis_manual' not in prompt
+    assert 'notes_manual' not in prompt
+
+
+def test_dry_run_still_makes_no_api_call_after_rubric_update(tmp_path):
+    csv_path = _make_csv(tmp_path, [_make_row('rrpool_probe')])
+    out = tmp_path / 'output'
+    run_script(['--input-csv', str(csv_path), '--output-dir', str(out), '--mode', 'dry_run'])
+    manifest = json.loads((out / 'run_manifest.json').read_text())
+    assert manifest['api_calls_made'] == 0
+
+
+# ---------------------------------------------------------------------------
 # 50/100 row boundary — real CSV
 # ---------------------------------------------------------------------------
 

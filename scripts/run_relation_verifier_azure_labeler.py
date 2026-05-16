@@ -69,29 +69,56 @@ _PROMPT_FIELDS = [
 
 _RUBRIC = """\
 Annotation rubric:
-- "ready": the trace and answer together visibly establish the target semantic relation.
-  There must be visible reasoning steps in the trace — a final-answer-only or opaque trace
-  is not sufficient.
-- "not_ready": trace or answer fails to establish the relation.  Mark the first_error_axis
-  to indicate why.
-- "uncertain": genuinely ambiguous; valid arguments exist for both ready and not_ready.
-- "gold_inconsistent": the trace/answer contradicts the gold answer in a way that makes
-  the relation status indeterminate.
-- If the trace is truncated before the final required reasoning step, mark not_ready and
-  use source_fact_missing or other depending on what is missing.
-- Do not infer hidden reasoning beyond the visible trace.
 
-first_error_axis values (use empty string "" for ready/uncertain/gold_inconsistent):
-  source_fact_missing   -- required intermediate fact not computed in trace
-  unit_scale_error      -- wrong unit, wrong scale, or wrong denominator
+WHAT "ready" MEANS — RELATION STRUCTURE, NOT ARITHMETIC CORRECTNESS:
+- "ready" means the visible trace uses the correct variables, source facts, units,
+  and operations to establish the target computational relation, regardless of whether
+  a single arithmetic calculation is slightly wrong.
+- A minor arithmetic slip (e.g. 5*7=35 when it should be 5*7=35, or rounding error)
+  does NOT make a row not_ready if the correct relation pathway is fully established.
+- A PAL/code trace that defines variables and the correct final expression
+  (e.g. `answer = a + b`) establishes the relation even if the evaluated numeric
+  value is not shown inline.
+- Do NOT flag arithmetic_error merely because the candidate answer seems numerically
+  off — only flag it when the arithmetic mistake structurally prevents the trace from
+  establishing the candidate answer.
+
+TRUNCATION RULE:
+- Do NOT mark source_fact_missing when only a trivial final aggregation
+  (a sum or subtraction of two already-computed visible values) is absent, and the
+  candidate answer matches that obvious aggregation.
+- Mark not_ready/source_fact_missing ONLY when an essential relation step, source
+  fact, unit conversion, or nontrivial intermediate computation is missing from the
+  visible trace.
+- If truncation hides a crucial step that is genuinely needed to establish the answer,
+  mark not_ready.
+
+HESITATION RULE — you must flag is_hesitant=true in these situations:
+- Deciding between ready and not_ready because of truncation ambiguity.
+- Deciding between ready and arithmetic_error because of a small arithmetic slip.
+- Deciding between source_fact_missing and ready due to an implicit final aggregation.
+- Uncertain which axis applies.
+- Any case where a careful annotator would pause before deciding.
+Do NOT report high confidence on every row — boundary cases exist in this dataset.
+
+LABEL DEFINITIONS:
+- "ready": trace visibly establishes the correct relation/computational pathway.
+  There must be visible reasoning steps — a final-answer-only or opaque trace is
+  not sufficient.
+- "not_ready": trace fails to establish the relation.  Mark the first_error_axis.
+- "uncertain": genuinely ambiguous; valid arguments exist for both ready and not_ready.
+- "gold_inconsistent": trace/answer contradicts the gold answer in a way that makes
+  the relation status indeterminate.
+
+first_error_axis values (use "" for ready/uncertain/gold_inconsistent):
+  source_fact_missing   -- essential intermediate computation absent from trace
+  unit_scale_error      -- wrong unit, wrong scale, wrong denominator, wrong rate base
   process_state_error   -- wrong state/time-point in a multi-step process
   relation_type_error   -- wrong relation type (rate vs total, ratio vs difference, etc.)
-  arithmetic_error      -- arithmetic calculation mistake
+  arithmetic_error      -- arithmetic mistake that structurally prevents establishing
+                           the candidate answer (not a minor slip in an otherwise correct trace)
   other                 -- error present but doesn't fit above axes
-  ""            -- no error (use for ready / uncertain / gold_inconsistent)
-
-Set is_hesitant=true whenever you are genuinely uncertain between ready/not_ready
-or between two error axes."""
+  ""                    -- no error (use for ready / uncertain / gold_inconsistent)"""
 
 _JSON_SCHEMA_EXAMPLE = """\
 {
@@ -103,6 +130,53 @@ _JSON_SCHEMA_EXAMPLE = """\
   "hesitation_reason": "brief reason or empty string",
   "rationale": "one or two sentence explanation"
 }"""
+
+_FEW_SHOT_EXAMPLES = """\
+=== FEW-SHOT EXAMPLES (synthetic, illustrate the rubric) ===
+
+--- EXAMPLE 1: ready — trivial final aggregation omitted but relation is established ---
+question: Alice earns $40 on Monday and $35 on Tuesday. How much total?
+candidate_answer: 75
+candidate_trace: monday = 40
+tuesday = 35
+answer = monday + tuesday
+print(answer)
+→ Label: ready  axis: ""  confidence: high  is_hesitant: false
+Reason: The trace defines both source values and the correct summation relation.
+The numeric result is not shown inline but the expression `monday + tuesday`
+fully establishes the total-earnings relation. Trivial aggregation omission does
+not prevent ready.
+
+--- EXAMPLE 2: ready — minor arithmetic slip, correct relation structure ---
+question: A bag has 8 red and 5 blue balls. How many total?
+candidate_answer: 14
+candidate_trace: total = 8 + 5 = 14
+→ Label: ready  axis: ""  confidence: medium  is_hesitant: true
+hesitation_reason: arithmetic slip (8+5=13, not 14) but relation structure correct
+Reason: The trace uses the correct addition relation over the correct operands.
+The arithmetic slip is minor and does not change the relation structure. Label ready
+per the convention; flag is_hesitant because of the arithmetic discrepancy.
+
+--- EXAMPLE 3: not_ready — essential computation entirely absent ---
+question: A worker earns $12/hr and works 8 hrs on Monday and 6 hrs on Tuesday.
+What is the total pay?
+candidate_answer: 168
+candidate_trace: Monday hours = 8. Tuesday hours = 6.
+→ Label: not_ready  axis: source_fact_missing  confidence: high  is_hesitant: false
+Reason: The trace never multiplies hours by the wage rate ($12/hr) for either day,
+so the pay relation is never established. Essential intermediate computations are
+fully absent.
+
+--- EXAMPLE 4: not_ready — wrong relation type (rate confused with total) ---
+question: A car travels 60 km/h for 3 hours. How far did it travel?
+candidate_answer: 20
+candidate_trace: distance = 60 / 3 = 20
+→ Label: not_ready  axis: relation_type_error  confidence: high  is_hesitant: false
+Reason: The trace divides speed by time instead of multiplying, using the wrong
+relation operator for distance = rate × time. This is a structural relation error,
+not a minor arithmetic slip.
+
+=== END OF EXAMPLES ==="""
 
 
 # ---------------------------------------------------------------------------
@@ -169,6 +243,8 @@ def build_prompt(row):
         "semantic relation requested by the question.",
         "",
         _RUBRIC,
+        "",
+        _FEW_SHOT_EXAMPLES,
         "",
         "=== INPUT ROW ===",
         f"row_id: {row.get('row_id', '')}",
