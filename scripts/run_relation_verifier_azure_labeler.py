@@ -483,7 +483,7 @@ def run_dry_run(args, all_rows, output_dir):
             'deployment': args.deployment or os.environ.get('AZURE_OPENAI_DEPLOYMENT', ''),
             'prompt': prompt,
             'temperature': args.temperature,
-            'max_tokens': 256,
+            'max_completion_tokens': 256,
         })
     write_jsonl(output_dir / 'azure_label_requests.jsonl', req_rows)
 
@@ -636,7 +636,7 @@ def run_api(args, all_rows, output_dir):
                 model=deployment,
                 messages=[{'role': 'user', 'content': prompt}],
                 temperature=args.temperature,
-                max_tokens=256,
+                max_completion_tokens=256,
             )
             response_text = response.choices[0].message.content or ''
             finish_reason = response.choices[0].finish_reason

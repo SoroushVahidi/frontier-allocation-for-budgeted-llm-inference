@@ -685,5 +685,144 @@ def test_real_csv_no_gold_leakage_in_requests(tmp_path):
             f'Notes leakage in row {req["row_id"]}')
 
 
+# ---------------------------------------------------------------------------
+# max_completion_tokens — gpt-5.x compatibility
+# ---------------------------------------------------------------------------
+
+def test_script_source_uses_max_completion_tokens_not_max_tokens():
+    """Script must use max_completion_tokens; gpt-5.4 rejects max_tokens."""
+    script_text = Path(SCRIPT).read_text()
+    assert 'max_completion_tokens' in script_text, (
+        'Script must use max_completion_tokens (required by gpt-5.4 and newer deployments)')
+    assert 'max_tokens=' not in script_text, (
+        'Script must not use max_tokens= kwarg (not supported by gpt-5.4)')
+    assert "'max_tokens'" not in script_text, (
+        "Script must not use 'max_tokens' as a dict key in the request payload")
+
+
+def test_dry_run_requests_record_max_completion_tokens(tmp_path):
+    """Dry-run JSONL requests must record max_completion_tokens, not max_tokens."""
+    csv_path = _make_csv(tmp_path, [_make_row('rrpool_001')])
+    out = tmp_path / 'output'
+    run_script(['--input-csv', str(csv_path), '--output-dir', str(out), '--mode', 'dry_run'])
+    reqs = read_jsonl(out / 'azure_label_requests.jsonl')
+    assert len(reqs) == 1
+    req = reqs[0]
+    assert 'max_completion_tokens' in req, (
+        'Request JSONL must contain max_completion_tokens field')
+    assert 'max_tokens' not in req, (
+        'Request JSONL must not contain max_tokens field')
+
+
+def _import_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('azure_labeler', SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_api_call_uses_max_completion_tokens(tmp_path):
+    """Live API call must pass max_completion_tokens= to chat.completions.create."""
+    from unittest.mock import MagicMock, patch
+
+    mod = _import_module()
+    csv_path = _make_csv(tmp_path, [_make_row('rrpool_mock')])
+    out = tmp_path / 'output'
+    out.mkdir()
+
+    mock_choice = MagicMock()
+    mock_choice.message.content = json.dumps({
+        'row_id': 'rrpool_mock',
+        'relation_ready_label': 'ready',
+        'first_error_axis': '',
+        'confidence': 'high',
+        'is_hesitant': False,
+        'hesitation_reason': '',
+        'rationale': 'Test.',
+    })
+    mock_choice.finish_reason = 'stop'
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+    mock_response.usage.prompt_tokens = 10
+    mock_response.usage.completion_tokens = 5
+
+    mock_create = MagicMock(return_value=mock_response)
+    mock_client = MagicMock()
+    mock_client.chat.completions.create = mock_create
+
+    env_override = {
+        'AZURE_OPENAI_API_KEY': 'fake_key',
+        'AZURE_OPENAI_ENDPOINT': 'https://fake.openai.azure.com/openai/v1',
+        'AZURE_OPENAI_DEPLOYMENT': 'gpt-4.1-mini',
+    }
+    with patch.dict(os.environ, env_override):
+        with patch('openai.OpenAI', return_value=mock_client):
+            args = mod.build_parser().parse_args([
+                '--input-csv', str(csv_path),
+                '--output-dir', str(out),
+                '--mode', 'api',
+                '--allow-api',
+            ])
+            mod.run_api(args, mod.read_csv_rows(csv_path), out)
+
+    assert mock_create.called, 'chat.completions.create was never called'
+    call_kwargs = mock_create.call_args.kwargs
+    assert 'max_completion_tokens' in call_kwargs, (
+        f'API call must use max_completion_tokens. Got kwargs: {list(call_kwargs)}')
+    assert 'max_tokens' not in call_kwargs, (
+        f'API call must NOT use max_tokens. Got kwargs: {list(call_kwargs)}')
+
+
+def test_api_call_passes_model_deployment(tmp_path):
+    """API call must pass the deployment name as the model= parameter."""
+    from unittest.mock import MagicMock, patch
+
+    mod = _import_module()
+    csv_path = _make_csv(tmp_path, [_make_row('rrpool_mock')])
+    out = tmp_path / 'output'
+    out.mkdir()
+
+    mock_choice = MagicMock()
+    mock_choice.message.content = json.dumps({
+        'row_id': 'rrpool_mock',
+        'relation_ready_label': 'ready',
+        'first_error_axis': '',
+        'confidence': 'high',
+        'is_hesitant': False,
+        'hesitation_reason': '',
+        'rationale': 'Test.',
+    })
+    mock_choice.finish_reason = 'stop'
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+    mock_response.usage.prompt_tokens = 10
+    mock_response.usage.completion_tokens = 5
+
+    mock_create = MagicMock(return_value=mock_response)
+    mock_client = MagicMock()
+    mock_client.chat.completions.create = mock_create
+
+    env_override = {
+        'AZURE_OPENAI_API_KEY': 'fake_key',
+        'AZURE_OPENAI_ENDPOINT': 'https://fake.openai.azure.com/openai/v1',
+        'AZURE_OPENAI_DEPLOYMENT': 'gpt-5.4',
+    }
+    with patch.dict(os.environ, env_override):
+        with patch('openai.OpenAI', return_value=mock_client):
+            args = mod.build_parser().parse_args([
+                '--input-csv', str(csv_path),
+                '--output-dir', str(out),
+                '--mode', 'api',
+                '--allow-api',
+                '--deployment', 'gpt-5.4',
+            ])
+            mod.run_api(args, mod.read_csv_rows(csv_path), out)
+
+    call_kwargs = mock_create.call_args.kwargs
+    assert call_kwargs.get('model') == 'gpt-5.4', (
+        f'model= must be the deployment name. Got: {call_kwargs.get("model")!r}')
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
