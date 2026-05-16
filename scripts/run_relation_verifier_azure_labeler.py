@@ -1,0 +1,670 @@
+#!/usr/bin/env python3
+"""Azure OpenAI assisted labeler for RelationReady candidate rows.
+
+Modes
+-----
+dry_run   -- validate rows and build prompt requests; no network calls
+api       -- submit real Azure OpenAI requests (requires --allow-api)
+
+Reads an input CSV produced by export_relation_verifier_positive_candidate_batch.py
+and labels unlabeled rows using the configured Azure OpenAI deployment.
+
+No openai SDK imported at module level.  No API calls unless --allow-api is set.
+Gold metadata (is_correct_offline_metadata) and manual labels/notes are
+never included in prompts.
+"""
+
+import argparse
+import csv
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+RELATION_LABELS = frozenset({'ready', 'not_ready', 'uncertain', 'gold_inconsistent'})
+ERROR_AXES = frozenset({
+    'source_fact_missing', 'unit_scale_error', 'process_state_error',
+    'relation_type_error', 'arithmetic_error', 'other', '',
+})
+CONFIDENCE_VALUES = frozenset({'high', 'medium', 'low'})
+
+# Fields that must never appear in a prompt (gold / label leakage)
+_EXCLUDED_FIELDS = frozenset({
+    'is_correct_offline_metadata',
+    'relation_ready_label_manual',
+    'first_error_axis_manual',
+    'notes_manual',
+})
+
+# Leakage detector terms (lower-cased at check time)
+_LEAKAGE_TERMS = [
+    'gold_answer_metadata_only',
+    'is_correct_offline_metadata',
+    'relation_ready_label_manual',
+    'first_error_axis_manual',
+    'notes_manual',
+    'likely not_ready',
+    'likely ready',
+    'likely uncertain',
+    'ready candidate',
+    'not_ready candidate',
+    'uncertain candidate',
+    'good judge should label',
+]
+
+# Prompt-allowed fields (explicitly whitelisted)
+_PROMPT_FIELDS = [
+    'row_id',
+    'question',
+    'candidate_answer',
+    'candidate_trace_short',
+    'trace_quality_flags',
+    'candidate_source',
+]
+
+_RUBRIC = """\
+Annotation rubric:
+- "ready": the trace and answer together visibly establish the target semantic relation.
+  There must be visible reasoning steps in the trace — a final-answer-only or opaque trace
+  is not sufficient.
+- "not_ready": trace or answer fails to establish the relation.  Mark the first_error_axis
+  to indicate why.
+- "uncertain": genuinely ambiguous; valid arguments exist for both ready and not_ready.
+- "gold_inconsistent": the trace/answer contradicts the gold answer in a way that makes
+  the relation status indeterminate.
+- If the trace is truncated before the final required reasoning step, mark not_ready and
+  use source_fact_missing or other depending on what is missing.
+- Do not infer hidden reasoning beyond the visible trace.
+
+first_error_axis values (use empty string "" for ready/uncertain/gold_inconsistent):
+  source_fact_missing   -- required intermediate fact not computed in trace
+  unit_scale_error      -- wrong unit, wrong scale, or wrong denominator
+  process_state_error   -- wrong state/time-point in a multi-step process
+  relation_type_error   -- wrong relation type (rate vs total, ratio vs difference, etc.)
+  arithmetic_error      -- arithmetic calculation mistake
+  other                 -- error present but doesn't fit above axes
+  ""            -- no error (use for ready / uncertain / gold_inconsistent)
+
+Set is_hesitant=true whenever you are genuinely uncertain between ready/not_ready
+or between two error axes."""
+
+_JSON_SCHEMA_EXAMPLE = """\
+{
+  "row_id": "<same as input>",
+  "relation_ready_label": "ready|not_ready|uncertain|gold_inconsistent",
+  "first_error_axis": "source_fact_missing|unit_scale_error|process_state_error|relation_type_error|arithmetic_error|other|",
+  "confidence": "high|medium|low",
+  "is_hesitant": true,
+  "hesitation_reason": "brief reason or empty string",
+  "rationale": "one or two sentence explanation"
+}"""
+
+
+# ---------------------------------------------------------------------------
+# I/O helpers
+# ---------------------------------------------------------------------------
+
+def read_csv_rows(path):
+    with Path(path).open(newline='', encoding='utf-8') as f:
+        return list(csv.DictReader(f))
+
+
+def write_jsonl(path, rows):
+    with Path(path).open('w', encoding='utf-8') as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + '\n')
+
+
+def append_jsonl(path, row):
+    with Path(path).open('a', encoding='utf-8') as f:
+        f.write(json.dumps(row, ensure_ascii=False) + '\n')
+
+
+def read_jsonl(path):
+    rows = []
+    p = Path(path)
+    if not p.exists():
+        return rows
+    with p.open(encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                rows.append(json.loads(line))
+    return rows
+
+
+# ---------------------------------------------------------------------------
+# Leakage / validation
+# ---------------------------------------------------------------------------
+
+def scan_leakage(text):
+    lower = text.lower()
+    return [term for term in _LEAKAGE_TERMS if term.lower() in lower]
+
+
+def validate_prompt_text(prompt_text):
+    """Return list of leakage terms found; empty list is clean."""
+    return scan_leakage(prompt_text)
+
+
+# ---------------------------------------------------------------------------
+# Prompt builder
+# ---------------------------------------------------------------------------
+
+def build_prompt(row):
+    """Build the Azure prompt for a single CSV row.
+
+    Only uses _PROMPT_FIELDS.  Excluded fields are never touched.
+    Returns the prompt string.
+    """
+    parts = [
+        "You are a precise annotation judge for a math-reasoning dataset.",
+        "",
+        "Evaluate whether the candidate trace and answer correctly establish the "
+        "semantic relation requested by the question.",
+        "",
+        _RUBRIC,
+        "",
+        "=== INPUT ROW ===",
+        f"row_id: {row.get('row_id', '')}",
+        f"question: {row.get('question', '')}",
+        f"candidate_answer: {row.get('candidate_answer', '')}",
+        "",
+        "candidate_trace:",
+        row.get('candidate_trace_short', '').strip(),
+        "",
+        f"trace_quality_flags: {row.get('trace_quality_flags', '')}",
+        f"candidate_source: {row.get('candidate_source', '')}",
+        "",
+        "=== TASK ===",
+        "Respond with ONLY a JSON object matching this exact schema:",
+        _JSON_SCHEMA_EXAMPLE,
+        "",
+        "Do not include any text outside the JSON object.",
+    ]
+    return '\n'.join(parts)
+
+
+# ---------------------------------------------------------------------------
+# Row selection
+# ---------------------------------------------------------------------------
+
+def select_rows(all_rows, start_index, max_rows, row_ids_set, include_labeled):
+    """Return the selected subset of rows.
+
+    Priority: if row_ids_set is non-empty it takes precedence over start_index.
+    """
+    if row_ids_set:
+        selected = [r for r in all_rows if r.get('row_id', '') in row_ids_set]
+    else:
+        selected = all_rows[start_index:]
+        if max_rows is not None:
+            selected = selected[:max_rows]
+
+    if not include_labeled:
+        selected = [r for r in selected if not r.get('relation_ready_label_manual', '').strip()]
+
+    return selected
+
+
+# ---------------------------------------------------------------------------
+# Response normalization
+# ---------------------------------------------------------------------------
+
+def normalize_response(row_id, deployment, response_text, raw_finish_reason):
+    """Parse and validate an Azure response.
+
+    Returns (normalized_dict, error_string).  error_string is None on success.
+    """
+    try:
+        parsed = json.loads(response_text)
+    except json.JSONDecodeError as exc:
+        # Try extracting JSON from surrounding text
+        import re
+        m = re.search(r'\{.*\}', response_text, re.DOTALL)
+        if m:
+            try:
+                parsed = json.loads(m.group())
+            except json.JSONDecodeError:
+                return None, f'json_parse_error:{exc}'
+        else:
+            return None, f'json_parse_error:{exc}'
+
+    label = parsed.get('relation_ready_label', '')
+    axis = parsed.get('first_error_axis', '')
+    confidence = parsed.get('confidence', '')
+    is_hesitant = bool(parsed.get('is_hesitant', False))
+    hesitation_reason = str(parsed.get('hesitation_reason', ''))
+    rationale = str(parsed.get('rationale', ''))
+    returned_row_id = str(parsed.get('row_id', ''))
+
+    issues = []
+    if label not in RELATION_LABELS:
+        issues.append(f'invalid_label:{label!r}')
+    if axis not in ERROR_AXES:
+        issues.append(f'invalid_axis:{axis!r}')
+    if confidence not in CONFIDENCE_VALUES:
+        issues.append(f'invalid_confidence:{confidence!r}')
+    if returned_row_id and returned_row_id != row_id:
+        issues.append(f'row_id_mismatch:expected={row_id!r} got={returned_row_id!r}')
+
+    if issues:
+        return None, f'validation_errors:{";".join(issues)}'
+
+    normalized = {
+        'row_id': row_id,
+        'judge_name': f'azure:{deployment}',
+        'relation_ready_label': label,
+        'first_error_axis': axis,
+        'confidence': confidence,
+        'is_hesitant': is_hesitant,
+        'hesitation_reason': hesitation_reason,
+        'rationale': rationale,
+        'finish_reason': raw_finish_reason,
+    }
+    return normalized, None
+
+
+# ---------------------------------------------------------------------------
+# Dry-run mode
+# ---------------------------------------------------------------------------
+
+def run_dry_run(args, all_rows, output_dir):
+    selected = select_rows(
+        all_rows,
+        start_index=args.start_index,
+        max_rows=args.max_rows,
+        row_ids_set=set(args.row_ids.split(',')) if args.row_ids else set(),
+        include_labeled=args.include_labeled,
+    )
+
+    requests = []
+    leakage_count = 0
+    labeled_skipped = sum(
+        1 for r in (all_rows[args.start_index:] if not args.row_ids else
+                    [r for r in all_rows if r.get('row_id', '') in
+                     set(args.row_ids.split(','))])
+        if r.get('relation_ready_label_manual', '').strip()
+    ) if not args.include_labeled else 0
+
+    for row in selected:
+        prompt = build_prompt(row)
+        leakage = validate_prompt_text(prompt)
+        if leakage:
+            leakage_count += 1
+
+        req = {
+            'row_id': row.get('row_id', ''),
+            'prompt_length': len(prompt),
+            'leakage_terms': leakage,
+            'has_question': bool(row.get('question', '').strip()),
+            'has_trace': bool(row.get('candidate_trace_short', '').strip()),
+        }
+        requests.append(req)
+
+    # Write requests JSONL
+    req_rows = []
+    for row in selected:
+        prompt = build_prompt(row)
+        req_rows.append({
+            'row_id': row.get('row_id', ''),
+            'deployment': args.deployment or os.environ.get('AZURE_OPENAI_DEPLOYMENT', ''),
+            'prompt': prompt,
+            'temperature': args.temperature,
+            'max_tokens': 256,
+        })
+    write_jsonl(output_dir / 'azure_label_requests.jsonl', req_rows)
+
+    # Manifest
+    manifest = {
+        'mode': 'dry_run',
+        'timestamp': datetime.now(timezone.utc).isoformat(),
+        'input_csv': str(args.input_csv),
+        'total_rows_in_csv': len(all_rows),
+        'start_index': args.start_index,
+        'max_rows': args.max_rows,
+        'row_ids_filter': args.row_ids or None,
+        'include_labeled': args.include_labeled,
+        'rows_selected': len(selected),
+        'rows_with_leakage': leakage_count,
+        'labeled_rows_skipped': labeled_skipped,
+        'deployment': args.deployment or os.environ.get('AZURE_OPENAI_DEPLOYMENT', ''),
+        'api_calls_made': 0,
+        'gold_metadata_excluded': True,
+        'manual_labels_excluded': True,
+    }
+    with (output_dir / 'run_manifest.json').open('w') as f:
+        json.dump(manifest, f, indent=2)
+
+    # Summary report
+    lines = [
+        '# Azure RelationReady Labeler — Dry-Run Summary',
+        '',
+        f'**Mode:** dry_run',
+        f'**Input CSV:** `{args.input_csv}`',
+        f'**Total rows in CSV:** {len(all_rows)}',
+        f'**Start index:** {args.start_index}',
+        f'**Max rows:** {args.max_rows if args.max_rows is not None else "all"}',
+        f'**Row IDs filter:** {args.row_ids or "(none)"}',
+        f'**Include labeled:** {args.include_labeled}',
+        f'**Rows selected:** {len(selected)}',
+        f'**Rows with leakage:** {leakage_count}',
+        '',
+        '## Safety',
+        '',
+        '- No API calls made (dry_run mode)',
+        '- No Azure SDK imported or called',
+        '- Gold metadata (`is_correct_offline_metadata`) excluded from all prompts',
+        '- Manual labels and notes excluded from all prompts',
+        '- No dataset rows sent to any external service',
+        '',
+    ]
+    if leakage_count > 0:
+        lines += [
+            '## WARNING: LEAKAGE DETECTED',
+            '',
+            f'{leakage_count} row(s) have leakage terms in their prompts.',
+            'Review `azure_label_requests.jsonl` before proceeding.',
+            '',
+        ]
+    else:
+        lines += ['## Leakage check: CLEAN — no leakage terms found in any prompt', '']
+
+    lines += [
+        '## Output files',
+        '',
+        '- `azure_label_requests.jsonl` — prompt requests',
+        '- `run_manifest.json` — run parameters',
+        '- `label_summary.md` — this file',
+        '',
+    ]
+
+    with (output_dir / 'label_summary.md').open('w') as f:
+        f.write('\n'.join(lines))
+
+    print(f'[dry_run] {len(selected)} rows selected, {leakage_count} with leakage.')
+    print(f'[dry_run] Outputs: {output_dir}')
+    if leakage_count:
+        print(f'[dry_run] WARNING: {leakage_count} rows have prompt leakage — check before API run.')
+
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# API mode
+# ---------------------------------------------------------------------------
+
+def run_api(args, all_rows, output_dir):
+    # Validate env vars before importing SDK
+    api_key = os.environ.get('AZURE_OPENAI_API_KEY', '')
+    endpoint = os.environ.get('AZURE_OPENAI_ENDPOINT', '')
+    if not api_key:
+        print('ERROR: AZURE_OPENAI_API_KEY is not set.', file=sys.stderr)
+        return 1
+    if not endpoint:
+        print('ERROR: AZURE_OPENAI_ENDPOINT is not set.', file=sys.stderr)
+        return 1
+
+    # Late import — only in api mode
+    try:
+        from openai import OpenAI  # noqa: PLC0415
+    except ImportError:
+        print('ERROR: openai package not installed. Run: pip install openai', file=sys.stderr)
+        return 1
+
+    client = OpenAI(api_key=api_key, base_url=endpoint)
+    deployment = args.deployment or os.environ.get('AZURE_OPENAI_DEPLOYMENT', '')
+    if not deployment:
+        print('ERROR: AZURE_OPENAI_DEPLOYMENT is not set and --deployment not provided.',
+              file=sys.stderr)
+        return 1
+
+    selected = select_rows(
+        all_rows,
+        start_index=args.start_index,
+        max_rows=args.max_rows,
+        row_ids_set=set(args.row_ids.split(',')) if args.row_ids else set(),
+        include_labeled=args.include_labeled,
+    )
+
+    # Resume: load already-normalized row_ids
+    norm_path = output_dir / 'azure_label_responses_normalized.jsonl'
+    raw_path = output_dir / 'azure_label_responses_raw.jsonl'
+    hesitant_path = output_dir / 'hesitant_cases.jsonl'
+
+    done_ids = set()
+    if args.resume:
+        existing = read_jsonl(norm_path)
+        done_ids = {r['row_id'] for r in existing}
+        if done_ids:
+            print(f'[resume] Skipping {len(done_ids)} already-normalized rows.')
+
+    pending = [r for r in selected if r.get('row_id', '') not in done_ids]
+    print(f'[api] {len(pending)} rows to label (of {len(selected)} selected).')
+
+    success_count = 0
+    error_count = 0
+    hesitant_cases = []
+
+    for i, row in enumerate(pending):
+        row_id = row.get('row_id', f'unknown_{i}')
+        prompt = build_prompt(row)
+
+        # Leakage guard
+        leakage = validate_prompt_text(prompt)
+        if leakage:
+            print(f'[api] ABORT row {row_id}: prompt leakage detected: {leakage}',
+                  file=sys.stderr)
+            error_count += 1
+            continue
+
+        print(f'[api] ({i+1}/{len(pending)}) row_id={row_id}', end=' ', flush=True)
+        try:
+            response = client.chat.completions.create(
+                model=deployment,
+                messages=[{'role': 'user', 'content': prompt}],
+                temperature=args.temperature,
+                max_tokens=256,
+            )
+            response_text = response.choices[0].message.content or ''
+            finish_reason = response.choices[0].finish_reason
+
+            # Save raw
+            raw_record = {
+                'row_id': row_id,
+                'deployment': deployment,
+                'response_text': response_text,
+                'finish_reason': finish_reason,
+                'prompt_tokens': response.usage.prompt_tokens,
+                'completion_tokens': response.usage.completion_tokens,
+            }
+            append_jsonl(raw_path, raw_record)
+
+            # Normalize
+            normalized, err = normalize_response(row_id, deployment, response_text, finish_reason)
+            if err:
+                print(f'NORM_ERROR: {err}')
+                error_count += 1
+            else:
+                append_jsonl(norm_path, normalized)
+                success_count += 1
+                print(f'label={normalized["relation_ready_label"]} '
+                      f'confidence={normalized["confidence"]}')
+                if normalized['is_hesitant']:
+                    hesitant_cases.append({
+                        **normalized,
+                        'question': row.get('question', ''),
+                        'candidate_answer': row.get('candidate_answer', ''),
+                    })
+                    append_jsonl(hesitant_path, hesitant_cases[-1])
+
+        except Exception as exc:  # noqa: BLE001
+            print(f'API_ERROR: {type(exc).__name__}: {exc}')
+            error_count += 1
+
+    # Write hesitant markdown
+    _write_hesitant_md(output_dir, hesitant_cases)
+
+    # Write label summary
+    all_normalized = read_jsonl(norm_path)
+    _write_label_summary(output_dir, args, all_normalized, success_count, error_count, deployment)
+
+    # Write manifest
+    manifest = {
+        'mode': 'api',
+        'timestamp': datetime.now(timezone.utc).isoformat(),
+        'input_csv': str(args.input_csv),
+        'total_rows_in_csv': len(all_rows),
+        'start_index': args.start_index,
+        'max_rows': args.max_rows,
+        'row_ids_filter': args.row_ids or None,
+        'include_labeled': args.include_labeled,
+        'rows_selected': len(selected),
+        'rows_labeled_this_run': success_count,
+        'rows_errored_this_run': error_count,
+        'rows_resumed': len(done_ids),
+        'deployment': deployment,
+        'temperature': args.temperature,
+        'api_calls_made': success_count + error_count,
+        'gold_metadata_excluded': True,
+        'manual_labels_excluded': True,
+    }
+    with (output_dir / 'run_manifest.json').open('w') as f:
+        json.dump(manifest, f, indent=2)
+
+    print(f'\n[api] Done. success={success_count} errors={error_count} '
+          f'hesitant={len(hesitant_cases)}')
+    print(f'[api] Outputs: {output_dir}')
+    return 0 if error_count == 0 else 1
+
+
+def _write_hesitant_md(output_dir, hesitant_cases):
+    lines = [
+        '# Hesitant Cases — Azure RelationReady Labeler',
+        '',
+        f'Total hesitant: {len(hesitant_cases)}',
+        '',
+    ]
+    for case in hesitant_cases:
+        lines += [
+            f'## row_id: {case["row_id"]}',
+            '',
+            f'**Label:** {case["relation_ready_label"]}  '
+            f'**Confidence:** {case["confidence"]}  '
+            f'**Axis:** {case["first_error_axis"]}',
+            '',
+            f'**Question:** {case.get("question", "")}',
+            '',
+            f'**Answer:** {case.get("candidate_answer", "")}',
+            '',
+            f'**Hesitation reason:** {case["hesitation_reason"]}',
+            '',
+            f'**Rationale:** {case["rationale"]}',
+            '',
+            '---',
+            '',
+        ]
+    with (output_dir / 'hesitant_cases.md').open('w') as f:
+        f.write('\n'.join(lines))
+
+
+def _write_label_summary(output_dir, args, all_normalized, success_count, error_count, deployment):
+    from collections import Counter
+    label_counts = Counter(r['relation_ready_label'] for r in all_normalized)
+    axis_counts = Counter(r['first_error_axis'] for r in all_normalized if r['first_error_axis'])
+    hesitant_count = sum(1 for r in all_normalized if r.get('is_hesitant'))
+
+    lines = [
+        '# Azure RelationReady Labeler — Label Summary',
+        '',
+        f'**Deployment:** {deployment}',
+        f'**Input CSV:** `{args.input_csv}`',
+        f'**This run:** success={success_count} errors={error_count}',
+        f'**Total normalized rows:** {len(all_normalized)}',
+        '',
+        '## Label distribution',
+        '',
+    ]
+    for label in ('ready', 'not_ready', 'uncertain', 'gold_inconsistent'):
+        lines.append(f'- {label}: {label_counts.get(label, 0)}')
+    lines += [
+        '',
+        '## First-error-axis distribution (not_ready rows)',
+        '',
+    ]
+    for axis, cnt in axis_counts.most_common():
+        lines.append(f'- {axis}: {cnt}')
+    lines += [
+        '',
+        f'## Hesitant cases: {hesitant_count}',
+        '',
+        '## Safety',
+        '',
+        '- Gold metadata excluded from all prompts',
+        '- Manual labels and notes excluded from all prompts',
+        '',
+    ]
+    with (output_dir / 'label_summary.md').open('w') as f:
+        f.write('\n'.join(lines))
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+def build_parser():
+    p = argparse.ArgumentParser(description='Azure OpenAI assisted labeler for RelationReady rows.')
+    p.add_argument('--input-csv', required=True,
+                   help='Path to positive_candidate_batch.csv')
+    p.add_argument('--output-dir', required=True,
+                   help='Directory to write outputs into (created if absent)')
+    p.add_argument('--start-index', type=int, default=0,
+                   help='First row index to process (default: 0)')
+    p.add_argument('--max-rows', type=int, default=None,
+                   help='Maximum number of rows to process')
+    p.add_argument('--row-ids', default=None,
+                   help='Comma-separated row_ids to process (takes precedence over start-index)')
+    p.add_argument('--mode', choices=['dry_run', 'api'], default='dry_run',
+                   help='dry_run: no API calls; api: live Azure calls')
+    p.add_argument('--allow-api', action='store_true',
+                   help='Required for api mode; prevents accidental live calls')
+    p.add_argument('--deployment', default=None,
+                   help='Azure deployment name (default: AZURE_OPENAI_DEPLOYMENT env var)')
+    p.add_argument('--temperature', type=float, default=0.0,
+                   help='Sampling temperature (default: 0)')
+    p.add_argument('--resume', action='store_true',
+                   help='Skip rows already present in normalized output (api mode only)')
+    p.add_argument('--include-labeled', action='store_true',
+                   help='Include rows that already have relation_ready_label_manual set')
+    return p
+
+
+def main(argv=None):
+    args = build_parser().parse_args(argv)
+
+    input_path = Path(args.input_csv)
+    if not input_path.exists():
+        print(f'ERROR: input CSV not found: {input_path}', file=sys.stderr)
+        return 1
+
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    all_rows = read_csv_rows(input_path)
+
+    if args.mode == 'api':
+        if not args.allow_api:
+            print('ERROR: api mode requires --allow-api flag.', file=sys.stderr)
+            return 1
+        return run_api(args, all_rows, output_dir)
+
+    return run_dry_run(args, all_rows, output_dir)
+
+
+if __name__ == '__main__':
+    sys.exit(main())
