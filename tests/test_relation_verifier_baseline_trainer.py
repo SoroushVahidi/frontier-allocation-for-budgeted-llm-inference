@@ -193,3 +193,282 @@ def test_missing_dataset_returns_error():
             ]
         )
         assert ret != 0
+
+
+# ---------------------------------------------------------------------------
+# Fixture: medium dataset with repeated problem_ids for grouped CV tests
+# ---------------------------------------------------------------------------
+
+# 40 rows, 10 problem groups of 4, balanced classes within each group
+MEDIUM_ROWS = []
+for pid in range(10):
+    for case in range(4):
+        row_idx = pid * 4 + case
+        MEDIUM_ROWS.append({
+            "row_id": f"m{row_idx}",
+            "problem_id": f"mpid{pid}",
+            "case_id": f"mcid{row_idx}",
+            "split_group_id": "train",
+            "feature_text": (
+                f"question: How many left after removing {row_idx} from {100 + row_idx}? "
+                f"| candidate_answer: {100} | candidate_source: direct"
+            ),
+            "structured_features": {
+                "question": f"How many left? {row_idx}",
+                "candidate_answer": str(100),
+            },
+            "label": row_idx % 2,
+            "auxiliary_axis": "",
+            "provenance": "fixture",
+        })
+
+
+# ---------------------------------------------------------------------------
+# Confusion matrix
+# ---------------------------------------------------------------------------
+
+def test_train_metrics_contain_confusion_matrix():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+        ])
+        metrics = json.loads((outdir / "metrics.json").read_text())
+        assert "confusion_matrix" in metrics, "metrics.json must contain confusion_matrix"
+        cm_info = metrics["confusion_matrix"]
+        assert "matrix" in cm_info
+        mat = cm_info["matrix"]
+        assert len(mat) == 2 and len(mat[0]) == 2, "Confusion matrix must be 2×2"
+        assert "label_names" in cm_info
+        assert cm_info["label_names"] == ["not_ready", "ready"]
+
+
+def test_train_report_contains_confusion_matrix_table():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+        ])
+        report = (outdir / "training_report.md").read_text()
+        assert "confusion matrix" in report.lower() or "Confusion matrix" in report
+
+
+# ---------------------------------------------------------------------------
+# PR-AUC
+# ---------------------------------------------------------------------------
+
+def test_train_metrics_contain_pr_auc():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+        ])
+        metrics = json.loads((outdir / "metrics.json").read_text())
+        assert "pr_auc_ready" in metrics, "metrics.json must contain pr_auc_ready"
+        pr_auc = metrics["pr_auc_ready"]
+        assert pr_auc is not None, "pr_auc_ready must not be None when predict_proba is available"
+        assert 0.0 <= pr_auc <= 1.0, f"PR-AUC must be in [0, 1], got {pr_auc}"
+
+
+def test_train_report_contains_pr_auc():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+        ])
+        report = (outdir / "training_report.md").read_text()
+        assert "PR-AUC" in report or "pr_auc" in report.lower()
+
+
+# ---------------------------------------------------------------------------
+# Threshold sweep
+# ---------------------------------------------------------------------------
+
+def test_threshold_sweep_returns_threshold_and_metrics():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+            "--threshold-sweep",
+        ])
+        metrics = json.loads((outdir / "metrics.json").read_text())
+        ts = metrics.get("threshold_sweep")
+        assert ts is not None, "threshold_sweep must be present when --threshold-sweep is passed"
+        assert "best_threshold" in ts
+        assert "best_ready_f1" in ts
+        assert "best_macro_f1" in ts
+        assert "sweep" in ts
+        assert isinstance(ts["sweep"], list) and len(ts["sweep"]) > 0
+        assert 0.0 < ts["best_threshold"] < 1.0
+
+
+def test_threshold_sweep_absent_without_flag():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+        ])
+        metrics = json.loads((outdir / "metrics.json").read_text())
+        assert metrics.get("threshold_sweep") is None
+
+
+def test_threshold_sweep_report_contains_best_threshold():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+            "--threshold-sweep",
+        ])
+        report = (outdir / "training_report.md").read_text()
+        assert "threshold" in report.lower()
+        assert "post-hoc" in report.lower() or "diagnostic" in report.lower(), (
+            "Report must note that sweep is post-hoc/diagnostic")
+
+
+# ---------------------------------------------------------------------------
+# Grouped CV
+# ---------------------------------------------------------------------------
+
+def test_grouped_cv_uses_problem_id():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        ret = mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+            "--grouped-cv",
+        ])
+        assert ret == 0
+        metrics = json.loads((outdir / "metrics.json").read_text())
+        assert metrics.get("grouped_cv") is True
+        assert metrics.get("group_field") == "problem_id", (
+            f"Expected group_field=problem_id, got {metrics.get('group_field')!r}")
+
+
+def test_grouped_cv_fallback_when_no_group_field():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    rows_no_pid = [
+        {k: v for k, v in r.items() if k not in ("problem_id", "case_id")}
+        for r in MEDIUM_ROWS
+    ]
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(rows_no_pid, jpath)
+        import io
+        captured = io.StringIO()
+        import warnings as _warnings
+        with _warnings.catch_warnings(record=True) as w:
+            _warnings.simplefilter("always")
+            ret = mod.main([
+                "--dataset-jsonl", str(jpath),
+                "--output-dir", str(outdir),
+                "--mode", "train",
+                "--seed", "42",
+                "--grouped-cv",
+            ])
+        assert ret == 0
+        # Warning must have been issued or metrics must note the fallback
+        metrics = json.loads((outdir / "metrics.json").read_text())
+        # group_field should be None (fell back to standard CV)
+        assert metrics.get("group_field") is None
+        assert metrics.get("grouped_cv_warning") is not None, (
+            "grouped_cv_warning must be set when no group field found")
+
+
+def test_dry_run_no_training_with_new_flags():
+    """dry_run must still produce no model when new flags are passed."""
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        ret = mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "dry_run",
+            "--grouped-cv",
+            "--threshold-sweep",
+        ])
+        assert ret == 0
+        assert not (outdir / "model.joblib").exists(), "dry_run must not save a model"
+
+
+def test_predictions_contain_proba_ready():
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(MEDIUM_ROWS, jpath)
+        mod.main([
+            "--dataset-jsonl", str(jpath),
+            "--output-dir", str(outdir),
+            "--mode", "train",
+            "--seed", "42",
+        ])
+        preds = []
+        with open(outdir / "predictions.jsonl") as f:
+            for line in f:
+                if line.strip():
+                    preds.append(json.loads(line))
+        assert len(preds) == len(MEDIUM_ROWS)
+        for p in preds:
+            assert "proba_ready" in p, "Each prediction must include proba_ready"
+            if p["proba_ready"] is not None:
+                assert 0.0 <= p["proba_ready"] <= 1.0

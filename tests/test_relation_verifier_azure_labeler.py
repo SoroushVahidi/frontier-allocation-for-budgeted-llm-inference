@@ -661,10 +661,22 @@ _REAL_CSV = Path(
 
 
 @pytest.mark.skipif(not _REAL_CSV.exists(), reason='Real CSV not available')
-def test_real_csv_rows_50_99_selects_50_unlabeled(tmp_path):
+def test_real_csv_rows_50_99_all_labeled_after_patch(tmp_path):
+    # Rows 50-99 were patched with Azure-accepted labels; 0 unlabeled remain.
     out = tmp_path / 'output'
     run_script(['--input-csv', str(_REAL_CSV), '--output-dir', str(out),
                 '--mode', 'dry_run', '--start-index', '50', '--max-rows', '50'])
+    reqs = read_jsonl(out / 'azure_label_requests.jsonl')
+    assert len(reqs) == 0, 'All rows 50-99 should be labeled; 0 unlabeled expected'
+
+
+@pytest.mark.skipif(not _REAL_CSV.exists(), reason='Real CSV not available')
+def test_real_csv_rows_50_99_include_labeled_selects_50(tmp_path):
+    # With --include-labeled, all 50 rows 50-99 should be returned.
+    out = tmp_path / 'output'
+    run_script(['--input-csv', str(_REAL_CSV), '--output-dir', str(out),
+                '--mode', 'dry_run', '--start-index', '50', '--max-rows', '50',
+                '--include-labeled'])
     reqs = read_jsonl(out / 'azure_label_requests.jsonl')
     assert len(reqs) == 50
 
