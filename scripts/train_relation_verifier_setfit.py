@@ -223,14 +223,17 @@ def _train_fold(
 ) -> tuple[list[float], list[int]]:
     """Fine-tune a SetFit model on train fold, return (scores, preds) for val fold."""
     import torch
+    from sentence_transformers import SentenceTransformer
     from setfit import SetFitModel, Trainer, TrainingArguments
 
     torch.manual_seed(seed + fold_idx)
 
-    model = SetFitModel.from_pretrained(model_name)
+    # Load via SentenceTransformer directly to avoid SetFitModel.from_pretrained
+    # fetching config_setfit.json (absent on vanilla ST model repos, raises 404).
+    st_body = SentenceTransformer(model_name, device=device)
     if max_seq_length is not None:
-        model.model_body.max_seq_length = max_seq_length
-    model.model_body.to(device)
+        st_body.max_seq_length = max_seq_length
+    model = SetFitModel(model_body=st_body)
 
     train_ds = _make_hf_dataset(train_texts, train_labels)
 
