@@ -165,7 +165,59 @@ These apply at all times and must be maintained by future agents:
 
 ---
 
-## 6. Current Problems / Blockers
+## 6. Provider Consistency Policy
+
+These rules govern how Cohere, Mistral, and Azure/OpenAI are used across different
+parts of the project, and what may be claimed in any paper or report.
+
+### 6a. Main method comparisons
+
+- Use the **same provider** for all methods compared within a single experiment.
+- Existing 100-case comparison evidence is **Cohere-based** (`run_relation_verifier_cohere_judge_adapter.py`, `relation100` subset).
+- Claims about `best` vs `external_l1_max` must not mix Cohere results for one method
+  with Azure/OpenAI results for another.
+- If Azure/OpenAI is used to replicate a comparison, it must be reported as a **separate
+  replication experiment**, not merged with the existing Cohere evidence.
+
+### 6b. Verifier labeling
+
+- Azure/OpenAI may be used as an **annotation assistant** or **adjudication helper**
+  (e.g., `run_relation_verifier_azure_labeler.py`).
+- Azure/OpenAI labels are **preliminary** unless explicitly human-reviewed and accepted.
+- **Final training labels must be human-reviewed/accepted** — automated labels are
+  draft inputs to human judgment, not ground truth.
+- Gold answers must never be used as model input features or included in provider prompts
+  (see §5 leakage conventions).
+
+### 6c. Judge and calibration experiments
+
+- Cohere, Mistral, and Azure/OpenAI judge outputs should be **reported as provider-specific
+  judge-calibration results**, not merged as a single ground truth.
+- Do not merge fine-grained axis labels from different providers into a single supervision signal.
+- Evidence from multi-judge runs showed providers are useful for **binary sanity checks**
+  but are unreliable for fine-grained axis labeling; do not use provider axis labels for training.
+
+### 6d. Disagreement adjudication
+
+- A strong Azure/OpenAI model may be used as a **diagnostic critic** on hard annotation
+  disagreements, but only as a second opinion, not as an automatic overwrite.
+- Azure/OpenAI diagnostic output must not automatically change human labels.
+- Any label changes following a diagnostic run must be **documented as human adjudication**,
+  with the human annotator's reasoning recorded in `notes_manual`.
+
+### 6e. Paper reporting
+
+Any result section or claim must clearly separate:
+
+1. **Method-performance provider** — which provider's outputs were evaluated.
+2. **Label-assistance provider** — which provider (if any) assisted annotation.
+3. **Final human-reviewed training labels** — the ground truth used for training/evaluation.
+
+Conflating these three will invalidate experimental claims.
+
+---
+
+## 7. Current Problems / Blockers  <!-- was §6 -->
 
 | Problem | Details |
 |---|---|
@@ -177,7 +229,7 @@ These apply at all times and must be maintained by future agents:
 
 ---
 
-## 7. Recommended Next Steps
+## 8. Recommended Next Steps  <!-- was §7 -->
 
 **Immediate (labeling):**
 1. Label rows 29–49 of `positive_candidate_batch.csv` and patch them in (see labeling workflow below).
@@ -205,7 +257,7 @@ These apply at all times and must be maintained by future agents:
 
 ---
 
-## 8. Labeling Workflow (for future agents)
+## 9. Labeling Workflow (for future agents)  <!-- was §8 -->
 
 To label a batch and patch results:
 
@@ -249,7 +301,7 @@ opaque, or truncated traces are `not_ready`.
 
 ---
 
-## 9. Key File Locations
+## 10. Key File Locations  <!-- was §9 -->
 
 | What | Where |
 |---|---|
