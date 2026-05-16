@@ -34,9 +34,9 @@ from __future__ import annotations
 #    which was removed in transformers 5.x. Patch it before setfit loads. ──────
 import transformers.training_args as _ta
 if not hasattr(_ta, "default_logdir"):
-    import datetime, os as _os
+    import datetime as _dt, os as _os
     def _default_logdir():
-        return _os.path.join("runs", datetime.datetime.now().strftime("%b%d_%H-%M-%S"))
+        return _os.path.join("runs", _dt.datetime.now().strftime("%b%d_%H-%M-%S"))
     _ta.default_logdir = _default_logdir
 # ─────────────────────────────────────────────────────────────────────────────
 
