@@ -238,14 +238,12 @@ def _train_fold(
     train_ds = _make_hf_dataset(train_texts, train_labels)
 
     args = TrainingArguments(
+        output_dir=str(output_dir / f"fold_{fold_idx}_model"),
         num_epochs=num_epochs,
         batch_size=batch_size,
         num_iterations=num_iterations,
         seed=seed + fold_idx,
         show_progress_bar=True,
-        # Don't save hub checkpoints
-        push_to_hub=False,
-        output_dir=str(output_dir / f"fold_{fold_idx}_model"),
         report_to="none",
     )
 
