@@ -98,6 +98,17 @@ DO NOT SECOND-GUESS THE TRACE'S ARITHMETIC:
   $5-bill count IS CORRECT (each $20 = four $5 bills). Do not flag as arithmetic_error
   because you expected division. Always ask: does this operator correctly represent the
   target relation, not just: does it match what I would write?
+- IMPLICIT INTERMEDIATE STEPS: If the trace's stated intermediate value is consistent
+  with the question's source facts, treat it as established even if the sub-derivation
+  is not spelled out. For example, if the trace writes "8 pounds of chihuahua stuffing"
+  and the question states 4 chihuahua beds × 2 lbs each, the value 8 is consistent —
+  do NOT flag source_fact_missing merely because "4 × 2 = 8" was not written explicitly.
+- SELF-CONTRADICTION CHECK: Before returning arithmetic_error or unit_scale_error,
+  verify your rationale is internally consistent. If your reasoning acknowledges that a
+  trace value equals the correct quantity (e.g., "the trace states 5 pounds, and
+  average(8, 2) = 5"), you MUST NOT simultaneously call that value wrong. A value
+  cannot be both correct by your own calculation and an error. If you catch yourself
+  writing this, discard the error and reconsider whether the trace is actually ready.
 - Only flag arithmetic_error when the operator is fundamentally wrong in a way that
   cannot be reconciled: e.g., division where the relation requires multiplication for
   a rate×time computation, or subtraction where addition is structurally required.
@@ -107,10 +118,14 @@ TRUNCATION RULE:
   (a sum or subtraction of two already-computed visible values) is absent, and the
   candidate answer matches that obvious aggregation.
 - TRIVIAL means: every component of the final step is explicitly computed and visible
-  in the trace, and the only missing step is combining them.
-  Concrete example: trace shows `arm_down_taps = 550 * 3 = 1650` and
-  `arm_raised_taps = 400 * 2 = 800`, candidate answer = 2450.
-  The final `1650 + 800 = 2450` line is trivial — mark ready (hesitant if unsure).
+  in the trace, and the only missing step is combining them with a basic operation
+  (sum, difference, or product of already-stated values). Examples:
+    • Addition:    trace shows 1650 and 800, answer = 2450 → `1650 + 800` is trivial.
+    • Subtraction: trace shows $30 (total money) and $24 (cost), answer = 6
+                   → `$30 - $24` is trivial even if the trace truncates after "has $30 -".
+    • Combination: trace states 8 lbs (chihuahua total) and 15 lbs (collie total),
+                   answer = 23 → `8 + 15` is trivial.
+  In all these cases mark ready (is_hesitant=true if truncation is visible).
 - NOT TRIVIAL means: the final step requires applying a rate, multiplying by a count,
   or using a source fact that does not appear anywhere in the visible trace.
 - Mark not_ready/source_fact_missing ONLY when an essential relation step, source
@@ -238,6 +253,19 @@ hesitation_reason: final sum 1650+800 not written but both components are visibl
 Reason: Both components (1650 and 800) are explicitly computed and visible.
 Candidate answer 2450 = 1650 + 800 exactly. The final summation line is trivial —
 apply the trivial-aggregation rule and mark ready. Flag is_hesitant for the truncation.
+
+--- EXAMPLE 8: ready — trivial final subtraction truncated (monetary change) ---
+question: Michael has $30. He spends $24 on hay. How much change does he have?
+candidate_answer: 6
+candidate_trace: hay_cost = 8 * 3 = 24. Michael has 6 * 5 = 30 dollars.
+After buying the hay for $24, he has $30 -
+[trace truncated mid-subtraction]
+→ Label: ready  axis: ""  confidence: medium  is_hesitant: true
+hesitation_reason: subtraction $30 - $24 not completed but both operands are visible
+Reason: Both operands ($30 total money and $24 cost) are explicitly computed and
+visible. Candidate answer 6 = 30 - 24 exactly. The final subtraction is trivial —
+this is the same pattern as the 1650 + 800 = 2450 case. Apply the trivial-aggregation
+rule and mark ready even though the trace truncates mid-operation.
 
 === END OF EXAMPLES ==="""
 

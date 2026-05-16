@@ -611,6 +611,45 @@ def test_prompt_hesitation_rule_covers_algebraic_equivalence(tmp_path):
         'Hesitation rule must mention checking algebraic equivalence before marking not_ready')
 
 
+def test_prompt_contains_monetary_subtraction_example(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    # Rubric must include a concrete monetary-subtraction trivial-aggregation example
+    assert '$24' in prompt and '$30' in prompt, (
+        'Prompt must include the monetary-subtraction trivial-aggregation example ($30 - $24 = $6)')
+
+
+def test_prompt_trivial_aggregation_includes_subtraction(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    lower = prompt.lower()
+    # Trivial aggregation rule must explicitly cover subtraction (not just addition)
+    assert 'subtraction' in lower or 'difference' in lower, (
+        'Trivial-aggregation rule must cover subtraction, not only addition/sum')
+
+
+def test_prompt_trivial_aggregation_includes_combination_example(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    # Must include an 8+15=23 or equivalent combination-of-totals example in rubric
+    assert '8 + 15' in prompt or '8+15' in prompt or '8 lbs' in prompt.lower() or \
+           '15 lbs' in prompt.lower() or '23 pounds' in prompt.lower() or \
+           '8 pounds' in prompt.lower(), (
+        'Trivial-aggregation rule must reference the combination-of-totals (8+15=23) pattern')
+
+
+def test_prompt_contains_self_contradiction_check(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    lower = prompt.lower()
+    assert 'self-contradiction' in lower or 'contradict' in lower, (
+        'Prompt must contain a self-contradiction check for arithmetic_error rationales')
+
+
+def test_prompt_implicit_intermediate_steps_rule(tmp_path):
+    prompt = _get_prompt_text(tmp_path)
+    lower = prompt.lower()
+    # Must tell the judge to accept implicit intermediate values consistent with source facts
+    assert 'implicit' in lower or 'spelled out' in lower or 'sub-derivation' in lower, (
+        'Prompt must accept implicit intermediate steps consistent with source facts')
+
+
 # ---------------------------------------------------------------------------
 # 50/100 row boundary — real CSV
 # ---------------------------------------------------------------------------
