@@ -48,3 +48,13 @@ It links claims to concrete scripts, commits, inputs, and output artifacts, and 
 The budget-4/8 artifact completed, but the full artifact is now treated as overlap-contaminated
 and non-independent after corrective audit. Only the filtered non-overlap subset is usable as
 diagnostic follow-up, and it does not strengthen the main independent claim.
+
+## Reproducibility Note: Disjointness Preflight Hardening
+
+- The budget-4/8 full artifact remains classified as overlap-contaminated due to
+  40 overlapping examples with prior scored sources.
+- The extraction/parsing bug that allowed false-zero overlap has been fixed and wired
+  into the Cohere validation runner preflight path (commit `c13c0256`).
+- Future validation runs should pass all prior artifacts directly via repeatable
+  `--disjointness-prior-jsonl` inputs (optionally labeled), with default fail-on-overlap
+  behavior and optional proof emission through `--disjointness-proof-json`.

@@ -229,3 +229,6 @@ Companion docs:
 - Frozen slice-aware transfer on that filtered subset is negative overall
   (`frozen_minus_verifier = -2.50pp`).
 - Therefore the budget-6 independent artifact remains the strongest current validation anchor.
+- For future Cohere validation runs, use runner-level disjointness preflight inputs
+  (`--disjointness-prior-jsonl` with optional `--disjointness-prior-label` and
+  `--disjointness-proof-json`) instead of relying on external proof-only workflows.

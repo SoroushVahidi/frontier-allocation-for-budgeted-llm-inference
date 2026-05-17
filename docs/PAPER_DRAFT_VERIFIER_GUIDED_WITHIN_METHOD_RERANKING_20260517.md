@@ -71,7 +71,9 @@ Current validated claim: verifier-guided **within-method** seed reranking improv
   with the prior 40-example scored source (40 overlapping `example_id`s), so it is not
   independent claim-bearing evidence.
 - Root cause was a preflight parser schema miss on scored artifacts
-  (`metadata.example_id`, question in `feature_text`/metadata), now tracked for correction.
+  (`metadata.example_id`, question in `feature_text`/metadata); preflight extraction is
+  now hardened in the Cohere validation runner, while the headline claim remains the
+  independent budget-6 validation result.
 - A filtered non-overlap subset (20 examples, 480 rows) remains diagnostic:
   overall verifier-minus-random is positive (`+3.75pp`) but uncertain (cluster CI crosses 0),
   and DR-v2@8 is negative vs random.

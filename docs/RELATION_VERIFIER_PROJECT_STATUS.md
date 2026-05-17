@@ -12,6 +12,9 @@
 - Overlap audit found `40` overlapping IDs with the prior 40-example scored artifact.
 - Preflight disjointness miss was a schema-parsing bug: prior scored rows used
   `metadata.example_id` and question in `feature_text`/metadata.
+- As of commit `c13c0256`, Cohere validation preflight now enforces schema-robust
+  disjointness directly in the runner via `--disjointness-prior-jsonl` (repeatable),
+  optional `--disjointness-proof-json`, and default fail-on-overlap behavior.
 - A filtered non-overlap subset (20 examples, 480 rows) is usable but small:
   overall verifier-minus-random `+3.75pp`, cluster CI crosses 0; DR-v2@8 is negative vs random.
 - Frozen slice-aware transfer on filtered subset remained negative overall

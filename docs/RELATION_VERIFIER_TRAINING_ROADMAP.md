@@ -321,6 +321,12 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
     recoveries/regressions/net `3/3/0`, affected `45/120` groups.
     Interpretation: neutral/inconclusive for gain beyond verifier_top1 on this target.
 
+16. ~~**Wire hardened disjointness extraction into Cohere validation preflight**~~ —
+    **Done (2026-05-17, commit `c13c0256`).**
+    `scripts/run_cohere_real_model_cost_normalized_validation.py` now supports
+    repeatable `--disjointness-prior-jsonl`, optional labels/proof output, and
+    default fail-on-overlap behavior using schema-robust extraction logic.
+
 ---
 
 ## 10. Reference: Current Dataset Counts (2026-05-16, updated)

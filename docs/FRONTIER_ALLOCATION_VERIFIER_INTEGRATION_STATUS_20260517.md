@@ -124,6 +124,9 @@ Interpretation:
   `outputs/verifier_frontier_scoring_full_20260517T032713Z/scored_candidates.jsonl`.
 - Root cause: preflight disjointness parsing for prior scored artifacts missed
   `metadata.example_id` (and question in `feature_text`/metadata), yielding a false-zero overlap.
+- Runner/preflight hardening is now wired in (commit `c13c0256`): Cohere validation
+  runner accepts repeatable `--disjointness-prior-jsonl` inputs and fails by default
+  on overlap unless explicitly bypassed with `--allow-disjointness-overlap`.
 - A clean derived subset
   (`.../per_example_records_nonoverlap_valid.jsonl`, 20 examples / 480 rows, balanced)
   produced weaker evidence: verifier-minus-random `+3.75pp` with 95% cluster CI crossing 0,
