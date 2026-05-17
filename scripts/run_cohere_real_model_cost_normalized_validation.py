@@ -33,6 +33,7 @@ from experiments.output_layer_repair import (
     resolve_selected_group_hint_from_metadata,
 )
 from experiments.trace_schema import build_branch_trace, write_trace_package
+from scripts.compute_cohere_validation_disjointness import compute_disjointness
 
 STRICT_F3 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
 STRICT_GATE1_CAP_K6 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control"
@@ -244,6 +245,28 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--validate-methods-only", action="store_true", help="Validate requested method IDs resolve to runnable strategy specs and exit without API calls.")
     p.add_argument("--allowed-example-ids-file", default="", help="Optional JSONL file containing rows with example_id (and optional dataset/seed/budget/method) to hard-filter runs.")
     p.add_argument("--exact-cases-jsonl", default="", help="Optional exact-case JSONL with example_id, question/problem_text, and gold answer; bypasses shuffled dataset loading.")
+    p.add_argument(
+        "--disjointness-prior-jsonl",
+        action="append",
+        default=[],
+        help="Optional prior JSONL artifact to compare against exact cases for overlap (repeatable).",
+    )
+    p.add_argument(
+        "--disjointness-prior-label",
+        action="append",
+        default=[],
+        help="Optional labels aligned with --disjointness-prior-jsonl order.",
+    )
+    p.add_argument(
+        "--disjointness-proof-json",
+        default="",
+        help="Optional explicit output path for disjointness_proof.json (default: <run_output_root>/disjointness_proof.json).",
+    )
+    p.add_argument(
+        "--allow-disjointness-overlap",
+        action="store_true",
+        help="Allow overlaps in disjointness preflight (default is fail on overlap).",
+    )
     p.add_argument("--validate-exact-cases-only", action="store_true", help="Validate exact-case JSONL and method resolution without API calls, then exit.")
     p.add_argument("--expected-exact-case-count", type=int, default=0, help="Optional expected number of cases for --validate-exact-cases-only.")
     p.add_argument("--dry-run-call-plan", action="store_true", help="Emit planned case count after filtering and exit without API calls.")
@@ -531,6 +554,59 @@ def validate_exact_cases_only(args: argparse.Namespace, providers: list[str], da
     if all_mismatches:
         raise SystemExit(2)
     raise SystemExit(0)
+
+
+def maybe_compute_disjointness_preflight(
+    *,
+    args: argparse.Namespace,
+    out_dir: Path,
+) -> Path | None:
+    """Optionally compute hardened disjointness proof and enforce overlap policy.
+
+    Runs only when both exact cases and one or more prior artifacts are provided.
+    """
+    if not args.exact_cases_jsonl or not args.disjointness_prior_jsonl:
+        return None
+
+    prior_paths = [Path(p) for p in args.disjointness_prior_jsonl]
+    missing = [str(p) for p in prior_paths if not p.exists()]
+    if missing:
+        raise FileNotFoundError(
+            "Missing --disjointness-prior-jsonl file(s): " + ", ".join(missing)
+        )
+
+    labels = args.disjointness_prior_label or None
+    if labels is not None and len(labels) > 0 and len(labels) != len(prior_paths):
+        raise ValueError(
+            "--disjointness-prior-label count must match --disjointness-prior-jsonl count"
+        )
+
+    selected_cases_path = Path(args.exact_cases_jsonl)
+    proof = compute_disjointness(
+        selected_cases_jsonl=selected_cases_path,
+        prior_jsonls=prior_paths,
+        source_labels=labels,
+    )
+
+    proof_path = Path(args.disjointness_proof_json) if args.disjointness_proof_json else (out_dir / "disjointness_proof.json")
+    proof_path.parent.mkdir(parents=True, exist_ok=True)
+    proof_path.write_text(json.dumps(proof, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(
+        "disjointness preflight:"
+        f" selected={proof['selected_count']}"
+        f" overlap_ids={proof['overlap_example_ids_with_prior']}"
+        f" overlap_questions={proof['overlap_questions_with_prior']}"
+        f" proof={proof_path}"
+    )
+
+    if (not args.allow_disjointness_overlap) and int(proof.get("overlap_example_ids_with_prior", 0)) > 0:
+        raise RuntimeError(
+            "Disjointness preflight failed: overlap detected with prior artifacts "
+            f"({proof.get('overlap_example_ids_with_prior', 0)} overlapping example_ids). "
+            "Pass --allow-disjointness-overlap to bypass intentionally."
+        )
+
+    return proof_path
 
 
 def ensure_cohere_readiness(*, model: str, timestamp: str) -> tuple[bool, str]:
@@ -846,6 +922,10 @@ def main() -> None:
         validate_methods_only(args, providers, budgets, methods)
     if args.validate_exact_cases_only:
         validate_exact_cases_only(args, providers, datasets, budgets, methods)
+
+    out_dir = REPO_ROOT / args.output_root / f"cohere_real_model_cost_normalized_validation_{args.timestamp}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
     exact_case_rows_by_dataset = {d: load_exact_case_rows(args.exact_cases_jsonl, dataset=d) for d in datasets} if args.exact_cases_jsonl else {}
     exact_case_meta_by_dataset: dict[str, dict[str, dict[str, Any]]] = {}
     if exact_case_rows_by_dataset:
@@ -855,6 +935,8 @@ def main() -> None:
             exact_case_meta_by_dataset[_d] = {
                 str(r.get("example_id")): r for r in _rows if isinstance(r, dict) and str(r.get("example_id") or "").strip()
             }
+
+    maybe_compute_disjointness_preflight(args=args, out_dir=out_dir)
 
     model_by_provider = {
         "cohere": args.cohere_model,
@@ -874,9 +956,6 @@ def main() -> None:
     if (not args.summarize_only) and all(s["ready"] != "1" for s in provider_status.values()):
         print("No configured provider is ready; exiting without API execution.")
         raise SystemExit(1)
-
-    out_dir = REPO_ROOT / args.output_root / f"cohere_real_model_cost_normalized_validation_{args.timestamp}"
-    out_dir.mkdir(parents=True, exist_ok=True)
     raw_dir = out_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
     per_example_path = out_dir / "per_example_records.jsonl"
