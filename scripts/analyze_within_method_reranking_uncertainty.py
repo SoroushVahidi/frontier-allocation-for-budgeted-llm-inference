@@ -101,9 +101,15 @@ def load_group_details(
         headers = reader.fieldnames or []
         metric_cols = _resolve_metric_columns(headers)
 
+        # Backward-compatible convenience: when the caller leaves the default
+        # cluster field as `example_id`, but the CSV uses `problem_id`.
+        resolved_cluster_field = cluster_field
+        if resolved_cluster_field not in headers and cluster_field == "example_id" and "problem_id" in headers:
+            resolved_cluster_field = "problem_id"
+
         missing_context = [
             field
-            for field in [cluster_field, method_field, budget_field]
+            for field in [resolved_cluster_field, method_field, budget_field]
             if field not in headers
         ]
         if missing_context:
@@ -115,7 +121,7 @@ def load_group_details(
         rows: list[dict[str, Any]] = []
         for raw in reader:
             row = {
-                "cluster": str(raw[cluster_field]),
+                "cluster": str(raw[resolved_cluster_field]),
                 "method": str(raw[method_field]),
                 "budget": str(raw[budget_field]),
             }
@@ -128,6 +134,7 @@ def load_group_details(
     if not rows:
         raise ValueError(f"No rows found in {path}")
 
+    metric_cols["resolved_cluster_field"] = resolved_cluster_field
     return rows, metric_cols
 
 
@@ -244,6 +251,28 @@ def summarize_with_uncertainty(
         "ci": ci,
         "bootstrap_distributions": boot,
     }
+
+
+def compute_verifier_vs_anti_discordance(rows: list[dict[str, Any]]) -> dict[str, int]:
+    counts = {
+        "n_groups": len(rows),
+        "both_correct": 0,
+        "verifier_only_correct": 0,
+        "anti_only_correct": 0,
+        "both_wrong": 0,
+    }
+    for row in rows:
+        v = int(row["verifier_max"])
+        a = int(row["anti_verifier"])
+        if v == 1 and a == 1:
+            counts["both_correct"] += 1
+        elif v == 1 and a == 0:
+            counts["verifier_only_correct"] += 1
+        elif v == 0 and a == 1:
+            counts["anti_only_correct"] += 1
+        else:
+            counts["both_wrong"] += 1
+    return counts
 
 
 def _aggregate_subsets(rows: list[dict[str, Any]]) -> tuple[list[tuple[str, list[dict[str, Any]]]], list[tuple[tuple[str, str], list[dict[str, Any]]]]]:
@@ -429,6 +458,8 @@ def _write_report(
     cluster_field: str,
     overall: dict[str, Any],
     by_method: dict[str, dict[str, Any]],
+    overall_discordance: dict[str, int],
+    by_method_discordance: dict[str, dict[str, int]],
 ) -> None:
     now = datetime.now(timezone.utc).isoformat()
     lines: list[str] = []
@@ -444,8 +475,10 @@ def _write_report(
     lines.append("This report uses two uncertainty procedures:")
     lines.append("1. Paired/group bootstrap over method-conditioned rows (evaluation unit: group).")
     lines.append(f"2. Cluster bootstrap over `{cluster_field}`, resampling all rows in each example cluster together.")
+    lines.append("Cluster bootstrap is the primary uncertainty readout because it preserves shared-example dependence.")
     lines.append("")
     lines.append("`random_expected` is treated as the deterministic expected accuracy over seeds per group, not a Monte Carlo sampled run.")
+    lines.append("`oracle` is a diagnostic fixed-pool upper bound on this candidate set, not a deployable policy.")
     lines.append("")
 
     ov_point = overall["point"]
@@ -500,6 +533,26 @@ def _write_report(
     lines.append(stability_line)
     lines.append("")
 
+    lines.append("## Optional Binary Discordance (Verifier vs Anti-Verifier)")
+    lines.append("")
+    lines.append("These 2x2 counts compare realized binary outcomes only (`verifier_max` vs `anti_verifier`).")
+    lines.append("No McNemar test is reported here; bootstrap CIs remain primary.")
+    lines.append("")
+    lines.append(
+        f"- Overall: both_correct={overall_discordance['both_correct']}, "
+        f"verifier_only={overall_discordance['verifier_only_correct']}, "
+        f"anti_only={overall_discordance['anti_only_correct']}, "
+        f"both_wrong={overall_discordance['both_wrong']} (n={overall_discordance['n_groups']})"
+    )
+    for method, d in sorted(by_method_discordance.items()):
+        lines.append(
+            f"- {method}: both_correct={d['both_correct']}, "
+            f"verifier_only={d['verifier_only_correct']}, "
+            f"anti_only={d['anti_only_correct']}, "
+            f"both_wrong={d['both_wrong']} (n={d['n_groups']})"
+        )
+    lines.append("")
+
     output_path.write_text("\n".join(lines) + "\n")
 
 
@@ -545,6 +598,15 @@ def run_analysis(
         )
         for i, (key, subset) in enumerate(by_method_budget_items)
     }
+    overall_discordance = compute_verifier_vs_anti_discordance(rows)
+    by_method_discordance = {
+        method: compute_verifier_vs_anti_discordance(subset)
+        for method, subset in by_method_items
+    }
+    by_method_budget_discordance = {
+        key: compute_verifier_vs_anti_discordance(subset)
+        for key, subset in by_method_budget_items
+    }
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -569,6 +631,8 @@ def run_analysis(
         cluster_field=cluster_field,
         overall=overall,
         by_method=by_method,
+        overall_discordance=overall_discordance,
+        by_method_discordance=by_method_discordance,
     )
 
     metrics_obj = {
@@ -583,6 +647,13 @@ def run_analysis(
             "n_bootstrap": n_bootstrap,
             "seed": seed,
             "types": ["paired", "cluster"],
+        },
+        "discordance_verifier_vs_anti": {
+            "overall": overall_discordance,
+            "by_method": by_method_discordance,
+            "by_method_budget": {
+                f"{k[0]}|{k[1]}": v for k, v in by_method_budget_discordance.items()
+            },
         },
         "overall": _strip_distributions(overall),
         "by_method": {k: _strip_distributions(v) for k, v in by_method.items()},
@@ -600,6 +671,9 @@ def run_analysis(
         "overall": overall,
         "by_method": by_method,
         "by_method_budget": by_method_budget,
+        "discordance_overall": overall_discordance,
+        "discordance_by_method": by_method_discordance,
+        "discordance_by_method_budget": by_method_budget_discordance,
         "metrics_obj": metrics_obj,
     }
 

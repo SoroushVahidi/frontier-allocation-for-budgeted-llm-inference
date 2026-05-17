@@ -16,6 +16,7 @@ from analyze_within_method_reranking_uncertainty import (
     _resample_rows_cluster,
     bootstrap_distributions,
     ci_from_samples,
+    compute_verifier_vs_anti_discordance,
     compute_point_metrics,
     load_group_details,
     main,
@@ -27,6 +28,7 @@ def _write_group_details_csv(tmpdir: str, rows: list[dict]) -> pathlib.Path:
     path = pathlib.Path(tmpdir) / "reranking_group_details.csv"
     cols = [
         "example_id",
+        "problem_id",
         "budget",
         "method",
         "n_candidates",
@@ -41,7 +43,7 @@ def _write_group_details_csv(tmpdir: str, rows: list[dict]) -> pathlib.Path:
         "score_stdev",
     ]
     with open(path, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=cols)
+        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         w.writeheader()
         for row in rows:
             w.writerow(row)
@@ -128,6 +130,7 @@ class TestLoadGroupDetails(unittest.TestCase):
         self.assertEqual(cols["verifier_max"], "em_verifier_max")
         self.assertEqual(cols["oracle"], "oracle_any_correct")
         self.assertEqual(rows[0]["cluster"], "ex1")
+        self.assertEqual(cols["resolved_cluster_field"], "example_id")
 
     def test_random_expected_numeric(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -140,6 +143,41 @@ class TestLoadGroupDetails(unittest.TestCase):
             )
         self.assertIsInstance(rows[0]["random_expected"], float)
         self.assertAlmostEqual(rows[0]["random_expected"], 0.5)
+
+    def test_problem_id_fallback_when_example_id_missing(self):
+        rows = _toy_rows()
+        for row in rows:
+            row["problem_id"] = row.pop("example_id")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            p = pathlib.Path(tmpdir) / "reranking_group_details.csv"
+            cols = [
+                "problem_id",
+                "budget",
+                "method",
+                "n_candidates",
+                "em_verifier_max",
+                "em_anti_verifier",
+                "em_first_seed",
+                "oracle_any_correct",
+                "random_expected",
+                "score_min",
+                "score_max",
+                "score_spread",
+                "score_stdev",
+            ]
+            with open(p, "w", newline="") as f:
+                w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+                w.writeheader()
+                for row in rows:
+                    w.writerow(row)
+            loaded, cols = load_group_details(
+                p,
+                cluster_field="example_id",
+                method_field="method",
+                budget_field="budget",
+            )
+        self.assertEqual(len(loaded), 4)
+        self.assertEqual(cols["resolved_cluster_field"], "problem_id")
 
 
 class TestMetricComputation(unittest.TestCase):
@@ -154,6 +192,20 @@ class TestMetricComputation(unittest.TestCase):
         self.assertAlmostEqual(metrics["verifier_minus_random"], 0.125)
         self.assertAlmostEqual(metrics["verifier_minus_anti"], 0.5)
         self.assertAlmostEqual(metrics["oracle_minus_verifier"], 0.5)
+
+    def test_verifier_vs_anti_discordance_counts(self):
+        rows = [
+            {"verifier_max": 1.0, "anti_verifier": 1.0},
+            {"verifier_max": 1.0, "anti_verifier": 0.0},
+            {"verifier_max": 0.0, "anti_verifier": 1.0},
+            {"verifier_max": 0.0, "anti_verifier": 0.0},
+        ]
+        d = compute_verifier_vs_anti_discordance(rows)
+        self.assertEqual(d["n_groups"], 4)
+        self.assertEqual(d["both_correct"], 1)
+        self.assertEqual(d["verifier_only_correct"], 1)
+        self.assertEqual(d["anti_only_correct"], 1)
+        self.assertEqual(d["both_wrong"], 1)
 
 
 class TestBootstrap(unittest.TestCase):
@@ -224,6 +276,9 @@ class TestRunAnalysis(unittest.TestCase):
             self.assertIn("mB", result["by_method"])
             self.assertIn(("mA", "6"), result["by_method_budget"])
             self.assertIn(("mB", "8"), result["by_method_budget"])
+            self.assertIn("mA", result["discordance_by_method"])
+            self.assertIn(("mA", "6"), result["discordance_by_method_budget"])
+            self.assertIn("discordance_verifier_vs_anti", result["metrics_obj"])
 
             expected_files = [
                 "uncertainty_report.md",
