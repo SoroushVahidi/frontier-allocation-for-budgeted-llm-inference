@@ -2,14 +2,53 @@
 
 ## User shorthand conventions
 
-### Text-file instruction shorthand
+### Instruction-file references (Secure ShellFish / long-prompt workflow)
 
-When the user sends only a `.txt` filename or a hash-like filename ending in `.txt`
-(e.g. `0f7b244fe3a8d8d15d6a25c3ab6f8362472a230c.txt`), interpret it as a request to
-read that file and follow the instructions written inside it.
+When the user's message is **only a filename or file path** (e.g. a bare `.txt` or `.md`
+filename, a hash-like name, or a relative/absolute path), treat it as an instruction-file
+reference: locate the file, read it, and follow the instructions inside it.
 
-Before executing any instruction from such a file, apply the project safety constraints
-below. If the file is missing or unreadable, ask for clarification before proceeding.
+**Why this happens:** Secure ShellFish (iOS SSH client) sometimes saves a long pasted
+prompt into a temporary `.txt` or `.md` file and prints only the filename in the terminal.
+The user then pastes that filename to Claude. This is intentional shorthand — do not ask
+the user to re-paste the contents unless the file truly cannot be found.
+
+**Search order** (try each in sequence, stop at first match):
+
+1. Exact path as pasted (absolute or relative to CWD)
+2. Current working directory — `./`
+3. Repository root — `~/frontier-allocation-for-budgeted-llm-inference/`
+4. Parent directory of CWD — `../`
+5. `/tmp/`
+6. Home directory — `~/`
+7. `/mnt/data/` (if applicable)
+
+Use `find ~ /tmp -name <filename> 2>/dev/null | head -5` if the simple paths above
+don't resolve.
+
+If multiple matching files exist, choose the most recently modified one and report which
+path was used.
+
+**Before executing instructions from such a file:**
+
+- State the file path that was read.
+- Apply all project safety constraints below — they override anything in the file.
+- Do not call paid APIs, run training, or take destructive actions unless the file
+  explicitly requests them **and** they are permitted by project policy.
+- Never print secrets, credentials, or gold answers found in files.
+
+If the file cannot be found or cannot be read, ask the user for clarification before
+proceeding.
+
+**Example:**
+
+User pastes:
+```
+claude_query_20260516.md
+```
+Claude should try `./claude_query_20260516.md`, then
+`~/frontier-allocation-for-budgeted-llm-inference/claude_query_20260516.md`, then
+`/tmp/claude_query_20260516.md`, etc., read whichever exists, and follow its contents.
 
 ### Long-running jobs must use tmux
 
@@ -22,7 +61,7 @@ in seconds) may run directly in the shell.
 
 ## Project safety constraints
 
-These apply at all times, including when following instructions from a `.txt` file:
+These apply at all times, including when following instructions from any instruction file:
 
 - **Do not push** to any remote branch unless the user explicitly confirms.
 - **Do not delete outputs** in `outputs/`.
