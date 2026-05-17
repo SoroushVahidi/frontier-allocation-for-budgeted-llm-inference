@@ -439,3 +439,234 @@ def test_model_artifacts_stay_under_output_dir():
             assert str(od).startswith(str(outdir)), (
                 f"Fold output dir {od!r} is outside output_dir {outdir!r}"
             )
+
+
+# ---------------------------------------------------------------------------
+# Explicit split evaluation
+# ---------------------------------------------------------------------------
+
+def _make_explicit_split_rows(
+    n_no_split: int = 30,
+    n_train: int = 10,
+    n_val: int = 6,
+    n_test: int = 4,
+    n_problems: int = 10,
+) -> list[dict]:
+    """Build rows with explicit split_group_id labels."""
+    rows = []
+    idx = 0
+    # no-split pool (split_group_id = "")
+    for i in range(n_no_split):
+        rows.append({
+            "row_id": f"ns{i}",
+            "problem_id": f"pid{idx % n_problems}",
+            "split_group_id": "",
+            "feature_text": f"question: Q{idx} | candidate_answer: {idx}",
+            "structured_features": {},
+            "label": idx % 2,
+        })
+        idx += 1
+    # train
+    for i in range(n_train):
+        rows.append({
+            "row_id": f"tr{i}",
+            "problem_id": f"pid{idx % n_problems}",
+            "split_group_id": "train",
+            "feature_text": f"question: Q{idx} | candidate_answer: {idx}",
+            "structured_features": {},
+            "label": idx % 2,
+        })
+        idx += 1
+    # val: at least one of each class
+    for i in range(n_val):
+        rows.append({
+            "row_id": f"v{i}",
+            "problem_id": f"pid{idx % n_problems}",
+            "split_group_id": "val",
+            "feature_text": f"question: Q{idx} | candidate_answer: {idx}",
+            "structured_features": {},
+            "label": i % 2,
+        })
+        idx += 1
+    # test: at least one of each class
+    for i in range(n_test):
+        rows.append({
+            "row_id": f"t{i}",
+            "problem_id": f"pid{idx % n_problems}",
+            "split_group_id": "test",
+            "feature_text": f"question: Q{idx} | candidate_answer: {idx}",
+            "structured_features": {},
+            "label": i % 2,
+        })
+        idx += 1
+    return rows
+
+
+def _mock_fit_setfit_model(mod, captured_train_texts: list | None = None):
+    """Patch _fit_setfit_model to return a fake model without GPU training."""
+    fake_model = MagicMock()
+
+    def fake_predict_proba(texts):
+        rng = np.random.default_rng(42)
+        n = len(texts)
+        raw = rng.random(n)
+        return np.column_stack([1 - raw, raw])
+
+    fake_model.predict_proba.side_effect = fake_predict_proba
+
+    def fake_fit(train_texts, train_labels, *args, **kwargs):
+        if captured_train_texts is not None:
+            captured_train_texts.extend(train_texts)
+        return fake_model
+
+    return patch.object(mod, "_fit_setfit_model", side_effect=fake_fit)
+
+
+def test_explicit_split_test_rows_excluded_from_training():
+    """Test rows must never appear in the texts passed to _fit_setfit_model."""
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    rows = _make_explicit_split_rows()
+
+    test_texts = {r["feature_text"] for r in rows if r["split_group_id"] == "test"}
+    captured: list = []
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(rows, jpath)
+        with _mock_fit_setfit_model(mod, captured_train_texts=captured):
+            ret = mod.main([
+                "--dataset-jsonl", str(jpath),
+                "--output-dir", str(outdir),
+                "--mode", "train",
+                "--seed", "42",
+                "--eval-split-mode", "explicit",
+            ])
+    assert ret == 0
+    for txt in captured:
+        assert txt not in test_texts, f"Test text leaked into training: {txt!r}"
+
+
+def test_explicit_split_val_rows_excluded_from_training():
+    """Val rows must not appear in training texts."""
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    rows = _make_explicit_split_rows()
+
+    val_texts = {r["feature_text"] for r in rows if r["split_group_id"] == "val"}
+    captured: list = []
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(rows, jpath)
+        with _mock_fit_setfit_model(mod, captured_train_texts=captured):
+            mod.main([
+                "--dataset-jsonl", str(jpath),
+                "--output-dir", str(outdir),
+                "--mode", "train",
+                "--seed", "42",
+                "--eval-split-mode", "explicit",
+            ])
+    for txt in captured:
+        assert txt not in val_texts, f"Val text leaked into training: {txt!r}"
+
+
+def test_explicit_split_output_files_created():
+    """Explicit split mode must create the standard output files."""
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    rows = _make_explicit_split_rows()
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(rows, jpath)
+        with _mock_fit_setfit_model(mod):
+            ret = mod.main([
+                "--dataset-jsonl", str(jpath),
+                "--output-dir", str(outdir),
+                "--mode", "train",
+                "--seed", "42",
+                "--eval-split-mode", "explicit",
+            ])
+        assert ret == 0
+        for fname in ("metrics.json", "training_report.md", "predictions.jsonl", "run_manifest.json"):
+            assert (outdir / fname).exists(), f"Expected {fname} in output dir"
+
+
+def test_explicit_split_metrics_keys():
+    """Metrics dict must contain explicit-split-specific keys."""
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    rows = _make_explicit_split_rows()
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(rows, jpath)
+        with _mock_fit_setfit_model(mod):
+            mod.main([
+                "--dataset-jsonl", str(jpath),
+                "--output-dir", str(outdir),
+                "--mode", "train",
+                "--seed", "42",
+                "--eval-split-mode", "explicit",
+            ])
+        m = json.loads((outdir / "metrics.json").read_text())
+        assert m.get("eval_mode") == "explicit_split"
+        assert "n_train" in m
+        assert "n_val" in m
+        assert "n_test" in m
+        assert "threshold_applied_to_test" in m
+        assert "threshold_source" in m
+        assert "test_has_zero_ready" in m
+
+
+def test_explicit_split_predictions_are_test_only():
+    """predictions.jsonl in explicit mode should contain only test rows."""
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    rows = _make_explicit_split_rows(n_test=4)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(rows, jpath)
+        with _mock_fit_setfit_model(mod):
+            mod.main([
+                "--dataset-jsonl", str(jpath),
+                "--output-dir", str(outdir),
+                "--mode", "train",
+                "--seed", "42",
+                "--eval-split-mode", "explicit",
+            ])
+        preds = [json.loads(l) for l in (outdir / "predictions.jsonl").open() if l.strip()]
+        assert len(preds) == 4, f"Expected 4 test predictions, got {len(preds)}"
+        for p in preds:
+            assert p.get("split") == "test"
+            assert "proba_ready" in p
+            assert "threshold_used" in p
+
+
+def test_explicit_split_run_manifest_records_mode():
+    """run_manifest.json must record eval_split_mode=explicit."""
+    pytest.importorskip("sklearn")
+    mod = _import_trainer()
+    rows = _make_explicit_split_rows()
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        jpath = pathlib.Path(tmpdir) / "rows.jsonl"
+        outdir = pathlib.Path(tmpdir) / "out"
+        write_jsonl(rows, jpath)
+        with _mock_fit_setfit_model(mod):
+            mod.main([
+                "--dataset-jsonl", str(jpath),
+                "--output-dir", str(outdir),
+                "--mode", "train",
+                "--seed", "42",
+                "--eval-split-mode", "explicit",
+            ])
+        manifest = json.loads((outdir / "run_manifest.json").read_text())
+        assert manifest.get("eval_split_mode") == "explicit"

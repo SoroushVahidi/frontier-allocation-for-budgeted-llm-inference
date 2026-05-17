@@ -207,10 +207,9 @@ def _make_hf_dataset(texts: list[str], labels: list[int]):
     return Dataset.from_dict({"text": texts, "label": labels})
 
 
-def _train_fold(
+def _fit_setfit_model(
     train_texts: list[str],
     train_labels: list[int],
-    val_texts: list[str],
     model_name: str,
     device: str,
     num_epochs: int,
@@ -223,8 +222,8 @@ def _train_fold(
     seed: int,
     output_dir: pathlib.Path,
     fold_idx: int,
-) -> tuple[list[float], list[int]]:
-    """Fine-tune a SetFit model on train fold, return (scores, preds) for val fold."""
+):
+    """Train a SetFit model and return it. Does not score anything."""
     import torch
     from sentence_transformers import SentenceTransformer
     from setfit import SetFitModel, Trainer, TrainingArguments
@@ -257,25 +256,58 @@ def _train_fold(
         report_to="none",
     )
 
-    trainer = Trainer(
-        model=model,
-        args=args,
-        train_dataset=train_ds,
-    )
+    trainer = Trainer(model=model, args=args, train_dataset=train_ds)
     trainer.train()
+    return model
 
-    # Score val texts
-    val_scores = model.predict_proba(val_texts)
-    # predict_proba returns shape (n, 2); take column 1 (ready class)
-    if hasattr(val_scores, "numpy"):
-        val_scores = val_scores.numpy()
+
+def _score_model(model, texts: list[str]) -> list[float]:
+    """Return ready-class probability scores for a list of texts."""
     import numpy as np
-    val_scores = np.array(val_scores)
-    if val_scores.ndim == 2:
-        proba_ready = val_scores[:, 1].tolist()
-    else:
-        proba_ready = val_scores.tolist()
+    scores = model.predict_proba(texts)
+    if hasattr(scores, "numpy"):
+        scores = scores.numpy()
+    scores = np.array(scores)
+    if scores.ndim == 2:
+        return scores[:, 1].tolist()
+    return scores.tolist()
 
+
+def _train_fold(
+    train_texts: list[str],
+    train_labels: list[int],
+    val_texts: list[str],
+    model_name: str,
+    device: str,
+    num_epochs: int,
+    batch_size: int,
+    num_iterations: int,
+    max_seq_length: int | None,
+    body_learning_rate: float,
+    head_learning_rate: float,
+    samples_per_label: int,
+    seed: int,
+    output_dir: pathlib.Path,
+    fold_idx: int,
+) -> tuple[list[float], list[int]]:
+    """Fine-tune a SetFit model on train fold, return (scores, preds) for val fold."""
+    model = _fit_setfit_model(
+        train_texts=train_texts,
+        train_labels=train_labels,
+        model_name=model_name,
+        device=device,
+        num_epochs=num_epochs,
+        batch_size=batch_size,
+        num_iterations=num_iterations,
+        max_seq_length=max_seq_length,
+        body_learning_rate=body_learning_rate,
+        head_learning_rate=head_learning_rate,
+        samples_per_label=samples_per_label,
+        seed=seed,
+        output_dir=output_dir,
+        fold_idx=fold_idx,
+    )
+    proba_ready = _score_model(model, val_texts)
     val_preds = [1 if s >= 0.5 else 0 for s in proba_ready]
     return proba_ready, val_preds
 
@@ -419,6 +451,205 @@ def train_and_evaluate(
     return metrics, predictions
 
 
+def train_eval_explicit_split(
+    rows: list[dict],
+    label_field: str,
+    model_name: str,
+    device: str,
+    num_epochs: int,
+    batch_size: int,
+    num_iterations: int,
+    max_seq_length: int | None,
+    body_learning_rate: float,
+    head_learning_rate: float,
+    samples_per_label: int,
+    seed: int,
+    output_dir: pathlib.Path,
+) -> tuple[dict, list[dict]]:
+    """Train on (train + no-split) rows, tune threshold on val, evaluate once on test.
+
+    split_group_id="" means no explicit split was assigned (bulk "no-split" pool).
+    These rows are included in the training set for maximum coverage.
+
+    Threshold is selected on val to avoid test contamination.
+    Test metrics are the primary unbiased estimate.
+
+    WARNING: if the test set has zero ready examples, ready F1 / PR-AUC cannot be
+    computed meaningfully; only the false-positive rate on not_ready is measurable.
+    """
+    import numpy as np
+    from sklearn.metrics import (
+        accuracy_score, f1_score, precision_score, recall_score,
+        confusion_matrix, average_precision_score, classification_report,
+    )
+
+    TRAIN_SPLIT_GROUPS = {"train", ""}   # "" = no-split pool
+    VAL_SPLIT = "val"
+    TEST_SPLIT = "test"
+
+    train_rows = [r for r in rows if r.get("split_group_id", "") in TRAIN_SPLIT_GROUPS]
+    val_rows   = [r for r in rows if r.get("split_group_id") == VAL_SPLIT]
+    test_rows  = [r for r in rows if r.get("split_group_id") == TEST_SPLIT]
+
+    if not train_rows:
+        raise ValueError("No training rows found for split_group_id in {'train', ''}.")
+    if not test_rows:
+        raise ValueError("No test rows found for split_group_id='test'.")
+
+    train_texts  = [r["feature_text"] for r in train_rows]
+    train_labels = [r[label_field] for r in train_rows]
+    val_texts    = [r["feature_text"] for r in val_rows]
+    val_labels   = [r[label_field] for r in val_rows]
+    test_texts   = [r["feature_text"] for r in test_rows]
+    test_labels  = [r[label_field] for r in test_rows]
+
+    train_lc = Counter(train_labels)
+    val_lc   = Counter(val_labels)
+    test_lc  = Counter(test_labels)
+    test_has_zero_ready = (test_lc.get(1, 0) == 0)
+
+    print(f"\n=== Explicit split evaluation ===")
+    print(f"  train+no-split: {len(train_rows)} rows  {dict(train_lc)}")
+    print(f"  val:            {len(val_rows)} rows  {dict(val_lc)}")
+    print(f"  test:           {len(test_rows)} rows  {dict(test_lc)}")
+    if test_has_zero_ready:
+        print("  WARNING: test set has 0 ready examples — ready F1 / PR-AUC undefined.")
+
+    # Train one model on train+no-split
+    model = _fit_setfit_model(
+        train_texts=train_texts,
+        train_labels=train_labels,
+        model_name=model_name,
+        device=device,
+        num_epochs=num_epochs,
+        batch_size=batch_size,
+        num_iterations=num_iterations,
+        max_seq_length=max_seq_length,
+        body_learning_rate=body_learning_rate,
+        head_learning_rate=head_learning_rate,
+        samples_per_label=samples_per_label,
+        seed=seed,
+        output_dir=output_dir,
+        fold_idx=0,
+    )
+
+    # Tune threshold on val (unbiased w.r.t. test)
+    selected_threshold = 0.5
+    threshold_source = "default (0.5) — val has no ready examples"
+    val_metrics_summary: dict = {}
+
+    if val_rows:
+        val_proba = _score_model(model, val_texts)
+        val_labels_int = [int(l) for l in val_labels]
+        if any(l == 1 for l in val_labels_int):
+            val_sweep = _threshold_sweep(val_labels_int, val_proba)
+            selected_threshold = val_sweep["best_threshold"]
+            threshold_source = f"val sweep (best ready F1 on val at thr={selected_threshold})"
+            val_metrics_summary = {
+                "n_val": len(val_rows),
+                "label_counts": dict(val_lc),
+                "best_threshold": val_sweep["best_threshold"],
+                "best_ready_f1_on_val": val_sweep["best_ready_f1"],
+                "best_macro_f1_on_val": val_sweep["best_macro_f1"],
+            }
+            print(f"  Val threshold sweep: best thr={selected_threshold}, val ready F1={val_sweep['best_ready_f1']}")
+        else:
+            print("  Val has no ready examples; using threshold=0.5.")
+
+    # Score test and apply selected threshold
+    test_proba = _score_model(model, test_texts)
+    test_labels_int = [int(l) for l in test_labels]
+    test_preds = [1 if s >= selected_threshold else 0 for s in test_proba]
+
+    # Test metrics
+    acc  = float(accuracy_score(test_labels_int, test_preds))
+    f1m  = float(f1_score(test_labels_int, test_preds, average="macro", zero_division=0))
+    rp   = float(precision_score(test_labels_int, test_preds, pos_label=1, zero_division=0))
+    rr   = float(recall_score(test_labels_int, test_preds, pos_label=1, zero_division=0))
+    rf1  = float(f1_score(test_labels_int, test_preds, pos_label=1, zero_division=0))
+    cm   = confusion_matrix(test_labels_int, test_preds, labels=[0, 1]).tolist()
+    clf_report = classification_report(test_labels_int, test_preds, zero_division=0)
+
+    pr_auc = None
+    if not test_has_zero_ready:
+        try:
+            pr_auc = round(float(average_precision_score(test_labels_int, test_proba)), 4)
+        except Exception as e:
+            warnings.warn(f"PR-AUC on test failed: {e}")
+
+    metrics = {
+        # write_report-compatible keys (test metrics as primary)
+        "n_samples": len(test_rows),
+        "n_folds_or_mode": (
+            f"explicit_split: train+no-split={len(train_rows)}, "
+            f"val={len(val_rows)}, test={len(test_rows)}"
+        ),
+        "grouped_cv": False,
+        "group_field": None,
+        "grouped_cv_warning": None,
+        "accuracy": round(acc, 4),
+        "f1_macro": round(f1m, 4),
+        "pr_auc_ready": pr_auc,
+        "confusion_matrix": {
+            "labels": [0, 1],
+            "label_names": ["not_ready", "ready"],
+            "matrix": cm,
+            "note": "rows=true, cols=predicted; labels=[0=not_ready, 1=ready]",
+        },
+        "classification_report": clf_report,
+        "threshold_sweep": None,
+        "label_counts": dict(test_lc),
+        "model_name": model_name,
+        "num_epochs": num_epochs,
+        "batch_size": batch_size,
+        "num_iterations": num_iterations,
+        "body_learning_rate": body_learning_rate,
+        "head_learning_rate": head_learning_rate,
+        "samples_per_label": samples_per_label,
+        # Explicit split specific
+        "eval_mode": "explicit_split",
+        "train_split_groups": ["train", "no-split (split_group_id='')"],
+        "val_split_group": VAL_SPLIT,
+        "test_split_group": TEST_SPLIT,
+        "n_train": len(train_rows),
+        "n_val": len(val_rows),
+        "n_test": len(test_rows),
+        "train_label_counts": dict(train_lc),
+        "val_label_counts": dict(val_lc),
+        "test_label_counts": dict(test_lc),
+        "test_has_zero_ready": test_has_zero_ready,
+        "threshold_applied_to_test": selected_threshold,
+        "threshold_source": threshold_source,
+        "ready_precision_on_test": round(rp, 4),
+        "ready_recall_on_test": round(rr, 4),
+        "ready_f1_on_test": round(rf1, 4),
+        "val_metrics": val_metrics_summary,
+    }
+
+    test_row_ids = [r.get("row_id", str(i)) for i, r in enumerate(test_rows)]
+    predictions = [
+        {
+            "row_id": test_row_ids[i],
+            "split": "test",
+            "label_true": test_labels_int[i],
+            "label_pred": test_preds[i],
+            "proba_ready": round(float(test_proba[i]), 4),
+            "threshold_used": selected_threshold,
+        }
+        for i in range(len(test_rows))
+    ]
+
+    print(
+        f"\nTest metrics (thr={selected_threshold}): "
+        f"acc={acc:.4f}  macro_F1={f1m:.4f}  "
+        f"ready P={rp:.4f} R={rr:.4f} F1={rf1:.4f}  PR-AUC={pr_auc}"
+    )
+    if test_has_zero_ready:
+        print("  (ready F1=0 expected — test set has no ready examples; check FP count only)")
+
+    return metrics, predictions
+
+
 def write_report(
     output_dir: pathlib.Path,
     mode: str,
@@ -458,11 +689,18 @@ def write_report(
         ts  = metrics.get("threshold_sweep")
         cm_info = metrics.get("confusion_matrix", {})
         cm  = cm_info.get("matrix", [])
-        best_thresh = ts["best_threshold"] if ts else 0.5
-        thresh_note = (
-            f"threshold sweep (best={best_thresh}, post-hoc diagnostic)"
-            if ts else "default threshold=0.5"
-        )
+        is_explicit = metrics.get("eval_mode") == "explicit_split"
+
+        if is_explicit:
+            thresh_note = (
+                f"val-tuned threshold={metrics['threshold_applied_to_test']} "
+                f"({metrics['threshold_source']})"
+            )
+        elif ts:
+            best_thresh = ts["best_threshold"]
+            thresh_note = f"threshold sweep (best={best_thresh}, post-hoc diagnostic)"
+        else:
+            thresh_note = "default threshold=0.5"
 
         lines += [
             "",
@@ -528,8 +766,40 @@ def write_report(
         if metrics.get("grouped_cv_warning"):
             lines.append(f"Grouped CV warning: {metrics['grouped_cv_warning']}")
 
-        lines.append("")
-        lines.append("> OOF results. Do not use for final paper claims without held-out evaluation.")
+        if is_explicit:
+            lines += [
+                "",
+                "### Explicit split details",
+                "",
+                f"- Train+no-split: {metrics.get('n_train')} rows  {metrics.get('train_label_counts')}",
+                f"- Val: {metrics.get('n_val')} rows  {metrics.get('val_label_counts')}",
+                f"- Test: {metrics.get('n_test')} rows  {metrics.get('test_label_counts')}",
+                f"- Threshold source: {metrics.get('threshold_source')}",
+                f"- Threshold applied to test: {metrics.get('threshold_applied_to_test')}",
+            ]
+            if metrics.get("test_has_zero_ready"):
+                lines += [
+                    "",
+                    "> **WARNING:** Test set has zero `ready` examples. Ready F1 and PR-AUC",
+                    "> cannot be meaningfully computed. Only the false-positive rate on",
+                    "> `not_ready` examples is measurable from this test split.",
+                ]
+            if metrics.get("val_metrics"):
+                vm = metrics["val_metrics"]
+                lines += [
+                    "",
+                    f"Val threshold sweep: best thr={vm.get('best_threshold')}  "
+                    f"val ready F1={vm.get('best_ready_f1_on_val')}  "
+                    f"val macro F1={vm.get('best_macro_f1_on_val')}",
+                ]
+            lines.append("")
+            lines.append(
+                "> Sanity check only. Test set is small (n=5) and has no ready examples. "
+                "Grouped 5-fold CV results remain the primary performance estimate."
+            )
+        else:
+            lines.append("")
+            lines.append("> OOF results. Do not use for final paper claims without held-out evaluation.")
 
     (output_dir / "training_report.md").write_text("\n".join(lines), encoding="utf-8")
 
@@ -556,6 +826,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--limit-rows", type=int, default=None,
         help="Truncate dataset to this many rows (smoke tests only)",
+    )
+    parser.add_argument(
+        "--eval-split-mode", default="cv", choices=["cv", "explicit"],
+        help=(
+            "cv: grouped cross-validation (default). "
+            "explicit: train on split_group_id in {train, ''}, "
+            "tune threshold on val, evaluate once on test."
+        ),
     )
     args = parser.parse_args(argv)
 
@@ -620,23 +898,41 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Using device: {device}")
 
         try:
-            metrics, predictions = train_and_evaluate(
-                rows=rows,
-                label_field=args.label_field,
-                model_name=args.model_name,
-                device=device,
-                num_epochs=args.num_epochs,
-                batch_size=args.batch_size,
-                num_iterations=args.num_iterations,
-                max_seq_length=args.max_seq_length,
-                body_learning_rate=args.body_learning_rate,
-                head_learning_rate=args.head_learning_rate,
-                samples_per_label=args.samples_per_label,
-                seed=args.seed,
-                use_grouped_cv=args.grouped_cv,
-                do_threshold_sweep=args.threshold_sweep,
-                output_dir=output_dir,
-            )
+            if args.eval_split_mode == "explicit":
+                print("Eval mode: explicit split (train+no-split / val / test)")
+                metrics, predictions = train_eval_explicit_split(
+                    rows=rows,
+                    label_field=args.label_field,
+                    model_name=args.model_name,
+                    device=device,
+                    num_epochs=args.num_epochs,
+                    batch_size=args.batch_size,
+                    num_iterations=args.num_iterations,
+                    max_seq_length=args.max_seq_length,
+                    body_learning_rate=args.body_learning_rate,
+                    head_learning_rate=args.head_learning_rate,
+                    samples_per_label=args.samples_per_label,
+                    seed=args.seed,
+                    output_dir=output_dir,
+                )
+            else:
+                metrics, predictions = train_and_evaluate(
+                    rows=rows,
+                    label_field=args.label_field,
+                    model_name=args.model_name,
+                    device=device,
+                    num_epochs=args.num_epochs,
+                    batch_size=args.batch_size,
+                    num_iterations=args.num_iterations,
+                    max_seq_length=args.max_seq_length,
+                    body_learning_rate=args.body_learning_rate,
+                    head_learning_rate=args.head_learning_rate,
+                    samples_per_label=args.samples_per_label,
+                    seed=args.seed,
+                    use_grouped_cv=args.grouped_cv,
+                    do_threshold_sweep=args.threshold_sweep,
+                    output_dir=output_dir,
+                )
         except Exception as e:
             print(f"ERROR during training: {e}", file=sys.stderr)
             import traceback; traceback.print_exc()
@@ -655,6 +951,7 @@ def main(argv: list[str] | None = None) -> int:
             "dataset_jsonl": str(dataset_path),
             "model_name": args.model_name,
             "mode": args.mode,
+            "eval_split_mode": args.eval_split_mode,
             "seed": args.seed,
             "grouped_cv": args.grouped_cv,
             "threshold_sweep": args.threshold_sweep,
