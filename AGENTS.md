@@ -3,14 +3,12 @@
 Welcome to the `frontier-allocation-for-budgeted-llm-inference` repository. To maintain research integrity and repository health, please follow these guidelines.
 
 ## Development Workflow
-1.  **Always work from `main`**: Ensure you are synced with `origin/main` before starting.
-2.  **Branch for every change**: Use descriptive branch names (e.g., `fix/issue-description` or `feat/new-feature`).
-3.  **PR + Squash Merge**: All changes must go through a Pull Request. Use squash merging to keep the history clean.
-4.  **Run Health Checks**: Before committing, always run:
-    ```bash
-    python3 scripts/check_repo_health.py
-    ```
-5.  **Test Coverage**: Add or update tests in `tests/` for any algorithmic changes. Use mocks to avoid API calls.
+1. **Respect the active project branch**: In this project, the active working branch is usually `feat/missing-gold-topology-v1` unless the user says otherwise. Do not switch to `main` unless explicitly instructed.
+2. **Inspect before changing**: Before source changes, check `git status --short`, `git branch --show-current`, and, when appropriate, `python3 scripts/check_repo_health.py`.
+3. **Commit/push when appropriate**: When source/tests/docs change, run relevant tests and the repo health check. If clean, stage only intended source/tests/docs, commit with a clear message, and push to the active branch.
+4. **Never stage local artifacts**: Do not stage or commit `outputs/`, `.claude/`, caches, bytecode, `.env`, secrets, or unrelated files.
+5. **Output-only runs stay local**: When only outputs are generated, do not commit. Report output directories, key metrics, and safety status.
+6. **Test coverage**: Add or update tests in `tests/` for algorithmic changes. Use mocks/dry-runs to avoid API calls unless the user explicitly approves provider/API use.
 
 ## Safety & Cost Guardrails
 1.  **NO PAID API CALLS**: Do not run any commands that call paid LLM APIs (OpenAI, Cohere, etc.) without explicit user approval.
@@ -27,10 +25,44 @@ Welcome to the `frontier-allocation-for-budgeted-llm-inference` repository. To m
 5.  **Do not overread structural replay**: The `pal_frontier_structural_target_replay_v1` offline replay is useful for structural analysis and logging, but it is not runtime promotion evidence until interpreted and validated.
 
 ## Next Research Focus
-The current priority is **no-API case-level analysis and pre-registered experiment design**.
-- Focus on clarifying candidate-generation failure modes, gold-in-pool behavior, and frontier collapse.
-- Keep proposed live work bounded and explicit; do not start paid runs without an approved capped plan.
-- Selector-only patches remain secondary unless a new no-API analysis changes the bottleneck diagnosis.
+The current priority is **frontier allocation validation using verifier-guided within-method reranking**.
+
+Recent state:
+- The RelationReady verifier training phase is mostly complete.
+- Selected verifier: SetFit `all-mpnet-base-v2` cfg1.
+- Cross-method verifier-guided selection was method-entangled and mostly reproduced `external_l1_max`.
+- Within-method reranking showed useful signal: verifier-selected seeds beat random seed choice on cached multi-seed artifacts.
+- Exploratory slice-aware/tie-aware policies showed potential but require independent validation.
+- A new independent multi-seed validation artifact may be generated with provider/API calls only after explicit approval, capped preflight, and tmux execution.
+
+Current research priorities:
+1. Validate verifier-guided within-method reranking on independent multi-seed artifacts.
+2. Keep provider prompts gold-free; use gold/exact_match only for offline evaluation/reporting.
+3. Use no-API dry-runs and manifests before paid/API generation.
+4. Use tmux for long/API jobs.
+5. Do not overclaim exploratory slice-aware policies unless validated on disjoint data.
+
+## Codex Session Defaults
+These defaults should be applied for future Codex sessions in this repository unless the user explicitly overrides them.
+
+1. **Access / permission default**
+   - Prefer the broadest safe workspace access available for this repository by default.
+   - Prefer full read/write access to the repository workspace when supported.
+   - Do **not** modify secrets, `.env` files, credentials, SSH keys, API keys, or unrelated system files.
+   - If the environment exposes formal approval/sandbox settings, use the most permissive safe setting available only when appropriate.
+
+2. **Instruction-file shortcut**
+   - If the user message is only a filename/path (for example `task.txt`, `instructions.md`, `/tmp/file.txt`), treat it as an instruction-file reference.
+   - Search for that file in this order:
+     a. exact path provided (absolute or relative),
+     b. current working directory,
+     c. repository root,
+     d. parent directory of repository root,
+     e. `/tmp/`,
+     f. `/mnt/data/` (if it exists).
+   - If found, read it fully and follow it.
+   - Do not ask the user to paste file contents unless the file cannot be found or cannot be read.
+   - If multiple matching files exist, use the closest one to the current working directory and report which file was used.
 
 ## Key Documentation
 - `docs/CURRENT_STATE_SUMMARY_20260511.md`: Canonical current-state summary.
