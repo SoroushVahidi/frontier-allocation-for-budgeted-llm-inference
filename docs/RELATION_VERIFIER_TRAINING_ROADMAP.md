@@ -1,39 +1,45 @@
 # RelationReady Verifier — Training Roadmap
 
-**Status as of 2026-05-16**
+**Status as of 2026-05-16 (evening — SetFit tuning in progress)**
 
 This document specifies the planned training progression for the RelationReady binary
 classifier (ready / not_ready). It is a planning document, not a training script.
-No training should be started until the prerequisites in Section 1 are satisfied.
 
 ---
 
-## 1. Current Training Bottleneck
+## 1. Current Training Status
 
-The current combined training dataset has a severe class imbalance:
+Prerequisites are now satisfied. Training is underway:
 
-| Label | Count |
+| Label | Count (current dataset) |
 |---|---|
-| ready | ~10 |
-| not_ready | ~270 |
+| ready | 93 |
+| not_ready | 287 |
+| **Total** | **380** |
 
-As a result, any model trained on this data produces **ready-class F1 ≈ 0.00** — the
-classifier learns to predict not_ready for everything and still achieves high accuracy.
+The positive-candidate batch (100 rows, ready=83, not_ready=17) has been fully labeled
+(human-reviewed; Azure `gpt-5.4` used only for hard adjudication) and merged into the
+combined training dataset at
+`outputs/relation_verifier_training_dataset_combined_33plus250plus100_20260516T221311Z/`.
 
-**Root cause:** The original training pool was built from incorrect-answer traces; very
-few correct-structure traces were included. The positive-candidate batch (rows 0–99 from
-`outputs/relation_verifier_positive_candidate_batch_20260516T002059Z/`) adds dozens of
-`ready` examples, but those labels must be merged before training.
+### Completed training runs (as of 2026-05-16)
 
-### Prerequisites before any model training
+| Model | ready F1 | PR-AUC | Output dir |
+|---|---|---|---|
+| TF-IDF + LogReg (balanced, grouped 5-fold) | 0.710 | 0.808 | `relation_verifier_baseline_combined380_grouped_threshold_train_20260516T222426Z` |
+| Frozen mpnet + SVM (balanced, grouped 5-fold) | 0.786 | 0.844 | `relation_verifier_embedding_mpnet_svm_grouped_20260516T230932Z` |
+| SetFit mpnet — first run (e1 i10) | 0.857 | 0.866 | `relation_verifier_setfit_mpnet_train_20260516T233217Z` |
+| **SetFit tuning cfg1 (e1 i20) — current best** | **0.865** | **0.890** | `relation_verifier_setfit_tuning_20260516_20260517T000951Z/cfg1_e1_i20_b16_spl2` |
 
-1. Finish labeling rows 50–99 (Azure-assisted + human review).
-2. Merge all labeled positive-candidate rows into the combined training CSV.
-3. Verify the merged dataset has at least ~40–50 ready examples (minimum for
-   meaningful cross-validation).
-4. Confirm no gold fields (`is_correct_offline_metadata`) appear as model features.
+SetFit tuning study (cfg0–cfg5) is **currently running** in tmux `setfit_tune`.
+cfg0–cfg2 done; cfg3 active; cfg4–cfg5 queued.
 
-**Do not start serious training until these steps are complete.**
+### Decision rule after tuning completes
+
+- If best SetFit ready F1 ≥ 0.87: proceed to integration. ModernBERT/DeBERTa optional.
+- If SetFit plateaus below 0.87: label `ready_candidate_batch.csv` (50 rows) to add
+  more positive examples, rebuild dataset, retrain.
+- If traces are frequently >512 tokens and SetFit still misses: try ModernBERT/DeBERTa.
 
 ---
 
@@ -259,40 +265,37 @@ df -h .          # disk space in repo
 
 ## 9. Immediate Next Steps
 
-In priority order:
+Steps 1–6 below are **complete**. Remaining work starts at step 7.
 
-1. **Finish labeling rows 50–99** — Azure-assisted (approved, current rubric
-   commit `05490be5`) + human spot-check on hesitant and not_ready rows.
+1. ~~Finish labeling rows 50–99~~ — **Done.** All 100 positive-candidate rows labeled.
+2. ~~Merge positive-candidate labels~~ — **Done.** Combined dataset: 380 rows, ready=93.
+3. ~~Implement imbalance-aware sklearn trainer~~ — **Done.** `--class-weight balanced` + `--threshold-sweep` implemented.
+4. ~~Run sklearn baselines~~ — **Done.** TF-IDF LogReg: ready F1=0.710, PR-AUC=0.808.
+5. ~~Run embedding baselines~~ — **Done.** Frozen mpnet SVM: ready F1=0.786, PR-AUC=0.844.
+6. ~~First SetFit run~~ — **Done.** SetFit mpnet e1 i10: ready F1=0.857, PR-AUC=0.866.
 
-2. **Merge positive-candidate labels into training dataset** — run
-   `export_relation_verifier_positive_candidate_batch.py` equivalent after
-   labeling is complete; combine with existing training CSV.
+7. **Wait for SetFit tuning to complete** — tmux `setfit_tune` running cfg0–cfg5.
+   Expected completion ~22:30–23:00 on 2026-05-16.
 
-3. **Implement imbalance-aware options in the sklearn trainer** —
-   `scripts/train_relation_verifier_baseline.py` should accept
-   `--class-weight balanced` and `--threshold-sweep` flags if not already present.
+8. **Read tuning results** — inspect `master.log` and each `cfg*/metrics.json`.
+   Choose the best stable config (current leader: cfg1, e1 i20).
 
-4. **Run sklearn baselines** — TF-IDF + LR and TF-IDF + SVM with grouped CV.
-   Report ready F1, macro F1, PR-AUC, confusion matrix.
+9. **Decide on ModernBERT/DeBERTa** — apply decision rule from Section 1.
 
-5. **Run embedding baselines** — frozen `all-MiniLM-L6-v2` and `all-mpnet-base-v2`
-   embeddings + LR/SVM heads; compare to TF-IDF baselines.
-
-6. **Only then: SetFit** — once sklearn and embedding baselines are characterised and
-   the dataset has ≥ 50 ready examples.
-
-7. **ModernBERT / DeBERTa** — after SetFit is evaluated and dataset is larger.
+10. **Integration** — run best verifier on held-out traces; wire into selector policy.
 
 ---
 
-## 10. Reference: Current Dataset Counts (2026-05-16)
+## 10. Reference: Current Dataset Counts (2026-05-16, updated)
 
 | Source | ready | not_ready | Total |
 |---|---|---|---|
-| Original training pool | ~10 | ~270 | ~280 |
-| Positive-candidate batch rows 0–49 (labeled) | TBD | 0 | ~50 |
-| Positive-candidate batch rows 50–99 (pending) | TBD | 0 | ~50 |
-| **Target after merge** | **≥ 50** | **~270** | **≥ 320** |
+| Seed dataset (33 rows) | ~8 | ~25 | 33 |
+| Expansion pool (250 rows) | 5 | 245 | 250 |
+| Positive-candidate batch (100 rows) | 83 | 17 | 100 |
+| **Combined (active dataset)** | **93** | **287** | **380** |
+| Ready-candidate batch (unlabeled) | TBD | 0 | 50 |
 
-Realistic minimum for meaningful SetFit: **≥ 40 ready examples**.
-Realistic minimum for fine-tuned transformer: **≥ 100 ready examples**.
+Realistic minimum for meaningful SetFit: **≥ 40 ready examples** — satisfied (93 ready).
+Realistic minimum for fine-tuned transformer: **≥ 100 ready examples** — borderline; labeling
+the ready-candidate batch would bring the total to ~143 ready if needed.

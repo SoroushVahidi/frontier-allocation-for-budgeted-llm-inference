@@ -1,8 +1,47 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-16
+**Last updated:** 2026-05-16 (evening update — SetFit tuning in progress)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
+
+---
+
+## 0. Current Status (2026-05-16)
+
+### Branch
+`feat/missing-gold-topology-v1` — active development.
+
+### Labeling
+- Positive-candidate batch (100 rows) **fully labeled**: ready=83, not_ready=17.
+- All labels are human-reviewed; Azure strong model (`gpt-5.4`) used only for
+  hard adjudication disagreements — not as automatic ground truth.
+- Combined training dataset rebuilt: **380 rows** (33 seed + 250 expansion + 100 positive),
+  ready=93, not_ready=287 (~3:1 imbalance, workable for SetFit).
+
+### Model leaderboard (grouped 5-fold CV, OOF, as of this update)
+
+| System | ready F1 | PR-AUC | Notes |
+|---|---|---|---|
+| TF-IDF + LogReg (balanced) | 0.710 | 0.808 | sklearn baseline |
+| Frozen mpnet + SVM (balanced) | 0.786 | 0.844 | embedding baseline |
+| SetFit mpnet (first run, e1 i10) | 0.857 | 0.866 | full fine-tune, default thr |
+| **SetFit mpnet cfg1 (e1 i20)** | **0.865** | **0.890** | tuning study, current best |
+
+SetFit cfg1 (1 epoch, 20 contrastive iterations) is the new leader on both ready F1 and PR-AUC.
+Doubling epochs (cfg2) hurts slightly — likely contrastive overfitting at this dataset size.
+
+### Active job
+SetFit hyperparameter tuning study running in tmux session `setfit_tune`:
+- Output dir: `outputs/relation_verifier_setfit_tuning_20260516_20260517T000951Z/`
+- Configs cfg0–cfg2 done; cfg3 running (fold 2/5 at ~21:50 on 2026-05-16); cfg4–cfg5 queued.
+- Estimated ~35–45 min remaining at time of this update.
+- GPU: RTX 5060 Ti, 100% utilization, 11–14 GiB VRAM used.
+
+### Immediate next step (after tuning completes)
+1. Read `outputs/relation_verifier_setfit_tuning_*/master.log` and all `cfg*/metrics.json`.
+2. Pick the best stable config (expect cfg1 e1 i20 to hold or cfg3/cfg4/cfg5 to improve it).
+3. Decide whether ModernBERT / DeBERTa fine-tuning is still needed or if SetFit is sufficient.
+4. If further data needed, label `ready_candidate_batch.csv` (50 rows, not yet labeled).
 
 ---
 
@@ -115,34 +154,25 @@ to 27:1.
 
 ### Expansion pool (250 rows)
 - Built from `build_relation_verifier_training_pool.py`
-- All 250 rows are now labeled:
-  - 245 `not_ready` (175 opaque bulk-labeled in a cleaning pass)
-  - 5 `ready`
+- All 250 rows labeled: 245 `not_ready` (175 opaque bulk-labeled), 5 `ready`
 - Label CSV: `outputs/relation_verifier_training_pool_expansion_20260515T050603Z/manual_audit_batch.csv`
 
-### Combined training dataset
-- `outputs/relation_verifier_training_dataset_combined_33plus250_20260515T234443Z/`
-- 280 rows included, 3 uncertain excluded
-- Current label totals: ready=10, not_ready=270
-
-### Positive candidate batch (100 rows)
+### Positive candidate batch (100 rows) — **FULLY LABELED**
 - Exported by `export_relation_verifier_positive_candidate_batch.py`
-- Source: 64 `per_example_records.jsonl` files from past runs, `exact_match=True`, non-opaque traces
+- Source: `per_example_records.jsonl` files, `exact_match=True`, non-opaque traces
 - Batch: `outputs/relation_verifier_positive_candidate_batch_20260516T002059Z/positive_candidate_batch.csv`
+- **All 100 rows labeled:** ready=83, not_ready=17 (human-reviewed; Azure `gpt-5.4` used only for hard adjudication)
 
-**Labeling progress:**
+### Combined training dataset — **CURRENT: 380 rows**
+- `outputs/relation_verifier_training_dataset_combined_33plus250plus100_20260516T221311Z/`
+- 380 rows included; label totals: **ready=93, not_ready=287** (~3:1 imbalance)
+- Prior dataset (280 rows, ready=10) is superseded — do not use for new training.
 
-| Row range | Status | Ready | Not-ready |
-|---|---|---|---|
-| 0–28 (29 rows) | Labeled and patched | 26 | 3 |
-| 29–49 (21 rows) | Printed; **pending human labels** | — | — |
-| 50–99 (50 rows) | Not yet printed or labeled | — | — |
-
-### Ready candidate batch (50 rows)
+### Ready candidate batch (50 rows) — **not yet labeled**
 - Exported by `export_relation_verifier_ready_candidate_batch.py`
 - Source: structured artifacts with `candidate_nodes` / `final_nodes` fields
 - Batch: `outputs/relation_verifier_ready_candidate_batch_20260515T235155Z/ready_candidate_batch.csv`
-- Status: not yet labeled
+- Label these if more `ready` examples are needed after SetFit tuning results.
 
 ---
 
@@ -221,39 +251,29 @@ Conflating these three will invalidate experimental claims.
 
 | Problem | Details |
 |---|---|
-| Class imbalance | ready=10 vs not_ready=270 in current training set; model F1-ready=0.00 |
-| Insufficient ready labels | Need ~50–100 confirmed ready examples minimum for training to be useful |
-| API judge noise | Multi-judge axis labeling has low agreement; not suitable for fine-grained supervision |
+| ~~Class imbalance~~ | ~~Resolved~~ — positive batch labeled; combined dataset now ready=93, not_ready=287 |
+| SetFit tuning not yet complete | cfg3–cfg5 still running; final config selection pending |
+| Ready candidate batch unlabeled | 50-row `ready_candidate_batch.csv` not yet labeled; may be needed if more ready data required |
 | Single-comparison underpowered | 100-case Cohere run affected by nondeterminism; repeated/cached replay needed for paper claims |
-| No `class_weight='balanced'` yet | Trainer does not yet use imbalance correction — add alongside data fix, not instead of it |
+| No ModernBERT/DeBERTa decision yet | Pending SetFit tuning results — may not be needed if SetFit F1 is sufficient |
 
 ---
 
 ## 8. Recommended Next Steps  <!-- was §7 -->
 
-**Immediate (labeling):**
-1. Label rows 29–49 of `positive_candidate_batch.csv` and patch them in (see labeling workflow below).
-2. Label rows 50–99.
-3. Label the 50-row `ready_candidate_batch.csv`.
+**Immediate (wait for active job):**
+1. Wait for `setfit_tune` tmux session to complete (cfg3–cfg5 remaining, ~35–45 min as of 21:50 2026-05-16).
+2. Read `outputs/relation_verifier_setfit_tuning_*/master.log` and all `cfg*/metrics.json`.
+3. Choose best stable config. Current leader: **cfg1** (e1 i20) — ready F1=0.865, PR-AUC=0.890.
 
-**After labeling (training):**
-4. Rebuild combined training dataset:
-   ```
-   python3 scripts/build_relation_verifier_training_dataset.py \
-       --seed-csv outputs/relation_verifier_seed_dataset_*/seed_dataset.csv \
-       --expansion-csv outputs/relation_verifier_training_pool_expansion_*/manual_audit_batch.csv \
-       --positive-csv outputs/relation_verifier_positive_candidate_batch_*/positive_candidate_batch.csv \
-       --ready-csv outputs/relation_verifier_ready_candidate_batch_*/ready_candidate_batch.csv \
-       --output-dir outputs/relation_verifier_training_dataset_<STAMP>
-   ```
-5. Add `class_weight='balanced'` and/or oversampling to `train_relation_verifier_baseline.py`.
-6. Retrain baseline — target ready F1 > 0.5.
-7. If larger training needed: use `tmux`, check RAM/CPU/GPU/disk first.
+**After tuning (decision gate):**
+4. If best tuned SetFit ready F1 ≥ 0.87: proceed to integration. ModernBERT/DeBERTa optional.
+5. If SetFit plateaus below 0.87: label `ready_candidate_batch.csv` (50 rows) to add more positives, then retrain.
 
-**After a working verifier:**
-8. Run verifier on held-out candidate traces to score relation-readiness.
-9. Integrate verifier score into the selector / budget-allocation policy.
-10. Revisit repeated Cohere comparison with caching/replay for paper-strength claims.
+**Integration (after verifier is good enough):**
+6. Run verifier on held-out candidate traces to score relation-readiness.
+7. Integrate verifier score into the selector / budget-allocation policy.
+8. Revisit repeated Cohere comparison with caching/replay for paper-strength claims.
 
 ---
 
@@ -313,7 +333,10 @@ opaque, or truncated traces are `not_ready`.
 | Output-layer fix note | `docs/RELATION100_COHERE_OUTPUT_LAYER_FIX_NOTE.md` |
 | Seed dataset | `outputs/relation_verifier_seed_dataset_*/seed_dataset.csv` |
 | Expansion pool labels | `outputs/relation_verifier_training_pool_expansion_20260515T050603Z/manual_audit_batch.csv` |
-| Combined training dataset | `outputs/relation_verifier_training_dataset_combined_33plus250_20260515T234443Z/` |
-| Positive candidate batch | `outputs/relation_verifier_positive_candidate_batch_20260516T002059Z/positive_candidate_batch.csv` |
-| Ready candidate batch | `outputs/relation_verifier_ready_candidate_batch_20260515T235155Z/ready_candidate_batch.csv` |
-| Baseline results | `outputs/relation_verifier_baseline_combined250_train_20260515T234455Z/` |
+| Combined training dataset (current) | `outputs/relation_verifier_training_dataset_combined_33plus250plus100_20260516T221311Z/` |
+| Positive candidate batch (fully labeled) | `outputs/relation_verifier_positive_candidate_batch_20260516T002059Z/positive_candidate_batch.csv` |
+| Ready candidate batch (unlabeled) | `outputs/relation_verifier_ready_candidate_batch_20260515T235155Z/ready_candidate_batch.csv` |
+| TF-IDF baseline results | `outputs/relation_verifier_baseline_combined380_grouped_threshold_train_20260516T222426Z/` |
+| Frozen embedding baseline results | `outputs/relation_verifier_embedding_mpnet_svm_grouped_20260516T230932Z/` |
+| First SetFit run results | `outputs/relation_verifier_setfit_mpnet_train_20260516T233217Z/` |
+| SetFit tuning study (active) | `outputs/relation_verifier_setfit_tuning_20260516_20260517T000951Z/` |
