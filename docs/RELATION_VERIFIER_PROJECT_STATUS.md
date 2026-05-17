@@ -1,6 +1,6 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-17 (independent 720-row Cohere validation completed; positive within-method confirmation)
+**Last updated:** 2026-05-17 (independent 720-row Cohere validation + cluster-bootstrap uncertainty readout completed)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
@@ -273,7 +273,7 @@ Conflating these three will invalidate experimental claims.
 | Problem | Details |
 |---|---|
 | Cross-method method entanglement | On the 1440-row scored artifact, verifier-guided cross-method selection chose `external_l1_max` in 705/720 groups and matched `external_l1_max` accuracy (72.1% vs 72.2%), so naive cross-method `proba_ready` routing is not reliable. |
-| Independent within-method validation status | Completed on disjoint Cohere artifact (`raw=738`, `dedup=720`, 120 groups): verifier-max 86.67% vs random 82.08% (+4.58pp), anti-verifier 72.50%, oracle 95.83%. This is now the strongest independent validation for within-method reranking directionality. |
+| Independent within-method validation status | Completed on disjoint Cohere artifact (`raw=738`, `dedup=720`, 120 groups) with cluster-bootstrap uncertainty: verifier-max 86.67% [79.17, 93.33], random 82.08% [75.56, 87.78], anti-verifier 72.50% [64.17, 80.83], oracle 95.83% [90.83, 100.00]. Lift vs random +4.58pp [ +0.28pp, +9.03pp ] overall (aggregate-stable), while per-method lift-vs-random CIs cross 0 (positive but individually uncertain). |
 | Slice-aware rules are exploratory | Slice-aware/tie-aware policies were selected and evaluated on the same scored artifact; gains are hypothesis-generating only until frozen-rule transfer succeeds on disjoint data. |
 | Small disjoint validation is underpowered | The 15-case disjoint artifact is same-sign for within-method reranking but too small for strong claims (30 groups total). |
 | Frozen-policy transfer tooling gap | Frozen Task K rules were not applied on the new artifact because no reusable audited transfer script exists yet. |
@@ -284,7 +284,7 @@ Conflating these three will invalidate experimental claims.
 
 **Immediate (post-independent-validation):**
 1. Keep no-API frontier-analysis mode and conservative claim language.
-2. Quantify uncertainty on the new 120-group result (paired/bootstrap CI for verifier-max vs random lift).
+2. Treat uncertainty as complete for the current independent artifact; use cluster-bootstrap CI as primary in summaries.
 3. Implement or adopt a reusable frozen Task K transfer script, then evaluate frozen rules with no retuning.
 4. Keep method-entanglement caveat explicit for any cross-method routing claim.
 
@@ -428,7 +428,18 @@ traces) is achieved.
   - By method:
     - `direct_reserve_semantic_frontier_v2`: verifier-max `0.8833`, random `0.8389`, anti `0.7333`, lift `+4.44pp`.
     - `external_l1_max`: verifier-max `0.8500`, random `0.8028`, anti `0.7167`, lift `+4.72pp`.
-  - Interpretation: independently confirms within-method reranking direction; effect size is smaller than the 1440-row exploratory artifact; cross-method entanglement caveat remains.
+  - Confirmatory uncertainty readout (cluster bootstrap over `example_id`, primary CI):
+    - verifier-max `86.67%` [79.17%, 93.33%]
+    - random `82.08%` [75.56%, 87.78%]
+    - anti-verifier `72.50%` [64.17%, 80.83%]
+    - oracle `95.83%` [90.83%, 100.00%]
+    - verifier-minus-random `+4.58pp` [+0.28pp, +9.03pp]
+    - verifier-minus-anti `+14.17pp` [+6.67pp, +21.67pp]
+    - oracle-minus-verifier `+9.17pp` [+4.17pp, +15.00pp]
+    - by-method verifier-minus-random:
+      - `direct_reserve_semantic_frontier_v2`: `+4.44pp` [-2.22pp, +11.11pp]
+      - `external_l1_max`: `+4.72pp` [-1.67pp, +10.83pp]
+  - Interpretation: aggregate verifier-vs-random gain is statistically stable (lower CI bound > 0); per-method verifier-vs-random lifts are positive but individually uncertain; cross-method entanglement caveat remains.
   - Frozen Task K transfer was not run (no reusable audited transfer script yet).
 
 See `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md` for a compact handoff summary.

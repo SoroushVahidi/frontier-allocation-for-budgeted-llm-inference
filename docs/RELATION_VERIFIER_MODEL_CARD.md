@@ -483,7 +483,20 @@ method-aware:
   120 groups with verifier-max `0.8667` vs random `0.8208` (+4.58pp),
   anti-verifier `0.7250`, oracle `0.9583`. By method, lift vs random was
   +4.44pp (`direct_reserve_semantic_frontier_v2`) and +4.72pp (`external_l1_max`).
-  This independently validates within-method reranking directionality on a disjoint Cohere artifact.
+  Confirmatory uncertainty analysis (cluster bootstrap over `example_id`, primary CI)
+  gave:
+  - verifier-max `86.67%` [79.17%, 93.33%]
+  - random `82.08%` [75.56%, 87.78%]
+  - anti-verifier `72.50%` [64.17%, 80.83%]
+  - oracle `95.83%` [90.83%, 100.00%]
+  - verifier-minus-random `+4.58pp` [+0.28pp, +9.03pp]
+  - verifier-minus-anti `+14.17pp` [+6.67pp, +21.67pp]
+  - oracle-minus-verifier `+9.17pp` [+4.17pp, +15.00pp]
+  By-method verifier-minus-random remained positive but individually uncertain:
+  +4.44pp [-2.22pp, +11.11pp] for `direct_reserve_semantic_frontier_v2`,
+  +4.72pp [-1.67pp, +10.83pp] for `external_l1_max`.
+  This provides the strongest current evidence for within-method reranking on disjoint data,
+  while preserving the method-entanglement caveat for cross-method selection.
 - **Dedup/QA note for the independent artifact:** raw `738` -> dedup `720`;
   duplicates removed `18` across `5` duplicate keys; duplicate payloads were divergent
   (raw file preserved); scoring leakage check remained PASS.

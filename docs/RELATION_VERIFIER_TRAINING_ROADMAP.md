@@ -307,6 +307,13 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
       budgeted accuracy curves.
     - See `docs/RELATION_VERIFIER_PROJECT_STATUS.md §11` for full transition plan.
 
+14. ~~**Independent uncertainty analysis for within-method reranking**~~ — **Done (2026-05-17).**
+    `scripts/analyze_within_method_reranking_uncertainty.py` added with tests, and run on
+    `outputs/within_method_reranking_new_multiseed_validation_20260517T144336Z/`.
+    Primary cluster-bootstrap CI (over `example_id`) for verifier-minus-random is
+    `+4.58pp` `[+0.28pp, +9.03pp]` overall; by-method lifts are positive but individually
+    uncertain (method-level CIs cross 0).
+
 ---
 
 ## 10. Reference: Current Dataset Counts (2026-05-16, updated)
@@ -345,6 +352,7 @@ Training is no longer the bottleneck. Current integration findings:
 
 Current recommended work split:
 - Independent validation is complete and positive for within-method reranking directionality.
-- Next no-API work should prioritize uncertainty reporting (paired/bootstrap CI for lift estimates).
+- Uncertainty reporting is complete; use cluster-bootstrap CI as primary readout in summaries.
 - Build/adopt a reusable audited frozen-policy transfer script before applying Task K frozen rules on new artifacts.
+- Prepare a paper-ready result table that separates aggregate-confirmed effects from method-level uncertainty.
 - Keep cross-method method-entanglement caveat explicit; validated claim scope remains within-method reranking.

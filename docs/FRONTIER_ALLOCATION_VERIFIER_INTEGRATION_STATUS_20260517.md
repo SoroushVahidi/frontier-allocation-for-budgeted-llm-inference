@@ -43,12 +43,43 @@ Independent artifact references:
 - Scoring output: `outputs/verifier_scoring_new_multiseed_validation_full_20260517T144315Z/`
 - Reranking output: `outputs/within_method_reranking_new_multiseed_validation_20260517T144336Z/`
 
+## Confirmatory Uncertainty Readout (Complete, 2026-05-17)
+
+Uncertainty analysis is complete using paired cluster bootstrap over `example_id`
+(primary CI), with paired row bootstrap reported as secondary:
+
+- Script: `scripts/analyze_within_method_reranking_uncertainty.py`
+- Test: `tests/test_analyze_within_method_reranking_uncertainty.py`
+- Commit: `d1b035f9`
+- Output: `outputs/within_method_reranking_uncertainty_new_validation_20260517T150458Z/`
+
+Overall independent/disjoint result (`n_groups=120`, `n_clusters=60`), 95% cluster-bootstrap CIs:
+
+| Metric | Point | 95% cluster CI |
+|---|---:|---:|
+| verifier-max | 86.67% | [79.17%, 93.33%] |
+| random-expected | 82.08% | [75.56%, 87.78%] |
+| anti-verifier | 72.50% | [64.17%, 80.83%] |
+| oracle | 95.83% | [90.83%, 100.00%] |
+| verifier minus random | +4.58pp | [+0.28pp, +9.03pp] |
+| verifier minus anti | +14.17pp | [+6.67pp, +21.67pp] |
+| oracle minus verifier | +9.17pp | [+4.17pp, +15.00pp] |
+
+By-method `verifier_minus_random`:
+- `direct_reserve_semantic_frontier_v2`: +4.44pp, CI [-2.22pp, +11.11pp]
+- `external_l1_max`: +4.72pp, CI [-1.67pp, +10.83pp]
+
+Interpretation:
+- Aggregate verifier-vs-random gain is statistically stable (cluster CI lower bound > 0).
+- Per-method verifier-vs-random gains are positive but individually uncertain (CIs cross 0).
+- Verifier-vs-anti is strongly positive overall and by method.
+- Oracle remains a diagnostic fixed-pool upper bound, not a deployable policy.
+
 ## Current Bottlenecks / Next Work
 
-1. Add uncertainty quantification for within-method lift on the new disjoint artifact
-   (paired/bootstrap confidence intervals over groups).
-2. Build or adopt a reusable audited frozen-policy transfer script for Task K rule application.
-3. Run frozen-rule transfer only with fixed rules and no retuning on the new artifact.
+1. Build or adopt a reusable audited frozen-policy transfer script for Task K rule application.
+2. Run frozen-rule transfer only with fixed rules and no retuning on the independent artifact.
+3. Prepare a paper-ready results table separating aggregate-confirmed effects from method-level uncertainty.
 4. Keep cross-method entanglement caveat explicit in all summaries.
 
 ## Claim Discipline

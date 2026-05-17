@@ -183,6 +183,14 @@ frontier-allocation validation status.
 - A small disjoint 15-case artifact shows same-sign lift (+3.3pp) but is underpowered and non-decisive.
 - New independent/disjoint Cohere validation (120 groups) confirms same-direction within-method signal:
   verifier-max `0.8667` vs random `0.8208` (+4.58pp), anti-verifier `0.7250`, oracle `0.9583`.
+- Confirmatory uncertainty analysis is complete (cluster bootstrap over `example_id`, primary CI):
+  verifier-max `86.67%` [79.17%, 93.33%], random `82.08%` [75.56%, 87.78%],
+  anti-verifier `72.50%` [64.17%, 80.83%], oracle `95.83%` [90.83%, 100.00%],
+  verifier-minus-random `+4.58pp` [+0.28pp, +9.03pp], verifier-minus-anti `+14.17pp`
+  [+6.67pp, +21.67pp], oracle-minus-verifier `+9.17pp` [+4.17pp, +15.00pp].
+- Aggregate verifier-vs-random gain is statistically stable (cluster CI lower bound > 0),
+  while per-method verifier-vs-random gains remain positive but individually uncertain
+  (method-level CIs cross 0).
 - By method on the new artifact:
   `direct_reserve_semantic_frontier_v2` lift vs random `+4.44pp`;
   `external_l1_max` lift vs random `+4.72pp`.
