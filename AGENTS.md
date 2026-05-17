@@ -64,6 +64,9 @@ These defaults should be applied for future Codex sessions in this repository un
    - Do not ask the user to paste file contents unless the file cannot be found or cannot be read.
    - If multiple matching files exist, use the closest one to the current working directory and report which file was used.
 
+3. **Model preference**
+   - When starting Codex for this repository, prefer GPT-5.3 with high reasoning if available; otherwise use the strongest available GPT-5 reasoning model approved by the user.
+
 ## Key Documentation
 - `docs/CURRENT_STATE_SUMMARY_20260511.md`: Canonical current-state summary.
 - `docs/CURRENT_METHOD_STATUS_20260511.md`: Method roles and status supplement.
