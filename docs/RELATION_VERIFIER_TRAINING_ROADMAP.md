@@ -31,7 +31,7 @@ combined training dataset at
 | TF-IDF + LogReg (balanced, grouped 5-fold) | 0.710 | 0.808 | `relation_verifier_baseline_combined380_grouped_threshold_train_20260516T222426Z` |
 | Frozen mpnet + SVM (balanced, grouped 5-fold) | 0.786 | 0.844 | `relation_verifier_embedding_mpnet_svm_grouped_20260516T230932Z` |
 | SetFit mpnet — first run (e1 i10) | 0.857 | 0.866 | `relation_verifier_setfit_mpnet_train_20260516T233217Z` |
-| **SetFit tuning cfg1 (e1 i20) — selected** | **0.865** | **0.890** | `relation_verifier_setfit_tuning_20260516_20260517T000951Z/cfg1_e1_i20_b16_spl2` |
+| **SetFit tuning cfg1 (e1 i20) — selected** | **0.865** | **0.883** (verified; wrapper reported ~0.890) | `relation_verifier_setfit_tuning_20260516_20260517T000951Z/cfg1_e1_i20_b16_spl2` |
 
 SetFit tuning study (cfg0–cfg5) is complete; cfg1 is selected for downstream use.
 Verified OOF metrics from `predictions.jsonl` are ready F1=0.8646 and PR-AUC=0.883.
@@ -279,7 +279,8 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
    cfg5 (batch=32) failed CUDA OOM; cfg0–cfg4 completed successfully.
 
 8. ~~Read tuning results~~ — **Done.** cfg1 (e1 i20 b16 spl2) selected as best config.
-   ready F1=0.865, PR-AUC=0.890 at default threshold=0.5.
+   ready F1=0.865, PR-AUC wrapper report ~0.890 at default threshold=0.5;
+   verified forward-facing PR-AUC from `predictions.jsonl` is 0.883.
 
 9. ~~**Decide on ModernBERT/DeBERTa**~~ — **Deferred; verifier declared ready (2026-05-17).**
    SetFit cfg1 verified metrics: ready F1=0.8646, PR-AUC=0.883, group-bootstrap CI
@@ -335,11 +336,13 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
 
 | Source | ready | not_ready | Total |
 |---|---|---|---|
-| Seed dataset (33 rows) | ~8 | ~25 | 33 |
+| Seed dataset (33 rows) | 5 | 25 | 33 |
 | Expansion pool (250 rows) | 5 | 245 | 250 |
 | Positive-candidate batch (100 rows) | 83 | 17 | 100 |
 | **Combined (active dataset)** | **93** | **287** | **380** |
 | Ready-candidate batch (unlabeled) | TBD | 0 | 50 |
+
+Seed dataset note: uncertain=3 (excluded from training).
 
 Realistic minimum for meaningful SetFit: **≥ 40 ready examples** — satisfied (93 ready).
 Realistic minimum for fine-tuned transformer: **≥ 100 ready examples** — borderline; labeling
