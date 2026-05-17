@@ -69,6 +69,8 @@ These defaults should be applied for future Codex sessions in this repository un
 
 ## Key Documentation
 - `docs/CURRENT_STATE_SUMMARY_20260511.md`: Canonical current-state summary.
+- `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md`: Compact verifier/frontier integration handoff with CI-backed claim scope.
+- `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`: Concise paper-ready narrative draft for verifier-guided within-method reranking.
 - `docs/CURRENT_METHOD_STATUS_20260511.md`: Method roles and status supplement.
 - `docs/CURRENT_ARTIFACTS_INDEX_20260511.md`: Canonical artifact navigation supplement.
 - `docs/CODEX_WEB_HANDOFF_20260510.md`: Earlier handoff, still useful context.

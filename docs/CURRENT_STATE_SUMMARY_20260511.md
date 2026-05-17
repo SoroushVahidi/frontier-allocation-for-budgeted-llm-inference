@@ -162,6 +162,9 @@ Hypothesis:
 
 This addendum preserves the historical evidence hierarchy above and records the current
 frontier-allocation validation status.
+Companion docs:
+- `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md`
+- `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`
 
 ### Current high-level state
 
