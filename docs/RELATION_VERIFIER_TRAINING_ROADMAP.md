@@ -336,10 +336,15 @@ Training is no longer the bottleneck. Current integration findings:
 3. Tie-aware and slice-aware rule gains are exploratory because selection and evaluation
    were on the same artifact.
 4. A small disjoint 15-case validation is same-sign but underpowered.
-5. The current bottleneck is independent multi-seed validation data; a new Cohere
-   60-example generation run is in progress in tmux.
+5. Independent/disjoint Cohere multi-seed validation is now complete:
+   - raw `738` -> dedup `720` (`18` duplicates removed across `5` duplicate keys; divergent duplicates, raw preserved)
+   - structural validation PASS (60 examples, 2 methods, budget 6, 6 seeds/group, trace/final-answer metadata present, disjointness overlap count 0)
+   - scoring dry-run PASS and full scoring on 720 candidates; leakage check PASS
+   - within-method reranking (120 groups): verifier-max `0.8667`, random `0.8208`, anti `0.7250`, oracle `0.9583`, lift vs random `+4.58pp`
+   - by method lift vs random: +4.44pp (`direct_reserve_semantic_frontier_v2`), +4.72pp (`external_l1_max`)
 
 Current recommended work split:
-- Keep no-API offline validation/reporting active while generation runs.
-- After generation completes, run artifact QA, offline verifier scoring, within-method reranking,
-  and frozen-rule transfer checks (no retuning).
+- Independent validation is complete and positive for within-method reranking directionality.
+- Next no-API work should prioritize uncertainty reporting (paired/bootstrap CI for lift estimates).
+- Build/adopt a reusable audited frozen-policy transfer script before applying Task K frozen rules on new artifacts.
+- Keep cross-method method-entanglement caveat explicit; validated claim scope remains within-method reranking.

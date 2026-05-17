@@ -1,6 +1,6 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-17 (frontier-allocation validation update; independent Cohere validation run in progress)
+**Last updated:** 2026-05-17 (independent 720-row Cohere validation completed; positive within-method confirmation)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
@@ -58,6 +58,7 @@ Fold 4 is the weakest fold (F1=0.7907, PR-AUC=0.769); the other four folds score
 - ~~Bootstrap CI / per-fold reporting~~ — Done. `scripts/analyze_relation_verifier_predictions.py`.
 - ~~Held-out split sanity check~~ — Done. `--eval-split-mode explicit` added to trainer.
 - **Verifier accepted for frontier integration** — Active next step: see §12 of MODEL_CARD.md.
+- **Independent/disjoint within-method validation completed (720-row dedup artifact)** — positive same-direction confirmation.
 
 ### Remaining optional steps (not blocking integration)
 - Label `ready_candidate_batch.csv` (50 rows) if more ready examples needed.
@@ -272,29 +273,24 @@ Conflating these three will invalidate experimental claims.
 | Problem | Details |
 |---|---|
 | Cross-method method entanglement | On the 1440-row scored artifact, verifier-guided cross-method selection chose `external_l1_max` in 705/720 groups and matched `external_l1_max` accuracy (72.1% vs 72.2%), so naive cross-method `proba_ready` routing is not reliable. |
-| Independent within-method validation data | The strongest within-method reranking result is from one 1440-row cached artifact; independent multi-seed validation is required before promotion claims. |
+| Independent within-method validation status | Completed on disjoint Cohere artifact (`raw=738`, `dedup=720`, 120 groups): verifier-max 86.67% vs random 82.08% (+4.58pp), anti-verifier 72.50%, oracle 95.83%. This is now the strongest independent validation for within-method reranking directionality. |
 | Slice-aware rules are exploratory | Slice-aware/tie-aware policies were selected and evaluated on the same scored artifact; gains are hypothesis-generating only until frozen-rule transfer succeeds on disjoint data. |
 | Small disjoint validation is underpowered | The 15-case disjoint artifact is same-sign for within-method reranking but too small for strong claims (30 groups total). |
-| Independent Cohere validation generation in progress | A 60-example × 6-seed × 2-method run (target 720 rows) is running in tmux; downstream validation depends on completion and artifact QA. |
+| Frozen-policy transfer tooling gap | Frozen Task K rules were not applied on the new artifact because no reusable audited transfer script exists yet. |
 
 ---
 
 ## 8. Recommended Next Steps  <!-- was §7 -->
 
-**Immediate (while independent generation is running):**
-1. Keep the active tmux generation job untouched; do not start duplicate API runs.
-2. Continue no-API analysis/documentation and keep claims conservative.
-3. Prepare frozen evaluation scripts/manifests for immediate post-generation validation.
-
-**After generation completes (gated):**
-4. Validate artifact integrity: expected row count, example/method/budget/seed coverage, trace/answer presence, and disjointness checks.
-5. Run offline verifier scoring dry-run, then full score mode on the new artifact.
-6. Run within-method reranking on the new scored artifact and compare against random/anti-verifier/oracle baselines.
-7. Evaluate frozen slice-aware rules from Task K only if method/budget slices overlap; do not retune on new data.
+**Immediate (post-independent-validation):**
+1. Keep no-API frontier-analysis mode and conservative claim language.
+2. Quantify uncertainty on the new 120-group result (paired/bootstrap CI for verifier-max vs random lift).
+3. Implement or adopt a reusable frozen Task K transfer script, then evaluate frozen rules with no retuning.
+4. Keep method-entanglement caveat explicit for any cross-method routing claim.
 
 **Promotion criteria:**
-8. Treat cross-method verifier routing as non-promotable unless method entanglement is mitigated on independent data.
-9. Promote within-method reranking only if independent multi-seed validation preserves same-sign lift with acceptable variance bounds.
+5. Treat cross-method verifier routing as non-promotable unless method entanglement is mitigated on independent data.
+6. Within-method reranking is now independently positive; further promotion should include uncertainty bounds and reproducible frozen-policy transfer behavior.
 
 ---
 
@@ -423,6 +419,16 @@ traces) is achieved.
 - **Task J (tie-aware sweep):** no global improvement over baseline verifier top-1; slice-level improvements appeared in selected method/budget slices.
 - **Task K (slice-aware constrained policies):** exploratory same-artifact policies showed offline lift (up to +4.17pp), but this is not independent validation.
 - **Task M (15-case disjoint sanity validation):** same-sign within-method lift (+3.3pp verifier-max vs random) with tiny spreads; underpowered and non-decisive.
-- **Independent validation generation:** a new Cohere 60-example multi-seed validation run is in progress in tmux and is the current bottleneck for disjoint confirmation.
+- **Independent/disjoint Cohere multi-seed validation (new, completed):**
+  - Generation root: `outputs/within_method_validation_generation_cohere_20260517T100852Z/`
+  - Dedup/QA: raw `738` -> dedup `720`, duplicates removed `18` across `5` duplicate keys; duplicates were divergent; raw preserved.
+  - Structural validation passed: 60 examples, 2 methods, budget 6, 6 seeds per `(example_id,budget,method)`, trace/final-answer metadata present, disjointness proof overlap count `0`.
+  - Scoring: dry-run PASS, full scoring `720` candidates, leakage check PASS.
+  - Within-method reranking (`120` groups): verifier-max `0.8667`, random `0.8208`, anti-verifier `0.7250`, oracle `0.9583`, lift vs random `+4.58pp`, lift vs anti `+14.17pp`.
+  - By method:
+    - `direct_reserve_semantic_frontier_v2`: verifier-max `0.8833`, random `0.8389`, anti `0.7333`, lift `+4.44pp`.
+    - `external_l1_max`: verifier-max `0.8500`, random `0.8028`, anti `0.7167`, lift `+4.72pp`.
+  - Interpretation: independently confirms within-method reranking direction; effect size is smaller than the 1440-row exploratory artifact; cross-method entanglement caveat remains.
+  - Frozen Task K transfer was not run (no reusable audited transfer script yet).
 
 See `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md` for a compact handoff summary.

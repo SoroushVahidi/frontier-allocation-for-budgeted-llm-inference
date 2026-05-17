@@ -167,8 +167,8 @@ frontier-allocation validation status.
 
 - RelationReady verifier training is complete enough for downstream testing.
 - Selected verifier: SetFit `all-mpnet-base-v2` cfg1 (verified OOF ready F1=0.8646, PR-AUC=0.883).
-- Current bottleneck: independent multi-seed validation artifacts for within-method reranking confirmation.
-- A new independent Cohere validation generation run is active in tmux (target 60 examples × 6 seeds × 2 methods).
+- Independent multi-seed validation for within-method reranking has now completed on a disjoint Cohere artifact.
+- New independent artifact QA: raw `738` -> dedup `720`, duplicates removed `18` across `5` duplicate keys (duplicates divergent), raw file preserved.
 
 ### Frontier-allocation findings (offline)
 
@@ -181,11 +181,21 @@ frontier-allocation validation status.
 - Tie-aware and slice-aware policies show exploratory gains, but these were selected/evaluated
   on the same artifact and require disjoint validation.
 - A small disjoint 15-case artifact shows same-sign lift (+3.3pp) but is underpowered and non-decisive.
+- New independent/disjoint Cohere validation (120 groups) confirms same-direction within-method signal:
+  verifier-max `0.8667` vs random `0.8208` (+4.58pp), anti-verifier `0.7250`, oracle `0.9583`.
+- By method on the new artifact:
+  `direct_reserve_semantic_frontier_v2` lift vs random `+4.44pp`;
+  `external_l1_max` lift vs random `+4.72pp`.
+- Independent artifact structural checks passed (60 examples, 2 methods, budget 6, 6 seeds/group),
+  trace/final-answer metadata present, and disjointness proof overlap count was zero.
 
 ### Claim discipline
 
-- Treat within-method verifier reranking as promising, not yet fully validated.
+- Within-method verifier reranking is now independently validated on a disjoint artifact,
+  with smaller effect size than the original exploratory 1440-row analysis.
 - Treat slice-aware/tie-aware policy improvements as exploratory until frozen-rule transfer
   succeeds on independent artifacts.
+- Cross-method method-entanglement caveat still holds; validated claim scope is within-method reranking,
+  not naive cross-method verifier-guided selection.
 - Continue to keep provider prompts gold-free; use `gold` / `exact_match` fields only as
   offline evaluation metadata.

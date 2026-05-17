@@ -479,10 +479,21 @@ method-aware:
   performance, supporting that within-method ordering signal is meaningful.
 - **Small disjoint check:** a 15-case disjoint artifact showed same-sign lift
   (+3.3pp) but is underpowered and non-decisive.
+- **Independent disjoint validation (new, 720-row dedup artifact):**
+  120 groups with verifier-max `0.8667` vs random `0.8208` (+4.58pp),
+  anti-verifier `0.7250`, oracle `0.9583`. By method, lift vs random was
+  +4.44pp (`direct_reserve_semantic_frontier_v2`) and +4.72pp (`external_l1_max`).
+  This independently validates within-method reranking directionality on a disjoint Cohere artifact.
+- **Dedup/QA note for the independent artifact:** raw `738` -> dedup `720`;
+  duplicates removed `18` across `5` duplicate keys; duplicate payloads were divergent
+  (raw file preserved); scoring leakage check remained PASS.
 
 Operational guidance:
 
 1. Do **not** use raw cross-method `proba_ready` as a naive global selector.
-2. Prefer within-method reranking/normalization and validate on disjoint artifacts.
+2. Prefer within-method reranking/normalization. This has now been independently
+   validated on a disjoint 720-row Cohere artifact, with positive lift for both methods.
 3. Treat slice-aware/tie-aware policy gains as exploratory until frozen-rule transfer
    succeeds on independent data.
+4. Keep claim scope explicit: validated claim is within-method seed reranking,
+   not naive cross-method verifier-guided selection.

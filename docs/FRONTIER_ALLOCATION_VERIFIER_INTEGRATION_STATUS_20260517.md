@@ -11,6 +11,7 @@ This page is summary-only; detailed metrics remain in the original output report
 - Selected verifier: SetFit `all-mpnet-base-v2` cfg1
   (verified OOF ready F1=0.8646, PR-AUC=0.883).
 - Safety baseline: verifier scoring is offline-capable with no provider calls and no gold leakage.
+- Independent/disjoint within-method validation is now complete on a Cohere 720-row artifact.
 
 ## Task G/H/I/J/K/M Summary
 
@@ -23,26 +24,36 @@ This page is summary-only; detailed metrics remain in the original output report
 - **Task J (tie-aware sweep):** no global gain over baseline verifier top-1; local slice gains appeared.
 - **Task K (slice-aware policies):** exploratory gains on same artifact (up to +4.17pp), not independent validation.
 - **Task M (15-case disjoint sanity check):** same-sign lift (+3.3pp) but underpowered (30 groups).
+- **Independent 720-row disjoint validation (new):**
+  verifier-max 86.67% vs random 82.08% (+4.58pp), anti-verifier 72.50%, oracle 95.83%
+  over 120 `(example_id,budget,method)` groups.
 
-## Current Bottleneck
+## Evidence Ladder (Within-Method Reranking)
 
-Independent multi-seed validation data is the gating item for promotion decisions.
-A new Cohere generation run is active in tmux:
+| Artifact | Groups | verifier-max | random | anti-verifier | Lift vs random | Role |
+|---|---:|---:|---:|---:|---:|---|
+| Exploratory cached artifact (1440 rows) | 240 | 75.8% | 66.0% | 53.8% | +9.8pp | Exploratory, same-artifact selection/eval context |
+| Small disjoint sanity artifact (15-case) | 30 | same-sign | same-sign | same-sign | +3.3pp | Underpowered diagnostic |
+| **Independent/disjoint Cohere artifact (dedup 720 rows)** | **120** | **86.67%** | **82.08%** | **72.50%** | **+4.58pp** | **Strongest current independent validation** |
 
-- Session: `frontier_multiseed_validation_20260517_061447`
-- Output root: `outputs/within_method_validation_generation_cohere_20260517T100852Z`
-- Target: 60 examples × 1 budget × 6 seeds × 2 methods = 720 rows
+Independent artifact references:
+- Generation root: `outputs/within_method_validation_generation_cohere_20260517T100852Z/`
+- Dedup file: `.../per_example_records_dedup.jsonl` (raw 738 -> dedup 720; 18 duplicates removed across 5 duplicate keys; duplicates divergent)
+- Validation report: `.../generation_validation_report.md`
+- Scoring output: `outputs/verifier_scoring_new_multiseed_validation_full_20260517T144315Z/`
+- Reranking output: `outputs/within_method_reranking_new_multiseed_validation_20260517T144336Z/`
 
-## Safe Next Steps (post-generation)
+## Current Bottlenecks / Next Work
 
-1. Validate artifact integrity (row count, coverage, traces/answers, disjointness evidence).
-2. Run offline verifier scoring (dry-run then full score).
-3. Run within-method reranking on scored output.
-4. Evaluate frozen Task K rules only if slices overlap; do not retune on new artifact.
-5. Update status docs with validated vs exploratory labels.
+1. Add uncertainty quantification for within-method lift on the new disjoint artifact
+   (paired/bootstrap confidence intervals over groups).
+2. Build or adopt a reusable audited frozen-policy transfer script for Task K rule application.
+3. Run frozen-rule transfer only with fixed rules and no retuning on the new artifact.
+4. Keep cross-method entanglement caveat explicit in all summaries.
 
 ## Claim Discipline
 
 - Do not claim cross-method verifier superiority from current evidence.
-- Treat within-method reranking as promising until independent validation confirms it.
+- Within-method seed reranking now has independent positive validation on a disjoint artifact.
+- Keep claims conservative: effect size on the disjoint artifact is smaller than the original exploratory 1440-row run.
 - Keep provider prompts gold-free; use `gold`/`exact_match` only for offline evaluation/reporting.
