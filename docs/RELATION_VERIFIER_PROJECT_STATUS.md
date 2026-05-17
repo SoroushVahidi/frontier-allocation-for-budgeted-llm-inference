@@ -33,10 +33,18 @@
 cfg1 selected: best PR-AUC=0.890, ready F1=0.865, confusion TN=271/FP=16/FN=10/TP=83.
 More iterations (i10→i20) consistently helps; more epochs (e1→e2) hurts PR-AUC (overfitting).
 
-### Immediate next steps
-Choose one of:
-- **A)** Add confidence intervals / per-fold variance before paper claims.
-- **B)** Run held-out split sanity check for one unbiased estimate.
+### Completed since tuning
+
+- ~~**A) Bootstrap CIs / per-fold reporting**~~ — **Done (2026-05-17).**
+  `scripts/analyze_relation_verifier_predictions.py` added. 1000-rep bootstrap on cfg1 OOF
+  predictions: ready F1=0.8646 [0.8095, 0.9111] (example) / [0.8045, 0.9140] (group).
+  Both CI lower bounds exceed frozen-mpnet SVM (0.786). PR-AUC=0.883 [0.811, 0.9476].
+  Per-fold F1: mean=0.867, std=0.050, range [0.791, 0.914]. See §8a of MODEL_CARD.md.
+- ~~**B) Held-out split sanity check**~~ — **Done (2026-05-17).**
+  `--eval-split-mode explicit` added to trainer; test set has 0 ready examples so not
+  diagnostic for F1, but confirmed the code path works end-to-end.
+
+### Remaining next steps
 - **C)** Label `ready_candidate_batch.csv` (50 rows, unlabeled) if more ready data needed.
 - **D)** ModernBERT / DeBERTa baseline — only if SetFit F1=0.865 is judged insufficient.
 

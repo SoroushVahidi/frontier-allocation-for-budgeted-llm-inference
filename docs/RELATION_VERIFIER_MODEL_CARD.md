@@ -212,14 +212,83 @@ the same OOF data used for evaluation and is therefore optimistically biased. It
 be cited as an unbiased estimate until fold-internal threshold selection is implemented.
 
 **Note on paper-strength claims:** All results are OOF cross-validated; no independent
-held-out test set exists yet. Bootstrap confidence intervals have not been computed.
-These results are sufficient for development decisions but require held-out evaluation
-and CIs before being cited in a paper.
+held-out test set with ready examples exists. Bootstrap CIs are now available (see §8a).
 
 Output dirs:
 - Tuning study: `outputs/relation_verifier_setfit_tuning_20260516_20260517T000951Z/`
 - Selected config subdir: `.../cfg1_e1_i20_b16_spl2/`
 - First SetFit run (reference): `outputs/relation_verifier_setfit_mpnet_train_20260516T233217Z/`
+
+---
+
+## 8a. CI Analysis for cfg1 (Verified from OOF Predictions)
+
+**Script:** `scripts/analyze_relation_verifier_predictions.py`  
+**Analysis dir:** `outputs/relation_verifier_setfit_cfg1_ci_analysis_20260517T025701Z/`  
+**Source:** `cfg1_e1_i20_b16_spl2/predictions.jsonl` joined with `train_rows.jsonl`
+
+### Verified overall metrics (threshold=0.5)
+
+| Metric | Value |
+|---|---|
+| n | 380 |
+| n_ready (true) | 93 |
+| Accuracy | 0.9316 |
+| Macro F1 | 0.9094 |
+| Ready Precision | 0.8384 |
+| Ready Recall | 0.8925 |
+| **Ready F1** | **0.8646** |
+| **PR-AUC** | **0.883** |
+
+> **Note on PR-AUC:** The tuning-study metrics.json reported `pr_auc_ready=0.8902`.
+> Direct computation from `predictions.jsonl` (380 OOF scores) gives **0.883**. The
+> discrepancy (~0.007) arises from a different internal computation path in the tuning
+> wrapper. The verified value 0.883 is used for CI analysis and paper reporting.
+>
+> **Note on ready F1:** The tuning-study reported 0.865. This is the same value rounded
+> to 3 decimal places; exact computation from the confusion matrix (TN=271, FP=16,
+> FN=10, TP=83) gives F1 = 2×83/(2×83+16+10) = 0.8646.
+
+### Per-fold metrics (fold assignments reconstructed via StratifiedGroupKFold)
+
+| Fold | N | N Ready | Ready P | Ready R | Ready F1 | PR-AUC |
+|---|---|---|---|---|---|---|
+| 0 | 77 | 19 | 0.8947 | 0.8947 | 0.8947 | 0.9148 |
+| 1 | 77 | 19 | 0.8947 | 0.8947 | 0.8947 | 0.9677 |
+| 2 | 75 | 18 | 0.8000 | 0.8889 | 0.8421 | 0.9497 |
+| 3 | 75 | 18 | 0.9412 | 0.8889 | 0.9143 | 0.9521 |
+| 4 | 76 | 19 | 0.7083 | 0.8947 | 0.7907 | 0.7692 |
+
+Per-fold ready F1: mean=0.8673, std=0.0505, min=0.7907, max=0.9143
+
+Fold 4 is the weakest fold (F1=0.7907, PR-AUC=0.769), pulling the mean below the
+OOF global estimate. This fold likely contains harder or more diverse problems.
+
+### 95% bootstrap confidence intervals (n=1000 reps, seed=20260516)
+
+| Bootstrap type | Metric | Point estimate | 95% CI |
+|---|---|---|---|
+| Example-level | Ready F1 | 0.8646 | [0.8095, 0.9111] |
+| Example-level | PR-AUC | 0.883 | [0.811, 0.9476] |
+| Group-level (295 groups) | Ready F1 | 0.8646 | [0.8045, 0.9140] |
+| Group-level (295 groups) | PR-AUC | 0.883 | [0.8027, 0.9467] |
+
+**Comparison to frozen-mpnet SVM baseline (ready F1=0.786, PR-AUC=0.844):**
+
+- Ready F1: both example- and group-level CI lower bounds (0.8095 / 0.8045) exceed
+  the SVM baseline (0.786). The CI provides evidence that SetFit cfg1 beats the
+  frozen-embedding baseline on ready F1.
+- PR-AUC: CI lower bounds (0.811 / 0.803) are below the SVM PR-AUC baseline (0.844).
+  The CIs overlap — dataset too small to claim a definitive PR-AUC improvement.
+
+### Limitations of the CI analysis
+
+- **Small dataset (n=380, n_ready=93):** CIs are wide; reflect resampling variance.
+- **OOF only:** No independent held-out test set with ready examples.
+- **Example bootstrap ignores group structure:** Likely underestimates variance.
+- **Group bootstrap with ~295 groups:** Some bootstrap samples may lack ready examples,
+  making PR-AUC undefined in those samples (excluded from CI computation).
+- **Threshold is default (0.5):** Not tuned on a held-out val set for this analysis.
 
 ---
 
@@ -247,8 +316,9 @@ paper-writing time.
 
 ## 10. Known Limitations
 
-- **Small dataset:** 380 included rows; 93 ready examples. Confidence intervals not yet
-  computed. Paper-strength claims require bootstrap CIs or repeated CV.
+- **Small dataset:** 380 included rows; 93 ready examples. Bootstrap CIs now computed
+  (see §8a); CIs are wide due to small n. Paper-strength claims require an independent
+  held-out test set.
 - **Model-assisted labels:** rows 50–99 of the positive batch are Azure-assisted
   (human-accepted). These labels carry more uncertainty than fully manual annotations.
 - **Positive-candidate bias:** the positive batch was mined from `exact_match=True`
@@ -269,13 +339,15 @@ paper-writing time.
 
 **Tuning is complete. cfg1 is selected. Next choices (in rough priority order):**
 
-A. **Add confidence intervals / per-fold reporting** — compute bootstrap CIs or report
-   per-fold variance so the ready F1=0.865 point estimate has a meaningful error bar
-   before paper submission.
+A. ~~**Add confidence intervals / per-fold reporting**~~ — **Done (2026-05-17).**
+   Bootstrap CIs computed via `scripts/analyze_relation_verifier_predictions.py`.
+   See §8a for verified metrics, per-fold table, and 95% CIs.
+   Example CI lower bound (0.8095) and group CI lower bound (0.8045) both exceed
+   frozen-mpnet SVM baseline (0.786) on ready F1. PR-AUC CIs overlap with baseline.
 
-B. **Run a held-out split sanity check** — carve out a small held-out set from the
-   labeled data (or use the unlabeled `ready_candidate_batch.csv` after labeling) to
-   get one unbiased estimate independent of the OOF CV.
+B. ~~**Run a held-out split sanity check**~~ — **Done (2026-05-17).**
+   `--eval-split-mode explicit` added to trainer; sanity run completed. Test set
+   has 0 ready examples, so not meaningful for ready F1 — see §8 output dirs.
 
 C. **Label `ready_candidate_batch.csv`** (50 rows, currently unlabeled) — adds more
    `ready` examples if the current F1=0.865 is judged insufficient for integration.

@@ -285,11 +285,14 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
    is only needed if this is judged insufficient or traces exceed 512 tokens frequently.
    Decision pending held-out evaluation (see step 10).
 
-10. **Add confidence intervals / per-fold reporting** — compute bootstrap CIs or per-fold
-    variance so the ready F1=0.865 point estimate has an error bar for paper reporting.
+10. ~~**Add confidence intervals / per-fold reporting**~~ — **Done (2026-05-17).**
+    `scripts/analyze_relation_verifier_predictions.py` added; 1000-rep bootstrap on cfg1
+    OOF predictions. Ready F1=0.8646 [0.8095, 0.9111] (example CI); both CI lower bounds
+    exceed frozen-mpnet SVM baseline. Per-fold F1: mean=0.867, std=0.050. See MODEL_CARD §8a.
 
-11. **Run held-out split sanity check** — obtain one unbiased evaluation estimate
-    independent of the OOF CV folds.
+11. ~~**Run held-out split sanity check**~~ — **Done (2026-05-17).**
+    `--eval-split-mode explicit` added to trainer; test set has 0 ready examples (not
+    diagnostic for ready F1), but confirmed the code path works end-to-end.
 
 12. **Optionally label `ready_candidate_batch.csv`** (50 rows, currently unlabeled) —
     adds ~50 more ready examples if more data is needed for the transformer baseline or
