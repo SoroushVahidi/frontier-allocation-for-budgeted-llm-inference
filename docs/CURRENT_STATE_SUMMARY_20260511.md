@@ -217,3 +217,15 @@ Companion docs:
   not naive cross-method verifier-guided selection.
 - Continue to keep provider prompts gold-free; use `gold` / `exact_match` fields only as
   offline evaluation metadata.
+
+### Correction Note (2026-05-17, budget-4/8 follow-up)
+
+- A later budget-4/8 Cohere artifact was audited and is **not independent** due to
+  40-example overlap with the prior 40-example scored source.
+- The disjointness miss was a preflight parser schema bug on scored artifacts
+  (`metadata.example_id` and question in `feature_text`/metadata).
+- A clean non-overlap filtered subset (20 examples, 480 rows) is balanced but small:
+  verifier-minus-random is positive point-estimate (`+3.75pp`) with uncertainty crossing 0.
+- Frozen slice-aware transfer on that filtered subset is negative overall
+  (`frozen_minus_verifier = -2.50pp`).
+- Therefore the budget-6 independent artifact remains the strongest current validation anchor.

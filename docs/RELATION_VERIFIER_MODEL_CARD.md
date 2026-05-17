@@ -518,3 +518,18 @@ Operational guidance:
    frozen transfer on independent data is neutral/inconclusive.
 4. Keep claim scope explicit: validated claim is within-method seed reranking,
    not naive cross-method verifier-guided selection.
+
+### 13a. Budget-4/8 Correction (2026-05-17)
+
+- A subsequent budget-4/8 Cohere artifact (`...budget4_8_20260517T154236Z`) is now
+  classified as **overlap-contaminated**, not independent.
+- Overlap audit found 40 overlapping example IDs with the prior 40-example scored source.
+- Root cause was a preflight parsing bug on prior scored rows:
+  `example_id` lived in `metadata.example_id` and question could be in `feature_text`/metadata.
+- Filtered non-overlap subset (`20` examples, `480` rows) produced:
+  verifier `0.8000`, random `0.7625`, anti `0.6875`, oracle `0.9875`,
+  verifier-minus-random `+3.75pp` with 95% cluster CI crossing zero.
+- For `direct_reserve_semantic_frontier_v2@8`, filtered lift vs random became negative
+  (`-12.50pp`, cluster CI negative), weakening budget-4/8 generalization confidence.
+- Frozen slice-aware transfer on filtered subset remained net negative overall
+  (`frozen_minus_verifier = -2.50pp`), so no promotion support.

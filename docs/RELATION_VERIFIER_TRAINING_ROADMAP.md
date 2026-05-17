@@ -365,3 +365,13 @@ Current recommended work split:
   verified verifier_top1-vs-random gains vs neutral slice-aware transfer outcome.
 - Optional: run another independent artifact with budget-4/8 slice coverage before revisiting frozen Task K rules.
 - Keep cross-method method-entanglement caveat explicit; validated claim scope remains within-method reranking.
+
+### 11a. Budget-4/8 Audit Correction (2026-05-17)
+
+- A completed budget-4/8 artifact was audited and found overlap-contaminated
+  (40 overlapping IDs with prior 40-example scored source), so it is not independent evidence.
+- Preflight disjointness parsing bug identified: prior scored artifacts required
+  `metadata.example_id` and structured `feature_text`/metadata question extraction.
+- Non-overlap filtered subset (`20` examples) remains useful as diagnostic follow-up but
+  is too small to upgrade claims; overall lift uncertainty crosses zero.
+- Frozen slice-aware transfer remains non-promotable (negative/neutral overall).

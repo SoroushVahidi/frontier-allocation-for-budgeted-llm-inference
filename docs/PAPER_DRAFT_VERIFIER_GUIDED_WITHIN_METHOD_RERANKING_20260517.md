@@ -64,4 +64,18 @@ Current validated claim: verifier-guided **within-method** seed reranking improv
 1. Finalize paper-ready method/results/limitations table text with explicit evidence tiers.
 2. If revisiting slice-aware rules, run additional independent validation with budget-4/8 slice coverage to reduce rule-target overlap mismatch.
 3. Add independent provider/dataset validation before broader generalization claims.
+
+## Correction Addendum (2026-05-17, Budget-4/8 Artifact)
+
+- A completed budget-4/8 Cohere artifact was later audited and found **overlap-contaminated**
+  with the prior 40-example scored source (40 overlapping `example_id`s), so it is not
+  independent claim-bearing evidence.
+- Root cause was a preflight parser schema miss on scored artifacts
+  (`metadata.example_id`, question in `feature_text`/metadata), now tracked for correction.
+- A filtered non-overlap subset (20 examples, 480 rows) remains diagnostic:
+  overall verifier-minus-random is positive (`+3.75pp`) but uncertain (cluster CI crosses 0),
+  and DR-v2@8 is negative vs random.
+- Frozen slice-aware transfer remains non-promotable overall (negative/neutral),
+  including on the filtered budget-4/8 subset.
+- Therefore, the independent budget-6 validation remains the primary headline evidence.
 4. Revisit verifier model upgrades only if allocation-error analysis shows verifier quality is the bottleneck.

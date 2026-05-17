@@ -17,6 +17,8 @@ It links claims to concrete scripts, commits, inputs, and output artifacts, and 
 | Independent Cohere validation (budget 6) | `outputs/within_method_reranking_new_multiseed_validation_20260517T144336Z/` and scoring input `outputs/verifier_scoring_new_multiseed_validation_full_20260517T144315Z/` | `scripts/score_verifier_on_frontier_candidates.py`, `scripts/compare_within_method_reranking.py` | `2e443e99`, `8bd928c6` | 720 rows, 60 examples, 120 groups | Independent validation | `verifier_max` 86.67% vs random 82.08% (`+4.58pp`) | Single provider/dataset family for this independent run |
 | Uncertainty analysis on independent validation | `outputs/within_method_reranking_uncertainty_new_validation_20260517T150458Z/` | `scripts/analyze_within_method_reranking_uncertainty.py` | `d1b035f9` | 120 groups, 60 clusters, 10,000 bootstrap draws | Uncertainty-backed validation (strongest current evidence) | `verifier_minus_random = +4.58pp`, 95% cluster-bootstrap CI `[+0.28pp, +9.03pp]` | Method-level CIs for verifier-vs-random cross zero |
 | Frozen slice-aware transfer (disjoint target) | `outputs/frozen_slice_aware_transfer_new_validation_20260517T152312Z/` | `scripts/apply_frozen_slice_aware_reranking.py` | `c30f1575` | 720 rows, 60 examples, 120 groups | Independent frozen-transfer check | Frozen policy equals baseline (`frozen_minus_verifier = +0.00pp`, recoveries/regressions/net = `3/3/0`) | Most learned slice rules did not overlap target slices; improvement not validated |
+| Budget-4/8 overlap audit (corrective) | `outputs/budget4_8_validation_overlap_audit_20260517T204213Z/` | audit utility + offline checks | output-only corrective audit | Full artifact: 1440 rows, 60 examples | Corrective quality audit | Found 40-example overlap with prior 40-source; full artifact not independent | Preflight parser bug on scored schema (`metadata.example_id`, question in `feature_text`/metadata) |
+| Budget-4/8 filtered non-overlap subset | `.../per_example_records_nonoverlap_valid.jsonl` + reranking/scoring outputs with `_nonoverlap_valid_20260517T2042*` | standard offline scoring/reranking/frozen/uncertainty scripts | output-only follow-up | 480 rows, 20 examples, 80 groups | Diagnostic follow-up | verifier-minus-random `+3.75pp`, cluster CI crosses 0; DR-v2@8 negative vs random | Small sample; not claim-upgrading |
 | Paper-ready local bundle | `outputs/paper_ready_reranking_results_20260517T151303Z/` | output packaging from existing artifacts | N/A (local output bundle) | Summary bundle | Reporting artifact (local) | Consolidated markdown/CSV/LaTeX result tables | Output directory is intentionally uncommitted |
 
 ## Script Index
@@ -27,6 +29,9 @@ It links claims to concrete scripts, commits, inputs, and output artifacts, and 
 - `scripts/sweep_within_method_tie_aware_reranking.py` (`dc94f4a0`): Tie-aware rule sweep over within-method groups to test deterministic tie-break alternatives.
 - `scripts/analyze_within_method_reranking_uncertainty.py` (`d1b035f9`): Paired and cluster bootstrap uncertainty analysis for reranking metrics.
 - `scripts/apply_frozen_slice_aware_reranking.py` (`c30f1575`): Applies preselected slice rules to a disjoint scored artifact without retuning; falls back to verifier top-1 for unmatched slices.
+- `scripts/compute_cohere_validation_disjointness.py` (current branch): Schema-robust
+  disjointness proof utility that extracts IDs/questions from top-level and nested metadata,
+  including scored-candidate artifacts with `metadata.example_id` and structured `feature_text`.
 
 ## Conservative Claim Language
 
@@ -39,9 +44,7 @@ It links claims to concrete scripts, commits, inputs, and output artifacts, and 
 - Oracle caveat:
   - Oracle metrics are fixed-pool diagnostic ceilings and not deployable policies.
 
-## Running Job Note (Future Artifact)
-A budget-4/8 Cohere validation generation job is currently running and should be treated as in-progress future evidence until completion and validation:
-
-- `outputs/within_method_validation_generation_cohere_budget4_8_20260517T154236Z/`
-
-This appendix does not treat that artifact as complete or claim-bearing yet.
+## Budget-4/8 Status Update (Corrective)
+The budget-4/8 artifact completed, but the full artifact is now treated as overlap-contaminated
+and non-independent after corrective audit. Only the filtered non-overlap subset is usable as
+diagnostic follow-up, and it does not strengthen the main independent claim.

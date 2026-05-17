@@ -116,6 +116,23 @@ Interpretation:
 3. Keep cross-method entanglement caveat explicit in all summaries.
 4. Keep provider prompts gold-free; use `gold` / `exact_match` only for offline reporting.
 
+## Correction Addendum (2026-05-17, Budget-4/8 Cohere)
+
+- The full budget-4/8 artifact (`outputs/within_method_validation_generation_cohere_budget4_8_20260517T154236Z/`)
+  is **overlap-contaminated** and must not be treated as independent validation.
+- Corrected overlap audit found `40` overlapping `example_id`s (`openai_gsm8k_0..39`) against
+  `outputs/verifier_frontier_scoring_full_20260517T032713Z/scored_candidates.jsonl`.
+- Root cause: preflight disjointness parsing for prior scored artifacts missed
+  `metadata.example_id` (and question in `feature_text`/metadata), yielding a false-zero overlap.
+- A clean derived subset
+  (`.../per_example_records_nonoverlap_valid.jsonl`, 20 examples / 480 rows, balanced)
+  produced weaker evidence: verifier-minus-random `+3.75pp` with 95% cluster CI crossing 0,
+  and `direct_reserve_semantic_frontier_v2@8` negative vs random.
+- Frozen slice-aware transfer on this filtered subset remained net negative overall
+  (`frozen_minus_verifier = -2.50pp`).
+- Headline independent evidence remains the budget-6 Cohere artifact:
+  verifier-minus-random `+4.58pp`, 95% cluster CI `[+0.28pp, +9.03pp]`.
+
 ## Claim Discipline
 
 - Do not claim cross-method verifier superiority from current evidence.

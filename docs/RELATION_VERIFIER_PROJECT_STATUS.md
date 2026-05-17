@@ -1,10 +1,22 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-17 (independent 720-row Cohere validation + uncertainty + frozen slice-aware transfer readout completed)
+**Last updated:** 2026-05-17 (budget-4/8 overlap audit + disjointness parser correction recorded)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
 **Compact integration + narrative draft:** `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md` and `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`
+
+## Correction Note (2026-05-17, Budget-4/8 Cohere Validation)
+
+- The full budget-4/8 artifact is now classified as **overlap-contaminated**, not independent.
+- Overlap audit found `40` overlapping IDs with the prior 40-example scored artifact.
+- Preflight disjointness miss was a schema-parsing bug: prior scored rows used
+  `metadata.example_id` and question in `feature_text`/metadata.
+- A filtered non-overlap subset (20 examples, 480 rows) is usable but small:
+  overall verifier-minus-random `+3.75pp`, cluster CI crosses 0; DR-v2@8 is negative vs random.
+- Frozen slice-aware transfer on filtered subset remained negative overall
+  (`frozen_minus_verifier = -2.50pp`).
+- Main headline remains the independent budget-6 artifact (`+4.58pp`, cluster CI `[+0.28pp, +9.03pp]`).
 
 ---
 
