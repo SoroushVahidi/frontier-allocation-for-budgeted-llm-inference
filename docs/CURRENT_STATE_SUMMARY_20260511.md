@@ -157,3 +157,35 @@ Hypothesis:
 - Prefer manifest / summary / report files over raw JSONL when interpreting evidence.
 - Keep exact method IDs, seed, budget, model, and output directory fixed before any future paid comparison.
 - Preserve the distinction between canonical evidence, proxy audits, and historical strict-method results.
+
+## Addendum (2026-05-17): Verifier-Guided Frontier Allocation Transition
+
+This addendum preserves the historical evidence hierarchy above and records the current
+frontier-allocation validation status.
+
+### Current high-level state
+
+- RelationReady verifier training is complete enough for downstream testing.
+- Selected verifier: SetFit `all-mpnet-base-v2` cfg1 (verified OOF ready F1=0.8646, PR-AUC=0.883).
+- Current bottleneck: independent multi-seed validation artifacts for within-method reranking confirmation.
+- A new independent Cohere validation generation run is active in tmux (target 60 examples × 6 seeds × 2 methods).
+
+### Frontier-allocation findings (offline)
+
+- Cross-method verifier-guided selection is method-entangled and mostly reproduces
+  `external_l1_max`; this is not sufficient evidence for cross-method routing promotion.
+- Within-method reranking on the 1440-row scored artifact is same-sign positive:
+  verifier-max beats random by +9.8pp and anti-verifier underperforms.
+- Missed-oracle audit indicates most misses are low-margin/tiny-gap decisions rather than
+  large confident separations under the configured audit thresholds.
+- Tie-aware and slice-aware policies show exploratory gains, but these were selected/evaluated
+  on the same artifact and require disjoint validation.
+- A small disjoint 15-case artifact shows same-sign lift (+3.3pp) but is underpowered and non-decisive.
+
+### Claim discipline
+
+- Treat within-method verifier reranking as promising, not yet fully validated.
+- Treat slice-aware/tie-aware policy improvements as exploratory until frozen-rule transfer
+  succeeds on independent artifacts.
+- Continue to keep provider prompts gold-free; use `gold` / `exact_match` fields only as
+  offline evaluation metadata.

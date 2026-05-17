@@ -461,3 +461,28 @@ API costs. Run verifier scoring over existing `per_example_records.jsonl` artifa
 3. Produce an offline report comparing verifier scores to `is_correct_offline_metadata`
    (metadata only; not used as model input) to validate alignment.
 4. Once offline scoring is validated, proceed to policy comparison experiments.
+
+---
+
+## 13. Known Downstream Behavior (2026-05-17)
+
+Findings from offline frontier-allocation analyses indicate that verifier usage must be
+method-aware:
+
+- **Cross-method method entanglement:** on a 1440-row, 2-method scored artifact, raw
+  `proba_ready` favored `external_l1_max` in 705/720 groups; cross-method
+  verifier-guided selection mostly reproduced `external_l1_max`.
+- **Within-method ranking signal:** when controlling for method identity
+  (`example_id, budget, method` groups), verifier-max beat random seed choice
+  (+9.8pp on the 1440-row artifact).
+- **Anti-verifier sanity check:** selecting lowest `proba_ready` substantially hurt
+  performance, supporting that within-method ordering signal is meaningful.
+- **Small disjoint check:** a 15-case disjoint artifact showed same-sign lift
+  (+3.3pp) but is underpowered and non-decisive.
+
+Operational guidance:
+
+1. Do **not** use raw cross-method `proba_ready` as a naive global selector.
+2. Prefer within-method reranking/normalization and validate on disjoint artifacts.
+3. Treat slice-aware/tie-aware policy gains as exploratory until frozen-rule transfer
+   succeeds on independent data.

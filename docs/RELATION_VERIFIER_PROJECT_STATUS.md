@@ -1,6 +1,6 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-17 (CI analysis complete; verifier accepted for frontier integration)
+**Last updated:** 2026-05-17 (frontier-allocation validation update; independent Cohere validation run in progress)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
@@ -271,29 +271,30 @@ Conflating these three will invalidate experimental claims.
 
 | Problem | Details |
 |---|---|
-| ~~Class imbalance~~ | ~~Resolved~~ — positive batch labeled; combined dataset now ready=93, not_ready=287 |
-| SetFit tuning not yet complete | cfg3–cfg5 still running; final config selection pending |
-| Ready candidate batch unlabeled | 50-row `ready_candidate_batch.csv` not yet labeled; may be needed if more ready data required |
-| Single-comparison underpowered | 100-case Cohere run affected by nondeterminism; repeated/cached replay needed for paper claims |
-| No ModernBERT/DeBERTa decision yet | Pending SetFit tuning results — may not be needed if SetFit F1 is sufficient |
+| Cross-method method entanglement | On the 1440-row scored artifact, verifier-guided cross-method selection chose `external_l1_max` in 705/720 groups and matched `external_l1_max` accuracy (72.1% vs 72.2%), so naive cross-method `proba_ready` routing is not reliable. |
+| Independent within-method validation data | The strongest within-method reranking result is from one 1440-row cached artifact; independent multi-seed validation is required before promotion claims. |
+| Slice-aware rules are exploratory | Slice-aware/tie-aware policies were selected and evaluated on the same scored artifact; gains are hypothesis-generating only until frozen-rule transfer succeeds on disjoint data. |
+| Small disjoint validation is underpowered | The 15-case disjoint artifact is same-sign for within-method reranking but too small for strong claims (30 groups total). |
+| Independent Cohere validation generation in progress | A 60-example × 6-seed × 2-method run (target 720 rows) is running in tmux; downstream validation depends on completion and artifact QA. |
 
 ---
 
 ## 8. Recommended Next Steps  <!-- was §7 -->
 
-**Immediate (wait for active job):**
-1. Wait for `setfit_tune` tmux session to complete (cfg3–cfg5 remaining, ~35–45 min as of 21:50 2026-05-16).
-2. Read `outputs/relation_verifier_setfit_tuning_*/master.log` and all `cfg*/metrics.json`.
-3. Choose best stable config. Current leader: **cfg1** (e1 i20) — ready F1=0.865, PR-AUC=0.890.
+**Immediate (while independent generation is running):**
+1. Keep the active tmux generation job untouched; do not start duplicate API runs.
+2. Continue no-API analysis/documentation and keep claims conservative.
+3. Prepare frozen evaluation scripts/manifests for immediate post-generation validation.
 
-**After tuning (decision gate):**
-4. If best tuned SetFit ready F1 ≥ 0.87: proceed to integration. ModernBERT/DeBERTa optional.
-5. If SetFit plateaus below 0.87: label `ready_candidate_batch.csv` (50 rows) to add more positives, then retrain.
+**After generation completes (gated):**
+4. Validate artifact integrity: expected row count, example/method/budget/seed coverage, trace/answer presence, and disjointness checks.
+5. Run offline verifier scoring dry-run, then full score mode on the new artifact.
+6. Run within-method reranking on the new scored artifact and compare against random/anti-verifier/oracle baselines.
+7. Evaluate frozen slice-aware rules from Task K only if method/budget slices overlap; do not retune on new data.
 
-**Integration (after verifier is good enough):**
-6. Run verifier on held-out candidate traces to score relation-readiness.
-7. Integrate verifier score into the selector / budget-allocation policy.
-8. Revisit repeated Cohere comparison with caching/replay for paper-strength claims.
+**Promotion criteria:**
+8. Treat cross-method verifier routing as non-promotable unless method entanglement is mitigated on independent data.
+9. Promote within-method reranking only if independent multi-seed validation preserves same-sign lift with acceptable variance bounds.
 
 ---
 
@@ -413,3 +414,15 @@ traces) is achieved.
 - Use cached replay; avoid live provider calls for frontier comparisons.
 - Do not mix Cohere / Azure / OpenAI runs in the same comparison table.
 - All long-running jobs (fine-tuning, large batch scoring) must run in tmux.
+
+### Frontier-allocation validation update (Tasks G/H/I/J/K/M; 2026-05-17)
+
+- **Task G (cross-method policy comparison):** verifier-guided cross-method selection was effectively method-entangled and mostly reproduced `external_l1_max` (72.1% vs 72.2%; chosen `external_l1_max` in 705/720 groups).
+- **Task H (within-method reranking, 1440-row artifact):** verifier-max beat random by +9.8pp overall (75.8% vs 66.0%); anti-verifier underperformed (53.8%).
+- **Task I (missed-oracle audit):** missed-oracle cases were mostly tiny-margin/low-gap decisions; no large-gap confident verifier failures were found under the configured thresholding.
+- **Task J (tie-aware sweep):** no global improvement over baseline verifier top-1; slice-level improvements appeared in selected method/budget slices.
+- **Task K (slice-aware constrained policies):** exploratory same-artifact policies showed offline lift (up to +4.17pp), but this is not independent validation.
+- **Task M (15-case disjoint sanity validation):** same-sign within-method lift (+3.3pp verifier-max vs random) with tiny spreads; underpowered and non-decisive.
+- **Independent validation generation:** a new Cohere 60-example multi-seed validation run is in progress in tmux and is the current bottleneck for disjoint confirmation.
+
+See `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md` for a compact handoff summary.

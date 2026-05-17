@@ -1,6 +1,6 @@
 # RelationReady Verifier — Training Roadmap
 
-**Status as of 2026-05-16 (evening — SetFit tuning in progress)**
+**Status as of 2026-05-17 (training mostly complete; frontier-allocation validation active)**
 
 This document specifies the planned training progression for the RelationReady binary
 classifier (ready / not_ready). It is a planning document, not a training script.
@@ -9,7 +9,7 @@ classifier (ready / not_ready). It is a planning document, not a training script
 
 ## 1. Current Training Status
 
-Prerequisites are now satisfied. Training is underway:
+Prerequisites are satisfied and core verifier training is mostly complete:
 
 | Label | Count (current dataset) |
 |---|---|
@@ -22,24 +22,23 @@ The positive-candidate batch (100 rows, ready=83, not_ready=17) has been fully l
 combined training dataset at
 `outputs/relation_verifier_training_dataset_combined_33plus250plus100_20260516T221311Z/`.
 
-### Completed training runs (as of 2026-05-16)
+### Completed training runs (as of 2026-05-17)
 
 | Model | ready F1 | PR-AUC | Output dir |
 |---|---|---|---|
 | TF-IDF + LogReg (balanced, grouped 5-fold) | 0.710 | 0.808 | `relation_verifier_baseline_combined380_grouped_threshold_train_20260516T222426Z` |
 | Frozen mpnet + SVM (balanced, grouped 5-fold) | 0.786 | 0.844 | `relation_verifier_embedding_mpnet_svm_grouped_20260516T230932Z` |
 | SetFit mpnet — first run (e1 i10) | 0.857 | 0.866 | `relation_verifier_setfit_mpnet_train_20260516T233217Z` |
-| **SetFit tuning cfg1 (e1 i20) — current best** | **0.865** | **0.890** | `relation_verifier_setfit_tuning_20260516_20260517T000951Z/cfg1_e1_i20_b16_spl2` |
+| **SetFit tuning cfg1 (e1 i20) — selected** | **0.865** | **0.890** | `relation_verifier_setfit_tuning_20260516_20260517T000951Z/cfg1_e1_i20_b16_spl2` |
 
-SetFit tuning study (cfg0–cfg5) is **currently running** in tmux `setfit_tune`.
-cfg0–cfg2 done; cfg3 active; cfg4–cfg5 queued.
+SetFit tuning study (cfg0–cfg5) is complete; cfg1 is selected for downstream use.
+Verified OOF metrics from `predictions.jsonl` are ready F1=0.8646 and PR-AUC=0.883.
 
-### Decision rule after tuning completes
+### Training decision status
 
-- If best SetFit ready F1 ≥ 0.87: proceed to integration. ModernBERT/DeBERTa optional.
-- If SetFit plateaus below 0.87: label `ready_candidate_batch.csv` (50 rows) to add
-  more positive examples, rebuild dataset, retrain.
-- If traces are frequently >512 tokens and SetFit still misses: try ModernBERT/DeBERTa.
+- Verifier is accepted for frontier-allocation integration.
+- ModernBERT/DeBERTa remains optional, only if integration diagnostics show systematic long-trace failures.
+- Additional labeling (`ready_candidate_batch.csv`) is optional and not a blocker.
 
 ---
 
@@ -323,3 +322,24 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
 Realistic minimum for meaningful SetFit: **≥ 40 ready examples** — satisfied (93 ready).
 Realistic minimum for fine-tuned transformer: **≥ 100 ready examples** — borderline; labeling
 the ready-candidate batch would bring the total to ~143 ready if needed.
+
+---
+
+## 11. Frontier-Allocation Integration Status (2026-05-17)
+
+Training is no longer the bottleneck. Current integration findings:
+
+1. Cross-method verifier-guided selection is method-entangled and mostly reproduces
+   `external_l1_max`; raw cross-method `proba_ready` is not reliable as a global chooser.
+2. Within-method reranking shows useful signal on the 1440-row cached artifact
+   (verifier-max > random by +9.8pp).
+3. Tie-aware and slice-aware rule gains are exploratory because selection and evaluation
+   were on the same artifact.
+4. A small disjoint 15-case validation is same-sign but underpowered.
+5. The current bottleneck is independent multi-seed validation data; a new Cohere
+   60-example generation run is in progress in tmux.
+
+Current recommended work split:
+- Keep no-API offline validation/reporting active while generation runs.
+- After generation completes, run artifact QA, offline verifier scoring, within-method reranking,
+  and frozen-rule transfer checks (no retuning).
