@@ -274,15 +274,28 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
 5. ~~Run embedding baselines~~ — **Done.** Frozen mpnet SVM: ready F1=0.786, PR-AUC=0.844.
 6. ~~First SetFit run~~ — **Done.** SetFit mpnet e1 i10: ready F1=0.857, PR-AUC=0.866.
 
-7. **Wait for SetFit tuning to complete** — tmux `setfit_tune` running cfg0–cfg5.
-   Expected completion ~22:30–23:00 on 2026-05-16.
+7. ~~Wait for SetFit tuning to complete~~ — **Done.** Finished 2026-05-17T02:13Z.
+   cfg5 (batch=32) failed CUDA OOM; cfg0–cfg4 completed successfully.
 
-8. **Read tuning results** — inspect `master.log` and each `cfg*/metrics.json`.
-   Choose the best stable config (current leader: cfg1, e1 i20).
+8. ~~Read tuning results~~ — **Done.** cfg1 (e1 i20 b16 spl2) selected as best config.
+   ready F1=0.865, PR-AUC=0.890 at default threshold=0.5.
 
-9. **Decide on ModernBERT/DeBERTa** — apply decision rule from Section 1.
+9. **Decide on ModernBERT/DeBERTa** — **currently deferred.** SetFit cfg1 with
+   ready F1=0.865 and PR-AUC=0.890 is a strong result. ModernBERT/DeBERTa fine-tuning
+   is only needed if this is judged insufficient or traces exceed 512 tokens frequently.
+   Decision pending held-out evaluation (see step 10).
 
-10. **Integration** — run best verifier on held-out traces; wire into selector policy.
+10. **Add confidence intervals / per-fold reporting** — compute bootstrap CIs or per-fold
+    variance so the ready F1=0.865 point estimate has an error bar for paper reporting.
+
+11. **Run held-out split sanity check** — obtain one unbiased evaluation estimate
+    independent of the OOF CV folds.
+
+12. **Optionally label `ready_candidate_batch.csv`** (50 rows, currently unlabeled) —
+    adds ~50 more ready examples if more data is needed for the transformer baseline or
+    to push past F1=0.87.
+
+13. **Integration** — run cfg1 verifier on held-out candidate traces; wire into selector.
 
 ---
 

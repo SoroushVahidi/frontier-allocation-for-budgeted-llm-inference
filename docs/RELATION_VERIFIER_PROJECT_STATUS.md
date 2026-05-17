@@ -1,6 +1,6 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-16 (SetFit tuning complete)
+**Last updated:** 2026-05-17 (SetFit tuning results recorded; cfg1 selected)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
@@ -19,30 +19,26 @@
 - Combined training dataset rebuilt: **380 rows** (33 seed + 250 expansion + 100 positive),
   ready=93, not_ready=287 (~3:1 imbalance, workable for SetFit).
 
-### Model leaderboard (grouped 5-fold CV, OOF, as of this update)
+### Model leaderboard (grouped 5-fold CV, OOF — FINAL)
 
 | System | ready F1 | PR-AUC | Notes |
 |---|---|---|---|
 | TF-IDF + LogReg (balanced) | 0.710 | 0.808 | sklearn baseline |
 | Frozen mpnet + SVM (balanced) | 0.786 | 0.844 | embedding baseline |
-| SetFit mpnet (first run, e1 i10) | 0.857 | 0.866 | full fine-tune, default thr |
-| **SetFit mpnet cfg1 (e1 i20)** | **0.865** | **0.890** | tuning study, current best |
+| SetFit mpnet first run (e1 i10) | 0.857 | 0.866 | pre-tuning |
+| **SetFit cfg1 (e1 i20) ← selected** | **0.865** | **0.890** | **tuning winner** |
+| SetFit cfg3 (e2 i20) | 0.868 | 0.860 | higher F1, worse PR-AUC |
 
-SetFit cfg1 (1 epoch, 20 contrastive iterations) is the new leader on both ready F1 and PR-AUC.
-Doubling epochs (cfg2) hurts slightly — likely contrastive overfitting at this dataset size.
+**SetFit tuning is complete** (finished 2026-05-17T02:13Z). cfg5 (batch=32) failed CUDA OOM.
+cfg1 selected: best PR-AUC=0.890, ready F1=0.865, confusion TN=271/FP=16/FN=10/TP=83.
+More iterations (i10→i20) consistently helps; more epochs (e1→e2) hurts PR-AUC (overfitting).
 
-### Active job
-SetFit hyperparameter tuning study running in tmux session `setfit_tune`:
-- Output dir: `outputs/relation_verifier_setfit_tuning_20260516_20260517T000951Z/`
-- Configs cfg0–cfg2 done; cfg3 running (fold 2/5 at ~21:50 on 2026-05-16); cfg4–cfg5 queued.
-- Estimated ~35–45 min remaining at time of this update.
-- GPU: RTX 5060 Ti, 100% utilization, 11–14 GiB VRAM used.
-
-### Immediate next step (after tuning completes)
-1. Read `outputs/relation_verifier_setfit_tuning_*/master.log` and all `cfg*/metrics.json`.
-2. Pick the best stable config (expect cfg1 e1 i20 to hold or cfg3/cfg4/cfg5 to improve it).
-3. Decide whether ModernBERT / DeBERTa fine-tuning is still needed or if SetFit is sufficient.
-4. If further data needed, label `ready_candidate_batch.csv` (50 rows, not yet labeled).
+### Immediate next steps
+Choose one of:
+- **A)** Add confidence intervals / per-fold variance before paper claims.
+- **B)** Run held-out split sanity check for one unbiased estimate.
+- **C)** Label `ready_candidate_batch.csv` (50 rows, unlabeled) if more ready data needed.
+- **D)** ModernBERT / DeBERTa baseline — only if SetFit F1=0.865 is judged insufficient.
 
 ---
 
