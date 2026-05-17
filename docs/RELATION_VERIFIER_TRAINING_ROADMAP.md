@@ -280,10 +280,11 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
 8. ~~Read tuning results~~ — **Done.** cfg1 (e1 i20 b16 spl2) selected as best config.
    ready F1=0.865, PR-AUC=0.890 at default threshold=0.5.
 
-9. **Decide on ModernBERT/DeBERTa** — **currently deferred.** SetFit cfg1 with
-   ready F1=0.865 and PR-AUC=0.890 is a strong result. ModernBERT/DeBERTa fine-tuning
-   is only needed if this is judged insufficient or traces exceed 512 tokens frequently.
-   Decision pending held-out evaluation (see step 10).
+9. ~~**Decide on ModernBERT/DeBERTa**~~ — **Deferred; verifier declared ready (2026-05-17).**
+   SetFit cfg1 verified metrics: ready F1=0.8646, PR-AUC=0.883, group-bootstrap CI
+   ready F1 [0.8045, 0.9140]. CI lower bound exceeds frozen-mpnet SVM (0.786).
+   ModernBERT/DeBERTa only needed if integration experiments reveal systematic failure
+   on long traces (>512 tokens). Not blocking frontier integration.
 
 10. ~~**Add confidence intervals / per-fold reporting**~~ — **Done (2026-05-17).**
     `scripts/analyze_relation_verifier_predictions.py` added; 1000-rep bootstrap on cfg1
@@ -298,7 +299,14 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
     adds ~50 more ready examples if more data is needed for the transformer baseline or
     to push past F1=0.87.
 
-13. **Integration** — run cfg1 verifier on held-out candidate traces; wire into selector.
+13. **Integration — ACTIVE NEXT STEP.** Verifier accepted (2026-05-17). Transition to
+    frontier allocation pipeline:
+    - Score existing `per_example_records.jsonl` candidate traces with cfg1 verifier
+      (offline, no API calls).
+    - Write `scripts/score_verifier_on_frontier_candidates.py` for offline dry-run.
+    - Compare allocation policies (baseline, frontier, verifier-guided, hybrid) on
+      budgeted accuracy curves.
+    - See `docs/RELATION_VERIFIER_PROJECT_STATUS.md §11` for full transition plan.
 
 ---
 

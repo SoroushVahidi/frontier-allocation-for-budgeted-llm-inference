@@ -1,52 +1,67 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-17 (SetFit tuning results recorded; cfg1 selected)
+**Last updated:** 2026-05-17 (CI analysis complete; verifier accepted for frontier integration)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
 
 ---
 
-## 0. Current Status (2026-05-16)
+## 0. Current Status (2026-05-17 — verifier accepted, transitioning to frontier integration)
 
 ### Branch
 `feat/missing-gold-topology-v1` — active development.
 
-### Labeling
-- Positive-candidate batch (100 rows) **fully labeled**: ready=83, not_ready=17.
-- All labels are human-reviewed; Azure strong model (`gpt-5.4`) used only for
-  hard adjudication disagreements — not as automatic ground truth.
-- Combined training dataset rebuilt: **380 rows** (33 seed + 250 expansion + 100 positive),
-  ready=93, not_ready=287 (~3:1 imbalance, workable for SetFit).
+### Dataset
+Combined training dataset: **380 rows** (33 seed + 250 expansion + 100 positive),
+ready=93, not_ready=287 (~3:1 imbalance). All labels human-reviewed.
 
-### Model leaderboard (grouped 5-fold CV, OOF — FINAL)
+### Model leaderboard (grouped 5-fold CV, OOF — FINAL, verified from predictions)
 
 | System | ready F1 | PR-AUC | Notes |
 |---|---|---|---|
 | TF-IDF + LogReg (balanced) | 0.710 | 0.808 | sklearn baseline |
 | Frozen mpnet + SVM (balanced) | 0.786 | 0.844 | embedding baseline |
 | SetFit mpnet first run (e1 i10) | 0.857 | 0.866 | pre-tuning |
-| **SetFit cfg1 (e1 i20) ← selected** | **0.865** | **0.890** | **tuning winner** |
-| SetFit cfg3 (e2 i20) | 0.868 | 0.860 | higher F1, worse PR-AUC |
+| **SetFit cfg1 (e1 i20) ← selected** | **0.8646** | **0.883** | **tuning winner; see CI below** |
+| SetFit cfg3 (e2 i20) | 0.868 | 0.860 | higher F1 at thr=0.5, worse PR-AUC |
 
-**SetFit tuning is complete** (finished 2026-05-17T02:13Z). cfg5 (batch=32) failed CUDA OOM.
-cfg1 selected: best PR-AUC=0.890, ready F1=0.865, confusion TN=271/FP=16/FN=10/TP=83.
-More iterations (i10→i20) consistently helps; more epochs (e1→e2) hurts PR-AUC (overfitting).
+PR-AUC note: tuning wrapper reported 0.890 for cfg1; verified from predictions.jsonl = **0.883**.
 
-### Completed since tuning
+### CI interpretation (2026-05-17, group-bootstrap 1000 reps)
 
-- ~~**A) Bootstrap CIs / per-fold reporting**~~ — **Done (2026-05-17).**
-  `scripts/analyze_relation_verifier_predictions.py` added. 1000-rep bootstrap on cfg1 OOF
-  predictions: ready F1=0.8646 [0.8095, 0.9111] (example) / [0.8045, 0.9140] (group).
-  Both CI lower bounds exceed frozen-mpnet SVM (0.786). PR-AUC=0.883 [0.811, 0.9476].
-  Per-fold F1: mean=0.867, std=0.050, range [0.791, 0.914]. See §8a of MODEL_CARD.md.
-- ~~**B) Held-out split sanity check**~~ — **Done (2026-05-17).**
-  `--eval-split-mode explicit` added to trainer; test set has 0 ready examples so not
-  diagnostic for F1, but confirmed the code path works end-to-end.
+| Metric | Point estimate | Group-bootstrap 95% CI | vs frozen SVM |
+|---|---|---|---|
+| Ready F1 | 0.8646 | [0.8045, 0.9140] | ✓ CI lower bound > 0.786 |
+| PR-AUC | 0.883 | [0.8027, 0.9467] | ⚠ CI lower bound < 0.844 (overlap) |
 
-### Remaining next steps
-- **C)** Label `ready_candidate_batch.csv` (50 rows, unlabeled) if more ready data needed.
-- **D)** ModernBERT / DeBERTa baseline — only if SetFit F1=0.865 is judged insufficient.
+**SetFit clearly improves ready F1 over frozen mpnet SVM** — both example-level and
+group-level bootstrap lower bounds exceed the SVM baseline (0.786). The improvement
+is supported statistically given the available data.
+
+**PR-AUC improvement is not definitive** — point estimate (0.883) is above the SVM
+baseline (0.844), but the CI lower bound (0.8027) falls below it. The dataset is
+too small for a definitive PR-AUC claim. Describe cautiously in any paper: "PR-AUC
+improves from 0.844 to 0.883 (95% CI [0.803, 0.947] by group bootstrap)."
+
+Per-fold ready F1: mean=0.867, std=0.050, range [0.791, 0.914].
+Fold 4 is the weakest fold (F1=0.7907, PR-AUC=0.769); the other four folds score
+0.842–0.914.
+
+### Completed milestones
+
+- ~~Labeling (100 positive-candidate rows)~~ — Done.
+- ~~Sklearn baselines~~ — Done. TF-IDF LogReg: F1=0.710.
+- ~~Embedding baselines~~ — Done. Frozen mpnet SVM: F1=0.786.
+- ~~First SetFit run~~ — Done. e1 i10: F1=0.857.
+- ~~SetFit hyperparameter tuning~~ — Done. cfg1 selected (F1=0.865, PR-AUC=0.883 verified).
+- ~~Bootstrap CI / per-fold reporting~~ — Done. `scripts/analyze_relation_verifier_predictions.py`.
+- ~~Held-out split sanity check~~ — Done. `--eval-split-mode explicit` added to trainer.
+- **Verifier accepted for frontier integration** — Active next step: see §12 of MODEL_CARD.md.
+
+### Remaining optional steps (not blocking integration)
+- Label `ready_candidate_batch.csv` (50 rows) if more ready examples needed.
+- ModernBERT / DeBERTa baseline — deferred; only if integration reveals systematic failure.
 
 ---
 
@@ -344,4 +359,57 @@ opaque, or truncated traces are `not_ready`.
 | TF-IDF baseline results | `outputs/relation_verifier_baseline_combined380_grouped_threshold_train_20260516T222426Z/` |
 | Frozen embedding baseline results | `outputs/relation_verifier_embedding_mpnet_svm_grouped_20260516T230932Z/` |
 | First SetFit run results | `outputs/relation_verifier_setfit_mpnet_train_20260516T233217Z/` |
-| SetFit tuning study (active) | `outputs/relation_verifier_setfit_tuning_20260516_20260517T000951Z/` |
+| SetFit tuning study results | `outputs/relation_verifier_setfit_tuning_20260516_20260517T000951Z/` |
+| Selected cfg1 subdir | `.../cfg1_e1_i20_b16_spl2/` |
+| CI analysis results | `outputs/relation_verifier_setfit_cfg1_ci_analysis_20260517T025701Z/` |
+| CI analysis script | `scripts/analyze_relation_verifier_predictions.py` |
+
+---
+
+## 11. Transition to Frontier Allocation
+
+The RelationReady verifier is now accepted for integration into the main frontier
+allocation pipeline. The sub-project goal (binary verifier to filter/score reasoning
+traces) is achieved.
+
+### Why accepted
+
+- Ready F1=0.8646, recall=0.8925 — the verifier catches ~89% of relation-ready traces.
+- Group-bootstrap CI lower bound for ready F1 (0.8045) is above the strong embedding
+  baseline (0.786). Statistical evidence for improvement is present.
+- No gold leakage confirmed by end-to-end leakage checker.
+- Inference is CPU-feasible (sentence-transformer + logistic head); no GPU needed for scoring.
+
+### Verifier roles in frontier allocation
+
+1. **Budget filter:** before allocating compute to a reasoning branch, score with the
+   verifier. Deprioritize branches with `proba_ready < 0.2` (likely opaque/truncated).
+2. **Edge reranker:** among frontier candidates at similar depth/cost, prefer higher
+   `proba_ready` — traces that visibly establish the target relation.
+3. **Hybrid scoring:** combine frontier confidence with `proba_ready`:
+   `hybrid = α × frontier_score + (1−α) × proba_ready`
+4. **Diagnostic:** audit which traces the existing selector chose and whether they
+   were relation-ready, without changing selection logic.
+
+### Immediate next steps for frontier integration
+
+1. **Locate candidate trace artifacts** — find `per_example_records.jsonl` files with
+   `candidate_trace_short` fields. These are the inputs the verifier needs.
+2. **Write offline scorer** — `scripts/score_verifier_on_frontier_candidates.py`:
+   loads cfg1 model from saved checkpoint, scores candidate traces without any API calls,
+   saves scored output to `outputs/verifier_scored_candidates_<STAMP>/`.
+3. **Dry-run validation** — compare `proba_ready` scores to `is_correct_offline_metadata`
+   (metadata only; never a model input) to sanity-check alignment.
+4. **Policy comparison** — evaluate budgeted accuracy curves for:
+   - Baseline selector (no verifier)
+   - External l1-max frontier policy
+   - Verifier-guided selection
+   - Hybrid score policy
+5. **Repeat Cohere comparison** with cached/replayed outputs for paper-strength claims.
+
+### Guardrails (carry forward from verifier project)
+
+- Verifier must never see `gold_answer_metadata_only` or `is_correct_offline_metadata`.
+- Use cached replay; avoid live provider calls for frontier comparisons.
+- Do not mix Cohere / Azure / OpenAI runs in the same comparison table.
+- All long-running jobs (fine-tuning, large batch scoring) must run in tmux.
