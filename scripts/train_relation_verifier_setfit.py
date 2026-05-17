@@ -217,6 +217,9 @@ def _train_fold(
     batch_size: int,
     num_iterations: int,
     max_seq_length: int | None,
+    body_learning_rate: float,
+    head_learning_rate: float,
+    samples_per_label: int,
     seed: int,
     output_dir: pathlib.Path,
     fold_idx: int,
@@ -246,6 +249,9 @@ def _train_fold(
         num_epochs=num_epochs,
         batch_size=batch_size,
         num_iterations=num_iterations,
+        body_learning_rate=body_learning_rate,
+        head_learning_rate=head_learning_rate,
+        samples_per_label=samples_per_label,
         seed=seed + fold_idx,
         show_progress_bar=True,
         report_to="none",
@@ -283,6 +289,9 @@ def train_and_evaluate(
     batch_size: int,
     num_iterations: int,
     max_seq_length: int | None,
+    body_learning_rate: float,
+    head_learning_rate: float,
+    samples_per_label: int,
     seed: int,
     use_grouped_cv: bool,
     do_threshold_sweep: bool,
@@ -341,6 +350,9 @@ def train_and_evaluate(
             batch_size=batch_size,
             num_iterations=num_iterations,
             max_seq_length=max_seq_length,
+            body_learning_rate=body_learning_rate,
+            head_learning_rate=head_learning_rate,
+            samples_per_label=samples_per_label,
             seed=seed,
             output_dir=output_dir,
             fold_idx=fold_idx,
@@ -389,6 +401,9 @@ def train_and_evaluate(
         "num_epochs": num_epochs,
         "batch_size": batch_size,
         "num_iterations": num_iterations,
+        "body_learning_rate": body_learning_rate,
+        "head_learning_rate": head_learning_rate,
+        "samples_per_label": samples_per_label,
     }
 
     predictions = [
@@ -458,7 +473,10 @@ def write_report(
             + (f" (group field: `{metrics['group_field']}`)" if metrics.get("group_field") else ""),
             f"- SetFit num_epochs={metrics['num_epochs']}, "
             f"batch_size={metrics['batch_size']}, "
-            f"num_iterations={metrics['num_iterations']}",
+            f"num_iterations={metrics['num_iterations']}, "
+            f"samples_per_label={metrics['samples_per_label']}, "
+            f"body_lr={metrics['body_learning_rate']}, "
+            f"head_lr={metrics['head_learning_rate']}",
             f"- Threshold policy: {thresh_note}",
             f"- Accuracy: `{metrics['accuracy']}`",
             f"- Macro F1: `{metrics['f1_macro']}`",
@@ -529,6 +547,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--num-epochs", type=int, default=1)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--num-iterations", type=int, default=5)
+    parser.add_argument("--body-learning-rate", type=float, default=2e-5)
+    parser.add_argument("--head-learning-rate", type=float, default=1e-2)
+    parser.add_argument("--samples-per-label", type=int, default=2)
     parser.add_argument("--max-seq-length", type=int, default=None)
     parser.add_argument("--device", default="auto", choices=["auto", "cpu", "cuda"])
     parser.add_argument("--threshold-sweep", action="store_true")
@@ -559,7 +580,8 @@ def main(argv: list[str] | None = None) -> int:
     print(
         f"Mode: {args.mode} | Rows: {len(rows)} | model: {args.model_name} "
         f"| grouped-cv: {args.grouped_cv} | epochs: {args.num_epochs} "
-        f"| iterations: {args.num_iterations}"
+        f"| iterations: {args.num_iterations} | samples_per_label: {args.samples_per_label} "
+        f"| body_lr: {args.body_learning_rate} | head_lr: {args.head_learning_rate}"
     )
 
     dry = dry_run_validate(rows, args.label_field, args.model_name)
@@ -607,6 +629,9 @@ def main(argv: list[str] | None = None) -> int:
                 batch_size=args.batch_size,
                 num_iterations=args.num_iterations,
                 max_seq_length=args.max_seq_length,
+                body_learning_rate=args.body_learning_rate,
+                head_learning_rate=args.head_learning_rate,
+                samples_per_label=args.samples_per_label,
                 seed=args.seed,
                 use_grouped_cv=args.grouped_cv,
                 do_threshold_sweep=args.threshold_sweep,
@@ -636,6 +661,9 @@ def main(argv: list[str] | None = None) -> int:
             "num_epochs": args.num_epochs,
             "batch_size": args.batch_size,
             "num_iterations": args.num_iterations,
+            "body_learning_rate": args.body_learning_rate,
+            "head_learning_rate": args.head_learning_rate,
+            "samples_per_label": args.samples_per_label,
             "max_seq_length": args.max_seq_length,
             "device": device,
             "n_rows": len(rows),
