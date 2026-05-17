@@ -314,6 +314,13 @@ Steps 1–6 below are **complete**. Remaining work starts at step 7.
     `+4.58pp` `[+0.28pp, +9.03pp]` overall; by-method lifts are positive but individually
     uncertain (method-level CIs cross 0).
 
+15. ~~**Reusable frozen slice-aware transfer script (Task K)**~~ — **Done (2026-05-17).**
+    `scripts/apply_frozen_slice_aware_reranking.py` added with tests and run on
+    independent validation using frozen `all_positive_net_slices` rules:
+    baseline verifier_top1 `0.866667` vs frozen `0.866667` (delta `+0.000000`),
+    recoveries/regressions/net `3/3/0`, affected `45/120` groups.
+    Interpretation: neutral/inconclusive for gain beyond verifier_top1 on this target.
+
 ---
 
 ## 10. Reference: Current Dataset Counts (2026-05-16, updated)
@@ -353,6 +360,8 @@ Training is no longer the bottleneck. Current integration findings:
 Current recommended work split:
 - Independent validation is complete and positive for within-method reranking directionality.
 - Uncertainty reporting is complete; use cluster-bootstrap CI as primary readout in summaries.
-- Build/adopt a reusable audited frozen-policy transfer script before applying Task K frozen rules on new artifacts.
-- Prepare a paper-ready result table that separates aggregate-confirmed effects from method-level uncertainty.
+- Frozen-policy transfer script is complete; current independent transfer is neutral/inconclusive due to limited slice overlap.
+- Prepare paper-ready writeup/results text that separates:
+  verified verifier_top1-vs-random gains vs neutral slice-aware transfer outcome.
+- Optional: run another independent artifact with budget-4/8 slice coverage before revisiting frozen Task K rules.
 - Keep cross-method method-entanglement caveat explicit; validated claim scope remains within-method reranking.

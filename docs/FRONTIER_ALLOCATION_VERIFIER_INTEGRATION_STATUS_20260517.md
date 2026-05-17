@@ -75,12 +75,46 @@ Interpretation:
 - Verifier-vs-anti is strongly positive overall and by method.
 - Oracle remains a diagnostic fixed-pool upper bound, not a deployable policy.
 
+## Frozen Slice-Aware Transfer (Complete, 2026-05-17)
+
+Frozen transfer has now been implemented and evaluated on the independent validation
+artifact with no retuning:
+
+- Script: `scripts/apply_frozen_slice_aware_reranking.py`
+- Test: `tests/test_apply_frozen_slice_aware_reranking.py`
+- Commit: `c30f1575`
+- Output: `outputs/frozen_slice_aware_transfer_new_validation_20260517T152312Z/`
+- Policy applied: `all_positive_net_slices` from
+  `outputs/slice_aware_reranking_policy_analysis_20260517T041740Z/selected_slice_rules.csv`
+
+Result on independent artifact (`n_groups=120`):
+
+- Baseline verifier_top1 accuracy: `0.866667`
+- Frozen policy accuracy: `0.866667`
+- `frozen_minus_verifier`: `+0.000000`
+- recoveries / regressions / net: `3 / 3 / 0`
+- affected groups: `45/120` (`37.5%`)
+- matched rule slice on target: `external_l1_max@6` only
+- unmatched rule slices: `direct_reserve@4`, `direct_reserve@8`, `external_l1_max@4`, `external_l1_max@8`
+- unmatched target slice: `direct_reserve_semantic_frontier_v2@6`
+
+Interpretation:
+
+- Frozen slice-aware transfer is **neutral/inconclusive** on this independent artifact.
+- No improvement beyond verifier_top1 was observed under frozen-rule transfer.
+- Limited rule/target slice overlap is a major reason; most learned Task K slices were
+  on budgets absent from this target artifact.
+- The validated claim remains verifier_top1 vs random on the independent artifact
+  (`+4.58pp`, cluster-bootstrap CI `[+0.28pp, +9.03pp]`).
+
 ## Current Bottlenecks / Next Work
 
-1. Build or adopt a reusable audited frozen-policy transfer script for Task K rule application.
-2. Run frozen-rule transfer only with fixed rules and no retuning on the independent artifact.
-3. Prepare a paper-ready results table separating aggregate-confirmed effects from method-level uncertainty.
-4. Keep cross-method entanglement caveat explicit in all summaries.
+1. Prepare paper-ready writeup/tables that explicitly separate:
+   aggregate-confirmed verifier_top1 effects vs neutral slice-aware transfer.
+2. Optionally run an additional independent validation containing budget-4/8 slices
+   before revisiting Task K frozen rules.
+3. Keep cross-method entanglement caveat explicit in all summaries.
+4. Keep provider prompts gold-free; use `gold` / `exact_match` only for offline reporting.
 
 ## Claim Discipline
 

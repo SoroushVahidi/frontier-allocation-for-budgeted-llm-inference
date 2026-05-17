@@ -191,6 +191,13 @@ frontier-allocation validation status.
 - Aggregate verifier-vs-random gain is statistically stable (cluster CI lower bound > 0),
   while per-method verifier-vs-random gains remain positive but individually uncertain
   (method-level CIs cross 0).
+- Frozen slice-aware transfer is now implemented and evaluated (no retuning) on the
+  same independent artifact:
+  baseline verifier_top1 `0.866667` vs frozen `all_positive_net_slices` `0.866667`
+  (`frozen_minus_verifier = +0.000000`, recoveries/regressions `3/3`, net `0`).
+  Interpretation: neutral/inconclusive for incremental gain beyond verifier_top1.
+  Rule-target overlap was limited (matched `external_l1_max@6`; target also contained
+  unmatched `direct_reserve_semantic_frontier_v2@6`; most frozen rules were for budgets 4/8).
 - By method on the new artifact:
   `direct_reserve_semantic_frontier_v2` lift vs random `+4.44pp`;
   `external_l1_max` lift vs random `+4.72pp`.
@@ -201,8 +208,8 @@ frontier-allocation validation status.
 
 - Within-method verifier reranking is now independently validated on a disjoint artifact,
   with smaller effect size than the original exploratory 1440-row analysis.
-- Treat slice-aware/tie-aware policy improvements as exploratory until frozen-rule transfer
-  succeeds on independent artifacts.
+- Treat slice-aware/tie-aware policy improvements as exploratory for promotion; frozen
+  transfer on current independent artifact is neutral/inconclusive.
 - Cross-method method-entanglement caveat still holds; validated claim scope is within-method reranking,
   not naive cross-method verifier-guided selection.
 - Continue to keep provider prompts gold-free; use `gold` / `exact_match` fields only as

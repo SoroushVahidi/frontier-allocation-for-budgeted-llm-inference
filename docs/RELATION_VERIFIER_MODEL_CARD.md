@@ -497,6 +497,14 @@ method-aware:
   +4.72pp [-1.67pp, +10.83pp] for `external_l1_max`.
   This provides the strongest current evidence for within-method reranking on disjoint data,
   while preserving the method-entanglement caveat for cross-method selection.
+- **Frozen slice-aware transfer on independent validation (new):**
+  reusable transfer was implemented (`scripts/apply_frozen_slice_aware_reranking.py`)
+  and run with frozen `all_positive_net_slices` rules (no retuning):
+  baseline verifier_top1 `0.866667` vs frozen policy `0.866667` (delta `+0.000000`),
+  recoveries/regressions `3/3` (net `0`), affected groups `45/120`.
+  This is neutral/inconclusive for improvement beyond verifier_top1 on this target.
+  Major limitation: slice overlap was narrow (`external_l1_max@6` matched; most frozen
+  rules were for budgets 4/8 while target slices were budget 6).
 - **Dedup/QA note for the independent artifact:** raw `738` -> dedup `720`;
   duplicates removed `18` across `5` duplicate keys; duplicate payloads were divergent
   (raw file preserved); scoring leakage check remained PASS.
@@ -506,7 +514,7 @@ Operational guidance:
 1. Do **not** use raw cross-method `proba_ready` as a naive global selector.
 2. Prefer within-method reranking/normalization. This has now been independently
    validated on a disjoint 720-row Cohere artifact, with positive lift for both methods.
-3. Treat slice-aware/tie-aware policy gains as exploratory until frozen-rule transfer
-   succeeds on independent data.
+3. Treat slice-aware/tie-aware policy gains as exploratory for promotion; current
+   frozen transfer on independent data is neutral/inconclusive.
 4. Keep claim scope explicit: validated claim is within-method seed reranking,
    not naive cross-method verifier-guided selection.

@@ -1,6 +1,6 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-17 (independent 720-row Cohere validation + cluster-bootstrap uncertainty readout completed)
+**Last updated:** 2026-05-17 (independent 720-row Cohere validation + uncertainty + frozen slice-aware transfer readout completed)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
@@ -274,9 +274,9 @@ Conflating these three will invalidate experimental claims.
 |---|---|
 | Cross-method method entanglement | On the 1440-row scored artifact, verifier-guided cross-method selection chose `external_l1_max` in 705/720 groups and matched `external_l1_max` accuracy (72.1% vs 72.2%), so naive cross-method `proba_ready` routing is not reliable. |
 | Independent within-method validation status | Completed on disjoint Cohere artifact (`raw=738`, `dedup=720`, 120 groups) with cluster-bootstrap uncertainty: verifier-max 86.67% [79.17, 93.33], random 82.08% [75.56, 87.78], anti-verifier 72.50% [64.17, 80.83], oracle 95.83% [90.83, 100.00]. Lift vs random +4.58pp [ +0.28pp, +9.03pp ] overall (aggregate-stable), while per-method lift-vs-random CIs cross 0 (positive but individually uncertain). |
-| Slice-aware rules are exploratory | Slice-aware/tie-aware policies were selected and evaluated on the same scored artifact; gains are hypothesis-generating only until frozen-rule transfer succeeds on disjoint data. |
+| Slice-aware rules are still unvalidated for promotion | Slice-aware/tie-aware policies were selected on the 1440-row artifact. Frozen transfer to independent validation (`all_positive_net_slices`) was neutral: baseline 0.866667 vs frozen 0.866667 (net gain 0; recoveries/regressions 3/3), with limited slice overlap. |
 | Small disjoint validation is underpowered | The 15-case disjoint artifact is same-sign for within-method reranking but too small for strong claims (30 groups total). |
-| Frozen-policy transfer tooling gap | Frozen Task K rules were not applied on the new artifact because no reusable audited transfer script exists yet. |
+| Frozen-policy transfer overlap gap | Reusable transfer tooling now exists (`scripts/apply_frozen_slice_aware_reranking.py`), but the independent target had budget-6 slices only; most frozen rules were for budgets 4/8, limiting evaluable coverage. |
 
 ---
 
@@ -285,7 +285,7 @@ Conflating these three will invalidate experimental claims.
 **Immediate (post-independent-validation):**
 1. Keep no-API frontier-analysis mode and conservative claim language.
 2. Treat uncertainty as complete for the current independent artifact; use cluster-bootstrap CI as primary in summaries.
-3. Implement or adopt a reusable frozen Task K transfer script, then evaluate frozen rules with no retuning.
+3. Treat frozen Task K transfer as implemented/evaluated; if revisited, use only frozen rules on an artifact with better slice overlap (e.g., budget 4/8 coverage).
 4. Keep method-entanglement caveat explicit for any cross-method routing claim.
 
 **Promotion criteria:**
@@ -440,6 +440,14 @@ traces) is achieved.
       - `direct_reserve_semantic_frontier_v2`: `+4.44pp` [-2.22pp, +11.11pp]
       - `external_l1_max`: `+4.72pp` [-1.67pp, +10.83pp]
   - Interpretation: aggregate verifier-vs-random gain is statistically stable (lower CI bound > 0); per-method verifier-vs-random lifts are positive but individually uncertain; cross-method entanglement caveat remains.
-  - Frozen Task K transfer was not run (no reusable audited transfer script yet).
+  - Frozen Task K transfer run (now completed, no retuning):
+    - script: `scripts/apply_frozen_slice_aware_reranking.py` (commit `c30f1575`)
+    - output: `outputs/frozen_slice_aware_transfer_new_validation_20260517T152312Z/`
+    - policy: `all_positive_net_slices` from frozen `selected_slice_rules.csv`
+    - overall: baseline verifier_top1 `0.866667`, frozen policy `0.866667`, delta `+0.000000`
+    - recoveries/regressions/net: `3/3/0`; affected groups: `45/120` (37.5%)
+    - matched target slice: `external_l1_max@6` only
+    - unmatched target slice: `direct_reserve_semantic_frontier_v2@6`
+    - interpretation: neutral/inconclusive; no improvement over verifier_top1 on this independent artifact.
 
 See `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md` for a compact handoff summary.
