@@ -69,6 +69,7 @@ These defaults should be applied for future Codex sessions in this repository un
 
 ## Key Documentation
 - `docs/CURRENT_STATE_SUMMARY_20260511.md`: Canonical current-state summary.
+- `docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`: Stage 2 plan for baseline-gated hybrid allocation policy design.
 - `docs/RELATION_VERIFIER_PHASE_CLOSURE_20260517.md`: Formal closure and approved-use boundary for the verifier phase.
 - `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md`: Compact verifier/frontier integration handoff with CI-backed claim scope.
 - `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`: Concise paper-ready narrative draft for verifier-guided within-method reranking.

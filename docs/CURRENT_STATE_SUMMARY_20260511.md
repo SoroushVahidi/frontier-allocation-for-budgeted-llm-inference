@@ -235,3 +235,10 @@ Companion docs:
 - For future Cohere validation runs, use runner-level disjointness preflight inputs
   (`--disjointness-prior-jsonl` with optional `--disjointness-prior-label` and
   `--disjointness-proof-json`) instead of relying on external proof-only workflows.
+
+### Stage 2 Note (2026-05-17): Baseline-Gated Hybrid Allocation
+
+- Next phase priority is Stage 2 baseline-gated hybrid allocation policy design, not
+  verifier model upgrades.
+- Stage 2 planning document:
+  `docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`.

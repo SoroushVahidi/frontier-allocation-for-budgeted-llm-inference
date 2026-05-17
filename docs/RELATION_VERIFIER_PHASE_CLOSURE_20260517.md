@@ -55,6 +55,8 @@ This closure means verifier model/training design is complete enough for current
 3. Optional provider/dataset replication.
 4. Optional truly independent budget-4/8 rerun using hardened disjointness preflight.
 5. Allocation-policy design and validation work.
+6. Stage 2 baseline-gated hybrid allocation plan execution
+   (`docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`).
 
 ## Reopen Criteria (Only If Needed)
 
