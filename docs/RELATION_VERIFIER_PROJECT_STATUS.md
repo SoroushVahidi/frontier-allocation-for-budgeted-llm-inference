@@ -1,8 +1,9 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-16 (evening update — SetFit tuning in progress)
+**Last updated:** 2026-05-16 (SetFit tuning complete)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
+**Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
 
 ---
 
