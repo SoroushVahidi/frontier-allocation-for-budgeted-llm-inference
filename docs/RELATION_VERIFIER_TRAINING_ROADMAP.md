@@ -1,6 +1,6 @@
 # RelationReady Verifier — Training Roadmap
 
-**Status as of 2026-05-17 (training mostly complete; frontier-allocation validation active)**
+**Status as of 2026-05-17 (verifier phase closed for this stage; frontier-allocation validation active)**
 
 This document specifies the planned training progression for the RelationReady binary
 classifier (ready / not_ready). It is a planning document, not a training script.
@@ -9,7 +9,9 @@ classifier (ready / not_ready). It is a planning document, not a training script
 
 ## 1. Current Training Status
 
-Prerequisites are satisfied and core verifier training is mostly complete:
+Prerequisites are satisfied and core verifier training is complete enough for the
+current stage, and verifier training is now treated as phase-closed unless reopen
+criteria are met (see `docs/RELATION_VERIFIER_PHASE_CLOSURE_20260517.md`):
 
 | Label | Count (current dataset) |
 |---|---|

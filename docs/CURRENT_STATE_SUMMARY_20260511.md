@@ -165,10 +165,13 @@ frontier-allocation validation status.
 Companion docs:
 - `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md`
 - `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`
+- `docs/RELATION_VERIFIER_PHASE_CLOSURE_20260517.md`
 
 ### Current high-level state
 
 - RelationReady verifier training is complete enough for downstream testing.
+- The RelationReady verifier phase is closed for the current project stage; primary
+  work is now allocation-policy validation and reporting.
 - Selected verifier: SetFit `all-mpnet-base-v2` cfg1 (verified OOF ready F1=0.8646, PR-AUC=0.883).
 - Independent multi-seed validation for within-method reranking has now completed on a disjoint Cohere artifact.
 - New independent artifact QA: raw `738` -> dedup `720`, duplicates removed `18` across `5` duplicate keys (duplicates divergent), raw file preserved.

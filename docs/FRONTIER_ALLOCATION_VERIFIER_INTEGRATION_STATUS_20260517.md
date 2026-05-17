@@ -7,11 +7,13 @@ This page is summary-only; detailed metrics remain in the original output report
 
 ## Completed State
 
-- Verifier training: mostly complete and accepted for downstream testing.
+- Verifier training: accepted and phase-closed for the current stage
+  (see `docs/RELATION_VERIFIER_PHASE_CLOSURE_20260517.md`).
 - Selected verifier: SetFit `all-mpnet-base-v2` cfg1
   (verified OOF ready F1=0.8646, PR-AUC=0.883).
 - Safety baseline: verifier scoring is offline-capable with no provider calls and no gold leakage.
 - Independent/disjoint within-method validation is now complete on a Cohere 720-row artifact.
+- Primary remaining work is allocation-policy validation and paper/report packaging.
 
 ## Task G/H/I/J/K/M Summary
 

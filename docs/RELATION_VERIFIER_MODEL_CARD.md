@@ -2,9 +2,10 @@
 
 **Created:** 2026-05-16  
 **Branch:** `feat/missing-gold-topology-v1`  
-**Status:** ✅ SetFit tuning complete. CI analysis complete. Transitioning to frontier-allocation integration.  
+**Status:** ✅ SetFit tuning complete. CI analysis complete. Verifier phase closed for the current stage; allocation-policy validation is primary.  
 **Selected config: cfg1 (e1/i20/b16/spl2) — ready F1=0.8646, PR-AUC=0.883 (verified from OOF predictions).**  
 **Group-bootstrap 95% CI: ready F1 [0.8045, 0.9140]; PR-AUC [0.8027, 0.9467].**
+**Phase-closure reference:** `docs/RELATION_VERIFIER_PHASE_CLOSURE_20260517.md`
 
 ---
 
@@ -19,6 +20,14 @@ problem.
   under inference budget constraints. Not deployed for live inference yet.
 - **Not in scope:** Judging numerical correctness alone, or ranking traces by quality.
   The verifier is a binary gate: does the trace show its work in a relation-establishing way?
+
+### Approved-use boundary (current stage)
+
+- Approved: within-method reranking, comparative scoring inside the same method/budget pool,
+  and offline allocation-policy analysis with gold-free features/prompts.
+- Not approved: naive cross-method routing by raw `proba_ready`, claims of slice-aware
+  policy promotion beyond verifier top-1, any gold/exact-match feature/prompt leakage,
+  or treating oracle ceilings as deployable behavior.
 
 ---
 
