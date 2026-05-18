@@ -118,3 +118,28 @@ The 6–8 seed robustness run therefore remains **optional/future**. It should n
 until there is an explicit decision that larger seed-robustness evidence is needed for
 gate promotion, and only after the promotion criteria in
 `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` §E are otherwise met.
+
+## 11) Merged Pattern Analysis Post-Mortem (Updated 2026-05-18)
+
+The targeted failure collection and subsequent merged 160-row pattern analysis
+(`outputs/merged_160_failure_pattern_analysis_20260518T211319Z/`) produced diagnostic evidence
+confirming:
+
+- External absent-from-tree is the primary external failure mechanism, driven by stochastic
+  truncation (`gold_in_tree=0` → absent, lift 4.85).
+- Frontier PNS failures are associated with low direct-reserve confidence (`frontier_dr_confidence=0.5`,
+  lift ~2.3) — an inference-time signal already incorporated in the calibrated gate design.
+- Both-wrong cases are candidate-pool misses, not selector failures.
+- TF-IDF trace clustering produced topic-based separation (silhouette 0.133), not failure-mechanism
+  clusters. Future trace clustering should use `sentence_transformers` embeddings if needed.
+
+**Status:** Additional Cohere API is not needed now. The immediate post-plan collection and
+merged analysis have served their diagnostic purpose.
+
+**Requirements for any future run**, if launched, should additionally capture:
+- `gold_in_tree` / correct-present indicators (already available in current schema).
+- Direct-reserve support and confidence fields (already in current schema).
+- Selection/tiebreak information and override reason (already in current schema).
+- Absent-from-tree / present-not-selected failure tags, verified offline.
+- Full promotion-review schema compliance (see §F.1–F.2 in
+  `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`).

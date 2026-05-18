@@ -196,6 +196,113 @@ Pattern: Most external flips follow "absent from explored tree" on seed=11 → c
 - The 6–8 seed robustness run (referenced in `TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`) remains optional/future and should not be launched until there is a clear decision that larger seed-robustness evidence is needed.
 - Recommendation: **C** — treat artifact as diagnostic, update docs, do not run more API now.
 
+## F.4) Merged 160-Row Failure-Pattern Analysis
+
+- Output: `outputs/merged_160_failure_pattern_analysis_20260518T211319Z/`
+- Source: `outputs/targeted_cohere_merged_seed11_seed23_analysis_1779133255/merged_per_example_records.jsonl`
+- Analysis: offline pattern mining only — decision trees, association rules, TF-IDF trace clustering.
+  No provider API calls, no training, no new installs.
+
+### Row and Target Counts
+
+| Dimension | Value |
+|---|---|
+| Total records | 160 (40 examples × 2 seeds × 2 methods) |
+| Paired rows (per-example × seed) | 80 |
+| frontier_wins | 8/80 = 10.0% |
+| external_wins | 7/80 = 8.75% |
+| both_correct | 51/80 = 63.75% |
+| both_wrong | 14/80 = 17.5% |
+| disagreement | 15/80 = 18.75% |
+
+### Seed Stability
+
+| Metric | Value |
+|---|---|
+| External flip rate (accuracy differs across seeds) | 14/40 = **35.0%** |
+| Frontier flip rate | 5/40 = **12.5%** |
+| Frontier stably correct (both seeds) | 27/40 = **67.5%** |
+| External stably correct (both seeds) | 22/40 = **55.0%** |
+| Strict seed-flip examples | 1 (`openai_gsm8k_144`, see §F.3) |
+
+### Top Association Rules (Manual Fallback, No mlxtend Needed)
+
+| Rule | Lift | Support | Rate |
+|---|---|---|---|
+| `gold_in_tree=0` → external absent-from-tree | **4.85** | 21% | 100% |
+| `frontier_absent=1` → both_wrong | **4.67** | 14% | 82% |
+| `external_absent=1` → both_wrong | **3.64** | 28% | 64% |
+| `frontier_pns=1` → both_wrong | **2.86** | 12% | 50% |
+| `frontier_pns=1` → disagreement | **2.67** | 12% | 50% |
+| `frontier_dr_confidence=0.5` → frontier PNS | **2.35** | 42% | 29% |
+| `frontier_dr_incumbent_support=1` → frontier PNS | **2.29** | 44% | 29% |
+
+Key: PNS = correct answer present but not selected.
+
+### Failure Mode Breakdown by Seed × Method
+
+| Seed | Method | Accuracy | Absent | PNS | Gold-in-Tree | Avg API Calls |
+|---|---|---|---|---|---|---|
+| 11 | frontier | 72.5% | 7 | 4 | 33 (82.5%) | 2.62 |
+| 11 | external | 62.5% | 15 | 0 | 25 (62.5%) | 1.25 |
+| 23 | frontier | 75.0% | 4 | 6 | 36 (90.0%) | 2.45 |
+| 23 | external | 82.5% | 7 | 0 | 33 (82.5%) | 1.38 |
+
+External seed=11 has 15 absent-from-tree failures vs 7 on seed=23, with average API calls
+of 1.25 — consistent with stochastic single-step truncation/early-stop, not pure reasoning
+failure. Frontier PNS failures are evenly spread across seeds (4 and 6), tied to
+low-confidence direct-reserve (confidence=0.5 / incumbent_support=1).
+
+### Trace Clustering
+
+- Method: TF-IDF + KMeans (k=6). No new library installs.
+- Silhouette score: 0.133 — low.
+- Clusters reflect **problem topic** (motion/distance, counting, cost/change, character-name
+  problems), not failure mechanisms directly.
+- Motion/distance cluster (n=16) has 50% accuracy and is enriched for external variance.
+- TF-IDF is insufficient for failure-mechanism clustering; `sentence_transformers` (already
+  installed) would be needed for semantic trace analysis if deeper clustering is required.
+
+### Representative Case Conclusions
+
+- **Seed-flip** (`openai_gsm8k_144`): two independent stochastic events — external
+  truncation/parser artifact (seed=11) + frontier tiebreak selection artifact (seed=23).
+- **Frontier recoveries**: external `absent_from_explored_tree` on seed=11; frontier stably
+  correct. Pattern = `stochastic_external_variance`.
+- **External wins**: frontier `present_not_selected` or stochastic external correct (seed=23
+  only). Pattern = `frontier_selection_failure` or `stochastic_frontier_variance`.
+- **Both-wrong cases**: `frontier_absent=1 AND external_absent=1` — candidate-pool misses
+  (lift 4.67). Require better generation, not better selection.
+- **Stable frontier correct**: 27/40 examples, both seeds correct. Useful controls.
+
+### Inference-Time Gate Feature Candidates (from this artifact)
+
+| Feature | Signal | Lift |
+|---|---|---|
+| `frontier_dr_confidence` (= incumbent_support / num_attempts) | low confidence → PNS risk | ~2.35 |
+| `frontier_dr_incumbent_support` | incumbent_support=1 → PNS risk | ~2.29 |
+| `cohere_logical_api_calls` (external) | low call count → truncation/absent risk | indirect |
+
+These features are **inference-time observable** and already used in the existing safe/near-neighbor
+gate configurations. The association-rule evidence from this artifact is consistent with and
+adds quantitative support to the feature choices already made.
+
+### Interpretation
+
+- Patterns are partially actionable: the two inference-time confidence/support features are
+  now quantitatively confirmed as PNS-risk signals.
+- Artifact is **diagnostic only**. Not promotion evidence. 40 examples and 2 seeds give
+  ±~8pp confidence intervals — findings are indicative, not conclusive.
+- No claim of beating `external_l1_max` or any other baseline follows from this artifact.
+- No promoted calibrated gate.
+
+### Decision
+
+- No Cohere API is needed now.
+- Document findings and continue treating artifact as diagnostic.
+- Both-wrong/pool-miss cases require candidate-generation improvement (not gate tuning) if addressed.
+- Future trace clustering should use `sentence_transformers` embeddings, not TF-IDF.
+
 ## G) Immediate Next Steps (Ranked)
 
 1. Improve and verify log sufficiency for incremental switch cases.

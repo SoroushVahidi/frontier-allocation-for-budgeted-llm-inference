@@ -268,6 +268,24 @@ Companion docs:
 - Artifact remains diagnostic only; no Cohere API is currently needed.
 - Canonical status: `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` §F.3.
 
+### Stage 2 Addendum (2026-05-18, later): Merged 160-Row Failure-Pattern Analysis
+
+- Analysis output: `outputs/merged_160_failure_pattern_analysis_20260518T211319Z/`
+- Offline association-rule and decision-tree pattern mining on the merged 40-example
+  Cohere diagnostic artifact (2 seeds × 2 methods, budget 6).
+- Key findings:
+  - Frontier is more stable across seeds (flip rate 12.5%) than external (flip rate 35.0%).
+  - External absent-from-tree is the primary external failure mode (`gold_in_tree=0` → absent,
+    lift 4.85); driven by stochastic truncation/early-stop (avg 1.25 API calls on seed=11).
+  - Frontier PNS (correct answer present but not selected) is associated with
+    `frontier_dr_confidence=0.5` / `incumbent_support=1` (lift ~2.3).
+  - Both-wrong cases are predominantly candidate-pool misses (`frontier_absent=1`, lift 4.67),
+    not selector failures — require better generation, not better gate tuning.
+  - TF-IDF trace clusters are topic-based (not failure-mechanism-based); silhouette 0.133.
+- This does **not** establish external-baseline superiority or justify gate promotion.
+- No Cohere API is needed now. Artifact remains diagnostic only.
+- Canonical status: `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` §F.4.
+
 ### Stage 2 Addendum (2026-05-18, later): Incremental Switch Log-Sufficiency Repair
 
 - Repair output: `outputs/incremental_switch_log_sufficiency_repair_20260518T161301Z/`.
