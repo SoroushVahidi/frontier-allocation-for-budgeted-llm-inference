@@ -147,6 +147,55 @@ Integration guidance:
 - Caveat: no runtime-failure rows occurred in this pilot, so runtime-failure-path readiness remains synthetic-tested only.
 - Decision impact: future targeted failure collection can use the same main Cohere writer + schema path.
 
+## F.3) Seed-Flip Manual Audit: openai_gsm8k_144
+
+- Output: `outputs/seed_flip_manual_audit_openai_gsm8k_144_20260518T205529Z/`
+- Source artifact: `outputs/targeted_cohere_merged_seed11_seed23_analysis_1779133255/` (160 rows, 40 examples, seeds 11/23, budget 6)
+- Methods compared: `direct_reserve_semantic_frontier_v2` (frontier) vs `external_l1_max`
+
+### Correctness Matrix (openai_gsm8k_144, gold = 20)
+
+| Method | Seed 11 | Answer | Seed 23 | Answer |
+|---|---|---|---|---|
+| frontier | ✓ correct | 20 | ✗ wrong | 9 |
+| external_l1_max | ✗ wrong | 5 | ✓ correct | 20 |
+
+No parse extraction failures on any row. Wrong answers are clearly arithmetically wrong (5 = cloth pack unit cost; 9 = cost per client — both mid-reasoning intermediate values).
+
+### Root Cause
+
+Two independent stochastic events, not systematic method superiority:
+
+- **External seed=11 failure:** Stochastic truncation + parser artifact. Model returned `action: continue` mid-reasoning (1 API call only); parser extracted `5` from `"$5 per cloth pack"` in the partial text. `gold_in_tree=0`.
+- **External seed=23:** Clean 3-step completion; model correctly computed $92 − $72 = $20. No issue.
+- **Frontier seed=11:** Both direct-reserve attempts independently returned 20 (confidence = 1.0, 2/2 agreement). Correct, stable.
+- **Frontier seed=23 failure:** Stochastic selection artifact. Direct-reserve attempt[0] captured intermediate value 9 (cost per client); attempt[1] correctly returned 20. Support split 1:1; tiebreak selected 9. Frontier ran, returned candidate 10 (also wrong). Override rejected (`single_weak_frontier_branch`). `gold_in_tree=1`; failure tag: `correct answer present but not selected`.
+
+### Sampled Pattern Across 40 Examples
+
+| Metric | Value |
+|---|---|
+| External flip rate (different across seeds) | 14/40 = **35%** |
+| Frontier flip rate (different across seeds) | 5/40 = **12.5%** |
+| Frontier stably correct (both seeds) | 27/40 = **67.5%** |
+| External stably correct (both seeds) | 22/40 = **55%** |
+| Frontier wins seed=11, external fails | 7 |
+| External wins seed=23, frontier fails | 4 |
+
+Pattern: Most external flips follow "absent from explored tree" on seed=11 → correct on seed=23. Frontier failures are predominantly selection artifacts ("correct answer present but not selected"), not reasoning failures.
+
+### Interpretation
+
+- Seed reversal is driven by high external seed variance (35% flip rate), not a genuine external-baseline superiority signal.
+- Frontier stability is substantially better than external on this diagnostic artifact, but 40 examples and 2 seeds are insufficient for gate-design or promotion claims (±~8pp CI at 95%).
+- Artifact remains **diagnostic only**. No gate promotion evidence.
+
+### Decision
+
+- No further Cohere API is needed immediately from this audit.
+- The 6–8 seed robustness run (referenced in `TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`) remains optional/future and should not be launched until there is a clear decision that larger seed-robustness evidence is needed.
+- Recommendation: **C** — treat artifact as diagnostic, update docs, do not run more API now.
+
 ## G) Immediate Next Steps (Ranked)
 
 1. Improve and verify log sufficiency for incremental switch cases.

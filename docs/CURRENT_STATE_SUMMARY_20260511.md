@@ -258,6 +258,16 @@ Companion docs:
 - Targeted diagnostic run design (not launched): 
   `docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`.
 
+### Stage 2 Addendum (2026-05-18, later): Seed-Flip Manual Audit
+
+- Audit output: `outputs/seed_flip_manual_audit_openai_gsm8k_144_20260518T205529Z/`
+- Source: merged 160-row Cohere diagnostic artifact (40 examples, seeds 11/23, budget 6).
+- The sole strict seed-flip case (`openai_gsm8k_144`) is explained by two independent stochastic events (external truncation + parser artifact on seed=11; frontier selection artifact on seed=23), not a systematic method difference.
+- External seed variance is high (14/40 = 35% flip rate); frontier seed variance is lower (5/40 = 12.5%); frontier stably correct on 27/40 = 67.5% of examples.
+- This does **not** establish external-baseline superiority or justify gate promotion.
+- Artifact remains diagnostic only; no Cohere API is currently needed.
+- Canonical status: `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` §F.3.
+
 ### Stage 2 Addendum (2026-05-18, later): Incremental Switch Log-Sufficiency Repair
 
 - Repair output: `outputs/incremental_switch_log_sufficiency_repair_20260518T161301Z/`.

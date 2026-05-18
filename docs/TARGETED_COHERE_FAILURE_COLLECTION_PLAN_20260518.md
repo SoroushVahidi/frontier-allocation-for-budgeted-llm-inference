@@ -100,3 +100,21 @@ Stop collection if any occur:
 - Cohere API collection is not required immediately for current documented status.
 - This plan is launch-ready only when existing artifacts are insufficient for promotion-grade diagnosis or when fresh disjoint promotion-grade failure cases are needed.
 - Any larger Cohere run requires explicit user approval before launch.
+
+## 10) Seed-Robustness Run Status (Updated 2026-05-18)
+
+A 6–8 seed robustness collection was previously discussed as a potential next step. The
+seed-flip manual audit (`outputs/seed_flip_manual_audit_openai_gsm8k_144_20260518T205529Z/`)
+concluded:
+
+- The sole seed-flip case (`openai_gsm8k_144`) is explained by two independent stochastic
+  events, not a systematic method difference.
+- External seed variance is high (14/40 = 35% flip rate) and frontier is more stable
+  (5/40 = 12.5%), but 40 examples and 2 seeds are insufficient for gate design or promotion.
+- Recommendation from audit: **C — treat artifact as diagnostic; do not launch additional
+  Cohere API immediately.**
+
+The 6–8 seed robustness run therefore remains **optional/future**. It should not be launched
+until there is an explicit decision that larger seed-robustness evidence is needed for
+gate promotion, and only after the promotion criteria in
+`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` §E are otherwise met.
