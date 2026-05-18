@@ -930,6 +930,11 @@ def build_promotion_review_fields_for_record(
         selected_answer_canonical=selected_answer_canonical,
     )
     prompt_hash = _prompt_hash_from_row(row)
+    node_expansion_order = _node_expansion_order_from_metadata(md)
+    if not node_expansion_order:
+        node_expansion_order = (
+            EXPLICIT_UNAVAILABLE_MARKER if is_runtime_failure else EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER
+        )
     prune_or_selection_reasons = _prune_or_selection_reasons_from_metadata(md)
     if not prune_or_selection_reasons:
         prune_or_selection_reasons = (
@@ -980,7 +985,7 @@ def build_promotion_review_fields_for_record(
         "partial_answer_present": bool(str(selected_answer_raw or "").strip()),
         "partial_trace_present": bool(str(candidate_trace).strip()),
         "discovery_tree": final_nodes,
-        "node_expansion_order": _node_expansion_order_from_metadata(md),
+        "node_expansion_order": node_expansion_order,
         "final_nodes": final_nodes,
         "selected_node_id": selected_node_id,
         "prune_or_selection_reasons": prune_or_selection_reasons,

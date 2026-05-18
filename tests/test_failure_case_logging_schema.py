@@ -173,6 +173,28 @@ def test_gold_and_exact_match_not_required_for_sufficiency() -> None:
     assert "gold_answer" not in out["missing_required_fields"]
 
 
+def test_explicit_not_applicable_node_expansion_validates_yes() -> None:
+    """EXPLICIT_NOT_APPLICABLE_MARKER satisfies node_expansion_order_or_unavailable."""
+    from scripts.failure_case_logging_schema import EXPLICIT_NOT_APPLICABLE_MARKER
+
+    raw = _base_record()
+    raw["node_expansion_order"] = EXPLICIT_NOT_APPLICABLE_MARKER
+    rec = build_promotion_review_record(raw, fill_explicit_failure_state=False)
+    out = validate_promotion_review_record(rec)
+    assert "node_expansion_order_or_unavailable" not in out["missing_required_fields"]
+    assert out["enough_for_promotion_review"] == "yes"
+
+
+def test_empty_list_node_expansion_remains_partial() -> None:
+    """Silent empty list [] does NOT satisfy node_expansion_order_or_unavailable."""
+    raw = _base_record()
+    raw["node_expansion_order"] = []
+    rec = build_promotion_review_record(raw, fill_explicit_failure_state=False)
+    out = validate_promotion_review_record(rec)
+    assert "node_expansion_order_or_unavailable" in out["missing_required_fields"]
+    assert out["enough_for_promotion_review"] in {"partial", "no"}
+
+
 def test_schema_helper_has_no_provider_api_imports() -> None:
     import pathlib
 

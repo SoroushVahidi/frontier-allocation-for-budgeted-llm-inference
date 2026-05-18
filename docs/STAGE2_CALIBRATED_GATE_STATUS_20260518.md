@@ -303,11 +303,33 @@ adds quantitative support to the feature choices already made.
 - Both-wrong/pool-miss cases require candidate-generation improvement (not gate tuning) if addressed.
 - Future trace clustering should use `sentence_transformers` embeddings, not TF-IDF.
 
-## F.5) Targeted 100-Case Collection: Run Launched (2026-05-18)
+## F.5) Promotion-Review Schema Repair: node_expansion_order (2026-05-18)
+
+During the active 100-case collection, external-method rows (`external_l1_max`,
+`external_s1_budget_forcing`, `external_tale_prompt_budgeting`) were found to
+serialize `node_expansion_order = []` (silently absent) instead of an explicit
+unavailable marker. This caused `enough_for_promotion_review = partial` for all
+external-method rows (50% of batches 1–2).
+
+Fix applied:
+- `scripts/run_cohere_real_model_cost_normalized_validation.py`: `node_expansion_order`
+  now receives the same explicit-marker fallback already used by `prune_or_selection_reasons`;
+  future records will emit `__unavailable_not_recorded__` at generation time.
+- `scripts/repair_promotion_review_markers.py`: repair utility to back-fill already-emitted
+  records without overwriting live output files.
+- Proof run on batches 1–2 (480 rows): 240 repaired; yes rate 50% → 100%.
+  Output: `outputs/promotion_review_marker_repair_check_20260518T223824Z/`.
+
+Live collection data from batches 1–2 is usable but requires running the repair
+utility before downstream analysis to reach the 95% yes-rate criterion.
+Batch 3 onward will emit the correct marker at generation time.
+The running tmux job was not interrupted.
+
+## F.6) Targeted 100-Case Collection: Run Launched (2026-05-18)
 
 - tmux session: `cohere_collect_100_failure_cases_20260518`
 - output root: `outputs/targeted_cohere_100_failure_cases_20260518T213958Z/`
-- Status: collection running as of 2026-05-18
+- Status: collection running; batch 3 in progress as of 2026-05-18 ~22:38 UTC
 
 Post-run pipeline is defined in `docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md` §7.
 Do not kill, restart, or overwrite the running collection.
