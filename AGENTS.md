@@ -64,6 +64,22 @@ These defaults should be applied for future Codex sessions in this repository un
    - Do not ask the user to paste file contents unless the file cannot be found or cannot be read.
    - If multiple matching files exist, use the closest one to the current working directory and report which file was used.
 
+   ### Instruction-file cleanup
+   - If the user message is only a filename/path to an instruction file, and the file is found, read, and successfully executed, Codex may delete that instruction file after completion only if **all** conditions below are true:
+     1. The file is untracked by git.
+     2. The file is not under `docs/`, `scripts/`, `tests/`, `outputs/`, `.git/`, or any source/project directory.
+     3. The file is not a config file, credential, secret, `.env`, SSH key, API key, persistent project note, or research artifact.
+     4. The file appears to be a temporary one-off instruction file, usually in `/home/soroush/`, `/tmp/`, or another scratch location.
+     5. The file extension is a plain instruction-like text/markdown extension such as `.txt`, `.md`, or `.instructions`.
+     6. Deleting it will not delete generated outputs, logs, data, code, docs, or research artifacts.
+   - If any condition is uncertain, preserve the file and report that it was not deleted.
+   - Never delete a directory as part of instruction-file cleanup.
+   - Never delete more than the single instruction file that was explicitly used.
+   - The final report must say:
+     - which instruction file was used,
+     - whether it was deleted or preserved,
+     - if preserved, why.
+
 3. **Model preference**
    - When starting Codex for this repository, prefer GPT-5.3 with high reasoning if available; otherwise use the strongest available GPT-5 reasoning model approved by the user.
 
