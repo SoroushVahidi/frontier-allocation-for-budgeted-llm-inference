@@ -85,6 +85,40 @@ Decision impact:
 - Cohere collection becomes justified only if existing logs cannot support sufficient diagnosis/promotion (including unresolved runtime-cap regression gaps), or if fresh disjoint failure cases with complete schema are required for promotion/final external-baseline comparison.
 - Any future Cohere collection must be targeted, capped, disjoint, and preserve full logs/discovery-tree provenance.
 
+## F.1) Promotion-Review Logging Schema
+
+- New helper module: `scripts/failure_case_logging_schema.py`
+- Purpose:
+  - Build a normalized promotion-review record for each attempt, including runtime-cap/failure attempts.
+  - Validate log sufficiency for promotion-grade review.
+  - Return:
+    - `enough_for_promotion_review` (`yes`/`partial`/`no`)
+    - `missing_required_fields`
+    - `missing_critical_fields`
+    - `notes`
+    - `runtime_failure_reviewable` (`yes`/`no`)
+
+Runtime-cap requirement:
+- Runtime-cap/failure rows must serialize explicit empty/unavailable states instead of silently missing fields, including:
+  - frontier/candidate answer (`explicit empty` marker when absent),
+  - frontier/candidate trace (`explicit empty` marker when absent),
+  - node expansion order (`explicit unavailable` marker when absent),
+  - prune/selection reasons (`explicit unavailable` marker when absent),
+  - explicit status/error plus cost/call-count context.
+
+Schema boundary:
+- `exact_match` and `gold_answer` are retained only as `offline_eval_only` metadata.
+- They are not required for promotion log sufficiency and must never be used as runtime prompt/model features.
+
+Integration guidance:
+- This helper is intentionally minimal and reusable; it is not wired into every writer yet.
+- Future Cohere/failure-collection/frontier writers that emit `per_example_records.jsonl`
+  should call:
+  - `build_promotion_review_record(...)` when constructing per-attempt rows,
+  - `validate_promotion_review_record(...)` before final write/report aggregation.
+- If unresolved runtime-cap reviewability remains after current artifacts, a targeted
+  collection (still not immediate) must use this schema and preserve full per-attempt logs.
+
 ## G) Immediate Next Steps (Ranked)
 
 1. Improve and verify log sufficiency for incremental switch cases.
