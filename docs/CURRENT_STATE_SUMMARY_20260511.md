@@ -251,3 +251,15 @@ Companion docs:
 - Bottleneck is now log sufficiency and promotion criteria, not absence of scored cases.
 - Canonical status + promotion criteria:
   `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`.
+
+### Stage 2 Addendum (2026-05-18, later): Incremental Switch Log-Sufficiency Repair
+
+- Repair output: `outputs/incremental_switch_log_sufficiency_repair_20260518T161301Z/`.
+- Incremental switched cases checked: `17`; previously insufficient: `13`; recovered to
+  sufficient: `11/13`; final sufficiency `yes/partial/no = 13/2/2`.
+- Added recoveries are fully reviewable (`2/2`), but added regressions are not fully
+  reviewable (`0/2`) due to runtime-cap-related missing frontier logs.
+- Safe gate remains the only conservative output-only candidate.
+- Near-neighbor is not promoted; it remains ablation/diagnostic only.
+- Promotion remains blocked by switched-case log sufficiency and recovery/regression
+  separability.

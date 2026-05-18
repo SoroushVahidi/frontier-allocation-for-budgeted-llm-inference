@@ -3,9 +3,10 @@
 ## Status Update (2026-05-18)
 
 - Stage-2 calibrated gate prototype pass is complete and remains output-only.
-- Current roles: safe gate `conservative_combo|f=0.85|b=0.40|m=0.5` as conservative candidate; near-neighbor `conservative_combo|f=0.80|b=0.45|m=0.5` as ablation.
+- Current roles: safe gate `conservative_combo|f=0.85|b=0.40|m=0.5` as conservative candidate; near-neighbor `conservative_combo|f=0.80|b=0.45|m=0.5` as ablation only.
 - Promotion to tracked source policy is deferred pending log sufficiency and disjoint validation criteria.
 - Canonical status and promotion criteria: `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`.
+- Incremental switch log-sufficiency repair (`outputs/incremental_switch_log_sufficiency_repair_20260518T161301Z/`) partially recovered missing logs, but near-neighbor remains non-promotable because its two incremental regressions are still not fully reviewable under runtime-cap-related missing frontier logs.
 
 ## 1) Stage Transition
 Stage 1 (RelationReady verifier) is closed for the current project stage.
@@ -104,6 +105,7 @@ Stronger milestone:
 - Overfitting to exploratory 1440-row artifact.
 - Verifier method entanglement persists in cross-method settings.
 - Missing/incomplete frontier or cost features in scored artifacts.
+- Runtime-cap cases missing frontier answer/trace and promotion-grade expansion/selection logs.
 - Insufficient disjoint validation sample size.
 - Artifacts missing one or more target external baselines.
 

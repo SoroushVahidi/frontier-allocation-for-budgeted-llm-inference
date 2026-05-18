@@ -1,12 +1,28 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-18 (Stage-2 calibrated gate status + promotion criteria linked)
+**Last updated:** 2026-05-18 (Stage-2 calibrated gate log-sufficiency repair recorded)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
 **Phase closure:** `docs/RELATION_VERIFIER_PHASE_CLOSURE_20260517.md`
 **Compact integration + narrative draft:** `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md` and `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`
 **Stage-2 calibrated gate status:** `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`
+**Stage-2 log-sufficiency repair output:** `outputs/incremental_switch_log_sufficiency_repair_20260518T161301Z/`
+
+## Stage-2 Addendum (2026-05-18): Incremental Switch Log-Sufficiency Repair
+
+- Repair checked 17 incremental switched cases and recovered 11 of 13 previously
+  insufficient cases to sufficient reviewability.
+- Final sufficiency split: `yes=13`, `partial=2`, `no=2`.
+- Added recoveries are fully reviewable (`2/2`), while added regressions are not fully
+  reviewable (`0/2`) due to runtime-cap frontier failures with missing promotion-grade
+  frontier answer/trace and expansion/selection logging.
+- Safe gate (`conservative_combo|f=0.85|b=0.40|m=0.5`) remains the only conservative
+  output-only candidate.
+- Near-neighbor (`conservative_combo|f=0.80|b=0.45|m=0.5`) remains ablation/diagnostic
+  only and should not be promoted from current logs.
+- Cohere API collection is not immediately required; it becomes justified only if
+  unresolved runtime-cap/log gaps block promotion-grade review.
 
 ## Correction Note (2026-05-17, Budget-4/8 Cohere Validation)
 
