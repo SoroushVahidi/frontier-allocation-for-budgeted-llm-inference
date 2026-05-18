@@ -1,11 +1,12 @@
 # Relation Verifier — Project Status Handoff
 
-**Last updated:** 2026-05-17 (budget-4/8 overlap audit + disjointness parser correction recorded)
+**Last updated:** 2026-05-18 (Stage-2 calibrated gate status + promotion criteria linked)
 **Branch:** `feat/missing-gold-topology-v1`
 **Canonical fast read:** after `README.md` and `docs/CURRENT_STATE_SUMMARY_20260511.md`
 **Model/data/evaluation details:** see `docs/RELATION_VERIFIER_MODEL_CARD.md`
 **Phase closure:** `docs/RELATION_VERIFIER_PHASE_CLOSURE_20260517.md`
 **Compact integration + narrative draft:** `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md` and `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`
+**Stage-2 calibrated gate status:** `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`
 
 ## Correction Note (2026-05-17, Budget-4/8 Cohere Validation)
 

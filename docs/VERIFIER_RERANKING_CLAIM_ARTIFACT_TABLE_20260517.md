@@ -3,6 +3,9 @@
 ## Purpose
 This document maps each current verifier-guided reranking / frontier-allocation claim to the exact script(s), input/output artifact paths, commit(s), measured result, and claim status. It is intended as a paper/results reproducibility anchor and claim-discipline checklist.
 
+Companion Stage-2 calibrated gate status and promotion criteria:
+`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`.
+
 ## Main Claim Table
 
 | Claim ID | Claim text | Claim status | Script(s) | Input artifact(s) | Output artifact(s) | Commit(s) | Main metric/result | Caveats |

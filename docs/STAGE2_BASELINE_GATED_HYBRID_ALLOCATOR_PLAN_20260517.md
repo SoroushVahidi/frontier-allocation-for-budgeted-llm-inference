@@ -1,5 +1,12 @@
 # Stage 2 Plan: Baseline-Gated Hybrid Allocator (2026-05-17)
 
+## Status Update (2026-05-18)
+
+- Stage-2 calibrated gate prototype pass is complete and remains output-only.
+- Current roles: safe gate `conservative_combo|f=0.85|b=0.40|m=0.5` as conservative candidate; near-neighbor `conservative_combo|f=0.80|b=0.45|m=0.5` as ablation.
+- Promotion to tracked source policy is deferred pending log sufficiency and disjoint validation criteria.
+- Canonical status and promotion criteria: `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`.
+
 ## 1) Stage Transition
 Stage 1 (RelationReady verifier) is closed for the current project stage.
 

@@ -242,3 +242,12 @@ Companion docs:
   verifier model upgrades.
 - Stage 2 planning document:
   `docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`.
+
+### Stage 2 Addendum (2026-05-18): Calibrated Gate Status
+
+- Stage-2 calibrated gate work is currently output-only and not yet promoted to a tracked source policy.
+- Safe candidate remains `conservative_combo|f=0.85|b=0.40|m=0.5`; near-neighbor
+  `conservative_combo|f=0.80|b=0.45|m=0.5` is retained as ablation/diagnostic only.
+- Bottleneck is now log sufficiency and promotion criteria, not absence of scored cases.
+- Canonical status + promotion criteria:
+  `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`.
