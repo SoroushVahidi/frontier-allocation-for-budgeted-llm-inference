@@ -34,6 +34,7 @@ from experiments.output_layer_repair import (
 )
 from experiments.trace_schema import build_branch_trace, write_trace_package
 from scripts.compute_cohere_validation_disjointness import compute_disjointness
+from scripts.failure_case_logging_schema import build_promotion_review_record, validate_promotion_review_record
 
 STRICT_F3 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
 STRICT_GATE1_CAP_K6 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control"
@@ -796,6 +797,191 @@ def append_progress(path: Path, row: dict[str, Any]) -> None:
         f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def _error_type_from_text(error_text: str) -> str:
+    text = str(error_text or "").strip()
+    if not text:
+        return ""
+    head = text.split(":", 1)[0].strip()
+    return head if head and " " not in head else ""
+
+
+def _runtime_cap_reached(error_text: str) -> bool:
+    t = str(error_text or "").lower()
+    return "logical api call cap reached" in t
+
+
+def _candidate_trace_from_nodes(
+    nodes: list[dict[str, Any]],
+    *,
+    selected_answer_raw: Any,
+    selected_answer_canonical: Any,
+) -> str:
+    sel_raw = str(selected_answer_raw or "").strip()
+    sel_can = str(selected_answer_canonical or "").strip()
+    fallback = ""
+    for node in nodes:
+        trace = str(node.get("reasoning_text") or node.get("trace") or "").strip()
+        if not trace:
+            continue
+        if not fallback:
+            fallback = trace
+        node_raw = str(node.get("predicted_answer") or "").strip()
+        node_can = str(node.get("predicted_answer_normalized") or "").strip()
+        if sel_can and node_can and sel_can == node_can:
+            return trace
+        if sel_raw and node_raw and sel_raw == node_raw:
+            return trace
+    return fallback
+
+
+def _selected_node_id_from_nodes(
+    nodes: list[dict[str, Any]],
+    *,
+    selected_answer_raw: Any,
+    selected_answer_canonical: Any,
+) -> str:
+    sel_raw = str(selected_answer_raw or "").strip()
+    sel_can = str(selected_answer_canonical or "").strip()
+    for node in nodes:
+        node_raw = str(node.get("predicted_answer") or "").strip()
+        node_can = str(node.get("predicted_answer_normalized") or "").strip()
+        if (sel_can and node_can and sel_can == node_can) or (sel_raw and node_raw and sel_raw == node_raw):
+            return str(node.get("branch_id") or "")
+    return ""
+
+
+def _node_expansion_order_from_metadata(md: dict[str, Any]) -> list[Any]:
+    action_trace = md.get("action_trace")
+    if not isinstance(action_trace, list):
+        return []
+    order: list[Any] = []
+    for ev in action_trace:
+        if not isinstance(ev, dict):
+            continue
+        if str(ev.get("action") or "") != "expand":
+            continue
+        order.append(ev.get("branch_id") or ev.get("node_id") or ev.get("family_id") or dict(ev))
+    return order
+
+
+def _prune_or_selection_reasons_from_metadata(md: dict[str, Any]) -> list[dict[str, Any]]:
+    action_trace = md.get("action_trace")
+    out: list[dict[str, Any]] = []
+    if isinstance(action_trace, list):
+        for ev in action_trace:
+            if not isinstance(ev, dict):
+                continue
+            action = str(ev.get("action") or "")
+            if action in {"prune", "select", "selection", "commit"}:
+                out.append(
+                    {
+                        "action": action,
+                        "branch_id": ev.get("branch_id"),
+                        "reason": ev.get("reason") or ev.get("prune_reason") or ev.get("selection_reason"),
+                    }
+                )
+    if out:
+        return out
+    selected_group = md.get("selected_group") or md.get("final_answer_group")
+    selection_reason = md.get("selection_reason")
+    if selected_group or selection_reason:
+        return [{"action": "selection", "selected_group": selected_group, "reason": selection_reason}]
+    return []
+
+
+def build_promotion_review_fields_for_record(
+    row: dict[str, Any],
+    *,
+    run_id: str,
+    artifact_label: str,
+) -> dict[str, Any]:
+    md = dict(row.get("result_metadata", {}) or {})
+    final_nodes = list(row.get("final_nodes", []) or [])
+    selected_answer_raw = row.get("selected_answer_raw") or row.get("final_answer_raw")
+    selected_answer_canonical = row.get("selected_answer_canonical") or row.get("final_answer_canonical")
+    status = str(row.get("status") or "")
+    err_text = str(row.get("error") or "")
+    runtime_cap_reached = _runtime_cap_reached(err_text)
+
+    candidate_trace = _candidate_trace_from_nodes(
+        final_nodes,
+        selected_answer_raw=selected_answer_raw,
+        selected_answer_canonical=selected_answer_canonical,
+    )
+    selected_node_id = _selected_node_id_from_nodes(
+        final_nodes,
+        selected_answer_raw=selected_answer_raw,
+        selected_answer_canonical=selected_answer_canonical,
+    )
+    candidate_pool_summary = (
+        md.get("answer_group_support_counts")
+        or md.get("candidate_pool_summary")
+        or {"final_nodes_count": len(final_nodes)}
+    )
+
+    promotion_source = {
+        "run_id": run_id,
+        "artifact_label": artifact_label,
+        "example_id": row.get("example_id"),
+        "problem_id": row.get("example_id"),
+        "dataset": row.get("dataset"),
+        "provider": row.get("provider"),
+        "model": row.get("model"),
+        "method": row.get("method"),
+        "budget": row.get("budget"),
+        "seed": row.get("seed"),
+        "problem_text": row.get("question"),
+        "question": row.get("question"),
+        "candidate_answer": selected_answer_raw,
+        "candidate_trace": candidate_trace,
+        "candidate_answer_canonical": selected_answer_canonical,
+        "parse_success": int(not bool(row.get("parse_extraction_failure"))),
+        "parser_status": "ok" if not bool(row.get("parse_extraction_failure")) else "parse_failed",
+        "parser_error": "",
+        "status": status,
+        "runtime_cap_reached": runtime_cap_reached,
+        "error_type": _error_type_from_text(err_text),
+        "error_message": err_text,
+        "partial_answer_present": bool(str(selected_answer_raw or "").strip()),
+        "partial_trace_present": bool(str(candidate_trace).strip()),
+        "discovery_tree": final_nodes,
+        "node_expansion_order": _node_expansion_order_from_metadata(md),
+        "final_nodes": final_nodes,
+        "selected_node_id": selected_node_id,
+        "prune_or_selection_reasons": _prune_or_selection_reasons_from_metadata(md),
+        "candidate_pool_summary": candidate_pool_summary,
+        "call_count": row.get("cohere_logical_api_calls"),
+        "prompt_tokens": row.get("input_tokens"),
+        "completion_tokens": row.get("output_tokens"),
+        "total_tokens": row.get("total_tokens"),
+        "estimated_cost": row.get("estimated_cost_usd"),
+        "latency_seconds": row.get("latency_seconds"),
+        "verifier_scores": (
+            md.get("verifier_scores")
+            or md.get("outcome_verifier_scores")
+            or md.get("prm_step_scores")
+            or {}
+        ),
+        "raw_proba_ready": md.get("raw_proba_ready"),
+        "calibrated_percentile": md.get("calibrated_percentile"),
+        "gate_features": md.get("gate_features") or {},
+        "gate_decision": md.get("gate_decision") or ("scored" if status == "scored" else "failed_runtime"),
+        "policy_family": md.get("policy_family") or "unknown",
+        "policy_thresholds": md.get("policy_thresholds") or {},
+        "exact_match": row.get("exact_match"),
+        "gold_answer": row.get("gold_answer"),
+        "offline_eval_only": True,
+    }
+    promotion_review_record = build_promotion_review_record(
+        promotion_source, fill_explicit_failure_state=True
+    )
+    promotion_review_validation = validate_promotion_review_record(promotion_review_record)
+    return {
+        "promotion_review_record": promotion_review_record,
+        "promotion_review_validation": promotion_review_validation,
+    }
+
+
 def evaluate_example(
     result: Any,
     dataset: str,
@@ -1303,6 +1489,23 @@ def main() -> None:
                                     "prm_step_verifier_model_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL"] or "unset",
                                     "cohere_api_key_present": ov_verifier_env["COHERE_API_KEY_present"],
                                 }
+                                try:
+                                    row.update(
+                                        build_promotion_review_fields_for_record(
+                                            row,
+                                            run_id=str(args.timestamp),
+                                            artifact_label=out_dir.name,
+                                        )
+                                    )
+                                except Exception as exc:  # noqa: BLE001
+                                    row["promotion_review_record"] = {}
+                                    row["promotion_review_validation"] = {
+                                        "enough_for_promotion_review": "no",
+                                        "runtime_failure_reviewable": "no",
+                                        "missing_required_fields": ["promotion_review_build_exception"],
+                                        "missing_critical_fields": ["promotion_review_build_exception"],
+                                        "notes": [f"promotion_review_build_exception:{type(exc).__name__}"],
+                                    }
                                 append_jsonl(per_example_path, row)
                                 records.append(row)
                                 seen.add(ck)

@@ -111,11 +111,17 @@ Schema boundary:
 - They are not required for promotion log sufficiency and must never be used as runtime prompt/model features.
 
 Integration guidance:
-- This helper is intentionally minimal and reusable; it is not wired into every writer yet.
-- Future Cohere/failure-collection/frontier writers that emit `per_example_records.jsonl`
-  should call:
-  - `build_promotion_review_record(...)` when constructing per-attempt rows,
+- First wired writer (minimal integration, backward-compatible):
+  - `scripts/run_cohere_real_model_cost_normalized_validation.py`
+  - New per-row fields:
+    - `promotion_review_record`
+    - `promotion_review_validation`
+  - Runtime-cap/failure rows now serialize explicit empty/unavailable markers through the helper path.
+- This helper remains intentionally minimal/reusable and is not yet wired into every writer.
+- Future Cohere/failure-collection/frontier writers that emit `per_example_records.jsonl` should call:
+  - `build_promotion_review_record(...)` when constructing per-attempt rows.
   - `validate_promotion_review_record(...)` before final write/report aggregation.
+- For promotion-grade audits, verify `promotion_review_validation.enough_for_promotion_review`.
 - If unresolved runtime-cap reviewability remains after current artifacts, a targeted
   collection (still not immediate) must use this schema and preserve full per-attempt logs.
 
