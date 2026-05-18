@@ -14,6 +14,9 @@ from typing import Any
 
 EXPLICIT_EMPTY_MARKER = "__explicit_empty__"
 EXPLICIT_UNAVAILABLE_MARKER = "__explicit_unavailable__"
+EXPLICIT_NOT_SCORED_YET_MARKER = "__not_scored_yet__"
+EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER = "__unavailable_not_recorded__"
+EXPLICIT_NOT_APPLICABLE_MARKER = "__not_applicable__"
 
 FAILURE_STATUSES = {"failed", "runtime_cap", "timeout", "parse_failed"}
 
@@ -108,7 +111,13 @@ def _is_present(value: Any) -> bool:
 
 
 def _is_explicit_marker(value: Any) -> bool:
-    return str(value) in {EXPLICIT_EMPTY_MARKER, EXPLICIT_UNAVAILABLE_MARKER}
+    return str(value) in {
+        EXPLICIT_EMPTY_MARKER,
+        EXPLICIT_UNAVAILABLE_MARKER,
+        EXPLICIT_NOT_SCORED_YET_MARKER,
+        EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER,
+        EXPLICIT_NOT_APPLICABLE_MARKER,
+    }
 
 
 def _present_or_explicit(value: Any) -> bool:

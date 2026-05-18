@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import atexit
 import csv
+import hashlib
 import json
 import os
 import random
@@ -34,7 +35,13 @@ from experiments.output_layer_repair import (
 )
 from experiments.trace_schema import build_branch_trace, write_trace_package
 from scripts.compute_cohere_validation_disjointness import compute_disjointness
-from scripts.failure_case_logging_schema import build_promotion_review_record, validate_promotion_review_record
+from scripts.failure_case_logging_schema import (
+    EXPLICIT_NOT_SCORED_YET_MARKER,
+    EXPLICIT_UNAVAILABLE_MARKER,
+    EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER,
+    build_promotion_review_record,
+    validate_promotion_review_record,
+)
 
 STRICT_F3 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
 STRICT_GATE1_CAP_K6 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control"
@@ -889,6 +896,13 @@ def _prune_or_selection_reasons_from_metadata(md: dict[str, Any]) -> list[dict[s
     return []
 
 
+def _prompt_hash_from_row(row: dict[str, Any]) -> str:
+    question = str(row.get("question") or "").strip()
+    if not question:
+        return ""
+    return "question_sha256:" + hashlib.sha256(question.encode("utf-8")).hexdigest()
+
+
 def build_promotion_review_fields_for_record(
     row: dict[str, Any],
     *,
@@ -900,8 +914,10 @@ def build_promotion_review_fields_for_record(
     selected_answer_raw = row.get("selected_answer_raw") or row.get("final_answer_raw")
     selected_answer_canonical = row.get("selected_answer_canonical") or row.get("final_answer_canonical")
     status = str(row.get("status") or "")
+    status_lower = status.strip().lower()
     err_text = str(row.get("error") or "")
     runtime_cap_reached = _runtime_cap_reached(err_text)
+    is_runtime_failure = runtime_cap_reached or status_lower in {"failed", "runtime_cap", "timeout", "parse_failed"}
 
     candidate_trace = _candidate_trace_from_nodes(
         final_nodes,
@@ -913,6 +929,24 @@ def build_promotion_review_fields_for_record(
         selected_answer_raw=selected_answer_raw,
         selected_answer_canonical=selected_answer_canonical,
     )
+    prompt_hash = _prompt_hash_from_row(row)
+    prune_or_selection_reasons = _prune_or_selection_reasons_from_metadata(md)
+    if not prune_or_selection_reasons:
+        prune_or_selection_reasons = (
+            EXPLICIT_UNAVAILABLE_MARKER if is_runtime_failure else EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER
+        )
+    verifier_scores = (
+        md.get("verifier_scores")
+        or md.get("outcome_verifier_scores")
+        or md.get("prm_step_scores")
+    )
+    verifier_scores_pointer: Any = None
+    if not verifier_scores:
+        verifier_scores_pointer = EXPLICIT_NOT_SCORED_YET_MARKER
+    raw_proba_ready = md.get("raw_proba_ready")
+    calibrated_percentile = md.get("calibrated_percentile")
+    if raw_proba_ready is None and calibrated_percentile is None:
+        raw_proba_ready = EXPLICIT_NOT_SCORED_YET_MARKER
     candidate_pool_summary = (
         md.get("answer_group_support_counts")
         or md.get("candidate_pool_summary")
@@ -932,6 +966,7 @@ def build_promotion_review_fields_for_record(
         "seed": row.get("seed"),
         "problem_text": row.get("question"),
         "question": row.get("question"),
+        "prompt_hash": prompt_hash,
         "candidate_answer": selected_answer_raw,
         "candidate_trace": candidate_trace,
         "candidate_answer_canonical": selected_answer_canonical,
@@ -948,7 +983,7 @@ def build_promotion_review_fields_for_record(
         "node_expansion_order": _node_expansion_order_from_metadata(md),
         "final_nodes": final_nodes,
         "selected_node_id": selected_node_id,
-        "prune_or_selection_reasons": _prune_or_selection_reasons_from_metadata(md),
+        "prune_or_selection_reasons": prune_or_selection_reasons,
         "candidate_pool_summary": candidate_pool_summary,
         "call_count": row.get("cohere_logical_api_calls"),
         "prompt_tokens": row.get("input_tokens"),
@@ -956,14 +991,10 @@ def build_promotion_review_fields_for_record(
         "total_tokens": row.get("total_tokens"),
         "estimated_cost": row.get("estimated_cost_usd"),
         "latency_seconds": row.get("latency_seconds"),
-        "verifier_scores": (
-            md.get("verifier_scores")
-            or md.get("outcome_verifier_scores")
-            or md.get("prm_step_scores")
-            or {}
-        ),
-        "raw_proba_ready": md.get("raw_proba_ready"),
-        "calibrated_percentile": md.get("calibrated_percentile"),
+        "verifier_scores": verifier_scores or {},
+        "verifier_scores_pointer": verifier_scores_pointer,
+        "raw_proba_ready": raw_proba_ready,
+        "calibrated_percentile": calibrated_percentile,
         "gate_features": md.get("gate_features") or {},
         "gate_decision": md.get("gate_decision") or ("scored" if status == "scored" else "failed_runtime"),
         "policy_family": md.get("policy_family") or "unknown",

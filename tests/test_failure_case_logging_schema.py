@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from scripts.failure_case_logging_schema import (
     EXPLICIT_EMPTY_MARKER,
+    EXPLICIT_NOT_SCORED_YET_MARKER,
     EXPLICIT_UNAVAILABLE_MARKER,
+    EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER,
     build_promotion_review_record,
     validate_promotion_review_record,
 )
@@ -118,6 +120,38 @@ def test_missing_node_expansion_and_prune_reasons_is_partial_or_no() -> None:
     assert "prune_or_selection_reasons_or_unavailable" in out["missing_required_fields"]
 
 
+def test_success_with_explicit_not_scored_and_unavailable_markers_is_yes() -> None:
+    raw = _base_record()
+    raw.pop("prompt_text", None)
+    raw["prompt_hash"] = "question_sha256:abc123"
+    raw["prune_or_selection_reasons"] = EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER
+    raw["verifier_scores"] = {}
+    raw["verifier_scores_pointer"] = EXPLICIT_NOT_SCORED_YET_MARKER
+    raw["raw_proba_ready"] = EXPLICIT_NOT_SCORED_YET_MARKER
+    raw["calibrated_percentile"] = None
+    rec = build_promotion_review_record(raw, fill_explicit_failure_state=False)
+    out = validate_promotion_review_record(rec)
+    assert out["enough_for_promotion_review"] == "yes"
+    assert out["runtime_failure_reviewable"] == "yes"
+
+
+def test_success_missing_prompt_score_and_verifier_fields_is_partial() -> None:
+    raw = _base_record()
+    raw.pop("prompt_text", None)
+    raw.pop("prompt_pointer", None)
+    raw.pop("prompt_hash", None)
+    raw["verifier_scores"] = {}
+    raw["verifier_scores_pointer"] = ""
+    raw["raw_proba_ready"] = None
+    raw["calibrated_percentile"] = None
+    rec = build_promotion_review_record(raw, fill_explicit_failure_state=False)
+    out = validate_promotion_review_record(rec)
+    assert out["enough_for_promotion_review"] in {"partial", "no"}
+    assert "prompt_text_or_pointer_or_hash" in out["missing_required_fields"]
+    assert "verifier_scores_or_pointer" in out["missing_required_fields"]
+    assert "raw_or_calibrated_score" in out["missing_required_fields"]
+
+
 def test_offline_eval_fields_are_flagged_offline_only() -> None:
     raw = _base_record()
     raw["exact_match"] = 1
@@ -148,4 +182,3 @@ def test_schema_helper_has_no_provider_api_imports() -> None:
     assert "from cohere" not in txt
     assert "import openai" not in txt
     assert "from openai" not in txt
-

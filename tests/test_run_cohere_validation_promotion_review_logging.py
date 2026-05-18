@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from scripts.failure_case_logging_schema import (
     EXPLICIT_EMPTY_MARKER,
+    EXPLICIT_NOT_SCORED_YET_MARKER,
     EXPLICIT_UNAVAILABLE_MARKER,
+    EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER,
 )
 from scripts.run_cohere_real_model_cost_normalized_validation import (
     build_promotion_review_fields_for_record,
@@ -68,8 +70,64 @@ def test_promotion_review_fields_keep_existing_row_semantics_for_scored_case() -
     assert review["candidate_trace"] == "2+2 is 4"
     assert review["selected_node_id"] == "b1"
     assert review["node_expansion_order"] == ["b0", "b1"]
+    assert str(review["prompt_hash"]).startswith("question_sha256:")
+    assert review["prune_or_selection_reasons"][0]["action"] == "select"
+    assert review["verifier_scores_pointer"] == EXPLICIT_NOT_SCORED_YET_MARKER
+    assert review["raw_proba_ready"] == EXPLICIT_NOT_SCORED_YET_MARKER
     assert validation["runtime_failure_reviewable"] == "yes"
-    assert "enough_for_promotion_review" in validation
+    assert validation["enough_for_promotion_review"] == "yes"
+
+
+def test_scored_row_without_selection_trace_gets_explicit_unavailable_marker() -> None:
+    row = {
+        "provider": "cohere",
+        "model": "command-r",
+        "dataset": "openai/gsm8k",
+        "seed": 11,
+        "budget": 4,
+        "method": "direct_reserve_semantic_frontier_v2",
+        "example_id": "ex-2",
+        "status": "scored",
+        "error": "",
+        "exact_match": 1,
+        "question": "What is 2+3?",
+        "gold_answer": "5",
+        "final_answer_raw": "5",
+        "final_answer_canonical": "5",
+        "selected_answer_raw": "5",
+        "selected_answer_canonical": "5",
+        "parse_extraction_failure": 0,
+        "result_metadata": {
+            "action_trace": [{"action": "expand", "branch_id": "b0", "family_id": "fam0"}],
+            "answer_group_support_counts": {"5": 1},
+        },
+        "final_nodes": [
+            {
+                "branch_id": "b0",
+                "reasoning_text": "2+3 is 5",
+                "predicted_answer": "5",
+                "predicted_answer_normalized": "5",
+            }
+        ],
+        "cohere_logical_api_calls": 1,
+        "input_tokens": 10,
+        "output_tokens": 5,
+        "total_tokens": 15,
+        "latency_seconds": 0.1,
+        "estimated_cost_usd": 0.005,
+    }
+
+    payload = build_promotion_review_fields_for_record(
+        row,
+        run_id="20260518T170000Z",
+        artifact_label="cohere_real_model_cost_normalized_validation_20260518T170000Z",
+    )
+    review = payload["promotion_review_record"]
+    validation = payload["promotion_review_validation"]
+    assert review["prune_or_selection_reasons"] == EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER
+    assert review["verifier_scores_pointer"] == EXPLICIT_NOT_SCORED_YET_MARKER
+    assert review["raw_proba_ready"] == EXPLICIT_NOT_SCORED_YET_MARKER
+    assert validation["enough_for_promotion_review"] == "yes"
 
 
 def test_runtime_cap_failure_gets_explicit_failure_markers() -> None:

@@ -117,6 +117,11 @@ Integration guidance:
     - `promotion_review_record`
     - `promotion_review_validation`
   - Runtime-cap/failure rows now serialize explicit empty/unavailable markers through the helper path.
+- Real Cohere pilot check:
+  - `outputs/cohere_promotion_review_logging_pilot_20260518T164702Z/`
+  - Confirmed real API rows emit both promotion-review fields.
+  - First pilot success rows were `partial` because generation-time prompt/verifier/score/selection-gap fields were left implicit.
+  - Schema/writer now require explicit generation-time markers (`__not_scored_yet__`, `__unavailable_not_recorded__`, prompt hash/pointer) so pre-offline-scoring rows can validate as promotion-reviewable (`yes`) when otherwise complete.
 - This helper remains intentionally minimal/reusable and is not yet wired into every writer.
 - Future Cohere/failure-collection/frontier writers that emit `per_example_records.jsonl` should call:
   - `build_promotion_review_record(...)` when constructing per-attempt rows.
