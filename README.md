@@ -27,6 +27,8 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 
 **Verifier-guided reranking navigation:** [`docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md`](docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md) · [`docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`](docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md)
 
+**Stage-2 calibrated gate:** [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md) · [`docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`](docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md) · [`docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`](docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md)
+
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 
 **Structured indexes:** [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) · [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) · [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) · [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md)
@@ -158,6 +160,7 @@ Full operational patterns, cluster batch names, reruns, and pitfalls → [`scrip
 | Finalguard or numeric-leaf success | Latest no-API/API checks showed no accuracy gain on target artifacts |
 | Path-gap proxies as causal gold-path counts | Diagnostics carry explicit caveat fields |
 | Slurm summaries without reading **`manifest.json`** | **`outputs/`** are provenance, not standalone authority |
+| Promoted calibrated gate or gate-beats-external claim | Gate is output-only; safe-gate holdout gain neutral (`+0.00pp`); near-neighbor regressions unresolved; no disjoint promotion-grade validation yet |
 
 Timestamped **`outputs/`** folders stay put. Prefer indexing, classification, and canonical interpretation over deletion.
 

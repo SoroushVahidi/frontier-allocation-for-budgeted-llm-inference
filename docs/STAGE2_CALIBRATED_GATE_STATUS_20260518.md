@@ -303,6 +303,16 @@ adds quantitative support to the feature choices already made.
 - Both-wrong/pool-miss cases require candidate-generation improvement (not gate tuning) if addressed.
 - Future trace clustering should use `sentence_transformers` embeddings, not TF-IDF.
 
+## F.5) Targeted 100-Case Collection: Run Launched (2026-05-18)
+
+- tmux session: `cohere_collect_100_failure_cases_20260518`
+- output root: `outputs/targeted_cohere_100_failure_cases_20260518T213958Z/`
+- Status: collection running as of 2026-05-18
+
+Post-run pipeline is defined in `docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md` §7.
+Do not kill, restart, or overwrite the running collection.
+Proceed with post-run verifier scoring, log-sufficiency validation, and failure inventory once collection completes.
+
 ## G) Immediate Next Steps (Ranked)
 
 1. Improve and verify log sufficiency for incremental switch cases.

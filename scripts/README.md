@@ -139,6 +139,25 @@ When this index and canonical docs disagree, canonical docs in `docs/` take prec
 | `generate_tree_plv_status_report.py` | Generate machine-readable Tree-PLV completeness status artifacts |
 | `list_external_baselines.py` | Print external baseline registry |
 
+## Stage-2 calibrated gate and verifier integration scripts
+
+Scripts added on `feat/missing-gold-topology-v1` for verifier-guided allocation and calibrated gate evaluation.
+
+| Script | Role |
+|---|---|
+| `score_verifier_on_frontier_candidates.py` | Offline verifier scoring on frontier candidate traces; no provider calls required. |
+| `compare_allocation_policies.py` | Compare cross-method and within-method allocation policies on scored artifacts. |
+| `compare_within_method_reranking.py` | Within-method verifier-guided reranking vs random vs oracle. |
+| `analyze_within_method_reranking_uncertainty.py` | Cluster-bootstrap CI analysis for within-method reranking gains. |
+| `apply_frozen_slice_aware_reranking.py` | Apply frozen slice-aware reranking policy to a new independent validation artifact (no retuning). |
+| `sweep_within_method_tie_aware_reranking.py` | Sweep tie-aware within-method reranking configurations. |
+| `collect_baseline_gated_loss_cases.py` | Collect and enrich baseline-gated loss cases for Stage-2 failure inventory. |
+| `compare_baseline_gated_hybrid_allocator.py` | Evaluate baseline-gated hybrid allocation policy and compare to `external_l1_max`. |
+| `evaluate_calibrated_percentile_gate.py` | Evaluate calibrated percentile gate configurations; produces safe and near-neighbor candidates. |
+| `join_verifier_scores_to_failure_features.py` | Join offline verifier scores to failure-feature rows for gate training and evaluation. |
+| `mine_failure_patterns.py` | Mine association rules and decision-tree patterns in failure/disagreement case sets. |
+| `failure_case_logging_schema.py` | Build and validate promotion-review records for per-attempt rows; log-sufficiency helper. |
+
 ## Historical and provenance scripts
 
 Historical entry points are documented in:

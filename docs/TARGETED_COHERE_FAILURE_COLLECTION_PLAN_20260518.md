@@ -143,3 +143,14 @@ merged analysis have served their diagnostic purpose.
 - Absent-from-tree / present-not-selected failure tags, verified offline.
 - Full promotion-review schema compliance (see §F.1–F.2 in
   `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`).
+
+## 12) Targeted 100-Case Collection: Run Launched (2026-05-18)
+
+The targeted Cohere 100-failure-case run described in §4 above has been launched:
+
+- tmux session: `cohere_collect_100_failure_cases_20260518`
+- output root: `outputs/targeted_cohere_100_failure_cases_20260518T213958Z/`
+- Status: collection running as of 2026-05-18
+
+Post-run pipeline (§7) and stop conditions (§8) apply once the run completes.
+Do not kill, restart, or overwrite the running collection.
