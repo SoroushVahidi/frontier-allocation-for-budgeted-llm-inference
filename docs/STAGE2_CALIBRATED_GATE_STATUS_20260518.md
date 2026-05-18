@@ -130,6 +130,23 @@ Integration guidance:
 - If unresolved runtime-cap reviewability remains after current artifacts, a targeted
   collection (still not immediate) must use this schema and preserve full per-attempt logs.
 
+## F.2) Cohere Promotion-Review Logging Pilot 2
+
+- Output: `outputs/cohere_promotion_review_logging_pilot2_20260518T170030Z/`
+- Per-example records rows: `4`
+- Promotion-review sufficiency: `enough_for_promotion_review` `yes=4/4`, `partial=0/4`, `no=0/4`
+- Runtime-failure reviewability: `yes=4/4`, `no=0/4`
+- Explicit marker coverage on success-path rows:
+  - `prompt_hash` present `4/4`
+  - `raw_proba_ready=__not_scored_yet__` `4/4`
+  - `verifier_scores_pointer=__not_scored_yet__` `4/4`
+  - `prune_or_selection_reasons` explicit unavailable/not_applicable when absent
+- Silent missing required marker fields: `0`
+- Prompt/feature leakage checks (`gold` / `exact_match`): `0`
+- Outcome: success-path promotion-review logging readiness is confirmed for the main Cohere writer.
+- Caveat: no runtime-failure rows occurred in this pilot, so runtime-failure-path readiness remains synthetic-tested only.
+- Decision impact: future targeted failure collection can use the same main Cohere writer + schema path.
+
 ## G) Immediate Next Steps (Ranked)
 
 1. Improve and verify log sufficiency for incremental switch cases.

@@ -251,6 +251,12 @@ Companion docs:
 - Bottleneck is now log sufficiency and promotion criteria, not absence of scored cases.
 - Canonical status + promotion criteria:
   `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`.
+- Cohere promotion-review logging pilot 2 confirmed success-path readiness (`4/4` rows
+  promotion-review sufficient) in
+  `outputs/cohere_promotion_review_logging_pilot2_20260518T170030Z/`; runtime-failure-path
+  coverage remains synthetic-tested only.
+- Targeted diagnostic run design (not launched): 
+  `docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`.
 
 ### Stage 2 Addendum (2026-05-18, later): Incremental Switch Log-Sufficiency Repair
 
