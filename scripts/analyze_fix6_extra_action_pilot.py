@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Offline analyzer for FIX-6 extra-action pilot outputs.
+"""Analyze FIX-6 extra-action pilot outputs into LoVEC training/evaluation artifacts.
 
-Safe-by-default behavior:
-- If pilot rows are missing/incomplete, emit readiness outputs and exit 0.
-- Never mutates live pilot output directory.
-- Uses gold/exact only as offline labels for diagnostics/targets.
+Safety contract:
+- Offline-only analysis over existing artifacts.
+- No provider/API calls.
+- Graceful readiness-mode output when pilot rows are missing/incomplete.
 """
 
 from __future__ import annotations
@@ -18,22 +18,55 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+EXPECTED_METHODS = {
+    "direct_reserve_semantic_frontier_v2",
+    "external_tale_prompt_budgeting",
+}
+EXPECTED_ROWS = 80
+EXPECTED_EXAMPLES = 40
+EXPECTED_SEED = 53
+EXPECTED_BUDGET = 6
 
-FRONTIER_METHOD = "direct_reserve_semantic_frontier_v2"
-TALE_METHOD = "external_tale_prompt_budgeting"
-REQUIRED_METHODS = {FRONTIER_METHOD, TALE_METHOD}
 
-FORBIDDEN_FEATURE_TOKENS = ("gold", "exact_match", "exact match", "correct")
+@dataclass
+class ValidationSummary:
+    row_count: int
+    complete: bool
+    reasons: list[str]
+    status_counts: dict[str, int]
+    method_counts: dict[str, int]
+    unique_examples: int
+    duplicate_count: int
+    promotion_review_record_coverage: dict[str, int]
+    promotion_review_validation_coverage: dict[str, int]
+    enough_for_promotion_review_counts: dict[str, int]
+    seed_mismatch_count: int
+    budget_mismatch_count: int
+    method_mismatch_count: int
+    leakage_hits: list[dict[str, Any]]
 
 
-def _norm_answer(v: Any) -> str | None:
-    s = str(v or "").strip()
-    if not s or s.lower() in {"none", "__unknown__"}:
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _norm_bool(value: Any) -> bool | None:
+    if value is None:
         return None
-    return s
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        s = value.strip().lower()
+        if s in {"1", "true", "yes", "y"}:
+            return True
+        if s in {"0", "false", "no", "n", ""}:
+            return False
+    return None
 
 
-def _read_jsonl(path: Path) -> list[dict[str, Any]]:
+def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     with path.open() as f:
         for line in f:
@@ -42,21 +75,14 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def _read_csv(path: Path) -> list[dict[str, Any]]:
+def _load_csv(path: Path) -> list[dict[str, Any]]:
     with path.open() as f:
         return list(csv.DictReader(f))
 
 
-def _write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str]) -> None:
-    with path.open("w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
-        w.writeheader()
-        for row in rows:
-            w.writerow(row)
-
-
 def _write_json(path: Path, obj: Any) -> None:
-    path.write_text(json.dumps(obj, indent=2))
+    with path.open("w") as f:
+        json.dump(obj, f, indent=2)
 
 
 def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -65,673 +91,739 @@ def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
             f.write(json.dumps(row) + "\n")
 
 
-def _scan_for_label_leakage(row: dict[str, Any]) -> list[dict[str, Any]]:
-    """Scan prompt/feature-like fields for gold/exact-match label tokens."""
+def _write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str] | None = None) -> None:
+    if fieldnames is None:
+        keys: set[str] = set()
+        for row in rows:
+            keys.update(str(k) for k in row.keys())
+        fieldnames = sorted(keys)
+    with path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def _to_int(value: Any, default: int | None = None) -> int | None:
+    try:
+        if value is None or value == "":
+            return default
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_float(value: Any, default: float | None = None) -> float | None:
+    try:
+        if value is None or value == "":
+            return default
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _row_key(row: dict[str, Any]) -> tuple[str, str, str, str, str]:
+    return (
+        str(row.get("example_id") or ""),
+        str(row.get("dataset") or ""),
+        str(row.get("method") or ""),
+        str(row.get("seed") or ""),
+        str(row.get("budget") or ""),
+    )
+
+
+def _example_key(row: dict[str, Any]) -> tuple[str, str]:
+    return (str(row.get("example_id") or ""), str(row.get("dataset") or ""))
+
+
+def _extract_answer(row: dict[str, Any]) -> str | None:
+    for key in ("final_answer_canonical", "selected_answer_canonical", "final_answer_raw", "selected_answer_raw"):
+        v = row.get(key)
+        if v is not None and str(v).strip() != "":
+            return str(v).strip()
+    return None
+
+
+def _extract_correct(row: dict[str, Any]) -> bool | None:
+    em = _norm_bool(row.get("exact_match"))
+    if em is not None:
+        return em
+    ans = _extract_answer(row)
+    gold = row.get("gold_answer_canonical") or row.get("gold_answer")
+    if ans is None or gold is None:
+        return None
+    return str(ans).strip() == str(gold).strip()
+
+
+def _deep_items(obj: Any, prefix: str = ""):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            k_str = str(k)
+            path = f"{prefix}.{k_str}" if prefix else k_str
+            yield from _deep_items(v, path)
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            path = f"{prefix}[{i}]"
+            yield from _deep_items(v, path)
+    else:
+        yield prefix, obj
+
+
+def _scan_leakage(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     hits: list[dict[str, Any]] = []
-
-    def scan_obj(obj: Any, path: str) -> None:
-        if isinstance(obj, dict):
-            for k, v in obj.items():
-                scan_obj(v, f"{path}.{k}" if path else str(k))
-        elif isinstance(obj, list):
-            for i, v in enumerate(obj):
-                scan_obj(v, f"{path}[{i}]")
-        elif isinstance(obj, str):
-            low = obj.lower()
-            if any(tok in low for tok in ("gold_answer", "gold_answer_canonical", "exact_match", "exact match")):
-                hits.append({"field": path, "snippet": obj[:220]})
-
-    feature_fields = {
-        "question": row.get("question"),
-        "result_metadata": row.get("result_metadata"),
-    }
-    pr = row.get("promotion_review_record")
-    if isinstance(pr, dict):
-        for k in (
-            "prompt_text",
-            "candidate_trace",
-            "gate_features",
-            "policy_thresholds",
-            "prune_or_selection_reasons",
-            "candidate_pool_summary",
-            "discovery_tree",
-        ):
-            feature_fields[f"promotion_review_record.{k}"] = pr.get(k)
-
-    for k, v in feature_fields.items():
-        scan_obj(v, k)
+    needle_terms = ("gold", "exact")
+    for idx, row in enumerate(rows):
+        for path, value in _deep_items(row):
+            p = path.lower()
+            if "prompt" not in p and "feature" not in p:
+                continue
+            if not isinstance(value, str):
+                continue
+            lowered = value.lower()
+            if any(term in lowered for term in needle_terms):
+                hits.append(
+                    {
+                        "row_index": idx,
+                        "example_id": row.get("example_id"),
+                        "dataset": row.get("dataset"),
+                        "method": row.get("method"),
+                        "path": path,
+                        "value_excerpt": value[:200],
+                    }
+                )
     return hits
 
 
-@dataclass
-class PilotReadiness:
-    ready: bool
-    reason: str
-    metrics: dict[str, Any]
-
-
-def _discover_pilot_jsonl(pilot_root: Path) -> Path | None:
-    paths = sorted(pilot_root.glob("runner_output/**/per_example_records.jsonl"))
-    if not paths:
-        return None
-    # Choose largest row file to avoid stale partial alternates.
-    best = None
-    best_size = -1
-    for p in paths:
-        try:
-            size = p.stat().st_size
-        except Exception:
-            size = -1
-        if size > best_size:
-            best = p
-            best_size = size
-    return best
-
-
-def _parse_bool(v: Any) -> bool:
-    if isinstance(v, bool):
-        return v
-    s = str(v).strip().lower()
-    return s in {"1", "true", "yes", "y"}
-
-
-def _feature_columns_from_state(state_row: dict[str, Any]) -> dict[str, Any]:
-    feature_cols: dict[str, Any] = {}
-    for k, v in state_row.items():
-        lk = k.lower()
-        if k in {"artifact", "split_kind", "example_id", "dataset", "seed", "budget"}:
-            continue
-        if any(tok in lk for tok in FORBIDDEN_FEATURE_TOKENS):
-            continue
-        feature_cols[f"f_{k}"] = v
-    return feature_cols
-
-
-def _group_pilot_rows(rows: list[dict[str, Any]]) -> dict[tuple[str, Any, Any, str], dict[str, dict[str, Any]]]:
-    grouped: dict[tuple[str, Any, Any, str], dict[str, dict[str, Any]]] = defaultdict(dict)
+def _coverage_counter(rows: list[dict[str, Any]], field: str) -> dict[str, int]:
+    counts = Counter()
     for row in rows:
-        key = (
-            str(row.get("example_id")),
-            row.get("seed"),
-            row.get("budget"),
-            str(row.get("dataset") or ""),
-        )
-        grouped[key][str(row.get("method") or "")] = row
-    return grouped
+        value = row.get(field)
+        if value is None:
+            rm = row.get("result_metadata")
+            if isinstance(rm, dict):
+                value = rm.get(field)
+        if value is None:
+            counts["missing"] += 1
+        elif isinstance(value, dict) and value:
+            counts["present"] += 1
+        elif isinstance(value, dict):
+            counts["empty"] += 1
+        elif str(value).strip() == "":
+            counts["empty"] += 1
+        else:
+            counts["present"] += 1
+    return dict(counts)
 
 
-def _build_readiness(
-    pilot_root: Path,
-    selected_cases: list[dict[str, Any]],
-    pilot_rows: list[dict[str, Any]] | None,
-    expected_rows: int,
-    expected_cases: int,
-) -> PilotReadiness:
-    if pilot_rows is None:
-        return PilotReadiness(
-            ready=False,
-            reason="pilot_rows_missing",
-            metrics={
-                "selected_case_count": len(selected_cases),
-                "expected_case_count": expected_cases,
-                "expected_rows": expected_rows,
-                "pilot_rows_found": 0,
-                "ready": False,
-            },
-        )
+def validate_pilot_rows(
+    rows: list[dict[str, Any]],
+    *,
+    expected_rows: int = EXPECTED_ROWS,
+    expected_examples: int = EXPECTED_EXAMPLES,
+) -> ValidationSummary:
+    reasons: list[str] = []
+    status_counts = Counter(str(r.get("status") or "unknown") for r in rows)
+    method_counts = Counter(str(r.get("method") or "unknown") for r in rows)
+    unique_examples = len({_example_key(r) for r in rows})
 
-    method_counts = Counter(str(r.get("method") or "") for r in pilot_rows)
-    status_counts = Counter(str(r.get("status") or "") for r in pilot_rows)
-    unique_examples = {str(r.get("example_id") or "") for r in pilot_rows}
-    seeds = {r.get("seed") for r in pilot_rows}
-    budgets = {r.get("budget") for r in pilot_rows}
+    seen = set()
+    duplicate_count = 0
+    for row in rows:
+        k = _row_key(row)
+        if k in seen:
+            duplicate_count += 1
+        seen.add(k)
 
-    dup_key = Counter(
-        (
-            r.get("provider"),
-            r.get("dataset"),
-            r.get("seed"),
-            r.get("budget"),
-            r.get("method"),
-            r.get("example_id"),
-        )
-        for r in pilot_rows
-    )
-    duplicate_count = sum(c - 1 for c in dup_key.values() if c > 1)
+    seed_mismatch_count = sum(1 for r in rows if _to_int(r.get("seed")) != EXPECTED_SEED)
+    budget_mismatch_count = sum(1 for r in rows if _to_int(r.get("budget")) != EXPECTED_BUDGET)
+    method_mismatch_count = sum(1 for r in rows if str(r.get("method") or "") not in EXPECTED_METHODS)
 
-    ready = True
-    reason = "ready"
-    if len(pilot_rows) < expected_rows:
-        ready = False
-        reason = "pilot_rows_incomplete"
-    elif duplicate_count != 0:
-        ready = False
-        reason = "duplicate_rows_detected"
-    elif set(method_counts.keys()) != REQUIRED_METHODS:
-        ready = False
-        reason = "methods_incomplete"
-    elif seeds != {53}:
-        ready = False
-        reason = "unexpected_seed"
-    elif budgets != {6}:
-        ready = False
-        reason = "unexpected_budget"
-    elif len(unique_examples) < min(expected_cases, len(selected_cases)):
-        ready = False
-        reason = "selected_examples_incomplete"
+    if len(rows) != expected_rows:
+        reasons.append(f"row_count_mismatch: expected={expected_rows}, found={len(rows)}")
+    if unique_examples != expected_examples:
+        reasons.append(f"example_count_mismatch: expected={expected_examples}, found={unique_examples}")
+    if set(method_counts.keys()) - EXPECTED_METHODS:
+        reasons.append("unexpected_methods_present")
+    if seed_mismatch_count:
+        reasons.append(f"seed_mismatch_count={seed_mismatch_count}")
+    if budget_mismatch_count:
+        reasons.append(f"budget_mismatch_count={budget_mismatch_count}")
+    if duplicate_count:
+        reasons.append(f"duplicate_rows={duplicate_count}")
 
-    metrics = {
-        "selected_case_count": len(selected_cases),
-        "expected_case_count": expected_cases,
-        "expected_rows": expected_rows,
-        "pilot_rows_found": len(pilot_rows),
-        "pilot_unique_examples": len(unique_examples),
-        "method_counts": dict(method_counts),
-        "status_counts": dict(status_counts),
-        "seeds": sorted(seeds),
-        "budgets": sorted(budgets),
-        "duplicate_count": duplicate_count,
-        "ready": ready,
-        "reason": reason,
-    }
-    return PilotReadiness(ready=ready, reason=reason, metrics=metrics)
+    pr_record_cov = _coverage_counter(rows, "promotion_review_record")
+    pr_validation_cov = _coverage_counter(rows, "promotion_review_validation")
 
-
-def run_analysis(
-    pilot_root: Path,
-    fix6_root: Path,
-    main_postrun_root: Path,
-    output_root: Path,
-    expected_rows: int,
-    expected_cases: int,
-) -> None:
-    output_root.mkdir(parents=True, exist_ok=False)
-
-    selected_cases_path = pilot_root / "selected_cases.jsonl"
-    extra_action_plan_path = pilot_root / "extra_action_plan.csv"
-
-    if not selected_cases_path.exists() or not extra_action_plan_path.exists():
-        metrics = {
-            "ready": False,
-            "reason": "missing_selection_inputs",
-            "selected_cases_jsonl_exists": selected_cases_path.exists(),
-            "extra_action_plan_csv_exists": extra_action_plan_path.exists(),
-        }
-        _write_json(output_root / "pilot_readiness_metrics.json", metrics)
-        (output_root / "pilot_readiness_report.md").write_text(
-            "# Pilot Readiness Report\n\n"
-            "Missing required pilot selection inputs.\n"
-            f"- selected_cases.jsonl exists: `{selected_cases_path.exists()}`\n"
-            f"- extra_action_plan.csv exists: `{extra_action_plan_path.exists()}`\n"
-        )
-        return
-
-    selected_cases = _read_jsonl(selected_cases_path)
-    extra_action_plan = _read_csv(extra_action_plan_path)
-
-    pilot_jsonl = _discover_pilot_jsonl(pilot_root)
-    pilot_rows = _read_jsonl(pilot_jsonl) if pilot_jsonl else None
-
-    readiness = _build_readiness(
-        pilot_root=pilot_root,
-        selected_cases=selected_cases,
-        pilot_rows=pilot_rows,
-        expected_rows=expected_rows,
-        expected_cases=expected_cases,
-    )
-
-    if not readiness.ready:
-        _write_json(output_root / "pilot_readiness_metrics.json", readiness.metrics)
-        (output_root / "pilot_readiness_report.md").write_text(
-            "# Pilot Readiness Report\n\n"
-            f"- ready: `{readiness.ready}`\n"
-            f"- reason: `{readiness.reason}`\n"
-            f"- pilot root: `{pilot_root}`\n"
-            f"- discovered per_example_records: `{str(pilot_jsonl) if pilot_jsonl else 'missing'}`\n"
-            f"- selected cases: `{len(selected_cases)}`\n"
-            f"- expected rows: `{expected_rows}`\n"
-            f"- rows found: `{readiness.metrics.get('pilot_rows_found', 0)}`\n"
-            "\nReadiness metrics are in `pilot_readiness_metrics.json`.\n"
-        )
-        return
-
-    assert pilot_rows is not None  # guarded by readiness
-
-    # Load FIX-6 offline tables.
-    state_rows = _read_csv(fix6_root / "fix6_state_feature_table.csv")
-    residual_rows = _read_csv(fix6_root / "fix6_residual_failure_cases.csv")
-    action_availability_rows = _read_csv(fix6_root / "fix6_action_availability.csv")
-    oracle_rows = _read_csv(fix6_root / "fix6_oracle_action_table.csv")
-
-    # Build quick maps.
-    state_map = {
-        str(r.get("example_id")): r
-        for r in state_rows
-        if str(r.get("artifact")) == "overnight_300_unbiased"
-    }
-    residual_map = {
-        str(r.get("example_id")): r
-        for r in residual_rows
-        if str(r.get("artifact")) == "overnight_300_unbiased"
-    }
-    action_avail_map = {
-        str(r.get("example_id")): r
-        for r in action_availability_rows
-        if str(r.get("artifact")) == "overnight_300_unbiased"
-    }
-    oracle_map = {
-        str(r.get("example_id")): r
-        for r in oracle_rows
-        if str(r.get("artifact")) == "overnight_300_unbiased"
-    }
-
-    # Pilot row grouping.
-    grouped = _group_pilot_rows(pilot_rows)
-    by_example: dict[str, dict[str, Any]] = {}
-    for (_, _, _, _), mm in grouped.items():
-        frontier = mm.get(FRONTIER_METHOD)
-        tale = mm.get(TALE_METHOD)
-        if not frontier and not tale:
+    enough_counts = Counter()
+    for row in rows:
+        value = row.get("enough_for_promotion_review")
+        if value is None:
+            rm = row.get("result_metadata")
+            if isinstance(rm, dict):
+                value = rm.get("enough_for_promotion_review")
+        if value is None:
+            enough_counts["missing"] += 1
             continue
-        eid = str((frontier or tale).get("example_id") or "")
-        by_example[eid] = {"frontier": frontier, "tale": tale}
+        s = str(value).strip().lower()
+        if s in {"yes", "true", "1"}:
+            enough_counts["yes"] += 1
+        elif s in {"partial", "partially"}:
+            enough_counts["partial"] += 1
+        elif s in {"no", "false", "0"}:
+            enough_counts["no"] += 1
+        else:
+            enough_counts[s or "unknown"] += 1
 
-    # Validate promotion review coverage + leakage.
-    pr_rec = 0
-    pr_val = 0
-    enough_counter = Counter()
-    runtime_counter = Counter()
-    leakage_hits: list[dict[str, Any]] = []
+    leakage_hits = _scan_leakage(rows)
+    if leakage_hits:
+        reasons.append(f"leakage_hits={len(leakage_hits)}")
 
-    for r in pilot_rows:
-        if isinstance(r.get("promotion_review_record"), dict):
-            pr_rec += 1
-        pv = r.get("promotion_review_validation")
-        if isinstance(pv, dict):
-            pr_val += 1
-            enough_counter[str(pv.get("enough_for_promotion_review", "missing"))] += 1
-            runtime_counter[str(pv.get("runtime_failure_reviewable", "missing"))] += 1
-        for h in _scan_for_label_leakage(r):
-            h2 = dict(h)
-            h2["example_id"] = r.get("example_id")
-            h2["method"] = r.get("method")
-            leakage_hits.append(h2)
+    complete = len(reasons) == 0
+    return ValidationSummary(
+        row_count=len(rows),
+        complete=complete,
+        reasons=reasons,
+        status_counts=dict(status_counts),
+        method_counts=dict(method_counts),
+        unique_examples=unique_examples,
+        duplicate_count=duplicate_count,
+        promotion_review_record_coverage=pr_record_cov,
+        promotion_review_validation_coverage=pr_validation_cov,
+        enough_for_promotion_review_counts=dict(enough_counts),
+        seed_mismatch_count=seed_mismatch_count,
+        budget_mismatch_count=budget_mismatch_count,
+        method_mismatch_count=method_mismatch_count,
+        leakage_hits=leakage_hits,
+    )
 
-    # Build outcomes per selected case.
+
+def _load_pre_action_tables(fix6_root: Path) -> dict[str, list[dict[str, Any]]]:
+    return {
+        "state": _load_csv(fix6_root / "fix6_state_feature_table.csv"),
+        "residual": _load_csv(fix6_root / "fix6_residual_failure_cases.csv"),
+        "availability": _load_csv(fix6_root / "fix6_action_availability.csv"),
+        "oracle": _load_csv(fix6_root / "fix6_oracle_action_table.csv"),
+    }
+
+
+def _index_rows(rows: list[dict[str, Any]], *, include_seed_budget: bool = False) -> dict[tuple[Any, ...], dict[str, Any]]:
+    out: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for row in rows:
+        key: tuple[Any, ...]
+        if include_seed_budget:
+            key = (
+                str(row.get("example_id") or ""),
+                str(row.get("dataset") or ""),
+                str(row.get("seed") or ""),
+                str(row.get("budget") or ""),
+            )
+        else:
+            key = (str(row.get("example_id") or ""), str(row.get("dataset") or ""))
+        if key not in out:
+            out[key] = row
+    return out
+
+
+def _find_candidate_row(
+    index_seed_budget: dict[tuple[Any, ...], dict[str, Any]],
+    index_example: dict[tuple[Any, ...], dict[str, Any]],
+    example_id: str,
+    dataset: str,
+    seed_parent: Any,
+    budget_parent: Any,
+) -> dict[str, Any] | None:
+    seed = "" if seed_parent is None else str(seed_parent)
+    budget = "" if budget_parent is None else str(budget_parent)
+    key_sb = (str(example_id), str(dataset), seed, budget)
+    if key_sb in index_seed_budget:
+        return index_seed_budget[key_sb]
+    key_ex = (str(example_id), str(dataset))
+    return index_example.get(key_ex)
+
+
+def _choose_recommendation(summary_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    if not summary_rows:
+        return {
+            "recommended_action": "run_larger_pilot",
+            "reason": "no_action_rows_available",
+        }
+    by_action = {r["action_type"]: r for r in summary_rows}
+    frontier_gain = by_action.get("extra_frontier", {}).get("mean_delta_vs_fix24", 0.0)
+    tale_gain = by_action.get("extra_tale_retry", {}).get("mean_delta_vs_fix24", 0.0)
+
+    if frontier_gain <= 0 and tale_gain <= 0:
+        rec = "abandon_extra_actions"
+    elif frontier_gain > 0 and tale_gain > 0:
+        rec = "implement_lovec_policy_now"
+    elif frontier_gain > 0:
+        rec = "use_only_frontier_extra"
+    elif tale_gain > 0:
+        rec = "use_only_tale_retry"
+    else:
+        rec = "run_larger_pilot"
+
+    return {
+        "recommended_action": rec,
+        "mean_delta_vs_fix24": {
+            "extra_frontier": frontier_gain,
+            "extra_tale_retry": tale_gain,
+        },
+        "considerations": [
+            "offline_only_diagnostic",
+            "requires_disjoint_followup_for_promotion_claims",
+        ],
+    }
+
+
+def analyze_complete_pilot(
+    *,
+    selected_cases: list[dict[str, Any]],
+    extra_action_plan: list[dict[str, Any]],
+    pilot_rows: list[dict[str, Any]],
+    fix6_tables: dict[str, list[dict[str, Any]]],
+    expected_rows: int,
+) -> dict[str, Any]:
+    selected_idx = _index_rows(selected_cases)
+
+    state_rows = fix6_tables["state"]
+    residual_rows = fix6_tables["residual"]
+    availability_rows = fix6_tables["availability"]
+
+    state_idx_sb = _index_rows(state_rows, include_seed_budget=True)
+    state_idx = _index_rows(state_rows)
+    residual_idx_sb = _index_rows(residual_rows, include_seed_budget=True)
+    residual_idx = _index_rows(residual_rows)
+    availability_idx_sb = _index_rows(availability_rows, include_seed_budget=True)
+    availability_idx = _index_rows(availability_rows)
+
+    grouped: dict[tuple[str, str], dict[str, dict[str, Any]]] = defaultdict(dict)
+    for row in pilot_rows:
+        grouped[_example_key(row)][str(row.get("method") or "")] = row
+
     outcomes: list[dict[str, Any]] = []
-    recovery_rows: list[dict[str, Any]] = []
-    regression_rows: list[dict[str, Any]] = []
     training_rows: list[dict[str, Any]] = []
 
-    for case in selected_cases:
-        eid = str(case.get("example_id") or "")
-        p = by_example.get(eid, {})
-        frow = p.get("frontier")
-        trow = p.get("tale")
+    for (example_id, dataset), mm in sorted(grouped.items()):
+        if not EXPECTED_METHODS.issubset(mm.keys()):
+            continue
 
-        rrow = residual_map.get(eid, {})
-        srow = state_map.get(eid, {})
-        arow = action_avail_map.get(eid, {})
-        orow = oracle_map.get(eid, {})
+        sel = selected_idx.get((example_id, dataset), {})
+        offline_labels = sel.get("offline_labels") if isinstance(sel.get("offline_labels"), dict) else {}
+        seed_parent = sel.get("seed_parent")
+        budget_parent = sel.get("budget_parent")
 
-        fix24_correct = _parse_bool((case.get("offline_labels") or {}).get("fix24_correct", rrow.get("fix24_correct")))
-        tale_correct_base = _parse_bool((case.get("offline_labels") or {}).get("tale_correct", rrow.get("tale_correct")))
+        state = _find_candidate_row(state_idx_sb, state_idx, example_id, dataset, seed_parent, budget_parent) or {}
+        residual = _find_candidate_row(residual_idx_sb, residual_idx, example_id, dataset, seed_parent, budget_parent) or {}
+        avail = _find_candidate_row(availability_idx_sb, availability_idx, example_id, dataset, seed_parent, budget_parent) or {}
 
-        frontier_ans = _norm_answer((frow or {}).get("final_answer_canonical") or (frow or {}).get("selected_answer_canonical"))
-        tale_retry_ans = _norm_answer((trow or {}).get("final_answer_canonical") or (trow or {}).get("selected_answer_canonical"))
+        fix24_correct = _norm_bool(offline_labels.get("fix24_correct"))
+        tale_correct = _norm_bool(offline_labels.get("tale_correct"))
+        if fix24_correct is None:
+            fix24_correct = _norm_bool(residual.get("fix24_correct"))
+        if tale_correct is None:
+            tale_correct = _norm_bool(residual.get("tale_correct"))
 
-        frontier_correct = bool((frow or {}).get("exact_match")) if frow else None
-        tale_retry_correct = bool((trow or {}).get("exact_match")) if trow else None
+        fix24_correct = bool(fix24_correct)
+        tale_correct = bool(tale_correct)
+
+        frontier_row = mm["direct_reserve_semantic_frontier_v2"]
+        tale_row = mm["external_tale_prompt_budgeting"]
+
+        frontier_correct = bool(_extract_correct(frontier_row))
+        tale_retry_correct = bool(_extract_correct(tale_row))
+
+        frontier_answer = _extract_answer(frontier_row)
+        tale_retry_answer = _extract_answer(tale_row)
 
         prior_answers = {
-            _norm_answer(case.get("fix24_answer_canonical")),
-            _norm_answer(case.get("tale_answer_canonical")),
-            _norm_answer(case.get("l1_answer_canonical")),
-            _norm_answer(case.get("s1_answer_canonical")),
-            _norm_answer(case.get("frontier_answer_canonical")),
+            str(sel.get("fix24_answer_canonical") or ""),
+            str(sel.get("tale_answer_canonical") or ""),
+            str(sel.get("frontier_answer_canonical") or ""),
+            str(sel.get("l1_answer_canonical") or ""),
+            str(sel.get("s1_answer_canonical") or ""),
         }
-        prior_answers.discard(None)
+        prior_answers = {a for a in prior_answers if a}
 
-        frontier_new_answer = bool(frontier_ans and frontier_ans not in prior_answers)
-        tale_retry_new_answer = bool(tale_retry_ans and tale_retry_ans not in prior_answers)
+        delta_frontier_vs_fix24 = int(frontier_correct) - int(fix24_correct)
+        delta_tale_vs_fix24 = int(tale_retry_correct) - int(fix24_correct)
+        delta_frontier_vs_tale = int(frontier_correct) - int(tale_correct)
+        delta_tale_vs_tale = int(tale_retry_correct) - int(tale_correct)
 
-        def classify(cur: bool, nxt: bool | None) -> str:
-            if nxt is None:
-                return "missing"
-            if (not cur) and nxt:
+        def _label(delta: int) -> str:
+            if delta > 0:
                 return "recovery"
-            if cur and (not nxt):
+            if delta < 0:
                 return "regression"
             return "no_change"
 
-        frontier_label = classify(fix24_correct, frontier_correct)
-        tale_retry_label = classify(fix24_correct, tale_retry_correct)
-
-        row = {
-            "example_id": eid,
-            "dataset": case.get("dataset"),
-            "tier": case.get("tier"),
-            "residual_category": case.get("residual_category") or rrow.get("root_cause_label"),
+        common = {
+            "example_id": example_id,
+            "dataset": dataset,
+            "pilot_seed": EXPECTED_SEED,
+            "pilot_budget": EXPECTED_BUDGET,
+            "parent_seed": seed_parent,
+            "parent_budget": budget_parent,
+            "residual_category": sel.get("residual_category") or residual.get("root_cause_label"),
+            "low_depth_flag": _norm_bool(state.get("low_depth_flag")),
+            "external_agreement_signature": state.get("external_agreement_signature"),
+            "candidate_count": _to_int(state.get("candidate_count")),
+            "answer_diversity_cluster_count": _to_int(state.get("answer_diversity_cluster_count")),
+            "avail_logged_frontier_alternative_proxy": _norm_bool(avail.get("avail_logged_frontier_alternative_proxy")),
+            "avail_logged_external_alternative_proxy": _norm_bool(avail.get("avail_logged_external_alternative_proxy")),
             "fix24_correct": fix24_correct,
-            "tale_correct_base": tale_correct_base,
-            "extra_frontier_answer": frontier_ans,
-            "extra_frontier_correct": frontier_correct,
-            "extra_tale_retry_answer": tale_retry_ans,
-            "extra_tale_retry_correct": tale_retry_correct,
-            "delta_frontier_vs_fix24": (int(frontier_correct) - int(fix24_correct)) if frontier_correct is not None else None,
-            "delta_tale_retry_vs_fix24": (int(tale_retry_correct) - int(fix24_correct)) if tale_retry_correct is not None else None,
-            "delta_frontier_vs_tale": (int(frontier_correct) - int(tale_correct_base)) if frontier_correct is not None else None,
-            "delta_tale_retry_vs_tale": (int(tale_retry_correct) - int(tale_correct_base)) if tale_retry_correct is not None else None,
-            "frontier_effect_label": frontier_label,
-            "tale_retry_effect_label": tale_retry_label,
-            "frontier_new_answer_not_in_prior": frontier_new_answer,
-            "tale_retry_new_answer_not_in_prior": tale_retry_new_answer,
-            "low_depth_flag": _parse_bool(srow.get("low_depth_flag")),
-            "weak_search_flag": _parse_bool(srow.get("weak_search_flag")),
-            "external_agreement_signature": srow.get("external_agreement_signature"),
-            "avail_logged_frontier_alt": _parse_bool(arow.get("avail_logged_frontier_alternative_proxy")),
-            "avail_logged_external_alt": _parse_bool(arow.get("avail_logged_external_alternative_proxy")),
-            "oracle_observable_action": orow.get("oracle_observable_action"),
-            "oracle_observable_correct": _parse_bool(orow.get("oracle_observable_correct")),
+            "tale_correct": tale_correct,
         }
-        outcomes.append(row)
 
-        if frontier_label == "recovery":
-            recovery_rows.append({"action_type": "extra_frontier_proxy", **row})
-        if tale_retry_label == "recovery":
-            recovery_rows.append({"action_type": "extra_tale_retry_proxy", **row})
-        if frontier_label == "regression":
-            regression_rows.append({"action_type": "extra_frontier_proxy", **row})
-        if tale_retry_label == "regression":
-            regression_rows.append({"action_type": "extra_tale_retry_proxy", **row})
+        frontier_outcome = {
+            **common,
+            "action_type": "extra_frontier",
+            "pilot_method": "direct_reserve_semantic_frontier_v2",
+            "extra_answer_canonical": frontier_answer,
+            "extra_correct": frontier_correct,
+            "delta_vs_fix24": delta_frontier_vs_fix24,
+            "delta_vs_tale": delta_frontier_vs_tale,
+            "delta_label_vs_fix24": _label(delta_frontier_vs_fix24),
+            "delta_label_vs_tale": _label(delta_frontier_vs_tale),
+            "new_answer_not_in_prior": bool(frontier_answer and frontier_answer not in prior_answers),
+        }
+        tale_outcome = {
+            **common,
+            "action_type": "extra_tale_retry",
+            "pilot_method": "external_tale_prompt_budgeting",
+            "extra_answer_canonical": tale_retry_answer,
+            "extra_correct": tale_retry_correct,
+            "delta_vs_fix24": delta_tale_vs_fix24,
+            "delta_vs_tale": delta_tale_vs_tale,
+            "delta_label_vs_fix24": _label(delta_tale_vs_fix24),
+            "delta_label_vs_tale": _label(delta_tale_vs_tale),
+            "new_answer_not_in_prior": bool(tale_retry_answer and tale_retry_answer not in prior_answers),
+        }
 
-        feature_cols = _feature_columns_from_state(srow)
+        outcomes.extend([frontier_outcome, tale_outcome])
 
-        if frow is not None:
-            training_rows.append(
-                {
-                    "example_id": eid,
-                    "dataset": case.get("dataset"),
-                    "seed": frow.get("seed"),
-                    "budget": frow.get("budget"),
-                    "residual_category": row["residual_category"],
-                    "action_type": "extra_frontier_proxy",
-                    "action_answer": frontier_ans,
-                    "action_correct_offline": frontier_correct,
-                    "current_fix24_correct_offline": fix24_correct,
-                    "current_tale_correct_offline": tale_correct_base,
-                    "delta_vs_fix24": row["delta_frontier_vs_fix24"],
-                    "delta_vs_tale": row["delta_frontier_vs_tale"],
-                    "action_cost_total_tokens": frow.get("total_tokens"),
-                    "action_cost_api_calls": frow.get("cohere_logical_api_calls"),
-                    "action_latency_seconds": frow.get("latency_seconds"),
-                    **feature_cols,
-                }
-            )
+        runtime_feature_exclusions = ("gold", "exact", "correct")
+        runtime_features = {
+            f"state_{k}": v
+            for k, v in state.items()
+            if not any(term in str(k).lower() for term in runtime_feature_exclusions)
+            and str(k) not in {"example_id", "dataset", "budget", "seed", "artifact", "split_kind"}
+        }
 
-        if trow is not None:
-            training_rows.append(
-                {
-                    "example_id": eid,
-                    "dataset": case.get("dataset"),
-                    "seed": trow.get("seed"),
-                    "budget": trow.get("budget"),
-                    "residual_category": row["residual_category"],
-                    "action_type": "extra_tale_retry_proxy",
-                    "action_answer": tale_retry_ans,
-                    "action_correct_offline": tale_retry_correct,
-                    "current_fix24_correct_offline": fix24_correct,
-                    "current_tale_correct_offline": tale_correct_base,
-                    "delta_vs_fix24": row["delta_tale_retry_vs_fix24"],
-                    "delta_vs_tale": row["delta_tale_retry_vs_tale"],
-                    "action_cost_total_tokens": trow.get("total_tokens"),
-                    "action_cost_api_calls": trow.get("cohere_logical_api_calls"),
-                    "action_latency_seconds": trow.get("latency_seconds"),
-                    **feature_cols,
-                }
-            )
+        training_rows.append(
+            {
+                "example_id": example_id,
+                "dataset": dataset,
+                "parent_seed": seed_parent,
+                "parent_budget": budget_parent,
+                "action_type": "extra_frontier",
+                "action_cost_proxy": _to_float(frontier_row.get("estimated_cost_usd"), 1.0),
+                "target_delta_correctness_vs_fix24": delta_frontier_vs_fix24,
+                "target_delta_correctness_vs_tale": delta_frontier_vs_tale,
+                **runtime_features,
+            }
+        )
+        training_rows.append(
+            {
+                "example_id": example_id,
+                "dataset": dataset,
+                "parent_seed": seed_parent,
+                "parent_budget": budget_parent,
+                "action_type": "extra_tale_retry",
+                "action_cost_proxy": _to_float(tale_row.get("estimated_cost_usd"), 1.0),
+                "target_delta_correctness_vs_fix24": delta_tale_vs_fix24,
+                "target_delta_correctness_vs_tale": delta_tale_vs_tale,
+                **runtime_features,
+            }
+        )
 
-    # Aggregates.
     action_summary: list[dict[str, Any]] = []
     by_action = defaultdict(list)
-    for tr in training_rows:
-        by_action[str(tr.get("action_type"))].append(tr)
+    for row in outcomes:
+        by_action[row["action_type"]].append(row)
 
     for action_type, rows in sorted(by_action.items()):
         n = len(rows)
-        delta_fix24 = [r.get("delta_vs_fix24") for r in rows if r.get("delta_vs_fix24") is not None]
-        delta_tale = [r.get("delta_vs_tale") for r in rows if r.get("delta_vs_tale") is not None]
-        regressions = sum(1 for r in rows if r.get("delta_vs_fix24") == -1)
-        recoveries = sum(1 for r in rows if r.get("delta_vs_fix24") == 1)
         action_summary.append(
             {
                 "action_type": action_type,
-                "n_rows": n,
-                "mean_delta_vs_fix24": (sum(delta_fix24) / len(delta_fix24)) if delta_fix24 else 0.0,
-                "mean_delta_vs_tale": (sum(delta_tale) / len(delta_tale)) if delta_tale else 0.0,
-                "recoveries": recoveries,
-                "regressions": regressions,
-                "recovery_rate": (recoveries / n) if n else 0.0,
-                "regression_rate": (regressions / n) if n else 0.0,
+                "n": n,
+                "mean_delta_vs_fix24": round(sum(r["delta_vs_fix24"] for r in rows) / n, 6) if n else 0.0,
+                "mean_delta_vs_tale": round(sum(r["delta_vs_tale"] for r in rows) / n, 6) if n else 0.0,
+                "recoveries_vs_fix24": sum(1 for r in rows if r["delta_vs_fix24"] > 0),
+                "regressions_vs_fix24": sum(1 for r in rows if r["delta_vs_fix24"] < 0),
+                "recoveries_vs_tale": sum(1 for r in rows if r["delta_vs_tale"] > 0),
+                "regressions_vs_tale": sum(1 for r in rows if r["delta_vs_tale"] < 0),
             }
         )
 
     by_residual: list[dict[str, Any]] = []
-    by_state_bins: list[dict[str, Any]] = []
-
-    def add_group(rows: list[dict[str, Any]], group_name: str, group_value: str) -> None:
-        if not rows:
-            return
-        by_state_bins.append(
+    by_action_resid = defaultdict(list)
+    for row in outcomes:
+        by_action_resid[(row["action_type"], str(row.get("residual_category") or "unknown"))].append(row)
+    for (action_type, residual_category), rows in sorted(by_action_resid.items()):
+        n = len(rows)
+        by_residual.append(
             {
-                "group_name": group_name,
-                "group_value": group_value,
-                "n_rows": len(rows),
-                "mean_delta_vs_fix24": sum(r["delta_vs_fix24"] for r in rows if r["delta_vs_fix24"] is not None) / max(1, len([r for r in rows if r["delta_vs_fix24"] is not None])),
-                "mean_delta_vs_tale": sum(r["delta_vs_tale"] for r in rows if r["delta_vs_tale"] is not None) / max(1, len([r for r in rows if r["delta_vs_tale"] is not None])),
+                "action_type": action_type,
+                "residual_category": residual_category,
+                "n": n,
+                "mean_delta_vs_fix24": round(sum(r["delta_vs_fix24"] for r in rows) / n, 6),
+                "recoveries_vs_fix24": sum(1 for r in rows if r["delta_vs_fix24"] > 0),
+                "regressions_vs_fix24": sum(1 for r in rows if r["delta_vs_fix24"] < 0),
             }
         )
 
-    for action_type, rows in sorted(by_action.items()):
-        cat_map = defaultdict(list)
-        for r in rows:
-            cat_map[str(r.get("residual_category"))].append(r)
-        for cat, sub in sorted(cat_map.items()):
-            by_residual.append(
-                {
-                    "action_type": action_type,
-                    "residual_category": cat,
-                    "n_rows": len(sub),
-                    "mean_delta_vs_fix24": sum(x["delta_vs_fix24"] for x in sub if x["delta_vs_fix24"] is not None) / max(1, len([x for x in sub if x["delta_vs_fix24"] is not None])),
-                    "mean_delta_vs_tale": sum(x["delta_vs_tale"] for x in sub if x["delta_vs_tale"] is not None) / max(1, len([x for x in sub if x["delta_vs_tale"] is not None])),
-                    "recoveries": sum(1 for x in sub if x["delta_vs_fix24"] == 1),
-                    "regressions": sum(1 for x in sub if x["delta_vs_fix24"] == -1),
-                }
-            )
+    by_bins: list[dict[str, Any]] = []
 
-        for flag in ("True", "False"):
-            sub = [r for r in rows if str(r.get("f_low_depth_flag")) == flag]
-            add_group(sub, f"{action_type}:low_depth_flag", flag)
-        for sig in sorted({str(r.get("f_external_agreement_signature")) for r in rows}):
-            sub = [r for r in rows if str(r.get("f_external_agreement_signature")) == sig]
-            add_group(sub, f"{action_type}:external_agreement_signature", sig)
+    def _bin_candidate_count(v: Any) -> str:
+        n = _to_int(v)
+        if n is None:
+            return "unknown"
+        if n <= 2:
+            return "le2"
+        if n <= 5:
+            return "3to5"
+        return "gt5"
 
-    # Recommendation heuristic.
-    action_gain = {r["action_type"]: r["mean_delta_vs_fix24"] for r in action_summary}
-    frontier_gain = action_gain.get("extra_frontier_proxy", 0.0)
-    tale_gain = action_gain.get("extra_tale_retry_proxy", 0.0)
-    frontier_reg = next((r["regression_rate"] for r in action_summary if r["action_type"] == "extra_frontier_proxy"), 0.0)
-    tale_reg = next((r["regression_rate"] for r in action_summary if r["action_type"] == "extra_tale_retry_proxy"), 0.0)
+    def _bin_bool(v: Any) -> str:
+        b = _norm_bool(v)
+        if b is None:
+            return "unknown"
+        return "true" if b else "false"
 
-    if max(frontier_gain, tale_gain) >= 0.03 and min(frontier_reg, tale_reg) <= 0.1:
-        recommendation = "A"
-        rec_reason = "Strong pilot signal with manageable regression risk."
-    elif max(frontier_gain, tale_gain) > 0.0:
-        recommendation = "B"
-        rec_reason = "Signal positive but underpowered for immediate policy lock-in."
-    elif frontier_gain > tale_gain:
-        recommendation = "C"
-        rec_reason = "Frontier extra action dominates TALE retry in pilot."
-    elif tale_gain > frontier_gain:
-        recommendation = "D"
-        rec_reason = "TALE retry dominates frontier extra action in pilot."
-    else:
-        recommendation = "E"
-        rec_reason = "No positive action-value signal over baseline."
+    grouped_bins = defaultdict(list)
+    for row in outcomes:
+        grouped_bins[(row["action_type"], "low_depth_flag", _bin_bool(row.get("low_depth_flag")))].append(row)
+        grouped_bins[(row["action_type"], "external_agreement_signature", str(row.get("external_agreement_signature") or "unknown"))].append(row)
+        grouped_bins[(row["action_type"], "candidate_count_bin", _bin_candidate_count(row.get("candidate_count")))].append(row)
+        grouped_bins[(row["action_type"], "frontier_alt_available", _bin_bool(row.get("avail_logged_frontier_alternative_proxy")))].append(row)
+        grouped_bins[(row["action_type"], "external_alt_available", _bin_bool(row.get("avail_logged_external_alternative_proxy")))].append(row)
 
-    recommended_policy = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "recommendation": recommendation,
-        "reason": rec_reason,
-        "frontier_mean_delta_vs_fix24": frontier_gain,
-        "tale_retry_mean_delta_vs_fix24": tale_gain,
-        "frontier_regression_rate": frontier_reg,
-        "tale_retry_regression_rate": tale_reg,
-        "notes": [
-            "Offline pilot proxy analysis only.",
-            "No gold/exact features were used in lovec_training_rows feature columns.",
-        ],
-    }
+    for (action_type, feature_name, feature_bin), rows in sorted(grouped_bins.items()):
+        n = len(rows)
+        by_bins.append(
+            {
+                "action_type": action_type,
+                "feature_name": feature_name,
+                "feature_bin": feature_bin,
+                "n": n,
+                "mean_delta_vs_fix24": round(sum(r["delta_vs_fix24"] for r in rows) / n, 6),
+                "recoveries_vs_fix24": sum(1 for r in rows if r["delta_vs_fix24"] > 0),
+                "regressions_vs_fix24": sum(1 for r in rows if r["delta_vs_fix24"] < 0),
+            }
+        )
 
-    # Write required outputs.
-    _write_csv(
-        output_root / "extra_action_outcomes.csv",
-        outcomes,
-        sorted({k for r in outcomes for k in r.keys()}),
-    )
-    _write_jsonl(output_root / "extra_action_outcomes.jsonl", outcomes)
-    _write_csv(
-        output_root / "lovec_training_rows.csv",
-        training_rows,
-        sorted({k for r in training_rows for k in r.keys()}),
-    )
-    _write_csv(
-        output_root / "action_value_summary.csv",
-        action_summary,
-        [
-            "action_type",
-            "n_rows",
-            "mean_delta_vs_fix24",
-            "mean_delta_vs_tale",
-            "recoveries",
-            "regressions",
-            "recovery_rate",
-            "regression_rate",
-        ],
-    )
-    _write_csv(
-        output_root / "action_value_by_residual_category.csv",
-        by_residual,
-        [
-            "action_type",
-            "residual_category",
-            "n_rows",
-            "mean_delta_vs_fix24",
-            "mean_delta_vs_tale",
-            "recoveries",
-            "regressions",
-        ],
-    )
-    _write_csv(
-        output_root / "action_value_by_state_feature_bins.csv",
-        by_state_bins,
-        ["group_name", "group_value", "n_rows", "mean_delta_vs_fix24", "mean_delta_vs_tale"],
-    )
-    _write_jsonl(output_root / "pilot_regression_cases.jsonl", regression_rows)
-    _write_jsonl(output_root / "pilot_recovery_cases.jsonl", recovery_rows)
-    _write_json(output_root / "recommended_lovec_policy.json", recommended_policy)
+    regressions = [r for r in outcomes if r["delta_vs_fix24"] < 0]
+    recoveries = [r for r in outcomes if r["delta_vs_fix24"] > 0]
 
-    leakage_report = {
-        "scan_scope": "prompt_and_feature_fields_only",
-        "patterns": ["gold_answer", "gold_answer_canonical", "exact_match", "exact match"],
-        "total_rows_scanned": len(pilot_rows),
-        "hit_count": len(leakage_hits),
-        "sample_hits": leakage_hits[:40],
-    }
-    _write_json(output_root / "pilot_leakage_scan_report.json", leakage_report)
+    recommendation = _choose_recommendation(action_summary)
 
     metrics = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "pilot_root": str(pilot_root),
-        "fix6_root": str(fix6_root),
-        "main_postrun_root": str(main_postrun_root),
-        "pilot_rows": len(pilot_rows),
-        "selected_cases": len(selected_cases),
+        "generated_at": _now_iso(),
         "expected_rows": expected_rows,
-        "method_counts": readiness.metrics.get("method_counts", {}),
-        "status_counts": readiness.metrics.get("status_counts", {}),
-        "duplicate_count": readiness.metrics.get("duplicate_count", 0),
-        "promotion_review_record_coverage": pr_rec / len(pilot_rows) if pilot_rows else 0.0,
-        "promotion_review_validation_coverage": pr_val / len(pilot_rows) if pilot_rows else 0.0,
-        "enough_for_promotion_review": dict(enough_counter),
-        "runtime_failure_reviewable": dict(runtime_counter),
-        "leakage_hit_count": len(leakage_hits),
+        "pilot_rows_loaded": len(pilot_rows),
+        "selected_cases": len(selected_cases),
+        "extra_action_plan_rows": len(extra_action_plan),
+        "outcome_rows": len(outcomes),
+        "training_rows": len(training_rows),
         "action_summary": action_summary,
-        "recommended_lovec_action": recommended_policy,
+        "recommendation": recommendation,
+        "safety": {
+            "offline_only": True,
+            "no_provider_api_calls": True,
+            "gold_offline_only": True,
+        },
     }
-    _write_json(output_root / "pilot_analysis_metrics.json", metrics)
 
-    lines = [
+    report_lines = [
         "# FIX-6 Extra-Action Pilot Analysis",
         "",
-        f"Generated: {datetime.now(timezone.utc).isoformat()}",
-        f"Pilot root: `{pilot_root}`",
-        f"Pilot rows: `{len(pilot_rows)}` / expected `{expected_rows}`",
-        f"Selected cases: `{len(selected_cases)}`",
+        f"Generated: {_now_iso()}",
+        f"Selected cases: {len(selected_cases)}",
+        f"Pilot rows loaded: {len(pilot_rows)}",
         "",
-        "## Integrity",
-        f"- Methods: `{readiness.metrics.get('method_counts', {})}`",
-        f"- Status counts: `{readiness.metrics.get('status_counts', {})}`",
-        f"- Duplicate count: `{readiness.metrics.get('duplicate_count', 0)}`",
-        f"- Promotion review record coverage: `{metrics['promotion_review_record_coverage']:.3f}`",
-        f"- Promotion review validation coverage: `{metrics['promotion_review_validation_coverage']:.3f}`",
-        f"- Leakage hits (prompt/feature fields): `{len(leakage_hits)}`",
-        "",
-        "## Action Value Summary",
+        "## Headline (offline diagnostic)",
     ]
-    for r in action_summary:
-        lines.append(
-            f"- {r['action_type']}: n={r['n_rows']}, mean ΔvsFIX24={r['mean_delta_vs_fix24']:+.4f}, "
-            f"recoveries={r['recoveries']}, regressions={r['regressions']}"
+    for row in action_summary:
+        report_lines.append(
+            f"- {row['action_type']}: mean delta vs FIX-2+FIX-4 = {row['mean_delta_vs_fix24']:+.3f} "
+            f"(recoveries/regressions {row['recoveries_vs_fix24']}/{row['regressions_vs_fix24']}, n={row['n']})"
         )
-    lines.extend(
+    report_lines.extend(
         [
             "",
             "## Recommendation",
-            f"- Next action: `{recommended_policy['recommendation']}`",
-            f"- Reason: {recommended_policy['reason']}",
+            f"- {recommendation['recommended_action']}",
+            "- Offline signal only; do not promote runtime policy without independent confirmation.",
         ]
     )
-    (output_root / "pilot_analysis_report.md").write_text("\n".join(lines))
+
+    return {
+        "outcomes": outcomes,
+        "training_rows": training_rows,
+        "action_summary": action_summary,
+        "by_residual": by_residual,
+        "by_bins": by_bins,
+        "regressions": regressions,
+        "recoveries": recoveries,
+        "recommendation": recommendation,
+        "metrics": metrics,
+        "report_markdown": "\n".join(report_lines) + "\n",
+    }
 
 
-def _default_output_root(repo_root: Path) -> Path:
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    return repo_root / f"outputs/fix6_extra_action_pilot_analysis_PREP_{stamp}"
+def _discover_pilot_jsonl_paths(pilot_root: Path) -> list[Path]:
+    return sorted(pilot_root.glob("runner_output/**/per_example_records.jsonl"))
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Analyze FIX-6 extra-action pilot outputs safely.")
+def run_analysis(
+    *,
+    pilot_root: Path,
+    fix6_root: Path,
+    main_postrun_root: Path,
+    output_root: Path,
+    expected_rows: int = EXPECTED_ROWS,
+    expected_examples: int = EXPECTED_EXAMPLES,
+) -> dict[str, Any]:
+    del main_postrun_root  # kept for CLI/API stability and future extension.
+
+    output_root.mkdir(parents=True, exist_ok=False)
+
+    selected_cases = _load_jsonl(pilot_root / "selected_cases.jsonl")
+    extra_action_plan = _load_csv(pilot_root / "extra_action_plan.csv")
+
+    selected_cases_summary_path = pilot_root / "selected_cases_summary.csv"
+    selected_cases_summary_present = selected_cases_summary_path.exists()
+
+    fix6_tables = _load_pre_action_tables(fix6_root)
+    per_example_paths = _discover_pilot_jsonl_paths(pilot_root)
+
+    pilot_rows: list[dict[str, Any]] = []
+    for p in per_example_paths:
+        pilot_rows.extend(_load_jsonl(p))
+
+    validation = validate_pilot_rows(
+        pilot_rows,
+        expected_rows=expected_rows,
+        expected_examples=expected_examples,
+    )
+
+    readiness_metrics = {
+        "generated_at": _now_iso(),
+        "pilot_root": str(pilot_root),
+        "fix6_root": str(fix6_root),
+        "selected_cases_count": len(selected_cases),
+        "extra_action_plan_count": len(extra_action_plan),
+        "selected_cases_summary_present": selected_cases_summary_present,
+        "discovered_per_example_paths": [str(p) for p in per_example_paths],
+        "validation": {
+            "row_count": validation.row_count,
+            "complete": validation.complete,
+            "reasons": validation.reasons,
+            "status_counts": validation.status_counts,
+            "method_counts": validation.method_counts,
+            "unique_examples": validation.unique_examples,
+            "duplicate_count": validation.duplicate_count,
+            "promotion_review_record_coverage": validation.promotion_review_record_coverage,
+            "promotion_review_validation_coverage": validation.promotion_review_validation_coverage,
+            "enough_for_promotion_review_counts": validation.enough_for_promotion_review_counts,
+            "seed_mismatch_count": validation.seed_mismatch_count,
+            "budget_mismatch_count": validation.budget_mismatch_count,
+            "method_mismatch_count": validation.method_mismatch_count,
+            "leakage_hits_count": len(validation.leakage_hits),
+        },
+    }
+
+    if not validation.complete:
+        missing_items: list[str] = []
+        if not per_example_paths:
+            missing_items.append("runner_output/**/per_example_records.jsonl")
+        if validation.row_count != expected_rows:
+            missing_items.append(f"expected_rows={expected_rows} (found={validation.row_count})")
+        if validation.unique_examples != expected_examples:
+            missing_items.append(
+                f"expected_examples={expected_examples} (found={validation.unique_examples})"
+            )
+
+        lines = [
+            "# FIX-6 Extra-Action Pilot Readiness Report",
+            "",
+            f"Generated: {_now_iso()}",
+            "",
+            "## Status",
+            "- Pilot rows are not complete yet; analysis outputs were not generated.",
+            f"- Rows loaded: {validation.row_count} / {expected_rows}",
+            f"- Unique examples: {validation.unique_examples} / {expected_examples}",
+            "",
+            "## Missing / Blocking",
+        ]
+        for item in missing_items or ["none"]:
+            lines.append(f"- {item}")
+        lines.extend(
+            [
+                "",
+                "## Validation Notes",
+            ]
+        )
+        for reason in validation.reasons or ["none"]:
+            lines.append(f"- {reason}")
+
+        (output_root / "pilot_readiness_report.md").write_text("\n".join(lines) + "\n")
+        _write_json(output_root / "pilot_readiness_metrics.json", readiness_metrics)
+        return {
+            "mode": "readiness",
+            "output_root": str(output_root),
+            "metrics": readiness_metrics,
+        }
+
+    analysis = analyze_complete_pilot(
+        selected_cases=selected_cases,
+        extra_action_plan=extra_action_plan,
+        pilot_rows=pilot_rows,
+        fix6_tables=fix6_tables,
+        expected_rows=expected_rows,
+    )
+
+    (output_root / "pilot_analysis_report.md").write_text(analysis["report_markdown"])
+    _write_json(output_root / "pilot_analysis_metrics.json", analysis["metrics"])
+    _write_csv(output_root / "extra_action_outcomes.csv", analysis["outcomes"])
+    _write_jsonl(output_root / "extra_action_outcomes.jsonl", analysis["outcomes"])
+    _write_csv(output_root / "lovec_training_rows.csv", analysis["training_rows"])
+    _write_csv(output_root / "action_value_summary.csv", analysis["action_summary"])
+    _write_csv(output_root / "action_value_by_residual_category.csv", analysis["by_residual"])
+    _write_csv(output_root / "action_value_by_state_feature_bins.csv", analysis["by_bins"])
+    _write_jsonl(output_root / "pilot_regression_cases.jsonl", analysis["regressions"])
+    _write_jsonl(output_root / "pilot_recovery_cases.jsonl", analysis["recoveries"])
+    _write_json(output_root / "recommended_lovec_policy.json", analysis["recommendation"])
+
+    return {
+        "mode": "complete",
+        "output_root": str(output_root),
+        "metrics": analysis["metrics"],
+    }
+
+
+def build_arg_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
     parser.add_argument("--pilot-root", type=Path, required=True)
     parser.add_argument("--fix6-root", type=Path, required=True)
     parser.add_argument("--main-postrun-root", type=Path, required=True)
-    parser.add_argument("--output-root", type=Path, default=None)
-    parser.add_argument("--expected-rows", type=int, default=80)
-    parser.add_argument("--expected-cases", type=int, default=40)
-    args = parser.parse_args()
+    parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--expected-rows", type=int, default=EXPECTED_ROWS)
+    parser.add_argument("--expected-examples", type=int, default=EXPECTED_EXAMPLES)
+    return parser
 
-    repo_root = Path(__file__).resolve().parents[1]
-    out = args.output_root or _default_output_root(repo_root)
 
+def main() -> None:
+    args = build_arg_parser().parse_args()
     run_analysis(
         pilot_root=args.pilot_root,
         fix6_root=args.fix6_root,
         main_postrun_root=args.main_postrun_root,
-        output_root=out,
+        output_root=args.output_root,
         expected_rows=args.expected_rows,
-        expected_cases=args.expected_cases,
+        expected_examples=args.expected_examples,
     )
-    print(out)
 
 
 if __name__ == "__main__":

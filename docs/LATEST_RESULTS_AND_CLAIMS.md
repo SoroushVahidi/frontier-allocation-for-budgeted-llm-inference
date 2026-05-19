@@ -272,7 +272,7 @@ Rationale:
 
 Status update (2026-05-19):
 - Extra-action replay pilot is currently running in tmux (`fix6_lovec_extra_action_pilot_20260519`) under `outputs/fix6_lovec1_extra_action_pilot_20260519T141709Z/`.
-- Offline postrun converter is prepared: `scripts/analyze_fix6_extra_action_pilot.py`.
+- Offline postrun converter is now implemented in-repo: `scripts/analyze_fix6_extra_action_pilot.py`.
 - No new empirical claims are made until pilot completion and postrun analysis.
 
 ---
