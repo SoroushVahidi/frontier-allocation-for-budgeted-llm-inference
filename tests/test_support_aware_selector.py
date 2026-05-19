@@ -43,6 +43,11 @@ from experiments.support_aware_selector import (
     apply_fix4_to_row,
     apply_combined_fix24_to_row,
     apply_combined_fix1234_to_row,
+    external_agreement_signature,
+    is_tale_isolated,
+    frontier_agrees_with_external_majority,
+    should_switch_from_tale_to_frontier_v1,
+    apply_fix5_tale_default_router,
     _normalize_answer,
     POLICY_NAME,
     FIX2_POLICY_NAME,
@@ -52,6 +57,7 @@ from experiments.support_aware_selector import (
     FIX4_POLICY_NAME,
     COMBINED_FIX24_POLICY_NAME,
     COMBINED_FIX1234_POLICY_NAME,
+    FIX5_POLICY_NAME,
 )
 
 
@@ -786,3 +792,160 @@ def test_fix4_policy_names_stable():
     assert "external_consensus_gate" in FIX4_POLICY_NAME
     assert "lowdepth_external_consensus" in COMBINED_FIX24_POLICY_NAME
     assert "support_lowdepth_calibrated_consensus" in COMBINED_FIX1234_POLICY_NAME
+
+
+# ─── FIX-5 tests ──────────────────────────────────────────────────────────────
+
+
+def _frontier_row_for_fix5(frontier_ans="40", override_reason="direct_frontier_agree"):
+    return {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": frontier_ans,
+        "final_answer_raw": frontier_ans,
+        "result_metadata": {
+            "override_reason": override_reason,
+            "frontier_support": 1,
+            "candidate_pool_answer_group_count": 2,
+            "support_margin": 0.0,
+            "direct_reserve_confidence_proxy": 0.5,
+            "frontier_candidate_answer": frontier_ans,
+            "answer_group_best_branch_scores": {"g1": 0.8},
+        },
+    }
+
+
+def test_fix5_defaults_to_tale_when_no_switch_pattern():
+    """FIX-5 defaults to TALE when no high-confidence switch region fires."""
+    row = _frontier_row_for_fix5(frontier_ans="40")
+    ext = {
+        "external_l1_max": "20",
+        "external_s1_budget_forcing": "99",
+        "external_tale_prompt_budgeting": "33",
+    }
+    out = apply_fix5_tale_default_router(row, external_answers=ext)
+    assert out["fix5_applied"] is False
+    assert out["fix5_answer_canonical"] == "33"
+    assert out["fix5_reason"] == "tale_default"
+
+
+def test_fix5_switches_when_tale_isolated_and_l1_s1_frontier_agree():
+    """FIX-5 switches when TALE is isolated and L1/S1 agree with frontier candidate."""
+    row = _frontier_row_for_fix5(frontier_ans="20")
+    ext = {
+        "external_l1_max": "20",
+        "external_s1_budget_forcing": "20",
+        "external_tale_prompt_budgeting": "33",
+    }
+    row["result_metadata"]["support_margin"] = 1.0
+    out = apply_fix5_tale_default_router(row, external_answers=ext)
+    assert out["fix5_applied"] is True
+    assert out["fix5_answer_canonical"] == "20"
+    assert out["fix5_reason"] in {
+        "frontier_switch_tale_isolated_l1_s1_agree",
+        "frontier_switch_external_majority_support",
+    }
+
+
+def test_fix5_no_switch_when_externals_unanimous_against_frontier():
+    """FIX-5 blocks switching when all three externals unanimously disagree with frontier."""
+    row = _frontier_row_for_fix5(frontier_ans="40", override_reason="insufficient_support_margin")
+    ext = {
+        "external_l1_max": "20",
+        "external_s1_budget_forcing": "20",
+        "external_tale_prompt_budgeting": "20",
+    }
+    out = apply_fix5_tale_default_router(row, external_answers=ext)
+    assert out["fix5_applied"] is False
+    assert out["fix5_reason"] == "blocked_external_unanimous_against_frontier"
+    assert out["fix5_answer_canonical"] == "20"
+
+
+def test_fix5_no_switch_when_low_depth_frontier():
+    """FIX-5 blocks switching in low-depth-risk frontier rows."""
+    row = _frontier_row_for_fix5(frontier_ans="40", override_reason="single_weak_frontier_branch")
+    ext = {
+        "external_l1_max": "40",
+        "external_s1_budget_forcing": "40",
+        "external_tale_prompt_budgeting": "33",
+    }
+    out = apply_fix5_tale_default_router(row, external_answers=ext)
+    assert out["fix5_applied"] is False
+    assert out["fix5_reason"] == "blocked_low_depth_frontier"
+    assert out["fix5_answer_canonical"] == "33"
+
+
+def test_fix5_no_switch_when_required_answers_missing():
+    """FIX-5 blocks switching when required answers/metadata are missing."""
+    row = _frontier_row_for_fix5(frontier_ans="40")
+    ext = {
+        "external_l1_max": "40",
+        # missing s1
+        "external_tale_prompt_budgeting": "33",
+    }
+    out = apply_fix5_tale_default_router(row, external_answers=ext)
+    assert out["fix5_applied"] is False
+    assert out["fix5_reason"] == "blocked_missing_metadata"
+
+
+def test_fix5_does_not_use_gold_or_exact_match_fields():
+    """FIX-5 ignores gold/exact-like fields and routes only from inference metadata."""
+    row = _frontier_row_for_fix5(frontier_ans="20")
+    row["gold_answer"] = "999"
+    row["exact_match"] = 0
+    row["result_metadata"]["gold_answer"] = "999"
+    row["result_metadata"]["exact_match"] = 0
+    ext = {
+        "external_l1_max": "20",
+        "external_s1_budget_forcing": "20",
+        "external_tale_prompt_budgeting": "33",
+    }
+    row["result_metadata"]["support_margin"] = 1.0
+    out = apply_fix5_tale_default_router(row, external_answers=ext)
+    assert out["fix5_applied"] is True
+    assert out["fix5_answer_canonical"] == "20"
+
+
+def test_fix5_records_decision_reason():
+    """FIX-5 always records a decision reason string."""
+    row = _frontier_row_for_fix5(frontier_ans="40")
+    ext = {
+        "external_l1_max": "20",
+        "external_s1_budget_forcing": "99",
+        "external_tale_prompt_budgeting": "33",
+    }
+    out = apply_fix5_tale_default_router(row, external_answers=ext)
+    assert isinstance(out.get("fix5_reason"), str)
+    assert out["fix5_reason"]
+
+
+def test_fix5_helper_signatures_and_majority():
+    """Agreement helper functions expose stable behavior."""
+    ext = {
+        "external_l1_max": "5",
+        "external_s1_budget_forcing": "5",
+        "external_tale_prompt_budgeting": "7",
+    }
+    assert external_agreement_signature(ext) == "l1=s1!=tale"
+    assert is_tale_isolated(ext)
+    assert frontier_agrees_with_external_majority("5", ext)
+    sw, reason = should_switch_from_tale_to_frontier_v1(
+        frontier_candidate_answer="5",
+        tale_answer="7",
+        external_answers=ext,
+        result_metadata={
+            "override_reason": "direct_frontier_agree",
+            "frontier_support": 1,
+            "support_margin": 1.0,
+        },
+    )
+    assert sw is True
+    assert reason in {
+        "frontier_switch_tale_isolated_l1_s1_agree",
+        "frontier_switch_external_majority_support",
+    }
+
+
+def test_fix5_policy_name_stable():
+    """FIX-5 policy name is identifiable and stable."""
+    assert "tale_default" in FIX5_POLICY_NAME
+    assert "frontier_switch" in FIX5_POLICY_NAME

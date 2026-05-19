@@ -688,6 +688,22 @@ COMBINED_FIX1234_POLICY_DESCRIPTION = (
     "FIX-4 (external unanimous consensus). Applied in precedence order; only one fires."
 )
 
+# ─── FIX-5: TALE-default conservative agreement-region router ───────────────
+#
+# Goal: use TALE as the default answer, and only switch to a frontier-derived
+# candidate in high-confidence agreement regions that are fully inference-available.
+# Candidate frontier policy arm: FIX-2+FIX-4 combined answer.
+
+FIX5_POLICY_NAME = "external_tale_default_frontier_switch_v1"
+FIX5_POLICY_VERSION = "1.0"
+FIX5_POLICY_DESCRIPTION = (
+    "TALE-default conservative router (FIX-5): default to "
+    "external_tale_prompt_budgeting, switch to frontier candidate "
+    "(FIX-2+FIX-4 answer) only in precise high-confidence agreement regions. "
+    "Never switch when externals unanimously disagree with frontier, when "
+    "frontier is low-depth risk, or when required metadata/answers are missing."
+)
+
 _REQUIRED_EXTERNAL_METHODS = (
     "external_l1_max",
     "external_s1_budget_forcing",
@@ -918,4 +934,204 @@ def apply_combined_fix1234_to_row(
         out["combined1234_policy_applied"] = "original"
 
     out["combined1234_policy"] = COMBINED_FIX1234_POLICY_NAME
+    return out
+
+
+def external_agreement_signature(external_answers: dict[str, Any]) -> str:
+    """Return a compact agreement signature for L1/S1/TALE answers.
+
+    Example signatures:
+    - ``l1=s1=tale``
+    - ``l1=s1!=tale``
+    - ``l1=tale!=s1``
+    - ``all_different``
+    - ``missing_external_answer``
+    """
+    l1 = _normalize_answer(external_answers.get("external_l1_max"))
+    s1 = _normalize_answer(external_answers.get("external_s1_budget_forcing"))
+    tale = _normalize_answer(external_answers.get("external_tale_prompt_budgeting"))
+    if not l1 or not s1 or not tale:
+        return "missing_external_answer"
+    if l1 == s1 == tale:
+        return "l1=s1=tale"
+    if l1 == s1 != tale:
+        return "l1=s1!=tale"
+    if l1 == tale != s1:
+        return "l1=tale!=s1"
+    if s1 == tale != l1:
+        return "s1=tale!=l1"
+    return "all_different"
+
+
+def is_tale_isolated(external_answers: dict[str, Any]) -> bool:
+    """Return True when L1 and S1 agree but TALE differs."""
+    return external_agreement_signature(external_answers) == "l1=s1!=tale"
+
+
+def frontier_agrees_with_external_majority(
+    frontier_answer: str | None,
+    external_answers: dict[str, Any],
+) -> bool:
+    """Return True if frontier answer matches at least 2 of {L1, S1, TALE}."""
+    from collections import Counter
+
+    f = _normalize_answer(frontier_answer)
+    if not f:
+        return False
+    vals: list[str] = []
+    for m in _REQUIRED_EXTERNAL_METHODS:
+        n = _normalize_answer(external_answers.get(m))
+        if not n:
+            return False
+        vals.append(n)
+    counts = Counter(vals)
+    return counts.get(f, 0) >= 2
+
+
+def should_switch_from_tale_to_frontier_v1(
+    *,
+    frontier_candidate_answer: str | None,
+    tale_answer: str | None,
+    external_answers: dict[str, Any],
+    result_metadata: dict[str, Any] | None,
+) -> tuple[bool, str]:
+    """Return (should_switch, reason) for FIX-5 TALE-default router.
+
+    Routing is conservative and fully inference-time:
+    - default action is TALE
+    - block switching on missing metadata/answers, unanimous externals against
+      frontier, and low-depth frontier risk
+    - allow switching only in precise agreement regions
+    """
+    if not isinstance(result_metadata, dict):
+        return False, "blocked_missing_metadata"
+
+    frontier_norm = _normalize_answer(frontier_candidate_answer)
+    tale_norm = _normalize_answer(tale_answer)
+    l1_norm = _normalize_answer(external_answers.get("external_l1_max"))
+    s1_norm = _normalize_answer(external_answers.get("external_s1_budget_forcing"))
+
+    if not frontier_norm or not tale_norm or not l1_norm or not s1_norm:
+        return False, "blocked_missing_metadata"
+
+    unanimous = external_unanimous_answer(external_answers)
+    if unanimous and unanimous != frontier_norm:
+        return False, "blocked_external_unanimous_against_frontier"
+
+    if is_low_depth_risk(result_metadata):
+        return False, "blocked_low_depth_frontier"
+
+    override_reason = str(result_metadata.get("override_reason", "") or "")
+    support_margin = result_metadata.get("support_margin")
+    try:
+        support_margin_val = float(support_margin) if support_margin is not None else None
+    except (TypeError, ValueError):
+        support_margin_val = None
+
+    if support_margin_val is None:
+        return False, "blocked_missing_metadata"
+
+    # If switch target equals TALE, keep default.
+    if frontier_norm == tale_norm:
+        return False, "tale_default"
+
+    # Region A: TALE isolated, L1/S1 agree with frontier candidate.
+    if (
+        override_reason == "direct_frontier_agree"
+        and support_margin_val > 0.0
+        and is_tale_isolated(external_answers)
+        and l1_norm == s1_norm == frontier_norm
+    ):
+        return True, "frontier_switch_tale_isolated_l1_s1_agree"
+
+    # Region B: majority external support for frontier and TALE differs.
+    sig = external_agreement_signature(external_answers)
+    if (
+        override_reason == "direct_frontier_agree"
+        and support_margin_val > 0.0
+        and
+        frontier_agrees_with_external_majority(frontier_norm, external_answers)
+        and sig == "l1=s1!=tale"
+    ):
+        return True, "frontier_switch_external_majority_support"
+
+    return False, "tale_default"
+
+
+def apply_fix5_tale_default_router(
+    row: dict[str, Any],
+    external_answers: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply FIX-5 TALE-default conservative router to a frontier row.
+
+    Candidate frontier arm is FIX-2+FIX-4 (combined24 answer). The router
+    defaults to TALE and only switches when the conservative trigger fires.
+    """
+    out = dict(row)
+    method = str(row.get("method", ""))
+    if "direct_reserve_semantic_frontier_v2" not in method:
+        out["fix5_applied"] = False
+        out["fix5_reason"] = "not_frontier_method"
+        out["fix5_answer_canonical"] = row.get("final_answer_canonical")
+        out["fix5_answer_raw"] = row.get("final_answer_raw")
+        out["fix5_policy"] = FIX5_POLICY_NAME
+        return out
+
+    rm = row.get("result_metadata")
+    if isinstance(rm, str):
+        import json as _json
+        try:
+            rm = _json.loads(rm)
+        except Exception:
+            rm = {}
+
+    ext = external_answers or {}
+    tale_answer = ext.get("external_tale_prompt_budgeting")
+    tale_norm = _normalize_answer(tale_answer)
+
+    # Candidate frontier arm = FIX-2 + FIX-4 answer
+    combined24 = apply_combined_fix24_to_row(row, external_answers=ext)
+    frontier_candidate = combined24.get("combined24_answer_canonical")
+    frontier_candidate_norm = _normalize_answer(frontier_candidate)
+
+    out["fix5_policy"] = FIX5_POLICY_NAME
+    out["fix5_policy_version"] = FIX5_POLICY_VERSION
+    out["fix5_external_agreement_signature"] = external_agreement_signature(ext)
+    out["fix5_is_tale_isolated"] = is_tale_isolated(ext)
+    out["fix5_frontier_candidate_from"] = "combined_fix24"
+    out["fix5_frontier_candidate_canonical"] = frontier_candidate_norm
+    out["fix5_tale_answer_canonical"] = tale_norm
+    out["fix5_is_low_depth_frontier"] = is_low_depth_risk(rm or {})
+    out["fix5_blocked_external_unanimous_against_frontier"] = bool(
+        external_unanimous_answer(ext)
+        and frontier_candidate_norm
+        and external_unanimous_answer(ext) != frontier_candidate_norm
+    )
+
+    # If TALE is missing/unparseable, we cannot run a TALE-default policy safely.
+    if not tale_norm:
+        out["fix5_applied"] = False
+        out["fix5_reason"] = "blocked_missing_metadata"
+        out["fix5_answer_canonical"] = frontier_candidate_norm
+        out["fix5_answer_raw"] = frontier_candidate_norm
+        return out
+
+    should_switch, reason = should_switch_from_tale_to_frontier_v1(
+        frontier_candidate_answer=frontier_candidate_norm,
+        tale_answer=tale_norm,
+        external_answers=ext,
+        result_metadata=rm or {},
+    )
+
+    if should_switch and frontier_candidate_norm:
+        out["fix5_applied"] = True
+        out["fix5_reason"] = reason
+        out["fix5_answer_canonical"] = frontier_candidate_norm
+        out["fix5_answer_raw"] = frontier_candidate_norm
+        return out
+
+    out["fix5_applied"] = False
+    out["fix5_reason"] = reason
+    out["fix5_answer_canonical"] = tale_norm
+    out["fix5_answer_raw"] = tale_norm
     return out
