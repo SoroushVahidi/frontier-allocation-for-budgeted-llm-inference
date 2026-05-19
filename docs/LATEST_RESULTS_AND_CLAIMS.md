@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-19 (overnight 300-example validation + FIX-6 LoVEC-1 offline feasibility + independent pilot launch)
+**Last updated:** 2026-05-19 (overnight 300-example validation + FIX-6 LoVEC-1 offline feasibility + independent Stage-2 relaunch postrun)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -258,6 +258,56 @@ Interpretation:
 - There is enough logged counterfactual structure to justify a value-of-compute direction.
 - There is **not** enough outcome data to claim deployable gains from accuracy-changing LoVEC routing without new extra-action collection.
 - The first 40-case extra-action pilot produced positive action-value signal but overlapped prior evidence and is not promotion-grade by itself.
+
+---
+
+## 13. Independent FIX-6 Stage-2 Relaunch (80 selected cases, disjoint from prior union)
+
+**Input root:** `outputs/fix6_lovec_independent_extra_action_pilot_20260519T163021Z/`
+**Postrun root:** `outputs/fix6_lovec_independent_stage2_postrun_20260519_20260519T191510Z/`
+**Stage-2 seed / budget:** `67 / 6`
+**Rows:** `160` (`80 examples × 2 methods`)
+**Methods:** `direct_reserve_semantic_frontier_v2`, `external_tale_prompt_budgeting`
+
+Integrity summary:
+- Status: `160/160 scored`
+- Duplicate rows: `0`
+- Runtime/rate-limit/cap failures: none observed in live logs
+- Prompt/feature leakage scan (`gold`/`exact` terms): `0` hits
+- Promotion-review fields in Stage-2 rows: missing (`enough_for_promotion_review = no`)
+
+Selected-case mix:
+- `tier2 / all_methods_wrong`: `31`
+- `tier2 / residual_low_depth_not_caught`: `4`
+- `tier3 / not_failure` controls: `45`
+
+Action-value results vs Stage-1 FIX-2+FIX-4 baseline:
+
+| Action proxy | Correctness | Recoveries vs FIX-2+FIX-4 | Regressions vs FIX-2+FIX-4 | Net vs FIX-2+FIX-4 | Net vs TALE | Control regression rate |
+|---|---:|---:|---:|---:|---:|---:|
+| Extra frontier proxy | 55.00% (44/80) | 3 | 4 | **-1** | +5 | 8.89% (4/45) |
+| Extra TALE retry proxy | 51.25% (41/80) | 1 | 5 | **-4** | +2 | 11.11% (5/45) |
+
+Residual-category breakdown (net vs FIX-2+FIX-4):
+- Extra frontier: `all_methods_wrong +1`, `residual_low_depth_not_caught +2`, `not_failure -4`
+- Extra TALE retry: `all_methods_wrong +1`, `residual_low_depth_not_caught 0`, `not_failure -5`
+
+Comparison to first 40-case overlapping pilot:
+- First pilot was positive by mean delta for both actions.
+- Independent relaunch **did not replicate** net-vs-FIX-2+FIX-4 gains:
+  - extra frontier: from nonnegative pilot signal to net `-1`
+  - extra TALE retry: from nonnegative pilot signal to net `-4`
+- Control-slice regressions remained material.
+
+Decision from independent relaunch:
+- **E: abandon extra-action promotion now; proceed with FIX-2+FIX-4 validation/writing.**
+- No accuracy-changing LoVEC-1 rule is ready for deployment from this independent run.
+
+Safe claim update:
+- The independent Stage-2 relaunch does **not** currently support promoting an accuracy-changing LoVEC extra-action policy over FIX-2+FIX-4.
+
+Unsafe claim update:
+- Do not claim that extra frontier or extra TALE retry is deployable from current independent evidence.
 
 ---
 
