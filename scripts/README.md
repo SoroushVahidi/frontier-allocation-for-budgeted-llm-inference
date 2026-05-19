@@ -157,6 +157,7 @@ Scripts added on `feat/missing-gold-topology-v1` for verifier-guided allocation 
 | `join_verifier_scores_to_failure_features.py` | Join offline verifier scores to failure-feature rows for gate training and evaluation. |
 | `mine_failure_patterns.py` | Mine association rules and decision-tree patterns in failure/disagreement case sets. |
 | `failure_case_logging_schema.py` | Build and validate promotion-review records for per-attempt rows; log-sufficiency helper. |
+| `repair_promotion_review_markers.py` | Back-fill `node_expansion_order` explicit-unavailable markers in already-emitted records; does not overwrite originals. |
 
 ## Historical and provenance scripts
 

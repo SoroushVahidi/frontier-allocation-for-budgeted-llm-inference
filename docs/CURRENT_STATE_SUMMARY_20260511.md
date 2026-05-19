@@ -297,3 +297,34 @@ Companion docs:
 - Near-neighbor is not promoted; it remains ablation/diagnostic only.
 - Promotion remains blocked by switched-case log sufficiency and recovery/regression
   separability.
+
+### Stage 2 Addendum (2026-05-19): 100-Case Diagnostic Collection Completed
+
+- tmux session `cohere_collect_100_failure_cases_20260518` completed: 7 batches, 210 examples,
+  101 unique failure/disagreement cases.
+- Output: `outputs/targeted_cohere_100_failure_cases_20260518T213958Z/`
+- Postrun: `outputs/targeted_cohere_100_failure_cases_postrun_20260519T002844Z/`
+- Promotion-review sufficiency after repair: 1680/1680 yes (100%); leakage scan: PASS.
+- All-data accuracy (failure-enriched, diagnostic only):
+  - frontier/direct: **79.3%**; external_tale: 78.6%; external_s1bf: 77.6%; external_l1max: 76.7%.
+- Paired deltas vs externals: all positive by point estimate; all 95% CIs include zero.
+- Results are NOT stable by seed (seed=11: +3.3pp, seed=23: −1.9pp) or batch (range −8.3pp to +10pp).
+- **This is a failure-enriched diagnostic collection, not promotion-grade validation.**
+  It does not support a superiority claim against any external baseline.
+- All-external-baseline policy evaluation:
+  `outputs/all_external_baseline_policy_eval_20260519_20260519T004042Z/`
+  Recommended next step: **B** — collect unbiased promotion-grade validation set.
+
+### Stage 2 Addendum (2026-05-19): Promotion-Grade All-Baseline Validation Running
+
+**STATUS: RUNNING — do not kill or restart.**
+
+- tmux session: `promotion_grade_cohere_all_baselines_20260519`
+- output root: `outputs/promotion_grade_cohere_all_baselines_validation_20260519T005021Z/`
+- Design: 200 unbiased random examples from GSM8K **training split** (seed=31, all 4 methods,
+  budget=6). Disjoint from all 1318 prior test-split IDs by namespace (`openai_gsm8k_train_N`).
+- Expected: 800 rows. API cap: 2000. Dry-run call plan: PASSED.
+- This is the first **unbiased** (not failure-enriched) all-baseline validation attempt.
+
+**No claim against any external baseline until postrun validation and bootstrap CIs are complete.**
+Canonical status: `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` §F.7.

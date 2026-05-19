@@ -325,25 +325,54 @@ utility before downstream analysis to reach the 95% yes-rate criterion.
 Batch 3 onward will emit the correct marker at generation time.
 The running tmux job was not interrupted.
 
-## F.6) Targeted 100-Case Collection: Run Launched (2026-05-18)
+## F.6) Targeted 100-Case Collection: Completed (2026-05-18/19)
 
-- tmux session: `cohere_collect_100_failure_cases_20260518`
+- tmux session: `cohere_collect_100_failure_cases_20260518` (completed, no longer running)
 - output root: `outputs/targeted_cohere_100_failure_cases_20260518T213958Z/`
-- Status: collection running; batch 3 in progress as of 2026-05-18 ~22:38 UTC
+- Status: **COMPLETED** — 7 batches, 210 examples attempted, 101 unique failure/disagreement cases.
+- Post-run postrun dir: `outputs/targeted_cohere_100_failure_cases_postrun_20260519T002844Z/`
 
-Post-run pipeline is defined in `docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md` §7.
-Do not kill, restart, or overwrite the running collection.
-Proceed with post-run verifier scoring, log-sufficiency validation, and failure inventory once collection completes.
+Post-run validation results:
+- Total generated rows: 1680; unique examples: 210; failure cases: 101.
+- Promotion-review sufficiency after repair: **1680/1680 yes** (100%).
+- Repair applied: `repair_promotion_review_markers.py` converted 361 `partial` → `yes` for external-method rows.
+- Leakage scan: PASS.
+- All-data accuracy: frontier 79.3%, tale 78.6%, s1bf 77.6%, l1max 76.7%.
+- Paired deltas vs externals: all positive in point estimate; all 95% CIs include zero (failure-enriched collection, not promotion-grade).
+- Verifier score margin NOT actionable for routing: frontier proba ≈ 0.20 vs baseline proba_max ≈ 0.92 (systematic asymmetry, not calibrated across methods).
+
+**Important caveat:** This collection is failure-enriched diagnostic data, not an unbiased validation set. Point-estimate superiority does not constitute a promotion claim. Results are not stable by seed or batch.
+
+Recommendation from all-external-baseline policy eval: **B** — collect unbiased promotion-grade validation set.
+
+## F.7) Promotion-Grade All-Baseline Validation: Running (2026-05-19)
+
+**STATUS: RUNNING — do not kill, restart, or interfere.**
+
+- tmux session: `promotion_grade_cohere_all_baselines_20260519`
+- output root: `outputs/promotion_grade_cohere_all_baselines_validation_20260519T005021Z/`
+- Dataset: GSM8K **training split** (200 examples, seed=31); namespace `openai_gsm8k_train_N`.
+- Disjointness: PASSED — 0 overlap vs all 1318 prior test-split IDs.
+- Methods: `direct_reserve_semantic_frontier_v2`, `external_l1_max`, `external_s1_budget_forcing`, `external_tale_prompt_budgeting`.
+- Budget: 6. Seed: 31. API cap: 2000.
+- Expected rows: 800 (200 examples × 4 methods × 1 seed).
+- Dry-run call plan: PASSED.
+
+This is an **unbiased** random sample — not failure-enriched. Results will determine whether frontier genuinely beats all external baselines on a held-out unbiased artifact.
+
+**Do not tune gates or thresholds on this validation set.**
+Do not claim results until postrun validation and bootstrap CIs are computed.
 
 ## G) Immediate Next Steps (Ranked)
 
-1. Improve and verify log sufficiency for incremental switch cases.
-2. Standardize runtime-cap and full discovery-tree fields in future records.
-3. Continue manual switched-case audit where ambiguity remains.
-4. Prepare a targeted Cohere failure-collection design only if log sufficiency remains inadequate.
-5. Do not claim external-baseline superiority yet.
+1. Wait for promotion-grade all-baseline validation to complete; run postrun validation.
+2. If frontier beats all three externals with CIs not strongly negative: document as first promotion-grade evidence.
+3. If result is mixed or negative: analyze root causes, collect more examples, or add seeds.
+4. Do not claim external-baseline superiority until postrun CIs support it.
+5. Do not promote any gate from the failure-enriched diagnostic collection.
 
 ## Current Decision Snapshot
 
 - Default recommendation: keep safe gate as conservative freeze candidate, keep near-neighbor as ablation.
 - Tracked-source promotion: defer (remain output-only until criteria above are satisfied).
+- **Promotion-grade all-baseline validation is actively running.** No claim until it completes and CIs are computed.
