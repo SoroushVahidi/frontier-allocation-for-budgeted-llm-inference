@@ -311,28 +311,24 @@ Unsafe claim update:
 
 ---
 
-## 13. Next Recommended Step
+## 14. Next Recommended Step
 
-**Recommended: B — Complete and analyze the larger independent FIX-6 extra-action Cohere pilot before any accuracy-changing LoVEC promotion decision.**
+**Recommended: E — Do not promote extra-action LoVEC now; proceed with FIX-2+FIX-4 validation/writing.**
 
 Rationale:
-- FIX-2+FIX-4 is currently strongest on main unbiased evidence.
-- LoVEC-1 scaffold is implemented but intentionally non-switching for safety.
-- Offline observable oracle shows potential, but a substantial irreducible subset still requires new generation outcomes.
-- Next progress bottleneck is collecting disjoint extra-action outcomes, not another selector-only tweak.
+- The independent Stage-2 relaunch did not produce positive net gain vs FIX-2+FIX-4 for either action proxy.
+- Control-slice (`tier3/not_failure`) regressions are non-trivial and erase tier2 gains.
+- The strongest inference-available trigger candidate (`low_depth=true` with split external signature) still has negative net effect in the independent run.
+- Current evidence supports documenting LoVEC as exploratory scaffolding, not an accuracy-changing runtime policy.
 
-Status update (2026-05-19):
-- First 40-case extra-action pilot completed and was analyzed:
-  - pilot: `outputs/fix6_lovec1_extra_action_pilot_20260519T141709Z/`
-  - analysis: `outputs/fix6_extra_action_pilot_analysis_20260519_20260519T160649Z/`
-  - interpretation: promising but overlap-contaminated for promotion claims.
-- Independent disjoint larger pilot is now running in tmux (`fix6_lovec_independent_pilot_20260519`) under `outputs/fix6_lovec_independent_extra_action_pilot_20260519T163021Z/`.
-- Offline postrun converter remains: `scripts/analyze_fix6_extra_action_pilot.py`.
-- No new empirical promotion claims are made until independent pilot completion and postrun analysis.
+Current status (2026-05-19):
+- 40-case overlapping extra-action pilot: completed and positive but non-promotion-grade due to overlap.
+- Independent 80-case Stage-2 relaunch: completed with 160/160 rows and negative net-vs-FIX-2+FIX-4 action value.
+- No deployable LoVEC-1 action rule is justified from current independent evidence.
 
 ---
 
-## 14. Source Files
+## 15. Source Files
 
 | File | Purpose |
 |---|---|
