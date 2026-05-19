@@ -204,3 +204,223 @@ def apply_support_aware_fix_to_row(row: dict[str, Any]) -> dict[str, Any]:
     out["fix1_frontier_candidate"] = fix_meta.get("frontier_candidate")
     out["fix1_original_answer"] = current
     return out
+
+
+# ─── FIX-2: Low-depth / single-weak-frontier-branch guard ────────────────────
+
+FIX2_POLICY_NAME = "direct_reserve_semantic_frontier_v2_low_depth_guard_v1"
+FIX2_POLICY_VERSION = "1.0"
+FIX2_POLICY_DESCRIPTION = (
+    "Offline low-depth guard (FIX-2): "
+    "when override_reason == 'single_weak_frontier_branch' (or frontier_support==0 with scattered pool), "
+    "prefer the majority external-baseline answer over the weak frontier output."
+)
+
+COMBINED_POLICY_NAME = "direct_reserve_semantic_frontier_v2_support_aware_low_depth_guard_v1"
+COMBINED_POLICY_VERSION = "1.0"
+COMBINED_POLICY_DESCRIPTION = (
+    "Combined FIX-1 + FIX-2: "
+    "FIX-1 (tie/PNS fix) takes precedence; if not triggered, FIX-2 (low-depth fallback) applies."
+)
+
+
+def is_low_depth_risk(result_metadata: dict[str, Any]) -> bool:
+    """Return True if frontier shows weak exploration signature (FIX-2 trigger).
+
+    Gold-free: uses only override_reason and support counts from result_metadata.
+    """
+    if not isinstance(result_metadata, dict):
+        return False
+    override = str(result_metadata.get("override_reason", "") or "")
+    if "single_weak_frontier_branch" in override:
+        return True
+    # Fallback: frontier_support == 0 with multiple competing candidate groups
+    fr_sup = result_metadata.get("frontier_support")
+    cpc = result_metadata.get("candidate_pool_answer_group_count")
+    if fr_sup is not None and cpc is not None:
+        try:
+            if int(fr_sup) == 0 and int(cpc) >= 2:
+                return True
+        except (TypeError, ValueError):
+            pass
+    return False
+
+
+def select_external_majority(
+    external_answers: dict[str, Any],
+) -> tuple[str | None, dict[str, Any]]:
+    """Choose the answer most commonly agreed on by external baselines.
+
+    Args:
+        external_answers: mapping method_name → answer_canonical (raw string)
+
+    Returns:
+        (selected_answer_canonical, selection_meta)
+    """
+    from collections import Counter
+
+    valid: dict[str, str] = {}
+    for k, v in external_answers.items():
+        norm = _normalize_answer(v)
+        if norm:
+            valid[k] = norm
+
+    if not valid:
+        return None, {"reason": "no_parseable_external_answer", "candidates": {}}
+
+    counts = Counter(valid.values())
+    most_common_ans, count = counts.most_common(1)[0]
+
+    if count >= 2:
+        chosen_method = next(k for k, v in valid.items() if v == most_common_ans)
+        return most_common_ans, {
+            "reason": "external_majority_vote",
+            "vote_count": count,
+            "total_baselines": len(valid),
+            "chosen_method": chosen_method,
+            "all_answers": dict(valid),
+        }
+
+    # No majority — use fixed priority order (best baseline first)
+    for preferred in (
+        "external_tale_prompt_budgeting",
+        "external_s1_budget_forcing",
+        "external_l1_max",
+    ):
+        if preferred in valid:
+            return valid[preferred], {
+                "reason": "external_no_majority_priority_fallback",
+                "priority_method": preferred,
+                "all_answers": dict(valid),
+            }
+
+    first_method, first_ans = next(iter(valid.items()))
+    return first_ans, {"reason": "external_fallback_first", "method": first_method}
+
+
+def apply_fix2_to_row(
+    row: dict[str, Any],
+    external_answers: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply FIX-2 low-depth guard to a single frontier row.
+
+    Args:
+        row: per-example record dict (direct_reserve_semantic_frontier_v2).
+        external_answers: method_name → final_answer_canonical for the same example_id.
+                          Pass None if not available (fix2 will not switch but will flag).
+
+    Returns:
+        Copy of row with fix2_* fields added.
+    """
+    out = dict(row)
+    method = str(row.get("method", ""))
+
+    if "direct_reserve_semantic_frontier_v2" not in method:
+        out["fix2_applied"] = False
+        out["fix2_reason"] = "not_frontier_method"
+        out["fix2_is_low_depth"] = False
+        out["fix2_answer_canonical"] = row.get("final_answer_canonical")
+        out["fix2_answer_raw"] = row.get("final_answer_raw")
+        return out
+
+    rm = row.get("result_metadata")
+    if isinstance(rm, str):
+        import json as _json
+        try:
+            rm = _json.loads(rm)
+        except Exception:
+            rm = {}
+
+    is_ld = is_low_depth_risk(rm or {})
+    override_reason_val = str((rm or {}).get("override_reason", "") or "")
+    current = row.get("final_answer_canonical") or row.get("selected_answer_canonical")
+
+    out["fix2_is_low_depth"] = is_ld
+    out["fix2_original_answer"] = current
+    out["fix2_override_reason"] = override_reason_val
+
+    if not is_ld:
+        out["fix2_applied"] = False
+        out["fix2_reason"] = "not_triggered"
+        out["fix2_answer_canonical"] = current
+        out["fix2_answer_raw"] = current
+        return out
+
+    # FIX-2 triggered — attempt external majority fallback
+    if external_answers:
+        ext_ans, ext_meta = select_external_majority(external_answers)
+    else:
+        ext_ans, ext_meta = None, {"reason": "no_external_answers_available"}
+
+    out["fix2_external_selection"] = ext_meta
+
+    if ext_ans and ext_ans != _normalize_answer(current):
+        out["fix2_applied"] = True
+        out["fix2_reason"] = "low_depth_external_fallback"
+        out["fix2_answer_canonical"] = ext_ans
+        out["fix2_answer_raw"] = ext_ans
+    else:
+        out["fix2_applied"] = False
+        out["fix2_reason"] = (
+            "low_depth_but_no_better_external"
+            if ext_ans
+            else "low_depth_no_external_available"
+        )
+        out["fix2_answer_canonical"] = current
+        out["fix2_answer_raw"] = current
+
+    return out
+
+
+def apply_combined_fix_to_row(
+    row: dict[str, Any],
+    external_answers: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply FIX-1 then FIX-2 with FIX-1 taking precedence.
+
+    FIX-1 handles tie/PNS using the frontier candidate.
+    FIX-2 handles weak-exploration using the external majority.
+    Only one fix fires per row; FIX-1 takes priority.
+
+    Args:
+        row: per-example record dict.
+        external_answers: method_name → final_answer_canonical for same example_id.
+
+    Returns:
+        Copy of row with fix1_*, fix2_*, and combined_* fields added.
+    """
+    # Step 1: apply FIX-1
+    out = apply_support_aware_fix_to_row(row)
+
+    if out.get("fix1_applied"):
+        # FIX-1 fired — skip FIX-2
+        out["fix2_applied"] = False
+        out["fix2_reason"] = "fix1_already_applied"
+        out["fix2_is_low_depth"] = False
+        out["fix2_answer_canonical"] = out.get("fix1_answer_canonical")
+        out["fix2_answer_raw"] = out.get("fix1_answer_raw")
+        out["combined_answer_canonical"] = out.get("fix1_answer_canonical")
+        out["combined_answer_raw"] = out.get("fix1_answer_raw")
+        out["combined_policy_applied"] = "fix1"
+        out["combined_policy"] = COMBINED_POLICY_NAME
+        return out
+
+    # Step 2: FIX-1 didn't fire — try FIX-2
+    fix2_out = apply_fix2_to_row(out, external_answers=external_answers)
+    for k, v in fix2_out.items():
+        if k.startswith("fix2_") or k not in out:
+            out[k] = v
+
+    if fix2_out.get("fix2_applied"):
+        out["combined_answer_canonical"] = fix2_out.get("fix2_answer_canonical")
+        out["combined_answer_raw"] = fix2_out.get("fix2_answer_raw")
+        out["combined_policy_applied"] = "fix2"
+    else:
+        out["combined_answer_canonical"] = _normalize_answer(
+            row.get("final_answer_canonical") or row.get("selected_answer_canonical")
+        )
+        out["combined_answer_raw"] = row.get("final_answer_raw")
+        out["combined_policy_applied"] = "original"
+
+    out["combined_policy"] = COMBINED_POLICY_NAME
+    return out

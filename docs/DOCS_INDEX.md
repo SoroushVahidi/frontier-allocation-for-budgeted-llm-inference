@@ -8,6 +8,7 @@ This index separates current interpretation documents from diagnostic and histor
 |---|---|
 | `README.md` | Short repository entry point. |
 | `START_HERE_CURRENT.md` | Short current front door: baselines, selector scope, safe/unsafe claims, commands. |
+| `docs/LATEST_RESULTS_AND_CLAIMS.md` | **Canonical latest results checkpoint** — current numbers, safe/unsafe claims, next step. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
 | `docs/CURRENT_EXTERNAL_BASELINE_GAP.md` | Single-page headline vs **`external_l1_max`** (**1018203** bounded harness). |
 | `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md` | Index of superseded/cache-limited/negative pilots without deleting provenance. |
