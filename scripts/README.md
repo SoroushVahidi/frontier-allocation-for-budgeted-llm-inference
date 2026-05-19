@@ -159,6 +159,15 @@ Scripts added on `feat/missing-gold-topology-v1` for verifier-guided allocation 
 | `failure_case_logging_schema.py` | Build and validate promotion-review records for per-attempt rows; log-sufficiency helper. |
 | `repair_promotion_review_markers.py` | Back-fill `node_expansion_order` explicit-unavailable markers in already-emitted records; does not overwrite originals. |
 
+## FIX-1 through FIX-6 policy scripts
+
+| Script / module | Role |
+|---|---|
+| `run_fix6_lovec1_offline_eval.py` | Offline FIX-6 / LoVEC-1 scaffold evaluation and feasibility reporting (no provider calls). |
+| `analyze_fix6_extra_action_pilot.py` | Postrun analyzer for FIX-6 extra-action pilot outputs (readiness mode + full analysis mode). |
+| `../experiments/support_aware_selector.py` | FIX-1 through FIX-5 policy logic (support-aware, low-depth, calibrated, consensus, and TALE-default routing). |
+| `../experiments/value_of_compute_controller.py` | FIX-6 LoVEC state extraction, observable-action table, and offline oracle helpers. |
+
 ## Historical and provenance scripts
 
 Historical entry points are documented in:

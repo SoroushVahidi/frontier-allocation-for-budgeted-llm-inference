@@ -51,6 +51,7 @@ This index separates current interpretation documents from diagnostic and histor
 
 | Document | Role |
 |---|---|
+| `docs/LATEST_RESULTS_AND_CLAIMS.md` | Canonical latest checkpoint including FIX-1..FIX-6 status, safe/unsafe claims, and current operational next step. |
 | `docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md` | Stage-2 plan: baseline-gated hybrid allocator design, steps, and success criteria. |
 | `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` | Canonical Stage-2 calibrated gate status, promotion criteria, and "do not claim yet" discipline. |
 | `docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md` | Targeted Cohere 100-case failure collection plan, required schema, and stop conditions. |

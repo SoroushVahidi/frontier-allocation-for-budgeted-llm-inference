@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-19 (overnight 300-example validation + FIX-6 LoVEC-1 offline feasibility)
+**Last updated:** 2026-05-19 (overnight 300-example validation + FIX-6 LoVEC-1 offline feasibility + independent pilot launch)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -257,12 +257,13 @@ Main 300-example findings:
 Interpretation:
 - There is enough logged counterfactual structure to justify a value-of-compute direction.
 - There is **not** enough outcome data to claim deployable gains from accuracy-changing LoVEC routing without new extra-action collection.
+- The first 40-case extra-action pilot produced positive action-value signal but overlapped prior evidence and is not promotion-grade by itself.
 
 ---
 
 ## 13. Next Recommended Step
 
-**Recommended: A — Run a minimal extra-action Cohere pilot for LoVEC-1 (30–50 cases, capped, tmux, promotion-review logging).**
+**Recommended: B — Complete and analyze the larger independent FIX-6 extra-action Cohere pilot before any accuracy-changing LoVEC promotion decision.**
 
 Rationale:
 - FIX-2+FIX-4 is currently strongest on main unbiased evidence.
@@ -271,9 +272,13 @@ Rationale:
 - Next progress bottleneck is collecting disjoint extra-action outcomes, not another selector-only tweak.
 
 Status update (2026-05-19):
-- Extra-action replay pilot is currently running in tmux (`fix6_lovec_extra_action_pilot_20260519`) under `outputs/fix6_lovec1_extra_action_pilot_20260519T141709Z/`.
-- Offline postrun converter is now implemented in-repo: `scripts/analyze_fix6_extra_action_pilot.py`.
-- No new empirical claims are made until pilot completion and postrun analysis.
+- First 40-case extra-action pilot completed and was analyzed:
+  - pilot: `outputs/fix6_lovec1_extra_action_pilot_20260519T141709Z/`
+  - analysis: `outputs/fix6_extra_action_pilot_analysis_20260519_20260519T160649Z/`
+  - interpretation: promising but overlap-contaminated for promotion claims.
+- Independent disjoint larger pilot is now running in tmux (`fix6_lovec_independent_pilot_20260519`) under `outputs/fix6_lovec_independent_extra_action_pilot_20260519T163021Z/`.
+- Offline postrun converter remains: `scripts/analyze_fix6_extra_action_pilot.py`.
+- No new empirical promotion claims are made until independent pilot completion and postrun analysis.
 
 ---
 

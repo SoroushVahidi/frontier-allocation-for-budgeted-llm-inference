@@ -328,3 +328,13 @@ Companion docs:
 
 **No claim against any external baseline until postrun validation and bootstrap CIs are complete.**
 Canonical status: `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` §F.7.
+
+### Stage 2 Addendum (2026-05-19): Independent FIX-6 Extra-Action Pilot Running
+
+- Operational next step is now to wait for completion of the independent disjoint FIX-6
+  extra-action pilot and evaluate LoVEC action value on that run before any
+  accuracy-changing LoVEC-1 promotion decision.
+- tmux session: `fix6_lovec_independent_pilot_20260519`
+- output root: `outputs/fix6_lovec_independent_extra_action_pilot_20260519T163021Z/`
+- This run is pre-registered, capped, and staged (base run -> pre-registered selection ->
+  extra-action run -> offline postrun analysis).

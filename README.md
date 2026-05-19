@@ -31,6 +31,8 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 
 **Stage-2 calibrated gate:** [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md) · [`docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`](docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md) · [`docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`](docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md)
 
+**Current Stage-2 checkpoint:** see [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) and [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md). No final promoted cross-method allocation policy is claimed yet.
+
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 
 **Structured indexes:** [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) · [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) · [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) · [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md)
