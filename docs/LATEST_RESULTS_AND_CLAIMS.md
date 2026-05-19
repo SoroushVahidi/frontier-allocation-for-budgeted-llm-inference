@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-19 (FIX-2 evaluation, commit feat/missing-gold-topology-v1)
+**Last updated:** 2026-05-19 (FIX-3 evaluation, commit feat/missing-gold-topology-v1)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -100,7 +100,47 @@ FIX-1 takes precedence; if not triggered, FIX-2 applies.
 
 ---
 
-## 6. Safe Claims
+## 6. FIX-3 Result (within-method verifier calibration guard)
+
+**Policy:** `direct_reserve_semantic_frontier_v2_within_method_calibrated_v1`
+**Source:** `experiments/support_aware_selector.py`
+**Evaluation:** `outputs/fix3_within_method_calibration_eval_20260519T023843Z/`
+
+**Trigger:** `override_reason == "frontier_not_run_or_budget_exhausted"` OR non-SWFB row with empty `answer_group_best_branch_scores`. When triggered: fall back to external majority. Does NOT fire on SWFB rows (handled by FIX-2).
+
+**Key finding:** AGBS raw scores (0.8–0.975) are not discriminative within non-SWFB rows — they are anti-correlated due to SWFB dominance. FIX-3 uses score *absence* as the signal.
+
+| Dataset | Frontier orig | FIX-3 | Applications | vs tale |
+|---|---|---|---|---|
+| Diagnostic (210 ex, biased) | 80.48% | 80.95% (+0.48pp) | 1 case | +0.95pp |
+| **Promotion-grade (100 ex, unbiased)** | **73.00%** | **73.00% (+0.00pp)** | **0 cases** | **-9.00pp** |
+
+**FIX-3 has near-zero coverage on promotion-grade data.** No `frontier_not_run_or_budget_exhausted` cases appear in the 100-example unbiased set; all non-SWFB rows have AGBS scores present. FIX-3 is structurally correct but does not help on the current promotion-grade artifact.
+
+---
+
+## 7. Combined FIX-1 + FIX-2 + FIX-3 Result
+
+**Policy:** `direct_reserve_semantic_frontier_v2_support_lowdepth_calibrated_v1`
+**Source:** `experiments/support_aware_selector.py`
+**Evaluation:** `outputs/fix3_within_method_calibration_eval_20260519T023843Z/`
+
+Precedence: FIX-1 → FIX-2 → FIX-3. Only one fires per row.
+
+| Dataset | Frontier orig | Combined | vs l1 | vs s1 | vs tale |
+|---|---|---|---|---|---|
+| Diagnostic (210 ex, biased) | 80.48% | 79.52% (-0.95pp) | +1.43pp | +3.33pp | -0.48pp |
+| **Promotion-grade (100 ex, unbiased)** | **73.00%** | **79.00% (+6.00pp)** | **+3.00pp** | **+2.00pp** | **-3.00pp** |
+
+- Unbiased (fix breakdown): fix1=13, fix2=9, fix3=0, original=78
+- Bootstrap CI (5000 resamples): vs l1 +3pp CI=[-5,11], vs s1 +2pp CI=[-5,9], vs tale -3pp CI=[-9,3]
+- **Does NOT beat all external baselines** (TALE at 82% remains 3pp ahead)
+- **CIs include zero** — 100 examples insufficient for conclusive evidence
+- FIX-3 adds no new recoveries on this artifact; combined FIX-1+2+3 = combined FIX-1+2
+
+---
+
+## 8. Safe Claims
 
 The following claims are supported by current evidence:
 
@@ -110,7 +150,7 @@ The following claims are supported by current evidence:
 - **Failure-pattern mining confirms frontier_present_not_selected (PNS)** is the dominant root cause (lift=5.74, 75% of regression-risk cases).
 - **single_weak_frontier_branch** is a strong low-depth risk signal: 31/100 unbiased examples trigger it, with 45% accuracy vs 73% overall frontier.
 
-## 7. Unsafe Claims
+## 9. Unsafe Claims
 
 Do NOT make these claims:
 
@@ -122,7 +162,7 @@ Do NOT make these claims:
 
 ---
 
-## 8. Root-Cause Summary (from failure-pattern mining)
+## 10. Root-Cause Summary (from failure-pattern mining)
 
 | Root Cause | Count | Actionable | Fix |
 |---|---|---|---|
@@ -135,27 +175,35 @@ Do NOT make these claims:
 
 ---
 
-## 9. Next Recommended Step
+## 11. Next Recommended Step
 
 **Recommended: E — Collect more promotion-grade examples (200+).**
 
-With 100 examples, all bootstrap CIs include zero. The combined policy shows a promising +6pp lift over frontier and closes 6 of the 9pp gap to tale. But conclusive evidence requires:
+All three selector fixes (FIX-1, FIX-2, FIX-3) are now implemented and evaluated. Key summary:
+- FIX-2 is the most impactful: +7pp on the unbiased set, beats l1 and s1bf
+- FIX-3 has zero coverage on the current 100-example artifact — structurally correct but not actionable yet
+- Combined FIX-1+2+3 = 79%, still 3pp below TALE (82%)
+- All bootstrap CIs include zero with 100 examples
 
+The gap to TALE cannot be closed by selector fixes alone with current candidate pools. The 7 remaining failures on the unbiased set are pool-miss or absent-from-tree cases (5 `direct_frontier_agree`, 2 `frontier_support_margin_override`).
+
+To make conclusive evidence:
 - At least 200 unbiased examples (ideally 300+)
 - Same 4-method budget-matched comparison
 - A new seed (e.g., seed=41 or seed=53)
 
-Alternative: Implement FIX-3 (within-method verifier calibration) to address cases where the selector has correct candidates but miscalibrated confidence scores. This would not require additional API calls on the existing 100-example set.
+Alternative: Implement multi-baseline disagreement ensemble gate (option B) targeting TALE-present cases where frontier deviates.
 
 ---
 
-## 10. Source Files
+## 12. Source Files
 
 | File | Purpose |
 |---|---|
-| `experiments/support_aware_selector.py` | FIX-1, FIX-2, and combined policy implementations |
-| `tests/test_support_aware_selector.py` | 30 tests covering all three policies |
+| `experiments/support_aware_selector.py` | FIX-1, FIX-2, FIX-3, and all combined policy implementations |
+| `tests/test_support_aware_selector.py` | 46 tests covering all policies |
 | `outputs/support_aware_selector_fix1_eval_20260519T013731Z/` | FIX-1 offline evaluation |
-| `outputs/support_aware_low_depth_fix2_eval_20260519T020057Z/` | FIX-2 and combined offline evaluation |
+| `outputs/support_aware_low_depth_fix2_eval_20260519T020057Z/` | FIX-2 and combined FIX-1+2 offline evaluation |
+| `outputs/fix3_within_method_calibration_eval_20260519T023843Z/` | FIX-3 and combined FIX-1+2+3 offline evaluation |
 | `outputs/promotion_grade_all_baselines_postrun_20260519_20260519T013731Z/` | Promotion-grade postrun validation |
 | `outputs/combined_failure_pattern_mining_20260519T012644Z/` | Failure-pattern mining report |

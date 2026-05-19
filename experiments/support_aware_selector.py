@@ -424,3 +424,223 @@ def apply_combined_fix_to_row(
 
     out["combined_policy"] = COMBINED_POLICY_NAME
     return out
+
+
+# ─── FIX-3: Within-method verifier calibration guard ─────────────────────────
+#
+# Empirical note (from offline analysis, 2026-05-19):
+# The available within-method verifier signal is answer_group_best_branch_scores
+# from result_metadata. On both the diagnostic and promotion-grade sets, AGBS
+# scores cluster at 0.8 (minimum) for ~85% of cases, with higher scores
+# occurring primarily in single_weak_frontier_branch rows (handled by FIX-2).
+# AGBS is counterintuitively anti-correlated with correctness when considered
+# naively: low score (=0.8) → 84.6% correct; high score (>0.81) → 68.8% correct.
+# This is because high-AGBS rows are dominated by SWFB cases, which FIX-2 handles.
+# Within-method cross-case percentile ranking of AGBS does not provide additional
+# discriminative signal beyond override_reason.
+#
+# FIX-3 therefore uses the only remaining actionable signal: verifier score
+# absence (empty AGBS) in non-SWFB cases, which occurs for
+# frontier_not_run_or_budget_exhausted rows. These cases have 33% accuracy
+# (diagnostic) vs 73% overall; external majority fallback is a safe improvement.
+
+FIX3_POLICY_NAME = "direct_reserve_semantic_frontier_v2_within_method_calibrated_v1"
+FIX3_POLICY_VERSION = "1.0"
+FIX3_POLICY_DESCRIPTION = (
+    "Within-method verifier calibration guard (FIX-3): "
+    "when override_reason == 'frontier_not_run_or_budget_exhausted' "
+    "or verifier scores are absent for a non-SWFB row, "
+    "prefer the external majority as the frontier had no usable calibrated score. "
+    "Note: AGBS scores (0.8–0.975) are not discriminative beyond override_reason; "
+    "see code comment for empirical details."
+)
+
+COMBINED_FIX123_POLICY_NAME = "direct_reserve_semantic_frontier_v2_support_lowdepth_calibrated_v1"
+COMBINED_FIX123_POLICY_VERSION = "1.0"
+COMBINED_FIX123_POLICY_DESCRIPTION = (
+    "Combined FIX-1 + FIX-2 + FIX-3: "
+    "FIX-1 (tie/PNS fix) → FIX-2 (low-depth fallback) → FIX-3 (verifier-absent fallback). "
+    "Applied in precedence order; only one fix fires per row."
+)
+
+
+def get_agbs_best_score(result_metadata: dict[str, Any]) -> float | None:
+    """Return the best branch verifier score across all answer groups, or None if absent."""
+    if not isinstance(result_metadata, dict):
+        return None
+    agbs = result_metadata.get("answer_group_best_branch_scores") or {}
+    if not agbs:
+        return None
+    try:
+        return max(float(v) for v in agbs.values())
+    except (TypeError, ValueError):
+        return None
+
+
+def is_verifier_score_absent_risk(result_metadata: dict[str, Any]) -> bool:
+    """Return True if frontier verifier scores are absent in a non-SWFB context (FIX-3 trigger).
+
+    FIX-2 already handles single_weak_frontier_branch. FIX-3 catches the
+    remaining no-score cases: frontier_not_run_or_budget_exhausted and
+    any other override where AGBS is empty.
+
+    Gold-free: uses only override_reason and answer_group_best_branch_scores.
+    """
+    if not isinstance(result_metadata, dict):
+        return False
+    override = str(result_metadata.get("override_reason", "") or "")
+    # FIX-2 handles SWFB; don't double-trigger
+    if "single_weak_frontier_branch" in override:
+        return False
+    # Explicit budget-exhausted case
+    if "frontier_not_run_or_budget_exhausted" in override:
+        return True
+    # Any other case where verifier scores are absent
+    agbs_best = get_agbs_best_score(result_metadata)
+    if agbs_best is None:
+        return True
+    return False
+
+
+def apply_fix3_to_row(
+    row: dict[str, Any],
+    external_answers: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply FIX-3 verifier-calibration guard to a single frontier row.
+
+    Args:
+        row: per-example record dict (direct_reserve_semantic_frontier_v2).
+        external_answers: method_name → final_answer_canonical for the same example_id.
+
+    Returns:
+        Copy of row with fix3_* fields added.
+    """
+    out = dict(row)
+    method = str(row.get("method", ""))
+
+    if "direct_reserve_semantic_frontier_v2" not in method:
+        out["fix3_applied"] = False
+        out["fix3_reason"] = "not_frontier_method"
+        out["fix3_score_absent_risk"] = False
+        out["fix3_answer_canonical"] = row.get("final_answer_canonical")
+        out["fix3_answer_raw"] = row.get("final_answer_raw")
+        return out
+
+    rm = row.get("result_metadata")
+    if isinstance(rm, str):
+        import json as _json
+        try:
+            rm = _json.loads(rm)
+        except Exception:
+            rm = {}
+
+    score_absent = is_verifier_score_absent_risk(rm or {})
+    override_val = str((rm or {}).get("override_reason", "") or "")
+    agbs_best = get_agbs_best_score(rm or {})
+    current = row.get("final_answer_canonical") or row.get("selected_answer_canonical")
+
+    out["fix3_score_absent_risk"] = score_absent
+    out["fix3_original_answer"] = current
+    out["fix3_override_reason"] = override_val
+    out["fix3_agbs_best_score"] = agbs_best
+
+    if not score_absent:
+        out["fix3_applied"] = False
+        out["fix3_reason"] = "not_triggered"
+        out["fix3_answer_canonical"] = current
+        out["fix3_answer_raw"] = current
+        return out
+
+    # FIX-3 triggered — attempt external majority fallback
+    if external_answers:
+        ext_ans, ext_meta = select_external_majority(external_answers)
+    else:
+        ext_ans, ext_meta = None, {"reason": "no_external_answers_available"}
+
+    out["fix3_external_selection"] = ext_meta
+
+    if ext_ans and ext_ans != _normalize_answer(current):
+        out["fix3_applied"] = True
+        out["fix3_reason"] = "verifier_score_absent_external_fallback"
+        out["fix3_answer_canonical"] = ext_ans
+        out["fix3_answer_raw"] = ext_ans
+    else:
+        out["fix3_applied"] = False
+        out["fix3_reason"] = (
+            "verifier_absent_but_no_better_external"
+            if ext_ans
+            else "verifier_absent_no_external_available"
+        )
+        out["fix3_answer_canonical"] = current
+        out["fix3_answer_raw"] = current
+
+    return out
+
+
+def apply_combined_fix123_to_row(
+    row: dict[str, Any],
+    external_answers: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply FIX-1 → FIX-2 → FIX-3 in precedence order.
+
+    Only one fix fires per row. FIX-1 takes top priority (frontier candidate),
+    FIX-2 second (low-depth / SWFB), FIX-3 third (verifier score absent).
+
+    Args:
+        row: per-example record dict.
+        external_answers: method_name → final_answer_canonical for same example_id.
+
+    Returns:
+        Copy of row with fix1_*, fix2_*, fix3_*, and combined123_* fields added.
+    """
+    # Step 1: apply FIX-1
+    out = apply_support_aware_fix_to_row(row)
+
+    if out.get("fix1_applied"):
+        out["fix2_applied"] = False
+        out["fix2_reason"] = "fix1_already_applied"
+        out["fix2_is_low_depth"] = False
+        out["fix3_applied"] = False
+        out["fix3_reason"] = "fix1_already_applied"
+        out["fix3_score_absent_risk"] = False
+        out["combined123_answer_canonical"] = out.get("fix1_answer_canonical")
+        out["combined123_answer_raw"] = out.get("fix1_answer_raw")
+        out["combined123_policy_applied"] = "fix1"
+        out["combined123_policy"] = COMBINED_FIX123_POLICY_NAME
+        return out
+
+    # Step 2: FIX-1 didn't fire — try FIX-2
+    fix2_out = apply_fix2_to_row(out, external_answers=external_answers)
+    for k, v in fix2_out.items():
+        if k.startswith("fix2_") or k not in out:
+            out[k] = v
+
+    if fix2_out.get("fix2_applied"):
+        out["fix3_applied"] = False
+        out["fix3_reason"] = "fix2_already_applied"
+        out["fix3_score_absent_risk"] = False
+        out["combined123_answer_canonical"] = fix2_out.get("fix2_answer_canonical")
+        out["combined123_answer_raw"] = fix2_out.get("fix2_answer_raw")
+        out["combined123_policy_applied"] = "fix2"
+        out["combined123_policy"] = COMBINED_FIX123_POLICY_NAME
+        return out
+
+    # Step 3: FIX-2 didn't fire — try FIX-3
+    fix3_out = apply_fix3_to_row(out, external_answers=external_answers)
+    for k, v in fix3_out.items():
+        if k.startswith("fix3_") or k not in out:
+            out[k] = v
+
+    if fix3_out.get("fix3_applied"):
+        out["combined123_answer_canonical"] = fix3_out.get("fix3_answer_canonical")
+        out["combined123_answer_raw"] = fix3_out.get("fix3_answer_raw")
+        out["combined123_policy_applied"] = "fix3"
+    else:
+        out["combined123_answer_canonical"] = _normalize_answer(
+            row.get("final_answer_canonical") or row.get("selected_answer_canonical")
+        )
+        out["combined123_answer_raw"] = row.get("final_answer_raw")
+        out["combined123_policy_applied"] = "original"
+
+    out["combined123_policy"] = COMBINED_FIX123_POLICY_NAME
+    return out

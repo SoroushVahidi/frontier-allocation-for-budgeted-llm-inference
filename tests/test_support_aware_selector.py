@@ -24,10 +24,16 @@ from experiments.support_aware_selector import (
     apply_fix2_to_row,
     select_external_majority,
     apply_combined_fix_to_row,
+    is_verifier_score_absent_risk,
+    get_agbs_best_score,
+    apply_fix3_to_row,
+    apply_combined_fix123_to_row,
     _normalize_answer,
     POLICY_NAME,
     FIX2_POLICY_NAME,
     COMBINED_POLICY_NAME,
+    FIX3_POLICY_NAME,
+    COMBINED_FIX123_POLICY_NAME,
 )
 
 
@@ -384,3 +390,177 @@ def test_fix2_policy_names_stable():
     assert "low_depth_guard" in FIX2_POLICY_NAME
     assert "support_aware" in COMBINED_POLICY_NAME
     assert "low_depth_guard" in COMBINED_POLICY_NAME
+
+
+# ─── FIX-3: Within-method verifier calibration guard tests ───────────────────
+
+def test_fix3_budget_exhausted_triggers():
+    """frontier_not_run_or_budget_exhausted triggers FIX-3."""
+    rm = {"override_reason": "frontier_not_run_or_budget_exhausted"}
+    assert is_verifier_score_absent_risk(rm)
+
+
+def test_fix3_empty_agbs_non_swfb_triggers():
+    """Empty AGBS on a non-SWFB row triggers FIX-3."""
+    rm = {"override_reason": "direct_frontier_agree", "answer_group_best_branch_scores": {}}
+    assert is_verifier_score_absent_risk(rm)
+
+
+def test_fix3_swfb_does_not_trigger():
+    """SWFB rows are handled by FIX-2 and should NOT trigger FIX-3."""
+    rm = {"override_reason": "single_weak_frontier_branch", "answer_group_best_branch_scores": {}}
+    assert not is_verifier_score_absent_risk(rm)
+
+
+def test_fix3_agbs_present_no_trigger():
+    """Rows with AGBS scores present do NOT trigger FIX-3."""
+    rm = {"override_reason": "direct_frontier_agree",
+          "answer_group_best_branch_scores": {"12": 0.8}}
+    assert not is_verifier_score_absent_risk(rm)
+
+
+def test_fix3_none_metadata_no_trigger():
+    """None metadata (type guard) does not trigger FIX-3."""
+    assert not is_verifier_score_absent_risk(None)  # type: ignore
+
+
+def test_fix3_empty_dict_triggers_score_absent():
+    """Completely empty result_metadata has no AGBS → score absent risk fires."""
+    # Empty metadata means no verifier score available, which is a valid trigger.
+    assert is_verifier_score_absent_risk({})
+
+
+def test_get_agbs_best_score_returns_max():
+    """get_agbs_best_score returns the maximum score across groups."""
+    rm = {"answer_group_best_branch_scores": {"1": 0.8, "2": 0.9, "3": 0.875}}
+    assert get_agbs_best_score(rm) == pytest.approx(0.9)
+
+
+def test_get_agbs_best_score_empty_returns_none():
+    """Empty AGBS returns None."""
+    assert get_agbs_best_score({}) is None
+    assert get_agbs_best_score({"answer_group_best_branch_scores": {}}) is None
+
+
+def test_fix3_applies_to_budget_exhausted_row():
+    """FIX-3 switches answer for budget-exhausted row with external majority."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "5",
+        "final_answer_raw": "5",
+        "result_metadata": {"override_reason": "frontier_not_run_or_budget_exhausted"},
+    }
+    ext = {"external_l1_max": "42", "external_s1_budget_forcing": "42", "external_tale_prompt_budgeting": "19"}
+    out = apply_fix3_to_row(row, external_answers=ext)
+    assert out["fix3_applied"] is True
+    assert out["fix3_answer_canonical"] == "42"
+    assert out["fix3_reason"] == "verifier_score_absent_external_fallback"
+    assert out["fix3_score_absent_risk"] is True
+
+
+def test_fix3_no_trigger_agbs_present():
+    """FIX-3 does not trigger when AGBS scores are present."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "19",
+        "final_answer_raw": "19",
+        "result_metadata": {
+            "override_reason": "direct_frontier_agree",
+            "answer_group_best_branch_scores": {"1": 0.8},
+        },
+    }
+    out = apply_fix3_to_row(row, external_answers={"external_l1_max": "42"})
+    assert out["fix3_applied"] is False
+    assert out["fix3_reason"] == "not_triggered"
+    assert out["fix3_answer_canonical"] == "19"
+
+
+def test_fix3_no_gold_required():
+    """FIX-3 trigger uses no gold/exact fields."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "3",
+        "final_answer_raw": "3",
+        "result_metadata": {"override_reason": "frontier_not_run_or_budget_exhausted"},
+    }
+    out = apply_fix3_to_row(row, external_answers={"external_tale_prompt_budgeting": "7"})
+    assert out["fix3_applied"] is True
+    assert "gold" not in out["fix3_reason"]
+
+
+def test_fix3_does_not_use_raw_cross_method_proba():
+    """FIX-3 does not compare frontier proba to external proba — no such field in trigger."""
+    rm = {"override_reason": "frontier_not_run_or_budget_exhausted", "frontier_proba": 0.04, "baseline_proba": 0.9}
+    # FIX-3 should still trigger on budget-exhausted alone, not on proba comparison
+    assert is_verifier_score_absent_risk(rm)
+
+
+def test_combined_fix123_fix1_takes_top_priority():
+    """FIX-1 fires first; FIX-2 and FIX-3 skipped."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "5",
+        "final_answer_raw": "5",
+        "result_metadata": {
+            "support_margin": 0.0,
+            "direct_reserve_confidence_proxy": 0.5,
+            "frontier_candidate_answer": "42",
+            "override_reason": "frontier_not_run_or_budget_exhausted",  # FIX-3 would fire too
+        },
+    }
+    ext = {"external_l1_max": "99", "external_s1_budget_forcing": "99", "external_tale_prompt_budgeting": "99"}
+    out = apply_combined_fix123_to_row(row, external_answers=ext)
+    assert out["fix1_applied"] is True
+    assert out["combined123_answer_canonical"] == "42"  # FIX-1 answer
+    assert out["combined123_policy_applied"] == "fix1"
+    assert out["fix3_reason"] == "fix1_already_applied"
+
+
+def test_combined_fix123_fix2_takes_precedence_over_fix3():
+    """FIX-2 fires before FIX-3; FIX-3 skipped."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "5",
+        "final_answer_raw": "5",
+        "result_metadata": {
+            "support_margin": 1.0,
+            "direct_reserve_confidence_proxy": 0.9,
+            "frontier_candidate_answer": "5",
+            "override_reason": "single_weak_frontier_branch",  # FIX-2 trigger
+            "answer_group_best_branch_scores": {},  # also FIX-3 trigger if not SWFB
+        },
+    }
+    ext = {"external_l1_max": "42", "external_s1_budget_forcing": "42", "external_tale_prompt_budgeting": "19"}
+    out = apply_combined_fix123_to_row(row, external_answers=ext)
+    assert out["fix2_applied"] is True
+    assert out["combined123_policy_applied"] == "fix2"
+    assert out["fix3_reason"] == "fix2_already_applied"
+
+
+def test_combined_fix123_fix3_fires_when_1_and_2_skip():
+    """FIX-3 fires when FIX-1 and FIX-2 both don't trigger."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "5",
+        "final_answer_raw": "5",
+        "result_metadata": {
+            "support_margin": 1.0,
+            "direct_reserve_confidence_proxy": 0.9,
+            "frontier_candidate_answer": "5",
+            "override_reason": "frontier_not_run_or_budget_exhausted",
+            "answer_group_best_branch_scores": {},
+        },
+    }
+    ext = {"external_l1_max": "42", "external_s1_budget_forcing": "42", "external_tale_prompt_budgeting": "19"}
+    out = apply_combined_fix123_to_row(row, external_answers=ext)
+    assert out["fix1_applied"] is False
+    assert out["fix2_applied"] is False
+    assert out["fix3_applied"] is True
+    assert out["combined123_answer_canonical"] == "42"
+    assert out["combined123_policy_applied"] == "fix3"
+
+
+def test_fix3_policy_names_stable():
+    """FIX-3 and combined FIX-1+2+3 policy names are identifiable."""
+    assert "within_method_calibrated" in FIX3_POLICY_NAME
+    assert "support_lowdepth_calibrated" in COMBINED_FIX123_POLICY_NAME
