@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-19 (overnight 300-example validation + FIX-6 LoVEC-1 offline feasibility + independent Stage-2 relaunch postrun)
+**Last updated:** 2026-05-19 (overnight 300-example validation + independent FIX-6 Stage-2 relaunch + FIX-2+FIX-4 aggregate validation evidence)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -339,3 +339,50 @@ Current status (2026-05-19):
 | `scripts/run_fix6_lovec1_offline_eval.py` | Offline FIX-6 evaluation driver (no API calls) |
 | `outputs/overnight_fix5_postrun_eval_20260519_20260519T134633Z/` | Canonical postrun for latest 300-example unbiased validation |
 | `outputs/fix6_lovec1_value_of_compute_20260519_20260519T140300Z/` | FIX-6 offline feasibility outputs and pilot plan |
+
+---
+
+## 16. FIX-2+FIX-4 Aggregate Unbiased Evidence (Primary: 300 + 120 disjoint)
+
+**Artifact root:** `outputs/fix24_aggregate_validation_evidence_20260519_20260519T222123Z/`
+
+Primary inclusion (disjoint, unbiased):
+- `main_300_unbiased_seed41_budget6` (`300` examples, seed `41`, budget `6`)
+- `independent_stage1_base_120_seed61_budget6` (`120` examples, seed `61`, budget `6`)
+
+Sensitivity-only (excluded from primary due design/tuning role):
+- `promotion_grade_100_seed31_budget6` (`100` examples, seed `31`, budget `6`)
+
+Primary integrity:
+- Primary overlap checks: `example_id overlap = 0`, `question-hash overlap = 0`
+- Required methods present for all primary groups
+- All primary rows scored
+- Promotion-review coverage present on primary rows
+- Leakage scan note: one lexical false-positive pattern (`exact`) appears in question text for one stage-1 case family; no gold/exact-match feature leakage evidence in routing fields
+
+Primary aggregate accuracy (`N = 420`):
+- `FIX-2+FIX-4`: `321/420 = 76.43%`
+- `external_l1_max`: `310/420 = 73.81%`
+- `external_s1_budget_forcing`: `309/420 = 73.57%`
+- `external_tale_prompt_budgeting`: `306/420 = 72.86%`
+
+Primary paired deltas (FIX-2+FIX-4 minus external):
+- vs `external_l1_max`: `+2.62pp`, stratified 95% CI `[-0.48, +5.71]`
+- vs `external_s1_budget_forcing`: `+2.86pp`, stratified 95% CI `[+0.24, +5.71]`
+- vs `external_tale_prompt_budgeting`: `+3.57pp`, stratified 95% CI `[+1.19, +5.95]`
+- vs source-local best external comparator: `+2.62pp`, stratified 95% CI `[+0.24, +5.00]`
+
+Sensitivity (primary + 100-example set, `N = 520`):
+- Point estimate remains positive vs all externals, but best-external delta softens (`+2.12pp`) and remains modest.
+
+Decision update:
+- **Recommended action: D (document promising but still-conservative result).**
+- FIX-2+FIX-4 is current best effective policy by point estimate on disjoint unbiased aggregate.
+- CI evidence is stronger than the single 300-example view, but **all-external superiority is not yet fully locked** because the stratified CI vs `external_l1_max` still crosses zero.
+
+Safe claim update:
+- FIX-2+FIX-4 is ahead of TALE and S1 with positive paired lower bounds on the current disjoint unbiased aggregate.
+- FIX-2+FIX-4 is ahead of L1 by point estimate, but L1 paired CI still crosses zero.
+
+Unsafe claim update:
+- Do not claim definitive superiority over all external baselines yet.
