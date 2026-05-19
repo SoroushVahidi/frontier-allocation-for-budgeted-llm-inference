@@ -1,4 +1,4 @@
-"""Tests for FIX-1 (support-aware selector) and FIX-2 (low-depth guard).
+"""Tests for FIX-1 through FIX-4 and combined policies.
 
 FIX-1 tests:
 - Tie detection (support_margin=0, confidence<=0.5)
@@ -14,6 +14,16 @@ FIX-2 tests:
 - External majority fallback selection
 - Combined FIX-1+FIX-2 applies FIX-1 first
 - No gold/exact used as features
+
+FIX-4 tests:
+- All 3 externals agree and differ from frontier with direct_frontier_agree → triggers
+- 2/3 externals agree → does not trigger
+- External consensus equals frontier → does not trigger
+- Any external missing → does not trigger
+- override_reason not direct_frontier_agree → does not trigger
+- No gold/exact fields required
+- Combined FIX-2+FIX-4 applies FIX-2 first
+- Combined FIX-1+2+3+4 precedence correct
 """
 import pytest
 from experiments.support_aware_selector import (
@@ -28,12 +38,20 @@ from experiments.support_aware_selector import (
     get_agbs_best_score,
     apply_fix3_to_row,
     apply_combined_fix123_to_row,
+    external_unanimous_answer,
+    is_external_unanimous_against_frontier,
+    apply_fix4_to_row,
+    apply_combined_fix24_to_row,
+    apply_combined_fix1234_to_row,
     _normalize_answer,
     POLICY_NAME,
     FIX2_POLICY_NAME,
     COMBINED_POLICY_NAME,
     FIX3_POLICY_NAME,
     COMBINED_FIX123_POLICY_NAME,
+    FIX4_POLICY_NAME,
+    COMBINED_FIX24_POLICY_NAME,
+    COMBINED_FIX1234_POLICY_NAME,
 )
 
 
@@ -564,3 +582,207 @@ def test_fix3_policy_names_stable():
     """FIX-3 and combined FIX-1+2+3 policy names are identifiable."""
     assert "within_method_calibrated" in FIX3_POLICY_NAME
     assert "support_lowdepth_calibrated" in COMBINED_FIX123_POLICY_NAME
+
+
+# ─── FIX-4 tests ──────────────────────────────────────────────────────────────
+
+
+def _dfa_row(frontier_ans="40"):
+    """Helper: a direct_frontier_agree row with the given frontier answer."""
+    return {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": frontier_ans,
+        "final_answer_raw": frontier_ans,
+        "result_metadata": {
+            "override_reason": "direct_frontier_agree",
+            "support_margin": 0.0,
+            "direct_reserve_confidence_proxy": 0.5,
+            "candidate_pool_answer_group_count": 2,
+        },
+    }
+
+
+def _all_ext_agree(ans="20"):
+    return {
+        "external_l1_max": ans,
+        "external_s1_budget_forcing": ans,
+        "external_tale_prompt_budgeting": ans,
+    }
+
+
+def test_fix4_triggers_unanimous_external_differ():
+    """FIX-4 fires when all 3 externals agree and differ from frontier (direct_frontier_agree)."""
+    row = _dfa_row("40")
+    ext = _all_ext_agree("20")
+    out = apply_fix4_to_row(row, external_answers=ext)
+    assert out["fix4_applied"] is True
+    assert out["fix4_answer_canonical"] == "20"
+    assert out["fix4_reason"] == "external_unanimous_consensus_over_direct_frontier_agree"
+
+
+def test_fix4_no_trigger_two_of_three_agree():
+    """FIX-4 does NOT trigger when only 2/3 externals agree (third disagrees)."""
+    row = _dfa_row("40")
+    ext = {
+        "external_l1_max": "20",
+        "external_s1_budget_forcing": "20",
+        "external_tale_prompt_budgeting": "99",  # disagrees
+    }
+    out = apply_fix4_to_row(row, external_answers=ext)
+    assert out["fix4_applied"] is False
+    assert out["fix4_answer_canonical"] == "40"
+
+
+def test_fix4_no_trigger_consensus_equals_frontier():
+    """FIX-4 does NOT trigger when external unanimous answer equals frontier answer."""
+    row = _dfa_row("20")
+    ext = _all_ext_agree("20")  # same as frontier
+    out = apply_fix4_to_row(row, external_answers=ext)
+    assert out["fix4_applied"] is False
+    assert out["fix4_answer_canonical"] == "20"
+
+
+def test_fix4_no_trigger_missing_external():
+    """FIX-4 does NOT trigger when any external answer is missing."""
+    row = _dfa_row("40")
+    ext = {
+        "external_l1_max": "20",
+        "external_s1_budget_forcing": "20",
+        # tale missing
+    }
+    out = apply_fix4_to_row(row, external_answers=ext)
+    assert out["fix4_applied"] is False
+
+
+def test_fix4_no_trigger_swfb_override():
+    """FIX-4 does NOT trigger when override_reason is single_weak_frontier_branch (FIX-2's domain)."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "40",
+        "final_answer_raw": "40",
+        "result_metadata": {"override_reason": "single_weak_frontier_branch"},
+    }
+    ext = _all_ext_agree("20")
+    out = apply_fix4_to_row(row, external_answers=ext)
+    assert out["fix4_applied"] is False
+    assert "override_not_dfa" in out["fix4_reason"]
+
+
+def test_fix4_no_trigger_missing_override_reason():
+    """FIX-4 does NOT trigger when override_reason is absent (conservative fallback)."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "40",
+        "final_answer_raw": "40",
+        "result_metadata": {},  # no override_reason
+    }
+    ext = _all_ext_agree("20")
+    out = apply_fix4_to_row(row, external_answers=ext)
+    assert out["fix4_applied"] is False
+
+
+def test_fix4_no_gold_required():
+    """FIX-4 trigger uses no gold_answer or exact_match fields."""
+    row = _dfa_row("40")
+    # Explicitly verify neither gold nor exact_match in result_metadata
+    assert "gold_answer" not in (row.get("result_metadata") or {})
+    assert "exact_match" not in (row.get("result_metadata") or {})
+    ext = _all_ext_agree("20")
+    out = apply_fix4_to_row(row, external_answers=ext)
+    assert out["fix4_applied"] is True  # pure inference-time rule
+
+
+def test_external_unanimous_answer_all_agree():
+    """external_unanimous_answer returns the common answer when all 3 agree."""
+    ext = _all_ext_agree("42")
+    ans = external_unanimous_answer(ext)
+    assert ans == "42"
+
+
+def test_external_unanimous_answer_disagree_returns_none():
+    """external_unanimous_answer returns None when externals disagree."""
+    ext = {"external_l1_max": "42", "external_s1_budget_forcing": "42", "external_tale_prompt_budgeting": "99"}
+    assert external_unanimous_answer(ext) is None
+
+
+def test_external_unanimous_answer_missing_returns_none():
+    """external_unanimous_answer returns None when a required method is absent."""
+    ext = {"external_l1_max": "42", "external_s1_budget_forcing": "42"}
+    assert external_unanimous_answer(ext) is None
+
+
+def test_combined_fix24_fix2_takes_precedence_over_fix4():
+    """In FIX-2+FIX-4 combined, FIX-2 fires first and FIX-4 does not run."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "99",
+        "final_answer_raw": "99",
+        "result_metadata": {
+            "override_reason": "single_weak_frontier_branch",
+            "support_margin": 0.0,
+        },
+    }
+    ext = {
+        "external_l1_max": "42",
+        "external_s1_budget_forcing": "42",
+        "external_tale_prompt_budgeting": "42",
+    }
+    out = apply_combined_fix24_to_row(row, external_answers=ext)
+    assert out["fix2_applied"] is True
+    assert out["fix4_applied"] is False
+    assert out["combined24_policy_applied"] == "fix2"
+    assert out["combined24_answer_canonical"] == "42"
+
+
+def test_combined_fix24_fix4_fires_when_fix2_skips():
+    """In FIX-2+FIX-4 combined, FIX-4 fires when FIX-2 is not triggered."""
+    row = _dfa_row("40")
+    ext = _all_ext_agree("20")
+    out = apply_combined_fix24_to_row(row, external_answers=ext)
+    assert out["fix2_applied"] is False
+    assert out["fix4_applied"] is True
+    assert out["combined24_policy_applied"] == "fix4"
+    assert out["combined24_answer_canonical"] == "20"
+
+
+def test_combined_fix1234_precedence_fix1_top():
+    """In FIX-1+2+3+4, FIX-1 takes top priority and FIX-4 does not fire."""
+    row = {
+        "method": "direct_reserve_semantic_frontier_v2",
+        "final_answer_canonical": "10",
+        "final_answer_raw": "10",
+        "result_metadata": {
+            "override_reason": "direct_frontier_agree",
+            "support_margin": 0.0,
+            "direct_reserve_confidence_proxy": 0.5,
+            "frontier_candidate_answer": "99",  # different parseable candidate
+            "answer_group_best_branch_scores": {"g1": 0.8},
+        },
+    }
+    ext = _all_ext_agree("20")
+    out = apply_combined_fix1234_to_row(row, external_answers=ext)
+    assert out["fix1_applied"] is True
+    assert out["combined1234_policy_applied"] == "fix1"
+    assert out["combined1234_answer_canonical"] == "99"
+
+
+def test_combined_fix1234_fix4_fires_after_1_2_3_skip():
+    """In FIX-1+2+3+4, FIX-4 fires when FIX-1/2/3 all skip."""
+    row = _dfa_row("40")
+    # No AGBS → FIX-3 would fire unless... actually we need AGBS present to skip FIX-3
+    row["result_metadata"]["answer_group_best_branch_scores"] = {"g1": 0.8}
+    ext = _all_ext_agree("20")
+    out = apply_combined_fix1234_to_row(row, external_answers=ext)
+    assert out["fix1_applied"] is False
+    assert out["fix2_applied"] is False
+    assert out["fix3_applied"] is False
+    assert out["fix4_applied"] is True
+    assert out["combined1234_policy_applied"] == "fix4"
+    assert out["combined1234_answer_canonical"] == "20"
+
+
+def test_fix4_policy_names_stable():
+    """FIX-4 policy names are identifiable and stable."""
+    assert "external_consensus_gate" in FIX4_POLICY_NAME
+    assert "lowdepth_external_consensus" in COMBINED_FIX24_POLICY_NAME
+    assert "support_lowdepth_calibrated_consensus" in COMBINED_FIX1234_POLICY_NAME

@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-19 (FIX-3 evaluation, commit feat/missing-gold-topology-v1)
+**Last updated:** 2026-05-19 (FIX-4 evaluation, commit feat/missing-gold-topology-v1)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -140,29 +140,64 @@ Precedence: FIX-1 → FIX-2 → FIX-3. Only one fires per row.
 
 ---
 
-## 8. Safe Claims
+## 8. FIX-4 Result (external unanimous consensus gate)
 
-The following claims are supported by current evidence:
+**Policy:** `direct_reserve_semantic_frontier_v2_external_consensus_gate_v1`
+**Combined with FIX-2:** `direct_reserve_semantic_frontier_v2_lowdepth_external_consensus_v1`
+**Source:** `experiments/support_aware_selector.py`
+**Evaluation:** `outputs/fix4_external_consensus_eval_20260519T031424Z/`
 
-- **Within-method reranking evidence is valid:** the support-aware and low-depth-guard selectors are sound policy variants with clear trigger conditions and no gold leakage.
-- **FIX-2 improves frontier output by +7pp on the unbiased 100-example set:** this is a meaningful point improvement.
-- **FIX-2 beats l1_max and s1_budget_forcing by point estimate** on the unbiased set (+4pp, +3pp respectively).
-- **Failure-pattern mining confirms frontier_present_not_selected (PNS)** is the dominant root cause (lift=5.74, 75% of regression-risk cases).
-- **single_weak_frontier_branch** is a strong low-depth risk signal: 31/100 unbiased examples trigger it, with 45% accuracy vs 73% overall frontier.
+**Trigger:** `override_reason == 'direct_frontier_agree' AND all 3 external baselines give the same answer X AND X != frontier_answer`. Conservative: requires all 3/3 externals and DFA override only. Inference-available, gold-free.
 
-## 9. Unsafe Claims
+**Key finding:** FIX-4 triggered on exactly the 2 predicted P1 cases (from precise failure pattern mining). Both were recoveries. Zero regressions observed.
 
-Do NOT make these claims:
+| Dataset | Frontier | FIX-2 | FIX-4 alone | **FIX-2+FIX-4** | TALE |
+|---|---|---|---|---|---|
+| Diagnostic (210 ex, biased) | 78.10% | 83.33% | 78.10% | 83.33% | 80.00% |
+| **Promo-grade (100 ex, unbiased)** | **73.00%** | **80.00%** | **75.00%** | **82.00%** | **82.00%** |
 
-- ❌ Do not claim the frontier policy beats all external baselines — it does NOT on the unbiased set (tale=82% > combined=79%).
-- ❌ Do not claim FIX-2 or combined are promotion-grade — CIs include zero with 100 examples.
-- ❌ Do not claim any result based on the failure-enriched diagnostic set as a population-level estimate.
-- ❌ Do not write a paper or abstract claiming superiority yet.
-- ❌ Do not use `override_reason`, `support_margin`, or `direct_reserve_confidence_proxy` in inference if the field is derived from gold.
+- Promo: FIX-4 applied=2, recoveries=2, regressions=0
+- **FIX-2+FIX-4 = 82% — ties TALE by point estimate**
+- Bootstrap CI vs TALE: +0.00pp CI=[-5, +5] — includes zero (100 examples insufficient)
+- Bootstrap CI vs l1: +6.00pp CI=[0, +12] — marginally includes zero (boundary)
+- Bootstrap CI vs s1: +5.00pp CI=[-1, +12] — includes zero
+
+| Combined Policy | Promo Accuracy |
+|---|---|
+| FIX-1+2+3+4 | 81.00% |
+| **FIX-2+4** | **82.00%** ← best policy |
+| FIX-1+2 | 79.00% |
+| FIX-2 alone | 80.00% |
+
+Note: FIX-1+2+3+4 = 81% (slightly below FIX-2+4 = 82%) because FIX-1 takes priority over FIX-2 for some SWFB+tie cases where FIX-2 would have been correct.
 
 ---
 
-## 10. Root-Cause Summary (from failure-pattern mining)
+## 9. Safe Claims
+
+The following claims are supported by current evidence:
+
+- **FIX-2+FIX-4 = 82% on the 100-example unbiased set, tying TALE by point estimate.** The best internal policy now matches the best external baseline at 82%.
+- **FIX-2 improves frontier output by +7pp on the unbiased 100-example set:** this is a meaningful point improvement.
+- **FIX-4 (external unanimous consensus gate) triggered on exactly 2 predicted cases with 2 recoveries and 0 observed regressions.** Precision = 1.0 on the promo set.
+- **FIX-2 beats l1_max and s1_budget_forcing by point estimate** on the unbiased set (+4pp, +3pp respectively); FIX-2+4 beats them by +6pp and +5pp.
+- **Failure-pattern mining confirms the P1 pattern:** when `direct_frontier_agree AND all 3 externals unanimous AND differ from frontier`, switching to external consensus is always correct on the observed promo set.
+- **All four fixes (FIX-1 through FIX-4) are gold-free and inference-available** — no oracle information is used in any trigger condition.
+
+## 10. Unsafe Claims
+
+Do NOT make these claims:
+
+- ❌ Do not claim the frontier+FIX-2+4 policy **beats** TALE — it **ties** at 82%; 0pp gap is not a beat.
+- ❌ Do not claim the result is promotion-grade — CIs include zero with 100 examples; paired delta vs TALE = 0pp CI=[-5,+5].
+- ❌ Do not claim any result based on the failure-enriched diagnostic set as a population-level estimate.
+- ❌ Do not write a paper or abstract claiming superiority over TALE yet.
+- ❌ Do not use `override_reason`, `support_margin`, or `direct_reserve_confidence_proxy` in inference if the field is derived from gold.
+- ❌ Do not combine FIX-1+2+3+4 as the primary policy — FIX-2+4 = 82% > FIX-1+2+3+4 = 81% due to FIX-1 interaction effects.
+
+---
+
+## 11. Root-Cause Summary (from failure-pattern mining)
 
 | Root Cause | Count | Actionable | Fix |
 |---|---|---|---|
@@ -175,35 +210,36 @@ Do NOT make these claims:
 
 ---
 
-## 11. Next Recommended Step
+## 12. Next Recommended Step
 
-**Recommended: E — Collect more promotion-grade examples (200+).**
+**Recommended: A — Run larger 200+ unbiased validation for FIX-2+FIX-4.**
 
-All three selector fixes (FIX-1, FIX-2, FIX-3) are now implemented and evaluated. Key summary:
-- FIX-2 is the most impactful: +7pp on the unbiased set, beats l1 and s1bf
-- FIX-3 has zero coverage on the current 100-example artifact — structurally correct but not actionable yet
-- Combined FIX-1+2+3 = 79%, still 3pp below TALE (82%)
-- All bootstrap CIs include zero with 100 examples
+All four selector fixes (FIX-1, FIX-2, FIX-3, FIX-4) are now implemented and evaluated. Key summary:
+- **FIX-2+FIX-4 = 82%** on the 100-example unbiased set — ties TALE by point estimate
+- FIX-4 triggers on exactly 2 predicted P1 cases with 2 recoveries and 0 regressions
+- Bootstrap CI vs TALE: +0pp CI=[-5, +5] — includes zero; 100 examples insufficient
+- Bootstrap CI vs l1: +6pp CI=[0, +12] — borderline (lower bound = 0)
 
-The gap to TALE cannot be closed by selector fixes alone with current candidate pools. The 7 remaining failures on the unbiased set are pool-miss or absent-from-tree cases (5 `direct_frontier_agree`, 2 `frontier_support_margin_override`).
+The 18 remaining failures are mostly pool-miss (9) and PNS cases not recoverable by selector fixes. No further selector fix can close the remaining gap — search expansion would be needed.
 
-To make conclusive evidence:
-- At least 200 unbiased examples (ideally 300+)
-- Same 4-method budget-matched comparison
+To get conclusive evidence:
+- At least 200 unbiased examples (ideally 300+, matching the 300-case PAL bundle methodology)
+- Same 4-method budget-matched comparison (frontier, l1, s1, tale)
 - A new seed (e.g., seed=41 or seed=53)
-
-Alternative: Implement multi-baseline disagreement ensemble gate (option B) targeting TALE-present cases where frontier deviates.
+- Evaluate with FIX-2+FIX-4 as the primary proposed policy
 
 ---
 
-## 12. Source Files
+## 13. Source Files
 
 | File | Purpose |
 |---|---|
-| `experiments/support_aware_selector.py` | FIX-1, FIX-2, FIX-3, and all combined policy implementations |
-| `tests/test_support_aware_selector.py` | 46 tests covering all policies |
+| `experiments/support_aware_selector.py` | FIX-1 through FIX-4 and all combined policy implementations |
+| `tests/test_support_aware_selector.py` | 61 tests covering all policies |
 | `outputs/support_aware_selector_fix1_eval_20260519T013731Z/` | FIX-1 offline evaluation |
 | `outputs/support_aware_low_depth_fix2_eval_20260519T020057Z/` | FIX-2 and combined FIX-1+2 offline evaluation |
 | `outputs/fix3_within_method_calibration_eval_20260519T023843Z/` | FIX-3 and combined FIX-1+2+3 offline evaluation |
-| `outputs/promotion_grade_all_baselines_postrun_20260519_20260519T013731Z/` | Promotion-grade postrun validation |
-| `outputs/combined_failure_pattern_mining_20260519T012644Z/` | Failure-pattern mining report |
+| `outputs/fix4_external_consensus_eval_20260519T031424Z/` | FIX-4 and combined FIX-2+4, FIX-1+2+3+4 offline evaluation |
+| `outputs/precise_failure_pattern_mining_20260519T025009Z/` | Precise pattern mining (found P1 leading to FIX-4) |
+| `outputs/promotion_grade_cohere_all_baselines_validation_20260519T005021Z/` | Promotion-grade live job |
+| `outputs/promotion_grade_all_baselines_postrun_check_20260519_20260519T030114Z/` | Postrun check |

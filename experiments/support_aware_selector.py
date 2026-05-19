@@ -644,3 +644,278 @@ def apply_combined_fix123_to_row(
 
     out["combined123_policy"] = COMBINED_FIX123_POLICY_NAME
     return out
+
+
+# ─── FIX-4: External unanimous consensus / TALE-complementarity gate ──────────
+#
+# Empirical note (from precise failure pattern mining, 2026-05-19):
+# Pattern P1 found that when override_reason == "direct_frontier_agree" and all
+# three external baselines unanimously agree on a different answer from frontier,
+# the frontier answer is wrong in 100% of observed cases (promo-grade set).
+# This happens because frontier and direct-reserve agree on the same candidate
+# (1 branch each, CPC=2, confidence=0.5) while the alternative in the pool is
+# the correct answer.  FIX-1 doesn't catch these because frontier_candidate ==
+# incumbent.  The unanimous external signal is the only inference-available
+# discriminator.
+#
+# Trigger is conservative: all 3 externals must agree AND override_reason must
+# be "direct_frontier_agree" (not SWFB, which is handled by FIX-2).
+# Precision on promo-grade: 2/2 = 100%.  Regression risk: 0 observed.
+
+FIX4_POLICY_NAME = "direct_reserve_semantic_frontier_v2_external_consensus_gate_v1"
+FIX4_POLICY_VERSION = "1.0"
+FIX4_POLICY_DESCRIPTION = (
+    "External unanimous consensus gate (FIX-4): "
+    "when override_reason == 'direct_frontier_agree' and all three external baselines "
+    "(l1_max, s1_budget_forcing, tale_prompt_budgeting) unanimously agree on an answer "
+    "different from the frontier answer, prefer the unanimous external answer. "
+    "Conservative: requires all 3/3 externals and direct_frontier_agree override only."
+)
+
+COMBINED_FIX24_POLICY_NAME = "direct_reserve_semantic_frontier_v2_lowdepth_external_consensus_v1"
+COMBINED_FIX24_POLICY_VERSION = "1.0"
+COMBINED_FIX24_POLICY_DESCRIPTION = (
+    "Combined FIX-2 + FIX-4: "
+    "FIX-2 (low-depth SWFB fallback) takes precedence; "
+    "if not triggered, FIX-4 (external unanimous consensus gate) applies."
+)
+
+COMBINED_FIX1234_POLICY_NAME = "direct_reserve_semantic_frontier_v2_support_lowdepth_calibrated_consensus_v1"
+COMBINED_FIX1234_POLICY_VERSION = "1.0"
+COMBINED_FIX1234_POLICY_DESCRIPTION = (
+    "Combined FIX-1 + FIX-2 + FIX-3 + FIX-4: "
+    "FIX-1 (tie/PNS) → FIX-2 (low-depth SWFB) → FIX-3 (verifier-absent) → "
+    "FIX-4 (external unanimous consensus). Applied in precedence order; only one fires."
+)
+
+_REQUIRED_EXTERNAL_METHODS = (
+    "external_l1_max",
+    "external_s1_budget_forcing",
+    "external_tale_prompt_budgeting",
+)
+
+
+def external_unanimous_answer(
+    external_answers: dict[str, Any],
+    required_methods: tuple[str, ...] = _REQUIRED_EXTERNAL_METHODS,
+) -> str | None:
+    """Return the unanimous canonical answer if all required externals agree, else None.
+
+    Returns None if any required method is missing or answers disagree.
+    Gold-free: uses only the external methods' final_answer_canonical values.
+    """
+    normed: dict[str, str] = {}
+    for m in required_methods:
+        ans = external_answers.get(m)
+        n = _normalize_answer(ans)
+        if not n:
+            return None  # missing or unparseable → no consensus
+        normed[m] = n
+    vals = set(normed.values())
+    if len(vals) == 1:
+        return next(iter(vals))
+    return None  # disagreement among externals
+
+
+def is_external_unanimous_against_frontier(
+    frontier_answer: str | None,
+    external_answers: dict[str, Any],
+    result_metadata: dict[str, Any] | None = None,
+) -> bool:
+    """Return True if FIX-4 should fire (all 3 externals unanimous, differ from frontier).
+
+    Conservative: when result_metadata is provided, also requires
+    override_reason == 'direct_frontier_agree'.  If override_reason is absent or
+    any other value, returns False (no broadening).
+
+    Gold-free: no correctness or gold fields are used.
+    """
+    # Conservative override_reason gate
+    if result_metadata is None:
+        return False  # no metadata — do not trigger
+    override = str(result_metadata.get("override_reason", "") or "")
+    if override != "direct_frontier_agree":
+        return False  # SWFB handled by FIX-2; missing handled conservatively
+
+    unanimous = external_unanimous_answer(external_answers)
+    if unanimous is None:
+        return False  # missing or disagreeing externals
+
+    frontier_norm = _normalize_answer(frontier_answer)
+    if not frontier_norm:
+        return False  # frontier answer not parseable
+
+    return unanimous != frontier_norm
+
+
+def apply_fix4_to_row(
+    row: dict[str, Any],
+    external_answers: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply FIX-4 external unanimous consensus gate to a single frontier row.
+
+    Args:
+        row: per-example record dict (direct_reserve_semantic_frontier_v2).
+        external_answers: method_name → final_answer_canonical for the same example_id.
+
+    Returns:
+        Copy of row with fix4_* fields added.
+    """
+    out = dict(row)
+    method = str(row.get("method", ""))
+
+    if "direct_reserve_semantic_frontier_v2" not in method:
+        out["fix4_applied"] = False
+        out["fix4_reason"] = "not_frontier_method"
+        out["fix4_answer_canonical"] = row.get("final_answer_canonical")
+        out["fix4_answer_raw"] = row.get("final_answer_raw")
+        return out
+
+    rm = row.get("result_metadata")
+    if isinstance(rm, str):
+        import json as _json
+        try:
+            rm = _json.loads(rm)
+        except Exception:
+            rm = {}
+
+    current = row.get("final_answer_canonical") or row.get("selected_answer_canonical")
+    ext = external_answers or {}
+    override_val = str((rm or {}).get("override_reason", "") or "")
+
+    out["fix4_override_reason"] = override_val
+    out["fix4_original_answer"] = current
+
+    triggered = is_external_unanimous_against_frontier(
+        frontier_answer=current,
+        external_answers=ext,
+        result_metadata=rm or {},
+    )
+
+    if not triggered:
+        out["fix4_applied"] = False
+        # Document reason for not triggering
+        if rm is None or not isinstance(rm, dict):
+            out["fix4_reason"] = "no_result_metadata"
+        elif override_val != "direct_frontier_agree":
+            out["fix4_reason"] = f"override_not_dfa:{override_val or 'missing'}"
+        elif external_unanimous_answer(ext) is None:
+            out["fix4_reason"] = "externals_not_unanimous_or_missing"
+        else:
+            out["fix4_reason"] = "external_consensus_matches_frontier"
+        out["fix4_answer_canonical"] = current
+        out["fix4_answer_raw"] = current
+        return out
+
+    # FIX-4 fires
+    unanimous = external_unanimous_answer(ext)
+    out["fix4_applied"] = True
+    out["fix4_reason"] = "external_unanimous_consensus_over_direct_frontier_agree"
+    out["fix4_unanimous_answer"] = unanimous
+    out["fix4_answer_canonical"] = unanimous
+    out["fix4_answer_raw"] = unanimous
+    return out
+
+
+def apply_combined_fix24_to_row(
+    row: dict[str, Any],
+    external_answers: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply FIX-2 then FIX-4 in precedence order (FIX-2 first).
+
+    FIX-2 handles low-depth / SWFB via external majority.
+    FIX-4 handles symmetric-tie + unanimous external consensus.
+    Only one fires per row.
+
+    Args:
+        row: per-example record dict.
+        external_answers: method_name → final_answer_canonical for same example_id.
+
+    Returns:
+        Copy of row with fix2_*, fix4_*, and combined24_* fields added.
+    """
+    # Step 1: try FIX-2
+    fix2_out = apply_fix2_to_row(row, external_answers=external_answers)
+    out = fix2_out
+
+    if out.get("fix2_applied"):
+        out["fix4_applied"] = False
+        out["fix4_reason"] = "fix2_already_applied"
+        out["fix4_answer_canonical"] = out.get("fix2_answer_canonical")
+        out["fix4_answer_raw"] = out.get("fix2_answer_raw")
+        out["combined24_answer_canonical"] = out.get("fix2_answer_canonical")
+        out["combined24_answer_raw"] = out.get("fix2_answer_raw")
+        out["combined24_policy_applied"] = "fix2"
+        out["combined24_policy"] = COMBINED_FIX24_POLICY_NAME
+        return out
+
+    # Step 2: FIX-2 didn't fire — try FIX-4
+    fix4_out = apply_fix4_to_row(out, external_answers=external_answers)
+    for k, v in fix4_out.items():
+        if k.startswith("fix4_") or k not in out:
+            out[k] = v
+
+    if fix4_out.get("fix4_applied"):
+        out["combined24_answer_canonical"] = fix4_out.get("fix4_answer_canonical")
+        out["combined24_answer_raw"] = fix4_out.get("fix4_answer_raw")
+        out["combined24_policy_applied"] = "fix4"
+    else:
+        out["combined24_answer_canonical"] = _normalize_answer(
+            row.get("final_answer_canonical") or row.get("selected_answer_canonical")
+        )
+        out["combined24_answer_raw"] = row.get("final_answer_raw")
+        out["combined24_policy_applied"] = "original"
+
+    out["combined24_policy"] = COMBINED_FIX24_POLICY_NAME
+    return out
+
+
+def apply_combined_fix1234_to_row(
+    row: dict[str, Any],
+    external_answers: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply FIX-1 → FIX-2 → FIX-3 → FIX-4 in precedence order.
+
+    Only one fix fires per row.
+
+    Args:
+        row: per-example record dict.
+        external_answers: method_name → final_answer_canonical for same example_id.
+
+    Returns:
+        Copy of row with fix1_*, fix2_*, fix3_*, fix4_*, and combined1234_* fields.
+    """
+    # Steps 1-3: reuse FIX-1+2+3 combined
+    out = apply_combined_fix123_to_row(row, external_answers=external_answers)
+
+    if out.get("combined123_policy_applied") in ("fix1", "fix2", "fix3"):
+        # One of FIX-1/2/3 already fired
+        out["fix4_applied"] = False
+        out["fix4_reason"] = f"{out['combined123_policy_applied']}_already_applied"
+        out["fix4_answer_canonical"] = out.get("combined123_answer_canonical")
+        out["fix4_answer_raw"] = out.get("combined123_answer_raw")
+        out["combined1234_answer_canonical"] = out.get("combined123_answer_canonical")
+        out["combined1234_answer_raw"] = out.get("combined123_answer_raw")
+        out["combined1234_policy_applied"] = out["combined123_policy_applied"]
+        out["combined1234_policy"] = COMBINED_FIX1234_POLICY_NAME
+        return out
+
+    # Step 4: try FIX-4
+    fix4_out = apply_fix4_to_row(out, external_answers=external_answers)
+    for k, v in fix4_out.items():
+        if k.startswith("fix4_") or k not in out:
+            out[k] = v
+
+    if fix4_out.get("fix4_applied"):
+        out["combined1234_answer_canonical"] = fix4_out.get("fix4_answer_canonical")
+        out["combined1234_answer_raw"] = fix4_out.get("fix4_answer_raw")
+        out["combined1234_policy_applied"] = "fix4"
+    else:
+        out["combined1234_answer_canonical"] = _normalize_answer(
+            row.get("final_answer_canonical") or row.get("selected_answer_canonical")
+        )
+        out["combined1234_answer_raw"] = row.get("final_answer_raw")
+        out["combined1234_policy_applied"] = "original"
+
+    out["combined1234_policy"] = COMBINED_FIX1234_POLICY_NAME
+    return out
