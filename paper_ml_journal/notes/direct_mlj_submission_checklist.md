@@ -9,6 +9,7 @@
 - [x] Declarations complete
 - [x] Acknowledgements added
 - [x] Data/Code Availability present
+- [x] Contribution information sheet drafted
 
 ## Release plan
 
@@ -19,9 +20,9 @@
 
 ## Remaining must-do before upload
 
-- [ ] Replace stub `svjour3.cls` with the official Springer/MLJ class or official template
-- [ ] Verify whether MLJ uses `svjour3` or `sn-jnl`
-- [ ] Verify whether MLJ requires a contribution information sheet
+- [ ] Replace stub `svjour3.cls` with the official Springer Nature journal template
+- [x] Journal guidance indicates the Springer Nature LaTeX template; the current repo still uses the local `svjour3` stub for local builds
+- [x] Verify whether MLJ requires a contribution information sheet
 - [ ] Verify supplementary material / ESM format
 - [ ] Inspect the final PDF under the official template
 - [ ] Confirm funding statement
