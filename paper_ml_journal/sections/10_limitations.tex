@@ -12,6 +12,12 @@ Results are scoped to GSM8K (\texttt{openai/gsm8k}) under the matched-budget pro
 \paragraph{Moderate margin.}
 The primary gain of FIX-2+FIX-4 over the best external baseline on Aggregate720 is $+3.06$ percentage points (95\% CI $[+1.11, +5.00]$).  While the confidence interval lower bound is positive, the margin is moderate in absolute terms.  We do not claim large or transformative improvements.
 
+\paragraph{Pooled-ensemble comparison.}
+Against a pooled four-answer ensemble over frontier, L1, S1, and TALE, the
+FIX-2+FIX-4 advantage is smaller: $+0.83$ pp on Aggregate720 with a confidence
+interval that includes zero.  The pooled comparison is therefore reported as a
+robustness baseline, not as statistically separated evidence of superiority.
+
 \paragraph{Cost metric scope.}
 We report cost in logical API calls, tokens, and latency; monetary cost depends on provider pricing and is not used as the primary comparison metric.  Dollar-normalized cost analysis and latency percentile distributions across all run batches are incomplete and identified as future work.
 

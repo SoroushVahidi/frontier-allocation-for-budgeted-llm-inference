@@ -1,6 +1,24 @@
 \subsection{Problem Setup}
 We consider method selection under a fixed budget parameter (budget $=6$) on Cohere command-r-plus-08-2024 runs over \texttt{openai/gsm8k} examples. GSM8K, a grade-school math benchmark, was introduced by \citet{cobbe2021training} and provides 1,319 test problems with numerical final answers that are amenable to exact-match evaluation. For each example, baseline methods produce candidate final answers. The objective is to maximize exact-match accuracy without using gold labels at runtime.
 
+The frontier method is a direct-reserve semantic frontier generator. At a high
+level, it allocates the fixed budget across a small set of direct-reserve attempts
+and frontier exploration branches, canonicalizes their final answers into answer
+groups, and selects a default frontier answer from the resulting candidate pool.
+During this execution it records runtime trace metadata: answer-group counts,
+support for the selected frontier group, whether the direct-reserve answer agrees
+with the frontier answer, and an \texttt{override\_reason} field summarizing why
+the frontier selector committed to its final answer. The allocator proposed in this
+paper treats those metadata as diagnostics, not as correctness labels.
+
+Two \texttt{override\_reason} values are central. The value
+\texttt{single\_weak\_frontier\_branch} is emitted when the selected frontier
+answer is supported by a narrow or weak frontier trace, which suggests limited
+exploration of alternative answer groups in this evaluated setting. The value
+\texttt{direct\_frontier\_agree} is emitted when the direct-reserve and frontier
+answers agree internally. Both fields are produced before any comparison to the
+gold answer; they are therefore runtime-visible and gold-free.
+
 Evaluation is reported on:
 \begin{itemize}
     \item final300 (seed 71),

@@ -1,0 +1,15 @@
+\begin{table*}[t]
+\centering
+\caption{Pooled answer-ensemble baselines computed from the same per-example frontier, L1, S1, and TALE outputs. Pooled-4 uses a strict majority over four answers and falls back to the frontier answer on ties or all-different cases. External-3 uses majority vote over L1/S1/TALE with the fixed TALE$\succ$S1$\succ$L1 tie fallback. Deltas and win/loss/tie counts compare FIX-2+FIX-4 to the pooled baseline.}
+\label{tab:pooled_ensemble}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+Split & FIX-2+4 & Pooled-4 & External-3 & $\Delta$ vs Pooled-4 & W/L/T vs Pooled-4 & 95\% CI \\
+\midrule
+Final-300 & 260/300 (86.67\%) & 253/300 (84.33\%) & 256/300 (85.33\%) & $+2.33$ pp & 16/9/275 & $[-0.67,\,+5.67]$ \\
+Aggregate-720 & 581/720 (80.69\%) & 575/720 (79.86\%) & 578/720 (80.28\%) & $+0.83$ pp & 28/22/670 & $[-1.11,\,+2.78]$ \\
+\bottomrule
+\end{tabular}}
+\end{table*}

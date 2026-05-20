@@ -38,9 +38,14 @@ The control flow is a strict precedence chain (Figure~\ref{fig:method_overview},
 Table~\ref{tab:policy_rules}).
 The weak-frontier trigger is checked first; when it fires, the policy routes to an
 external majority answer and stops.
+This priority reflects the interpretation of the weak-frontier trace as a
+generation-quality warning: when exploration itself appears narrow, the policy
+does not also ask whether the frontier was internally self-consistent.
 If it does not fire, the policy checks the direct-agreement trigger; when that
 condition fires, the policy routes to the external unanimity answer.
 If neither trigger fires, the frontier answer is retained.
+The default therefore preserves the original frontier method on all examples
+where neither high-confidence failure trace is present.
 Conflict handling is deterministic: at most one gate can act, and majority ties are
 resolved by the fixed priority order documented in Table~\ref{tab:policy_rules}.
 
