@@ -10,9 +10,9 @@ On Final-300, FIX-2+FIX-4 achieves 260/300 = 86.67%. On the disjoint Aggregate-7
 
 The claims are scoped to the tested provider, benchmark, and budget-6 setting. We do not claim universal superiority.
 
-Code and processed artifacts are currently maintained in a private development repository during review. A cleaned, versioned public artifact release will be made available upon acceptance, preferably with a persistent identifier such as a Zenodo DOI. Reviewer-access processed artifacts can be provided upon request.
+Code and processed artifacts are currently maintained in a private development workspace during review. A cleaned, versioned public artifact release will be made available upon acceptance, preferably with a persistent identifier such as a Zenodo DOI. Reviewer-access processed artifacts can be provided upon request.
 
-I will disclose the related NeurIPS-style manuscript under review for transparency. That manuscript focuses on broader frontier allocation, STRICT-F3 / STRICT-GATE1-CAP-K6, matched action-budget surfaces, weak anti-collapse, and close top-cluster claims. The current MLJ manuscript focuses on FIX-2+FIX-4, GSM8K Final-300 and Aggregate-720, L1 / S1 / TALE comparisons, source-stratified bootstrap confidence intervals, and runtime-legal no-gold triggers.
+I will disclose the related conference manuscript under review for transparency. That manuscript focuses on broader frontier allocation, STRICT-F3 / STRICT-GATE1-CAP-K6, matched action-budget surfaces, weak anti-collapse, and close top-cluster claims. The present MLJ submission focuses on FIX-2+FIX-4, GSM8K Final-300 and Aggregate-720, L1 / S1 / TALE comparisons, source-stratified bootstrap confidence intervals, and runtime-legal no-gold triggers.
 
 If helpful for editorial review, I can provide the related manuscript to the editor upon request.
 

@@ -19,4 +19,4 @@ The manuscript is related to chain-of-thought and self-consistency, test-time co
 
 ## Related submission disclosure
 
-The author will disclose the related NeurIPS-style manuscript under review. That manuscript focuses on broader frontier allocation, STRICT-F3 / STRICT-GATE1-CAP-K6, matched action-budget surfaces, weak anti-collapse, and close top-cluster claims. This MLJ manuscript instead focuses on FIX-2+FIX-4, GSM8K Final-300 / Aggregate-720, L1 / S1 / TALE / source-local best external comparisons, source-stratified bootstrap confidence intervals, and runtime-legal no-gold triggers.
+The author will disclose the related conference manuscript under review. That manuscript focuses on broader frontier allocation, STRICT-F3 / STRICT-GATE1-CAP-K6, matched action-budget surfaces, weak anti-collapse, and close top-cluster claims. This MLJ manuscript instead focuses on FIX-2+FIX-4, GSM8K Final-300 / Aggregate-720, L1 / S1 / TALE / source-local best external comparisons, source-stratified bootstrap confidence intervals, and runtime-legal no-gold triggers.

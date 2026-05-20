@@ -7,7 +7,7 @@ Throughout the paper we use short paper-facing names for readability.
 The combined FIX-2+FIX-4 policy is the \emph{failure-trace-guided allocator}.
 Its two internal conditions are the \emph{weak-frontier trigger} and the \emph{direct-agreement trigger}.
 The three external baselines are abbreviated \emph{L1}, \emph{S1}, and \emph{TALE}; the best-performing external on a given evaluation split is the \emph{best external}.
-Repository identifiers are retained in the algorithm (Algorithm~\ref{alg:fix24}) and the name-mapping table (Table~\ref{tab:name_mapping}) for reproducibility.
+Implementation identifiers are retained in the algorithm (Algorithm~\ref{alg:fix24}) and the name-mapping table (Table~\ref{tab:name_mapping}) for reproducibility.
 
 At each example, the allocator consumes three classes of runtime-legal inputs:
 the frontier answer candidate, the three evaluated external-baseline answers, and
@@ -44,7 +44,7 @@ budget; the failure-trace-guided allocator then decides whether to keep the
 frontier answer or override it using external agreement signals.
 This separation between candidate generation and final allocation is what allows the
 policy to improve selection quality without additional model calls.
-Table~\ref{tab:name_mapping} provides the paper-facing to repository-name mapping.
+Table~\ref{tab:name_mapping} provides the paper-facing to implementation-name mapping.
 
 \subsection{Low-Depth Guard (FIX-2)}
 \label{sec:fix2}

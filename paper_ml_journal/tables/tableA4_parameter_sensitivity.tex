@@ -30,7 +30,7 @@ $\wedge$ \texttt{pool\_group\_count}$\geq 2$ \newline
   \textit{(integer thresholds: 0 and 2)} &
   Detects zero-support frontier outputs when the pool contains $\geq 2$ distinct answer groups.
   Conservative: requires complete absence of support plus pool diversity. &
-  Condition derived from offline artifact review; trigger counts in package. &
+  Condition derived from offline evaluation review; trigger counts in supplementary artifacts. &
   No continuous threshold sweep. \\
 \addlinespace
 External-consensus condition (FIX-4): \texttt{l1}$=$\texttt{s1}$=$\texttt{tale} $\wedge$ all $\neq$ frontier \newline
@@ -55,7 +55,7 @@ Evaluation seeds / splits \newline \textit{(seeds 41, 61, 71)} &
 Disjointness check \newline \textit{(overlap = 0)} &
   Prevents data leakage between primary sources.
   Verified programmatically on all three source sets. &
-  Confirmed in postrun package; overlap count $= 0$. &
+  Confirmed in postrun evaluation artifacts; overlap count $= 0$. &
   Within GSM8K only; no cross-dataset overlap check. \\
 \addlinespace
 Provider / model \newline \textit{(Cohere command-r-plus-08-2024)} &

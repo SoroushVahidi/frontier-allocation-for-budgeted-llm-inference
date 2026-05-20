@@ -8,18 +8,18 @@
 \toprule
 Item & Status & Value & Artifact/reference \\
 \midrule
-Dataset & complete & \texttt{openai/gsm8k} train split subsets (300+120+300 primary) & validation manifests + \texttt{aggregate\_with\_prior\_validation.csv} \\
-Provider / model & complete & Cohere / command-r-plus-08-2024 & \texttt{validation\_manifest.json} \\
-Seeds & complete & 41, 61, 71 (primary); 31 sensitivity & \texttt{aggregate\_with\_prior\_validation.csv} \\
-Budget & complete & $B=6$ matched across all methods & validation manifests + per-example rows \\
-Output roots & complete & all major roots enumerated & artifact package + \texttt{docs/LATEST\_RESULTS\_AND\_CLAIMS.md} \\
-Disjointness proofs & complete & primary source overlaps $= 0$ & \texttt{final\_postrun\_metrics.json} overlap checks \\
-Dry-run logs & complete & dry-run plans present for all validation runs & \texttt{dry\_run\_call\_plan.log} \\
-Postrun outputs & complete & final postrun metrics and CI tables present & \texttt{final\_fix24\_all\_external\_postrun} root \\
-Bootstrap method & complete & 5000 resamples; pooled + source-stratified summaries & \texttt{bootstrap\_ci\_summary.csv} \\
-Policy code files & complete & \texttt{support\_aware\_selector.py}, \texttt{cluster\_answer\_selector.py}, \texttt{robust\_answer\_parser.py} & \texttt{experiments/} \\
+Dataset & complete & \texttt{openai/gsm8k} primary subsets (300+120+300) & manifests + \texttt{aggregate\allowbreak\_with\allowbreak\_prior\allowbreak\_validation.csv} \\
+Provider / model & complete & Cohere / command-r-plus-08-2024 & \texttt{validation\allowbreak\_manifest.json} \\
+Seeds & complete & 41, 61, 71 (primary); 31 sensitivity & \texttt{aggregate\allowbreak\_with\allowbreak\_prior\allowbreak\_validation.csv} \\
+Budget & complete & $B=6$ matched across all methods & manifests + per-example rows \\
+Output roots & complete & major roots enumerated & supplementary reproducibility artifact + \texttt{docs/LATEST\allowbreak\_RESULTS\allowbreak\_AND\allowbreak\_CLAIMS.md} \\
+Disjointness proofs & complete & source overlaps $= 0$ & \texttt{final\allowbreak\_postrun\allowbreak\_metrics.json} checks \\
+Dry-run logs & complete & dry-run plans present for all validation runs & \texttt{dry\allowbreak\_run\allowbreak\_call\allowbreak\_plan.log} \\
+Postrun outputs & complete & final postrun metrics and CI tables present & \texttt{final\allowbreak\_fix24\allowbreak\_all\allowbreak\_external\allowbreak\_postrun} root \\
+Bootstrap method & complete & 5000 resamples; pooled + source-stratified summaries & \texttt{bootstrap\allowbreak\_ci\allowbreak\_summary.csv} \\
+Policy code files & complete & \texttt{support\allowbreak\_aware\allowbreak\_selector.py}, \texttt{cluster\allowbreak\_answer\allowbreak\_selector.py}, \texttt{robust\allowbreak\_answer\allowbreak\_parser.py} & \texttt{experiments/} \\
 Tests & partial & policy/parser tests present; not all scripts formalized as tests & \texttt{tests/} \\
-Non-promoted prototypes & complete & FIX-5/6/7/8/9 documented with negative or insufficient evidence & Table~\ref{tab:negative_results} + package docs \\
+Non-promoted prototypes & complete & FIX-5/6/7/8/9 documented with negative or insufficient evidence & Table~\ref{tab:negative_results} + supplementary documentation \\
 Rerun requirements & partial & API credentials and provider availability required for live rerun & validation scripts/manifests \\
 \bottomrule
 \end{tabular}}
