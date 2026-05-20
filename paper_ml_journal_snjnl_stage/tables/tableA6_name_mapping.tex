@@ -1,0 +1,42 @@
+\begin{table*}[t]
+\centering
+\caption{Paper-facing name mapping. Short names used throughout the manuscript and their implementation identifiers, roles, runtime availability, and gold-free status. Raw identifiers are retained in Algorithm~\ref{alg:fix24}, Table~\ref{tab:policy_rules}, and Table~\ref{tab:feature_legality}.}
+\label{tab:name_mapping}
+\footnotesize
+\resizebox{\textwidth}{!}{%
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}X c c}
+\toprule
+Paper-facing name & Implementation identifier & Role & Used at runtime? & Gold-free? \\
+\midrule
+failure-trace-guided allocator
+  & \texttt{FIX-2+FIX-4}
+  & Promoted two-gate policy
+  & Yes & Yes \\[2pt]
+weak-frontier trigger
+  & \texttt{single\allowbreak\_weak\allowbreak\_frontier\allowbreak\_branch}
+  & Low-Depth Guard condition; \texttt{override\_reason} value
+  & Yes & Yes \\[2pt]
+direct-agreement trigger
+  & \texttt{direct\allowbreak\_frontier\allowbreak\_agree}
+  & External-Consensus Fallback condition; \texttt{override\_reason} value
+  & Yes & Yes \\[2pt]
+L1
+  & \texttt{external\allowbreak\_l1\allowbreak\_max}
+  & External baseline; L1-max answer selector
+  & Yes & Yes \\[2pt]
+S1
+  & \texttt{external\allowbreak\_s1\allowbreak\_budget\allowbreak\_forcing}
+  & External baseline; S1 budget-forcing method
+  & Yes & Yes \\[2pt]
+TALE
+  & \texttt{external\allowbreak\_tale\allowbreak\_prompt\allowbreak\_budgeting}
+  & External baseline; TALE prompt-budgeting method
+  & Yes & Yes \\[2pt]
+best external
+  & best external comparator
+  & Highest-accuracy external baseline on a given split
+  & No & Yes \\
+\bottomrule
+\end{tabularx}
+}
+\end{table*}

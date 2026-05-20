@@ -1,0 +1,17 @@
+\begin{table*}[t]
+\centering
+\caption{Aggregate720 cost and resource summaries from logged runs. Provider: Cohere command-r-plus-08-2024; budget $B = 6$ for all methods (matched-budget condition). Avg total tokens = avg input + avg output. Monetary cost is not reported; it depends on provider pricing (see Section~\ref{sec:cost}).}
+\label{tab:cost_budget}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+Method & Avg logical calls & Avg input tok. & Avg output tok. & Avg total tok. & Avg latency (s) & Budget \\
+\midrule
+Frontier & 2.60 & 1153.97 & 229.94 & 1383.91 & 13.30 & 6 \\
+L1 & 1.21 & 515.87 & 114.14 & 630.01 & 4.11 & 6 \\
+S1 & 2.62 & 1110.20 & 160.50 & 1270.70 & 5.15 & 6 \\
+TALE & 1.44 & 612.38 & 117.90 & 730.28 & 4.63 & 6 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

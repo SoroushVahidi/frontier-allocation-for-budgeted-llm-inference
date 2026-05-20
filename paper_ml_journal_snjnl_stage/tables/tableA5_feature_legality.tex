@@ -1,0 +1,47 @@
+\begin{table*}[t]
+\centering
+\caption{Runtime feature legality for FIX-2+FIX-4. All gating inputs are logged as side-effects of normal frontier execution and are available at inference time without any access to gold answers, correctness labels, example IDs, or artifact paths.}
+\label{tab:feature_legality}
+\footnotesize
+\resizebox{\textwidth}{!}{%
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.18\textwidth} c X}
+\toprule
+Feature & Source & Gold-free? & Why it is allowed \\
+\midrule
+\texttt{override\allowbreak\_reason} &
+  Frontier run metadata &
+  Yes &
+  Logged search-state signal; e.g., \texttt{"single\allowbreak\_weak\allowbreak\_frontier\allowbreak\_branch"} or \texttt{"direct\allowbreak\_frontier\allowbreak\_agree"}; not a correctness label. \\[2pt]
+\texttt{frontier\allowbreak\_support} &
+  Frontier run metadata &
+  Yes &
+  Integer support count from the frontier search; derived from pool structure, not correctness. \\[2pt]
+\texttt{candidate\allowbreak\_pool\allowbreak\_answer\allowbreak\_group\allowbreak\_count} &
+  Frontier run metadata &
+  Yes &
+  Number of distinct answer groups in the pool; reflects diversity, not correctness. \\[2pt]
+\texttt{frontier\allowbreak\_answer} &
+  Frontier generator output &
+  Yes &
+  Frontier candidate selected before gating; proposed output only. \\[2pt]
+\texttt{l1\allowbreak\_answer} &
+  External L1 baseline output &
+  Yes &
+  L1 inference output, not the ground-truth label. \\[2pt]
+\texttt{s1\allowbreak\_answer} &
+  External S1 baseline output &
+  Yes &
+  S1 budget-forcing output only. \\[2pt]
+\texttt{tale\allowbreak\_answer} &
+  External TALE baseline output &
+  Yes &
+  TALE prompt-budgeting output only. \\
+\midrule
+Excluded at runtime &
+  N/A &
+  N/A &
+  \texttt{gold\allowbreak\_answer}, \texttt{exact\allowbreak\_match}, \texttt{example\allowbreak\_id}, and artifact paths are never used in routing. \\
+\bottomrule
+\end{tabularx}
+}
+\end{table*}

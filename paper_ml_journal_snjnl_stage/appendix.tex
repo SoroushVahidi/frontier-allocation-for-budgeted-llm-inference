@@ -1,0 +1,55 @@
+\appendix
+\section{Reproducibility and Supplementary Material}
+\input{tables/tableA1_reproducibility}
+\input{tables/tableA2_win_loss_tie}
+\input{tables/tableA3_safe_unsafe_claims}
+
+\section{Parameter Grounding and Sensitivity}
+\label{sec:appendix_params}
+\input{tables/tableA4_parameter_sensitivity}
+
+\section{Runtime Feature Legality}
+\label{sec:appendix_features}
+\input{tables/tableA5_feature_legality}
+
+\section{Paper-Facing Name Mapping}
+\label{sec:appendix_names}
+\input{tables/tableA6_name_mapping}
+
+\section{Algorithm Listing}
+The promoted policy is presented inline as Algorithm~\ref{alg:fix24} in Section~\ref{sec:fix24_algorithm}.
+For the full executable implementation, see \nolinkurl{experiments/support_aware_selector.py} and the supplementary reproducibility artifact at
+\nolinkurl{outputs/machine_learning_journal_result_package_20260520_20260520T035127Z/algorithm_fix24_pseudocode.md}.
+
+\section*{Data Availability}
+The code and processed evaluation artifacts are maintained in a private development
+workspace during manuscript preparation. A cleaned, versioned artifact release will be
+made public upon acceptance, preferably with a persistent identifier such as a Zenodo
+DOI. Reviewer-access copies of the processed artifacts can be provided upon request.
+The GSM8K benchmark questions used for evaluation are available from the original source
+\citep{cobbe2021training}. No proprietary or restricted data were used.
+
+\section*{Code Availability}
+The complete implementation of FIX-2+FIX-4 is provided in
+\nolinkurl{experiments/support_aware_selector.py} within a private development
+workspace. A cleaned, versioned public release will be made available upon
+acceptance, preferably with a persistent identifier such as a Zenodo DOI.
+Evaluation driver scripts are located under \nolinkurl{scripts/}. Reviewer-access
+processed artifacts or supplementary files can be provided upon request, but no API
+keys or other private internal artifacts will be released.
+
+\section*{Funding}
+This work was supported by Cohere research API credits. No other specific grant
+funding was received from any funding agency in the public, commercial, or
+not-for-profit sectors.
+
+\section*{Competing Interests}
+The authors declare no competing interests.
+
+\section*{Use of AI Tools}
+The author used ChatGPT, Cursor, Claude, GitHub Copilot, Cohere models, and Perplexity AI during parts of the coding, literature-search, manuscript-drafting, editing, and artifact-preparation workflow. These tools were used for assistance with code navigation, implementation support, language editing, reference discovery, and drafting support. All scientific claims, experimental design choices, code changes, analyses, reported results, citations, and final manuscript text were reviewed and approved by the author, who takes full responsibility for the content of the paper.
+
+\section*{Author Contributions}
+Soroush Vahidi: Conceptualization, Methodology, Software, Validation, Formal analysis,
+Investigation, Data curation, Writing --- original draft, Writing --- review and editing,
+Visualization.

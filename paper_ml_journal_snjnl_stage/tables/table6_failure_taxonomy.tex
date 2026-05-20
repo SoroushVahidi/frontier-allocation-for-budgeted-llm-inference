@@ -1,0 +1,25 @@
+\begin{table*}[t]
+\centering
+\caption{Failure taxonomy for final300 residual errors.}
+\label{tab:failure_taxonomy}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{0.45\textwidth}ccp{0.30\textwidth}}
+\toprule
+Failure group & Count & Share & Likely fix class \\
+\midrule
+final300 total failures & 40 & 1.000 & mixed \\
+\quad all methods wrong & 24 & 0.600 & new candidate generation likely \\
+\quad parser / canonicalization issue & 12 & 0.300 & parser / canonicalization \\
+\quad present not selected & 4 & 0.100 & selector \\
+\midrule
+\multicolumn{4}{l}{\textit{Subtypes of all-methods-wrong}} \\
+\quad multi-step composition trap & 10 & 0.250 & selector-only unlikely \\
+\quad near-miss numeric error & 5 & 0.125 & selector-only unlikely \\
+\quad different wrong answers, no correct cluster & 4 & 0.100 & mixed (rare selector possible) \\
+\quad same wrong answer, false consensus & 2 & 0.050 & selector-only unlikely \\
+\quad shared unit/rate trap & 2 & 0.050 & selector-only unlikely \\
+\quad quantity selection trap & 1 & 0.025 & selector-only unlikely \\
+\bottomrule
+\end{tabular}}
+\end{table*}
