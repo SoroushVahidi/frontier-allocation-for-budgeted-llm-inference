@@ -14,8 +14,8 @@ Welcome to the `frontier-allocation-for-budgeted-llm-inference` repository. To m
 1.  **NO PAID API CALLS**: Do not run any commands that call paid LLM APIs (OpenAI, Cohere, etc.) without explicit user approval.
 2.  **Use Artifacts for Analysis**: Prefer analyzing existing JSONL/CSV outputs in `outputs/` or `docs/project_handoff_20260510/` instead of running new experiments.
 3.  **Preserve Provenance**: Do not delete or overwrite existing output files in `outputs/` unless specifically asked. They are essential for reproducibility.
-4.  **Preserve current evidence hierarchy**: The main evidence is the 300-case PAL+retry vs `external_l1_max` bundle. The 30-case four-way pilot is diagnostic only. The 15-case Direct L1 strong-seed run is a small mixed follow-up diagnostic and is not the headline result.
-5.  **Read the canonical summary first**: After `README.md`, read `docs/CURRENT_STATE_SUMMARY_20260511.md` before interpreting any outputs or planning new work.
+4.  **Preserve current evidence hierarchy**: The primary evidence is the **aggregate-720 FIX-2+FIX-4 result** (581/720 = 80.69%) and the **final-300 result** (260/300 = 86.67%). The old 300-case PAL+retry bundle (252/300 vs 244/300, p≈0.322) is historical background only and is not the headline result. FIX-5, FIX-6/LoVEC, FIX-7, and FIX-8 were tested and **not promoted**.
+5.  **Read the canonical results doc first**: After `README.md`, read `docs/LATEST_RESULTS_AND_CLAIMS.md` before interpreting any outputs or planning new work. `docs/CURRENT_STATE_SUMMARY_20260511.md` is historical background (pre-FIX series) and should not be treated as the current canonical state.
 
 ## Research Integrity
 1.  **No Unsubstantiated Claims**: Do not claim a method is "better" or "beats the baseline" based on small samples or proxy audits alone. Use the term "potentially recoverable" for artifact-based improvements.
@@ -25,22 +25,21 @@ Welcome to the `frontier-allocation-for-budgeted-llm-inference` repository. To m
 5.  **Do not overread structural replay**: The `pal_frontier_structural_target_replay_v1` offline replay is useful for structural analysis and logging, but it is not runtime promotion evidence until interpreted and validated.
 
 ## Next Research Focus
-The current priority is **frontier allocation validation using verifier-guided within-method reranking**.
+The current priority is **paper write-up** for the FIX-2+FIX-4 result.
 
-Recent state:
-- The RelationReady verifier training phase is mostly complete.
-- Selected verifier: SetFit `all-mpnet-base-v2` cfg1.
-- Cross-method verifier-guided selection was method-entangled and mostly reproduced `external_l1_max`.
-- Within-method reranking showed useful signal: verifier-selected seeds beat random seed choice on cached multi-seed artifacts.
-- Exploratory slice-aware/tie-aware policies showed potential but require independent validation.
-- A new independent multi-seed validation artifact may be generated with provider/API calls only after explicit approval, capped preflight, and tmux execution.
+Completed phases:
+- RelationReady verifier training: closed. Selected verifier: SetFit `all-mpnet-base-v2` cfg1 (ready-F1=0.8646, PR-AUC=0.883). Within-method reranking validated (+4.58pp, cluster-CI lower bound +0.28pp). Cross-method routing was method-entangled; not promoted.
+- Stage-2 calibrated gate: evaluated; safe-gate holdout gain neutral; not promoted.
+- FIX-1 through FIX-8: all evaluated. FIX-2+FIX-4 promoted; all others not promoted.
+- Aggregate-720 evidence assembled from 3 disjoint sources (seeds 41, 61, 71). Decision A (begin write-up) recorded.
+- Paper manuscript in progress: `paper_ml_journal/` (MLJ format, 11 sections, 9 tables).
 
-Current research priorities:
-1. Validate verifier-guided within-method reranking on independent multi-seed artifacts.
-2. Keep provider prompts gold-free; use gold/exact_match only for offline evaluation/reporting.
-3. Use no-API dry-runs and manifests before paid/API generation.
+Current priorities:
+1. Complete `paper_ml_journal/` manuscript: finalize figures from CSV data, replace placeholder references in `refs.bib`.
+2. Keep provider prompts gold-free; gold/exact_match is offline evaluation only.
+3. Use no-API dry-runs and manifests before any paid/API generation.
 4. Use tmux for long/API jobs.
-5. Do not overclaim exploratory slice-aware policies unless validated on disjoint data.
+5. Do not overclaim FIX-5/6/7/8 improvements — they were tested and not promoted.
 
 ## Codex Session Defaults
 These defaults should be applied for future Codex sessions in this repository unless the user explicitly overrides them.
@@ -84,13 +83,12 @@ These defaults should be applied for future Codex sessions in this repository un
    - When starting Codex for this repository, prefer GPT-5.3 with high reasoning if available; otherwise use the strongest available GPT-5 reasoning model approved by the user.
 
 ## Key Documentation
-- `docs/CURRENT_STATE_SUMMARY_20260511.md`: Canonical current-state summary.
-- `docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`: Stage 2 plan for baseline-gated hybrid allocation policy design.
+- `docs/LATEST_RESULTS_AND_CLAIMS.md`: **Canonical current results** — FIX-1..8 outcomes, aggregate-720 evidence, safe/unsafe claims, decision records. Read this before any other results doc.
+- `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`: Stage-2 gate evaluation detail (not promoted).
 - `docs/RELATION_VERIFIER_PHASE_CLOSURE_20260517.md`: Formal closure and approved-use boundary for the verifier phase.
 - `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md`: Compact verifier/frontier integration handoff with CI-backed claim scope.
-- `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`: Concise paper-ready narrative draft for verifier-guided within-method reranking.
-- `docs/CURRENT_METHOD_STATUS_20260511.md`: Method roles and status supplement.
-- `docs/CURRENT_ARTIFACTS_INDEX_20260511.md`: Canonical artifact navigation supplement.
-- `docs/CODEX_WEB_HANDOFF_20260510.md`: Earlier handoff, still useful context.
-- `docs/GOLD_ABSENT_FAILURE_SUBPATTERN_ANALYSIS_20260510.md`: Detailed failure analysis.
-- `docs/DIRECT_L1_ANCHOR_PATCH_EFFECT_AUDIT_20260510.md`: Latest patch audit.
+- `docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`: Paper-ready narrative for verifier-guided within-method reranking.
+- `docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`: Stage-2 plan (historical; gate not promoted).
+- `docs/CURRENT_STATE_SUMMARY_20260511.md`: Historical background only (pre-FIX series, as of 2026-05-11). Do not treat as current canonical state.
+- `docs/CURRENT_METHOD_STATUS_20260511.md`: Method roles supplement (historical).
+- `docs/CURRENT_ARTIFACTS_INDEX_20260511.md`: Artifact navigation supplement (historical).

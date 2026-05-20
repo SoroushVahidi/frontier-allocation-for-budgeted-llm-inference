@@ -16,7 +16,7 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 | Order | Doc | Purpose |
 |------:|-----|---------|
 | 0 | [`REVIEWER_FIRST.md`](REVIEWER_FIRST.md) | Minimal reviewer setup, checks, and reproduction path |
-| 1 | [`docs/CURRENT_STATE_SUMMARY_20260511.md`](docs/CURRENT_STATE_SUMMARY_20260511.md) | Canonical current-state summary: main evidence hierarchy, method roles, artifact map, replay status, and safe claims |
+| 1 | [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) | **Canonical current results**: FIX-2+FIX-4 final-300 and aggregate-720 evidence, safe/unsafe claims, all FIX-1..8 outcomes, decision records |
 | 2 | [`START_HERE_CURRENT.md`](START_HERE_CURRENT.md) | Current front door: merged state, current target method, external baseline, and next experiment pattern |
 | 3 | [`docs/CURRENT_APPROACHES_STATUS_20260505.md`](docs/CURRENT_APPROACHES_STATUS_20260505.md) | Latest method-by-method status: tested, parked, active, and next hopeful lines |
 | 4 | [`docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md`](docs/EXPERIMENT_EXECUTION_GUARDRAILS_20260504.md) | Guardrails to avoid old-method/API-waste mistakes |
@@ -24,21 +24,22 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 | 6 | [`docs/CURRENT_PROJECT_STATUS.md`](docs/CURRENT_PROJECT_STATUS.md) | Detailed current research/engineering status |
 | 7 | [`docs/CURRENT_EXTERNAL_BASELINE_GAP.md`](docs/CURRENT_EXTERNAL_BASELINE_GAP.md) | Separate strict-method diagnostic vs **`external_l1_max`** |
 | 8 | [`docs/REPO_MAP.md`](docs/REPO_MAP.md) | Directory map and artifact-navigation guide |
-
-**Latest results checkpoint:** [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) — current numbers, safe/unsafe claims, next step
+| — | [`docs/CURRENT_STATE_SUMMARY_20260511.md`](docs/CURRENT_STATE_SUMMARY_20260511.md) | Historical background only (pre-FIX series, as of 2026-05-11); superseded by `docs/LATEST_RESULTS_AND_CLAIMS.md` |
 
 **Verifier-guided reranking navigation:** [`docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md`](docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md) · [`docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md`](docs/PAPER_DRAFT_VERIFIER_GUIDED_WITHIN_METHOD_RERANKING_20260517.md)
 
 **Stage-2 calibrated gate:** [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md) · [`docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md`](docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md) · [`docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`](docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md)
 
-**Current Stage-2 checkpoint:** see [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) and [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md). No final promoted cross-method allocation policy is claimed yet.
+**Current Stage-2 checkpoint:** see [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) and [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md). **FIX-2+FIX-4 is the promoted policy.** Calibrated gate was evaluated and not promoted (safe-gate holdout gain neutral).
 
 **Current operational policy checkpoint (2026-05-20):**
-- Best effective policy remains **FIX-2+FIX-4**.
-- **FIX-5** is not the current best on the larger unbiased validation and is not promoted.
-- **FIX-6 / LoVEC extra-action** is not promoted after the independent pilot.
-- **FIX-7** exists as an offline prototype and is not promoted.
-- Final all-baseline validation is currently running (`final_fix24_validation_20260519`); do not claim final clean superiority over all external baselines until postrun/CI completion.
+- Promoted policy: **FIX-2+FIX-4** (Combined Failure-Trace-Guided Allocator).
+- Final-300 (seed 71, budget 6): FIX-2+FIX-4 **260/300 (86.67%)** vs L1 249/300 (83.00%) vs S1 246/300 (82.00%) vs TALE 235/300 (78.33%).
+- Aggregate-720 (3 disjoint sources): FIX-2+FIX-4 **581/720 (80.69%)** vs L1 559/720 (77.64%) vs S1 555/720 (77.08%) vs TALE 541/720 (75.14%); all paired CI lower bounds > 0; Decision A recorded.
+- **FIX-5** (TALE-default router): not promoted — 0 switches on final-300.
+- **FIX-6 / LoVEC extra-action**: not promoted after independent stage-2 relaunch (net negative).
+- **FIX-7** (cluster selector): offline prototype only, not promoted.
+- **FIX-8** (robust parser): 0 recoveries on both final-300 and aggregate-720, not promoted.
 
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 
@@ -48,86 +49,24 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 
 ## Current evidence hierarchy
 
-The hierarchy is stable and should be read in this order:
+The hierarchy is stable; read in this order:
 
-1. `300-case PAL+retry vs external_l1_max` is the main external-baseline evidence.
-2. The `30-case` four-way Cohere pilot is diagnostic caution only.
-3. The `15-case` Direct L1 strong-seed run is a targeted mixed / negative follow-up diagnostic.
-4. `pal_frontier_structural_target_replay_v1` is an offline, no-API replay experiment. It is useful for structural analysis and logging, but it is not runtime promotion evidence.
+1. **Aggregate-720 — primary promotion-grade evidence.** FIX-2+FIX-4 vs all baselines across 3 disjoint 240-case runs (seeds 41, 61, 71): 581/720 (80.69%) vs L1 559/720 (77.64%) vs S1 555/720 (77.08%) vs TALE 541/720 (75.14%). Source-stratified bootstrap 5 000 resamples; all paired CI lower bounds > 0; p(delta>0) ≥ 0.995 vs best external. Decision A recorded. Full detail: [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md).
+2. **Final-300 (seed 71, budget 6) — supporting evidence.** FIX-2+FIX-4 260/300 (86.67%) vs L1 249/300 (83.00%); consistent with aggregate-720.
+3. **PAL+retry vs external_l1_max (300-case, seed 41) — historical, superseded.** 252/300 vs 244/300 (+2.67pp, McNemar p≈0.322, CI [−2.00pp, +7.33pp]). Not statistically decisive; context only.
+4. **RelationReady verifier within-method reranking — closed phase.** +4.58pp vs random seed, cluster-CI lower bound +0.28pp. Within-method only; cross-method routing was method-entangled and not promoted.
 
-## Current method target for new external-baseline diagnostics
+## Current promoted method
 
-`external_l1_max` remains the strong external comparator. Recent real-model diagnostics show a large gap for older strict methods, but those diagnostics do **not** test the newly merged diverse-root guarded stack.
-
-The main external-baseline evidence for the current PAL line is the paired 300-case Cohere bundle:
-
-- PAL+retry / guarded PAL: `252/300`
-- `external_l1_max`: `244/300`
-- paired gap: `+8` cases / `+2.67 pp`
-- McNemar `p≈0.322`
-- bootstrap paired-diff CI: `[-2.00 pp, +7.33 pp]`
-
-Use that bundle as the headline comparison. Do **not** replace it with the newer 15-case Direct L1 strong-seed diagnostic.
-
-The latest offline structural-target replay lives here:
-
-- `outputs/gsm8k_structural_validator_eval_20260507/pal_frontier_structural_target_replay_v1_20260511T222238Z/`
-- this is no-API replay only, with candidate-level structural fields and selector ablations
-- do not promote runtime defaults from it
-
-For any fresh fair comparison against `external_l1_max`, the current active internal line is:
-
-```text
-direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal
-```
-
-This is the live diagnostic/development method for the PAL line, not a paper-promoted default. The smaller k1 frontier tiebreak line remains a useful debug sidecar:
-
-```text
-direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak
-```
-
-The merged guarded base remains:
-
-```text
-direct_reserve_diverse_root_frontier_v1_guarded
-```
-
-Reference anchors only:
-
-```text
-strict_f3
-strict_gate1_cap_k6
-strict_f2
-```
-
-`strict_f3` remains a manuscript-facing matched-surface representative, but it is not the current-best target for new real-model L1-gap experiments.
+`direct_reserve_semantic_frontier_v2` with **FIX-2+FIX-4** gates is the promoted policy. Do not use or report results for the superseded `direct_reserve_diverse_root_frontier_v1_guarded_k1_frontier4_frontier_tiebreak_pal` line as the headline comparison.
 
 ---
 
 ## Current evidence posture
 
-The current best small same-case live diagnostic is:
+Primary evidence: aggregate-720 with FIX-2+FIX-4. All baselines (L1, S1, TALE) are beaten with source-stratified CI lower bounds > 0. Project is now in write-up phase.
 
-```text
-outputs/cohere_external_l1_cached_vs_k1_frontier4_frontier_tiebreak_10case_20260505T004535Z/
-```
-
-It reports cached `external_l1_max` at **8/10** and live `k1_frontier4_frontier_tiebreak` at **6/10** on the same 10 cases. This is a small diagnostic signal only.
-
-Current targeted diagnostics, in order of evidentiary importance:
-
-1. The 300-case PAL+retry vs `external_l1_max` bundle is the main evidence.
-2. The 30-case PAL vs three external baselines pilot is diagnostic only.
-3. The 15-case Direct L1 strong-seed run is a mixed follow-up diagnostic and is not promoted.
-
-The audited working selector **`outcome_verifier_answer_group_selector_v1`** with **`scorer_mode = cached_jsonl`** remains selected for the **recovery / selector-evidence track only**. Machine config:
-
-```text
-configs/selected_selector_current.json
-```
-
-Human narrative + comparator tables → [`docs/CURRENT_SELECTOR_DECISION.md`](docs/CURRENT_SELECTOR_DECISION.md).
+PAL+retry diagnostics (300-case, 30-case, 15-case) are historical context. Do not use them as the headline comparison in any new analysis, paper draft, or agent response. See [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) for the complete evidence record.
 
 ---
 
@@ -165,13 +104,13 @@ Full operational patterns, cluster batch names, reruns, and pitfalls → [`scrip
 
 | Do not claim | Why |
 |--------------|-----|
-| Broad superiority over **`external_l1_max`** | Requires matched surfaces + canonical paper-source uplift |
-| Runtime promotion of verifier selector | Current evidence is recovery-track only |
+| PAL+retry bundle as current headline result | Superseded by FIX-2+FIX-4 aggregate-720 evidence; was not statistically decisive |
+| Cross-method verifier routing superiority | Verifier cross-method routing was method-entangled; within-method reranking only is valid |
 | Old strict-F3 results as current diverse-root results | Different method target |
-| Finalguard or numeric-leaf success | Latest no-API/API checks showed no accuracy gain on target artifacts |
+| FIX-5/6/7/8 improvements | All tested and not promoted; see `docs/LATEST_RESULTS_AND_CLAIMS.md` §FIX-5 through §FIX-8 |
 | Path-gap proxies as causal gold-path counts | Diagnostics carry explicit caveat fields |
 | Slurm summaries without reading **`manifest.json`** | **`outputs/`** are provenance, not standalone authority |
-| Promoted calibrated gate or gate-beats-external claim | Gate is output-only; safe-gate holdout gain neutral (`+0.00pp`); near-neighbor regressions unresolved; no disjoint promotion-grade validation yet |
+| Promoted calibrated gate or gate-beats-external claim | Gate evaluated; safe-gate holdout gain neutral (`+0.00pp`); not promoted |
 
 Timestamped **`outputs/`** folders stay put. Prefer indexing, classification, and canonical interpretation over deletion.
 
