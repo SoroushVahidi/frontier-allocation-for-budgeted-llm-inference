@@ -1,0 +1,61 @@
+\section{Method}
+\label{sec:method}
+
+The promoted method, which we term the \textbf{Combined Failure-Trace-Guided Allocator} (FIX-2+FIX-4), is a deterministic precedence policy applied at inference time.  Its two gates---the \textit{Low-Depth Guard} and the \textit{External-Consensus Fallback}---fire in strict priority order; at most one gate acts per example.  All runtime decisions are gold-free: no \texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
+
+\subsection{Low-Depth Guard (FIX-2)}
+\label{sec:fix2}
+
+The Low-Depth Guard detects frontier answers arising from structurally weak search branches and replaces them with an external majority vote.  The trigger relies exclusively on fields logged during the frontier run: the override reason string and the candidate-pool group count.
+
+\subsection{External-Consensus Fallback (FIX-4)}
+\label{sec:fix4}
+
+The External-Consensus Fallback identifies examples where the frontier agreed with its internal reserve selection (\texttt{override\_reason = direct\_frontier\_agree}) yet all three external baselines unanimously chose a different answer.  When this unanimous disagreement holds, the policy substitutes the external consensus answer.
+
+\subsection{Combined Policy Algorithm}
+\label{sec:fix24_algorithm}
+
+Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime field names.  Named implementation constants refer to values in \texttt{experiments/support\_aware\_selector.py}.
+
+\begin{table}[t]
+\centering
+\caption{Algorithm: Combined Failure-Trace-Guided Allocator (FIX-2+FIX-4). All inputs are gold-free runtime fields. Named constants are defined in \texttt{experiments/support\_aware\_selector.py}.}
+\label{alg:fix24}
+\scriptsize
+\begin{tabular}{p{0.06\textwidth} p{0.88\textwidth}}
+\toprule
+\textbf{Step} & \textbf{Operation} \\
+\midrule
+\multicolumn{2}{l}{\textit{Inputs per example}} \\
+& \texttt{frontier\_answer}, \texttt{result\_metadata} (from frontier run logs) \\
+& \texttt{l1\_answer}, \texttt{s1\_answer}, \texttt{tale\_answer} (external baseline outputs) \\
+& \texttt{override\_reason}, \texttt{frontier\_support} $\in \mathbb{Z}_{\geq 0}$, \texttt{candidate\_pool\_answer\_group\_count} $\in \mathbb{Z}_{>0}$ \\
+\midrule
+\multicolumn{2}{l}{\textit{Step 1 — Low-Depth Guard (FIX-2)}} \\
+1a & \textbf{if} \texttt{override\_reason} contains \texttt{"single\_weak\_frontier\_branch"} \\
+   & \quad \textbf{or} (\texttt{frontier\_support} $= 0$ \textbf{and} \texttt{candidate\_pool\_answer\_group\_count} $\geq 2$) \\
+   & \textbf{then:} \\
+1b & \quad Compute \texttt{ext} $\leftarrow$ majority answer among \{\texttt{l1}, \texttt{s1}, \texttt{tale}\} (at least 2 agree); \\
+   & \quad if no majority, use priority order TALE $\succ$ S1 $\succ$ L1 \\
+1c & \quad \textbf{if} \texttt{ext} exists \textbf{and} \texttt{ext} $\neq$ \texttt{frontier\_answer}: \\
+   & \quad\quad \textbf{return} \texttt{ext}, \texttt{policy} $\leftarrow$ \texttt{fix2} \quad\quad \textit{(guard fires; stop)} \\
+\midrule
+\multicolumn{2}{l}{\textit{Step 2 — External-Consensus Fallback (FIX-4)}} \\
+2a & \textbf{if} \texttt{override\_reason} $=$ \texttt{"direct\_frontier\_agree"} \\
+   & \quad \textbf{and} \texttt{l1\_answer} $=$ \texttt{s1\_answer} $=$ \texttt{tale\_answer} \\
+   & \quad \textbf{and} \texttt{l1\_answer} $\neq$ \texttt{frontier\_answer} \\
+   & \textbf{then:} \\
+2b & \quad \textbf{return} \texttt{l1\_answer}, \texttt{policy} $\leftarrow$ \texttt{fix4} \quad\quad \textit{(consensus fallback fires; stop)} \\
+\midrule
+\multicolumn{2}{l}{\textit{Step 3 — Default}} \\
+3  & \textbf{return} \texttt{frontier\_answer}, \texttt{policy} $\leftarrow$ \texttt{original} \\
+\midrule
+\multicolumn{2}{l}{\textit{Output}} \\
+& Selected answer and \texttt{policy} label; no gold labels accessed at any step. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The exact field-level trigger conditions are also tabulated in Table~\ref{tab:policy_rules} for reproducibility.
+

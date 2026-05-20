@@ -1,0 +1,71 @@
+% Springer Machine Learning skeleton (svjour3-based)
+\documentclass[smallextended]{svjour3}
+
+\smartqed
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{enumitem}
+
+\journalname{Machine Learning}
+
+\begin{document}
+
+\title{Failure-Trace-Guided Gold-Free Policy Gating for Budgeted LLM Reasoning\\
+\large Cohere Matched-Budget Evidence on Disjoint 720-Example Evaluation}
+
+\author{First Author \and Second Author}
+
+\institute{First Author \at Department, Institution \\
+\email{first.author@example.com}
+\and
+Second Author \at Department, Institution \\
+\email{second.author@example.com}}
+
+\date{Received: date / Accepted: date}
+\maketitle
+
+\begin{abstract}
+We present a journal-ready evidence package for a gold-free policy gating method (FIX-2+FIX-4) that improves matched-budget LLM reasoning accuracy in the tested Cohere setting. On a disjoint 720-example aggregate, FIX-2+FIX-4 achieves 80.69\% versus L1 77.64\%, S1 77.08\%, and TALE 75.14\%, with positive source-stratified confidence-interval lower bounds for all baseline comparisons. We provide reproducible rule definitions, ablations, cost/budget summaries, and conservative claim boundaries.
+\keywords{Large language models \and budgeted inference \and reproducibility \and policy gating}
+\end{abstract}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_problem_setup}
+\input{sections/04_method}
+\input{sections/05_experiments}
+\input{sections/06_results}
+
+\input{tables/table1_main_results}
+\input{tables/table2_source_by_source}
+\input{figures/figure1_method_overview_placeholder}
+\input{figures/figure2_accuracy_ci_placeholder}
+
+\input{sections/07_ablation}
+\input{tables/table3_ablation}
+\input{tables/table4_policy_rules}
+\input{tables/table5_cost_budget}
+
+\input{sections/08_failure_analysis}
+\input{tables/table6_failure_taxonomy}
+\input{figures/figure3_failure_breakdown_placeholder}
+
+\input{sections/09_discussion}
+\input{sections/10_limitations}
+\input{sections/11_conclusion}
+\input{tables/table7_negative_results}
+
+\bibliographystyle{spmpsci}
+\bibliography{refs}
+
+\input{appendix}
+
+\end{document}

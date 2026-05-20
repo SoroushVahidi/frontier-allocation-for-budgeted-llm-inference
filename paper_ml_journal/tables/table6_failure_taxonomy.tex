@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering
+\caption{Failure taxonomy for final300 residual errors.}
+\label{tab:failure_taxonomy}
+\scriptsize
+\begin{tabular}{p{0.40\textwidth}ccp{0.33\textwidth}}
+\toprule
+Failure group & Count & Share & Likely fix class \\
+\midrule
+final300\_total\_failures & 40 & 1.0 & mixed \\
+all\_methods\_wrong & 24 & 0.6 & new candidate generation likely \\
+parser\_or\_canonicalization\_issue & 12 & 0.3 & parser/canonicalization \\
+present\_not\_selected & 4 & 0.1 & selector \\
+all\_methods\_wrong::multi\_step\_composition\_trap & 10 & 0.25 & selector-only unlikely \\
+all\_methods\_wrong::near\_miss\_numeric\_error & 5 & 0.125 & selector-only unlikely \\
+all\_methods\_wrong::different\_wrong\_answers\_no\_correct\_cluster & 4 & 0.1 & mixed (rare selector possible) \\
+all\_methods\_wrong::same\_wrong\_answer\_false\_consensus & 2 & 0.05 & selector-only unlikely \\
+all\_methods\_wrong::shared\_unit\_or\_rate\_trap & 2 & 0.05 & selector-only unlikely \\
+all\_methods\_wrong::quantity\_selection\_trap & 1 & 0.025 & selector-only unlikely \\
+\bottomrule
+\end{tabular}
+\end{table*}

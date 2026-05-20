@@ -1,0 +1,25 @@
+\begin{table*}[t]
+\centering
+\caption{Reproducibility checklist.}
+\label{tab:repro_checklist}
+\scriptsize
+\begin{tabular}{p{0.16\textwidth}p{0.11\textwidth}p{0.30\textwidth}p{0.33\textwidth}}
+\toprule
+Item & Status & Value & Artifact/reference \\
+\midrule
+dataset & complete & openai/gsm8k train split subsets (300+120+300 primary) & validation manifests + aggregate\_with\_prior\_validation.csv \\
+provider\_model & complete & cohere / command-r-plus-08-2024 & validation\_manifest.json \\
+seeds & complete & 41, 61, 71 (primary); 31 sensitivity & aggregate\_with\_prior\_validation.csv \\
+budget & complete & budget=6 matched across methods & validation manifests + per-example rows \\
+output\_roots & complete & all major roots enumerated & this package + docs/LATEST\_RESULTS\_AND\_CLAIMS.md \\
+disjointness\_proofs & complete & primary source overlaps=0 & final\_postrun\_metrics.json overlap\_checks\_primary \\
+dry\_run\_logs & complete & dry-run plans present for validation runs & validation roots dry\_run\_call\_plan.log \\
+postrun\_outputs & complete & final postrun metrics and CI tables present & final\_fix24\_all\_external\_postrun root \\
+bootstrap\_method & complete & 5000 bootstrap resamples; pooled + source-stratified summaries & bootstrap\_ci\_summary.csv + aggregate\_720\_bootstrap\_ci.csv \\
+policy\_code\_files & complete & support\_aware\_selector.py, cluster\_answer\_selector.py, robust\_answer\_parser.py & experiments/ \\
+tests & partial & policy/parser tests present; not all manuscript scripts are formalized as tests & tests/ \\
+non\_promoted\_prototypes & complete & FIX-5/6/7/8/9 documented with negative or insufficient evidence & table7 + package docs \\
+rerun\_requirements & partial & API credentials and provider availability required for full live rerun & validation scripts/manifests \\
+\bottomrule
+\end{tabular}
+\end{table*}

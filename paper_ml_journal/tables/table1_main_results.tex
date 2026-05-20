@@ -1,0 +1,20 @@
+\begin{table*}[t]
+\centering
+\caption{Main validated results (final300 and aggregate720). Deltas are percentage points vs baselines on aggregate720.}
+\label{tab:main_results}
+\scriptsize
+\begin{tabular}{lcccccccc}
+\toprule
+Policy & Final300 Acc. & Final300 c/n & Agg720 Acc. & Agg720 c/n & $\Delta$vsL1 & $\Delta$vsS1 & $\Delta$vsTALE & Promoted \\
+\midrule
+frontier original & 76.67 & 230/300 & 75.28 & 542/720 & -2.36 & -1.81 & 0.14 & no \\
+FIX-2 & 85.67 & 257/300 & 80.0 & 576/720 & 2.36 & 2.92 & 4.86 & no \\
+FIX-2+FIX-4 & 86.67 & 260/300 & 80.69 & 581/720 & 3.06 & 3.61 & 5.56 & yes \\
+FIX-5 & 78.67 & 236/300 & 75.28 & 542/720 & -2.36 & -1.81 & 0.14 & no \\
+L1 & 83.0 & 249/300 & 77.64 & 559/720 & 0.0 & 0.56 & 2.5 & no \\
+S1 & 82.0 & 246/300 & 77.08 & 555/720 & -0.56 & 0.0 & 1.94 & no \\
+TALE & 78.33 & 235/300 & 75.14 & 541/720 & -2.5 & -1.94 & 0.0 & no \\
+best external & 83.0 & 249/300 (method=l1) & 77.64 & 559/720 (method=l1) & 0.0 & 0.56 & 2.5 & no \\
+\bottomrule
+\end{tabular}
+\end{table*}

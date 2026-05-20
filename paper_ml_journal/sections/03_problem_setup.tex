@@ -1,0 +1,31 @@
+\section{Problem Setup}
+We consider method selection under a fixed budget parameter (budget $=6$) on Cohere command-r-plus-08-2024 runs over \texttt{openai/gsm8k} examples. For each example, baseline methods produce candidate final answers. The objective is to maximize exact-match accuracy without using gold labels at runtime.
+
+Evaluation is reported on:
+\begin{itemize}
+    \item final300 (seed 71),
+    \item aggregate720 disjoint primary set (seeds 41, 61, 71),
+    \item optional sensitivity set (+100; labeled sensitivity-only).
+\end{itemize}
+
+\subsection{Terminology}
+\label{sec:terminology}
+
+The following terms are used consistently throughout the paper.
+
+\begin{description}[leftmargin=2.2cm, labelwidth=2cm, labelsep=0.2cm, style=nextline]
+  \item[Candidate pool] The set of final answers produced by all available methods (frontier and external baselines) for a given example.
+  \item[Frontier method] The primary, computationally intensive answer selected by the direct-reserve semantic frontier policy (\texttt{direct\_reserve\_semantic\_frontier\_v2}), which serves as the default output before any policy gate fires.
+  \item[External baseline] Any of the three independently-sourced single-model methods used as reference signals: L1, S1, or TALE (defined below). External baselines provide gold-free consensus signals without access to gold labels.
+  \item[L1] \texttt{external\_l1\_max}: an external method that selects the answer with the highest support count across sampled model outputs.
+  \item[S1] \texttt{external\_s1\_budget\_forcing}: an external method that applies sequential budget-forcing to elicit a final answer within the allocated budget.
+  \item[TALE] \texttt{external\_tale\_prompt\_budgeting}: an external method that uses prompt-level budget cues to guide answer selection.
+  \item[Logical API call] A single provider inference request counted against the budget. The budget parameter ($B = 6$) caps the maximum number of logical API calls per example across the full method stack.
+  \item[Budget] The integer upper bound $B = 6$ on logical API calls per example, applied identically to all compared methods (matched-budget condition).
+  \item[Matched budget] All compared methods operate under the same budget $B$, ensuring that accuracy differences are not confounded by unequal computational expenditure.
+  \item[Postrun replay] Offline re-evaluation of a previously generated run artifact using a policy rule without issuing new provider API calls. Postrun replay is used to compute policy-specific accuracy from existing logs.
+  \item[Gold-free runtime feature] Any input to a policy decision rule that is derived solely from model outputs, run metadata, or structural properties of the candidate pool---never from gold labels, exact-match signals, or correctness indicators.
+  \item[Promotion-grade evidence] Evidence collected on held-out evaluation sets that were not used during rule development, meeting the disjointness, seed-independence, and aggregate scale criteria documented in Section~\ref{sec:experiments}.
+  \item[Provider-specific evidence] Results obtained from a particular provider--model pairing (here, Cohere command-r-plus-08-2024). Claims are explicitly scoped to this setting and do not generalize beyond it without additional replication.
+\end{description}
+

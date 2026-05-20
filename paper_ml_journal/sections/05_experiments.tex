@@ -1,0 +1,26 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Data, model, and protocol}
+All promoted comparisons are conducted on \textbf{Cohere command-r-plus-08-2024} with a fixed budget of $B = 6$ logical API calls per example.  The dataset is \texttt{openai/gsm8k}.  Evaluation conditions are matched across all compared methods: every method operates under the same budget cap, provider, and model, so accuracy differences are not confounded by unequal compute.
+
+\paragraph{Matched-budget definition.} A comparison is \emph{matched-budget} if and only if every compared method is subject to the same maximum logical API call count $B$ per example, with the same provider and model.  No method in the promoted comparison receives extra calls or a different model.
+
+\subsection{Cost and resource usage}
+\label{sec:cost}
+
+Table~\ref{tab:cost_budget} reports per-method resource usage measured from logged Aggregate720 runs on Cohere command-r-plus-08-2024. Reported metrics include average logical API calls, average input tokens, average output tokens, and average latency in seconds.  Total tokens (input + output) can be derived by summing the respective columns.  Budget parameter $B = 6$ is shown for completeness.
+
+We report cost in logical calls, tokens, and latency; monetary cost depends on provider pricing and is not used as the primary comparison metric.  Dollar-normalized cost analysis, latency percentile distributions, and multi-provider token cost benchmarks are identified as future work (Section~\ref{sec:limitations}).
+
+\subsection{Parameter grounding}
+\label{sec:param_grounding}
+
+Table~\ref{tab:param_sensitivity} (Appendix) documents the key parameters and design choices used in FIX-2+FIX-4, including their values, roles, and the robustness evidence available.  We report parameter grounding and robustness checks rather than a full continuous hyperparameter sweep; a full threshold sweep is left for future work.
+
+\subsection{Primary splits and disjointness}
+The primary aggregate (Aggregate720) is formed from three disjoint sources: seed41 main300, seed61 independent120, seed71 final300.  Cross-source overlap checks confirm zero shared example IDs and zero shared question hashes, ensuring that the aggregate evidence is drawn from non-overlapping subpopulations.
+
+\subsection{Statistics}
+We report paired bootstrap confidence intervals ($n = 5{,}000$ resamples) on final300 and source-stratified aggregate confidence intervals on Aggregate720.  The bootstrap resample count of 5,000 is standard for stable CI estimation at the sample sizes used.  All confidence intervals are two-sided at the 95\% level.
+

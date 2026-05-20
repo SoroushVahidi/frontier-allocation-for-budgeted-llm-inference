@@ -1,0 +1,23 @@
+\section{Limitations}
+\label{sec:limitations}
+
+We identify the following scope boundaries and residual risks explicitly.
+
+\paragraph{Provider-specific scope.}
+All promoted evidence is obtained on Cohere command-r-plus-08-2024.  The method is not claimed to generalize to other providers, model families, or API versions without independent replication.  Provider-specific evidence is the appropriate evidential category for this submission.
+
+\paragraph{Benchmark scope.}
+Results are scoped to GSM8K (\texttt{openai/gsm8k}) under the matched-budget protocol described in Section~\ref{sec:experiments}.  We make no universal accuracy claim beyond this dataset and task family.  Extension to other reasoning benchmarks or open-ended tasks is left for future work.
+
+\paragraph{Moderate margin.}
+The primary gain of FIX-2+FIX-4 over the best external baseline on Aggregate720 is $+3.06$ percentage points (95\% CI $[+1.11, +5.00]$).  While the confidence interval lower bound is positive, the margin is moderate in absolute terms.  We do not claim large or transformative improvements.
+
+\paragraph{Cost metric scope.}
+We report cost in logical API calls, tokens, and latency; monetary cost depends on provider pricing and is not used as the primary comparison metric.  Dollar-normalized cost analysis and latency percentile distributions across all run batches are incomplete and identified as future work.
+
+\paragraph{Residual pool-miss failures.}
+A residual failure class exists in which all methods---frontier and external baselines---produce incorrect answers for the same example.  The proposed policy cannot recover from this class, as no correct answer is present in the candidate pool.  The fraction of such cases is documented in Table~\ref{tab:failure_taxonomy} but no remedy has been developed.
+
+\paragraph{Non-promoted prototypes.}
+Follow-up prototypes (FIX-7, FIX-8, FIX-9) were explored during development but did not meet promotion-grade evidence criteria.  They are reported as negative results in Table~\ref{tab:negative_results} and must not be interpreted as deployment-ready improvements.  Only FIX-2+FIX-4 is promoted.
+

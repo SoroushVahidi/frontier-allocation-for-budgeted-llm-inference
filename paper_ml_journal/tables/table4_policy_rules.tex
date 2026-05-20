@@ -1,0 +1,15 @@
+\begin{table*}[t]
+\centering
+\caption{Exact policy rule definitions for reproducibility.}
+\label{tab:policy_rules}
+\scriptsize
+\begin{tabular}{p{0.18\textwidth}p{0.31\textwidth}p{0.24\textwidth}p{0.20\textwidth}}
+\toprule
+Component & Exact condition & Action & Gold-free rationale \\
+\midrule
+FIX-2 low-depth guard & trigger if override\_reason contains single\_weak\_frontier\_branch OR (frontier\_support==0 AND candidate\_pool\_answer\_group\_count>=2) & fallback to external majority vote; if no majority use fixed priority TALE>S1>L1; else keep frontier & uses only runtime metadata and baseline answers; no gold/exact labels \\
+FIX-4 external-consensus gate & trigger only when override\_reason==direct\_frontier\_agree AND l1==s1==tale AND unanimous\_external!=frontier & replace frontier with unanimous external answer & uses only runtime override reason + method answers \\
+Combined FIX-2+FIX-4 & if FIX-2 triggers apply FIX-2 and stop; else if FIX-4 triggers apply FIX-4; else keep original & single-fire precedence chain & no correctness labels in trigger chain \\
+\bottomrule
+\end{tabular}
+\end{table*}
