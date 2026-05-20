@@ -11,8 +11,10 @@
 - `mlj_final_related_files.zip`
 
 ## Notes
-- Package refreshed after 7-section manuscript restructuring and Method subsection expansion.
+- Package refreshed after repository-style wording cleanup.
+- Canonical and staged manuscripts retain the 7-section journal structure.
+- Figure 1 yes/no label placement fix is preserved in staged and canonical sources.
 - Scientific claims/results were not changed.
-- Repository remains private during review.
+- Development repository remains private during review.
 - Supplementary ZIP is intentionally clean and reviewer-facing only.
 - If editor requests: add the related under-review manuscript PDF to `mlj_final_related_files.zip`.
