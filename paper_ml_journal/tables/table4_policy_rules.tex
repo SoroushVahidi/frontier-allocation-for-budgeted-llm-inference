@@ -9,11 +9,11 @@
 Component & Exact condition & Action & Gold-free rationale \\
 \midrule
 Low-Depth Guard (FIX-2) &
-  \texttt{override\_reason} contains \texttt{single\_weak\allowbreak\_frontier\_branch} \textbf{or} (\texttt{frontier\_support}$=0$ \textbf{and} \texttt{pool\_group\_count}$\geq 2$) &
+  \texttt{override\allowbreak\_reason} contains \texttt{single\allowbreak\_weak\allowbreak\_frontier\allowbreak\_branch} \textbf{or} (\texttt{frontier\allowbreak\_support}$=0$ \textbf{and} \texttt{pool\allowbreak\_group\allowbreak\_count}$\geq 2$) &
   Fallback to external majority vote; if no majority use priority TALE$\succ$S1$\succ$L1; else keep frontier &
   Uses only runtime metadata and baseline answers; no gold/exact labels \\
 External-Consensus Fallback (FIX-4) &
-  \texttt{override\_reason}$=$\texttt{direct\_frontier\_agree} \textbf{and} \texttt{l1}$=$\texttt{s1}$=$\texttt{tale} \textbf{and} unanimous external $\neq$ frontier &
+  \texttt{override\allowbreak\_reason}$=$\texttt{direct\allowbreak\_frontier\allowbreak\_agree} \textbf{and} \texttt{l1}$=$\texttt{s1}$=$\texttt{tale} \textbf{and} unanimous external $\neq$ frontier &
   Replace frontier with the unanimous external answer &
   Uses only runtime override reason and method answers \\
 Combined FIX-2+FIX-4 &

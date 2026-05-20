@@ -10,7 +10,7 @@ The key difference from self-consistency is that our selection policy is conditi
 \paragraph{Test-time compute scaling.}
 Recent work has shown that scaling inference-time computation can yield accuracy gains comparable to scaling model parameters \citep{snell2024scaling}.
 Budget-forcing \citep{muennighoff2025s1} operationalises this by extending or truncating the reasoning trace to a target token count, encouraging the model to use its full compute allotment.
-\citet{wu2024inference} and others have studied how the allocation of test-time compute across verifier calls, generator retries, and search depth affects downstream accuracy.
+\citet{wu2024inference} and related work study cost--performance trade-offs across test-time strategies (for example, sampling, voting, and search variants) under fixed compute budgets.
 The present work occupies a complementary niche: given that the budget has already been spent generating a frontier candidate pool (budget~$= 6$ in our setting), we ask how to select the best answer from the pool without additional generation.
 
 \paragraph{Tree-structured and search-based reasoning.}

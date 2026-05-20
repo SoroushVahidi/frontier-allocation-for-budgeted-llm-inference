@@ -11,9 +11,11 @@
 - `mlj_final_related_files.zip`
 
 ## Notes
-- Package refreshed after repository-style wording cleanup.
+- Package refreshed on 2026-05-20 after repository-style wording cleanup.
 - Canonical and staged manuscripts retain the 7-section journal structure.
 - Figure 1 yes/no label placement fix is preserved in staged and canonical sources.
+- Main LaTeX ZIP is built from `paper_ml_journal_snjnl_stage/` sources.
+- Main PDF ZIP contains rebuilt `paper_ml_journal_snjnl_stage/main.pdf`.
 - Scientific claims/results were not changed.
 - Development repository remains private during review.
 - Supplementary ZIP is intentionally clean and reviewer-facing only.
