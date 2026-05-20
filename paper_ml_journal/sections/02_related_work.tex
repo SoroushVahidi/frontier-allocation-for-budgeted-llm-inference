@@ -16,7 +16,7 @@ The present work occupies a complementary niche: given that the budget has alrea
 \paragraph{Tree-structured and search-based reasoning.}
 Tree of Thoughts \citep{yao2023tree} and similar frameworks \citep{besta2024graph} extend CoT to multi-branch deliberate search, where the model evaluates partial solutions at each step.
 These approaches improve coverage of the solution space at the cost of increased inference computation.
-The frontier method used as our baseline can be viewed as a lightweight variant: it generates a diverse candidate pool under a budget constraint and selects a final answer via a fixed rule.
+The frontier method used as our baseline can be viewed as a lightweight variant: it generates candidates via program-aided execution \citep{gao2023pal}, accumulates a diverse pool under a budget constraint, and selects a final answer via a fixed rule.
 The failure modes we identify---structurally weak single-branch explorations and frontier-external disagreements---arise specifically because not all budget allocations produce equally reliable candidates, motivating the gating rules in FIX-2 and FIX-4.
 
 \paragraph{Verifier-guided reranking and outcome reward models.}

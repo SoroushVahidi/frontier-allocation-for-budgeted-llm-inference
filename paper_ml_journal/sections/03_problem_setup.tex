@@ -1,5 +1,5 @@
 \section{Problem Setup}
-We consider method selection under a fixed budget parameter (budget $=6$) on Cohere command-r-plus-08-2024 runs over \texttt{openai/gsm8k} examples. For each example, baseline methods produce candidate final answers. The objective is to maximize exact-match accuracy without using gold labels at runtime.
+We consider method selection under a fixed budget parameter (budget $=6$) on Cohere command-r-plus-08-2024 runs over \texttt{openai/gsm8k} examples. GSM8K, a grade-school math benchmark, was introduced by \citet{cobbe2021training} and provides 1,319 test problems with numerical final answers that are amenable to exact-match evaluation. For each example, baseline methods produce candidate final answers. The objective is to maximize exact-match accuracy without using gold labels at runtime.
 
 Evaluation is reported on:
 \begin{itemize}
