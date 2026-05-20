@@ -22,6 +22,10 @@ FIX-5 (TALE-default router) produced zero switches on seeds~41 and~61,
 equalling TALE performance on both splits, and only a marginal net positive
 switch on seed~71 ($+1$ example over TALE, final-300 78.67\% vs.\ 78.33\%).
 This outcome is $-8.00$~pp below FIX-2+FIX-4 on the same split.
+Note that the Aggregate-720 accuracy for FIX-5 (75.28\%) numerically coincides
+with that of the frontier baseline; this reflects the zero-switch behavior on
+seeds~41 and~61 (FIX-5 reverts to TALE, and TALE plus the single seed-71 switch
+happen to sum to the same total as the frontier), not an equivalence by design.
 The TALE-default design assumed a reliable agreement region that did not
 materialise consistently across evaluation seeds; see Section~\ref{sec:discussion}
 for interpretation.

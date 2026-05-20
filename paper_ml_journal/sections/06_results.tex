@@ -51,3 +51,18 @@ On the Final-300 evaluation, FIX-2+FIX-4 wins on 19 examples vs.\ L1 (losses: 8,
 23 examples vs.\ S1 (losses: 9, ties: 268), and 27 examples vs.\ TALE (losses: 2, ties: 271).
 The extremely low loss counts vs.\ TALE confirm that the policy's recoveries
 substantially outweigh its regressions on this evaluation.
+
+\paragraph{Sensitivity set (supporting diagnostic only).}
+Table~\ref{tab:source_by_source} includes a row for a 100-example set (seed~31,
+labeled ``sensitivity-only'') that was used as a development diagnostic during
+early policy calibration for FIX-1 and FIX-2.
+Because this set was involved in parameter selection for earlier FIX variants,
+it is excluded from the primary Aggregate-720 evidence and from the bootstrap
+confidence intervals reported above.
+On this set, FIX-2+FIX-4 achieves 82.00\%, tied with TALE and ahead of L1 (76.00\%)
+and S1 (77.00\%).
+When the sensitivity set is added to the aggregate ($N = 820$), the positive
+point-estimate advantage of FIX-2+FIX-4 over all three external baselines is
+preserved, and the overall picture is unchanged.
+All promoted accuracy claims in this paper are based on Final-300 and Aggregate-720
+only.
