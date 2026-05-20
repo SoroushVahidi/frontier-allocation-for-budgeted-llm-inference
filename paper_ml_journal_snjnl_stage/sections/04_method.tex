@@ -1,7 +1,7 @@
 \subsection{Method}
 \label{sec:method}
 
-The promoted method, which we term the \textbf{failure-trace-guided allocator} (FIX-2+FIX-4), is a fixed-budget answer-selection layer applied \emph{after} candidate generation (Figure~\ref{fig:method_overview}).  It does not generate new candidates and does not issue additional inference calls: it selects a final answer from already-produced frontier and external outputs under the same matched-budget protocol.  Its two gates---the \textit{weak-frontier trigger} and the \textit{direct-agreement trigger}---fire in strict priority order; at most one gate acts per example.  All runtime decisions are gold-free: no \texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
+The promoted method, which we term the \textbf{failure-trace-guided allocator} (FIX-2+FIX-4), is an answer-selection layer applied \emph{after} candidate generation (Figure~\ref{fig:method_overview}).  It does not generate new candidates and does not issue additional inference calls: it selects a final answer from already-produced frontier and external outputs generated under the same per-method budget cap.  Its two gates---the \textit{weak-frontier trigger} and the \textit{direct-agreement trigger}---fire in strict priority order; at most one gate acts per example.  All runtime decisions are gold-free: no \texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
 
 Throughout the paper we use short paper-facing names for readability.
 The combined FIX-2+FIX-4 policy is the \emph{failure-trace-guided allocator}.
@@ -17,6 +17,17 @@ The allocator output is a single final answer plus an explicit policy outcome
 audited after the run using only logged runtime fields.
 This interface is intentionally narrow: the promoted policy does not depend on
 learned scores or post-hoc labels.
+
+Conceptually, the allocator uses three abstract predicates.
+\textsc{WeakFrontier}$(x)$ is true when the frontier trace indicates low support
+or a single-branch selection.
+\textsc{ExternalMajority}$(x)$ returns an external answer when at least two of
+L1, S1, and TALE agree, with a deterministic fallback only when all three differ.
+\textsc{ExternalConsensusDisagree}$(x)$ is true when L1, S1, and TALE unanimously
+agree with one another and disagree with the frontier answer.
+The raw log strings in Algorithm~\ref{alg:fix24} and Table~\ref{tab:policy_rules}
+are implementation realizations of these predicates, not scientific assumptions
+tied to a private script.
 
 The weak-frontier trigger is motivated by a structural reliability pattern.
 When the frontier trace indicates a single weak branch (for example, low-depth
@@ -46,8 +57,12 @@ condition fires, the policy routes to the external unanimity answer.
 If neither trigger fires, the frontier answer is retained.
 The default therefore preserves the original frontier method on all examples
 where neither high-confidence failure trace is present.
-Conflict handling is deterministic: at most one gate can act, and majority ties are
-resolved by the fixed priority order documented in Table~\ref{tab:policy_rules}.
+Conflict handling is deterministic: at most one gate can act, and external
+majority ties are resolved by the fixed priority order documented in
+Table~\ref{tab:policy_rules}.
+That fallback is retained for reproducibility rather than claimed as optimal;
+the sensitivity noted in Table~\ref{tab:param_sensitivity} shows that alternative
+tie orders change Aggregate-720 replay by less than one percentage point.
 
 All trigger features are runtime-legal and gold-free by construction.
 They are computed only from model outputs and frontier trace metadata that are
@@ -60,8 +75,8 @@ constraint.
 
 Relative to L1, S1, TALE, and the frontier baseline, FIX-2+FIX-4 plays a different
 role in the stack.
-L1, S1, TALE, and frontier each provide candidate answers under the same matched
-budget; the failure-trace-guided allocator then decides whether to keep the
+L1, S1, TALE, and frontier each provide candidate answers under the same
+per-method matched budget; the failure-trace-guided allocator then decides whether to keep the
 frontier answer or override it using external agreement signals.
 This separation between candidate generation and final allocation is what allows the
 policy to improve selection quality without additional model calls.

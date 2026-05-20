@@ -19,7 +19,10 @@ interval that includes zero.  The pooled comparison is therefore reported as a
 robustness baseline, not as statistically separated evidence of superiority.
 
 \paragraph{Cost metric scope.}
-We report cost in logical API calls, tokens, and latency; monetary cost depends on provider pricing and is not used as the primary comparison metric.  Dollar-normalized cost analysis and latency percentile distributions across all run batches are incomplete and identified as future work.
+We report cost in logical API calls, tokens, and latency; monetary cost depends on provider pricing and is not used as the primary comparison metric.  The matched-budget claim is a per-method evaluation contract, not a claim that generating the full frontier/L1/S1/TALE candidate pool costs the same as one method run.  Dollar-normalized cost analysis and latency percentile distributions across all run batches are incomplete and identified as future work.
+
+\paragraph{Tie-breaker sensitivity.}
+The TALE$\succ$S1$\succ$L1 fallback used when all three external answers differ is deterministic and gold-free, but it is not claimed to be optimal.  Alternative tie orders move Aggregate720 replay by less than one percentage point in the available artifacts.  A fully optimized tie policy would require separate validation and is outside the promoted claim.
 
 \paragraph{Residual pool-miss failures.}
 A residual failure class exists in which all methods---frontier and external baselines---produce incorrect answers for the same example.  The proposed policy cannot recover from this class, as no correct answer is present in the candidate pool.  The fraction of such cases is documented in Table~\ref{tab:failure_taxonomy} but no remedy has been developed.

@@ -12,9 +12,9 @@ and TALE 78.33\% (235/300).
 Paired bootstrap 95\% confidence intervals (5\,000 resamples) for FIX-2+FIX-4
 minus each baseline on this split:
 \begin{itemize}[nosep,leftmargin=1.5em]
-  \item vs.\ L1: $+3.67$ pp, 95\% CI $[+0.33,\;+7.00]$, $p(\Delta>0)=0.983$
-  \item vs.\ S1: $+4.67$ pp, 95\% CI $[+1.00,\;+8.33]$, $p(\Delta>0)=0.993$
-  \item vs.\ TALE: $+8.33$ pp, 95\% CI $[+5.00,\;+12.00]$, $p(\Delta>0)=1.000$
+  \item vs.\ L1: $+3.67$ pp, 95\% CI $[+0.33,\;+7.00]$, bootstrap positive-delta fraction $0.983$
+  \item vs.\ S1: $+4.67$ pp, 95\% CI $[+1.00,\;+8.33]$, bootstrap positive-delta fraction $0.993$
+  \item vs.\ TALE: $+8.33$ pp, 95\% CI $[+5.00,\;+12.00]$, bootstrap positive-delta fraction $1.000$
 \end{itemize}
 All three CI lower bounds are strictly positive on this split.
 
@@ -26,11 +26,11 @@ FIX-2+FIX-4 reaches \textbf{80.69\%} (581/720), versus L1 77.64\% (559/720),
 S1 77.08\% (555/720), and TALE 75.14\% (541/720).
 Source-stratified bootstrap 95\% confidence intervals (5\,000 resamples):
 \begin{itemize}[nosep,leftmargin=1.5em]
-  \item vs.\ L1: $+3.06$ pp, 95\% CI $[+0.83,\;+5.42]$, $p(\Delta>0)=0.995$
-  \item vs.\ S1: $+3.61$ pp, 95\% CI $[+1.39,\;+5.69]$, $p(\Delta>0)=0.999$
-  \item vs.\ TALE: $+5.56$ pp, 95\% CI $[+3.61,\;+7.50]$, $p(\Delta>0)=1.000$
+  \item vs.\ L1: $+3.06$ pp, 95\% CI $[+0.83,\;+5.42]$, bootstrap positive-delta fraction $0.995$
+  \item vs.\ S1: $+3.61$ pp, 95\% CI $[+1.39,\;+5.69]$, bootstrap positive-delta fraction $0.999$
+  \item vs.\ TALE: $+5.56$ pp, 95\% CI $[+3.61,\;+7.50]$, bootstrap positive-delta fraction $1.000$
   \item vs.\ source-local best external: $+3.06$ pp, 95\% CI $[+1.11,\;+5.00]$,
-        $p(\Delta>0)=0.999$
+        bootstrap positive-delta fraction $0.999$
 \end{itemize}
 All aggregate source-stratified CI lower bounds are strictly above zero.
 The margin vs.\ best external exceeds 1 pp even at the lower CI bound.
@@ -52,6 +52,12 @@ and 80.28\% on Aggregate-720.
 Thus, FIX-2+FIX-4 remains ahead by point estimate, but the pooled-ensemble
 comparison is not statistically separated and is treated as a robustness check
 rather than a promoted superiority claim.
+The external fallback order used by FIX-2 is deterministic and fixed for
+reproducibility; it is not presented as an optimized learned ranker.  A replay
+sensitivity check over alternative external tie orders changes Aggregate-720
+FIX-2-only accuracy from 80.00\% to 80.42\%, with frontier fallback on
+all-different external ties reaching 80.83\%; these variants are reported only as
+sensitivity because they were not the promoted policy.
 
 \paragraph{Source-by-source breakdown.}
 Table~\ref{tab:source_by_source} gives the per-source accuracy for all evaluated methods.

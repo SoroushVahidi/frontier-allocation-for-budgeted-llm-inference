@@ -1,6 +1,6 @@
 \begin{table*}[t]
 \centering
-\caption{Pooled answer-ensemble baselines computed from the same per-example frontier, L1, S1, and TALE outputs. Pooled-4 uses a strict majority over four answers and falls back to the frontier answer on ties or all-different cases. External-3 uses majority vote over L1/S1/TALE with the fixed TALE$\succ$S1$\succ$L1 tie fallback. Deltas and win/loss/tie counts compare FIX-2+FIX-4 to the pooled baseline.}
+\caption{Pooled answer-ensemble baselines computed from the same per-example frontier, L1, S1, and TALE outputs. Pooled-4 uses a strict majority over four answers and falls back to the frontier answer on ties or all-different cases. External-3 uses majority vote over L1/S1/TALE with the fixed, deterministic TALE$\succ$S1$\succ$L1 tie fallback used by the promoted policy; tie sensitivity is summarized in Table~\ref{tab:param_sensitivity}. Deltas and win/loss/tie counts compare FIX-2+FIX-4 to the pooled baseline.}
 \label{tab:pooled_ensemble}
 \scriptsize
 \resizebox{\textwidth}{!}{%

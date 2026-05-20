@@ -1,5 +1,5 @@
 \subsection{Problem Setup}
-We consider method selection under a fixed budget parameter (budget $=6$) on Cohere command-r-plus-08-2024 runs over \texttt{openai/gsm8k} examples. GSM8K, a grade-school math benchmark, was introduced by \citet{cobbe2021training} and provides 1,319 test problems with numerical final answers that are amenable to exact-match evaluation. For each example, baseline methods produce candidate final answers. The objective is to maximize exact-match accuracy without using gold labels at runtime.
+We consider method selection under a fixed per-method budget parameter (budget $=6$) on Cohere command-r-plus-08-2024 runs over \texttt{openai/gsm8k} examples. GSM8K, a grade-school math benchmark, was introduced by \citet{cobbe2021training} and provides 1,319 test problems with numerical final answers that are amenable to exact-match evaluation. For each example, candidate-producing methods produce final-answer candidates under the same provider, model, and budget cap. The objective is to maximize exact-match accuracy without using gold labels at runtime.
 
 The frontier method is a direct-reserve semantic frontier generator. At a high
 level, it allocates the fixed budget across a small set of direct-reserve attempts
@@ -33,15 +33,15 @@ The following terms are used consistently throughout the paper.
 Where helpful for readability, we use short paper-facing names and keep the corresponding implementation identifiers in Table~\ref{tab:name_mapping} for reproducibility.
 
 \begin{description}[leftmargin=2.2cm, labelwidth=2cm, labelsep=0.2cm, style=nextline]
-  \item[Candidate pool] The set of final answers produced by all available methods (frontier and external baselines) for a given example.
+  \item[Candidate pool] The set of final answers produced by the available methods (frontier and external baselines) for a given example. Candidate-pool construction is separate from the downstream selection policy.
   \item[Frontier method] The primary, computationally intensive answer selected by the direct-reserve semantic frontier policy (\texttt{direct\_reserve\_semantic\_frontier\_v2}), which serves as the default output before any policy gate fires.
   \item[External baseline] Any of the three independently-sourced single-model methods used as reference signals: L1, S1, or TALE (defined below). External baselines provide gold-free consensus signals without access to gold labels.
   \item[L1] An external method that selects the answer with the highest support count across sampled model outputs.
   \item[S1] An external method that applies sequential budget-forcing to elicit a final answer within the allocated budget.
   \item[TALE] An external method that uses prompt-level budget cues to guide answer selection.
-  \item[Logical API call] A single provider inference request counted against the budget. The budget parameter ($B = 6$) caps the maximum number of logical API calls per example across the full method stack.
-  \item[Budget] The integer upper bound $B = 6$ on logical API calls per example, applied identically to all compared methods (matched-budget condition).
-  \item[Matched budget] All compared methods operate under the same budget $B$, ensuring that accuracy differences are not confounded by unequal computational expenditure.
+  \item[Logical API call] A single provider inference request counted against a candidate-producing method's budget.
+  \item[Budget] The integer upper bound $B = 6$ on logical API calls per example for each candidate-producing method, applied identically to all compared methods (matched-budget condition).
+  \item[Matched budget] All compared candidate-producing methods operate under the same per-method budget cap $B$, ensuring that accuracy differences are not confounded by unequal per-method computational limits. If a deployment generates frontier, L1, S1, and TALE outputs from scratch, its total wall-clock and API cost depends on which producers are executed.
   \item[Postrun replay] Offline re-evaluation of a previously generated run artifact using a policy rule without issuing new provider API calls. Postrun replay is used to compute policy-specific accuracy from existing logs.
   \item[Gold-free runtime feature] Any input to a policy decision rule that is derived solely from model outputs, run metadata, or structural properties of the candidate pool---never from gold labels, exact-match signals, or correctness indicators.
   \item[Promotion-grade evidence] Evidence collected on held-out evaluation sets that were not used during rule development, meeting the disjointness, seed-independence, and aggregate scale criteria documented in Section~\ref{sec:experiments}.

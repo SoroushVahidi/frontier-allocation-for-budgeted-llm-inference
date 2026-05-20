@@ -2,6 +2,12 @@
 
 This note records offline analyses added before MLJ submission. No provider API calls were made.
 
+Budget accounting boundary: all comparisons use a per-method matched budget cap of
+`B=6` logical calls for each candidate-producing method. FIX-2+FIX-4 is a
+post-generation answer selector and adds no model calls after candidate answers
+and frontier metadata are available. If frontier, L1, S1, and TALE must all be
+generated from scratch, total deployment cost depends on which producers are run.
+
 ## Per-example artifacts used
 
 - Seed 41 main 300:
@@ -30,12 +36,19 @@ External-only ensemble: majority over L1, S1, and TALE; if no majority, use the 
 
 Bootstrap results for FIX-2+FIX-4 minus Pooled-4:
 
-| Split | Delta | 95% CI | p(delta > 0) | W/L/T |
+| Split | Delta | 95% CI | Bootstrap positive-delta fraction | W/L/T |
 |---|---:|---:|---:|---:|
 | Final-300 | +2.33pp | [-0.67, +5.67] | 0.911 | 16/9/275 |
 | Aggregate-720 | +0.83pp | [-1.11, +2.78] | 0.780 | 28/22/670 |
 
 Interpretation: FIX-2+FIX-4 remains ahead by point estimate on Final-300 and Aggregate-720, but the pooled-ensemble comparison is not statistically separated.
+
+External tie fallback sensitivity: the promoted policy uses the fixed deterministic
+TALE > S1 > L1 fallback when L1/S1/TALE all differ. Aggregate-720 FIX-2-only replay
+is 80.00% under that convention, 80.14% with S1-first, 80.42% with L1-first, and
+80.83% if all-different external ties retain the frontier answer. The tie rule is
+therefore reported as a fixed reproducibility convention, not as an optimized
+learned ranker.
 
 ## FIX-4 marginal action counts
 
