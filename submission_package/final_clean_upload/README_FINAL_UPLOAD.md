@@ -11,6 +11,7 @@
 - `mlj_final_related_files.zip`
 
 ## Notes
+- Package refreshed after 7-section manuscript restructuring and Method subsection expansion.
 - Scientific claims/results were not changed.
 - Repository remains private during review.
 - Supplementary ZIP is intentionally clean and reviewer-facing only.
