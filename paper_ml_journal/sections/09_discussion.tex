@@ -1,5 +1,62 @@
 \section{Discussion}
-This work addresses prior reviewer concerns by expanding from small-sample evidence to disjoint aggregate evaluation with interval estimates and explicit rule definitions.
+\label{sec:discussion}
 
-The contribution is practical and reproducible: a simple gold-free gating policy that improves over strong external baselines under matched budget conditions in the tested Cohere setting.
+\paragraph{Why failure-trace-guided gating works.}
+The two gates in FIX-2+FIX-4 target failure modes that are identifiable at runtime
+without any access to gold labels.
+The Low-Depth Guard (FIX-2) addresses a structural weakness: when the frontier search
+terminates with a \textit{single weak branch}---signalled by the \texttt{override\_reason}
+field---the resulting answer is drawn from a narrow slice of the candidate space.
+In such cases, the external majority vote is empirically more reliable.
+The External-Consensus Fallback (FIX-4) targets a different pattern: when the frontier
+selects its own answer confidently (\texttt{direct\_frontier\_agree}) yet all three
+independent external baselines unanimously prefer a different answer, that unanimous
+disagreement constitutes strong evidence that the frontier is wrong.
+Both signals are available as logged metadata from normal frontier execution;
+no additional inference or labelling is required.
 
+\paragraph{Why the non-promoted variants were abandoned.}
+FIX-5 (TALE-default router) produced zero switches on the unbiased 300-example
+validation run (seed 71), reverting to TALE performance and offering no advantage
+over simply running TALE.
+The TALE-default design assumed a reliable agreement region that did not materialise
+at scale, making the router effectively inactive.
+
+FIX-6/LoVEC proposed collecting extra frontier or TALE-retry actions for predicted
+failure cases.
+The first 40-case overlapping pilot showed nonnegative action-value signal, but
+the independent 80-case Stage-2 relaunch (disjoint from the pilot) yielded
+net $-1$ for extra frontier actions and net $-4$ for extra TALE retries relative to FIX-2+FIX-4,
+with non-trivial control-slice regressions (8.9\% for frontier, 11.1\% for TALE retry).
+The failure to replicate on disjoint data is the key indicator: the pilot signal
+appears to have been artefact-specific rather than generalisable.
+
+FIX-7 (cluster-level selector) and FIX-8 (robust parser/canonicaliser) both produced
+zero accuracy-changing switches on the final-300 and aggregate-720 evaluations.
+Their logged action counts confirm that the targeted failure patterns---ambiguous answer
+clusters and parse-failure residuals---are rare in the current evaluation setting,
+leaving no headroom for these rules to operate.
+
+\paragraph{How aggregate-720 changes the evidence posture.}
+The most substantive evidence shift in this work is the transition from a single-run
+300-example evaluation (seed 41, where the CI lower bound vs.\ L1 still crossed zero
+at $[-0.48, +5.71]$) to the disjoint Aggregate-720 evidence (seeds 41, 61, 71).
+By combining three independently sampled unbiased evaluation splits, the stratified
+bootstrap CI narrows sufficiently that the lower bound vs.\ every external baseline
+is strictly positive.
+This is not simply a power argument: the source-stratified design controls for
+seed-specific variance, and the zero-overlap check on example-id and question-hash
+confirms independence.
+The result is that the point-estimate advantage of FIX-2+FIX-4 is consistent across
+all three seeds, which is the primary reason the aggregate CIs no longer include zero.
+
+\paragraph{Scope and limitations.}
+The result is strong within its defined scope but should not be extrapolated.
+The evaluation is conducted on GSM8K-style arithmetic reasoning problems using
+Cohere command-r-plus-08-2024 with a matched budget of 6 inference calls per example.
+Performance on datasets with different reasoning types (multi-hop, commonsense, code),
+on different providers, or under different budget constraints may differ substantially.
+The failure-trace signals (\texttt{override\_reason}, external answer availability)
+are specific to the frontier method's logging format and would require re-implementation
+for a different base system.
+Section~\ref{sec:limitations} enumerates these limitations in detail.

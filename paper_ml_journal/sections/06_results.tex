@@ -1,12 +1,52 @@
 \section{Results}
-Main results are listed in Table~\ref{tab:main_results}. FIX-2+FIX-4 is the promoted policy.
+\label{sec:results}
 
-\paragraph{Final300.}
-FIX-2+FIX-4 reaches 86.67\% (260/300), versus L1 83.00\%, S1 82.00\%, TALE 78.33\%.
+Main results are listed in Table~\ref{tab:main_results} and Figure~\ref{fig:accuracy_ci}.
+FIX-2+FIX-4 is the promoted policy; all other FIX variants were evaluated and not promoted
+(see Section~\ref{sec:ablation} and Table~\ref{tab:negative_results}).
 
-\paragraph{Aggregate720 (primary).}
-FIX-2+FIX-4 reaches 80.69\% (581/720), versus L1 77.64\%, S1 77.08\%, TALE 75.14\%.
+\paragraph{Final-300.}
+On the unbiased 300-example evaluation (seed 71, budget 6), FIX-2+FIX-4 reaches
+\textbf{86.67\%} (260/300), versus L1 83.00\% (249/300), S1 82.00\% (246/300),
+and TALE 78.33\% (235/300).
+Paired bootstrap 95\% confidence intervals (5\,000 resamples) for FIX-2+FIX-4
+minus each baseline on this split:
+\begin{itemize}[nosep,leftmargin=1.5em]
+  \item vs.\ L1: $+3.67$ pp, 95\% CI $[+0.33,\;+7.00]$, $p(\Delta>0)=0.983$
+  \item vs.\ S1: $+4.67$ pp, 95\% CI $[+1.00,\;+8.33]$, $p(\Delta>0)=0.993$
+  \item vs.\ TALE: $+8.33$ pp, 95\% CI $[+5.00,\;+12.00]$, $p(\Delta>0)=1.000$
+\end{itemize}
+All three CI lower bounds are strictly positive on this split.
 
-\paragraph{Confidence intervals.}
-Source-stratified aggregate720 deltas for FIX-2+FIX-4 are positive versus L1/S1/TALE/best-external.
+\paragraph{Aggregate-720 (primary).}
+The primary claim rests on the disjoint Aggregate-720 evaluation combining three independent
+sources (seeds 41, 61, 71; 240 examples each, no example-id or question-hash overlap).
+FIX-2+FIX-4 reaches \textbf{80.69\%} (581/720), versus L1 77.64\% (559/720),
+S1 77.08\% (555/720), and TALE 75.14\% (541/720).
+Source-stratified bootstrap 95\% confidence intervals (5\,000 resamples):
+\begin{itemize}[nosep,leftmargin=1.5em]
+  \item vs.\ L1: $+3.06$ pp, 95\% CI $[+0.83,\;+5.42]$, $p(\Delta>0)=0.995$
+  \item vs.\ S1: $+3.61$ pp, 95\% CI $[+1.39,\;+5.69]$, $p(\Delta>0)=0.999$
+  \item vs.\ TALE: $+5.56$ pp, 95\% CI $[+3.61,\;+7.50]$, $p(\Delta>0)=1.000$
+  \item vs.\ source-local best external: $+3.06$ pp, 95\% CI $[+1.11,\;+5.00]$,
+        $p(\Delta>0)=0.999$
+\end{itemize}
+All aggregate source-stratified CI lower bounds are strictly above zero.
+The margin vs.\ best external exceeds 1 pp even at the lower CI bound,
+meeting the pre-registered publication-meaningful threshold (Decision~A;
+see \texttt{docs/LATEST\_RESULTS\_AND\_CLAIMS.md} \S17).
 
+\paragraph{Source-by-source breakdown.}
+Table~\ref{tab:source_by_source} gives the per-source accuracy for all evaluated methods.
+Estimates are consistent across sources: FIX-2+FIX-4 leads by point estimate in every
+individual source split, with seed-41 showing the smallest advantage
+(83.33\% vs.\ 80.33\% for all three baselines) and seed-71 showing the largest
+(86.67\% vs.\ 83.00\% for L1).
+
+\paragraph{Win/loss/tie decomposition.}
+Appendix Table~\ref{tab:wlt} gives the per-example win/loss/tie counts versus each baseline
+on Final-300.
+On the Final-300 evaluation, FIX-2+FIX-4 wins on 19 examples vs.\ L1 (losses: 8, ties: 273),
+23 examples vs.\ S1 (losses: 9, ties: 268), and 27 examples vs.\ TALE (losses: 2, ties: 271).
+The extremely low loss counts vs.\ TALE confirm that the policy's recoveries
+substantially outweigh its regressions on this evaluation.

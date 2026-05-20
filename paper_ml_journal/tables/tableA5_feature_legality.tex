@@ -1,0 +1,61 @@
+\begin{table*}[t]
+\centering
+\caption{Runtime feature legality for FIX-2+FIX-4. All features used in the
+gating logic are logged as side-effects of normal frontier execution and are
+available at inference time without any access to gold answers, correctness labels,
+example identifiers, or artifact paths. The \emph{Gold-free?} column confirms
+compliance with the gold-free runtime requirement.}
+\label{tab:feature_legality}
+\small
+\begin{tabular}{llll}
+\toprule
+Feature & Source & Gold-free? & Justification \\
+\midrule
+\texttt{override\_reason} &
+  Frontier run log metadata &
+  Yes &
+  Set by the frontier search algorithm (e.g., \texttt{"single\_weak\_frontier\_branch"},
+  \texttt{"direct\_frontier\_agree"}); reflects internal search state, not answer correctness. \\[2pt]
+\texttt{frontier\_support} &
+  Frontier run log metadata &
+  Yes &
+  Integer count of support paths from the frontier search; derived from candidate pool
+  structure, no correctness signal. \\[2pt]
+\texttt{candidate\_pool\_answer\_group\_count} &
+  Frontier run log metadata &
+  Yes &
+  Count of unique answer clusters in the candidate pool; reflects diversity of
+  generated candidates, not correctness. \\[2pt]
+\texttt{frontier\_answer} &
+  Frontier generator output &
+  Yes &
+  The candidate answer selected by the frontier before gating; the method's
+  proposed output, not the reference answer. \\[2pt]
+\texttt{l1\_answer} &
+  External L1 baseline output &
+  Yes &
+  Final predicted answer from the L1 baseline; an inference output, not the
+  ground-truth label. \\[2pt]
+\texttt{s1\_answer} &
+  External S1 baseline output &
+  Yes &
+  Final predicted answer from the S1 (budget-forcing) baseline; inference output only. \\[2pt]
+\texttt{tale\_answer} &
+  External TALE baseline output &
+  Yes &
+  Final predicted answer from the TALE (prompt-budgeting) baseline; inference output only. \\
+\midrule
+\multicolumn{4}{l}{\textit{Features that are \textbf{never} accessed at runtime:}} \\
+\midrule
+\texttt{gold\_answer} / \texttt{exact\_match} &
+  Evaluation-only labels &
+  N/A &
+  Not available in the runtime routing path. Accessed only offline for
+  evaluation reporting. \\[2pt]
+\texttt{example\_id} / artifact path &
+  Evaluation metadata &
+  N/A &
+  Not used in any gating condition; present in logs for reproducibility only. \\
+\bottomrule
+\end{tabular}
+\end{table*}

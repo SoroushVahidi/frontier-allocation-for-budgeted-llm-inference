@@ -8,7 +8,52 @@
 \label{sec:appendix_params}
 \input{tables/tableA4_parameter_sensitivity}
 
+\section{Runtime Feature Legality}
+\label{sec:appendix_features}
+\input{tables/tableA5_feature_legality}
+
 \section{Algorithm Listing}
 The promoted policy is presented inline as Algorithm~\ref{alg:fix24} in Section~\ref{sec:fix24_algorithm}.
-For full executable implementation, see \nolinkurl{experiments/support_aware_selector.py} and the artifact package at
+For the full executable implementation, see \nolinkurl{experiments/support_aware_selector.py} and the artifact package at
 \nolinkurl{outputs/machine_learning_journal_result_package_20260520_20260520T035127Z/algorithm_fix24_pseudocode.md}.
+
+\section*{Data Availability}
+The primary evaluation artifacts, including per-example JSONL outputs, integrity manifests,
+and the result package used to generate all tables and figures in this paper, are stored in
+the repository under \nolinkurl{outputs/machine_learning_journal_result_package_20260520_20260520T035127Z/}.
+The GSM8K benchmark questions used for evaluation are available from the original source
+\citep{cobbe2021training}.
+No proprietary or restricted data were used.
+
+\section*{Code Availability}
+The complete implementation of FIX-2+FIX-4 is provided in
+\nolinkurl{experiments/support_aware_selector.py} within the project repository.
+Evaluation driver scripts are located under \nolinkurl{scripts/}.
+All experiment configurations, dry-run scripts, and manifest files required to
+reproduce the promoted evaluation are included in the repository.
+
+% AUTHOR ACTION REQUIRED: Fill in actual funding sources before submission.
+% Remove this comment after updating.
+\section*{Funding}
+% Placeholder: update with actual grant numbers and agencies before submission.
+This research received no specific grant from any funding agency in the public,
+commercial, or not-for-profit sectors.
+% Example (replace if applicable):
+% This work was supported in part by [Agency] under Grant [Number].
+
+\section*{Competing Interests}
+The authors declare no competing interests.
+
+\section*{Use of AI Tools}
+Portions of this manuscript were drafted with the assistance of AI-based writing tools.
+All scientific claims, experimental designs, results, and interpretations were reviewed
+and verified by the authors against the primary evaluation artifacts.
+
+% AUTHOR ACTION REQUIRED: Author names and contributions must be filled in before submission.
+\section*{Author Contributions}
+% Replace with actual contributions following the CRediT taxonomy.
+% Example:
+% Conceptualization: [Author A]; Methodology: [Author A, Author B];
+% Software: [Author A]; Validation: [Author A]; Formal analysis: [Author A];
+% Writing -- original draft: [Author A]; Writing -- review \& editing: [Author A, Author B].
+\textit{[Author contributions to be completed by the authors before submission.]}

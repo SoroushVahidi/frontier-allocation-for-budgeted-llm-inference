@@ -1,5 +1,32 @@
 \section{Conclusion}
-FIX-2+FIX-4 is the current promoted method and improves matched-budget performance over L1/S1/TALE on disjoint aggregate evidence with positive confidence-interval lower bounds.
+\label{sec:conclusion}
 
-Future progress is likely to require better candidate generation for all-methods-wrong residuals, with careful disjoint pilot design and strict claim discipline.
+We presented FIX-2+FIX-4, a deterministic gold-free policy gating method for
+matched-budget LLM reasoning.
+On a disjoint 720-example aggregate evaluation (three independent seeds, zero overlap),
+FIX-2+FIX-4 achieves 80.69\% (581/720) versus L1 77.64\%, S1 77.08\%, and TALE 75.14\%.
+Source-stratified 95\% bootstrap confidence intervals are strictly positive for all four
+baseline comparisons, with the lower bound vs.\ best external at $+1.11$ pp.
+On the Final-300 evaluation (seed 71, budget 6), FIX-2+FIX-4 reaches 86.67\% (260/300),
+compared to 83.00\% for L1, 82.00\% for S1, and 78.33\% for TALE.
 
+The policy consists of two rule-based gates applied in strict priority order.
+The Low-Depth Guard (FIX-2) detects structurally weak frontier search branches using the
+logged \texttt{override\_reason} field and substitutes the external majority vote.
+The External-Consensus Fallback (FIX-4) identifies cases where all three external
+baselines unanimously disagree with the frontier's selection, overriding to the
+consensus answer.
+Both gates are gold-free: no correctness labels, example identifiers, or artifact
+paths are accessed at runtime.
+The rules, trigger conditions, and exact field names are fully specified in
+Table~\ref{tab:policy_rules} and Algorithm~\ref{alg:fix24}, and the complete
+implementation is available in \texttt{experiments/support\_aware\_selector.py}.
+
+Further accuracy gains in this setting will most likely require advances in candidate
+generation rather than selection policy.
+Failure analysis of the 40 residual errors on Final-300 shows that 24 (60\%) are
+\textit{all-methods-wrong} cases in which no evaluated method produced the correct answer;
+the dominant subtype is multi-step composition traps (10/24) where the error is
+embedded in intermediate reasoning rather than in the final answer selection step.
+Addressing this residual category requires either stronger base generators or
+training-time interventions that improve coverage of hard compositional patterns.
