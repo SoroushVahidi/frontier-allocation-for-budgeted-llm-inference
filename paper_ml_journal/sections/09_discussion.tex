@@ -16,11 +16,15 @@ Both signals are available as logged metadata from normal frontier execution;
 no additional inference or labelling is required.
 
 \paragraph{Why the non-promoted variants were abandoned.}
-FIX-5 (TALE-default router) produced zero switches on the unbiased 300-example
-validation run (seed 71), reverting to TALE performance and offering no advantage
-over simply running TALE.
+FIX-5 (TALE-default router) produced zero switches on seeds~41 and~61,
+equalling TALE performance exactly on both splits (80.33\% and 54.17\%,
+respectively).
+On seed~71 (Final-300), FIX-5 made one net positive switch over TALE
+(78.67\% vs.\ 78.33\%), a difference of a single example that is negligible
+compared to the $+8.33$~pp advantage of FIX-2+FIX-4 over TALE on the same split.
 The TALE-default design assumed a reliable agreement region that did not materialise
-at scale, making the router effectively inactive.
+consistently across evaluation seeds, making the router effectively inactive in most
+conditions.
 
 FIX-6/LoVEC proposed collecting extra frontier or TALE-retry actions for predicted
 failure cases.
@@ -50,13 +54,16 @@ confirms independence.
 The result is that the point-estimate advantage of FIX-2+FIX-4 is consistent across
 all three seeds, which is the primary reason the aggregate CIs no longer include zero.
 
-\paragraph{Scope and limitations.}
-The result is strong within its defined scope but should not be extrapolated.
-The evaluation is conducted on GSM8K-style arithmetic reasoning problems using
-Cohere command-r-plus-08-2024 with a matched budget of 6 inference calls per example.
-Performance on datasets with different reasoning types (multi-hop, commonsense, code),
-on different providers, or under different budget constraints may differ substantially.
-The failure-trace signals (\texttt{override\_reason}, external answer availability)
-are specific to the frontier method's logging format and would require re-implementation
-for a different base system.
-Section~\ref{sec:limitations} enumerates these limitations in detail.
+\paragraph{Evidence scope and generalization.}
+The transition from single-seed to multi-seed aggregate evidence is the key
+methodological contribution of this evaluation.
+On seed~41 alone, the CI versus L1 crossed zero ($[-0.48, +5.71]$); on the
+source-stratified Aggregate-720, the same comparison yields CI $[+0.83, +5.42]$.
+This narrowing is not merely a power argument: the source-stratified design
+controls for seed-specific variance, and the consistency of positive point estimates
+across all three seeds confirms that the advantage is not an artefact of a
+single evaluation draw.
+What this evidence does \emph{not} establish is generalization beyond the tested
+scope: whether the same failure-trace signals are informative on other providers,
+benchmarks, or budget levels is an open empirical question.
+Section~\ref{sec:limitations} enumerates the scope boundaries explicitly.

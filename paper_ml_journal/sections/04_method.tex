@@ -1,7 +1,7 @@
 \section{Method}
 \label{sec:method}
 
-The promoted method, which we term the \textbf{Combined Failure-Trace-Guided Allocator} (FIX-2+FIX-4), is a deterministic precedence policy applied at inference time.  Its two gates---the \textit{Low-Depth Guard} and the \textit{External-Consensus Fallback}---fire in strict priority order; at most one gate acts per example.  All runtime decisions are gold-free: no \texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
+The promoted method, which we term the \textbf{Combined Failure-Trace-Guided Allocator} (FIX-2+FIX-4), is a deterministic precedence policy applied at inference time (Figure~\ref{fig:method_overview}).  Its two gates---the \textit{Low-Depth Guard} and the \textit{External-Consensus Fallback}---fire in strict priority order; at most one gate acts per example.  All runtime decisions are gold-free: no \texttt{gold\_answer}, \texttt{exact\_match}, or correctness label is accessed.
 
 \subsection{Low-Depth Guard (FIX-2)}
 \label{sec:fix2}

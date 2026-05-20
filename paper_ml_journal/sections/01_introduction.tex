@@ -1,7 +1,63 @@
 \section{Introduction}
-Large language model (LLM) reasoning quality is often evaluated by final-answer accuracy under fixed compute budgets. In this work, we report a conservative, evidence-grounded policy improvement over a strong frontier baseline by combining two gold-free runtime rules (FIX-2 and FIX-4). The promoted policy is \textbf{FIX-2+FIX-4}, validated on disjoint Cohere-only matched-budget evaluations.
+\label{sec:introduction}
 
-The main aggregate evidence contains 720 disjoint examples across three sources (300+120+300), all at budget 6. On this aggregate, FIX-2+FIX-4 achieves 80.69\% versus external baselines L1 (77.64\%), S1 (77.08\%), and TALE (75.14\%), with positive source-stratified confidence-interval lower bounds for all comparisons.
+Scaling inference-time computation offers a practical path to improved accuracy
+without additional model training~\citep{snell2024scaling}.
+By generating multiple candidate answers under a fixed budget and aggregating or
+selecting among them, a system can achieve accuracy gains comparable to those from
+model scaling, at inference time~\citep{wang2023self}.
+In settings where the inference budget is strictly matched---every compared method
+receives the same number of model calls per example---the quality of the final
+answer depends entirely on the selection rule applied to the already-generated pool.
+Majority vote treats all candidates equally; but generation runs produce metadata
+that is richer than raw candidate answers, and this metadata may carry signal about
+which candidates are more reliable.
 
-This manuscript intentionally separates promoted findings from exploratory prototypes. FIX-5/FIX-6/FIX-7/FIX-8/FIX-9 are included as negative or non-promoted follow-ups.
+We study this question in a concrete, reproducible setting.
+The task is grade-school arithmetic reasoning on the GSM8K
+benchmark~\citep{cobbe2021training}, the provider is Cohere command-r-plus-08-2024,
+and the budget is $B = 6$ inference calls per example.
+A frontier generator produces candidate answers via program-aided
+execution~\citep{gao2023pal}; three independent external methods (L1, S1, and TALE)
+provide reference answers under the same budget.
+Given these already-generated outputs, the goal is to select a final answer without
+additional inference calls and without using gold labels.
 
+The main contribution of this paper is \textbf{FIX-2+FIX-4} (Combined
+Failure-Trace-Guided Allocator), a deterministic two-gate policy that relies on
+failure-trace metadata logged during normal frontier execution.
+The \textit{Low-Depth Guard} (FIX-2) fires when the frontier's
+\texttt{override\_reason} field signals a structurally weak single-branch output,
+substituting an external majority vote.
+The \textit{External-Consensus Fallback} (FIX-4) fires when all three external
+baselines unanimously prefer a different answer than the frontier's selection.
+Both gates are strictly gold-free: no correctness labels, ground-truth answers, or
+example identifiers are accessed at decision time.
+The two gates operate in strict priority order; at most one fires per example.
+
+On a disjoint Aggregate-720 combining three independent evaluation seeds (seeds 41,
+61, 71; $300 + 120 + 300$ examples with zero example-id or question-hash overlap),
+FIX-2+FIX-4 achieves 80.69\% accuracy versus 77.64\% (L1), 77.08\% (S1), and
+75.14\% (TALE).
+Source-stratified 95\% bootstrap confidence intervals are strictly positive for all
+four pairwise comparisons, including versus the source-local best external
+(CI lower bound $+1.11$~pp).
+All claims are explicitly scoped to the tested provider and benchmark; we make no
+universal generalization claims.
+
+We also document five non-promoted prototypes (FIX-5 through FIX-9) evaluated
+against the same criteria, following a protocol that separates exploratory
+development from promoted evidence.
+These are reported as negative or insufficient results in Section~\ref{sec:ablation}
+and Table~\ref{tab:negative_results}.
+
+The remainder of the paper is organized as follows.
+Section~\ref{sec:related_work} reviews related work on test-time compute scaling,
+verifier-guided reranking, and cost-aware routing.
+Section~\ref{sec:method} specifies FIX-2+FIX-4 precisely, including exact trigger
+conditions and pseudocode.
+Sections~\ref{sec:experiments} and~\ref{sec:results} describe the evaluation
+protocol and report results with full confidence intervals.
+Section~\ref{sec:ablation} summarizes the prototype development trajectory.
+Sections~\ref{sec:discussion}--\ref{sec:conclusion} discuss implications,
+limitations, and directions for future work.

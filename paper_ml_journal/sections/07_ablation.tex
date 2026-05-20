@@ -1,12 +1,41 @@
 \section{Ablation and Policy Evolution}
-Table~\ref{tab:ablation} summarizes FIX-1 through FIX-9 development status.
+\label{sec:ablation}
 
-Key non-promoted findings:
-\begin{itemize}
-    \item FIX-5 did not hold as preferred policy in larger unbiased validation.
-    \item FIX-6 independent extra-action relaunch was net negative vs FIX-2+FIX-4.
-    \item FIX-7 showed weak prototype gains and remains non-promoted.
-    \item FIX-8 parser prototype produced zero aggregate gain.
-    \item FIX-9 audit indicates most all-methods-wrong residuals are generation-likely.
-\end{itemize}
+Table~\ref{tab:ablation} traces the complete development trajectory from the initial
+FIX-1 support-aware selector through FIX-9.
+All variants were evaluated via postrun replay on existing candidate artifacts;
+no additional inference calls were issued for ablation purposes.
+FIX-2+FIX-4 is the sole promoted policy.
 
+\paragraph{Promoted gate components.}
+FIX-2 alone achieves 80.00\% on Aggregate-720 ($+2.36$~pp over the frontier
+baseline), confirming that the Low-Depth Guard carries most of the combined gain.
+FIX-4 alone achieves 75.00\% on final-300---below FIX-2---but contributes an
+additional $+0.69$~pp when combined with FIX-2, reflecting its role in recovering
+cases where FIX-2 does not fire.
+FIX-3 (calibration on score-absent non-SWFB cases) was evaluated but applied to
+zero examples in the primary splits, contributing no accuracy change; it is
+excluded from the combined policy.
+
+\paragraph{Non-promoted follow-up prototypes.}
+FIX-5 (TALE-default router) produced zero switches on seeds~41 and~61,
+equalling TALE performance on both splits, and only a marginal net positive
+switch on seed~71 ($+1$ example over TALE, final-300 78.67\% vs.\ 78.33\%).
+This outcome is $-8.00$~pp below FIX-2+FIX-4 on the same split.
+The TALE-default design assumed a reliable agreement region that did not
+materialise consistently across evaluation seeds; see Section~\ref{sec:discussion}
+for interpretation.
+FIX-6 (LoVEC extra-action pilot) showed a nonnegative pilot signal in the
+initial 40-case overlapping evaluation, but the independent 80-case Stage-2
+relaunch yielded net $-1$ for extra frontier actions and net $-4$ for extra TALE
+retries relative to FIX-2+FIX-4.
+Pilot-stage signal that fails to replicate on disjoint data is the standard
+non-promotion criterion.
+FIX-7 (cluster-level selector) achieved at most $+0.67$~pp in the best rule
+variant on final-300, below the promotion-meaningful threshold.
+FIX-8 (robust parser/canonicaliser) produced zero accuracy-changing switches on
+both final-300 and Aggregate-720, indicating that parse-failure residuals are
+rare in this evaluation setting.
+FIX-9 (pool-miss detector) found 23 of 24 all-methods-wrong residuals to be
+generation-limited, with no selector-only remedy available; see the failure
+analysis in Section~\ref{sec:failure_analysis}.
