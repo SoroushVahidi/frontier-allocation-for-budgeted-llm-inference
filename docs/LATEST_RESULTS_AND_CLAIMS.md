@@ -1,26 +1,55 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-20 (offline FIX-7 cluster-selector prototype evaluation added; no promotion claim)
+**Last updated:** 2026-05-20 (final FIX-2+FIX-4 all-external postrun completed; aggregate-720 claim decision updated)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
 ---
 
-## 0. Current Operational Checkpoint (while final validation is running)
+## 0. Current Operational Checkpoint
 
 - Current best effective policy: **FIX-2+FIX-4**.
-- **FIX-5 is not promoted** as the current best policy after larger unbiased validation.
+- **FIX-5 is not promoted** as the current best policy after unbiased validation.
 - **FIX-6 / LoVEC extra-action is not promoted** after the independent Stage-2 relaunch.
 - **FIX-7 is an offline prototype only** (no runtime promotion claim).
-- Final all-baseline 300-example validation for seed `71` is currently running:
-  - tmux session: `final_fix24_validation_20260519`
-  - output root: `outputs/final_fix24_all_external_validation_20260519_20260520T000902Z/`
-- Safe current claim: FIX-2+FIX-4 remains promising by point estimate.
-- Unsafe current claim: final clean superiority over every external baseline before the running validation completes and postrun uncertainty is computed.
+- Final all-baseline 300-example validation for seed `71` is complete:
+  - validation root: `outputs/final_fix24_all_external_validation_20260519_20260520T000902Z/`
+  - postrun root: `outputs/final_fix24_all_external_postrun_20260520_20260520T025349Z/`
+- Safe current claim: FIX-2+FIX-4 is ahead by point estimate on final-300 and aggregate-720, with positive stratified CI lower bounds vs L1/S1/TALE/best-external.
+- Unsafe current claim: do not extrapolate beyond this benchmark setting without additional independent runs.
 
 ---
 
-## 1. Latest Promotion-Grade Validation (300 examples, unbiased)
+## 1. Final All-External Validation (300 examples, unbiased)
+
+**Validation artifact root:** `outputs/final_fix24_all_external_validation_20260519_20260520T000902Z/`
+**Postrun artifact root:** `outputs/final_fix24_all_external_postrun_20260520_20260520T025349Z/`
+**Seed / budget:** `71 / 6`
+**Rows:** `1200` (`300 examples × 4 methods`)
+**Integrity:** rows `1200/1200`, unique examples `300/300`, duplicates `0`, all rows scored, promotion review coverage `100%`, leakage scan hit rows `0`, no runtime/rate-limit/cap errors in log scan.
+
+| Method / Policy | Accuracy |
+|---|---|
+| `direct_reserve_semantic_frontier_v2` (frontier) | 76.67% (230/300) |
+| `external_l1_max` | 83.00% (249/300) |
+| `external_s1_budget_forcing` | 82.00% (246/300) |
+| `external_tale_prompt_budgeting` (TALE) | 78.33% (235/300) |
+| `FIX-2` | 85.67% (257/300) |
+| `FIX-2+FIX-4` | **86.67%** (260/300) |
+| `FIX-5` | 78.67% (236/300) |
+
+FIX-2+FIX-4 paired deltas (bootstrap 95% CI, 5000 resamples):
+- vs `external_l1_max`: `+3.67pp` `[+0.33, +7.00]`, wins/losses/ties `19/8/273`
+- vs `external_s1_budget_forcing`: `+4.67pp` `[+1.00, +8.33]`, wins/losses/ties `23/9/268`
+- vs `external_tale_prompt_budgeting`: `+8.33pp` `[+5.00, +12.00]`, wins/losses/ties `27/2/271`
+
+Interpretation:
+- FIX-2+FIX-4 is best by point estimate on the final unbiased 300-example run.
+- On this run, CI lower bounds are positive vs all external baselines.
+
+---
+
+## 1B. Prior Promotion-Grade Validation (300 examples, unbiased)
 
 **Validation artifact root:** `outputs/overnight_fix5_promotion_grade_validation_20260519T040621Z/`
 **Postrun artifact root:** `outputs/overnight_fix5_postrun_eval_20260519_20260519T134633Z/`
@@ -418,3 +447,48 @@ Safe claim update:
 
 Unsafe claim update:
 - Do not claim definitive superiority over all external baselines yet.
+
+---
+
+## 17. Final Aggregate Update (Primary: 300 + 120 + 300 = 720)
+
+**Artifact root:** `outputs/final_fix24_all_external_postrun_20260520_20260520T025349Z/`
+
+Primary inclusion (disjoint, unbiased):
+- `main_300_seed41_budget6`
+- `independent_stage1_base_120_seed61_budget6`
+- `final_300_seed71_budget6`
+
+Cross-source overlap checks:
+- `example_id` overlap: `0` across all source pairs.
+- `question-hash` overlap: `0` across all source pairs.
+
+Aggregate accuracy (`N = 720`):
+- `FIX-2+FIX-4`: `581/720 = 80.69%`
+- `external_l1_max`: `559/720 = 77.64%`
+- `external_s1_budget_forcing`: `555/720 = 77.08%`
+- `external_tale_prompt_budgeting`: `541/720 = 75.14%`
+
+Paired deltas (FIX-2+FIX-4 minus external; source-stratified bootstrap, 5000 resamples):
+- vs `external_l1_max`: `+3.06pp`, 95% CI `[+0.83, +5.42]`, `p(delta>0)=0.995`
+- vs `external_s1_budget_forcing`: `+3.61pp`, 95% CI `[+1.39, +5.69]`, `p(delta>0)=0.999`
+- vs `external_tale_prompt_budgeting`: `+5.56pp`, 95% CI `[+3.61, +7.50]`, `p(delta>0)=1.000`
+- vs source-local best external: `+3.06pp`, 95% CI `[+1.11, +5.00]`, `p(delta>0)=0.999`
+
+Sensitivity-only include (add prior 100-example seed-31 set, `N = 820`):
+- vs L1: `+3.06pp -> +3.41pp` (shift `+0.36pp`)
+- vs S1: `+3.61pp -> +3.78pp` (shift `+0.17pp`)
+- vs TALE: `+5.56pp -> +4.88pp` (shift `-0.68pp`)
+- vs best external: `+3.06pp -> +2.68pp` (shift `-0.37pp`)
+- Conclusion unchanged: FIX-2+FIX-4 remains ahead by point estimate.
+
+Claim readiness decision:
+- **Decision: A** (strong enough to begin result packaging/write-up preparation).
+- All aggregate source-stratified CI lower bounds are strictly above zero vs L1/S1/TALE/best-external.
+- Margin vs best external is positive and above the 1pp publication-meaningful threshold.
+
+Safe claim update:
+- FIX-2+FIX-4 currently beats all three external baselines by point estimate on both final-300 and aggregate-720, with positive aggregate stratified lower bounds.
+
+Unsafe claim update:
+- Do not generalize this result to other datasets/providers/budgets without independent validation.
