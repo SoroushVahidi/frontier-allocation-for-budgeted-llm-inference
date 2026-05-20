@@ -3,21 +3,22 @@
 \caption{Ablation and prototype trajectory.}
 \label{tab:ablation}
 \scriptsize
-\begin{tabular}{p{0.23\textwidth}p{0.25\textwidth}p{0.34\textwidth}c}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{0.22\textwidth}p{0.24\textwidth}p{0.33\textwidth}c}
 \toprule
 Policy & Target failure mode & Accuracy / delta summary & Promoted \\
 \midrule
-frontier\_original & baseline reference & final300=76.67\%; agg720=75.28\% & no \\
-FIX-1 support-aware selector & tie/present-not-selected & 77.00\% (delta vs frontier 4.00 pp) & no \\
+frontier original & baseline reference & final300=76.67\%; agg720=75.28\% & no \\
+FIX-1 support-aware & tie / present-not-selected & 77.00\% (delta vs frontier $+4.00$~pp) & no \\
 FIX-2 low-depth guard & single\_weak\_frontier\_branch / low-depth & 80.00\% & no (superseded by FIX-2+FIX-4) \\
-FIX-3 within-method calibration & score-absent non-SWFB edge cases & 73.00\% (applied 0 cases) & no \\
-FIX-4 external-consensus gate & direct\_frontier\_agree with unanimous external disagreement & 75.00\% alone; with FIX-2 gives 82.00\% & as part of FIX-2+FIX-4 \\
-FIX-2+FIX-4 & low-depth + external-consensus failure classes & final300=86.67\%; agg720=80.69\% & yes \\
+FIX-3 calibration & score-absent non-SWFB edge cases & 73.00\% (applied 0 cases) & no \\
+FIX-4 consensus gate & direct\_frontier\_agree + unanimous external disagree & 75.00\% alone; 82.00\% with FIX-2 & part of FIX-2+FIX-4 \\
+\textbf{FIX-2+FIX-4} & low-depth + external-consensus & final300=86.67\%; agg720=80.69\% & \textbf{yes} \\
 FIX-1+2+3+4 & combined heuristic stack & 81.00\% & no \\
-FIX-5 TALE-default router & conservative agreement-region switching & overnight300=80.3333\%; final300=78.67\% & no \\
-FIX-6 LoVEC scaffold/pilot & residual errors requiring extra action & extra\_frontier net vs fix24=-1; extra\_tale net vs fix24=-4 & no \\
-FIX-7 cluster selector prototype & cluster-level reranking / present-not-selected / parser guards & best candidate rule delta vs fix24 = +0.67 pp & no \\
-FIX-8 robust parser prototype & parser/canonicalization errors & final300 delta +0.00 pp; agg720 delta +0.00 pp & no \\
+FIX-5 TALE-default router & agreement-region switching & overnight300=80.33\%; final300=78.67\% & no \\
+FIX-6 LoVEC pilot & residual errors needing extra action & net vs FIX-2+FIX-4: frontier$-1$, TALE$-4$ & no \\
+FIX-7 cluster selector & cluster-level reranking / parser guards & best rule delta vs FIX-2+FIX-4: $+0.67$~pp & no \\
+FIX-8 robust parser & parser/canonicalization errors & final300 delta $+0.00$~pp; agg720 $+0.00$~pp & no \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}

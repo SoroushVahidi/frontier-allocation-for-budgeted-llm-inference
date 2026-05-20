@@ -3,25 +3,66 @@
 \caption{Parameter grounding for FIX-2+FIX-4 and the evaluation protocol. We report parameter grounding and available robustness checks rather than a full continuous hyperparameter sweep; a full threshold sweep is left for future work. All values are fixed and applied identically across all evaluated splits.}
 \label{tab:param_sensitivity}
 \scriptsize
-\begin{tabular}{p{0.14\textwidth}p{0.09\textwidth}p{0.18\textwidth}p{0.18\textwidth}p{0.19\textwidth}p{0.13\textwidth}}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{0.24\textwidth}p{0.30\textwidth}p{0.22\textwidth}p{0.18\textwidth}}
 \toprule
-Parameter / Design choice & Value used & Role in method / evaluation & Justification & Robustness evidence available & Remaining limitation \\
+Parameter / Design choice \newline \textit{(value used)} &
+Role, justification &
+Robustness evidence available &
+Remaining limitation \\
 \midrule
-Budget ($B$) & 6 & Hard cap on logical API calls per example; ensures matched-budget comparison & Fixed by provider run protocol; all methods operate under the same $B$ & Sensitivity source (+100 examples) included as separate labeled set; budget value held constant & No multi-$B$ sweep reported \\
+Budget ($B = 6$) &
+  Hard cap on logical API calls per example, ensuring matched-budget comparison.
+  Fixed by provider run protocol; all methods use the same $B$. &
+  Sensitivity source (+100 examples) included as separate labeled set; $B$ held constant. &
+  No multi-$B$ sweep reported. \\
 \addlinespace
-Low-depth guard trigger: \texttt{single\_weak\_frontier\_branch} & String match (implementation constant) & Identifies frontier answers from structurally weak search paths & Derived from failure-trace analysis of frontier run logs; see \texttt{experiments/support\_aware\_selector.py} & Trigger frequency and recovery/regression counts available in postrun artifacts & No threshold variation sweep in manuscript \\
+Low-depth guard: \texttt{single\_weak\linebreak\_frontier\_branch} \newline
+  \textit{(string match; implementation constant)} &
+  Identifies frontier answers from structurally weak search paths.
+  Derived from failure-trace analysis of frontier run logs
+  (\texttt{support\_aware\_selector.py}). &
+  Trigger frequency and recovery/regression counts available in postrun artifacts. &
+  No threshold variation sweep in manuscript. \\
 \addlinespace
-Low-depth guard trigger: \texttt{frontier\_support}$=0$ $\wedge$ \texttt{candidate\_pool\_answer\_group\_count}$\geq 2$ & Integer threshold (0 and 2) & Detects zero-support frontier outputs when the pool contains multiple distinct answer groups & Conservative condition: requires complete absence of support combined with pool diversity & Condition derived from offline artifact review; trigger counts in package & No continuous threshold sweep \\
+Low-depth guard: \texttt{frontier\_support}$=0$
+$\wedge$ \texttt{pool\_group\_count}$\geq 2$ \newline
+  \textit{(integer thresholds: 0 and 2)} &
+  Detects zero-support frontier outputs when the pool contains $\geq 2$ distinct answer groups.
+  Conservative: requires complete absence of support plus pool diversity. &
+  Condition derived from offline artifact review; trigger counts in package. &
+  No continuous threshold sweep. \\
 \addlinespace
-External-consensus condition (FIX-4) & \texttt{l1}=\texttt{s1}=\texttt{tale} $\wedge$ all $\neq$ frontier & Identifies unanimous external agreement diverging from frontier & Unanimity is a strong, conservative signal; partial agreement is not acted on & Trigger frequency available from postrun replay artifacts & No partial-consensus variant evaluated \\
+External-consensus condition (FIX-4): \texttt{l1}$=$\texttt{s1}$=$\texttt{tale} $\wedge$ all $\neq$ frontier \newline
+  \textit{(unanimity gate)} &
+  Identifies unanimous external agreement diverging from frontier.
+  Unanimity is a strong, conservative signal; partial agreement is not acted on. &
+  Trigger frequency available from postrun replay artifacts. &
+  No partial-consensus variant evaluated. \\
 \addlinespace
-Bootstrap resamples & $n = 5{,}000$ & Controls Monte Carlo variance in paired bootstrap CI estimation & Standard practice for stable 95\% CI estimation at $n \leq 720$ & Single-seed results show consistent sign agreement; no resample-count sensitivity sweep & Single seed; no multi-seed resample check reported \\
+Bootstrap resamples \newline \textit{($n = 5{,}000$)} &
+  Controls Monte Carlo variance in paired bootstrap CI estimation.
+  Standard practice for stable 95\% CIs at $n \leq 720$. &
+  Single-seed results show consistent sign agreement. &
+  No resample-count sensitivity sweep reported. \\
 \addlinespace
-Evaluation seeds / source split & Seeds 41, 61, 71; sources main300, independent120, final300 & Define the disjoint aggregate and source-stratified analysis & Seeds chosen to span independent run batches; disjointness verified by example ID and question hash & Source-stratified CIs show consistent positive sign for all baselines & Single task/provider; no cross-dataset seed check \\
+Evaluation seeds / splits \newline \textit{(seeds 41, 61, 71)} &
+  Define disjoint aggregate and source-stratified analysis.
+  Seeds span independent run batches; disjointness verified by example ID and question hash. &
+  Source-stratified CIs show consistent positive sign for all baselines. &
+  Single task/provider; no cross-dataset seed check. \\
 \addlinespace
-Disjointness check & Zero overlap on example IDs and question hashes & Prevents data leakage between primary sources & Verified programmatically on all three sources & Confirmed in postrun package; overlap count = 0 & Only within GSM8K; no cross-dataset overlap check \\
+Disjointness check \newline \textit{(overlap = 0)} &
+  Prevents data leakage between primary sources.
+  Verified programmatically on all three source sets. &
+  Confirmed in postrun package; overlap count $= 0$. &
+  Within GSM8K only; no cross-dataset overlap check. \\
 \addlinespace
-Provider / model & Cohere command-r-plus-08-2024 & Defines the inference backend for all runs & Chosen for API availability and run stability during the experiment period & All comparisons use the same provider/model; no cross-provider replication & Provider-specific; generalization not established \\
+Provider / model \newline \textit{(Cohere command-r-plus-08-2024)} &
+  Inference backend for all runs.
+  Chosen for API availability and run stability during the experiment period. &
+  All compared methods use the same provider/model. &
+  Provider-specific; generalization not established. \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}

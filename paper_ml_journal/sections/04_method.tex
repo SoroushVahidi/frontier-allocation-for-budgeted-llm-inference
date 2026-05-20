@@ -32,7 +32,7 @@ Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime fiel
 & \texttt{l1\_answer}, \texttt{s1\_answer}, \texttt{tale\_answer} (external baseline outputs) \\
 & \texttt{override\_reason}, \texttt{frontier\_support} $\in \mathbb{Z}_{\geq 0}$, \texttt{candidate\_pool\_answer\_group\_count} $\in \mathbb{Z}_{>0}$ \\
 \midrule
-\multicolumn{2}{l}{\textit{Step 1 — Low-Depth Guard (FIX-2)}} \\
+\multicolumn{2}{l}{\textit{Step 1 ---Low-Depth Guard (FIX-2)}} \\
 1a & \textbf{if} \texttt{override\_reason} contains \texttt{"single\_weak\_frontier\_branch"} \\
    & \quad \textbf{or} (\texttt{frontier\_support} $= 0$ \textbf{and} \texttt{candidate\_pool\_answer\_group\_count} $\geq 2$) \\
    & \textbf{then:} \\
@@ -41,14 +41,14 @@ Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime fiel
 1c & \quad \textbf{if} \texttt{ext} exists \textbf{and} \texttt{ext} $\neq$ \texttt{frontier\_answer}: \\
    & \quad\quad \textbf{return} \texttt{ext}, \texttt{policy} $\leftarrow$ \texttt{fix2} \quad\quad \textit{(guard fires; stop)} \\
 \midrule
-\multicolumn{2}{l}{\textit{Step 2 — External-Consensus Fallback (FIX-4)}} \\
+\multicolumn{2}{l}{\textit{Step 2 ---External-Consensus Fallback (FIX-4)}} \\
 2a & \textbf{if} \texttt{override\_reason} $=$ \texttt{"direct\_frontier\_agree"} \\
    & \quad \textbf{and} \texttt{l1\_answer} $=$ \texttt{s1\_answer} $=$ \texttt{tale\_answer} \\
    & \quad \textbf{and} \texttt{l1\_answer} $\neq$ \texttt{frontier\_answer} \\
    & \textbf{then:} \\
 2b & \quad \textbf{return} \texttt{l1\_answer}, \texttt{policy} $\leftarrow$ \texttt{fix4} \quad\quad \textit{(consensus fallback fires; stop)} \\
 \midrule
-\multicolumn{2}{l}{\textit{Step 3 — Default}} \\
+\multicolumn{2}{l}{\textit{Step 3 ---Default}} \\
 3  & \textbf{return} \texttt{frontier\_answer}, \texttt{policy} $\leftarrow$ \texttt{original} \\
 \midrule
 \multicolumn{2}{l}{\textit{Output}} \\
