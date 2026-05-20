@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-19 (overnight 300-example validation + independent FIX-6 Stage-2 relaunch + FIX-2+FIX-4 aggregate validation evidence)
+**Last updated:** 2026-05-20 (offline FIX-7 cluster-selector prototype evaluation added; no promotion claim)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -34,6 +34,24 @@ Key paired deltas vs TALE (bootstrap 95% CI):
 - FIX-5 did not hold on the larger unbiased run (switches `0`, tied TALE).
 - Current best base policy is **FIX-2+FIX-4**.
 - `+3pp` over TALE is promising by point estimate, but CI lower bound is exactly `0.00`, so this is not yet a publication-strong superiority claim.
+
+---
+
+## 1A. FIX-7 Offline Prototype (No Promotion)
+
+**Artifact root:** `outputs/fix7_cluster_selector_offline_eval_20260520_20260520T014151Z/`
+**Scope:** Offline-only replay of conservative cluster-level selector + robust parser arbitration.
+**Runtime status:** FIX-2+FIX-4 remains current deployed/best effective policy.
+
+What was added:
+- `experiments/cluster_answer_selector.py` (conservative parser/canonicalizer + clustering primitives)
+- `scripts/run_fix7_cluster_selector_offline_eval.py` (offline rule sweep + reporting)
+- `tests/test_cluster_answer_selector.py`
+
+Claim boundary:
+- This is prototype evidence only.
+- No live/API promotion decision is made from this run.
+- Recommendation file is conservative (`fix7_next_decision.json` => `B`: keep prototype; wait for independent final validation before any promotion).
 
 ---
 
