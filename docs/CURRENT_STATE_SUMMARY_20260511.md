@@ -334,6 +334,14 @@ Canonical status: `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` §F.7.
 - Operational next step is now to wait for completion of the independent disjoint FIX-6
   extra-action pilot and evaluate LoVEC action value on that run before any
   accuracy-changing LoVEC-1 promotion decision.
+
+### Stage 2 Addendum (2026-05-20): Final All-Baseline Validation Running
+
+- Runtime policy remains FIX-2+FIX-4 pending completion of the current final all-baseline validation.
+- Running session: `final_fix24_validation_20260519`.
+- Running output root: `outputs/final_fix24_all_external_validation_20260519_20260520T000902Z/`.
+- While this run is active, no additional behavior-changing policy updates should be promoted.
+- Immediate next step after completion: postrun validation + aggregate evidence refresh with uncertainty reporting before any all-baseline superiority claim.
 - tmux session: `fix6_lovec_independent_pilot_20260519`
 - output root: `outputs/fix6_lovec_independent_extra_action_pilot_20260519T163021Z/`
 - This run is pre-registered, capped, and staged (base run -> pre-registered selection ->

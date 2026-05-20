@@ -33,6 +33,13 @@ Do not reinterpret the project as legacy binary cheap-vs-revise routing.
 
 **Current Stage-2 checkpoint:** see [`docs/LATEST_RESULTS_AND_CLAIMS.md`](docs/LATEST_RESULTS_AND_CLAIMS.md) and [`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`](docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md). No final promoted cross-method allocation policy is claimed yet.
 
+**Current operational policy checkpoint (2026-05-20):**
+- Best effective policy remains **FIX-2+FIX-4**.
+- **FIX-5** is not the current best on the larger unbiased validation and is not promoted.
+- **FIX-6 / LoVEC extra-action** is not promoted after the independent pilot.
+- **FIX-7** exists as an offline prototype and is not promoted.
+- Final all-baseline validation is currently running (`final_fix24_validation_20260519`); do not claim final clean superiority over all external baselines until postrun/CI completion.
+
 **Paper claim rules:** [`docs/PAPER_SOURCE_OF_TRUTH.md`](docs/PAPER_SOURCE_OF_TRUTH.md) · [`docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md`](docs/PAPER_CLAIMS_AND_EVIDENCE_MAP.md)
 
 **Structured indexes:** [`docs/METHOD_STATUS_TABLE.md`](docs/METHOD_STATUS_TABLE.md) · [`docs/ARTIFACT_STATUS_TABLE.md`](docs/ARTIFACT_STATUS_TABLE.md) · [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) · [`scripts/CURRENT_RUNBOOK.md`](scripts/CURRENT_RUNBOOK.md)

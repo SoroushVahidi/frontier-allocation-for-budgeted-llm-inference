@@ -6,6 +6,20 @@ This document is the canonical single-page record of the most recent empirical r
 
 ---
 
+## 0. Current Operational Checkpoint (while final validation is running)
+
+- Current best effective policy: **FIX-2+FIX-4**.
+- **FIX-5 is not promoted** as the current best policy after larger unbiased validation.
+- **FIX-6 / LoVEC extra-action is not promoted** after the independent Stage-2 relaunch.
+- **FIX-7 is an offline prototype only** (no runtime promotion claim).
+- Final all-baseline 300-example validation for seed `71` is currently running:
+  - tmux session: `final_fix24_validation_20260519`
+  - output root: `outputs/final_fix24_all_external_validation_20260519_20260520T000902Z/`
+- Safe current claim: FIX-2+FIX-4 remains promising by point estimate.
+- Unsafe current claim: final clean superiority over every external baseline before the running validation completes and postrun uncertainty is computed.
+
+---
+
 ## 1. Latest Promotion-Grade Validation (300 examples, unbiased)
 
 **Validation artifact root:** `outputs/overnight_fix5_promotion_grade_validation_20260519T040621Z/`

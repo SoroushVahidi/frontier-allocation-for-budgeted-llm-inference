@@ -165,8 +165,10 @@ Scripts added on `feat/missing-gold-topology-v1` for verifier-guided allocation 
 |---|---|
 | `run_fix6_lovec1_offline_eval.py` | Offline FIX-6 / LoVEC-1 scaffold evaluation and feasibility reporting (no provider calls). |
 | `analyze_fix6_extra_action_pilot.py` | Postrun analyzer for FIX-6 extra-action pilot outputs (readiness mode + full analysis mode). |
+| `run_fix7_cluster_selector_offline_eval.py` | Offline FIX-7 cluster-level selector + robust parser arbitration evaluation (no provider calls). |
 | `../experiments/support_aware_selector.py` | FIX-1 through FIX-5 policy logic (support-aware, low-depth, calibrated, consensus, and TALE-default routing). |
 | `../experiments/value_of_compute_controller.py` | FIX-6 LoVEC state extraction, observable-action table, and offline oracle helpers. |
+| `../experiments/cluster_answer_selector.py` | FIX-7 parser/canonicalizer, candidate clustering, and conservative offline selector primitives. |
 
 ## Historical and provenance scripts
 
