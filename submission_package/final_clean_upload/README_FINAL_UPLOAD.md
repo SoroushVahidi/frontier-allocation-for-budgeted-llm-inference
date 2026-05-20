@@ -1,8 +1,9 @@
 # Final Clean Upload Package (MLJ / Springer Portal)
 
 ## Primary upload files
+- `mlj_final_main_manuscript_snjnl.pdf` (directly viewable manuscript PDF for quick inspection)
 - `mlj_final_main_latex_snjnl.zip`
-- `mlj_final_main_pdf.zip`
+- `mlj_final_main_pdf.zip` (packaged PDF ZIP for portal upload, if needed)
 - `mlj_final_figures_tables.zip`
 - `mlj_final_admin_texts.zip`
 
