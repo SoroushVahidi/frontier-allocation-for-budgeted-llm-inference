@@ -1,0 +1,38 @@
+# Verifier Reranking Claim-to-Artifact Reproducibility Table (2026-05-17)
+
+## Purpose
+This document maps each current verifier-guided reranking / frontier-allocation claim to the exact script(s), input/output artifact paths, commit(s), measured result, and claim status. It is intended as a paper/results reproducibility anchor and claim-discipline checklist.
+
+Companion Stage-2 calibrated gate status and promotion criteria:
+`docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md`.
+
+## Main Claim Table
+
+| Claim ID | Claim text | Claim status | Script(s) | Input artifact(s) | Output artifact(s) | Commit(s) | Main metric/result | Caveats |
+|---|---|---|---|---|---|---|---|---|
+| A | Offline verifier scoring pipeline on frontier candidates exists and is runnable. | infrastructure | `scripts/score_verifier_on_frontier_candidates.py` | `per_example_records.jsonl` candidate artifacts | scored candidate bundles (e.g., `outputs/verifier_scoring_*`) | `2e443e99` | Offline scoring path established; no provider calls required. | Infrastructure claim only; not a performance claim. |
+| B | Cross-method verifier-guided selection is method-entangled and mostly reproduces `external_l1_max`. | caveat / diagnostic | `scripts/compare_allocation_policies.py` | `outputs/verifier_frontier_scoring_full_20260517T032713Z/scored_candidates.jsonl` | `outputs/allocation_policy_comparison_verifier_scored_20260517T033833Z/` | `53f6e607` | verifier-guided `72.08%` vs `external_l1_max` `72.22%`; chooser selected `external_l1_max` in `705/720` groups. | Not evidence for cross-method routing promotion. |
+| C | Exploratory within-method reranking on original 1440-row artifact is positive. | exploratory | `scripts/compare_within_method_reranking.py` | `outputs/verifier_frontier_scoring_full_20260517T032713Z/scored_candidates.jsonl` | `outputs/within_method_reranking_verifier_scored_20260517T040436Z/` | `8bd928c6` | verifier `75.83%`, random `66.04%`, lift `+9.79pp`. | Same-artifact exploratory context; not independent validation. |
+| D | Small disjoint 15-case validation is same-sign but underpowered. | sanity validation / underpowered | `scripts/score_verifier_on_frontier_candidates.py`; `scripts/compare_within_method_reranking.py` | 15-case generation artifact inputs (disjoint sanity set) | `outputs/verifier_scoring_direct_l1_15case_full_20260517T100025Z/`; `outputs/within_method_reranking_direct_l1_15case_validation_20260517T100048Z/` | `2e443e99`; `8bd928c6` | verifier `40.00%`, random `36.67%`, lift `+3.33pp`. | Very small sample (30 groups). |
+| E | Independent budget-6 Cohere validation confirms same-direction within-method gain. | independent validation | generation runner + `scripts/score_verifier_on_frontier_candidates.py`; `scripts/compare_within_method_reranking.py` | `outputs/within_method_validation_generation_cohere_20260517T100852Z/` | `outputs/verifier_scoring_new_multiseed_validation_full_20260517T144315Z/`; `outputs/within_method_reranking_new_multiseed_validation_20260517T144336Z/` | generation/scoring/reranking commits on branch (`2e443e99`, `8bd928c6`) | verifier `86.67%`, random `82.08%`, lift `+4.58pp`. | Single provider/dataset family in this independent run. |
+| F | Headline independent gain is uncertainty-backed by cluster bootstrap. | uncertainty-backed (strongest current evidence) | `scripts/analyze_within_method_reranking_uncertainty.py` | `outputs/within_method_reranking_new_multiseed_validation_20260517T144336Z/reranking_group_details.csv` | `outputs/within_method_reranking_uncertainty_new_validation_20260517T150458Z/` | `d1b035f9` | `verifier_minus_random = +4.58pp`, 95% cluster CI `[+0.28pp, +9.03pp]`. | Method-level lifts remain individually uncertain (CIs cross zero). |
+| G | Frozen slice-aware transfer on independent budget-6 validation is neutral. | caveat / neutral | `scripts/apply_frozen_slice_aware_reranking.py` | scored candidates + frozen rules CSV | `outputs/frozen_slice_aware_transfer_new_validation_20260517T152312Z/` | `c30f1575` | frozen `86.67%` vs verifier top1 `86.67%`, delta `0.00pp` (recoveries/regressions `3/3`). | Not validated for promotion; limited slice overlap. |
+| H | Budget-4/8 full artifact is overlap-contaminated and not independent. | caveat (invalid for headline) | overlap audit + disjointness analysis workflow | `outputs/within_method_validation_generation_cohere_budget4_8_20260517T154236Z/`; comparison vs prior scored source | `outputs/budget4_8_validation_overlap_audit_20260517T204213Z/` | corrective audit tracked in docs; parser hardening in `755634bd`/`c13c0256` | Found overlap with original 40 examples (`openai_gsm8k_0..39`). | Full budget-4/8 artifact must not be cited as independent validation. |
+| I | Budget-4/8 filtered non-overlap subset is small and uncertain. | sanity / small uncertain subset | standard scoring/reranking/uncertainty scripts | `.../per_example_records_nonoverlap_valid.jsonl` | `outputs/within_method_reranking_budget4_8_nonoverlap_valid_20260517T204236Z/`; `outputs/within_method_reranking_uncertainty_budget4_8_nonoverlap_valid_20260517T204237Z/` | output-only follow-up (no new method claim commit) | `verifier_minus_random = +3.75pp`, cluster CI `[-4.58pp, +12.30pp]`. | Small subset (20 examples); uncertainty crosses zero. |
+| J | Disjointness extraction/preflight bug is fixed and enforced in runner path. | infrastructure / safety fix | `scripts/compute_cohere_validation_disjointness.py`; `scripts/run_cohere_real_model_cost_normalized_validation.py` | prior scored artifacts + preflight sources (mixed schemas) | runner-generated disjointness proof outputs via `--disjointness-proof-json` | `755634bd`; `c13c0256` | Hardened extraction handles top-level IDs, `metadata.example_id`, nested schemas, and structured `feature_text`; runner can fail on overlap by default. | Prevents false-zero overlap from top-level-only parsing. |
+
+## Recommended Paper Wording (Conservative)
+Verifier-guided within-method seed reranking improves over random seed expectation on independent Cohere validation by `+4.58pp`, with 95% cluster-bootstrap CI `[+0.28pp, +9.03pp]`. This supports within-method reranking only, not cross-method verifier-guided routing, because cross-method selection remains method-entangled. Slice-aware/frozen transfer should be treated as unvalidated for promotion because independent transfer was neutral and budget-4/8 follow-up was negative/uncertain. The full budget-4/8 artifact is overlap-contaminated and not independent claim-bearing evidence. Oracle results remain fixed-pool diagnostic ceilings and are not deployable policy behavior.
+
+## Do Not Cite As Headline
+- Full budget-4/8 artifact (`outputs/within_method_validation_generation_cohere_budget4_8_20260517T154236Z/`) due to overlap contamination.
+- Frozen slice-aware transfer outcomes as a promoted gain claim.
+- Cross-method verifier-guided selection as evidence of routing superiority.
+- Method-level subgroup lifts where verifier-vs-random CIs cross zero.
+
+## Current Next-Step Options (Do Not Start Here)
+1. Write paper/results sections from existing validated evidence using this table plus `docs/VERIFIER_RERANKING_REPRODUCIBILITY_APPENDIX_20260517.md` and the paper draft.
+2. Optionally run a truly independent budget-4/8 validation with runner-level hardened preflight flags (`--disjointness-prior-jsonl` etc.).
+3. Optionally replicate on another provider/dataset family before broader generalization claims.
+4. Polish the artifact-path appendix/table links for paper and handoff clarity.
+5. Consider verifier model upgrades only if future failure analysis shows verifier quality is the bottleneck.

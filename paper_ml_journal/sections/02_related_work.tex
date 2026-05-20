@@ -1,0 +1,48 @@
+\section{Related Work}
+\label{sec:related_work}
+
+\paragraph{Chain-of-thought and self-consistency.}
+Chain-of-thought (CoT) prompting \citep{wei2022chain} and its zero-shot variant \citep{kojima2022large} demonstrated that step-by-step reasoning elicits substantially stronger performance from large language models on mathematical and logical tasks.
+Building on CoT, \citet{wang2023self} introduced self-consistency, in which multiple reasoning paths are sampled and the most frequent final answer is returned.
+Self-consistency is a direct ancestor of the exploration strategy in this work: the frontier method accumulates a pool of candidate answers via diverse sampling before applying a selection policy.
+The key difference from self-consistency is that our selection policy is conditioned on logged execution metadata---specifically failure-trace signals from the frontier run---rather than raw majority vote across all samples.
+
+\paragraph{Test-time compute scaling.}
+Recent work has shown that scaling inference-time computation can yield accuracy gains comparable to scaling model parameters \citep{snell2024scaling}.
+Budget-forcing \citep{muennighoff2025s1} operationalises this by extending or truncating the reasoning trace to a target token count, encouraging the model to use its full compute allotment.
+\citet{wu2024inference} and others have studied how the allocation of test-time compute across verifier calls, generator retries, and search depth affects downstream accuracy.
+The present work occupies a complementary niche: given that the budget has already been spent generating a frontier candidate pool (budget~$= 6$ in our setting), we ask how to select the best answer from the pool without additional generation.
+
+\paragraph{Tree-structured and search-based reasoning.}
+Tree of Thoughts \citep{yao2023tree} and similar frameworks \citep{besta2024graph} extend CoT to multi-branch deliberate search, where the model evaluates partial solutions at each step.
+These approaches improve coverage of the solution space at the cost of increased inference computation.
+The frontier method used as our baseline can be viewed as a lightweight variant: it generates candidates via program-aided execution \citep{gao2023pal}, accumulates a diverse pool under a budget constraint, and selects a final answer via a fixed rule.
+The failure modes we identify---structurally weak single-branch explorations and frontier-external disagreements---arise specifically because not all budget allocations produce equally reliable candidates, motivating the gating rules in FIX-2 and FIX-4.
+
+\paragraph{Verifier-guided reranking and outcome reward models.}
+A complementary line of work trains separate verifier or reward models to rerank candidate solutions.
+\citet{cobbe2021training} showed that a trained outcome verifier substantially improves answer selection on the GSM8K benchmark.
+Process reward models \citep{lightman2024lets} extend this to step-level verification, providing finer-grained feedback.
+In our setting, a SetFit verifier \citep{tunstall2022efficient} was trained during the RelationReady phase and showed positive within-method reranking signal; however, cross-method routing was method-entangled and not promoted.
+The gating rules studied in this paper avoid learned verifier components entirely: they rely only on runtime metadata that is logged as a side-effect of the frontier run.
+
+\paragraph{Cost-aware routing and cascades.}
+FrugalGPT \citep{chen2023frugalgpt} and related cascade approaches \citep{dohan2022language} route queries to cheaper models or early-exit points when a confidence threshold is met.
+These methods reduce overall inference cost by skipping expensive models on ``easy'' examples.
+Our setting differs in that cost is fixed by the budget contract: all examples receive the same number of inference calls.
+The allocation question is therefore not which model to call, but which answer to surface from an already-generated candidate pool, given only gold-free execution signals.
+
+\paragraph{Prompt-budget strategies.}
+Several approaches directly manipulate the prompt or generation parameters to control inference cost.
+TALE-style prompt budgeting, used as an external baseline in this paper, allocates a target token count in the prompt and constrains generation length.
+Such approaches are orthogonal to our method: they control the generation phase, while FIX-2+FIX-4 acts post-generation on already-produced candidates.
+
+\paragraph{Adaptive computation.}
+Adaptive computation in neural networks---from early exits \citep{graves2016adaptive} to mixture-of-experts gating---dynamically allocates compute based on input difficulty.
+Our failure-trace gating policy can be seen as an adaptive selection layer applied at the output of the frontier generator: it redirects the final answer for a predicted subset of ``weak'' outputs without requiring additional forward passes.
+
+\paragraph{Positioning of this work.}
+The present paper contributes a simple, deterministic, gold-free gating policy evaluated under strict reproducibility constraints: exact rule definitions, matched budgets, disjoint evaluation splits, and explicit confidence-interval reporting.
+Unlike verifier-based approaches, the method requires no additional model training.
+Unlike search-based methods, it adds no inference cost beyond the already-allocated budget.
+The principal contribution is an empirical demonstration that two lightweight failure-trace signals---the override-reason metadata field and external-consensus agreement---can recover a meaningful fraction of cases where the frontier method's output is unreliable, yielding statistically supported accuracy gains on the tested Cohere setting.

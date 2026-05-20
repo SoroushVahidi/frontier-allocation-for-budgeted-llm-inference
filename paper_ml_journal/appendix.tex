@@ -1,0 +1,50 @@
+\appendix
+\section{Reproducibility and Supplementary Material}
+\input{tables/tableA1_reproducibility}
+\input{tables/tableA2_win_loss_tie}
+\input{tables/tableA3_safe_unsafe_claims}
+
+\section{Parameter Grounding and Sensitivity}
+\label{sec:appendix_params}
+\input{tables/tableA4_parameter_sensitivity}
+
+\section{Runtime Feature Legality}
+\label{sec:appendix_features}
+\input{tables/tableA5_feature_legality}
+
+\section{Algorithm Listing}
+The promoted policy is presented inline as Algorithm~\ref{alg:fix24} in Section~\ref{sec:fix24_algorithm}.
+For the full executable implementation, see \nolinkurl{experiments/support_aware_selector.py} and the artifact package at
+\nolinkurl{outputs/machine_learning_journal_result_package_20260520_20260520T035127Z/algorithm_fix24_pseudocode.md}.
+
+\section*{Data Availability}
+The primary evaluation artifacts, including per-example JSONL outputs, integrity manifests,
+and the result package used to generate all tables and figures in this paper, are stored in
+the repository under \nolinkurl{outputs/machine_learning_journal_result_package_20260520_20260520T035127Z/}.
+The GSM8K benchmark questions used for evaluation are available from the original source
+\citep{cobbe2021training}.
+No proprietary or restricted data were used.
+
+\section*{Code Availability}
+The complete implementation of FIX-2+FIX-4 is provided in
+\nolinkurl{experiments/support_aware_selector.py} within the project repository.
+Evaluation driver scripts are located under \nolinkurl{scripts/}.
+All experiment configurations, dry-run scripts, and manifest files required to
+reproduce the promoted evaluation are included in the repository.
+
+\section*{Funding}
+This research received no specific grant from any funding agency in the public,
+commercial, or not-for-profit sectors.
+
+\section*{Competing Interests}
+The authors declare no competing interests.
+
+\section*{Use of AI Tools}
+Portions of this manuscript were drafted with the assistance of AI-based writing tools.
+All scientific claims, experimental designs, results, and interpretations were reviewed
+and verified by the authors against the primary evaluation artifacts.
+
+\section*{Author Contributions}
+Soroush Vahidi: Conceptualization, Methodology, Software, Validation, Formal analysis,
+Investigation, Data curation, Writing --- original draft, Writing --- review and editing,
+Visualization.

@@ -1,0 +1,378 @@
+# Stage 2 Calibrated Gate Status (2026-05-18)
+
+## A) Stage-2 Status Summary
+
+- Current stage: calibrated baseline-gated allocator prototype (failure-driven allocation), output-only.
+- RelationReady verifier phase remains closed for within-method reranking model development; current work is policy validation/integration.
+- Raw cross-method verifier scores are not a valid direct routing signal (method-entangled in prior audits).
+- Method-calibrated percentile features show useful signal, but current evidence is not yet sufficient for tracked policy promotion.
+
+## B) Evidence Summary
+
+| Step | Evidence | Result | Status |
+|---|---|---|---|
+| Minimal baseline-gated allocator | `scripts/compare_baseline_gated_hybrid_allocator.py` (commit `4f178ce8`) | Validation failure; gate missed recoveries. | Completed |
+| Loss collector + failure inventory | `scripts/collect_baseline_gated_loss_cases.py` (commit `871e7a4b`) + downstream inventories | Sufficient disagreement/opportunity pool; clean enriched table included 245 clean rows. | Completed |
+| High-log verifier scoring/calibration | `outputs/overnight_high_log_verifier_calibration_20260518T044646Z/` | 2710 scored candidates; verifier features joined to all feature rows (`1183/1183`), both baseline+frontier available for `1141/1183`; raw PAL/frontier scores flat-low; no Cohere API needed. | Completed |
+| Calibrated feature audit | `outputs/calibrated_verifier_feature_audit_20260518T141003Z/` | Frozen features: `frontier_proba_ready_pct_within_method`, `baseline_proba_ready_pct_within_method`; margin/z features as ablation; raw cross-method features excluded. | Completed |
+| Calibrated percentile gate (safe) | `scripts/evaluate_calibrated_percentile_gate.py` (commit `ac12d13e`), output `outputs/calibrated_percentile_gate_eval_20260518T141746Z/` | Safe gate `conservative_combo f=0.85 b=0.40 m=0.50`; dev `+1.02pp`, holdout `+0.00pp`, all-artifacts `+0.76pp`; conservative with missed recoveries. | Completed |
+| Sensitivity / near-neighbor audit | `outputs/calibrated_percentile_gate_sensitivity_20260518T143150Z/`, `outputs/calibrated_gate_candidate_manual_review_20260518T143150Z/`, `outputs/calibrated_gate_regression_penalized_retest_20260518T145519Z/`, `outputs/calibrated_gate_near_neighbor_audit_20260518T150018Z/` | Best near-neighbor `conservative_combo f=0.80 b=0.45 m=0.50`; holdout `+0.33pp` vs safe, with higher switch volume. | Completed |
+| Incremental case review | `outputs/calibrated_gate_incremental_case_review_20260518T151933Z/` | Incremental switches `17`; added recoveries `2` acceptable; added regressions `2` tolerable/explainable (runtime-cap failures); `13/17` marked `insufficient_logs`. | Completed |
+| Incremental switch log-sufficiency repair | `outputs/incremental_switch_log_sufficiency_repair_20260518T161301Z/` | Cases checked `17`; previously insufficient `13`; recovered to sufficient `11/13`; final sufficiency `yes/partial/no = 13/2/2`; added recoveries `2/2` fully reviewable; added regressions `0/2` fully reviewable due to runtime-cap gaps. | Completed |
+
+## B.1) Incremental Switch Log-Sufficiency Repair
+
+- Output: `outputs/incremental_switch_log_sufficiency_repair_20260518T161301Z/`
+- Incremental switched cases checked: `17`
+- Previously insufficient: `13`
+- Recovered from insufficient to sufficient: `11/13`
+- Final sufficiency split: `yes=13`, `partial=2`, `no=2`
+- Added recoveries: `2/2` fully reviewable
+- Added regressions: `0/2` fully reviewable
+- Unresolved regression caveat: remaining unresolved regressions are tied to frontier runtime-cap failures (`Global logical API call cap reached`), with missing frontier answer/trace and missing promotion-grade expansion/selection logging.
+
+Decision impact:
+- This strengthens the non-promotion decision for the near-neighbor gate.
+- Keep safe gate as the only conservative output-only candidate.
+- Keep near-neighbor as ablation/diagnostic only; do not promote.
+- Cohere API is still not immediately required, but future targeted collection (if needed) must preserve runtime-cap and frontier-trace completeness.
+
+## C) Current Recommended Gate Roles
+
+- Safe gate: `conservative_combo f=0.85 b=0.40 m=0.50`
+  - Role: conservative output-only candidate / safe baseline prototype.
+- Near-neighbor gate: `conservative_combo f=0.80 b=0.45 m=0.50`
+  - Role: ablation/diagnostic candidate only; not promotable from current logs.
+- Promotion status: not promoted as final tracked project policy.
+
+## D) Why It Is Not Promoted Yet
+
+- Safe gate holdout gain is neutral (`+0.00pp`).
+- Near-neighbor gain is modest (`+0.33pp` holdout) and not broad enough for promotion.
+- Incremental review showed substantial log insufficiency (`13/17` switched cases tagged `insufficient_logs`).
+- Log-sufficiency repair recovered most neutral switches, but the two incremental near-neighbor regressions remain unresolved and not fully reviewable due to runtime-cap-related missing frontier logs.
+- Recovery/regression behavior is not perfectly separable under current logging quality.
+- Current evidence does not support broad claims of beating all external baselines.
+- No final disjoint, promotion-grade validation yet against full external baseline set under matched budget/cost.
+
+## E) Promotion Criteria (Output-Only -> Tracked/Promoted Policy)
+
+1. Switched-case logging is sufficient for most cases, including:
+   - candidate pool,
+   - discovery/frontier tree,
+   - node expansion order,
+   - prune/selection reasons,
+   - runtime-cap status,
+   - frontier answer/trace (or explicit serialized empty/failure state when runtime-capped),
+   - parser/canonicalizer trace,
+   - verifier scores,
+   - selector/gate features.
+2. Manual review of switched regressions shows no unacceptable systematic failure mode.
+   - Runtime-cap regressions cannot be treated as acceptable for promotion unless logs are complete enough to diagnose cause and counterfactual gate behavior.
+3. Gate beats `external_l1_max` on held-out artifacts with paired/cluster uncertainty not strongly negative.
+4. Gate shows non-negative net gain overall and by major artifact family, or provides clear documented exception rationale.
+5. Gate is validated on disjoint cases not used to tune thresholds.
+6. Gate is compared against strong external baselines under matched budget/cost:
+   - `external_l1_max`
+   - `external_s1_budget_forcing`
+   - `external_tale_prompt_budgeting`
+   - PAL/frontier variants at matched budget/cost.
+7. If existing logs are insufficient for diagnosis/promotion, run targeted Cohere failure-collection with strict schema before promotion.
+
+## F) Cohere API Decision
+
+- Cohere API collection is not needed immediately.
+- Cohere collection becomes justified only if existing logs cannot support sufficient diagnosis/promotion (including unresolved runtime-cap regression gaps), or if fresh disjoint failure cases with complete schema are required for promotion/final external-baseline comparison.
+- Any future Cohere collection must be targeted, capped, disjoint, and preserve full logs/discovery-tree provenance.
+
+## F.1) Promotion-Review Logging Schema
+
+- New helper module: `scripts/failure_case_logging_schema.py`
+- Purpose:
+  - Build a normalized promotion-review record for each attempt, including runtime-cap/failure attempts.
+  - Validate log sufficiency for promotion-grade review.
+  - Return:
+    - `enough_for_promotion_review` (`yes`/`partial`/`no`)
+    - `missing_required_fields`
+    - `missing_critical_fields`
+    - `notes`
+    - `runtime_failure_reviewable` (`yes`/`no`)
+
+Runtime-cap requirement:
+- Runtime-cap/failure rows must serialize explicit empty/unavailable states instead of silently missing fields, including:
+  - frontier/candidate answer (`explicit empty` marker when absent),
+  - frontier/candidate trace (`explicit empty` marker when absent),
+  - node expansion order (`explicit unavailable` marker when absent),
+  - prune/selection reasons (`explicit unavailable` marker when absent),
+  - explicit status/error plus cost/call-count context.
+
+Schema boundary:
+- `exact_match` and `gold_answer` are retained only as `offline_eval_only` metadata.
+- They are not required for promotion log sufficiency and must never be used as runtime prompt/model features.
+
+Integration guidance:
+- First wired writer (minimal integration, backward-compatible):
+  - `scripts/run_cohere_real_model_cost_normalized_validation.py`
+  - New per-row fields:
+    - `promotion_review_record`
+    - `promotion_review_validation`
+  - Runtime-cap/failure rows now serialize explicit empty/unavailable markers through the helper path.
+- Real Cohere pilot check:
+  - `outputs/cohere_promotion_review_logging_pilot_20260518T164702Z/`
+  - Confirmed real API rows emit both promotion-review fields.
+  - First pilot success rows were `partial` because generation-time prompt/verifier/score/selection-gap fields were left implicit.
+  - Schema/writer now require explicit generation-time markers (`__not_scored_yet__`, `__unavailable_not_recorded__`, prompt hash/pointer) so pre-offline-scoring rows can validate as promotion-reviewable (`yes`) when otherwise complete.
+- This helper remains intentionally minimal/reusable and is not yet wired into every writer.
+- Future Cohere/failure-collection/frontier writers that emit `per_example_records.jsonl` should call:
+  - `build_promotion_review_record(...)` when constructing per-attempt rows.
+  - `validate_promotion_review_record(...)` before final write/report aggregation.
+- For promotion-grade audits, verify `promotion_review_validation.enough_for_promotion_review`.
+- If unresolved runtime-cap reviewability remains after current artifacts, a targeted
+  collection (still not immediate) must use this schema and preserve full per-attempt logs.
+
+## F.2) Cohere Promotion-Review Logging Pilot 2
+
+- Output: `outputs/cohere_promotion_review_logging_pilot2_20260518T170030Z/`
+- Per-example records rows: `4`
+- Promotion-review sufficiency: `enough_for_promotion_review` `yes=4/4`, `partial=0/4`, `no=0/4`
+- Runtime-failure reviewability: `yes=4/4`, `no=0/4`
+- Explicit marker coverage on success-path rows:
+  - `prompt_hash` present `4/4`
+  - `raw_proba_ready=__not_scored_yet__` `4/4`
+  - `verifier_scores_pointer=__not_scored_yet__` `4/4`
+  - `prune_or_selection_reasons` explicit unavailable/not_applicable when absent
+- Silent missing required marker fields: `0`
+- Prompt/feature leakage checks (`gold` / `exact_match`): `0`
+- Outcome: success-path promotion-review logging readiness is confirmed for the main Cohere writer.
+- Caveat: no runtime-failure rows occurred in this pilot, so runtime-failure-path readiness remains synthetic-tested only.
+- Decision impact: future targeted failure collection can use the same main Cohere writer + schema path.
+
+## F.3) Seed-Flip Manual Audit: openai_gsm8k_144
+
+- Output: `outputs/seed_flip_manual_audit_openai_gsm8k_144_20260518T205529Z/`
+- Source artifact: `outputs/targeted_cohere_merged_seed11_seed23_analysis_1779133255/` (160 rows, 40 examples, seeds 11/23, budget 6)
+- Methods compared: `direct_reserve_semantic_frontier_v2` (frontier) vs `external_l1_max`
+
+### Correctness Matrix (openai_gsm8k_144, gold = 20)
+
+| Method | Seed 11 | Answer | Seed 23 | Answer |
+|---|---|---|---|---|
+| frontier | ✓ correct | 20 | ✗ wrong | 9 |
+| external_l1_max | ✗ wrong | 5 | ✓ correct | 20 |
+
+No parse extraction failures on any row. Wrong answers are clearly arithmetically wrong (5 = cloth pack unit cost; 9 = cost per client — both mid-reasoning intermediate values).
+
+### Root Cause
+
+Two independent stochastic events, not systematic method superiority:
+
+- **External seed=11 failure:** Stochastic truncation + parser artifact. Model returned `action: continue` mid-reasoning (1 API call only); parser extracted `5` from `"$5 per cloth pack"` in the partial text. `gold_in_tree=0`.
+- **External seed=23:** Clean 3-step completion; model correctly computed $92 − $72 = $20. No issue.
+- **Frontier seed=11:** Both direct-reserve attempts independently returned 20 (confidence = 1.0, 2/2 agreement). Correct, stable.
+- **Frontier seed=23 failure:** Stochastic selection artifact. Direct-reserve attempt[0] captured intermediate value 9 (cost per client); attempt[1] correctly returned 20. Support split 1:1; tiebreak selected 9. Frontier ran, returned candidate 10 (also wrong). Override rejected (`single_weak_frontier_branch`). `gold_in_tree=1`; failure tag: `correct answer present but not selected`.
+
+### Sampled Pattern Across 40 Examples
+
+| Metric | Value |
+|---|---|
+| External flip rate (different across seeds) | 14/40 = **35%** |
+| Frontier flip rate (different across seeds) | 5/40 = **12.5%** |
+| Frontier stably correct (both seeds) | 27/40 = **67.5%** |
+| External stably correct (both seeds) | 22/40 = **55%** |
+| Frontier wins seed=11, external fails | 7 |
+| External wins seed=23, frontier fails | 4 |
+
+Pattern: Most external flips follow "absent from explored tree" on seed=11 → correct on seed=23. Frontier failures are predominantly selection artifacts ("correct answer present but not selected"), not reasoning failures.
+
+### Interpretation
+
+- Seed reversal is driven by high external seed variance (35% flip rate), not a genuine external-baseline superiority signal.
+- Frontier stability is substantially better than external on this diagnostic artifact, but 40 examples and 2 seeds are insufficient for gate-design or promotion claims (±~8pp CI at 95%).
+- Artifact remains **diagnostic only**. No gate promotion evidence.
+
+### Decision
+
+- No further Cohere API is needed immediately from this audit.
+- The 6–8 seed robustness run (referenced in `TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md`) remains optional/future and should not be launched until there is a clear decision that larger seed-robustness evidence is needed.
+- Recommendation: **C** — treat artifact as diagnostic, update docs, do not run more API now.
+
+## F.4) Merged 160-Row Failure-Pattern Analysis
+
+- Output: `outputs/merged_160_failure_pattern_analysis_20260518T211319Z/`
+- Source: `outputs/targeted_cohere_merged_seed11_seed23_analysis_1779133255/merged_per_example_records.jsonl`
+- Analysis: offline pattern mining only — decision trees, association rules, TF-IDF trace clustering.
+  No provider API calls, no training, no new installs.
+
+### Row and Target Counts
+
+| Dimension | Value |
+|---|---|
+| Total records | 160 (40 examples × 2 seeds × 2 methods) |
+| Paired rows (per-example × seed) | 80 |
+| frontier_wins | 8/80 = 10.0% |
+| external_wins | 7/80 = 8.75% |
+| both_correct | 51/80 = 63.75% |
+| both_wrong | 14/80 = 17.5% |
+| disagreement | 15/80 = 18.75% |
+
+### Seed Stability
+
+| Metric | Value |
+|---|---|
+| External flip rate (accuracy differs across seeds) | 14/40 = **35.0%** |
+| Frontier flip rate | 5/40 = **12.5%** |
+| Frontier stably correct (both seeds) | 27/40 = **67.5%** |
+| External stably correct (both seeds) | 22/40 = **55.0%** |
+| Strict seed-flip examples | 1 (`openai_gsm8k_144`, see §F.3) |
+
+### Top Association Rules (Manual Fallback, No mlxtend Needed)
+
+| Rule | Lift | Support | Rate |
+|---|---|---|---|
+| `gold_in_tree=0` → external absent-from-tree | **4.85** | 21% | 100% |
+| `frontier_absent=1` → both_wrong | **4.67** | 14% | 82% |
+| `external_absent=1` → both_wrong | **3.64** | 28% | 64% |
+| `frontier_pns=1` → both_wrong | **2.86** | 12% | 50% |
+| `frontier_pns=1` → disagreement | **2.67** | 12% | 50% |
+| `frontier_dr_confidence=0.5` → frontier PNS | **2.35** | 42% | 29% |
+| `frontier_dr_incumbent_support=1` → frontier PNS | **2.29** | 44% | 29% |
+
+Key: PNS = correct answer present but not selected.
+
+### Failure Mode Breakdown by Seed × Method
+
+| Seed | Method | Accuracy | Absent | PNS | Gold-in-Tree | Avg API Calls |
+|---|---|---|---|---|---|---|
+| 11 | frontier | 72.5% | 7 | 4 | 33 (82.5%) | 2.62 |
+| 11 | external | 62.5% | 15 | 0 | 25 (62.5%) | 1.25 |
+| 23 | frontier | 75.0% | 4 | 6 | 36 (90.0%) | 2.45 |
+| 23 | external | 82.5% | 7 | 0 | 33 (82.5%) | 1.38 |
+
+External seed=11 has 15 absent-from-tree failures vs 7 on seed=23, with average API calls
+of 1.25 — consistent with stochastic single-step truncation/early-stop, not pure reasoning
+failure. Frontier PNS failures are evenly spread across seeds (4 and 6), tied to
+low-confidence direct-reserve (confidence=0.5 / incumbent_support=1).
+
+### Trace Clustering
+
+- Method: TF-IDF + KMeans (k=6). No new library installs.
+- Silhouette score: 0.133 — low.
+- Clusters reflect **problem topic** (motion/distance, counting, cost/change, character-name
+  problems), not failure mechanisms directly.
+- Motion/distance cluster (n=16) has 50% accuracy and is enriched for external variance.
+- TF-IDF is insufficient for failure-mechanism clustering; `sentence_transformers` (already
+  installed) would be needed for semantic trace analysis if deeper clustering is required.
+
+### Representative Case Conclusions
+
+- **Seed-flip** (`openai_gsm8k_144`): two independent stochastic events — external
+  truncation/parser artifact (seed=11) + frontier tiebreak selection artifact (seed=23).
+- **Frontier recoveries**: external `absent_from_explored_tree` on seed=11; frontier stably
+  correct. Pattern = `stochastic_external_variance`.
+- **External wins**: frontier `present_not_selected` or stochastic external correct (seed=23
+  only). Pattern = `frontier_selection_failure` or `stochastic_frontier_variance`.
+- **Both-wrong cases**: `frontier_absent=1 AND external_absent=1` — candidate-pool misses
+  (lift 4.67). Require better generation, not better selection.
+- **Stable frontier correct**: 27/40 examples, both seeds correct. Useful controls.
+
+### Inference-Time Gate Feature Candidates (from this artifact)
+
+| Feature | Signal | Lift |
+|---|---|---|
+| `frontier_dr_confidence` (= incumbent_support / num_attempts) | low confidence → PNS risk | ~2.35 |
+| `frontier_dr_incumbent_support` | incumbent_support=1 → PNS risk | ~2.29 |
+| `cohere_logical_api_calls` (external) | low call count → truncation/absent risk | indirect |
+
+These features are **inference-time observable** and already used in the existing safe/near-neighbor
+gate configurations. The association-rule evidence from this artifact is consistent with and
+adds quantitative support to the feature choices already made.
+
+### Interpretation
+
+- Patterns are partially actionable: the two inference-time confidence/support features are
+  now quantitatively confirmed as PNS-risk signals.
+- Artifact is **diagnostic only**. Not promotion evidence. 40 examples and 2 seeds give
+  ±~8pp confidence intervals — findings are indicative, not conclusive.
+- No claim of beating `external_l1_max` or any other baseline follows from this artifact.
+- No promoted calibrated gate.
+
+### Decision
+
+- No Cohere API is needed now.
+- Document findings and continue treating artifact as diagnostic.
+- Both-wrong/pool-miss cases require candidate-generation improvement (not gate tuning) if addressed.
+- Future trace clustering should use `sentence_transformers` embeddings, not TF-IDF.
+
+## F.5) Promotion-Review Schema Repair: node_expansion_order (2026-05-18)
+
+During the active 100-case collection, external-method rows (`external_l1_max`,
+`external_s1_budget_forcing`, `external_tale_prompt_budgeting`) were found to
+serialize `node_expansion_order = []` (silently absent) instead of an explicit
+unavailable marker. This caused `enough_for_promotion_review = partial` for all
+external-method rows (50% of batches 1–2).
+
+Fix applied:
+- `scripts/run_cohere_real_model_cost_normalized_validation.py`: `node_expansion_order`
+  now receives the same explicit-marker fallback already used by `prune_or_selection_reasons`;
+  future records will emit `__unavailable_not_recorded__` at generation time.
+- `scripts/repair_promotion_review_markers.py`: repair utility to back-fill already-emitted
+  records without overwriting live output files.
+- Proof run on batches 1–2 (480 rows): 240 repaired; yes rate 50% → 100%.
+  Output: `outputs/promotion_review_marker_repair_check_20260518T223824Z/`.
+
+Live collection data from batches 1–2 is usable but requires running the repair
+utility before downstream analysis to reach the 95% yes-rate criterion.
+Batch 3 onward will emit the correct marker at generation time.
+The running tmux job was not interrupted.
+
+## F.6) Targeted 100-Case Collection: Completed (2026-05-18/19)
+
+- tmux session: `cohere_collect_100_failure_cases_20260518` (completed, no longer running)
+- output root: `outputs/targeted_cohere_100_failure_cases_20260518T213958Z/`
+- Status: **COMPLETED** — 7 batches, 210 examples attempted, 101 unique failure/disagreement cases.
+- Post-run postrun dir: `outputs/targeted_cohere_100_failure_cases_postrun_20260519T002844Z/`
+
+Post-run validation results:
+- Total generated rows: 1680; unique examples: 210; failure cases: 101.
+- Promotion-review sufficiency after repair: **1680/1680 yes** (100%).
+- Repair applied: `repair_promotion_review_markers.py` converted 361 `partial` → `yes` for external-method rows.
+- Leakage scan: PASS.
+- All-data accuracy: frontier 79.3%, tale 78.6%, s1bf 77.6%, l1max 76.7%.
+- Paired deltas vs externals: all positive in point estimate; all 95% CIs include zero (failure-enriched collection, not promotion-grade).
+- Verifier score margin NOT actionable for routing: frontier proba ≈ 0.20 vs baseline proba_max ≈ 0.92 (systematic asymmetry, not calibrated across methods).
+
+**Important caveat:** This collection is failure-enriched diagnostic data, not an unbiased validation set. Point-estimate superiority does not constitute a promotion claim. Results are not stable by seed or batch.
+
+Recommendation from all-external-baseline policy eval: **B** — collect unbiased promotion-grade validation set.
+
+## F.7) Promotion-Grade All-Baseline Validation: Running (2026-05-19)
+
+**STATUS: RUNNING — do not kill, restart, or interfere.**
+
+- tmux session: `promotion_grade_cohere_all_baselines_20260519`
+- output root: `outputs/promotion_grade_cohere_all_baselines_validation_20260519T005021Z/`
+- Dataset: GSM8K **training split** (200 examples, seed=31); namespace `openai_gsm8k_train_N`.
+- Disjointness: PASSED — 0 overlap vs all 1318 prior test-split IDs.
+- Methods: `direct_reserve_semantic_frontier_v2`, `external_l1_max`, `external_s1_budget_forcing`, `external_tale_prompt_budgeting`.
+- Budget: 6. Seed: 31. API cap: 2000.
+- Expected rows: 800 (200 examples × 4 methods × 1 seed).
+- Dry-run call plan: PASSED.
+
+This is an **unbiased** random sample — not failure-enriched. Results will determine whether frontier genuinely beats all external baselines on a held-out unbiased artifact.
+
+**Do not tune gates or thresholds on this validation set.**
+Do not claim results until postrun validation and bootstrap CIs are computed.
+
+## G) Immediate Next Steps (Ranked)
+
+1. Wait for promotion-grade all-baseline validation to complete; run postrun validation.
+2. If frontier beats all three externals with CIs not strongly negative: document as first promotion-grade evidence.
+3. If result is mixed or negative: analyze root causes, collect more examples, or add seeds.
+4. Do not claim external-baseline superiority until postrun CIs support it.
+5. Do not promote any gate from the failure-enriched diagnostic collection.
+
+## Current Decision Snapshot
+
+- Default recommendation: keep safe gate as conservative freeze candidate, keep near-neighbor as ablation.
+- Tracked-source promotion: defer (remain output-only until criteria above are satisfied).
+- **Promotion-grade all-baseline validation is actively running.** No claim until it completes and CIs are computed.

@@ -22,6 +22,79 @@ def _write_jsonl(path: Path, rows: list[dict[str, object]]) -> None:
             handle.write(json.dumps(row) + "\n")
 
 
+def _write_artifact_bundle(base: Path, *, case_id: str, question: str, gold_answer: str, final_answer: str) -> Path:
+    bundle = base / "artifact_bundle"
+    bundle.mkdir(parents=True, exist_ok=True)
+    _write_csv(
+        bundle / "pal_results.csv",
+        [
+            {
+                "example_id": case_id,
+                "question": question,
+                "gold_answer": gold_answer,
+                "final_answer_raw": final_answer,
+                "final_answer_source": "repair_layer",
+                "repair_answer_raw": final_answer,
+                "failure_tag": "correct answer absent from explored tree",
+                "status": "scored",
+                "final_nodes": json.dumps(
+                    [
+                        {"branch_id": "direct_reserve_0", "predicted_answer": "3", "source_metadata": "direct_reserve"},
+                        {"branch_id": "pal_seed_0", "predicted_answer": "5", "source_metadata": "pal_seed"},
+                    ]
+                ),
+                "result_metadata": json.dumps(
+                    {
+                        "direct_reserve_answer": "3",
+                        "frontier_candidate_answer": "5",
+                        "answer_group_support_counts": {"3": 1, "5": 2},
+                        "selector_candidate_pool": ["3", "5"],
+                        "action_trace": [
+                            {
+                                "branch_id": "div_0",
+                                "action": "expand",
+                                "reasoning_text": "A promising but wrong frontier trace.",
+                                "target_alignment_category": "likely_intermediate_or_mistargeted",
+                            }
+                        ],
+                        "pal_candidate_answer": "5",
+                        "pal_execution_result": {
+                            "pal_exec_ok": False,
+                            "pal_parse_ok": True,
+                            "pal_safety_ok": True,
+                            "pal_stdout": "",
+                            "pal_error_type": "ValueError",
+                            "pal_error_message_sanitized": "bad arithmetic",
+                        },
+                    }
+                ),
+            }
+        ],
+    )
+    _write_csv(bundle / "selected_cases.csv", [{"example_id": case_id, "question": question, "gold_answer": gold_answer}])
+    _write_csv(
+        bundle / "pal_discovery3_audit.csv",
+        [
+            {
+                "example_id": case_id,
+                "pal_final_nodes_normalized_answers_json": json.dumps(["3", "5"]),
+                "pal_selector_candidate_pool_json": json.dumps(["3", "5"]),
+            }
+        ],
+    )
+    _write_csv(
+        bundle / "pal_retry_audit.csv",
+        [
+            {
+                "example_id": case_id,
+                "retry_selected_source": "none",
+                "pal_retry_reason": "seed_empty_or_non_executable",
+            }
+        ],
+    )
+    return bundle / "pal_results.csv"
+
+
 def test_trace_packets_include_structural_fields_and_stay_gold_free(tmp_path: Path, monkeypatch) -> None:
     failure = tmp_path / "failure.csv"
     gold = tmp_path / "gold.csv"
@@ -182,16 +255,16 @@ def test_trace_packets_include_structural_fields_and_stay_gold_free(tmp_path: Pa
     assert manifest["allow_api"] is False
     assert manifest["api_clients_constructed"] is False
     assert manifest["unique_case_count"] == 1
-    assert manifest["planned_request_count"] == 3
+    assert manifest["planned_request_count"] == 2
 
     trace_packets = [json.loads(line) for line in (out_dir / "trace_packets.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     provider_requests = [json.loads(line) for line in (out_dir / "provider_requests_dry_run.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     raw_rows = [json.loads(line) for line in (out_dir / "raw_provider_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     parsed_rows = [json.loads(line) for line in (out_dir / "parsed_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     assert len(trace_packets) == 1
-    assert len(provider_requests) == 3
-    assert len(raw_rows) == 3
-    assert len(parsed_rows) == 3
+    assert len(provider_requests) == 2
+    assert len(raw_rows) == 2
+    assert len(parsed_rows) == 2
     assert all("gold_answer" not in request["prompt_text"].lower() for request in provider_requests)
     assert all("answer_key" not in request["prompt_text"].lower() for request in provider_requests)
 
@@ -206,6 +279,112 @@ def test_trace_packets_include_structural_fields_and_stay_gold_free(tmp_path: Pa
     assert packet["pal_exec_summary"]["pal_execution_status"] == "success"
     assert packet["gold_assisted"] is False
     assert "reference_answer" not in packet
+    assert packet["internal_scoring_metadata"]["gold_answer"] == "7"
+
+
+def test_trace_packets_join_artifact_bundle_when_target_audit_is_missing(tmp_path: Path, monkeypatch) -> None:
+    failure = tmp_path / "failure.csv"
+    gold = tmp_path / "gold.csv"
+    anchor = tmp_path / "anchor.csv"
+    target_audit = tmp_path / "target_audit.jsonl"
+    diag30 = tmp_path / "diagnostic_30.jsonl"
+    target15 = tmp_path / "target_15.jsonl"
+    structural = tmp_path / "candidate_feature_rows.csv"
+    out_dir = tmp_path / "out_joined"
+    artifact_path = _write_artifact_bundle(
+        tmp_path,
+        case_id="c1",
+        question="Wendy is five times as old as Colin will be seven years from now.",
+        gold_answer="20",
+        final_answer="3",
+    )
+
+    _write_csv(
+        failure,
+        [
+            {
+                "case_id": "c1",
+                "method_id": labeler.DEFAULT_METHOD,
+                "method_version": "v1",
+                "evidence_completeness": "FULL",
+                "failure_family": "unknown",
+                "problem_text": "",
+                "gold_answer": "",
+                "selected_answer": "",
+                "selected_source": "",
+                "artifact_source": str(artifact_path),
+                "has_candidate_metadata": "unknown",
+                "has_trace_metadata": "unknown",
+                "has_pal_metadata": "unknown",
+                "local_or_tracked_source": "local",
+                "notes": "",
+            }
+        ],
+    )
+    _write_csv(
+        gold,
+        [
+            {
+                "case_id": "c1",
+                "question_type": "ratio/proportion/percentage",
+                "error_type": "unknown",
+                "gold": "20",
+                "predicted": "",
+                "num_candidate_groups": "0",
+                "diversity_bucket": "low (1 group)",
+                "external_contrast": "Both wrong",
+            }
+        ],
+    )
+    _write_csv(anchor, [{"case_id": "c1"}])
+    _write_jsonl(target_audit, [])
+    _write_jsonl(diag30, [{"example_id": "c1"}])
+    _write_jsonl(target15, [{"example_id": "c1"}])
+    _write_csv(structural, [{"case_id": "c1", "target_tuple": json.dumps({"question_kind": "count"})}])
+
+    monkeypatch.setattr(
+        labeler,
+        "_call_provider_api",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("API call attempted in dry run")),
+    )
+
+    rc = labeler.main(
+        [
+            "--failure-csv",
+            str(failure),
+            "--gold-absent-csv",
+            str(gold),
+            "--anchor-effect-csv",
+            str(anchor),
+            "--target-audit-jsonl",
+            str(target_audit),
+            "--diagnostic-30-jsonl",
+            str(diag30),
+            "--target-staged-15-jsonl",
+            str(target15),
+            "--structural-feature-csv",
+            str(structural),
+            "--subsets",
+            "diagnostic_30",
+            "--providers",
+            "cohere",
+            "--output-dir",
+            str(out_dir),
+        ]
+    )
+    assert rc == 0
+
+    packet = json.loads((out_dir / "trace_packets.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert packet["question"] == "Wendy is five times as old as Colin will be seven years from now."
+    assert packet["model_final_prediction"] == "3"
+    assert packet["selector_metadata"]["selected_source"] == "repair_layer"
+    assert packet["direct_reserve_answer"] == "3"
+    assert packet["frontier_candidate_answer"] == "5"
+    assert packet["selector_candidate_pool"] == ["3", "5"]
+    assert packet["answer_group_support_counts"] == {"3": 1.0, "5": 2.0}
+    assert packet["pal_exec_summary"]["pal_error_type"] == "ValueError"
+    assert packet["action_trace_summary"]["action_trace_step_count"] == 1
+    assert packet["internal_scoring_metadata"]["gold_answer"] == "20"
 
 
 def test_pattern_discovery_trace_packets_include_batch_structure_and_stay_gold_free(tmp_path: Path) -> None:
@@ -260,3 +439,40 @@ def test_pattern_discovery_trace_packets_include_batch_structure_and_stay_gold_f
     assert "answer_key" not in prompt.lower()
     assert "c1" in prompt and "c2" in prompt
     assert "pattern_name" in prompt
+
+
+def test_packet_completeness_summary_counts_missing_fields_and_warnings() -> None:
+    summary = labeler._compute_packet_completeness_summary(
+        [
+            {
+                "case_id": "c1",
+                "primary_subset": "wrong_supported_consensus_97",
+                "question": "Q1",
+                "model_final_prediction": "7",
+                "candidate_answers": ["7"],
+                "candidate_answer_groups": [],
+                "selector_candidate_pool": ["7"],
+                "action_trace_summary": {"trace_excerpt": [{"reasoning_text": "x"}]},
+                "pal_exec_summary": {"pal_execution_status": "success"},
+                "structural_fields": {"target_tuple": {"question_kind": "count"}},
+            },
+            {
+                "case_id": "c2",
+                "primary_subset": "wrong_supported_consensus_97",
+                "question": "",
+                "model_final_prediction": "",
+                "candidate_answers": [],
+                "candidate_answer_groups": [],
+                "selector_candidate_pool": [],
+                "action_trace_summary": {},
+                "pal_exec_summary": {},
+                "structural_fields": {},
+            },
+        ],
+        min_completeness=0.75,
+    )
+    assert summary["question_present_rate"] == 0.5
+    assert summary["prediction_present_rate"] == 0.5
+    assert summary["candidate_pool_present_rate"] == 0.5
+    assert summary["empty_packet_count"] == 1
+    assert len(summary["warnings"]) == 2

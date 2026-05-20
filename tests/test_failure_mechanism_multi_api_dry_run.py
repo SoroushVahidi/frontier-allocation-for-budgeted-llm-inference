@@ -22,6 +22,141 @@ def _write_jsonl(path: Path, rows: list[dict[str, object]]) -> None:
             handle.write(json.dumps(row) + "\n")
 
 
+def _prepare_single_case_inputs(tmp_path: Path) -> dict[str, Path]:
+    failure = tmp_path / "failure.csv"
+    gold = tmp_path / "gold.csv"
+    anchor = tmp_path / "anchor.csv"
+    target_audit = tmp_path / "target_audit.jsonl"
+    diag30 = tmp_path / "diagnostic_30.jsonl"
+    target15 = tmp_path / "target_15.jsonl"
+    structural = tmp_path / "candidate_feature_rows.csv"
+
+    _write_csv(
+        failure,
+        [
+            {
+                "case_id": "c1",
+                "method_id": labeler.DEFAULT_METHOD,
+                "method_version": "v1",
+                "evidence_completeness": "FULL",
+                "failure_family": "unknown",
+                "problem_text": "If there are 3 apples and 4 pears, how many fruits are there?",
+                "gold_answer": "7",
+                "selected_answer": "6",
+                "selected_source": "frontier",
+                "artifact_source": "outputs/example.csv",
+                "has_candidate_metadata": "yes",
+                "has_trace_metadata": "yes",
+                "has_pal_metadata": "yes",
+                "local_or_tracked_source": "local",
+                "notes": "test row",
+            }
+        ],
+    )
+    _write_csv(
+        gold,
+        [
+            {
+                "case_id": "c1",
+                "question_type": "multi-step arithmetic",
+                "error_type": "unknown",
+                "gold": "7",
+                "predicted": "6",
+                "abs_error": "1",
+                "rel_error": "0.1429",
+                "distance_bucket": "near (<10%)",
+                "num_candidate_groups": "1",
+                "diversity_bucket": "low (1 group)",
+                "external_contrast": "Both wrong",
+                "notes": "test row",
+            }
+        ],
+    )
+    _write_csv(
+        anchor,
+        [
+            {
+                "case_id": "c1",
+                "question_type": "multi-step arithmetic",
+                "error_type": "unknown",
+                "gold": "7",
+                "original_predicted": "6",
+                "anchor_answer": "7",
+                "has_anchor": "1",
+                "diversity_before": "1",
+                "diversity_after": "2",
+                "diversity_increased": "1",
+                "gold_recovered": "1",
+                "anchor_matches_l1_max": "1",
+                "external_l1_exact": "1",
+            }
+        ],
+    )
+    _write_jsonl(
+        target_audit,
+        [
+            {
+                "case_id": "c1",
+                "question": "If there are 3 apples and 4 pears, how many fruits are there?",
+                "selected_answer": "6",
+                "selected_source": "frontier",
+                "candidate_answers": ["6", "7"],
+                "candidate_sources": ["frontier", "pal_seed"],
+                "candidate_support_counts": {"6": 1, "7": 2},
+                "direct_reserve_answer": "6",
+                "frontier_answer": "6",
+                "tiebreak_answer": "6",
+                "structural_commit_reason": "candidate_pool_present",
+                "gold_present_in_candidate_pool": "no",
+                "correct_alternate_available": "yes",
+                "failure_category": "wrong target",
+                "latest_method_failure_tag": "frontier_collapse",
+                "selection_reason": "test",
+                "short_diagnosis": "test diagnosis",
+                "likely_mismatch_subtype": "wrong_target_variable",
+                "pal_answer": "7",
+                "pal_code": "answer = 7",
+                "pal_stdout": "7\n",
+                "pal_execution_status": "success",
+            }
+        ],
+    )
+    _write_jsonl(diag30, [{"example_id": "c1", "question": "Q30"}])
+    _write_jsonl(target15, [{"example_id": "c1", "question": "Q15"}])
+    _write_csv(
+        structural,
+        [
+            {
+                "case_id": "c1",
+                "target_tuple": json.dumps({"question_kind": "count", "target_surface": "total fruits", "target_entity": "fruits", "target_unit": "count"}),
+                "entity_unit_ledger_proxy": json.dumps({"target_entity": "fruits", "target_unit": "count", "entity_hints": ["apples", "pears"]}),
+                "final_answer_role": "target",
+                "last_operation_family": "add",
+                "target_alignment_score": "1.0",
+                "intermediate_answer_penalty": "0.0",
+                "duplicate_wrong_signature": "abc123",
+                "structural_selector_score": "0.9",
+                "slice_name": "primary",
+                "group_key": "7",
+                "candidate_answer": "7",
+                "source_family": "target",
+                "candidate_role": "target",
+                "support_count": "2",
+                "candidate_pool_size": "2",
+            }
+        ],
+    )
+    return {
+        "failure": failure,
+        "gold": gold,
+        "anchor": anchor,
+        "target_audit": target_audit,
+        "diag30": diag30,
+        "target15": target15,
+        "structural": structural,
+    }
+
+
 def test_dry_run_reports_no_clients_and_writes_minimal_bundle(tmp_path: Path, monkeypatch) -> None:
     failure = tmp_path / "failure.csv"
     gold = tmp_path / "gold.csv"
@@ -188,7 +323,7 @@ def test_dry_run_reports_no_clients_and_writes_minimal_bundle(tmp_path: Path, mo
             "--subsets",
             "diagnostic_30",
             "--providers",
-            "cohere",
+            "mistral",
             "--output-dir",
             str(out_dir),
         ]
@@ -403,7 +538,7 @@ def test_provider_config_check_records_models_without_clients(tmp_path: Path, mo
     structural = tmp_path / "candidate_feature_rows.csv"
     out_dir = tmp_path / "out_check"
 
-    for key in ("COHERE_API_KEY", "CEREBRAS_API_KEY", "FIREWORKS_API_KEY", "OPENAI_API_KEY", "CO_API_KEY"):
+    for key in ("COHERE_API_KEY", "CEREBRAS_API_KEY", "FIREWORKS_API_KEY", "OPENAI_API_KEY", "CO_API_KEY", "MISTRAL_API_KEY"):
         monkeypatch.setenv(key, f"{key}_VALUE")
 
     _write_csv(
@@ -552,13 +687,15 @@ def test_provider_config_check_records_models_without_clients(tmp_path: Path, mo
             "--subsets",
             "diagnostic_30",
             "--providers",
-            "cohere,cerebras,fireworks",
+            "cohere,cerebras,fireworks,mistral",
             "--cohere-model",
             "cohere-x",
             "--cerebras-model",
             "cerebras-y",
             "--fireworks-model",
             "fireworks-z",
+            "--mistral-model",
+            "mistral-a",
             "--check-provider-config",
             "--output-dir",
             str(out_dir),
@@ -571,10 +708,13 @@ def test_provider_config_check_records_models_without_clients(tmp_path: Path, mo
     assert manifest["provider_models"]["cohere"] == "cohere-x"
     assert manifest["provider_models"]["cerebras"] == "cerebras-y"
     assert manifest["provider_models"]["fireworks"] == "fireworks-z"
+    assert manifest["provider_models"]["mistral"] == "mistral-a"
     assert manifest["provider_config_summary"]["cohere"]["model"] == "cohere-x"
     assert manifest["provider_config_summary"]["cerebras"]["model"] == "cerebras-y"
     assert manifest["provider_config_summary"]["fireworks"]["model"] == "fireworks-z"
-    assert manifest["planned_request_count"] == 3
+    assert manifest["provider_config_summary"]["mistral"]["model"] == "mistral-a"
+    assert manifest["provider_config_summary"]["mistral"]["env_ready"] is True
+    assert manifest["planned_request_count"] == 4
 
 
 def test_pattern_discovery_dry_run_limit_plans_one_batch_per_provider(tmp_path: Path, monkeypatch) -> None:
@@ -682,6 +822,8 @@ def test_pattern_discovery_dry_run_limit_plans_one_batch_per_provider(tmp_path: 
         [
             {"example_id": "c1", "question": "Q30-1"},
             {"example_id": "c2", "question": "Q30-2"},
+            {"example_id": "c3", "question": "Q30-3"},
+            {"example_id": "c4", "question": "Q30-4"},
         ],
     )
     _write_jsonl(target15, [{"example_id": "c1", "question": "Q15"}])
@@ -746,9 +888,13 @@ def test_pattern_discovery_dry_run_limit_plans_one_batch_per_provider(tmp_path: 
             "--subsets",
             "diagnostic_30",
             "--providers",
-            "openai,cohere,cerebras,fireworks",
+            "cohere,fireworks,mistral",
+            "--fireworks-model",
+            "accounts/fireworks/models/glm-5",
+            "--mistral-model",
+            "mistral-small-latest",
             "--limit",
-            "1",
+            "3",
             "--output-dir",
             str(out_dir),
         ]
@@ -757,33 +903,125 @@ def test_pattern_discovery_dry_run_limit_plans_one_batch_per_provider(tmp_path: 
 
     manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["mode"] == "pattern_discovery"
-    assert manifest["limit"] == 1
-    assert manifest["prelimit_unique_case_count"] == 2
-    assert manifest["requested_case_count"] == 2
-    assert manifest["selected_case_count"] == 1
-    assert manifest["unique_case_count"] == 1
-    assert manifest["batch_count"] == 4
-    assert manifest["provider_batch_count"] == 4
-    assert manifest["planned_request_count"] == 4
-    assert manifest["expected_request_count"] == 4
-    assert manifest["provider_models"]["openai"] == "gpt-4.1-mini"
+    assert manifest["limit"] == 3
+    assert manifest["prelimit_unique_case_count"] == 4
+    assert manifest["requested_case_count"] == 4
+    assert manifest["selected_case_count"] == 3
+    assert manifest["unique_case_count"] == 3
+    assert manifest["batch_count"] == 3
+    assert manifest["provider_batch_count"] == 3
+    assert manifest["planned_request_count"] == 3
+    assert manifest["expected_request_count"] == 3
+    assert manifest["provider_models"]["mistral"] == "mistral-small-latest"
+    assert manifest["provider_max_output_tokens"]["cohere"] == labeler.PATTERN_DISCOVERY_MAX_TOKENS["cohere"]
+    assert manifest["provider_max_output_tokens"]["fireworks"] == labeler.PATTERN_DISCOVERY_MAX_TOKENS["fireworks"]
+    assert manifest["provider_max_output_tokens"]["mistral"] == labeler.PATTERN_DISCOVERY_MAX_TOKENS["mistral"]
 
     provider_requests = [json.loads(line) for line in (out_dir / "provider_requests_dry_run.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     raw_rows = [json.loads(line) for line in (out_dir / "raw_provider_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     parsed_rows = [json.loads(line) for line in (out_dir / "parsed_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     trace_packets = [json.loads(line) for line in (out_dir / "trace_packets.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
-    assert len(provider_requests) == 4
-    assert len(raw_rows) == 4
-    assert len(parsed_rows) == 4
-    assert len(trace_packets) == 4
+    assert len(provider_requests) == 3
+    assert len(raw_rows) == 3
+    assert len(parsed_rows) == 3
+    assert len(trace_packets) == 3
     assert all(request["dry_run"] is True for request in provider_requests)
+    assert {request["provider"]: request["max_output_tokens"] for request in provider_requests} == {
+        "cohere": labeler.PATTERN_DISCOVERY_MAX_TOKENS["cohere"],
+        "fireworks": labeler.PATTERN_DISCOVERY_MAX_TOKENS["fireworks"],
+        "mistral": labeler.PATTERN_DISCOVERY_MAX_TOKENS["mistral"],
+    }
     assert all("gold_answer" not in request["prompt_text"].lower() for request in provider_requests)
     assert all("answer_key" not in request["prompt_text"].lower() for request in provider_requests)
-    assert all(packet["case_count"] == 1 for packet in trace_packets)
-    assert all(packet["cases_reviewed"] == ["c1"] for packet in trace_packets)
+    assert all(packet["case_count"] == 3 for packet in trace_packets)
+    assert all(packet["cases_reviewed"] == ["c1", "c2", "c3"] for packet in trace_packets)
     assert all(row["label_status"] == "dry_run" for row in parsed_rows)
     assert (out_dir / "pattern_summary.json").is_file()
     assert (out_dir / "report.md").is_file()
+
+
+def test_pattern_discovery_live_parse_errors_capture_snippets_and_response_meta(tmp_path: Path, monkeypatch) -> None:
+    paths = _prepare_single_case_inputs(tmp_path)
+    out_dir = tmp_path / "out_pattern_live"
+
+    monkeypatch.setenv("COHERE_API_KEY", "cohere-test")
+    monkeypatch.setenv("FIREWORKS_API_KEY", "fireworks-test")
+
+    def _fake_call_provider_api(*, provider: str, model: str, prompt: str, mode: str = "label", max_output_tokens: int | None = None):
+        assert mode == "pattern_discovery"
+        if provider == "cohere":
+            return (
+                '{"batch_id":"cohere:1:abc","cases_reviewed":["c1"],"top_patterns":[{"pattern_name":"target drift"',
+                {
+                    "provider": provider,
+                    "model": model,
+                    "requested_max_output_tokens": max_output_tokens,
+                    "response_finish_reason": "max_tokens",
+                },
+            )
+        if provider == "fireworks":
+            return (
+                "",
+                {
+                    "provider": provider,
+                    "model": model,
+                    "requested_max_output_tokens": max_output_tokens,
+                    "response_finish_reason": "length",
+                    "raw_response_body_snippet": '{"choices":[{"finish_reason":"length","message":{"content":""}}]}',
+                },
+            )
+        raise AssertionError(f"unexpected provider {provider}")
+
+    monkeypatch.setattr(labeler, "_call_provider_api", _fake_call_provider_api)
+
+    rc = labeler.main(
+        [
+            "--failure-csv",
+            str(paths["failure"]),
+            "--gold-absent-csv",
+            str(paths["gold"]),
+            "--anchor-effect-csv",
+            str(paths["anchor"]),
+            "--target-audit-jsonl",
+            str(paths["target_audit"]),
+            "--diagnostic-30-jsonl",
+            str(paths["diag30"]),
+            "--target-staged-15-jsonl",
+            str(paths["target15"]),
+            "--structural-feature-csv",
+            str(paths["structural"]),
+            "--mode",
+            "pattern_discovery",
+            "--subsets",
+            "diagnostic_30",
+            "--providers",
+            "cohere,fireworks",
+            "--fireworks-model",
+            "accounts/fireworks/models/glm-5",
+            "--allow-api",
+            "--max-calls-total",
+            "2",
+            "--output-dir",
+            str(out_dir),
+        ]
+    )
+    assert rc == 0
+
+    raw_rows = [json.loads(line) for line in (out_dir / "raw_provider_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+    parsed_rows = [json.loads(line) for line in (out_dir / "parsed_labels.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+    raw_by_provider = {row["provider"]: row for row in raw_rows}
+    parsed_by_provider = {row["provider"]: row for row in parsed_rows}
+
+    assert parsed_by_provider["cohere"]["label_status"] == "parse_error"
+    assert parsed_by_provider["cohere"]["label_parse_error"] == "json_parse_error:JSONDecodeError"
+    assert '"batch_id":"cohere:1:abc"' in raw_by_provider["cohere"]["raw_label_text"]
+    assert "batch_id" in raw_by_provider["cohere"]["provider_error_message_short"]
+
+    assert parsed_by_provider["fireworks"]["label_status"] == "parse_error"
+    assert parsed_by_provider["fireworks"]["label_parse_error"] == "json_parse_error:empty_response"
+    fireworks_meta = json.loads(raw_by_provider["fireworks"]["raw_response_json"])
+    assert fireworks_meta["response_finish_reason"] == "length"
+    assert "finish_reason" in fireworks_meta["raw_response_body_snippet"]
 
 
 def test_provider_config_check_reports_openai_without_clients(tmp_path: Path, monkeypatch) -> None:
@@ -973,3 +1211,122 @@ def test_provider_config_check_reports_openai_without_clients(tmp_path: Path, mo
     assert manifest["provider_config_summary"]["openai"]["model"] == "openai-x"
     assert manifest["provider_config_summary"]["openai"]["env_ready"] is True
     assert manifest["planned_request_count"] == 4
+
+
+def test_sparse_packet_warning_is_recorded_in_manifest_and_report(tmp_path: Path, monkeypatch) -> None:
+    failure = tmp_path / "failure.csv"
+    gold = tmp_path / "gold.csv"
+    anchor = tmp_path / "anchor.csv"
+    target_audit = tmp_path / "target_audit.jsonl"
+    diag30 = tmp_path / "diagnostic_30.jsonl"
+    target15 = tmp_path / "target_15.jsonl"
+    structural = tmp_path / "candidate_feature_rows.csv"
+    out_dir = tmp_path / "out_sparse"
+
+    _write_csv(
+        failure,
+        [
+            {
+                "case_id": "c1",
+                "method_id": labeler.DEFAULT_METHOD,
+                "method_version": "v1",
+                "evidence_completeness": "FULL",
+                "failure_family": "unknown",
+                "problem_text": "",
+                "gold_answer": "",
+                "selected_answer": "",
+                "selected_source": "",
+                "artifact_source": "",
+                "has_candidate_metadata": "unknown",
+                "has_trace_metadata": "unknown",
+                "has_pal_metadata": "unknown",
+                "local_or_tracked_source": "local",
+                "notes": "",
+            }
+        ],
+    )
+    _write_csv(gold, [{"case_id": "c1", "question_type": "unknown", "error_type": "unknown", "gold": "7", "external_contrast": "Both wrong"}])
+    _write_csv(anchor, [{"case_id": "c1"}])
+    _write_jsonl(target_audit, [])
+    _write_jsonl(diag30, [{"example_id": "c1"}])
+    _write_jsonl(target15, [{"example_id": "c1"}])
+    _write_csv(structural, [{"case_id": "c1", "target_tuple": ""}])
+
+    monkeypatch.setattr(
+        labeler,
+        "_call_provider_api",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("API call attempted in dry run")),
+    )
+
+    rc = labeler.main(
+        [
+            "--failure-csv",
+            str(failure),
+            "--gold-absent-csv",
+            str(gold),
+            "--anchor-effect-csv",
+            str(anchor),
+            "--target-audit-jsonl",
+            str(target_audit),
+            "--diagnostic-30-jsonl",
+            str(diag30),
+            "--target-staged-15-jsonl",
+            str(target15),
+            "--structural-feature-csv",
+            str(structural),
+            "--subsets",
+            "diagnostic_30",
+            "--providers",
+            "cohere",
+            "--output-dir",
+            str(out_dir),
+        ]
+    )
+    assert rc == 0
+
+    manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    warnings = manifest["packet_completeness_summary"]["warnings"]
+    assert any("question_present_rate" in warning for warning in warnings)
+    assert any("prediction_present_rate" in warning for warning in warnings)
+    report_text = (out_dir / "report.md").read_text(encoding="utf-8")
+    assert "## Warnings" in report_text
+
+
+def test_wrong_supported_consensus_repo_dry_run_has_nonempty_questions_for_most_cases(tmp_path: Path, monkeypatch) -> None:
+    out_dir = tmp_path / "out_repo_pattern"
+
+    monkeypatch.setattr(
+        labeler,
+        "_call_provider_api",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("API call attempted in dry run")),
+    )
+
+    rc = labeler.main(
+        [
+            "--mode",
+            "pattern_discovery",
+            "--subsets",
+            "wrong_supported_consensus_97",
+            "--limit",
+            "10",
+            "--providers",
+            "cohere,fireworks,mistral",
+            "--cohere-model",
+            "command-r-plus-08-2024",
+            "--fireworks-model",
+            "accounts/fireworks/models/glm-5",
+            "--mistral-model",
+            "mistral-small-latest",
+            "--dry-run",
+            "--max-calls-total",
+            "3",
+            "--output-dir",
+            str(out_dir),
+        ]
+    )
+    assert rc == 0
+
+    manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    completeness = manifest["packet_completeness_summary"]
+    assert completeness["question_present_rate"] >= 0.75
+    assert completeness["prediction_present_rate"] >= 0.75

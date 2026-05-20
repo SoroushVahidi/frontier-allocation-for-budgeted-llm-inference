@@ -8,6 +8,8 @@ This index separates current interpretation documents from diagnostic and histor
 |---|---|
 | `README.md` | Short repository entry point. |
 | `START_HERE_CURRENT.md` | Short current front door: baselines, selector scope, safe/unsafe claims, commands. |
+| `docs/CURRENT_STATE_SUMMARY_20260511.md` | Canonical state summary and evidence hierarchy baseline; read after `README.md`. |
+| `docs/LATEST_RESULTS_AND_CLAIMS.md` | **Canonical latest results checkpoint** — current numbers, safe/unsafe claims, next step. |
 | `docs/CURRENT_PROJECT_STATUS.md` | Current day-to-day project status and next action. |
 | `docs/CURRENT_EXTERNAL_BASELINE_GAP.md` | Single-page headline vs **`external_l1_max`** (**1018203** bounded harness). |
 | `docs/FAILED_AND_NEGATIVE_RESULTS_INDEX.md` | Index of superseded/cache-limited/negative pilots without deleting provenance. |
@@ -45,6 +47,19 @@ This index separates current interpretation documents from diagnostic and histor
 | `docs/ARTIFACT_INDEX_20260501.md` | Selector artifact index after Wulver transfer. |
 | `docs/SELECTOR_AND_COVERAGE_CONTROLLER_ROADMAP_20260429.md` | Older ordered selector-vs-coverage roadmap; preserve as provenance. |
 | `docs/METHOD_REGISTRY_CANONICAL_20260429.md` | Method status and live-runnable/diagnostic distinctions. |
+
+## Stage-2 calibrated gate and verifier integration
+
+| Document | Role |
+|---|---|
+| `docs/LATEST_RESULTS_AND_CLAIMS.md` | Canonical latest checkpoint including FIX-1..FIX-6 status, safe/unsafe claims, and current operational next step. |
+| `docs/STAGE2_BASELINE_GATED_HYBRID_ALLOCATOR_PLAN_20260517.md` | Stage-2 plan: baseline-gated hybrid allocator design, steps, and success criteria. |
+| `docs/STAGE2_CALIBRATED_GATE_STATUS_20260518.md` | Canonical Stage-2 calibrated gate status, promotion criteria, and "do not claim yet" discipline. |
+| `docs/TARGETED_COHERE_FAILURE_COLLECTION_PLAN_20260518.md` | Targeted Cohere 100-case failure collection plan, required schema, and stop conditions. |
+| `docs/FRONTIER_ALLOCATION_VERIFIER_INTEGRATION_STATUS_20260517.md` | Compact verifier-guided frontier allocation integration handoff and evidence summary. |
+| `docs/RELATION_VERIFIER_PROJECT_STATUS.md` | Full verifier project handoff: model leaderboard, evidence, promotion criteria, and labeling workflow. |
+| `docs/VERIFIER_RERANKING_CLAIM_ARTIFACT_TABLE_20260517.md` | Claim-to-artifact table: each reranking claim mapped to scripts, artifact paths, commits, and results. |
+| `docs/VERIFIER_RERANKING_REPRODUCIBILITY_APPENDIX_20260517.md` | Reproducibility appendix for verifier-guided reranking artifacts. |
 
 ## Current selector evidence artifacts
 

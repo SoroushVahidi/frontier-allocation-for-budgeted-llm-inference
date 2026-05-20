@@ -197,6 +197,7 @@ def test_agreement_summary_and_frequency_outputs(tmp_path: Path) -> None:
         request_rows=[],
         raw_rows=[],
         parsed_rows=parsed_rows,
+        packet_completeness_summary={"question_present_rate": 1.0, "prediction_present_rate": 1.0, "warnings": [], "per_subset": {}, "candidate_pool_present_rate": 1.0, "action_trace_present_rate": 1.0, "pal_execution_present_rate": 1.0, "structural_fields_present_rate": 1.0, "empty_packet_count": 0},
         output_dir=out_dir,
         manifest=manifest,
     )
@@ -266,6 +267,35 @@ def test_provider_readiness_summary_classifies_403_and_404_errors() -> None:
     assert summary["provider_readiness_counts"]["fireworks"]["model_not_found"] == 1
     assert summary["provider_error_samples"]["cerebras"][0]["provider_readiness"] == "auth_error"
     assert summary["provider_error_samples"]["fireworks"][0]["provider_http_status"] == 404
+
+
+def test_provider_error_details_classify_mistral_http_errors() -> None:
+    cases = [
+        (401, "auth_error"),
+        (403, "auth_error"),
+        (404, "model_not_found"),
+        (429, "rate_limited"),
+        (500, "unknown_error"),
+    ]
+
+    for status_code, expected in cases:
+        details = labeler._provider_error_details(
+            label_status="api_error",
+            api_error=f"HTTP error from https://api.mistral.ai/v1/chat/completions: {status_code} test-error",
+        )
+        assert details["provider_readiness"] == expected
+        assert details["provider_http_status"] == status_code
+
+
+def test_provider_error_details_extract_retry_after_from_rate_limit() -> None:
+    details = labeler._provider_error_details(
+        label_status="api_error",
+        api_error="HTTP error from https://api.mistral.ai/v1/chat/completions: 429 rate limited retry_after=30",
+    )
+
+    assert details["provider_readiness"] == "rate_limited"
+    assert details["provider_http_status"] == 429
+    assert details["provider_retry_after"] == "30"
 
 
 def test_pattern_discovery_summary_aggregates_names_stages_and_hypotheses() -> None:

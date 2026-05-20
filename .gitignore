@@ -136,6 +136,13 @@ secrets.*
 # Local agent/editor runtime logs
 .cursor/
 terminals/
+.claude/
+
+# Local ad-hoc command scratchpad (per-machine)
+commands.txt
+
+# Generated local run notes; canonical tracked narrative lives under docs/*status* and docs/*summary*
+docs/COHERE_REAL_MODEL_COST_NORMALIZED_VALIDATION_*.md
 
 !outputs/full_method_comparison_bundle/
 !outputs/full_method_comparison_bundle/**/*

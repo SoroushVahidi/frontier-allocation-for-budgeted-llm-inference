@@ -101,9 +101,9 @@ def test_prompt_rendering_and_label_schema_validation() -> None:
 
 def test_pattern_discovery_prompt_rendering_and_schema_validation() -> None:
     batch_packet = {
-        "provider": "openai",
-        "model": "gpt-4.1-mini",
-        "batch_id": "openai:2:abc123",
+        "provider": "mistral",
+        "model": "mistral-small-latest",
+        "batch_id": "mistral:2:abc123",
         "cases_reviewed": ["c1", "c2"],
         "case_count": 2,
         "cases": [
@@ -135,11 +135,12 @@ def test_pattern_discovery_prompt_rendering_and_schema_validation() -> None:
     assert "answer_key" not in prompt.lower()
 
     parsed, error = labeler._parse_pattern_discovery_json(
-        json.dumps(
+        "```json\n"
+        + json.dumps(
             {
-                "provider": "openai",
-                "model": "gpt-4.1-mini",
-                "batch_id": "openai:2:abc123",
+                "provider": "mistral",
+                "model": "mistral-small-latest",
+                "batch_id": "mistral:2:abc123",
                 "cases_reviewed": ["c1", "c2"],
                 "top_patterns": [
                     {
@@ -157,6 +158,7 @@ def test_pattern_discovery_prompt_rendering_and_schema_validation() -> None:
                 "do_not_claim": ["This is not an accuracy comparison."],
             }
         )
+        + "\n```"
     )
     assert error == ""
     assert parsed is not None
@@ -168,9 +170,9 @@ def test_pattern_discovery_prompt_rendering_and_schema_validation() -> None:
     invalid_parsed, invalid_error = labeler._parse_pattern_discovery_json(
         json.dumps(
             {
-                "provider": "openai",
-                "model": "gpt-4.1-mini",
-                "batch_id": "openai:2:abc123",
+                "provider": "mistral",
+                "model": "mistral-small-latest",
+                "batch_id": "mistral:2:abc123",
                 "cases_reviewed": ["c1"],
                 "top_patterns": [
                     {
@@ -193,3 +195,21 @@ def test_pattern_discovery_prompt_rendering_and_schema_validation() -> None:
     assert invalid_parsed is not None
     assert invalid_parsed["pattern_valid"] is False
     assert "invalid_likely_failure_stage" in invalid_parsed["pattern_errors"]
+
+
+def test_extract_openai_text_handles_dict_chat_completion_payload() -> None:
+    response = {
+        "choices": [
+            {
+                "finish_reason": "stop",
+                "message": {
+                    "content": '{"provider":"fireworks","top_patterns":[]}',
+                },
+            }
+        ]
+    }
+
+    text = labeler._extract_openai_text(response)
+
+    assert text == '{"provider":"fireworks","top_patterns":[]}'
+    assert labeler._extract_response_finish_reason(response) == "stop"

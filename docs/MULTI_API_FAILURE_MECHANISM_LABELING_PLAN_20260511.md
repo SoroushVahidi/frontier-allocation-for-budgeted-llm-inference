@@ -17,6 +17,7 @@ explicit flags and hard caps.
   - Cohere
   - Cerebras
   - Fireworks
+  - Mistral
 - Default mode behavior:
   - `label`: deterministic per-case failure labeling
   - `pattern_discovery`: batch-level pattern discovery
@@ -26,7 +27,8 @@ explicit flags and hard caps.
 ## Accuracy vs Pattern Discovery
 
 - Cohere is the only provider used for accuracy comparisons.
-- OpenAI, Cohere, Cerebras, and Fireworks are all allowed for pattern discovery.
+- OpenAI, Cohere, Cerebras, Fireworks, and Mistral are all allowed for pattern discovery.
+- Mistral outputs are qualitative failure-pattern evidence only, not benchmark-comparison evidence.
 - Pattern discovery outputs are hypotheses until manually audited.
 
 ## Label Schema
@@ -121,6 +123,10 @@ The rendered prompt may include only:
 - `model_final_prediction`
 - `candidate_answers`
 - `candidate_answer_groups`
+- `answer_group_support_counts`
+- `selector_candidate_pool`
+- `direct_reserve_answer`
+- `frontier_candidate_answer`
 - `selector_metadata`
 - `action_trace_summary`
 - `pal_exec_summary`
@@ -132,6 +138,15 @@ The rendered prompt may include only:
 The packet stays gold-free by default. If `--include-gold-for-labeling` is set,
 the packet can include a reference answer, and the manifest/report must mark the
 run as gold-assisted.
+
+For non-diagnostic subsets such as `wrong_supported_consensus_97`, packet construction should join richer evidence from:
+
+- `target_audit_diagnostic_cases.jsonl` when available
+- the canonical failure bank CSVs
+- the referenced `artifact_source` bundle such as `pal_results.csv`
+- sibling audit files in the same bundle directory, for example `selected_cases.csv`, `pal_discovery3_audit.csv`, and `pal_retry_audit.csv`
+
+Gold answers may be loaded into internal scoring metadata, but they must stay out of provider prompts unless `--include-gold-for-labeling` is explicitly set.
 
 ## Output Directory
 
@@ -146,11 +161,29 @@ Expected files:
 - `provider_requests_dry_run.jsonl`
 - `raw_provider_labels.jsonl`
 - `parsed_labels.jsonl`
+- `packet_completeness_summary.json`
 - `agreement_summary.json`
 - `label_frequency_summary.csv`
 - `case_label_matrix.csv`
 - `disagreement_cases.csv`
 - `report.md`
+
+Packet completeness must be tracked in the manifest/report:
+
+- `question_present_rate`
+- `prediction_present_rate`
+- `candidate_pool_present_rate`
+- `action_trace_present_rate`
+- `pal_execution_present_rate`
+- `structural_fields_present_rate`
+- `empty_packet_count`
+- per-subset completeness summary
+
+Default warning policy:
+
+- warn when question completeness falls below `0.75`
+- warn when prediction completeness falls below `0.75`
+- configurable via `--min-packet-completeness`
 
 ## Cap Policy
 
@@ -167,15 +200,21 @@ Provider caps are either:
 
 The script should stop hard if the cap would be exceeded.
 
-## Smoke Note
+## Provider Status
 
-A tiny API smoke was run on 5 diagnostic cases across the 3 selected providers.
+Current provider status for this scaffold:
 
-- Cohere produced 5 parsed labels.
-- Cerebras failed all 5 calls with an API-layer 403 response.
-- Fireworks failed all 5 calls with an API-layer 404 model-not-found response.
+- Cohere: usable
+- Fireworks: usable with `accounts/fireworks/models/glm-5`
+- Mistral: usable with `mistral-small-latest`
+- Cerebras: blocked by HTTP 403 / code 1010 until support resolves it
 
-This is enough to confirm the Cohere path works on the small smoke slice, but it is not enough to draw any conclusion about the full diagnostic_30 or the larger 97/157 slices. Do not run the full 30-case or 97-case labeling until provider configs are fixed and a fresh smoke confirms readiness.
+Operational rules:
+
+- Use Cohere only for accuracy comparisons against prior algorithm results.
+- Use Fireworks and Mistral only for qualitative failure-pattern discovery or annotation.
+- Do not use non-Cohere outputs as evidence that any method beats `external_l1_max`.
+- Do not claim a final recurring pattern from a tiny smoke run.
 
 ## Pattern Discovery Mode
 
@@ -212,6 +251,12 @@ Pattern discovery prompts must:
 - state that this is not an accuracy comparison
 - state that non-Cohere providers are allowed only for pattern discovery, not for algorithm comparison
 
+Default qualitative pattern-discovery model choices:
+
+- Cohere: `command-r-plus-08-2024`
+- Fireworks: `accounts/fireworks/models/glm-5`
+- Mistral: `mistral-small-latest`
+
 Dry-run command:
 
 ```bash
@@ -219,16 +264,19 @@ python3 scripts/label_failure_mechanisms_multi_api.py \
   --mode pattern_discovery \
   --subset wrong_supported_consensus_97 \
   --limit 10 \
-  --providers openai,cohere,cerebras,fireworks \
+  --providers cohere,fireworks,mistral \
+  --cohere-model command-r-plus-08-2024 \
+  --fireworks-model accounts/fireworks/models/glm-5 \
+  --mistral-model mistral-small-latest \
   --dry-run \
-  --max-calls-total 40 \
+  --max-calls-total 3 \
   --output-dir /tmp/pattern_discovery_dryrun
 ```
 
 Expected dry-run behavior:
 
 - 10 cases selected
-- 4 provider requests planned
+- 3 provider requests planned
 - 0 API calls
 - provider request previews written
 - no gold leakage
@@ -241,13 +289,16 @@ python3 scripts/label_failure_mechanisms_multi_api.py \
   --mode pattern_discovery \
   --subset wrong_supported_consensus_97 \
   --limit 5 \
-  --providers openai,cohere,cerebras,fireworks \
+  --providers cohere,fireworks,mistral \
+  --cohere-model command-r-plus-08-2024 \
+  --fireworks-model accounts/fireworks/models/glm-5 \
+  --mistral-model mistral-small-latest \
   --allow-api \
-  --max-calls-total 20 \
+  --max-calls-total 3 \
   --output-dir "outputs/failure_mechanism_multi_api_pattern_smoke_${STAMP}"
 ```
 
-Treat discovered patterns as hypotheses until manually audited.
+Treat discovered patterns as hypotheses until manually audited. Do not use these outputs for accuracy comparison.
 
 ## Validation Plan
 

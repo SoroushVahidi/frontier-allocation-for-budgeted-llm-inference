@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import atexit
 import csv
+import hashlib
 import json
 import os
 import random
@@ -33,6 +34,14 @@ from experiments.output_layer_repair import (
     resolve_selected_group_hint_from_metadata,
 )
 from experiments.trace_schema import build_branch_trace, write_trace_package
+from scripts.compute_cohere_validation_disjointness import compute_disjointness
+from scripts.failure_case_logging_schema import (
+    EXPLICIT_NOT_SCORED_YET_MARKER,
+    EXPLICIT_UNAVAILABLE_MARKER,
+    EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER,
+    build_promotion_review_record,
+    validate_promotion_review_record,
+)
 
 STRICT_F3 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth3_coverage_forced_v1"
 STRICT_GATE1_CAP_K6 = "broad_diversity_aggregation_strong_v1_anti_collapse_answer_group_refinement_repeat_expansion_fine_incumbent_guard_tuned_v1_hard_early_root_depth2_then_gate_v1_optimistic_collapse_first_hard_max_family_expansions_cap_k6_v1_fixed_k6_control"
@@ -244,6 +253,28 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--validate-methods-only", action="store_true", help="Validate requested method IDs resolve to runnable strategy specs and exit without API calls.")
     p.add_argument("--allowed-example-ids-file", default="", help="Optional JSONL file containing rows with example_id (and optional dataset/seed/budget/method) to hard-filter runs.")
     p.add_argument("--exact-cases-jsonl", default="", help="Optional exact-case JSONL with example_id, question/problem_text, and gold answer; bypasses shuffled dataset loading.")
+    p.add_argument(
+        "--disjointness-prior-jsonl",
+        action="append",
+        default=[],
+        help="Optional prior JSONL artifact to compare against exact cases for overlap (repeatable).",
+    )
+    p.add_argument(
+        "--disjointness-prior-label",
+        action="append",
+        default=[],
+        help="Optional labels aligned with --disjointness-prior-jsonl order.",
+    )
+    p.add_argument(
+        "--disjointness-proof-json",
+        default="",
+        help="Optional explicit output path for disjointness_proof.json (default: <run_output_root>/disjointness_proof.json).",
+    )
+    p.add_argument(
+        "--allow-disjointness-overlap",
+        action="store_true",
+        help="Allow overlaps in disjointness preflight (default is fail on overlap).",
+    )
     p.add_argument("--validate-exact-cases-only", action="store_true", help="Validate exact-case JSONL and method resolution without API calls, then exit.")
     p.add_argument("--expected-exact-case-count", type=int, default=0, help="Optional expected number of cases for --validate-exact-cases-only.")
     p.add_argument("--dry-run-call-plan", action="store_true", help="Emit planned case count after filtering and exit without API calls.")
@@ -533,6 +564,59 @@ def validate_exact_cases_only(args: argparse.Namespace, providers: list[str], da
     raise SystemExit(0)
 
 
+def maybe_compute_disjointness_preflight(
+    *,
+    args: argparse.Namespace,
+    out_dir: Path,
+) -> Path | None:
+    """Optionally compute hardened disjointness proof and enforce overlap policy.
+
+    Runs only when both exact cases and one or more prior artifacts are provided.
+    """
+    if not args.exact_cases_jsonl or not args.disjointness_prior_jsonl:
+        return None
+
+    prior_paths = [Path(p) for p in args.disjointness_prior_jsonl]
+    missing = [str(p) for p in prior_paths if not p.exists()]
+    if missing:
+        raise FileNotFoundError(
+            "Missing --disjointness-prior-jsonl file(s): " + ", ".join(missing)
+        )
+
+    labels = args.disjointness_prior_label or None
+    if labels is not None and len(labels) > 0 and len(labels) != len(prior_paths):
+        raise ValueError(
+            "--disjointness-prior-label count must match --disjointness-prior-jsonl count"
+        )
+
+    selected_cases_path = Path(args.exact_cases_jsonl)
+    proof = compute_disjointness(
+        selected_cases_jsonl=selected_cases_path,
+        prior_jsonls=prior_paths,
+        source_labels=labels,
+    )
+
+    proof_path = Path(args.disjointness_proof_json) if args.disjointness_proof_json else (out_dir / "disjointness_proof.json")
+    proof_path.parent.mkdir(parents=True, exist_ok=True)
+    proof_path.write_text(json.dumps(proof, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(
+        "disjointness preflight:"
+        f" selected={proof['selected_count']}"
+        f" overlap_ids={proof['overlap_example_ids_with_prior']}"
+        f" overlap_questions={proof['overlap_questions_with_prior']}"
+        f" proof={proof_path}"
+    )
+
+    if (not args.allow_disjointness_overlap) and int(proof.get("overlap_example_ids_with_prior", 0)) > 0:
+        raise RuntimeError(
+            "Disjointness preflight failed: overlap detected with prior artifacts "
+            f"({proof.get('overlap_example_ids_with_prior', 0)} overlapping example_ids). "
+            "Pass --allow-disjointness-overlap to bypass intentionally."
+        )
+
+    return proof_path
+
+
 def ensure_cohere_readiness(*, model: str, timestamp: str) -> tuple[bool, str]:
     key = os.getenv("COHERE_API_KEY", "") or os.getenv("CO_API_KEY", "")
     checked = ["COHERE_API_KEY", "CO_API_KEY"]
@@ -720,6 +804,220 @@ def append_progress(path: Path, row: dict[str, Any]) -> None:
         f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def _error_type_from_text(error_text: str) -> str:
+    text = str(error_text or "").strip()
+    if not text:
+        return ""
+    head = text.split(":", 1)[0].strip()
+    return head if head and " " not in head else ""
+
+
+def _runtime_cap_reached(error_text: str) -> bool:
+    t = str(error_text or "").lower()
+    return "logical api call cap reached" in t
+
+
+def _candidate_trace_from_nodes(
+    nodes: list[dict[str, Any]],
+    *,
+    selected_answer_raw: Any,
+    selected_answer_canonical: Any,
+) -> str:
+    sel_raw = str(selected_answer_raw or "").strip()
+    sel_can = str(selected_answer_canonical or "").strip()
+    fallback = ""
+    for node in nodes:
+        trace = str(node.get("reasoning_text") or node.get("trace") or "").strip()
+        if not trace:
+            continue
+        if not fallback:
+            fallback = trace
+        node_raw = str(node.get("predicted_answer") or "").strip()
+        node_can = str(node.get("predicted_answer_normalized") or "").strip()
+        if sel_can and node_can and sel_can == node_can:
+            return trace
+        if sel_raw and node_raw and sel_raw == node_raw:
+            return trace
+    return fallback
+
+
+def _selected_node_id_from_nodes(
+    nodes: list[dict[str, Any]],
+    *,
+    selected_answer_raw: Any,
+    selected_answer_canonical: Any,
+) -> str:
+    sel_raw = str(selected_answer_raw or "").strip()
+    sel_can = str(selected_answer_canonical or "").strip()
+    for node in nodes:
+        node_raw = str(node.get("predicted_answer") or "").strip()
+        node_can = str(node.get("predicted_answer_normalized") or "").strip()
+        if (sel_can and node_can and sel_can == node_can) or (sel_raw and node_raw and sel_raw == node_raw):
+            return str(node.get("branch_id") or "")
+    return ""
+
+
+def _node_expansion_order_from_metadata(md: dict[str, Any]) -> list[Any]:
+    action_trace = md.get("action_trace")
+    if not isinstance(action_trace, list):
+        return []
+    order: list[Any] = []
+    for ev in action_trace:
+        if not isinstance(ev, dict):
+            continue
+        if str(ev.get("action") or "") != "expand":
+            continue
+        order.append(ev.get("branch_id") or ev.get("node_id") or ev.get("family_id") or dict(ev))
+    return order
+
+
+def _prune_or_selection_reasons_from_metadata(md: dict[str, Any]) -> list[dict[str, Any]]:
+    action_trace = md.get("action_trace")
+    out: list[dict[str, Any]] = []
+    if isinstance(action_trace, list):
+        for ev in action_trace:
+            if not isinstance(ev, dict):
+                continue
+            action = str(ev.get("action") or "")
+            if action in {"prune", "select", "selection", "commit"}:
+                out.append(
+                    {
+                        "action": action,
+                        "branch_id": ev.get("branch_id"),
+                        "reason": ev.get("reason") or ev.get("prune_reason") or ev.get("selection_reason"),
+                    }
+                )
+    if out:
+        return out
+    selected_group = md.get("selected_group") or md.get("final_answer_group")
+    selection_reason = md.get("selection_reason")
+    if selected_group or selection_reason:
+        return [{"action": "selection", "selected_group": selected_group, "reason": selection_reason}]
+    return []
+
+
+def _prompt_hash_from_row(row: dict[str, Any]) -> str:
+    question = str(row.get("question") or "").strip()
+    if not question:
+        return ""
+    return "question_sha256:" + hashlib.sha256(question.encode("utf-8")).hexdigest()
+
+
+def build_promotion_review_fields_for_record(
+    row: dict[str, Any],
+    *,
+    run_id: str,
+    artifact_label: str,
+) -> dict[str, Any]:
+    md = dict(row.get("result_metadata", {}) or {})
+    final_nodes = list(row.get("final_nodes", []) or [])
+    selected_answer_raw = row.get("selected_answer_raw") or row.get("final_answer_raw")
+    selected_answer_canonical = row.get("selected_answer_canonical") or row.get("final_answer_canonical")
+    status = str(row.get("status") or "")
+    status_lower = status.strip().lower()
+    err_text = str(row.get("error") or "")
+    runtime_cap_reached = _runtime_cap_reached(err_text)
+    is_runtime_failure = runtime_cap_reached or status_lower in {"failed", "runtime_cap", "timeout", "parse_failed"}
+
+    candidate_trace = _candidate_trace_from_nodes(
+        final_nodes,
+        selected_answer_raw=selected_answer_raw,
+        selected_answer_canonical=selected_answer_canonical,
+    )
+    selected_node_id = _selected_node_id_from_nodes(
+        final_nodes,
+        selected_answer_raw=selected_answer_raw,
+        selected_answer_canonical=selected_answer_canonical,
+    )
+    prompt_hash = _prompt_hash_from_row(row)
+    node_expansion_order = _node_expansion_order_from_metadata(md)
+    if not node_expansion_order:
+        node_expansion_order = (
+            EXPLICIT_UNAVAILABLE_MARKER if is_runtime_failure else EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER
+        )
+    prune_or_selection_reasons = _prune_or_selection_reasons_from_metadata(md)
+    if not prune_or_selection_reasons:
+        prune_or_selection_reasons = (
+            EXPLICIT_UNAVAILABLE_MARKER if is_runtime_failure else EXPLICIT_UNAVAILABLE_NOT_RECORDED_MARKER
+        )
+    verifier_scores = (
+        md.get("verifier_scores")
+        or md.get("outcome_verifier_scores")
+        or md.get("prm_step_scores")
+    )
+    verifier_scores_pointer: Any = None
+    if not verifier_scores:
+        verifier_scores_pointer = EXPLICIT_NOT_SCORED_YET_MARKER
+    raw_proba_ready = md.get("raw_proba_ready")
+    calibrated_percentile = md.get("calibrated_percentile")
+    if raw_proba_ready is None and calibrated_percentile is None:
+        raw_proba_ready = EXPLICIT_NOT_SCORED_YET_MARKER
+    candidate_pool_summary = (
+        md.get("answer_group_support_counts")
+        or md.get("candidate_pool_summary")
+        or {"final_nodes_count": len(final_nodes)}
+    )
+
+    promotion_source = {
+        "run_id": run_id,
+        "artifact_label": artifact_label,
+        "example_id": row.get("example_id"),
+        "problem_id": row.get("example_id"),
+        "dataset": row.get("dataset"),
+        "provider": row.get("provider"),
+        "model": row.get("model"),
+        "method": row.get("method"),
+        "budget": row.get("budget"),
+        "seed": row.get("seed"),
+        "problem_text": row.get("question"),
+        "question": row.get("question"),
+        "prompt_hash": prompt_hash,
+        "candidate_answer": selected_answer_raw,
+        "candidate_trace": candidate_trace,
+        "candidate_answer_canonical": selected_answer_canonical,
+        "parse_success": int(not bool(row.get("parse_extraction_failure"))),
+        "parser_status": "ok" if not bool(row.get("parse_extraction_failure")) else "parse_failed",
+        "parser_error": "",
+        "status": status,
+        "runtime_cap_reached": runtime_cap_reached,
+        "error_type": _error_type_from_text(err_text),
+        "error_message": err_text,
+        "partial_answer_present": bool(str(selected_answer_raw or "").strip()),
+        "partial_trace_present": bool(str(candidate_trace).strip()),
+        "discovery_tree": final_nodes,
+        "node_expansion_order": node_expansion_order,
+        "final_nodes": final_nodes,
+        "selected_node_id": selected_node_id,
+        "prune_or_selection_reasons": prune_or_selection_reasons,
+        "candidate_pool_summary": candidate_pool_summary,
+        "call_count": row.get("cohere_logical_api_calls"),
+        "prompt_tokens": row.get("input_tokens"),
+        "completion_tokens": row.get("output_tokens"),
+        "total_tokens": row.get("total_tokens"),
+        "estimated_cost": row.get("estimated_cost_usd"),
+        "latency_seconds": row.get("latency_seconds"),
+        "verifier_scores": verifier_scores or {},
+        "verifier_scores_pointer": verifier_scores_pointer,
+        "raw_proba_ready": raw_proba_ready,
+        "calibrated_percentile": calibrated_percentile,
+        "gate_features": md.get("gate_features") or {},
+        "gate_decision": md.get("gate_decision") or ("scored" if status == "scored" else "failed_runtime"),
+        "policy_family": md.get("policy_family") or "unknown",
+        "policy_thresholds": md.get("policy_thresholds") or {},
+        "exact_match": row.get("exact_match"),
+        "gold_answer": row.get("gold_answer"),
+        "offline_eval_only": True,
+    }
+    promotion_review_record = build_promotion_review_record(
+        promotion_source, fill_explicit_failure_state=True
+    )
+    promotion_review_validation = validate_promotion_review_record(promotion_review_record)
+    return {
+        "promotion_review_record": promotion_review_record,
+        "promotion_review_validation": promotion_review_validation,
+    }
+
+
 def evaluate_example(
     result: Any,
     dataset: str,
@@ -846,6 +1144,10 @@ def main() -> None:
         validate_methods_only(args, providers, budgets, methods)
     if args.validate_exact_cases_only:
         validate_exact_cases_only(args, providers, datasets, budgets, methods)
+
+    out_dir = REPO_ROOT / args.output_root / f"cohere_real_model_cost_normalized_validation_{args.timestamp}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
     exact_case_rows_by_dataset = {d: load_exact_case_rows(args.exact_cases_jsonl, dataset=d) for d in datasets} if args.exact_cases_jsonl else {}
     exact_case_meta_by_dataset: dict[str, dict[str, dict[str, Any]]] = {}
     if exact_case_rows_by_dataset:
@@ -855,6 +1157,8 @@ def main() -> None:
             exact_case_meta_by_dataset[_d] = {
                 str(r.get("example_id")): r for r in _rows if isinstance(r, dict) and str(r.get("example_id") or "").strip()
             }
+
+    maybe_compute_disjointness_preflight(args=args, out_dir=out_dir)
 
     model_by_provider = {
         "cohere": args.cohere_model,
@@ -874,9 +1178,6 @@ def main() -> None:
     if (not args.summarize_only) and all(s["ready"] != "1" for s in provider_status.values()):
         print("No configured provider is ready; exiting without API execution.")
         raise SystemExit(1)
-
-    out_dir = REPO_ROOT / args.output_root / f"cohere_real_model_cost_normalized_validation_{args.timestamp}"
-    out_dir.mkdir(parents=True, exist_ok=True)
     raw_dir = out_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
     per_example_path = out_dir / "per_example_records.jsonl"
@@ -1224,6 +1525,23 @@ def main() -> None:
                                     "prm_step_verifier_model_env": prm_step_verifier_env["DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL"] or "unset",
                                     "cohere_api_key_present": ov_verifier_env["COHERE_API_KEY_present"],
                                 }
+                                try:
+                                    row.update(
+                                        build_promotion_review_fields_for_record(
+                                            row,
+                                            run_id=str(args.timestamp),
+                                            artifact_label=out_dir.name,
+                                        )
+                                    )
+                                except Exception as exc:  # noqa: BLE001
+                                    row["promotion_review_record"] = {}
+                                    row["promotion_review_validation"] = {
+                                        "enough_for_promotion_review": "no",
+                                        "runtime_failure_reviewable": "no",
+                                        "missing_required_fields": ["promotion_review_build_exception"],
+                                        "missing_critical_fields": ["promotion_review_build_exception"],
+                                        "notes": [f"promotion_review_build_exception:{type(exc).__name__}"],
+                                    }
                                 append_jsonl(per_example_path, row)
                                 records.append(row)
                                 seen.add(ck)
