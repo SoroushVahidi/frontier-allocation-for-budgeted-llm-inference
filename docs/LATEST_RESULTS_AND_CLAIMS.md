@@ -1,6 +1,6 @@
 # Latest Results and Safe Claims
 
-**Last updated:** 2026-05-20 (final FIX-2+FIX-4 all-external postrun completed; aggregate-720 claim decision updated)
+**Last updated:** 2026-05-20 (final FIX-2+FIX-4 all-external postrun completed; aggregate-720 claim decision updated; FIX-8 parser prototype evaluated offline)
 
 This document is the canonical single-page record of the most recent empirical results and what can and cannot be claimed based on them.
 
@@ -492,3 +492,33 @@ Safe claim update:
 
 Unsafe claim update:
 - Do not generalize this result to other datasets/providers/budgets without independent validation.
+
+---
+
+## 18. FIX-8 Robust Parser/Canonicalizer Prototype (Offline, No Promotion)
+
+**Artifact root:** `outputs/fix8_parser_canonicalizer_eval_20260520_20260520T033331Z/`
+**Scope:** offline parser/canonicalization re-evaluation only (no new generations, no API calls).
+**Variants evaluated:** `R0`, `P1`, `P2`, `P3`, `P4`.
+
+Key outcome:
+- On final-300, all FIX-8 variants matched baseline FIX-2+FIX-4 exactly:
+  - R0/P1/P2/P3/P4: `260/300 = 86.67%`
+  - recoveries/regressions vs R0: `0/0` for all variants.
+- On aggregate-720, all FIX-8 variants also matched baseline exactly:
+  - R0/P1/P2/P3/P4: `581/720 = 80.69%`
+  - recoveries/regressions vs R0: `0/0` for all variants.
+- Parser-failure stress slice:
+  - referenced parser/canonicalization cases: `12`
+  - recovered by FIX-8 variants in this replay: `0`
+  - remaining wrong: `12`
+
+Decision:
+- `fix8_next_decision.json` => **C** (explicit cue anchoring is the safest constrained form), but **no promotion** because there is no measured gain over baseline on final-300 or aggregate-720.
+
+Safe claim update:
+- FIX-8 prototype is implemented and offline-validated.
+- Current evidence does not support changing the promoted policy due to parser/canonicalization changes.
+
+Unsafe claim update:
+- Do not claim parser-driven accuracy improvement from FIX-8 on current unbiased validation artifacts.
