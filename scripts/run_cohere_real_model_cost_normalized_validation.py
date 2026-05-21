@@ -411,7 +411,7 @@ def normalize_providers(args: argparse.Namespace) -> list[str]:
     else:
         providers = parse_csv_list(args.providers)
     normed = [p.strip().lower() for p in providers if p.strip()]
-    allowed = {"cohere", "openai"}
+    allowed = {"cohere", "openai", "cerebras"}
     bad = [p for p in normed if p not in allowed]
     if bad:
         raise ValueError(f"Unsupported provider(s): {bad}; allowed={sorted(allowed)}")

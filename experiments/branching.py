@@ -274,6 +274,8 @@ class APIBranchGenerator:
             default_base_url = "https://generativelanguage.googleapis.com/v1beta"
         elif self.provider == "cohere":
             default_base_url = "https://api.cohere.com/v2"
+        elif self.provider == "cerebras":
+            default_base_url = "https://api.cerebras.ai/v1"
         elif self.provider == "groq":
             default_base_url = "https://api.groq.com/openai/v1"
         else:
@@ -441,6 +443,8 @@ class APIBranchGenerator:
             return self._call_gemini_api(prompt)
         if self.provider == "cohere":
             return self._call_cohere_chat_api(prompt)
+        if self.provider == "cerebras":
+            return self._call_cerebras_chat_api(prompt)
         if self.provider == "groq":
             return self._call_groq_chat_api(prompt)
         return self._call_responses_api(payload)
@@ -516,6 +520,55 @@ class APIBranchGenerator:
         if texts:
             return "\n".join(texts)
         raise RuntimeError("Cohere API returned no text output.")
+
+    def _call_cerebras_chat_api(self, prompt: str) -> str:
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+        }
+
+        retry_attempts = 4
+        body: dict | None = None
+        for attempt in range(retry_attempts):
+            req = request.Request(
+                f"{self.base_url}/chat/completions",
+                data=json.dumps(payload).encode("utf-8"),
+                headers=headers,
+                method="POST",
+            )
+            try:
+                with request.urlopen(req, timeout=self.timeout_seconds) as resp:
+                    body = json.loads(resp.read().decode("utf-8"))
+                break
+            except error.HTTPError as exc:
+                err_body = exc.read().decode("utf-8", errors="ignore")
+                if exc.code in {408, 429, 500, 502, 503, 504} and attempt < retry_attempts - 1:
+                    time.sleep(1.25 * (attempt + 1))
+                    continue
+                raise RuntimeError(f"Cerebras API HTTPError {exc.code}: {err_body[:500]}") from exc
+            except Exception as exc:
+                if attempt < retry_attempts - 1:
+                    time.sleep(1.25 * (attempt + 1))
+                    continue
+                raise RuntimeError(f"Cerebras API request failed: {exc}") from exc
+
+        if body is None:
+            raise RuntimeError("Cerebras API request failed after retries.")
+
+        # Cerebras returns choices -> message -> content
+        choices = body.get("choices", []) if isinstance(body, dict) else []
+        if choices:
+            message = choices[0].get("message", {})
+            content = message.get("content")
+            if isinstance(content, str) and content.strip():
+                return content
+        raise RuntimeError("Cerebras API returned no text output.")
 
     def _call_groq_chat_api(self, prompt: str) -> str:
         headers = {"Content-Type": "application/json"}
