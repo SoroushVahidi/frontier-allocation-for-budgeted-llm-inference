@@ -12,6 +12,7 @@
 - `mlj_final_related_files.zip`
 
 ## Notes
+- Package refreshed on 2026-05-20 after appendix layout simplification: collapsed to single appendix section with subsection labels; guaranteed heading-before-table order in rendered PDF; no B/C/D/E appendix headings appearing without content.
 - Package refreshed on 2026-05-20 after Data/Code Availability and appendix wording polish: journal-style availability statements, Appendix A intro updated, tableA1 Rerun requirements row simplified.
 - Package refreshed on 2026-05-20 after appendix section reorganization fix: each appendix heading now immediately precedes its tables; empty Algorithm Listing section removed; note about Algorithm 1 placed in Appendix A.
 - Package refreshed on 2026-05-20 after Related Work polish in commit `9b4c6301b04813a3e6b5af310ac6830d7a377333`.

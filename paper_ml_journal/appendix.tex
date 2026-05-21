@@ -1,27 +1,43 @@
 \appendix
 \section{Reproducibility and Supplementary Material}
 \label{sec:appendix_repro}
-The complete two-gate policy is presented inline as Algorithm~\ref{alg:fix24} in
-Section~\ref{sec:fix24_algorithm}; the supplementary reproducibility package included
-with this submission contains the executable policy specification and processed result
-summaries.
+This appendix collects reproducibility information, additional result decompositions,
+parameter grounding, runtime feature legality, and paper-facing name mappings.
+
 \input{tables/tableA1_reproducibility}
 
-\section{Additional Result Decompositions}
-\label{sec:appendix_decomp}
+\clearpage
+\subsection*{Additional Result Decompositions}
+
+The following tables give the per-example win/loss/tie decomposition
+(Table~\ref{tab:wlt}) and claim language guidance for manuscript writing
+(Table~\ref{tab:claim_language}).
+
 \input{tables/tableA2_win_loss_tie}
 \input{tables/tableA3_safe_unsafe_claims}
 
-\section{Parameter Grounding and Sensitivity}
-\label{sec:appendix_params}
+\clearpage
+\subsection*{Parameter Grounding and Sensitivity}
+
+Table~\ref{tab:param_sensitivity} documents the key parameters and design choices
+used in FIX-2+FIX-4, including their values, roles, and available robustness evidence.
+
 \input{tables/tableA4_parameter_sensitivity}
 
-\section{Runtime Feature Legality}
-\label{sec:appendix_features}
+\clearpage
+\subsection*{Runtime Feature Legality}
+
+Table~\ref{tab:feature_legality} lists all features used by FIX-2+FIX-4 at
+inference time and confirms their gold-free status.
+
 \input{tables/tableA5_feature_legality}
 
-\section{Paper-Facing Name Mapping}
-\label{sec:appendix_names}
+\clearpage
+\subsection*{Paper-Facing Name Mapping}
+
+Table~\ref{tab:name_mapping} maps paper-facing short names to their
+implementation identifiers, roles, runtime availability, and gold-free status.
+
 \input{tables/tableA6_name_mapping}
 
 \section*{Data Availability}
