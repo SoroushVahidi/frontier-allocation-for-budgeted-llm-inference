@@ -523,6 +523,8 @@ class APIBranchGenerator:
 
     def _call_cerebras_chat_api(self, prompt: str) -> str:
         headers = {"Content-Type": "application/json"}
+        # Avoid Cloudflare WAF blocks (HTTP 403 error code 1010) by setting a common User-Agent
+        headers["User-Agent"] = "python-requests/2.31.0"
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
