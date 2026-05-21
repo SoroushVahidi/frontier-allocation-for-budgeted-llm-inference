@@ -2,7 +2,7 @@
 
 Dear Editor,
 
-Please consider our manuscript, *Failure-Trace-Guided Gold-Free Policy Gating for Budgeted LLM Reasoning: Cohere Matched-Budget Evidence on Disjoint 720-Example Evaluation*, for publication in *Machine Learning*.
+Please consider our manuscript, *Failure-Trace-Guided Answer Allocation for Budgeted LLM Reasoning*, for publication in *Machine Learning*.
 
 The manuscript studies matched-budget answer selection for GSM8K under Cohere command-r-plus-08-2024. Its promoted policy, FIX-2+FIX-4, is a deterministic gold-free gate that uses runtime failure-trace metadata and external consensus signals.
 
@@ -10,7 +10,7 @@ On Final-300, FIX-2+FIX-4 achieves 260/300 = 86.67%. On the disjoint Aggregate-7
 
 The claims are scoped to the tested provider, benchmark, and budget-6 setting. We do not claim universal superiority.
 
-Code and processed artifacts are currently maintained in a private development workspace during review. A cleaned, versioned public artifact release will be made available upon acceptance, preferably with a persistent identifier such as a Zenodo DOI. Reviewer-access processed artifacts can be provided upon request.
+Implementation and processed evaluation artifacts will be made publicly available upon acceptance in a versioned repository, preferably with a persistent identifier such as a Zenodo DOI. A supplementary reproducibility package is included with this submission, and additional processed artifacts can be provided to reviewers upon request.
 
 I will disclose the related conference manuscript under review for transparency. That manuscript focuses on a broader frontier-allocation formulation with matched action-budget analysis and internal frontier controls. The present MLJ submission focuses on FIX-2+FIX-4, GSM8K Final-300 and Aggregate-720, L1 / S1 / TALE comparisons, source-stratified bootstrap confidence intervals, and runtime-legal no-gold triggers.
 

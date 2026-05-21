@@ -12,6 +12,7 @@
 - `mlj_final_related_files.zip`
 
 ## Notes
+- Package refreshed on 2026-05-20 after title and conclusion polish: title shortened to "Failure-Trace-Guided Answer Allocation for Budgeted LLM Reasoning"; file-path reference removed from Conclusion; cover letter wording updated.
 - Package refreshed on 2026-05-20 after appendix layout simplification: collapsed to single appendix section with subsection labels; guaranteed heading-before-table order in rendered PDF; no B/C/D/E appendix headings appearing without content.
 - Package refreshed on 2026-05-20 after Data/Code Availability and appendix wording polish: journal-style availability statements, Appendix A intro updated, tableA1 Rerun requirements row simplified.
 - Package refreshed on 2026-05-20 after appendix section reorganization fix: each appendix heading now immediately precedes its tables; empty Algorithm Listing section removed; note about Algorithm 1 placed in Appendix A.
