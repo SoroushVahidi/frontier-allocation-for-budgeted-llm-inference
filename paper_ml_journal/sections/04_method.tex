@@ -29,7 +29,7 @@ The raw log strings in Algorithm~\ref{alg:fix24} and Table~\ref{tab:policy_rules
 are implementation realizations of these predicates, not scientific assumptions
 tied to a private script.
 
-The weak-frontier trigger is motivated by a structural reliability pattern.
+The weak-frontier trigger is motivated by a structural reliability pattern. In practice, branches and candidate groups are formed from the frontier's logged branch traces: each produced branch yields a parsed answer and is assigned to an answer group by normalized predicted text. Support counts are the integer counts of branches per answer-group (\texttt{answer\_group\_support\_counts}) observed in the trace; higher support indicates multiple independent branches converging on the same answer. The field \texttt{override\_reason} records the runtime decision pathway (for example, \texttt{single\_weak\_frontier\_branch} or \texttt{direct\_frontier\_agree}) and is emitted by the frontier when a guard or post-processing event signals limited search breadth or internal agreement. Weak-frontier traces are emitted when expansion depth or family diversity falls below configured thresholds; direct-frontier agreement is emitted when the frontier's reserve selection matches the incumbent. These metadata fields are runtime-visible and used only for gold-free decision predicates; they are not derived from gold labels or post-hoc scoring.
 When the frontier trace indicates a single weak branch (for example, low-depth
 termination in the logged metadata), the resulting candidate is treated as
 evidence of under-exploration in this evaluated setting.
@@ -101,7 +101,7 @@ Algorithm~\ref{alg:fix24} gives the complete pseudocode using exact runtime fiel
 
 \begin{table}[t]
 \centering
-\caption{Algorithm: Combined Failure-Trace-Guided Allocator (FIX-2+FIX-4). All inputs are gold-free runtime fields. Named constants and name mapping are documented in the appendix reproducibility tables.}
+\caption{Algorithm 1: Combined Failure-Trace-Guided Allocator (FIX-2+FIX-4). All inputs are gold-free runtime fields. Named constants and name mapping are documented in the appendix reproducibility tables.}
 \label{alg:fix24}
 \scriptsize
 \begin{tabular}{p{0.06\textwidth} p{0.88\textwidth}}
