@@ -234,6 +234,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--provider", default="", help="Deprecated alias for single-provider runs.")
     p.add_argument("--cohere-model", default="command-r-plus-08-2024")
     p.add_argument("--openai-model", default="gpt-4o-mini")
+    p.add_argument("--cerebras-model", default="llama3.1-8b")
     p.add_argument("--datasets", default=DEFAULT_DATASETS)
     p.add_argument("--budgets", default=DEFAULT_BUDGETS)
     p.add_argument("--seeds", default=DEFAULT_SEEDS)
@@ -1163,6 +1164,7 @@ def main() -> None:
     model_by_provider = {
         "cohere": args.cohere_model,
         "openai": args.openai_model,
+        "cerebras": args.cerebras_model,
     }
     provider_status: dict[str, dict[str, str]] = {}
     if args.summarize_only:
@@ -1171,6 +1173,10 @@ def main() -> None:
         for provider in providers:
             if provider == "cohere":
                 ok, reason = ensure_cohere_readiness(model=model_by_provider["cohere"], timestamp=args.timestamp)
+            elif provider == "cerebras":
+                # Basic readiness check: API key present
+                ok = bool(os.getenv("CEREBRAS_API_KEY", ""))
+                reason = "api_key_present" if ok else "api_key_missing"
             else:
                 ok, reason = ensure_openai_readiness(timestamp=args.timestamp)
             provider_status[provider] = {"ready": "1" if ok else "0", "reason": reason}
@@ -1190,16 +1196,19 @@ def main() -> None:
     api_keys = {
         "cohere": os.getenv("COHERE_API_KEY", "") or os.getenv("CO_API_KEY", ""),
         "openai": os.getenv("OPENAI_API_KEY", ""),
+        "cerebras": os.getenv("CEREBRAS_API_KEY", ""),
     }
     ov_verifier_env = {
         "DR_V2_OV_RERANK_VERIFIER_BACKEND": os.getenv("DR_V2_OV_RERANK_VERIFIER_BACKEND", ""),
         "DR_V2_OV_RERANK_COHERE_MODEL": os.getenv("DR_V2_OV_RERANK_COHERE_MODEL", ""),
         "COHERE_API_KEY_present": "yes" if bool(api_keys.get("cohere")) else "no",
+        "CEREBRAS_API_KEY_present": "yes" if bool(api_keys.get("cerebras")) else "no",
     }
     prm_step_verifier_env = {
         "DR_V2_PRM_STEP_VERIFIER_BACKEND": os.getenv("DR_V2_PRM_STEP_VERIFIER_BACKEND", ""),
         "DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL": os.getenv("DR_V2_PRM_STEP_VERIFIER_COHERE_MODEL", ""),
         "COHERE_API_KEY_present": "yes" if bool(api_keys.get("cohere")) else "no",
+        "CEREBRAS_API_KEY_present": "yes" if bool(api_keys.get("cerebras")) else "no",
     }
     dataset_load_failures: dict[tuple[str, str, int], str] = {}
     runtime_missing: set[tuple[str, str, int, int, str]] = set()
