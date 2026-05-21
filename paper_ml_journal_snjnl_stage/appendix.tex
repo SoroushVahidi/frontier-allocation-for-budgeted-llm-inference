@@ -1,25 +1,31 @@
 \appendix
 \section{Reproducibility and Supplementary Material}
+\label{sec:appendix_repro}
+The complete two-gate policy is presented inline as Algorithm~\ref{alg:fix24} in
+Section~\ref{sec:fix24_algorithm}; the full executable implementation is at
+\nolinkurl{experiments/support_aware_selector.py} in the supplementary package.
 \input{tables/tableA1_reproducibility}
+
+\clearpage
+\section{Additional Result Decompositions}
+\label{sec:appendix_decomp}
 \input{tables/tableA2_win_loss_tie}
 \input{tables/tableA3_safe_unsafe_claims}
 
+\clearpage
 \section{Parameter Grounding and Sensitivity}
 \label{sec:appendix_params}
 \input{tables/tableA4_parameter_sensitivity}
 
+\clearpage
 \section{Runtime Feature Legality}
 \label{sec:appendix_features}
 \input{tables/tableA5_feature_legality}
 
+\clearpage
 \section{Paper-Facing Name Mapping}
 \label{sec:appendix_names}
 \input{tables/tableA6_name_mapping}
-
-\section{Algorithm Listing}
-The promoted policy is presented inline as Algorithm~\ref{alg:fix24} in Section~\ref{sec:fix24_algorithm}.
-For the full executable implementation, see \nolinkurl{experiments/support_aware_selector.py} and the supplementary reproducibility artifact at
-\nolinkurl{outputs/machine_learning_journal_result_package_20260520_20260520T035127Z/algorithm_fix24_pseudocode.md}.
 
 \section*{Data Availability}
 The code and processed evaluation artifacts are maintained in a private development
