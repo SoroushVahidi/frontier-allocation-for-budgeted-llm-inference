@@ -549,8 +549,18 @@ class APIBranchGenerator:
                     body = json.loads(resp.read().decode("utf-8"))
                 break
             except error.HTTPError as exc:
+                # Read body for diagnostics
                 err_body = exc.read().decode("utf-8", errors="ignore")
-                if exc.code in {408, 429, 500, 502, 503, 504} and attempt < retry_attempts - 1:
+                # If rate-limited, honor Retry-After header when present
+                if exc.code == 429 and attempt < retry_attempts - 1:
+                    try:
+                        retry_after = int(exc.headers.get("Retry-After", "0") or "0")
+                    except Exception:
+                        retry_after = 0
+                    wait = max(1.25 * (attempt + 1), retry_after + 1 if retry_after > 0 else 0)
+                    time.sleep(wait)
+                    continue
+                if exc.code in {408, 500, 502, 503, 504} and attempt < retry_attempts - 1:
                     time.sleep(1.25 * (attempt + 1))
                     continue
                 raise RuntimeError(f"Cerebras API HTTPError {exc.code}: {err_body[:500]}") from exc
